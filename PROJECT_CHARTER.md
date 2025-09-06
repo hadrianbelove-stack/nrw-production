@@ -125,7 +125,11 @@ It exists to:
 ### AMENDMENT-024: Multiple Solutions Rule
 - Present ≥2–3 distinct options for significant problems. Rate 1–10. Give pros/cons. Recommend best but show alternatives for audit.
 
-
+### AMENDMENT-025: Database Update Cadence
+- Daily requirement: Run `python movie_tracker.py check` to detect provider availability
+- Weekly: Run `python movie_tracker.py bootstrap` to add new theatrical releases  
+- Before handoff: check → generate_data.py → verify data.json is current
+- Automation goal: Daily cron/scheduler until GitHub Actions restored
 
 ### AMENDMENT-FLATSHOT: Single-Shot Governance Updates
 
@@ -215,3 +219,21 @@ Root Structure:
 - **Base URL:** http://www.omdbapi.com/?i=tt3896198&apikey=539723d9
 - **Poster API:** http://img.omdbapi.com/?i=tt3896198&h=600&apikey=539723d9
 - **Usage:** Alternative movie data source, poster fallbacks
+
+### AMENDMENT-008: Canonical Daily Update Script
+- `daily_update.sh` is the binding daily workflow
+- Executes: check → generate → summary → git commit
+- Run manually or via cron until GitHub Actions restored
+- Located in repo root, not Downloads folder
+
+### AMENDMENT-026: Repository Migration Record
+- Migrated from new-release-wall to nrw-production on 2025-09-05
+- Due to GitHub Actions account flag on original repo
+- All future work in nrw-production repository
+- GitHub support ticket filed for account reinstatement
+
+### AMENDMENT-027: Bootstrap Data Integrity
+- Bootstrap movies (discovered already-digital) marked with bootstrap_digital flag
+- Only show movies caught transitioning in real-time for pure tracking
+- Filter option in generate_data.py to exclude bootstrap batch
+- Integrity over appearance: no fake dates

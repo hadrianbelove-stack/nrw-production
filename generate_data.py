@@ -65,3 +65,19 @@ with open('data.json', 'w') as f:
     json.dump(output, f, indent=2)
 
 print(f"Generated data.json with {len(recent)} recent releases (showing top 30)")
+
+# Add this function after imports
+def filter_bootstrap_movies(movies_dict, cutoff_date='2025-09-05'):
+    """Option to exclude movies discovered during bootstrap"""
+    bootstrap_count = len([m for m in movies_dict.values() 
+                          if m.get('digital_date') == cutoff_date])
+    
+    # If more than 50 movies on same date, likely bootstrap batch
+    if bootstrap_count > 50:
+        print(f"Filtering {bootstrap_count} bootstrap movies from {cutoff_date}")
+        return {k: v for k, v in movies_dict.items() 
+                if v.get('digital_date') != cutoff_date}
+    return movies_dict
+
+# To use: uncomment this line after loading db
+# db['movies'] = filter_bootstrap_movies(db['movies'])

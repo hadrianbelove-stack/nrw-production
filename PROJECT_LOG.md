@@ -130,3 +130,34 @@
 - 20250831-070929Z: Flat handoff canonical; AMENDMENT-FLATSHOT added; scripts locked to FLAT_HANDOFF_ONLY
 - 20250831-070929Z: Context updated with Flat Handoff section
 - 20250831-075104Z: Operator's Manual appended to Charter
+
+## 2025-09-06 - Repository Migration & Bootstrap
+
+### Major Changes
+- **Repository Migration:** Moved from new-release-wall to nrw-production
+- **GitHub Actions Issue:** Account flagged, preventing workflow execution
+- **Bootstrap Complete:** 180 movies tracked, 107 marked digital on discovery
+- **Support Ticket:** Filed for GitHub account reinstatement
+
+### Data Pipeline Status
+- movie_tracker.py: Functional, tracking 180 movies
+- generate_data.py: Functional, showing 30 most recent
+- daily_update.sh: Created with canonical workflow
+- GitHub Actions: Blocked pending reinstatement
+
+### Issues Identified
+- All bootstrap movies show Sept 5 (discovery date, not digital date)
+- No way to retroactively determine actual digital dates
+- GitHub Actions blocked at account level
+- Design issues: small date markers, no hover states
+
+### Amendments Added
+- AMENDMENT-025: Database Update Cadence
+- AMENDMENT-026: Repository Migration Record  
+- AMENDMENT-027: Bootstrap Data Integrity
+- AMENDMENT-008: Canonical Daily Update Script
+
+### Next Session Focus
+- Await GitHub reinstatement decision
+- Fix design issues with current data
+- Implement bootstrap movie filtering if needed
