@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>New Release Wall</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 20px;
+        }
+        .header h1 { 
+            font-size: 2.5em; 
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .control-panel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(17, 17, 17, 0.95);
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 15px;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+        .control-btn {
+            display: block;
+            width: 100%;
+            margin: 5px 0;
+            padding: 10px 15px;
+            background: #222;
+            color: #fff;
+            border: 1px solid #444;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+        .control-btn:hover {
+            background: #667eea;
+            border-color: #667eea;
+        }
+        .control-info {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #333;
+            font-size: 11px;
+            color: #888;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .card {
+            background: #111;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .poster-container {
+            position: relative;
+            padding-top: 150%;
+            background: #222;
+        }
+        .poster {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+    <div class="control-panel">
+        <h3 style="margin-bottom: 10px; font-size: 14px;">🎬 Controls</h3>
+        <button class="control-btn" onclick="showInstructions()">
+            📖 How to Refresh
+        </button>
+        <button class="control-btn" onclick="copyCommand('quick')">
+            📋 Copy Quick Refresh
+        </button>
+        <button class="control-btn" onclick="copyCommand('full')">
+            📋 Copy Full Refresh
+        </button>
+        <div class="control-info">
+            <div>Movies: {{ items|length }}</div>
+            <div>Updated: {{ now|default('Recently') }}</div>
+        </div>
+    </div>
+
+    <div class="header">
+        <h1>New Release Wall</h1>
+        <div style="color: #888;">{{ items|length }} movies • Last 14 days</div>
+    </div>
+
+    <div class="grid">
+        {% for item in items %}
+        <div class="card">
+            <div class="poster-container">
+                {% if item.poster %}
+                <img onerror=\"this.src='static/placeholder_poster.svg'\" src="{{ item.poster }}" alt="{{ item.title }}" class="poster" loading="lazy">
+                {% else %}
+                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+                    {{ item.title }}
+                </div>
+                {% endif %}
+            </div>
+            <div style="padding: 15px;">
+                <div style="font-weight: 600;">{{ item.title }}</div>
+                <div style="color: #888; font-size: 0.9em;">{{ item.year or '—' }}</div>
+                {% if item.providers %}
+                <div style="margin-top: 8px;">
+                    {% for provider in item.providers[:3] %}
+                    <span style="display: inline-block; padding: 2px 8px; background: #222; border-radius: 12px; font-size: 0.75em; margin: 2px;">
+                        {{ provider }}
+                    </span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        function showInstructions() {
+            alert(`To refresh data:
+            
+1. Open Terminal
+2. Paste one of the commands below
+3. Refresh this page
+
+Quick: python3 ~/Downloads/new-release-wall/new_release_wall_balanced.py --days 14 --max-pages 3
+
+Full: python3 ~/Downloads/new-release-wall/new_release_wall_balanced.py --days 30 --max-pages 5`);
+        }
+
+        function copyCommand(type) {
+            const commands = {
+                quick: 'cd ~/Downloads/new-release-wall && python3 new_release_wall_balanced.py --days 14 --max-pages 3 && python3 -m http.server 8080 -d output/site',
+                full: 'cd ~/Downloads/new-release-wall && python3 new_release_wall_balanced.py --days 30 --max-pages 5 && python3 -m http.server 8080 -d output/site'
+            };
+            
+            navigator.clipboard.writeText(commands[type]).then(() => {
+                alert('Command copied! Paste in Terminal to run.');
+            });
+        }
+    </script>
+
+<!-- NRW_FIX_02 -->
+<style>
+  /* Bigger, fixed card so rows don't overlap */
+  .movie-card{ width:180px; height:320px; aspect-ratio:auto !important; }
+  .movie-card-inner{ width:100%; height:100%; }
+  .movie-poster{ height:70%; object-fit:cover; }
+  .back-synopsis{ flex:1; overflow-y:auto; }
+</style>
+<script>
+(() => {
+  /* Unwrap invalid <a.card-back> -> <div.card-back> */
+  document.querySelectorAll('a.card-face.card-back').forEach(a => {
+    const div = document.createElement('div');
+    div.className = a.className;
+    if (a.getAttribute('style')) div.setAttribute('style', a.getAttribute('style'));
+    while (a.firstChild) div.appendChild(a.firstChild);
+    a.parentNode.replaceChild(div, a);
+  });
+
+  /* Remove full-surface overlay link */
+  document.querySelectorAll('.card-back .card-back-link').forEach(el => el.remove());
+
+  /* Hide RT button when broken */
+  document.querySelectorAll('.mini-btn.btn-rt').forEach(btn => {
+    const href = (btn.getAttribute('href')||'').trim();
+    if (!href || href === 'None' || href === '#') btn.remove();
+  });
+
+  /* Kill any auto-reload timers (debugging) */
+  try { const max = setInterval(()=>{},1000); for (let i=0;i<=max;i++) clearInterval(i); } catch(e){}
+})();
+</script>
+
+</body>
+</html>

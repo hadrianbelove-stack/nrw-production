@@ -1,0 +1,14 @@
+name: Push Test
+on:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: |
+          echo "Workflow running at $(date)"
+          ls -la
+          echo "Testing complete"

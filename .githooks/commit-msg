@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+set -euo pipefail
+MSG_FILE="$1"
+MSG="$(cat "$MSG_FILE")"
+
+# Sum of deleted lines across staged changes
+DELETIONS=$(git diff --cached --numstat | awk '{d+=$2} END{print d+0}')
+
+# Detect edits to any context doc (adjust pattern if needed)
+CONTEXT_CHANGED=$(git diff --cached --name-only | grep -iE '(^|/).*context.*\.md' || true)
+
+need_token_delete=false
+need_token_context=false
+
+if [ "$DELETIONS" -gt 0 ]; then
+  echo "$MSG" | grep -q "APPROVED: DELETE" || need_token_delete=true
+fi
+
+if [ -n "$CONTEXT_CHANGED" ]; then
+  echo "$MSG" | grep -q "APPROVED: CONTEXT-EDIT" || need_token_context=true
+fi
+
+if $need_token_delete || $need_token_context; then
+  echo "Commit blocked."
+  if $need_token_delete; then
+    echo "- You removed $DELETIONS line(s). Add token: 'APPROVED: DELETE' to the commit message."
+  fi
+  if $need_token_context; then
+    echo "- You changed a context doc. Add token: 'APPROVED: CONTEXT-EDIT' to the commit message."
+  fi
+  exit 1
+fi

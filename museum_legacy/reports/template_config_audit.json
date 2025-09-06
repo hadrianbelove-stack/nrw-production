@@ -1,0 +1,16 @@
+{
+  "config_keys": {
+    "tmdb.bearer": true,
+    "tmdb.api_key": false
+  },
+  "template_checks": {
+    "card_back_overlay": false,
+    "rt_button_href": false,
+    "meta_fallbacks": false,
+    "uses_item_vars": false
+  },
+  "generate_site_checks": {
+    "has_select_items": true,
+    "imports_dt": true
+  }
+}

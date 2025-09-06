@@ -1,0 +1,61 @@
+{
+  "demo_info": {
+    "description": "RT Agent Demo Results",
+    "method": "web_search",
+    "total_movies": 5,
+    "successful_fetches": 5,
+    "timestamp": "2025-08-24 16:05:14"
+  },
+  "results": [
+    {
+      "title": "Barbie",
+      "year": "2023",
+      "search_query": "\"Barbie\" 2023 rotten tomatoes",
+      "rt_url": "https://www.rottentomatoes.com/m/barbie",
+      "critic_score": 88,
+      "audience_score": 83,
+      "method": "web_search",
+      "status": "success"
+    },
+    {
+      "title": "Oppenheimer",
+      "year": "2023",
+      "search_query": "\"Oppenheimer\" 2023 rotten tomatoes",
+      "rt_url": "https://www.rottentomatoes.com/m/oppenheimer_2023",
+      "critic_score": 93,
+      "audience_score": 91,
+      "method": "web_search",
+      "status": "success"
+    },
+    {
+      "title": "The Flash",
+      "year": "2023",
+      "search_query": "\"The Flash\" 2023 rotten tomatoes",
+      "rt_url": "https://www.rottentomatoes.com/m/the_flash_2023",
+      "critic_score": 63,
+      "audience_score": 81,
+      "method": "web_search",
+      "status": "success"
+    },
+    {
+      "title": "John Wick Chapter 4",
+      "year": "2023",
+      "search_query": "\"John Wick Chapter 4\" 2023 rotten tomatoes",
+      "rt_url": "https://www.rottentomatoes.com/m/john_wick_chapter_4",
+      "critic_score": 94,
+      "audience_score": 93,
+      "method": "web_search",
+      "status": "success"
+    },
+    {
+      "title": "Scream VI",
+      "year": "2023",
+      "search_query": "\"Scream VI\" 2023 rotten tomatoes",
+      "rt_url": "https://www.rottentomatoes.com/m/scream_vi",
+      "critic_score": 77,
+      "audience_score": 90,
+      "method": "web_search",
+      "status": "success"
+    }
+  ]
+}

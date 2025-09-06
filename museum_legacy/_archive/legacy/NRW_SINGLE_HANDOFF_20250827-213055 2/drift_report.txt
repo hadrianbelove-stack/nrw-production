@@ -1,0 +1,76 @@
+DRIFT DETECTION REPORT - Wed Aug 27 21:30:55 PDT 2025
+
+GIT STATUS:
+ M PROJECT_LOG.md
+ M archive/old_admin/admin_broken.py
+ M archive/old_admin/admin_fixed.py
+ M archive/old_admin/curator_admin.py
+ M archive/old_diagnostics/check_metadata.py
+ M archive/old_diagnostics/check_missing_titles.py
+ M archive/old_diagnostics/check_stats.py
+ M archive/old_diagnostics/corrected_diagnosis.py
+ M archive/old_diagnostics/final_diagnosis.py
+ M archive/old_rt_fetchers/enhanced_rt_collector.py
+ M archive/old_rt_fetchers/fix_rt_scores.py
+ M archive/old_rt_fetchers/rt_score_collector.py
+ M archive/old_rt_fetchers/rt_score_fetcher.py
+ M archive/old_rt_fetchers/simple_rt_fetcher.py
+ M archive/old_scrapers/new_release_wall_fixed.py
+ M archive/old_scrapers/new_release_wall_improved.py
+ M archive/old_scrapers/new_release_wall_smart.py
+ M archive/old_scrapers/new_release_wall_v2.py
+ M generate_site.py
+ M nrw-make-code-snapshot.sh
+ M output/data.json
+ M output/site/index.html
+?? AUDIT_20250827-171754.zip
+?? NRW_CODE_SNAPSHOT_20250827-1444.manifest.txt
+?? NRW_CODE_SNAPSHOT_20250827-1444.sha256
+?? drift_report.txt
+?? manifest.txt
+?? nrw-append-rule-021.sh
+?? nrw-audit-frontend.sh
+?? nrw-audit.sh
+?? nrw-make-code-snapshot.sh.bak
+?? nrw-post-validate.sh
+?? nrw-release-latest.sh
+?? nrw-session-start.sh
+?? output/nrw_audit_20250827-231948.txt
+?? output/nrw_audit_20250827-232849.txt
+?? output/nrw_audit_20250827-233050.txt
+?? output/nrw_audit_20250827-233200.txt
+?? output/nrw_audit_20250828-034817.txt
+?? output/nrw_audit_20250828-035944.txt
+?? snapshots/
+
+RECENT COMMITS (last 5):
+a17ebb7 Append RULE-024: Charter Canonical Source APPROVED: CONTEXT-EDIT
+82065f4 Snapshot: embed Charter/Log/Context; tighten excludes; size caps APPROVED: DELETE
+ed3c9c4 Fix snapshot script to create proper ZIP files instead of gzipped tar APPROVED: DELETE
+d8dce07 Append RULE-021: Visibility Guarantee APPROVED: CONTEXT-EDIT
+ee2f516 Add session wrappers for snapshot policy (RULE-023)
+
+MODIFIED FILES:
+./ALL_CODE_SYNC.py
+./tmdb_auth.py
+./_resume_tmp/tests/smoke_test.py
+./rt_live_demo.py
+./ALL_CODE_CONCATENATED.py
+./rt_web_fetcher.py
+./tools/session_gate.py
+./tools/session_end.py
+./tools/preflight.py
+./rt_fetcher.py
+No recently modified Python files
+
+SYSTEM STATE:
+- Python files:     2335
+- JSON data files:        8
+- Template files:        6
+- Output files:       25
+
+HEALTH CHECKS:
+- CLAUDE.md exists: ✓
+- Main script exists: ✓
+- Templates exist: ✓
+- Output directory: ✓

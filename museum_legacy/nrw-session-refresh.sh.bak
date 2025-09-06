@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd "${ROOT:-$HOME/Downloads/new-release-wall}"
+SNAP="$(./nrw-make-code-snapshot.sh || true)"
+echo "REFRESH SNAPSHOT READY:"
+echo "  ${SNAP}.zip"
+echo "  ${SNAP}.manifest.txt"

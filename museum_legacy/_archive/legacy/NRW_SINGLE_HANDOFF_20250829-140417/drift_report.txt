@@ -1,0 +1,87 @@
+DRIFT DETECTION REPORT - Fri Aug 29 14:04:17 PDT 2025
+
+GIT STATUS:
+ M .gitignore
+ M PROJECT_CHARTER.md
+ D PROJECT_CHARTER.md.bak
+ M PROJECT_LOG.md
+ M archive/old_admin/admin_broken.py
+ M archive/old_admin/admin_fixed.py
+ M archive/old_admin/curator_admin.py
+ M archive/old_diagnostics/check_metadata.py
+ M archive/old_diagnostics/check_missing_titles.py
+ M archive/old_diagnostics/check_stats.py
+ M archive/old_diagnostics/corrected_diagnosis.py
+ M archive/old_diagnostics/final_diagnosis.py
+ M archive/old_rt_fetchers/enhanced_rt_collector.py
+ M archive/old_rt_fetchers/fix_rt_scores.py
+ M archive/old_rt_fetchers/rt_score_collector.py
+ M archive/old_rt_fetchers/rt_score_fetcher.py
+ M archive/old_rt_fetchers/simple_rt_fetcher.py
+ M archive/old_scrapers/new_release_wall_fixed.py
+ M archive/old_scrapers/new_release_wall_improved.py
+ M archive/old_scrapers/new_release_wall_smart.py
+ M archive/old_scrapers/new_release_wall_v2.py
+ M generate_site.py
+ M nrw-make-code-snapshot.sh
+ M output/data.json
+ M output/site/index.html
+ M package_contents.txt
+ D reports/PROJECT_CHARTER_latest.md
+ D reports/PROJECT_CHARTER_snapshot_20250825-203250.md
+ D reports/PROJECT_CHARTER_snapshot_20250825-222621.md
+ M sync_package.sh
+?? "NRW_SINGLE_HANDOFF_20250827-213055 2/"
+?? NRW_SINGLE_HANDOFF_20250827-213055/
+?? charter_history/
+?? drift_report.txt
+?? manifest.txt
+?? nrw-append-rule-021.sh
+?? nrw-audit-frontend.sh
+?? nrw-audit.sh
+?? nrw-make-code-snapshot.sh.bak
+?? nrw-patch-charter.sh
+?? nrw-post-validate.sh
+?? nrw-release-latest.sh
+?? nrw-session-start.sh
+?? output/nrw_audit_20250827-231948.txt
+?? output/nrw_audit_20250827-232849.txt
+?? output/nrw_audit_20250827-233050.txt
+?? output/nrw_audit_20250827-233200.txt
+?? output/nrw_audit_20250828-034817.txt
+?? output/nrw_audit_20250828-035944.txt
+?? output/nrw_audit_20250828-191116.txt
+?? snapshots/
+?? sync_package.sh.bak
+
+RECENT COMMITS (last 5):
+a17ebb7 Append RULE-024: Charter Canonical Source APPROVED: CONTEXT-EDIT
+82065f4 Snapshot: embed Charter/Log/Context; tighten excludes; size caps APPROVED: DELETE
+ed3c9c4 Fix snapshot script to create proper ZIP files instead of gzipped tar APPROVED: DELETE
+d8dce07 Append RULE-021: Visibility Guarantee APPROVED: CONTEXT-EDIT
+ee2f516 Add session wrappers for snapshot policy (RULE-023)
+
+MODIFIED FILES:
+./ALL_CODE_SYNC.py
+./tmdb_auth.py
+./_resume_tmp/tests/smoke_test.py
+./rt_live_demo.py
+./ALL_CODE_CONCATENATED.py
+./NRW_SINGLE_HANDOFF_20250827-213055 2/ALL_CODE_SYNC.py
+./NRW_SINGLE_HANDOFF_20250827-213055 2/tmdb_auth.py
+./NRW_SINGLE_HANDOFF_20250827-213055 2/rt_live_demo.py
+./NRW_SINGLE_HANDOFF_20250827-213055 2/ALL_CODE_CONCATENATED.py
+./NRW_SINGLE_HANDOFF_20250827-213055 2/rt_web_fetcher.py
+No recently modified Python files
+
+SYSTEM STATE:
+- Python files:     2429
+- JSON data files:        8
+- Template files:        6
+- Output files:       26
+
+HEALTH CHECKS:
+- CLAUDE.md exists: ✓
+- Main script exists: ✓
+- Templates exist: ✓
+- Output directory: ✓

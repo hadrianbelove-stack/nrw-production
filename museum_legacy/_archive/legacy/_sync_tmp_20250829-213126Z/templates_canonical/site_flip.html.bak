@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Release Wall</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            line-height: 1.6;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 2rem 1rem;
+            background: linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 100%);
+            border-bottom: 1px solid #333;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+        
+        .header .subtitle {
+            color: #888;
+            font-size: 1rem;
+        }
+        
+        .movie-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .movie-card {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 2/3;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            cursor: pointer;
+        }
+        
+        .movie-card.flipped {
+            transform: rotateY(180deg);
+        }
+        
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #1a1a1a;
+        }
+        
+        .card-front {
+            z-index: 2;
+        }
+        
+        .card-back {
+            transform: rotateY(180deg);
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            color: #fff;
+        }
+        
+        .movie-poster {
+            width: 100%;
+            height: 75%;
+            object-fit: cover;
+            background: #2a2a2a;
+        }
+        
+        .movie-info {
+            padding: 0.75rem;
+            background: linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 100%);
+            height: 25%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .movie-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .movie-year {
+            font-size: 0.8rem;
+            color: #888;
+            margin-bottom: 0.25rem;
+        }
+        
+        .movie-credits {
+            font-size: 0.75rem;
+            color: #aaa;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            margin-bottom: 0.5rem;
+        }
+        
+        .provider-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.25rem;
+        }
+        
+        .provider-btn {
+            background: #333;
+            color: #fff;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+        
+        .provider-btn:hover {
+            background: #555;
+        }
+        
+        /* Card Back Styles */
+        .back-header {
+            margin-bottom: 1rem;
+        }
+        
+        .back-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .back-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            color: #aaa;
+            margin-bottom: 0.5rem;
+        }
+        
+        .back-meta span {
+            background: #333;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+        }
+        
+        .synopsis {
+            flex: 1;
+            font-size: 0.8rem;
+            line-height: 1.4;
+            color: #ccc;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+        }
+        
+        .back-links {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .trailer-btn, .watch-btn {
+            flex: 1;
+            padding: 0.5rem;
+            background: #e50914;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            text-decoration: none;
+            text-align: center;
+            font-size: 0.75rem;
+            transition: all 0.3s;
+        }
+        
+        .watch-btn {
+            background: #333;
+        }
+        
+        .trailer-btn:hover {
+            background: #ff0a16;
+        }
+        
+        .watch-btn:hover {
+            background: #555;
+        }
+        
+        @media (max-width: 768px) {
+            .movie-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 1rem;
+                padding: 1rem;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>The New Release Wall</h1>
+        <div class="subtitle">What's New to Digital This Week</div>
+    </div>
+    
+    <div class="movie-grid">
+        {% for movie in movies %}
+        <div class="movie-card" onclick="this.classList.toggle('flipped')">
+            <div class="card-face card-front">
+                <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" class="movie-poster">
+                <div class="movie-info">
+                    <div class="movie-title">{{ movie.title }}</div>
+                    <div class="movie-year">{{ movie.year }}</div>
+                    <div class="movie-credits">
+                        {% if movie.director %}Dir: {{ movie.director }}{% endif %}
+                        {% if movie.cast %}• {{ movie.cast[:2]|join(', ') }}{% endif %}
+                    </div>
+                    <div class="provider-links">
+                        {% for provider in movie.providers[:3] %}
+                        <a href="{{ movie.tmdb_watch_link }}" class="provider-btn">{{ provider }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-face card-back">
+                <div class="back-header">
+                    <div class="back-title">{{ movie.title }}</div>
+                    <div class="back-meta">
+                        <span>{{ movie.studio }}</span>
+                        <span>{{ movie.runtime }} min</span>
+                        <span>RT: {{ movie.rt_score }}%</span>
+                    </div>
+                </div>
+                <div class="synopsis">
+                    {{ movie.synopsis|default("No synopsis available", true)|truncate(200) }}
+                </div>
+                <div class="back-links">
+                    <a href="{{ movie.trailer_url }}" class="trailer-btn">▶ Trailer</a>
+                    <a href="{{ movie.tmdb_watch_link }}" class="watch-btn">Watch Options</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

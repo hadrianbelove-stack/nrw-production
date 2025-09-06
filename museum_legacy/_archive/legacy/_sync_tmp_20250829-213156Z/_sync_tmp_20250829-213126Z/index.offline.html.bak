@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>The New Release Wall</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    :root{
+      --bg:#0c0c0f;--card:#17171c;--ink:#eaeaf0;--muted:#a9adba;
+      --chip:#22232a;--ring:#2a2c36;--accent:#7ea3ff
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+    header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--ring);position:sticky;top:0;background:linear-gradient(to bottom, rgba(12,12,15,.95), rgba(12,12,15,.85))}
+    h1{margin:0;font-size:20px;letter-spacing:.2px}
+    main{padding:20px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+    .card{background:var(--card);border:1px solid var(--ring);border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+    .poster{width:100%;aspect-ratio:2/3;background:#111;object-fit:cover}
+    .pad{padding:12px}
+    .title{font-size:16px;margin:0 0 6px}
+    .meta{color:var(--muted);font-size:12px;margin:0 0 10px}
+    .chips{display:flex;flex-wrap:wrap;gap:6px}
+    .chip{font-size:11px;background:var(--chip);border:1px solid var(--ring);padding:4px 8px;border-radius:999px;color:var(--ink)}
+    .rt{margin-left:auto}
+    .bar{display:flex;align-items:center;gap:8px}
+    .count{color:var(--muted);font-size:12px}
+    a{color:var(--accent);text-decoration:none}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>The New Release Wall</h1>
+    <div class="count" id="count">Loading…</div>
+  </header>
+  <main>
+    <div class="grid" id="grid" aria-live="polite"></div>
+  </main>
+  <script>
+    (async function(){
+      const res = await fetch('assets/data.json',{cache:'no-store'});
+      const all = await res.json();
+      // Only show provider-active & not-future
+      const today = new Date().toISOString().slice(0,10);
+      const items = all.filter(m=>{
+        const has = !!m.has_digital;
+        const d = (m.digital_date || m.date_key || m.release_date || '').slice(0,10);
+        const future = d && d > today;
+        return has && !future;
+      });
+      document.getElementById('count').textContent = `${items.length} titles`;
+      const toPoster = (p)=> p && p.startsWith('http') ? p : (p ? `https://image.tmdb.org/t/p/w500${p}` : '');
+      const grid = document.getElementById('grid');
+      grid.innerHTML = items.map(m=>{
+        const poster = toPoster(m.poster || m.poster_path || '');
+        const prov = (m.providers || []).slice(0,6);
+        const rt = (m.rt_score==null||m.rt_score==='') ? '—' : `${m.rt_score}%`;
+        const year = (m.theatrical_date || m.release_date || m.date_key || '').slice(0,4);
+        return `
+          <article class="card">
+            <img class="poster" src="${poster}" alt="${m.title||''} poster" onerror="this.style.visibility='hidden'">
+            <div class="pad">
+              <h2 class="title">${m.title||''}</h2>
+              <p class="meta">${year?year:''}${year&&m.runtime?' • ':''}${m.runtime?m.runtime+' min':''}</p>
+              <div class="bar">
+                <div class="chips">
+                  ${prov.map(p=>`<span class="chip">${p}</span>`).join('')}
+                </div>
+                <span class="chip rt">🍅 ${rt}</span>
+              </div>
+            </div>
+          </article>`;
+      }).join('');
+    }());
+  </script>
+</body>
+</html>

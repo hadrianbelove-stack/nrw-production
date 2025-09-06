@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -e
+cd "$(dirname "$0")/output/site"
+lsof -ti :3001 -sTCP:LISTEN | xargs -r kill
+python -m http.server 3001

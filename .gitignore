@@ -1,0 +1,24 @@
+.venv/
+*.pyc
+__pycache__/
+.DS_Store
+config.yaml  # Keep API keys local only
+movie_tracking.json  # Keep database local unless you want it synced
+cache/
+diagnose_*.py
+movie_tracking.json
+current_releases.json
+*_test.py
+NRW_SYNC_*.zip
+NRW_SYNC_*.sha256
+NRW_SYNC_*.manifest*
+bundle_history/
+snapshot_history/
+*.zip
+*.sha256
+*.manifest.txt
+WORKING_SET_HANDOFF_*/
+_ws_*/
+sync_tmp_*/
+output/
+.nrw_http_pid

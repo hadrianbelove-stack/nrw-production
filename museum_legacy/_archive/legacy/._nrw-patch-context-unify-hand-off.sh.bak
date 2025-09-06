@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd "${REPO:-$PWD}"
+
+STAMP="$(date -u +%Y%m%d-%H%M%SZ)"
+cp -n complete_project_context.md "complete_project_context.before_unify_${STAMP}.md" 2>/dev/null || true
+
+read -r -d '' INSERT <<'MD'
+## Handoff Policy (Unified Working Set)
+
+- **Canonical artifact:** `NRW_WORKINGSET_<UTC-YYYYMMDD-HHMMSSZ>.zip` (or `_assistant/` folder with identical contents).
+- **Includes only:**
+  - Runtime truth: `output/site/index.html`, `output/site/assets/*` (assets actually referenced by the page)
+  - UI sources: `templates/site*.html`, `render_*.js` (if used), `generate_site.py`, `adapter.py`
+  - Data pipeline: `movie_tracker.py`, `generate_from_tracker.py`, `new_release_wall_balanced.py`, `movie_tracking.json`, `current_releases.json`, `curated_selections.json`
+  - Governance: repo-root `PROJECT_CHARTER.md` (sacrosanct) + timestamped copy in `charter_history/`, `PROJECT_LOG.md`, `complete_project_context.md`
+  - Canonical scripts: `sync_package.sh`, `nrw-make-code-snapshot.sh`, `nrw-post-validate.sh`, `nrw-handoff.sh`
+
+### Deprecated (Legacy)
+- **NRW_SYNC + manifest + sha** handoffs are **retired**. Existing archives move to `bundle_history/` (git-ignored) for audit only.
+- Assistants must reference and inspect the Working Set only.
+
+### Execution Semantics (IF/THEN)
+- Assistants must wait for results before issuing contingent commands.
+- Safe parallel steps are bundled into a single labeled block.
+MD
+
+# Insert/replace a Handoff section: remove any legacy "NRW_SYNC handoff" text block and add new policy near the top after ground rules.
+awk -v RS= -v ORS="\n\n" -v insert="$INSERT" '
+{
+  text=$0
+  # Drop any prior "Handoff"/"Session Handoff" sections mentioning NRW_SYNC
+  gsub(/##[[:space:]]*(Session Handoff|Handoff)[^\n]*\n([^#]|#[^#])*?(NRW_SYNC[^#]*\n([^#]|#[^#])*)*/,"",text)
+  # Prepend new unified section after the first big rules section header occurrence
+  if (text ~ /##[[:space:]]*ESSENTIAL STRATEGY|##[[:space:]]*WORKING PRINCIPLES/) {
+    # place after the first matching header block
+    n=split(text, a, /\n\n/)
+    placed=0
+    for(i=1;i<=n;i++){
+      print a[i] "\n"
+      if(!placed && a[i] ~ /##[[:space:]]*WORKING PRINCIPLES/){
+        print insert "\n"
+        placed=1
+      }
+    }
+    if(!placed) print insert
+  } else {
+    print text "\n" insert
+  }
+}' complete_project_context.md > .ctx && mv .ctx complete_project_context.md
+
+echo "- ${STAMP}: Context updated — unified Working Set handoff; legacy NRW_SYNC deprecated" >> PROJECT_LOG.md
+echo "Context unified."

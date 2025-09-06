@@ -1,0 +1,19 @@
+#!/bin/bash
+# nrw-append-rule-021.sh — VISIBILITY GUARANTEE
+set -euo pipefail
+cd ~/Downloads/new-release-wall
+test -f PROJECT_CHARTER.md || { echo "Missing PROJECT_CHARTER.md"; exit 2; }
+
+grep -q 'RULE-021: Visibility Guarantee' PROJECT_CHARTER.md || cat >> PROJECT_CHARTER.md <<'EOF'
+
+## AMENDMENT: VISIBILITY GUARANTEE
+RULE-021: Visibility Guarantee.
+- Every working session must provide a code snapshot to the assistant (or the latest NRW_SYNC bundle).
+- Assistants must base all recommendations on the most recent provided code snapshot or unpacked NRW_SYNC.
+- Handoffs must embed the snapshot filenames in PROJECT_LOG.md for traceability.
+EOF
+
+git add PROJECT_CHARTER.md
+git commit -m "Append RULE-021: Visibility Guarantee" || true
+git push || true
+echo "RULE-021 appended."

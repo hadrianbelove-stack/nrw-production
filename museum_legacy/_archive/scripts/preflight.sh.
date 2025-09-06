@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd ~/Downloads/new-release-wall
+
+echo "🚀 NRW Preflight Check"
+
+# Check UI Lock first
+if [[ -f ui_lock.sh ]]; then
+  echo "Checking UI Lock integrity..."
+  if ./ui_lock.sh verify; then
+    echo "✓ UI templates verified"
+  else
+    echo "⚠️  UI templates compromised - attempting auto-fix..."
+    ./ui_lock.sh auto-fix || {
+      echo "❌ PREFLIGHT FAILED: Could not restore UI templates"
+      exit 1
+    }
+  fi
+else
+  echo "⚠️  No UI Lock found"
+fi
+
+# Check virtual environment
+if [[ -d .venv ]]; then
+  source .venv/bin/activate
+  echo "✓ Virtual environment activated"
+else
+  echo "⚠️  No virtual environment found"
+fi
+
+# Check critical files
+CRITICAL_FILES=(
+  "generate_site.py"
+  "movie_tracker.py" 
+  "new_release_wall_balanced.py"
+  "templates/site_enhanced.html"
+  "config.yaml"
+)
+
+for file in "${CRITICAL_FILES[@]}"; do
+  if [[ -f "$file" ]]; then
+    echo "✓ $file"
+  else
+    echo "❌ MISSING: $file"
+    exit 1
+  fi
+done
+
+# Check API keys
+if python3 -c "import yaml; cfg=yaml.safe_load(open('config.yaml')); exit(0 if cfg.get('tmdb_api_key') and 'YOUR' not in cfg.get('tmdb_api_key','') else 1)" 2>/dev/null; then
+  echo "✓ TMDB API key configured"
+else
+  echo "⚠️  TMDB API key missing or placeholder"
+fi
+
+if python3 -c "import yaml; cfg=yaml.safe_load(open('config.yaml')); exit(0 if cfg.get('omdb_api_key') and 'YOUR' not in cfg.get('omdb_api_key','') else 1)" 2>/dev/null; then
+  echo "✓ OMDB API key configured"
+else
+  echo "⚠️  OMDB API key missing or placeholder"
+fi
+
+echo "🚀 Preflight check completed"

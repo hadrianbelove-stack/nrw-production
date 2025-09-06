@@ -1,0 +1,5 @@
+# Copy to config.yaml and fill in your keys
+tmdb_api_key: "YOUR_TMDB_API_KEY_HERE"
+omdb_api_key: "YOUR_OMDB_API_KEY_HERE"   # set to "" to skip Rotten Tomatoes filtering
+min_rotten_tomatoes: 1                   # minimum RT % to include (1 means 'any rated title')
+site_title: "The New Release Wall"

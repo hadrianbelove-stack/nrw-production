@@ -1,0 +1,711 @@
+#!/usr/bin/env python3
+"""
+Site generator using new VHS-style template
+"""
+import json
+import os
+import requests
+import time
+import re
+import urllib.parse
+import hashlib
+import urllib.request
+import random
+import pathlib
+import datetime as dt
+from datetime import datetime
+from jinja2 import FileSystemLoader, Environment, Template
+
+TEMPLATE_NAME = os.getenv('NRW_TEMPLATE', 'site_enhanced.html')
+
+# --- NRW provider normalization helpers ---
+def _nrw_norm_providers(p):
+    if isinstance(p, dict):
+        return {k:(p.get(k) or []) for k in ('rent','buy','stream','flatrate')}
+    if isinstance(p, list):
+        return {'stream': p, 'rent': [], 'buy': [], 'flatrate': []}
+    return {'rent': [], 'buy': [], 'stream': [], 'flatrate': []}
+
+def _nrw_has_providers(p):
+    P=_nrw_norm_providers(p)
+    return any(P.get(k) for k in ('rent','buy','stream','flatrate'))
+
+from collections import defaultdict
+
+def load_data(filepath):
+    return json.load(open(filepath))
+
+def select_items(items):
+    today = dt.date.today()
+    out = []
+    for x in items:
+        # Use has_digital flag if available, otherwise check providers structure
+        has_provider = x.get("has_digital", False)
+        if not has_provider:
+            prov = x.get("providers") or {}
+            has_provider = (isinstance(prov, dict) and any(prov.get(k) for k in ("rent","buy","stream","flatrate"))) or (isinstance(prov, list) and bool(prov))
+        
+        # Check if movie is in the future based on available date fields
+        ddate = x.get("digital_date") or x.get("date_key") or x.get("release_date")
+        future = False
+        if ddate:
+            try:
+                if 'T' in str(ddate):
+                    future = dt.date.fromisoformat(str(ddate)[:10]) > today
+                else:
+                    future = dt.datetime.strptime(str(ddate)[:10], '%Y-%m-%d').date() > today
+            except Exception:
+                future = False
+        
+        # Include if has providers AND not in future
+        if has_provider and not future:
+            out.append(x)
+    return out
+
+# RT Score Caching System
+CACHE = "cache/review_cache.json"
+OMDB_KEY = os.getenv("OMDB_API_KEY")
+
+def _load_cache():
+    try: return json.load(open(CACHE))
+    except: return {}
+
+def _save_cache(c): 
+    os.makedirs("cache", exist_ok=True); json.dump(c, open(CACHE,"w"), indent=2)
+
+def _cache_key(q): 
+    return hashlib.sha1(q.encode("utf-8")).hexdigest()
+
+def rt_from_omdb(imdb_id=None, title=None, year=None, delay=0.2):
+    if not OMDB_KEY: return None, None  # no key → skip
+    params = {"apikey": OMDB_KEY, "tomatoes":"true", "type":"movie"}
+    q1 = None
+    if imdb_id: 
+        params["i"] = imdb_id; q1 = urllib.parse.urlencode(params)
+    else:
+        params["t"] = title or ""; 
+        if year: params["y"] = str(year)
+        q1 = urllib.parse.urlencode(params)
+
+    url = f"https://www.omdbapi.com/?{q1}"
+    cache = _load_cache(); ck = _cache_key(url)
+    if ck in cache: 
+        data = cache[ck]; 
+    else:
+        with urllib.request.urlopen(url, timeout=10) as r:
+            data = json.loads(r.read().decode("utf-8"))
+        cache[ck] = data; _save_cache(cache); time.sleep(delay)
+
+    if not data or data.get("Response") != "True": 
+        # fallback: title-only if first was IMDb or title+year
+        if imdb_id and title:
+            return rt_from_omdb(None, title, year)
+        return None, None
+
+    rt = None
+    for ent in data.get("Ratings", []):
+        if ent.get("Source") == "Rotten Tomatoes":
+            try: rt = int(ent["Value"].strip("%"))
+            except: pass
+    url_rt = data.get("tomatoURL") or None  # OMDb sometimes includes this
+    return rt, url_rt
+
+def _fetch(url):
+    """Fetch HTML content from URL"""
+    try:
+        import urllib.request
+        with urllib.request.urlopen(url, timeout=10) as response:
+            return response.read().decode('utf-8')
+    except Exception as e:
+        print(f"Failed to fetch {url}: {e}")
+        return ""
+
+def _parse_rt_score(html):
+    """Parse RT score from HTML using score-board element"""
+    if not html:
+        return None
+    
+    # Look for score-board element with tomatometerscore
+    m = re.search(r'<score-board[^>]*\btomatometerscore="(\d+)"', html, re.I)
+    if m:
+        return int(m.group(1))
+    
+    # Fallback: try other common patterns
+    patterns = [
+        r'"tomatometer":{"score":(\d+)',
+        r'tomatometer[^>]*>(\d+)%',
+        r'critics-score[^>]*>(\d+)%'
+    ]
+    
+    for pattern in patterns:
+        m = re.search(pattern, html, re.I)
+        if m:
+            return int(m.group(1))
+    
+    return None
+
+def rt_from_web_search(title, year=None):
+    """RT agent-based search and score extraction"""
+    try:
+        # Import and use the RT agent
+        import sys
+        import os
+        sys.path.append(os.path.join(os.path.dirname(__file__), 'scripts'))
+        
+        from rt_agent import fetch_rt_for_title
+        
+        result = fetch_rt_for_title(title, year, delay=0.5)
+        if result and result.get("critic_score") is not None:
+            return result["critic_score"], result.get("rt_url")
+            
+    except Exception as e:
+        print(f"RT agent search failed for {title}: {e}")
+        
+    # Fallback to direct URL guessing
+    try:
+        candidates = []
+        title_slug = title.lower().replace(' ', '_').replace(':', '').replace("'", "").replace(',', '').replace('.', '').replace('!', '').replace('?', '')
+        candidates.append(f"https://www.rottentomatoes.com/m/{title_slug}")
+        
+        title_dash = title.lower().replace(' ', '-').replace(':', '').replace("'", "").replace(',', '').replace('.', '').replace('!', '').replace('?', '')
+        candidates.append(f"https://www.rottentomatoes.com/m/{title_dash}")
+        
+        for url in candidates:
+            html = _fetch(url)
+            if html and "Page Not Found" not in html:
+                score = _parse_rt_score(html)
+                if score is not None:
+                    return score, url
+                    
+    except Exception as e:
+        print(f"RT direct fetch failed for {title}: {e}")
+        
+    return None, None
+
+def get_rt_hybrid(movie: dict):
+    """OMDb first; if missing and release old enough, scrape RT page."""
+    # 1) keep existing score
+    if movie.get("rt_score") not in (None, "", 0):
+        return movie.get("rt_score"), movie.get("rt_url"), movie.get("rt_method", "tracker")
+    
+    # 2) OMDb
+    rt, rt_url = rt_from_omdb(movie.get("imdb_id"), movie.get("title"), movie.get("year"))
+    if rt is not None:
+        return rt, rt_url, "omdb"
+    
+    # 3) Only scrape if released ≥ 7 days ago
+    from datetime import datetime, timedelta
+    cutoff = datetime.now() - timedelta(days=7)
+    digital_date_str = movie.get("digital_date", "")
+    if digital_date_str:
+        try:
+            digital_date = datetime.fromisoformat(digital_date_str.replace('Z', '+00:00'))
+            if digital_date.replace(tzinfo=None) < cutoff:
+                # 4) RT scrape (JSON-LD only)
+                rt, rt_url = rt_from_web_search(movie.get("title"), movie.get("year"))
+                if rt is not None:
+                    return rt, rt_url, "web_scrape"
+        except:
+            pass  # ignore date parsing errors
+    
+    return None, None, "none"
+
+def month_name_filter(month_str):
+    """Convert month number to name"""
+    months = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+              'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    try:
+        return months[int(month_str)]
+    except:
+        return 'Unknown'
+
+WIKIDATA_SPARQL = "https://query.wikidata.org/sparql"
+HEADERS = {"Accept": "application/sparql-results+json", "User-Agent": "nrw/1.0"}
+
+def resolve_wikipedia_url(title, year=None, imdb_id=None):
+    # 1) IMDb → Wikidata → enwiki sitelink
+    if imdb_id:
+        q = f'''
+        SELECT ?enwiki WHERE {{
+          ?item wdt:P345 "{imdb_id}" .
+          OPTIONAL {{
+            ?enwiki_schema schema:about ?item ;
+                           schema:isPartOf <https://en.wikipedia.org/> ;
+                           schema:name ?name .
+            BIND(CONCAT("https://en.wikipedia.org/wiki/", REPLACE(?name, " ", "_")) AS ?enwiki)
+          }}
+        }} LIMIT 1
+        '''
+        try:
+            r = requests.get(WIKIDATA_SPARQL, params={"query": q}, headers=HEADERS, timeout=8)
+            r.raise_for_status()
+            b = r.json()["results"]["bindings"]
+            if b and "enwiki" in b[0]:
+                return b[0]["enwiki"]["value"]
+        except Exception:
+            pass  # fall through
+
+    # 2) Wikipedia API quick candidates
+    candidates = []
+    if year:
+        candidates += [f"{title} ({year} film)"]
+    candidates += [f"{title} (film)", f"{title} (upcoming film)"]
+    for cand in candidates:
+        try:
+            r = requests.get(
+                "https://en.wikipedia.org/w/api.php",
+                params={"action":"query","format":"json","prop":"info","inprop":"url","titles":cand},
+                headers=HEADERS, timeout=8
+            )
+            pages = r.json()["query"]["pages"]
+            page = next(iter(pages.values()))
+            if "missing" not in page:
+                return page["fullurl"]
+        except Exception:
+            pass
+
+    # 3) Last resort: Special:Search with quotes + film + year + ns0
+    q = f"\"{title}\" film {year}" if year else f"\"{title}\" film"
+    return "https://en.wikipedia.org/w/index.php?title=Special:Search&fulltext=1&ns0=1&search=" + urllib.parse.quote(q)
+
+def create_wiki_url(title, year, imdb_id=None):
+    return resolve_wikipedia_url(title, year, imdb_id)
+
+def create_justwatch_url(title):
+    """Create direct JustWatch URL from movie title with fallback to search"""
+    if not title:
+        return "https://www.justwatch.com/us"
+    
+    # Special cases for known movie URL patterns
+    special_cases = {
+        'Deadpool & Wolverine': 'deadpool-3',
+        'Deadpool 3': 'deadpool-3',
+        'Inside Out 2': 'inside-out-2',
+        'A Quiet Place: Day One': 'a-quiet-place-day-one',
+        'Beetlejuice Beetlejuice': 'beetlejuice-2',
+        'The Bad Guys 2': 'the-bad-guys-2',
+        'Mission: Impossible - The Final Reckoning': 'mission-impossible-8',
+        'Mission Impossible - The Final Reckoning': 'mission-impossible-8',
+        'Mission: Impossible 8': 'mission-impossible-8',
+    }
+    
+    if title in special_cases:
+        return f"https://www.justwatch.com/us/movie/{special_cases[title]}"
+    
+    # Convert title to JustWatch URL slug
+    slug = title.lower()
+    
+    # Remove common articles from beginning only
+    articles = ['the ', 'a ', 'an ']
+    for article in articles:
+        if slug.startswith(article):
+            slug = slug[len(article):]
+    
+    # Replace special characters and spaces
+    slug = slug.replace('&', 'and')
+    slug = slug.replace("'", '')
+    slug = slug.replace('"', '')
+    slug = slug.replace(':', '')
+    slug = slug.replace('.', '')
+    slug = slug.replace(',', '')
+    slug = slug.replace('!', '')
+    slug = slug.replace('?', '')
+    slug = slug.replace('(', '')
+    slug = slug.replace(')', '')
+    slug = slug.replace('[', '')
+    slug = slug.replace(']', '')
+    slug = slug.replace('/', '')
+    slug = slug.replace('\\', '')
+    slug = slug.replace('#', '')
+    
+    # Replace spaces and multiple dashes with single dash
+    slug = '-'.join(slug.split())
+    slug = '-'.join(filter(None, slug.split('-')))  # Remove empty parts
+    
+    # If slug is too short or empty, fallback to search
+    if len(slug) < 2:
+        title_encoded = title.replace(' ', '+').replace('&', '%26')
+        return f"https://www.justwatch.com/us/search?q={title_encoded}"
+    
+    return f"https://www.justwatch.com/us/movie/{slug}"
+
+def get_tmdb_api_key():
+    """Get TMDB API key from config"""
+    try:
+        with open('config.yaml', 'r') as f:
+            import yaml
+            config = yaml.safe_load(f)
+            return config.get('tmdb_api_key')
+    except:
+        return None
+
+def get_rt_score_direct(title, year):
+    """Get RT score by scraping Rotten Tomatoes directly"""
+    try:
+        import urllib.parse
+        # Create search URL for RT
+        search_query = f"{title} {year}" if year else title
+        search_url = f"https://www.rottentomatoes.com/search?search={urllib.parse.quote(search_query)}"
+        
+        # Use WebFetch to get RT page and extract score
+        from tools import WebFetch  # This won't work in current context
+        # For now, return None and we'll use a different approach
+        return None
+    except Exception as e:
+        print(f"Error getting direct RT score for {title}: {e}")
+    return None
+
+def get_tmdb_movie_details(tmdb_id):
+    """Get comprehensive movie details from TMDB"""
+    api_key = get_tmdb_api_key()
+    if not api_key:
+        return {
+            'poster_url': 'https://via.placeholder.com/160x240',
+            'director': 'Director N/A',
+            'cast': [],
+            'synopsis': 'Synopsis not available.',
+            'runtime': None,
+            'studio': 'Studio N/A',
+            'rating': 'NR',
+            'trailer_url': None,
+            'rt_url': None
+        }
+    
+    # Get basic movie details
+    movie_url = f"https://api.themoviedb.org/3/movie/{tmdb_id}"
+    credits_url = f"https://api.themoviedb.org/3/movie/{tmdb_id}/credits"
+    videos_url = f"https://api.themoviedb.org/3/movie/{tmdb_id}/videos"
+    
+    try:
+        # Fetch movie details
+        movie_response = requests.get(movie_url, params={'api_key': api_key})
+        credits_response = requests.get(credits_url, params={'api_key': api_key})
+        videos_response = requests.get(videos_url, params={'api_key': api_key})
+        
+        result = {
+            'poster_url': 'https://via.placeholder.com/160x240',
+            'director': 'Director N/A',
+            'cast': [],
+            'synopsis': 'Synopsis not available.',
+            'runtime': None,
+            'studio': 'Studio N/A',
+            'rating': 'NR',
+            'trailer_url': None,
+            'rt_url': None
+        }
+        
+        if movie_response.status_code == 200:
+            movie_data = movie_response.json()
+            
+            # Poster
+            # poster_path override disabled - use existing poster_url from data
+
+            # poster_path = movie_data.get('poster_path')
+
+            # if poster_path:
+
+            #     result['poster_url'] = f\"https://image.tmdb.org/t/p/w500{poster_path}\"
+            
+            # Synopsis
+            result['synopsis'] = movie_data.get('overview', 'Synopsis not available.')
+            
+            # Runtime
+            runtime = movie_data.get('runtime')
+            result['runtime'] = runtime if runtime else None
+            
+            # Studio
+            production_companies = movie_data.get('production_companies', [])
+            if production_companies:
+                result['studio'] = production_companies[0].get('name', 'Studio N/A')
+            
+            # Create RT search URL using movie title and year
+            title = result.get('title', '')
+            year = result.get('year', '')
+            if title:
+                import urllib.parse
+                search_query = f"{title} {year}" if year else title
+                result['rt_url'] = f"https://www.rottentomatoes.com/search?search={urllib.parse.quote(search_query)}"
+        
+        if credits_response.status_code == 200:
+            credits_data = credits_response.json()
+            
+            # Director
+            for crew in credits_data.get('crew', []):
+                if crew.get('job') == 'Director':
+                    result['director'] = crew.get('name', 'Director N/A')
+                    break
+            
+            # Cast (first 3)
+            cast_list = []
+            for actor in credits_data.get('cast', [])[:3]:
+                name = actor.get('name')
+                if name:
+                    cast_list.append(name)
+            result['cast'] = cast_list
+        
+        if videos_response.status_code == 200:
+            videos_data = videos_response.json()
+            
+            # Find official trailer
+            for video in videos_data.get('results', []):
+                if (video.get('type') == 'Trailer' and 
+                    video.get('site') == 'YouTube' and 
+                    video.get('official', False)):
+                    result['trailer_url'] = f"https://www.youtube.com/watch?v={video['key']}"
+                    break
+            
+            # If no official trailer, take the first trailer
+            if not result['trailer_url']:
+                for video in videos_data.get('results', []):
+                    if video.get('type') == 'Trailer' and video.get('site') == 'YouTube':
+                        result['trailer_url'] = f"https://www.youtube.com/watch?v={video['key']}"
+                        break
+        
+        return result
+        
+    except Exception:
+        return {
+            'poster_url': 'https://via.placeholder.com/160x240',
+            'director': 'Director N/A',
+            'cast': [],
+            'synopsis': 'Synopsis not available.',
+            'runtime': None,
+            'studio': 'Studio N/A',
+            'rating': 'NR',
+            'trailer_url': None,
+            'rt_url': None
+        }
+
+def render_site_enhanced(items, site_title, window_label, region, store_names):
+    """Render site with flip cards and date dividers."""
+    
+    # Group movies by date
+    movies_by_date = defaultdict(list)
+    for item in items:
+        date = item.get('digital_date', '')[:10]
+        if date:
+            movies_by_date[date].append(item)
+    
+    # Sort dates descending (newest first)
+    sorted_dates = sorted(movies_by_date.keys(), reverse=True)
+    
+    # Prepare data for template
+    template_data = []
+    for date_str in sorted_dates:
+        # Parse date for display
+        date_obj = datetime.strptime(date_str, '%Y-%m-%d')
+        date_info = {
+            'month_short': date_obj.strftime('%b').upper(),
+            'day': date_obj.strftime('%d').lstrip('0'),
+            'year': date_obj.strftime('%Y')
+        }
+        template_data.append((date_info, movies_by_date[date_str]))
+    
+    # Load and render template
+    tpl_path = os.path.join("templates", "site_enhanced.html")
+    with open(tpl_path, "r", encoding="utf-8") as f:
+        tpl = Template(f.read())
+    
+    html = tpl.render(items=items, 
+        site_title=site_title,
+        window_label=window_label,
+        region=region,
+        store_names=store_names,
+        movies_by_date=template_data,
+        generated_at=datetime.now().strftime("%Y-%m-%d %H:%M")
+    )
+    
+    # Write output
+    out_dir = os.path.join("output", "site")
+    os.makedirs(out_dir, exist_ok=True)
+    with open(os.path.join(out_dir, "index.html"), "w", encoding="utf-8") as f:
+        f.write(html)
+
+def generate_site():
+    """Generate the VHS-style website"""
+    
+    # Load movie data with RT scores from main data file
+    try:
+        all_movies = load_data('current_releases.json')
+        
+        # __NRW_PROVIDERS_ASSERT__
+        try:
+            _chk = [m for m in (all_movies or [])[:5] if (m.get("providers") or [])]
+            assert _chk, "No provider data in first 5 movies — aborting generation."
+        except Exception as e:
+            raise SystemExit(f"[ABORT] provider check failed: {e}")
+        
+        # Check if this is an approved dataset (has tmdb_id set indicating it's from build_from_approved.py)
+        has_tmdb_ids = all_movies and any(movie.get('tmdb_id') for movie in all_movies[:3])
+        
+        if has_tmdb_ids:
+            # This is an approved/curated dataset - use all movies without date filtering
+            current_movies = all_movies
+        else:
+            # Filter to current releases (last 60 days) but keep RT scores
+            from datetime import datetime, timedelta
+            cutoff_date = (datetime.now() - timedelta(days=60)).strftime('%Y-%m-%d')
+            
+            current_movies = []
+            for movie in all_movies:
+                digital_date = movie.get('digital_date', '').split('T')[0] if movie.get('digital_date') else ''
+                if digital_date and digital_date >= cutoff_date:
+                    current_movies.append(movie)
+        
+        # Apply provider and future date filtering
+        movies = select_items(current_movies)
+        
+        print(f"Filtered to {len(movies)} available movies from {len(current_movies)} current releases from {len(all_movies)} total movies")
+        
+        # Skip RT score fetching for now to avoid timeout
+        print("Skipping RT score fetching to avoid timeout")
+        
+    except FileNotFoundError:
+        # Fallback to current releases if main data doesn't exist
+        with open('current_releases.json', 'r') as f:
+            current_movies = json.load(f)
+        # Apply provider and future date filtering
+        movies = select_items(current_movies)
+    
+    # Load RT scores from main tracking database
+    rt_scores = {}
+    try:
+        with open('movie_tracking.json', 'r') as f:
+            tracking_db = json.load(f)
+            for movie_id, movie_data in tracking_db.get('movies', {}).items():
+                if movie_data.get('rt_score'):
+                    rt_scores[movie_id] = movie_data['rt_score']
+    except:
+        pass
+    
+    print(f"Loaded {len(movies)} movies with {len(rt_scores)} RT scores")
+    
+    # Transform tracking data for new template
+    items = []
+    # Handle both list and dictionary formats
+    if isinstance(movies, dict):
+        movie_list = list(movies.values())
+    else:
+        movie_list = movies
+    
+    for movie in movie_list:
+        # Extract year from digital_date if available
+        year = '2025'
+        if movie.get('digital_date'):
+            year = movie['digital_date'][:4]
+        elif movie.get('theatrical_date'):
+            year = movie['theatrical_date'][:4]
+        
+        # Skip TMDB API calls to avoid timeout - use existing movie data
+        tmdb_details = {}
+        
+        # Get direct trailer URL from TMDB API
+        trailer_url = tmdb_details.get('trailer_url') if tmdb_details else None
+        if not trailer_url:
+            # Always provide YouTube search fallback
+            title_encoded = movie.get('title', '').replace(' ', '+').replace('&', '%26')
+            trailer_url = f"https://www.youtube.com/results?search_query={title_encoded}+{year}+trailer"
+        
+        # Create direct JustWatch link
+        watch_link = create_justwatch_url(movie.get('title', ''))
+        
+        # Create Wikipedia link with proper disambiguation
+        wiki_link = create_wiki_url(movie.get('title', ''), year, movie.get('imdb_id'))
+        
+        # Only show watch link if there are actual providers
+        providers = movie.get('providers', {})
+        providers = _nrw_norm_providers(providers)
+        has_providers = _nrw_has_providers(providers)
+        if not has_providers:
+            watch_link = '#'
+        
+        # Combine all providers for display
+        all_providers = []
+        if providers.get('stream'):
+            all_providers.extend(providers['stream'])
+        if providers.get('rent'):
+            all_providers.extend(providers['rent'])
+        if providers.get('buy'):
+            all_providers.extend(providers['buy'])
+        
+        # Skip RT fetching to avoid timeout - use existing scores if available
+        if not movie.get("rt_score"):
+            movie["rt_score"] = None
+        
+        rt_score = movie.get("rt_score")
+        
+        # Convert poster_path to full URL
+        poster_url = 'https://via.placeholder.com/160x240'
+        if movie.get('poster_path'):
+            poster_url = f"https://image.tmdb.org/t/p/w500{movie['poster_path']}"
+        elif movie.get('poster_url'):
+            poster_url = movie['poster_url']
+        
+        item = {
+            'title': movie.get('title', 'Unknown'),
+            'year': year,
+            'poster_url': poster_url,
+            'director': tmdb_details.get('director', 'Director N/A'),
+            'cast': tmdb_details.get('cast', []),
+            'synopsis': tmdb_details.get('synopsis', 'Synopsis not available.'),
+            'digital_date': movie.get('digital_date', '').split('T')[0] if movie.get('digital_date') else '',
+            'trailer_url': trailer_url,
+            'rt_url': tmdb_details.get('rt_url'),
+            'watch_link': watch_link,
+            'wiki_link': wiki_link,
+            'rt_score': rt_score,
+            'runtime': tmdb_details.get('runtime'),
+            'studio': tmdb_details.get('studio', 'Studio N/A'),
+            'rating': tmdb_details.get('rating', 'NR'),
+            'providers': all_providers[:3]  # Show first 3 platforms
+        }
+        items.append(item)
+    
+    # Sort by digital date
+    items.sort(key=lambda x: x['digital_date'] if x['digital_date'] else '9999-12-31')
+    
+    # Use enhanced rendering with flip cards and date dividers
+    render_site_enhanced(
+        items=items,
+        site_title="New Release Wall",
+        window_label="Digital Releases",
+        region="US",
+        store_names=["iTunes", "Vudu", "Amazon", "Google Play"]
+    )
+    
+    print("✓ Generated output/site/index.html with enhanced flip cards and date dividers")
+
+if __name__ == '__main__':
+    generate_site()
+
+# --- copy assets ---
+try:
+    from pathlib import Path
+    import shutil
+    src = Path('templates/assets')
+    dst = Path('output/site/assets')
+    if src.exists():
+        dst.mkdir(parents=True, exist_ok=True)
+        for p in src.rglob('*'):
+            if p.is_file():
+                rel = p.relative_to(src)
+                (dst/rel).parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(p, dst/rel)
+        print('[generator] assets copied:', src, '->', dst)
+except Exception as e:
+    print('[generator] assets copy skipped:', e)
+
+
+# copytree_assets_guard
+try:
+    src = Path("assets")
+    dst = Path("output/site/assets")
+    if src.exists():
+        dst.mkdir(parents=True, exist_ok=True)
+        for p in src.rglob("*"):
+            if p.is_file():
+                q = dst / p.relative_to(src)
+                q.parent.mkdir(parents=True, exist_ok=True)
+                q.write_bytes(p.read_bytes())
+except Exception as _e:
+    pass

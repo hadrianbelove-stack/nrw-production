@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The New Releases</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            line-height: 1.6;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 3rem 1rem 2rem;
+            background: linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 100%);
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            letter-spacing: 0.08em;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+        
+        .header .date-range {
+            color: #888;
+            font-size: 1rem;
+            letter-spacing: 0.05em;
+        }
+        
+        .movie-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        /* Date Card Styling */
+        .date-card {
+            width: 160px;
+            aspect-ratio: 2/3;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            border: 1px solid #333;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 1rem;
+        }
+        
+        .date-card .month {
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #888;
+            margin-bottom: 0.5rem;
+        }
+        
+        .date-card .day {
+            font-size: 3rem;
+            font-weight: 200;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+        
+        .date-card .year {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        /* Movie Card Container */
+        .movie-card {
+            width: 160px;
+            aspect-ratio: 2/3;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+        
+        .movie-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+        }
+        
+        .movie-card:hover .movie-card-inner {
+            transform: rotateY(180deg);
+        }
+        
+        /* Card Faces */
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .card-front {
+            background: #1a1a1a;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .card-back {
+            background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+            transform: rotateY(180deg);
+            padding: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            font-size: 0.65rem;
+            color: #ccc;
+            cursor: pointer;
+        }
+        
+        /* Front Card Content */
+        .movie-poster {
+            width: 100%;
+            flex: 1;
+            object-fit: cover;
+        }
+        
+        .no-poster {
+            width: 100%;
+            flex: 1;
+            background: linear-gradient(135deg, #2a2a2a, #1a1a1a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: #333;
+        }
+        
+        .movie-info {
+            background: linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 100%);
+            padding: 0.5rem;
+            font-size: 0.7rem;
+        }
+        
+        .movie-title {
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+            font-size: 0.75rem;
+            line-height: 1.2;
+        }
+        
+        .movie-details {
+            color: #888;
+            font-size: 0.65rem;
+            line-height: 1.3;
+        }
+        
+        /* Back Card Content - VHS Style */
+        .back-synopsis {
+            flex: 1;
+            line-height: 1.3;
+            margin-bottom: 0.5rem;
+            overflow-y: auto;
+            font-size: 0.7rem;
+        }
+        
+        .back-buttons {
+            display: flex;
+            gap: 0.3rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .mini-btn {
+            padding: 0.2rem 0.4rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 2px;
+            font-size: 0.6rem;
+            transition: all 0.2s;
+            flex: 1;
+            text-align: center;
+        }
+        
+        .mini-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .btn-trailer {
+            background: rgba(200, 0, 0, 0.3);
+            border-color: rgba(200, 0, 0, 0.5);
+        }
+        
+        .btn-rt {
+            background: rgba(230, 30, 30, 0.3);
+            border-color: rgba(230, 30, 30, 0.5);
+        }
+        
+        .btn-wiki {
+            background: rgba(50, 50, 50, 0.3);
+            border-color: rgba(100, 100, 100, 0.5);
+        }
+        
+        .back-meta {
+            font-size: 0.55rem;
+            color: #666;
+            line-height: 1.2;
+            text-align: center;
+            padding-top: 0.3rem;
+            border-top: 1px solid #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>The New Releases</h1>
+        <div class="date-range">{{ date_range }}</div>
+    </div>
+    
+    <div class="movie-grid">
+        {% set current_date = None %}
+        {% for movie in items %}
+            {% if movie.digital_date and movie.digital_date != current_date %}
+                {% set current_date = movie.digital_date %}
+                <!-- Date Card -->
+                <div class="date-card">
+                    <div class="month">{{ movie.digital_date[5:7] | month_name }}</div>
+                    <div class="day">{{ movie.digital_date[8:10] }}</div>
+                    <div class="year">{{ movie.digital_date[0:4] }}</div>
+                </div>
+            {% endif %}
+            
+            <!-- Movie Card -->
+            <div class="movie-card">
+                <div class="movie-card-inner">
+                    <div class="card-face card-front">
+                        {% if movie.poster_url %}
+                        <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" class="movie-poster">
+                        {% else %}
+                        <div class="no-poster">🎬</div>
+                        {% endif %}
+                        <div class="movie-info">
+                            <div class="movie-title">{{ movie.title }}</div>
+                            <div class="movie-details">
+                                <div>{{ movie.director or 'Unknown Director' }} • {{ movie.year }}</div>
+                                <div>{{ movie.cast[:2]|join(', ') if movie.cast else 'Cast Unknown' }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-face card-back" onclick="window.open('{{ movie.watch_link }}', '_blank')">
+                        <div class="back-synopsis">
+                            {{ movie.synopsis or 'A new release now available on digital platforms.' }}
+                        </div>
+                        <div class="back-buttons">
+                            <a href="{{ movie.trailer_url }}" class="mini-btn btn-trailer" onclick="event.stopPropagation()" target="_blank">Trailer</a>
+                            {% if movie.rt_score %}
+                            <a href="#" class="mini-btn btn-rt" onclick="event.stopPropagation()">RT {{ movie.rt_score }}%</a>
+                            {% else %}
+                            <a href="#" class="mini-btn btn-rt" onclick="event.stopPropagation()">RT N/A</a>
+                            {% endif %}
+                            <a href="https://en.wikipedia.org/wiki/{{ movie.title|replace(' ', '_') }}" class="mini-btn btn-wiki" onclick="event.stopPropagation()" target="_blank">Wiki</a>
+                        </div>
+                        <div class="back-meta">
+                            {{ movie.runtime or '?' }} min • {{ movie.studio or 'Unknown Studio' }} • {{ movie.rating or 'NR' }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    
+    <div style="text-align: center; padding: 3rem 1rem; color: #666;">
+        <p>Hover over any movie poster to see details • Click the back to watch</p>
+    </div>
+</body>
+</html>

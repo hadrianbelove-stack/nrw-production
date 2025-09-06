@@ -1,0 +1,72 @@
+tools/session_end.py:78:    z=f"NRW_SYNC_{ts}.zip"; man=f"NRW_SYNC_{ts}.manifest.txt"; sha=f"NRW_SYNC_{ts}.sha256"
+tools/session_end.py:79:    skip=(".venv/",".git/","__pycache__/","tmp/","NRW_SYNC_")
+tools/session_end.py:89:    h=hashlib.sha256(open(z,"rb").read()).hexdigest()
+PROJECT_LOG.md:41:- Upload latest sync (`NRW_SYNC_*.zip`).
+PROJECT_LOG.md:56:- Pre-push guard installed (blocks NRW_SYNC and >50MB)
+PROJECT_LOG.md:126:- 20250831-004650Z: Context updated — unified Working Set handoff; legacy NRW_SYNC deprecated
+PROJECT_LOG.md:127:- 20250831-005853Z: Retired legacy NRW_SYNC; moved to bundle_history; Working Set only
+PROJECT_LOG.md:129:- 20250831-065647Z: Context patched — Flat Handoff canonical; NRW_SYNC deprecated
+PROJECT_CHARTER.md:62:- `NRW_SYNC_YYYYMMDD-HHMMSSZ.zip` + `.manifest.txt` + `.sha256` (UTC, seconds; `_N` if colliding). Log artifact + tag.
+PROJECT_CHARTER.md:91:- Bundles, manifests, sha256 not tracked in Git. Use `bundle_history/` (git-ignored) or external archive.
+PROJECT_CHARTER.md:142:This amendment governs handoffs and supersedes prior "NRW_SYNC zip + manifest + sha" wording until the checklist is updated.
+PROJECT_CHARTER.md:196:- Zips and legacy NRW_SYNC artifacts are retired.
+tools/session_gate.py:6:def sha256_file(p: Path) -> str:
+tools/session_gate.py:7:    h=hashlib.sha256()
+tools/session_gate.py:14:        print("usage: python tools/session_gate.py NRW_SYNC_<timestamp>.zip"); sys.exit(2)
+tools/session_gate.py:23:    # 1) locate sibling .sha256 if present, else look inside zip
+tools/session_gate.py:24:    sha_txt = zip_path.with_suffix(".sha256")
+tools/session_gate.py:33:    sha_actual = sha256_file(zip_path)
+tools/session_gate.py:34:    report["sha256_actual"] = sha_actual
+tools/session_gate.py:36:        report["sha256_expected"] = sha_expected
+tools/session_gate.py:39:            report["issues"].append("zip sha256 mismatch")
+tools/session_gate.py:81:                            h=_hashlib.sha256(p.read_bytes()).hexdigest()
+tools/session_gate.py:86:                h=_hashlib.sha256("\n".join(sorted(paths)).encode()).hexdigest()
+tools/session_gate.py:89:            report["fingerprint_tree_restored"] = restored.get("tree_sha256")
+tools/session_gate.py:91:            if restored.get("tree_sha256") and restored["tree_sha256"] != tree:
+complete_project_context.md:53:- Always package NRW_SYNC_YYYYMMDD-HHMM.zip and NRW_SYNC_YYYYMMDD-HHMM.sha256.
+complete_project_context.md:65:- Always package NRW_SYNC_YYYYMMDD-HHMM.zip and NRW_SYNC_YYYYMMDD-HHMM.sha256.
+complete_project_context.md:76:- Start of session: run `./nrw-session-open.sh` → upload the printed snapshot `.zip` and `.manifest.txt`.
+complete_project_context.md:78:- Assistants must base code suggestions on the most recent snapshot or the unpacked NRW_SYNC, per RULE-022 and RULE-023.
+complete_project_context.md:88:- NRW_SYNC `<timestamp>.zip` + manifest + sha256 are retired. Use the flat handoff instead.
+tools/preflight.py:9:def sha256_path(p: Path) -> str:
+tools/preflight.py:11:    h=hashlib.sha256()
+tools/preflight.py:22:    report["charter_sha256"]=sha256_path(cpath)
+complete_project_context.before_unify_20250831-004429Z.md:53:- Always package NRW_SYNC_YYYYMMDD-HHMM.zip and NRW_SYNC_YYYYMMDD-HHMM.sha256.
+complete_project_context.before_unify_20250831-004429Z.md:65:- Always package NRW_SYNC_YYYYMMDD-HHMM.zip and NRW_SYNC_YYYYMMDD-HHMM.sha256.
+complete_project_context.before_unify_20250831-004429Z.md:76:- Start of session: run `./nrw-session-open.sh` → upload the printed snapshot `.zip` and `.manifest.txt`.
+complete_project_context.before_unify_20250831-004429Z.md:78:- Assistants must base code suggestions on the most recent snapshot or the unpacked NRW_SYNC, per RULE-022 and RULE-023.
+complete_project_context.before_flat_20250831-065647Z.md:53:- Always package NRW_SYNC_YYYYMMDD-HHMM.zip and NRW_SYNC_YYYYMMDD-HHMM.sha256.
+complete_project_context.before_flat_20250831-065647Z.md:65:- Always package NRW_SYNC_YYYYMMDD-HHMM.zip and NRW_SYNC_YYYYMMDD-HHMM.sha256.
+complete_project_context.before_flat_20250831-065647Z.md:76:- Start of session: run `./nrw-session-open.sh` → upload the printed snapshot `.zip` and `.manifest.txt`.
+complete_project_context.before_flat_20250831-065647Z.md:78:- Assistants must base code suggestions on the most recent snapshot or the unpacked NRW_SYNC, per RULE-022 and RULE-023.
+scraper_core.py:111:    return hashlib.sha256(base.encode("utf-8")).hexdigest()
+nrw-patch-charter.sh:80:- `NRW_SYNC_YYYYMMDD-HHMMSSZ.zip` + `.manifest.txt` + `.sha256` (UTC, seconds; `_N` if colliding). Log artifact + tag.
+nrw-patch-charter.sh:95:- Bundles, manifests, sha256 not tracked in Git. Use `bundle_history/` (git-ignored) or external archive.
+nrw-patch-charter.sh:135:grep -qxF '*.sha256' .gitignore 2>/dev/null || echo '*.sha256' >> .gitignore
+nrw-patch-charter.sh:136:grep -qxF '*.manifest.txt' .gitignore 2>/dev/null || echo '*.manifest.txt' >> .gitignore
+nrw-session-start.sh:22:MAN="${SNAP}.manifest.txt"
+nrw-restore-from-sync.sh:2:# Usage: ./nrw-restore-from-sync.sh /path/to/NRW_SYNC_YYYYMMDD-HHMM.zip
+nrw-restore-from-sync.sh:5:[[ -f "$ZIP" ]] || { echo "Provide a valid NRW_SYNC zip path"; exit 2; }
+ui_lock.sh:9:  if [[ ! -f .ui_lock.sha256 ]]; then
+ui_lock.sh:10:    echo "UI-LOCK: missing .ui_lock.sha256"; exit 4
+ui_lock.sh:16:  done < .ui_lock.sha256
+nrw-release-latest.sh:19:SHA="$(ls -1t "$ARCH_DIR"/*"$STAMP"*.sha256 2>/dev/null | head -n1 || true)"
+nrw-release-latest.sh:22:  SHA="$(ls -1t "$ARCH_DIR"/*.sha256 2>/dev/null | head -n1 || true)"
+nrw-release-latest.sh:25:test -f "$SHA" || { echo "No bundle .sha256 found in $ARCH_DIR"; exit 2; }
+nrw-patch-context-unify-hand-off.sh:20:- **NRW_SYNC + manifest + sha** handoffs are **retired**. Existing archives move to `bundle_history/` (git-ignored) for audit only.
+nrw-patch-context-unify-hand-off.sh:28:# Insert/replace a Handoff section: remove any legacy "NRW_SYNC handoff" text block and add new policy near the top after ground rules.
+nrw-patch-context-unify-hand-off.sh:32:  # Drop any prior "Handoff"/"Session Handoff" sections mentioning NRW_SYNC
+nrw-patch-context-unify-hand-off.sh:33:  gsub(/##[[:space:]]*(Session Handoff|Handoff)[^\n]*\n([^#]|#[^#])*?(NRW_SYNC[^#]*\n([^#]|#[^#])*)*/,"",text)
+nrw-patch-context-unify-hand-off.sh:52:echo "- ${STAMP}: Context updated — unified Working Set handoff; legacy NRW_SYNC deprecated" >> PROJECT_LOG.md
+code_lock.sh:5:LOCK=".code_lock.sha256"
+code_lock.sh:9:EXCLUDE=( ".git/**" ".venv/**" "node_modules/**" "web/.next/**" "output/**" "cache/**" "logs/**" "snapshots/**" "NRW_SYNC_*.zip" "AUDIT_*.tgz" )
+nrw-resume.sh:11:ZIP="$(ls -t NRW_SYNC_*.zip 2>/dev/null | head -1 || true)"
+nrw-resume.sh:12:[[ -z "$ZIP" ]] && { echo "ERROR: No NRW_SYNC_*.zip found. Upload latest then rerun."; exit 2; }
+nrw-resume.sh:48: | xargs -0 -I{} sh -c 'printf "%s  %s\n" "$(shasum -a 256 "{}" | cut -d" " -f1)" "{}"' > "${SNAP_DIR}/TREE.sha256"
+nrw-resume.sh:57:    diff -u <(cut -d" " -f1 "${PREV}/TREE.sha256" | sort) \
+nrw-resume.sh:58:            <(cut -d" " -f1 "${SNAP_DIR}/TREE.sha256" | sort) || true
+nrw-resume.sh:70:echo "Bundle: $(ls -t NRW_SYNC_*.zip | head -1)"
+test_ws.sh:35:shasum -a 256 "$ZIP" | awk '{print $1}' > "NRW_WORKINGSET_${STAMP}.sha256"
+nrw-patch-charter-folder-first.sh:33:**This checklist supersedes and retires all legacy NRW_SYNC handoffs.**
+nrw-append-rule-021.sh:11:- Every working session must provide a code snapshot to the assistant (or the latest NRW_SYNC bundle).
+nrw-append-rule-021.sh:12:- Assistants must base all recommendations on the most recent provided code snapshot or unpacked NRW_SYNC.

@@ -1,0 +1,69 @@
+name: Daily New Release Wall
+
+on:
+  push:
+    branches: [ main ]
+  schedule:
+    - cron: '0 10 * * *'  # Daily at 10 AM UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Create config.yaml
+      run: |
+        cat > config.yaml << 'CONFIG'
+        tmdb_api_key: "${{ secrets.TMDB_API_KEY }}"
+        omdb_api_key: "${{ secrets.OMDB_API_KEY }}"
+        CONFIG
+    
+    - name: Update tracking database
+      run: |
+        python movie_tracker.py daily
+    
+    - name: Generate current releases
+      run: |
+        python generate_from_tracker.py 60
+    
+    - name: Generate website
+      run: |
+        python generate_site.py
+    
+    - name: List output files
+      run: |
+        echo "Files created:"
+        ls -la output/ || echo "No output directory created"
+    
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: output
+        path: output/
+    
+    - name: Deploy to GitHub Pages
+      if: github.ref == 'refs/heads/main' && success()
+      uses: peaceiris/actions-gh-pages@v4
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./output/site
+        force_orphan: true

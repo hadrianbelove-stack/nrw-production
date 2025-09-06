@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -euo pipefail
+# Creates a timestamped code snapshot archive
+
+STAMP=$(date +%Y%m%d-%H%M%S)
+SNAP_NAME="CODE_SNAP_${STAMP}"
+mkdir -p snapshots
+SNAP_DIR="snapshots/${SNAP_NAME}"
+SNAP_ZIP="${SNAP_DIR}.zip"
+
+# Create actual ZIP archive (not tar)
+zip -r "${SNAP_ZIP}" . \
+  -x "snapshots/*" ".git/*" ".venv/*" "node_modules/*" "web/.next/*" ".cache/*" \
+  > /dev/null
+
+# Generate SHA256
+sha256sum "${SNAP_ZIP}" > "${SNAP_ZIP}.sha256"
+
+# Output the snapshot name for scripting
+echo "${SNAP_DIR}"

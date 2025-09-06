@@ -1,0 +1,149 @@
+diff --git a/movie_tracker.py b/movie_tracker.py
+index 687d829b..cc1d638b 100644
+--- a/movie_tracker.py
++++ b/movie_tracker.py
+@@ -46,8 +46,8 @@ class MovieTracker:
+         movies = self.db['movies']
+         self.db['stats'] = {
+             'total_tracked': len(movies),
+-            'resolved': len([m for m in movies.values() if m['status'] == 'resolved']),
+-            'still_tracking': len([m for m in movies.values() if m['status'] == 'tracking'])
++            'resolved': len([m for m in movies.values() if m.get('status') == 'resolved']),
++            'still_tracking': len([m for m in movies.values() if m.get('status') == 'tracking'])
+         }
+         
+         with open(self.db_file, 'w') as f:
+@@ -177,12 +177,12 @@ class MovieTracker:
+         page = 1
+         total_pages = 999  # Will be updated from API response
+         
++        # Standard discovery
+         while page <= total_pages:
+-            print(f"  Scanning page {page}...")
++            print(f"  Scanning page {page} (standard discovery)...")
+             
+             params = {
+                 "sort_by": "primary_release_date.desc",
+-                "region": "US",
+                 "primary_release_date.gte": start_date.strftime("%Y-%m-%d"),
+                 "primary_release_date.lte": end_date.strftime("%Y-%m-%d"),
+                 "page": page
+@@ -200,6 +200,63 @@ class MovieTracker:
+             page += 1
+             time.sleep(0.2)
+         
++        # Enhanced discovery for indie films (no popularity filtering)
++        print(f"  Enhanced discovery for indie films...")
++        
++        # Discover by indie production companies
++        indie_companies = [41077, 2, 491, 25, 61, 11072, 7505]  # A24, Neon, Focus, IFC, etc.
++        for company_id in indie_companies:
++            for comp_page in range(1, 3):  # First 2 pages per company
++                params = {
++                    "with_companies": str(company_id),
++                    "primary_release_date.gte": start_date.strftime("%Y-%m-%d"),
++                    "primary_release_date.lte": end_date.strftime("%Y-%m-%d"),
++                    "sort_by": "release_date.desc",
++                    "page": comp_page
++                }
++                
++                comp_data = self.tmdb_get("/discover/movie", params)
++                comp_movies = comp_data.get("results", [])
++                
++                # Filter out duplicates
++                existing_ids = {str(m['id']) for m in all_movies}
++                new_movies = [m for m in comp_movies if str(m['id']) not in existing_ids]
++                all_movies.extend(new_movies)
++                
++                if new_movies:
++                    print(f"    Company {company_id}: +{len(new_movies)} indie films")
++                
++                if not comp_movies or comp_page >= comp_data.get("total_pages", 1):
++                    break
++                
++                time.sleep(0.1)
++        
++        # Discover by alternative sorting (catches low-popularity films)
++        for sort_method in ["vote_average.desc", "vote_count.asc"]:
++            for sort_page in range(1, 3):
++                params = {
++                    "sort_by": sort_method,
++                    "primary_release_date.gte": start_date.strftime("%Y-%m-%d"),
++                    "primary_release_date.lte": end_date.strftime("%Y-%m-%d"),
++                    "page": sort_page
++                }
++                
++                sort_data = self.tmdb_get("/discover/movie", params)
++                sort_movies = sort_data.get("results", [])
++                
++                # Filter out duplicates
++                existing_ids = {str(m['id']) for m in all_movies}
++                new_movies = [m for m in sort_movies if str(m['id']) not in existing_ids]
++                all_movies.extend(new_movies)
++                
++                if new_movies:
++                    print(f"    {sort_method}: +{len(new_movies)} additional films")
++                
++                if not sort_movies or sort_page >= sort_data.get("total_pages", 1):
++                    break
++                
++                time.sleep(0.1)
++        
+         print(f"  Found {len(all_movies)} movies, checking release status...")
+         
+         # Add movies to tracking database
+@@ -239,22 +296,52 @@ class MovieTracker:
+         print(f"✅ Bootstrap complete!")
+     
+     def add_new_theatrical_releases(self, days_back=7):
+-        """Daily: Add new theatrical releases from last X days"""
++        """Daily: Add new theatrical releases from last X days (including low-popularity indie films)"""
+         print(f"➕ Adding new releases from last {days_back} days...")
+         
+         end_date = datetime.now()
+         start_date = end_date - timedelta(days=days_back)
+         
++        all_movies = []
++        
++        # Standard discovery by release date (no popularity filtering)
+         params = {
+             'api_key': self.api_key,
+             'primary_release_date.gte': start_date.strftime('%Y-%m-%d'),
+             'primary_release_date.lte': end_date.strftime('%Y-%m-%d'),
+-            'sort_by': 'popularity.desc',
++            'sort_by': 'primary_release_date.desc',  # Changed from popularity.desc
+             'page': 1
+         }
+         
+         response = requests.get('https://api.themoviedb.org/3/discover/movie', params=params)
+         movies = response.json().get('results', [])
++        all_movies.extend(movies)
++        
++        # Enhanced discovery for indie films
++        print(f"  🎭 Also searching indie studios...")
++        indie_companies = [41077, 2, 491, 25, 61]  # A24, Neon, Focus, IFC, Magnolia
++        for company_id in indie_companies:
++            params = {
++                'api_key': self.api_key,
++                'with_companies': str(company_id),
++                'primary_release_date.gte': start_date.strftime('%Y-%m-%d'),
++                'primary_release_date.lte': end_date.strftime('%Y-%m-%d'),
++                'sort_by': 'release_date.desc',
++                'page': 1
++            }
++            
++            response = requests.get('https://api.themoviedb.org/3/discover/movie', params=params)
++            company_movies = response.json().get('results', [])
++            
++            # Add unique movies only
++            existing_ids = {str(m['id']) for m in all_movies}
++            new_movies = [m for m in company_movies if str(m['id']) not in existing_ids]
++            all_movies.extend(new_movies)
++            
++            if new_movies:
++                print(f"    Company {company_id}: +{len(new_movies)} indie films")
++        
++        movies = all_movies  # Use combined results
+         
+         new_count = 0
+         for movie in movies:

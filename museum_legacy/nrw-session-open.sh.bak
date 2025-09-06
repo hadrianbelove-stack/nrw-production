@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd "${ROOT:-$HOME/Downloads/new-release-wall}"
+SNAP="$(./nrw-make-code-snapshot.sh --with-index || ./nrw-make-code-snapshot.sh)"
+echo "UPLOAD THESE:"
+echo "  ${SNAP}.zip"
+echo "  ${SNAP}.manifest.txt"

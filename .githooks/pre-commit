@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+# Fail fast on conflict markers
+if git diff --cached | grep -qE '^(<<<<<<<|=======|>>>>>>>)'; then
+  echo "Blocked: conflict markers present. Resolve before committing."
+  exit 1
+fi
