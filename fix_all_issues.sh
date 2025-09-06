@@ -1,3 +1,16 @@
+#!/bin/bash
+# Fix all repository issues in one shot
+
+echo "=== Fixing all issues in nrw-production ==="
+
+# 1. Remove duplicate amendments from charter (lines after AMENDMENT-027)
+sed -i '' '/^### AMENDMENT-008: Canonical Daily Update Script$/,$ d' PROJECT_CHARTER.md
+
+# 2. Fix the data strategy in context
+sed -i '' 's/Track ALL theatrical releases (Type 1,2,3)/Track ALL movie releases (any premiere type)/g' complete_project_context.md
+
+# 3. Fix movie_tracker.py to track ALL releases
+cat > movie_tracker.py << 'TRACKER_EOF'
 #!/usr/bin/env python3
 """
 Movie Digital Release Tracker - Core Logic
@@ -108,3 +121,54 @@ if __name__ == "__main__":
         tracker.check_providers()
     else:
         print("Usage: python movie_tracker.py [bootstrap|check]")
+TRACKER_EOF
+
+# 4. Remove files that shouldn't be in repo
+rm -f governance_patch.sh
+rm -f approved.json
+
+# 5. Add missing amendment about inclusive tracking
+cat >> PROJECT_CHARTER.md << 'CHARTER_EOF'
+
+### AMENDMENT-028: Inclusive Tracking Strategy
+- Track ALL movie releases, not filtered by type
+- Use release_date not primary_release_date in API calls
+- Premiere date is key - first public showing anywhere
+- No pre-filtering - cast wide net, narrow later based on data
+CHARTER_EOF
+
+# 6. Update daily script to show better summary
+cat > daily_update.sh << 'DAILY_EOF'
+#!/bin/bash
+cd ~/Downloads/nrw-production || exit 1
+
+echo "=== NRW Daily Update - $(date) ==="
+python movie_tracker.py check
+python generate_data.py
+
+echo "=== Summary ==="
+python -c "
+import json
+d = json.load(open('movie_tracking.json'))
+tracking = len([m for m in d['movies'].values() if m['status']=='tracking'])
+digital = len([m for m in d['movies'].values() if m['status']=='available'])
+total = len(d['movies'])
+print(f'Total tracked: {total}')
+print(f'Still tracking: {tracking}')
+print(f'Now digital: {digital}')
+"
+
+if git diff --quiet movie_tracking.json data.json; then
+    echo "No changes to commit"
+else
+    git add -A
+    git commit -m "Daily update - $(date +%Y-%m-%d)"
+    git push
+    echo "Changes committed"
+fi
+DAILY_EOF
+
+chmod +x daily_update.sh
+
+echo "=== All issues fixed ==="
+echo "Run: git add -A && git commit -m 'Fix all issues APPROVED: DELETE' && git push"

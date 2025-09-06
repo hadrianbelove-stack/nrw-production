@@ -17,7 +17,7 @@ A "Blockbuster Wall for the streaming age." Reverse-chronological display of dig
 - **GitHub Actions:** ❌ Blocked - account flagged, support ticket filed
 
 ## Data Strategy (Learned from Museum)
-1. Track ALL theatrical releases (Type 1,2,3)
+1. Track ALL movie releases (any premiere type)
 2. Check daily for provider availability
 3. First day with providers = actual digital release date
 4. This catches movies that never get Type 4 flag

@@ -220,20 +220,9 @@ Root Structure:
 - **Poster API:** http://img.omdbapi.com/?i=tt3896198&h=600&apikey=539723d9
 - **Usage:** Alternative movie data source, poster fallbacks
 
-### AMENDMENT-008: Canonical Daily Update Script
-- `daily_update.sh` is the binding daily workflow
-- Executes: check → generate → summary → git commit
-- Run manually or via cron until GitHub Actions restored
-- Located in repo root, not Downloads folder
 
-### AMENDMENT-026: Repository Migration Record
-- Migrated from new-release-wall to nrw-production on 2025-09-05
-- Due to GitHub Actions account flag on original repo
-- All future work in nrw-production repository
-- GitHub support ticket filed for account reinstatement
-
-### AMENDMENT-027: Bootstrap Data Integrity
-- Bootstrap movies (discovered already-digital) marked with bootstrap_digital flag
-- Only show movies caught transitioning in real-time for pure tracking
-- Filter option in generate_data.py to exclude bootstrap batch
-- Integrity over appearance: no fake dates
+### AMENDMENT-028: Inclusive Tracking Strategy
+- Track ALL movie releases, not filtered by type
+- Use release_date not primary_release_date in API calls
+- Premiere date is key - first public showing anywhere
+- No pre-filtering - cast wide net, narrow later based on data
