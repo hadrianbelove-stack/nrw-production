@@ -108,6 +108,12 @@ echo "📦 Preparing to archive..."
 if [[ -f "$ARCHIVE_PATH" ]]; then
     print_warning "Archive already exists: $ARCHIVE_PATH"
     if [[ "$FORCE" == "false" && "$DRY_RUN" == "false" ]]; then
+        # Check if we're in a non-interactive environment
+        if [[ ! -t 0 ]]; then
+            print_error "Non-interactive environment detected and archive exists."
+            echo "   Use --force to overwrite existing archive: $ARCHIVE_PATH"
+            exit 1
+        fi
         echo -n "Overwrite existing archive? (y/N): "
         read -r response
         if [[ ! "$response" =~ ^[Yy]$ ]]; then
@@ -138,10 +144,10 @@ echo "📄 Creating fresh template..."
 if [[ "$DRY_RUN" == "true" ]]; then
     print_info "[DRY RUN] Would create fresh DAILY_CONTEXT.md template"
 else
-    cat > DAILY_CONTEXT.md << 'EOF'
+    cat > DAILY_CONTEXT.md << EOF
 # DAILY_CONTEXT.md
 **Date:** [YYYY-MM-DD]
-**Previous diary entry:** diary/[YYYY-MM-DD].md
+**Previous diary entry:** diary/$DATE.md
 
 ---
 
@@ -282,7 +288,7 @@ python3 movie_tracker.py bootstrap
 ---
 
 **Last updated:** [End of session]
-**Next diary archive:** End of session → `diary/[YYYY-MM-DD].md`
+**Next diary archive:** End of session → \`diary/[YYYY-MM-DD].md\`
 EOF
 
     if [[ $? -eq 0 ]]; then
