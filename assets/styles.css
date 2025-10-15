@@ -1,70 +1,151 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-    background: #0a0a0a;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
     color: #fff;
     font-family: -apple-system, system-ui, sans-serif;
+    line-height: 1.6;
 }
 
 header {
-    padding: 2rem 1rem;
+    padding: 3rem 1rem 2rem;
     text-align: center;
-    border-bottom: 1px solid #222;
+    border-bottom: 1px solid #333;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(10px);
 }
 
 header h1 {
-    font-weight: 200;
-    letter-spacing: 0.2em;
-    font-size: 1.5rem;
+    font-weight: 100;
+    letter-spacing: 0.3em;
+    font-size: 2.5rem;
+    background: linear-gradient(45deg, #fff, #00d4aa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 1rem;
+}
+
+.filters {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+}
+
+.filter-btn {
+    padding: 0.5rem 1rem;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+    cursor: pointer;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.filter-btn:hover, .filter-btn.active {
+    background: #00d4aa;
+    border-color: #00d4aa;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,212,170,0.3);
 }
 
 #wall {
+    padding: 2rem;
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
-    padding: 1.5rem;
+    gap: 1.5rem;
+    justify-content: center;
     max-width: 1400px;
     margin: 0 auto;
-    align-items: start;
 }
 
-.date-marker {
-    width: 70px;
-    height: 105px;
-    background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
-    border: 1px solid #333;
-    border-radius: 4px;
+.movie-container {
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+/* Inline date divider cards */
+.date-divider-card {
+    width: 215px;  /* Same width as movie cards */
+    height: 320px; /* Same height as movie cards */
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+    border: 3px solid #00d4aa;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
     justify-content: center;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3), 
+                0 0 40px rgba(0,212,170,0.2);
+    position: relative;
+    overflow: hidden;
 }
 
-.date-marker .month {
-    font-size: 0.7rem;
+.date-divider-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 10px,
+        rgba(0,212,170,0.05) 10px,
+        rgba(0,212,170,0.05) 20px
+    );
+}
+
+.date-content {
+    text-align: center;
+    z-index: 1;
+}
+
+.date-day {
+    font-size: 1.2rem;
     color: #888;
-    letter-spacing: 1px;
+    letter-spacing: 0.2em;
+    margin-bottom: 0.5rem;
 }
 
-.date-marker .day {
-    font-size: 2rem;
-    font-weight: 100;
-    margin: 4px 0;
+.date-number {
+    font-size: 4rem;
+    font-weight: bold;
+    color: #00d4aa;
+    line-height: 1;
+    text-shadow: 0 0 20px rgba(0,212,170,0.5);
+}
+
+.date-month {
+    font-size: 1.5rem;
+    color: #00d4aa;
+    letter-spacing: 0.3em;
+    margin-top: 0.5rem;
+    font-weight: bold;
 }
 
 .movie-card {
-    width: 150px;
-    height: 225px;
+    width: 215px;
+    height: 320px;
     perspective: 1000px;
     cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.movie-card:hover {
+    transform: scale(1.05);
 }
 
 .card-inner {
-    position: relative;
     width: 100%;
     height: 100%;
-    transition: transform 0.5s;
+    transition: transform 0.8s;
     transform-style: preserve-3d;
+    position: relative;
 }
 
 .movie-card.flipped .card-inner {
@@ -75,61 +156,199 @@ header h1 {
     position: absolute;
     width: 100%;
     height: 100%;
-    -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
-    border-radius: 4px;
+    border-radius: 15px;
     overflow: hidden;
-    background: #151515;
-    border: 1px solid #333;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
 }
 
-.card-back {
-    transform: rotateY(180deg);
-    padding: 10px;
+.card-front, .card-back {
+    padding: 0;
     display: flex;
     flex-direction: column;
 }
 
-.card-front img {
-    width: 100%;
-    height: 170px;
-    object-fit: cover;
-    background: #222;
+.card-front {
+    background: #1a1a2e;
 }
 
-.card-front .info {
-    padding: 6px;
-    font-size: 0.7rem;
-    color: #aaa;
-    height: 55px;
-    overflow: hidden;
+.card-back {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    transform: rotateY(180deg);
+    padding: 0.8rem;
+    box-sizing: border-box;
+}
+
+.card-front img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 15px;
+}
+
+.movie-info {
+    margin-top: 0.4rem;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #bbb;
+    line-height: 1.2;
+}
+
+.movie-info .director {
+    color: #00d4aa;
+    font-weight: bold;
+}
+
+.movie-info .country {
+    color: #fff;
 }
 
 .card-back h3 {
-    font-size: 0.85rem;
-    margin-bottom: 6px;
+    color: #00d4aa;
+    margin-bottom: 0.8rem;
+    font-size: 0.95rem;
+    text-align: center;
+    border-bottom: 1px solid #00d4aa;
+    padding-bottom: 0.3rem;
 }
 
-.card-back .synopsis {
+.card-back h3 .title-link {
+    color: #00d4aa;
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: color 0.3s ease;
+}
+
+.card-back h3 .title-link:hover {
+    color: #00ffbb;
+    text-decoration: underline;
+}
+
+.synopsis {
     flex: 1;
-    font-size: 0.7rem;
-    line-height: 1.3;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    color: #f0f0f0;
+    margin-bottom: 0.8rem;
     overflow-y: auto;
-    color: #ccc;
 }
 
-.card-back .actions {
+.metadata {
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+.metadata div {
+    margin-bottom: 0.3rem;
+    color: #bbb;
+}
+
+.metadata strong {
+    color: #00d4aa;
+}
+
+.actions {
+    margin-top: auto;
     display: flex;
-    gap: 6px;
-    margin-top: 8px;
+    flex-direction: column;
+    gap: 0.8rem;
 }
 
-.card-back .actions a {
-    padding: 4px 8px;
-    background: #2a2a2a;
+.actions .watch-btn {
+    padding: 1rem;
+    background: #00d4aa;
+    color: #000;
+    text-decoration: none;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    display: block;
+}
+
+.actions .watch-btn:hover {
+    background: #00ffbb;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(0,212,170,0.5);
+}
+
+.info-links {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+}
+
+.info-links .info-btn {
+    padding: 0.5rem;
+    background: rgba(255,255,255,0.1);
     color: #fff;
     text-decoration: none;
-    border-radius: 3px;
-    font-size: 0.65rem;
-    border: 1px solid #444;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 0.85rem;
+    border: 1px solid rgba(255,255,255,0.2);
+    transition: all 0.3s ease;
 }
+
+.info-links .info-btn:hover {
+    background: rgba(0,212,170,0.3);
+    border-color: #00d4aa;
+    color: #00d4aa;
+}
+
+.bottom-meta {
+    padding-top: 0.5rem;
+    margin-top: 0.5rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    font-size: 0.42rem;
+    color: #999;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 2rem;
+    }
+    
+    #wall {
+        padding: 1rem;
+        gap: 1rem;
+    }
+    
+    .movie-card {
+        width: 300px;
+        height: 450px;
+    }
+    
+    .card-front img {
+        height: 350px;
+    }
+    
+    .filters {
+        gap: 0.5rem;
+    }
+    
+    .filter-btn {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .movie-card {
+        width: 280px;
+        height: 420px;
+    }
+    
+    .card-front img {
+        height: 320px;
+    }
+    
+    .info-links {
+        grid-template-columns: 1fr 1fr;
+    }
+}Cache buster: Sat Sep  6 18:27:30 PDT 2025
+/* Updated: Sat Sep  6 18:28:50 PDT 2025 */
+/* Date marker fix: Sat Sep  6 18:32:24 PDT 2025 */
+/* Card alignment fix: Sat Sep  6 20:44:22 PDT 2025 */

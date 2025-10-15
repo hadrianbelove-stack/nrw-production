@@ -2,7 +2,13 @@
 cd ~/Downloads/nrw-production || exit 1
 
 echo "=== NRW Daily Update - $(date) ==="
-python movie_tracker.py check
+python movie_tracker.py daily
+
+# Update RT data for new movies (max 10 to be safe)
+echo "Updating Rotten Tomatoes data..."
+python update_rt_data.py
+
+python date_verification.py  # Check bootstrap dates for accuracy
 python generate_data.py
 
 echo "=== Summary ==="

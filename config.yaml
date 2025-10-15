@@ -1,0 +1,17 @@
+# NRW Configuration
+workflow:
+  daily_check_time: "02:00"  # 2 AM PST
+  weekly_bootstrap_day: "sunday"
+  
+display:
+  days_back: 90  # Show movies from last N days
+  min_movies: 20  # Minimum movies to display
+  max_movies: 100  # Maximum movies to display
+
+tracking:
+  bootstrap_days: 7  # Look back N days for new releases
+  check_interval_hours: 24  # How often to check
+  
+api:
+  tmdb_rate_limit: 0.1  # Seconds between API calls
+  max_retries: 3

@@ -1,24 +1,38 @@
-name: Daily Provider Check
+name: Daily Update (Automated)
 on:
-  push:
-    branches: [main]
   schedule:
-    - cron: '0 9 * * *'
-  workflow_dispatch:
+    - cron: '0 9 * * *'  # 9 AM UTC = 1 AM PST / 2 AM PDT
+  workflow_dispatch:  # Allow manual trigger
 
 jobs:
-  check:
+  daily-update:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
         with:
           python-version: '3.10'
-      - run: pip install requests
-      - run: python movie_tracker.py check
-      - run: |
+
+      - name: Install dependencies
+        run: |
+          pip install requests pyyaml beautifulsoup4 lxml selenium
+
+      - name: Run daily orchestrator
+        run: python3 daily_orchestrator.py
+
+      - name: Commit and push changes
+        run: |
           git config user.email "action@github.com"
-          git config user.name "GitHub Action"
-          git add movie_tracking.json
-          git diff --staged --quiet || git commit -m "Daily check - $(date -u +%Y-%m-%d)"
-          git push
+          git config user.name "NRW Daily Bot"
+          git add -A
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Daily update - $(date -u +%Y-%m-%d) [automated]"
+            git push
+          fi

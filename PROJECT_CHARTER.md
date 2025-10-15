@@ -32,9 +32,9 @@ It exists to:
 
 ## Current Config
 - **Runtime entry:** `index.html` loads `assets/styles.css` and `assets/app.js`, then initializes the wall.  
-- **Data file:** `data.json` (126 titles; blanks allowed; renderer supplies search fallbacks).  
+- **Data file:** `data.json` (30 recent titles; links resolved via waterfall per AMENDMENT-030).  
 - **Mode:** offline for MVP.  
-- **UI:** date cards + flip-cards; back shows Synopsis + Trailer/RT/Wiki + Watch.
+- **UI:** date dividers + flip-cards per AMENDMENT-033; back shows Synopsis + Trailer/RT/Wiki buttons.
 
 ## AMENDMENTS
 ### AMENDMENT-001: Numbering Discipline
@@ -49,9 +49,6 @@ It exists to:
 - **Run after X:** Sequential dependency - must wait for step X to complete first  
 - **Single commands:** No annotation needed if only one command in the block
 - Optional steps must list pros/cons for user decision
-
-### AMENDMENT-004: Ordered Execution
-- `movie_tracker.py` → `generate_from_tracker.py` → `generate_site.py`; then handoff: smoke tests → verify outputs → package sync. Parallel only after pipeline completes.
 
 ### AMENDMENT-005: Canonical Scripts
 - Automation scripts are binding. Modify/reuse them; do not reinvent workflows.
@@ -176,27 +173,6 @@ It exists to:
 - Zips and legacy NRW_SYNC artifacts are retired.
 - Apply governance/script/context updates in one consolidated patch whenever possible (AMENDMENT-FLATSHOT).
 
-## File Structure
-
-```
-Root Structure:
-├── index.html          # Entry point
-├── data.json          # Movie database  
-├── assets/
-│   ├── app.js         # Client-side renderer
-│   ├── styles.css     # All styling
-│   └── no-poster.jpg  # Fallback image
-└── museum_legacy/     # Archived experiments
-```
-
-### File Rules
-
-- One JS file for client display (app.js)
-- One CSS file for all styles (styles.css)
-- One data file for movies (data.json)
-- No framework dependencies for MVP
-- All paths relative from root
-
 ### AMENDMENT-ROADMAP+NAMING-LOCK-2025-09-04
 
 1) **Root is canonical.** Fixed names only: `index.html`, `assets/styles.css`, `assets/app.js`, `data.json`. No dated or "copy" variants in root (the application expects these exact names).  
@@ -205,7 +181,6 @@ Root Structure:
 4) **Architecture.** Client-only render from `data.json`. Prebuild static HTML is optional later.  
 5) **Digital date.** First-seen provider is authoritative; API release types may fill posters/cast/runtime but cannot change the date.  
 6) **Continuity.** Start sessions by uploading the newest `WORKING_SET_HANDOFF_*`. End sessions by creating a fresh one with `_MANIFEST.txt` and `POSTVALIDATION.txt` (PASS). Keep `museum_legacy/` for archived experiments; never mix with root.  
-7) **Operator guide.** `ALLCODE.md` travels with handoffs and explains the four live files, the Watch rule, and museum policy.
 
 ## API Keys & External Services
 
@@ -226,3 +201,45 @@ Root Structure:
 - Use release_date not primary_release_date in API calls
 - Premiere date is key - first public showing anywhere
 - No pre-filtering - cast wide net, narrow later based on data
+
+### AMENDMENT-029: SSOT Data Contract
+- Canonical runtime files: index.html, assets/app.js, assets/styles.css, data.json at repo root.
+- UI fetches ./data.json only; any other data.json lives under museum_legacy/ and is ignored.
+- verify.sh fails if another data.json exists outside museum_legacy/.
+
+### AMENDMENT-030: Link Waterfall Mandate
+- generate_data.py must populate links in this order, per title:
+- Overrides: overrides/wikipedia_overrides.json and overrides/rt_overrides.json.
+- Cache: cache/wikipedia_cache.json, cache/rt_cache.json.
+- Wikidata: IMDb→Wikidata→enwiki sitelink for Wikipedia; Wikidata P1258 for RT when present.
+- MediaWiki search: biased to (YEAR film) then (film).
+- Selenium (optional, gated): last resort.
+- If unresolved: set field to null, not a guessed slug; append to missing_wikipedia.json.
+
+### AMENDMENT-031: Data Schema Lock v1
+- Required per movie: tmdb_id, imdb_id, title, original_title, digital_date (ISO‑8601), poster, crew.director, crew.cast[], synopsis, metadata.runtime, links.{trailer,rt,wikipedia} (nullable).
+- digital_date = first provider day from tracker; never "discovery date".
+
+### AMENDMENT-032: Runtime vs Pipeline Hierarchy
+- /index.html
+- /data.json
+- /assets/{app.js,styles.css}
+- scripts/{movie_tracker.py,generate_data.py,wikidata_scraper.py,wikipedia_scraper.py,rt_scraper.py}
+- data/{movie_tracking.json}
+- cache/{wikipedia_cache.json,rt_cache.json}         # git-ignored
+- overrides/{wikipedia_overrides.json,rt_overrides.json}
+- ops/{PROJECT_CHARTER.md,PROJECT_LOG.md,complete_project_context.md,verify.sh,daily_update.sh}
+- museum_legacy/
+- UI reads only root files noted above; all generation and caches live outside runtime.
+
+### AMENDMENT-033: UI Contract Lock
+- Date divider = horizontal line with centered date text, not a card.
+- Front: poster area ~70% height; credits band below.
+- Back: title as watch link; exactly three info buttons Trailer | RT | Wiki; bottom meta line.
+- No genre filter UI in MVP.
+
+### AMENDMENT-034: Daily Pipeline Contract
+- movie_tracker.py check → updates provider and digital_date.
+- generate_data.py → enriches and writes data.json using AMENDMENT‑030.
+- ops/verify.sh → asserts schema, non‑null links where resolvable, and SSOT invariants.
+- daily_update.sh runs the above, then commits.
