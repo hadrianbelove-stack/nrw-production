@@ -223,6 +223,34 @@ git push origin main
 5) **Digital date.** First-seen provider is authoritative; API release types may fill posters/cast/runtime but cannot change the date.  
 6) **Continuity.** Start sessions by uploading the newest `WORKING_SET_HANDOFF_*`. End sessions by creating a fresh one with `_MANIFEST.txt` and `POSTVALIDATION.txt` (PASS). Keep `museum_legacy/` for archived experiments; never mix with root.  
 
+## Configuration
+
+The system expects configuration to be provided via `config.yaml` in the repository root and/or environment variables.
+
+### config.yaml Structure
+```yaml
+api:
+  tmdb_api_key: ""  # TMDB API key (can be set via TMDB_API_KEY env var)
+  tmdb_rate_limit: 0.1  # Seconds between API calls
+  max_retries: 3
+
+workflow:
+  daily_check_time: "02:00"  # 2 AM PST
+  weekly_bootstrap_day: "sunday"
+
+display:
+  days_back: 90  # Show movies from last N days
+  min_movies: 20  # Minimum movies to display
+  max_movies: 100  # Maximum movies to display
+
+tracking:
+  bootstrap_days: 7  # Look back N days for new releases
+  check_interval_hours: 24  # How often to check
+```
+
+### Environment Variables
+- **TMDB_API_KEY**: TMDB API key (takes precedence over config.yaml)
+
 ## API Keys & External Services
 
 ### TMDB (The Movie Database)

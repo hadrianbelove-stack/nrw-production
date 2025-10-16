@@ -13,5 +13,6 @@ tracking:
   check_interval_hours: 24  # How often to check
   
 api:
+  tmdb_api_key: "99b122ce7fa3e9065d7b7dc6e660772d"  # Can be overridden via TMDB_API_KEY env var
   tmdb_rate_limit: 0.1  # Seconds between API calls
   max_retries: 3

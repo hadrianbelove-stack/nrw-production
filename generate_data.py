@@ -11,19 +11,43 @@ import time
 import os
 import re
 from urllib.parse import quote
+import argparse
 
 class DataGenerator:
     def __init__(self):
         self.config = self.load_config()
         self.tmdb_key = self.config['tmdb_api_key']
+        self.watchmode_key = "bBMpVr31lRfUsSFmgoQp0jixDrQt8DIKCVg7EFdp"  # Watchmode API
         self.wikipedia_cache = self.load_cache('wikipedia_cache.json')
         self.rt_cache = self.load_cache('rt_cache.json')
         self.wikipedia_overrides = self.load_cache('overrides/wikipedia_overrides.json')
         self.rt_overrides = self.load_cache('overrides/rt_overrides.json')
+        self.watch_links_cache = self.load_cache('cache/watch_links_cache.json')
     
     def load_config(self):
-        # API key from PROJECT_CHARTER.md
-        return {'tmdb_api_key': '99b122ce7fa3e9065d7b7dc6e660772d'}
+        """Load configuration from config.yaml and environment variables"""
+        config = {}
+
+        # Load from config.yaml if it exists
+        if os.path.exists('config.yaml'):
+            with open('config.yaml', 'r') as f:
+                yaml_config = yaml.safe_load(f)
+                if yaml_config and 'api' in yaml_config:
+                    config.update(yaml_config['api'])
+
+        # Environment variable takes precedence
+        tmdb_key = os.environ.get('TMDB_API_KEY')
+        if tmdb_key:
+            config['tmdb_api_key'] = tmdb_key
+
+        # Validate that we have a key
+        if not config.get('tmdb_api_key'):
+            raise ValueError(
+                "TMDB API key not found. Please set the TMDB_API_KEY environment variable "
+                "or add 'tmdb_api_key' to the 'api' section in config.yaml"
+            )
+
+        return config
     
     def load_cache(self, filename):
         if os.path.exists(filename):
@@ -161,7 +185,168 @@ class DataGenerator:
         # 3. Fall back to search
         search_query = quote(f"{title} {year}")
         return f"https://www.rottentomatoes.com/search?search={search_query}"
-    
+
+    def get_watch_links(self, movie_id, title, year, providers):
+        """Get deep links with smart hierarchy for two-button UI (free/paid)
+
+        Returns: {
+            'free': {'service': 'Netflix', 'link': 'https://...'},  # streaming subscription
+            'paid': {'service': 'Amazon', 'link': 'https://...'}     # rental/purchase
+        }
+        """
+        # Check cache first
+        cache_key = str(movie_id)
+        if cache_key in self.watch_links_cache:
+            cached = self.watch_links_cache[cache_key]
+            if cached.get('links'):
+                return cached['links']
+
+        # Service priority hierarchies
+        STREAMING_PRIORITY = ['Netflix', 'Disney+', 'Disney Plus', 'HBO Max', 'Max',
+                              'Hulu', 'Amazon Prime Video', 'Prime Video', 'Apple TV+',
+                              'Paramount+', 'Paramount Plus', 'Peacock', 'MUBI', 'Shudder', 'Criterion Channel']
+
+        PAID_PRIORITY = ['Amazon Video', 'Amazon', 'Prime Video', 'Apple TV', 'Vudu',
+                         'Google Play Movies', 'Google Play', 'Microsoft Store']
+
+        def build_platform_link(service_name):
+            """Build best possible direct link for each platform"""
+            search_term = quote(f'{title} {year}')
+
+            if 'Amazon' in service_name or service_name == 'Prime Video':
+                return f"https://www.amazon.com/s?k={search_term}&i=instant-video"
+            elif 'Apple' in service_name:
+                return f"https://tv.apple.com/search?term={quote(title)}"
+            elif 'Vudu' in service_name:
+                return f"https://www.vudu.com/content/movies/search/{quote(title)}"
+            elif 'Google Play' in service_name:
+                return f"https://play.google.com/store/search?q={search_term}&c=movies"
+            elif 'Microsoft' in service_name:
+                return f"https://www.microsoft.com/en-us/search?q={search_term}"
+            else:
+                # For Netflix, Disney+, etc - can't build direct links, return null
+                return None
+
+        def select_best_service(service_list, priority_list):
+            """Select best service from list based on priority"""
+            for priority_service in priority_list:
+                for available_service in service_list:
+                    if priority_service.lower() in available_service.lower():
+                        return available_service
+            # If no priority match, return first available
+            return service_list[0] if service_list else None
+
+        # Collect sources from Watchmode API
+        watchmode_streaming = []
+        watchmode_rent = []
+        watchmode_buy = []
+
+        try:
+            # Step 1: Search by TMDB ID
+            search_url = "https://api.watchmode.com/v1/search/"
+            search_params = {
+                "apiKey": self.watchmode_key,
+                "search_field": "tmdb_movie_id",
+                "search_value": movie_id
+            }
+
+            search_response = requests.get(search_url, params=search_params, timeout=10)
+
+            if search_response.status_code == 200:
+                search_data = search_response.json()
+
+                if search_data.get('title_results'):
+                    watchmode_id = search_data['title_results'][0]['id']
+
+                    # Step 2: Get sources
+                    sources_url = f"https://api.watchmode.com/v1/title/{watchmode_id}/details/"
+                    sources_params = {
+                        "apiKey": self.watchmode_key,
+                        "append_to_response": "sources"
+                    }
+
+                    sources_response = requests.get(sources_url, params=sources_params, timeout=10)
+
+                    if sources_response.status_code == 200:
+                        sources_data = sources_response.json()
+                        sources = sources_data.get('sources', [])
+
+                        # Collect US sources by type
+                        for source in sources:
+                            if source.get('region') != 'US':
+                                continue
+
+                            service_name = source.get('name', '')
+                            web_url = source.get('web_url', '')
+                            source_type = source.get('type', '')
+
+                            if not service_name or not web_url:
+                                continue
+
+                            if source_type == 'sub':
+                                watchmode_streaming.append({'service': service_name, 'link': web_url})
+                            elif source_type == 'rent':
+                                watchmode_rent.append({'service': service_name, 'link': web_url})
+                            elif source_type == 'buy':
+                                watchmode_buy.append({'service': service_name, 'link': web_url})
+
+        except Exception as e:
+            print(f"  Warning: Watchmode API failed for {title}: {e}")
+
+        # Build final watch_links with two-button structure
+        watch_links = {}
+
+        # FREE BUTTON: Prefer Watchmode, fallback to TMDB providers
+        if watchmode_streaming:
+            # Use Watchmode streaming data
+            best_service = select_best_service([s['service'] for s in watchmode_streaming], STREAMING_PRIORITY)
+            for source in watchmode_streaming:
+                if source['service'] == best_service:
+                    watch_links['free'] = source
+                    break
+        elif providers.get('streaming'):
+            # Fallback to TMDB provider data (no deep link available for most streaming services)
+            service = select_best_service(providers['streaming'], STREAMING_PRIORITY)
+            watch_links['free'] = {
+                'service': service,
+                'link': None  # Can't build direct links to Netflix/Disney+/etc
+            }
+
+        # PAID BUTTON: Prefer rent over buy, use Watchmode or fallback to platform links
+        paid_sources = watchmode_rent if watchmode_rent else watchmode_buy
+
+        if paid_sources:
+            # Use Watchmode rental/buy data
+            best_service = select_best_service([s['service'] for s in paid_sources], PAID_PRIORITY)
+            for source in paid_sources:
+                if source['service'] == best_service:
+                    watch_links['paid'] = source
+                    break
+        elif providers.get('rent') or providers.get('buy'):
+            # Fallback to TMDB providers with platform-specific links
+            rent_service = select_best_service(providers.get('rent', []), PAID_PRIORITY)
+            buy_service = select_best_service(providers.get('buy', []), PAID_PRIORITY)
+
+            preferred_service = rent_service if rent_service else buy_service
+            if preferred_service:
+                platform_link = build_platform_link(preferred_service)
+                if platform_link:
+                    watch_links['paid'] = {
+                        'service': preferred_service,
+                        'link': platform_link
+                    }
+
+        # Cache result
+        if watch_links:
+            self.watch_links_cache[cache_key] = {
+                'links': watch_links,
+                'cached_at': datetime.now().isoformat(),
+                'source': 'watchmode_api' if (watchmode_streaming or paid_sources) else 'tmdb_fallback'
+            }
+            self.save_cache(self.watch_links_cache, 'cache/watch_links_cache.json')
+
+        return watch_links
+
     def process_movie(self, movie_id, movie_data, movie_details):
         """Process a single movie into display format"""
         if not movie_details:
@@ -216,7 +401,10 @@ class DataGenerator:
         rt_url = self.find_rt_url(title, year, imdb_id)
         if rt_url:
             links['rt'] = rt_url
-        
+
+        # Watch links (deep links to streaming platforms)
+        watch_links = self.get_watch_links(movie_id, title, year, movie_data.get('providers', {}))
+
         return {
             'id': movie_id,
             'title': title,
@@ -234,7 +422,8 @@ class DataGenerator:
             'country': country,
             'rt_score': None,  # Will be filled by RT cache if available
             'providers': movie_data.get('providers', {}),
-            'links': links
+            'links': links,
+            'watch_links': watch_links
         }
     
     def generate_display_data(self, days_back=90, incremental=True):
@@ -361,8 +550,14 @@ class DataGenerator:
         return filtered_movies
 
 def main():
+    parser = argparse.ArgumentParser(description="Generate display data from tracking database with enriched links")
+    parser.add_argument('--full', action='store_true', help='Regenerate entire data.json from scratch (default: incremental mode - only process new movies)')
+
+    args = parser.parse_args()
+    incremental = not args.full
+
     generator = DataGenerator()
-    generator.generate_display_data()
+    generator.generate_display_data(incremental=incremental)
 
 if __name__ == "__main__":
     main()

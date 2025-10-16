@@ -151,7 +151,7 @@ else
 
 ---
 
-## 🤖 AI Assistant Quick Start
+## AI Assistant Quick Start
 
 **READ THESE FILES FIRST WHEN STARTING A NEW SESSION:**
 
@@ -288,7 +288,7 @@ python3 movie_tracker.py bootstrap
 ---
 
 **Last updated:** [End of session]
-**Next diary archive:** End of session → \`diary/[YYYY-MM-DD].md\`
+**Next diary archive:** End of session -> \`diary/[YYYY-MM-DD].md\`
 EOF
 
     if [[ $? -eq 0 ]]; then

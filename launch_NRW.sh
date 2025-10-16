@@ -3,8 +3,17 @@
 
 set -e
 
-# Trap handler for clean shutdown
-trap "echo ''; echo '🛑 Shutting down server...'; kill \$SERVER_PID 2>/dev/null; exit" INT TERM
+# Cleanup function for server process
+cleanup() {
+    if [ -n "$SERVER_PID" ] && kill -0 $SERVER_PID 2>/dev/null; then
+        echo ''
+        echo '🛑 Shutting down server...'
+        kill $SERVER_PID 2>/dev/null
+    fi
+}
+
+# Register cleanup for all exit paths
+trap cleanup EXIT INT TERM
 
 echo "🎬 NEW RELEASE WALL - Daily Startup"
 echo "===================================="
@@ -65,6 +74,7 @@ if ! python3 -c "import json; json.load(open('data.json'))" 2>/dev/null; then
 fi
 python3 << 'PYTHON'
 import json
+import os
 from datetime import datetime, timedelta
 
 with open('data.json') as f:
@@ -80,7 +90,21 @@ yesterday_str = yesterday.isoformat()
 today_count = len([m for m in movies if m.get('digital_date', '').startswith(today_str)])
 yesterday_count = len([m for m in movies if m.get('digital_date', '').startswith(yesterday_str)])
 
+# Check for movie_tracking.json and get tracked total
+tracked_total = None
+if os.path.exists('movie_tracking.json'):
+    try:
+        with open('movie_tracking.json') as f:
+            tracking_db = json.load(f)
+        tracked_total = len(tracking_db.get('movies', {}))
+    except (json.JSONDecodeError, KeyError):
+        print("   ⚠️ Warning: movie_tracking.json found but corrupted")
+
 print(f"   Total movies on wall: {len(movies)}")
+if tracked_total is not None:
+    print(f"   Tracked: {tracked_total} / Displayed: {len(movies)}")
+else:
+    print("   ⚠️ movie_tracking.json not found, skipping tracked count")
 print(f"   New today ({today.strftime('%b %d')}): {today_count}")
 print(f"   New yesterday ({yesterday.strftime('%b %d')}): {yesterday_count}")
 print(f"   Last generated: {data.get('generated_at', 'unknown')[:19]}")
@@ -127,22 +151,40 @@ echo ""
 python3 -m http.server $PORT &
 SERVER_PID=$!
 
-# Wait for server to start
-sleep 1
+# Wait for server to be ready with retry loop
+echo -n "   Waiting for server to start"
+RETRY_COUNT=0
+MAX_RETRIES=10
+SERVER_READY=false
 
-# Verify server started successfully
-if ! kill -0 $SERVER_PID 2>/dev/null; then
-    echo "   ❌ Server failed to start (process died)"
-    exit 1
-fi
-
-# Verify port is listening (if lsof is available)
-if command -v lsof >/dev/null; then
-    if ! lsof -Pi :$PORT -sTCP:LISTEN -t >/dev/null 2>&1; then
-        echo "   ❌ Server failed to start on port $PORT"
-        kill $SERVER_PID 2>/dev/null
+while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+    # Check if server process is still alive
+    if ! kill -0 $SERVER_PID 2>/dev/null; then
+        echo ""
+        echo "   ❌ Server failed to start (process died)"
         exit 1
     fi
+
+    # Try to connect to server
+    if command -v curl >/dev/null && curl --silent --fail --connect-timeout 1 http://localhost:$PORT >/dev/null 2>&1; then
+        SERVER_READY=true
+        break
+    elif command -v lsof >/dev/null && lsof -Pi :$PORT -sTCP:LISTEN -t >/dev/null 2>&1; then
+        SERVER_READY=true
+        break
+    fi
+
+    echo -n "."
+    sleep 0.5
+    RETRY_COUNT=$((RETRY_COUNT + 1))
+done
+
+echo ""
+
+if [ "$SERVER_READY" = false ]; then
+    echo "   ❌ Server failed to start on port $PORT after $MAX_RETRIES attempts"
+    kill $SERVER_PID 2>/dev/null
+    exit 1
 fi
 
 # Open browser if available

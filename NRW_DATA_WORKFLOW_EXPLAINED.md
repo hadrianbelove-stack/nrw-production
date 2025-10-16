@@ -19,9 +19,9 @@ We want a beautiful webpage that shows the latest movies available for streaming
 - **Magic moment:** When it finds new providers, sets `digital_date` = today, status = "available"
 - **Output:** Updates tracking database with new movies and availability changes
 
-**📄 `data/movie_tracking.json`** - *The Master Database* 
+**📄 `movie_tracking.json`** - *The Master Database*
 - **What it is:** Complete database of all movies we're monitoring (count always changing)
-- **Why:** Single source of truth for all movie data and tracking status  
+- **Why:** Single source of truth for all movie data and tracking status
 - **Contains:** Movie details, tracking status ("tracking" vs "available"), provider info
 - **Example:** `{"1404864": {"title": "Inspector Zende", "status": "tracking", "digital_date": null}}`
 - **Updated by:** Daily command (adds new movies and updates availability)
@@ -39,7 +39,8 @@ We want a beautiful webpage that shows the latest movies available for streaming
 
 **📂 Link Resolution Files** - *The Smart Lookup System*
 - **`overrides/wikipedia_overrides.json`** - Manual fixes for wrong links
-- **`cache/wikipedia_cache.json`** - Remembers successful finds (saves time)
+- **`wikipedia_cache.json`** - Remembers successful finds (saves time)
+- **`rt_cache.json`** - Caches Rotten Tomatoes link lookups
 - **`scripts/wikidata_scraper.py`** - Uses IMDb→Wikidata→Wikipedia chain
 - **`scripts/wikipedia_scraper.py`** - Selenium browser automation (last resort)
 - **`missing_wikipedia.json`** - Logs failures for manual review
@@ -120,10 +121,12 @@ We want a beautiful webpage that shows the latest movies available for streaming
 **Why this folder structure?**
 ```
 /index.html, /data.json, /assets/     ← Runtime files (what users see)
+/movie_tracking.json                  ← Master tracking database
+/wikipedia_cache.json, /rt_cache.json ← Speed optimization files
 /scripts/                            ← Data generation tools
-/data/                               ← Source databases  
-/cache/                              ← Speed optimization files
+/overrides/                          ← Manual fixes for link resolution
 /ops/                                ← Operational tools
+/admin/                              ← Editorial control files
 /museum_legacy/                      ← Old experiments (ignored)
 ```
 
