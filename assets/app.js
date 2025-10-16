@@ -80,17 +80,29 @@ const NRW = {
             }
             const bottomInfo = bottomMetadata.join(' | ');
 
-            // Build watch link for title
+            // Build watch link and button text
             let watchLink = '';
+            let watchText = 'PLAY';
+
             if (movie.providers?.streaming?.length > 0) {
                 // Use first streaming provider
-                watchLink = `https://www.google.com/search?q=${encodeURIComponent(title + ' watch ' + movie.providers.streaming[0])}`;
+                const provider = movie.providers.streaming[0];
+                watchLink = `https://www.google.com/search?q=${encodeURIComponent(title + ' watch ' + provider)}`;
+                watchText = `PLAY ON ${provider.toUpperCase()}`;
             } else if (movie.providers?.rent?.length > 0) {
                 // Use first rental provider
-                watchLink = `https://www.google.com/search?q=${encodeURIComponent(title + ' rent ' + movie.providers.rent[0])}`;
+                const provider = movie.providers.rent[0];
+                watchLink = `https://www.google.com/search?q=${encodeURIComponent(title + ' rent ' + provider)}`;
+                watchText = `RENT ON ${provider.toUpperCase()}`;
+            } else if (movie.providers?.buy?.length > 0) {
+                // Use first buy provider
+                const provider = movie.providers.buy[0];
+                watchLink = `https://www.google.com/search?q=${encodeURIComponent(title + ' buy ' + provider)}`;
+                watchText = `BUY ON ${provider.toUpperCase()}`;
             } else {
                 // Default to Amazon search
                 watchLink = `https://www.amazon.com/s?k=${encodeURIComponent(title + ' ' + year)}`;
+                watchText = 'PLAY ON AMAZON';
             }
 
             // Info links - Only Trailer, RT, Wiki
@@ -120,6 +132,7 @@ const NRW = {
                         <div class="card-back">
                             <div class="synopsis">${movie.synopsis || 'Synopsis coming soon'}</div>
                             <div class="actions">
+                                <a href="${watchLink}" target="_blank" class="watch-btn">${watchText}</a>
                                 <div class="info-links">
                                     ${infoLinks.join('')}
                                 </div>

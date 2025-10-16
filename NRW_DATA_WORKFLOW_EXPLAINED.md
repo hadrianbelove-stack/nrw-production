@@ -31,6 +31,8 @@ We want a beautiful webpage that shows the latest movies available for streaming
 
 **🔧 `generate_data.py`** - *The Complete Data Enricher*
 - **What it does:** Takes recently available movies (90 days) and creates full movie profiles
+- **Incremental mode (default):** Only processes NEW movies not already in data.json, then ADDS them to existing list (takes seconds)
+- **Full regeneration mode:** Rebuilds entire data.json from scratch (takes 30+ minutes, use only when needed)
 - **TMDB API calls:** Fetches complete movie details including cast, crew, synopsis, posters, genres, studio, runtime, country
 - **Link resolution:** Finds working Wikipedia pages, trailers, and review links
 - **Why:** Users need complete movie information to decide what to watch
@@ -107,7 +109,7 @@ We want a beautiful webpage that shows the latest movies available for streaming
 3. git commit & push                 # Save changes
 ```
 
-**🔍 `ops/verify.sh`** - *The Quality Inspector*
+**🔍 `ops/health_check.py`** - *The Quality Inspector*
 - **What it does:** Checks data.json has correct structure, no broken links
 - **Why:** Catches problems before users see them
 

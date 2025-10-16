@@ -237,24 +237,47 @@ class DataGenerator:
             'links': links
         }
     
-    def generate_display_data(self, days_back=90):
-        """Generate display data from tracking database"""
-        
+    def generate_display_data(self, days_back=90, incremental=True):
+        """Generate display data from tracking database
+
+        Args:
+            days_back: How many days back to look for available movies
+            incremental: If True, only process NEW movies not already in data.json (default)
+                        If False, regenerate entire data.json from scratch
+        """
+
         # Load tracking database
         if not os.path.exists('movie_tracking.json'):
             print("❌ No tracking database found. Run 'python movie_tracker.py daily' first")
             return
-        
+
         with open('movie_tracking.json', 'r') as f:
             db = json.load(f)
-        
+
+        # Load existing data.json if incremental mode
+        existing_movies = []
+        existing_ids = set()
+        if incremental and os.path.exists('data.json'):
+            with open('data.json', 'r') as f:
+                existing_data = json.load(f)
+                existing_movies = existing_data.get('movies', [])
+                existing_ids = {str(m['id']) for m in existing_movies}
+            print(f"📂 Incremental mode: Found {len(existing_movies)} existing movies in data.json")
+
         # Filter to recently available movies
         cutoff_date = datetime.now() - timedelta(days=days_back)
-        display_movies = []
-        
-        print(f"🎬 Processing movies that went digital in last {days_back} days...")
-        
+        new_movies = []
+
+        if incremental:
+            print(f"🎬 Processing NEW movies that went digital in last {days_back} days...")
+        else:
+            print(f"🎬 Processing ALL movies that went digital in last {days_back} days...")
+
         for movie_id, movie_data in db['movies'].items():
+            # Skip if already in data.json (incremental mode)
+            if incremental and movie_id in existing_ids:
+                continue
+
             if movie_data['status'] == 'available' and movie_data.get('digital_date'):
                 try:
                     digital_date = datetime.strptime(movie_data['digital_date'], '%Y-%m-%d')
@@ -264,13 +287,20 @@ class DataGenerator:
                         if movie_details:
                             processed = self.process_movie(movie_id, movie_data, movie_details)
                             if processed:
-                                display_movies.append(processed)
+                                new_movies.append(processed)
                                 print(f"  ✓ {processed['title']} - Links: {len(processed['links'])}")
-                        
+
                         time.sleep(0.2)  # Rate limiting
-                        
+
                 except Exception as e:
                     print(f"  ✗ Error processing {movie_data.get('title')}: {e}")
+
+        # Merge with existing movies if incremental
+        if incremental:
+            print(f"\n📋 Adding {len(new_movies)} new movies to {len(existing_movies)} existing movies")
+            display_movies = existing_movies + new_movies
+        else:
+            display_movies = new_movies
         
         # Sort by digital release date (newest first)
         display_movies.sort(key=lambda x: x['digital_date'], reverse=True)

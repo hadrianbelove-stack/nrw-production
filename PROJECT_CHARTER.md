@@ -110,8 +110,9 @@ It exists to:
 ### AMENDMENT-020: Unified Continuity Rule (supersedes RULE-016, RULE-019, RULE-023, RULE-024)
 - End-of-session bundle contains: source/templates/configs; built site; log + context; timestamped charter; manifest + SHA256 + tree hash. Snapshots optional for visibility; superseded by newer sync. Git tracks source/configs/root charter/log/context/`charter_history/`; ignores bundles/snapshots. Recovery: resume from newest (lexicographic UTC stamp).
 
-### AMENDMENT-021: Post-Validation Gate
-- Validate before success: `output/data.json`, `output/site/index.html`, `PROJECT_LOG.md`, `complete_project_context.md`; repo charter ≥ MIN_AMENDMENTS; timestamped charter in bundle root + `charter_history/` with identical SHA256; manifest + tree hash present; bundle SHA256 matches. Any failure = invalid bundle.
+### AMENDMENT-021: Post-Validation Gate (Legacy bundle validation)
+- **Legacy bundle validation (for flat handoffs):** Validate before success: `output/data.json`, `output/site/index.html`, `PROJECT_LOG.md`, `DAILY_CONTEXT.md`; repo charter ≥ MIN_AMENDMENTS; timestamped charter in bundle root + `charter_history/` with identical SHA256; manifest + tree hash present; bundle SHA256 matches. Any failure = invalid bundle.
+- **Current git workflow validation:** `/data.json`, `/index.html` at repo root; `PROJECT_CHARTER.md`, `DAILY_CONTEXT.md`; git status clean.
 
 ### AMENDMENT-022: Historical Folders
 - `charter_history/` (tracked), `snapshot_history/` (git-ignored), `bundle_history/` (git-ignored). All timestamps `UTC-YYYYMMDD-HHMMSSZ`. Repo root clean.
@@ -136,42 +137,82 @@ It exists to:
 
 ### OPERATOR'S MANUAL: Daily Session Workflow
 
-**End of Session (always one shot)**
+**Session Start (Every Day)**
 
-1. Run:
-   ./nrw-handoff.sh
+1. Run: `./launch_NRW.sh`
+   - Pulls latest data from GitHub automation
+   - Shows status report (total movies, today's new releases)
+   - Starts local server on port 8000 (or 8001 if busy)
+   - Opens browser automatically
 
-2. This will:
-   - Build a flat handoff folder: WORKING_SET_HANDOFF_<UTC>/ (files only).
-   - Write required files: index.handoff.html, index.html, _ASSET_MAP.txt, _MANIFEST.txt,
-     PROJECT_CHARTER_<timestamp>.md, PROJECT_LOG.md, complete_project_context.md,
-     sources/scripts/data JSONs, _WHY.txt, POSTVALIDATION.txt.
-   - Validate the set (POSTVALIDATION.txt records results).
-   - Write an optional archival zip to bundle_history/ (for audit only).
+2. Read context files in order:
+   - `DAILY_CONTEXT.md` (yesterday's work, current state, active issues)
+   - `PROJECT_CHARTER.md` (governance, amendments, API keys)
+   - `NRW_DATA_WORKFLOW_EXPLAINED.md` (technical pipeline)
 
-3. Check:
-   - No directories inside handoff.
-   - index.handoff.html opens locally.
-   - POSTVALIDATION.txt ends with PASS.
+3. Continue work from "Next Priorities" section in `DAILY_CONTEXT.md`
 
 ---
 
-**Next Session (resync)**
+**Session End (Always)**
 
-1. Open the latest WORKING_SET_HANDOFF_<UTC>/ folder.
-2. Select all files (⌘A / Ctrl+A).
-3. Upload them into the assistant.
-4. Reference the golden tag (from PROJECT_LOG.md) if needed.
-5. Do not upload folders or zips.
+1. Update `DAILY_CONTEXT.md` with today's work:
+   - Current State (update metrics, status)
+   - What We Did Today (detailed summary)
+   - Conversation Context (key decisions, rationale)
+   - Known Issues (new problems, resolved items)
+   - Next Priorities (what to do next session)
+   - Files Changed (created, modified, deleted)
+
+2. Run: `./ops/archive_daily_context.sh`
+   - Archives current context to `diary/YYYY-MM-DD.md`
+   - Creates fresh template for next session
+   - Validates archive was created successfully
+
+3. Commit changes:
+   ```bash
+   git add DAILY_CONTEXT.md diary/
+   git commit -m "Session end - YYYY-MM-DD"
+   git push origin main
+   ```
+
+4. Verify:
+   - `diary/YYYY-MM-DD.md` exists and contains today's work
+   - `DAILY_CONTEXT.md` is fresh template for next session
+   - All working changes committed
+
+---
+
+**Manual Pipeline (If Automation Fails)**
+
+If GitHub Actions automation fails or you need to run pipeline manually:
+
+```bash
+# Check for new digital releases
+python3 movie_tracker.py check
+
+# Regenerate data.json
+python3 generate_data.py
+
+# Verify output
+python3 ops/health_check.py
+
+# Commit if successful
+git add data.json movie_tracking.json
+git commit -m "Manual update - YYYY-MM-DD"
+git push origin main
+```
 
 ---
 
 **Rules**
 
-- Only the flat handoff folder is canonical.
-- Uploads must be all files from WORKING_SET_HANDOFF_<UTC>/.
-- Zips and legacy NRW_SYNC artifacts are retired.
-- Apply governance/script/context updates in one consolidated patch whenever possible (AMENDMENT-FLATSHOT).
+- `DAILY_CONTEXT.md` is the primary handoff document (per AMENDMENT-037)
+- Archive at end of every session using `ops/archive_daily_context.sh`
+- Never edit archived diary entries (immutable historical record)
+- GitHub Actions runs daily at 9 AM UTC (2 AM PDT / 1 AM PST)
+- Launch script handles all startup tasks (git pull, status, server, browser)
+- Apply governance updates via amendments (append-only to charter)
 
 ### AMENDMENT-ROADMAP+NAMING-LOCK-2025-09-04
 
@@ -221,16 +262,12 @@ It exists to:
 - digital_date = first provider day from tracker; never "discovery date".
 
 ### AMENDMENT-032: Runtime vs Pipeline Hierarchy
-- /index.html
-- /data.json
-- /assets/{app.js,styles.css}
-- scripts/{movie_tracker.py,generate_data.py,wikidata_scraper.py,wikipedia_scraper.py,rt_scraper.py}
-- data/{movie_tracking.json}
-- cache/{wikipedia_cache.json,rt_cache.json}         # git-ignored
-- overrides/{wikipedia_overrides.json,rt_overrides.json}
-- ops/{PROJECT_CHARTER.md,PROJECT_LOG.md,complete_project_context.md,verify.sh,daily_update.sh}
-- museum_legacy/
-- UI reads only root files noted above; all generation and caches live outside runtime.
+- Root: /index.html, /data.json, /assets/{app.js,styles.css}, /PROJECT_CHARTER.md, /PROJECT_LOG.md, /DAILY_CONTEXT.md, /launch_NRW.sh
+- Root scripts: {movie_tracker.py,generate_data.py,wikidata_scraper.py,wikipedia_scraper.py,rt_scraper.py}
+- Data and caches: /overrides/{wikipedia_overrides.json,rt_overrides.json}, /wikipedia_cache.json, /rt_cache.json, /movie_tracking.json
+- Ops: /ops/{archive_daily_context.sh,health_check.py}
+- Archives: /diary/ (daily context archives), /museum_legacy/
+- UI reads only root runtime files; generation and caches live outside runtime.
 
 ### AMENDMENT-033: UI Contract Lock
 - Date divider = horizontal line with centered date text, not a card.
@@ -241,5 +278,63 @@ It exists to:
 ### AMENDMENT-034: Daily Pipeline Contract
 - movie_tracker.py check → updates provider and digital_date.
 - generate_data.py → enriches and writes data.json using AMENDMENT‑030.
-- ops/verify.sh → asserts schema, non‑null links where resolvable, and SSOT invariants.
+- ops/health_check.py → asserts schema, non‑null links where resolvable, and SSOT invariants.
 - daily_update.sh runs the above, then commits.
+
+### AMENDMENT-036: Rolling Daily Context
+- DAILY_CONTEXT.md = living document, always current, overwritten each session.
+- diary/YYYY-MM-DD.md = end-of-session archives (immutable).
+- Replaces stale complete_project_context.md (archived to museum_legacy/).
+- Format: Current State, What We Did, Known Issues, Next Priorities, Files Changed.
+- Start sessions by reading DAILY_CONTEXT.md; end sessions by archiving to diary/.
+
+### AMENDMENT-037: Daily Context System (Three-File Loading Pattern)
+
+**Rationale:** AI assistants need fresh, relevant context without token waste from months of stale history. The rolling daily context system provides:
+- **Token efficiency:** Load only yesterday's work, not full PROJECT_LOG.md history
+- **Perfect continuity:** Detailed summary of previous session enables smooth handoffs
+- **Audit trail:** Immutable diary archives preserve history when needed
+- **Reduced confusion:** No outdated information from weeks-old context documents
+
+**Three-File Context Loading (Session Start):**
+
+When starting a new session, AI assistants should read these files in order:
+
+1. **`DAILY_CONTEXT.md`** (PRIMARY) - Current state, recent changes, active issues, unfinished tasks
+   - Living document, overwritten each session
+   - Contains: Current State, What We Did, Conversation Context, Known Issues, Next Priorities, Files Changed
+   - Always up-to-date, never stale
+
+2. **`PROJECT_CHARTER.md`** (GOVERNANCE) - Immutable rules, amendments, API keys, architectural decisions
+   - Updated only via amendments (append-only)
+   - Stable reference for governance and technical contracts
+
+3. **`NRW_DATA_WORKFLOW_EXPLAINED.md`** (TECHNICAL) - Data pipeline mechanics, how components fit together
+   - Stable technical documentation
+   - Updated only when pipeline architecture changes
+
+**End-of-Session Workflow:**
+
+1. Run: `./ops/archive_daily_context.sh`
+2. Script archives current `DAILY_CONTEXT.md` → `diary/YYYY-MM-DD.md` (immutable)
+3. Script creates fresh template for next session
+4. Commit changes including new diary entry
+5. Next session reads the new `DAILY_CONTEXT.md` (which will be filled during that session)
+
+**Archive Structure:**
+- `diary/YYYY-MM-DD.md` - End-of-session snapshots (immutable, git-tracked)
+- Searchable history available when needed (grep, file search)
+- Not loaded by default (avoids token waste)
+
+**Supersedes:**
+- `complete_project_context.md` (deprecated, moved to `museum_legacy/`)
+- Full PROJECT_LOG.md loading (now optional, use diary/ for historical queries)
+
+**Implementation Status:**
+- ✅ `DAILY_CONTEXT.md` created (2025-10-15)
+- ✅ `diary/` directory established
+- ✅ `ops/archive_daily_context.sh` script operational
+- ✅ `launch_NRW.sh` references DAILY_CONTEXT.md in context reminders
+- ⏳ AMENDMENT-021 update pending (remove complete_project_context.md requirement)
+
+**Why this amendment:** AMENDMENT-036 established the basic concept but lacked detail about the three-file loading pattern, token efficiency rationale, and complete workflow. This amendment provides comprehensive documentation for AI assistants and future maintainers.
