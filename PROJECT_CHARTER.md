@@ -264,6 +264,19 @@ tracking:
 - **Poster API:** http://img.omdbapi.com/?i=tt3896198&h=600&apikey=539723d9
 - **Usage:** Alternative movie data source, poster fallbacks
 
+### Watchmode API
+- **API Key:** bBMpVr31lRfUsSFmgoQp0jixDrQt8DIKCVg7EFdp
+- **Base URL:** https://api.watchmode.com/v1/
+- **Documentation:** https://api.watchmode.com/docs/
+- **Free Tier:** 1,000 requests/month (no credit card required)
+- **Usage:** Deep links to streaming platforms (Netflix, Amazon, HBO Max, etc.)
+- **Endpoints used:**
+  - Search: https://api.watchmode.com/v1/search/ (search by TMDB ID)
+  - Details: https://api.watchmode.com/v1/title/{watchmode_id}/details/ (get streaming sources)
+- **Authentication:** Pass `apiKey` as query parameter
+- **Coverage:** 200+ streaming services in 50+ countries (US data on free tier)
+- **Features:** Web links, iOS/Android deep links, episode-level links
+
 
 ### AMENDMENT-028: Inclusive Tracking Strategy
 - Track ALL movie releases, not filtered by type
@@ -286,7 +299,8 @@ tracking:
 - If unresolved: set field to null, not a guessed slug; append to missing_wikipedia.json.
 
 ### AMENDMENT-031: Data Schema Lock v1
-- Required per movie: tmdb_id, imdb_id, title, original_title, digital_date (ISO‑8601), poster, crew.director, crew.cast[], synopsis, metadata.runtime, links.{trailer,rt,wikipedia} (nullable).
+- Required per movie: tmdb_id, imdb_id, title, original_title, digital_date (ISO‑8601), poster, crew.director, crew.cast[], synopsis, metadata.runtime, links.{trailer,rt,wikipedia} (nullable), watch_links (optional).
+- watch_links (optional): object whose optional keys are `streaming`, `rent`, `buy`, and `default`, each containing `{service: string, link: string}`. Categories are present only when available for the title. (See AMENDMENT-038 for full details and fallback logic.)
 - digital_date = first provider day from tracker; never "discovery date".
 
 ### AMENDMENT-032: Runtime vs Pipeline Hierarchy
@@ -366,3 +380,90 @@ When starting a new session, AI assistants should read these files in order:
 - ⏳ AMENDMENT-021 update pending (remove complete_project_context.md requirement)
 
 **Why this amendment:** AMENDMENT-036 established the basic concept but lacked detail about the three-file loading pattern, token efficiency rationale, and complete workflow. This amendment provides comprehensive documentation for AI assistants and future maintainers.
+
+### AMENDMENT-038: Watchmode API Integration for Watch Links
+
+**Rationale:**
+
+The project needed direct links to streaming platforms rather than Google searches for movie watch options. TMDB provides provider names ("Netflix", "Amazon Video") but not deep links to actual watch pages. Users need clickable links that take them directly to streaming platforms, not search results.
+
+**Problem evaluation:**
+- **TMDB limitation:** Provides provider metadata (service names) but no deep links
+- **User need:** Direct links to streaming platforms for immediate viewing
+- **Solution evaluation:** Tested multiple APIs for streaming link coverage
+  - Streaming Availability API (RapidAPI): 100 requests/day free tier
+  - Watchmode API: 1,000 requests/month free tier
+- **Winner:** Watchmode API had superior coverage for new releases (October 2025 movies)
+- **Example:** "The Long Walk" (Oct 2025) - Watchmode returned 6 sources with Amazon deep links, while Streaming Availability API had no data
+
+**Technical Implementation:**
+
+1. **Two-step API process:**
+   - Step 1: Search by TMDB ID to get Watchmode internal ID
+   - Step 2: Fetch streaming sources for that Watchmode ID
+   - Endpoints: `https://api.watchmode.com/v1/search/` and `https://api.watchmode.com/v1/title/{id}/details/`
+   - Implementation: `get_watch_links()` method in `generate_data.py` (lines 197-400)
+
+2. **Watch links schema (canonical structure):**
+   ```
+   watch_links: {
+     'streaming': {'service': 'Netflix', 'link': 'https://...'},  // subscription streaming
+     'rent': {'service': 'Amazon', 'link': 'https://...'},        // rental
+     'buy': {'service': 'Apple TV', 'link': 'https://...'},       // purchase
+     'default': {'service': 'Amazon', 'link': 'https://...'}      // fallback if no providers
+   }
+   ```
+   - Each category contains: `service` (platform name) and `link` (URL)
+   - Links can be deep links (Watchmode API success) or platform search URLs (fallback)
+   - Categories are optional - only present if movie has that availability type
+
+3. **Service priority hierarchies:**
+   - **Streaming priority:** Netflix > Disney+ > HBO Max > Hulu > Amazon Prime > MUBI > Shudder > Criterion Channel
+   - **Paid priority:** Amazon Video > Apple TV > Vudu > Google Play > Microsoft Store
+   - **Rationale:** Prioritizes platforms with largest user bases for better UX
+   - **Implementation:** `select_best_service()` function (lines 246-253)
+
+4. **Fallback hierarchy (three-tier system):**
+   - **Tier 1:** Watchmode API deep links (e.g., `https://watch.amazon.com/detail?gti=...`)
+   - **Tier 2:** Platform-specific search URLs (e.g., `https://tv.apple.com/search?term=Movie`)
+   - **Tier 3:** Amazon video search (universal fallback)
+   - **Platform-specific links:** Amazon, Apple TV, Vudu, Google Play, Microsoft Store
+   - **No direct links:** Netflix, Disney+, HBO Max (return null, use Google search fallback)
+   - **Implementation:** `build_platform_link()` function (lines 228-244)
+
+5. **Cache strategy:**
+   - **Location:** `cache/watch_links_cache.json`
+   - **Key:** TMDB ID (string)
+   - **Value:** `{links: {...}, cached_at: ISO-8601, source: 'watchmode_api'|'google_fallback'|'amazon_fallback'}`
+   - **Purpose:** Prevents redundant API calls (saves 13,380 calls/month)
+   - **Effectiveness:** With cache, monthly usage is ~300 calls (new movies only); without cache, would be 13,680 calls (exceeds free tier)
+   - **Migration support:** Automatically migrates legacy `free/paid` format to canonical `streaming/rent/buy` schema
+
+6. **API usage tracking:**
+   - **Statistics:** search_calls, source_calls, cache_hits, watchmode_successes
+   - **Reporting:** Displayed after each `generate_data.py` run
+   - **Metrics:** Cache hit rate, Watchmode success rate
+   - **Purpose:** Monitor API usage to ensure staying within free tier limits
+
+**API limits and sustainability:**
+- **Free tier:** 1,000 requests/month
+- **Full regeneration:** 456 API calls (228 movies × 2 calls each) = 45.6% of limit
+- **Daily automation:** ~10 calls/day for new movies = ~300 calls/month
+- **Total monthly usage:** ~756 calls (75.6% of limit) with 244-request buffer
+- **Sustainability:** ✅ Well under free tier limit with cache in place
+
+**Implementation status:**
+- ✅ Backend integration complete (`generate_data.py` lines 197-400)
+- ✅ Cache system operational
+- ✅ Statistics tracking implemented
+- ✅ Fallback hierarchy working
+- ✅ `argparse` support for `--full` flag testing
+- ⏳ Frontend two-button UI (subsequent phase)
+- ⏳ Agent-based link finding for missing data (optional future enhancement)
+
+**Reference implementation:**
+- File: `generate_data.py`
+- Method: `get_watch_links()` (lines 197-400)
+- Cache handling: `load_cache()` and `save_cache()` (lines 60-69)
+- Statistics: `watchmode_stats` dictionary (lines 27-33)
+- Migration: `_migrate_legacy_cache_format()` (lines 407-424)

@@ -80,24 +80,35 @@ const NRW = {
             }
             const bottomInfo = bottomMetadata.join(' | ');
 
-            // Build watch link - button always says "WATCH"
-            let watchLink = '';
+            // Build watch buttons - use canonical schema (streaming/rent/buy)
+            let watchButtons = [];
 
-            if (movie.providers?.streaming?.length > 0) {
-                // Use first streaming provider
-                const provider = movie.providers.streaming[0];
-                watchLink = `https://www.google.com/search?q=${encodeURIComponent(title + ' watch ' + provider)}`;
-            } else if (movie.providers?.rent?.length > 0) {
-                // Use first rental provider
-                const provider = movie.providers.rent[0];
-                watchLink = `https://www.google.com/search?q=${encodeURIComponent(title + ' rent ' + provider)}`;
-            } else if (movie.providers?.buy?.length > 0) {
-                // Use first buy provider
-                const provider = movie.providers.buy[0];
-                watchLink = `https://www.google.com/search?q=${encodeURIComponent(title + ' buy ' + provider)}`;
-            } else {
-                // Default to Amazon search
-                watchLink = `https://www.amazon.com/s?k=${encodeURIComponent(title + ' ' + year)}`;
+            if (movie.watch_links) {
+                // STREAMING button (subscription services)
+                if (movie.watch_links.streaming && movie.watch_links.streaming.link) {
+                    const streamingLink = movie.watch_links.streaming.link;
+                    watchButtons.push(`<a href="${streamingLink}" target="_blank" class="watch-btn watch-btn-free">WATCH FREE</a>`);
+                }
+
+                // RENT/BUY button (paid options - prefer rent over buy)
+                if (movie.watch_links.rent && movie.watch_links.rent.link) {
+                    const rentLink = movie.watch_links.rent.link;
+                    watchButtons.push(`<a href="${rentLink}" target="_blank" class="watch-btn watch-btn-paid">RENT/BUY</a>`);
+                } else if (movie.watch_links.buy && movie.watch_links.buy.link) {
+                    const buyLink = movie.watch_links.buy.link;
+                    watchButtons.push(`<a href="${buyLink}" target="_blank" class="watch-btn watch-btn-paid">RENT/BUY</a>`);
+                }
+            }
+
+            // Fallback: check default link, then Amazon search
+            if (watchButtons.length === 0) {
+                if (movie.watch_links && movie.watch_links.default && movie.watch_links.default.link) {
+                    const defaultLink = movie.watch_links.default.link;
+                    watchButtons.push(`<a href="${defaultLink}" target="_blank" class="watch-btn">FIND ON AMAZON</a>`);
+                } else {
+                    const amazonLink = `https://www.amazon.com/s?k=${encodeURIComponent(title + ' ' + year)}&i=instant-video`;
+                    watchButtons.push(`<a href="${amazonLink}" target="_blank" class="watch-btn">FIND ON AMAZON</a>`);
+                }
             }
 
             // Info links - Only Trailer, RT, Wiki
@@ -127,7 +138,7 @@ const NRW = {
                         <div class="card-back">
                             <div class="synopsis">${movie.synopsis || 'Synopsis coming soon'}</div>
                             <div class="actions">
-                                <a href="${watchLink}" target="_blank" class="watch-btn">WATCH</a>
+                                ${watchButtons.join('')}
                                 <div class="info-links">
                                     ${infoLinks.join('')}
                                 </div>

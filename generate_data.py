@@ -23,6 +23,14 @@ class DataGenerator:
         self.wikipedia_overrides = self.load_cache('overrides/wikipedia_overrides.json')
         self.rt_overrides = self.load_cache('overrides/rt_overrides.json')
         self.watch_links_cache = self.load_cache('cache/watch_links_cache.json')
+
+        # Watchmode usage statistics
+        self.watchmode_stats = {
+            'search_calls': 0,
+            'source_calls': 0,
+            'cache_hits': 0,
+            'watchmode_successes': 0
+        }
     
     def load_config(self):
         """Load configuration from config.yaml and environment variables"""
@@ -186,20 +194,28 @@ class DataGenerator:
         search_query = quote(f"{title} {year}")
         return f"https://www.rottentomatoes.com/search?search={search_query}"
 
-    def get_watch_links(self, movie_id, title, year, providers):
-        """Get deep links with smart hierarchy for two-button UI (free/paid)
+    def get_watch_links(self, movie_id, title, year, providers, force_refresh=False):
+        """Get deep links with canonical streaming/rent/buy structure
 
         Returns: {
-            'free': {'service': 'Netflix', 'link': 'https://...'},  # streaming subscription
-            'paid': {'service': 'Amazon', 'link': 'https://...'}     # rental/purchase
+            'streaming': {'service': 'Netflix', 'link': 'https://...'},  # subscription streaming
+            'rent': {'service': 'Amazon', 'link': 'https://...'},        # rental
+            'buy': {'service': 'Apple TV', 'link': 'https://...'}        # purchase
         }
         """
-        # Check cache first
+        # Check cache first (unless force refresh)
         cache_key = str(movie_id)
-        if cache_key in self.watch_links_cache:
+        if not force_refresh and cache_key in self.watch_links_cache:
             cached = self.watch_links_cache[cache_key]
             if cached.get('links'):
-                return cached['links']
+                self.watchmode_stats['cache_hits'] += 1
+                # Migrate legacy cache format if needed
+                migrated_links = self._migrate_legacy_cache_format(cached['links'])
+                if migrated_links != cached['links']:
+                    # Update cache with migrated format
+                    self.watch_links_cache[cache_key]['links'] = migrated_links
+                    self.save_cache(self.watch_links_cache, 'cache/watch_links_cache.json')
+                return migrated_links
 
         # Service priority hierarchies
         STREAMING_PRIORITY = ['Netflix', 'Disney+', 'Disney Plus', 'HBO Max', 'Max',
@@ -250,6 +266,7 @@ class DataGenerator:
                 "search_value": movie_id
             }
 
+            self.watchmode_stats['search_calls'] += 1
             search_response = requests.get(search_url, params=search_params, timeout=10)
 
             if search_response.status_code == 200:
@@ -265,11 +282,15 @@ class DataGenerator:
                         "append_to_response": "sources"
                     }
 
+                    self.watchmode_stats['source_calls'] += 1
                     sources_response = requests.get(sources_url, params=sources_params, timeout=10)
 
                     if sources_response.status_code == 200:
                         sources_data = sources_response.json()
                         sources = sources_data.get('sources', [])
+
+                        if sources:
+                            self.watchmode_stats['watchmode_successes'] += 1
 
                         # Collect US sources by type
                         for source in sources:
@@ -293,61 +314,141 @@ class DataGenerator:
         except Exception as e:
             print(f"  Warning: Watchmode API failed for {title}: {e}")
 
-        # Build final watch_links with two-button structure
+        # Build final watch_links with canonical streaming/rent/buy structure
         watch_links = {}
 
-        # FREE BUTTON: Prefer Watchmode, fallback to TMDB providers
+        # STREAMING: Prefer Watchmode, fallback to TMDB providers with smart Amazon handling
         if watchmode_streaming:
             # Use Watchmode streaming data
             best_service = select_best_service([s['service'] for s in watchmode_streaming], STREAMING_PRIORITY)
             for source in watchmode_streaming:
                 if source['service'] == best_service:
-                    watch_links['free'] = source
+                    watch_links['streaming'] = source
                     break
         elif providers.get('streaming'):
-            # Fallback to TMDB provider data (no deep link available for most streaming services)
+            # Fallback to TMDB provider data
             service = select_best_service(providers['streaming'], STREAMING_PRIORITY)
-            watch_links['free'] = {
-                'service': service,
-                'link': None  # Can't build direct links to Netflix/Disney+/etc
-            }
 
-        # PAID BUTTON: Prefer rent over buy, use Watchmode or fallback to platform links
-        paid_sources = watchmode_rent if watchmode_rent else watchmode_buy
+            # SMART FALLBACK: If TMDB says "Amazon Prime Video" but Watchmode didn't find subscription,
+            # reuse any Amazon rent/buy link we have (it's the same detail page on Amazon)
+            if 'Amazon Prime Video' in service and (watchmode_rent or watchmode_buy):
+                # Find any Amazon link in rent or buy sources
+                amazon_link = None
+                for source in watchmode_rent + watchmode_buy:
+                    if 'Amazon' in source['service'] and source.get('link'):
+                        amazon_link = source['link']
+                        break
 
-        if paid_sources:
-            # Use Watchmode rental/buy data
-            best_service = select_best_service([s['service'] for s in paid_sources], PAID_PRIORITY)
-            for source in paid_sources:
+                if amazon_link:
+                    watch_links['streaming'] = {
+                        'service': service,
+                        'link': amazon_link  # Same page shows both Prime (free) and rent/buy options
+                    }
+                else:
+                    # No Amazon link available, use search fallback
+                    search_link = self._build_streaming_search_link(service, title, year)
+                    watch_links['streaming'] = {
+                        'service': service,
+                        'link': search_link
+                    }
+            else:
+                # For other services (Netflix, Disney+, etc), use search fallback
+                search_link = self._build_streaming_search_link(service, title, year)
+                watch_links['streaming'] = {
+                    'service': service,
+                    'link': search_link
+                }
+
+        # RENT: Use Watchmode or fallback to platform links
+        if watchmode_rent:
+            best_service = select_best_service([s['service'] for s in watchmode_rent], PAID_PRIORITY)
+            for source in watchmode_rent:
                 if source['service'] == best_service:
-                    watch_links['paid'] = source
+                    watch_links['rent'] = source
                     break
-        elif providers.get('rent') or providers.get('buy'):
+        elif providers.get('rent'):
             # Fallback to TMDB providers with platform-specific links
             rent_service = select_best_service(providers.get('rent', []), PAID_PRIORITY)
-            buy_service = select_best_service(providers.get('buy', []), PAID_PRIORITY)
-
-            preferred_service = rent_service if rent_service else buy_service
-            if preferred_service:
-                platform_link = build_platform_link(preferred_service)
+            if rent_service:
+                platform_link = build_platform_link(rent_service)
                 if platform_link:
-                    watch_links['paid'] = {
-                        'service': preferred_service,
+                    watch_links['rent'] = {
+                        'service': rent_service,
                         'link': platform_link
                     }
 
-        # Cache result
+        # BUY: Use Watchmode or fallback to platform links
+        if watchmode_buy:
+            best_service = select_best_service([s['service'] for s in watchmode_buy], PAID_PRIORITY)
+            for source in watchmode_buy:
+                if source['service'] == best_service:
+                    watch_links['buy'] = source
+                    break
+        elif providers.get('buy'):
+            # Fallback to TMDB providers with platform-specific links
+            buy_service = select_best_service(providers.get('buy', []), PAID_PRIORITY)
+            if buy_service:
+                platform_link = build_platform_link(buy_service)
+                if platform_link:
+                    watch_links['buy'] = {
+                        'service': buy_service,
+                        'link': platform_link
+                    }
+
+        # DEFAULT: If no streaming or paid options available, provide Amazon search
+        if not watch_links.get('streaming') and not watch_links.get('rent') and not watch_links.get('buy'):
+            search_term = quote(f'{title} {year}')
+            watch_links['default'] = {
+                'service': 'Amazon',
+                'link': f"https://www.amazon.com/s?k={search_term}&i=instant-video"
+            }
+
+        # Cache result with canonical schema
         if watch_links:
+            source_type = 'watchmode_api'
+            if watchmode_streaming or watchmode_rent or watchmode_buy:
+                source_type = 'watchmode_api'
+            elif any(link.get('link') and 'google.com/search' in link['link'] for link in watch_links.values()):
+                source_type = 'google_fallback'
+            elif watch_links.get('default'):
+                source_type = 'amazon_fallback'
+            else:
+                source_type = 'tmdb_fallback'
+
             self.watch_links_cache[cache_key] = {
                 'links': watch_links,
                 'cached_at': datetime.now().isoformat(),
-                'source': 'watchmode_api' if (watchmode_streaming or paid_sources) else 'tmdb_fallback'
+                'source': source_type
             }
             self.save_cache(self.watch_links_cache, 'cache/watch_links_cache.json')
 
         return watch_links
 
-    def process_movie(self, movie_id, movie_data, movie_details):
+    def _build_streaming_search_link(self, service, title, year):
+        """Build search links for streaming services that don't have deep links"""
+        search_term = quote(f'{title} {year} watch {service}')
+        return f"https://www.google.com/search?q={search_term}"
+
+    def _migrate_legacy_cache_format(self, links):
+        """Migrate legacy free/paid cache format to streaming/rent/buy"""
+        if not isinstance(links, dict):
+            return links
+
+        # Already in new format
+        if any(key in links for key in ['streaming', 'rent', 'buy', 'default']):
+            return links
+
+        # Migrate from old free/paid format
+        migrated = {}
+        if 'free' in links:
+            migrated['streaming'] = links['free']
+        if 'paid' in links:
+            # Default paid to rent category
+            migrated['rent'] = links['paid']
+
+        return migrated if migrated else links
+
+    def process_movie(self, movie_id, movie_data, movie_details, force_refresh=False):
         """Process a single movie into display format"""
         if not movie_details:
             return None
@@ -403,7 +504,10 @@ class DataGenerator:
             links['rt'] = rt_url
 
         # Watch links (deep links to streaming platforms)
-        watch_links = self.get_watch_links(movie_id, title, year, movie_data.get('providers', {}))
+        watch_links_raw = self.get_watch_links(movie_id, title, year, movie_data.get('providers', {}), force_refresh)
+
+        # Use canonical streaming/rent/buy schema directly
+        watch_links = watch_links_raw
 
         return {
             'id': movie_id,
@@ -426,7 +530,7 @@ class DataGenerator:
             'watch_links': watch_links
         }
     
-    def generate_display_data(self, days_back=90, incremental=True):
+    def generate_display_data(self, days_back=90, incremental=True, force_refresh=False):
         """Generate display data from tracking database
 
         Args:
@@ -474,7 +578,7 @@ class DataGenerator:
                         # Get full movie details (movie_id is the TMDB ID)
                         movie_details = self.get_movie_details(movie_id)
                         if movie_details:
-                            processed = self.process_movie(movie_id, movie_data, movie_details)
+                            processed = self.process_movie(movie_id, movie_data, movie_details, force_refresh)
                             if processed:
                                 new_movies.append(processed)
                                 print(f"  ✓ {processed['title']} - Links: {len(processed['links'])}")
@@ -516,6 +620,18 @@ class DataGenerator:
         print(f"Direct trailers found: {len([m for m in display_movies if m['links'].get('trailer') and 'watch?v=' in m['links']['trailer']])}")
         print(f"RT scores cached: {len([m for m in display_movies if m['rt_score']])}")
 
+        # Watchmode usage statistics
+        total_calls = self.watchmode_stats['search_calls'] + self.watchmode_stats['source_calls']
+        cache_hit_rate = (self.watchmode_stats['cache_hits'] / (self.watchmode_stats['cache_hits'] + total_calls) * 100) if (self.watchmode_stats['cache_hits'] + total_calls) > 0 else 0
+        success_rate = (self.watchmode_stats['watchmode_successes'] / self.watchmode_stats['search_calls'] * 100) if self.watchmode_stats['search_calls'] > 0 else 0
+
+        print(f"\n📊 Watchmode API Usage:")
+        print(f"  Search calls: {self.watchmode_stats['search_calls']}")
+        print(f"  Source calls: {self.watchmode_stats['source_calls']}")
+        print(f"  Cache hits: {self.watchmode_stats['cache_hits']}")
+        print(f"  Cache hit rate: {cache_hit_rate:.1f}%")
+        print(f"  Watchmode success rate: {success_rate:.1f}%")
+
     def apply_admin_overrides(self, display_movies):
         """Apply admin panel decisions to final output"""
         
@@ -555,9 +671,10 @@ def main():
 
     args = parser.parse_args()
     incremental = not args.full
+    force_refresh = args.full  # Force refresh cache on full runs
 
     generator = DataGenerator()
-    generator.generate_display_data(incremental=incremental)
+    generator.generate_display_data(incremental=incremental, force_refresh=force_refresh)
 
 if __name__ == "__main__":
     main()

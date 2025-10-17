@@ -262,15 +262,40 @@ header h1 {
     border-radius: 8px;
     text-align: center;
     font-weight: bold;
-    font-size: 1rem;
+    font-size: 0.75rem;
     transition: all 0.3s ease;
     display: block;
+    margin-bottom: 0.5rem;
+}
+
+.actions .watch-btn:last-of-type {
+    margin-bottom: 0;
 }
 
 .actions .watch-btn:hover {
     background: #00ffbb;
     transform: translateY(-2px);
     box-shadow: 0 5px 20px rgba(0,212,170,0.5);
+}
+
+.actions .watch-btn-free {
+    background: #00d4aa;
+}
+
+.actions .watch-btn-paid {
+    background: #ff9500;
+}
+
+.actions .watch-btn-paid:hover {
+    background: #ffad33;
+    box-shadow: 0 5px 20px rgba(255,149,0,0.5);
+}
+
+.actions .watch-btn-disabled {
+    background: #333;
+    color: #999;
+    cursor: default;
+    pointer-events: none;
 }
 
 .info-links {
@@ -302,7 +327,7 @@ header h1 {
     margin-top: 0.5rem;
     border-top: 1px solid rgba(255,255,255,0.1);
     font-size: 0.42rem;
-    color: #999;
+    color: #fff;
     text-align: center;
 }
 
