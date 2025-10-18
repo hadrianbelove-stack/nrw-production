@@ -80,36 +80,44 @@ const NRW = {
             }
             const bottomInfo = bottomMetadata.join(' | ');
 
-            // Build watch buttons - use canonical schema (streaming/rent/buy)
-            let watchButtons = [];
+            // Build three watch buttons with state management
+            const buildWatchButton = (category, movie) => {
+                const watchLinks = movie.watch_links || {};
+                const categoryData = watchLinks[category];
 
-            if (movie.watch_links) {
-                // STREAMING button (subscription services)
-                if (movie.watch_links.streaming && movie.watch_links.streaming.link) {
-                    const streamingLink = movie.watch_links.streaming.link;
-                    watchButtons.push(`<a href="${streamingLink}" target="_blank" class="watch-btn watch-btn-free">WATCH FREE</a>`);
-                }
-
-                // RENT/BUY button (paid options - prefer rent over buy)
-                if (movie.watch_links.rent && movie.watch_links.rent.link) {
-                    const rentLink = movie.watch_links.rent.link;
-                    watchButtons.push(`<a href="${rentLink}" target="_blank" class="watch-btn watch-btn-paid">RENT/BUY</a>`);
-                } else if (movie.watch_links.buy && movie.watch_links.buy.link) {
-                    const buyLink = movie.watch_links.buy.link;
-                    watchButtons.push(`<a href="${buyLink}" target="_blank" class="watch-btn watch-btn-paid">RENT/BUY</a>`);
-                }
-            }
-
-            // Fallback: check default link, then Amazon search
-            if (watchButtons.length === 0) {
-                if (movie.watch_links && movie.watch_links.default && movie.watch_links.default.link) {
-                    const defaultLink = movie.watch_links.default.link;
-                    watchButtons.push(`<a href="${defaultLink}" target="_blank" class="watch-btn">FIND ON AMAZON</a>`);
+                if (category === 'streaming') {
+                    if (categoryData && categoryData.link) {
+                        // Active streaming button with platform name
+                        const serviceName = categoryData.service === 'Amazon Prime Video' ? 'PRIME' :
+                                          (categoryData.service || 'STREAM').toUpperCase();
+                        return `<a href="${categoryData.link}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-stream" aria-label="Watch on ${categoryData.service}">${serviceName}</a>`;
+                    } else if (categoryData && !categoryData.link) {
+                        // Error state - service exists but link is null
+                        const serviceName = categoryData.service === 'Amazon Prime Video' ? 'PRIME' :
+                                          (categoryData.service || 'STREAM').toUpperCase();
+                        return `<a href="#" class="watch-btn watch-btn-stream watch-btn-error" aria-label="${categoryData.service} link unavailable" title="Link not found - contact admin" tabindex="-1">${serviceName} (LINK MISSING)</a>`;
+                    } else {
+                        // Disabled state - no streaming available
+                        return `<a href="#" class="watch-btn watch-btn-stream watch-btn-disabled" aria-disabled="true" title="Not available on streaming services" tabindex="-1">STREAM</a>`;
+                    }
                 } else {
-                    const amazonLink = `https://www.amazon.com/s?k=${encodeURIComponent(title + ' ' + year)}&i=instant-video`;
-                    watchButtons.push(`<a href="${amazonLink}" target="_blank" class="watch-btn">FIND ON AMAZON</a>`);
+                    const label = category.toUpperCase();
+                    if (categoryData && categoryData.link) {
+                        // Active rent/buy button
+                        return `<a href="${categoryData.link}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-${category}" aria-label="${label} on ${categoryData.service || 'digital platform'}">${label}</a>`;
+                    } else if (categoryData && !categoryData.link) {
+                        // Error state - service exists but link is null
+                        return `<a href="#" class="watch-btn watch-btn-${category} watch-btn-error" aria-label="${label} link unavailable" title="Link not found - contact admin" tabindex="-1">${label} (LINK MISSING)</a>`;
+                    } else {
+                        // Disabled state - no rent/buy available
+                        return `<a href="#" class="watch-btn watch-btn-${category} watch-btn-disabled" aria-disabled="true" title="Not available for ${category.toLowerCase()}" tabindex="-1">${label}</a>`;
+                    }
                 }
-            }
+            };
+
+            const streamButton = buildWatchButton('streaming', movie);
+            const rentButton = buildWatchButton('rent', movie);
+            const buyButton = buildWatchButton('buy', movie);
 
             // Info links - Only Trailer, RT, Wiki
             let infoLinks = [];
@@ -138,7 +146,9 @@ const NRW = {
                         <div class="card-back">
                             <div class="synopsis">${movie.synopsis || 'Synopsis coming soon'}</div>
                             <div class="actions">
-                                ${watchButtons.join('')}
+                                ${streamButton}
+                                ${rentButton}
+                                ${buyButton}
                                 <div class="info-links">
                                     ${infoLinks.join('')}
                                 </div>

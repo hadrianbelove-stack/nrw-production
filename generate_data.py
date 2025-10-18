@@ -12,25 +12,42 @@ import os
 import re
 from urllib.parse import quote
 import argparse
+from agent_link_scraper import AgentLinkScraper
+from scripts.youtube_trailer_scraper import YouTubeTrailerScraper
 
 class DataGenerator:
     def __init__(self):
         self.config = self.load_config()
-        self.tmdb_key = self.config['tmdb_api_key']
+        self.tmdb_key = self.config['api']['tmdb_api_key']  # Changed from self.config['tmdb_api_key']
         self.watchmode_key = "bBMpVr31lRfUsSFmgoQp0jixDrQt8DIKCVg7EFdp"  # Watchmode API
         self.wikipedia_cache = self.load_cache('wikipedia_cache.json')
         self.rt_cache = self.load_cache('rt_cache.json')
         self.wikipedia_overrides = self.load_cache('overrides/wikipedia_overrides.json')
         self.rt_overrides = self.load_cache('overrides/rt_overrides.json')
+        self.trailer_overrides = self.load_cache('overrides/trailer_overrides.json')
         self.watch_links_cache = self.load_cache('cache/watch_links_cache.json')
+        self.watch_link_overrides = self.load_cache('admin/watch_link_overrides.json')
 
         # Watchmode usage statistics
         self.watchmode_stats = {
             'search_calls': 0,
             'source_calls': 0,
             'cache_hits': 0,
-            'watchmode_successes': 0
+            'watchmode_successes': 0,
+            'agent_attempts': 0,
+            'agent_successes': 0,
+            'agent_cache_hits': 0,
+            'override_hits': 0,
+            'rt_attempts': 0,
+            'rt_successes': 0,
+            'rt_cache_hits': 0
         }
+
+        self.agent_scraper = None  # Lazy initialization
+        self.youtube_scraper = None  # Lazy initialization for YouTube trailer scraping
+        self.youtube_trailer_cache = self.load_cache('youtube_trailer_cache.json')
+        self.rt_driver = None  # Lazy Selenium driver for RT scraping
+        self.rt_last_scrape_time = 0  # Track last scrape for rate limiting
     
     def load_config(self):
         """Load configuration from config.yaml and environment variables"""
@@ -40,23 +57,233 @@ class DataGenerator:
         if os.path.exists('config.yaml'):
             with open('config.yaml', 'r') as f:
                 yaml_config = yaml.safe_load(f)
-                if yaml_config and 'api' in yaml_config:
-                    config.update(yaml_config['api'])
+                if yaml_config:
+                    config = yaml_config  # Load entire config, not just 'api' section
 
-        # Environment variable takes precedence
+        # Environment variable takes precedence for API key
         tmdb_key = os.environ.get('TMDB_API_KEY')
         if tmdb_key:
-            config['tmdb_api_key'] = tmdb_key
+            if 'api' not in config:
+                config['api'] = {}
+            config['api']['tmdb_api_key'] = tmdb_key
 
         # Validate that we have a key
-        if not config.get('tmdb_api_key'):
+        if not config.get('api', {}).get('tmdb_api_key'):
             raise ValueError(
                 "TMDB API key not found. Please set the TMDB_API_KEY environment variable "
                 "or add 'tmdb_api_key' to the 'api' section in config.yaml"
             )
 
         return config
-    
+
+    def _init_agent_scraper(self):
+        """Initialize agent scraper if not already initialized"""
+        if self.agent_scraper is None:
+            # Check if agent scraper is enabled in config
+            agent_config = self.config.get('agent_scraper', {})
+            enabled = agent_config.get('enabled', True)  # Default to True if not specified
+
+            if not enabled:
+                print("  Agent scraper disabled in config.yaml")
+                self.agent_scraper = False
+                return
+
+            # Check if playwright is available
+            try:
+                from playwright.sync_api import sync_playwright
+            except ImportError:
+                print("  Warning: playwright not installed, agent scraper disabled")
+                print("  Install with: pip install playwright && playwright install chromium")
+                self.agent_scraper = False
+                return
+
+            try:
+                # Read config settings
+                cache_file = 'cache/agent_links_cache.json'  # Could be configurable
+
+                print(f"  Initializing agent scraper with Playwright...")
+                self.agent_scraper = AgentLinkScraper(
+                    cache_file=cache_file,
+                    config=agent_config  # Pass entire config dict
+                )
+                print("  ✓ Agent scraper initialized (Playwright)")
+            except Exception as e:
+                print(f"  ✗ Failed to initialize agent scraper: {e}")
+                import traceback
+                traceback.print_exc()  # Print full stack trace for debugging
+                self.agent_scraper = False  # Mark as failed to prevent retries
+
+    def _init_rt_driver(self):
+        """Initialize Selenium WebDriver for RT scraping"""
+        if self.rt_driver is not None:  # Already initialized (could be False for failed)
+            return self.rt_driver is not False
+
+        try:
+            from selenium import webdriver
+            from selenium.webdriver.chrome.options import Options
+            from webdriver_manager.chrome import ChromeDriverManager
+            from selenium.webdriver.chrome.service import Service
+
+            # Configure Chrome options
+            chrome_options = Options()
+
+            # Read headless setting from config
+            headless = self.config.get('rt_scraper', {}).get('headless', True)
+            if headless:
+                chrome_options.add_argument("--headless")
+
+            chrome_options.add_argument("--no-sandbox")
+            chrome_options.add_argument("--disable-dev-shm-usage")
+            chrome_options.add_argument("--disable-blink-features=AutomationControlled")
+            chrome_options.add_argument("--user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+
+            # Use ChromeDriverManager for automatic driver installation
+            service = Service(ChromeDriverManager().install())
+
+            # Create WebDriver instance
+            self.rt_driver = webdriver.Chrome(service=service, options=chrome_options)
+
+            # Set page load timeout from config
+            timeout = self.config.get('rt_scraper', {}).get('timeout', 10)
+            self.rt_driver.set_page_load_timeout(timeout)
+
+            print("  ✓ RT driver initialized successfully")
+            return True
+
+        except Exception as e:
+            print(f"  ✗ Failed to initialize RT driver: {e}")
+            self.rt_driver = False  # Mark as failed to prevent retries
+            return False
+
+    def _rt_rate_limit(self):
+        """Enforce minimum delay between RT scrapes to avoid anti-bot detection"""
+        # Read rate limit from config, fallback to 2.0 seconds
+        rate_limit = self.config.get('rt_scraper', {}).get('rate_limit', 2.0)
+
+        # Calculate time since last scrape
+        time_since_last = time.time() - self.rt_last_scrape_time
+
+        # If less than rate limit, sleep for remaining time
+        if time_since_last < rate_limit:
+            sleep_time = rate_limit - time_since_last
+            print(f"  Rate limiting: sleeping {sleep_time:.1f}s")
+            time.sleep(sleep_time)
+
+        # Update last scrape time
+        self.rt_last_scrape_time = time.time()
+
+    def _scrape_rt_page(self, title, year):
+        """Scrape RT search page to find movie URL and score"""
+        # Initialize driver if needed
+        if not self._init_rt_driver():
+            return None
+
+        # Check driver availability
+        if self.rt_driver is False:
+            return None
+
+        # Apply rate limiting
+        self._rt_rate_limit()
+
+        # Increment attempts counter
+        self.watchmode_stats['rt_attempts'] += 1
+
+        try:
+            # Build search URL
+            search_query = f"{title} {year}"
+            search_url = f"https://www.rottentomatoes.com/search?search={quote(search_query)}"
+
+            print(f"  → Searching RT: {title} ({year})")
+
+            # Navigate to search page
+            self.rt_driver.get(search_url)
+            time.sleep(2)  # Wait for page load
+
+            # Try selector fallbacks for search results
+            search_selectors = [
+                "search-page-media-row a[data-qa='info-name']",  # Primary
+                "a[data-qa='thumbnail-link']",  # Fallback 1
+                "a[href*='/m/'][data-qa='info-name']",  # Fallback 2
+                "search-page-result a[href*='/m/']",  # Fallback 3
+                "a[href*='/m/']"  # Generic movie link
+            ]
+
+            movie_url = None
+            for selector in search_selectors:
+                try:
+                    from selenium.webdriver.common.by import By
+                    elements = self.rt_driver.find_elements(By.CSS_SELECTOR, selector)
+                    if elements:
+                        href = elements[0].get_attribute('href')
+                        if href and '/m/' in href:
+                            movie_url = href
+                            print(f"  ✓ Found with selector: {selector}")
+                            break
+                except Exception:
+                    continue
+
+            if not movie_url:
+                print(f"  ✗ No RT page found for {title} ({year})")
+                # Cache the failure
+                cache_key = f"{title}_{year}"
+                self.rt_cache[cache_key] = None
+                self._save_rt_cache()
+                return None
+
+            # Navigate to movie page
+            self.rt_driver.get(movie_url)
+            time.sleep(2)  # Wait for page load
+
+            # Try selector fallbacks for score
+            score_selectors = [
+                "rt-text[slot='criticsScore']",  # Primary
+                "score-board",  # Fallback 1
+                "[data-qa='tomatometer']",  # Fallback 2
+                "[data-qa='tomatometer-value']",  # Fallback 3
+                ".tomatometer-score",  # Fallback 4
+                "score-icon-critic"  # Fallback 5
+            ]
+
+            score = None
+            for selector in score_selectors:
+                try:
+                    element = self.rt_driver.find_element(By.CSS_SELECTOR, selector)
+                    if element:
+                        score_text = element.text or element.get_attribute('textContent') or ""
+                        # Extract score using regex
+                        import re
+                        match = re.search(r'(\d+)%', score_text)
+                        if match:
+                            score = match.group(1) + "%"
+                            print(f"  ✓ Found score with selector: {selector}")
+                            break
+                except Exception:
+                    continue
+
+            # Create result
+            result = {
+                'url': movie_url,
+                'score': score
+            }
+
+            print(f"  ✓ RT scraping successful: {movie_url} (Score: {score or 'N/A'})")
+
+            # Cache the result
+            cache_key = f"{title}_{year}"
+            self.rt_cache[cache_key] = result
+            self._save_rt_cache()
+            self.watchmode_stats['rt_successes'] += 1
+
+            return result
+
+        except Exception as e:
+            print(f"  ✗ RT scraping error for {title} ({year}): {e}")
+            # Cache the failure
+            cache_key = f"{title}_{year}"
+            self.rt_cache[cache_key] = None
+            self._save_rt_cache()
+            return None
+
     def load_cache(self, filename):
         if os.path.exists(filename):
             with open(filename, 'r') as f:
@@ -67,7 +294,44 @@ class DataGenerator:
         os.makedirs(os.path.dirname(filename) if '/' in filename else '.', exist_ok=True)
         with open(filename, 'w') as f:
             json.dump(data, f, indent=2)
-    
+
+    def simplify_provider_name(self, provider_name):
+        """Simplify provider names for display
+        Examples:
+        - 'Amazon Prime Video' → 'Amazon'
+        - 'Viaplay Amazon Channel' → 'Amazon'
+        - 'AMC Plus Apple TV Channel' → 'AMC+'
+        """
+        if not provider_name:
+            return provider_name
+
+        # Most specific patterns first (check AMC before Amazon)
+        simplifications = [
+            ('amc', 'AMC+'),
+            ('netflix', 'Netflix'),
+            ('disney', 'Disney+'),
+            ('hulu', 'Hulu'),
+            ('hbo max', 'Max'),
+            ('paramount', 'Paramount+'),
+            ('peacock', 'Peacock'),
+            ('amazon', 'Amazon'),
+            ('apple tv', 'Apple TV'),
+            ('shudder', 'Shudder'),
+            ('mubi', 'MUBI'),
+            ('criterion', 'Criterion'),
+            ('vudu', 'Vudu'),
+            ('google play', 'Google Play'),
+            ('youtube', 'YouTube'),
+            ('fandango', 'Fandango'),
+        ]
+
+        provider_lower = provider_name.lower()
+        for pattern, simplified in simplifications:
+            if pattern in provider_lower:
+                return simplified
+
+        return provider_name
+
     def get_movie_details(self, movie_id):
         """Get full movie details from TMDB"""
         url = f"https://api.themoviedb.org/3/movie/{movie_id}"
@@ -98,28 +362,34 @@ class DataGenerator:
                 return cached_data.get('url')
             return cached_data
 
-        # 3. Try Wikipedia API search
+        # 3. Try Wikipedia API search with proper headers
         try:
+            headers = {
+                'User-Agent': 'NewReleaseWall/1.0 (https://github.com/hadrianbelove-stack/nrw-production; hadrianbelove@gmail.com)'
+            }
+
             # Try exact match with (year film) suffix
             search_title = f"{title} ({year} film)"
             url = f"https://en.wikipedia.org/api/rest_v1/page/summary/{quote(search_title)}"
-            response = requests.get(url, timeout=5)
+            response = requests.get(url, headers=headers, timeout=5)
             if response.status_code == 200:
                 data = response.json()
                 wiki_url = data.get('content_urls', {}).get('desktop', {}).get('page')
                 if wiki_url:
                     self.wikipedia_cache[cache_key] = {'url': wiki_url, 'title': title, 'cached_at': datetime.now().isoformat()}
+                    self._save_cache(self.wikipedia_cache, 'wikipedia_cache.json')
                     return wiki_url
 
             # Try without year
             search_title = f"{title} (film)"
             url = f"https://en.wikipedia.org/api/rest_v1/page/summary/{quote(search_title)}"
-            response = requests.get(url, timeout=5)
+            response = requests.get(url, headers=headers, timeout=5)
             if response.status_code == 200:
                 data = response.json()
                 wiki_url = data.get('content_urls', {}).get('desktop', {}).get('page')
                 if wiki_url:
                     self.wikipedia_cache[cache_key] = {'url': wiki_url, 'title': title, 'cached_at': datetime.now().isoformat()}
+                    self._save_cache(self.wikipedia_cache, 'wikipedia_cache.json')
                     return wiki_url
 
         except Exception as e:
@@ -157,45 +427,108 @@ class DataGenerator:
             print(f"Failed to log missing Wikipedia: {e}")
     
     def find_trailer_url(self, movie_details):
-        """Extract trailer URL from TMDB movie details"""
+        """Extract trailer URL from TMDB movie details or scrape YouTube"""
+        title = movie_details.get('title', '')
+        year = movie_details.get('release_date', '')[:4] if movie_details.get('release_date') else ''
+
+        # 1. Check manual overrides first
+        override_key = f"{title}_{year}"
+        if override_key in self.trailer_overrides:
+            return self.trailer_overrides[override_key]
+
         videos = movie_details.get('videos', {}).get('results', [])
-        
-        # Prioritize official trailers
+
+        # 2. Prioritize official trailers from TMDB
         for video in videos:
             if video['type'] == 'Trailer' and video['site'] == 'YouTube':
                 return f"https://www.youtube.com/watch?v={video['key']}"
-        
-        # Fall back to any YouTube video
+
+        # 3. Fall back to any YouTube video from TMDB
         for video in videos:
             if video['site'] == 'YouTube':
                 return f"https://www.youtube.com/watch?v={video['key']}"
-        
-        # Generate YouTube search as fallback
-        title = movie_details.get('title', '')
-        year = movie_details.get('release_date', '')[:4] if movie_details.get('release_date') else ''
+
+        # 4. Check YouTube scraper cache
+        cache_key = f"{title}_{year}"
+        if cache_key in self.youtube_trailer_cache:
+            cached_url = self.youtube_trailer_cache[cache_key]
+            if cached_url:  # Don't return None from cache, keep trying
+                return cached_url
+
+        # 5. Try scraping YouTube for the trailer
+        if self.youtube_scraper is None:
+            self.youtube_scraper = YouTubeTrailerScraper(
+                cache_file='youtube_trailer_cache.json',
+                headless=True
+            )
+
+        scraped_url = self.youtube_scraper.find_trailer(title, year)
+        if scraped_url:
+            return scraped_url
+
+        # 6. Final fallback: generate YouTube search URL
         search_query = quote(f"{title} {year} trailer")
         return f"https://www.youtube.com/results?search_query={search_query}"
     
     def find_rt_url(self, title, year, imdb_id):
-        """Find Rotten Tomatoes URL"""
+        """Find Rotten Tomatoes URL and score"""
         # 1. Check overrides first
         if imdb_id and imdb_id in self.rt_overrides:
-            return self.rt_overrides[imdb_id]
-        
+            override = self.rt_overrides[imdb_id]
+            if isinstance(override, dict):
+                return override
+            return {'url': override, 'score': None}
+
         # 2. Check cache
         cache_key = f"{title}_{year}"
         if cache_key in self.rt_cache:
             cached_data = self.rt_cache[cache_key]
+            # Check for cached failure and return fallback immediately
+            if cached_data is None:
+                self.watchmode_stats['rt_cache_hits'] += 1
+                search_query = quote(f"{title} {year}")
+                return {'url': f"https://www.rottentomatoes.com/search?search={search_query}", 'score': None}
+
+            # Handle successful cache hits (dict or legacy string values)
+            self.watchmode_stats['rt_cache_hits'] += 1
             if isinstance(cached_data, dict):
-                return cached_data.get('url')
-            return cached_data
-        
-        # 3. Fall back to search
+                return cached_data
+            if cached_data:
+                return {'url': cached_data, 'score': None}
+
+        # 3. Check if RT scraper is enabled
+        enabled = self.config.get('rt_scraper', {}).get('enabled', True)
+        if not enabled:
+            print("  RT scraping disabled via config")
+            search_query = quote(f"{title} {year}")
+            return {'url': f"https://www.rottentomatoes.com/search?search={search_query}", 'score': None}
+
+        # 4. Try RT scraper (inlined)
+        result = self._scrape_rt_page(title, year)
+        if result:
+            return result
+
+        # 5. Fall back to search
         search_query = quote(f"{title} {year}")
-        return f"https://www.rottentomatoes.com/search?search={search_query}"
+        return {'url': f"https://www.rottentomatoes.com/search?search={search_query}", 'score': None}
+
+    def _save_rt_cache(self):
+        """Save RT cache to disk after updates"""
+        try:
+            with open('rt_cache.json', 'w') as f:
+                json.dump(self.rt_cache, f, indent=2)
+        except Exception as e:
+            print(f"Warning: Failed to save RT cache: {e}")
 
     def get_watch_links(self, movie_id, title, year, providers, force_refresh=False):
         """Get deep links with canonical streaming/rent/buy structure
+
+        Priority waterfall:
+        1. Admin overrides (admin/watch_link_overrides.json) - highest priority
+        2. Cache (cache/watch_links_cache.json)
+        3. Watchmode API
+        4. Agent scraper (Netflix, Disney+, HBO Max, Hulu)
+        5. TMDB provider names with null links
 
         Returns: {
             'streaming': {'service': 'Netflix', 'link': 'https://...'},  # subscription streaming
@@ -203,8 +536,36 @@ class DataGenerator:
             'buy': {'service': 'Apple TV', 'link': 'https://...'}        # purchase
         }
         """
-        # Check cache first (unless force refresh)
+        # 1. Check admin overrides FIRST (highest priority)
         cache_key = str(movie_id)
+        validated_overrides = {}
+        if cache_key in self.watch_link_overrides:
+            overrides = self.watch_link_overrides[cache_key]
+            # Validate overrides but continue with waterfall for non-overridden categories
+            for category in ['streaming', 'rent', 'buy']:
+                if category in overrides:
+                    override_data = overrides[category]
+                    # Validate structure
+                    if isinstance(override_data, dict) and 'service' in override_data and 'link' in override_data:
+                        # Validate service name is non-empty string
+                        service = override_data['service']
+                        if not service or not isinstance(service, str) or not service.strip():
+                            print(f"  Warning: Invalid override service name for {title} {category}: {service}")
+                            continue
+                        # Validate URL if link is not None/empty
+                        link = override_data['link']
+                        if link and isinstance(link, str) and (link.startswith('http://') or link.startswith('https://')):
+                            validated_overrides[category] = override_data
+                        elif not link:  # Empty link means "no override for this category"
+                            continue
+                        else:
+                            print(f"  Warning: Invalid override link for {title} {category}: {link}")
+
+            if validated_overrides:
+                print(f"  Using admin overrides for {title}: {list(validated_overrides.keys())}")
+                self.watchmode_stats['override_hits'] += 1
+
+        # 2. Check cache (unless force refresh)
         if not force_refresh and cache_key in self.watch_links_cache:
             cached = self.watch_links_cache[cache_key]
             if cached.get('links'):
@@ -214,6 +575,17 @@ class DataGenerator:
                 if migrated_links != cached['links']:
                     # Update cache with migrated format
                     self.watch_links_cache[cache_key]['links'] = migrated_links
+
+                    # Recompute source metadata based on whether any category has a non-null link
+                    has_links = any(
+                        link.get('link') is not None
+                        for link in migrated_links.values()
+                        if isinstance(link, dict)
+                    )
+                    source_type = 'watchmode_api' if has_links else 'tmdb_providers'
+                    self.watch_links_cache[cache_key]['source'] = source_type
+                    self.watch_links_cache[cache_key]['cached_at'] = datetime.now().isoformat()
+
                     self.save_cache(self.watch_links_cache, 'cache/watch_links_cache.json')
                 return migrated_links
 
@@ -225,23 +597,6 @@ class DataGenerator:
         PAID_PRIORITY = ['Amazon Video', 'Amazon', 'Prime Video', 'Apple TV', 'Vudu',
                          'Google Play Movies', 'Google Play', 'Microsoft Store']
 
-        def build_platform_link(service_name):
-            """Build best possible direct link for each platform"""
-            search_term = quote(f'{title} {year}')
-
-            if 'Amazon' in service_name or service_name == 'Prime Video':
-                return f"https://www.amazon.com/s?k={search_term}&i=instant-video"
-            elif 'Apple' in service_name:
-                return f"https://tv.apple.com/search?term={quote(title)}"
-            elif 'Vudu' in service_name:
-                return f"https://www.vudu.com/content/movies/search/{quote(title)}"
-            elif 'Google Play' in service_name:
-                return f"https://play.google.com/store/search?q={search_term}&c=movies"
-            elif 'Microsoft' in service_name:
-                return f"https://www.microsoft.com/en-us/search?q={search_term}"
-            else:
-                # For Netflix, Disney+, etc - can't build direct links, return null
-                return None
 
         def select_best_service(service_list, priority_list):
             """Select best service from list based on priority"""
@@ -252,10 +607,15 @@ class DataGenerator:
             # If no priority match, return first available
             return service_list[0] if service_list else None
 
-        # Collect sources from Watchmode API
+        # Collect sources from Watchmode API (skip categories that already have overrides)
         watchmode_streaming = []
         watchmode_rent = []
         watchmode_buy = []
+
+        # Skip external API calls for categories that already have overrides
+        skip_streaming = 'streaming' in validated_overrides
+        skip_rent = 'rent' in validated_overrides
+        skip_buy = 'buy' in validated_overrides
 
         try:
             # Step 1: Search by TMDB ID
@@ -304,11 +664,11 @@ class DataGenerator:
                             if not service_name or not web_url:
                                 continue
 
-                            if source_type == 'sub':
+                            if source_type == 'sub' and not skip_streaming:
                                 watchmode_streaming.append({'service': service_name, 'link': web_url})
-                            elif source_type == 'rent':
+                            elif source_type == 'rent' and not skip_rent:
                                 watchmode_rent.append({'service': service_name, 'link': web_url})
-                            elif source_type == 'buy':
+                            elif source_type == 'buy' and not skip_buy:
                                 watchmode_buy.append({'service': service_name, 'link': web_url})
 
         except Exception as e:
@@ -317,103 +677,90 @@ class DataGenerator:
         # Build final watch_links with canonical streaming/rent/buy structure
         watch_links = {}
 
-        # STREAMING: Prefer Watchmode, fallback to TMDB providers with smart Amazon handling
-        if watchmode_streaming:
-            # Use Watchmode streaming data
-            best_service = select_best_service([s['service'] for s in watchmode_streaming], STREAMING_PRIORITY)
-            for source in watchmode_streaming:
-                if source['service'] == best_service:
-                    watch_links['streaming'] = source
-                    break
-        elif providers.get('streaming'):
-            # Fallback to TMDB provider data
-            service = select_best_service(providers['streaming'], STREAMING_PRIORITY)
-
-            # SMART FALLBACK: If TMDB says "Amazon Prime Video" but Watchmode didn't find subscription,
-            # reuse any Amazon rent/buy link we have (it's the same detail page on Amazon)
-            if 'Amazon Prime Video' in service and (watchmode_rent or watchmode_buy):
-                # Find any Amazon link in rent or buy sources
-                amazon_link = None
-                for source in watchmode_rent + watchmode_buy:
-                    if 'Amazon' in source['service'] and source.get('link'):
-                        amazon_link = source['link']
+        # STREAMING: Prefer Watchmode, fallback to TMDB providers with smart Amazon handling (skip if overridden)
+        if not skip_streaming:
+            if watchmode_streaming:
+                # Use Watchmode streaming data
+                best_service = select_best_service([s['service'] for s in watchmode_streaming], STREAMING_PRIORITY)
+                for source in watchmode_streaming:
+                    if source['service'] == best_service:
+                        watch_links['streaming'] = source
                         break
+            elif providers.get('streaming'):
+                # Fallback to TMDB provider data
+                service = select_best_service(providers['streaming'], STREAMING_PRIORITY)
 
-                if amazon_link:
-                    watch_links['streaming'] = {
-                        'service': service,
-                        'link': amazon_link  # Same page shows both Prime (free) and rent/buy options
-                    }
+                # SMART FALLBACK: If TMDB says "Amazon Prime Video" but Watchmode didn't find subscription,
+                # reuse any Amazon rent/buy link we have (it's the same detail page on Amazon)
+                if 'Amazon Prime Video' in service and (watchmode_rent or watchmode_buy):
+                    # Find any Amazon link in rent or buy sources
+                    amazon_link = None
+                    for source in watchmode_rent + watchmode_buy:
+                        if 'Amazon' in source['service'] and source.get('link'):
+                            amazon_link = source['link']
+                            break
+
+                    if amazon_link:
+                        watch_links['streaming'] = {
+                            'service': service,
+                            'link': amazon_link  # Same page shows both Prime (free) and rent/buy options
+                        }
+                    else:
+                        # No Amazon link available, return null
+                        watch_links['streaming'] = {
+                            'service': service,
+                            'link': None
+                        }
                 else:
-                    # No Amazon link available, use search fallback
-                    search_link = self._build_streaming_search_link(service, title, year)
-                    watch_links['streaming'] = {
-                        'service': service,
-                        'link': search_link
-                    }
-            else:
-                # For other services (Netflix, Disney+, etc), use search fallback
-                search_link = self._build_streaming_search_link(service, title, year)
-                watch_links['streaming'] = {
-                    'service': service,
-                    'link': search_link
-                }
+                    # Try agent scraper for supported platforms before returning null
+                    agent_result = self._try_agent_scraper(movie_id, title, year, service, 'streaming')
+                    watch_links['streaming'] = agent_result
 
-        # RENT: Use Watchmode or fallback to platform links
-        if watchmode_rent:
-            best_service = select_best_service([s['service'] for s in watchmode_rent], PAID_PRIORITY)
-            for source in watchmode_rent:
-                if source['service'] == best_service:
-                    watch_links['rent'] = source
-                    break
-        elif providers.get('rent'):
-            # Fallback to TMDB providers with platform-specific links
-            rent_service = select_best_service(providers.get('rent', []), PAID_PRIORITY)
-            if rent_service:
-                platform_link = build_platform_link(rent_service)
-                if platform_link:
+        # RENT: Use Watchmode or fallback to platform links (skip if overridden)
+        if not skip_rent:
+            if watchmode_rent:
+                best_service = select_best_service([s['service'] for s in watchmode_rent], PAID_PRIORITY)
+                for source in watchmode_rent:
+                    if source['service'] == best_service:
+                        watch_links['rent'] = source
+                        break
+            elif providers.get('rent'):
+                rent_service = select_best_service(providers.get('rent', []), PAID_PRIORITY)
+                if rent_service:
                     watch_links['rent'] = {
                         'service': rent_service,
-                        'link': platform_link
+                        'link': None
                     }
 
-        # BUY: Use Watchmode or fallback to platform links
-        if watchmode_buy:
-            best_service = select_best_service([s['service'] for s in watchmode_buy], PAID_PRIORITY)
-            for source in watchmode_buy:
-                if source['service'] == best_service:
-                    watch_links['buy'] = source
-                    break
-        elif providers.get('buy'):
-            # Fallback to TMDB providers with platform-specific links
-            buy_service = select_best_service(providers.get('buy', []), PAID_PRIORITY)
-            if buy_service:
-                platform_link = build_platform_link(buy_service)
-                if platform_link:
+        # BUY: Use Watchmode or fallback to platform links (skip if overridden)
+        if not skip_buy:
+            if watchmode_buy:
+                best_service = select_best_service([s['service'] for s in watchmode_buy], PAID_PRIORITY)
+                for source in watchmode_buy:
+                    if source['service'] == best_service:
+                        watch_links['buy'] = source
+                        break
+            elif providers.get('buy'):
+                buy_service = select_best_service(providers.get('buy', []), PAID_PRIORITY)
+                if buy_service:
                     watch_links['buy'] = {
                         'service': buy_service,
-                        'link': platform_link
+                        'link': None
                     }
 
-        # DEFAULT: If no streaming or paid options available, provide Amazon search
-        if not watch_links.get('streaming') and not watch_links.get('rent') and not watch_links.get('buy'):
-            search_term = quote(f'{title} {year}')
-            watch_links['default'] = {
-                'service': 'Amazon',
-                'link': f"https://www.amazon.com/s?k={search_term}&i=instant-video"
-            }
+        # Overlay admin overrides on top of auto-discovered links
+        for category, override_data in validated_overrides.items():
+            watch_links[category] = override_data
 
         # Cache result with canonical schema
         if watch_links:
-            source_type = 'watchmode_api'
-            if watchmode_streaming or watchmode_rent or watchmode_buy:
-                source_type = 'watchmode_api'
-            elif any(link.get('link') and 'google.com/search' in link['link'] for link in watch_links.values()):
-                source_type = 'google_fallback'
-            elif watch_links.get('default'):
-                source_type = 'amazon_fallback'
-            else:
-                source_type = 'tmdb_fallback'
+            # Determine source type
+            has_links = any(
+                link.get('link') is not None
+                for link in watch_links.values()
+                if isinstance(link, dict)
+            )
+            source_type = 'watchmode_api' if has_links else 'tmdb_providers'
 
             self.watch_links_cache[cache_key] = {
                 'links': watch_links,
@@ -424,29 +771,97 @@ class DataGenerator:
 
         return watch_links
 
-    def _build_streaming_search_link(self, service, title, year):
-        """Build search links for streaming services that don't have deep links"""
-        search_term = quote(f'{title} {year} watch {service}')
-        return f"https://www.google.com/search?q={search_term}"
+    def _try_agent_scraper(self, movie_id, title, year, service, category):
+        """Try agent scraper for supported platforms"""
+        supported_platforms = ['Netflix', 'Disney+', 'Disney Plus', 'HBO Max', 'Max', 'Hulu']
+        print(f"  [DEBUG] Checking if '{service}' is in supported platforms: {supported_platforms}")
+
+        # Check if service is supported
+        if service not in supported_platforms:
+            print(f"  [DEBUG] '{service}' not supported by agent scraper, returning null")
+            return {'service': service, 'link': None}
+
+        # Initialize agent scraper if needed
+        self._init_agent_scraper()
+        print(f"  [DEBUG] Agent scraper state: {type(self.agent_scraper).__name__ if self.agent_scraper else 'None or False'}")
+        if self.agent_scraper is False:
+            return {'service': service, 'link': None}
+
+        try:
+            print(f"  Trying agent scraper for {title} on {service}...")
+            self.watchmode_stats['agent_attempts'] += 1
+
+            result = self.agent_scraper.find_watch_link(movie_id, title, year, service)
+            print(f"  [DEBUG] Agent result: {result}")
+
+            if result.get('cached'):
+                self.watchmode_stats['agent_cache_hits'] += 1
+
+            if result.get('link'):
+                self.watchmode_stats['agent_successes'] += 1
+                print(f"  ✓ Agent found link for {title} on {service}")
+            else:
+                print(f"  ✗ Agent could not find link for {title} on {service}")
+
+            print(f"  [DEBUG] Returning: {{'service': {service}, 'link': {result.get('link')}}}")
+            return {'service': service, 'link': result.get('link')}
+
+        except Exception as e:
+            print(f"  Error in agent scraper for {title}: {e}")
+            return {'service': service, 'link': None}
+
 
     def _migrate_legacy_cache_format(self, links):
-        """Migrate legacy free/paid cache format to streaming/rent/buy"""
+        """Migrate legacy free/paid cache format to streaming/rent/buy and normalize URLs"""
         if not isinstance(links, dict):
             return links
 
-        # Already in new format
-        if any(key in links for key in ['streaming', 'rent', 'buy', 'default']):
-            return links
+        # Define search URL patterns that should be normalized to null
+        search_url_patterns = [
+            'google.com/search',
+            'amazon.com/s?',
+            'play.google.com/store/search',
+            'vudu.com/',
+            'microsoft.com/store/search'
+        ]
 
-        # Migrate from old free/paid format
+        def normalize_link(link_obj):
+            """Normalize a link object, setting search URLs to null while preserving service"""
+            if not isinstance(link_obj, dict) or 'service' not in link_obj:
+                return link_obj
+
+            link_url = link_obj.get('link')
+            if link_url and any(pattern in link_url for pattern in search_url_patterns):
+                return {'service': link_obj['service'], 'link': None}
+            return link_obj
+
+        # Start with a copy to avoid modifying original
         migrated = {}
-        if 'free' in links:
-            migrated['streaming'] = links['free']
-        if 'paid' in links:
-            # Default paid to rent category
-            migrated['rent'] = links['paid']
 
-        return migrated if migrated else links
+        # Remove 'default' key entirely if present
+        for key, value in links.items():
+            if key == 'default':
+                continue  # Skip default key entirely
+            migrated[key] = value
+
+        # Convert old 'free/paid' keys to 'streaming/rent'
+        if 'free' in migrated:
+            migrated['streaming'] = migrated.pop('free')
+        if 'paid' in migrated:
+            migrated['rent'] = migrated.pop('paid')
+
+        # Normalize all link objects to remove search URLs
+        for category in ['streaming', 'rent', 'buy']:
+            if category in migrated:
+                migrated[category] = normalize_link(migrated[category])
+
+        # Ensure we only return canonical categories
+        final_migrated = {}
+        for category in ['streaming', 'rent', 'buy']:
+            if category in migrated:
+                final_migrated[category] = migrated[category]
+
+        return final_migrated if final_migrated else {}
 
     def process_movie(self, movie_id, movie_data, movie_details, force_refresh=False):
         """Process a single movie into display format"""
@@ -498,16 +913,30 @@ class DataGenerator:
         if trailer_url:
             links['trailer'] = trailer_url
         
-        # RT link
-        rt_url = self.find_rt_url(title, year, imdb_id)
-        if rt_url:
-            links['rt'] = rt_url
+        # RT link and score
+        rt_data = self.find_rt_url(title, year, imdb_id)
+        rt_score = None
+        if rt_data:
+            if isinstance(rt_data, dict):
+                links['rt'] = rt_data.get('url')
+                rt_score = rt_data.get('score')
+            else:
+                links['rt'] = rt_data
 
         # Watch links (deep links to streaming platforms)
         watch_links_raw = self.get_watch_links(movie_id, title, year, movie_data.get('providers', {}), force_refresh)
 
-        # Use canonical streaming/rent/buy schema directly
-        watch_links = watch_links_raw
+        # Simplify provider names in watch links
+        watch_links = {}
+        for category, link_obj in watch_links_raw.items():
+            if isinstance(link_obj, dict) and 'service' in link_obj:
+                simplified_service = self.simplify_provider_name(link_obj['service'])
+                watch_links[category] = {
+                    'service': simplified_service,
+                    'link': link_obj.get('link')
+                }
+            else:
+                watch_links[category] = link_obj
 
         return {
             'id': movie_id,
@@ -524,7 +953,7 @@ class DataGenerator:
             'runtime': runtime,
             'year': int(year) if year else None,
             'country': country,
-            'rt_score': None,  # Will be filled by RT cache if available
+            'rt_score': rt_score,
             'providers': movie_data.get('providers', {}),
             'links': links,
             'watch_links': watch_links
@@ -563,12 +992,17 @@ class DataGenerator:
 
         if incremental:
             print(f"🎬 Processing NEW movies that went digital in last {days_back} days...")
+            print(f"   Existing movies in data.json: {len(existing_ids)}")
+            print(f"   These will be SKIPPED (use --full to reprocess)")
         else:
             print(f"🎬 Processing ALL movies that went digital in last {days_back} days...")
+            print(f"   This will regenerate watch links for all movies")
 
+        skipped_count = 0
         for movie_id, movie_data in db['movies'].items():
             # Skip if already in data.json (incremental mode)
             if incremental and movie_id in existing_ids:
+                skipped_count += 1
                 continue
 
             if movie_data['status'] == 'available' and movie_data.get('digital_date'):
@@ -587,6 +1021,10 @@ class DataGenerator:
 
                 except Exception as e:
                     print(f"  ✗ Error processing {movie_data.get('title')}: {e}")
+
+        if incremental and skipped_count > 0:
+            print(f"\n⏭️  Skipped {skipped_count} existing movies (incremental mode)")
+            print(f"   To reprocess all movies with agent scraper, run: python3 generate_data.py --full")
 
         # Merge with existing movies if incremental
         if incremental:
@@ -611,6 +1049,21 @@ class DataGenerator:
         with open('data.json', 'w') as f:
             json.dump(output_data, f, indent=2)
         
+        # Cleanup agent scraper if initialized
+        if self.agent_scraper and self.agent_scraper != False:
+            try:
+                self.agent_scraper.close()
+            except Exception as e:
+                print(f"Warning: Failed to close agent scraper: {e}")
+
+        # Cleanup RT driver if initialized
+        if self.rt_driver and self.rt_driver is not False:
+            try:
+                self.rt_driver.quit()
+                print("  ✓ RT driver closed")
+            except Exception as e:
+                print(f"Warning: Failed to close RT driver: {e}")
+
         # Save caches
         self.save_cache(self.wikipedia_cache, 'wikipedia_cache.json')
         self.save_cache(self.rt_cache, 'rt_cache.json')
@@ -631,6 +1084,31 @@ class DataGenerator:
         print(f"  Cache hits: {self.watchmode_stats['cache_hits']}")
         print(f"  Cache hit rate: {cache_hit_rate:.1f}%")
         print(f"  Watchmode success rate: {success_rate:.1f}%")
+
+        print(f"\n📊 Agent Scraper Usage:")
+        print(f"  Agent enabled: {self.config.get('agent_scraper', {}).get('enabled', True)}")
+        print(f"  Agent initialized: {self.agent_scraper is not None and self.agent_scraper is not False}")
+        print(f"  Agent attempts: {self.watchmode_stats['agent_attempts']}")
+        print(f"  Agent successes: {self.watchmode_stats['agent_successes']}")
+        print(f"  Agent cache hits: {self.watchmode_stats['agent_cache_hits']}")
+        if self.watchmode_stats['agent_attempts'] > 0:
+            agent_success_rate = (self.watchmode_stats['agent_successes'] / self.watchmode_stats['agent_attempts'] * 100)
+            print(f"  Agent success rate: {agent_success_rate:.1f}%")
+        else:
+            print(f"  ⚠️  Agent scraper was never called (check if movies have Netflix/Disney+/Hulu providers)")
+
+        print(f"\n📊 RT Scraper Usage:")
+        print(f"  RT attempts: {self.watchmode_stats['rt_attempts']}")
+        print(f"  RT successes: {self.watchmode_stats['rt_successes']}")
+        print(f"  RT cache hits: {self.watchmode_stats['rt_cache_hits']}")
+        if self.watchmode_stats['rt_attempts'] > 0:
+            rt_success_rate = (self.watchmode_stats['rt_successes'] / self.watchmode_stats['rt_attempts'] * 100)
+            print(f"  RT success rate: {rt_success_rate:.1f}%")
+
+        print(f"\n📊 Admin Override Usage:")
+        print(f"  Override hits: {self.watchmode_stats['override_hits']}")
+        if self.watchmode_stats['override_hits'] > 0:
+            print(f"  Movies with manual overrides: {self.watchmode_stats['override_hits']}")
 
     def apply_admin_overrides(self, display_movies):
         """Apply admin panel decisions to final output"""
@@ -668,10 +1146,16 @@ class DataGenerator:
 def main():
     parser = argparse.ArgumentParser(description="Generate display data from tracking database with enriched links")
     parser.add_argument('--full', action='store_true', help='Regenerate entire data.json from scratch (default: incremental mode - only process new movies)')
+    parser.add_argument('--debug', action='store_true', help='Enable debug logging for agent scraper')
 
     args = parser.parse_args()
     incremental = not args.full
     force_refresh = args.full  # Force refresh cache on full runs
+
+    # Set debug mode globally (could be passed to DataGenerator if needed)
+    if args.debug:
+        os.environ['AGENT_SCRAPER_DEBUG'] = 'true'
+        print("🐛 Debug mode enabled for agent scraper")
 
     generator = DataGenerator()
     generator.generate_display_data(incremental=incremental, force_refresh=force_refresh)

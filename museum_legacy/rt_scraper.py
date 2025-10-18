@@ -3,6 +3,11 @@
 Selenium-based Rotten Tomatoes scraper for finding exact movie URLs
 """
 
+# DEPRECATED: This is the old RT scraper version
+# Replaced by scripts/rt_scraper.py (which is now inlined into generate_data.py)
+# This file is kept for reference only and will be archived to museum_legacy/
+# Used by: update_rt_data.py, bootstrap_rt_cache.py (also deprecated)
+
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By

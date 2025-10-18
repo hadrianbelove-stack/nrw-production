@@ -109,6 +109,23 @@ See [AMENDMENT-036](PROJECT_CHARTER.md#amendment-036-rolling-daily-context) for 
 - **Impact:** Streaming services without Watchmode data use search links
 - **Future:** Agent-based link finding could scrape actual URLs (optional enhancement)
 
+### Issue: Agent Scraper Not Running (CRITICAL - Oct 17)
+- **Symptom:** All Netflix/Disney+/Hulu links in data.json are null despite agent scraper being integrated
+- **Root causes:**
+  1. **Cache directory gitignored** - `.gitignore` line 7 excludes `cache/`, directory lost between git operations
+  2. **Incremental mode skips existing movies** - Daily automation only processes NEW movies, existing 236 movies never reprocessed
+  3. **Config not read** - `generate_data.py` doesn't read `agent_scraper` section from config.yaml
+  4. **Missing dependencies** - `requirements.txt` lacks selenium/webdriver-manager (only in GitHub Actions manual install)
+  5. **No execution evidence** - No cache files, no log messages, agent scraper never successfully ran
+- **Mitigation:**
+  1. Add `cache/.gitkeep` to track directory in git
+  2. Run `python3 generate_data.py --full` to reprocess all movies
+  3. Update `load_config()` to read entire config.yaml (not just api section)
+  4. Add selenium/webdriver-manager to requirements.txt
+  5. Add debug logging to trace execution
+- **Status:** ⏳ Being fixed (see test_agent_scraper.py for standalone testing)
+- **Workaround:** Use admin panel watch link overrides for critical movies until agent scraper is fixed
+
 ### Issue: Cache Migration from Legacy Format
 - **Symptom:** Early testing used `free/paid` categories instead of `streaming/rent/buy`
 - **Solution:** Automatic migration in `_migrate_legacy_cache_format()` (lines 407-424)
@@ -119,30 +136,37 @@ See [AMENDMENT-036](PROJECT_CHARTER.md#amendment-036-rolling-daily-context) for 
 
 ## Next Priorities
 
-### Immediate (This Session)
-- ✅ Integrate Watchmode API into `generate_data.py`
-- ✅ Add `argparse` support for `--full` flag
-- ✅ Test full regeneration with watch links
-- ✅ Add WATCH button to movie card backs
-- ✅ Document Watchmode API integration in PROJECT_CHARTER.md (AMENDMENT-038)
-- ✅ Update DAILY_CONTEXT.md with feature completion (this task)
-- ⏳ Commit all changes to GitHub
+### Completed (Oct 16-17)
+- ✅ Integrate Watchmode API into `generate_data.py` (AMENDMENT-038)
+- ✅ Implement three-button UI (STREAM/RENT/BUY) in `assets/app.js`
+- ✅ Add agent-based link finding for Netflix/Disney+/HBO Max/Hulu (AMENDMENT-039)
+- ✅ Migrate agent scraper to Playwright (AMENDMENT-041)
+- ✅ Inline RT scraper into generate_data.py (AMENDMENT-042)
+- ✅ Fix admin panel integration (file paths, 20-movie limit, date update)
+- ✅ Add watch link override system to admin panel
+- ✅ Add HTTP authentication to admin panel
+- ✅ Archive redundant scrapers (wikidata, reelgood, date_verification)
+- ✅ Update documentation (NRW_DATA_WORKFLOW_EXPLAINED.md, museum_legacy/README.md)
 
-### Next Phase
-- Implement two-button UI ("WATCH FREE" + "RENT/BUY") in `assets/app.js`
-- Test with Oct 16 movies: "A Woman with No Filter" (Netflix), "The Long Walk" (Amazon rent)
-- Update CSS for two-button layout
+### Immediate (Testing & Verification)
+- ⏳ Test agent scraper with `python3 test_agent_scraper.py` (verify Playwright selectors work)
+- ⏳ Run full regeneration: `python3 generate_data.py --full --debug`
+- ⏳ Verify Netflix/Disney+/Hulu links are populated in data.json (not null)
+- ⏳ Test admin panel watch link override functionality
+- ⏳ Verify GitHub Actions workflow succeeds with Playwright installation
+- ⏳ Update agent scraper selectors if platforms changed HTML structure
 
-### Subsequent Phase (Optional)
-- Agent-based link finding for movies without Watchmode data
-- Admin panel section for manual watch link overrides
-- Performance optimization for large datasets
+### Short-term (Next Session)
+- Monitor agent scraper success rate (target: >70%)
+- Fix any broken selectors discovered during testing
+- Consider migrating RT scraper to Playwright (optional performance improvement)
+- Consider migrating YouTube scraper to Playwright (optional consistency improvement)
 
-### Short-term (Next Few Days)
-[Fill in during session - list near-term tasks]
-
-### Long-term (Ongoing)
-[Fill in during session - list ongoing maintenance tasks]
+### Long-term (Ongoing Maintenance)
+- Update scraper selectors when platforms change HTML (every 3-6 months)
+- Monitor cache hit rates and scraper statistics
+- Review screenshot diagnostics for recurring failures
+- Consider parallel scraping for performance (if dataset grows significantly)
 
 ---
 
@@ -175,6 +199,10 @@ See [AMENDMENT-036](PROJECT_CHARTER.md#amendment-036-rolling-daily-context) for 
 
 ### Created
 - `cache/watch_links_cache.json` - Watchmode API response cache (228 entries)
+- `cache/.gitkeep` - Ensures cache directory is tracked in git
+- `test_agent_scraper.py` - Standalone test for agent scraper debugging
+- `test_rt_scraper_inline.py` - Standalone test for inlined RT scraper
+- `cache/screenshots/.gitkeep` - Ensures screenshot directory is tracked in git
 
 ### Modified
 - `generate_data.py` - Added Watchmode API integration (lines 197-400), `argparse` support (lines 14, 640-649)
@@ -184,9 +212,33 @@ See [AMENDMENT-036](PROJECT_CHARTER.md#amendment-036-rolling-daily-context) for 
 - `index.html` - Added cache-busting parameters (?v=3 for CSS, ?v=2 for JS)
 - `PROJECT_CHARTER.md` - Added AMENDMENT-038 for Watchmode API integration, added Watchmode API key to API Keys section
 - `DAILY_CONTEXT.md` - This file (documented watch links feature completion)
+- `requirements.txt` - Added selenium, webdriver-manager, beautifulsoup4, lxml
+- `generate_data.py` - Enhanced debug logging, config reading for agent_scraper section
+- `agent_link_scraper.py` - Added comprehensive debug logging throughout
+- `admin.py` - Fixed file paths (admin/ not output/), removed 20-movie limit, added watch link override UI, added regenerate button, added HTTP auth
+- `config.yaml` - Added agent_scraper and rt_scraper configuration sections
+- `daily_orchestrator.py` - Removed date_verification.py and update_rt_data.py from pipeline
+- `daily_update.sh` - Removed date_verification.py and update_rt_data.py calls
+- `.github/workflows/daily-check.yml` - Added Playwright browser installation
+- `NRW_DATA_WORKFLOW_EXPLAINED.md` - Updated scraper architecture documentation
+- `museum_legacy/README.md` - Added scripts/rt_scraper.py to archived list
 
-### Archived
-[Fill in during session - list files moved to museum_legacy/]
+### Archived (Oct 17, 2025)
+
+**Scrapers moved to museum_legacy/:**
+- `wikidata_scraper.py` - Redundant with Wikipedia REST API
+- `reelgood_scraper.py` - Redundant with TMDB API
+- `date_verification.py` - Only user of reelgood_scraper (non-critical)
+- `rt_scraper.py` (root) - Old RT scraper version (v1)
+- `scripts/rt_scraper.py` - Newer RT scraper (v2), inlined into generate_data.py (v3)
+- `update_rt_data.py` - RT scraping now automatic
+- `bootstrap_rt_cache.py` - RT cache built automatically
+
+**Admin tools deleted:**
+- `museum_legacy/curator_admin.py` - Orphaned admin UI (expected non-existent files)
+- `museum_legacy/run_admin_5100.py` - Launcher for curator_admin.py
+
+**See:** `museum_legacy/README.md` for detailed archival documentation and migration notes
 
 ---
 
@@ -221,5 +273,5 @@ python3 movie_tracker.py bootstrap
 
 ---
 
-**Last updated:** 2025-10-17
+**Last updated:** 2025-10-17 (End of scraper consolidation session)
 **Next diary archive:** End of session -> `diary/[YYYY-MM-DD].md`

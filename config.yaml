@@ -16,3 +16,34 @@ api:
   tmdb_api_key: "99b122ce7fa3e9065d7b7dc6e660772d"  # Can be overridden via TMDB_API_KEY env var
   tmdb_rate_limit: 0.1  # Seconds between API calls
   max_retries: 3
+
+agent_scraper:
+  enabled: true  # Enable/disable agent-based link finding
+  headless: true  # Run browser in headless mode (required for CI)
+  rate_limit: 2.0  # Minimum seconds between scrapes
+  timeout: 10  # Page load timeout in seconds
+  max_retries: 3  # Increased from 1 for exponential backoff
+  cache_ttl_days: 30  # Cache expiration (days)
+  screenshots_enabled: true  # Capture screenshots on failure
+  screenshot_retention_days: 7  # Auto-delete old screenshots
+  exponential_backoff:
+    base_delay: 0.5  # Initial retry delay (seconds)
+    max_delay: 5.0  # Maximum retry delay (seconds)
+    jitter_ratio: 0.2  # Randomness factor (±20%)
+
+rt_scraper:
+  enabled: true  # Enable/disable RT scraping
+  headless: true  # Run browser in headless mode
+  rate_limit: 2.0  # Minimum seconds between scrapes
+  timeout: 10  # Page load timeout in seconds
+  max_retries: 1  # Number of retries on failure (RT is less critical than watch links)
+  cache_ttl_days: 90  # RT links are stable, longer TTL than agent scraper
+
+agent_scraper:
+  supported_platforms:
+    - Netflix
+    - Disney+
+    - Disney Plus
+    - HBO Max
+    - Max
+    - Hulu

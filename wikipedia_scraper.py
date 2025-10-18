@@ -1,6 +1,23 @@
 #!/usr/bin/env python3
 """Selenium-based Wikipedia scraper for finding movie pages"""
 
+# MANUAL FALLBACK TOOL - Not integrated into automated workflow
+#
+# Purpose: Find Wikipedia URLs when the built-in REST API fails
+# Usage: python3 wikipedia_scraper.py (modify test function with movie details)
+#
+# When to use:
+# - REST API returns wrong Wikipedia page
+# - Movie has ambiguous title (multiple Wikipedia pages)
+# - Need to manually verify Wikipedia link
+#
+# Primary method: find_wikipedia_url(title, year)
+# Returns: Wikipedia URL or None
+#
+# Note: This uses Selenium (slower) but can handle complex searches
+#       that the REST API can't. For automated workflow, use the
+#       built-in REST API in generate_data.py (lines 177-228)
+
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By

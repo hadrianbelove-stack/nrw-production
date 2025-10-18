@@ -251,7 +251,7 @@ header h1 {
     margin-top: auto;
     display: flex;
     flex-direction: column;
-    gap: 0.8rem;
+    gap: 0.5rem;
 }
 
 .actions .watch-btn {
@@ -265,37 +265,68 @@ header h1 {
     font-size: 0.75rem;
     transition: all 0.3s ease;
     display: block;
-    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.actions .watch-btn:last-of-type {
-    margin-bottom: 0;
+
+.actions .watch-btn:focus {
+    outline: 2px solid #00d4aa;
+    outline-offset: 2px;
 }
 
-.actions .watch-btn:hover {
+.actions .watch-btn-stream {
+    background: #00d4aa;
+    color: #000;
+}
+
+.actions .watch-btn-stream:hover {
     background: #00ffbb;
     transform: translateY(-2px);
     box-shadow: 0 5px 20px rgba(0,212,170,0.5);
 }
 
-.actions .watch-btn-free {
-    background: #00d4aa;
-}
-
-.actions .watch-btn-paid {
+.actions .watch-btn-rent {
     background: #ff9500;
+    color: #000;
 }
 
-.actions .watch-btn-paid:hover {
+.actions .watch-btn-rent:hover {
     background: #ffad33;
+    transform: translateY(-2px);
     box-shadow: 0 5px 20px rgba(255,149,0,0.5);
 }
+
+.actions .watch-btn-buy {
+    background: #ff6b00;
+    color: #fff;
+}
+
+.actions .watch-btn-buy:hover {
+    background: #ff8533;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(255,107,0,0.5);
+}
+
 
 .actions .watch-btn-disabled {
     background: #333;
     color: #999;
     cursor: default;
     pointer-events: none;
+    opacity: 0.5;
+    border: 1px solid #444;
+}
+
+.actions .watch-btn-error {
+    background: #cc6600;
+    color: #fff;
+    border: 2px dashed #ff9500;
+    cursor: not-allowed;
+    pointer-events: none;
+    opacity: 0.8;
 }
 
 .info-links {
@@ -358,6 +389,10 @@ header h1 {
         padding: 0.4rem 0.8rem;
         font-size: 0.8rem;
     }
+
+    .actions {
+        gap: 0.4rem;
+    }
 }
 
 @media (max-width: 480px) {
@@ -372,6 +407,15 @@ header h1 {
     
     .info-links {
         grid-template-columns: 1fr 1fr;
+    }
+
+    .actions {
+        gap: 0.4rem;
+    }
+
+    .actions .watch-btn {
+        font-size: 0.65rem;
+        padding: 0.4rem;
     }
 }Cache buster: Sat Sep  6 18:27:30 PDT 2025
 /* Updated: Sat Sep  6 18:28:50 PDT 2025 */

@@ -62,17 +62,44 @@ class NRWOrchestrator:
         self.has_changes = result.returncode != 0
         return self.has_changes
     
+    def validate_rt_data(self):
+        """Validate RT data in data.json (non-critical check)"""
+        try:
+            with open('data.json', 'r') as f:
+                data = json.load(f)
+
+            movies = data.get('movies', [])
+            if not movies:
+                print("⚠️  Warning: No movies found in data.json")
+                return
+
+            # Check a sample of movies for RT data
+            sample_size = min(5, len(movies))
+            movies_with_rt = 0
+
+            for movie in movies[:sample_size]:
+                if movie.get('rt_url') or movie.get('rt_score'):
+                    movies_with_rt += 1
+
+            if movies_with_rt == 0:
+                print("⚠️  Warning: No RT data found in sample - RT scraping may not be working")
+            else:
+                print(f"✅ RT validation: {movies_with_rt}/{sample_size} movies have RT data")
+
+        except Exception as e:
+            print(f"⚠️  Warning: Could not validate RT data: {e}")
+
     def get_statistics(self):
         """Extract statistics from tracking database"""
         try:
             with open('movie_tracking.json', 'r') as f:
                 db = json.load(f)
-            
+
             movies = db.get('movies', {})
             tracking = len([m for m in movies.values() if m.get('status') == 'tracking'])
             available = len([m for m in movies.values() if m.get('status') == 'available'])
             total = len(movies)
-            
+
             return {
                 'total': total,
                 'tracking': tracking,
@@ -131,13 +158,13 @@ class NRWOrchestrator:
             ("python3 movie_tracker.py daily",
              "Discover new premieres and check for digital availability", True),
 
-            # Phase 2: Enrichment
-            ("python3 update_rt_data.py",
-             "Update Rotten Tomatoes links", False),  # Non-critical
+            # Phase 2: Enrichment (DISABLED - RT scraping now automatic in generate_data.py)
+            # ("python3 update_rt_data.py",
+            #  "Update Rotten Tomatoes links", False),
 
-            # Phase 3: Verification
-            ("python3 date_verification.py",
-             "Verify premiere dates", False),  # Non-critical
+            # Phase 3: Verification (DISABLED - date_verification.py archived to museum_legacy/)
+            # ("python3 date_verification.py",
+            #  "Verify premiere dates", False),
 
             # Phase 4: Generate final display data
             ("python3 generate_data.py",
@@ -146,8 +173,12 @@ class NRWOrchestrator:
         
         # Execute pipeline
         for cmd, description, critical in pipeline:
-            self.run_command(cmd, description, critical)
-        
+            success = self.run_command(cmd, description, critical)
+            # If generate_data.py succeeded, validate RT data
+            if success and "generate_data.py" in cmd:
+                print("\n🔍 Validating RT data...")
+                self.validate_rt_data()
+
         # Check for changes and commit if needed
         if self.check_changes():
             print("\n📝 Changes detected, committing...")

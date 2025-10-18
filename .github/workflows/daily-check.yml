@@ -18,11 +18,20 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Install dependencies
+      - name: Setup Chrome
+        uses: browser-actions/setup-chrome@latest
+
+      - name: Install Python dependencies
         run: |
-          pip install requests pyyaml beautifulsoup4 lxml selenium
+          pip install requests pyyaml beautifulsoup4 lxml selenium webdriver-manager playwright
+
+      - name: Install Playwright browsers
+        run: |
+          playwright install chromium --with-deps
 
       - name: Run daily orchestrator
+        env:
+          AGENT_SCRAPER_ENABLED: true  # Set to false to disable agent scraping
         run: python3 daily_orchestrator.py
 
       - name: Commit and push changes
