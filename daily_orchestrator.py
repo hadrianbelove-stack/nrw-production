@@ -89,29 +89,96 @@ class NRWOrchestrator:
         except Exception as e:
             print(f"⚠️  Warning: Could not validate RT data: {e}")
 
-    def get_statistics(self):
-        """Extract statistics from tracking database"""
+    def validate_data_quality(self):
+        """Comprehensive data quality checks to prevent committing broken data"""
         try:
+            # 1. Check file existence
+            if not os.path.exists('data.json'):
+                raise Exception("data.json file not found")
+
+            # 2. Load and validate JSON
+            with open('data.json', 'r') as f:
+                data = json.load(f)
+
+            # 3. Check minimum movie count
+            movies = data.get('movies', [])
+            if len(movies) < 200:
+                raise Exception(f"Too few movies ({len(movies)}) - possible data loss! Expected at least 200.")
+
+            # 4. Check for recent movies (last 7 days)
+            from datetime import timedelta
+            cutoff_date = (datetime.now() - timedelta(days=7)).strftime('%Y-%m-%d')
+            recent_movies = [m for m in movies if m.get('digital_date', '') >= cutoff_date]
+
+            if len(recent_movies) == 0:
+                raise Exception("No recent movies found - automation may not be discovering new releases")
+
+            # 5. Check required fields on sample of movies
+            sample_movies = movies[:5] if len(movies) >= 5 else movies
+            for movie in sample_movies:
+                if not movie.get('title'):
+                    raise Exception(f"Movie missing title: {movie}")
+                if not movie.get('digital_date'):
+                    raise Exception(f"Movie missing digital_date: {movie.get('title')}")
+                if not movie.get('poster'):
+                    print(f"⚠️  Warning: Movie missing poster: {movie.get('title')}")
+
+            # 6. Check watch links coverage
+            movies_with_links = [m for m in movies if any(m.get('watch_links', {}).values())]
+            movies_with_rt = [m for m in movies if m.get('rt_score')]
+            movies_with_wikipedia = [m for m in movies if m.get('wikipedia_link')]
+            movies_with_trailers = [m for m in movies if m.get('trailer_link')]
+
+            # Print validation summary
+            print(f"✅ Quality check passed: {len(movies)} total, {len(recent_movies)} recent")
+            print(f"   Data coverage: {len(movies_with_links)} with watch links, {len(movies_with_rt)} with RT scores")
+            print(f"   Additional links: {len(movies_with_wikipedia)} Wikipedia, {len(movies_with_trailers)} trailers")
+
+        except Exception as e:
+            raise Exception(f"Data quality validation failed: {e}")
+
+    def get_statistics(self):
+        """Extract statistics from tracking database and data.json"""
+        stats = {
+            'total': 0,
+            'tracking': 0,
+            'available': 0,
+            'data_movies': 0,
+            'movies_with_links': 0,
+            'movies_with_rt': 0,
+            'movies_with_wikipedia': 0,
+            'movies_with_trailers': 0
+        }
+
+        try:
+            # Get tracking database stats
             with open('movie_tracking.json', 'r') as f:
                 db = json.load(f)
 
             movies = db.get('movies', {})
-            tracking = len([m for m in movies.values() if m.get('status') == 'tracking'])
-            available = len([m for m in movies.values() if m.get('status') == 'available'])
-            total = len(movies)
+            stats['tracking'] = len([m for m in movies.values() if m.get('status') == 'tracking'])
+            stats['available'] = len([m for m in movies.values() if m.get('status') == 'available'])
+            stats['total'] = len(movies)
 
-            return {
-                'total': total,
-                'tracking': tracking,
-                'available': available
-            }
         except Exception as e:
-            return {
-                'total': 0,
-                'tracking': 0,
-                'available': 0,
-                'error': str(e)
-            }
+            stats['tracking_error'] = str(e)
+
+        try:
+            # Get data.json stats
+            with open('data.json', 'r') as f:
+                data = json.load(f)
+
+            data_movies = data.get('movies', [])
+            stats['data_movies'] = len(data_movies)
+            stats['movies_with_links'] = len([m for m in data_movies if any(m.get('watch_links', {}).values())])
+            stats['movies_with_rt'] = len([m for m in data_movies if m.get('rt_score')])
+            stats['movies_with_wikipedia'] = len([m for m in data_movies if m.get('wikipedia_link')])
+            stats['movies_with_trailers'] = len([m for m in data_movies if m.get('trailer_link')])
+
+        except Exception as e:
+            stats['data_error'] = str(e)
+
+        return stats
     
     def print_summary(self):
         """Print execution summary"""
@@ -124,6 +191,20 @@ class NRWOrchestrator:
         print(f"Total tracked: {stats['total']}")
         print(f"Still tracking: {stats['tracking']}")
         print(f"Now digital: {stats['available']}")
+
+        # Data.json statistics
+        if stats['data_movies'] > 0:
+            print(f"\n📊 Data Quality:")
+            print(f"Movies in data.json: {stats['data_movies']}")
+            if stats['data_movies'] > 0:
+                link_pct = (stats['movies_with_links'] / stats['data_movies']) * 100
+                rt_pct = (stats['movies_with_rt'] / stats['data_movies']) * 100
+                wiki_pct = (stats['movies_with_wikipedia'] / stats['data_movies']) * 100
+                trailer_pct = (stats['movies_with_trailers'] / stats['data_movies']) * 100
+                print(f"Watch links: {stats['movies_with_links']} ({link_pct:.1f}%)")
+                print(f"RT scores: {stats['movies_with_rt']} ({rt_pct:.1f}%)")
+                print(f"Wikipedia: {stats['movies_with_wikipedia']} ({wiki_pct:.1f}%)")
+                print(f"Trailers: {stats['movies_with_trailers']} ({trailer_pct:.1f}%)")
         
         # Execution results
         print(f"\n⏱️  Duration: {datetime.now() - self.start_time}")
@@ -174,10 +255,18 @@ class NRWOrchestrator:
         # Execute pipeline
         for cmd, description, critical in pipeline:
             success = self.run_command(cmd, description, critical)
-            # If generate_data.py succeeded, validate RT data
+            # If generate_data.py succeeded, validate data quality
             if success and "generate_data.py" in cmd:
                 print("\n🔍 Validating RT data...")
                 self.validate_rt_data()
+
+                print("\n🔍 Validating data quality...")
+                try:
+                    self.validate_data_quality()
+                except Exception as e:
+                    print(f"❌ Data quality validation failed: {e}")
+                    self.print_summary()
+                    sys.exit(1)
 
         # Check for changes and commit if needed
         if self.check_changes():

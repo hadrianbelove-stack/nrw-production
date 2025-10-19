@@ -1,7 +1,19 @@
+# Core dependencies
 flask
 flask-httpauth
 PyYAML
 requests
+
+# Web scraping
 selenium
 webdriver-manager
 playwright
+beautifulsoup4
+lxml
+
+# YouTube playlist automation
+google-api-python-client
+google-auth-oauthlib
+google-auth-httplib2
+
+# Newsletter generation (no extra dependencies - uses stdlib)

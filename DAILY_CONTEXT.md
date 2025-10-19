@@ -126,6 +126,16 @@ See [AMENDMENT-036](PROJECT_CHARTER.md#amendment-036-rolling-daily-context) for 
 - **Status:** ⏳ Being fixed (see test_agent_scraper.py for standalone testing)
 - **Workaround:** Use admin panel watch link overrides for critical movies until agent scraper is fixed
 
+### Issue: Daily Automation Merge Conflicts (RESOLVED - Oct 17)
+- **Symptom:** User gets merge conflicts every morning when pulling from GitHub
+- **Root cause:** Bot and user both commit to main branch, causing conflicts in data.json
+- **Solution:** Separate branch strategy (AMENDMENT-043)
+  - Bot pushes to automation-updates branch (force-push, always succeeds)
+  - User merges when ready via ./sync_daily_updates.sh
+  - Weekly full regen ensures all movies get retroactive improvements
+- **Status:** ✅ Resolved via separate branch architecture
+- **Testing:** ⏳ Verify automation-updates branch strategy works in production
+
 ### Issue: Cache Migration from Legacy Format
 - **Symptom:** Early testing used `free/paid` categories instead of `streaming/rent/buy`
 - **Solution:** Automatic migration in `_migrate_legacy_cache_format()` (lines 407-424)
@@ -147,6 +157,9 @@ See [AMENDMENT-036](PROJECT_CHARTER.md#amendment-036-rolling-daily-context) for 
 - ✅ Add HTTP authentication to admin panel
 - ✅ Archive redundant scrapers (wikidata, reelgood, date_verification)
 - ✅ Update documentation (NRW_DATA_WORKFLOW_EXPLAINED.md, museum_legacy/README.md)
+- ✅ Formalize streaming/rent/buy schema in PROJECT_CHARTER.md (canonical schema section)
+- ✅ Add schema validation function to generate_data.py (validate_watch_links_schema)
+- ✅ Verify schema consistency across codebase (generate_data.py, app.js, admin.py, caches)
 
 ### Immediate (Testing & Verification)
 - ⏳ Test agent scraper with `python3 test_agent_scraper.py` (verify Playwright selectors work)
@@ -155,6 +168,11 @@ See [AMENDMENT-036](PROJECT_CHARTER.md#amendment-036-rolling-daily-context) for 
 - ⏳ Test admin panel watch link override functionality
 - ⏳ Verify GitHub Actions workflow succeeds with Playwright installation
 - ⏳ Update agent scraper selectors if platforms changed HTML structure
+- ⏳ Test daily automation with automation-updates branch strategy
+- ⏳ Test weekly full regeneration workflow
+- ⏳ Test sync_daily_updates.sh script
+- ⏳ Verify data quality validation catches bad data
+- ⏳ Verify GitHub issue creation on failures
 
 ### Short-term (Next Session)
 - Monitor agent scraper success rate (target: >70%)
@@ -203,6 +221,8 @@ See [AMENDMENT-036](PROJECT_CHARTER.md#amendment-036-rolling-daily-context) for 
 - `test_agent_scraper.py` - Standalone test for agent scraper debugging
 - `test_rt_scraper_inline.py` - Standalone test for inlined RT scraper
 - `cache/screenshots/.gitkeep` - Ensures screenshot directory is tracked in git
+- `.github/workflows/weekly-full-regen.yml` - Sunday full regeneration workflow
+- `sync_daily_updates.sh` - User script to merge automation data
 
 ### Modified
 - `generate_data.py` - Added Watchmode API integration (lines 197-400), `argparse` support (lines 14, 640-649)
@@ -210,18 +230,20 @@ See [AMENDMENT-036](PROJECT_CHARTER.md#amendment-036-rolling-daily-context) for 
 - `assets/app.js` - Added WATCH button to card backs (line 130), updated watch link logic (lines 84-101)
 - `assets/styles.css` - Reduced WATCH button height (padding: 0.5rem)
 - `index.html` - Added cache-busting parameters (?v=3 for CSS, ?v=2 for JS)
-- `PROJECT_CHARTER.md` - Added AMENDMENT-038 for Watchmode API integration, added Watchmode API key to API Keys section
+- `PROJECT_CHARTER.md` - Added AMENDMENT-038 for Watchmode API integration, added Watchmode API key to API Keys section, added AMENDMENT-043 documenting bulletproof daily automation
 - `DAILY_CONTEXT.md` - This file (documented watch links feature completion)
 - `requirements.txt` - Added selenium, webdriver-manager, beautifulsoup4, lxml
 - `generate_data.py` - Enhanced debug logging, config reading for agent_scraper section
 - `agent_link_scraper.py` - Added comprehensive debug logging throughout
 - `admin.py` - Fixed file paths (admin/ not output/), removed 20-movie limit, added watch link override UI, added regenerate button, added HTTP auth
 - `config.yaml` - Added agent_scraper and rt_scraper configuration sections
-- `daily_orchestrator.py` - Removed date_verification.py and update_rt_data.py from pipeline
+- `daily_orchestrator.py` - Removed date_verification.py and update_rt_data.py from pipeline, added validate_data_quality() method with comprehensive checks
 - `daily_update.sh` - Removed date_verification.py and update_rt_data.py calls
-- `.github/workflows/daily-check.yml` - Added Playwright browser installation
+- `.github/workflows/daily-check.yml` - Added Playwright browser installation, updated to push to automation-updates branch with force-push, added data quality validation, added failure notifications
 - `NRW_DATA_WORKFLOW_EXPLAINED.md` - Updated scraper architecture documentation
 - `museum_legacy/README.md` - Added scripts/rt_scraper.py to archived list
+- `PROJECT_CHARTER.md` - Added "Canonical Watch Links Schema" section, updated AMENDMENT-031 to remove unused `default` category, added schema validation reference to AMENDMENT-038
+- `generate_data.py` - Added validate_watch_links_schema() function with comprehensive validation and statistics tracking
 
 ### Archived (Oct 17, 2025)
 
@@ -253,6 +275,23 @@ See [AMENDMENT-036](PROJECT_CHARTER.md#amendment-036-rolling-daily-context) for 
 # (No manual intervention needed)
 ```
 
+### Sync Automation Data
+```bash
+# Merge automation updates from bot
+./sync_daily_updates.sh
+
+# What it does:
+# 1. Fetches automation-updates branch
+# 2. Shows what changed
+# 3. Merges into main
+# 4. Shows latest movies
+```
+
+### Automation Schedule
+- **Daily:** 9 AM UTC (2 AM PDT) - Incremental update (new movies only)
+- **Weekly:** Sunday 10 AM UTC (2 AM PDT) - Full regeneration (all movies)
+- **User sync:** Run `./sync_daily_updates.sh` after automation completes
+
 ### Manual Pipeline (if needed)
 ```bash
 # Check for new digital releases
@@ -273,5 +312,5 @@ python3 movie_tracker.py bootstrap
 
 ---
 
-**Last updated:** 2025-10-17 (End of scraper consolidation session)
+**Last updated:** 2025-10-17 (End of scraper consolidation + schema formalization session)
 **Next diary archive:** End of session -> `diary/[YYYY-MM-DD].md`

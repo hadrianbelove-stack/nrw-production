@@ -40,7 +40,15 @@ class DataGenerator:
             'override_hits': 0,
             'rt_attempts': 0,
             'rt_successes': 0,
-            'rt_cache_hits': 0
+            'rt_cache_hits': 0,
+            'schema_validation_warnings': 0,
+            'schema_validation_passes': 0
+        }
+
+        # Wikipedia usage statistics
+        self.wikipedia_stats = {
+            'wikidata_attempts': 0,
+            'wikidata_successes': 0
         }
 
         self.agent_scraper = None  # Lazy initialization
@@ -172,6 +180,18 @@ class DataGenerator:
         # Update last scrape time
         self.rt_last_scrape_time = time.time()
 
+    def scrape_rt_score(self, title, year):
+        """Public wrapper function to scrape RT score for external consumers
+
+        Args:
+            title: Movie title
+            year: Release year
+
+        Returns:
+            dict: {'url': ..., 'score': ...} or None if not found
+        """
+        return self._scrape_rt_page(title, year)
+
     def _scrape_rt_page(self, title, year):
         """Scrape RT search page to find movie URL and score"""
         # Initialize driver if needed
@@ -224,9 +244,15 @@ class DataGenerator:
 
             if not movie_url:
                 print(f"  ✗ No RT page found for {title} ({year})")
-                # Cache the failure
+                # Cache the failure with consistent schema
                 cache_key = f"{title}_{year}"
-                self.rt_cache[cache_key] = None
+                cached_failure = {
+                    'url': None,
+                    'score': None,
+                    'title': title,
+                    'scraped_at': datetime.now().isoformat()
+                }
+                self.rt_cache[cache_key] = cached_failure
                 self._save_rt_cache()
                 return None
 
@@ -245,17 +271,40 @@ class DataGenerator:
             ]
 
             score = None
+            # Define multiple regex patterns to try in order
+            regex_patterns = [
+                r'(\d+)\s*%',                          # Basic pattern: number followed by %
+                r'tomatometer\s*:?\s*(\d+)\s*%',       # Pattern with tomatometer prefix
+                r'(\d+)\s*percent',                     # Pattern with "percent" instead of %
+                r'critics?\s*score\s*:?\s*(\d+)',      # Pattern with "critic score" prefix
+                r'fresh\s*:?\s*(\d+)',                 # Pattern with "fresh" prefix
+            ]
+
             for selector in score_selectors:
                 try:
                     element = self.rt_driver.find_element(By.CSS_SELECTOR, selector)
                     if element:
-                        score_text = element.text or element.get_attribute('textContent') or ""
-                        # Extract score using regex
-                        import re
-                        match = re.search(r'(\d+)%', score_text)
-                        if match:
-                            score = match.group(1) + "%"
-                            print(f"  ✓ Found score with selector: {selector}")
+                        # Get text from multiple sources
+                        text_sources = [
+                            element.text or "",
+                            element.get_attribute('textContent') or "",
+                            element.get_attribute('aria-label') or "",
+                            element.get_attribute('data-score') or "",
+                            element.get_attribute('innerHTML') or ""
+                        ]
+
+                        # Concatenate all text sources for matching
+                        combined_text = " ".join(text_sources).lower()
+
+                        # Try each regex pattern until one matches
+                        for pattern in regex_patterns:
+                            match = re.search(pattern, combined_text, re.IGNORECASE)
+                            if match:
+                                score = match.group(1) + "%"
+                                print(f"  ✓ Found score with selector: {selector}, pattern: {pattern}")
+                                break
+
+                        if score:
                             break
                 except Exception:
                     continue
@@ -268,9 +317,15 @@ class DataGenerator:
 
             print(f"  ✓ RT scraping successful: {movie_url} (Score: {score or 'N/A'})")
 
-            # Cache the result
+            # Cache the result with consistent schema
             cache_key = f"{title}_{year}"
-            self.rt_cache[cache_key] = result
+            cached_result = {
+                'url': result['url'],
+                'score': result['score'],
+                'title': title,
+                'scraped_at': datetime.now().isoformat()
+            }
+            self.rt_cache[cache_key] = cached_result
             self._save_rt_cache()
             self.watchmode_stats['rt_successes'] += 1
 
@@ -278,9 +333,15 @@ class DataGenerator:
 
         except Exception as e:
             print(f"  ✗ RT scraping error for {title} ({year}): {e}")
-            # Cache the failure
+            # Cache the failure with consistent schema
             cache_key = f"{title}_{year}"
-            self.rt_cache[cache_key] = None
+            cached_failure = {
+                'url': None,
+                'score': None,
+                'title': title,
+                'scraped_at': datetime.now().isoformat()
+            }
+            self.rt_cache[cache_key] = cached_failure
             self._save_rt_cache()
             return None
 
@@ -349,7 +410,24 @@ class DataGenerator:
         return None
     
     def find_wikipedia_url(self, title, year, imdb_id, movie_id=None):
-        """Find Wikipedia URL using waterfall approach"""
+        """Find Wikipedia URL using waterfall approach
+
+        Priority waterfall:
+        1. Overrides (overrides/wikipedia_overrides.json) - Manual curator fixes
+        2. Cache (wikipedia_cache.json) - Previously successful lookups
+        3. Wikidata SPARQL - Query by IMDb ID for structured data
+        4. Wikipedia REST API - Search by title with (year film) suffix
+        5. Log missing and return None
+
+        Args:
+            title: Movie title
+            year: Release year
+            imdb_id: IMDb ID from TMDB external_ids (e.g., 'tt35076553')
+            movie_id: TMDB ID for logging purposes
+
+        Returns:
+            Wikipedia URL string or None if not found
+        """
         # 1. Check overrides first
         if imdb_id and imdb_id in self.wikipedia_overrides:
             return f"https://en.wikipedia.org/wiki/{self.wikipedia_overrides[imdb_id]}"
@@ -362,7 +440,23 @@ class DataGenerator:
                 return cached_data.get('url')
             return cached_data
 
-        # 3. Try Wikipedia API search with proper headers
+        # 3. Try Wikidata SPARQL query (if IMDb ID available)
+        if imdb_id:
+            wiki_url = self.find_wikipedia_url_wikidata(imdb_id)
+            if wiki_url:
+                # Cache the result with source attribution
+                self.wikipedia_cache[cache_key] = {
+                    'url': wiki_url,
+                    'title': title,
+                    'cached_at': datetime.now().isoformat(),
+                    'source': 'wikidata'
+                }
+                self.save_cache(self.wikipedia_cache, 'wikipedia_cache.json')
+                return wiki_url
+            else:
+                print(f"  Wikidata lookup failed for {title}, trying Wikipedia REST API...")
+
+        # 4. Try Wikipedia API search with proper headers
         try:
             headers = {
                 'User-Agent': 'NewReleaseWall/1.0 (https://github.com/hadrianbelove-stack/nrw-production; hadrianbelove@gmail.com)'
@@ -376,8 +470,8 @@ class DataGenerator:
                 data = response.json()
                 wiki_url = data.get('content_urls', {}).get('desktop', {}).get('page')
                 if wiki_url:
-                    self.wikipedia_cache[cache_key] = {'url': wiki_url, 'title': title, 'cached_at': datetime.now().isoformat()}
-                    self._save_cache(self.wikipedia_cache, 'wikipedia_cache.json')
+                    self.wikipedia_cache[cache_key] = {'url': wiki_url, 'title': title, 'cached_at': datetime.now().isoformat(), 'source': 'wikipedia_api'}
+                    self.save_cache(self.wikipedia_cache, 'wikipedia_cache.json')
                     return wiki_url
 
             # Try without year
@@ -388,17 +482,23 @@ class DataGenerator:
                 data = response.json()
                 wiki_url = data.get('content_urls', {}).get('desktop', {}).get('page')
                 if wiki_url:
-                    self.wikipedia_cache[cache_key] = {'url': wiki_url, 'title': title, 'cached_at': datetime.now().isoformat()}
-                    self._save_cache(self.wikipedia_cache, 'wikipedia_cache.json')
+                    self.wikipedia_cache[cache_key] = {'url': wiki_url, 'title': title, 'cached_at': datetime.now().isoformat(), 'source': 'wikipedia_api'}
+                    self.save_cache(self.wikipedia_cache, 'wikipedia_cache.json')
                     return wiki_url
 
         except Exception as e:
             print(f"Wikipedia search error for {title}: {e}")
 
-        # 4. Log as missing and return null (only if movie_id is provided)
-        if movie_id:
-            self.log_missing_wikipedia(movie_id, title, year, imdb_id)
-        return None
+        # 5. Fallback to Wikipedia search URL
+        search_fallback_url = f"https://en.wikipedia.org/w/index.php?search={quote(title + ' (' + year + ' film)')}"
+        self.wikipedia_cache[cache_key] = {
+            'url': search_fallback_url,
+            'title': title,
+            'cached_at': datetime.now().isoformat(),
+            'source': 'search_fallback'
+        }
+        self.save_cache(self.wikipedia_cache, 'wikipedia_cache.json')
+        return search_fallback_url
     
     def log_missing_wikipedia(self, movie_id, title, year, imdb_id):
         """Log missing Wikipedia links for manual review"""
@@ -425,7 +525,85 @@ class DataGenerator:
                     json.dump(missing, f, indent=2)
         except Exception as e:
             print(f"Failed to log missing Wikipedia: {e}")
-    
+
+    def find_wikipedia_url_wikidata(self, imdb_id):
+        """Query Wikidata SPARQL endpoint to find Wikipedia article URL using IMDb ID
+
+        Args:
+            imdb_id: IMDb ID from TMDB external_ids (e.g., 'tt35076553')
+
+        Returns:
+            Wikipedia URL string or None if not found
+        """
+        # Validate input
+        if not imdb_id:
+            return None
+
+        # Increment attempts counter
+        self.wikipedia_stats['wikidata_attempts'] += 1
+
+        try:
+            # Build SPARQL query to find English Wikipedia article by IMDb ID
+            sparql_query = f"""
+            SELECT ?article WHERE {{
+              ?item wdt:P345 "{imdb_id}" .
+              ?article schema:about ?item .
+              ?article schema:isPartOf <https://en.wikipedia.org/> .
+            }}
+            """
+
+            # Query Wikidata SPARQL endpoint
+            url = "https://query.wikidata.org/sparql"
+            headers = {
+                'User-Agent': 'NewReleaseWall/1.0 (https://github.com/hadrianbelove-stack/nrw-production; hadrianbelove@gmail.com)',
+                'Accept': 'application/sparql-results+json'
+            }
+            params = {
+                'query': sparql_query,
+                'format': 'json'
+            }
+
+            response = requests.get(url, params=params, headers=headers, timeout=10)
+
+            # Check response status
+            if response.status_code != 200:
+                print(f"  Wikidata query error: HTTP {response.status_code}")
+                return None
+
+            # Parse JSON response
+            data = response.json()
+            results = data.get('results', {}).get('bindings', [])
+
+            if not results:
+                print(f"  ✗ Wikidata found no Wikipedia link for IMDb {imdb_id}")
+                return None
+
+            # Extract Wikipedia URL from first result
+            wikipedia_url = results[0]['article']['value']
+
+            # Validate URL format
+            if not wikipedia_url or not wikipedia_url.startswith('https://en.wikipedia.org/wiki/'):
+                print(f"  Wikidata returned invalid Wikipedia URL: {wikipedia_url}")
+                return None
+
+            # Success
+            self.wikipedia_stats['wikidata_successes'] += 1
+            print(f"  ✓ Wikidata found Wikipedia link for IMDb {imdb_id}")
+            return wikipedia_url
+
+        except requests.exceptions.Timeout:
+            print(f"  Wikidata query timeout for IMDb {imdb_id}")
+            return None
+        except requests.exceptions.RequestException as e:
+            print(f"  Wikidata network error for IMDb {imdb_id}: {e}")
+            return None
+        except KeyError as e:
+            print(f"  Wikidata response parsing error for IMDb {imdb_id}: {e}")
+            return None
+        except Exception as e:
+            print(f"  Wikidata query error for IMDb {imdb_id}: {e}")
+            return None
+
     def find_trailer_url(self, movie_details):
         """Extract trailer URL from TMDB movie details or scrape YouTube"""
         title = movie_details.get('title', '')
@@ -479,22 +657,53 @@ class DataGenerator:
                 return override
             return {'url': override, 'score': None}
 
-        # 2. Check cache
+        # 2. Check cache with TTL enforcement
         cache_key = f"{title}_{year}"
         if cache_key in self.rt_cache:
             cached_data = self.rt_cache[cache_key]
-            # Check for cached failure and return fallback immediately
-            if cached_data is None:
+
+            # Check if cache entry has expired (90-day TTL)
+            is_expired = False
+            if cached_data is not None and isinstance(cached_data, dict) and 'scraped_at' in cached_data:
+                try:
+                    scraped_at = datetime.fromisoformat(cached_data['scraped_at'])
+                    cache_age = datetime.now() - scraped_at
+                    if cache_age > timedelta(days=90):
+                        is_expired = True
+                        print(f"  RT cache expired for {title} ({year}), age: {cache_age.days} days")
+                except Exception as e:
+                    print(f"  Warning: Invalid scraped_at timestamp in RT cache: {e}")
+                    is_expired = True
+            elif cached_data is None:
+                # Legacy None entries (failures) - treat as expired to retry failures after 90 days
+                is_expired = True
+            elif cached_data is not None and not isinstance(cached_data, dict):
+                # Legacy cache entries without scraped_at - treat as expired
+                is_expired = True
+
+            # If not expired, return cached data
+            if not is_expired:
                 self.watchmode_stats['rt_cache_hits'] += 1
+
+                # Handle cached failures (new schema: dict with null url/score)
+                if isinstance(cached_data, dict) and cached_data.get('url') is None:
+                    search_query = quote(f"{title} {year}")
+                    return {'url': f"https://www.rottentomatoes.com/search?search={search_query}", 'score': None}
+
+                # Handle cached successes (new schema: dict with url/score)
+                if isinstance(cached_data, dict):
+                    return {'url': cached_data.get('url'), 'score': cached_data.get('score')}
+
+                # Handle legacy successful cache hits (string values)
+                if cached_data:
+                    return {'url': cached_data, 'score': None}
+
+                # Legacy None entries (should not reach here due to is_expired check above)
                 search_query = quote(f"{title} {year}")
                 return {'url': f"https://www.rottentomatoes.com/search?search={search_query}", 'score': None}
-
-            # Handle successful cache hits (dict or legacy string values)
-            self.watchmode_stats['rt_cache_hits'] += 1
-            if isinstance(cached_data, dict):
-                return cached_data
-            if cached_data:
-                return {'url': cached_data, 'score': None}
+            else:
+                # Cache expired, continue to scraping logic
+                print(f"  RT cache entry expired for {title} ({year}), will re-scrape")
 
         # 3. Check if RT scraper is enabled
         enabled = self.config.get('rt_scraper', {}).get('enabled', True)
@@ -752,24 +961,116 @@ class DataGenerator:
         for category, override_data in validated_overrides.items():
             watch_links[category] = override_data
 
-        # Cache result with canonical schema
-        if watch_links:
+        # Validate schema before caching and returning
+        validated_links = self.validate_watch_links_schema(watch_links, title)
+
+        # Cache result with canonical schema (use validated links)
+        if validated_links:
             # Determine source type
             has_links = any(
                 link.get('link') is not None
-                for link in watch_links.values()
+                for link in validated_links.values()
                 if isinstance(link, dict)
             )
             source_type = 'watchmode_api' if has_links else 'tmdb_providers'
 
             self.watch_links_cache[cache_key] = {
-                'links': watch_links,
+                'links': validated_links,
                 'cached_at': datetime.now().isoformat(),
                 'source': source_type
             }
             self.save_cache(self.watch_links_cache, 'cache/watch_links_cache.json')
 
-        return watch_links
+        return validated_links
+
+    def validate_watch_links_schema(self, watch_links, movie_title='Unknown'):
+        """
+        Runtime validation that watch_links conform to canonical streaming/rent/buy schema.
+
+        Args:
+            watch_links: Dict to validate (typically from get_watch_links)
+            movie_title: String for logging context
+
+        Returns:
+            Dict: Validated/cleaned watch_links with invalid entries removed
+        """
+        import re
+        from urllib.parse import urlparse
+
+        # Initialize stats counters if not present
+        if 'schema_validation_warnings' not in self.watchmode_stats:
+            self.watchmode_stats['schema_validation_warnings'] = 0
+        if 'schema_validation_passes' not in self.watchmode_stats:
+            self.watchmode_stats['schema_validation_passes'] = 0
+
+        # Type check: Verify watch_links is a dict
+        if not isinstance(watch_links, dict):
+            print(f"Warning: Invalid watch_links type '{type(watch_links).__name__}' for {movie_title}, expected dict")
+            self.watchmode_stats['schema_validation_warnings'] += 1
+            return {}
+
+        validated_links = {}
+        had_warnings = False
+        valid_categories = ['streaming', 'rent', 'buy']
+
+        for category, category_data in watch_links.items():
+            # Category validation: Check that all keys are in ['streaming', 'rent', 'buy']
+            if category not in valid_categories:
+                print(f"Warning: Invalid watch link category '{category}' for {movie_title}")
+                had_warnings = True
+                continue
+
+            # Structure validation: For each category, verify it's a dict with 'service' and 'link' keys
+            if not isinstance(category_data, dict):
+                print(f"Warning: Invalid category data type for '{category}' in {movie_title}, expected dict")
+                had_warnings = True
+                continue
+
+            if 'service' not in category_data or 'link' not in category_data:
+                print(f"Warning: Missing required keys (service/link) in '{category}' for {movie_title}")
+                had_warnings = True
+                continue
+
+            # Service validation: Verify service is non-empty string
+            if not isinstance(category_data['service'], str) or not category_data['service'].strip():
+                print(f"Warning: Invalid service in '{category}' for {movie_title}")
+                had_warnings = True
+                continue
+
+            # Link validation: Verify link is either None or valid HTTP/HTTPS URL string
+            link = category_data['link']
+            if link is not None:
+                if not isinstance(link, str):
+                    print(f"Warning: Invalid link type in '{category}' for {movie_title}, expected string or None")
+                    had_warnings = True
+                    continue
+
+                # Basic URL validation
+                try:
+                    parsed = urlparse(link)
+                    if not parsed.scheme or parsed.scheme not in ['http', 'https']:
+                        print(f"Warning: Invalid URL scheme in '{category}' for {movie_title}")
+                        had_warnings = True
+                        continue
+                    if not parsed.netloc:
+                        print(f"Warning: Invalid URL netloc in '{category}' for {movie_title}")
+                        had_warnings = True
+                        continue
+                except Exception:
+                    print(f"Warning: Malformed URL in '{category}' for {movie_title}")
+                    had_warnings = True
+                    continue
+
+            # If we reach here, the category data is valid
+            validated_links[category] = category_data
+
+        # Update statistics
+        if had_warnings:
+            self.watchmode_stats['schema_validation_warnings'] += 1
+        else:
+            self.watchmode_stats['schema_validation_passes'] += 1
+
+        return validated_links
 
     def _try_agent_scraper(self, movie_id, title, year, service, category):
         """Try agent scraper for supported platforms"""
@@ -1073,6 +1374,15 @@ class DataGenerator:
         print(f"Direct trailers found: {len([m for m in display_movies if m['links'].get('trailer') and 'watch?v=' in m['links']['trailer']])}")
         print(f"RT scores cached: {len([m for m in display_movies if m['rt_score']])}")
 
+        # Wikidata usage statistics
+        print(f"\n📊 Wikidata Usage:")
+        print(f"  Wikidata attempts: {self.wikipedia_stats['wikidata_attempts']}")
+        print(f"  Wikidata successes: {self.wikipedia_stats['wikidata_successes']}")
+        if self.wikipedia_stats['wikidata_attempts'] > 0:
+            wikidata_success_rate = (self.wikipedia_stats['wikidata_successes'] / self.wikipedia_stats['wikidata_attempts'] * 100)
+            print(f"  Wikidata success rate: {wikidata_success_rate:.1f}%")
+        print(f"  Wikipedia links recovered via Wikidata: {self.wikipedia_stats['wikidata_successes']}")
+
         # Watchmode usage statistics
         total_calls = self.watchmode_stats['search_calls'] + self.watchmode_stats['source_calls']
         cache_hit_rate = (self.watchmode_stats['cache_hits'] / (self.watchmode_stats['cache_hits'] + total_calls) * 100) if (self.watchmode_stats['cache_hits'] + total_calls) > 0 else 0
@@ -1109,6 +1419,16 @@ class DataGenerator:
         print(f"  Override hits: {self.watchmode_stats['override_hits']}")
         if self.watchmode_stats['override_hits'] > 0:
             print(f"  Movies with manual overrides: {self.watchmode_stats['override_hits']}")
+
+        print(f"\n🔍 Schema Validation:")
+        print(f"  Validation passes: {self.watchmode_stats['schema_validation_passes']}")
+        print(f"  Validation warnings: {self.watchmode_stats['schema_validation_warnings']}")
+        total_validations = self.watchmode_stats['schema_validation_passes'] + self.watchmode_stats['schema_validation_warnings']
+        if total_validations > 0:
+            pass_rate = (self.watchmode_stats['schema_validation_passes'] / total_validations * 100)
+            print(f"  Validation pass rate: {pass_rate:.1f}%")
+            if self.watchmode_stats['schema_validation_warnings'] > total_validations * 0.05:  # Alert if warnings > 5%
+                print(f"  ⚠️  WARNING: High validation failure rate ({self.watchmode_stats['schema_validation_warnings']}/{total_validations}) - check for systematic schema issues")
 
     def apply_admin_overrides(self, display_movies):
         """Apply admin panel decisions to final output"""

@@ -1,0 +1,69 @@
+name: Update YouTube Playlists
+
+on:
+  schedule:
+    # Monday at 10:00 UTC (3 AM PDT / 2 AM PST) - rebuild weekly playlist
+    - cron: '0 10 * * 1'
+
+    # 1st of month at 10:00 UTC (3 AM PDT / 2 AM PST) - create monthly playlist
+    - cron: '0 10 1 * *'
+
+  workflow_dispatch:  # Allow manual trigger
+    inputs:
+      playlist_type:
+        description: 'Type of playlist to update'
+        required: false
+        default: 'weekly'
+        type: choice
+        options:
+        - weekly
+        - monthly
+
+jobs:
+  update-playlists:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install google-api-python-client google-auth-oauthlib google-auth-httplib2
+
+      - name: Restore YouTube credentials
+        env:
+          YOUTUBE_TOKEN: ${{ secrets.YOUTUBE_TOKEN }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+        run: |
+          mkdir -p youtube_credentials
+          echo "$YOUTUBE_CLIENT_SECRET" | base64 -d > youtube_credentials/client_secret.json
+          echo "$YOUTUBE_TOKEN" | base64 -d > youtube_credentials/token.pickle
+
+      - name: Validate credentials
+        run: |
+          if [ ! -s youtube_credentials/client_secret.json ]; then
+            echo "Error: client_secret.json is missing or empty. Check YOUTUBE_CLIENT_SECRET secret."
+            exit 1
+          fi
+          if [ ! -s youtube_credentials/token.pickle ]; then
+            echo "Error: token.pickle is missing or empty. Check YOUTUBE_TOKEN secret."
+            exit 1
+          fi
+          echo "Credentials validated successfully."
+
+      - name: Update weekly playlist
+        if: github.event.schedule == '0 10 * * 1'
+        run: python3 youtube_playlist_manager.py weekly
+
+      - name: Update monthly playlist
+        if: github.event.schedule == '0 10 1 * *'
+        run: python3 youtube_playlist_manager.py monthly
+
+      - name: Manual trigger
+        if: github.event_name == 'workflow_dispatch'
+        run: python3 youtube_playlist_manager.py ${{ github.event.inputs.playlist_type || 'weekly' }}

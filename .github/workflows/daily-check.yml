@@ -1,4 +1,11 @@
 name: Daily Update (Automated)
+# Testing instructions:
+# - Manual trigger: Go to Actions tab → Daily Update → Run workflow
+# - Verify: Check automation-updates branch was created/updated
+# - Verify: Force-push succeeded (no conflicts)
+# - Verify: Data quality validation passed
+# - Test failure: Temporarily break data.json, verify issue is created
+# - Test merge: Run ./sync_daily_updates.sh locally
 on:
   schedule:
     - cron: '0 9 * * *'  # 9 AM UTC = 1 AM PST / 2 AM PDT
@@ -34,7 +41,52 @@ jobs:
           AGENT_SCRAPER_ENABLED: true  # Set to false to disable agent scraping
         run: python3 daily_orchestrator.py
 
-      - name: Commit and push changes
+      - name: Validate data quality
+        run: |
+          python3 -c "
+          import json
+          import sys
+          from datetime import datetime, timedelta
+
+          # Load and validate data.json
+          try:
+              with open('data.json', 'r') as f:
+                  data = json.load(f)
+          except (FileNotFoundError, json.JSONDecodeError) as e:
+              print(f'❌ Failed to load data.json: {e}')
+              sys.exit(1)
+
+          # Check minimum movie count
+          movies = data.get('movies', [])
+          if len(movies) < 200:
+              print(f'❌ Too few movies ({len(movies)}) - possible data loss! Expected at least 200.')
+              sys.exit(1)
+
+          # Check for recent movies (last 7 days)
+          recent_cutoff = (datetime.now() - timedelta(days=7)).strftime('%Y-%m-%d')
+          recent_movies = [m for m in movies if m.get('digital_date', '') >= recent_cutoff]
+
+          if len(recent_movies) == 0:
+              print(f'❌ No recent movies found - automation may not be discovering new releases')
+              sys.exit(1)
+
+          # Check required fields on sample of movies
+          sample_movies = movies[:5]
+          for movie in sample_movies:
+              if not movie.get('title'):
+                  print(f'❌ Movie missing title: {movie}')
+                  sys.exit(1)
+              if not movie.get('digital_date'):
+                  print(f'❌ Movie missing digital_date: {movie.get(\"title\")}')
+                  sys.exit(1)
+
+          # Check watch links coverage
+          movies_with_links = [m for m in movies if any(m.get('watch_links', {}).values())]
+
+          print(f'✅ Quality check passed: {len(movies)} total, {len(recent_movies)} recent, {len(movies_with_links)} with watch links')
+          "
+
+      - name: Commit and push to automation-updates branch
         run: |
           git config user.email "action@github.com"
           git config user.name "NRW Daily Bot"
@@ -42,6 +94,75 @@ jobs:
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
+            git checkout -B automation-updates
             git commit -m "Daily update - $(date -u +%Y-%m-%d) [automated]"
-            git push
+            git push --force origin automation-updates
+            echo "✅ Pushed to automation-updates branch"
           fi
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          gh issue create \
+            --title "Daily automation failed - $(date -u +%Y-%m-%d)" \
+            --body "$(cat <<'EOF'
+          ## Automation Failure Report
+
+          **Workflow Run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          **Timestamp:** $(date -u)
+          **Branch:** ${{ github.ref_name }}
+
+          ## Troubleshooting Steps
+
+          1. Check the workflow logs for error details
+          2. Verify data.json is not corrupted
+          3. Check if external APIs (RT, Watchmode) are responding
+          4. Run the pipeline manually: `python3 daily_orchestrator.py`
+          5. If issue persists, regenerate data: `python3 generate_data.py --full`
+
+          ## Next Steps
+
+          - Fix the underlying issue
+          - Trigger the workflow manually to verify the fix
+          - Close this issue when automation is working again
+
+          🤖 This issue was created automatically by the daily automation workflow.
+          EOF
+          )" \
+            --label "automation,bug"
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Create summary comment
+        if: success()
+        run: |
+          python3 -c "
+          import json
+          from datetime import datetime, timedelta
+
+          # Load data.json and extract statistics
+          with open('data.json', 'r') as f:
+              data = json.load(f)
+
+          movies = data.get('movies', [])
+          total_movies = len(movies)
+
+          # Find latest movie
+          latest_movie = None
+          if movies:
+              sorted_movies = sorted(movies, key=lambda x: x.get('digital_date', ''), reverse=True)
+              latest_movie = sorted_movies[0]
+
+          # Print summary
+          print('📊 Automation Summary')
+          print(f'Total movies: {total_movies}')
+          if latest_movie:
+              print(f'Latest movie: {latest_movie.get(\"title\")} ({latest_movie.get(\"digital_date\")})')
+          print('Generation timestamp: $(date -u)')
+          print('')
+          print('🔄 To merge these changes:')
+          print('  ./sync_daily_updates.sh')
+          print('')
+          print('📋 To view changes:')
+          print('  git diff --stat main..automation-updates')
+          "

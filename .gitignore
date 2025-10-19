@@ -5,6 +5,8 @@ __pycache__/
 config.yaml  # Keep API keys local only
 movie_tracking.json  # Keep database local unless you want it synced
 cache/
+!cache/.gitkeep
+!cache/screenshots/.gitkeep
 diagnose_*.py
 movie_tracking.json
 current_releases.json
@@ -22,3 +24,8 @@ _ws_*/
 sync_tmp_*/
 output/
 .nrw_http_pid
+
+# YouTube credentials (sensitive OAuth tokens)
+youtube_credentials/
+client_secret_encoded.txt
+token_encoded.txt

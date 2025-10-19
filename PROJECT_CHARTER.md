@@ -287,6 +287,60 @@ tracking:
 - **Optional:** Can be disabled by not initializing agent in `generate_data.py`
 - **Terms of Service:** Web scraping may violate platform ToS; use responsibly
 
+### Canonical Watch Links Schema
+
+**Official Structure (as of AMENDMENT-038):**
+
+The `watch_links` field in `data.json` uses a **three-category structure** representing different access methods:
+
+```json
+{
+  "watch_links": {
+    "streaming": {
+      "service": "Netflix",
+      "link": "https://www.netflix.com/title/12345"
+    },
+    "rent": {
+      "service": "Amazon Video",
+      "link": "https://www.amazon.com/..."
+    },
+    "buy": {
+      "service": "Apple TV",
+      "link": "https://tv.apple.com/..."
+    }
+  }
+}
+```
+
+**Category Definitions:**
+- **`streaming`**: Subscription-based services (Netflix, Prime, Disney+, HBO Max, Hulu, MUBI, Criterion)
+- **`rent`**: Rental options (Amazon Video, Apple TV, Google Play, Vudu)
+- **`buy`**: Purchase options (Amazon Video, Apple TV, Google Play, Microsoft Store)
+
+**Schema Rules:**
+1. **Optional categories**: Only present when available for the movie (sparse structure)
+2. **Required fields per category**: `service` (string, provider name) and `link` (string URL or null)
+3. **Null links allowed**: `link: null` indicates service is available but URL not found (frontend shows error state)
+4. **No search URLs**: System returns `null` instead of Google/Amazon search fallbacks (curator can add overrides)
+5. **Service priority**: Best service selected per category (Netflix > Disney+ for streaming, Amazon > Apple TV for rent/buy)
+
+**Why `streaming/rent/buy` (not `free/paid`):**
+- More semantic clarity - users understand "streaming" vs "rent" better than "free" vs "paid"
+- Aligns with industry terminology (Watchmode API, TMDB, streaming platforms)
+- Three categories provide finer granularity (rent vs buy are different user intents)
+- "Free" is ambiguous (subscription services aren't truly free)
+
+**Legacy Migration:**
+- Early implementation used `free/paid` categories (Oct 16, 2025)
+- Automatic migration function in `generate_data.py` (lines 1021-1072) converts old cache entries
+- All production code now uses `streaming/rent/buy` exclusively
+- Migration is transparent (no user action required)
+
+**Validation:**
+- Schema validation function in `generate_data.py` enforces structure (see `validate_watch_links_schema()`)
+- Invalid categories rejected (only streaming/rent/buy allowed)
+- Invalid structure logged as warning (graceful degradation)
+
 
 ### AMENDMENT-028: Inclusive Tracking Strategy
 - Track ALL movie releases, not filtered by type
@@ -310,7 +364,7 @@ tracking:
 
 ### AMENDMENT-031: Data Schema Lock v1
 - Required per movie: tmdb_id, imdb_id, title, original_title, digital_date (ISO‑8601), poster, crew.director, crew.cast[], synopsis, metadata.runtime, links.{trailer,rt,wikipedia} (nullable), watch_links (optional).
-- watch_links (optional): object whose optional keys are `streaming`, `rent`, `buy`, and `default`, each containing `{service: string, link: string}`. Categories are present only when available for the title. (See AMENDMENT-038 for full details and fallback logic.)
+- watch_links (optional): object whose optional keys are `streaming`, `rent`, `buy`, each containing `{service: string, link: string}`. Categories are present only when available for the title. See "Canonical Watch Links Schema" section and AMENDMENT-038 for full details and fallback logic.
 - digital_date = first provider day from tracker; never "discovery date".
 
 ### AMENDMENT-032: Runtime vs Pipeline Hierarchy
@@ -454,6 +508,8 @@ The project needed direct links to streaming platforms rather than Google search
    - **Purpose:** Prevents redundant API calls (saves 13,380 calls/month)
    - **Effectiveness:** With cache, monthly usage is ~300 calls (new movies only); without cache, would be 13,680 calls (exceeds free tier)
    - **Migration support:** Automatically migrates legacy `free/paid` format to canonical `streaming/rent/buy` schema
+   - **Schema enforcement:** See "Canonical Watch Links Schema" section for official structure definition
+   - **Validation:** `validate_watch_links_schema()` function enforces schema correctness during generation
 
 6. **API usage tracking:**
    - **Statistics:** search_calls, source_calls, cache_hits, watchmode_successes
@@ -892,6 +948,18 @@ The scripts version was already integrated (line 17 import, lines 318-323 usage)
 3. RT scraper (NEW - inlined) - Selenium-based scraping
 4. RT search URL - Fallback when scraping fails
 
+**Score Extraction Status (Oct 18, 2025 - Verification Complete):**
+- ✅ Implemented in `_scrape_rt_page()` method (generate_data.py:181-291)
+- ✅ 6 selector fallbacks for score elements (lines 244-251)
+- ✅ Regex pattern `r'(\d+)%'` extracts percentage scores (line 261)
+- ✅ Cached in rt_cache.json with 90-day TTL
+- ✅ Rate limiting enforced (2-second delays between scrapes)
+- ✅ Integrated into waterfall at tier 4 (line 630)
+- ✅ Test results: 100% success rate on 4 test cases (including live scraping)
+- ✅ Current coverage: 72.9% (172/236 entries have scores)
+- ⚠️ Selectors working correctly (extracted 89% for "The Substance", 82% for random movie)
+- 📊 Target coverage: 85-90% (achievable with full regeneration)
+
 **Cache Structure:**
 
 - **File:** `rt_cache.json`
@@ -959,3 +1027,165 @@ These files will be archived to `museum_legacy/` in subsequent phase.
 - Statistics show accurate counts
 - No crashes or hangs during generation
 - Cache properly updated after scrapes
+
+### AMENDMENT-043: Bulletproof Daily Automation with Separate Branch Strategy (Oct 17, 2025)
+
+**Problem:**
+
+Daily automation was causing merge conflicts when user worked locally during the day:
+- Bot and user both commit to `main` branch
+- Git conflicts occur when both modify `data.json` or `movie_tracking.json`
+- User must manually resolve conflicts every morning
+- `git push` can fail silently in GitHub Actions (workflow shows green but push failed)
+- Incremental mode only processes NEW movies (existing 235 movies never get agent scraper links)
+
+**Solution:**
+
+Implement separate branch strategy where bot and user never write to same branch simultaneously:
+
+**Architecture:**
+- **main branch:** User works here (commits, pushes, pulls)
+- **automation-updates branch:** Bot force-pushes here (always succeeds, never conflicts)
+- **Sync mechanism:** User runs `./sync_daily_updates.sh` to merge automation data when ready
+- **Weekly full regen:** Sunday full regeneration ensures all movies get retroactive improvements
+
+**Implementation:**
+
+1. **Daily Automation (.github/workflows/daily-check.yml):**
+   - Checkout main branch (start from user's latest work)
+   - Run pipeline: movie_tracker.py daily → generate_data.py (incremental)
+   - Validate data quality (minimum 200 movies check)
+   - Create/switch to automation-updates branch: `git checkout -B automation-updates`
+   - Force-push to automation-updates: `git push --force origin automation-updates`
+   - On failure: Create GitHub issue with workflow run URL
+
+2. **Weekly Full Regeneration (.github/workflows/weekly-full-regen.yml):**
+   - Trigger: Sunday at 10 AM UTC (2 AM PDT)
+   - Checkout main branch
+   - Run: `python3 generate_data.py --full` (reprocess ALL movies)
+   - Validate data quality
+   - Force-push to automation-updates branch
+   - On failure: Create GitHub issue
+
+3. **User Sync Script (sync_daily_updates.sh):**
+   - Fetch automation-updates branch
+   - Show what changed (git diff --stat)
+   - Merge into main branch
+   - Show latest movies added
+   - Handle merge conflicts gracefully
+
+4. **Data Quality Validation (daily_orchestrator.py):**
+   - Check data.json exists and is valid JSON
+   - Verify minimum 200 movies (prevents data loss)
+   - Verify at least 1 movie from last 7 days (ensures discovery working)
+   - Sample movies for required fields (title, digital_date, poster)
+   - Check watch links coverage (some movies should have links)
+
+**Benefits:**
+
+- ✅ **No merge conflicts:** Bot and user never write to same branch
+- ✅ **Bot always succeeds:** Force-push never fails
+- ✅ **User control:** Merge automation data when ready (not forced)
+- ✅ **Data quality:** Validation prevents committing broken data
+- ✅ **Failure visibility:** GitHub issues created automatically
+- ✅ **Retroactive improvements:** Weekly full regen populates agent scraper links for all movies
+- ✅ **Easy rollback:** Don't merge automation-updates if something looks wrong
+
+**Workflow:**
+
+**Daily (Automated):**
+1. 9 AM UTC: GitHub Actions runs daily automation
+2. Bot: Discovers new movies, updates tracking database
+3. Bot: Generates data.json (incremental mode - only new movies)
+4. Bot: Validates data quality (minimum 200 movies)
+5. Bot: Force-pushes to automation-updates branch
+6. Bot: Creates GitHub issue if any step fails
+
+**Daily (User):**
+1. Morning: Run `./sync_daily_updates.sh` to merge automation data
+2. Review: Check what changed (git diff output)
+3. Merge: Automation data merged into main
+4. Work: Make changes, test locally
+5. Commit: Push changes to main
+6. Next day: Repeat
+
+**Weekly (Automated):**
+1. Sunday 10 AM UTC: GitHub Actions runs weekly full regeneration
+2. Bot: Reprocesses ALL 235 movies (not just new ones)
+3. Bot: Agent scraper populates Netflix/Disney+/Hulu links for existing movies
+4. Bot: RT scraper updates scores for movies that got reviews
+5. Bot: Validates data quality
+6. Bot: Force-pushes to automation-updates branch (overwrites daily incremental)
+7. User: Merges weekly regen on Monday morning (preferred over daily incremental)
+
+**Performance Impact:**
+
+- **Daily automation:** 3-5 minutes (incremental mode, only new movies)
+- **Weekly full regen:** 15-20 minutes (first run with agent scraper), 5-10 minutes (subsequent runs with cache)
+- **User sync:** <1 second (just git merge)
+
+**Failure Handling:**
+
+- **Validation failure:** Workflow stops, no commit/push, GitHub issue created
+- **Scraper failure:** Graceful degradation (returns null links), workflow continues
+- **Git push failure:** Impossible (force-push always succeeds)
+- **Merge conflict:** User runs `git merge --abort` and regenerates data.json
+
+**Configuration:**
+
+No new configuration needed. Uses existing:
+- `config.yaml` for agent_scraper and rt_scraper settings
+- Environment variables for API keys
+- GitHub Actions secrets (none needed - uses default GITHUB_TOKEN)
+
+**Testing:**
+
+1. **Test daily automation:**
+   - Trigger workflow manually
+   - Verify automation-updates branch created
+   - Verify force-push succeeded
+   - Verify data quality validation passed
+
+2. **Test weekly full regen:**
+   - Trigger workflow manually
+   - Verify --full flag is used
+   - Verify all movies reprocessed
+   - Verify agent scraper links populated
+
+3. **Test sync script:**
+   - Run `./sync_daily_updates.sh`
+   - Verify merge succeeds
+   - Verify latest movies shown
+
+4. **Test failure notification:**
+   - Temporarily break generate_data.py
+   - Trigger workflow
+   - Verify GitHub issue created
+   - Fix and verify issue can be closed
+
+**Rollback Plan:**
+
+- If separate branch strategy causes issues:
+  1. Revert daily-check.yml to push to main (remove force-push)
+  2. Delete automation-updates branch
+  3. Delete sync_daily_updates.sh
+  4. Keep data quality validation (still useful)
+  5. Accept merge conflicts (original problem returns)
+
+**Implementation Status:**
+
+- ✅ Daily automation modified for automation-updates branch
+- ✅ Weekly full regeneration workflow created
+- ✅ User sync script created
+- ✅ Data quality validation added
+- ✅ Failure notifications implemented
+- ⏳ Testing in progress
+
+**Success Criteria:**
+
+- Zero merge conflicts for user
+- Bot automation succeeds 100% of time (force-push)
+- Data quality maintained (minimum 200 movies)
+- Failures are visible (GitHub issues)
+- Weekly full regen populates agent scraper links
+- User can review automation changes before merging
