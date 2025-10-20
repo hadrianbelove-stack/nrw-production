@@ -4,14 +4,23 @@ Admin panel for curating movie selections.
 Simple Flask app for editing movie data and controlling visibility.
 """
 
-from flask import Flask, render_template_string, request, jsonify, redirect, url_for
+from flask import Flask, render_template, request, jsonify, redirect, url_for
 import json
 import os
 import subprocess
 from datetime import datetime
 import yaml
+import glob
+import shutil
+import logging
+from logging.handlers import RotatingFileHandler
+import traceback
+from typing import Dict, List, Optional, Union, Any, Tuple
 
-app = Flask(__name__)
+app = Flask(__name__,
+            template_folder='admin/templates',
+            static_folder='admin/static',
+            static_url_path='/admin/static')
 
 from flask_httpauth import HTTPBasicAuth
 
@@ -22,7 +31,7 @@ ADMIN_USERNAME = os.environ.get('ADMIN_USERNAME', 'admin')
 ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'changeme')
 
 @auth.verify_password
-def verify_password(username, password):
+def verify_password(username: str, password: str) -> Optional[str]:
     if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
         return username
     return None
@@ -33,808 +42,17 @@ HIDDEN_FILE = 'admin/hidden_movies.json'  # Admin overrides
 FEATURED_FILE = 'admin/featured_movies.json'  # Admin overrides
 WATCH_LINK_OVERRIDES_FILE = 'admin/watch_link_overrides.json'
 
-# HTML Template for admin interface
-ADMIN_TEMPLATE = '''
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>New Release Wall - Admin Panel</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #1a1a1a;
-            color: #fff;
-            padding: 2rem;
-        }
-        
-        .header {
-            background: #2a2a2a;
-            padding: 2rem;
-            border-radius: 8px;
-            margin-bottom: 2rem;
-            border: 1px solid #3a3a3a;
-        }
-        
-        h1 {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-            color: #ff6b6b;
-        }
-        
-        .stats {
-            display: flex;
-            gap: 2rem;
-            margin-top: 1rem;
-            color: #999;
-        }
-        
-        .stat-item {
-            display: flex;
-            gap: 0.5rem;
-        }
-        
-        .stat-value {
-            color: #fff;
-            font-weight: bold;
-        }
-        
-        .filters {
-            background: #2a2a2a;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 2rem;
-            border: 1px solid #3a3a3a;
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        
-        .filter-btn {
-            padding: 0.5rem 1rem;
-            background: #4a4a6a;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .filter-btn:hover {
-            background: #5a5a7a;
-        }
-        
-        .filter-btn.active {
-            background: #ff6b6b;
-        }
-        
-        .movie-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
-        
-        .movie-card {
-            background: #2a2a2a;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid #3a3a3a;
-            transition: transform 0.3s;
-        }
-        
-        .movie-card:hover {
-            transform: translateY(-2px);
-            border-color: #4a4a6a;
-        }
-        
-        .movie-card.hidden {
-            opacity: 0.5;
-            border-color: #ff4444;
-        }
-        
-        .movie-card.featured {
-            border-color: #ffd700;
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
-        }
-        
-        .movie-poster {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            background: #1a1a1a;
-        }
-        
-        .movie-info {
-            padding: 1rem;
-        }
-        
-        .movie-title {
-            font-size: 1.1rem;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-            color: #fff;
-        }
-        
-        .movie-meta {
-            font-size: 0.9rem;
-            color: #999;
-            margin-bottom: 0.5rem;
-        }
-        
-        .movie-score {
-            display: inline-block;
-            padding: 0.2rem 0.5rem;
-            background: #333;
-            border-radius: 4px;
-            margin-right: 0.5rem;
-        }
-        
-        .score-high {
-            background: #28a745;
-            color: white;
-        }
-        
-        .score-medium {
-            background: #ffc107;
-            color: black;
-        }
-        
-        .score-low {
-            background: #dc3545;
-            color: white;
-        }
-        
-        .movie-providers {
-            font-size: 0.85rem;
-            color: #66b3ff;
-            margin-bottom: 0.5rem;
-        }
-        
-        .movie-actions {
-            display: flex;
-            gap: 0.5rem;
-            margin-top: 1rem;
-            flex-wrap: wrap;
-        }
-        
-        .action-btn {
-            padding: 0.4rem 0.8rem;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: all 0.3s;
-            text-decoration: none;
-        }
-        
-        .btn-hide {
-            background: #dc3545;
-            color: white;
-        }
-        
-        .btn-show {
-            background: #28a745;
-            color: white;
-        }
-        
-        .btn-feature {
-            background: #ffc107;
-            color: black;
-        }
-        
-        .btn-unfeature {
-            background: #6c757d;
-            color: white;
-        }
-        
-        .btn-rt {
-            background: #ff6b6b;
-            color: white;
-        }
-        
-        .btn-tmdb {
-            background: #01d277;
-            color: white;
-        }
-        
-        .action-btn:hover {
-            opacity: 0.8;
-        }
-        
-        .search-box {
-            flex: 1;
-            padding: 0.5rem 1rem;
-            background: #1a1a1a;
-            border: 1px solid #3a3a3a;
-            color: white;
-            border-radius: 4px;
-            max-width: 300px;
-        }
-        
-        .success-msg {
-            position: fixed;
-            top: 2rem;
-            right: 2rem;
-            background: #28a745;
-            color: white;
-            padding: 1rem 2rem;
-            border-radius: 4px;
-            display: none;
-        }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <h1>🎬 New Release Wall - Admin Panel</h1>
-        <div class="stats">
-            <div class="stat-item">
-                <span>Total Movies:</span>
-                <span class="stat-value">{{ movies|length }}</span>
-            </div>
-            <div class="stat-item">
-                <span>Visible:</span>
-                <span class="stat-value" id="visible-count">{{ visible_count }}</span>
-            </div>
-            <div class="stat-item">
-                <span>Hidden:</span>
-                <span class="stat-value" id="hidden-count">{{ hidden_count }}</span>
-            </div>
-            <div class="stat-item">
-                <span>Featured:</span>
-                <span class="stat-value" id="featured-count">{{ featured_count }}</span>
-            </div>
-        </div>
-        <div style="margin-top: 1rem;">
-            <button onclick="regenerateData()"
-                    class="action-btn"
-                    style="background: #007bff; color: white; padding: 0.6rem 1.2rem; font-size: 0.9rem;"
-                    id="regenerate-btn">
-                🔄 Regenerate data.json
-            </button>
-            <span id="regenerate-status" style="margin-left: 1rem; color: #999; font-size: 0.85rem;"></span>
-        </div>
-    </div>
-    
-    <div class="filters">
-        <button class="filter-btn active" onclick="filterMovies('all')">All Movies</button>
-        <button class="filter-btn" onclick="filterMovies('visible')">Visible Only</button>
-        <button class="filter-btn" onclick="filterMovies('hidden')">Hidden Only</button>
-        <button class="filter-btn" onclick="filterMovies('featured')">Featured</button>
-        <button class="filter-btn" onclick="filterMovies('no-score')">No RT Score</button>
-        <input type="text" class="search-box" placeholder="Search movies..." onkeyup="searchMovies(this.value)">
-    </div>
-    
-    <div class="movie-grid" id="movie-grid">
-        {% for movie_id, movie in movies.items() %}
-        <div class="movie-card {% if movie_id in hidden %}hidden{% endif %} {% if movie_id in featured %}featured{% endif %}" 
-             data-movie-id="{{ movie_id }}"
-             data-title="{{ movie.title|lower }}"
-             data-has-score="{{ 'yes' if movie.rt_score else 'no' }}">
-            {% if movie.poster_url %}
-            <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" class="movie-poster">
-            {% else %}
-            <div class="movie-poster" style="display: flex; align-items: center; justify-content: center; color: #666;">
-                No Poster
-            </div>
-            {% endif %}
-            
-            <div class="movie-info">
-                <div class="movie-title">{{ movie.title }}</div>
-                <div class="movie-meta">
-                    {{ movie.year or '2025' }} • {{ movie.director or 'Unknown Director' }}
-                </div>
-                
-                {% if movie.rt_score %}
-                <span class="movie-score {% if movie.rt_score >= 80 %}score-high{% elif movie.rt_score >= 60 %}score-medium{% else %}score-low{% endif %}">
-                    🍅 {{ movie.rt_score }}%
-                </span>
-                {% else %}
-                <span class="movie-score">No RT Score</span>
-                {% endif %}
-                
-                {% if movie.runtime %}
-                <span class="movie-meta">{{ movie.runtime }} min</span>
-                {% endif %}
-                
-                {% if movie.provider_list %}
-                <div class="movie-providers">{{ movie.provider_list }}</div>
-                {% endif %}
-                
-                <div class="movie-actions">
-                    {% if movie_id in hidden %}
-                    <button class="action-btn btn-show" onclick="toggleHidden('{{ movie_id }}', false)">👁️ Show</button>
-                    {% else %}
-                    <button class="action-btn btn-hide" onclick="toggleHidden('{{ movie_id }}', true)">🚫 Hide</button>
-                    {% endif %}
-                    
-                    {% if movie_id in featured %}
-                    <button class="action-btn btn-unfeature" onclick="toggleFeatured('{{ movie_id }}', false)">⭐ Unfeature</button>
-                    {% else %}
-                    <button class="action-btn btn-feature" onclick="toggleFeatured('{{ movie_id }}', true)">⭐ Feature</button>
-                    {% endif %}
-                    
-                    {% if movie.rt_url %}
-                    <a href="{{ movie.rt_url }}" target="_blank" class="action-btn btn-rt">RT →</a>
-                    {% else %}
-                    <a href="https://www.rottentomatoes.com/search?search={{ movie.title }}" target="_blank" class="action-btn btn-rt">RT Search</a>
-                    {% endif %}
-                    
-                    <a href="https://www.themoviedb.org/movie/{{ movie.tmdb_id or movie_id }}" target="_blank" class="action-btn btn-tmdb">TMDB →</a>
-                </div>
-                
-                <div class="date-editor" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #3a3a3a;">
-                    <div style="font-size: 0.85rem; color: #999; margin-bottom: 0.5rem;">
-                        Digital Release: {{ movie.digital_date or 'Unknown' }}
-                    </div>
-                    <div style="display: flex; gap: 0.5rem; align-items: center;">
-                        <input type="date" 
-                               class="date-input" 
-                               style="flex: 1; padding: 0.3rem; background: #1a1a1a; border: 1px solid #3a3a3a; color: white; border-radius: 4px; font-size: 0.8rem;"
-                               value="{{ movie.digital_date }}"
-                               id="date-{{ movie_id }}">
-                        <button class="action-btn" 
-                                style="background: #007bff; color: white; font-size: 0.7rem; padding: 0.3rem 0.6rem;"
-                                onclick="updateDate('{{ movie_id }}')">
-                            📅 Update
-                        </button>
-                    </div>
-                </div>
 
-                <!-- Watch Links Editor -->
-                <div class="watch-links-editor" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #3a3a3a;">
-                    <div style="font-size: 0.85rem; color: #999; margin-bottom: 0.5rem; cursor: pointer;"
-                         onclick="toggleWatchLinksEditor('{{ movie_id }}')">
-                        🔗 Watch Links Override
-                        <span id="watch-links-indicator-{{ movie_id }}" style="color: #00d4aa;">
-                            {% if movie_id in watch_link_overrides %}({{ watch_link_overrides[movie_id].keys()|length }} override{% if watch_link_overrides[movie_id].keys()|length != 1 %}s{% endif %}){% endif %}
-                        </span>
-                        <span style="float: right;">▼</span>
-                    </div>
+def load_json(filepath: str, default: Optional[Union[dict, list]] = None) -> Union[dict, list]:
+    """Load JSON file with fallback to default value.
 
-                    <div id="watch-links-form-{{ movie_id }}" style="display: none;">
-                        <!-- Streaming Override -->
-                        <div style="margin-bottom: 0.5rem;">
-                            <label style="font-size: 0.75rem; color: #999; display: block; margin-bottom: 0.2rem;">Streaming</label>
-                            <input type="text"
-                                   id="streaming-service-{{ movie_id }}"
-                                   placeholder="Service (e.g., Netflix)"
-                                   value="{% if movie_id in watch_link_overrides and 'streaming' in watch_link_overrides[movie_id] %}{{ watch_link_overrides[movie_id]['streaming']['service'] }}{% endif %}"
-                                   style="width: 100%; padding: 0.3rem; background: #1a1a1a; border: 1px solid #3a3a3a; color: white; border-radius: 4px; font-size: 0.75rem; margin-bottom: 0.2rem;">
-                            <input type="url"
-                                   id="streaming-link-{{ movie_id }}"
-                                   placeholder="https://www.netflix.com/title/..."
-                                   value="{% if movie_id in watch_link_overrides and 'streaming' in watch_link_overrides[movie_id] %}{{ watch_link_overrides[movie_id]['streaming']['link'] }}{% endif %}"
-                                   style="width: 100%; padding: 0.3rem; background: #1a1a1a; border: 1px solid #3a3a3a; color: white; border-radius: 4px; font-size: 0.75rem;">
-                        </div>
+    Args:
+        filepath: Path to JSON file to load
+        default: Default value if file doesn't exist or is invalid (defaults to {})
 
-                        <!-- Rent Override -->
-                        <div style="margin-bottom: 0.5rem;">
-                            <label style="font-size: 0.75rem; color: #999; display: block; margin-bottom: 0.2rem;">Rent</label>
-                            <input type="text"
-                                   id="rent-service-{{ movie_id }}"
-                                   placeholder="Service (e.g., Amazon Video)"
-                                   value="{% if movie_id in watch_link_overrides and 'rent' in watch_link_overrides[movie_id] %}{{ watch_link_overrides[movie_id]['rent']['service'] }}{% endif %}"
-                                   style="width: 100%; padding: 0.3rem; background: #1a1a1a; border: 1px solid #3a3a3a; color: white; border-radius: 4px; font-size: 0.75rem; margin-bottom: 0.2rem;">
-                            <input type="url"
-                                   id="rent-link-{{ movie_id }}"
-                                   placeholder="https://www.amazon.com/..."
-                                   value="{% if movie_id in watch_link_overrides and 'rent' in watch_link_overrides[movie_id] %}{{ watch_link_overrides[movie_id]['rent']['link'] }}{% endif %}"
-                                   style="width: 100%; padding: 0.3rem; background: #1a1a1a; border: 1px solid #3a3a3a; color: white; border-radius: 4px; font-size: 0.75rem;">
-                        </div>
-
-                        <!-- Buy Override -->
-                        <div style="margin-bottom: 0.5rem;">
-                            <label style="font-size: 0.75rem; color: #999; display: block; margin-bottom: 0.2rem;">Buy</label>
-                            <input type="text"
-                                   id="buy-service-{{ movie_id }}"
-                                   placeholder="Service (e.g., Apple TV)"
-                                   value="{% if movie_id in watch_link_overrides and 'buy' in watch_link_overrides[movie_id] %}{{ watch_link_overrides[movie_id]['buy']['service'] }}{% endif %}"
-                                   style="width: 100%; padding: 0.3rem; background: #1a1a1a; border: 1px solid #3a3a3a; color: white; border-radius: 4px; font-size: 0.75rem; margin-bottom: 0.2rem;">
-                            <input type="url"
-                                   id="buy-link-{{ movie_id }}"
-                                   placeholder="https://tv.apple.com/..."
-                                   value="{% if movie_id in watch_link_overrides and 'buy' in watch_link_overrides[movie_id] %}{{ watch_link_overrides[movie_id]['buy']['link'] }}{% endif %}"
-                                   style="width: 100%; padding: 0.3rem; background: #1a1a1a; border: 1px solid #3a3a3a; color: white; border-radius: 4px; font-size: 0.75rem;">
-                        </div>
-
-                        <!-- Save Button -->
-                        <button class="action-btn"
-                                style="background: #28a745; color: white; font-size: 0.75rem; padding: 0.4rem 0.8rem; width: 100%;"
-                                onclick="saveWatchLinks('{{ movie_id }}')">
-                            💾 Save Watch Links
-                        </button>
-
-                        <!-- Clear Button -->
-                        <button class="action-btn"
-                                style="background: #dc3545; color: white; font-size: 0.75rem; padding: 0.4rem 0.8rem; width: 100%; margin-top: 0.3rem;"
-                                onclick="clearWatchLinks('{{ movie_id }}')">
-                            🗑️ Clear All Overrides
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-    
-    <div class="success-msg" id="success-msg">Changes saved!</div>
-    
-    <script>
-        function toggleHidden(movieId, hide) {
-            fetch('/toggle-hidden', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({movie_id: movieId, hidden: hide})
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Update card styling without page reload
-                    const card = document.querySelector(`[data-movie-id="${movieId}"]`);
-                    if (hide) {
-                        card.classList.add('hidden');
-                    } else {
-                        card.classList.remove('hidden');
-                    }
-
-                    // Update button
-                    const actionsDiv = card.querySelector('.movie-actions');
-                    const hideBtn = actionsDiv.querySelector('.btn-hide, .btn-show');
-                    if (hide) {
-                        hideBtn.className = 'action-btn btn-show';
-                        hideBtn.innerHTML = '👁️ Show';
-                        hideBtn.onclick = () => toggleHidden(movieId, false);
-                    } else {
-                        hideBtn.className = 'action-btn btn-hide';
-                        hideBtn.innerHTML = '🚫 Hide';
-                        hideBtn.onclick = () => toggleHidden(movieId, true);
-                    }
-
-                    // Update stats
-                    updateStats();
-
-                    showSuccess(hide ? 'Movie hidden' : 'Movie shown');
-                }
-            })
-            .catch(error => {
-                alert('Error: ' + error);
-            });
-        }
-        
-        function toggleFeatured(movieId, feature) {
-            fetch('/toggle-featured', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({movie_id: movieId, featured: feature})
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Update card styling without page reload
-                    const card = document.querySelector(`[data-movie-id="${movieId}"]`);
-                    if (feature) {
-                        card.classList.add('featured');
-                    } else {
-                        card.classList.remove('featured');
-                    }
-
-                    // Update button
-                    const actionsDiv = card.querySelector('.movie-actions');
-                    const featureBtn = actionsDiv.querySelector('.btn-feature, .btn-unfeature');
-                    if (feature) {
-                        featureBtn.className = 'action-btn btn-unfeature';
-                        featureBtn.innerHTML = '⭐ Unfeature';
-                        featureBtn.onclick = () => toggleFeatured(movieId, false);
-                    } else {
-                        featureBtn.className = 'action-btn btn-feature';
-                        featureBtn.innerHTML = '⭐ Feature';
-                        featureBtn.onclick = () => toggleFeatured(movieId, true);
-                    }
-
-                    // Update stats
-                    updateStats();
-
-                    showSuccess(feature ? 'Movie featured' : 'Movie unfeatured');
-                }
-            })
-            .catch(error => {
-                alert('Error: ' + error);
-            });
-        }
-        
-        function showSuccess(message = 'Changes saved!') {
-            const msg = document.getElementById('success-msg');
-            msg.textContent = message;
-            msg.style.display = 'block';
-            setTimeout(() => {
-                msg.style.display = 'none';
-            }, 3000);
-        }
-
-        function updateStats() {
-            // Recalculate stats from current DOM state
-            const allCards = document.querySelectorAll('.movie-card');
-            const hiddenCards = document.querySelectorAll('.movie-card.hidden');
-            const featuredCards = document.querySelectorAll('.movie-card.featured');
-
-            const total = allCards.length;
-            const hidden = hiddenCards.length;
-            const visible = total - hidden;
-            const featured = featuredCards.length;
-
-            // Update stat displays
-            document.getElementById('visible-count').textContent = visible;
-            document.getElementById('hidden-count').textContent = hidden;
-            document.getElementById('featured-count').textContent = featured;
-        }
-
-        function regenerateData() {
-            const btn = document.getElementById('regenerate-btn');
-            const status = document.getElementById('regenerate-status');
-
-            // Disable button and show loading state
-            btn.disabled = true;
-            btn.style.opacity = '0.5';
-            btn.style.cursor = 'not-allowed';
-            status.textContent = 'Regenerating... (this may take 10-30 seconds)';
-            status.style.color = '#ffc107';
-
-            fetch('/regenerate', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'}
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    status.textContent = '✓ ' + (data.message || 'Regeneration complete!');
-                    status.style.color = '#28a745';
-                    showSuccess('data.json regenerated successfully');
-                } else {
-                    status.textContent = '✗ ' + (data.error || 'Regeneration failed');
-                    status.style.color = '#dc3545';
-                    alert('Regeneration failed: ' + (data.error || 'Unknown error'));
-                }
-
-                // Re-enable button
-                btn.disabled = false;
-                btn.style.opacity = '1';
-                btn.style.cursor = 'pointer';
-
-                // Clear status after 5 seconds
-                setTimeout(() => {
-                    status.textContent = '';
-                }, 5000);
-            })
-            .catch(error => {
-                status.textContent = '✗ Error: ' + error;
-                status.style.color = '#dc3545';
-                alert('Error triggering regeneration: ' + error);
-
-                // Re-enable button
-                btn.disabled = false;
-                btn.style.opacity = '1';
-                btn.style.cursor = 'pointer';
-            });
-        }
-        
-        function filterMovies(filter) {
-            const cards = document.querySelectorAll('.movie-card');
-            const buttons = document.querySelectorAll('.filter-btn');
-            
-            // Update active button
-            buttons.forEach(btn => {
-                btn.classList.remove('active');
-                if (btn.textContent.toLowerCase().includes(filter) || 
-                    (filter === 'all' && btn.textContent === 'All Movies')) {
-                    btn.classList.add('active');
-                }
-            });
-            
-            // Filter cards
-            cards.forEach(card => {
-                switch(filter) {
-                    case 'all':
-                        card.style.display = 'block';
-                        break;
-                    case 'visible':
-                        card.style.display = card.classList.contains('hidden') ? 'none' : 'block';
-                        break;
-                    case 'hidden':
-                        card.style.display = card.classList.contains('hidden') ? 'block' : 'none';
-                        break;
-                    case 'featured':
-                        card.style.display = card.classList.contains('featured') ? 'block' : 'none';
-                        break;
-                    case 'no-score':
-                        card.style.display = card.dataset.hasScore === 'no' ? 'block' : 'none';
-                        break;
-                }
-            });
-        }
-        
-        function searchMovies(query) {
-            const cards = document.querySelectorAll('.movie-card');
-            const searchTerm = query.toLowerCase();
-            
-            cards.forEach(card => {
-                const title = card.dataset.title;
-                if (title.includes(searchTerm)) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-        }
-        
-        function updateDate(movieId) {
-            const dateInput = document.getElementById(`date-${movieId}`);
-            const newDate = dateInput.value;
-            
-            if (!newDate) {
-                alert('Please select a date');
-                return;
-            }
-            
-            fetch('/update-date', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    movie_id: movieId,
-                    digital_date: newDate
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    showSuccess(data.message || 'Date updated successfully!');
-                    // Update the displayed date
-                    const dateDisplay = dateInput.closest('.date-editor').querySelector('div');
-                    dateDisplay.textContent = `Digital Release: ${newDate}`;
-                } else {
-                    alert(data.error || 'Failed to update date');
-                }
-            })
-            .catch(error => {
-                alert('Error updating date: ' + error);
-            });
-        }
-
-        function toggleWatchLinksEditor(movieId) {
-            const form = document.getElementById(`watch-links-form-${movieId}`);
-            const isHidden = form.style.display === 'none';
-            form.style.display = isHidden ? 'block' : 'none';
-        }
-
-        function validateUrl(url) {
-            if (!url || url.trim() === '') {
-                return true; // Empty is valid (means "no override")
-            }
-            try {
-                const urlObj = new URL(url);
-                return urlObj.protocol === 'http:' || urlObj.protocol === 'https:';
-            } catch (e) {
-                return false;
-            }
-        }
-
-        function saveWatchLinks(movieId) {
-            // Collect input values
-            const streamingService = document.getElementById(`streaming-service-${movieId}`).value.trim();
-            const streamingLink = document.getElementById(`streaming-link-${movieId}`).value.trim();
-            const rentService = document.getElementById(`rent-service-${movieId}`).value.trim();
-            const rentLink = document.getElementById(`rent-link-${movieId}`).value.trim();
-            const buyService = document.getElementById(`buy-service-${movieId}`).value.trim();
-            const buyLink = document.getElementById(`buy-link-${movieId}`).value.trim();
-
-            // Validate URLs
-            if (!validateUrl(streamingLink)) {
-                alert('Invalid streaming URL. Must start with http:// or https://');
-                return;
-            }
-            if (!validateUrl(rentLink)) {
-                alert('Invalid rent URL. Must start with http:// or https://');
-                return;
-            }
-            if (!validateUrl(buyLink)) {
-                alert('Invalid buy URL. Must start with http:// or https://');
-                return;
-            }
-
-            // Build overrides object (only include non-empty entries)
-            const overrides = {};
-
-            if (streamingService && streamingLink) {
-                overrides.streaming = {service: streamingService, link: streamingLink};
-            }
-            if (rentService && rentLink) {
-                overrides.rent = {service: rentService, link: rentLink};
-            }
-            if (buyService && buyLink) {
-                overrides.buy = {service: buyService, link: buyLink};
-            }
-
-            // Send to server
-            fetch('/update-watch-links', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    movie_id: movieId,
-                    overrides: overrides
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    showSuccess(data.message || 'Watch links saved!');
-                    // Update indicator
-                    const indicator = document.getElementById(`watch-links-indicator-${movieId}`);
-                    const count = Object.keys(overrides).length;
-                    if (count > 0) {
-                        indicator.textContent = `(${count} override${count !== 1 ? 's' : ''})`;
-                    } else {
-                        indicator.textContent = '';
-                    }
-                } else {
-                    alert(data.error || 'Failed to save watch links');
-                }
-            })
-            .catch(error => {
-                alert('Error saving watch links: ' + error);
-            });
-        }
-
-        function clearWatchLinks(movieId) {
-            if (!confirm('Clear all watch link overrides for this movie?')) {
-                return;
-            }
-
-            // Clear input fields
-            document.getElementById(`streaming-service-${movieId}`).value = '';
-            document.getElementById(`streaming-link-${movieId}`).value = '';
-            document.getElementById(`rent-service-${movieId}`).value = '';
-            document.getElementById(`rent-link-${movieId}`).value = '';
-            document.getElementById(`buy-service-${movieId}`).value = '';
-            document.getElementById(`buy-link-${movieId}`).value = '';
-
-            // Send empty overrides to server
-            fetch('/update-watch-links', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    movie_id: movieId,
-                    overrides: {}
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    showSuccess('Watch link overrides cleared');
-                    // Clear indicator
-                    const indicator = document.getElementById(`watch-links-indicator-${movieId}`);
-                    indicator.textContent = '';
-                } else {
-                    alert(data.error || 'Failed to clear watch links');
-                }
-            })
-            .catch(error => {
-                alert('Error clearing watch links: ' + error);
-            });
-        }
-    </script>
-</body>
-</html>
-'''
-
-def load_json(filepath, default=None):
-    """Load JSON file with fallback"""
+    Returns:
+        Loaded JSON data (dict or list) or default value
+    """
     if default is None:
         default = {}
     try:
@@ -843,17 +61,28 @@ def load_json(filepath, default=None):
     except:
         return default
 
-def load_config():
-    """Load configuration from config.yaml"""
+def load_config() -> dict:
+    """Load configuration from config.yaml.
+
+    Returns:
+        Configuration dictionary, or empty dict if file not found or invalid
+    """
     try:
         with open('config.yaml', 'r') as f:
             return yaml.safe_load(f)
     except Exception as e:
-        print(f"Warning: Could not load config.yaml: {e}")
+        logger.error(f"Failed to load config.yaml: {e}")
         return {}
 
-def get_tmdb_api_key():
-    """Get TMDB API key from config or environment"""
+def get_tmdb_api_key() -> Optional[str]:
+    """Get TMDB API key from environment or config.yaml.
+
+    Checks environment variable TMDB_API_KEY first (12-factor app pattern),
+    then falls back to config.yaml api.tmdb_api_key.
+
+    Returns:
+        API key string, or None if not found
+    """
     # Try environment variable first (12-factor app pattern)
     api_key = os.environ.get('TMDB_API_KEY')
     if api_key:
@@ -865,12 +94,23 @@ def get_tmdb_api_key():
     if api_key:
         return api_key
 
-    # Last resort: print warning
-    print("Warning: No TMDB API key found in environment or config.yaml")
+    # Last resort: log warning
+    logger.warning("No TMDB API key found in environment or config.yaml")
     return None
 
-def get_poster_url(tmdb_id):
-    """Get poster URL from TMDB ID"""
+def get_poster_url(tmdb_id: Union[str, int]) -> Optional[str]:
+    """Fetch poster URL from TMDB API.
+
+    Args:
+        tmdb_id: TMDB movie ID (string or integer)
+
+    Returns:
+        Poster URL (w300 size), or None if not found or API error
+
+    Note:
+        Requires TMDB API key from environment or config.yaml.
+        Has 10 second timeout to prevent hanging.
+    """
     if not tmdb_id:
         return None
 
@@ -891,26 +131,196 @@ def get_poster_url(tmdb_id):
             if poster_path:
                 return f"https://image.tmdb.org/t/p/w300{poster_path}"
     except requests.Timeout:
-        print(f"Timeout fetching poster for TMDB ID {tmdb_id}")
+        logger.warning(f"Timeout fetching poster for TMDB ID {tmdb_id}")
         return None
     except:
         pass
     return None
 
-def save_json(filepath, data):
-    """Save JSON file"""
+def save_json(filepath: str, data: Union[dict, list]) -> None:
+    """Save data to JSON file.
+
+    Creates parent directories if they don't exist.
+
+    Args:
+        filepath: Path to JSON file to write
+        data: Data to serialize as JSON (dict or list)
+
+    Raises:
+        IOError: If file cannot be written
+        TypeError: If data is not JSON-serializable
+    """
     os.makedirs(os.path.dirname(filepath) if os.path.dirname(filepath) else '.', exist_ok=True)
     with open(filepath, 'w') as f:
         json.dump(data, f, indent=2)
 
+def safe_write_json(filepath: str, data: Union[dict, list], indent: int = 2, max_backups: int = 10) -> bool:
+    """
+    Safely write JSON data to a file with atomic operations and backup creation.
+
+    Args:
+        filepath (str): Path to the JSON file to write
+        data (dict): Python dictionary to serialize as JSON
+        indent (int): JSON indentation level (default 2)
+        max_backups (int): Maximum number of backup files to keep (default 10)
+
+    Returns:
+        bool: True on success
+
+    Raises:
+        Exception: On write failure (original file remains untouched)
+    """
+    try:
+        # Step 1: Create timestamped backup if original file exists
+        if os.path.exists(filepath):
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            backup_file = f"{filepath}.backup.{timestamp}"
+            shutil.copy2(filepath, backup_file)
+
+        # Step 2: Write to temporary file
+        temp_file = f"{filepath}.tmp"
+        try:
+            with open(temp_file, 'w') as f:
+                json.dump(data, f, indent=indent)
+        except Exception:
+            # Clean up temp file if write failed
+            if os.path.exists(temp_file):
+                os.remove(temp_file)
+            raise
+
+        # Step 3: Atomic rename (all-or-nothing)
+        os.replace(temp_file, filepath)
+
+        # Step 4: Cleanup old backups
+        try:
+            backup_pattern = f"{filepath}.backup.*"
+            backup_files = glob.glob(backup_pattern)
+            if len(backup_files) > max_backups:
+                # Sort by timestamp (newest first)
+                backup_files.sort(reverse=True)
+                # Remove old backups beyond max_backups
+                for old_backup in backup_files[max_backups:]:
+                    os.remove(old_backup)
+        except Exception:
+            # Backup cleanup failure shouldn't fail the write
+            pass
+
+        return True
+
+    except Exception as e:
+        # Ensure temp file is cleaned up
+        temp_file = f"{filepath}.tmp"
+        if os.path.exists(temp_file):
+            try:
+                os.remove(temp_file)
+            except:
+                pass
+        raise
+
+
+def setup_logger(name: str, log_file: str = 'logs/admin.log', level: int = logging.INFO) -> logging.Logger:
+    """
+    Configure logging with file rotation and console output.
+
+    Args:
+        name (str): Logger name (e.g., 'admin', 'data_generator')
+        log_file (str): Path to log file (default: 'logs/admin.log')
+        level (int): Logging level (default: logging.INFO)
+
+    Returns:
+        logging.Logger: Configured logger instance
+    """
+    # Create logs directory if it doesn't exist
+    os.makedirs('logs', exist_ok=True)
+
+    # Get or create logger
+    logger = logging.getLogger(name)
+
+    # Prevent duplicate handlers
+    if not logger.handlers:
+        logger.setLevel(level)
+
+        # Create formatter with user context placeholder
+        formatter = logging.Formatter(
+            '%(asctime)s [%(levelname)s] [%(user)s] %(message)s',
+            datefmt='%Y-%m-%d %H:%M:%S'
+        )
+
+        # File handler with rotation (10MB, 5 backups)
+        file_handler = RotatingFileHandler(
+            log_file,
+            maxBytes=10*1024*1024,  # 10MB
+            backupCount=5,
+            encoding='utf-8'
+        )
+        file_handler.setLevel(level)
+        file_handler.setFormatter(formatter)
+        logger.addHandler(file_handler)
+
+        # Console handler for development visibility
+        console_handler = logging.StreamHandler()
+        console_handler.setLevel(level)
+        console_handler.setFormatter(formatter)
+        logger.addHandler(console_handler)
+
+    return logger
+
+
+# Custom LogRecord factory to inject user context
+old_factory = logging.getLogRecordFactory()
+
+def record_factory(*args: Any, **kwargs: Any) -> logging.LogRecord:
+    """Custom LogRecord factory that injects user context.
+
+    Wraps the default LogRecord factory to add 'user' attribute
+    with the current authenticated user from Flask-HTTPAuth.
+
+    Args:
+        *args: Positional arguments passed to default factory
+        **kwargs: Keyword arguments passed to default factory
+
+    Returns:
+        LogRecord with added 'user' attribute
+    """
+    record = old_factory(*args, **kwargs)
+    # Inject user context
+    try:
+        record.user = auth.current_user() or 'system'
+    except:
+        record.user = 'system'
+    return record
+
+logging.setLogRecordFactory(record_factory)
+
+# Initialize logger
+logger = setup_logger('admin', 'logs/admin.log', logging.INFO)
+
 @app.route('/')
 @auth.login_required
-def index():
-    """Main admin panel"""
+def index() -> str:
+    """Main admin panel page.
+
+    Displays all movies in a grid with filtering, search, and inline editing.
+    Shows statistics (total, visible, hidden, featured, missing data counts).
+
+    Authentication:
+        Requires HTTP Basic Auth (@auth.login_required)
+
+    Returns:
+        Rendered HTML template with movie data and statistics
+
+    Template Variables:
+        movies: Dict of movie objects keyed by movie ID
+        hidden: List of hidden movie IDs
+        featured: List of featured movie IDs
+        visible_count: Number of visible movies
+        hidden_count: Number of hidden movies
+        featured_count: Number of featured movies
+        missing_data_count: Number of movies with incomplete data
+    """
     data = load_json(DATA_FILE, {})
     hidden = load_json(HIDDEN_FILE, [])
     featured = load_json(FEATURED_FILE, [])
-    watch_link_overrides = load_json(WATCH_LINK_OVERRIDES_FILE, {})
 
     # Handle different data shapes from data.json
     if data and isinstance(data, dict) and 'movies' in data and isinstance(data['movies'], list):
@@ -956,6 +366,14 @@ def index():
         if not movie_copy.get('poster_url') and not movie_copy.get('poster') and movie_copy.get('id'):
             movie_copy['poster_url'] = get_poster_url(movie_copy['id'])
 
+        # Normalize rt_score to integer for template comparisons
+        if movie_copy.get('rt_score'):
+            rt_score_str = str(movie_copy['rt_score']).strip().replace('%', '')
+            try:
+                movie_copy['rt_score'] = int(rt_score_str)
+            except (ValueError, TypeError):
+                movie_copy['rt_score'] = None
+
         processed_movies[movie_id] = movie_copy
 
     # Calculate stats
@@ -964,57 +382,185 @@ def index():
     visible_count = total_count - hidden_count
     featured_count = len(featured)
 
-    return render_template_string(
-        ADMIN_TEMPLATE,
+    # Calculate missing data count
+    missing_data_count = sum(
+        1 for movie in processed_movies.values()
+        if not movie.get('rt_score')
+        or not movie.get('links', {}).get('trailer')
+        or not (movie.get('poster_url') or movie.get('poster'))
+        or not movie.get('director')
+        or movie.get('director') == 'Unknown'
+        or not movie.get('country')
+    )
+
+
+    return render_template(
+        'index.html',
         movies=processed_movies,
         hidden=hidden,
         featured=featured,
-        watch_link_overrides=watch_link_overrides,
         visible_count=visible_count,
         hidden_count=hidden_count,
-        featured_count=featured_count
+        featured_count=featured_count,
+        missing_data_count=missing_data_count
     )
 
-@app.route('/toggle-hidden', methods=['POST'])
-@auth.login_required
-def toggle_hidden():
-    """Toggle movie visibility"""
-    data = request.json
-    movie_id = data.get('movie_id')
-    is_hidden = data.get('hidden', False)
-    
-    hidden = load_json(HIDDEN_FILE, [])
-    
-    if is_hidden and movie_id not in hidden:
-        hidden.append(movie_id)
-    elif not is_hidden and movie_id in hidden:
-        hidden.remove(movie_id)
-    
-    save_json(HIDDEN_FILE, hidden)
-    return jsonify({'success': True})
+"""
+VERIFICATION STEPS FOR /toggle-status ENDPOINT:
+===============================================
 
-@app.route('/toggle-featured', methods=['POST'])
+Test commands for manual verification (requires admin panel running on localhost:5555):
+
+1. Hide a movie:
+   curl -X POST http://localhost:5555/toggle-status -u admin:changeme -H "Content-Type: application/json" -d '{"movie_id": "12345", "status_type": "hidden", "value": true}'
+
+2. Show a movie (unhide):
+   curl -X POST http://localhost:5555/toggle-status -u admin:changeme -H "Content-Type: application/json" -d '{"movie_id": "12345", "status_type": "hidden", "value": false}'
+
+3. Feature a movie:
+   curl -X POST http://localhost:5555/toggle-status -u admin:changeme -H "Content-Type: application/json" -d '{"movie_id": "12345", "status_type": "featured", "value": true}'
+
+4. Unfeature a movie:
+   curl -X POST http://localhost:5555/toggle-status -u admin:changeme -H "Content-Type: application/json" -d '{"movie_id": "12345", "status_type": "featured", "value": false}'
+
+5. Test invalid status_type:
+   curl -X POST http://localhost:5555/toggle-status -u admin:changeme -H "Content-Type: application/json" -d '{"movie_id": "12345", "status_type": "invalid", "value": true}'
+   Expected: {"success": false, "error": "Invalid status_type \"invalid\". Must be \"hidden\" or \"featured\""}
+
+6. Test missing movie_id:
+   curl -X POST http://localhost:5555/toggle-status -u admin:changeme -H "Content-Type: application/json" -d '{"status_type": "hidden", "value": true}'
+   Expected: {"success": false, "error": "Missing required parameter: movie_id"}
+
+7. Test invalid value type:
+   curl -X POST http://localhost:5555/toggle-status -u admin:changeme -H "Content-Type: application/json" -d '{"movie_id": "12345", "status_type": "hidden", "value": "not_boolean"}'
+   Expected: {"success": false, "error": "Parameter value must be boolean"}
+
+All tests should return HTTP 200. Success cases return {"success": true}, error cases return {"success": false, "error": "..."}
+Check admin/hidden_movies.json and admin/featured_movies.json for file updates after successful operations.
+"""
+
+@app.route('/toggle-status', methods=['POST'])
 @auth.login_required
-def toggle_featured():
-    """Toggle movie featured status"""
-    data = request.json
-    movie_id = data.get('movie_id')
-    is_featured = data.get('featured', False)
-    
-    featured = load_json(FEATURED_FILE, [])
-    
-    if is_featured and movie_id not in featured:
-        featured.append(movie_id)
-    elif not is_featured and movie_id in featured:
-        featured.remove(movie_id)
-    
-    save_json(FEATURED_FILE, featured)
-    return jsonify({'success': True})
+def toggle_status() -> dict:
+    """Toggle movie status (hidden or featured).
+
+    Unified endpoint for toggling movie visibility and featured status.
+    Replaces separate /toggle-hidden and /toggle-featured endpoints.
+
+    Authentication:
+        Requires HTTP Basic Auth (@auth.login_required)
+
+    Request JSON:
+        {
+            "movie_id": str,  # TMDB movie ID
+            "status_type": str,  # 'hidden' or 'featured'
+            "value": bool  # True to enable, False to disable
+        }
+
+    Returns:
+        JSON response:
+        {
+            "success": bool,
+            "error": str  # On failure (invalid status_type or movie_id)
+        }
+
+    Examples:
+        Hide a movie:
+        {"movie_id": "12345", "status_type": "hidden", "value": true}
+
+        Show a movie:
+        {"movie_id": "12345", "status_type": "hidden", "value": false}
+
+        Feature a movie:
+        {"movie_id": "12345", "status_type": "featured", "value": true}
+    """
+    try:
+        data = request.json
+        movie_id = data.get('movie_id')
+        status_type = data.get('status_type')
+        value = data.get('value')
+
+        # Validation
+        if not movie_id:
+            return jsonify({'success': False, 'error': 'Missing required parameter: movie_id'})
+
+        if not status_type:
+            return jsonify({'success': False, 'error': 'Missing required parameter: status_type'})
+
+        if value is None:
+            return jsonify({'success': False, 'error': 'Missing required parameter: value'})
+
+        if not isinstance(value, bool):
+            return jsonify({'success': False, 'error': 'Parameter value must be boolean'})
+
+        # Status type mapping
+        STATUS_FILES = {
+            'hidden': HIDDEN_FILE,
+            'featured': FEATURED_FILE
+        }
+
+        STATUS_VERBS = {
+            'hidden': ('hidden', 'shown'),
+            'featured': ('featured', 'unfeatured')
+        }
+
+        if status_type not in STATUS_FILES:
+            return jsonify({
+                'success': False,
+                'error': f'Invalid status_type "{status_type}". Must be "hidden" or "featured"'
+            })
+
+        # Load appropriate file
+        file_path = STATUS_FILES[status_type]
+        status_list = load_json(file_path, [])
+
+        # Toggle logic
+        if value and movie_id not in status_list:
+            status_list.append(movie_id)
+        elif not value and movie_id in status_list:
+            status_list.remove(movie_id)
+
+        # Save file
+        save_json(file_path, status_list)
+
+        # Log action
+        verb_true, verb_false = STATUS_VERBS[status_type]
+        action = verb_true if value else verb_false
+        logger.info(f"Movie {movie_id} {action}")
+
+        return jsonify({'success': True})
+
+    except Exception as e:
+        logger.error(f"Error toggling {status_type} status for movie {movie_id}: {str(e)}")
+        return jsonify({'success': False, 'error': f'Internal error: {str(e)}'})
 
 @app.route('/update-date', methods=['POST'])
 @auth.login_required
-def update_date():
-    """Update movie's digital release date"""
+def update_date() -> dict:
+    """Update movie's digital release date.
+
+    Updates the date in movie_tracking.json and triggers data.json regeneration.
+
+    Authentication:
+        Requires HTTP Basic Auth (@auth.login_required)
+
+    Request JSON:
+        {
+            "movie_id": str,  # TMDB movie ID
+            "digital_date": str  # ISO format YYYY-MM-DD
+        }
+
+    Returns:
+        JSON response:
+        {
+            "success": bool,
+            "message": str,  # On success
+            "error": str  # On failure
+        }
+
+    Raises:
+        Returns error JSON if movie not found or regeneration fails
+    """
     data = request.json
     movie_id = data.get('movie_id')
     new_date = data.get('digital_date')
@@ -1025,11 +571,11 @@ def update_date():
             db = json.load(f)
         
         if movie_id in db['movies']:
+            logger.info(f"Updating digital date for movie {movie_id} to {new_date}")
             db['movies'][movie_id]['digital_date'] = new_date
             db['movies'][movie_id]['manually_corrected'] = True
-            
-            with open('movie_tracking.json', 'w') as f:
-                json.dump(db, f, indent=2)
+
+            safe_write_json('movie_tracking.json', db)
 
             # Regenerate data.json from movie_tracking.json
             try:
@@ -1040,89 +586,49 @@ def update_date():
                     timeout=60  # 1 minute timeout
                 )
                 if result.returncode == 0:
+                    logger.info(f"Successfully updated date and regenerated data.json for movie {movie_id}")
                     return jsonify({'success': True, 'message': f'Date updated to {new_date} and data.json regenerated'})
                 else:
+                    logger.error(f"Date updated but regeneration failed for movie {movie_id}: {result.stderr}")
                     return jsonify({'success': False, 'error': f'Date updated but regeneration failed: {result.stderr}'})
             except subprocess.TimeoutExpired:
+                logger.error(f"Date updated but regeneration timed out for movie {movie_id}")
                 return jsonify({'success': False, 'error': 'Date updated but regeneration timed out'})
             except Exception as e:
+                logger.error(f"Date updated but regeneration failed for movie {movie_id}: {str(e)}")
                 return jsonify({'success': False, 'error': f'Date updated but regeneration failed: {str(e)}'})
     except Exception as e:
+        logger.error(f"Failed to update date for movie {movie_id}: {str(e)}")
         return jsonify({'success': False, 'error': str(e)})
     
     return jsonify({'success': False, 'error': 'Movie not found'})
 
-@app.route('/update-watch-links', methods=['POST'])
-@auth.login_required
-def update_watch_links():
-    """Update watch link overrides for a movie"""
-    data = request.json
-    movie_id = data.get('movie_id')
-    overrides = data.get('overrides', {})
-
-    if not movie_id:
-        return jsonify({'success': False, 'error': 'Movie ID required'})
-
-    # Validate movie_id is numeric (TMDB ID)
-    if not str(movie_id).isdigit():
-        return jsonify({'success': False, 'error': 'Invalid movie ID: must be numeric TMDB ID'})
-
-    # Load existing overrides
-    all_overrides = load_json(WATCH_LINK_OVERRIDES_FILE, {})
-
-    # Validate overrides structure
-    validated_overrides = {}
-    for category in ['streaming', 'rent', 'buy']:
-        if category in overrides:
-            override_data = overrides[category]
-
-            # Validate structure
-            if not isinstance(override_data, dict):
-                return jsonify({'success': False, 'error': f'Invalid {category} override format'})
-
-            if 'service' not in override_data or 'link' not in override_data:
-                return jsonify({'success': False, 'error': f'{category} override missing service or link'})
-
-            service = override_data['service'].strip()
-            link = override_data['link'].strip()
-
-            # Validate service name
-            if not service:
-                return jsonify({'success': False, 'error': f'{category} service name cannot be empty'})
-
-            # Validate URL format
-            if not link:
-                return jsonify({'success': False, 'error': f'{category} link cannot be empty'})
-
-            if not (link.startswith('http://') or link.startswith('https://')):
-                return jsonify({'success': False, 'error': f'{category} link must start with http:// or https://'})
-
-            validated_overrides[category] = {
-                'service': service,
-                'link': link
-            }
-
-    # Update or remove movie overrides
-    if validated_overrides:
-        all_overrides[movie_id] = validated_overrides
-        message = f'Watch link overrides saved for {len(validated_overrides)} categor{"y" if len(validated_overrides) == 1 else "ies"}'
-    else:
-        # Remove movie from overrides if no categories provided
-        if movie_id in all_overrides:
-            del all_overrides[movie_id]
-        message = 'Watch link overrides cleared'
-
-    # Save updated overrides
-    try:
-        save_json(WATCH_LINK_OVERRIDES_FILE, all_overrides)
-        return jsonify({'success': True, 'message': message})
-    except Exception as e:
-        return jsonify({'success': False, 'error': f'Failed to save: {str(e)}'})
 
 @app.route('/regenerate', methods=['POST'])
 @auth.login_required
-def regenerate():
-    """Manually trigger data.json regeneration"""
+def regenerate() -> dict:
+    """Manually trigger data.json regeneration.
+
+    Runs generate_data.py as a subprocess to rebuild data.json from
+    movie_tracking.json with all admin overrides applied.
+
+    Authentication:
+        Requires HTTP Basic Auth (@auth.login_required)
+
+    Returns:
+        JSON response:
+        {
+            "success": bool,
+            "message": str,  # On success
+            "output": str,  # Last 500 chars of stdout (on success)
+            "error": str,  # On failure
+            "stderr": str  # Last 500 chars of stderr (on failure)
+        }
+
+    Note:
+        Has 2 minute timeout. Regeneration typically takes 10-30 seconds.
+    """
+    logger.info("Manual data.json regeneration triggered")
     try:
         result = subprocess.run(
             ['python3', 'generate_data.py'],
@@ -1132,26 +638,541 @@ def regenerate():
         )
 
         if result.returncode == 0:
+            logger.info("Data.json regenerated successfully")
             return jsonify({
                 'success': True,
                 'message': 'data.json regenerated successfully',
                 'output': result.stdout[-500:] if result.stdout else ''  # Last 500 chars
             })
         else:
+            logger.error(f"Regeneration failed with exit code {result.returncode}: {result.stderr[-200:] if result.stderr else ''}")
             return jsonify({
                 'success': False,
                 'error': f'Regeneration failed with exit code {result.returncode}',
                 'stderr': result.stderr[-500:] if result.stderr else ''
             })
     except subprocess.TimeoutExpired:
+        logger.error("Regeneration timed out after 2 minutes")
         return jsonify({
             'success': False,
             'error': 'Regeneration timed out after 2 minutes'
         })
     except Exception as e:
+        logger.error(f"Failed to trigger regeneration: {str(e)}")
         return jsonify({
             'success': False,
             'error': f'Failed to trigger regeneration: {str(e)}'
+        })
+
+@app.route('/update-movie-fields', methods=['POST'])
+@auth.login_required
+def update_movie_fields() -> dict:
+    """Update all editable fields for a movie.
+
+    Updates fields directly in movie_tracking.json with validation,
+    then triggers data.json regeneration.
+
+    Authentication:
+        Requires HTTP Basic Auth (@auth.login_required)
+
+    Request JSON:
+        {
+            "movie_id": str,  # Required
+            "rt_score": int,  # Optional, 0-100
+            "rt_link": str,  # Optional, must be valid URL
+            "trailer_link": str,  # Optional, must be valid URL
+            "director": str,  # Optional
+            "country": str,  # Optional
+            "poster_url": str,  # Optional, must be valid URL
+            "digital_date": str,  # Optional, ISO format YYYY-MM-DD
+            "synopsis": str,  # Optional, max 5000 chars
+            "watch_links": {  # Optional
+                "streaming": {"service": str, "link": str},
+                "rent": {"service": str, "link": str},
+                "buy": {"service": str, "link": str}
+            }
+        }
+
+    Returns:
+        JSON response:
+        {
+            "success": bool,
+            "message": str,  # Lists fields updated
+            "error": str,  # On validation or save failure
+            "warning": str  # If save succeeded but regeneration failed
+        }
+
+    Validation:
+        - RT score: Must be integer 0-100
+        - URLs: Must start with http:// or https://
+        - Date: Must be ISO format YYYY-MM-DD
+        - Synopsis: Max 5000 characters
+        - Watch links: Must have service and link fields
+
+    Note:
+        All changes are marked with manual_* flags to prevent
+        overwriting by daily scraper.
+    """
+    try:
+        data = request.json
+        movie_id = str(data.get('movie_id'))
+
+        logger.info(f"Updating fields for movie {movie_id}")
+
+        if not movie_id:
+            return jsonify({'success': False, 'error': 'Movie ID required'})
+
+        # Load movie_tracking.json
+        tracking_file = 'movie_tracking.json'
+        try:
+            with open(tracking_file, 'r') as f:
+                tracking_data = json.load(f)
+        except FileNotFoundError:
+            return jsonify({'success': False, 'error': 'movie_tracking.json not found'})
+
+        # Check if movie exists
+        if movie_id not in tracking_data.get('movies', {}):
+            return jsonify({'success': False, 'error': f'Movie {movie_id} not found in tracking database'})
+
+        movie = tracking_data['movies'][movie_id]
+        changes_made = []
+
+        # Update RT Score
+        if 'rt_score' in data and data['rt_score'] is not None:
+            # VALIDATION: RT score must be integer 0-100, reject floats
+            rt_score_value = data['rt_score']
+
+            # If it's already an int, accept it
+            if isinstance(rt_score_value, int):
+                rt_score = rt_score_value
+            # If it's a string, ensure it matches an optional sign followed by digits only
+            elif isinstance(rt_score_value, str):
+                rt_score_str = rt_score_value.strip()
+                # Check if it matches an integer pattern (optional sign + digits)
+                import re
+                if not re.match(r'^[-+]?\d+$', rt_score_str):
+                    return jsonify({
+                        'success': False,
+                        'error': 'RT score must be an integer between 0 and 100'
+                    })
+                try:
+                    rt_score = int(rt_score_str)
+                except ValueError:
+                    return jsonify({
+                        'success': False,
+                        'error': 'RT score must be an integer between 0 and 100'
+                    })
+            # Reject floats or any other type
+            else:
+                return jsonify({
+                    'success': False,
+                    'error': 'RT score must be an integer between 0 and 100'
+                })
+
+            # Check range after confirming it's an integer
+            if rt_score < 0 or rt_score > 100:
+                return jsonify({
+                    'success': False,
+                    'error': 'RT score must be between 0 and 100'
+                })
+
+            # Update with validated integer value
+            movie['rt_score'] = rt_score
+            movie['manual_rt_score'] = True
+            changes_made.append('RT Score')
+
+        # Update Links
+        if 'links' not in movie:
+            movie['links'] = {}
+
+        if 'rt_link' in data:
+            rt_link = data['rt_link'].strip() if data['rt_link'] else ''
+
+            if rt_link == '':
+                # Empty string clears the field
+                if 'rt' in movie.get('links', {}):
+                    del movie['links']['rt']
+                movie['manual_rt_link'] = False
+                changes_made.append('RT Link (cleared)')
+            else:
+                # VALIDATION: URL must start with http:// or https://
+                if not rt_link.startswith(('http://', 'https://')):
+                    return jsonify({
+                        'success': False,
+                        'error': 'RT link must be a valid URL starting with http:// or https://'
+                    })
+
+                movie['links']['rt'] = rt_link
+                movie['manual_rt_link'] = True
+                changes_made.append('RT Link')
+
+        if 'trailer_link' in data:
+            trailer_link = data['trailer_link'].strip() if data['trailer_link'] else ''
+
+            if trailer_link == '':
+                # Empty string clears the field
+                if 'trailer' in movie.get('links', {}):
+                    del movie['links']['trailer']
+                movie['manual_trailer'] = False
+                changes_made.append('Trailer (cleared)')
+            else:
+                # VALIDATION: URL must start with http:// or https://
+                if not trailer_link.startswith(('http://', 'https://')):
+                    return jsonify({
+                        'success': False,
+                        'error': 'Trailer link must be a valid URL starting with http:// or https://'
+                    })
+
+                movie['links']['trailer'] = trailer_link
+                movie['manual_trailer'] = True
+                changes_made.append('Trailer')
+
+        # Update Director
+        if 'director' in data:
+            director = str(data['director']).strip() if data['director'] else ''
+
+            if director == '':
+                # Empty string clears the field
+                if 'crew' in movie and 'director' in movie['crew']:
+                    del movie['crew']['director']
+                movie['manual_director'] = False
+                changes_made.append('Director (cleared)')
+            else:
+                if 'crew' not in movie:
+                    movie['crew'] = {}
+                movie['crew']['director'] = director
+                movie['manual_director'] = True
+                changes_made.append('Director')
+
+        # Update Country
+        if 'country' in data:
+            country = str(data['country']).strip() if data['country'] else ''
+
+            if country == '':
+                # Empty string clears the field
+                if 'country' in movie:
+                    del movie['country']
+                movie['manual_country'] = False
+                changes_made.append('Country (cleared)')
+            else:
+                movie['country'] = country
+                movie['manual_country'] = True
+                changes_made.append('Country')
+
+        # Update Poster URL
+        if 'poster_url' in data:
+            poster_url = data['poster_url'].strip() if data['poster_url'] else ''
+
+            if poster_url == '':
+                # Empty string clears the field
+                if 'poster' in movie:
+                    del movie['poster']
+                movie['manual_poster'] = False
+                changes_made.append('Poster (cleared)')
+            else:
+                # VALIDATION: URL must start with http:// or https://
+                if not poster_url.startswith(('http://', 'https://')):
+                    return jsonify({
+                        'success': False,
+                        'error': 'Poster URL must be a valid URL starting with http:// or https://'
+                    })
+
+                movie['poster'] = poster_url
+                movie['manual_poster'] = True
+                changes_made.append('Poster')
+
+        # Update Digital Release Date
+        if 'digital_date' in data:
+            digital_date = data['digital_date'].strip() if data['digital_date'] else ''
+
+            if digital_date == '':
+                # Empty string clears the field
+                if 'digital_date' in movie:
+                    del movie['digital_date']
+                changes_made.append('Digital Date (cleared)')
+            else:
+                # VALIDATION: Date must be ISO format YYYY-MM-DD
+                try:
+                    # This will raise ValueError if format is wrong or date is invalid
+                    datetime.strptime(digital_date, '%Y-%m-%d')
+                except ValueError:
+                    return jsonify({
+                        'success': False,
+                        'error': 'Digital date must be in ISO format YYYY-MM-DD (e.g., 2025-10-20)'
+                    })
+
+                movie['digital_date'] = digital_date
+                movie['manually_corrected'] = True
+                changes_made.append('Digital Date')
+
+        # Update Synopsis
+        if 'synopsis' in data:
+            synopsis = str(data['synopsis']).strip() if data['synopsis'] else ''
+
+            if synopsis == '':
+                # Empty string clears the field
+                if 'synopsis' in movie:
+                    del movie['synopsis']
+                movie['manual_synopsis'] = False
+                changes_made.append('Synopsis (cleared)')
+            else:
+                # VALIDATION: Maximum length check
+                if len(synopsis) > 5000:
+                    return jsonify({
+                        'success': False,
+                        'error': 'Synopsis is too long (maximum 5000 characters)'
+                    })
+
+                movie['synopsis'] = synopsis
+                movie['manual_synopsis'] = True
+                changes_made.append('Synopsis')
+
+        # Update Watch Links
+        if 'watch_links' in data:
+            if data['watch_links']:
+                watch_links = data['watch_links']
+
+                # VALIDATION: Watch links structure
+                if not isinstance(watch_links, dict):
+                    return jsonify({
+                        'success': False,
+                        'error': 'Watch links must be a dictionary'
+                    })
+
+                # Validate each category and normalize trimmed values
+                for category in ['streaming', 'rent', 'buy']:
+                    if category in watch_links:
+                        cat_data = watch_links[category]
+
+                        # Must have 'service' and 'link' keys
+                        if not isinstance(cat_data, dict) or 'service' not in cat_data or 'link' not in cat_data:
+                            return jsonify({
+                                'success': False,
+                                'error': f'Watch links {category} must have "service" and "link" fields'
+                            })
+
+                        # Service must be non-empty string and assign trimmed value back
+                        service = str(cat_data['service']).strip()
+                        if not service:
+                            return jsonify({
+                                'success': False,
+                                'error': f'Watch links {category} service cannot be empty'
+                            })
+                        cat_data['service'] = service  # Persist normalized value
+
+                        # Link validation and normalization
+                        link = cat_data['link']
+                        if link:
+                            link = link.strip()
+                            if not link:
+                                # Empty string after trimming - treat as clearing the link
+                                cat_data['link'] = None
+                            elif not link.startswith(('http://', 'https://')):
+                                return jsonify({
+                                    'success': False,
+                                    'error': f'Watch links {category} link must be a valid URL starting with http:// or https://'
+                                })
+                            else:
+                                cat_data['link'] = link  # Persist normalized value
+                        else:
+                            cat_data['link'] = None  # Ensure null for empty
+
+                # Save to movie_tracking.json (consistent with other manual corrections)
+                movie['watch_links'] = watch_links
+                movie['manual_watch_links'] = True
+                changes_made.append('Watch Links')
+            else:
+                # Clear watch links when null or empty
+                if 'watch_links' in movie:
+                    del movie['watch_links']
+                movie['manual_watch_links'] = False
+                changes_made.append('Watch Links')
+
+        # Mark as manually corrected
+        movie['manually_corrected'] = True
+        movie['last_manual_edit'] = datetime.now().isoformat()
+
+        # Save back to movie_tracking.json (with atomic write and backup)
+        safe_write_json(tracking_file, tracking_data)
+        logger.info(f"Saved {len(changes_made)} field changes for movie {movie_id}: {', '.join(changes_made)}")
+
+        # Trigger regeneration of data.json
+        try:
+            result = subprocess.run(
+                ['python3', 'generate_data.py'],
+                capture_output=True,
+                text=True,
+                timeout=60
+            )
+            if result.returncode != 0:
+                logger.warning(f"Fields updated for movie {movie_id} but regeneration failed: {result.stderr}")
+                return jsonify({
+                    'success': True,
+                    'message': f'Fields updated ({", ".join(changes_made)}) but regeneration failed',
+                    'warning': result.stderr
+                })
+        except Exception as e:
+            logger.warning(f"Fields updated for movie {movie_id} but regeneration failed: {str(e)}")
+            return jsonify({
+                'success': True,
+                'message': f'Fields updated ({", ".join(changes_made)}) but regeneration failed: {str(e)}'
+            })
+
+        logger.info(f"Successfully updated and regenerated for movie {movie_id}: {', '.join(changes_made)}")
+        return jsonify({
+            'success': True,
+            'message': f'Updated {", ".join(changes_made)} and regenerated data.json'
+        })
+
+    except Exception as e:
+        logger.error(f"Error updating fields for movie {movie_id}: {str(e)}", exc_info=True)
+        return jsonify({
+            'success': False,
+            'error': f'Error updating fields: {str(e)}',
+            'traceback': traceback.format_exc()
+        })
+
+@app.route('/create-youtube-playlist', methods=['POST'])
+@auth.login_required
+def create_youtube_playlist() -> dict:
+    """Create a YouTube playlist with custom date parameters.
+
+    Calls youtube_playlist_manager.py as a subprocess to create
+    a playlist from movie trailers in data.json.
+
+    Authentication:
+        Requires HTTP Basic Auth (@auth.login_required)
+
+    Request JSON:
+        {
+            "date_type": str,  # 'last_x_days' or 'date_range'
+            "days_back": int,  # Required if date_type='last_x_days'
+            "from_date": str,  # Required if date_type='date_range' (YYYY-MM-DD)
+            "to_date": str,  # Required if date_type='date_range' (YYYY-MM-DD)
+            "title": str,  # Optional custom title
+            "privacy": str,  # 'public', 'unlisted', or 'private'
+            "dry_run": bool  # If true, preview only (don't create)
+        }
+
+    Returns:
+        JSON response:
+        {
+            "success": bool,
+            "message": str,
+            "playlist_url": str,  # YouTube playlist URL (if created)
+            "title": str,  # Playlist title
+            "video_count": int,  # Number of videos added
+            "date_range": str,  # Date range covered
+            "preview_videos": list,  # First 5 video titles (if dry_run)
+            "error": str  # On failure
+        }
+
+    Note:
+        Requires YouTube OAuth credentials in youtube_credentials/.
+        Has 3 minute timeout for playlist creation.
+        See YOUTUBE_PLAYLIST_SETUP.md for setup instructions.
+    """
+    try:
+        data = request.json
+        date_type = data.get('date_type', 'last_x_days')
+        privacy = data.get('privacy', 'public')
+        dry_run = data.get('dry_run', False)
+        custom_title = data.get('title')
+
+        logger.info(f"Creating YouTube playlist: {date_type}, privacy={privacy}, dry_run={dry_run}")
+
+        # Build command arguments
+        cmd = ['python3', 'youtube_playlist_manager.py', 'custom']
+
+        if dry_run:
+            cmd.append('--dry-run')
+
+        cmd.extend(['--privacy', privacy])
+
+        if custom_title:
+            cmd.extend(['--title', custom_title])
+
+        # Add date parameters
+        if date_type == 'last_x_days':
+            days_back = data.get('days_back', 7)
+            cmd.extend(['--days-back', str(days_back)])
+        else:  # date_range
+            from_date = data.get('from_date')
+            to_date = data.get('to_date')
+
+            if not from_date or not to_date:
+                return jsonify({
+                    'success': False,
+                    'error': 'Both from_date and to_date required for date range'
+                })
+
+            cmd.extend(['--from-date', from_date, '--to-date', to_date])
+
+        # Run the playlist manager
+        result = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            timeout=180  # 3 minute timeout
+        )
+
+        if result.returncode == 0:
+            # Parse output for details
+            output = result.stdout
+
+            response_data = {
+                'success': True,
+                'message': 'Playlist created successfully' if not dry_run else 'Preview generated'
+            }
+
+            # Try to extract playlist URL from output
+            import re
+            url_match = re.search(r'https://youtube\.com/playlist\?list=([a-zA-Z0-9_-]+)', output)
+            if url_match:
+                response_data['playlist_url'] = url_match.group(0)
+
+            # Extract title
+            title_match = re.search(r'Title: (.+)', output)
+            if title_match:
+                response_data['title'] = title_match.group(1).strip()
+
+            # Extract video count
+            video_match = re.search(r'Videos: (\d+)', output)
+            if video_match:
+                response_data['video_count'] = int(video_match.group(1))
+
+            # Extract date range
+            date_match = re.search(r'Date range: (.+)', output)
+            if date_match:
+                response_data['date_range'] = date_match.group(1).strip()
+
+            # Extract preview videos (first 5)
+            preview_matches = re.findall(r'• (.+) - https://youtube\.com/watch', output)
+            if preview_matches:
+                response_data['preview_videos'] = preview_matches[:5]
+
+            logger.info(f"YouTube playlist created: {response_data.get('title', 'Unknown')} with {response_data.get('video_count', 0)} videos")
+            return jsonify(response_data)
+        else:
+            error_msg = result.stderr or result.stdout or 'Unknown error'
+            logger.error(f"YouTube playlist creation failed: {error_msg[-200:]}")
+            return jsonify({
+                'success': False,
+                'error': f'Playlist creation failed: {error_msg[-500:]}'  # Last 500 chars
+            })
+
+    except subprocess.TimeoutExpired:
+        logger.error("YouTube playlist creation timed out after 3 minutes")
+        return jsonify({
+            'success': False,
+            'error': 'Playlist creation timed out after 3 minutes'
+        })
+    except Exception as e:
+        logger.error(f"Error creating YouTube playlist: {str(e)}", exc_info=True)
+        return jsonify({
+            'success': False,
+            'error': f'Error creating playlist: {str(e)}',
+            'traceback': traceback.format_exc()
         })
 
 if __name__ == '__main__':

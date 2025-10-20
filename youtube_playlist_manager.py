@@ -275,7 +275,7 @@ class YouTubePlaylistManager:
         return None
 
     @staticmethod
-    def get_trailers_from_nrw_data(days_back=7, rt_min=None, data_path=None):
+    def get_trailers_from_nrw_data(days_back=7, rt_min=None, data_path=None, from_date=None, to_date=None):
         """
         Load trailers from data.json with optional filtering
 
@@ -283,6 +283,8 @@ class YouTubePlaylistManager:
             days_back: Only include movies from last N days (None = all)
             rt_min: Minimum RT score (None = all)
             data_path: Path to data.json (defaults to script directory)
+            from_date: Start date for custom range (YYYY-MM-DD string or date object)
+            to_date: End date for custom range (YYYY-MM-DD string or date object)
 
         Returns:
             List of trailer dicts with video_id, title, date, etc.
@@ -299,8 +301,24 @@ class YouTubePlaylistManager:
         with open(data_file) as f:
             data = json.load(f)
 
+        # Handle date filtering
         cutoff = None
-        if days_back:
+        date_range_start = None
+        date_range_end = None
+
+        if from_date and to_date:
+            # Custom date range
+            if isinstance(from_date, str):
+                date_range_start = datetime.fromisoformat(from_date).date()
+            else:
+                date_range_start = from_date
+
+            if isinstance(to_date, str):
+                date_range_end = datetime.fromisoformat(to_date).date()
+            else:
+                date_range_end = to_date
+        elif days_back:
+            # Last N days
             cutoff = datetime.now().date() - timedelta(days=days_back)
 
         trailers = []
@@ -313,28 +331,26 @@ class YouTubePlaylistManager:
             if not video_id:
                 continue
 
-            # Apply date filter
-            if cutoff:
-                try:
-                    digital_date = datetime.fromisoformat(movie['digital_date']).date()
-                    if digital_date < cutoff:
-                        continue
-                except (KeyError, ValueError, TypeError):
-                    # Skip entries with missing or malformed digital_date
-                    print(f"⚠️  Skipping '{movie.get('title', 'Unknown')}': invalid digital_date")
+            # Get and validate date
+            try:
+                digital_date = datetime.fromisoformat(movie['digital_date']).date()
+                date_str = movie['digital_date']
+            except (KeyError, ValueError, TypeError):
+                print(f"⚠️  Skipping '{movie.get('title', 'Unknown')}': invalid digital_date")
+                continue
+
+            # Apply date filters
+            if date_range_start and date_range_end:
+                # Custom date range
+                if not (date_range_start <= digital_date <= date_range_end):
+                    continue
+            elif cutoff:
+                # Last N days
+                if digital_date < cutoff:
                     continue
 
             # Apply RT score filter
             if rt_min and (not movie.get('rt_score') or movie.get('rt_score') < rt_min):
-                continue
-
-            # Ensure we have a valid date before adding to trailers
-            try:
-                # Validate the date can be parsed
-                datetime.fromisoformat(movie['digital_date'])
-                date_str = movie['digital_date']
-            except (KeyError, ValueError, TypeError):
-                print(f"⚠️  Skipping '{movie.get('title', 'Unknown')}': invalid digital_date")
                 continue
 
             trailers.append({
@@ -554,6 +570,97 @@ Top rated:
 
         return playlist_id
 
+    def create_custom_playlist(self, days_back=None, from_date=None, to_date=None,
+                              title=None, privacy='public', dry_run=False, data_path=None):
+        """
+        Create a custom playlist with flexible date parameters
+
+        Args:
+            days_back: Number of days back from today (None = use date range)
+            from_date: Start date for custom range (YYYY-MM-DD)
+            to_date: End date for custom range (YYYY-MM-DD)
+            title: Custom playlist title (auto-generated if None)
+            privacy: 'public', 'unlisted', or 'private'
+            dry_run: If True, only print what would be done
+            data_path: Path to data.json
+
+        Returns:
+            Playlist ID or None
+        """
+        print("\n📺 Creating custom playlist...")
+
+        # Get trailers based on date parameters
+        if from_date and to_date:
+            trailers = self.get_trailers_from_nrw_data(
+                days_back=None,
+                from_date=from_date,
+                to_date=to_date,
+                data_path=data_path
+            )
+            date_range_str = f"{from_date} to {to_date}"
+        elif days_back:
+            trailers = self.get_trailers_from_nrw_data(days_back=days_back, data_path=data_path)
+            end_date = datetime.now()
+            start_date = end_date - timedelta(days=days_back)
+            date_range_str = f"{start_date.strftime('%b %d')} - {end_date.strftime('%b %d, %Y')}"
+        else:
+            print("⚠️  Must specify either days_back or from_date/to_date")
+            return None
+
+        if not trailers:
+            print(f"⚠️  No trailers found for specified date range")
+            return None
+
+        # Auto-generate title if not provided
+        if not title:
+            if from_date and to_date:
+                from_dt = datetime.fromisoformat(from_date)
+                to_dt = datetime.fromisoformat(to_date)
+                title = f"New Releases ({from_dt.strftime('%b %d')} - {to_dt.strftime('%b %d, %Y')})"
+            else:
+                title = f"New Releases - Last {days_back} Days"
+
+        # Build description
+        description = f"""🎬 {len(trailers)} movies released digitally
+
+Curated by New Release Wall
+Created: {datetime.now().strftime('%B %d, %Y at %I:%M %p')}
+Date Range: {date_range_str}
+
+Featured titles:
+"""
+        # Add top movies to description
+        for i, trailer in enumerate(trailers[:10], 1):
+            rt = f" • {trailer['rt_score']}% RT" if trailer['rt_score'] else ""
+            director = f" • {trailer['director']}" if trailer['director'] != 'Unknown' else ""
+            description += f"\n{i}. {trailer['title']}{rt}{director}"
+
+        if len(trailers) > 10:
+            description += f"\n...and {len(trailers) - 10} more!"
+
+        description += "\n\n🔗 Full list: https://newreleasewall.com"
+
+        print(f"\n📝 Playlist details:")
+        print(f"   Title: {title}")
+        print(f"   Videos: {len(trailers)}")
+        print(f"   Date range: {date_range_str}")
+
+        if dry_run:
+            print("\n🔍 DRY RUN - No playlist created")
+            print(f"\nFirst 5 videos:")
+            for t in trailers[:5]:
+                print(f"   • {t['title']} - https://youtube.com/watch?v={t['video_id']}")
+            return None
+
+        # Create playlist
+        playlist_id = self.create_playlist(title, description, privacy=privacy)
+
+        # Add videos
+        video_ids = [t['video_id'] for t in trailers]
+        self.add_videos_to_playlist(playlist_id, video_ids)
+
+        return playlist_id
+
 
 def main():
     """CLI interface for YouTube Playlist Manager"""
@@ -579,12 +686,21 @@ Examples:
 
   # Create certified fresh playlist (RT ≥ 90%)
   python3 youtube_playlist_manager.py certified --threshold 90
+
+  # Create custom playlist - last 14 days
+  python3 youtube_playlist_manager.py custom --days-back 14
+
+  # Create custom playlist - specific date range
+  python3 youtube_playlist_manager.py custom --from-date 2025-10-01 --to-date 2025-10-15
+
+  # Create custom playlist with custom title
+  python3 youtube_playlist_manager.py custom --days-back 30 --title "October Horror Movies" --privacy unlisted
         """
     )
 
     parser.add_argument(
         'action',
-        choices=['auth', 'test', 'weekly', 'monthly', 'certified'],
+        choices=['auth', 'test', 'weekly', 'monthly', 'certified', 'custom'],
         help='Action to perform'
     )
     parser.add_argument('--dry-run', action='store_true',
@@ -597,6 +713,17 @@ Examples:
                        help='RT score threshold for certified playlist (default: 90)')
     parser.add_argument('--data-path', type=str,
                        help='Path to data.json file (defaults to script directory)')
+    parser.add_argument('--days-back', type=int,
+                       help='Number of days back for custom playlist')
+    parser.add_argument('--from-date', type=str,
+                       help='Start date for custom playlist (YYYY-MM-DD)')
+    parser.add_argument('--to-date', type=str,
+                       help='End date for custom playlist (YYYY-MM-DD)')
+    parser.add_argument('--title', type=str,
+                       help='Custom playlist title (auto-generated if not provided)')
+    parser.add_argument('--privacy', type=str, default='public',
+                       choices=['public', 'unlisted', 'private'],
+                       help='Playlist privacy setting (default: public)')
 
     args = parser.parse_args()
 
@@ -689,6 +816,35 @@ Examples:
             playlist_id = manager.create_certified_fresh_playlist(
                 rt_threshold=args.threshold, dry_run=args.dry_run, data_path=args.data_path
             )
+            if playlist_id and not args.dry_run:
+                print(f"\n🎬 Success! Playlist created:")
+                print(f"   https://youtube.com/playlist?list={playlist_id}")
+
+        elif args.action == 'custom':
+            # Validate parameters
+            if args.from_date and args.to_date:
+                # Use date range
+                playlist_id = manager.create_custom_playlist(
+                    from_date=args.from_date,
+                    to_date=args.to_date,
+                    title=args.title,
+                    privacy=args.privacy,
+                    dry_run=args.dry_run,
+                    data_path=args.data_path
+                )
+            elif args.days_back:
+                # Use days back
+                playlist_id = manager.create_custom_playlist(
+                    days_back=args.days_back,
+                    title=args.title,
+                    privacy=args.privacy,
+                    dry_run=args.dry_run,
+                    data_path=args.data_path
+                )
+            else:
+                print("❌ Error: Must specify either --days-back or both --from-date and --to-date")
+                sys.exit(1)
+
             if playlist_id and not args.dry_run:
                 print(f"\n🎬 Success! Playlist created:")
                 print(f"   https://youtube.com/playlist?list={playlist_id}")

@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Release Wall - Admin Panel</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+<body>
+    <div class="header">
+        <h1>🎬 New Release Wall - Admin Panel</h1>
+        <div class="stats">
+            <div class="stat-item">
+                <span>Total Movies:</span>
+                <span class="stat-value">{{ movies|length }}</span>
+            </div>
+            <div class="stat-item">
+                <span>Visible:</span>
+                <span class="stat-value" id="visible-count">{{ visible_count }}</span>
+            </div>
+            <div class="stat-item">
+                <span>Hidden:</span>
+                <span class="stat-value" id="hidden-count">{{ hidden_count }}</span>
+            </div>
+            <div class="stat-item">
+                <span>Featured:</span>
+                <span class="stat-value" id="featured-count">{{ featured_count }}</span>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button onclick="regenerateData()"
+                    class="action-btn btn-large"
+                    id="regenerate-btn">
+                🔄 Regenerate data.json
+            </button>
+            <span id="regenerate-status" class="status-text"></span>
+
+            <button onclick="togglePlaylistForm()"
+                    class="action-btn btn-large danger">
+                📺 Create YouTube Playlist
+            </button>
+        </div>
+
+        <!-- YouTube Playlist Creation Form -->
+        <div id="playlist-form" class="playlist-form">
+            <h3 class="form-title">Create YouTube Playlist</h3>
+
+            <div class="form-grid">
+                <div>
+                    <label class="form-label">
+                        Date Range Type:
+                    </label>
+                    <select id="playlist-date-type"
+                            onchange="updateDateInputs()"
+                            class="form-input">
+                        <option value="last_x_days">Last X Days</option>
+                        <option value="date_range">Custom Date Range</option>
+                    </select>
+                </div>
+
+                <div id="days-input-container">
+                    <label class="form-label">
+                        Number of Days:
+                    </label>
+                    <input type="number"
+                           id="playlist-days"
+                           value="7"
+                           min="1"
+                           max="365"
+                           class="form-input">
+                </div>
+
+                <div id="date-range-container" style="display: none; grid-column: span 2;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div>
+                            <label style="display: block; font-size: 0.85rem; color: #999; margin-bottom: 0.3rem;">
+                                From Date:
+                            </label>
+                            <input type="date"
+                                   id="playlist-from-date"
+                                   style="width: 100%; padding: 0.5rem; background: #2a2a2a; border: 1px solid #3a3a3a; color: white; border-radius: 4px;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 0.85rem; color: #999; margin-bottom: 0.3rem;">
+                                To Date:
+                            </label>
+                            <input type="date"
+                                   id="playlist-to-date"
+                                   style="width: 100%; padding: 0.5rem; background: #2a2a2a; border: 1px solid #3a3a3a; color: white; border-radius: 4px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-field">
+                <label class="form-label">
+                    Playlist Title (optional - auto-generated if blank):
+                </label>
+                <input type="text"
+                       id="playlist-title"
+                       placeholder="e.g., This Week's New Releases"
+                       class="form-input">
+            </div>
+
+            <div class="form-field">
+                <label class="form-label">
+                    Privacy:
+                </label>
+                <select id="playlist-privacy"
+                        class="form-input">
+                    <option value="public">Public</option>
+                    <option value="unlisted">Unlisted</option>
+                    <option value="private">Private</option>
+                </select>
+            </div>
+
+            <div class="form-field">
+                <label class="form-checkbox-label">
+                    <input type="checkbox"
+                           id="playlist-dry-run"
+                           class="form-checkbox">
+                    <span class="form-label">Dry Run (preview only, don't create playlist)</span>
+                </label>
+            </div>
+
+            <div class="form-button-group">
+                <button onclick="createYouTubePlaylist()"
+                        class="action-btn btn-large success"
+                        id="create-playlist-btn">
+                    🎬 Create Playlist
+                </button>
+                <button onclick="togglePlaylistForm()"
+                        class="action-btn btn-large secondary">
+                    Cancel
+                </button>
+            </div>
+
+            <div id="playlist-status" class="status-message"></div>
+            <div id="playlist-result" class="result-container"></div>
+        </div>
+    </div>
+
+    <div class="filters">
+        <button class="filter-btn active" onclick="filterMovies('all')">All Movies</button>
+        <button class="filter-btn warning-badge" onclick="filterMovies('missing-data')">
+            ⚠️ Missing Data
+            <span class="notification-badge">{{ missing_data_count }}</span>
+        </button>
+        <button class="filter-btn" onclick="filterMovies('visible')">Visible</button>
+        <button class="filter-btn" onclick="filterMovies('hidden')">Hidden</button>
+        <button class="filter-btn" onclick="filterMovies('featured')">Featured</button>
+        <input type="text" id="search-box" class="search-box" placeholder="Search movies..." onkeyup="searchMovies()">
+    </div>
+
+    <div class="movie-grid" id="movie-grid">
+        {% for movie_id, movie in movies.items() %}
+        <div class="movie-card {% if movie_id in hidden %}hidden{% endif %} {% if movie_id in featured %}featured{% endif %}"
+             data-movie-id="{{ movie_id }}"
+             data-title="{{ movie.title|lower }}"
+             data-has-score="{{ 'yes' if movie.rt_score else 'no' }}"
+             data-has-trailer="{{ 'yes' if movie.get('links', {}).get('trailer') else 'no' }}"
+             data-has-poster="{{ 'yes' if movie.poster_url or movie.get('poster') else 'no' }}"
+             data-has-director="{{ 'yes' if movie.director and movie.director != 'Unknown' else 'no' }}"
+             data-has-country="{{ 'yes' if movie.get('country') else 'no' }}"
+             data-missing-any="{{ 'yes' if not movie.rt_score or not movie.get('links', {}).get('trailer') or not (movie.poster_url or movie.get('poster')) or not movie.director or movie.director == 'Unknown' or not movie.get('country') else 'no' }}">
+            {% if movie.poster_url %}
+            <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" class="movie-poster">
+            {% else %}
+            <div class="movie-poster no-poster-placeholder">
+                No Poster
+            </div>
+            {% endif %}
+
+            <div class="movie-info">
+                <div class="movie-title">{{ movie.title }}</div>
+                <div class="movie-meta">
+                    {{ movie.year or '2025' }} • {{ movie.director or 'Unknown Director' }}
+                </div>
+
+                <!-- Editable Fields Section -->
+                <div class="edit-section">
+                    <div class="edit-title">
+                        📝 Edit Fields
+                    </div>
+
+                    <!-- Digital Release Date -->
+                    <div class="edit-field-group">
+                        <label class="edit-label">
+                            Digital Release Date:
+                        </label>
+                        <input type="date"
+                               id="digital-date-{{ movie_id }}"
+                               value="{{ movie.digital_date }}"
+                               class="edit-input">
+                    </div>
+
+                    <!-- RT Score -->
+                    <div class="edit-field-group">
+                        <label class="edit-label">
+                            RT Score (0-100):
+                        </label>
+                        <input type="number"
+                               id="rt-score-{{ movie_id }}"
+                               value="{{ movie.rt_score or '' }}"
+                               placeholder="Enter RT score"
+                               min="0"
+                               max="100"
+                               class="edit-input{% if not movie.rt_score %} missing{% endif %}">
+                    </div>
+
+                    <!-- RT Link -->
+                    <div style="margin-bottom: 0.5rem;">
+                        <label style="display: block; font-size: 0.75rem; color: #999; margin-bottom: 0.2rem;">
+                            RT Link:
+                        </label>
+                        <div style="display: flex; gap: 0.3rem;">
+                            <input type="url"
+                                   id="rt-link-{{ movie_id }}"
+                                   value="{{ movie.get('links', {}).get('rt', '') }}"
+                                   placeholder="https://www.rottentomatoes.com/m/..."
+                                   style="flex: 1; padding: 0.3rem; background: {% if not movie.get('links', {}).get('rt') %}#3a1a1a{% else %}#2a2a2a{% endif %}; border: 1px solid {% if not movie.get('links', {}).get('rt') %}#dc3545{% else %}#3a3a3a{% endif %}; color: white; border-radius: 4px; font-size: 0.75rem;">
+                            <a href="{{ movie.get('links', {}).get('rt', '#') }}" target="_blank"
+                               style="padding: 0.3rem 0.5rem; background: #28a745; color: white; border-radius: 4px; text-decoration: none; font-size: 0.75rem; display: flex; align-items: center;"
+                               title="Open RT link">🔗</a>
+                        </div>
+                    </div>
+
+                    <!-- Trailer Link -->
+                    <div style="margin-bottom: 0.5rem;">
+                        <label style="display: block; font-size: 0.75rem; color: #999; margin-bottom: 0.2rem;">
+                            Trailer Link:
+                        </label>
+                        <div style="display: flex; gap: 0.3rem;">
+                            <input type="url"
+                                   id="trailer-link-{{ movie_id }}"
+                                   value="{{ movie.get('links', {}).get('trailer', '') }}"
+                                   placeholder="https://www.youtube.com/watch?v=..."
+                                   style="flex: 1; padding: 0.3rem; background: {% if not movie.get('links', {}).get('trailer') %}#3a1a1a{% else %}#2a2a2a{% endif %}; border: 1px solid {% if not movie.get('links', {}).get('trailer') %}#dc3545{% else %}#3a3a3a{% endif %}; color: white; border-radius: 4px; font-size: 0.75rem;">
+                            <a href="{{ movie.get('links', {}).get('trailer', '#') }}" target="_blank"
+                               style="padding: 0.3rem 0.5rem; background: #ff0000; color: white; border-radius: 4px; text-decoration: none; font-size: 0.75rem; display: flex; align-items: center;"
+                               title="Open trailer">▶️</a>
+                        </div>
+                    </div>
+
+                    <!-- Director -->
+                    <div style="margin-bottom: 0.5rem;">
+                        <label style="display: block; font-size: 0.75rem; color: #999; margin-bottom: 0.2rem;">
+                            Director:
+                        </label>
+                        <input type="text"
+                               id="director-{{ movie_id }}"
+                               value="{{ movie.director or '' }}"
+                               placeholder="Director name"
+                               style="width: 100%; padding: 0.3rem; background: {% if not movie.director or movie.director == 'Unknown' %}#3a1a1a{% else %}#2a2a2a{% endif %}; border: 1px solid {% if not movie.director or movie.director == 'Unknown' %}#dc3545{% else %}#3a3a3a{% endif %}; color: white; border-radius: 4px; font-size: 0.75rem;">
+                    </div>
+
+                    <!-- Country -->
+                    <div style="margin-bottom: 0.5rem;">
+                        <label style="display: block; font-size: 0.75rem; color: #999; margin-bottom: 0.2rem;">
+                            Country:
+                        </label>
+                        <input type="text"
+                               id="country-{{ movie_id }}"
+                               value="{{ movie.get('country', '') }}"
+                               placeholder="Country name"
+                               style="width: 100%; padding: 0.3rem; background: {% if not movie.get('country') %}#3a1a1a{% else %}#2a2a2a{% endif %}; border: 1px solid {% if not movie.get('country') %}#dc3545{% else %}#3a3a3a{% endif %}; color: white; border-radius: 4px; font-size: 0.75rem;">
+                    </div>
+
+                    <!-- Synopsis -->
+                    <div style="margin-bottom: 0.5rem;">
+                        <label style="display: block; font-size: 0.75rem; color: #999; margin-bottom: 0.2rem;">
+                            Synopsis:
+                        </label>
+                        <textarea id="synopsis-{{ movie_id }}"
+                                  placeholder="Movie description/plot summary"
+                                  rows="3"
+                                  style="width: 100%; padding: 0.3rem; background: {% if not movie.get('synopsis') %}#3a1a1a{% else %}#2a2a2a{% endif %}; border: 1px solid {% if not movie.get('synopsis') %}#dc3545{% else %}#3a3a3a{% endif %}; color: white; border-radius: 4px; font-size: 0.75rem; resize: vertical; font-family: inherit;">{{ movie.get('synopsis', '') }}</textarea>
+                    </div>
+
+                    <!-- Poster URL -->
+                    <div style="margin-bottom: 0.5rem;">
+                        <label style="display: block; font-size: 0.75rem; color: #999; margin-bottom: 0.2rem;">
+                            Poster URL:
+                        </label>
+                        <div style="display: flex; gap: 0.3rem;">
+                            <input type="url"
+                                   id="poster-url-{{ movie_id }}"
+                                   value="{{ movie.poster_url or movie.get('poster', '') }}"
+                                   placeholder="https://image.tmdb.org/t/p/w500/..."
+                                   style="flex: 1; padding: 0.3rem; background: {% if not (movie.poster_url or movie.get('poster')) %}#3a1a1a{% else %}#2a2a2a{% endif %}; border: 1px solid {% if not (movie.poster_url or movie.get('poster')) %}#dc3545{% else %}#3a3a3a{% endif %}; color: white; border-radius: 4px; font-size: 0.75rem;">
+                            <a href="https://www.themoviedb.org/movie/{{ movie.tmdb_id or movie_id }}" target="_blank"
+                               style="padding: 0.3rem 0.5rem; background: #01d277; color: white; border-radius: 4px; text-decoration: none; font-size: 0.75rem; display: flex; align-items: center;"
+                               title="Open TMDB">🎬</a>
+                        </div>
+                    </div>
+
+                    <!-- Watch Links (Streaming/Rent/Buy) -->
+                    <div style="margin-bottom: 0.5rem;">
+                        <label style="display: block; font-size: 0.75rem; color: #999; margin-bottom: 0.2rem;">
+                            Streaming Service & Link:
+                        </label>
+                        <div style="display: flex; gap: 0.3rem; margin-bottom: 0.3rem;">
+                            <input type="text"
+                                   id="streaming-service-{{ movie_id }}"
+                                   value="{% if movie.get('watch_links', {}).get('streaming') %}{{ movie['watch_links']['streaming']['service'] }}{% endif %}"
+                                   placeholder="Netflix, Disney+, etc."
+                                   style="width: 35%; padding: 0.3rem; background: #2a2a2a; border: 1px solid #3a3a3a; color: white; border-radius: 4px; font-size: 0.75rem;">
+                            <input type="url"
+                                   id="streaming-link-{{ movie_id }}"
+                                   value="{% if movie.get('watch_links', {}).get('streaming') %}{{ movie['watch_links']['streaming']['link'] }}{% endif %}"
+                                   placeholder="https://..."
+                                   style="flex: 1; padding: 0.3rem; background: #2a2a2a; border: 1px solid #3a3a3a; color: white; border-radius: 4px; font-size: 0.75rem;">
+                        </div>
+                        <label style="display: block; font-size: 0.75rem; color: #999; margin-bottom: 0.2rem;">
+                            Rent Service & Link:
+                        </label>
+                        <div style="display: flex; gap: 0.3rem; margin-bottom: 0.3rem;">
+                            <input type="text"
+                                   id="rent-service-{{ movie_id }}"
+                                   value="{% if movie.get('watch_links', {}).get('rent') %}{{ movie['watch_links']['rent']['service'] }}{% endif %}"
+                                   placeholder="Amazon, Apple TV, etc."
+                                   style="width: 35%; padding: 0.3rem; background: #2a2a2a; border: 1px solid #3a3a3a; color: white; border-radius: 4px; font-size: 0.75rem;">
+                            <input type="url"
+                                   id="rent-link-{{ movie_id }}"
+                                   value="{% if movie.get('watch_links', {}).get('rent') %}{{ movie['watch_links']['rent']['link'] }}{% endif %}"
+                                   placeholder="https://..."
+                                   style="flex: 1; padding: 0.3rem; background: #2a2a2a; border: 1px solid #3a3a3a; color: white; border-radius: 4px; font-size: 0.75rem;">
+                        </div>
+                        <label style="display: block; font-size: 0.75rem; color: #999; margin-bottom: 0.2rem;">
+                            Buy Service & Link:
+                        </label>
+                        <div style="display: flex; gap: 0.3rem;">
+                            <input type="text"
+                                   id="buy-service-{{ movie_id }}"
+                                   value="{% if movie.get('watch_links', {}).get('buy') %}{{ movie['watch_links']['buy']['service'] }}{% endif %}"
+                                   placeholder="Apple TV, Vudu, etc."
+                                   style="width: 35%; padding: 0.3rem; background: #2a2a2a; border: 1px solid #3a3a3a; color: white; border-radius: 4px; font-size: 0.75rem;">
+                            <input type="url"
+                                   id="buy-link-{{ movie_id }}"
+                                   value="{% if movie.get('watch_links', {}).get('buy') %}{{ movie['watch_links']['buy']['link'] }}{% endif %}"
+                                   placeholder="https://..."
+                                   style="flex: 1; padding: 0.3rem; background: #2a2a2a; border: 1px solid #3a3a3a; color: white; border-radius: 4px; font-size: 0.75rem;">
+                        </div>
+                    </div>
+
+                    <!-- Save All Changes Button -->
+                    <button class="action-btn save-all-btn"
+                            onclick="saveAllFields('{{ movie_id }}')">
+                        💾 Save All Changes
+                    </button>
+                </div>
+
+                {% if movie.rt_score %}
+                <span class="movie-score {% if movie.rt_score >= 80 %}score-high{% elif movie.rt_score >= 60 %}score-medium{% else %}score-low{% endif %}">
+                    🍅 {{ movie.rt_score }}%
+                </span>
+                {% else %}
+                <span class="movie-score">No RT Score</span>
+                {% endif %}
+
+                {% if movie.runtime %}
+                <span class="movie-meta">{{ movie.runtime }} min</span>
+                {% endif %}
+
+                {% if movie.provider_list %}
+                <div class="movie-providers">{{ movie.provider_list }}</div>
+                {% endif %}
+
+                <div class="movie-actions">
+                    {% if movie_id in hidden %}
+                    <button class="action-btn btn-show" onclick="toggleHidden('{{ movie_id }}', false)">👁️ Show</button>
+                    {% else %}
+                    <button class="action-btn btn-hide" onclick="toggleHidden('{{ movie_id }}', true)">🚫 Hide</button>
+                    {% endif %}
+
+                    {% if movie_id in featured %}
+                    <button class="action-btn btn-unfeature" onclick="toggleFeatured('{{ movie_id }}', false)">⭐ Unfeature</button>
+                    {% else %}
+                    <button class="action-btn btn-feature" onclick="toggleFeatured('{{ movie_id }}', true)">⭐ Feature</button>
+                    {% endif %}
+
+                    {% if movie.rt_url %}
+                    <a href="{{ movie.rt_url }}" target="_blank" class="action-btn btn-rt">RT →</a>
+                    {% else %}
+                    <a href="https://www.rottentomatoes.com/search?search={{ movie.title }}" target="_blank" class="action-btn btn-rt">RT Search</a>
+                    {% endif %}
+
+                    <a href="https://www.themoviedb.org/movie/{{ movie.tmdb_id or movie_id }}" target="_blank" class="action-btn btn-tmdb">TMDB →</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="success-msg" id="success-msg">Changes saved!</div>
+
+    <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+</body>
+</html>

@@ -92,17 +92,109 @@ We want a beautiful webpage that shows the latest movies available for streaming
 - Simple approach: Generate URLs like "Inspector_Zende_(film)" → 50% are broken
 - Smart approach: Verify URLs exist, use multiple methods → 80% success rate
 
-### **Phase 3: Editorial Curation**
-**What happens:** The admin panel lets you hide unwanted movies, feature special titles, edit dates, and manually override watch links.
+### **Phase 3: Quality Assurance & Manual Correction**
+**What happens:** The admin panel serves as a QA gate where you inspect all scraped data, identify incomplete/incorrect movies, and either fix them or hide them before they reach the public site.
 
-**🔧 Admin Panel Interface** (`admin.py` on port 5555)
-- **Hide/Show:** Remove movies from public display (saved to `admin/hidden_movies.json`)
-- **Feature:** Mark special movies for highlighting (saved to `admin/featured_movies.json`)
-- **Date Editing:** Correct digital release dates in `movie_tracking.json`
-- **Watch Link Overrides:** Manually add/fix streaming, rent, buy links (saved to `admin/watch_link_overrides.json`)
-- **Regenerate:** Trigger `generate_data.py` to apply changes to public site
-- **Authentication:** HTTP Basic Auth (default: admin/changeme - change in production!)
-- **Why:** Editorial control ensures quality curation and allows fixing API/scraper failures
+**🔧 Admin Panel - QA Database Editor** (`admin.py` on port 5555)
+
+**Purpose:** Manual quality control checkpoint - scan scraped data, fix errors, approve for public display
+
+**The QA Workflow:**
+```
+Daily Scraper → movie_tracking.json → ADMIN PANEL (You) → data.json → Public Site
+                (raw scraped)          (QA inspection)     (curated)    (visitors)
+```
+
+**Core Features:**
+
+1. **Missing Data Detection**:
+   - "⚠️ Missing Data" button shows all incomplete movies at once
+   - Badge displays count (e.g., "93 movies need attention")
+   - Incomplete movies flagged with:
+     * Red left border
+     * "⚠️ INCOMPLETE" badge
+     * Pink box listing what's missing (RT Score, Trailer, Poster, Director, Country)
+   - Quick visual scanning to identify quality issues
+
+2. **Inline Database Editing**:
+   - Every movie card has editable fields for ALL key data:
+     * Digital Release Date (date picker)
+     * RT Score (0-100 number input)
+     * RT Link (URL with 🔗 test button)
+     * Trailer Link (URL with ▶️ play button)
+     * Director (text input)
+     * Country (text input)
+     * Synopsis (textarea)
+     * Poster URL (URL with 🎬 TMDB button)
+     * Watch Links - Streaming/Rent/Buy (service + URL pairs)
+   - Missing fields have RED backgrounds for instant visibility
+   - Single "💾 Save All Changes" button saves all fields at once
+   - Changes write directly to `movie_tracking.json` with `manual_*` flags
+   - Auto-regenerates `data.json` after save
+
+3. **UI Preferences** (separate from data corrections):
+   - **Hide/Show**: Remove movies from public display (saves to `admin/hidden_movies.json`)
+   - **Feature**: Mark movies for golden border highlighting (saves to `admin/featured_movies.json`)
+   - These are curation decisions, not data corrections
+
+4. **YouTube Playlist Creation**:
+   - "📺 Create YouTube Playlist" button in header
+   - Custom date parameters: "Last X Days" OR "From Date → To Date"
+   - Manual control with dry-run preview
+   - Privacy settings (public/unlisted/private)
+   - Reads from `data.json` and calls `youtube_playlist_manager.py`
+
+5. **Manual Correction Tracking**:
+   - All edits flagged in `movie_tracking.json`:
+     * `manually_corrected: true` (overall flag)
+     * `manual_rt_score: true`, `manual_trailer: true`, etc. (field-specific)
+     * `last_manual_edit: "2025-10-19T..."` (timestamp)
+   - Flags protect manual corrections from being overwritten by daily scraper
+
+**Authentication:**
+- HTTP Basic Auth (username/password prompt)
+- Default credentials: `admin` / `changeme` (CHANGE IN PRODUCTION!)
+- Override via environment variables: `ADMIN_USERNAME`, `ADMIN_PASSWORD`
+
+**Integration with generate_data.py:**
+- Admin corrections in `movie_tracking.json` are read during data generation
+- Hidden movies filtered out (from `admin/hidden_movies.json`)
+- Featured movies get `"featured": true` flag in `data.json`
+- Watch link overrides take precedence over Watchmode API
+- Manual field corrections preserved via `manual_*` flags
+
+**Usage:**
+```bash
+# Start admin panel
+python3 admin.py
+
+# Access at http://localhost:5555
+# Login: admin / changeme
+```
+
+**Your Morning QA Session:**
+1. Open http://localhost:5555
+2. Click "⚠️ Missing Data (93)"
+3. Scan flagged movies (red borders, incomplete badges)
+4. For each movie:
+   - Just missing RT score? → Wait (reviews coming)
+   - Missing trailer/poster? → Check TMDB → Fix or Hide
+   - Wrong director/country? → Edit field → Save
+5. Click "🔄 Regenerate data.json" when done
+6. Public site updated with only quality-checked movies
+
+**Why This Architecture:**
+- Scrapers are imperfect - APIs have gaps, data is incomplete
+- Manual QA ensures only complete, accurate movies reach users
+- Visual indicators make quality control fast and efficient
+- Inline editing is faster than manual JSON editing
+- Protected corrections prevent automation from overwriting your fixes
+
+**Admin Files:**
+- `admin/hidden_movies.json` - Array of TMDB IDs to hide (UI preference)
+- `admin/featured_movies.json` - Array of TMDB IDs to feature (UI preference)
+- `admin/watch_link_overrides.json` - Manual watch links (temporary - being migrated to movie_tracking.json)
+- `movie_tracking.json` - All data corrections stored here with `manual_*` flags
 
 ### **Phase 4: Display Generation**
 **What happens:** We create the final JSON file that the website reads, applying admin decisions and enriching with all metadata.
@@ -110,10 +202,11 @@ We want a beautiful webpage that shows the latest movies available for streaming
 **🔧 `generate_data.py` with Admin Integration**
 - **Data enrichment:** Creates complete movie profiles with all metadata (cast, crew, synopsis, posters, links)
 - **Watch link resolution:** Multi-tier waterfall (overrides → cache → Watchmode API → agent scraper → null)
+- **Admin corrections:** Reads `manual_*` flags from movie_tracking.json and preserves user edits
 - **Admin filtering:** Applies decisions from `admin/hidden_movies.json` (removes from display)
 - **Admin featuring:** Marks movies from `admin/featured_movies.json` with `"featured": true` flag
 - **Admin overrides:** Applies manual watch links from `admin/watch_link_overrides.json`
-- **Quality assurance:** Only curated content with verified links reaches users
+- **Quality assurance:** Only QA-approved content with verified links and complete data reaches users
 
 **📄 `data.json`** - *The Website Menu*
 - **What it is:** Clean, final dataset of all recent movies with verified data and working links

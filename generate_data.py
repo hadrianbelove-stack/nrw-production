@@ -12,8 +12,59 @@ import os
 import re
 from urllib.parse import quote
 import argparse
+import logging
+from logging.handlers import RotatingFileHandler
 from agent_link_scraper import AgentLinkScraper
 from scripts.youtube_trailer_scraper import YouTubeTrailerScraper
+
+
+def setup_logger(name, log_file='logs/admin.log', level=logging.INFO):
+    """
+    Configure logging with file rotation and console output.
+
+    Args:
+        name (str): Logger name (e.g., 'admin', 'data_generator')
+        log_file (str): Path to log file (default: 'logs/admin.log')
+        level (int): Logging level (default: logging.INFO)
+
+    Returns:
+        logging.Logger: Configured logger instance
+    """
+    # Create logs directory if it doesn't exist
+    os.makedirs('logs', exist_ok=True)
+
+    # Get or create logger
+    logger = logging.getLogger(name)
+
+    # Prevent duplicate handlers
+    if not logger.handlers:
+        logger.setLevel(level)
+
+        # Create formatter (no user context for generate_data.py)
+        formatter = logging.Formatter(
+            '%(asctime)s [%(levelname)s] %(message)s',
+            datefmt='%Y-%m-%d %H:%M:%S'
+        )
+
+        # File handler with rotation (10MB, 5 backups)
+        file_handler = RotatingFileHandler(
+            log_file,
+            maxBytes=10*1024*1024,  # 10MB
+            backupCount=5,
+            encoding='utf-8'
+        )
+        file_handler.setLevel(level)
+        file_handler.setFormatter(formatter)
+        logger.addHandler(file_handler)
+
+        # Console handler for development visibility
+        console_handler = logging.StreamHandler()
+        console_handler.setLevel(level)
+        console_handler.setFormatter(formatter)
+        logger.addHandler(console_handler)
+
+    return logger
+
 
 class DataGenerator:
     def __init__(self):
@@ -56,6 +107,9 @@ class DataGenerator:
         self.youtube_trailer_cache = self.load_cache('youtube_trailer_cache.json')
         self.rt_driver = None  # Lazy Selenium driver for RT scraping
         self.rt_last_scrape_time = 0  # Track last scrape for rate limiting
+
+        # Initialize logger
+        self.logger = setup_logger('data_generator', 'logs/admin.log', logging.INFO)
     
     def load_config(self):
         """Load configuration from config.yaml and environment variables"""
@@ -92,7 +146,7 @@ class DataGenerator:
             enabled = agent_config.get('enabled', True)  # Default to True if not specified
 
             if not enabled:
-                print("  Agent scraper disabled in config.yaml")
+                self.logger.debug("Agent scraper disabled in config.yaml")
                 self.agent_scraper = False
                 return
 
@@ -100,8 +154,8 @@ class DataGenerator:
             try:
                 from playwright.sync_api import sync_playwright
             except ImportError:
-                print("  Warning: playwright not installed, agent scraper disabled")
-                print("  Install with: pip install playwright && playwright install chromium")
+                self.logger.debug("Playwright not installed, agent scraper disabled")
+                self.logger.debug("Install with: pip install playwright && playwright install chromium")
                 self.agent_scraper = False
                 return
 
@@ -109,16 +163,14 @@ class DataGenerator:
                 # Read config settings
                 cache_file = 'cache/agent_links_cache.json'  # Could be configurable
 
-                print(f"  Initializing agent scraper with Playwright...")
+                self.logger.debug("Initializing agent scraper with Playwright...")
                 self.agent_scraper = AgentLinkScraper(
                     cache_file=cache_file,
                     config=agent_config  # Pass entire config dict
                 )
-                print("  ✓ Agent scraper initialized (Playwright)")
+                self.logger.debug("Agent scraper initialized (Playwright)")
             except Exception as e:
-                print(f"  ✗ Failed to initialize agent scraper: {e}")
-                import traceback
-                traceback.print_exc()  # Print full stack trace for debugging
+                self.logger.exception(f"Failed to initialize agent scraper: {e}")
                 self.agent_scraper = False  # Mark as failed to prevent retries
 
     def _init_rt_driver(self):
@@ -155,11 +207,11 @@ class DataGenerator:
             timeout = self.config.get('rt_scraper', {}).get('timeout', 10)
             self.rt_driver.set_page_load_timeout(timeout)
 
-            print("  ✓ RT driver initialized successfully")
+            self.logger.debug("RT driver initialized successfully")
             return True
 
         except Exception as e:
-            print(f"  ✗ Failed to initialize RT driver: {e}")
+            self.logger.error(f"Failed to initialize RT driver: {e}")
             self.rt_driver = False  # Mark as failed to prevent retries
             return False
 
@@ -174,7 +226,7 @@ class DataGenerator:
         # If less than rate limit, sleep for remaining time
         if time_since_last < rate_limit:
             sleep_time = rate_limit - time_since_last
-            print(f"  Rate limiting: sleeping {sleep_time:.1f}s")
+            self.logger.debug(f"Rate limiting: sleeping {sleep_time:.1f}s")
             time.sleep(sleep_time)
 
         # Update last scrape time
@@ -213,7 +265,7 @@ class DataGenerator:
             search_query = f"{title} {year}"
             search_url = f"https://www.rottentomatoes.com/search?search={quote(search_query)}"
 
-            print(f"  → Searching RT: {title} ({year})")
+            self.logger.debug(f"Searching RT: {title} ({year})")
 
             # Navigate to search page
             self.rt_driver.get(search_url)
@@ -237,13 +289,13 @@ class DataGenerator:
                         href = elements[0].get_attribute('href')
                         if href and '/m/' in href:
                             movie_url = href
-                            print(f"  ✓ Found with selector: {selector}")
+                            self.logger.debug(f"Found with selector: {selector}")
                             break
                 except Exception:
                     continue
 
             if not movie_url:
-                print(f"  ✗ No RT page found for {title} ({year})")
+                self.logger.warning(f"No RT page found for {title} ({year})")
                 # Cache the failure with consistent schema
                 cache_key = f"{title}_{year}"
                 cached_failure = {
@@ -301,7 +353,7 @@ class DataGenerator:
                             match = re.search(pattern, combined_text, re.IGNORECASE)
                             if match:
                                 score = match.group(1) + "%"
-                                print(f"  ✓ Found score with selector: {selector}, pattern: {pattern}")
+                                self.logger.debug(f"Found score with selector: {selector}, pattern: {pattern}")
                                 break
 
                         if score:
@@ -315,7 +367,7 @@ class DataGenerator:
                 'score': score
             }
 
-            print(f"  ✓ RT scraping successful: {movie_url} (Score: {score or 'N/A'})")
+            self.logger.debug(f"RT scraping successful: {movie_url} (Score: {score or 'N/A'})")
 
             # Cache the result with consistent schema
             cache_key = f"{title}_{year}"
@@ -332,7 +384,7 @@ class DataGenerator:
             return result
 
         except Exception as e:
-            print(f"  ✗ RT scraping error for {title} ({year}): {e}")
+            self.logger.error(f"RT scraping error for {title} ({year}): {e}")
             # Cache the failure with consistent schema
             cache_key = f"{title}_{year}"
             cached_failure = {
@@ -729,15 +781,16 @@ class DataGenerator:
         except Exception as e:
             print(f"Warning: Failed to save RT cache: {e}")
 
-    def get_watch_links(self, movie_id, title, year, providers, force_refresh=False):
+    def get_watch_links(self, movie_id, title, year, providers, force_refresh=False, tracking_data=None):
         """Get deep links with canonical streaming/rent/buy structure
 
         Priority waterfall:
-        1. Admin overrides (admin/watch_link_overrides.json) - highest priority
-        2. Cache (cache/watch_links_cache.json)
-        3. Watchmode API
-        4. Agent scraper (Netflix, Disney+, HBO Max, Hulu)
-        5. TMDB provider names with null links
+        1. Manual watch links from movie_tracking.json - highest priority
+        2. Admin overrides (admin/watch_link_overrides.json) - backward compatibility
+        3. Cache (cache/watch_links_cache.json)
+        4. Watchmode API
+        5. Agent scraper (Netflix, Disney+, HBO Max, Hulu)
+        6. TMDB provider names with null links
 
         Returns: {
             'streaming': {'service': 'Netflix', 'link': 'https://...'},  # subscription streaming
@@ -745,7 +798,30 @@ class DataGenerator:
             'buy': {'service': 'Apple TV', 'link': 'https://...'}        # purchase
         }
         """
-        # 1. Check admin overrides FIRST (highest priority)
+        # 1. Check manual watch links from tracking data FIRST (highest priority)
+        if tracking_data and 'watch_links' in tracking_data and tracking_data.get('manual_watch_links'):
+            manual_links = tracking_data['watch_links']
+            try:
+                validated_manual = self.validate_watch_links_schema(manual_links, title)
+                if validated_manual:
+                    print(f"  Using manual watch links from tracking data for {title}: {list(validated_manual.keys())}")
+                    self.watchmode_stats['manual_tracking_hits'] = self.watchmode_stats.get('manual_tracking_hits', 0) + 1
+
+                    # Cache the validated manual links
+                    cache_key = str(movie_id)
+                    now = datetime.now().isoformat()
+                    self.watch_links_cache[cache_key] = {
+                        'links': validated_manual,
+                        'cached_at': now,
+                        'source': 'manual_tracking'
+                    }
+                    self.save_cache(self.watch_links_cache, 'cache/watch_links_cache.json')
+
+                    return validated_manual
+            except Exception as e:
+                print(f"  Warning: Invalid manual watch links in tracking data for {title}: {e}")
+
+        # 2. Check admin overrides (backward compatibility)
         cache_key = str(movie_id)
         validated_overrides = {}
         if cache_key in self.watch_link_overrides:
@@ -1005,7 +1081,7 @@ class DataGenerator:
 
         # Type check: Verify watch_links is a dict
         if not isinstance(watch_links, dict):
-            print(f"Warning: Invalid watch_links type '{type(watch_links).__name__}' for {movie_title}, expected dict")
+            self.logger.warning(f"Invalid watch_links type '{type(watch_links).__name__}' for {movie_title}, expected dict")
             self.watchmode_stats['schema_validation_warnings'] += 1
             return {}
 
@@ -1016,24 +1092,24 @@ class DataGenerator:
         for category, category_data in watch_links.items():
             # Category validation: Check that all keys are in ['streaming', 'rent', 'buy']
             if category not in valid_categories:
-                print(f"Warning: Invalid watch link category '{category}' for {movie_title}")
+                self.logger.warning(f"Invalid watch link category '{category}' for {movie_title}")
                 had_warnings = True
                 continue
 
             # Structure validation: For each category, verify it's a dict with 'service' and 'link' keys
             if not isinstance(category_data, dict):
-                print(f"Warning: Invalid category data type for '{category}' in {movie_title}, expected dict")
+                self.logger.warning(f"Invalid category data type for '{category}' in {movie_title}, expected dict")
                 had_warnings = True
                 continue
 
             if 'service' not in category_data or 'link' not in category_data:
-                print(f"Warning: Missing required keys (service/link) in '{category}' for {movie_title}")
+                self.logger.warning(f"Missing required keys (service/link) in '{category}' for {movie_title}")
                 had_warnings = True
                 continue
 
             # Service validation: Verify service is non-empty string
             if not isinstance(category_data['service'], str) or not category_data['service'].strip():
-                print(f"Warning: Invalid service in '{category}' for {movie_title}")
+                self.logger.warning(f"Invalid service in '{category}' for {movie_title}")
                 had_warnings = True
                 continue
 
@@ -1041,7 +1117,7 @@ class DataGenerator:
             link = category_data['link']
             if link is not None:
                 if not isinstance(link, str):
-                    print(f"Warning: Invalid link type in '{category}' for {movie_title}, expected string or None")
+                    self.logger.warning(f"Invalid link type in '{category}' for {movie_title}, expected string or None")
                     had_warnings = True
                     continue
 
@@ -1049,7 +1125,7 @@ class DataGenerator:
                 try:
                     parsed = urlparse(link)
                     if not parsed.scheme or parsed.scheme not in ['http', 'https']:
-                        print(f"Warning: Invalid URL scheme in '{category}' for {movie_title}")
+                        self.logger.warning(f"Invalid URL scheme in '{category}' for {movie_title}")
                         had_warnings = True
                         continue
                     if not parsed.netloc:
@@ -1225,7 +1301,7 @@ class DataGenerator:
                 links['rt'] = rt_data
 
         # Watch links (deep links to streaming platforms)
-        watch_links_raw = self.get_watch_links(movie_id, title, year, movie_data.get('providers', {}), force_refresh)
+        watch_links_raw = self.get_watch_links(movie_id, title, year, movie_data.get('providers', {}), force_refresh, tracking_data=movie_data)
 
         # Simplify provider names in watch links
         watch_links = {}
@@ -1271,7 +1347,7 @@ class DataGenerator:
 
         # Load tracking database
         if not os.path.exists('movie_tracking.json'):
-            print("❌ No tracking database found. Run 'python movie_tracker.py daily' first")
+            self.logger.error("No tracking database found. Run 'python movie_tracker.py daily' first")
             return
 
         with open('movie_tracking.json', 'r') as f:
@@ -1285,7 +1361,9 @@ class DataGenerator:
                 existing_data = json.load(f)
                 existing_movies = existing_data.get('movies', [])
                 existing_ids = {str(m['id']) for m in existing_movies}
-            print(f"📂 Incremental mode: Found {len(existing_movies)} existing movies in data.json")
+            message = f"Incremental mode: Found {len(existing_movies)} existing movies in data.json"
+            self.logger.info(message)
+            print(f"📂 {message}")
 
         # Filter to recently available movies
         cutoff_date = datetime.now() - timedelta(days=days_back)
@@ -1355,24 +1433,34 @@ class DataGenerator:
             try:
                 self.agent_scraper.close()
             except Exception as e:
-                print(f"Warning: Failed to close agent scraper: {e}")
+                self.logger.warning(f"Failed to close agent scraper: {e}")
 
         # Cleanup RT driver if initialized
         if self.rt_driver and self.rt_driver is not False:
             try:
                 self.rt_driver.quit()
-                print("  ✓ RT driver closed")
+                self.logger.debug("RT driver closed")
             except Exception as e:
-                print(f"Warning: Failed to close RT driver: {e}")
+                self.logger.warning(f"Failed to close RT driver: {e}")
 
         # Save caches
         self.save_cache(self.wikipedia_cache, 'wikipedia_cache.json')
         self.save_cache(self.rt_cache, 'rt_cache.json')
         
-        print(f"\n✅ Generated data.json with {len(display_movies)} movies")
-        print(f"Wikipedia links found: {len([m for m in display_movies if m['links'].get('wikipedia')])}")
-        print(f"Direct trailers found: {len([m for m in display_movies if m['links'].get('trailer') and 'watch?v=' in m['links']['trailer']])}")
-        print(f"RT scores cached: {len([m for m in display_movies if m['rt_score']])}")
+        message = f"Generated data.json with {len(display_movies)} movies"
+        self.logger.info(message)
+        print(f"✅ {message}")  # Also print to console for visibility
+        wiki_count = len([m for m in display_movies if m['links'].get('wikipedia')])
+        trailer_count = len([m for m in display_movies if m['links'].get('trailer') and 'watch?v=' in m['links']['trailer']])
+        rt_count = len([m for m in display_movies if m['rt_score']])
+
+        self.logger.info(f"Wikipedia links found: {wiki_count}")
+        self.logger.info(f"Direct trailers found: {trailer_count}")
+        self.logger.info(f"RT scores cached: {rt_count}")
+
+        print(f"Wikipedia links found: {wiki_count}")
+        print(f"Direct trailers found: {trailer_count}")
+        print(f"RT scores cached: {rt_count}")
 
         # Wikidata usage statistics
         print(f"\n📊 Wikidata Usage:")
@@ -1416,6 +1504,7 @@ class DataGenerator:
             print(f"  RT success rate: {rt_success_rate:.1f}%")
 
         print(f"\n📊 Admin Override Usage:")
+        print(f"  Manual tracking hits: {self.watchmode_stats.get('manual_tracking_hits', 0)}")
         print(f"  Override hits: {self.watchmode_stats['override_hits']}")
         if self.watchmode_stats['override_hits'] > 0:
             print(f"  Movies with manual overrides: {self.watchmode_stats['override_hits']}")
@@ -1478,6 +1567,10 @@ def main():
         print("🐛 Debug mode enabled for agent scraper")
 
     generator = DataGenerator()
+
+    if args.debug:
+        generator.logger.setLevel(logging.DEBUG)
+        generator.logger.debug("Debug mode enabled - verbose logging active")
     generator.generate_display_data(incremental=incremental, force_refresh=force_refresh)
 
 if __name__ == "__main__":

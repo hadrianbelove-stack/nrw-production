@@ -1189,3 +1189,173 @@ No new configuration needed. Uses existing:
 - Failures are visible (GitHub issues)
 - Weekly full regen populates agent scraper links
 - User can review automation changes before merging
+
+---
+
+### AMENDMENT-044: Authentication Token Management
+
+**Date:** October 19, 2025
+**Author:** Assistant (reconstruction session)
+**Category:** Operational / Incident Management
+
+**Context:**
+
+OAuth token expiration during Oct 17 session prevented normal end-of-session workflow. This amendment documents the incident and establishes best practices for handling authentication failures.
+
+**Incident Details:**
+
+- **Error:** "API Error: 401 authentication_error - OAuth token has expired"
+- **Impact:** Unable to commit changes through normal Claude Code workflow
+- **Resolution:** User manually hit "commit changes" button and restarted extensions
+- **Outcome:** Work was successfully committed (commit `0d7f978`), but documentation workflow was interrupted
+
+**Lessons Learned:**
+
+1. Authentication errors can interrupt end-of-session workflows
+2. Manual commit button can serve as fallback when API fails
+3. Diary archives may need retroactive creation after incidents
+4. Work preservation takes priority over documentation completeness
+
+**Best Practices Going Forward:**
+
+1. **Monitor for authentication warnings** before end-of-session
+2. **Refresh OAuth tokens proactively** (before expiration) when possible
+3. **If authentication fails:** Use manual commit button as fallback
+4. **Document incidents** in next session's diary
+5. **Retroactive diary creation** is acceptable per AMENDMENT-036 (immutable historical record)
+
+**Recovery Procedure:**
+
+When authentication incident occurs:
+
+1. **Check git log** to verify work was committed:
+   ```bash
+   git log --oneline -10
+   ```
+
+2. **Review git status** for uncommitted changes:
+   ```bash
+   git status
+   ```
+
+3. **Reconstruct diary entries** from DAILY_CONTEXT.md and commit messages
+
+4. **Update DAILY_CONTEXT.md** to reflect actual state
+
+5. **Create missing diary archives** retroactively with session-end notes
+
+6. **Document incident** as amendment for future reference
+
+**Key Principle:**
+
+Work preservation takes priority. If authentication fails:
+- FIRST: Save work via any available method (manual commit button)
+- THEN: Reconstruct documentation in next session
+- FINALLY: Update procedures to prevent recurrence
+
+This amendment ensures future authentication incidents can be handled systematically without losing work or context.
+
+## AMENDMENT-045: Admin Panel as QA Database Editor
+**Date:** October 19-20, 2025
+**Context:** Admin panel redesigned from basic editorial tool to comprehensive QA database editor
+
+### Admin Panel Role - Quality Assurance Gate
+
+The admin panel serves as the **manual inspection and correction stage** between scraped data and public display. It is not a "control center" or "dashboard" - it's a **QA checkpoint** where incomplete/incorrect data is caught and fixed before reaching users.
+
+**Data Flow with QA Gate:**
+```
+Daily Scraper → movie_tracking.json → ADMIN PANEL (QA) → data.json → Public Site
+                (raw scraped)          (inspect/fix)      (curated)    (visitors)
+```
+
+### Inline Database Editing Capabilities
+
+All movie fields are directly editable in the UI:
+- **Digital release date** (date picker)
+- **RT score** (0-100 number input)
+- **RT link** (URL with test button 🔗)
+- **Trailer link** (URL with play button ▶️)
+- **Director** (text input)
+- **Country** (text input)
+- **Synopsis** (textarea)
+- **Poster URL** (URL with TMDB button 🎬)
+- **Watch links** - streaming/rent/buy (service + URL pairs)
+
+**Save Mechanism:**
+- Single "💾 Save All Changes" button per movie card
+- Changes save directly to `movie_tracking.json` with `manual_*` flags
+- Auto-regenerates `data.json` after save
+
+### Missing Data Detection System
+
+**"⚠️ Missing Data" Filter:**
+- Shows all incomplete movies at once
+- Badge displays count of movies needing attention (e.g., "93")
+- Incomplete movies have:
+  * Red left border
+  * "⚠️ INCOMPLETE" badge in top-right corner
+  * Red background on missing fields
+  * Pink box listing exactly what's missing (RT Score, Trailer, Poster, Director, Country)
+- Allows rapid quality control: click filter → scan flagged movies → fix or hide
+
+### Manual Correction Tracking
+
+All edits saved to `movie_tracking.json` with flags:
+- `manually_corrected: true` (overall flag)
+- `manual_rt_score: true`, `manual_rt_link: true`, etc. (field-specific flags)
+- `last_manual_edit: "2025-10-19T..."` (timestamp)
+
+**Protection:** Flags protect manual edits from being overwritten by daily scraper. Separate from UI preferences (hidden/featured stay in admin/*.json files).
+
+### YouTube Playlist Integration
+
+**"📺 Create YouTube Playlist" Feature:**
+- Button in admin panel header
+- Custom date parameters: "Last X Days" OR "From Date → To Date"
+- Manual control (no automation) with dry-run preview mode
+- Privacy settings (public/unlisted/private)
+- Calls `youtube_playlist_manager.py` with custom parameters
+- See `YOUTUBE_PLAYLIST_SETUP.md` for OAuth setup instructions
+
+### Implementation Details
+
+**File:** `admin.py` (Flask application on port 5555)
+
+**Routes:**
+- `/` - Main admin panel with inline editing UI
+- `/update-movie-fields` - Saves all editable fields to movie_tracking.json
+- `/create-youtube-playlist` - Creates YouTube playlists with custom dates
+- `/toggle-hidden`, `/toggle-featured` - UI preference toggles
+- `/regenerate` - Manual data.json regeneration trigger
+
+**Authentication:** HTTP Basic Auth (default: admin/changeme)
+
+**Frontend:** Embedded JavaScript with fetch API for AJAX operations
+
+### QA Workflow
+
+**Morning Routine:**
+1. Open http://localhost:5555
+2. Click "⚠️ Missing Data (93)" to see incomplete movies
+3. For each flagged movie:
+   - Missing RT score only? → Wait (reviews coming)
+   - Missing trailer/poster? → Check TMDB → Fix or Hide
+   - Wrong director/country? → Edit field → Save
+4. All fixed movies turn from RED to normal
+5. Public site automatically updated via regeneration
+
+### Rationale
+
+- **Scrapers are imperfect** - APIs have gaps, platforms change, data is incomplete
+- **Manual QA ensures quality** - Only complete, accurate movies reach users
+- **Inline editing efficiency** - Faster than editing JSON files manually
+- **Visual indicators** - Red borders, badges make quality control efficient
+- **Single save button** - Reduces cognitive load
+- **Protected corrections** - Prevents automation from overwriting manual fixes
+
+**Reference Files:**
+- Implementation: `admin.py` (lines 1-1987)
+- YouTube integration: `youtube_playlist_manager.py` (lines 573-662 for custom playlists)
+- Setup guide: `YOUTUBE_PLAYLIST_SETUP.md`
+- Related amendments: AMENDMENT-038 (Watchmode API), AMENDMENT-044 (Auth token management)

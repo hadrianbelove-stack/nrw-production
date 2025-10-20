@@ -18,7 +18,7 @@ api:
   max_retries: 3
 
 agent_scraper:
-  enabled: true  # Enable/disable agent-based link finding
+  enabled: false  # Disabled due to authentication barriers on all platforms (see AGENT_SCRAPER_DIAGNOSTICS.md)
   headless: true  # Run browser in headless mode (required for CI)
   rate_limit: 2.0  # Minimum seconds between scrapes
   timeout: 10  # Page load timeout in seconds
@@ -38,12 +38,3 @@ rt_scraper:
   timeout: 10  # Page load timeout in seconds
   max_retries: 1  # Number of retries on failure (RT is less critical than watch links)
   cache_ttl_days: 90  # RT links are stable, longer TTL than agent scraper
-
-agent_scraper:
-  supported_platforms:
-    - Netflix
-    - Disney+
-    - Disney Plus
-    - HBO Max
-    - Max
-    - Hulu
