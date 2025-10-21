@@ -18,7 +18,7 @@ api:
   max_retries: 3
 
 agent_scraper:
-  enabled: false  # Disabled due to authentication barriers on all platforms (see AGENT_SCRAPER_DIAGNOSTICS.md)
+  enabled: false  # Disabled due to authentication barriers on all platforms (see AGENT_SCRAPER_TEST_REPORT.md for details)
   headless: true  # Run browser in headless mode (required for CI)
   rate_limit: 2.0  # Minimum seconds between scrapes
   timeout: 10  # Page load timeout in seconds

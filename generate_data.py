@@ -408,6 +408,11 @@ class DataGenerator:
         with open(filename, 'w') as f:
             json.dump(data, f, indent=2)
 
+    def generate_google_search_fallback(self, title, year, service):
+        """Generate a Google search URL as fallback when no direct link is available"""
+        search_query = quote(f"{title} {year} watch {service}")
+        return f"https://www.google.com/search?q={search_query}"
+
     def simplify_provider_name(self, provider_name):
         """Simplify provider names for display
         Examples:
@@ -991,10 +996,10 @@ class DataGenerator:
                             'link': amazon_link  # Same page shows both Prime (free) and rent/buy options
                         }
                     else:
-                        # No Amazon link available, return null
+                        # No Amazon link available, use Google search fallback
                         watch_links['streaming'] = {
                             'service': service,
-                            'link': None
+                            'link': self.generate_google_search_fallback(title, year, service)
                         }
                 else:
                     # Try agent scraper for supported platforms before returning null
@@ -1014,7 +1019,7 @@ class DataGenerator:
                 if rent_service:
                     watch_links['rent'] = {
                         'service': rent_service,
-                        'link': None
+                        'link': self.generate_google_search_fallback(title, year, rent_service)
                     }
 
         # BUY: Use Watchmode or fallback to platform links (skip if overridden)
@@ -1030,7 +1035,7 @@ class DataGenerator:
                 if buy_service:
                     watch_links['buy'] = {
                         'service': buy_service,
-                        'link': None
+                        'link': self.generate_google_search_fallback(title, year, buy_service)
                     }
 
         # Overlay admin overrides on top of auto-discovered links
@@ -1155,14 +1160,14 @@ class DataGenerator:
 
         # Check if service is supported
         if service not in supported_platforms:
-            print(f"  [DEBUG] '{service}' not supported by agent scraper, returning null")
-            return {'service': service, 'link': None}
+            print(f"  [DEBUG] '{service}' not supported by agent scraper, returning Google search fallback")
+            return {'service': service, 'link': self.generate_google_search_fallback(title, year, service)}
 
         # Initialize agent scraper if needed
         self._init_agent_scraper()
         print(f"  [DEBUG] Agent scraper state: {type(self.agent_scraper).__name__ if self.agent_scraper else 'None or False'}")
         if self.agent_scraper is False:
-            return {'service': service, 'link': None}
+            return {'service': service, 'link': self.generate_google_search_fallback(title, year, service)}
 
         try:
             print(f"  Trying agent scraper for {title} on {service}...")
@@ -1180,12 +1185,14 @@ class DataGenerator:
             else:
                 print(f"  ✗ Agent could not find link for {title} on {service}")
 
-            print(f"  [DEBUG] Returning: {{'service': {service}, 'link': {result.get('link')}}}")
-            return {'service': service, 'link': result.get('link')}
+            # Return found link or fallback to Google search
+            final_link = result.get('link') or self.generate_google_search_fallback(title, year, service)
+            print(f"  [DEBUG] Returning: {{'service': {service}, 'link': {final_link}}}")
+            return {'service': service, 'link': final_link}
 
         except Exception as e:
             print(f"  Error in agent scraper for {title}: {e}")
-            return {'service': service, 'link': None}
+            return {'service': service, 'link': self.generate_google_search_fallback(title, year, service)}
 
 
     def _migrate_legacy_cache_format(self, links):

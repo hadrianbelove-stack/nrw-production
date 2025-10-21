@@ -1,194 +1,118 @@
-name: Weekly Full Regeneration (Automated)
-
-# Testing instructions:
-# - Manual trigger: Go to Actions tab → Weekly Full Regeneration → Run workflow
-# - Verify: automation-updates branch was updated with full regeneration
-# - Verify: agent scraper links populated for Netflix/Disney+/Hulu movies
-# - Verify: workflow duration is reasonable (15-30 minutes)
-# - Test failure: Temporarily break generate_data.py, verify issue is created
-# - Test sync: Run ./sync_daily_updates.sh after completion
+name: "Weekly Full Regeneration"
 
 on:
   schedule:
-    - cron: '0 10 * * 0'  # Sunday at 10 AM UTC = 2 AM PDT
-  workflow_dispatch:  # Allow manual trigger
+    - cron: '0 10 * * 0'  # 10 AM UTC on Sundays
+  workflow_dispatch:  # Manual trigger for testing
+
+permissions:
+  contents: write
+  issues: write
 
 jobs:
   weekly-full-regen:
     runs-on: ubuntu-latest
-    timeout-minutes: 45  # Allow extra time for full regeneration
+    env:
+      TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
+      OMDB_API_KEY: ${{ secrets.OMDB_API_KEY }}
+      WATCHMODE_API_KEY: ${{ secrets.WATCHMODE_API_KEY }}
+
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
-          ref: main  # Start from main branch (user's latest work)
+          ref: main
           fetch-depth: 0
 
-      - name: Setup Python
-        uses: actions/setup-python@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
-
-      - name: Setup Chrome
-        uses: browser-actions/setup-chrome@latest
+          python-version: '3.11'
+          cache: 'pip'
 
       - name: Install Python dependencies
-        run: |
-          pip install requests pyyaml beautifulsoup4 lxml selenium webdriver-manager playwright
+        run: pip install -r requirements.txt
 
       - name: Install Playwright browsers
         run: |
-          playwright install chromium --with-deps
+          playwright install chromium
+          sudo playwright install-deps
 
-      - name: Run full regeneration
-        env:
-          AGENT_SCRAPER_ENABLED: true  # Enable agent scraper for full regen
+      - name: Configure Git
         run: |
-          echo "🔄 Starting weekly full regeneration..."
-          echo "This will reprocess ALL movies (not just new ones)"
-          python3 generate_data.py --full
+          git config user.name "NRW Bot"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Run full regeneration pipeline
+        run: python3 generate_data.py --full
 
       - name: Validate data quality
         run: |
           python3 -c "
-          import json
-          import sys
-          from datetime import datetime, timedelta
-
-          # Load and validate data.json
-          try:
-              with open('data.json', 'r') as f:
-                  data = json.load(f)
-          except (FileNotFoundError, json.JSONDecodeError) as e:
-              print(f'❌ Failed to load data.json: {e}')
-              sys.exit(1)
-
-          # Check minimum movie count
-          movies = data.get('movies', [])
-          if len(movies) < 200:
-              print(f'❌ Too few movies ({len(movies)}) - possible data loss! Expected at least 200.')
-              sys.exit(1)
-
-          # Check agent scraper effectiveness
-          netflix_movies = [m for m in movies if any('netflix.com' in str(link) for link in m.get('watch_links', {}).values() if link)]
-          disney_movies = [m for m in movies if any('disneyplus.com' in str(link) for link in m.get('watch_links', {}).values() if link)]
-          hulu_movies = [m for m in movies if any('hulu.com' in str(link) for link in m.get('watch_links', {}).values() if link)]
-
-          # Check RT scores
-          movies_with_rt = [m for m in movies if m.get('rt_score')]
-
-          print(f'✅ Weekly full regen quality check passed:')
-          print(f'  - Total movies: {len(movies)}')
-          print(f'  - Netflix links: {len(netflix_movies)}')
-          print(f'  - Disney+ links: {len(disney_movies)}')
-          print(f'  - Hulu links: {len(hulu_movies)}')
-          print(f'  - RT scores: {len(movies_with_rt)}')
+          import daily_orchestrator
+          daily_orchestrator.NRWOrchestrator().validate_data_quality()
           "
 
-      - name: Commit and push to automation-updates branch
+      - name: Check for changes
+        id: changes
         run: |
-          git config user.email "action@github.com"
-          git config user.name "NRW Weekly Bot"
-          git add -A
-          if git diff --staged --quiet; then
-            echo "No changes to commit"
+          git diff --quiet -- data.json || echo "changes=true" >> $GITHUB_OUTPUT
+          if [[ "$(git status --porcelain -- data.json)" ]]; then
+            echo "Changes detected in repository"
           else
-            git checkout -B automation-updates
-            git commit -m "Weekly full regeneration - $(date -u +%Y-%m-%d) [automated]"
-            git push --force origin automation-updates
-            echo "✅ Weekly full regeneration pushed to automation-updates branch"
+            echo "changes=false" >> $GITHUB_OUTPUT
+            echo "No changes detected"
           fi
 
-      - name: Notify on failure
+      - name: Commit changes
+        if: steps.changes.outputs.changes == 'true'
+        run: |
+          git add data.json
+          git commit -m "Weekly full regeneration - $(date +%Y-%m-%d) [automated]"
+
+      - name: Switch to automation branch
+        run: git checkout -B automation-updates
+
+      - name: Force push to remote
+        run: git push --force origin automation-updates
+
+      - name: Create GitHub issue on failure
         if: failure()
-        run: |
-          gh issue create \
-            --title "Weekly regeneration failed - $(date -u +%Y-%m-%d)" \
-            --body "$(cat <<'EOF'
-          ## Weekly Full Regeneration Failure
-
-          **Workflow Run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          **Timestamp:** $(date -u)
-          **Branch:** ${{ github.ref_name }}
-
-          ## What This Workflow Does
-
-          The weekly full regeneration:
-          - Reprocesses ALL 235 movies (not just new ones)
-          - Populates agent scraper links for Netflix/Disney+/Hulu movies
-          - Updates RT scores for movies that got reviews since last scrape
-          - Refreshes Wikipedia links for movies that got articles
-          - Ensures complete data quality
-
-          ## Troubleshooting Steps
-
-          1. Check the workflow logs for error details
-          2. Verify generate_data.py --full flag is working
-          3. Check if agent scraper is enabled and functioning
-          4. Verify external APIs (RT, Watchmode, Netflix) are responding
-          5. Run the full regeneration manually: `python3 generate_data.py --full`
-          6. Check for Playwright/Selenium browser issues
-
-          ## Expected Behavior
-
-          - **First run:** 15-20 minutes (agent scraper processes ~50 streaming movies)
-          - **Subsequent runs:** 5-10 minutes (cache hits reduce scraping time)
-          - **Result:** Netflix/Disney+/Hulu links populated for applicable movies
-
-          ## Next Steps
-
-          - Fix the underlying issue
-          - Trigger the workflow manually to verify the fix
-          - Run `./sync_daily_updates.sh` to merge the weekly regeneration
-          - Close this issue when weekly automation is working again
-
-          🤖 This issue was created automatically by the weekly full regeneration workflow.
-          EOF
-          )" \
-            --label "automation,weekly-regen,bug"
+        uses: actions/github-script@v7
         env:
-          GH_TOKEN: ${{ github.token }}
+          WORKFLOW_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        with:
+          script: |
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Weekly Full Regeneration Failed - ${new Date().toISOString().split('T')[0]}`,
+              body: `## Weekly Full Regeneration Failure
 
-      - name: Create weekly summary
-        if: success()
-        run: |
-          python3 -c "
-          import json
-          from datetime import datetime
+            **Workflow Run:** ${process.env.WORKFLOW_URL}
+            **Failure Time:** ${new Date().toISOString()}
+            **Branch:** ${context.ref}
 
-          # Load data.json and extract comprehensive statistics
-          with open('data.json', 'r') as f:
-              data = json.load(f)
+            ### Debugging Steps:
+            1. Check the workflow logs at the URL above
+            2. Review \`generate_data.py --full\` output for specific errors
+            3. Verify API keys are properly configured in repository secrets
+            4. Check data quality validation errors
+            5. Verify cache directory permissions and disk space
 
-          movies = data.get('movies', [])
-          total_movies = len(movies)
+            ### Manual Recovery:
+            If needed, run the full regeneration manually:
+            \`\`\`bash
+            python3 generate_data.py --full
+            \`\`\`
 
-          # Count movies with different link types
-          netflix_movies = [m for m in movies if any('netflix.com' in str(link) for link in m.get('watch_links', {}).values() if link)]
-          disney_movies = [m for m in movies if any('disneyplus.com' in str(link) for link in m.get('watch_links', {}).values() if link)]
-          hulu_movies = [m for m in movies if any('hulu.com' in str(link) for link in m.get('watch_links', {}).values() if link)]
-          movies_with_rt = [m for m in movies if m.get('rt_score')]
-          movies_with_wikipedia = [m for m in movies if m.get('wikipedia_link')]
-          movies_with_trailers = [m for m in movies if m.get('trailer_link')]
+            ### Context:
+            Weekly full regeneration reprocesses ALL movies (not just new ones) to:
+            - Populate agent scraper links retroactively
+            - Update RT scores for movies with new reviews
+            - Refresh all data enrichment
+            - Apply retroactive improvements to entire dataset
 
-          # Print comprehensive summary
-          print('📊 Weekly Full Regeneration Summary')
-          print('=====================================')
-          print(f'Total movies processed: {total_movies}')
-          print('')
-          print('🎬 Streaming Coverage:')
-          print(f'  Netflix: {len(netflix_movies)} movies')
-          print(f'  Disney+: {len(disney_movies)} movies')
-          print(f'  Hulu: {len(hulu_movies)} movies')
-          print('')
-          print('📈 Data Quality:')
-          print(f'  RT scores: {len(movies_with_rt)} movies ({len(movies_with_rt)/total_movies*100:.1f}%)')
-          print(f'  Wikipedia: {len(movies_with_wikipedia)} movies ({len(movies_with_wikipedia)/total_movies*100:.1f}%)')
-          print(f'  Trailers: {len(movies_with_trailers)} movies ({len(movies_with_trailers)/total_movies*100:.1f}%)')
-          print('')
-          print('🔄 Next Steps:')
-          print('  Run: ./sync_daily_updates.sh')
-          print('  This will merge the weekly regeneration into main branch')
-          print('')
-          print('📅 Regeneration completed: $(date -u)')
-          "
+            This issue was created automatically by the failed workflow.`,
+              labels: ['automation', 'bug', 'weekly-regen']
+            })

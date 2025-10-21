@@ -429,6 +429,7 @@ When starting a new session, AI assistants should read these files in order:
 
 **Archive Structure:**
 - `diary/YYYY-MM-DD.md` - End-of-session snapshots (immutable, git-tracked)
+- Archive dates use UTC timezone to align with GitHub Actions automation timeline
 - Searchable history available when needed (grep, file search)
 - Not loaded by default (avoids token waste)
 
@@ -1179,7 +1180,8 @@ No new configuration needed. Uses existing:
 - ✅ User sync script created
 - ✅ Data quality validation added
 - ✅ Failure notifications implemented
-- ⏳ Testing in progress
+- ✅ Workflows deployed to .github/workflows/
+- ⏳ Awaiting first automated run to verify functionality
 
 **Success Criteria:**
 

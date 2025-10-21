@@ -1,168 +1,103 @@
-name: Daily Update (Automated)
-# Testing instructions:
-# - Manual trigger: Go to Actions tab → Daily Update → Run workflow
-# - Verify: Check automation-updates branch was created/updated
-# - Verify: Force-push succeeded (no conflicts)
-# - Verify: Data quality validation passed
-# - Test failure: Temporarily break data.json, verify issue is created
-# - Test merge: Run ./sync_daily_updates.sh locally
+name: "Daily NRW Update"
+
 on:
   schedule:
-    - cron: '0 9 * * *'  # 9 AM UTC = 1 AM PST / 2 AM PDT
-  workflow_dispatch:  # Allow manual trigger
+    - cron: '0 9 * * *'  # 9 AM UTC daily
+  workflow_dispatch:  # Manual trigger for testing
+
+permissions:
+  contents: write
+  issues: write
 
 jobs:
   daily-update:
     runs-on: ubuntu-latest
+    env:
+      TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
+      OMDB_API_KEY: ${{ secrets.OMDB_API_KEY }}
+      WATCHMODE_API_KEY: ${{ secrets.WATCHMODE_API_KEY }}
+
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
+          ref: main
           fetch-depth: 0
 
-      - name: Setup Python
-        uses: actions/setup-python@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
-
-      - name: Setup Chrome
-        uses: browser-actions/setup-chrome@latest
+          python-version: '3.11'
+          cache: 'pip'
 
       - name: Install Python dependencies
-        run: |
-          pip install requests pyyaml beautifulsoup4 lxml selenium webdriver-manager playwright
+        run: pip install -r requirements.txt
 
       - name: Install Playwright browsers
         run: |
-          playwright install chromium --with-deps
+          playwright install chromium
+          sudo playwright install-deps
 
-      - name: Run daily orchestrator
-        env:
-          AGENT_SCRAPER_ENABLED: true  # Set to false to disable agent scraping
+      - name: Configure Git
+        run: |
+          git config user.name "NRW Bot"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Run daily pipeline
         run: python3 daily_orchestrator.py
 
-      - name: Validate data quality
+      - name: Check for changes
+        id: changes
         run: |
-          python3 -c "
-          import json
-          import sys
-          from datetime import datetime, timedelta
-
-          # Load and validate data.json
-          try:
-              with open('data.json', 'r') as f:
-                  data = json.load(f)
-          except (FileNotFoundError, json.JSONDecodeError) as e:
-              print(f'❌ Failed to load data.json: {e}')
-              sys.exit(1)
-
-          # Check minimum movie count
-          movies = data.get('movies', [])
-          if len(movies) < 200:
-              print(f'❌ Too few movies ({len(movies)}) - possible data loss! Expected at least 200.')
-              sys.exit(1)
-
-          # Check for recent movies (last 7 days)
-          recent_cutoff = (datetime.now() - timedelta(days=7)).strftime('%Y-%m-%d')
-          recent_movies = [m for m in movies if m.get('digital_date', '') >= recent_cutoff]
-
-          if len(recent_movies) == 0:
-              print(f'❌ No recent movies found - automation may not be discovering new releases')
-              sys.exit(1)
-
-          # Check required fields on sample of movies
-          sample_movies = movies[:5]
-          for movie in sample_movies:
-              if not movie.get('title'):
-                  print(f'❌ Movie missing title: {movie}')
-                  sys.exit(1)
-              if not movie.get('digital_date'):
-                  print(f'❌ Movie missing digital_date: {movie.get(\"title\")}')
-                  sys.exit(1)
-
-          # Check watch links coverage
-          movies_with_links = [m for m in movies if any(m.get('watch_links', {}).values())]
-
-          print(f'✅ Quality check passed: {len(movies)} total, {len(recent_movies)} recent, {len(movies_with_links)} with watch links')
-          "
-
-      - name: Commit and push to automation-updates branch
-        run: |
-          git config user.email "action@github.com"
-          git config user.name "NRW Daily Bot"
-          git add -A
-          if git diff --staged --quiet; then
-            echo "No changes to commit"
+          git diff --quiet -- data.json || echo "changes=true" >> $GITHUB_OUTPUT
+          if [[ "$(git status --porcelain -- data.json)" ]]; then
+            echo "Changes detected in repository"
           else
-            git checkout -B automation-updates
-            git commit -m "Daily update - $(date -u +%Y-%m-%d) [automated]"
-            git push --force origin automation-updates
-            echo "✅ Pushed to automation-updates branch"
+            echo "changes=false" >> $GITHUB_OUTPUT
+            echo "No changes detected"
           fi
 
-      - name: Notify on failure
+      - name: Commit changes
+        if: steps.changes.outputs.changes == 'true'
+        run: |
+          git add data.json
+          git commit -m "Daily update - $(date +%Y-%m-%d) [automated]"
+
+      - name: Switch to automation branch
+        run: git checkout -B automation-updates
+
+      - name: Force push to remote
+        run: git push --force origin automation-updates
+
+      - name: Create GitHub issue on failure
         if: failure()
-        run: |
-          gh issue create \
-            --title "Daily automation failed - $(date -u +%Y-%m-%d)" \
-            --body "$(cat <<'EOF'
-          ## Automation Failure Report
-
-          **Workflow Run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          **Timestamp:** $(date -u)
-          **Branch:** ${{ github.ref_name }}
-
-          ## Troubleshooting Steps
-
-          1. Check the workflow logs for error details
-          2. Verify data.json is not corrupted
-          3. Check if external APIs (RT, Watchmode) are responding
-          4. Run the pipeline manually: `python3 daily_orchestrator.py`
-          5. If issue persists, regenerate data: `python3 generate_data.py --full`
-
-          ## Next Steps
-
-          - Fix the underlying issue
-          - Trigger the workflow manually to verify the fix
-          - Close this issue when automation is working again
-
-          🤖 This issue was created automatically by the daily automation workflow.
-          EOF
-          )" \
-            --label "automation,bug"
+        uses: actions/github-script@v7
         env:
-          GH_TOKEN: ${{ github.token }}
+          WORKFLOW_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        with:
+          script: |
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Daily Automation Failed - ${new Date().toISOString().split('T')[0]}`,
+              body: `## Daily Automation Failure
 
-      - name: Create summary comment
-        if: success()
-        run: |
-          python3 -c "
-          import json
-          from datetime import datetime, timedelta
+            **Workflow Run:** ${process.env.WORKFLOW_URL}
+            **Failure Time:** ${new Date().toISOString()}
+            **Branch:** ${context.ref}
 
-          # Load data.json and extract statistics
-          with open('data.json', 'r') as f:
-              data = json.load(f)
+            ### Debugging Steps:
+            1. Check the workflow logs at the URL above
+            2. Review \`daily_orchestrator.py\` output for specific errors
+            3. Verify API keys are properly configured in repository secrets
+            4. Check data quality validation errors
 
-          movies = data.get('movies', [])
-          total_movies = len(movies)
+            ### Manual Recovery:
+            If needed, run the daily pipeline manually:
+            \`\`\`bash
+            python3 daily_orchestrator.py
+            \`\`\`
 
-          # Find latest movie
-          latest_movie = None
-          if movies:
-              sorted_movies = sorted(movies, key=lambda x: x.get('digital_date', ''), reverse=True)
-              latest_movie = sorted_movies[0]
-
-          # Print summary
-          print('📊 Automation Summary')
-          print(f'Total movies: {total_movies}')
-          if latest_movie:
-              print(f'Latest movie: {latest_movie.get(\"title\")} ({latest_movie.get(\"digital_date\")})')
-          print('Generation timestamp: $(date -u)')
-          print('')
-          print('🔄 To merge these changes:')
-          print('  ./sync_daily_updates.sh')
-          print('')
-          print('📋 To view changes:')
-          print('  git diff --stat main..automation-updates')
-          "
+            This issue was created automatically by the failed workflow.`,
+              labels: ['automation', 'bug']
+            })

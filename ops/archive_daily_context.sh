@@ -29,6 +29,7 @@ show_usage() {
     echo "  --help       Show this help message"
     echo ""
     echo "Archives current DAILY_CONTEXT.md to diary/YYYY-MM-DD.md and creates fresh template."
+    echo "Uses UTC dates to align with GitHub Actions automation timeline."
 }
 
 # Parse command line arguments
@@ -80,10 +81,10 @@ fi
 
 print_success "Prerequisites validated"
 
-# Generate timestamp
-DATE=$(date +%Y-%m-%d)
+# Generate timestamp (UTC to align with GitHub Actions automation)
+DATE=$(date -u +%Y-%m-%d)
 echo ""
-echo "📅 Archive date: $DATE"
+echo "📅 Archive date: $DATE (UTC)"
 
 # Create diary directory if needed
 echo ""
@@ -125,12 +126,32 @@ if [[ -f "$ARCHIVE_PATH" ]]; then
     fi
 fi
 
-# Archive current context
+# Archive current context with metadata header
 if [[ "$DRY_RUN" == "true" ]]; then
-    print_info "[DRY RUN] Would copy DAILY_CONTEXT.md to $ARCHIVE_PATH"
+    print_info "[DRY RUN] Would create archive with metadata header at $ARCHIVE_PATH"
 else
-    if cp DAILY_CONTEXT.md "$ARCHIVE_PATH"; then
-        print_success "Archived today's context to $ARCHIVE_PATH"
+    # Find previous diary entry (most recent file in diary/ directory)
+    PREV_DATE=$(ls -1 diary/*.md 2>/dev/null | sort -r | head -1 | sed 's/diary\///' | sed 's/\.md$//' || echo "")
+    if [[ -n "$PREV_DATE" ]]; then
+        PREV_DIARY="diary/${PREV_DATE}.md"
+    else
+        PREV_DIARY="diary/[previous-date].md"
+    fi
+
+    # Create archive with metadata header, then append the rest of the content
+    {
+        echo "# DAILY_CONTEXT.md"
+        echo "**Date:** $DATE"
+        echo "**Previous diary entry:** $PREV_DIARY"
+        echo ""
+        echo "---"
+        echo ""
+        # Skip the first 6 lines of DAILY_CONTEXT.md (existing header) and append the rest
+        tail -n +7 DAILY_CONTEXT.md
+    } > "$ARCHIVE_PATH"
+
+    if [[ $? -eq 0 ]]; then
+        print_success "Archived today's context with metadata header to $ARCHIVE_PATH"
     else
         print_error "Failed to archive context. Check permissions."
         exit 1
@@ -167,7 +188,7 @@ This is a **living document** that gets overwritten each session with current in
 - **Maintains audit trail** in the diary/ folder
 - **Reduces AI confusion** by keeping focus on current state
 
-See [AMENDMENT-036](PROJECT_CHARTER.md#amendment-036-rolling-daily-context) for governance rules.
+See [AMENDMENT-036](PROJECT_CHARTER.md#amendment-036-rolling-daily-context) and [AMENDMENT-037](PROJECT_CHARTER.md#amendment-037-daily-context-system-three-file-loading-pattern) for governance rules.
 
 ---
 
