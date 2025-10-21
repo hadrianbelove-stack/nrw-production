@@ -1,0 +1,40 @@
+# NRW Configuration
+workflow:
+  daily_check_time: "02:00"  # 2 AM PST
+  weekly_bootstrap_day: "sunday"
+  
+display:
+  days_back: 90  # Show movies from last N days
+  min_movies: 20  # Minimum movies to display
+  max_movies: 100  # Maximum movies to display
+
+tracking:
+  bootstrap_days: 7  # Look back N days for new releases
+  check_interval_hours: 24  # How often to check
+  
+api:
+  # tmdb_api_key: Set via TMDB_API_KEY environment variable
+  tmdb_rate_limit: 0.1  # Seconds between API calls
+  max_retries: 3
+
+agent_scraper:
+  enabled: false  # Disabled due to authentication barriers on all platforms (see AGENT_SCRAPER_TEST_REPORT.md for details)
+  headless: true  # Run browser in headless mode (required for CI)
+  rate_limit: 2.0  # Minimum seconds between scrapes
+  timeout: 10  # Page load timeout in seconds
+  max_retries: 3  # Increased from 1 for exponential backoff
+  cache_ttl_days: 30  # Cache expiration (days)
+  screenshots_enabled: true  # Capture screenshots on failure
+  screenshot_retention_days: 7  # Auto-delete old screenshots
+  exponential_backoff:
+    base_delay: 0.5  # Initial retry delay (seconds)
+    max_delay: 5.0  # Maximum retry delay (seconds)
+    jitter_ratio: 0.2  # Randomness factor (±20%)
+
+rt_scraper:
+  enabled: true  # Enable/disable RT scraping
+  headless: true  # Run browser in headless mode
+  rate_limit: 2.0  # Minimum seconds between scrapes
+  timeout: 10  # Page load timeout in seconds
+  max_retries: 1  # Number of retries on failure (RT is less critical than watch links)
+  cache_ttl_days: 90  # RT links are stable, longer TTL than agent scraper
