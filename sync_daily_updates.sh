@@ -46,6 +46,37 @@ if ! git diff --quiet || ! git diff --staged --quiet; then
     exit 1
 fi
 
+# Check if we're on main branch
+current_branch=$(git branch --show-current)
+if [ "$current_branch" != "main" ]; then
+    echo "❌ Error: Not on main branch"
+    echo "   Current branch: $current_branch"
+    echo "   This script merges into the current branch, which should be 'main'."
+    echo ""
+    echo "   To fix:"
+    echo "   1. Switch to main: git checkout main"
+    echo "   2. Run this script again"
+    echo "   3. Or add --force flag to allow merging into $current_branch (advanced)"
+    exit 1
+fi
+
+# Fetch from origin and check if local main is up to date
+echo "📡 Fetching from origin..."
+git fetch origin
+
+# Check if local main is behind origin/main
+local_main=$(git rev-parse HEAD)
+origin_main=$(git rev-parse origin/main)
+if [ "$local_main" != "$origin_main" ]; then
+    echo "❌ Error: Local main is not up to date with origin/main"
+    echo "   Your local main branch is behind the remote."
+    echo ""
+    echo "   To fix:"
+    echo "   1. Run: git pull --ff-only origin main"
+    echo "   2. Run this script again"
+    exit 1
+fi
+
 # Fetch automation branch
 echo "📡 Fetching automation-updates branch..."
 if ! git fetch origin automation-updates 2>/dev/null; then

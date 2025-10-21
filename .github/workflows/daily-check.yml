@@ -39,8 +39,8 @@ jobs:
 
       - name: Install Playwright browsers
         run: |
-          playwright install chromium
-          sudo playwright install-deps
+          python -m playwright install chromium
+          sudo python -m playwright install-deps
 
       - name: Configure Git
         run: |
@@ -68,9 +68,11 @@ jobs:
           git commit -m "Daily update - $(date +%Y-%m-%d) [automated]"
 
       - name: Switch to automation branch
+        if: steps.changes.outputs.changes == 'true'
         run: git checkout -B automation-updates
 
       - name: Force push to remote
+        if: steps.changes.outputs.changes == 'true'
         run: git push --force origin automation-updates
 
       - name: Create GitHub issue on failure
