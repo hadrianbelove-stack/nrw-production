@@ -1,5 +1,8 @@
 # New Release Wall (NRW) - Automated Movie Tracker
 
+![Daily NRW Update](https://github.com/hadrianbelove-stack/nrw-production/actions/workflows/daily-check.yml/badge.svg)
+![Weekly Full Regeneration](https://github.com/hadrianbelove-stack/nrw-production/actions/workflows/weekly-full-regen.yml/badge.svg)
+
 ## Overview
 Automated tracking of theatrical releases becoming available digitally, displayed in Netflix-style interface.
 
@@ -22,6 +25,12 @@ Run the one-command startup:
 - Populates agent scraper links retroactively
 - Updates RT scores for movies with new reviews
 - Refreshes all data enrichment
+
+### Morning Sync Checklist
+1. Run `./sync_daily_updates.sh` to merge automation updates
+2. Review diff to ensure data quality looks healthy
+3. If changes look good, merge and proceed with work
+4. If issues detected, investigate before merging
 
 ### Syncing Automation Data
 Run `./sync_daily_updates.sh` to merge automation updates into your main branch.
