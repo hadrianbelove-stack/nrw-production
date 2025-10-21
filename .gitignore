@@ -26,6 +26,32 @@ sync_tmp_*/
 output/
 .nrw_http_pid
 
+# Cache files (ephemeral data)
+*_cache.json
+rt_cache.json
+wikipedia_cache.json
+youtube_trailer_cache.json
+
+# Editor and temporary files
+*.swp
+*.swo
+*~
+.*.swp
+.*.swo
+*.tmp
+*.temp
+.#*
+#*#
+.emacs.d/
+.vscode/
+*.sublime-*
+.idea/
+
+# UI preferences and lock files
+.ui_lock.json
+prefs.json
+.!*
+
 # YouTube credentials (sensitive OAuth tokens)
 youtube_credentials/
 client_secret_encoded.txt
