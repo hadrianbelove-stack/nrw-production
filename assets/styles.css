@@ -310,6 +310,68 @@ header h1 {
     box-shadow: 0 5px 20px rgba(255,107,0,0.5);
 }
 
+/* Platform-specific button styles */
+.actions .watch-btn-amazon {
+    background: #ff9900;
+    color: #000;
+    font-weight: bold;
+}
+
+.actions .watch-btn-amazon:hover {
+    background: #ffad33;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(255,153,0,0.5);
+}
+
+.actions .watch-btn-apple {
+    background: #555555;
+    color: #fff;
+    font-weight: bold;
+}
+
+.actions .watch-btn-apple:hover {
+    background: #6a6a6a;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(85,85,85,0.5);
+}
+
+/* Additional streaming platforms */
+.actions .watch-btn-netflix {
+    background: #e50914;
+    color: #fff;
+    font-weight: bold;
+}
+
+.actions .watch-btn-netflix:hover {
+    background: #ff0a16;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(229,9,20,0.5);
+}
+
+.actions .watch-btn-disney {
+    background: #113ccf;
+    color: #fff;
+    font-weight: bold;
+}
+
+.actions .watch-btn-disney:hover {
+    background: #1a52ff;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(17,60,207,0.5);
+}
+
+.actions .watch-btn-hulu {
+    background: #1ce783;
+    color: #000;
+    font-weight: bold;
+}
+
+.actions .watch-btn-hulu:hover {
+    background: #2fff9a;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(28,231,131,0.5);
+}
+
 
 .actions .watch-btn-disabled {
     background: #333;

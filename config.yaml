@@ -19,7 +19,7 @@ discovery:
   enable_pass_b: true  # Enable Pass B: Theatrical releases (primary_release_date)
 
 api:
-  # tmdb_api_key: Set via TMDB_API_KEY environment variable
+  tmdb_api_key: "99b122ce7fa3e9065d7b7dc6e660772d"  # From PROJECT_CHARTER.md line 259
   watchmode_api_key: "bBMpVr31lRfUsSFmgoQp0jixDrQt8DIKCVg7EFdp"
   tmdb_rate_limit: 0.1  # Seconds between API calls
   max_retries: 3
@@ -56,6 +56,9 @@ platform_scraper:
   maintenance:
     last_selector_update: "2025-10-23"  # Track when selectors were last verified
     expected_update_frequency: "quarterly"  # How often selectors typically need updates
+    # Note: Last validation test (2025-10-24) was invalid due to TMDB API key configuration error
+    # Amazon scraper validated at 100% success rate, but overall test incomplete
+    # Re-run validation after fixing config.yaml to get complete statistics
     # Note: Acceptable failure rate, manual admin overrides handle edge cases
     # Implementation: streaming_platform_scraper.py (separate from agent_scraper.py)
 
@@ -80,3 +83,31 @@ newsletter:
     - markdown  # Generate markdown format
     - html      # Generate HTML format
     - text      # Generate plain text format
+
+# Affiliate Program Configuration
+# Sign up for affiliate programs to earn commissions on movie rentals/purchases
+# NOTE: Most affiliate programs require an existing website before approval
+# Set enabled=false for now, enable after getting approved and adding your IDs
+affiliate:
+  enabled: false  # Set to true after signing up for affiliate programs
+
+  # Amazon Associates - https://affiliate-program.amazon.com/
+  # Commission: 5% on digital video, 24-hour cookie (earns on ANY purchase within 24h)
+  # Application requirements: Active website with content, 10+ posts/pages, regular traffic
+  amazon:
+    enabled: false  # Enable after getting your affiliate tag
+    tag: "REPLACE_WITH_YOUR_AMAZON_TAG"  # e.g., "yoursite-20"
+    # Get your tag from: https://affiliate-program.amazon.com/home/account/tag/manage
+
+  # Apple Performance Partners - https://performance-partners.apple.com/
+  # Commission: 7% on movies/TV, 30-day cookie, $100 min payout
+  # Application requirements: Website/app with relevant content, approved by Apple
+  apple:
+    enabled: false  # Enable after getting your affiliate token
+    token: "REPLACE_WITH_YOUR_APPLE_TOKEN"  # e.g., "1000lxyz"
+    # Get your token from: https://performance-partners.apple.com/resources/documentation/affiliate-token-guide
+
+  # Future platforms can be added here as needed
+  # vudu:
+  #   enabled: false
+  #   affiliate_id: ""

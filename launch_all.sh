@@ -20,9 +20,11 @@ NC='\033[0m' # No Color
 SITE_PID=""
 ADMIN_PID=""
 YOUTUBE_PID=""
+SITE_PORT=""
 
 # Browser command detection
 BROWSER_CMD=""
+LSOF_AVAILABLE=false
 
 # Cleanup function - gracefully shut down all running processes
 cleanup() {
@@ -54,8 +56,9 @@ cleanup() {
 # Register cleanup function for various exit signals
 trap cleanup EXIT INT TERM
 
-# Detect available browser command
-detect_browser() {
+# Detect available tools
+detect_tools() {
+    # Detect browser command
     if command -v open >/dev/null 2>&1; then
         BROWSER_CMD="open"
     elif command -v xdg-open >/dev/null 2>&1; then
@@ -63,6 +66,11 @@ detect_browser() {
     else
         echo -e "${YELLOW}⚠️  No browser opener found. URLs will be displayed for manual opening.${NC}"
         BROWSER_CMD=""
+    fi
+
+    # Detect lsof availability
+    if command -v lsof >/dev/null 2>&1; then
+        LSOF_AVAILABLE=true
     fi
 }
 
@@ -80,15 +88,15 @@ open_browser() {
 # Check if a port is available
 check_port() {
     local port="$1"
-    if command -v lsof >/dev/null 2>&1; then
+    if [ "$LSOF_AVAILABLE" = true ]; then
         if lsof -Pi ":$port" -sTCP:LISTEN -t >/dev/null 2>&1; then
             return 1  # Port is in use
         else
             return 0  # Port is available
         fi
     else
-        echo -e "${YELLOW}⚠️  'lsof' not found. Cannot check if port $port is available.${NC}"
-        return 0  # Assume available
+        # If lsof is not available, assume port is available
+        return 0
     fi
 }
 
@@ -97,37 +105,70 @@ launch_site() {
     local auto_open="${1:-true}"
     echo -e "${GREEN}🎬 Launching Public Site...${NC}"
 
-    # Check ports 8000 and 8001
     local port=8000
-    if ! check_port 8000; then
-        echo -e "${YELLOW}   Port 8000 is busy, trying 8001...${NC}"
-        if ! check_port 8001; then
-            echo -e "${RED}❌ Both ports 8000 and 8001 are in use!${NC}"
-            echo -e "${YELLOW}   Try stopping other services or choose a different option.${NC}"
+    local retry_attempted=false
+
+    # When lsof is available, use traditional port checking
+    if [ "$LSOF_AVAILABLE" = true ]; then
+        # Check ports 8000 and 8001
+        if ! check_port 8000; then
+            echo -e "${YELLOW}   Port 8000 is busy, trying 8001...${NC}"
+            if ! check_port 8001; then
+                echo -e "${RED}❌ Both ports 8000 and 8001 are in use!${NC}"
+                echo -e "${YELLOW}   Try stopping other services or choose a different option.${NC}"
+                return 1
+            fi
+            port=8001
+        fi
+    fi
+
+    # Attempt to start server (potentially with retry on port conflict)
+    while true; do
+        SITE_PORT=$port
+
+        # Start Python HTTP server
+        echo -e "${BLUE}   Starting HTTP server on port $port...${NC}"
+        python3 -m http.server "$port" &
+        SITE_PID=$!
+
+        # Wait for server to be ready
+        echo -e "${BLUE}   Waiting for server to start...${NC}"
+        local attempts=0
+        local max_attempts=15
+
+        while [ $attempts -lt $max_attempts ]; do
+            # Try curl first for true HTTP readiness
+            if command -v curl >/dev/null && curl --silent --fail --connect-timeout 1 http://localhost:$port >/dev/null 2>&1; then
+                break  # Server is ready
+            # If curl fails, check port binding with lsof (if available)
+            elif [ "$LSOF_AVAILABLE" = true ] && lsof -Pi ":$port" -sTCP:LISTEN -t >/dev/null 2>&1; then
+                break  # Server is ready
+            fi
+            sleep 1
+            attempts=$((attempts + 1))
+        done
+
+        # If server started successfully, break out of retry loop
+        if [ $attempts -lt $max_attempts ]; then
+            break
+        fi
+
+        # Handle readiness timeout
+        if [ "$LSOF_AVAILABLE" = false ] && [ "$port" = "8000" ] && [ "$retry_attempted" = false ]; then
+            # Stop the failed process
+            if [[ -n "$SITE_PID" ]] && kill -0 "$SITE_PID" 2>/dev/null; then
+                kill "$SITE_PID" 2>/dev/null || true
+                SITE_PID=""
+            fi
+            echo -e "${YELLOW}   Port 8000 readiness check failed, retrying on port 8001...${NC}"
+            port=8001
+            retry_attempted=true
+            continue
+        else
+            echo -e "${RED}❌ Server failed to start after $max_attempts seconds${NC}"
             return 1
         fi
-        port=8001
-    fi
-
-    # Start Python HTTP server
-    echo -e "${BLUE}   Starting HTTP server on port $port...${NC}"
-    python3 -m http.server "$port" &
-    SITE_PID=$!
-
-    # Wait for server to be ready
-    echo -e "${BLUE}   Waiting for server to start...${NC}"
-    local attempts=0
-    local max_attempts=15
-
-    while ! check_port "$port" && [ $attempts -lt $max_attempts ]; do
-        sleep 1
-        attempts=$((attempts + 1))
     done
-
-    if [ $attempts -eq $max_attempts ]; then
-        echo -e "${RED}❌ Server failed to start after $max_attempts seconds${NC}"
-        return 1
-    fi
 
     # Open browser if requested
     if [[ "$auto_open" == "true" ]]; then
@@ -156,9 +197,6 @@ launch_admin() {
     echo "┌─────────────────────────────────────────┐"
     echo "│ 🔐 AUTHENTICATION REQUIRED              │"
     echo "│                                         │"
-    echo "│ Username: admin                         │"
-    echo "│ Password: admin                         │"
-    echo "│                                         │"
     echo "│ See PROJECT_CHARTER.md for credentials  │"
     echo "└─────────────────────────────────────────┘"
     echo ""
@@ -173,7 +211,14 @@ launch_admin() {
     local attempts=0
     local max_attempts=15
 
-    while check_port 5555 && [ $attempts -lt $max_attempts ]; do
+    while [ $attempts -lt $max_attempts ]; do
+        # Try curl first for true HTTP readiness
+        if command -v curl >/dev/null && curl --silent --fail --connect-timeout 1 http://localhost:5555 >/dev/null 2>&1; then
+            break  # Server is ready
+        # If curl fails, check port binding with lsof (if available)
+        elif [ "$LSOF_AVAILABLE" = true ] && lsof -Pi ":5555" -sTCP:LISTEN -t >/dev/null 2>&1; then
+            break  # Server is ready
+        fi
         sleep 1
         attempts=$((attempts + 1))
     done
@@ -198,6 +243,14 @@ launch_youtube() {
     echo -e "${GREEN}📺 YouTube Playlist Manager${NC}"
     echo ""
     echo -e "${BLUE}This is a CLI tool, not a web interface.${NC}"
+    echo ""
+
+    # Show official help first
+    echo -e "${GREEN}📺 YouTube Playlist Manager Help:${NC}"
+    echo ""
+    python3 youtube_playlist_manager.py --help || true
+    echo ""
+    echo "─────────────────────────────────────────"
     echo ""
     echo "Common commands:"
     echo "  python3 youtube_playlist_manager.py auth          # First-time setup"
@@ -247,32 +300,37 @@ launch_all() {
         return 1
     fi
 
+    # Show YouTube manager help
+    echo ""
+    echo -e "${GREEN}📺 YouTube Playlist Manager Help:${NC}"
+    echo ""
+    python3 youtube_playlist_manager.py --help || true
+    echo ""
+
     # Display YouTube manager info
     echo ""
-    echo -e "${BLUE}📺 YouTube Playlist Manager (CLI tool):${NC}"
-    echo "   Use: python3 youtube_playlist_manager.py [command]"
-    echo "   Commands: auth, test, weekly, --help"
+    echo -e "${BLUE}📺 YouTube Playlist Manager: See help output above${NC}"
     echo ""
 
     # Display summary
     echo "┌─────────────────────────────────────────┐"
     echo "│ ✅ ALL SERVICES RUNNING                 │"
     echo "│                                         │"
-    echo "│ 🎬 Public Site: http://localhost:8000   │"
+    echo "│ 🎬 Public Site: http://localhost:${SITE_PORT:-8000}   │"
     echo "│ 🔧 Admin Panel: http://localhost:5555   │"
     echo "│ 📺 YouTube: CLI tool (see above)        │"
     echo "│                                         │"
-    echo "│ Press Ctrl+C to stop all services       │"
+    echo "│ Press Ctrl+C to stop and exit           │"
     echo "└─────────────────────────────────────────┘"
     echo ""
 
     # Open both URLs in browser
-    open_browser "http://localhost:8000"
+    open_browser "http://localhost:${SITE_PORT:-8000}"
     sleep 1
     open_browser "http://localhost:5555"
 
     # Wait indefinitely until Ctrl+C
-    echo -e "${BLUE}Services are running. Press Ctrl+C to stop all services.${NC}"
+    echo -e "${BLUE}Services are running. Press Ctrl+C to stop and exit.${NC}"
     wait
 }
 
@@ -299,33 +357,30 @@ show_menu() {
                 echo ""
                 if launch_site; then
                     echo ""
-                    echo -e "${BLUE}Press Ctrl+C to stop the server and return to menu.${NC}"
+                    echo -e "${BLUE}Press Ctrl+C to stop and exit.${NC}"
                     wait
                 fi
                 echo ""
                 echo -e "${BLUE}Press Enter to return to menu...${NC}"
                 read -r
-                show_menu
-                return
+                continue
                 ;;
             2)
                 echo ""
                 if launch_admin; then
                     echo ""
-                    echo -e "${BLUE}Press Ctrl+C to stop the server and return to menu.${NC}"
+                    echo -e "${BLUE}Press Ctrl+C to stop and exit.${NC}"
                     wait
                 fi
                 echo ""
                 echo -e "${BLUE}Press Enter to return to menu...${NC}"
                 read -r
-                show_menu
-                return
+                continue
                 ;;
             3)
                 echo ""
                 launch_youtube
-                show_menu
-                return
+                continue
                 ;;
             4)
                 echo ""
@@ -357,8 +412,8 @@ main() {
         exit 1
     fi
 
-    # Detect browser
-    detect_browser
+    # Detect tools
+    detect_tools
 
     # Welcome message
     echo -e "${GREEN}🎬 NEW RELEASE WALL - Unified Launcher${NC}"

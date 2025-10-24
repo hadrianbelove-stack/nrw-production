@@ -183,6 +183,58 @@ class DataGenerator:
 
         return config
 
+    def append_affiliate_tag(self, url, service_name):
+        """
+        Append affiliate tags to streaming service URLs.
+
+        Args:
+            url (str): The original URL
+            service_name (str): The service name (e.g., "Amazon Video", "Apple TV")
+
+        Returns:
+            str: URL with affiliate tag appended, or original URL if not applicable
+        """
+        # Return original URL if None or empty
+        if not url or not isinstance(url, str):
+            return url
+
+        # Check if affiliate tagging is enabled globally
+        affiliate_config = self.config.get('affiliate', {})
+        if not affiliate_config.get('enabled', False):
+            return url
+
+        # Normalize service name for matching
+        service_lower = service_name.lower() if service_name else ''
+
+        # Amazon affiliate tagging
+        if 'amazon' in service_lower or 'amazon' in url.lower():
+            amazon_config = affiliate_config.get('amazon', {})
+            if amazon_config.get('enabled', False):
+                tag = amazon_config.get('tag', '')
+                # Only add tag if it's not a placeholder
+                if tag and tag != 'REPLACE_WITH_YOUR_AMAZON_TAG':
+                    # Check if URL already has parameters
+                    separator = '&' if '?' in url else '?'
+                    # Check if tag already exists in URL
+                    if 'tag=' not in url:
+                        return f"{url}{separator}tag={tag}"
+
+        # Apple affiliate tagging
+        elif 'apple' in service_lower or 'itunes' in url.lower() or 'apple.com' in url.lower():
+            apple_config = affiliate_config.get('apple', {})
+            if apple_config.get('enabled', False):
+                token = apple_config.get('token', '')
+                # Only add token if it's not a placeholder
+                if token and token != 'REPLACE_WITH_YOUR_APPLE_TOKEN':
+                    # Check if URL already has parameters
+                    separator = '&' if '?' in url else '?'
+                    # Check if token already exists in URL
+                    if 'at=' not in url:
+                        return f"{url}{separator}at={token}"
+
+        # Return original URL if no affiliate tag was added
+        return url
+
     def _init_agent_scraper(self):
         """Initialize agent scraper if not already initialized"""
         if self.agent_scraper is None:
@@ -1121,6 +1173,18 @@ class DataGenerator:
 
         # Validate schema before caching and returning
         validated_links = self.validate_watch_links_schema(watch_links, title)
+
+        # Apply affiliate tags to all validated links (after validation, before caching)
+        for category in ['streaming', 'rent', 'buy']:
+            if category in validated_links and isinstance(validated_links[category], dict):
+                link_data = validated_links[category]
+                if link_data.get('link') and link_data.get('service'):
+                    # Append affiliate tag to the link
+                    original_link = link_data['link']
+                    tagged_link = self.append_affiliate_tag(original_link, link_data['service'])
+                    if tagged_link != original_link:
+                        validated_links[category]['link'] = tagged_link
+                        self.logger.debug(f"Added affiliate tag to {category} link for {title}: {link_data['service']}")
 
         # Cache result with canonical schema (use validated links)
         if validated_links:

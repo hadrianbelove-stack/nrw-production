@@ -85,44 +85,99 @@ const NRW = {
             }
             const bottomInfo = bottomMetadata.join(' | ');
 
-            // Build three watch buttons with state management
-            const buildWatchButton = (category, movie) => {
+            // Build platform-based watch buttons (SVOD, Amazon, Apple)
+            const buildPlatformButtons = (movie) => {
                 const watchLinks = movie.watch_links || {};
-                const categoryData = watchLinks[category];
+                const buttons = [];
 
-                if (category === 'streaming') {
-                    if (categoryData && categoryData.link) {
-                        // Active streaming button with platform name
-                        const serviceName = categoryData.service === 'Amazon Prime Video' ? 'PRIME' :
-                                          (categoryData.service || 'STREAM').toUpperCase();
-                        return `<a href="${categoryData.link}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-stream" aria-label="Watch on ${categoryData.service}">${serviceName}</a>`;
-                    } else if (categoryData && !categoryData.link) {
-                        // Error state - service exists but link is null
-                        const serviceName = categoryData.service === 'Amazon Prime Video' ? 'PRIME' :
-                                          (categoryData.service || 'STREAM').toUpperCase();
-                        return `<a href="#" class="watch-btn watch-btn-stream watch-btn-error" aria-label="${categoryData.service} link unavailable" title="Link not found - contact admin" tabindex="-1">${serviceName} (LINK MISSING)</a>`;
-                    } else {
-                        // Disabled state - no streaming available
-                        return `<a href="#" class="watch-btn watch-btn-stream watch-btn-disabled" aria-disabled="true" title="Not available on streaming services" tabindex="-1">STREAM</a>`;
-                    }
-                } else {
-                    const label = category.toUpperCase();
-                    if (categoryData && categoryData.link) {
-                        // Active rent/buy button
-                        return `<a href="${categoryData.link}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-${category}" aria-label="${label} on ${categoryData.service || 'digital platform'}">${label}</a>`;
-                    } else if (categoryData && !categoryData.link) {
-                        // Error state - service exists but link is null
-                        return `<a href="#" class="watch-btn watch-btn-${category} watch-btn-error" aria-label="${label} link unavailable" title="Link not found - contact admin" tabindex="-1">${label} (LINK MISSING)</a>`;
-                    } else {
-                        // Disabled state - no rent/buy available
-                        return `<a href="#" class="watch-btn watch-btn-${category} watch-btn-disabled" aria-disabled="true" title="Not available for ${category.toLowerCase()}" tabindex="-1">${label}</a>`;
-                    }
+                // 1. Check for SVOD streaming (Netflix, Mubi, Disney+, etc.)
+                if (watchLinks.streaming?.service && watchLinks.streaming?.link) {
+                    const service = watchLinks.streaming.service;
+                    const link = watchLinks.streaming.link;
+
+                    // Shorten platform names for display
+                    const displayName = service
+                        .replace('Amazon Prime Video', 'PRIME')
+                        .replace('Disney Plus', 'DISNEY+')
+                        .replace('HBO Max', 'HBO')
+                        .toUpperCase();
+
+                    buttons.push({
+                        name: displayName,
+                        link: link,
+                        service: service,
+                        class: 'watch-btn-stream'
+                    });
+                } else if (watchLinks.streaming && !watchLinks.streaming.link) {
+                    // Error state for streaming
+                    const service = watchLinks.streaming.service || 'STREAM';
+                    buttons.push({
+                        name: `${service.toUpperCase()} (MISSING)`,
+                        link: '#',
+                        service: service,
+                        class: 'watch-btn-error',
+                        disabled: true
+                    });
                 }
+
+                // 2. Check for Amazon (rent OR buy)
+                // Look for Amazon in both rent and buy, prefer rent if both exist
+                let amazonLink = null;
+                if (watchLinks.rent?.service?.toLowerCase().includes('amazon') && watchLinks.rent?.link) {
+                    amazonLink = watchLinks.rent.link;
+                } else if (watchLinks.buy?.service?.toLowerCase().includes('amazon') && watchLinks.buy?.link) {
+                    amazonLink = watchLinks.buy.link;
+                }
+
+                if (amazonLink) {
+                    buttons.push({
+                        name: 'AMAZON',
+                        link: amazonLink,
+                        service: 'Amazon',
+                        class: 'watch-btn-amazon'
+                    });
+                }
+
+                // 3. Check for Apple (rent OR buy)
+                // Look for Apple in both rent and buy, prefer rent if both exist
+                let appleLink = null;
+                if (watchLinks.rent?.service?.toLowerCase().includes('apple') && watchLinks.rent?.link) {
+                    appleLink = watchLinks.rent.link;
+                } else if (watchLinks.buy?.service?.toLowerCase().includes('apple') && watchLinks.buy?.link) {
+                    appleLink = watchLinks.buy.link;
+                }
+
+                if (appleLink) {
+                    buttons.push({
+                        name: 'APPLE',
+                        link: appleLink,
+                        service: 'Apple TV',
+                        class: 'watch-btn-apple'
+                    });
+                }
+
+                // If no buttons at all, show disabled placeholder
+                if (buttons.length === 0) {
+                    buttons.push({
+                        name: 'NOT AVAILABLE',
+                        link: '#',
+                        service: 'None',
+                        class: 'watch-btn-disabled',
+                        disabled: true
+                    });
+                }
+
+                // Render buttons as HTML
+                return buttons.map(btn => {
+                    if (btn.disabled) {
+                        return `<a href="${btn.link}" class="watch-btn ${btn.class}" aria-disabled="true" title="Link not available" tabindex="-1">${btn.name}</a>`;
+                    } else {
+                        return `<a href="${btn.link}" target="_blank" rel="noopener noreferrer" class="watch-btn ${btn.class}" aria-label="Watch on ${btn.service}">${btn.name}</a>`;
+                    }
+                }).join('');
             };
 
-            const streamButton = buildWatchButton('streaming', movie);
-            const rentButton = buildWatchButton('rent', movie);
-            const buyButton = buildWatchButton('buy', movie);
+            const platformButtons = buildPlatformButtons(movie);
 
             // Info links - Only Trailer, RT, Wiki
             let infoLinks = [];
@@ -151,9 +206,7 @@ const NRW = {
                         <div class="card-back">
                             <div class="synopsis">${movie.synopsis || 'Synopsis coming soon'}</div>
                             <div class="actions">
-                                ${streamButton}
-                                ${rentButton}
-                                ${buyButton}
+                                ${platformButtons}
                                 <div class="info-links">
                                     ${infoLinks.join('')}
                                 </div>

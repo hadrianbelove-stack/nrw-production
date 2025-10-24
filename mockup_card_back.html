@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NRW Card Back Mockup - Platform Buttons</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #0a0a0a;
+            color: #fff;
+            font-family: -apple-system, system-ui, sans-serif;
+            padding: 2rem;
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        h1 {
+            width: 100%;
+            text-align: center;
+            color: #00d4aa;
+            margin-bottom: 2rem;
+            font-size: 1.5rem;
+        }
+
+        .comparison {
+            display: flex;
+            gap: 2rem;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .card-back {
+            width: 215px;
+            height: 320px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border-radius: 15px;
+            padding: 0.8rem;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+        }
+
+        .label {
+            text-align: center;
+            margin-bottom: 0.5rem;
+            color: #00d4aa;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+
+        .synopsis {
+            flex: 1;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            color: #f0f0f0;
+            margin-bottom: 0.8rem;
+            overflow-y: auto;
+        }
+
+        .actions {
+            margin-top: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .watch-btn {
+            padding: 0.5rem;
+            color: #000;
+            text-decoration: none;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 0.75rem;
+            transition: all 0.3s ease;
+            display: block;
+            text-transform: uppercase;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* CURRENT DESIGN - Rent/Buy */
+        .watch-btn-stream {
+            background: #00d4aa;
+            color: #000;
+        }
+
+        .watch-btn-rent {
+            background: #ff9500;
+            color: #000;
+        }
+
+        .watch-btn-buy {
+            background: #ff6b00;
+            color: #fff;
+        }
+
+        .watch-btn-disabled {
+            background: #333;
+            color: #999;
+            cursor: default;
+            opacity: 0.5;
+            border: 1px solid #444;
+        }
+
+        /* NEW DESIGN - Platform buttons */
+        .watch-btn-amazon {
+            background: #ff9900;
+            color: #000;
+        }
+
+        .watch-btn-apple {
+            background: #555555;
+            color: #fff;
+        }
+
+        .watch-btn-netflix {
+            background: #e50914;
+            color: #fff;
+        }
+
+        .watch-btn-disney {
+            background: #113ccf;
+            color: #fff;
+        }
+
+        .watch-btn-hulu {
+            background: #1ce783;
+            color: #000;
+        }
+
+        .watch-btn-platform {
+            background: #007aff;
+            color: #fff;
+        }
+
+        .watch-btn:hover:not(.watch-btn-disabled) {
+            transform: translateY(-2px);
+            opacity: 0.9;
+            box-shadow: 0 5px 15px rgba(255,255,255,0.2);
+        }
+
+        .info-links {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+        }
+
+        .info-btn {
+            padding: 0.5rem;
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 0.85rem;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .info-btn:hover {
+            background: rgba(0,212,170,0.3);
+            border-color: #00d4aa;
+            color: #00d4aa;
+        }
+
+        .bottom-meta {
+            padding-top: 0.5rem;
+            margin-top: 0.5rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.42rem;
+            color: #fff;
+            text-align: center;
+        }
+
+        .notes {
+            width: 100%;
+            background: rgba(0,212,170,0.1);
+            border: 1px solid #00d4aa;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 2rem;
+        }
+
+        .notes h2 {
+            color: #00d4aa;
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .notes ul {
+            margin-left: 1.5rem;
+            line-height: 1.8;
+        }
+
+        .notes code {
+            background: rgba(255,255,255,0.1);
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            color: #00ffbb;
+        }
+    </style>
+</head>
+<body>
+    <h1>NRW Card Back Mockup: CURRENT vs PROPOSED</h1>
+
+    <div class="comparison">
+        <!-- CURRENT DESIGN -->
+        <div>
+            <div class="label">CURRENT (Rent/Buy)</div>
+            <div class="card-back">
+                <div class="synopsis">
+                    Set against the backdrop of a postapocalyptic Earth whose Eastern Hemisphere was destroyed by a massive solar flare, leaving what life remains mutated from radiation and fallout. The story revolves around a group of treasure hunters...
+                </div>
+                <div class="actions">
+                    <a href="#" class="watch-btn watch-btn-stream watch-btn-disabled">STREAM</a>
+                    <a href="#" class="watch-btn watch-btn-rent">RENT</a>
+                    <a href="#" class="watch-btn watch-btn-buy">BUY</a>
+                    <div class="info-links">
+                        <a href="#" class="info-btn">Trailer</a>
+                        <a href="#" class="info-btn">RT 91%</a>
+                        <a href="#" class="info-btn">Wiki</a>
+                    </div>
+                </div>
+                <div class="bottom-meta">Sci-Fi • Action | Endurance Media | 105 min</div>
+            </div>
+        </div>
+
+        <!-- PROPOSED DESIGN - Option A: Show top 3 platforms -->
+        <div>
+            <div class="label">PROPOSED (Top 3 Platforms)</div>
+            <div class="card-back">
+                <div class="synopsis">
+                    Set against the backdrop of a postapocalyptic Earth whose Eastern Hemisphere was destroyed by a massive solar flare, leaving what life remains mutated from radiation and fallout. The story revolves around a group of treasure hunters...
+                </div>
+                <div class="actions">
+                    <a href="#" class="watch-btn watch-btn-amazon">AMAZON</a>
+                    <a href="#" class="watch-btn watch-btn-apple">APPLE TV</a>
+                    <a href="#" class="watch-btn watch-btn-platform">FANDANGO</a>
+                    <div class="info-links">
+                        <a href="#" class="info-btn">Trailer</a>
+                        <a href="#" class="info-btn">RT 91%</a>
+                        <a href="#" class="info-btn">Wiki</a>
+                    </div>
+                </div>
+                <div class="bottom-meta">Sci-Fi • Action | Endurance Media | 105 min</div>
+            </div>
+        </div>
+
+        <!-- PROPOSED DESIGN - Option B: Show streaming + 2 platforms -->
+        <div>
+            <div class="label">PROPOSED (Stream + 2 Platforms)</div>
+            <div class="card-back">
+                <div class="synopsis">
+                    Set against the backdrop of a postapocalyptic Earth whose Eastern Hemisphere was destroyed by a massive solar flare, leaving what life remains mutated from radiation and fallout. The story revolves around a group of treasure hunters...
+                </div>
+                <div class="actions">
+                    <a href="#" class="watch-btn watch-btn-netflix">NETFLIX</a>
+                    <a href="#" class="watch-btn watch-btn-amazon">AMAZON</a>
+                    <a href="#" class="watch-btn watch-btn-apple">APPLE TV</a>
+                    <div class="info-links">
+                        <a href="#" class="info-btn">Trailer</a>
+                        <a href="#" class="info-btn">RT 91%</a>
+                        <a href="#" class="info-btn">Wiki</a>
+                    </div>
+                </div>
+                <div class="bottom-meta">Sci-Fi • Action | Endurance Media | 105 min</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="notes">
+        <h2>Design Notes:</h2>
+        <ul>
+            <li><strong>CURRENT:</strong> Shows STREAM/RENT/BUY - generic actions, doesn't show WHERE to watch</li>
+            <li><strong>PROPOSED:</strong> Shows platform names (AMAZON, APPLE TV, NETFLIX) - clearer for users</li>
+            <li><strong>Button Logic:</strong> Collects all platforms from streaming/rent/buy, deduplicates (Amazon appears in both rent+buy = one button)</li>
+            <li><strong>Priority:</strong> Netflix > Amazon > Apple > Disney+ > Hulu > HBO Max > Others</li>
+            <li><strong>Max Buttons:</strong> Show top 3 platforms (configurable)</li>
+            <li><strong>Colors:</strong>
+                <ul>
+                    <li>Amazon = Orange (#ff9900) - matches Amazon branding</li>
+                    <li>Apple = Gray (#555) - matches Apple TV branding</li>
+                    <li>Netflix = Red (#e50914) - matches Netflix branding</li>
+                    <li>Disney+ = Blue (#113ccf) - matches Disney+ branding</li>
+                    <li>Others = Generic blue (#007aff)</li>
+                </ul>
+            </li>
+            <li><strong>Affiliate Links:</strong> All Amazon links include <code>?tag=yoursite-20</code>, Apple links include <code>?at=yourtoken</code></li>
+            <li><strong>Click Behavior:</strong> Clicking any button opens that platform's page where user can rent/buy/stream</li>
+        </ul>
+    </div>
+
+    <div class="notes" style="margin-top: 1rem; background: rgba(255,149,0,0.1); border-color: #ff9500;">
+        <h2>Alternative Option - Hybrid Approach:</h2>
+        <ul>
+            <li>Keep buttons labeled as actions: <code>RENT</code>, <code>BUY</code>, <code>STREAM</code></li>
+            <li>Add small platform label/icon above or inside button: <code>Amazon</code></li>
+            <li>Example: Button says "RENT" with small "via Amazon" text</li>
+            <li>Pros: Clearer action (rent vs buy), still shows platform</li>
+            <li>Cons: More complex UI, less space on small cards</li>
+        </ul>
+    </div>
+</body>
+</html>

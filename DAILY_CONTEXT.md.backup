@@ -75,21 +75,21 @@ See [AMENDMENT-036](PROJECT_CHARTER.md#amendment-036-rolling-daily-context) and 
 
 **End-of-session workflow:**
 
-1. **Run archive script:** `./ops/archive_daily_context.sh`
+1. **Run archive script:** `./scripts/archive_daily_context.sh`
    - Archives current context to `diary/YYYY-MM-DD.md` (immutable historical record)
    - Creates fresh DAILY_CONTEXT.md template for next session
    - Automatically uses UTC date for consistency
 
-2. **Preview changes (dry-run):** `./ops/archive_daily_context.sh --dry-run`
+2. **Preview changes (dry-run):** `./scripts/archive_daily_context.sh --dry-run`
    - Shows what would happen without executing
    - Useful for verifying before archiving
 
-3. **Force overwrite existing archive:** `./ops/archive_daily_context.sh --force`
+3. **Force overwrite existing archive:** `./scripts/archive_daily_context.sh --force`
    - Use when archive already exists for today
    - Overwrites existing diary entry (use with caution)
 
 4. **Troubleshooting:**
-   - **Permission error:** Run `chmod +x ops/archive_daily_context.sh`
+   - **Permission error:** Run `chmod +x scripts/archive_daily_context.sh`
    - **Missing file error:** Ensure you're in repository root directory
    - **Directory issues:** Script creates `diary/` automatically if missing
 
@@ -99,6 +99,78 @@ See [AMENDMENT-036](PROJECT_CHARTER.md#amendment-036-rolling-daily-context) and 
    - No token waste from loading stale information
 
 **See also:** [AMENDMENT-036](PROJECT_CHARTER.md#amendment-036-rolling-daily-context) and [AMENDMENT-037](PROJECT_CHARTER.md#amendment-037-daily-context-system-three-file-loading-pattern) for governance rules.
+
+**Current status:** Archive script created and ready to use
+[0;32m✅ Prerequisites validated[0m
+
+📅 Archive date: 2025-10-24 (UTC)
+
+📂 Checking diary directory...
+[0;34m📁 diary/ directory already exists[0m
+
+📦 Preparing to archive...
+[1;33m⚠️ Archive already exists: diary/2025-10-24.md[0m
+[0;31m❌ Error: Non-interactive environment detected and archive exists.[0m
+   Use --force to overwrite existing archive: diary/2025-10-24.md):**
+
+1. Run archive script: 🚀 Daily Context Archive Script
+===============================
+
+📋 Validating prerequisites...
+[0;32m✅ Prerequisites validated[0m
+
+📅 Archive date: 2025-10-24 (UTC)
+
+📂 Checking diary directory...
+[0;34m📁 diary/ directory already exists[0m
+
+📦 Preparing to archive...
+[1;33m⚠️ Archive already exists: diary/2025-10-24.md[0m
+[0;31m❌ Error: Non-interactive environment detected and archive exists.[0m
+   Use --force to overwrite existing archive: diary/2025-10-24.md
+   - Archives current context to 
+   - Creates fresh template for next session
+   - Use  to preview changes without executing
+
+2. **Testing:** 🚀 Daily Context Archive Script
+===============================
+
+📋 Validating prerequisites...
+[0;32m✅ Prerequisites validated[0m
+
+📅 Archive date: 2025-10-24 (UTC)
+
+📂 Checking diary directory...
+[0;34m📁 diary/ directory already exists[0m
+
+📦 Preparing to archive...
+[1;33m⚠️ Archive already exists: diary/2025-10-24.md[0m
+[0;34m📁 [DRY RUN] Would overwrite existing archive[0m
+[0;34m📁 [DRY RUN] Would create archive with metadata header at diary/2025-10-24.md[0m
+
+📄 Creating fresh template...
+[0;34m📁 [DRY RUN] Would create fresh DAILY_CONTEXT.md template[0m
+
+🎉 Archive Complete!
+===================
+
+📋 DRY RUN SUMMARY:
+   📦 Would archive: DAILY_CONTEXT.md → diary/2025-10-24.md
+   📄 Would create: Fresh DAILY_CONTEXT.md template
+
+   Run without --dry-run to execute these changes.
+
+✨ Ready for next development session! shows what would happen
+
+3. **Troubleshooting:**
+   - Permission error: 
+   - Missing file error: Ensure you're in repo root
+   - Directory issues: Script creates  automatically
+
+4. **Next session starts fresh:**
+   - AI reads new DAILY_CONTEXT.md template
+   - Historical context available in  if needed
+   - No token waste from stale information
 
 **Current status:** Archive script created and ready to use
 

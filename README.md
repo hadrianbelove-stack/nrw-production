@@ -82,7 +82,7 @@ The `launch_all.sh` script provides a menu-driven interface to launch all NRW to
 **Option 4: Launch All Services**
 - Starts public site AND admin panel simultaneously
 - Opens both in browser (site first, then admin)
-- Displays YouTube CLI instructions
+- Runs YouTube Playlist Manager --help and displays output
 - Press Ctrl+C to stop all services
 
 **Option 5: Exit**
