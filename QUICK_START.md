@@ -199,9 +199,7 @@ nrw-production/
 ```yaml
 api:
   tmdb_api_key: "your_key_here"
-
-watchmode:
-  api_key: "your_key_here"
+  watchmode_api_key: "your_key_here"
 
 agent_scraper:
   enabled: true

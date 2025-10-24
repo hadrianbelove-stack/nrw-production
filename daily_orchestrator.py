@@ -7,6 +7,7 @@ import subprocess
 import json
 import sys
 import os
+import yaml
 from datetime import datetime
 from pathlib import Path
 
@@ -129,6 +130,9 @@ class NRWOrchestrator:
             movies_with_wikipedia = [m for m in movies if m.get('wikipedia_link')]
             movies_with_trailers = [m for m in movies if m.get('trailer_link')]
 
+            # 7. Provider coverage sanity check
+            self.validate_provider_coverage(recent_movies)
+
             # Print validation summary
             print(f"✅ Quality check passed: {len(movies)} total, {len(recent_movies)} recent")
             print(f"   Data coverage: {len(movies_with_links)} with watch links, {len(movies_with_rt)} with RT scores")
@@ -136,6 +140,65 @@ class NRWOrchestrator:
 
         except Exception as e:
             raise Exception(f"Data quality validation failed: {e}")
+
+    def validate_provider_coverage(self, recent_movies):
+        """Validate that we have adequate provider coverage for recent movies"""
+        import yaml
+
+        # Load validation configuration
+        config = {}
+        if os.path.exists('config.yaml'):
+            with open('config.yaml', 'r') as f:
+                config = yaml.safe_load(f) or {}
+
+        validation_config = config.get('validation', {})
+        min_coverage = validation_config.get('min_provider_coverage', 10)
+
+        # Define search URL patterns that should be considered "no real link"
+        search_url_patterns = [
+            'google.com/search',
+            'amazon.com/s?',
+            'play.google.com/store/search',
+            'vudu.com/',
+            'microsoft.com/store/search',
+            'rottentomatoes.com/search',
+            'youtube.com/results?search_query'
+        ]
+
+        def has_real_watch_link(movie):
+            """Check if movie has at least one non-search deep link"""
+            watch_links = movie.get('watch_links', {})
+            for category in ['streaming', 'rent', 'buy']:
+                if category in watch_links:
+                    link_obj = watch_links[category]
+                    if isinstance(link_obj, dict) and link_obj.get('link'):
+                        link_url = link_obj['link']
+                        # Check if it's not a search URL
+                        if not any(pattern in link_url for pattern in search_url_patterns):
+                            return True
+            return False
+
+        # Count movies with real provider links
+        movies_with_real_links = [m for m in recent_movies if has_real_watch_link(m)]
+        coverage_count = len(movies_with_real_links)
+
+        print(f"🔍 Provider coverage check: {coverage_count}/{len(recent_movies)} recent movies have real watch links")
+
+        # Log some examples for debugging
+        if coverage_count > 0:
+            sample_movie = movies_with_real_links[0]
+            print(f"   Example: {sample_movie.get('title')} has links: {list(sample_movie.get('watch_links', {}).keys())}")
+
+        if coverage_count < min_coverage:
+            # Log details about missing coverage
+            movies_without_links = [m for m in recent_movies if not has_real_watch_link(m)]
+            print(f"❌ Movies without real watch links ({len(movies_without_links)}):")
+            for movie in movies_without_links[:5]:  # Show first 5
+                title = movie.get('title', 'Unknown')
+                watch_links = movie.get('watch_links', {})
+                print(f"   - {title}: {watch_links}")
+
+            raise Exception(f"Provider coverage too low: {coverage_count} < {min_coverage}. Weekly provider data may be stale or unavailable.")
 
     def get_statistics(self):
         """Extract statistics from tracking database and data.json"""
@@ -179,7 +242,79 @@ class NRWOrchestrator:
             stats['data_error'] = str(e)
 
         return stats
-    
+
+    def generate_newsletter_if_enabled(self):
+        """Generate newsletter if auto-generation is enabled in config"""
+        try:
+            # Load configuration
+            config = {}
+            if os.path.exists('config.yaml'):
+                with open('config.yaml', 'r') as f:
+                    config = yaml.safe_load(f) or {}
+
+            newsletter_config = config.get('newsletter', {})
+            auto_generate = newsletter_config.get('auto_generate', False)
+
+            if auto_generate:
+                print("\n📧 Generating weekly newsletter...")
+
+                # Get configuration values
+                days_back = newsletter_config.get('days_back', 7)
+                output_dir = newsletter_config.get('output_dir', 'newsletters/')
+                formats = newsletter_config.get('formats', ['markdown', 'html', 'text'])
+
+                # Build command
+                cmd_parts = ['python3', 'generate_newsletter.py']
+                cmd_parts.extend(['--days', str(days_back)])
+                cmd_parts.extend(['--output-dir', output_dir])
+
+                if formats:
+                    if len(formats) == 3 and 'markdown' in formats and 'html' in formats and 'text' in formats:
+                        cmd_parts.extend(['--format', 'all'])
+                    else:
+                        # Generate each format separately
+                        for fmt in formats:
+                            if fmt in ['markdown', 'html', 'text']:
+                                result = subprocess.run(
+                                    cmd_parts + ['--format', fmt],
+                                    capture_output=True,
+                                    text=True,
+                                    timeout=60
+                                )
+                                if result.returncode == 0:
+                                    print(f"✅ Generated {fmt} newsletter")
+                                    if result.stdout.strip():
+                                        for line in result.stdout.strip().split('\n')[-2:]:  # Last 2 lines
+                                            if line.strip():
+                                                print(f"   {line}")
+                                else:
+                                    print(f"⚠️ Newsletter generation failed for {fmt}: {result.stderr}")
+                        return
+
+                # Run single command for all formats
+                result = subprocess.run(
+                    cmd_parts,
+                    capture_output=True,
+                    text=True,
+                    timeout=60
+                )
+
+                if result.returncode == 0:
+                    print("✅ Newsletter generated successfully")
+                    if result.stdout.strip():
+                        # Show last few lines of output
+                        for line in result.stdout.strip().split('\n')[-3:]:
+                            if line.strip():
+                                print(f"   {line}")
+                else:
+                    print(f"⚠️ Newsletter generation failed: {result.stderr}")
+
+            else:
+                print("\n📧 Newsletter auto-generation disabled (set newsletter.auto_generate: true in config.yaml)")
+
+        except Exception as e:
+            print(f"⚠️ Newsletter generation error: {e}")
+
     def print_summary(self):
         """Print execution summary"""
         print("\n" + "=" * 50)
@@ -233,23 +368,19 @@ class NRWOrchestrator:
             # In CI, we're already in the repo root
             print(f"📂 Working directory: {Path.cwd()}")
         
-        # Pipeline steps - based on daily_update.sh
+        # Pipeline steps - using production discovery path
         pipeline = [
-            # Phase 1: Discovery + Monitoring
-            ("python3 movie_tracker.py daily",
-             "Discover new premieres and check for digital availability", True),
+            # Phase 1: Production Discovery (replaces legacy movie_tracker.py daily)
+            ("python3 generate_data.py --discover",
+             "Discover new premieres using production discovery", True),
 
-            # Phase 2: Enrichment (DISABLED - RT scraping now automatic in generate_data.py)
-            # ("python3 update_rt_data.py",
-            #  "Update Rotten Tomatoes links", False),
+            # Phase 1.5: Validate discovery results (fail if recall drops below threshold)
+            ("python3 ops/validate_discovery.py --days-back 7",
+             "Validate discovery against ground truth", False),  # Non-critical to avoid blocking automation
 
-            # Phase 3: Verification (DISABLED - date_verification.py archived to museum_legacy/)
-            # ("python3 date_verification.py",
-            #  "Verify premiere dates", False),
-
-            # Phase 4: Generate final display data
+            # Phase 2: Generate final display data with enrichment
             ("python3 generate_data.py",
-             "Generate data.json for website", True),
+             "Generate data.json for website with enriched links", True),
         ]
         
         # Execute pipeline
@@ -267,6 +398,9 @@ class NRWOrchestrator:
                     print(f"❌ Data quality validation failed: {e}")
                     self.print_summary()
                     sys.exit(1)
+
+        # Optional newsletter generation
+        self.generate_newsletter_if_enabled()
 
         # Check for changes and commit if needed
         if self.check_changes():

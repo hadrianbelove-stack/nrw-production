@@ -417,7 +417,21 @@ header h1 {
         font-size: 0.65rem;
         padding: 0.4rem;
     }
-}Cache buster: Sat Sep  6 18:27:30 PDT 2025
+}
+
+/* Bootstrap date indicator - shows approximate dates */
+.date-approximate {
+    opacity: 0.8;
+    font-style: italic;
+}
+
+/* Add cursor hint for tooltip */
+.date-approximate[title] {
+    cursor: help;
+    text-decoration: underline dotted;
+}
+
+Cache buster: Sat Sep  6 18:27:30 PDT 2025
 /* Updated: Sat Sep  6 18:28:50 PDT 2025 */
 /* Date marker fix: Sat Sep  6 18:32:24 PDT 2025 */
 /* Card alignment fix: Sat Sep  6 20:44:22 PDT 2025 */

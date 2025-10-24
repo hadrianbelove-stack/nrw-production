@@ -21,14 +21,15 @@ It exists to:
 - Function as an evolving constitution: equal parts production system and manifesto.  
 
 ## Core Rules
-1. **Immutable Charter** — `PROJECT_CHARTER.md` in repo root is the sacrosanct source. Updated only via amendments.  
-2. **Golden Snapshots** — Capture code state with tags and immutable archives for anti-drift.  
-3. **Session Workflow**  
-   - Steps are numbered (7a, 7b…).  
-   - Every block declares run condition (*Run now*, *Wait*, *Run in parallel*).  
-   - No vague phrases.  
-   - Optional steps list pros/cons.  
+1. **Immutable Charter** — `PROJECT_CHARTER.md` in repo root is the sacrosanct source. Updated only via amendments.
+2. **Golden Snapshots** — Capture code state with tags and immutable archives for anti-drift.
+3. **Session Workflow**
+   - Steps are numbered (7a, 7b…).
+   - Every block declares run condition (*Run now*, *Wait*, *Run in parallel*).
+   - No vague phrases.
+   - Optional steps list pros/cons.
    - End each batch with **⚡ To keep moving** summary.
+4. **Tactical Planning** — `IMPLEMENTATION_ROADMAP.md` serves as the canonical tactical plan for prioritized implementation work.
 
 ## Current Config
 - **Runtime entry:** `index.html` loads `assets/styles.css` and `assets/app.js`, then initializes the wall.  
@@ -124,9 +125,10 @@ It exists to:
 - Present ≥2–3 distinct options for significant problems. Rate 1–10. Give pros/cons. Recommend best but show alternatives for audit.
 
 ### AMENDMENT-025: Database Update Cadence
-- Daily requirement: Run `python movie_tracker.py check` to detect provider availability
-- Weekly: Run `python movie_tracker.py bootstrap` to add new theatrical releases  
-- Before handoff: check → generate_data.py → verify data.json is current
+- Daily automation: `generate_data.py` handles both discovery and provider checking
+- Discovery source: `generate_data.py` is the single system for movie discovery
+- Legacy: `museum_legacy/legacy_movie_tracker.py` is for historical reference only
+- Before handoff: generate_data.py → verify data.json is current
 - Automation goal: Daily cron/scheduler until GitHub Actions restored
 
 ### AMENDMENT-FLATSHOT: Single-Shot Governance Updates
@@ -189,7 +191,7 @@ If GitHub Actions automation fails or you need to run pipeline manually:
 
 ```bash
 # Check for new digital releases
-python3 movie_tracker.py check
+python3 generate_data.py  # Now handles discovery + provider checking
 
 # Regenerate data.json
 python3 generate_data.py
@@ -369,7 +371,7 @@ The `watch_links` field in `data.json` uses a **three-category structure** repre
 
 ### AMENDMENT-032: Runtime vs Pipeline Hierarchy
 - Root: /index.html, /data.json, /assets/{app.js,styles.css}, /PROJECT_CHARTER.md, /PROJECT_LOG.md, /DAILY_CONTEXT.md, /launch_NRW.sh
-- Root scripts: {movie_tracker.py,generate_data.py,wikidata_scraper.py,wikipedia_scraper.py,rt_scraper.py}
+- Root scripts: {generate_data.py} (primary), {museum_legacy/legacy_movie_tracker.py} (historical reference)
 - Data and caches: /overrides/{wikipedia_overrides.json,rt_overrides.json}, /wikipedia_cache.json, /rt_cache.json, /movie_tracking.json
 - Ops: /ops/{archive_daily_context.sh,health_check.py}
 - Archives: /diary/ (daily context archives), /museum_legacy/
@@ -382,8 +384,8 @@ The `watch_links` field in `data.json` uses a **three-category structure** repre
 - No genre filter UI in MVP.
 
 ### AMENDMENT-034: Daily Pipeline Contract
-- movie_tracker.py check → updates provider and digital_date.
-- generate_data.py → enriches and writes data.json using AMENDMENT‑030.
+- generate_data.py → handles discovery, provider checking, and enrichment, writes data.json using AMENDMENT‑030.
+- Legacy: museum_legacy/legacy_movie_tracker.py → historical reference only.
 - ops/health_check.py → asserts schema, non‑null links where resolvable, and SSOT invariants.
 - daily_update.sh runs the above, then commits.
 
@@ -1361,3 +1363,397 @@ All edits saved to `movie_tracking.json` with flags:
 - YouTube integration: `youtube_playlist_manager.py` (lines 573-662 for custom playlists)
 - Setup guide: `YOUTUBE_PLAYLIST_SETUP.md`
 - Related amendments: AMENDMENT-038 (Watchmode API), AMENDMENT-044 (Auth token management)
+
+### AMENDMENT-046: Remove TMDB vote_count Filter for Discovery
+
+**Date:** 2025-10-21
+
+**Context:**
+Discovery rate was too low (2 movies in 3 days). Analysis revealed the `vote_count.gte: 1` filter in `movie_tracker.py` was blocking brand-new releases with 0 TMDB votes.
+
+**Decision:**
+Remove the vote_count filter from both `discover_new_premieres` and `bootstrap` methods to allow discovery of movies with 0 votes.
+
+**Rationale:**
+1. **Vote count is unreliable for new releases:** Movies often have 0 votes for 1-3 days after premiere
+2. **Provider availability is the real filter:** Movies without distribution deals never get providers, so they never appear on the wall
+3. **90-day window is based on digital_date:** Long premiere-to-provider gaps don't cause movies to be missed
+4. **Empirical approach:** Start wider, narrow later if needed based on actual results
+
+**Implementation:**
+- Modified: `movie_tracker.py` line 50 (discover_new_premieres method)
+- Modified: `movie_tracker.py` line 97 (bootstrap method)
+- Kept: `sort_by: 'primary_release_date.desc'` (chronological order)
+- Kept: All other filters unchanged (date range, pagination)
+
+**Expected impact:**
+- Discovery rate: 10-20 movies/day (5-10x increase)
+- Movies becoming digital: 2-5/day (unchanged)
+- Total tracking: 600-900 movies after 1 month
+- Movies on wall: 250-350 (unchanged, limited by 90-day window)
+
+**Testing plan:**
+- Day 1: Run discovery, document new movie count
+- Day 2-3: Monitor discovery rates
+- Day 4: Calculate 3-day average, assess quality
+- Decision point: Keep filter removed or add alternative filters
+
+**Alternative filters considered (rejected for now):**
+- `popularity.desc` sorting - User prefers chronological
+- `region: 'US'` filter - Would reduce results (user wants wider discovery)
+- `with_release_type: '2|3'` - Would reduce results (user wants wider discovery)
+
+**Monitoring criteria:**
+- If spam/fake movies appear: Consider adding `vote_average.gte: 4.0` or popularity threshold
+- If too many irrelevant movies: Consider adding region or release_type filters
+- If discovery rate is still low: Investigate TMDB API parameters or date range
+
+**Success criteria:**
+- 3-day average discovery: 10-20 movies/day
+- Quality maintained: No spam movies appearing on wall
+- Provider filtering working: Only movies with distribution deals appear on wall
+
+**Supersedes:** None (new amendment)
+
+**Status:** ✅ Implemented, ⏳ Testing in progress
+
+### AMENDMENT-047: Production Discovery Architecture
+
+**Date:** 2025-10-22
+**Severity:** Critical
+
+**Problem:** Discovery system was fragmented between legacy `movie_tracker.py` and `generate_data.py`, leading to inconsistent behavior and maintenance complexity.
+
+**Solution:** Complete consolidation to production discovery architecture.
+
+**Production Flow (MANDATORY):**
+```
+daily_orchestrator.py
+  ↓
+generate_data.py --discover  (with bounded timeouts, retry logic, structured diagnostics)
+  ↓
+generate_data.py  (enrichment phase)
+```
+
+**Legacy System Status:**
+- `movie_tracker.py` → **ARCHIVED** to `museum_legacy/legacy_movie_tracker.py`
+- Use ONLY for historical reference and debugging
+- **NEVER use in production pipeline**
+
+**Discovery Features (Implemented):**
+- Bounded timeouts: (10s connect, 30s read) with 3 retries
+- Exponential backoff with jitter for rate limiting
+- Structured diagnostics: per-page counts, duplicate tracking, sample titles
+- Configuration-driven: Uses `config.yaml` `discovery` section only
+- Daily metrics: Saves to `metrics/daily.jsonl` for 3-day baselining
+- Debug mode: `--debug` flag for detailed logging
+
+**Configuration:**
+- Discovery settings: `config.yaml` → `discovery` section
+- Deprecated: `api.max_pages_daily` (use `discovery.max_pages`)
+- TLS fix: `urllib3<2` pinned in `requirements.txt`
+
+**Baseline Monitoring:**
+- Target: 3-day average discovery rate of 10-20 movies/day
+- Metrics script: `scripts/baseline_metrics.py`
+- Daily tracking: discovery count, newly-digital count, total tracking/available
+
+**Testing:**
+- Discovery: `python3 generate_data.py --discover --debug`
+- Metrics: `python3 scripts/baseline_metrics.py`
+- Full pipeline: `python3 daily_orchestrator.py`
+
+**Supersedes:** AMENDMENT-046 (adds production implementation)
+
+**Status:** ✅ Implemented and documented
+
+### AMENDMENT-036: Implementation Roadmap Discipline (2025-10-14)
+
+**Rationale:** The project requires disciplined tactical planning to systematically address prioritized issues and maintain implementation continuity across sessions.
+
+**Rules Established:**
+
+1. **Canonical Tactical Plan:** `IMPLEMENTATION_ROADMAP.md` serves as the single source of truth for all planned implementation work, complementing `PROJECT_CHARTER.md` (governance) and `PROJECT_LOG.md` (historical record).
+
+2. **Update Requirements:** The roadmap must be updated:
+   - When new issues are identified and prioritized
+   - When implementation decisions are made
+   - When status changes occur (Not Started → In Progress → Completed)
+   - When dependencies or priorities shift
+
+3. **Relationship to PROJECT_LOG.md:** The roadmap focuses on future work (what to do next), while PROJECT_LOG.md records completed work (what was done). Both reference each other for continuity.
+
+4. **Priority Discipline:** Issues must be categorized by impact and urgency (Critical, High, Medium, Low, Future) with clear criteria for each level.
+
+5. **Session Integration:** Each session should:
+   - Review roadmap status at start
+   - Update roadmap with new decisions and progress
+   - Reference specific roadmap IDs in commit messages and log entries
+
+This amendment aligns with AMENDMENT-001 (numbering discipline), AMENDMENT-006 (user safeguards), AMENDMENT-007 (session documentation), and FLATSHOT (consolidated governance updates).
+
+### AMENDMENT-048: Watch Links Agent Search and Manual Override System
+
+**Date:** 2025-10-22
+**Severity:** Enhancement
+
+**Problem:** Watchmode API has coverage gaps for very new releases (~30-50% of October 2025 movies), resulting in Google search fallbacks instead of direct deep links.
+
+**Solution:** Two-tier enhancement: manual overrides + optional agent search.
+
+**Manual Override System (Tier 1 - IMPLEMENTED):**
+- **File:** `overrides/watch_links_overrides.json`
+- **Structure:** `{"tmdb_id": {"streaming": {...}, "rent": {...}, "buy": {...}}}`
+- **Priority:** Highest (checked before cache and Watchmode API)
+- **Use Case:** High-priority movies, Watchmode gaps, platform-specific corrections
+- **Workflow:** Manually find deep link → Add to overrides → Regenerate data.json
+- **Integration:** Admin panel can edit this file (future enhancement)
+
+**Agent Search System (Tier 2 - OPTIONAL):**
+- **File:** `streaming_platform_scraper.py`
+- **Class:** `StreamingPlatformScraper`
+- **Platforms Supported:** Amazon Prime Video, Apple TV (Netflix/Disney+ skipped due to anti-bot)
+- **Trigger:** When Watchmode API returns no data AND provider is Amazon/Apple TV
+- **Process:** Search platform → Extract deep link → Cache with `source: 'agent_search'`
+- **Performance:** ~5-10 seconds per movie, ~5-6 minutes for full regeneration
+- **Maintenance:** Requires selector updates when platforms change UI (~1-2 hours/month)
+
+**Complete Fallback Hierarchy:**
+1. Manual watch links from `movie_tracking.json` - Highest priority
+2. Manual overrides (`overrides/watch_links_overrides.json`) - Second priority
+3. Admin overrides (`admin/watch_link_overrides.json`) - Backward compatibility
+4. Cache (`cache/watch_links_cache.json`) - Third priority
+5. Watchmode API - Fourth priority
+6. Agent search (Amazon/Apple TV only) - Fifth priority (optional)
+7. Platform search URLs - Sixth priority (fallback)
+8. Amazon search - Ultimate fallback (default)
+
+**Platform Deep Link Formats:**
+- **Amazon:** `https://www.amazon.com/gp/video/detail/{ASIN}` or `https://watch.amazon.com/detail?gti=amzn1.dv.gti.{id}`
+- **Apple TV:** `https://tv.apple.com/us/movie/{slug}/umc.cmc.{id}`
+- **Netflix:** `https://www.netflix.com/title/{netflix_id}` (agent search not supported)
+
+**Cache Source Types:**
+- `manual_tracking`: Deep link from movie_tracking.json manual entry
+- `manual_override`: Deep link from overrides/watch_links_overrides.json
+- `watchmode_api`: Deep link from Watchmode API
+- `agent_search`: Deep link from Selenium scraping (if implemented)
+- `tmdb_fallback`: Platform search URL built from TMDB provider data
+
+**Implementation Status:**
+- ✅ Manual override system (simple, reliable)
+- ✅ Agent search infrastructure (`streaming_platform_scraper.py`)
+- ✅ Integration into fallback hierarchy
+- ⏳ Admin panel integration (future enhancement)
+
+**Usage Guidelines:**
+
+**For Manual Overrides:**
+- Add ~5-10 entries per day for movies lacking Watchmode data
+- Verify links work before adding to overrides
+- Use for high-priority releases or platform-specific corrections
+
+**For Agent Search (if enabled):**
+- Runs automatically during `generate_data.py`
+- Only for Amazon and Apple TV (reliable platforms)
+- Results are cached (no re-scraping)
+- Graceful degradation if Selenium unavailable
+
+**Configuration:**
+- Agent search is optional (import handled gracefully)
+- No configuration required for manual overrides
+- Chrome WebDriver required for agent search functionality
+
+**Supersedes:** No previous amendment (new functionality)
+
+**Status:** ✅ Implemented and documented
+
+## AMENDMENT-049: Bootstrap Date Accuracy & Data Quality Policy (2025-10-22)
+
+**Context:** On 2025-09-06, the legacy movie tracker bootstrap process marked 50+ movies as "available" with `digital_date: 2025-09-06` (discovery date) instead of their actual digital release dates. This occurred because the legacy system set `digital_date = datetime.now()` when providers were first detected.
+
+**Problem:** Movies with premiere dates in August 2025 showing September 6 digital dates are clearly inaccurate. This affects timeline accuracy and user trust.
+
+**Solution Implemented:**
+
+1. **Metadata Flagging:**
+   - All bootstrap movies marked with `bootstrap_date: true` flag in `movie_tracking.json`
+   - Flag propagated to `data.json` for frontend display
+   - Visual indicator ("~" prefix or tooltip) shown on website
+   - Admin panel highlights bootstrap movies for review
+
+2. **Manual Correction Tools:**
+   - Admin panel `/update-date` endpoint sets `manually_corrected: true`
+   - `date_verification.py` provides interactive and batch correction tools
+   - CSV import for bulk corrections after manual research
+   - Corrected movies lose `bootstrap_date` flag
+
+3. **Prevention:**
+   - Current discovery system (integrated into `generate_data.py`) uses TMDB's `release_date` field
+   - No longer sets `digital_date = today` when providers detected
+   - Future movies will have accurate dates from TMDB
+
+**Data Quality Policy:**
+
+- **Transparency:** Bootstrap dates are flagged, not hidden
+- **Gradual Correction:** High-profile titles corrected manually over time
+- **Acceptable Uncertainty:** Low-profile titles may retain approximate dates
+- **Audit Trail:** `manually_corrected` flag tracks admin interventions
+- **Future Accuracy:** Prevention measures ensure new data is accurate
+
+**Files Modified:**
+- `movie_tracking.json` - Added `bootstrap_date` flag to affected movies
+- `generate_data.py` - Propagates bootstrap metadata to display data
+- `assets/app.js` - Displays visual indicator for bootstrap dates
+- `assets/styles.css` - Styles bootstrap date indicator
+- `admin.py` - Shows bootstrap movies in admin panel
+- `date_verification.py` - Implements manual correction tools
+- `scripts/flag_bootstrap_dates.py` - One-time flagging script
+
+**Rationale:** Automated retroactive correction (via Reelgood scraping) proved unreliable. Manual correction of high-value titles is more practical than hiding 50+ movies or attempting fragile web scraping. Transparency about data quality builds user trust.
+
+**Related:** See AMENDMENT-027 (Bootstrap Data Integrity) for original bootstrap documentation.
+
+**Status:** ✅ Implemented and documented
+
+## AMENDMENT-050: Review System for Newsletter Content (2025-10-22)
+
+**Context:** Newsletter generation requires editorial content - custom reviews written by the curator to highlight notable releases and provide context beyond metadata.
+
+**Implementation:**
+
+1. **Review Storage:**
+   - Reviews stored in `admin/movie_reviews.json`
+   - Schema: `{movie_id: {review, author, rating, featured_in_newsletter, added_date, last_modified}}`
+   - Follows admin override pattern (similar to hidden/featured movies)
+
+2. **Admin Panel UI:**
+   - Review section added to each movie card in admin panel
+   - Fields: review text (textarea), author, rating (0-5), featured flag
+   - Separate "Save Review" and "Delete Review" buttons
+   - Review statistics in header (count of reviewed movies)
+   - Filter button to show only reviewed movies
+
+3. **Backend Routes:**
+   - `/update-review` - POST endpoint to create/update reviews
+   - `/delete-review` - POST endpoint to delete reviews
+   - Atomic writes with backup management
+   - Triggers data.json regeneration after changes
+
+4. **Data Integration:**
+   - `generate_data.py` loads reviews at initialization
+   - Reviews included in `data.json` for each movie
+   - Newsletter generator can access review data
+
+5. **Review Workflow:**
+   - Curator writes reviews in admin panel
+   - Reviews saved to `admin/movie_reviews.json`
+   - Data regeneration includes reviews in `data.json`
+   - Newsletter generator features reviewed movies prominently
+   - "Featured in newsletter" flag highlights top picks
+
+**Schema Example:**
+```json
+{
+  "1234567": {
+    "review": "A haunting meditation on memory and loss...",
+    "author": "Hadrian Belove",
+    "rating": 4.5,
+    "featured_in_newsletter": true,
+    "added_date": "2025-10-22T14:30:00Z",
+    "last_modified": "2025-10-22T14:30:00Z"
+  }
+}
+```
+
+**Files Modified:**
+- `admin/movie_reviews.json` - Review storage (new file)
+- `admin.py` - Review CRUD routes
+- `admin/templates/index.html` - Review UI
+- `admin/static/js/admin.js` - Review JavaScript handlers
+- `generate_data.py` - Review data integration
+
+**Rationale:** Editorial content is essential for newsletter value proposition. Reviews provide context, recommendations, and personality that distinguish the newsletter from automated aggregators. The inline admin UI keeps the workflow simple - curators can write reviews while browsing the movie list.
+
+**Related:** Unblocks HIGH-002 (Newsletter Export) in `IMPLEMENTATION_ROADMAP.md`.
+
+## AMENDMENT-051: Multi-Format Newsletter Generator (2025-10-22)
+
+**Context:** With the review system in place (AMENDMENT-050), the project needs a newsletter generator to distribute weekly updates to subscribers. The generator must support multiple output formats for different distribution channels (Substack, email, social media).
+
+**Implementation:**
+
+1. **Script: `generate_newsletter.py`**
+   - Standalone Python script (no external dependencies)
+   - Reads `data.json` and `admin/movie_reviews.json`
+   - Filters movies by configurable date range (default 7 days)
+   - Groups movies by streaming platform (not genre)
+   - Features reviewed movies prominently
+
+2. **Output Formats:**
+   - **Markdown** (`newsletter_YYYY-MM-DD.md`): Substack/blog-ready format
+   - **HTML** (`newsletter_YYYY-MM-DD.html`): Email-friendly with inline styles
+   - **Plain Text** (`newsletter_YYYY-MM-DD.txt`): Simple list for quick sharing
+
+3. **Newsletter Sections:**
+   - **Hero Review**: Featured movie with full review (first movie with `featured_in_newsletter: true`)
+   - **This Week's Highlights**: 3-5 reviewed movies with excerpts
+   - **By Platform**: Movies grouped by streaming service (Netflix, Amazon, Apple TV+, Disney+, Hulu, Max, etc.)
+   - **Quick List**: Alphabetical reference of all movies with RT scores
+
+4. **CLI Interface:**
+   ```bash
+   python3 generate_newsletter.py [--days N] [--format FORMAT] [--output-dir DIR]
+   ```
+   - `--days`: Number of days to look back (default 7)
+   - `--format`: Output format (markdown, html, text, all)
+   - `--output-dir`: Output directory (default current directory)
+
+5. **Platform Grouping Logic:**
+   - Extracts platforms from movie `providers` object (streaming, rent, buy)
+   - Normalizes platform names ("Amazon Video" → "Amazon Prime Video")
+   - Sorts platforms by movie count (most popular first)
+   - Limits to top 10 movies per platform for readability
+
+6. **Review Integration:**
+   - Loads reviews from `admin/movie_reviews.json`
+   - Matches reviews to movies by ID
+   - Prioritizes movies with `featured_in_newsletter: true` for Hero Review
+   - Includes review text, author, rating in all formats
+   - Gracefully handles missing reviews (newsletter works without them)
+
+7. **Error Handling:**
+   - Fatal error if `data.json` missing (can't generate without data)
+   - Warning if `admin/movie_reviews.json` missing (continues without reviews)
+   - Skips movies with malformed dates (logs warning)
+   - Uses defaults for missing fields ("Unknown Director", "No synopsis")
+   - Prints helpful message if no movies in date range
+
+**Design Decisions:**
+
+- **New script vs. modifying existing:** Created new `generate_newsletter.py` instead of modifying `substack_newsletter_generator.py` because requirements differ significantly (platform grouping vs. genre, review integration, multiple formats)
+- **Platform grouping vs. genre:** Aligns with user's "where to watch" focus and streaming-first audience
+- **Three formats:** Supports different distribution channels (Substack, email, social media)
+- **Hero Review section:** Showcases editorial content and incentivizes review writing
+- **No external dependencies:** Uses only Python standard library for easy deployment
+
+**Workflow Integration:**
+
+1. Curator writes reviews in admin panel (`python3 admin.py`)
+2. Marks top pick as "featured in newsletter"
+3. Runs `python3 generate_newsletter.py` to generate all formats
+4. Copies markdown to Substack or HTML to email client
+5. Distributes to subscribers
+
+**Files Created:**
+- `generate_newsletter.py` - Newsletter generator script (~600-800 lines)
+
+**Files Modified:**
+- `README.md` - Added newsletter generation documentation
+- `IMPLEMENTATION_ROADMAP.md` - Updated HIGH-002 status to resolved
+
+**Rationale:** Multi-format output supports different distribution channels without requiring multiple tools. Platform grouping helps users find movies on their preferred services. Review integration provides editorial value beyond automated aggregation. Configurable date range enables both weekly and monthly newsletters.
+
+**Related:** Completes HIGH-002 (Newsletter Export) in `IMPLEMENTATION_ROADMAP.md`. Depends on AMENDMENT-050 (Review System).
+
+**Status:** ✅ Implemented and documented

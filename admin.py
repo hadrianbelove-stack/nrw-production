@@ -8,6 +8,7 @@ from flask import Flask, render_template, request, jsonify, redirect, url_for
 import json
 import os
 import subprocess
+import sys
 from datetime import datetime
 import yaml
 import glob
@@ -16,6 +17,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 import traceback
 from typing import Dict, List, Optional, Union, Any, Tuple
+import requests
 
 app = Flask(__name__,
             template_folder='admin/templates',
@@ -26,7 +28,30 @@ from flask_httpauth import HTTPBasicAuth
 
 auth = HTTPBasicAuth()
 
-# Load credentials from environment or use defaults (change in production!)
+# Production environment check and credential enforcement
+def check_production_environment():
+    """Enforce secure credentials in production environment"""
+    is_production = (
+        os.environ.get('FLASK_ENV') == 'production' or
+        os.environ.get('ENV') == 'production' or
+        not os.environ.get('FLASK_DEBUG', '').lower() in ('true', '1', 'yes')
+    )
+
+    if is_production:
+        if not os.environ.get('ADMIN_USERNAME'):
+            print("ERROR: ADMIN_USERNAME environment variable must be set in production")
+            exit(1)
+        if not os.environ.get('ADMIN_PASSWORD'):
+            print("ERROR: ADMIN_PASSWORD environment variable must be set in production")
+            exit(1)
+        if os.environ.get('ADMIN_PASSWORD') == 'changeme':
+            print("ERROR: Default password 'changeme' is not allowed in production")
+            exit(1)
+
+# Check environment at startup
+check_production_environment()
+
+# Load credentials from environment or use defaults (only in development!)
 ADMIN_USERNAME = os.environ.get('ADMIN_USERNAME', 'admin')
 ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'changeme')
 
@@ -41,6 +66,7 @@ DATA_FILE = 'data.json'  # Root directory - production display data
 HIDDEN_FILE = 'admin/hidden_movies.json'  # Admin overrides
 FEATURED_FILE = 'admin/featured_movies.json'  # Admin overrides
 WATCH_LINK_OVERRIDES_FILE = 'admin/watch_link_overrides.json'
+REVIEWS_FILE = 'admin/movie_reviews.json'
 
 
 def load_json(filepath: str, default: Optional[Union[dict, list]] = None) -> Union[dict, list]:
@@ -119,7 +145,6 @@ def get_poster_url(tmdb_id: Union[str, int]) -> Optional[str]:
         return None
 
     try:
-        import requests
         response = requests.get(
             f"https://api.themoviedb.org/3/movie/{tmdb_id}",
             params={"api_key": api_key},
@@ -130,12 +155,15 @@ def get_poster_url(tmdb_id: Union[str, int]) -> Optional[str]:
             poster_path = data.get('poster_path')
             if poster_path:
                 return f"https://image.tmdb.org/t/p/w300{poster_path}"
-    except requests.Timeout:
-        logger.warning(f"Timeout fetching poster for TMDB ID {tmdb_id}")
+        else:
+            logger.warning(f"TMDB API returned status {response.status_code} for movie ID {tmdb_id}")
+            return None
+    except (requests.Timeout, requests.RequestException) as e:
+        logger.warning(f"Request error fetching poster for TMDB ID {tmdb_id}: {str(e)}")
         return None
-    except:
-        pass
-    return None
+    except Exception as e:
+        logger.warning(f"Unexpected error fetching poster for TMDB ID {tmdb_id}: {str(e)}")
+        return None
 
 def save_json(filepath: str, data: Union[dict, list]) -> None:
     """Save data to JSON file.
@@ -321,6 +349,7 @@ def index() -> str:
     data = load_json(DATA_FILE, {})
     hidden = load_json(HIDDEN_FILE, [])
     featured = load_json(FEATURED_FILE, [])
+    reviews = load_json(REVIEWS_FILE, default={})
 
     # Handle different data shapes from data.json
     if data and isinstance(data, dict) and 'movies' in data and isinstance(data['movies'], list):
@@ -362,9 +391,10 @@ def index() -> str:
         if movie_copy.get('poster') and not movie_copy.get('poster_url'):
             movie_copy['poster_url'] = movie_copy['poster']
 
-        # Fetch from TMDB only if both poster and poster_url are missing and id exists
-        if not movie_copy.get('poster_url') and not movie_copy.get('poster') and movie_copy.get('id'):
-            movie_copy['poster_url'] = get_poster_url(movie_copy['id'])
+        # Skip synchronous TMDB poster fetching to avoid slowing admin page
+        # Poster URLs should be precomputed in generate_data.py or fetched client-side
+        # if not movie_copy.get('poster_url') and not movie_copy.get('poster') and movie_copy.get('id'):
+        #     movie_copy['poster_url'] = get_poster_url(movie_copy['id'])
 
         # Normalize rt_score to integer for template comparisons
         if movie_copy.get('rt_score'):
@@ -373,6 +403,13 @@ def index() -> str:
                 movie_copy['rt_score'] = int(rt_score_str)
             except (ValueError, TypeError):
                 movie_copy['rt_score'] = None
+
+        # Add bootstrap date and manually corrected flags for display
+        movie_copy['bootstrap_date'] = movie_copy.get('bootstrap_date', False)
+        movie_copy['manually_corrected'] = movie_copy.get('manually_corrected', False)
+
+        # Include review data in movie normalization
+        movie_copy['review'] = reviews.get(movie_id, {})
 
         processed_movies[movie_id] = movie_copy
 
@@ -393,16 +430,26 @@ def index() -> str:
         or not movie.get('country')
     )
 
+    # Calculate bootstrap movies count
+    bootstrap_count = sum(1 for movie in processed_movies.values() if movie.get('bootstrap_date'))
+
+    # Calculate reviewed movies count (only for displayed movies)
+    processed_movie_ids = set(processed_movies.keys())
+    reviewed_count = len([movie_id for movie_id in reviews.keys() if movie_id in processed_movie_ids])
+
 
     return render_template(
         'index.html',
         movies=processed_movies,
         hidden=hidden,
         featured=featured,
+        reviews=reviews,
         visible_count=visible_count,
         hidden_count=hidden_count,
         featured_count=featured_count,
-        missing_data_count=missing_data_count
+        missing_data_count=missing_data_count,
+        bootstrap_count=bootstrap_count,
+        reviewed_count=reviewed_count
     )
 
 """
@@ -520,8 +567,10 @@ def toggle_status() -> dict:
         elif not value and movie_id in status_list:
             status_list.remove(movie_id)
 
-        # Save file
-        save_json(file_path, status_list)
+        # Save file with atomic write
+        # Ensure admin directory exists
+        os.makedirs('admin', exist_ok=True)
+        safe_write_json(file_path, status_list)
 
         # Log action
         verb_true, verb_false = STATUS_VERBS[status_type]
@@ -564,7 +613,17 @@ def update_date() -> dict:
     data = request.json
     movie_id = data.get('movie_id')
     new_date = data.get('digital_date')
-    
+
+    # Validate ISO date format before proceeding
+    if new_date:
+        try:
+            datetime.strptime(new_date, '%Y-%m-%d')
+        except ValueError:
+            return jsonify({
+                'success': False,
+                'error': 'Digital date must be in ISO format YYYY-MM-DD (e.g., 2025-10-20)'
+            })
+
     # Update in tracking database
     try:
         with open('movie_tracking.json', 'r') as f:
@@ -580,7 +639,7 @@ def update_date() -> dict:
             # Regenerate data.json from movie_tracking.json
             try:
                 result = subprocess.run(
-                    ['python3', 'generate_data.py'],
+                    [sys.executable, 'generate_data.py'],
                     capture_output=True,
                     text=True,
                     timeout=60  # 1 minute timeout
@@ -603,6 +662,229 @@ def update_date() -> dict:
     
     return jsonify({'success': False, 'error': 'Movie not found'})
 
+@app.route('/update-review', methods=['POST'])
+@auth.login_required
+def update_review() -> dict:
+    """Update or create a movie review.
+
+    Updates review data in admin/movie_reviews.json and triggers data.json regeneration.
+
+    Authentication:
+        Requires HTTP Basic Auth (@auth.login_required)
+
+    Request JSON:
+        {
+            "movie_id": str,  # Required TMDB movie ID
+            "review_text": str,  # Required review content
+            "author": str,  # Optional author name (default "Admin")
+            "rating": float,  # Optional rating 0-5
+            "featured_in_newsletter": bool  # Optional newsletter flag (default false)
+        }
+
+    Returns:
+        JSON response:
+        {
+            "success": bool,
+            "message": str,  # On success
+            "error": str  # On failure
+        }
+
+    Validation:
+        - movie_id: Must exist in tracking data
+        - review_text: Required, non-empty, max 5000 chars
+        - rating: Optional, must be 0-5 if provided
+        - author: Optional string
+        - featured_in_newsletter: Optional boolean
+    """
+    try:
+        data = request.json
+        movie_id = data.get('movie_id')
+        review_text = data.get('review_text', '').strip()
+        author = data.get('author', 'Admin').strip() or 'Admin'
+        rating = data.get('rating')
+        featured = data.get('featured_in_newsletter', False)
+
+        # Validation
+        if not movie_id:
+            return jsonify({'success': False, 'error': 'Movie ID required'})
+
+        movie_id = str(movie_id).strip()
+        if not movie_id:
+            return jsonify({'success': False, 'error': 'Movie ID cannot be empty'})
+
+        if not review_text:
+            return jsonify({'success': False, 'error': 'Review text required'})
+
+        if len(review_text) > 5000:
+            return jsonify({'success': False, 'error': 'Review text too long (max 5000 characters)'})
+
+        # Validate rating if provided
+        if rating is not None:
+            try:
+                rating = float(rating)
+                if rating < 0 or rating > 5:
+                    return jsonify({'success': False, 'error': 'Rating must be between 0 and 5'})
+            except (ValueError, TypeError):
+                return jsonify({'success': False, 'error': 'Rating must be a number between 0 and 5'})
+
+        # Verify movie exists in tracking data
+        try:
+            with open('movie_tracking.json', 'r') as f:
+                tracking_data = json.load(f)
+            if movie_id not in tracking_data.get('movies', {}):
+                return jsonify({'success': False, 'error': f'Movie {movie_id} not found in tracking database'})
+            movie_title = tracking_data['movies'][movie_id].get('title', f'Movie {movie_id}')
+        except FileNotFoundError:
+            return jsonify({'success': False, 'error': 'movie_tracking.json not found'})
+
+        # Load existing reviews
+        reviews = load_json(REVIEWS_FILE, default={})
+
+        # Create review entry
+        now = datetime.now().isoformat()
+        review_entry = {
+            'review': review_text,
+            'author': author,
+            'featured_in_newsletter': featured,
+            'last_modified': now
+        }
+
+        if rating is not None:
+            review_entry['rating'] = rating
+
+        # Preserve added_date if review already exists, otherwise set it
+        if movie_id in reviews and 'added_date' in reviews[movie_id]:
+            review_entry['added_date'] = reviews[movie_id]['added_date']
+        else:
+            review_entry['added_date'] = now
+
+        # Update reviews
+        reviews[movie_id] = review_entry
+
+        # Save atomically
+        os.makedirs('admin', exist_ok=True)
+        safe_write_json(REVIEWS_FILE, reviews)
+
+        # Log action
+        logger.info(f"Review saved for movie {movie_id} ({movie_title}) by {author}")
+
+        # Trigger data regeneration
+        try:
+            result = subprocess.run(
+                [sys.executable, 'generate_data.py'],
+                capture_output=True,
+                text=True,
+                timeout=60
+            )
+            if result.returncode != 0:
+                logger.warning(f"Review saved for movie {movie_id} but regeneration failed: {result.stderr}")
+                return jsonify({
+                    'success': True,
+                    'message': 'Review saved but data regeneration failed',
+                    'warning': result.stderr
+                })
+        except Exception as e:
+            logger.warning(f"Review saved for movie {movie_id} but regeneration failed: {str(e)}")
+            return jsonify({
+                'success': True,
+                'message': f'Review saved but regeneration failed: {str(e)}'
+            })
+
+        return jsonify({
+            'success': True,
+            'message': 'Review saved successfully'
+        })
+
+    except Exception as e:
+        logger.error(f"Error saving review for movie {movie_id}: {str(e)}", exc_info=True)
+        return jsonify({
+            'success': False,
+            'error': f'Error saving review: {str(e)}'
+        })
+
+@app.route('/delete-review', methods=['POST'])
+@auth.login_required
+def delete_review() -> dict:
+    """Delete a movie review.
+
+    Removes review from admin/movie_reviews.json and triggers data.json regeneration.
+
+    Authentication:
+        Requires HTTP Basic Auth (@auth.login_required)
+
+    Request JSON:
+        {
+            "movie_id": str  # Required TMDB movie ID
+        }
+
+    Returns:
+        JSON response:
+        {
+            "success": bool,
+            "message": str,  # On success
+            "error": str  # On failure
+        }
+    """
+    try:
+        data = request.json
+        movie_id = data.get('movie_id')
+
+        if not movie_id:
+            return jsonify({'success': False, 'error': 'Movie ID required'})
+
+        movie_id = str(movie_id).strip()
+        if not movie_id:
+            return jsonify({'success': False, 'error': 'Movie ID cannot be empty'})
+
+        # Load existing reviews
+        reviews = load_json(REVIEWS_FILE, default={})
+
+        # Check if review exists
+        if movie_id not in reviews:
+            return jsonify({'success': False, 'error': 'Review not found'})
+
+        # Remove review
+        del reviews[movie_id]
+
+        # Save atomically
+        safe_write_json(REVIEWS_FILE, reviews)
+
+        # Log action
+        logger.info(f"Review deleted for movie {movie_id}")
+
+        # Trigger data regeneration
+        try:
+            result = subprocess.run(
+                [sys.executable, 'generate_data.py'],
+                capture_output=True,
+                text=True,
+                timeout=60
+            )
+            if result.returncode != 0:
+                logger.warning(f"Review deleted for movie {movie_id} but regeneration failed: {result.stderr}")
+                return jsonify({
+                    'success': True,
+                    'message': 'Review deleted but data regeneration failed',
+                    'warning': result.stderr
+                })
+        except Exception as e:
+            logger.warning(f"Review deleted for movie {movie_id} but regeneration failed: {str(e)}")
+            return jsonify({
+                'success': True,
+                'message': f'Review deleted but regeneration failed: {str(e)}'
+            })
+
+        return jsonify({
+            'success': True,
+            'message': 'Review deleted successfully'
+        })
+
+    except Exception as e:
+        logger.error(f"Error deleting review for movie {movie_id}: {str(e)}", exc_info=True)
+        return jsonify({
+            'success': False,
+            'error': f'Error deleting review: {str(e)}'
+        })
 
 @app.route('/regenerate', methods=['POST'])
 @auth.login_required
@@ -631,7 +913,7 @@ def regenerate() -> dict:
     logger.info("Manual data.json regeneration triggered")
     try:
         result = subprocess.run(
-            ['python3', 'generate_data.py'],
+            [sys.executable, 'generate_data.py'],
             capture_output=True,
             text=True,
             timeout=120  # 2 minute timeout (longer than date update)
@@ -715,12 +997,19 @@ def update_movie_fields() -> dict:
     """
     try:
         data = request.json
-        movie_id = str(data.get('movie_id'))
+        raw_movie_id = data.get('movie_id')
+
+        # Validate movie_id exists and is not None before str() conversion
+        if raw_movie_id is None:
+            return jsonify({'success': False, 'error': 'Movie ID required'})
+
+        movie_id = str(raw_movie_id).strip()
+
+        # Check if empty after strip
+        if not movie_id:
+            return jsonify({'success': False, 'error': 'Movie ID cannot be empty'})
 
         logger.info(f"Updating fields for movie {movie_id}")
-
-        if not movie_id:
-            return jsonify({'success': False, 'error': 'Movie ID required'})
 
         # Load movie_tracking.json
         tracking_file = 'movie_tracking.json'
@@ -999,7 +1288,7 @@ def update_movie_fields() -> dict:
         # Trigger regeneration of data.json
         try:
             result = subprocess.run(
-                ['python3', 'generate_data.py'],
+                [sys.executable, 'generate_data.py'],
                 capture_output=True,
                 text=True,
                 timeout=60
@@ -1082,7 +1371,7 @@ def create_youtube_playlist() -> dict:
         logger.info(f"Creating YouTube playlist: {date_type}, privacy={privacy}, dry_run={dry_run}")
 
         # Build command arguments
-        cmd = ['python3', 'youtube_playlist_manager.py', 'custom']
+        cmd = [sys.executable, 'youtube_playlist_manager.py', 'custom']
 
         if dry_run:
             cmd.append('--dry-run')
@@ -1178,7 +1467,25 @@ def create_youtube_playlist() -> dict:
 if __name__ == '__main__':
     print("\n🎬 New Release Wall Admin Panel")
     print("================================")
-    print("Starting server at http://localhost:5555")
+
+    # Configure debug and host based on environment
+    flask_debug = os.environ.get('FLASK_DEBUG', '').lower() in ('true', '1', 'yes')
+    flask_env = os.environ.get('FLASK_ENV', 'development').lower()
+
+    # Production safety: disable debug and restrict host
+    is_production = flask_env == 'production' or not flask_debug
+
+    if is_production:
+        debug_mode = False
+        host = '127.0.0.1'  # Localhost only for production
+        print("Starting server at http://127.0.0.1:5555 (production mode)")
+        print("🔒 Production mode: debug=False, host=127.0.0.1")
+    else:
+        debug_mode = True
+        host = '0.0.0.0'  # All interfaces for development
+        print("Starting server at http://0.0.0.0:5555 (development mode)")
+        print("🔧 Development mode: debug=True, host=0.0.0.0")
+
     print(f"\n🔐 Authentication enabled")
     print(f"   Username: {ADMIN_USERNAME}")
     print(f"   Password: {'*' * len(ADMIN_PASSWORD)}")
@@ -1190,5 +1497,5 @@ if __name__ == '__main__':
     # Ensure admin directory exists
     os.makedirs('admin', exist_ok=True)
 
-    # Run the Flask app
-    app.run(debug=True, host='0.0.0.0', port=5555)
+    # Run the Flask app with environment-appropriate settings
+    app.run(debug=debug_mode, host=host, port=5555)

@@ -26,6 +26,10 @@
                 <span>Featured:</span>
                 <span class="stat-value" id="featured-count">{{ featured_count }}</span>
             </div>
+            <div class="stat-item">
+                <span>Reviewed:</span>
+                <span class="stat-value" id="reviewed-count">{{ reviewed_count }}</span>
+            </div>
         </div>
         <div class="header-actions">
             <button onclick="regenerateData()"
@@ -149,6 +153,7 @@
         <button class="filter-btn" onclick="filterMovies('visible')">Visible</button>
         <button class="filter-btn" onclick="filterMovies('hidden')">Hidden</button>
         <button class="filter-btn" onclick="filterMovies('featured')">Featured</button>
+        <button class="filter-btn" onclick="filterMovies('reviewed')">📝 Reviewed</button>
         <input type="text" id="search-box" class="search-box" placeholder="Search movies..." onkeyup="searchMovies()">
     </div>
 
@@ -162,6 +167,7 @@
              data-has-poster="{{ 'yes' if movie.poster_url or movie.get('poster') else 'no' }}"
              data-has-director="{{ 'yes' if movie.director and movie.director != 'Unknown' else 'no' }}"
              data-has-country="{{ 'yes' if movie.get('country') else 'no' }}"
+             data-has-review="{{ 'yes' if movie.get('review', {}).get('review') else 'no' }}"
              data-missing-any="{{ 'yes' if not movie.rt_score or not movie.get('links', {}).get('trailer') or not (movie.poster_url or movie.get('poster')) or not movie.director or movie.director == 'Unknown' or not movie.get('country') else 'no' }}">
             {% if movie.poster_url %}
             <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" class="movie-poster">
@@ -341,6 +347,84 @@
                                    placeholder="https://..."
                                    style="flex: 1; padding: 0.3rem; background: #2a2a2a; border: 1px solid #3a3a3a; color: white; border-radius: 4px; font-size: 0.75rem;">
                         </div>
+                    </div>
+
+                    <!-- Review Section -->
+                    <div class="edit-field-group" style="border-top: 1px solid #3a3a3a; padding-top: 0.5rem; margin-top: 0.5rem;">
+                        <label class="edit-label" style="font-weight: bold; color: #66b3ff;">
+                            📝 Custom Review (for Newsletter):
+                        </label>
+
+                        <!-- Review Text -->
+                        <textarea id="review-text-{{ movie_id }}"
+                                  placeholder="Write your review here... (This will appear in the newsletter)"
+                                  rows="5"
+                                  style="width: 100%; padding: 0.5rem; background: {% if movie.get('review', {}).get('review') %}#2a2a2a{% else %}#1a1a1a{% endif %}; border: 1px solid {% if movie.get('review', {}).get('review') %}#3a3a3a{% else %}#555{% endif %}; color: white; border-radius: 4px; font-size: 0.85rem; resize: vertical; font-family: inherit; margin-bottom: 0.5rem;">{{ movie.get('review', {}).get('review', '') }}</textarea>
+
+                        <!-- Review Metadata Row -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.5rem;">
+                            <!-- Author -->
+                            <div>
+                                <label style="display: block; font-size: 0.75rem; color: #999; margin-bottom: 0.2rem;">
+                                    Author:
+                                </label>
+                                <input type="text"
+                                       id="review-author-{{ movie_id }}"
+                                       value="{{ movie.get('review', {}).get('author', 'Hadrian Belove') }}"
+                                       placeholder="Your name"
+                                       style="width: 100%; padding: 0.3rem; background: #2a2a2a; border: 1px solid #3a3a3a; color: white; border-radius: 4px; font-size: 0.75rem;">
+                            </div>
+
+                            <!-- Rating -->
+                            <div>
+                                <label style="display: block; font-size: 0.75rem; color: #999; margin-bottom: 0.2rem;">
+                                    Rating (0-5):
+                                </label>
+                                <input type="number"
+                                       id="review-rating-{{ movie_id }}"
+                                       value="{{ movie.get('review', {}).get('rating', '') }}"
+                                       placeholder="4.5"
+                                       min="0"
+                                       max="5"
+                                       step="0.5"
+                                       style="width: 100%; padding: 0.3rem; background: #2a2a2a; border: 1px solid #3a3a3a; color: white; border-radius: 4px; font-size: 0.75rem;">
+                            </div>
+                        </div>
+
+                        <!-- Newsletter Feature Checkbox -->
+                        <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: #ccc; cursor: pointer;">
+                            <input type="checkbox"
+                                   id="review-featured-{{ movie_id }}"
+                                   {% if movie.get('review', {}).get('featured_in_newsletter') %}checked{% endif %}
+                                   style="cursor: pointer;">
+                            <span>⭐ Feature this review in newsletter</span>
+                        </label>
+
+                        <!-- Review Action Buttons -->
+                        <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                            <button class="action-btn"
+                                    onclick="saveReview('{{ movie_id }}', this)"
+                                    style="flex: 1; background: #007bff; padding: 0.5rem;">
+                                💾 Save Review
+                            </button>
+                            {% if movie.get('review', {}).get('review') %}
+                            <button class="action-btn"
+                                    onclick="deleteReview('{{ movie_id }}', this)"
+                                    style="background: #dc3545; padding: 0.5rem;">
+                                🗑️ Delete
+                            </button>
+                            {% endif %}
+                        </div>
+
+                        <!-- Review Metadata Display (if exists) -->
+                        {% if movie.get('review', {}).get('added_date') %}
+                        <div style="font-size: 0.7rem; color: #666; margin-top: 0.3rem;">
+                            Added: {{ movie.get('review', {}).get('added_date', '')[:10] }}
+                            {% if movie.get('review', {}).get('last_modified') %}
+                            | Modified: {{ movie.get('review', {}).get('last_modified', '')[:10] %}
+                            {% endif %}
+                        </div>
+                        {% endif %}
                     </div>
 
                     <!-- Save All Changes Button -->

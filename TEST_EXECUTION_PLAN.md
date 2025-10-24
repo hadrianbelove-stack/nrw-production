@@ -21,15 +21,20 @@
 
 ## Phase 1: Discovery & Monitoring Test
 
-**Command:** `python3 movie_tracker.py daily`
+**Command (DEPRECATED):** `python3 movie_tracker.py daily`
+**Production Command:** `python3 generate_data.py --discover`
 
-**Expected Behavior:**
-- Prints "=== NRW Daily Update - [timestamp] ==="
-- Phase 1: Discovers new premieres from past 7 days
-- Phase 2: Checks all tracking movies for digital availability
-- Prints summary with counts (new premieres, newly digital, total tracking, total available)
+⚠️ **IMPORTANT:** The legacy `movie_tracker.py` has been moved to `museum_legacy/legacy_movie_tracker.py`. The production system now uses `generate_data.py --discover` for discovery.
+
+**Expected Behavior (Production):**
+- Prints "🔍 Running discovery for new premieres..."
+- Uses config.yaml discovery settings (days_back: 7, max_pages: 10)
+- Implements bounded timeouts and retry logic for TMDB API calls
+- Provides structured diagnostics with per-page logging
+- Shows discovery statistics (pages fetched, total results, new movies added, duplicates skipped)
 - Updates movie_tracking.json with new data
-- Execution time: 2-5 minutes depending on tracking database size
+- Prints "✅ Discovery complete: [N] new movies added"
+- Execution time: 30 seconds to 2 minutes depending on API responses
 
 **Verification Steps:**
 - [ ] Command completes without errors (exit code 0)
@@ -294,7 +299,7 @@ Expected: High percentage have trailer links (TMDB provides trailers)
 **Command:** `python3 daily_orchestrator.py`
 
 **Expected Behavior:**
-- Runs complete pipeline: movie_tracker.py daily → generate_data.py → validation
+- Runs production pipeline: generate_data.py --discover → generate_data.py → validation
 - Prints "🚀 NRW Daily Update - [timestamp]"
 - Executes each step with progress indicators
 - Validates RT data (checks sample of movies for RT scores)
@@ -305,8 +310,8 @@ Expected: High percentage have trailer links (TMDB provides trailers)
 
 **Verification Steps:**
 - [ ] Command completes without errors
-- [ ] Output shows "📍 Discover new premieres and check for digital availability..."
-- [ ] Output shows "✅ Discover new premieres and check for digital availability complete"
+- [ ] Output shows "📍 Discover new premieres using production discovery..."
+- [ ] Output shows "✅ Discover new premieres using production discovery complete"
 - [ ] Output shows "📍 Generate data.json for website..."
 - [ ] Output shows "✅ Generate data.json for website complete"
 - [ ] Output shows "🔍 Validating RT data..."
@@ -375,10 +380,12 @@ cp movie_tracking.json.backup movie_tracking.json
 **Next Steps:** _______
 
 Reference files:
-- `movie_tracker.py` - Discovery and monitoring logic
-- `generate_data.py` - Data enrichment and link resolution
-- `daily_orchestrator.py` - Pipeline coordinator with validation (lines 92-138)
+- `generate_data.py` - Production discovery, data enrichment and link resolution
+- `daily_orchestrator.py` - Pipeline coordinator with validation
+- `museum_legacy/legacy_movie_tracker.py` - ARCHIVED legacy discovery system (historical reference only)
 - `ops/health_check.py` - System health validator
 - `admin.py` - QA panel on port 5555
-- `config.yaml` - Configuration (agent scraper disabled, RT scraper enabled)
+- `config.yaml` - Configuration (discovery section, agent scraper disabled, RT scraper enabled)
+- `metrics/daily.jsonl` - Daily discovery and newly-digital metrics
+- `scripts/baseline_metrics.py` - 3-day baseline computation
 - `NRW_DATA_WORKFLOW_EXPLAINED.md` - Complete workflow documentation

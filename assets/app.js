@@ -51,15 +51,20 @@ const NRW = {
             // Add inline date divider card when date changes
             if (date !== lastDate) {
                 const d = new Date(date + 'T12:00:00');
-                
+
+                // Check if this is a bootstrap date for visual indicator
+                const isBootstrapDate = movie.bootstrap_date;
+                const datePrefix = isBootstrapDate ? '~' : '';
+                const dateTitle = isBootstrapDate ? 'Approximate date - may have been available earlier' : '';
+
                 html += `<div class="date-divider-card">
-                    <div class="date-content">
+                    <div class="date-content ${isBootstrapDate ? 'date-approximate' : ''}" ${dateTitle ? `title="${dateTitle}"` : ''}>
                         <div class="date-day">${d.toLocaleDateString('en', {weekday: 'short'}).toUpperCase()}</div>
-                        <div class="date-number">${d.getDate()}</div>
+                        <div class="date-number">${datePrefix}${d.getDate()}</div>
                         <div class="date-month">${d.toLocaleDateString('en', {month: 'short'}).toUpperCase()}</div>
                     </div>
                 </div>`;
-                
+
                 lastDate = date;
             }
             

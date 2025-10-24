@@ -20,6 +20,8 @@ from datetime import datetime, timedelta
 from pathlib import Path
 import re
 import argparse
+import logging
+from logging.handlers import RotatingFileHandler
 
 try:
     from google.oauth2.credentials import Credentials
@@ -34,6 +36,54 @@ except ImportError:
     print("   pip install google-api-python-client google-auth-oauthlib google-auth-httplib2")
 
 
+def setup_logger(name='youtube_manager', log_file='logs/youtube_manager.log', level=logging.INFO):
+    """
+    Configure logging with file rotation and console output.
+
+    Args:
+        name (str): Logger name
+        log_file (str): Path to log file (default: 'logs/youtube_manager.log')
+        level (int): Logging level (default: logging.INFO)
+
+    Returns:
+        logging.Logger: Configured logger instance
+    """
+    # Create logs directory if it doesn't exist
+    os.makedirs('logs', exist_ok=True)
+
+    # Get or create logger
+    logger = logging.getLogger(name)
+
+    # Prevent duplicate handlers
+    if not logger.handlers:
+        logger.setLevel(level)
+
+        # Create formatter
+        formatter = logging.Formatter(
+            '%(asctime)s [%(levelname)s] %(message)s',
+            datefmt='%Y-%m-%d %H:%M:%S'
+        )
+
+        # File handler with rotation (10MB, 5 backups)
+        file_handler = RotatingFileHandler(
+            log_file,
+            maxBytes=10*1024*1024,  # 10MB
+            backupCount=5,
+            encoding='utf-8'
+        )
+        file_handler.setLevel(level)
+        file_handler.setFormatter(formatter)
+        logger.addHandler(file_handler)
+
+        # Console handler for CLI UX
+        console_handler = logging.StreamHandler()
+        console_handler.setLevel(level)
+        console_handler.setFormatter(formatter)
+        logger.addHandler(console_handler)
+
+    return logger
+
+
 class YouTubePlaylistManager:
     """Manages YouTube playlists for New Release Wall trailers"""
 
@@ -43,6 +93,7 @@ class YouTubePlaylistManager:
         """Initialize playlist manager with credentials directory"""
         self.credentials_dir = Path(credentials_dir)
         self.credentials_dir.mkdir(exist_ok=True)
+        self.logger = setup_logger('youtube_manager')
 
         if not GOOGLE_LIBS_AVAILABLE:
             raise ImportError("Google API libraries required. See setup instructions above.")
@@ -62,7 +113,7 @@ class YouTubePlaylistManager:
         # Refresh or get new credentials
         if not creds or not creds.valid:
             if creds and creds.expired and creds.refresh_token:
-                print("🔄 Refreshing expired credentials...")
+                self.logger.info("🔄 Refreshing expired credentials...")
                 creds.refresh(Request())
             else:
                 client_secret_path = self.credentials_dir / 'client_secret.json'
@@ -73,8 +124,8 @@ class YouTubePlaylistManager:
                         "https://console.cloud.google.com/apis/credentials"
                     )
 
-                print("🔐 Starting OAuth authorization flow...")
-                print("Your browser will open to authorize this app.")
+                self.logger.info("🔐 Starting OAuth authorization flow...")
+                print("Your browser will open to authorize this app.")  # Keep for CLI UX
                 flow = InstalledAppFlow.from_client_secrets_file(
                     str(client_secret_path),
                     self.SCOPES
@@ -84,10 +135,10 @@ class YouTubePlaylistManager:
             # Save credentials for future runs
             with open(token_path, 'wb') as token:
                 pickle.dump(creds, token)
-            print(f"✅ Credentials saved to {token_path}")
+            self.logger.info(f"✅ Credentials saved to {token_path}")
 
         self.youtube = build('youtube', 'v3', credentials=creds)
-        print("✅ YouTube API authenticated")
+        self.logger.info("✅ YouTube API authenticated")
 
     def _ensure_client(self):
         """Ensure YouTube client is authenticated before API calls"""
@@ -123,8 +174,8 @@ class YouTubePlaylistManager:
         response = request.execute()
 
         playlist_id = response['id']
-        print(f"✅ Created playlist: {title}")
-        print(f"   🔗 https://youtube.com/playlist?list={playlist_id}")
+        self.logger.info(f"✅ Created playlist: {title}")
+        print(f"   🔗 https://youtube.com/playlist?list={playlist_id}")  # Keep for CLI UX
         return playlist_id
 
     def add_videos_to_playlist(self, playlist_id, video_ids):
@@ -158,16 +209,16 @@ class YouTubePlaylistManager:
                 )
                 request.execute()
                 added += 1
-                print(f"   [{i}/{len(video_ids)}] Added video: {video_id}")
+                self.logger.info(f"   [{i}/{len(video_ids)}] Added video: {video_id}")
             except Exception as e:
                 failed.append((video_id, str(e)))
-                print(f"   ⚠️  Failed to add video {video_id}: {e}")
+                self.logger.warning(f"   ⚠️  Failed to add video {video_id}: {e}")
 
-        print(f"✅ Added {added}/{len(video_ids)} videos to playlist")
+        self.logger.info(f"✅ Added {added}/{len(video_ids)} videos to playlist")
         if failed:
-            print(f"⚠️  {len(failed)} videos failed:")
+            self.logger.warning(f"⚠️  {len(failed)} videos failed:")
             for vid, err in failed[:5]:  # Show first 5 failures
-                print(f"   • {vid}: {err}")
+                self.logger.warning(f"   • {vid}: {err}")
 
         return added
 
@@ -182,7 +233,7 @@ class YouTubePlaylistManager:
             Number of videos removed
         """
         self._ensure_client()
-        print(f"🗑️  Clearing playlist {playlist_id}...")
+        self.logger.info(f"🗑️  Clearing playlist {playlist_id}...")
 
         # Get all items in playlist
         items = []
@@ -206,7 +257,7 @@ class YouTubePlaylistManager:
         for item in items:
             self.youtube.playlistItems().delete(id=item['id']).execute()
 
-        print(f"✅ Cleared {len(items)} videos from playlist")
+        self.logger.info(f"✅ Cleared {len(items)} videos from playlist")
         return len(items)
 
     def update_playlist_metadata(self, playlist_id, title=None, description=None):

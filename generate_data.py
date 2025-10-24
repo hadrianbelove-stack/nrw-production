@@ -16,6 +16,10 @@ import logging
 from logging.handlers import RotatingFileHandler
 from agent_link_scraper import AgentLinkScraper
 from scripts.youtube_trailer_scraper import YouTubeTrailerScraper
+try:
+    from streaming_platform_scraper import StreamingPlatformScraper
+except ImportError:
+    StreamingPlatformScraper = None
 
 
 def setup_logger(name, log_file='logs/admin.log', level=logging.INFO):
@@ -68,16 +72,49 @@ def setup_logger(name, log_file='logs/admin.log', level=logging.INFO):
 
 class DataGenerator:
     def __init__(self):
+        # Initialize logger FIRST before any operations that might log
+        self.logger = setup_logger('data_generator', 'logs/admin.log', logging.INFO)
+
         self.config = self.load_config()
         self.tmdb_key = self.config['api']['tmdb_api_key']  # Changed from self.config['tmdb_api_key']
-        self.watchmode_key = "bBMpVr31lRfUsSFmgoQp0jixDrQt8DIKCVg7EFdp"  # Watchmode API
+
+        # Watchmode API - Get new key from https://api.watchmode.com/ (free tier: 1000 calls/month)
+        self.watchmode_key = os.environ.get('WATCHMODE_API_KEY')
+        if not self.watchmode_key:
+            # Try fallback from config.yaml
+            self.watchmode_key = self.config.get('api', {}).get('watchmode_api_key')
+
+        # Validate Watchmode API key
+        if not self.watchmode_key or self.watchmode_key == "REPLACE_WITH_NEW_API_KEY":
+            self.logger.error(
+                "WATCHMODE_API_KEY not found or using placeholder value. "
+                "Please set the WATCHMODE_API_KEY environment variable or add "
+                "'watchmode_api_key' to the 'api' section in config.yaml. "
+                "Get a free key from https://api.watchmode.com/"
+            )
+            # Disable Watchmode usage explicitly
+            self.watchmode_enabled = False
+            self.watchmode_key = None
+        else:
+            self.watchmode_enabled = True
         self.wikipedia_cache = self.load_cache('wikipedia_cache.json')
         self.rt_cache = self.load_cache('rt_cache.json')
         self.wikipedia_overrides = self.load_cache('overrides/wikipedia_overrides.json')
         self.rt_overrides = self.load_cache('overrides/rt_overrides.json')
+        self.watch_links_overrides = self.load_cache('overrides/watch_links_overrides.json')
         self.trailer_overrides = self.load_cache('overrides/trailer_overrides.json')
         self.watch_links_cache = self.load_cache('cache/watch_links_cache.json')
         self.watch_link_overrides = self.load_cache('admin/watch_link_overrides.json')
+
+        # Load reviews
+        self.reviews = {}
+        if os.path.exists('admin/movie_reviews.json'):
+            try:
+                with open('admin/movie_reviews.json', 'r') as f:
+                    self.reviews = json.load(f)
+            except (json.JSONDecodeError, IOError) as e:
+                self.logger.warning(f"Failed to load movie reviews from admin/movie_reviews.json: {e}")
+                self.reviews = {}
 
         # Watchmode usage statistics
         self.watchmode_stats = {
@@ -102,14 +139,22 @@ class DataGenerator:
             'wikidata_successes': 0
         }
 
+        # Discovery statistics
+        self.discovery_stats = {
+            'pages_fetched': 0,
+            'total_results': 0,
+            'new_movies_added': 0,
+            'duplicates_skipped': 0,
+            'api_calls': 0,
+            'debug_enabled': False
+        }
+
         self.agent_scraper = None  # Lazy initialization
         self.youtube_scraper = None  # Lazy initialization for YouTube trailer scraping
         self.youtube_trailer_cache = self.load_cache('youtube_trailer_cache.json')
         self.rt_driver = None  # Lazy Selenium driver for RT scraping
         self.rt_last_scrape_time = 0  # Track last scrape for rate limiting
-
-        # Initialize logger
-        self.logger = setup_logger('data_generator', 'logs/admin.log', logging.INFO)
+        self.platform_scraper = None  # Lazy initialization for streaming platform scraper
     
     def load_config(self):
         """Load configuration from config.yaml and environment variables"""
@@ -826,8 +871,20 @@ class DataGenerator:
             except Exception as e:
                 print(f"  Warning: Invalid manual watch links in tracking data for {title}: {e}")
 
-        # 2. Check admin overrides (backward compatibility)
+        # 2. Check overrides/watch_links_overrides.json (highest priority after manual tracking)
         cache_key = str(movie_id)
+        if cache_key in self.watch_links_overrides:
+            override_data = self.watch_links_overrides[cache_key]
+            try:
+                validated_override = self.validate_watch_links_schema(override_data, title)
+                if validated_override:
+                    print(f"  Using override from watch_links_overrides.json for {title}: {list(validated_override.keys())}")
+                    self.watchmode_stats['override_hits'] = self.watchmode_stats.get('override_hits', 0) + 1
+                    return validated_override
+            except Exception as e:
+                print(f"  Warning: Invalid override in watch_links_overrides.json for {title}: {e}")
+
+        # 3. Check admin overrides (backward compatibility)
         validated_overrides = {}
         if cache_key in self.watch_link_overrides:
             overrides = self.watch_link_overrides[cache_key]
@@ -907,62 +964,82 @@ class DataGenerator:
         skip_rent = 'rent' in validated_overrides
         skip_buy = 'buy' in validated_overrides
 
-        try:
-            # Step 1: Search by TMDB ID
-            search_url = "https://api.watchmode.com/v1/search/"
-            search_params = {
-                "apiKey": self.watchmode_key,
-                "search_field": "tmdb_movie_id",
-                "search_value": movie_id
-            }
+        # Skip Watchmode API if not enabled/configured
+        if not self.watchmode_enabled:
+            self.logger.debug(f"Watchmode API disabled, skipping for {title}")
+        else:
+            try:
+                # Step 1: Search by TMDB ID
+                search_url = "https://api.watchmode.com/v1/search/"
+                search_params = {
+                    "apiKey": self.watchmode_key,
+                    "search_field": "tmdb_movie_id",
+                    "search_value": movie_id
+                }
 
-            self.watchmode_stats['search_calls'] += 1
-            search_response = requests.get(search_url, params=search_params, timeout=10)
+                self.watchmode_stats['search_calls'] += 1
+                search_response = requests.get(search_url, params=search_params, timeout=10)
 
-            if search_response.status_code == 200:
-                search_data = search_response.json()
+                if search_response.status_code == 200:
+                    search_data = search_response.json()
 
-                if search_data.get('title_results'):
-                    watchmode_id = search_data['title_results'][0]['id']
+                    if search_data.get('title_results'):
+                        watchmode_id = search_data['title_results'][0]['id']
 
-                    # Step 2: Get sources
-                    sources_url = f"https://api.watchmode.com/v1/title/{watchmode_id}/details/"
-                    sources_params = {
-                        "apiKey": self.watchmode_key,
-                        "append_to_response": "sources"
-                    }
+                        # Step 2: Get sources
+                        sources_url = f"https://api.watchmode.com/v1/title/{watchmode_id}/details/"
+                        sources_params = {
+                            "apiKey": self.watchmode_key,
+                            "append_to_response": "sources"
+                        }
 
-                    self.watchmode_stats['source_calls'] += 1
-                    sources_response = requests.get(sources_url, params=sources_params, timeout=10)
+                        self.watchmode_stats['source_calls'] += 1
+                        sources_response = requests.get(sources_url, params=sources_params, timeout=10)
 
-                    if sources_response.status_code == 200:
-                        sources_data = sources_response.json()
-                        sources = sources_data.get('sources', [])
+                        if sources_response.status_code == 200:
+                            sources_data = sources_response.json()
+                            sources = sources_data.get('sources', [])
 
-                        if sources:
-                            self.watchmode_stats['watchmode_successes'] += 1
+                            if sources:
+                                self.watchmode_stats['watchmode_successes'] += 1
 
-                        # Collect US sources by type
-                        for source in sources:
-                            if source.get('region') != 'US':
-                                continue
+                            # Collect US sources by type
+                            for source in sources:
+                                if source.get('region') != 'US':
+                                    continue
 
-                            service_name = source.get('name', '')
-                            web_url = source.get('web_url', '')
-                            source_type = source.get('type', '')
+                                service_name = source.get('name', '')
+                                web_url = source.get('web_url', '')
+                                source_type = source.get('type', '')
 
-                            if not service_name or not web_url:
-                                continue
+                                if not service_name or not web_url:
+                                    continue
 
-                            if source_type == 'sub' and not skip_streaming:
-                                watchmode_streaming.append({'service': service_name, 'link': web_url})
-                            elif source_type == 'rent' and not skip_rent:
-                                watchmode_rent.append({'service': service_name, 'link': web_url})
-                            elif source_type == 'buy' and not skip_buy:
-                                watchmode_buy.append({'service': service_name, 'link': web_url})
+                                if source_type == 'sub' and not skip_streaming:
+                                    watchmode_streaming.append({'service': service_name, 'link': web_url})
+                                elif source_type == 'rent' and not skip_rent:
+                                    watchmode_rent.append({'service': service_name, 'link': web_url})
+                                elif source_type == 'buy' and not skip_buy:
+                                    watchmode_buy.append({'service': service_name, 'link': web_url})
 
-        except Exception as e:
-            print(f"  Warning: Watchmode API failed for {title}: {e}")
+            except Exception as e:
+                print(f"  Warning: Watchmode API failed for {title}: {e}")
+
+        # Agent search tier (optional): Try to find deep links for Amazon/Apple TV when Watchmode has no data
+        # Capture lengths before platform scraper to detect if it added links
+        streaming_len_before = len(watchmode_streaming)
+        rent_len_before = len(watchmode_rent)
+        buy_len_before = len(watchmode_buy)
+
+        if StreamingPlatformScraper and (not watchmode_streaming or not watchmode_rent or not watchmode_buy):
+            self._try_platform_agent_search(title, year, providers, watchmode_streaming, watchmode_rent, watchmode_buy, skip_streaming, skip_rent, skip_buy)
+
+        # Check if platform scraper actually added any links
+        platform_scraper_used = (
+            len(watchmode_streaming) > streaming_len_before or
+            len(watchmode_rent) > rent_len_before or
+            len(watchmode_buy) > buy_len_before
+        )
 
         # Build final watch_links with canonical streaming/rent/buy structure
         watch_links = {}
@@ -1047,13 +1124,20 @@ class DataGenerator:
 
         # Cache result with canonical schema (use validated links)
         if validated_links:
-            # Determine source type
+            # Determine source type based on where links came from
             has_links = any(
                 link.get('link') is not None
                 for link in validated_links.values()
                 if isinstance(link, dict)
             )
-            source_type = 'watchmode_api' if has_links else 'tmdb_providers'
+
+            # Use platform_scraper_used to accurately determine if platform scraper added links
+            if platform_scraper_used:
+                source_type = 'agent_search'
+            elif has_links:
+                source_type = 'watchmode_api'
+            else:
+                source_type = 'tmdb_providers'
 
             self.watch_links_cache[cache_key] = {
                 'links': validated_links,
@@ -1194,6 +1278,158 @@ class DataGenerator:
             print(f"  Error in agent scraper for {title}: {e}")
             return {'service': service, 'link': self.generate_google_search_fallback(title, year, service)}
 
+    def _try_platform_agent_search(self, title, year, providers, watchmode_streaming, watchmode_rent, watchmode_buy, skip_streaming, skip_rent, skip_buy):
+        """Try platform scraper (Selenium) for Amazon/Apple TV when Watchmode API has no data"""
+
+        # Check if platform scraper is enabled in config
+        platform_config = self.config.get('platform_scraper', {})
+        if not platform_config.get('enabled', True):
+            print(f"  Platform scraper disabled in config, skipping {title}")
+            return
+
+        # Check if Amazon is enabled
+        platforms_config = platform_config.get('platforms', {})
+        amazon_enabled = platforms_config.get('amazon', True)
+        apple_tv_enabled = platforms_config.get('apple_tv', True)
+
+        if not amazon_enabled and not apple_tv_enabled:
+            print(f"  No platforms enabled in config, skipping {title}")
+            return
+
+        # Initialize platform scraper if needed (lazy initialization)
+        if self.platform_scraper is None:
+            try:
+                print(f"  Initializing platform scraper for {title}...")
+                # Read settings from config
+                headless_mode = platform_config.get('headless', True)
+                timeout_seconds = platform_config.get('timeout', 30)
+                rate_limit_seconds = platform_config.get('rate_limit', None)
+                self.platform_scraper = StreamingPlatformScraper(
+                    headless=headless_mode,
+                    timeout_seconds=timeout_seconds,
+                    rate_limit_seconds=rate_limit_seconds
+                )
+                print(f"  Platform scraper initialized (headless={headless_mode}, timeout={timeout_seconds}s)")
+            except Exception as e:
+                print(f"  Warning: Could not initialize platform scraper: {e}")
+                self.platform_scraper = False
+                return
+
+        # Skip if initialization failed
+        if self.platform_scraper is False:
+            print(f"  Platform scraper initialization failed, skipping {title}")
+            return
+
+        # Track platform scraper attempts
+        if not hasattr(self, 'watchmode_stats'):
+            self.watchmode_stats = {}
+        self.watchmode_stats['platform_scraper_attempts'] = self.watchmode_stats.get('platform_scraper_attempts', 0) + 1
+
+        # Enforce rate limiting if configured
+        if hasattr(self.platform_scraper, 'rate_limit_seconds') and self.platform_scraper.rate_limit_seconds:
+            if not hasattr(self, '_last_platform_scraper_time'):
+                self._last_platform_scraper_time = 0
+
+            time_since_last = time.time() - self._last_platform_scraper_time
+            if time_since_last < self.platform_scraper.rate_limit_seconds:
+                sleep_time = self.platform_scraper.rate_limit_seconds - time_since_last
+                print(f"  Rate limiting: sleeping {sleep_time:.1f}s before platform scraper")
+                time.sleep(sleep_time)
+
+            self._last_platform_scraper_time = time.time()
+
+        # Try streaming providers (if no Watchmode streaming data and not skipped)
+        if not skip_streaming and not watchmode_streaming and providers.get('streaming'):
+            for provider in providers['streaming']:
+                # Filter platforms based on config
+                should_try_provider = False
+                if 'Amazon' in provider and amazon_enabled:
+                    should_try_provider = True
+                elif 'Apple' in provider and apple_tv_enabled:
+                    should_try_provider = True
+
+                if should_try_provider:
+                    try:
+                        print(f"  Trying platform scraper for {title} streaming on {provider}...")
+                        deep_link = self.platform_scraper.get_platform_deep_link(title, year, provider)
+                        if deep_link:
+                            print(f"  ✓ Platform scraper found streaming link for {title} on {provider}")
+                            watchmode_streaming.append({'service': provider, 'link': deep_link})
+                            # Track statistics
+                            if not hasattr(self, 'watchmode_stats'):
+                                self.watchmode_stats = {}
+                            self.watchmode_stats['platform_scraper_successes'] = self.watchmode_stats.get('platform_scraper_successes', 0) + 1
+                            break  # Found a link, stop searching
+                    except Exception as e:
+                        print(f"  Error in platform scraper for {title} streaming on {provider}: {e}")
+                        # Track statistics
+                        if not hasattr(self, 'watchmode_stats'):
+                            self.watchmode_stats = {}
+                        self.watchmode_stats['platform_scraper_failures'] = self.watchmode_stats.get('platform_scraper_failures', 0) + 1
+                else:
+                    print(f"  Platform {provider} disabled in config, skipping")
+
+        # Try rent providers (if no Watchmode rent data and not skipped)
+        if not skip_rent and not watchmode_rent and providers.get('rent'):
+            for provider in providers['rent']:
+                # Filter platforms based on config
+                should_try_provider = False
+                if 'Amazon' in provider and amazon_enabled:
+                    should_try_provider = True
+                elif 'Apple' in provider and apple_tv_enabled:
+                    should_try_provider = True
+
+                if should_try_provider:
+                    try:
+                        print(f"  Trying platform scraper for {title} rent on {provider}...")
+                        deep_link = self.platform_scraper.get_platform_deep_link(title, year, provider)
+                        if deep_link:
+                            print(f"  ✓ Platform scraper found rent link for {title} on {provider}")
+                            watchmode_rent.append({'service': provider, 'link': deep_link})
+                            # Track statistics
+                            if not hasattr(self, 'watchmode_stats'):
+                                self.watchmode_stats = {}
+                            self.watchmode_stats['platform_scraper_successes'] = self.watchmode_stats.get('platform_scraper_successes', 0) + 1
+                            break  # Found a link, stop searching
+                    except Exception as e:
+                        print(f"  Error in platform scraper for {title} rent on {provider}: {e}")
+                        # Track statistics
+                        if not hasattr(self, 'watchmode_stats'):
+                            self.watchmode_stats = {}
+                        self.watchmode_stats['platform_scraper_failures'] = self.watchmode_stats.get('platform_scraper_failures', 0) + 1
+                else:
+                    print(f"  Platform {provider} disabled in config, skipping")
+
+        # Try buy providers (if no Watchmode buy data and not skipped)
+        if not skip_buy and not watchmode_buy and providers.get('buy'):
+            for provider in providers['buy']:
+                # Filter platforms based on config
+                should_try_provider = False
+                if 'Amazon' in provider and amazon_enabled:
+                    should_try_provider = True
+                elif 'Apple' in provider and apple_tv_enabled:
+                    should_try_provider = True
+
+                if should_try_provider:
+                    try:
+                        print(f"  Trying platform scraper for {title} buy on {provider}...")
+                        deep_link = self.platform_scraper.get_platform_deep_link(title, year, provider)
+                        if deep_link:
+                            print(f"  ✓ Platform scraper found buy link for {title} on {provider}")
+                            watchmode_buy.append({'service': provider, 'link': deep_link})
+                            # Track statistics
+                            if not hasattr(self, 'watchmode_stats'):
+                                self.watchmode_stats = {}
+                            self.watchmode_stats['platform_scraper_successes'] = self.watchmode_stats.get('platform_scraper_successes', 0) + 1
+                            break  # Found a link, stop searching
+                    except Exception as e:
+                        print(f"  Error in platform scraper for {title} buy on {provider}: {e}")
+                        # Track statistics
+                        if not hasattr(self, 'watchmode_stats'):
+                            self.watchmode_stats = {}
+                        self.watchmode_stats['platform_scraper_failures'] = self.watchmode_stats.get('platform_scraper_failures', 0) + 1
+                else:
+                    print(f"  Platform {provider} disabled in config, skipping")
 
     def _migrate_legacy_cache_format(self, links):
         """Migrate legacy free/paid cache format to streaming/rent/buy and normalize URLs"""
@@ -1246,6 +1482,371 @@ class DataGenerator:
                 final_migrated[category] = migrated[category]
 
         return final_migrated if final_migrated else {}
+
+    def save_daily_metrics(self, discovered=0, newly_digital=0):
+        """Save daily discovery and availability metrics for 3-day baselining"""
+        try:
+            # Ensure metrics directory exists
+            os.makedirs('metrics', exist_ok=True)
+
+            # Load current tracking database for counts
+            total_tracking = 0
+            total_available = 0
+            if os.path.exists('movie_tracking.json'):
+                with open('movie_tracking.json', 'r') as f:
+                    db = json.load(f)
+                    movies = db.get('movies', {})
+                    total_tracking = len([m for m in movies.values() if m.get('status') == 'tracking'])
+                    total_available = len([m for m in movies.values() if m.get('status') == 'available'])
+
+            # Create metrics entry
+            metrics_entry = {
+                'date': datetime.now().strftime('%Y-%m-%d'),
+                'discovered': discovered,
+                'newly_digital': newly_digital,
+                'total_tracking': total_tracking,
+                'total_available': total_available,
+                'timestamp': datetime.now().isoformat()
+            }
+
+            # Append to daily metrics log (JSONL format)
+            metrics_file = 'metrics/daily.jsonl'
+            with open(metrics_file, 'a') as f:
+                f.write(json.dumps(metrics_entry) + '\n')
+
+            self.logger.info(f"Daily metrics saved: {discovered} discovered, {newly_digital} newly digital")
+
+        except Exception as e:
+            self.logger.error(f"Failed to save daily metrics: {e}")
+
+    def get_3_day_baseline(self):
+        """Compute 3-day average for discovery and newly-digital counts"""
+        try:
+            metrics_file = 'metrics/daily.jsonl'
+            if not os.path.exists(metrics_file):
+                return None
+
+            # Read last 3 days of metrics
+            recent_metrics = []
+            with open(metrics_file, 'r') as f:
+                for line in f:
+                    if line.strip():
+                        recent_metrics.append(json.loads(line))
+
+            # Get last 3 entries
+            if len(recent_metrics) < 3:
+                return {
+                    'days_available': len(recent_metrics),
+                    'discovery_avg': None,
+                    'newly_digital_avg': None,
+                    'note': f'Need at least 3 days of data, have {len(recent_metrics)}'
+                }
+
+            last_3 = recent_metrics[-3:]
+            discovery_avg = sum(m['discovered'] for m in last_3) / 3
+            newly_digital_avg = sum(m['newly_digital'] for m in last_3) / 3
+
+            return {
+                'days_available': 3,
+                'discovery_avg': round(discovery_avg, 1),
+                'newly_digital_avg': round(newly_digital_avg, 1),
+                'dates': [m['date'] for m in last_3]
+            }
+
+        except Exception as e:
+            self.logger.error(f"Failed to compute 3-day baseline: {e}")
+            return None
+
+    def discover_new_premieres(self, debug=False):
+        """Discover new movie premieres and add them to movie_tracking.json
+
+        Args:
+            debug: Enable detailed logging of discovery process
+
+        Returns:
+            Number of new movies added
+        """
+        self.discovery_stats['debug_enabled'] = debug
+
+        # Get discovery configuration
+        discovery_config = self.config.get('discovery', {})
+        days_back = discovery_config.get('days_back', 7)
+        max_pages = discovery_config.get('max_pages', 10)
+
+        # Get hybrid discovery flags
+        enable_pass_a = discovery_config.get('enable_pass_a', True)  # Digital releases (release_date + type=4)
+        enable_pass_b = discovery_config.get('enable_pass_b', True)  # Theatrical releases (primary_release_date)
+
+        if debug:
+            self.logger.info(f"Starting discovery: days_back={days_back}, max_pages={max_pages}")
+            self.logger.info(f"Discovery passes: A={enable_pass_a}, B={enable_pass_b}")
+
+        # Load existing tracking database
+        if os.path.exists('movie_tracking.json'):
+            with open('movie_tracking.json', 'r') as f:
+                db = json.load(f)
+        else:
+            db = {'movies': {}, 'last_update': None}
+
+        existing_ids = set(db['movies'].keys())
+        if debug:
+            self.logger.info(f"Existing database has {len(existing_ids)} movies")
+
+        # Calculate date range for discovery
+        end_date = datetime.now()
+        start_date = end_date - timedelta(days=days_back)
+
+        self.logger.info(f"Discovering new premieres from {start_date.strftime('%Y-%m-%d')} to {end_date.strftime('%Y-%m-%d')}")
+
+        new_movies_added = 0
+        all_discovered_movies = {}
+
+        # Pass A: Direct-to-digital releases (release_date + type=4)
+        if enable_pass_a:
+            if debug:
+                self.logger.info("Starting Pass A: Direct-to-digital releases")
+
+            pass_a_count = self._run_discovery_pass(
+                'A', 'digital', start_date, end_date, max_pages,
+                all_discovered_movies, existing_ids, debug
+            )
+
+            if debug:
+                self.logger.info(f"Pass A completed: {pass_a_count} movies discovered")
+
+        # Pass B: Theatrical releases (primary_release_date)
+        if enable_pass_b:
+            if debug:
+                self.logger.info("Starting Pass B: Theatrical releases")
+
+            pass_b_count = self._run_discovery_pass(
+                'B', 'theatrical', start_date, end_date, max_pages,
+                all_discovered_movies, existing_ids, debug
+            )
+
+            if debug:
+                self.logger.info(f"Pass B completed: {pass_b_count} movies discovered")
+
+        # Merge all discovered movies into database
+        for movie_id, movie_data in all_discovered_movies.items():
+            if movie_id not in existing_ids:
+                db['movies'][movie_id] = movie_data
+                new_movies_added += 1
+                existing_ids.add(movie_id)
+
+        # Save updated database
+        if new_movies_added > 0:
+            db['last_update'] = datetime.now().isoformat()
+            with open('movie_tracking.json', 'w') as f:
+                json.dump(db, f, indent=2)
+
+        # Collect sample titles for metrics
+        sample_titles = []
+        for movie_data in list(all_discovered_movies.values())[:5]:  # Get up to 5 sample titles
+            sample_titles.append(movie_data['title'])
+
+        # Write per-run metrics
+        self._write_discovery_metrics(
+            days_back, new_movies_added, sample_titles
+        )
+
+        # Log discovery summary
+        self.logger.info(f"Discovery complete: {new_movies_added} new movies added from {self.discovery_stats['pages_fetched']} pages")
+        if debug or new_movies_added == 0:
+            self.logger.info(f"Discovery stats: {self.discovery_stats['total_results']} total results, {self.discovery_stats['duplicates_skipped']} duplicates")
+
+        return new_movies_added
+
+    def _write_discovery_metrics(self, window_days, new_movies_added, sample_titles):
+        """Write per-run discovery metrics to metrics/daily.jsonl"""
+        try:
+            # Ensure metrics directory exists
+            os.makedirs('metrics', exist_ok=True)
+
+            # Create metrics object
+            metrics_object = {
+                'date': datetime.now().strftime('%Y-%m-%d'),
+                'timestamp': datetime.now().isoformat(),
+                'window_days': window_days,
+                'pages_fetched': self.discovery_stats['pages_fetched'],
+                'total_results': self.discovery_stats['total_results'],
+                'new_movies_added': new_movies_added,
+                'duplicates_skipped': self.discovery_stats['duplicates_skipped'],
+                'api_calls': self.discovery_stats['api_calls'],
+                'sample_titles': sample_titles[:5]  # Limit to 5 samples
+            }
+
+            # Append to daily metrics log (JSONL format)
+            metrics_file = 'metrics/daily.jsonl'
+            with open(metrics_file, 'a') as f:
+                f.write(json.dumps(metrics_object) + '\n')
+
+            self.logger.info(f"Discovery metrics written to {metrics_file}")
+
+        except Exception as e:
+            self.logger.error(f"Failed to write discovery metrics: {e}")
+
+    def _run_discovery_pass(self, pass_name, pass_type, start_date, end_date, max_pages, discovered_movies, existing_ids, debug):
+        """Run a single discovery pass (A or B)
+
+        Args:
+            pass_name: 'A' or 'B' for logging
+            pass_type: 'digital' or 'theatrical' to determine API parameters
+            start_date: Discovery start date
+            end_date: Discovery end date
+            max_pages: Maximum pages to fetch
+            discovered_movies: Dict to accumulate discovered movies
+            existing_ids: Set of existing movie IDs to skip
+            debug: Enable debug logging
+
+        Returns:
+            Number of new movies discovered in this pass
+        """
+        pass_new_count = 0
+
+        for page in range(1, max_pages + 1):
+            try:
+                if debug:
+                    self.logger.info(f"Pass {pass_name} - Fetching page {page}/{max_pages}")
+
+                # Use bounded timeout and retry logic
+                page_results = self._fetch_tmdb_page_with_retry(
+                    page, start_date, end_date, debug, pass_type=pass_type
+                )
+
+                if not page_results:
+                    if debug:
+                        self.logger.warning(f"Pass {pass_name} - No results from page {page}, stopping pass")
+                    break
+
+                self.discovery_stats['pages_fetched'] += 1
+                self.discovery_stats['total_results'] += len(page_results)
+
+                # Process results from this page
+                page_new_count = 0
+                page_duplicate_count = 0
+                sample_titles = []
+
+                for movie in page_results:
+                    movie_id = str(movie['id'])
+                    title = movie.get('title', 'Unknown')
+
+                    # Collect sample titles for debugging
+                    if len(sample_titles) < 3:
+                        sample_titles.append(f"{title} (ID: {movie_id})")
+
+                    # Skip if already in existing database or already discovered in this run
+                    if movie_id in existing_ids or movie_id in discovered_movies:
+                        page_duplicate_count += 1
+                        continue
+
+                    # Add new movie with tracking status
+                    digital_date = movie.get('release_date') if pass_type == 'digital' else movie.get('primary_release_date')
+                    discovered_movies[movie_id] = {
+                        'title': title,
+                        'status': 'tracking',
+                        'first_seen': datetime.now().strftime('%Y-%m-%d'),
+                        'digital_date': digital_date,
+                        'providers': {},
+                        'discovery_pass': pass_name  # Track which pass found this movie
+                    }
+
+                    page_new_count += 1
+                    pass_new_count += 1
+
+                self.discovery_stats['new_movies_added'] += page_new_count
+                self.discovery_stats['duplicates_skipped'] += page_duplicate_count
+
+                # Log page summary
+                if debug:
+                    self.logger.info(f"Pass {pass_name} - Page {page}: {len(page_results)} results, {page_new_count} new, {page_duplicate_count} duplicates")
+                    if sample_titles:
+                        self.logger.info(f"Sample titles: {', '.join(sample_titles)}")
+
+                # Rate limiting
+                time.sleep(self.config.get('api', {}).get('tmdb_rate_limit', 0.1))
+
+            except Exception as e:
+                self.logger.error(f"Pass {pass_name} - Error processing page {page}: {e}")
+                continue
+
+        return pass_new_count
+
+    def _fetch_tmdb_page_with_retry(self, page, start_date, end_date, debug=False, pass_type='digital', max_retries=3):
+        """Fetch TMDB discover page with bounded timeout and retry logic"""
+        import requests
+        from requests.adapters import HTTPAdapter
+        from urllib3.util.retry import Retry
+
+        # Configure session with retry strategy
+        session = requests.Session()
+        retry_strategy = Retry(
+            total=max_retries,
+            backoff_factor=1,
+            status_forcelist=[429, 500, 502, 503, 504],
+        )
+        adapter = HTTPAdapter(max_retries=retry_strategy)
+        session.mount("http://", adapter)
+        session.mount("https://", adapter)
+
+        url = "https://api.themoviedb.org/3/discover/movie"
+
+        # Build parameters based on pass type
+        if pass_type == 'digital':
+            # Pass A: Direct-to-digital releases
+            params = {
+                'api_key': self.tmdb_key,
+                'release_date.gte': start_date.strftime('%Y-%m-%d'),
+                'release_date.lte': end_date.strftime('%Y-%m-%d'),
+                'with_release_type': '4',  # Digital only
+                'region': 'US',
+                'language': 'en-US',
+                'include_adult': 'false',
+                'sort_by': 'release_date.desc',
+                'page': page
+            }
+        else:  # pass_type == 'theatrical'
+            # Pass B: Theatrical releases
+            params = {
+                'api_key': self.tmdb_key,
+                'primary_release_date.gte': start_date.strftime('%Y-%m-%d'),
+                'primary_release_date.lte': end_date.strftime('%Y-%m-%d'),
+                'region': 'US',
+                'language': 'en-US',
+                'include_adult': 'false',
+                'sort_by': 'primary_release_date.desc',
+                'page': page
+            }
+
+        self.discovery_stats['api_calls'] += 1
+
+        # Log exact TMDB params (excluding API key)
+        if debug:
+            log_params = {k: v for k, v in params.items() if k != 'api_key'}
+            self.logger.info(f"TMDB API call (pass_type={pass_type}): {log_params}")
+
+        try:
+            # Use bounded timeouts: (connect_timeout, read_timeout)
+            response = session.get(url, params=params, timeout=(10, 30))
+            response.raise_for_status()
+
+            data = response.json()
+            results = data.get('results', [])
+
+            if debug and results:
+                self.logger.info(f"TMDB API success: page {page} returned {len(results)} results")
+
+            return results
+
+        except requests.exceptions.Timeout as e:
+            self.logger.error(f"TMDB API timeout for page {page}: {e}")
+            return None
+        except requests.exceptions.RequestException as e:
+            self.logger.error(f"TMDB API error for page {page}: {e}")
+            return None
+        except Exception as e:
+            self.logger.error(f"Unexpected error fetching page {page}: {e}")
+            return None
 
     def process_movie(self, movie_id, movie_data, movie_details, force_refresh=False):
         """Process a single movie into display format"""
@@ -1322,10 +1923,13 @@ class DataGenerator:
             else:
                 watch_links[category] = link_obj
 
-        return {
+        # Build movie dict
+        movie_dict = {
             'id': movie_id,
             'title': title,
             'digital_date': movie_data.get('digital_date'),
+            'bootstrap_date': movie_data.get('bootstrap_date', False),
+            'manually_corrected': movie_data.get('manually_corrected', False),
             'poster': f"https://image.tmdb.org/t/p/w500{movie_details['poster_path']}" if movie_details.get('poster_path') else None,
             'synopsis': movie_details.get('overview', 'No synopsis available.'),
             'crew': {
@@ -1342,6 +1946,13 @@ class DataGenerator:
             'links': links,
             'watch_links': watch_links
         }
+
+        # Only add review key if a review exists
+        review = self.reviews.get(str(movie_id))
+        if review:
+            movie_dict['review'] = review
+
+        return movie_dict
     
     def generate_display_data(self, days_back=90, incremental=True, force_refresh=False):
         """Generate display data from tracking database
@@ -1442,6 +2053,13 @@ class DataGenerator:
             except Exception as e:
                 self.logger.warning(f"Failed to close agent scraper: {e}")
 
+        # Cleanup platform scraper if initialized
+        if self.platform_scraper and self.platform_scraper != False:
+            try:
+                self.platform_scraper.close()
+            except Exception as e:
+                self.logger.warning(f"Failed to close platform scraper: {e}")
+
         # Cleanup RT driver if initialized
         if self.rt_driver and self.rt_driver is not False:
             try:
@@ -1460,14 +2078,17 @@ class DataGenerator:
         wiki_count = len([m for m in display_movies if m['links'].get('wikipedia')])
         trailer_count = len([m for m in display_movies if m['links'].get('trailer') and 'watch?v=' in m['links']['trailer']])
         rt_count = len([m for m in display_movies if m['rt_score']])
+        reviewed_count = len([m for m in display_movies if m.get('review')])
 
         self.logger.info(f"Wikipedia links found: {wiki_count}")
         self.logger.info(f"Direct trailers found: {trailer_count}")
         self.logger.info(f"RT scores cached: {rt_count}")
+        self.logger.info(f"Movies with reviews: {reviewed_count}")
 
         print(f"Wikipedia links found: {wiki_count}")
         print(f"Direct trailers found: {trailer_count}")
         print(f"RT scores cached: {rt_count}")
+        print(f"Movies with reviews: {reviewed_count}")
 
         # Wikidata usage statistics
         print(f"\n📊 Wikidata Usage:")
@@ -1502,6 +2123,39 @@ class DataGenerator:
         else:
             print(f"  ⚠️  Agent scraper was never called (check if movies have Netflix/Disney+/Hulu providers)")
 
+        print(f"\n📊 Platform Scraper Statistics (Amazon/Apple TV):")
+        platform_config = self.config.get('platform_scraper', {})
+        print(f"  Platform scraper enabled: {platform_config.get('enabled', True)}")
+        print(f"  Platform scraper initialized: {self.platform_scraper is not None and self.platform_scraper is not False}")
+        platforms_config = platform_config.get('platforms', {})
+        print(f"  Amazon enabled: {platforms_config.get('amazon', True)}")
+        print(f"  Apple TV enabled: {platforms_config.get('apple_tv', True)}")
+
+        platform_attempts = self.watchmode_stats.get('platform_scraper_attempts', 0)
+        platform_successes = self.watchmode_stats.get('platform_scraper_successes', 0)
+        platform_failures = self.watchmode_stats.get('platform_scraper_failures', 0)
+
+        print(f"  Platform scraper attempts: {platform_attempts}")
+        print(f"  Platform scraper successes: {platform_successes}")
+        print(f"  Platform scraper failures: {platform_failures}")
+
+        if platform_attempts > 0:
+            platform_success_rate = (platform_successes / platform_attempts * 100)
+            print(f"  Platform scraper success rate: {platform_success_rate:.1f}%")
+
+            # Compare with Watchmode success rate
+            if success_rate > 0:
+                comparison = "higher" if platform_success_rate > success_rate else "lower"
+                print(f"  Success rate vs Watchmode API: {platform_success_rate:.1f}% ({comparison} than {success_rate:.1f}%)")
+        else:
+            print(f"  ⚠️  Platform scraper was never called (check if movies have Amazon/Apple TV providers)")
+
+        # Show maintenance info
+        last_update = platform_config.get('maintenance', {}).get('last_selector_update', 'unknown')
+        update_freq = platform_config.get('maintenance', {}).get('expected_update_frequency', 'quarterly')
+        print(f"  Last selector update: {last_update}")
+        print(f"  Expected update frequency: {update_freq}")
+
         print(f"\n📊 RT Scraper Usage:")
         print(f"  RT attempts: {self.watchmode_stats['rt_attempts']}")
         print(f"  RT successes: {self.watchmode_stats['rt_successes']}")
@@ -1525,6 +2179,20 @@ class DataGenerator:
             print(f"  Validation pass rate: {pass_rate:.1f}%")
             if self.watchmode_stats['schema_validation_warnings'] > total_validations * 0.05:  # Alert if warnings > 5%
                 print(f"  ⚠️  WARNING: High validation failure rate ({self.watchmode_stats['schema_validation_warnings']}/{total_validations}) - check for systematic schema issues")
+
+        # Discovery statistics (if discovery was run)
+        if self.discovery_stats['api_calls'] > 0:
+            print(f"\n🔍 Discovery Statistics:")
+            print(f"  API calls: {self.discovery_stats['api_calls']}")
+            print(f"  Pages fetched: {self.discovery_stats['pages_fetched']}")
+            print(f"  Total results: {self.discovery_stats['total_results']}")
+            print(f"  New movies added: {self.discovery_stats['new_movies_added']}")
+            print(f"  Duplicates skipped: {self.discovery_stats['duplicates_skipped']}")
+            if self.discovery_stats['pages_fetched'] > 0:
+                avg_results_per_page = self.discovery_stats['total_results'] / self.discovery_stats['pages_fetched']
+                print(f"  Average results per page: {avg_results_per_page:.1f}")
+            if self.discovery_stats['debug_enabled']:
+                print(f"  Debug mode was enabled for this run")
 
     def apply_admin_overrides(self, display_movies):
         """Apply admin panel decisions to final output"""
@@ -1562,7 +2230,8 @@ class DataGenerator:
 def main():
     parser = argparse.ArgumentParser(description="Generate display data from tracking database with enriched links")
     parser.add_argument('--full', action='store_true', help='Regenerate entire data.json from scratch (default: incremental mode - only process new movies)')
-    parser.add_argument('--debug', action='store_true', help='Enable debug logging for agent scraper')
+    parser.add_argument('--debug', action='store_true', help='Enable debug logging for discovery and agent scraper')
+    parser.add_argument('--discover', action='store_true', help='Run discovery to find new premieres before generating data')
 
     args = parser.parse_args()
     incremental = not args.full
@@ -1571,13 +2240,39 @@ def main():
     # Set debug mode globally (could be passed to DataGenerator if needed)
     if args.debug:
         os.environ['AGENT_SCRAPER_DEBUG'] = 'true'
-        print("🐛 Debug mode enabled for agent scraper")
+        print("🐛 Debug mode enabled for discovery and agent scraper")
 
     generator = DataGenerator()
 
     if args.debug:
         generator.logger.setLevel(logging.DEBUG)
         generator.logger.debug("Debug mode enabled - verbose logging active")
+
+    # Run discovery if requested
+    discovered_count = 0
+    if args.discover:
+        print("🔍 Running discovery for new premieres...")
+        discovered_count = generator.discover_new_premieres(debug=args.debug)
+        print(f"✅ Discovery complete: {discovered_count} new movies added")
+
+    # Get newly digital count by checking status changes (simplified for now)
+    newly_digital_count = 0
+
+    # Save daily metrics if discovery was run
+    if args.discover:
+        generator.save_daily_metrics(discovered=discovered_count, newly_digital=newly_digital_count)
+
+        # Show 3-day baseline
+        baseline = generator.get_3_day_baseline()
+        if baseline:
+            print(f"\n📈 3-Day Baseline:")
+            if baseline['discovery_avg'] is not None:
+                print(f"  Discovery average: {baseline['discovery_avg']} movies/day")
+                print(f"  Newly digital average: {baseline['newly_digital_avg']} movies/day")
+                print(f"  Based on: {', '.join(baseline['dates'])}")
+            else:
+                print(f"  {baseline['note']}")
+
     generator.generate_display_data(incremental=incremental, force_refresh=force_refresh)
 
 if __name__ == "__main__":

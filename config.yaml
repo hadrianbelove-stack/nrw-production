@@ -12,13 +12,23 @@ tracking:
   bootstrap_days: 7  # Look back N days for new releases
   check_interval_hours: 24  # How often to check
   
+discovery:
+  days_back: 14  # Discovery window for finding new premieres (expanded to catch more releases)
+  max_pages: 20  # Maximum pages to fetch for discovery (increased for expanded discovery)
+  enable_pass_a: true  # Enable Pass A: Direct-to-digital releases (release_date + type=4)
+  enable_pass_b: true  # Enable Pass B: Theatrical releases (primary_release_date)
+
 api:
   # tmdb_api_key: Set via TMDB_API_KEY environment variable
+  watchmode_api_key: "bBMpVr31lRfUsSFmgoQp0jixDrQt8DIKCVg7EFdp"
   tmdb_rate_limit: 0.1  # Seconds between API calls
   max_retries: 3
+  max_pages_bootstrap: 49  # Maximum pages to fetch for bootstrap operation
 
+# Agent scraper (Playwright): For Netflix/Disney+/HBO Max/Hulu - DISABLED due to authentication barriers
+# Uses playwright for stealth browsing but blocked by login requirements
 agent_scraper:
-  enabled: false  # Disabled due to authentication barriers on all platforms (see AGENT_SCRAPER_TEST_REPORT.md for details)
+  enabled: true  # Enabled as fallback when Watchmode API has no data
   headless: true  # Run browser in headless mode (required for CI)
   rate_limit: 2.0  # Minimum seconds between scrapes
   timeout: 10  # Page load timeout in seconds
@@ -31,6 +41,24 @@ agent_scraper:
     max_delay: 5.0  # Maximum retry delay (seconds)
     jitter_ratio: 0.2  # Randomness factor (±20%)
 
+# Platform scraper (Selenium): For Amazon/Apple TV - ENABLED as Watchmode fallback
+# Uses selenium for Amazon/Apple TV since they don't require authentication
+# Only runs when Watchmode API has no data, focuses on recent releases
+platform_scraper:
+  enabled: true  # Enable Selenium-based Amazon/Apple TV scraper as Watchmode fallback
+  headless: true  # Run browser in headless mode for production
+  rate_limit: 2.0  # Seconds between scrapes to avoid rate limiting
+  timeout: 10  # Page load timeout in seconds
+  max_retries: 2  # Retry attempts on failure
+  platforms:
+    amazon: true  # Enable Amazon Prime Video scraping
+    apple_tv: false  # Disable Apple TV scraping (user doesn't need it)
+  maintenance:
+    last_selector_update: "2025-10-23"  # Track when selectors were last verified
+    expected_update_frequency: "quarterly"  # How often selectors typically need updates
+    # Note: Acceptable failure rate, manual admin overrides handle edge cases
+    # Implementation: streaming_platform_scraper.py (separate from agent_scraper.py)
+
 rt_scraper:
   enabled: true  # Enable/disable RT scraping
   headless: true  # Run browser in headless mode
@@ -38,3 +66,17 @@ rt_scraper:
   timeout: 10  # Page load timeout in seconds
   max_retries: 1  # Number of retries on failure (RT is less critical than watch links)
   cache_ttl_days: 90  # RT links are stable, longer TTL than agent scraper
+
+validation:
+  min_recall: 0.75  # Minimum discovery recall threshold (75%)
+  min_precision: 0.70  # Minimum discovery precision threshold (70%)
+  min_provider_coverage: 10  # Minimum number of movies with non-search watch links per week
+
+newsletter:
+  auto_generate: false  # Set to true to generate newsletter during daily automation
+  days_back: 7  # Default date range for newsletter (7 = weekly, 30 = monthly)
+  output_dir: "newsletters/"  # Directory for generated newsletters
+  formats:
+    - markdown  # Generate markdown format
+    - html      # Generate HTML format
+    - text      # Generate plain text format

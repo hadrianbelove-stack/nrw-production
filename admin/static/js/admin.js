@@ -8,10 +8,10 @@ function showSuccess(message = 'Changes saved!') {
 }
 
 function toggleHidden(movieId, hide) {
-    fetch('/toggle-hidden', {
+    fetch('/toggle-status', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({movie_id: movieId, hidden: hide})
+        body: JSON.stringify({movie_id: movieId, status_type: 'hidden', value: hide})
     })
     .then(response => response.json())
     .then(data => {
@@ -49,10 +49,10 @@ function toggleHidden(movieId, hide) {
 }
 
 function toggleFeatured(movieId, feature) {
-    fetch('/toggle-featured', {
+    fetch('/toggle-status', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({movie_id: movieId, featured: feature})
+        body: JSON.stringify({movie_id: movieId, status_type: 'featured', value: feature})
     })
     .then(response => response.json())
     .then(data => {
@@ -104,6 +104,18 @@ function updateStats() {
     document.getElementById('visible-count').textContent = visible;
     document.getElementById('hidden-count').textContent = hidden;
     document.getElementById('featured-count').textContent = featured;
+
+    // Update reviewed count
+    updateReviewedCount();
+}
+
+function updateReviewedCount() {
+    // Recalculate reviewed count from current DOM state
+    const reviewedCards = document.querySelectorAll('.movie-card[data-has-review="yes"]');
+    const reviewedCount = reviewedCards.length;
+
+    // Update reviewed count display
+    document.getElementById('reviewed-count').textContent = reviewedCount;
 }
 
 function regenerateData() {
@@ -194,6 +206,9 @@ function filterMovies(filter) {
                 break;
             case 'missing-data':
                 card.style.display = card.dataset.missingAny === 'yes' ? 'block' : 'none';
+                break;
+            case 'reviewed':
+                card.style.display = card.dataset.hasReview === 'yes' ? 'block' : 'none';
                 break;
         }
     });
@@ -330,6 +345,151 @@ function saveAllFields(movieId) {
             btn.innerHTML = originalText;
             btn.disabled = false;
         }, 2000);
+    });
+}
+
+function saveReview(movieId, btn) {
+    const originalText = btn.innerHTML;
+
+    // Collect review fields
+    const reviewText = document.getElementById(`review-text-${movieId}`).value.trim();
+    const author = document.getElementById(`review-author-${movieId}`).value.trim() || 'Admin';
+    const rating = document.getElementById(`review-rating-${movieId}`).value;
+    const featured = document.getElementById(`review-featured-${movieId}`).checked;
+
+    // Validate review text
+    if (!reviewText) {
+        alert('Please enter review text before saving.');
+        return;
+    }
+
+    if (reviewText.length > 5000) {
+        alert('Review text is too long (max 5000 characters).');
+        return;
+    }
+
+    // Validate rating if provided
+    if (rating && (parseFloat(rating) < 0 || parseFloat(rating) > 5)) {
+        alert('Rating must be between 0 and 5.');
+        return;
+    }
+
+    // Disable button
+    btn.disabled = true;
+    btn.innerHTML = '⏳ Saving...';
+
+    // Send to server
+    fetch('/update-review', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            movie_id: movieId,
+            review_text: reviewText,
+            author: author,
+            rating: rating ? parseFloat(rating) : null,
+            featured_in_newsletter: featured
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            btn.innerHTML = '✅ Saved!';
+            btn.style.background = '#28a745';
+            showSuccess(data.message || 'Review saved successfully!');
+
+            // Update card data attribute
+            const card = document.querySelector(`[data-movie-id="${movieId}"]`);
+            card.dataset.hasReview = 'yes';
+
+            // Update textarea background to show it's no longer empty
+            document.getElementById(`review-text-${movieId}`).style.background = '#2a2a2a';
+            document.getElementById(`review-text-${movieId}`).style.borderColor = '#3a3a3a';
+
+            // Update reviewed count in header
+            updateReviewedCount();
+
+            // Reset button after 2 seconds
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                btn.style.background = '#007bff';
+            }, 2000);
+        } else {
+            btn.innerHTML = '❌ Failed';
+            btn.style.background = '#dc3545';
+            alert(data.error || 'Failed to save review');
+
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                btn.style.background = '#007bff';
+            }, 2000);
+        }
+    })
+    .catch(error => {
+        btn.innerHTML = '❌ Error';
+        btn.style.background = '#dc3545';
+        alert('Error saving review: ' + error);
+
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            btn.style.background = '#007bff';
+        }, 2000);
+    });
+}
+
+function deleteReview(movieId, btn) {
+    if (!confirm('Are you sure you want to delete this review?')) {
+        return;
+    }
+
+    const originalText = btn.innerHTML;
+
+    // Disable button
+    btn.disabled = true;
+    btn.innerHTML = '⏳ Deleting...';
+
+    // Send to server
+    fetch('/delete-review', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({movie_id: movieId})
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showSuccess('Review deleted');
+
+            // Clear form fields
+            document.getElementById(`review-text-${movieId}`).value = '';
+            document.getElementById(`review-author-${movieId}`).value = 'Hadrian Belove';
+            document.getElementById(`review-rating-${movieId}`).value = '';
+            document.getElementById(`review-featured-${movieId}`).checked = false;
+
+            // Update card data attribute
+            const card = document.querySelector(`[data-movie-id="${movieId}"]`);
+            card.dataset.hasReview = 'no';
+
+            // Update textarea background to show it's empty
+            document.getElementById(`review-text-${movieId}`).style.background = '#1a1a1a';
+            document.getElementById(`review-text-${movieId}`).style.borderColor = '#555';
+
+            // Update reviewed count in header
+            updateReviewedCount();
+
+            // Hide delete button (will require page reload to show again)
+            btn.style.display = 'none';
+        } else {
+            alert(data.error || 'Failed to delete review');
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    })
+    .catch(error => {
+        alert('Error deleting review: ' + error);
+        btn.innerHTML = originalText;
+        btn.disabled = false;
     });
 }
 

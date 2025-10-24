@@ -3,6 +3,7 @@ flask
 flask-httpauth
 PyYAML
 requests
+urllib3<2  # Pin to avoid TLS/SSL issues with some environments
 
 # Web scraping
 selenium
