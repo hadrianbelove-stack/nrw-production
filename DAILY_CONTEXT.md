@@ -1,283 +1,245 @@
-# Daily Context and Recent Activities
+# DAILY_CONTEXT.md
+**Date:** [YYYY-MM-DD]
+**Previous diary entry:** diary/2025-10-24.md
 
-**NOTE:** The discovery system has been completely modernized:
-- **Production Flow:** `daily_orchestrator.py` → `generate_data.py --discover` → `generate_data.py`
-- **Legacy Reference:** `movie_tracker.py` replaced with deprecation stub. Legacy implementation moved to `museum_legacy/legacy_movie_tracker.py`
-- **Discovery Component:** Integrated into `generate_data.py` with bounded timeouts, retry logic, and structured diagnostics
-- **Metrics Tracking:** Daily discovery and newly-digital counts saved to `metrics/daily.jsonl` for 3-day baselining
+---
 
-## What We Did Today
+## AI Assistant Quick Start
 
-### Vote Count Filter Verification (Oct 21)
+**READ THESE FILES FIRST WHEN STARTING A NEW SESSION:**
 
-**Task:** Remove vote_count filter from legacy_movie_tracker.py to increase discovery rates
+1. **This file (DAILY_CONTEXT.md)** - Current state, recent changes, active issues
+2. **[PROJECT_CHARTER.md](PROJECT_CHARTER.md)** - Governance rules, amendments, API keys, architectural decisions
+3. **[NRW_DATA_WORKFLOW_EXPLAINED.md](NRW_DATA_WORKFLOW_EXPLAINED.md)** - Data pipeline mechanics, how everything fits together
 
-**Finding:** Filter is **already absent** from current code
-- Checked `discover_new_premieres` method (lines 61-67): No vote_count parameter
-- Checked `bootstrap` method (lines 107-113): No vote_count parameter
-- Both methods use identical params: api_key, date range, page, sort_by
+**What is this rolling context system?**
 
-**Conclusion:** The filter was already removed in a previous session. No code changes needed.
+This is a **living document** that gets overwritten each session with current information. At the end of each session, we archive it to  (immutable historical record). This approach:
+- **Avoids token waste** from loading months of PROJECT_LOG.md history
+- **Provides fresh context** without stale information
+- **Maintains audit trail** in the diary/ folder
+- **Reduces AI confusion** by keeping focus on current state
 
-### Movie Discovery Test - vote_count Filter Removed (Oct 22)
+See [AMENDMENT-036](PROJECT_CHARTER.md#amendment-036-rolling-daily-context) and [AMENDMENT-037](PROJECT_CHARTER.md#amendment-037-daily-context-system-three-file-loading-pattern) for governance rules.
 
-**Phase 2: Test Discovery Script**
+---
 
-**Objective:** Measure discovery rate with vote_count filter removed
+## Current State
 
-**Pre-test verification:**
-- ✅ Confirmed vote_count filter absent from discover_new_premieres (lines 61-67)
-- ✅ Confirmed vote_count filter absent from bootstrap (lines 107-113)
-- ✅ Verified chronological sorting maintained (sort_by: primary_release_date.desc)
+### What's Working
+[Fill in during session - describe operational systems and their status]
 
-**Test execution:**
-- Command: `python3 generate_data.py --discover` (current production discovery system)
-- Execution time: ~3 minutes (partial completion)
-- Exit code: Non-zero (network timeout)
-- **NOTE:** This test used the deprecated legacy system. Production now uses `python3 generate_data.py --discover`
+### Architecture
+[Fill in during session - describe runtime components and data flow]
 
-**Results captured:**
-- **New premieres discovered:** 0 movies
-- **Newly digital:** Unable to complete (network timeout)
-- **Total tracking:** 1175 movies
-- **Total available:** 253 movies
+---
 
-**Analysis:**
-- Previous discovery rate: 0-2 movies per day
-- Current discovery rate: 0 movies per day
-- Improvement factor: No improvement
-- **Assessment:** ❌ No improvement - Filter removal did not solve discovery issue
+## What We Did Today ([YYYY-MM-DD])
 
-**Critical finding:**
-The vote_count filter removal did **NOT** improve discovery. The script still found 0 new movies in the past 7 days, indicating the low discovery rate has a different root cause.
+[Fill in during session - document major changes, commits, and implementations]
 
-**Quality check:**
-- Cannot assess movie quality (no movies discovered)
-- Database integrity: ✅ Verified - movie_tracking.json updated correctly
-- Network issues: ⚠️ Timeout during provider check phase (650/1175 completed)
+---
 
-**Findings:**
-- Discovery issue persists despite filter removal
-- Root cause unknown - requires investigation
-- Database has 1428 total movies (1175 tracking, 253 available)
-- Network connectivity problems with TMDB API during provider checks
+## Conversation Context (Key Decisions)
 
-**Issues encountered:**
-- Discovery still returned 0 movies (unchanged from before)
-- Network timeout error during provider monitoring phase
-- SSL warnings (non-critical)
+[Fill in during session - record important decisions and their rationale]
 
-**Next steps:**
-- ❌ Phase 2 partially complete - Discovery tested but failed
-- 🔍 Phase 2.1 - **Root cause analysis required**
-- ⏸️ Phase 3 - Database verification (on hold)
-- ⏸️ Phase 4 - Commit changes (on hold until discovery works)
+---
 
-### Watch Links Enhancement - Agent Search Evaluation and Implementation (Oct 22)
+## Known Issues
 
-**Task:** Evaluate and implement agent search solution for Watchmode API coverage gaps
-
-**Problem Identified:**
-- Watchmode API has coverage gaps for very new releases (~30-50% of October 2025 movies)
-- Examples: "The Roughneck" has Google search fallback, "The Long Walk" has Watchmode deep link
-- Current coverage pattern: ~50-70% of movies have deep links, rest use platform search URLs
-
-**Research Conducted:**
-- Analyzed existing scraper infrastructure (`wikipedia_scraper.py`, `rt_scraper.py`, `reelgood_scraper.py`)
-- Researched platform deep link URL structures (Amazon, Apple TV, Netflix)
-- Evaluated current watch_links coverage in `data.json`
-- Assessed platform anti-bot measures and scraping feasibility
-
-**Decision: Two-tier approach**
-
-**Tier 1: Manual override system (IMPLEMENTED)**
-- Created `overrides/watch_links_overrides.json` for manual deep link entry
-- Highest priority in fallback hierarchy (before cache and Watchmode API)
-- Simple, reliable, ~5-10 entries per day manageable
-- Foundation for future admin panel integration
-- **Status:** ✅ Implemented and tested
-
-**Tier 2: Agent search (OPTIONAL ENHANCEMENT)**
-- Created `streaming_platform_scraper.py` with Selenium-based scraping
-- Supports Amazon Prime Video and Apple TV (reliable platforms)
-- Skips Netflix/Disney+ due to anti-bot complexity
-- Inserts between Watchmode API and platform search URLs in fallback
-- **Status:** ✅ Infrastructure implemented, ready for use
-
-**Implementation Details:**
-- Added override loading to `generate_data.py` __init__ method
-- Added override check with highest priority in `get_watch_links()` method
-- Created comprehensive scraper with Chrome WebDriver and anti-bot measures
-- Integrated agent search into fallback hierarchy with graceful degradation
-- Enhanced cache tracking to distinguish `agent_search` from `watchmode_api` sources
-- Added cleanup logic for platform scraper resources
-
-**Rationale:**
-- User mentioned "it's only 10 movies a day" - manual overrides are manageable
-- User mentioned "we can have a part of the admin page to edit links" - override system enables this
-- Agent search adds complexity (Selenium, maintenance) for marginal gains
-- Start simple (overrides), add automation (agent) only if needed
-
-**Complete Fallback Hierarchy (NEW):**
-1. Manual watch links from `movie_tracking.json` - Highest priority
-2. Manual overrides (`overrides/watch_links_overrides.json`) - **NEW** Second priority
-3. Admin overrides (`admin/watch_link_overrides.json`) - Backward compatibility
-4. Cache (`cache/watch_links_cache.json`) - Third priority
-5. Watchmode API - Fourth priority
-6. Agent search (Amazon/Apple TV only) - **NEW** Fifth priority (optional)
-7. Platform search URLs - Sixth priority (fallback)
-8. Amazon search - Ultimate fallback (default)
-
-**Performance Impact:**
-- Manual overrides: No impact (immediate return)
-- Agent search (if used): ~5-10 seconds per movie, ~5-6 minutes for full regeneration
-- Acceptable for daily automation (~10 movies affected)
-
-**Future Enhancements:**
-- Admin panel section for editing watch link overrides
-- Bulk override import/export functionality
-- Agent search for additional platforms (if feasible)
-
-### Git Commit Strategy - Admin Panel Redesign (Oct 22)
-
-**Task:** Commit and push Oct 19-20 admin panel redesign work to GitHub
-
-**Git State Analysis:**
-- Current branch: `main`
-- HEAD: `73c6eef342cd668d4238e987b05f310b589e723a`
-- origin/main: `73c6eef342cd668d4238e987b05f310b589e723a` (IN SYNC)
-- Divergence: 0 commits ahead, 0 commits behind
-- **Merge/rebase required:** ❌ NO
-
-**Files to Commit:**
-
-*Core Code Changes (Commit 1):*
-- `admin.py` - Admin panel redesign:
-  - Inline editing for all fields (RT score, links, director, country, synopsis, poster, watch links)
-  - Input validation (RT score 0-100, URL format, ISO dates, non-empty strings)
-  - Safe atomic writes with timestamped backups (max 10 backups)
-  - Logging system with rotation (10MB, 5 files)
-  - Type hints and comprehensive docstrings
-  - Consolidated `/toggle-status` endpoint (replaced /toggle-hidden and /toggle-featured)
-  - Watch links saved to movie_tracking.json (consistent with other manual corrections)
-
-- `youtube_playlist_manager.py` - YouTube integration:
-  - `create_custom_playlist()` method with custom date parameters
-  - CLI support for --days-back, --from-date, --to-date
-  - Dry-run preview mode
-
-- `config.yaml` - Configuration cleanup:
-  - Duplicate agent_scraper section removed
-  - Agent scraper disabled (authentication barriers)
-
-- Template refactoring (if completed):
-  - `admin/templates/index.html` - Extracted Jinja2 template
-  - `admin/static/css/admin.css` - Extracted CSS
-  - `admin/static/js/admin.js` - Extracted JavaScript
-
-- Infrastructure:
-  - `cache/.gitkeep` - Ensures cache directory tracked
-  - `cache/screenshots/.gitkeep` - Ensures screenshots directory tracked
-  - `.gitignore` - Added logs/, *.backup.*, *.tmp exclusions
-
-*Documentation (Commit 2):*
-- `PROJECT_CHARTER.md` - Added AMENDMENT-044, AMENDMENT-045, AMENDMENT-046
-- `DAILY_CONTEXT.md` - Documented Oct 19-22 session work
-- `diary/2025-10-17.md` - Retroactive archive (authentication incident)
-- `diary/2025-10-19.md` - Agent scraper diagnostics session
-- `diary/2025-10-20.md` - Admin panel redesign session
-- `AGENT_SCRAPER_DIAGNOSTICS.md` - Diagnostic report
-- `AGENT_SCRAPER_FUTURE_IMPLEMENTATION.md` - Future implementation guide
-- `VERIFICATION_CHECKLIST.md` - Configuration verification
-
-**Files EXCLUDED (intentionally not committed):**
-- `movie_tracker.py` - Modified for discovery test but test failed (0 movies found)
-- `DISCOVERY_TEST_RESULTS.md` - Incomplete test results
-- Backup files: `movie_tracking.json.backup.*`
-- Log files: `logs/*.log`
-- Cache files: `cache/*.json` (already gitignored)
-
-**Commit Strategy:**
-- Two-commit approach (code separate from documentation)
-- Commit 1: "Admin panel redesign: QA database editor with inline editing"
-- Commit 2: "Docs: Admin panel QA architecture + agent scraper resolution"
-- Push both commits to origin/main
-
-**Status:** ⏳ Awaiting user to run `git status` and execute commit commands
-
-**Reference:** See `GIT_COMMIT_STRATEGY.md` for detailed step-by-step instructions
+[Fill in during session - document current problems and their status]
 
 ---
 
 ## Next Priorities
 
-### Immediate
-- ✅ Verify vote_count filter status in legacy_movie_tracker.py
-- ✅ Test discovery: `python3 museum_legacy/legacy_movie_tracker.py daily` (DEPRECATED)
-- ✅ Capture output metrics and document results
-- ✅ **Production Discovery Modernized:**
-  - ✅ Integrated discovery into `generate_data.py --discover`
-  - ✅ Added bounded timeouts and retry logic for provider checks
-  - ✅ Implemented structured diagnostics with per-page logging
-  - ✅ Added daily metrics tracking to `metrics/daily.jsonl`
-  - ✅ Updated `daily_orchestrator.py` to use production discovery path
-  - ✅ Consolidated discovery settings in `config.yaml` under `discovery` section
-- ⏳ Run `git status` to verify uncommitted files
-- ⏳ Execute two-commit strategy (code + documentation)
-- ⏳ Push to origin/main and verify on GitHub
-- ⏳ Archive this session to diary/2025-10-22.md
-- 🔍 **Root cause analysis - Discovery still broken:**
-  - Add debug output to see TMDB API response
-  - Check if TMDB API is returning movies for the date range
-  - Verify pagination settings in config.yaml
-  - Test with broader date range (14 days instead of 7)
-  - Check for duplicate detection issues
+### Immediate (This Session)
+[Fill in during session - list current tasks and their completion status]
 
-### Next Phase (On Hold)
-- ⏸️ Analyze 3-day discovery results (blocked - discovery broken)
-- ⏸️ Determine if additional filters needed (blocked - need working discovery first)
-- ⏸️ Update config.yaml with any new filter settings (blocked)
-- ⏸️ Document final discovery configuration in PROJECT_CHARTER.md (blocked)
+### Next Phase
+[Fill in during session - list upcoming tasks for next session]
 
-### Debug Investigation Plan
-1. **TMDB API Response Analysis**
-   - Add debug output to discover_new_premieres method
-   - Log actual API URL being called
-   - Log number of results returned by TMDB
-   - Log movie titles and IDs returned
-   - Check if movies are being filtered out as duplicates
+### Subsequent Phase
+[Fill in during session - list future improvements]
 
-2. **Date Range Testing**
-   - Test different date ranges (14 days instead of 7)
-   - Try different start/end dates
-   - Test broader time windows
+### Short-term (Next Few Days)
+[Fill in during session - list near-term tasks]
 
-3. **Database Analysis**
-   - Check for recent additions to database
-   - Verify duplicate detection logic
-   - Analyze existing movie dates
+### Long-term (Ongoing)
+[Fill in during session - list ongoing maintenance tasks]
 
-4. **Network/API Debugging**
-   - Test TMDB API manually with curl
-   - Verify API key functionality
-   - Check rate limiting issues
+---
+
+## Archive Instructions
+
+**End-of-session workflow (automated via 🚀 Daily Context Archive Script
+===============================
+
+📋 Validating prerequisites...
+[0;32m✅ Prerequisites validated[0m
+
+📅 Archive date: 2025-10-24 (UTC)
+
+📂 Checking diary directory...
+[0;34m📁 diary/ directory already exists[0m
+
+📦 Preparing to archive...
+[1;33m⚠️ Archive already exists: diary/2025-10-24.md[0m
+[0;31m❌ Error: Non-interactive environment detected and archive exists.[0m
+   Use --force to overwrite existing archive: diary/2025-10-24.md):**
+
+1. Run archive script: 🚀 Daily Context Archive Script
+===============================
+
+📋 Validating prerequisites...
+[0;32m✅ Prerequisites validated[0m
+
+📅 Archive date: 2025-10-24 (UTC)
+
+📂 Checking diary directory...
+[0;34m📁 diary/ directory already exists[0m
+
+📦 Preparing to archive...
+[1;33m⚠️ Archive already exists: diary/2025-10-24.md[0m
+[0;31m❌ Error: Non-interactive environment detected and archive exists.[0m
+   Use --force to overwrite existing archive: diary/2025-10-24.md
+   - Archives current context to 
+   - Creates fresh template for next session
+   - Use  to preview changes without executing
+
+2. **Testing:** 🚀 Daily Context Archive Script
+===============================
+
+📋 Validating prerequisites...
+[0;32m✅ Prerequisites validated[0m
+
+📅 Archive date: 2025-10-24 (UTC)
+
+📂 Checking diary directory...
+[0;34m📁 diary/ directory already exists[0m
+
+📦 Preparing to archive...
+[1;33m⚠️ Archive already exists: diary/2025-10-24.md[0m
+[0;34m📁 [DRY RUN] Would overwrite existing archive[0m
+[0;34m📁 [DRY RUN] Would create archive with metadata header at diary/2025-10-24.md[0m
+
+📄 Creating fresh template...
+[0;34m📁 [DRY RUN] Would create fresh DAILY_CONTEXT.md template[0m
+
+🎉 Archive Complete!
+===================
+
+📋 DRY RUN SUMMARY:
+   📦 Would archive: DAILY_CONTEXT.md → diary/2025-10-24.md
+   📄 Would create: Fresh DAILY_CONTEXT.md template
+
+   Run without --dry-run to execute these changes.
+
+✨ Ready for next development session! shows what would happen
+
+3. **Troubleshooting:**
+   - Permission error: 
+   - Missing file error: Ensure you're in repo root
+   - Directory issues: Script creates  automatically
+
+4. **Next session starts fresh:**
+   - AI reads new DAILY_CONTEXT.md template
+   - Historical context available in  if needed
+   - No token waste from stale information
+
+**Current status:** Archive script created and ready to use
 
 ---
 
 ## Files Changed Today
 
-### Created (Oct 22 - Git Strategy)
-- `GIT_COMMIT_STRATEGY.md` - Comprehensive git commit and push guide
+### Created
+[Fill in during session - list new files]
 
-### Created (Oct 22 - Watch Links Enhancement)
-- `overrides/watch_links_overrides.json` - Manual deep link overrides (empty initially)
-- `streaming_platform_scraper.py` - Optional agent search for Amazon/Apple TV
+### Modified
+[Fill in during session - list changed files with brief descriptions]
 
-### Modified (Oct 22 - Git Strategy)
-- `DAILY_CONTEXT.md` - Documented git commit strategy and next steps
-- `.gitignore` - Added *.log and *.backup.* exclusions for runtime artifacts
+### Archived
+[Fill in during session - list files moved to museum_legacy/]
 
-### Modified (Oct 22 - Watch Links Enhancement)
-- `generate_data.py` - Added override loading, override check in `get_watch_links()`, optional agent search integration
-- `PROJECT_CHARTER.md` - Added AMENDMENT-048 for watch links enhancement system
-- `DAILY_CONTEXT.md` - This file (documented agent search evaluation and decision)
+---
+
+## Quick Reference
+
+### Daily Workflow
+🎬 NEW RELEASE WALL - Daily Startup
+====================================
+
+🔍 Step 0: Checking dependencies...
+   ✅ All dependencies available
+
+📥 Step 1: Pulling latest data from automation...
+   ✅ Data is current
+
+📊 Step 2: Quick Status Report
+   Total movies on wall: 247
+   Tracked: 1808 / Displayed: 247
+   New today (Oct 23): 0
+   New yesterday (Oct 22): 5
+   Last generated: 2025-10-23T17:33:38
+
+📋 Step 3: Context Files for AI Assistants
+   When working with AI assistants, read these files in order:
+   1. DAILY_CONTEXT.md (current state, recent changes, active issues) ⭐ PRIMARY
+   2. PROJECT_CHARTER.md (governance & amendments)
+   3. NRW_DATA_WORKFLOW_EXPLAINED.md (technical pipeline)
+
+🚀 Step 4: Starting local server...
+   ⚠️ Port 8000 in use, trying 8001...
+   ❌ Ports 8000 and 8001 both in use. Stop other servers first.
+   Try: lsof -ti:8000 | xargs kill
+
+### Manual Pipeline (if needed)
+❌ DEPRECATED: movie_tracker.py is no longer supported
+
+The movie tracking functionality has been integrated into the production discovery system.
+Please use the following commands instead:
+
+  For daily discovery:
+    python3 generate_data.py --discover
+
+  For full data generation:
+    python3 generate_data.py
+
+  For the complete daily pipeline:
+    python3 daily_orchestrator.py
+
+The legacy implementation is available at:
+    museum_legacy/legacy_movie_tracker.py
+
+For more information, see README.md and DAILY_CONTEXT.md
+❌ DEPRECATED: movie_tracker.py is no longer supported
+
+The movie tracking functionality has been integrated into the production discovery system.
+Please use the following commands instead:
+
+  For daily discovery:
+    python3 generate_data.py --discover
+
+  For full data generation:
+    python3 generate_data.py
+
+  For the complete daily pipeline:
+    python3 daily_orchestrator.py
+
+The legacy implementation is available at:
+    museum_legacy/legacy_movie_tracker.py
+
+For more information, see README.md and DAILY_CONTEXT.md
+
+### Context Files (Read These First)
+- **Daily:** This file (DAILY_CONTEXT.md) - Current state and recent changes
+- **Governance:** [PROJECT_CHARTER.md](PROJECT_CHARTER.md) - Rules, amendments, API keys
+- **Pipeline:** [NRW_DATA_WORKFLOW_EXPLAINED.md](NRW_DATA_WORKFLOW_EXPLAINED.md) - How data flows
+- **History:**  - End-of-session archives (when needed)
+
+---
+
+**Last updated:** [End of session]
+**Next diary archive:** End of session -> `diary/[YYYY-MM-DD].md`
