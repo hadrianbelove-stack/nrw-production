@@ -1259,19 +1259,30 @@ Work preservation takes priority. If authentication fails:
 
 This amendment ensures future authentication incidents can be handled systematically without losing work or context.
 
-## AMENDMENT-045: Admin Panel as QA Database Editor
+## AMENDMENT-045: Admin Panel - Post-Publication Curation & Data Quality
 **Date:** October 19-20, 2025
 **Context:** Admin panel redesigned from basic editorial tool to comprehensive QA database editor
 
-### Admin Panel Role - Quality Assurance Gate
+### Admin Panel Role - Post-Publication Curation
 
-The admin panel serves as the **manual inspection and correction stage** between scraped data and public display. It is not a "control center" or "dashboard" - it's a **QA checkpoint** where incomplete/incorrect data is caught and fixed before reaching users.
+The admin panel is used for **post-publication curation** where movies are refined after they appear on the public site. Movies are **automatically visible** when discovered by automation unless explicitly hidden. The admin panel allows curators to hide unwanted movies, feature important releases, and fix incomplete data.
 
-**Data Flow with QA Gate:**
+**Data Flow with Post-Publication Curation:**
 ```
-Daily Scraper → movie_tracking.json → ADMIN PANEL (QA) → data.json → Public Site
-                (raw scraped)          (inspect/fix)      (curated)    (visitors)
+Daily Scraper → movie_tracking.json → data.json → Public Site
+                (all discovered)      (filtered)   (visitors)
+                                         ↓
+                                   ADMIN PANEL (post-publication curation)
+                                   - Hide unwanted movies
+                                   - Feature important releases
+                                   - Fix incomplete data
 ```
+
+### Default Visibility Model
+
+Movies are **visible by default** (no approval required). The `apply_admin_overrides()` method in `generate_data.py` (lines 2197-2228) filters out movies in `admin/hidden_movies.json` during data generation. Admin uses "🚫 Hide" button to remove unwanted movies from public display and "⭐ Feature" button to highlight important releases.
+
+**Rationale:** Publish-first model reduces friction, allows rapid discovery, and trusts automation with manual refinement.
 
 ### Inline Database Editing Capabilities
 
@@ -1337,22 +1348,25 @@ All edits saved to `movie_tracking.json` with flags:
 
 **Frontend:** Embedded JavaScript with fetch API for AJAX operations
 
-### QA Workflow
+### Daily Curation Workflow
 
 **Morning Routine:**
-1. Open http://localhost:5555
-2. Click "⚠️ Missing Data (93)" to see incomplete movies
-3. For each flagged movie:
+1. Open http://localhost:5555 (after automation has run)
+2. Review new movies on public site to identify candidates for hiding/featuring
+3. Click "⚠️ Missing Data (93)" to see incomplete movies
+4. For each flagged movie:
    - Missing RT score only? → Wait (reviews coming)
    - Missing trailer/poster? → Check TMDB → Fix or Hide
    - Wrong director/country? → Edit field → Save
-4. All fixed movies turn from RED to normal
-5. Public site automatically updated via regeneration
+5. All fixed movies turn from RED to normal
+6. Hidden movies removed from public site via regeneration
 
 ### Rationale
 
 - **Scrapers are imperfect** - APIs have gaps, platforms change, data is incomplete
-- **Manual QA ensures quality** - Only complete, accurate movies reach users
+- **Post-publication curation** - Admin refines display after automation, rather than blocking publication
+- **Publish-first model** - Reduces manual bottleneck, allows rapid discovery of new releases
+- **Manual QA ensures quality** - Quality control through post-publication refinement
 - **Inline editing efficiency** - Faster than editing JSON files manually
 - **Visual indicators** - Red borders, badges make quality control efficient
 - **Single save button** - Reduces cognitive load
@@ -1363,6 +1377,8 @@ All edits saved to `movie_tracking.json` with flags:
 - YouTube integration: `youtube_playlist_manager.py` (lines 573-662 for custom playlists)
 - Setup guide: `YOUTUBE_PLAYLIST_SETUP.md`
 - Related amendments: AMENDMENT-038 (Watchmode API), AMENDMENT-044 (Auth token management)
+
+For detailed curation workflow and best practices, see `ADMIN_WORKFLOW.md`.
 
 ### AMENDMENT-046: Remove TMDB vote_count Filter for Discovery
 
@@ -1755,5 +1771,84 @@ This amendment aligns with AMENDMENT-001 (numbering discipline), AMENDMENT-006 (
 **Rationale:** Multi-format output supports different distribution channels without requiring multiple tools. Platform grouping helps users find movies on their preferred services. Review integration provides editorial value beyond automated aggregation. Configurable date range enables both weekly and monthly newsletters.
 
 **Related:** Completes HIGH-002 (Newsletter Export) in `IMPLEMENTATION_ROADMAP.md`. Depends on AMENDMENT-050 (Review System).
+
+**Status:** ✅ Implemented and documented
+
+## AMENDMENT-052: Unified Launcher for Daily Operations (2025-10-23)
+
+**Context:** Users previously needed to remember three separate commands to launch different NRW tools: `./launch_NRW.sh` for the public site, `python3 admin.py` for the admin panel, and `python3 youtube_playlist_manager.py [args]` for YouTube management. This created friction for daily operations and onboarding new users to the project.
+
+**Decision:** Create `launch_all.sh` as unified launcher with menu-driven interface. The launcher provides four menu options: (1) Public Site, (2) Admin Panel, (3) YouTube Manager, (4) All Services. Browser auto-open for web interfaces (site and admin), process management with graceful cleanup on Ctrl+C, and authentication reminder for admin panel access.
+
+**Implementation:**
+
+1. **Script: `launch_all.sh`**
+   - Menu-driven interface with 5 options (1-4 plus Exit)
+   - Reuses browser detection and port checking logic from `launch_NRW.sh`
+   - Tracks PIDs for all launched processes with cleanup function
+   - Registered cleanup with `trap` for EXIT, INT, TERM signals
+   - YouTube manager integrated as interactive CLI (not background service)
+
+2. **Menu Options:**
+   - **Option 1: Public Site** - HTTP server on port 8000/8001, auto-open browser
+   - **Option 2: Admin Panel** - Flask server on port 5555, auth reminder, auto-open browser
+   - **Option 3: YouTube Manager** - Interactive CLI with common commands listed
+   - **Option 4: All Services** - Launch site + admin simultaneously, both auto-open
+   - **Option 5: Exit** - Clean shutdown
+
+3. **Process Management:**
+   - Global variables: `SITE_PID`, `ADMIN_PID`, `YOUTUBE_PID`
+   - Cleanup function checks if PIDs exist and running with `kill -0`
+   - Graceful shutdown with `kill $PID` for each service
+   - Automatic cleanup on script exit or Ctrl+C
+
+4. **Authentication Reminder:**
+   - Displays credentials box when launching admin panel (options 2 or 4)
+   - Shows default username/password and reference to `PROJECT_CHARTER.md`
+   - Security note about changing defaults in production
+
+5. **Browser Integration:**
+   - Detects `open` (macOS) or `xdg-open` (Linux)
+   - Auto-opens URLs for web interfaces, displays URLs if no opener available
+   - Staggered browser opens for option 4 (site first, admin after 1 second)
+
+6. **Error Handling:**
+   - Port availability checking using `lsof`
+   - Dependency validation (python3, git required)
+   - Graceful fallbacks for missing tools (`lsof`, browser opener)
+   - Clear error messages for port conflicts
+
+**Design Decisions:**
+
+- **Menu-driven vs. command-line flags:** Menu interface is more discoverable for new users and reduces cognitive load
+- **Process management:** Track all PIDs to ensure complete cleanup and prevent orphaned processes
+- **Staggered launches:** 2-second delay between services to avoid port conflicts and startup races
+- **YouTube CLI integration:** Interactive prompt for commands rather than background service (matches its CLI nature)
+- **Browser auto-open:** Automatic for web interfaces, manual for CLI tools
+- **Authentication prominence:** Large box display for admin credentials to reduce login friction
+- **Backward compatibility:** Original scripts (`launch_NRW.sh`, `admin.py`) remain unchanged and supported
+
+**Files Created:**
+- `launch_all.sh` - Unified launcher script (~430 lines)
+
+**Files Modified:**
+- `README.md` - Updated Quick Start section, added comprehensive Unified Launcher documentation
+- `DAILY_CONTEXT.md` - Added launcher to Quick Reference section, updated admin panel instructions
+- `PROJECT_CHARTER.md` - This amendment
+
+**Usage:**
+
+Primary command: `./launch_all.sh`
+Recommended for daily work: Select option 4 (All Services)
+YouTube manager: Select option 3 for interactive CLI
+Direct launches still supported for automation/scripting
+
+**Related Files:**
+- `launch_all.sh` - Unified launcher (new)
+- `launch_NRW.sh` - Public site launcher (existing, still supported)
+- `admin.py` - Admin panel (existing, still supported)
+- `youtube_playlist_manager.py` - YouTube CLI (existing, still supported)
+
+**Rationale:** Improved user experience with single entry point for all tools eliminates need to remember multiple commands. Menu interface aids discovery and onboarding. Option 4 (All Services) optimizes daily workflow by launching both site and admin simultaneously. Process management prevents orphaned processes. Authentication reminder reduces admin panel friction. Maintains backward compatibility for automation and scripting use cases.
 
 **Status:** ✅ Implemented and documented

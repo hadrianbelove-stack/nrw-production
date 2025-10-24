@@ -180,8 +180,8 @@ See [AMENDMENT-036](PROJECT_CHARTER.md#amendment-036-rolling-daily-context) and 
 📊 Step 2: Quick Status Report
    Total movies on wall: 247
    Tracked: 1808 / Displayed: 247
-   New today (Oct 23): 0
-   New yesterday (Oct 22): 5
+   New today (Oct 24): 0
+   New yesterday (Oct 23): 0
    Last generated: 2025-10-23T17:33:38
 
 📋 Step 3: Context Files for AI Assistants
@@ -214,6 +214,72 @@ The legacy implementation is available at:
     museum_legacy/legacy_movie_tracker.py
 
 For more information, see README.md and DAILY_CONTEXT.md
+📂 Incremental mode: Found 247 existing movies in data.json
+🎬 Processing NEW movies that went digital in last 90 days...
+   Existing movies in data.json: 247
+   These will be SKIPPED (use --full to reprocess)
+  ✓ Night Always Comes - Links: 3
+  ✓ Tehran - Links: 3
+  ✓ Hurricane Katrina: 20 Years After the Storm with Robin Roberts - Links: 3
+  ✓ Nanticoke - Links: 3
+
+⏭️  Skipped 247 existing movies (incremental mode)
+   To reprocess all movies with agent scraper, run: python3 generate_data.py --full
+
+📋 Adding 4 new movies to 247 existing movies
+📝 Admin overrides applied:
+  Hidden movies: 0
+  Featured movies: 0
+✅ Generated data.json with 251 movies
+Wikipedia links found: 251
+Direct trailers found: 248
+RT scores cached: 182
+Movies with reviews: 1
+
+📊 Wikidata Usage:
+  Wikidata attempts: 0
+  Wikidata successes: 0
+  Wikipedia links recovered via Wikidata: 0
+
+📊 Watchmode API Usage:
+  Search calls: 0
+  Source calls: 0
+  Cache hits: 4
+  Cache hit rate: 100.0%
+  Watchmode success rate: 0.0%
+
+📊 Agent Scraper Usage:
+  Agent enabled: True
+  Agent initialized: False
+  Agent attempts: 0
+  Agent successes: 0
+  Agent cache hits: 0
+  ⚠️  Agent scraper was never called (check if movies have Netflix/Disney+/Hulu providers)
+
+📊 Platform Scraper Statistics (Amazon/Apple TV):
+  Platform scraper enabled: True
+  Platform scraper initialized: False
+  Amazon enabled: True
+  Apple TV enabled: False
+  Platform scraper attempts: 0
+  Platform scraper successes: 0
+  Platform scraper failures: 0
+  ⚠️  Platform scraper was never called (check if movies have Amazon/Apple TV providers)
+  Last selector update: 2025-10-23
+  Expected update frequency: quarterly
+
+📊 RT Scraper Usage:
+  RT attempts: 0
+  RT successes: 0
+  RT cache hits: 4
+
+📊 Admin Override Usage:
+  Manual tracking hits: 0
+  Override hits: 0
+
+🔍 Schema Validation:
+  Validation passes: 0
+  Validation warnings: 0
 ❌ DEPRECATED: movie_tracker.py is no longer supported
 
 The movie tracking functionality has been integrated into the production discovery system.
