@@ -70,9 +70,15 @@ rt_scraper:
   enabled: true  # Enable/disable RT scraping
   headless: true  # Run browser in headless mode
   rate_limit: 2.0  # Minimum seconds between scrapes
-  timeout: 10  # Page load timeout in seconds
-  max_retries: 1  # Number of retries on failure (RT is less critical than watch links)
+  timeout: 15  # Page load timeout in seconds (increased for CI environment)
+  max_retries: 3  # Number of retries on failure (increased for CI reliability)
   cache_ttl_days: 90  # RT links are stable, longer TTL than agent scraper
+  screenshots_enabled: true  # Capture screenshots on failure for debugging
+  screenshot_retention_days: 7  # Auto-delete old screenshots
+  exponential_backoff:
+    base_delay: 0.5  # Initial retry delay (seconds)
+    max_delay: 5.0  # Maximum retry delay (seconds)
+    jitter_ratio: 0.2  # Randomness factor (±20%)
 
 validation:
   min_recall: 0.75  # Minimum discovery recall threshold (75%)
