@@ -129,8 +129,8 @@ header h1 {
 }
 
 .movie-card {
-    width: 215px;
-    height: 320px;
+    width: 172px;
+    height: 256px;
     perspective: 1000px;
     cursor: pointer;
     transition: transform 0.3s ease;
@@ -192,6 +192,17 @@ header h1 {
     font-size: 0.9rem;
     color: #bbb;
     line-height: 1.2;
+    max-width: 189px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.movie-info .movie-title {
+    color: #fff;
+    font-weight: bold;
+    font-size: 1rem;
+    margin-bottom: 0.3rem;
+    line-height: 1.3;
 }
 
 .movie-info .director {
@@ -200,7 +211,7 @@ header h1 {
 }
 
 .movie-info .country {
-    color: #fff;
+    color: #00d4aa;
 }
 
 .card-back h3 {
@@ -254,6 +265,12 @@ header h1 {
     gap: 0.5rem;
 }
 
+.watch-buttons {
+    display: flex;
+    gap: 0.4rem;
+    align-items: stretch;
+}
+
 .actions .watch-btn {
     padding: 0.5rem;
     background: #00d4aa;
@@ -280,6 +297,7 @@ header h1 {
 .actions .watch-btn-stream {
     background: #00d4aa;
     color: #000;
+    flex: 1;
 }
 
 .actions .watch-btn-stream:hover {
@@ -288,88 +306,29 @@ header h1 {
     box-shadow: 0 5px 20px rgba(0,212,170,0.5);
 }
 
-.actions .watch-btn-rent {
+.actions .watch-btn-purchase {
     background: #ff9500;
     color: #000;
+    flex: 0 0 auto;
+    width: 44px;
+    padding: 0.4rem;
 }
 
-.actions .watch-btn-rent:hover {
+.actions .watch-btn-purchase:hover {
     background: #ffad33;
     transform: translateY(-2px);
     box-shadow: 0 5px 20px rgba(255,149,0,0.5);
 }
 
-.actions .watch-btn-buy {
-    background: #ff6b00;
-    color: #fff;
+.btn-logo {
+    max-width: 100%;
+    max-height: 20px;
+    display: block;
+    filter: brightness(0);
 }
 
-.actions .watch-btn-buy:hover {
-    background: #ff8533;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 20px rgba(255,107,0,0.5);
-}
-
-/* Platform-specific button styles */
-.actions .watch-btn-amazon {
-    background: #ff9900;
-    color: #000;
-    font-weight: bold;
-}
-
-.actions .watch-btn-amazon:hover {
-    background: #ffad33;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 20px rgba(255,153,0,0.5);
-}
-
-.actions .watch-btn-apple {
-    background: #555555;
-    color: #fff;
-    font-weight: bold;
-}
-
-.actions .watch-btn-apple:hover {
-    background: #6a6a6a;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 20px rgba(85,85,85,0.5);
-}
-
-/* Additional streaming platforms */
-.actions .watch-btn-netflix {
-    background: #e50914;
-    color: #fff;
-    font-weight: bold;
-}
-
-.actions .watch-btn-netflix:hover {
-    background: #ff0a16;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 20px rgba(229,9,20,0.5);
-}
-
-.actions .watch-btn-disney {
-    background: #113ccf;
-    color: #fff;
-    font-weight: bold;
-}
-
-.actions .watch-btn-disney:hover {
-    background: #1a52ff;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 20px rgba(17,60,207,0.5);
-}
-
-.actions .watch-btn-hulu {
-    background: #1ce783;
-    color: #000;
-    font-weight: bold;
-}
-
-.actions .watch-btn-hulu:hover {
-    background: #2fff9a;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 20px rgba(28,231,131,0.5);
+.watch-btn-purchase .btn-logo {
+    max-height: 28px;
 }
 
 

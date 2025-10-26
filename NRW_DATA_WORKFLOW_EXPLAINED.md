@@ -10,7 +10,9 @@ We want a beautiful webpage that shows the latest movies available for streaming
 ### **Phase 1: Daily Discovery & Monitoring**
 **What happens:** We check if tracked movies became available for digital (streaming/rental/buy) AND discover new movies to track.
 
-**🔧 `movie_tracker.py daily`** - *The Complete Movie Tracker*
+**🔧 `generate_data.py --discover`** - *The Production Discovery System*
+
+⚠️ **DEPRECATION NOTICE:** The legacy `movie_tracker.py` system has been superseded by `generate_data.py --discover`. The legacy implementation is archived at `museum_legacy/legacy_movie_tracker.py` for historical reference. See PROJECT_CHARTER.md AMENDMENT-025 for governance documentation.
 - **Discovery:** Searches TMDB API for movies released in past 7 days (festival, limited theatrical, theatrical, direct to streaming, etc.)
 - **Monitoring:** Checks ALL movies in database for digital availability on Netflix, Amazon, etc.
 - **Why:** There is no functional DIGITAL premiere date in APIs. They only show current state. We detect the change by checking daily.
@@ -30,12 +32,36 @@ We want a beautiful webpage that shows the latest movies available for streaming
 **What happens:** We take movies that became digitally available and fill out ALL their details - cast, director, synopsis, posters, trailers, Wikipedia pages, review links, watch links (streaming/rent/buy), country, studio, runtime, genres.
 
 **🔧 `generate_data.py`** - *The Complete Data Enricher*
-- **What it does:** Takes recently available movies (90 days) and creates full movie profiles
+- **What it does:** Takes recently available movies (90 days) and creates full movie profiles using smart caching
 - **Incremental mode (default):** Only processes NEW movies not already in data.json, then ADDS them to existing list (takes seconds)
 - **Full regeneration mode:** Rebuilds entire data.json from scratch (takes 30+ minutes, use only when needed)
 - **TMDB API calls:** Fetches complete movie details including cast, crew, synopsis, posters, genres, studio, runtime, country
 - **Link resolution:** Finds working Wikipedia pages, trailers, and review links
 - **Why:** Users need complete movie information to decide what to watch
+
+### **Phase 2.1: Enrichment Optimization (Smart Caching)**
+**What happens:** Critical optimization implemented on 2025-10-24 that reduces API/scraping costs by 98% through enrichment-on-transition pattern.
+
+**🎯 Enrichment-on-Transition Pattern:**
+- Movies are only enriched when they transition from 'tracking' to 'available' status in Watchmode
+- Enrichment state tracked with `enriched` flag and `enrichment_date` timestamp in `movie_tracking.json`
+- Subsequent data generation runs skip already-enriched movies (99%+ cache hit rate)
+- Only newly available movies (1-10 per day) are enriched with Watchmode API calls and scraping
+- Stale movies (>90 days old) re-enriched in small batches (max 10/day) to keep links fresh
+
+**📊 Performance Impact:**
+- **Before:** 9,540 API calls/month (exceeded free tier limits)
+- **After:** 150-300 API calls/month (98% reduction, sustainable on free tier)
+- **Cache efficiency:** 99.4% (318/320 movies cached in typical run)
+- **Speed:** 96% faster data generation (30 seconds vs 15+ minutes)
+
+**🔄 Smart Cache Management:**
+- Enrichment consistency validation prevents flag/data mismatches
+- Automatic stale data refresh for movies >90 days old
+- Graceful degradation when Watchmode quota exhausted (uses scrapers only)
+- Monthly quota reset tracking (automatically resets Nov 1st)
+
+**Reference:** See `PHASE_2_1_COMPLETE.md` and `OPTIMIZATION_COMPLETE.md` for detailed implementation documentation.
 
 **📂 Link Resolution System** - *Multi-Tier Intelligent Lookup*
 
@@ -242,8 +268,8 @@ python3 admin.py
 
 **🔧 `daily_orchestrator.py`** - *The Modern Orchestra Conductor*
 ```bash
-1. python movie_tracker.py daily     # Discover new movies + monitor all existing for availability changes
-2. python generate_data.py           # Create enriched display data with links (includes RT scraping, agent scraping)
+1. python3 generate_data.py --discover     # Discover new movies + monitor all existing for availability changes
+2. python3 generate_data.py          # Create enriched display data with links (includes RT scraping, agent scraping)
 3. git commit & push                 # Save changes
 ```
 
@@ -253,7 +279,13 @@ python3 admin.py
 - Executes full pipeline automatically
 - Commits results to repository
 
-**Legacy:** `daily_update.sh` exists but `daily_orchestrator.py` is the modern implementation
+**Current System:** `daily_orchestrator.py` is the production automation script (runs `generate_data.py --discover` for discovery)
+
+**Legacy Systems (Archived):**
+- `daily_update.sh` - Shell script predecessor to `daily_orchestrator.py`
+- `movie_tracker.py` - Original discovery/monitoring system, superseded by `generate_data.py --discover`
+- Both archived in `museum_legacy/` directory for historical reference
+- See PROJECT_CHARTER.md AMENDMENT-025 for migration documentation
 
 **🔍 `ops/health_check.py`** - *The Quality Inspector*
 - **What it does:** Checks data.json has correct structure, no broken links
@@ -294,10 +326,11 @@ python3 admin.py
    - **Cache:** `wikipedia_cache.json` (root directory)
    - **Fallback:** Search URL if API fails
 
-2. **RT Scraper** (Inlined, AMENDMENT-042)
-   - **Technology:** Selenium WebDriver with Chrome
+2. **RT Scraper** (Migrated to Playwright, AMENDMENT-042)
+   - **File:** `rt_scraper_playwright.py` (Playwright-based)
+   - **Technology:** Playwright with Chromium browser
    - **Speed:** ~6-8 seconds per scrape (includes rate limiting)
-   - **Reliability:** Medium (CSS selectors can break)
+   - **Reliability:** High (Playwright auto-wait, better selector stability)
    - **Cache:** `rt_cache.json` (root directory, 90-day TTL)
    - **Waterfall:** Overrides → Cache → Scraper → Search URL
    - **Selectors:** 3 search result selectors, 4 score selectors (fallback strategy)
@@ -313,21 +346,22 @@ python3 admin.py
    - **Features:** 4-6 selector fallbacks per platform, exponential backoff (3 retries), screenshot capture on failure
    - **Diagnostics:** Saves screenshots to `cache/screenshots/` when scraping fails
 
-4. **YouTube Trailer Scraper** (External class)
-   - **File:** `scripts/youtube_trailer_scraper.py` (192 lines, Selenium-based)
-   - **Technology:** Selenium WebDriver with Chrome
+4. **YouTube Trailer Scraper** (Migrated to Playwright)
+   - **File:** `scripts/youtube_trailer_scraper.py` (192 lines, Playwright-based)
+   - **Technology:** Playwright with Chromium browser
    - **Speed:** ~3-5 seconds per scrape
-   - **Reliability:** High (YouTube structure is stable)
+   - **Reliability:** High (YouTube structure is stable, Playwright auto-wait)
    - **Cache:** `youtube_trailer_cache.json` (root directory)
    - **Integration:** Called by generate_data.py to convert search URLs to direct watch URLs
 
 **Manual Fallback Tools (Not Automated):**
 
 1. **wikipedia_scraper.py** (Root directory)
-   - **Technology:** Selenium WebDriver with Chrome
+   - **Technology:** Selenium WebDriver with Chrome (kept for emergency fallback)
    - **Use case:** When Wikipedia REST API fails or returns wrong results
    - **Usage:** Manual execution only (not integrated into daily automation)
    - **When to use:** Complex title searches, disambiguation pages, manual verification
+   - **Note:** Selenium kept as emergency backup only; Playwright is primary technology
 
 ### **Archived Scrapers (museum_legacy/)**
 
@@ -339,6 +373,7 @@ These scrapers have been superseded and archived:
 - **rt_scraper.py** - Old version, replaced by inlined RT scraper
 - **update_rt_data.py** - RT scraping now automatic in generate_data.py
 - **bootstrap_rt_cache.py** - RT cache built automatically
+- **Selenium backup files** - `*_selenium_backup.py` files preserved for emergency rollback
 
 See `museum_legacy/README.md` for detailed archival documentation.
 
@@ -347,7 +382,11 @@ See `museum_legacy/README.md` for detailed archival documentation.
 **Playwright vs Selenium:**
 - **Playwright:** Modern, faster (~30% speed improvement), better auto-wait, screenshot/trace debugging
 - **Selenium:** Legacy but stable, widely used, good for simple scraping
-- **Migration status:** Agent scraper migrated to Playwright (AMENDMENT-041), others remain on Selenium
+- **Migration status:** COMPLETED (October 2025) - All active scrapers now use Playwright:
+  - Agent scraper: `agent_link_scraper.py` (Netflix, Disney+, HBO Max, Hulu)
+  - RT scraper: `rt_scraper_playwright.py` (Rotten Tomatoes)
+  - YouTube scraper: `scripts/youtube_trailer_scraper.py` (YouTube trailers)
+- **Selenium backups:** Emergency fallback versions preserved as `*_selenium_backup.py` files
 
 **REST APIs vs Scraping:**
 - **REST APIs:** Preferred when available (Wikipedia, TMDB, Watchmode)

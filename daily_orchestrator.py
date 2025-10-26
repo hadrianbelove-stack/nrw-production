@@ -374,7 +374,11 @@ class NRWOrchestrator:
             ("python3 generate_data.py --discover",
              "Discover new premieres using production discovery", True),
 
-            # Phase 1.5: Validate discovery results (fail if recall drops below threshold)
+            # Phase 1.5: Check tracking movies for digital availability (provider monitoring)
+            ("python3 generate_data.py --check",
+             "Check tracking movies for digital availability", True),
+
+            # Phase 1.75: Validate discovery results (fail if recall drops below threshold)
             ("python3 ops/validate_discovery.py --days-back 7",
              "Validate discovery against ground truth", False),  # Non-critical to avoid blocking automation
 

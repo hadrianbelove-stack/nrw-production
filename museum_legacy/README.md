@@ -167,6 +167,14 @@ This directory contains scrapers that have been superseded by better solutions o
 
 ### Archived Files
 
+#### legacy_movie_tracker.py
+- **Archived:** Oct 22, 2025
+- **Original Purpose:** Core discovery and monitoring system for movie releases
+- **Why Archived:** Replaced by integrated discovery in `generate_data.py` (AMENDMENT-047)
+- **Replacement:** `python3 generate_data.py --discover` and `python3 generate_data.py --check`
+- **Technology:** TMDB API with pagination and rate limiting
+- **Migration Notes:** Production discovery is now consolidated into generate_data.py
+
 #### wikidata_scraper.py
 - **Archived:** Oct 17, 2025
 - **Original Purpose:** IMDb ID → Wikidata → Wikipedia page title + RT ID

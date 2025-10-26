@@ -255,21 +255,32 @@ tracking:
 
 ## API Keys & External Services
 
-### TMDB (The Movie Database)
-- **API Key:** 99b122ce7fa3e9065d7b7dc6e660772d
-- **Read Access Token:** eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI5OWIxMjJjZTdmYTNlOTA2NWQ3YjdkYzZlNjYwNzcyZCIsIm5iZiI6MTc1NDc4NjMzNS4zOTUsInN1YiI6IjY4OTdlYTFmOTdlOGI3NGVkNDkyZWIxMSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.jBIIJ0Om5GS9Yjs4_VmegF-QCg_qamwSr7TK1yp9kjw
-- **Usage:** Movie metadata, posters, cast/crew information
+### Configuration Pattern
 
-### OMDb API
-- **API Key:** 539723d9
-- **Base URL:** http://www.omdbapi.com/?i=tt3896198&apikey=539723d9
-- **Poster API:** http://img.omdbapi.com/?i=tt3896198&h=600&apikey=539723d9
-- **Usage:** Alternative movie data source, poster fallbacks
+All API keys follow the 12-factor app pattern:
+1. **Environment variables** (production, CI/CD) - highest priority
+2. **config.yaml** (local development only) - fallback
+3. **Error if neither is set** - fail fast with clear message
+
+**Environment Variables:**
+- `TMDB_API_KEY` - The Movie Database API key
+- `WATCHMODE_API_KEY` - Watchmode streaming links API key
+- `OMDB_API_KEY` - OMDb API key (optional, for fallbacks)
+
+**Local Development:**
+See `config.yaml` for local development configuration. Copy `config.example.yaml` to `config.yaml` and add your API keys. Never commit `config.yaml` with real keys to version control.
+
+### TMDB (The Movie Database)
+- **Sign up:** https://www.themoviedb.org/settings/api
+- **Environment variable:** `TMDB_API_KEY`
+- **Config fallback:** `api.tmdb_api_key` in config.yaml
+- **Usage:** Movie metadata, posters, cast/crew information
+- **Rate limit:** 40 requests per 10 seconds (handled automatically)
 
 ### Watchmode API
-- **API Key:** bBMpVr31lRfUsSFmgoQp0jixDrQt8DIKCVg7EFdp
-- **Base URL:** https://api.watchmode.com/v1/
-- **Documentation:** https://api.watchmode.com/docs/
+- **Sign up:** https://api.watchmode.com/
+- **Environment variable:** `WATCHMODE_API_KEY`
+- **Config fallback:** `api.watchmode_api_key` in config.yaml
 - **Free Tier:** 1,000 requests/month (no credit card required)
 - **Usage:** Deep links to streaming platforms (Netflix, Amazon, HBO Max, etc.)
 - **Endpoints used:**
@@ -277,7 +288,13 @@ tracking:
   - Details: https://api.watchmode.com/v1/title/{watchmode_id}/details/ (get streaming sources)
 - **Authentication:** Pass `apiKey` as query parameter
 - **Coverage:** 200+ streaming services in 50+ countries (US data on free tier)
-- **Features:** Web links, iOS/Android deep links, episode-level links
+
+### OMDb API
+- **Sign up:** http://www.omdbapi.com/apikey.aspx
+- **Environment variable:** `OMDB_API_KEY`
+- **Config fallback:** `api.omdb_api_key` in config.yaml (if implemented)
+- **Usage:** Alternative movie data source, poster fallbacks
+- **Free Tier:** 1,000 requests/day
 
 ### Agent-Based Link Finding (No API Key Required)
 - **Purpose:** Scrape direct watch links from streaming platforms when Watchmode API has no data
@@ -1435,20 +1452,22 @@ Remove the vote_count filter from both `discover_new_premieres` and `bootstrap` 
 
 ### AMENDMENT-047: Production Discovery Architecture
 
-**Date:** 2025-10-22
+**Date:** 2025-10-22 (Updated: 2025-10-24)
 **Severity:** Critical
 
 **Problem:** Discovery system was fragmented between legacy `movie_tracker.py` and `generate_data.py`, leading to inconsistent behavior and maintenance complexity.
 
-**Solution:** Complete consolidation to production discovery architecture.
+**Solution:** Complete consolidation to production discovery and monitoring architecture.
 
 **Production Flow (MANDATORY):**
 ```
 daily_orchestrator.py
   ↓
-generate_data.py --discover  (with bounded timeouts, retry logic, structured diagnostics)
+generate_data.py --discover  (find new theatrical releases)
   ↓
-generate_data.py  (enrichment phase)
+generate_data.py --check     (monitor tracking movies for digital availability)
+  ↓
+generate_data.py             (generate enriched display data)
 ```
 
 **Legacy System Status:**
@@ -1464,6 +1483,14 @@ generate_data.py  (enrichment phase)
 - Daily metrics: Saves to `metrics/daily.jsonl` for 3-day baselining
 - Debug mode: `--debug` flag for detailed logging
 
+**Provider Monitoring Features (Implemented 2025-10-24):**
+- Checks tracking movies for digital availability via TMDB watch/providers API
+- Smart prioritization: Recent movies (last 180 days) checked first
+- Incremental saves: Progress saved every 100 movies
+- Retry logic: 3 attempts with exponential backoff for API failures
+- Updates `status='tracking'` → `status='available'` when providers found
+- Records digital_date and provider details (rent/buy/streaming)
+
 **Configuration:**
 - Discovery settings: `config.yaml` → `discovery` section
 - Deprecated: `api.max_pages_daily` (use `discovery.max_pages`)
@@ -1476,12 +1503,19 @@ generate_data.py  (enrichment phase)
 
 **Testing:**
 - Discovery: `python3 generate_data.py --discover --debug`
+- Provider check: `python3 generate_data.py --check`
 - Metrics: `python3 scripts/baseline_metrics.py`
 - Full pipeline: `python3 daily_orchestrator.py`
 
+**Bug Fix (2025-10-24):**
+- **Issue:** Initial migration on 2025-10-23 only ported discovery, forgot provider monitoring
+- **Impact:** 1,956 movies stuck in 'tracking' status, never transitioning to 'available'
+- **Resolution:** Ported `check_tracking_movies()` from legacy tracker to `generate_data.py`
+- **Root cause:** AMENDMENT-047 specification was incomplete - only documented discovery, not monitoring
+
 **Supersedes:** AMENDMENT-046 (adds production implementation)
 
-**Status:** ✅ Implemented and documented
+**Status:** ✅ Fully implemented (discovery + monitoring) and documented
 
 ### AMENDMENT-036: Implementation Roadmap Discipline (2025-10-14)
 
@@ -1787,12 +1821,12 @@ This amendment aligns with AMENDMENT-001 (numbering discipline), AMENDMENT-006 (
    - Reuses browser detection and port checking logic from `launch_NRW.sh`
    - Tracks PIDs for all launched processes with cleanup function
    - Registered cleanup with `trap` for EXIT, INT, TERM signals
-   - YouTube manager integrated as interactive CLI (not background service)
+   - YouTube Playlist Manager integrated as interactive CLI (not background service)
 
 2. **Menu Options:**
    - **Option 1: Public Site** - HTTP server on port 8000/8001, auto-open browser
    - **Option 2: Admin Panel** - Flask server on port 5555, auth reminder, auto-open browser
-   - **Option 3: YouTube Manager** - Interactive CLI with common commands listed
+   - **Option 3: YouTube Playlist Manager** - Executes `python3 youtube_playlist_manager.py --help` and displays its output
    - **Option 4: All Services** - Launch site + admin simultaneously, both auto-open
    - **Option 5: Exit** - Clean shutdown
 
@@ -1804,7 +1838,7 @@ This amendment aligns with AMENDMENT-001 (numbering discipline), AMENDMENT-006 (
 
 4. **Authentication Reminder:**
    - Displays credentials box when launching admin panel (options 2 or 4)
-   - Shows default username/password and reference to `PROJECT_CHARTER.md`
+   - Shows a generic reminder with a pointer to `PROJECT_CHARTER.md` (no in-script credentials)
    - Security note about changing defaults in production
 
 5. **Browser Integration:**
@@ -1814,6 +1848,7 @@ This amendment aligns with AMENDMENT-001 (numbering discipline), AMENDMENT-006 (
 
 6. **Error Handling:**
    - Port availability checking using `lsof`
+   - Readiness checks include `lsof` if available and curl-based HTTP probes as fallback
    - Dependency validation (python3, git required)
    - Graceful fallbacks for missing tools (`lsof`, browser opener)
    - Clear error messages for port conflicts
@@ -1840,7 +1875,7 @@ This amendment aligns with AMENDMENT-001 (numbering discipline), AMENDMENT-006 (
 
 Primary command: `./launch_all.sh`
 Recommended for daily work: Select option 4 (All Services)
-YouTube manager: Select option 3 for interactive CLI
+YouTube Playlist Manager: Select option 3 for interactive CLI
 Direct launches still supported for automation/scripting
 
 **Related Files:**

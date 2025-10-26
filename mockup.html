@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Button Mockup - Real Logos</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+            color: #fff;
+            font-family: -apple-system, system-ui, sans-serif;
+            padding: 2rem;
+        }
+
+        .card-back {
+            width: 172px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            padding: 0.8rem;
+            border-radius: 15px;
+            margin: 1rem;
+            display: inline-block;
+            vertical-align: top;
+        }
+
+        .card-title {
+            color: #00d4aa;
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+            text-align: center;
+            font-weight: bold;
+            line-height: 1.2;
+        }
+
+        .synopsis {
+            font-size: 0.7rem;
+            line-height: 1.3;
+            color: #f0f0f0;
+            margin-bottom: 0.8rem;
+            height: 70px;
+            overflow: hidden;
+        }
+
+        .actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .watch-buttons {
+            display: flex;
+            gap: 0.4rem;
+            align-items: stretch;
+        }
+
+        .watch-btn {
+            text-decoration: none;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 0.7rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-transform: uppercase;
+            padding: 0.5rem 0.4rem;
+            min-height: 36px;
+        }
+
+        .watch-btn-stream {
+            background: #00d4aa;
+            color: #000;
+            flex: 1;
+        }
+
+        .watch-btn-stream:hover {
+            background: #00ffbb;
+            transform: translateY(-2px);
+        }
+
+        .watch-btn-purchase {
+            background: #ff9500;
+            color: #000;
+            flex: 0 0 auto;
+            width: 44px;
+            padding: 0.4rem;
+        }
+
+        .watch-btn-purchase:hover {
+            background: #ffad33;
+            transform: translateY(-2px);
+        }
+
+        .watch-btn-purchase.solo {
+            flex: 1;
+        }
+
+        .btn-logo {
+            max-width: 100%;
+            max-height: 24px;
+            display: block;
+            filter: brightness(0); /* Make logos black */
+        }
+
+        .watch-btn-stream .btn-logo {
+            max-height: 20px;
+        }
+
+        .info-links {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.4rem;
+        }
+
+        .info-btn {
+            padding: 0.4rem;
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 0.75rem;
+            border: 1px solid rgba(255,255,255,0.2);
+            display: block;
+        }
+
+        h1 {
+            color: #00d4aa;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            color: #fff;
+            font-size: 1.2rem;
+            margin: 2rem 0 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Card Back Button Mockups - Real Logos</h1>
+
+    <h2 class="section-title">Streaming Only</h2>
+
+    <!-- Netflix streaming -->
+    <div class="card-back">
+        <div class="card-title">Swim to Me</div>
+        <div class="synopsis">Estela, a young woman from rural Chile, embarks on a journey to Santiago, leaving her family behind...</div>
+        <div class="actions">
+            <div class="watch-buttons">
+                <a href="#" class="watch-btn watch-btn-stream">NETFLIX</a>
+            </div>
+            <div class="info-links">
+                <a href="#" class="info-btn">Trailer</a>
+                <a href="#" class="info-btn">RT</a>
+                <a href="#" class="info-btn">Wiki</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Prime streaming -->
+    <div class="card-back">
+        <div class="card-title">A Christmas Angel Match</div>
+        <div class="synopsis">Christmas angels used to working alone to bring "destined soulmates together" over the holidays...</div>
+        <div class="actions">
+            <div class="watch-buttons">
+                <a href="#" class="watch-btn watch-btn-stream">
+                    <img src="logos and images/amazon prime.png" alt="Prime Video" class="btn-logo">
+                </a>
+            </div>
+            <div class="info-links">
+                <a href="#" class="info-btn">Trailer</a>
+                <a href="#" class="info-btn">RT</a>
+                <a href="#" class="info-btn">Wiki</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Max streaming -->
+    <div class="card-back">
+        <div class="card-title">Armed Only with a Camera</div>
+        <div class="synopsis">On March 13, 2022, filmmaker Brent Renaud was killed by Russian soldiers, the first American journalist...</div>
+        <div class="actions">
+            <div class="watch-buttons">
+                <a href="#" class="watch-btn watch-btn-stream">MAX</a>
+            </div>
+            <div class="info-links">
+                <a href="#" class="info-btn">Trailer</a>
+                <a href="#" class="info-btn">RT</a>
+                <a href="#" class="info-btn">Wiki</a>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="section-title">Streaming + Purchase Options</h2>
+
+    <!-- Prime + Amazon purchase -->
+    <div class="card-back">
+        <div class="card-title">Lurker</div>
+        <div class="synopsis">When a twenty-something retail clerk meets a rising popstar, he takes the opportunity to edge his way...</div>
+        <div class="actions">
+            <div class="watch-buttons">
+                <a href="#" class="watch-btn watch-btn-stream">
+                    <img src="logos and images/amazon prime.png" alt="Prime Video" class="btn-logo">
+                </a>
+                <a href="#" class="watch-btn watch-btn-purchase" title="Rent/Buy on Amazon">
+                    <img src="logos and images/pngimg.com - amazon_PNG17.png" alt="Amazon" class="btn-logo">
+                </a>
+            </div>
+            <div class="info-links">
+                <a href="#" class="info-btn">Trailer</a>
+                <a href="#" class="info-btn">RT</a>
+                <a href="#" class="info-btn">Wiki</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Peacock + Amazon purchase -->
+    <div class="card-back">
+        <div class="card-title">How to Train Your Dragon</div>
+        <div class="synopsis">On the rugged isle of Berk, where Vikings and dragons have been bitter enemies for generations...</div>
+        <div class="actions">
+            <div class="watch-buttons">
+                <a href="#" class="watch-btn watch-btn-stream">PEACOCK</a>
+                <a href="#" class="watch-btn watch-btn-purchase" title="Rent/Buy on Amazon">
+                    <img src="logos and images/pngimg.com - amazon_PNG17.png" alt="Amazon" class="btn-logo">
+                </a>
+            </div>
+            <div class="info-links">
+                <a href="#" class="info-btn">Trailer</a>
+                <a href="#" class="info-btn">RT 72</a>
+                <a href="#" class="info-btn">Wiki</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Max + Amazon + Apple -->
+    <div class="card-back">
+        <div class="card-title">The Substance</div>
+        <div class="synopsis">A fading celebrity decides to use a black market drug, a cell-replicating substance that temporarily...</div>
+        <div class="actions">
+            <div class="watch-buttons">
+                <a href="#" class="watch-btn watch-btn-stream">MAX</a>
+                <a href="#" class="watch-btn watch-btn-purchase" title="Rent/Buy on Amazon">
+                    <img src="logos and images/pngimg.com - amazon_PNG17.png" alt="Amazon" class="btn-logo">
+                </a>
+                <a href="#" class="watch-btn watch-btn-purchase" title="Rent/Buy on Apple">
+                    <img src="logos and images/apple logo.png" alt="Apple" class="btn-logo">
+                </a>
+            </div>
+            <div class="info-links">
+                <a href="#" class="info-btn">Trailer</a>
+                <a href="#" class="info-btn">RT 90</a>
+                <a href="#" class="info-btn">Wiki</a>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="section-title">Purchase Only (No Streaming)</h2>
+
+    <!-- Amazon only -->
+    <div class="card-back">
+        <div class="card-title">Beast of War</div>
+        <div class="synopsis">Available for rent or purchase on Amazon Video...</div>
+        <div class="actions">
+            <div class="watch-buttons">
+                <a href="#" class="watch-btn watch-btn-purchase solo" title="Rent/Buy on Amazon">
+                    <img src="logos and images/pngimg.com - amazon_PNG17.png" alt="Amazon" class="btn-logo">
+                </a>
+            </div>
+            <div class="info-links">
+                <a href="#" class="info-btn">Trailer</a>
+                <a href="#" class="info-btn">RT</a>
+                <a href="#" class="info-btn">Wiki</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Amazon + Apple -->
+    <div class="card-back">
+        <div class="card-title">Both Purchase Options</div>
+        <div class="synopsis">Available for rent or purchase on Amazon and Apple TV...</div>
+        <div class="actions">
+            <div class="watch-buttons">
+                <a href="#" class="watch-btn watch-btn-purchase" title="Rent/Buy on Amazon" style="flex: 1;">
+                    <img src="logos and images/pngimg.com - amazon_PNG17.png" alt="Amazon" class="btn-logo">
+                </a>
+                <a href="#" class="watch-btn watch-btn-purchase" title="Rent/Buy on Apple" style="flex: 1;">
+                    <img src="logos and images/apple logo.png" alt="Apple" class="btn-logo">
+                </a>
+            </div>
+            <div class="info-links">
+                <a href="#" class="info-btn">Trailer</a>
+                <a href="#" class="info-btn">RT</a>
+                <a href="#" class="info-btn">Wiki</a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

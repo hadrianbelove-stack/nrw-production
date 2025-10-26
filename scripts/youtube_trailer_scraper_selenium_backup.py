@@ -1,10 +1,22 @@
 #!/usr/bin/env python3
 """
-YouTube Trailer Scraper - Uses Playwright to find direct trailer links
+YouTube Trailer Scraper - Uses Selenium to find direct trailer links
 Converts YouTube search URLs to direct watch URLs
+
+LEGACY BACKUP - Selenium-based implementation
+This file is kept as a backup during Playwright migration
+The active implementation is now youtube_trailer_scraper.py (Playwright-based)
+Created: 2025-10-25
+Can be deleted after Playwright version is validated in production
 """
 
-from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeoutError
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from webdriver_manager.chrome import ChromeDriverManager
 import time
 import json
 import os
@@ -14,12 +26,7 @@ class YouTubeTrailerScraper:
         self.cache_file = cache_file
         self.cache = self._load_cache()
         self.headless = headless
-
-        # Browser components (lazy initialization)
-        self.playwright = None
-        self.browser = None
-        self.context = None
-        self.page = None
+        self.driver = None
 
     def _load_cache(self):
         """Load cache from file"""
@@ -33,64 +40,28 @@ class YouTubeTrailerScraper:
         with open(self.cache_file, 'w') as f:
             json.dump(self.cache, f, indent=2)
 
-    def _init_browser(self):
-        """Initialize Playwright browser"""
-        if self.browser is not None:
+    def _init_driver(self):
+        """Initialize Selenium driver"""
+        if self.driver is not None:
             return
 
-        print("Initializing Playwright browser...")
-        try:
-            self.playwright = sync_playwright().start()
+        print("Initializing Chrome driver...")
+        chrome_options = Options()
+        chrome_options.add_argument('--no-sandbox')
+        chrome_options.add_argument('--disable-dev-shm-usage')
+        chrome_options.add_argument('--disable-blink-features=AutomationControlled')
 
-            # Launch browser
-            self.browser = self.playwright.chromium.launch(headless=self.headless)
+        if self.headless:
+            chrome_options.add_argument('--headless')
 
-            # Create context with viewport and user agent
-            self.context = self.browser.new_context(
-                viewport={'width': 1920, 'height': 1080},
-                user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-            )
+        service = Service(ChromeDriverManager().install())
+        self.driver = webdriver.Chrome(service=service, options=chrome_options)
 
-            # Set default timeout
-            self.context.set_default_timeout(10000)  # 10 seconds
-
-            # Create page
-            self.page = self.context.new_page()
-
-        except Exception as e:
-            print(f"Browser initialization failed: {e}")
-            self._cleanup_browser()
-            raise
-
-    def _cleanup_browser(self):
-        """Clean up browser resources"""
-        if self.page:
-            try:
-                self.page.close()
-            except:
-                pass
-            self.page = None
-
-        if self.context:
-            try:
-                self.context.close()
-            except:
-                pass
-            self.context = None
-
-        if self.browser:
-            try:
-                self.browser.close()
-            except:
-                pass
-            self.browser = None
-
-        if self.playwright:
-            try:
-                self.playwright.stop()
-            except:
-                pass
-            self.playwright = None
+    def _close_driver(self):
+        """Close Selenium driver"""
+        if self.driver:
+            self.driver.quit()
+            self.driver = None
 
     def find_trailer(self, title, year):
         """
@@ -110,8 +81,8 @@ class YouTubeTrailerScraper:
             print(f"  ✓ Cache hit: {title} ({year})")
             return self.cache[cache_key]
 
-        # Initialize browser if needed
-        self._init_browser()
+        # Initialize driver if needed
+        self._init_driver()
 
         try:
             # Build search query
@@ -119,13 +90,14 @@ class YouTubeTrailerScraper:
             search_url = f"https://www.youtube.com/results?search_query={search_query.replace(' ', '+')}"
 
             print(f"  → Searching YouTube: {title} ({year})")
-            self.page.goto(search_url, wait_until='domcontentloaded')
+            self.driver.get(search_url)
 
-            # Wait for video results to load
+            # Wait for video results to load with proper WebDriverWait
             try:
-                self.page.wait_for_selector('a#video-title', timeout=10000)
-                self.page.wait_for_timeout(1000)  # Small additional wait for full render
-            except PlaywrightTimeoutError as e:
+                wait = WebDriverWait(self.driver, 10)
+                wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "a#video-title")))
+                time.sleep(1)  # Small additional wait for full render
+            except Exception as e:
                 print(f"  ✗ Timeout waiting for results: {e}")
                 self.cache[cache_key] = None
                 self._save_cache()
@@ -133,7 +105,7 @@ class YouTubeTrailerScraper:
 
             # Try to find the first video link
             # YouTube uses <a> tags with /watch?v= in the href
-            video_links = self.page.locator('a#video-title').all()
+            video_links = self.driver.find_elements(By.CSS_SELECTOR, "a#video-title")
 
             if video_links:
                 # Get the href of the first video
@@ -141,10 +113,6 @@ class YouTubeTrailerScraper:
                 video_url = first_video.get_attribute('href')
 
                 if video_url and '/watch?v=' in video_url:
-                    # Normalize relative URLs to absolute URLs
-                    if video_url.startswith('/watch'):
-                        video_url = f"https://www.youtube.com{video_url}"
-
                     # Clean up URL (remove any extra parameters after video ID)
                     if '&' in video_url:
                         video_url = video_url.split('&')[0]
@@ -197,13 +165,13 @@ class YouTubeTrailerScraper:
                     time.sleep(1)  # Rate limiting - be nice to YouTube
 
         finally:
-            self._cleanup_browser()
+            self._close_driver()
 
         return results
 
     def cleanup(self):
         """Clean up resources"""
-        self._cleanup_browser()
+        self._close_driver()
 
 
 if __name__ == "__main__":

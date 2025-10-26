@@ -14,7 +14,7 @@
 
 **What is this rolling context system?**
 
-This is a **living document** that gets overwritten each session with current information. At the end of each session, we archive it to  (immutable historical record). This approach:
+This is a **living document** that gets overwritten each session with current information. At the end of each session, we archive it to `diary/YYYY-MM-DD.md` (immutable historical record). This approach:
 - **Avoids token waste** from loading months of PROJECT_LOG.md history
 - **Provides fresh context** without stale information
 - **Maintains audit trail** in the diary/ folder
@@ -27,7 +27,12 @@ See [AMENDMENT-036](PROJECT_CHARTER.md#amendment-036-rolling-daily-context) and 
 ## Current State
 
 ### What's Working
-[Fill in during session - describe operational systems and their status]
+- **Provider monitoring:** Restored and operational (checks 1,889 tracking movies daily)
+- **Enrichment optimization:** 99.4% cache efficiency (318/320 movies cached)
+- **Quota management:** Watchmode quota tracking active, auto-resets Nov 1st
+- **Watch links:** 100% coverage (318/318 movies have at least one link)
+- **Performance:** Data generation in 30 seconds (96% faster than before)
+- **System stability:** Graceful degradation when Watchmode quota exhausted
 
 ### Architecture
 [Fill in during session - describe runtime components and data flow]
@@ -48,23 +53,34 @@ See [AMENDMENT-036](PROJECT_CHARTER.md#amendment-036-rolling-daily-context) and 
 
 ## Known Issues
 
-[Fill in during session - document current problems and their status]
+- **Amazon ASIN placeholder bug:** Same ASIN (B0FMPYFP9W) appearing for multiple movies ✅ FIXED
+- **Watchmode quota:** Exhausted until Nov 1st reset (graceful degradation to scrapers active)
+- **Apple TV coverage:** Only 11 links (3.5%), needs monitoring after recent enablement
 
 ---
 
 ## Next Priorities
 
 ### Immediate (This Session)
-[Fill in during session - list current tasks and their completion status]
+- ✅ Fix Amazon scraper title validation (placeholder ASIN bug)
+- ✅ Redesign watch buttons (service-based layout per user requirements)
+- ⏳ Monitor Apple TV scraper performance (just enabled)
+- ⏳ Wait for Watchmode quota reset (Nov 1st)
 
 ### Next Phase
-[Fill in during session - list upcoming tasks for next session]
+- Monitor Apple TV scraper coverage improvements
+- Test new watch button UI design with users
+- Review enrichment consistency validation effectiveness
 
 ### Subsequent Phase
-[Fill in during session - list future improvements]
+- Consider additional streaming platform scrapers (if needed)
+- Optimize scraper performance and reliability
+- Implement advanced watch link validation
 
 ### Short-term (Next Few Days)
-[Fill in during session - list near-term tasks]
+- Monitor system performance with new optimizations
+- Track Watchmode quota reset on Nov 1st
+- Validate Amazon ASIN fix effectiveness
 
 ### Long-term (Ongoing)
 [Fill in during session - list ongoing maintenance tasks]
@@ -107,13 +123,28 @@ See [AMENDMENT-036](PROJECT_CHARTER.md#amendment-036-rolling-daily-context) and 
 ## Files Changed Today
 
 ### Created
-[Fill in during session - list new files]
+- `watchmode_api.py` - New quota management module
+- `OPTIMIZATION_PLAN.md` - Initial optimization planning
+- `PHASE_2_1_COMPLETE.md` - Enrichment optimization documentation
+- `PHASE_3_COMPLETE.md` - Quota management implementation
+- `PHASE_4_5_FUTURE_WORK.md` - Future optimization roadmap
+- `OPTIMIZATION_COMPLETE.md` - Overall completion summary
 
 ### Modified
-[Fill in during session - list changed files with brief descriptions]
+- `generate_data.py` - Added enrichment-on-transition optimization
+- `daily_orchestrator.py` - Updated with new workflow
+- `PROJECT_CHARTER.md` - Updated governance for optimization
+- `config.yaml` - Configuration updates for new features
+- `movie_tracking.json` - Enhanced with enrichment state tracking
+- `streaming_platform_scraper.py` - Fixed Amazon ASIN placeholder bug with title validation
+- `assets/app.js` - Redesigned watch buttons for service-based layout
+- `assets/styles.css` - Added side-by-side button layout styles
+- `NRW_DATA_WORKFLOW_EXPLAINED.md` - Documented Phase 2.1 optimization
+- `IMPLEMENTATION_ROADMAP.md` - Marked CRITICAL-003 as resolved
+- `DAILY_CONTEXT.md` - Updated with optimization completion status
 
 ### Archived
-[Fill in during session - list files moved to museum_legacy/]
+- `itunes_search_api.py` - Deleted dead code (iTunes API non-functional for movies)
 
 ---
 
@@ -129,12 +160,12 @@ See [AMENDMENT-036](PROJECT_CHARTER.md#amendment-036-rolling-daily-context) and 
 📥 Step 1: Pulling latest data from automation...
    ✅ Data is current
 
-📊 Step 2: Quick Status Report
-   Total movies on wall: 247
-   Tracked: 1808 / Displayed: 247
-   New today (Oct 24): 0
-   New yesterday (Oct 23): 0
-   Last generated: 2025-10-23T17:33:38
+📊 Step 2: Quick Status Report (as of [YYYY-MM-DD])
+   Total movies on wall: [N]
+   Tracked: [N] / Displayed: [N]
+   New today ([MM-DD]): [N]
+   New yesterday ([MM-DD]): [N]
+   Last generated: [YYYY-MM-DDTHH:MM:SS]
 
 📋 Step 3: Context Files for AI Assistants
    When working with AI assistants, read these files in order:
@@ -166,96 +197,12 @@ The legacy implementation is available at:
     museum_legacy/legacy_movie_tracker.py
 
 For more information, see README.md and DAILY_CONTEXT.md
-📂 Incremental mode: Found 247 existing movies in data.json
-🎬 Processing NEW movies that went digital in last 90 days...
-   Existing movies in data.json: 247
-   These will be SKIPPED (use --full to reprocess)
-  ✓ Night Always Comes - Links: 3
-  ✓ Tehran - Links: 3
-  ✓ Hurricane Katrina: 20 Years After the Storm with Robin Roberts - Links: 3
-  ✓ Nanticoke - Links: 3
-
-⏭️  Skipped 247 existing movies (incremental mode)
-   To reprocess all movies with agent scraper, run: python3 generate_data.py --full
-
-📋 Adding 4 new movies to 247 existing movies
-📝 Admin overrides applied:
-  Hidden movies: 0
-  Featured movies: 0
-✅ Generated data.json with 251 movies
-Wikipedia links found: 251
-Direct trailers found: 248
-RT scores cached: 182
-Movies with reviews: 1
-
-📊 Wikidata Usage:
-  Wikidata attempts: 0
-  Wikidata successes: 0
-  Wikipedia links recovered via Wikidata: 0
-
-📊 Watchmode API Usage:
-  Search calls: 0
-  Source calls: 0
-  Cache hits: 4
-  Cache hit rate: 100.0%
-  Watchmode success rate: 0.0%
-
-📊 Agent Scraper Usage:
-  Agent enabled: True
-  Agent initialized: False
-  Agent attempts: 0
-  Agent successes: 0
-  Agent cache hits: 0
-  ⚠️  Agent scraper was never called (check if movies have Netflix/Disney+/Hulu providers)
-
-📊 Platform Scraper Statistics (Amazon/Apple TV):
-  Platform scraper enabled: True
-  Platform scraper initialized: False
-  Amazon enabled: True
-  Apple TV enabled: False
-  Platform scraper attempts: 0
-  Platform scraper successes: 0
-  Platform scraper failures: 0
-  ⚠️  Platform scraper was never called (check if movies have Amazon/Apple TV providers)
-  Last selector update: 2025-10-23
-  Expected update frequency: quarterly
-
-📊 RT Scraper Usage:
-  RT attempts: 0
-  RT successes: 0
-  RT cache hits: 4
-
-📊 Admin Override Usage:
-  Manual tracking hits: 0
-  Override hits: 0
-
-🔍 Schema Validation:
-  Validation passes: 0
-  Validation warnings: 0
-❌ DEPRECATED: movie_tracker.py is no longer supported
-
-The movie tracking functionality has been integrated into the production discovery system.
-Please use the following commands instead:
-
-  For daily discovery:
-    python3 generate_data.py --discover
-
-  For full data generation:
-    python3 generate_data.py
-
-  For the complete daily pipeline:
-    python3 daily_orchestrator.py
-
-The legacy implementation is available at:
-    museum_legacy/legacy_movie_tracker.py
-
-For more information, see README.md and DAILY_CONTEXT.md
 
 ### Context Files (Read These First)
 - **Daily:** This file (DAILY_CONTEXT.md) - Current state and recent changes
 - **Governance:** [PROJECT_CHARTER.md](PROJECT_CHARTER.md) - Rules, amendments, API keys
 - **Pipeline:** [NRW_DATA_WORKFLOW_EXPLAINED.md](NRW_DATA_WORKFLOW_EXPLAINED.md) - How data flows
-- **History:**  - End-of-session archives (when needed)
+- **History:** [diary/](diary/) – End-of-session archives
 
 ---
 

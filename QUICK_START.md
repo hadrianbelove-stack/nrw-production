@@ -18,13 +18,27 @@ This installs everything you need for:
 - ✅ Newsletter generation
 - ✅ All scrapers
 
-### 2. Install Playwright Browsers (for agent scraper)
+### 2. Install Playwright Browsers (for all scrapers)
 
 ```bash
 playwright install chromium --with-deps
 ```
 
-This enables deep link scraping for Netflix/Disney+/Hulu.
+This enables all browser-based scraping (RT scores, watch links, trailers).
+
+### 3. Verify Playwright Installation
+
+```bash
+playwright --version  # Should show version 1.40+
+```
+
+All scrapers now use Playwright (migrated October 2025):
+- RT scraper: `rt_scraper_playwright.py`
+- Platform scraper: `streaming_platform_scraper.py` (Amazon, Apple TV)
+- YouTube scraper: `scripts/youtube_trailer_scraper.py`
+- Agent scraper: `agent_link_scraper.py` (Netflix, Disney+, HBO Max, Hulu)
+
+Selenium has been removed from dependencies.
 
 ---
 
@@ -55,7 +69,8 @@ git pull origin main
 python3 daily_orchestrator.py
 
 # Or step-by-step:
-python3 movie_tracker.py daily         # Discover new releases
+python3 generate_data.py --discover    # Discover new releases
+python3 daily_orchestrator.py          # Full daily automation
 python3 generate_data.py               # Generate website data
 
 # View website
@@ -154,9 +169,10 @@ All features use `data.json` generated from:
 1. **movie_tracking.json** - Main database (tracked movies)
 2. **TMDB API** - Movie details, posters, trailers
 3. **Watchmode API** - Watch links (Netflix, Amazon, etc.)
-4. **Rotten Tomatoes** - RT scores (scraped)
+4. **Rotten Tomatoes** - RT scores (scraped with Playwright)
 5. **Wikipedia API** - Wikipedia links
 6. **YouTube** - Trailer videos
+7. **Playwright** - Browser automation for all scrapers (RT, watch links, trailers)
 
 See [NRW_DATA_WORKFLOW_EXPLAINED.md](NRW_DATA_WORKFLOW_EXPLAINED.md) for details.
 
@@ -172,7 +188,6 @@ nrw-production/
 │   └── styles.css                     # Styling
 ├── data.json                          # Generated movie data (230+ movies)
 │
-├── movie_tracker.py                   # Discover new releases
 ├── generate_data.py                   # Generate data.json
 ├── daily_orchestrator.py              # Automated pipeline
 │
@@ -232,8 +247,7 @@ Or create `.env` file (gitignored).
 ### Add a Movie Manually
 
 ```bash
-# Edit movie_tracking.json directly or:
-python3 movie_tracker.py add --tmdb-id 123456
+# Edit movie_tracking.json directly or use admin panel
 ```
 
 ### Force Regenerate All Data
@@ -315,7 +329,7 @@ python3 admin.py
 
 | Task | Time | Notes |
 |------|------|-------|
-| `movie_tracker.py daily` | ~30s | Checks ~100 tracked movies |
+| `generate_data.py --discover` | ~30s | Discovers new releases |
 | `generate_data.py` (incremental) | ~5s | New movies only |
 | `generate_data.py --full` | ~5min | All 230+ movies, all scrapers |
 | Admin panel startup | <1s | Flask server |

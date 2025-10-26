@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Playwright-based streaming platform scraper for Amazon Prime Video and Apple TV deep links
+Selenium-based streaming platform scraper for Amazon Prime Video and Apple TV deep links
 
 Purpose: Find direct deep links to movie pages when Watchmode API has no data
 Supports: Amazon Prime Video, Apple TV (Netflix/Disney+ skipped due to anti-bot measures)
@@ -10,203 +10,40 @@ Integration: Called from generate_data.py when Watchmode API returns no data
 Returns: Deep link URL or None if not found
 
 Maintenance: Requires selector updates when platforms change UI (~1-2 hours/month)
-Performance: ~6-8 seconds per search, 30-40% faster than Selenium version
+Performance: ~5-10 seconds per search, acceptable for daily automation
 """
 
-from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeoutError
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException, NoSuchElementException
+from webdriver_manager.chrome import ChromeDriverManager
 import time
 import urllib.parse
-import os
-import random
-import re
-from datetime import datetime, timedelta
-from constants import PLACEHOLDER_ASINS
 
 
 class StreamingPlatformScraper:
-    def __init__(self, headless=True, timeout_seconds=30, rate_limit_seconds=None, **kwargs):
-        """Initialize Playwright browser with anti-bot measures"""
+    def __init__(self, headless=True, timeout_seconds=30, rate_limit_seconds=None):
+        """Initialize Chrome WebDriver with anti-bot measures"""
+        self.options = Options()
+        if headless:
+            self.options.add_argument('--headless')
+        self.options.add_argument('--no-sandbox')
+        self.options.add_argument('--disable-dev-shm-usage')
+        self.options.add_argument('--disable-blink-features=AutomationControlled')
+        self.options.add_argument('--user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
 
         # Store configuration
-        self.headless = headless
         self.timeout_seconds = timeout_seconds
         self.rate_limit_seconds = rate_limit_seconds
 
-        # Retry and backoff configuration
-        self.max_retries = kwargs.get('max_retries', 3)
-        self.base_delay = kwargs.get('base_delay', 0.5)
-        self.max_delay = kwargs.get('max_delay', 5.0)
-        self.jitter_ratio = kwargs.get('jitter_ratio', 0.2)
-
-        # Screenshots configuration
-        self.screenshot_dir = 'cache/screenshots'
-        self.screenshots_enabled = kwargs.get('screenshots_enabled', True)
-        self.screenshot_retention_days = kwargs.get('screenshot_retention_days', 7)
-
-        # Browser components (lazy initialization)
-        self.playwright = None
-        self.browser = None
-        self.context = None
-        self.page = None
-
-        # Clean up old screenshots on initialization
-        if self.screenshots_enabled:
-            self._cleanup_old_screenshots()
-
-    def _init_browser(self):
-        """Initialize Playwright browser with context (lazy initialization)"""
-        if self.browser is not None:
-            return
-
-        try:
-            self.playwright = sync_playwright().start()
-
-            # Launch Chromium browser
-            self.browser = self.playwright.chromium.launch(headless=self.headless)
-
-            # Create context with viewport and user agent (same as Selenium version)
-            self.context = self.browser.new_context(
-                viewport={'width': 1920, 'height': 1080},
-                user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-            )
-
-            # Set default timeout
-            timeout_ms = self.timeout_seconds * 1000
-            self.context.set_default_timeout(timeout_ms)
-
-            # Create page
-            self.page = self.context.new_page()
-
-        except Exception as e:
-            print(f"Browser initialization failed: {e}")
-            self._cleanup_browser()
-            raise
-
-    def _cleanup_browser(self):
-        """Clean up browser resources"""
-        if self.page:
-            try:
-                self.page.close()
-            except:
-                pass
-            self.page = None
-
-        if self.context:
-            try:
-                self.context.close()
-            except:
-                pass
-            self.context = None
-
-        if self.browser:
-            try:
-                self.browser.close()
-            except:
-                pass
-            self.browser = None
-
-        if self.playwright:
-            try:
-                self.playwright.stop()
-            except:
-                pass
-            self.playwright = None
-
-    def _cleanup_old_screenshots(self):
-        """Delete old screenshots based on retention policy."""
-        if not self.screenshots_enabled or not os.path.exists(self.screenshot_dir):
-            return
-
-        try:
-            cutoff_time = datetime.now() - timedelta(days=self.screenshot_retention_days)
-            cutoff_timestamp = cutoff_time.timestamp()
-
-            deleted_count = 0
-            for filename in os.listdir(self.screenshot_dir):
-                file_path = os.path.join(self.screenshot_dir, filename)
-                if os.path.isfile(file_path):
-                    file_mtime = os.path.getmtime(file_path)
-                    if file_mtime < cutoff_timestamp:
-                        try:
-                            os.remove(file_path)
-                            deleted_count += 1
-                        except OSError as e:
-                            print(f"Failed to delete old screenshot {filename}: {e}")
-
-            if deleted_count > 0:
-                print(f"🧹 Cleaned up {deleted_count} old screenshots (older than {self.screenshot_retention_days} days)")
-
-        except Exception as e:
-            print(f"Failed to cleanup old screenshots: {e}")
-
-    def _retry_with_backoff(self, fn):
-        """Retry function with exponential backoff."""
-        last_error = None
-        for attempt in range(self.max_retries):
-            try:
-                result = fn()
-                if result is not None:
-                    return result
-
-                # If function returned None, continue to retry
-                if attempt < self.max_retries - 1:
-                    delay = min(self.max_delay, self.base_delay * (2 ** attempt))
-                    jitter = random.uniform(-self.jitter_ratio * delay, self.jitter_ratio * delay)
-                    sleep_time = delay + jitter
-                    print(f"  Attempt {attempt + 1} failed, retrying in {sleep_time:.1f}s...")
-                    time.sleep(sleep_time)
-
-            except (PlaywrightTimeoutError, Exception) as e:
-                last_error = e
-                print(f"  Attempt {attempt + 1} error: {e}")
-                if attempt < self.max_retries - 1:
-                    delay = min(self.max_delay, self.base_delay * (2 ** attempt))
-                    jitter = random.uniform(-self.jitter_ratio * delay, self.jitter_ratio * delay)
-                    sleep_time = delay + jitter
-                    print(f"  Retrying in {sleep_time:.1f}s...")
-                    time.sleep(sleep_time)
-
-        # All attempts failed
-        return None
-
-    def _capture_failure_diagnostics(self, title, year, platform, error_msg):
-        """Capture screenshot and HTML on failure for debugging."""
-        if not self.screenshots_enabled or not self.page:
-            return
-
-        try:
-            # Create screenshot directory
-            os.makedirs(self.screenshot_dir, exist_ok=True)
-
-            # Generate filename
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            safe_title = re.sub(r'[^\w\-_\.]', '_', title)[:30]  # Sanitize filename
-            filename_base = f"{safe_title}_{year}_{platform}_{timestamp}"
-
-            # Capture screenshot
-            screenshot_path = os.path.join(self.screenshot_dir, f"{filename_base}.png")
-            self.page.screenshot(path=screenshot_path, full_page=True)
-
-            # Save HTML
-            html_path = os.path.join(self.screenshot_dir, f"{filename_base}.html")
-            html_content = self.page.content()
-            with open(html_path, 'w', encoding='utf-8') as f:
-                f.write(html_content)
-
-            print(f"  📸 Diagnostics saved: {screenshot_path}")
-
-            # Clean up old screenshots after saving a new one
-            self._cleanup_old_screenshots()
-
-        except Exception as e:
-            print(f"  Failed to capture diagnostics: {e}")
-
-    def close(self):
-        """Clean up WebDriver resources"""
-        try:
-            self._cleanup_browser()
-        except Exception as e:
-            print(f"Warning: Failed to close platform scraper: {e}")
+        # Initialize WebDriver
+        service = webdriver.chrome.service.Service(ChromeDriverManager().install())
+        self.driver = webdriver.Chrome(service=service, options=self.options)
+        self.driver.set_page_load_timeout(timeout_seconds)
+        self.wait = WebDriverWait(self.driver, timeout_seconds)
 
     def find_amazon_link(self, title, year):
         """Search Amazon Prime Video and extract movie detail page URL
@@ -218,21 +55,8 @@ class StreamingPlatformScraper:
         Returns:
             Deep link URL (https://www.amazon.com/gp/video/detail/{ASIN}) or None
         """
-        def search_attempt():
-            return self._find_amazon_link_core(title, year)
-
-        result = self._retry_with_backoff(search_attempt)
-        if result is None:
-            self._capture_failure_diagnostics(title, year, "amazon", "No link found after retries")
-        return result
-
-    def _find_amazon_link_core(self, title, year):
-        """Core Amazon search logic (wrapped by retry mechanism)"""
         start_time = time.time()
         try:
-            # Initialize browser if needed
-            self._init_browser()
-
             # Build Amazon video search URL
             search_query = f"{title} {year}"
             encoded_query = urllib.parse.quote(search_query)
@@ -240,18 +64,31 @@ class StreamingPlatformScraper:
 
             print(f"  Searching Amazon for: {search_query}")
             print(f"  URL: {search_url}")
+            self.driver.get(search_url)
 
-            # Navigate to search page
-            self.page.goto(search_url, wait_until='networkidle')
-
+            # Wait for page load with explicit wait for better reliability
             print(f"  Page loaded, waiting for search results...")
-
-            # Wait for search results to appear
             try:
-                self.page.wait_for_selector(".s-result-item, .s-widget-container", timeout=self.timeout_seconds * 1000)
+                # Wait for search results to appear
+                self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, ".s-result-item, .s-widget-container")))
                 print(f"  Search results loaded successfully")
-            except PlaywrightTimeoutError:
+            except TimeoutException:
                 print(f"  Warning: Search results may not have loaded completely")
+
+            # Wait for high-confidence elements to be present instead of fixed sleep
+            try:
+                # Wait for first high-confidence selector to have elements present
+                high_confidence_selector = "div[data-component-type='s-search-result'] h2 a[href*='/gp/video/detail/'], .s-widget-container a[href*='/gp/video/detail/'], a[href*='/gp/video/detail/']"
+                self.wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, high_confidence_selector)))
+                print(f"  High-confidence elements loaded")
+            except TimeoutException:
+                # If high-confidence elements not found, wait for any result elements
+                try:
+                    fallback_selector = "div[data-component-type='s-search-result'] h2 a, .s-result-item h2 a"
+                    self.wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, fallback_selector)))
+                    print(f"  Fallback result elements loaded")
+                except TimeoutException:
+                    print(f"  Warning: No specific result elements found, proceeding with available content")
 
             # Try multiple selectors for search results (in order of preference)
             # Updated selectors based on modern Amazon HTML structure (2025)
@@ -296,7 +133,7 @@ class StreamingPlatformScraper:
                     selector_type = "HIGH-CONFIDENCE" if is_high_confidence else "FALLBACK"
                     print(f"    Selector {i} ({selector_type}): {selector}")
 
-                    elements = self.page.locator(selector).all()
+                    elements = self.driver.find_elements(By.CSS_SELECTOR, selector)
                     print(f"    Found {len(elements)} elements")
 
                     for j, element in enumerate(elements):
@@ -310,7 +147,8 @@ class StreamingPlatformScraper:
                                 continue
 
                             # Check for known placeholder ASINs
-                            if any(asin in href for asin in PLACEHOLDER_ASINS):
+                            placeholder_asins = ['B0FMPYFP9W', 'B0FMPYFP9X', 'B0FNDR5BW5']
+                            if any(asin in href for asin in placeholder_asins):
                                 print(f"    Element {j+1}: Skipping known placeholder ASIN")
                                 continue
 
@@ -318,40 +156,40 @@ class StreamingPlatformScraper:
                             is_sponsored = False
                             try:
                                 # Strategy 1: Traditional sponsored parent classes
-                                parent = element.locator("xpath=./ancestor::div[contains(@class, 'sp-sponsored') or contains(@data-component-type, 'sp-sponsored-result')]").first
-                                if parent.count() > 0:
+                                parent = element.find_element(By.XPATH, "./ancestor::div[contains(@class, 'sp-sponsored') or contains(@data-component-type, 'sp-sponsored-result')]")
+                                if parent:
                                     is_sponsored = True
-                            except:
+                            except NoSuchElementException:
                                 pass
 
                             if not is_sponsored:
                                 try:
                                     # Strategy 2: Check for 'sponsored' keyword in any ancestor class or data attribute
-                                    parent = element.locator("xpath=./ancestor::div[contains(@class, 'sponsored') or contains(@data-testid, 'sponsored') or contains(@id, 'AdHolder')]").first
-                                    if parent.count() > 0:
+                                    parent = element.find_element(By.XPATH, "./ancestor::div[contains(@class, 'sponsored') or contains(@data-testid, 'sponsored') or contains(@id, 'AdHolder')]")
+                                    if parent:
                                         is_sponsored = True
-                                except:
+                                except NoSuchElementException:
                                     pass
 
                             if not is_sponsored:
                                 try:
                                     # Strategy 3: Check for ad-related IDs and classes
-                                    parent = element.locator("xpath=./ancestor::div[contains(@id, 'ad-') or contains(@class, 'AdHolder') or contains(@class, 'sp-sponsored')]").first
-                                    if parent.count() > 0:
+                                    parent = element.find_element(By.XPATH, "./ancestor::div[contains(@id, 'ad-') or contains(@class, 'AdHolder') or contains(@class, 'sp-sponsored')]")
+                                    if parent:
                                         is_sponsored = True
-                                except:
+                                except NoSuchElementException:
                                     pass
 
                             if not is_sponsored:
                                 # Strategy 4: Look for "Sponsored" text in nearby elements (within 3 ancestors)
                                 try:
-                                    parent = element.locator("xpath=./ancestor::div[contains(., 'Sponsored')]").first
-                                    if parent.count() > 0:
+                                    parent = element.find_element(By.XPATH, "./ancestor::div[contains(., 'Sponsored')]")
+                                    if parent:
                                         # Verify "Sponsored" text is actually visible (not deep in nested content)
-                                        sponsored_text = parent.text_content()
-                                        if sponsored_text and 'Sponsored' in sponsored_text and len(sponsored_text) < 500:  # Reasonable text length
+                                        sponsored_text = parent.text
+                                        if 'Sponsored' in sponsored_text and len(sponsored_text) < 500:  # Reasonable text length
                                             is_sponsored = True
-                                except:
+                                except NoSuchElementException:
                                     pass
 
                             if is_sponsored:
@@ -363,60 +201,32 @@ class StreamingPlatformScraper:
                                 # Try to find the result container
                                 parent = None
                                 try:
-                                    parent = element.locator("xpath=./ancestor::div[@data-component-type='s-search-result']").first
-                                    if parent.count() == 0:
-                                        parent = None
-                                except:
-                                    pass
-
-                                if parent is None:
+                                    parent = element.find_element(By.XPATH, "./ancestor::div[@data-component-type='s-search-result']")
+                                except NoSuchElementException:
                                     # Try alternative parent selectors
                                     try:
-                                        parent = element.locator("xpath=./ancestor::div[contains(@class, 's-result-item')]").first
-                                        if parent.count() == 0:
-                                            parent = element.locator("xpath=./ancestor::div[contains(@class, 's-widget-container')]").first
-                                    except:
-                                        pass
+                                        parent = element.find_element(By.XPATH, "./ancestor::div[contains(@class, 's-result-item')]")
+                                    except NoSuchElementException:
+                                        parent = element.find_element(By.XPATH, "./ancestor::div[contains(@class, 's-widget-container')]")
 
-                                if parent and parent.count() > 0:
+                                if parent:
                                     # Get the text content for title validation
-                                    text_content = parent.text_content().lower()
+                                    text_content = parent.text.lower()
                                     print(f"    Element {j+1}: Text content preview: {text_content[:100]}...")
 
-                                    # Enhanced title validation with stopword filtering and character normalization
-                                    stopwords = {'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'is', 'are', 'was', 'were', 'be', 'been', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'can', 'from', 'that', 'this', 'as', 'it'}
-
-                                    def normalize_text(text):
-                                        """Normalize text by removing accents and special characters"""
-                                        import unicodedata
-                                        # Normalize Unicode characters (accents, etc.)
-                                        normalized = unicodedata.normalize('NFD', text)
-                                        # Remove accent marks
-                                        ascii_text = ''.join(c for c in normalized if unicodedata.category(c) != 'Mn')
-                                        # Keep only alphanumeric and spaces
-                                        return re.sub(r'[^a-zA-Z0-9\s]', ' ', ascii_text)
-
-                                    # Normalize and filter stopwords from search title
-                                    normalized_title = normalize_text(title.lower())
-                                    search_title_words = {word for word in normalized_title.split() if word and word not in stopwords and len(word) > 1}
-
+                                    # Enhanced title validation: require at least 70% word overlap
+                                    search_title_words = set(title.lower().split())
                                     # Extract potential title from the result text (first few lines usually contain title)
                                     result_text_lines = text_content.split('\n')[:3]  # First 3 lines most likely to contain title
                                     result_text = ' '.join(result_text_lines).lower()
-                                    normalized_result = normalize_text(result_text)
 
-                                    # Count word overlap (excluding stopwords)
-                                    matching_words = sum(1 for word in search_title_words if word in normalized_result)
+                                    # Count word overlap
+                                    matching_words = sum(1 for word in search_title_words if word in result_text)
                                     overlap_percentage = matching_words / len(search_title_words) if search_title_words else 0
 
                                     # Exact title match bonus: if result contains the exact full title, accept with lower threshold
-                                    has_exact_title = normalized_title in normalized_result
-
-                                    # Require at least two non-stopword matches or exact title presence for very short titles
-                                    if len(search_title_words) <= 2:
-                                        threshold = 0.5 if (has_exact_title or matching_words >= 2) else 1.0
-                                    else:
-                                        threshold = 0.6 if has_exact_title else 0.7
+                                    has_exact_title = title.lower() in result_text
+                                    threshold = 0.6 if has_exact_title else 0.7
 
                                     # Year validation: if year is in search, verify it appears in result
                                     year_match = True
@@ -504,26 +314,14 @@ class StreamingPlatformScraper:
         Returns:
             Deep link URL (https://tv.apple.com/us/movie/{slug}/umc.cmc.{id}) or None
         """
-        def search_attempt():
-            return self._find_apple_tv_link_core(title, year)
-
-        result = self._retry_with_backoff(search_attempt)
-        if result is None:
-            self._capture_failure_diagnostics(title, year, "apple_tv", "No link found after retries")
-        return result
-
-    def _find_apple_tv_link_core(self, title, year):
-        """Core Apple TV search logic (wrapped by retry mechanism)"""
         try:
-            # Initialize browser if needed
-            self._init_browser()
-
             # Build Apple TV search URL
             search_query = urllib.parse.quote(title)
             search_url = f"https://tv.apple.com/search?term={search_query}"
 
             print(f"  Searching Apple TV for: {title}")
-            self.page.goto(search_url, wait_until='networkidle')
+            self.driver.get(search_url)
+            time.sleep(3)  # Apple TV needs more time for React rendering
 
             # Try multiple selectors for search results (in order of preference)
             selectors = [
@@ -535,43 +333,16 @@ class StreamingPlatformScraper:
 
             for selector in selectors:
                 try:
-                    # Wait for selector to appear before attempting to enumerate elements
-                    self.page.wait_for_selector(selector, timeout=self.timeout_seconds*1000)
-                    elements = self.page.locator(selector).all()
+                    elements = self.driver.find_elements(By.CSS_SELECTOR, selector)
                     for element in elements:
                         href = element.get_attribute('href')
                         if href and '/movie/' in href and 'umc.cmc' in href:
-                            # Enhanced title validation with stopword filtering and character normalization
-                            stopwords = {'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'is', 'are', 'was', 'were', 'be', 'been', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'can', 'from', 'that', 'this', 'as', 'it'}
-
-                            def normalize_text(text):
-                                """Normalize text by removing accents and special characters"""
-                                import unicodedata
-                                # Normalize Unicode characters (accents, etc.)
-                                normalized = unicodedata.normalize('NFD', text)
-                                # Remove accent marks
-                                ascii_text = ''.join(c for c in normalized if unicodedata.category(c) != 'Mn')
-                                # Keep only alphanumeric and spaces
-                                return re.sub(r'[^a-zA-Z0-9\s]', ' ', ascii_text)
-
-                            link_text = element.text_content().lower()
-                            normalized_title = normalize_text(title.lower())
-                            normalized_link_text = normalize_text(link_text)
-
-                            # Filter stopwords from title
-                            title_words = {word for word in normalized_title.split() if word and word not in stopwords and len(word) > 1}
-
-                            # Require at least two non-stopword matches or exact title presence
-                            matching_words = sum(1 for word in title_words if word in normalized_link_text)
-                            has_exact_title = normalized_title in normalized_link_text
-
-                            if (len(title_words) <= 2 and (has_exact_title or matching_words >= 2)) or (len(title_words) > 2 and matching_words >= 2):
+                            # Validate the title matches (basic check)
+                            link_text = element.text.lower()
+                            title_words = title.lower().split()
+                            if any(word in link_text for word in title_words):
                                 print(f"  ✓ Found Apple TV link: {href}")
-                                print(f"  ✓ Title match: {matching_words}/{len(title_words)} words, exact: {has_exact_title}")
                                 return href
-                except PlaywrightTimeoutError:
-                    print(f"  Selector not found within timeout: {selector}")
-                    continue
                 except Exception:
                     continue
 
@@ -610,6 +381,14 @@ class StreamingPlatformScraper:
         except Exception as e:
             print(f"  Error in platform search for {service_name}: {e}")
             return None
+
+    def close(self):
+        """Clean up WebDriver resources"""
+        try:
+            if hasattr(self, 'driver') and self.driver:
+                self.driver.quit()
+        except Exception as e:
+            print(f"Warning: Failed to close platform scraper: {e}")
 
 
 def test_scraper():

@@ -1,3 +1,10 @@
+---
+**DEPRECATED:** This file is no longer actively maintained. Session logs are now archived in the `diary/` directory with one file per date (e.g., `diary/2025-10-24.md`). This file is preserved for historical reference covering sessions from Aug 26 - Oct 14, 2025.
+
+**Active Session Archive:** See `diary/` directory for current session logs.
+
+---
+
 # PROJECT_LOG.md
 
 ## 2025-08-26 — Session Summary
@@ -229,3 +236,32 @@ Conducted thorough codebase exploration and created structured implementation ro
 - All implementation decisions cross-referenced with roadmap IDs
 - User communication emphasized regarding breaking changes and new features
 - Rollback plans established for major changes (Playwright migration)
+
+## 2025-10-25 - Documentation Cleanup & Deprecation
+
+### Session Summary
+Completed comprehensive documentation cleanup and organization. Archived completion reports to museum_legacy/, deleted nested snapshot directories, updated QUICK_START.md with Playwright information, merged NULL_STREAMING_LINKS_EXPLAINED.md into WATCH_LINKS_TROUBLESHOOTING.md.
+
+### Deprecation Notice
+This PROJECT_LOG.md file is now deprecated in favor of the diary/ system. All future session logs will be archived in diary/ with one file per date. This provides:
+- Better organization (one file per session)
+- Easier navigation (chronological by filename)
+- Cleaner git history (smaller diffs per session)
+- Consistent with DAILY_CONTEXT.md archival pattern
+
+### Documentation Changes
+- Archived to museum_legacy/: BUTTON_UI_IMPLEMENTATION_COMPLETE.md, OPTIMIZATION_COMPLETE.md, VALIDATION_IMPLEMENTATION_COMPLETE.md
+- Deleted nested snapshots: snapshot_20250831-002604Z/, snapshot_20250901-002508Z/
+- Updated QUICK_START.md: Removed movie_tracker.py references, added Playwright migration info
+- Merged NULL_STREAMING_LINKS_EXPLAINED.md into WATCH_LINKS_TROUBLESHOOTING.md
+- Added deprecation notice to this file
+
+### Files Preserved
+All historical information preserved:
+- Completion reports: Accessible in museum_legacy/ for reference
+- Snapshot history: Preserved in git history (commits from Aug-Sept 2025)
+- Session logs: This file covers Aug 26 - Oct 14, diary/ covers Oct 15+
+
+**Final Status:** Documentation cleanup complete. Future sessions logged in diary/.
+
+---

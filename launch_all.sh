@@ -44,7 +44,7 @@ cleanup() {
     fi
 
     if [[ -n "$YOUTUBE_PID" ]] && kill -0 "$YOUTUBE_PID" 2>/dev/null; then
-        echo -e "${BLUE}   Stopping YouTube manager (PID: $YOUTUBE_PID)${NC}"
+        echo -e "${BLUE}   Stopping YouTube Playlist Manager (PID: $YOUTUBE_PID)${NC}"
         kill "$YOUTUBE_PID" 2>/dev/null || true
         YOUTUBE_PID=""
     fi
@@ -300,14 +300,14 @@ launch_all() {
         return 1
     fi
 
-    # Show YouTube manager help
+    # Show YouTube Playlist Manager help
     echo ""
     echo -e "${GREEN}📺 YouTube Playlist Manager Help:${NC}"
     echo ""
     python3 youtube_playlist_manager.py --help || true
     echo ""
 
-    # Display YouTube manager info
+    # Display YouTube Playlist Manager info
     echo ""
     echo -e "${BLUE}📺 YouTube Playlist Manager: See help output above${NC}"
     echo ""

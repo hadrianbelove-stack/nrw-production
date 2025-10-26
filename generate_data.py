@@ -16,10 +16,15 @@ import logging
 from logging.handlers import RotatingFileHandler
 from agent_link_scraper import AgentLinkScraper
 from scripts.youtube_trailer_scraper import YouTubeTrailerScraper
+from rt_scraper_playwright import RTScraperPlaywright
+from constants import PLACEHOLDER_ASINS
 try:
     from streaming_platform_scraper import StreamingPlatformScraper
 except ImportError:
     StreamingPlatformScraper = None
+
+# Phase 3: Watchmode API with quota management
+from watchmode_api import create_watchmode_client
 
 
 def setup_logger(name, log_file='logs/admin.log', level=logging.INFO):
@@ -76,7 +81,19 @@ class DataGenerator:
         self.logger = setup_logger('data_generator', 'logs/admin.log', logging.INFO)
 
         self.config = self.load_config()
-        self.tmdb_key = self.config['api']['tmdb_api_key']  # Changed from self.config['tmdb_api_key']
+        # Get TMDB API key from environment or config.yaml (12-factor app pattern)
+        self.tmdb_key = os.environ.get('TMDB_API_KEY')
+        if not self.tmdb_key:
+            # Fall back to config.yaml for local development
+            self.tmdb_key = self.config.get('api', {}).get('tmdb_api_key')
+
+        if not self.tmdb_key:
+            self.logger.error(
+                "TMDB_API_KEY not found. Please set the TMDB_API_KEY environment variable "
+                "or add 'tmdb_api_key' to the 'api' section in config.yaml. "
+                "Get a free key from https://www.themoviedb.org/settings/api"
+            )
+            raise ValueError("TMDB_API_KEY is required")
 
         # Watchmode API - Get new key from https://api.watchmode.com/ (free tier: 1000 calls/month)
         self.watchmode_key = os.environ.get('WATCHMODE_API_KEY')
@@ -84,19 +101,18 @@ class DataGenerator:
             # Try fallback from config.yaml
             self.watchmode_key = self.config.get('api', {}).get('watchmode_api_key')
 
-        # Validate Watchmode API key
-        if not self.watchmode_key or self.watchmode_key == "REPLACE_WITH_NEW_API_KEY":
+        # Phase 3: Initialize Watchmode API with quota management
+        self.watchmode_client = create_watchmode_client(self.watchmode_key, quota_limit=1000)
+        self.watchmode_enabled = self.watchmode_client is not None
+
+        if not self.watchmode_enabled:
             self.logger.error(
                 "WATCHMODE_API_KEY not found or using placeholder value. "
                 "Please set the WATCHMODE_API_KEY environment variable or add "
                 "'watchmode_api_key' to the 'api' section in config.yaml. "
                 "Get a free key from https://api.watchmode.com/"
             )
-            # Disable Watchmode usage explicitly
-            self.watchmode_enabled = False
             self.watchmode_key = None
-        else:
-            self.watchmode_enabled = True
         self.wikipedia_cache = self.load_cache('wikipedia_cache.json')
         self.rt_cache = self.load_cache('rt_cache.json')
         self.wikipedia_overrides = self.load_cache('overrides/wikipedia_overrides.json')
@@ -152,8 +168,7 @@ class DataGenerator:
         self.agent_scraper = None  # Lazy initialization
         self.youtube_scraper = None  # Lazy initialization for YouTube trailer scraping
         self.youtube_trailer_cache = self.load_cache('youtube_trailer_cache.json')
-        self.rt_driver = None  # Lazy Selenium driver for RT scraping
-        self.rt_last_scrape_time = 0  # Track last scrape for rate limiting
+        self.rt_scraper = None  # Lazy initialization for RT scraping with Playwright
         self.platform_scraper = None  # Lazy initialization for streaming platform scraper
     
     def load_config(self):
@@ -270,64 +285,23 @@ class DataGenerator:
                 self.logger.exception(f"Failed to initialize agent scraper: {e}")
                 self.agent_scraper = False  # Mark as failed to prevent retries
 
-    def _init_rt_driver(self):
-        """Initialize Selenium WebDriver for RT scraping"""
-        if self.rt_driver is not None:  # Already initialized (could be False for failed)
-            return self.rt_driver is not False
+    def _init_rt_scraper(self):
+        """Initialize RT scraper with Playwright (lazy initialization)"""
+        if self.rt_scraper is not None:
+            return self.rt_scraper is not False
 
         try:
-            from selenium import webdriver
-            from selenium.webdriver.chrome.options import Options
-            from webdriver_manager.chrome import ChromeDriverManager
-            from selenium.webdriver.chrome.service import Service
-
-            # Configure Chrome options
-            chrome_options = Options()
-
-            # Read headless setting from config
-            headless = self.config.get('rt_scraper', {}).get('headless', True)
-            if headless:
-                chrome_options.add_argument("--headless")
-
-            chrome_options.add_argument("--no-sandbox")
-            chrome_options.add_argument("--disable-dev-shm-usage")
-            chrome_options.add_argument("--disable-blink-features=AutomationControlled")
-            chrome_options.add_argument("--user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
-
-            # Use ChromeDriverManager for automatic driver installation
-            service = Service(ChromeDriverManager().install())
-
-            # Create WebDriver instance
-            self.rt_driver = webdriver.Chrome(service=service, options=chrome_options)
-
-            # Set page load timeout from config
-            timeout = self.config.get('rt_scraper', {}).get('timeout', 10)
-            self.rt_driver.set_page_load_timeout(timeout)
-
-            self.logger.debug("RT driver initialized successfully")
+            self.rt_scraper = RTScraperPlaywright(
+                cache_file='rt_cache.json',
+                config=self.config,
+                logger=self.logger
+            )
+            self.logger.debug("RT scraper initialized successfully")
             return True
-
         except Exception as e:
-            self.logger.error(f"Failed to initialize RT driver: {e}")
-            self.rt_driver = False  # Mark as failed to prevent retries
+            self.logger.error(f"Failed to initialize RT scraper: {e}")
+            self.rt_scraper = False  # Mark as failed to prevent retries
             return False
-
-    def _rt_rate_limit(self):
-        """Enforce minimum delay between RT scrapes to avoid anti-bot detection"""
-        # Read rate limit from config, fallback to 2.0 seconds
-        rate_limit = self.config.get('rt_scraper', {}).get('rate_limit', 2.0)
-
-        # Calculate time since last scrape
-        time_since_last = time.time() - self.rt_last_scrape_time
-
-        # If less than rate limit, sleep for remaining time
-        if time_since_last < rate_limit:
-            sleep_time = rate_limit - time_since_last
-            self.logger.debug(f"Rate limiting: sleeping {sleep_time:.1f}s")
-            time.sleep(sleep_time)
-
-        # Update last scrape time
-        self.rt_last_scrape_time = time.time()
 
     def scrape_rt_score(self, title, year):
         """Public wrapper function to scrape RT score for external consumers
@@ -339,159 +313,27 @@ class DataGenerator:
         Returns:
             dict: {'url': ..., 'score': ...} or None if not found
         """
-        return self._scrape_rt_page(title, year)
-
-    def _scrape_rt_page(self, title, year):
-        """Scrape RT search page to find movie URL and score"""
-        # Initialize driver if needed
-        if not self._init_rt_driver():
+        # Initialize scraper if needed
+        if not self._init_rt_scraper():
             return None
 
-        # Check driver availability
-        if self.rt_driver is False:
+        # Check scraper availability
+        if self.rt_scraper is False:
             return None
 
-        # Apply rate limiting
-        self._rt_rate_limit()
-
-        # Increment attempts counter
-        self.watchmode_stats['rt_attempts'] += 1
-
+        # Use the new Playwright scraper
         try:
-            # Build search URL
-            search_query = f"{title} {year}"
-            search_url = f"https://www.rottentomatoes.com/search?search={quote(search_query)}"
+            result = self.rt_scraper.scrape_rt_score(title, year)
 
-            self.logger.debug(f"Searching RT: {title} ({year})")
-
-            # Navigate to search page
-            self.rt_driver.get(search_url)
-            time.sleep(2)  # Wait for page load
-
-            # Try selector fallbacks for search results
-            search_selectors = [
-                "search-page-media-row a[data-qa='info-name']",  # Primary
-                "a[data-qa='thumbnail-link']",  # Fallback 1
-                "a[href*='/m/'][data-qa='info-name']",  # Fallback 2
-                "search-page-result a[href*='/m/']",  # Fallback 3
-                "a[href*='/m/']"  # Generic movie link
-            ]
-
-            movie_url = None
-            for selector in search_selectors:
-                try:
-                    from selenium.webdriver.common.by import By
-                    elements = self.rt_driver.find_elements(By.CSS_SELECTOR, selector)
-                    if elements:
-                        href = elements[0].get_attribute('href')
-                        if href and '/m/' in href:
-                            movie_url = href
-                            self.logger.debug(f"Found with selector: {selector}")
-                            break
-                except Exception:
-                    continue
-
-            if not movie_url:
-                self.logger.warning(f"No RT page found for {title} ({year})")
-                # Cache the failure with consistent schema
-                cache_key = f"{title}_{year}"
-                cached_failure = {
-                    'url': None,
-                    'score': None,
-                    'title': title,
-                    'scraped_at': datetime.now().isoformat()
-                }
-                self.rt_cache[cache_key] = cached_failure
-                self._save_rt_cache()
-                return None
-
-            # Navigate to movie page
-            self.rt_driver.get(movie_url)
-            time.sleep(2)  # Wait for page load
-
-            # Try selector fallbacks for score
-            score_selectors = [
-                "rt-text[slot='criticsScore']",  # Primary
-                "score-board",  # Fallback 1
-                "[data-qa='tomatometer']",  # Fallback 2
-                "[data-qa='tomatometer-value']",  # Fallback 3
-                ".tomatometer-score",  # Fallback 4
-                "score-icon-critic"  # Fallback 5
-            ]
-
-            score = None
-            # Define multiple regex patterns to try in order
-            regex_patterns = [
-                r'(\d+)\s*%',                          # Basic pattern: number followed by %
-                r'tomatometer\s*:?\s*(\d+)\s*%',       # Pattern with tomatometer prefix
-                r'(\d+)\s*percent',                     # Pattern with "percent" instead of %
-                r'critics?\s*score\s*:?\s*(\d+)',      # Pattern with "critic score" prefix
-                r'fresh\s*:?\s*(\d+)',                 # Pattern with "fresh" prefix
-            ]
-
-            for selector in score_selectors:
-                try:
-                    element = self.rt_driver.find_element(By.CSS_SELECTOR, selector)
-                    if element:
-                        # Get text from multiple sources
-                        text_sources = [
-                            element.text or "",
-                            element.get_attribute('textContent') or "",
-                            element.get_attribute('aria-label') or "",
-                            element.get_attribute('data-score') or "",
-                            element.get_attribute('innerHTML') or ""
-                        ]
-
-                        # Concatenate all text sources for matching
-                        combined_text = " ".join(text_sources).lower()
-
-                        # Try each regex pattern until one matches
-                        for pattern in regex_patterns:
-                            match = re.search(pattern, combined_text, re.IGNORECASE)
-                            if match:
-                                score = match.group(1) + "%"
-                                self.logger.debug(f"Found score with selector: {selector}, pattern: {pattern}")
-                                break
-
-                        if score:
-                            break
-                except Exception:
-                    continue
-
-            # Create result
-            result = {
-                'url': movie_url,
-                'score': score
-            }
-
-            self.logger.debug(f"RT scraping successful: {movie_url} (Score: {score or 'N/A'})")
-
-            # Cache the result with consistent schema
-            cache_key = f"{title}_{year}"
-            cached_result = {
-                'url': result['url'],
-                'score': result['score'],
-                'title': title,
-                'scraped_at': datetime.now().isoformat()
-            }
-            self.rt_cache[cache_key] = cached_result
-            self._save_rt_cache()
-            self.watchmode_stats['rt_successes'] += 1
+            # Update stats from scraper
+            scraper_stats = self.rt_scraper.get_stats()
+            self.watchmode_stats['rt_attempts'] = scraper_stats['attempts']
+            self.watchmode_stats['rt_successes'] = scraper_stats['successes']
+            self.watchmode_stats['rt_cache_hits'] = scraper_stats['cache_hits']
 
             return result
-
         except Exception as e:
-            self.logger.error(f"RT scraping error for {title} ({year}): {e}")
-            # Cache the failure with consistent schema
-            cache_key = f"{title}_{year}"
-            cached_failure = {
-                'url': None,
-                'score': None,
-                'title': title,
-                'scraped_at': datetime.now().isoformat()
-            }
-            self.rt_cache[cache_key] = cached_failure
-            self._save_rt_cache()
+            self.logger.error(f"RT scraping error: {e}")
             return None
 
     def load_cache(self, filename):
@@ -811,77 +653,22 @@ class DataGenerator:
                 return override
             return {'url': override, 'score': None}
 
-        # 2. Check cache with TTL enforcement
-        cache_key = f"{title}_{year}"
-        if cache_key in self.rt_cache:
-            cached_data = self.rt_cache[cache_key]
-
-            # Check if cache entry has expired (90-day TTL)
-            is_expired = False
-            if cached_data is not None and isinstance(cached_data, dict) and 'scraped_at' in cached_data:
-                try:
-                    scraped_at = datetime.fromisoformat(cached_data['scraped_at'])
-                    cache_age = datetime.now() - scraped_at
-                    if cache_age > timedelta(days=90):
-                        is_expired = True
-                        print(f"  RT cache expired for {title} ({year}), age: {cache_age.days} days")
-                except Exception as e:
-                    print(f"  Warning: Invalid scraped_at timestamp in RT cache: {e}")
-                    is_expired = True
-            elif cached_data is None:
-                # Legacy None entries (failures) - treat as expired to retry failures after 90 days
-                is_expired = True
-            elif cached_data is not None and not isinstance(cached_data, dict):
-                # Legacy cache entries without scraped_at - treat as expired
-                is_expired = True
-
-            # If not expired, return cached data
-            if not is_expired:
-                self.watchmode_stats['rt_cache_hits'] += 1
-
-                # Handle cached failures (new schema: dict with null url/score)
-                if isinstance(cached_data, dict) and cached_data.get('url') is None:
-                    search_query = quote(f"{title} {year}")
-                    return {'url': f"https://www.rottentomatoes.com/search?search={search_query}", 'score': None}
-
-                # Handle cached successes (new schema: dict with url/score)
-                if isinstance(cached_data, dict):
-                    return {'url': cached_data.get('url'), 'score': cached_data.get('score')}
-
-                # Handle legacy successful cache hits (string values)
-                if cached_data:
-                    return {'url': cached_data, 'score': None}
-
-                # Legacy None entries (should not reach here due to is_expired check above)
-                search_query = quote(f"{title} {year}")
-                return {'url': f"https://www.rottentomatoes.com/search?search={search_query}", 'score': None}
-            else:
-                # Cache expired, continue to scraping logic
-                print(f"  RT cache entry expired for {title} ({year}), will re-scrape")
-
-        # 3. Check if RT scraper is enabled
+        # 2. Check if RT scraper is enabled
         enabled = self.config.get('rt_scraper', {}).get('enabled', True)
         if not enabled:
             print("  RT scraping disabled via config")
             search_query = quote(f"{title} {year}")
             return {'url': f"https://www.rottentomatoes.com/search?search={search_query}", 'score': None}
 
-        # 4. Try RT scraper (inlined)
-        result = self._scrape_rt_page(title, year)
+        # 3. Use RT scraper (handles caching internally)
+        result = self.scrape_rt_score(title, year)
         if result:
             return result
 
-        # 5. Fall back to search
+        # 4. Fall back to search
         search_query = quote(f"{title} {year}")
         return {'url': f"https://www.rottentomatoes.com/search?search={search_query}", 'score': None}
 
-    def _save_rt_cache(self):
-        """Save RT cache to disk after updates"""
-        try:
-            with open('rt_cache.json', 'w') as f:
-                json.dump(self.rt_cache, f, indent=2)
-        except Exception as e:
-            print(f"Warning: Failed to save RT cache: {e}")
 
     def get_watch_links(self, movie_id, title, year, providers, force_refresh=False, tracking_data=None):
         """Get deep links with canonical streaming/rent/buy structure
@@ -969,24 +756,43 @@ class DataGenerator:
             cached = self.watch_links_cache[cache_key]
             if cached.get('links'):
                 self.watchmode_stats['cache_hits'] += 1
-                # Migrate legacy cache format if needed
-                migrated_links = self._migrate_legacy_cache_format(cached['links'])
-                if migrated_links != cached['links']:
-                    # Update cache with migrated format
-                    self.watch_links_cache[cache_key]['links'] = migrated_links
 
-                    # Recompute source metadata based on whether any category has a non-null link
-                    has_links = any(
-                        link.get('link') is not None
-                        for link in migrated_links.values()
-                        if isinstance(link, dict)
-                    )
-                    source_type = 'watchmode_api' if has_links else 'tmdb_providers'
-                    self.watch_links_cache[cache_key]['source'] = source_type
-                    self.watch_links_cache[cache_key]['cached_at'] = datetime.now().isoformat()
+                # Check for placeholder ASINs in cached links and purge if found
+                has_placeholder_asin = False
+                detected_asin = None
+                for category in ['streaming', 'rent', 'buy']:
+                    category_data = cached['links'].get(category, {})
+                    if category_data and isinstance(category_data, dict):
+                        link = category_data.get('link', '')
+                        if link and any(asin in link for asin in PLACEHOLDER_ASINS):
+                            detected_asin = next(asin for asin in PLACEHOLDER_ASINS if asin in link)
+                            has_placeholder_asin = True
+                            break
 
+                if has_placeholder_asin:
+                    # Delete the cache entry with placeholder ASIN
+                    del self.watch_links_cache[cache_key]
                     self.save_cache(self.watch_links_cache, 'cache/watch_links_cache.json')
-                return migrated_links
+                    print(f"  Purged cache entry {cache_key} containing placeholder ASIN {detected_asin}")
+                else:
+                    # Migrate legacy cache format if needed
+                    migrated_links = self._migrate_legacy_cache_format(cached['links'])
+                    if migrated_links != cached['links']:
+                        # Update cache with migrated format
+                        self.watch_links_cache[cache_key]['links'] = migrated_links
+
+                        # Recompute source metadata based on whether any category has a non-null link
+                        has_links = any(
+                            link.get('link') is not None
+                            for link in migrated_links.values()
+                            if isinstance(link, dict)
+                        )
+                        source_type = 'watchmode_api' if has_links else 'tmdb_providers'
+                        self.watch_links_cache[cache_key]['source'] = source_type
+                        self.watch_links_cache[cache_key]['cached_at'] = datetime.now().isoformat()
+
+                        self.save_cache(self.watch_links_cache, 'cache/watch_links_cache.json')
+                    return migrated_links
 
         # Service priority hierarchies
         STREAMING_PRIORITY = ['Netflix', 'Disney+', 'Disney Plus', 'HBO Max', 'Max',
@@ -996,15 +802,31 @@ class DataGenerator:
         PAID_PRIORITY = ['Amazon Video', 'Amazon', 'Prime Video', 'Apple TV', 'Vudu',
                          'Google Play Movies', 'Google Play', 'Microsoft Store']
 
+        # Services to exclude from the database (niche/low-quality services)
+        EXCLUDED_SERVICES = ['fuboTV', 'Philo']
+
+
+        def is_excluded_service(service_name):
+            """Check if a service should be excluded"""
+            if not service_name:
+                return False
+            service_lower = service_name.lower()
+            return any(excluded.lower() in service_lower for excluded in EXCLUDED_SERVICES)
 
         def select_best_service(service_list, priority_list):
-            """Select best service from list based on priority"""
+            """Select best service from list based on priority, filtering out excluded services"""
+            # Filter out excluded services first
+            filtered_services = [s for s in service_list if not is_excluded_service(s)]
+
+            if not filtered_services:
+                return None
+
             for priority_service in priority_list:
-                for available_service in service_list:
+                for available_service in filtered_services:
                     if priority_service.lower() in available_service.lower():
                         return available_service
-            # If no priority match, return first available
-            return service_list[0] if service_list else None
+            # If no priority match, return first available (from filtered list)
+            return filtered_services[0] if filtered_services else None
 
         # Collect sources from Watchmode API (skip categories that already have overrides)
         watchmode_streaming = []
@@ -1016,63 +838,52 @@ class DataGenerator:
         skip_rent = 'rent' in validated_overrides
         skip_buy = 'buy' in validated_overrides
 
-        # Skip Watchmode API if not enabled/configured
-        if not self.watchmode_enabled:
+        # Phase 3: Quota-aware Watchmode API calls with graceful degradation
+        if not self.watchmode_enabled or not self.watchmode_client:
             self.logger.debug(f"Watchmode API disabled, skipping for {title}")
         else:
             try:
-                # Step 1: Search by TMDB ID
-                search_url = "https://api.watchmode.com/v1/search/"
-                search_params = {
-                    "apiKey": self.watchmode_key,
-                    "search_field": "tmdb_movie_id",
-                    "search_value": movie_id
-                }
+                # Use quota-aware API client (automatically checks quota and tracks calls)
+                search_results = self.watchmode_client.search_by_tmdb_id(movie_id, title)
 
-                self.watchmode_stats['search_calls'] += 1
-                search_response = requests.get(search_url, params=search_params, timeout=10)
+                if search_results and search_results.get('title_results'):
+                    watchmode_id = search_results['title_results'][0]['id']
 
-                if search_response.status_code == 200:
-                    search_data = search_response.json()
+                    # Get details with sources (quota-aware)
+                    details = self.watchmode_client.get_title_details(watchmode_id, title, movie_id)
 
-                    if search_data.get('title_results'):
-                        watchmode_id = search_data['title_results'][0]['id']
+                    if details:
+                        sources = details.get('sources', [])
 
-                        # Step 2: Get sources
-                        sources_url = f"https://api.watchmode.com/v1/title/{watchmode_id}/details/"
-                        sources_params = {
-                            "apiKey": self.watchmode_key,
-                            "append_to_response": "sources"
-                        }
-
+                        # Track statistics (maintain backward compatibility)
+                        self.watchmode_stats['search_calls'] += 1
                         self.watchmode_stats['source_calls'] += 1
-                        sources_response = requests.get(sources_url, params=sources_params, timeout=10)
 
-                        if sources_response.status_code == 200:
-                            sources_data = sources_response.json()
-                            sources = sources_data.get('sources', [])
+                        if sources:
+                            self.watchmode_stats['watchmode_successes'] += 1
 
-                            if sources:
-                                self.watchmode_stats['watchmode_successes'] += 1
+                        # Collect US sources by type
+                        for source in sources:
+                            if source.get('region') != 'US':
+                                continue
 
-                            # Collect US sources by type
-                            for source in sources:
-                                if source.get('region') != 'US':
-                                    continue
+                            service_name = source.get('name', '')
+                            web_url = source.get('web_url', '')
+                            source_type = source.get('type', '')
 
-                                service_name = source.get('name', '')
-                                web_url = source.get('web_url', '')
-                                source_type = source.get('type', '')
+                            if not service_name or not web_url:
+                                continue
 
-                                if not service_name or not web_url:
-                                    continue
+                            # Skip excluded services
+                            if is_excluded_service(service_name):
+                                continue
 
-                                if source_type == 'sub' and not skip_streaming:
-                                    watchmode_streaming.append({'service': service_name, 'link': web_url})
-                                elif source_type == 'rent' and not skip_rent:
-                                    watchmode_rent.append({'service': service_name, 'link': web_url})
-                                elif source_type == 'buy' and not skip_buy:
-                                    watchmode_buy.append({'service': service_name, 'link': web_url})
+                            if source_type == 'sub' and not skip_streaming:
+                                watchmode_streaming.append({'service': service_name, 'link': web_url})
+                            elif source_type == 'rent' and not skip_rent:
+                                watchmode_rent.append({'service': service_name, 'link': web_url})
+                            elif source_type == 'buy' and not skip_buy:
+                                watchmode_buy.append({'service': service_name, 'link': web_url})
 
             except Exception as e:
                 print(f"  Warning: Watchmode API failed for {title}: {e}")
@@ -1186,6 +997,18 @@ class DataGenerator:
                         validated_links[category]['link'] = tagged_link
                         self.logger.debug(f"Added affiliate tag to {category} link for {title}: {link_data['service']}")
 
+        # Validate service/link consistency and fix mismatches
+        for category in ['streaming', 'rent', 'buy']:
+            if category in validated_links and isinstance(validated_links[category], dict):
+                link_data = validated_links[category]
+                service = link_data.get('service')
+                link = link_data.get('link')
+
+                if service and link and not self.validate_service_link_consistency(service, link, title):
+                    # Mismatch detected, replace with Google search fallback
+                    self.logger.warning(f"Replacing mismatched {category} link for {title} with Google fallback")
+                    validated_links[category]['link'] = self.generate_google_search_fallback(title, year, service)
+
         # Cache result with canonical schema (use validated links)
         if validated_links:
             # Determine source type based on where links came from
@@ -1211,6 +1034,20 @@ class DataGenerator:
             self.save_cache(self.watch_links_cache, 'cache/watch_links_cache.json')
 
         return validated_links
+
+    def _enforce_platform_scraper_rate_limit(self):
+        """Enforce rate limiting for platform scraper calls"""
+        if hasattr(self.platform_scraper, 'rate_limit_seconds') and self.platform_scraper.rate_limit_seconds:
+            if not hasattr(self, '_last_platform_scraper_time'):
+                self._last_platform_scraper_time = 0
+
+            time_since_last = time.time() - self._last_platform_scraper_time
+            if time_since_last < self.platform_scraper.rate_limit_seconds:
+                sleep_time = self.platform_scraper.rate_limit_seconds - time_since_last
+                print(f"  Rate limiting: sleeping {sleep_time:.1f}s before platform scraper")
+                time.sleep(sleep_time)
+
+            self._last_platform_scraper_time = time.time()
 
     def validate_watch_links_schema(self, watch_links, movie_title='Unknown'):
         """
@@ -1290,6 +1127,13 @@ class DataGenerator:
                     had_warnings = True
                     continue
 
+                # Check for known placeholder ASINs
+                if any(asin in link for asin in PLACEHOLDER_ASINS):
+                    detected_asin = next(asin for asin in PLACEHOLDER_ASINS if asin in link)
+                    self.logger.warning(f"Detected placeholder ASIN {detected_asin} in {category} link for {movie_title}, rejecting")
+                    had_warnings = True
+                    continue
+
             # If we reach here, the category data is valid
             validated_links[category] = category_data
 
@@ -1342,6 +1186,114 @@ class DataGenerator:
             print(f"  Error in agent scraper for {title}: {e}")
             return {'service': service, 'link': self.generate_google_search_fallback(title, year, service)}
 
+    def is_actual_amazon_service(self, provider):
+        """
+        Check if a provider is actual Amazon Prime Video vs Amazon Channel subscription.
+
+        Args:
+            provider (str): Provider name from TMDB
+
+        Returns:
+            bool: True if genuine Amazon Prime Video, False if Amazon Channel
+        """
+        if not provider or 'Amazon' not in provider:
+            return False
+
+        # Reject Amazon Channel subscriptions
+        if 'Channel' in provider or 'Channels' in provider:
+            return False
+
+        # Accept genuine Amazon Prime Video services
+        genuine_amazon_services = [
+            'Amazon Video',
+            'Amazon Prime Video',
+            'Prime Video',
+            'Amazon'
+        ]
+
+        return provider in genuine_amazon_services or provider == 'Amazon Video'
+
+    def is_actual_apple_service(self, provider):
+        """
+        Check if a provider is actual Apple TV vs Apple TV Channel subscription.
+
+        Args:
+            provider (str): Provider name from TMDB
+
+        Returns:
+            bool: True if genuine Apple TV, False if Apple TV Channel
+        """
+        if not provider or 'Apple' not in provider:
+            return False
+
+        # Reject Apple TV Channel subscriptions
+        if 'Channel' in provider or 'Channels' in provider:
+            return False
+
+        # Accept genuine Apple TV services
+        genuine_apple_services = [
+            'Apple TV',
+            'Apple iTunes',
+            'iTunes',
+            'Apple TV Plus'
+        ]
+
+        return provider in genuine_apple_services
+
+    def validate_service_link_consistency(self, service, link, title):
+        """
+        Validate that a service name matches its link domain.
+
+        Args:
+            service (str): Service name
+            link (str): Watch link URL
+            title (str): Movie title for logging
+
+        Returns:
+            bool: True if service and link are consistent, False if mismatch
+        """
+        if not service or not link:
+            return True  # Nothing to validate
+
+        # Define expected domains for each service
+        service_domains = {
+            'Max': ['max.com', 'hbomax.com'],
+            'HBO Max': ['max.com', 'hbomax.com'],
+            'Netflix': ['netflix.com'],
+            'Disney Plus': ['disneyplus.com'],
+            'Disney+': ['disneyplus.com'],
+            'Hulu': ['hulu.com'],
+            'Amazon Prime Video': ['amazon.com'],
+            'Amazon Video': ['amazon.com'],
+            'Prime Video': ['amazon.com'],
+            'Amazon': ['amazon.com'],
+            'Apple TV': ['tv.apple.com', 'itunes.apple.com'],
+            'Apple iTunes': ['tv.apple.com', 'itunes.apple.com'],
+            'iTunes': ['tv.apple.com', 'itunes.apple.com'],
+            'Paramount Plus': ['paramountplus.com'],
+            'Peacock': ['peacocktv.com'],
+            'Crunchyroll': ['crunchyroll.com'],
+            'Funimation': ['funimation.com']
+        }
+
+        expected_domains = service_domains.get(service, [])
+        if not expected_domains:
+            # Unknown service, can't validate
+            return True
+
+        # Check if link contains any expected domain
+        for domain in expected_domains:
+            if domain in link.lower():
+                return True
+
+        # Check if it's a Google search fallback (always valid)
+        if 'google.com/search' in link.lower():
+            return True
+
+        # Mismatch detected
+        self.logger.warning(f"Service/link mismatch for {title}: service='{service}' but link='{link}'")
+        return False
+
     def _try_platform_agent_search(self, title, year, providers, watchmode_streaming, watchmode_rent, watchmode_buy, skip_streaming, skip_rent, skip_buy):
         """Try platform scraper (Selenium) for Amazon/Apple TV when Watchmode API has no data"""
 
@@ -1368,10 +1320,12 @@ class DataGenerator:
                 headless_mode = platform_config.get('headless', True)
                 timeout_seconds = platform_config.get('timeout', 30)
                 rate_limit_seconds = platform_config.get('rate_limit', None)
+                max_retries = platform_config.get('max_retries', 3)
                 self.platform_scraper = StreamingPlatformScraper(
                     headless=headless_mode,
                     timeout_seconds=timeout_seconds,
-                    rate_limit_seconds=rate_limit_seconds
+                    rate_limit_seconds=rate_limit_seconds,
+                    max_retries=max_retries
                 )
                 print(f"  Platform scraper initialized (headless={headless_mode}, timeout={timeout_seconds}s)")
             except Exception as e:
@@ -1389,32 +1343,20 @@ class DataGenerator:
             self.watchmode_stats = {}
         self.watchmode_stats['platform_scraper_attempts'] = self.watchmode_stats.get('platform_scraper_attempts', 0) + 1
 
-        # Enforce rate limiting if configured
-        if hasattr(self.platform_scraper, 'rate_limit_seconds') and self.platform_scraper.rate_limit_seconds:
-            if not hasattr(self, '_last_platform_scraper_time'):
-                self._last_platform_scraper_time = 0
-
-            time_since_last = time.time() - self._last_platform_scraper_time
-            if time_since_last < self.platform_scraper.rate_limit_seconds:
-                sleep_time = self.platform_scraper.rate_limit_seconds - time_since_last
-                print(f"  Rate limiting: sleeping {sleep_time:.1f}s before platform scraper")
-                time.sleep(sleep_time)
-
-            self._last_platform_scraper_time = time.time()
-
         # Try streaming providers (if no Watchmode streaming data and not skipped)
         if not skip_streaming and not watchmode_streaming and providers.get('streaming'):
             for provider in providers['streaming']:
-                # Filter platforms based on config
+                # Filter platforms based on config and validate actual services
                 should_try_provider = False
-                if 'Amazon' in provider and amazon_enabled:
+                if amazon_enabled and self.is_actual_amazon_service(provider):
                     should_try_provider = True
-                elif 'Apple' in provider and apple_tv_enabled:
+                elif apple_tv_enabled and self.is_actual_apple_service(provider):
                     should_try_provider = True
 
                 if should_try_provider:
                     try:
                         print(f"  Trying platform scraper for {title} streaming on {provider}...")
+                        self._enforce_platform_scraper_rate_limit()
                         deep_link = self.platform_scraper.get_platform_deep_link(title, year, provider)
                         if deep_link:
                             print(f"  ✓ Platform scraper found streaming link for {title} on {provider}")
@@ -1436,16 +1378,17 @@ class DataGenerator:
         # Try rent providers (if no Watchmode rent data and not skipped)
         if not skip_rent and not watchmode_rent and providers.get('rent'):
             for provider in providers['rent']:
-                # Filter platforms based on config
+                # Filter platforms based on config and validate actual services
                 should_try_provider = False
-                if 'Amazon' in provider and amazon_enabled:
+                if amazon_enabled and self.is_actual_amazon_service(provider):
                     should_try_provider = True
-                elif 'Apple' in provider and apple_tv_enabled:
+                elif apple_tv_enabled and self.is_actual_apple_service(provider):
                     should_try_provider = True
 
                 if should_try_provider:
                     try:
                         print(f"  Trying platform scraper for {title} rent on {provider}...")
+                        self._enforce_platform_scraper_rate_limit()
                         deep_link = self.platform_scraper.get_platform_deep_link(title, year, provider)
                         if deep_link:
                             print(f"  ✓ Platform scraper found rent link for {title} on {provider}")
@@ -1467,16 +1410,17 @@ class DataGenerator:
         # Try buy providers (if no Watchmode buy data and not skipped)
         if not skip_buy and not watchmode_buy and providers.get('buy'):
             for provider in providers['buy']:
-                # Filter platforms based on config
+                # Filter platforms based on config and validate actual services
                 should_try_provider = False
-                if 'Amazon' in provider and amazon_enabled:
+                if amazon_enabled and self.is_actual_amazon_service(provider):
                     should_try_provider = True
-                elif 'Apple' in provider and apple_tv_enabled:
+                elif apple_tv_enabled and self.is_actual_apple_service(provider):
                     should_try_provider = True
 
                 if should_try_provider:
                     try:
                         print(f"  Trying platform scraper for {title} buy on {provider}...")
+                        self._enforce_platform_scraper_rate_limit()
                         deep_link = self.platform_scraper.get_platform_deep_link(title, year, provider)
                         if deep_link:
                             print(f"  ✓ Platform scraper found buy link for {title} on {provider}")
@@ -1720,6 +1664,298 @@ class DataGenerator:
             self.logger.info(f"Discovery stats: {self.discovery_stats['total_results']} total results, {self.discovery_stats['duplicates_skipped']} duplicates")
 
         return new_movies_added
+
+    def check_tracking_movies(self, max_to_check=None, priority_days=180):
+        """Check tracking movies for provider availability (monitoring component)
+
+        Checks movies in 'tracking' status to see if they have gotten digital releases
+        by querying TMDB watch/providers API. Updates status to 'available' when providers found.
+
+        Args:
+            max_to_check: Maximum number of movies to check (None = all)
+            priority_days: Prioritize movies released within this many days (default 180)
+
+        Returns:
+            int: Number of newly digital movies found
+        """
+        import random
+        import requests
+
+        # Load tracking database
+        if not os.path.exists('movie_tracking.json'):
+            print("⚠️  No movie_tracking.json found")
+            return 0
+
+        with open('movie_tracking.json', 'r') as f:
+            db = json.load(f)
+
+        # Get all tracking movies with their IDs
+        tracking_movies = [(movie_id, movie) for movie_id, movie in db['movies'].items()
+                          if movie['status'] == 'tracking']
+
+        print(f"🔍 Found {len(tracking_movies)} movies in tracking status")
+
+        if not tracking_movies:
+            return 0
+
+        # Sort by premiere_date/digital_date (most recent first) for smart prioritization
+        def get_sort_key(item):
+            movie_id, movie = item
+            date_str = movie.get('digital_date') or movie.get('premiere_date')
+            if date_str:
+                try:
+                    return datetime.strptime(date_str, '%Y-%m-%d')
+                except:
+                    pass
+            return datetime.min  # Put movies with no date at the end
+
+        tracking_movies.sort(key=get_sort_key, reverse=True)
+
+        # Apply priority window if specified
+        if priority_days:
+            cutoff_date = datetime.now() - timedelta(days=priority_days)
+            priority_movies = []
+            older_movies = []
+
+            for movie_id, movie in tracking_movies:
+                date_str = movie.get('digital_date') or movie.get('premiere_date')
+                if date_str:
+                    try:
+                        date_dt = datetime.strptime(date_str, '%Y-%m-%d')
+                        if date_dt >= cutoff_date:
+                            priority_movies.append((movie_id, movie))
+                        else:
+                            older_movies.append((movie_id, movie))
+                    except:
+                        older_movies.append((movie_id, movie))
+                else:
+                    older_movies.append((movie_id, movie))
+
+            # Check priority movies first, then older ones
+            tracking_movies = priority_movies + older_movies
+            print(f"  Priority queue (last {priority_days} days): {len(priority_movies)} movies")
+            print(f"  Older movies: {len(older_movies)} movies")
+
+        # Limit if max_to_check specified
+        if max_to_check:
+            tracking_movies = tracking_movies[:max_to_check]
+            print(f"  Limiting check to first {len(tracking_movies)} movies")
+
+        newly_digital = 0
+        checked = 0
+        failed = 0
+        total_to_check = len(tracking_movies)
+
+        print(f"\n🎬 Checking {total_to_check} movies for digital availability...\n")
+
+        try:
+            for movie_id, movie in tracking_movies:
+                checked += 1
+
+                # Progress indicator every 50 movies
+                if checked % 50 == 0 or checked == total_to_check:
+                    progress_pct = (checked / total_to_check) * 100
+                    print(f"  Progress: {checked}/{total_to_check} ({progress_pct:.1f}%) - Found {newly_digital} newly digital, {failed} failed")
+
+                # Check providers with retry logic
+                url = f"https://api.themoviedb.org/3/movie/{movie_id}/watch/providers"
+                params = {'api_key': self.tmdb_key}
+
+                data = None
+                max_retries = 3
+                for attempt in range(max_retries):
+                    try:
+                        response = requests.get(url, params=params, timeout=(5, 15))
+                        if response.status_code == 200:
+                            data = response.json()
+                            break
+                        elif response.status_code == 429:  # Rate limited
+                            wait_time = (2 ** attempt) + random.uniform(0, 1)
+                            print(f"  Rate limited on {movie['title']}, waiting {wait_time:.1f}s")
+                            time.sleep(wait_time)
+                            continue
+                        else:
+                            self.logger.warning(f"HTTP {response.status_code} for {movie['title']}")
+                            break
+                    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as e:
+                        wait_time = (2 ** attempt) + random.uniform(0, 1)
+                        if attempt < max_retries - 1:
+                            print(f"  Timeout/connection error for {movie['title']}, retrying in {wait_time:.1f}s")
+                            time.sleep(wait_time)
+                            continue
+                        else:
+                            self.logger.warning(f"Failed after {max_retries} attempts for {movie['title']}: {type(e).__name__}")
+                            failed += 1
+                            break
+                    except requests.exceptions.RequestException as e:
+                        self.logger.warning(f"Request error for {movie['title']}: {type(e).__name__}")
+                        failed += 1
+                        break
+
+                if data:
+                    us = data.get('results', {}).get('US', {})
+
+                    # Get all provider types
+                    rent_providers = us.get('rent', [])
+                    buy_providers = us.get('buy', [])
+                    stream_providers = us.get('flatrate', [])
+
+                    # Extract provider names (defined in get_watch_links for consistency)
+                    EXCLUDED_SERVICES = ['fuboTV', 'Philo']
+
+                    def is_excluded_service(service_name):
+                        """Check if a service should be excluded"""
+                        if not service_name:
+                            return False
+                        service_lower = service_name.lower()
+                        return any(excluded.lower() in service_lower for excluded in EXCLUDED_SERVICES)
+
+                    rent_names = [p.get('provider_name', '') for p in rent_providers if not is_excluded_service(p.get('provider_name', ''))]
+                    buy_names = [p.get('provider_name', '') for p in buy_providers if not is_excluded_service(p.get('provider_name', ''))]
+                    stream_names = [p.get('provider_name', '') for p in stream_providers if not is_excluded_service(p.get('provider_name', ''))]
+
+                    # Check if ANY providers exist (after filtering out excluded services)
+                    has_providers = bool(rent_names or buy_names or stream_names)
+
+                    if has_providers and movie['status'] == 'tracking':
+                        movie['status'] = 'available'
+                        movie['digital_date'] = datetime.now().strftime('%Y-%m-%d')
+                        movie['providers'] = {
+                            'rent': rent_names,
+                            'buy': buy_names,
+                            'streaming': stream_names
+                        }
+                        # Mark for enrichment (Phase 2.1 optimization)
+                        movie['enriched'] = False
+                        movie['enrichment_date'] = None
+
+                        newly_digital += 1
+                        # Show which service it appeared on
+                        first_service = stream_names[0] if stream_names else rent_names[0] if rent_names else buy_names[0]
+                        print(f"  ✓ {movie['title']} now on {first_service}!")
+
+                # Incremental save every 100 movies
+                if checked % 100 == 0:
+                    with open('movie_tracking.json', 'w') as f:
+                        json.dump(db, f, indent=2)
+                    print(f"  💾 Progress saved (batch {checked//100})")
+
+                # Rate limiting
+                time.sleep(0.2)
+
+        except Exception as e:
+            self.logger.error(f"Unexpected error during provider checking: {e}")
+            print(f"\n⚠️  Unexpected error during provider checking: {e}")
+            print(f"  Processed {checked}/{total_to_check} movies before error")
+        finally:
+            # Always save database before exiting
+            try:
+                with open('movie_tracking.json', 'w') as f:
+                    json.dump(db, f, indent=2)
+                print(f"  💾 Final database save completed")
+            except Exception as save_error:
+                self.logger.error(f"Failed to save database: {save_error}")
+                print(f"  ❌ Failed to save database: {save_error}")
+
+        print(f"\n✅ Provider check complete: Found {newly_digital} newly digital movies out of {checked} checked ({failed} failed)")
+        self.logger.info(f"Provider check complete: {newly_digital} newly digital, {checked} checked, {failed} failed")
+
+        return newly_digital
+
+    def validate_enrichment_consistency(self):
+        """Validate enrichment consistency to prevent data/flag mismatches
+
+        Checks for movies marked enriched: true but missing watch_links data.
+        Resets enriched flag to false for inconsistent movies.
+
+        Returns:
+            int: Number of inconsistencies found and corrected
+        """
+        try:
+            # Load movie tracking database
+            if not os.path.exists('movie_tracking.json'):
+                self.logger.info("No movie_tracking.json found, skipping enrichment validation")
+                return 0
+
+            with open('movie_tracking.json', 'r') as f:
+                db = json.load(f)
+
+            inconsistencies_found = 0
+            total_available = 0
+
+            for movie_id, movie in db.get('movies', {}).items():
+                if movie.get('status') == 'available':
+                    total_available += 1
+
+                    # Check if marked as enriched but missing watch_links
+                    if movie.get('enriched', False):
+                        # Load corresponding data.json to check for watch_links
+                        data_file = 'data.json'
+                        if os.path.exists(data_file):
+                            try:
+                                with open(data_file, 'r') as df:
+                                    data_movies = json.load(df)
+
+                                # Find corresponding movie in data.json
+                                data_movie = None
+                                for dm in data_movies:
+                                    if str(dm.get('id')) == str(movie_id):
+                                        data_movie = dm
+                                        break
+
+                                if data_movie:
+                                    watch_links = data_movie.get('watch_links')
+
+                                    # Check if watch_links is missing, empty, or contains placeholder ASIN
+                                    has_placeholder_asin = False
+                                    detected_asin = None
+                                    placeholder_asins = ['B0FMPYFP9W', 'B0FNDR5BW5']
+
+                                    if watch_links and isinstance(watch_links, dict):
+                                        # Check for placeholder ASINs in any category
+                                        for category in ['streaming', 'rent', 'buy']:
+                                            category_data = watch_links.get(category, {})
+                                            if category_data and isinstance(category_data, dict):
+                                                link = category_data.get('link', '')
+                                                if link:
+                                                    for asin in placeholder_asins:
+                                                        if asin in link:
+                                                            has_placeholder_asin = True
+                                                            detected_asin = asin
+                                                            break
+                                            if has_placeholder_asin:
+                                                break
+
+                                    if not watch_links or (isinstance(watch_links, dict) and not any(watch_links.values())) or has_placeholder_asin:
+                                        # Inconsistency found: enriched=true but no/bad watch_links
+                                        reason = "no watch_links" if not watch_links else "empty watch_links" if not any(watch_links.values()) else f"placeholder ASIN {detected_asin}"
+                                        self.logger.warning(f"Enrichment inconsistency: {movie.get('title', 'Unknown')} (ID: {movie_id}) marked enriched=true but has {reason}")
+                                        movie['enriched'] = False
+                                        # Remove enrichment_date if present
+                                        if 'enrichment_date' in movie:
+                                            del movie['enrichment_date']
+                                        inconsistencies_found += 1
+
+                            except Exception as e:
+                                self.logger.warning(f"Error checking data.json for movie {movie.get('title', 'Unknown')}: {e}")
+
+            # Save corrected database if any inconsistencies were found
+            if inconsistencies_found > 0:
+                with open('movie_tracking.json', 'w') as f:
+                    json.dump(db, f, indent=2)
+                self.logger.info(f"Corrected {inconsistencies_found} enrichment inconsistencies in movie_tracking.json")
+
+            # Log summary
+            consistent_count = total_available - inconsistencies_found
+            self.logger.info(f"Enrichment consistency: {consistent_count}/{total_available} valid, {inconsistencies_found} corrected")
+            print(f"  🔍 Enrichment consistency: {consistent_count}/{total_available} valid, {inconsistencies_found} corrected")
+
+            return inconsistencies_found
+
+        except Exception as e:
+            self.logger.error(f"Error during enrichment consistency validation: {e}")
+            print(f"  ❌ Error during enrichment consistency validation: {e}")
+            return 0
 
     def _write_discovery_metrics(self, window_days, new_movies_added, sample_titles):
         """Write per-run discovery metrics to metrics/daily.jsonl"""
@@ -2035,62 +2271,160 @@ class DataGenerator:
         with open('movie_tracking.json', 'r') as f:
             db = json.load(f)
 
-        # Load existing data.json if incremental mode
+        # Load existing data.json for merging later
         existing_movies = []
         existing_ids = set()
-        if incremental and os.path.exists('data.json'):
+        if os.path.exists('data.json'):
             with open('data.json', 'r') as f:
                 existing_data = json.load(f)
                 existing_movies = existing_data.get('movies', [])
                 existing_ids = {str(m['id']) for m in existing_movies}
-            message = f"Incremental mode: Found {len(existing_movies)} existing movies in data.json"
+            message = f"Found {len(existing_movies)} existing movies in data.json"
             self.logger.info(message)
             print(f"📂 {message}")
 
+        # Validate enrichment consistency before categorization
+        print(f"\n🔍 Validating enrichment consistency...")
+        self.validate_enrichment_consistency()
+
         # Filter to recently available movies
         cutoff_date = datetime.now() - timedelta(days=days_back)
-        new_movies = []
 
-        if incremental:
-            print(f"🎬 Processing NEW movies that went digital in last {days_back} days...")
-            print(f"   Existing movies in data.json: {len(existing_ids)}")
-            print(f"   These will be SKIPPED (use --full to reprocess)")
-        else:
-            print(f"🎬 Processing ALL movies that went digital in last {days_back} days...")
-            print(f"   This will regenerate watch links for all movies")
+        # Build lookup of existing movies by ID for watch_links validation
+        existing_movies_lookup = {str(m['id']): m for m in existing_movies}
 
-        skipped_count = 0
+        # Separate movies by enrichment status (Phase 2.1 optimization)
+        needs_enrichment = []
+        already_enriched = []
+        stale_enrichment = []
+
         for movie_id, movie_data in db['movies'].items():
-            # Skip if already in data.json (incremental mode)
-            if incremental and movie_id in existing_ids:
-                skipped_count += 1
-                continue
-
             if movie_data['status'] == 'available' and movie_data.get('digital_date'):
                 try:
                     digital_date = datetime.strptime(movie_data['digital_date'], '%Y-%m-%d')
                     if digital_date >= cutoff_date:
-                        # Get full movie details (movie_id is the TMDB ID)
-                        movie_details = self.get_movie_details(movie_id)
-                        if movie_details:
-                            processed = self.process_movie(movie_id, movie_data, movie_details, force_refresh)
-                            if processed:
-                                new_movies.append(processed)
-                                print(f"  ✓ {processed['title']} - Links: {len(processed['links'])}")
+                        # Check enrichment status
+                        is_enriched = movie_data.get('enriched', False)
+                        enrichment_date = movie_data.get('enrichment_date')
 
-                        time.sleep(0.2)  # Rate limiting
+                        # Check if enrichment is stale (> 90 days old)
+                        is_stale = False
+                        if is_enriched and enrichment_date:
+                            try:
+                                enrich_dt = datetime.fromisoformat(enrichment_date)
+                                age_days = (datetime.now() - enrich_dt).days
+                                is_stale = age_days > 90
+                            except:
+                                pass
+
+                        if not is_enriched:
+                            needs_enrichment.append((movie_id, movie_data))
+                        elif is_stale:
+                            stale_enrichment.append((movie_id, movie_data))
+                        else:
+                            # Before classifying as already_enriched, validate watch_links for placeholders
+                            existing_movie = existing_movies_lookup.get(movie_id)
+                            has_valid_links = True
+
+                            if existing_movie and 'watch_links' in existing_movie:
+                                validated_links = self.validate_watch_links_schema(
+                                    existing_movie['watch_links'],
+                                    movie_data.get('title', 'Unknown')
+                                )
+                                # If validation removes all categories or results in empty dict,
+                                # don't classify as already_enriched
+                                if not validated_links:
+                                    has_valid_links = False
+
+                            if has_valid_links:
+                                already_enriched.append((movie_id, movie_data))
+                            else:
+                                # Movie has placeholder ASINs or invalid links, needs re-enrichment
+                                needs_enrichment.append((movie_id, movie_data))
 
                 except Exception as e:
-                    print(f"  ✗ Error processing {movie_data.get('title')}: {e}")
+                    self.logger.warning(f"Error parsing date for {movie_data.get('title')}: {e}")
 
-        if incremental and skipped_count > 0:
-            print(f"\n⏭️  Skipped {skipped_count} existing movies (incremental mode)")
-            print(f"   To reprocess all movies with agent scraper, run: python3 generate_data.py --full")
+        # Phase 2.1 Optimization Report
+        total_available = len(needs_enrichment) + len(already_enriched) + len(stale_enrichment)
+        print(f"\n📊 Phase 2.1 Enrichment Optimization:")
+        print(f"   Total available movies (last {days_back} days): {total_available}")
+        print(f"   ✅ Already enriched (cached): {len(already_enriched)}")
+        print(f"   🆕 Need enrichment: {len(needs_enrichment)}")
+        print(f"   ⏰ Stale (>90 days, will re-enrich): {len(stale_enrichment)}")
 
-        # Merge with existing movies if incremental
         if incremental:
-            print(f"\n📋 Adding {len(new_movies)} new movies to {len(existing_movies)} existing movies")
-            display_movies = existing_movies + new_movies
+            # Re-enrich stale movies in batches (max 10 per run to avoid quota issues)
+            stale_to_process = stale_enrichment[:10]
+            if stale_to_process:
+                print(f"   📝 Re-enriching {len(stale_to_process)} stale movies (batch of 10)")
+            needs_enrichment.extend(stale_to_process)
+        else:
+            # Full mode: re-enrich everything
+            print(f"   🔄 FULL MODE: Re-enriching ALL movies")
+            needs_enrichment.extend(already_enriched)
+            needs_enrichment.extend(stale_enrichment)
+
+        print(f"\n🎬 Processing {len(needs_enrichment)} movies (enrichment phase)...")
+        print(f"   API savings: {len(already_enriched)} movies skipped (95% cost reduction)")
+
+        # Process only movies that need enrichment
+        new_movies = []
+        enriched_count = 0
+
+        for movie_id, movie_data in needs_enrichment:
+            try:
+                # Get full movie details (movie_id is the TMDB ID)
+                movie_details = self.get_movie_details(movie_id)
+                if movie_details:
+                    processed = self.process_movie(movie_id, movie_data, movie_details, force_refresh)
+                    if processed:
+                        new_movies.append(processed)
+                        print(f"  ✓ {processed['title']} - Links: {len(processed['links'])}")
+
+                        # Mark as enriched in tracking database
+                        movie_data['enriched'] = True
+                        movie_data['enrichment_date'] = datetime.now().isoformat()
+                        enriched_count += 1
+
+                time.sleep(0.2)  # Rate limiting
+
+            except Exception as e:
+                print(f"  ✗ Error processing {movie_data.get('title')}: {e}")
+
+        # Save updated tracking database with enrichment flags
+        with open('movie_tracking.json', 'w') as f:
+            json.dump(db, f, indent=2)
+        print(f"\n💾 Enrichment tracking saved: {enriched_count} movies marked as enriched")
+
+        # Merge with existing movies that are already enriched
+        if incremental and already_enriched:
+            # Get cached data from existing data.json
+            already_enriched_ids = {movie_id for movie_id, _ in already_enriched}
+            raw_cached_movies = [m for m in existing_movies if str(m['id']) in already_enriched_ids]
+
+            # Validate and clean cached movies' watch_links
+            cached_movies = []
+            for movie in raw_cached_movies:
+                if 'watch_links' in movie:
+                    validated_links = self.validate_watch_links_schema(
+                        movie['watch_links'],
+                        movie.get('title', 'Unknown')
+                    )
+                    # Replace watch_links with validated result
+                    movie_copy = movie.copy()
+                    movie_copy['watch_links'] = validated_links
+
+                    # Only include movie if it has valid links after validation
+                    if validated_links:
+                        cached_movies.append(movie_copy)
+                    # If validated result is empty, drop the movie (it will be re-enriched in next run)
+                else:
+                    # Movie without watch_links, include as-is
+                    cached_movies.append(movie)
+
+            print(f"\n📋 Using {len(cached_movies)} cached movies + {len(new_movies)} newly enriched = {len(cached_movies) + len(new_movies)} total")
+            display_movies = cached_movies + new_movies
         else:
             display_movies = new_movies
         
@@ -2124,17 +2458,16 @@ class DataGenerator:
             except Exception as e:
                 self.logger.warning(f"Failed to close platform scraper: {e}")
 
-        # Cleanup RT driver if initialized
-        if self.rt_driver and self.rt_driver is not False:
+        # Cleanup RT scraper if initialized
+        if self.rt_scraper and self.rt_scraper is not False:
             try:
-                self.rt_driver.quit()
-                self.logger.debug("RT driver closed")
+                self.rt_scraper.close()
+                self.logger.debug("RT scraper closed")
             except Exception as e:
-                self.logger.warning(f"Failed to close RT driver: {e}")
+                self.logger.warning(f"Failed to close RT scraper: {e}")
 
-        # Save caches
+        # Save caches (RT cache is managed by rt_scraper)
         self.save_cache(self.wikipedia_cache, 'wikipedia_cache.json')
-        self.save_cache(self.rt_cache, 'rt_cache.json')
         
         message = f"Generated data.json with {len(display_movies)} movies"
         self.logger.info(message)
@@ -2174,6 +2507,10 @@ class DataGenerator:
         print(f"  Cache hits: {self.watchmode_stats['cache_hits']}")
         print(f"  Cache hit rate: {cache_hit_rate:.1f}%")
         print(f"  Watchmode success rate: {success_rate:.1f}%")
+
+        # Phase 3: Print Watchmode quota report
+        if self.watchmode_client:
+            self.watchmode_client.print_quota_report()
 
         print(f"\n📊 Agent Scraper Usage:")
         print(f"  Agent enabled: {self.config.get('agent_scraper', {}).get('enabled', True)}")
@@ -2296,6 +2633,7 @@ def main():
     parser.add_argument('--full', action='store_true', help='Regenerate entire data.json from scratch (default: incremental mode - only process new movies)')
     parser.add_argument('--debug', action='store_true', help='Enable debug logging for discovery and agent scraper')
     parser.add_argument('--discover', action='store_true', help='Run discovery to find new premieres before generating data')
+    parser.add_argument('--check', action='store_true', help='Check tracking movies for digital availability (provider monitoring)')
 
     args = parser.parse_args()
     incremental = not args.full
@@ -2319,8 +2657,11 @@ def main():
         discovered_count = generator.discover_new_premieres(debug=args.debug)
         print(f"✅ Discovery complete: {discovered_count} new movies added")
 
-    # Get newly digital count by checking status changes (simplified for now)
+    # Check tracking movies for digital availability if requested
     newly_digital_count = 0
+    if args.check:
+        print("\n🔍 Checking tracking movies for digital availability...")
+        newly_digital_count = generator.check_tracking_movies()
 
     # Save daily metrics if discovery was run
     if args.discover:

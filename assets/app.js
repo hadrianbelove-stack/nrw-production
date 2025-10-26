@@ -88,93 +88,76 @@ const NRW = {
             // Build platform-based watch buttons (SVOD, Amazon, Apple)
             const buildPlatformButtons = (movie) => {
                 const watchLinks = movie.watch_links || {};
-                const buttons = [];
+                let buttonsHtml = '';
 
-                // 1. Check for SVOD streaming (Netflix, Mubi, Disney+, etc.)
+                // 1. SVOD Streaming Button (if available)
                 if (watchLinks.streaming?.service && watchLinks.streaming?.link) {
                     const service = watchLinks.streaming.service;
                     const link = watchLinks.streaming.link;
 
                     // Shorten platform names for display
-                    const displayName = service
-                        .replace('Amazon Prime Video', 'PRIME')
-                        .replace('Disney Plus', 'DISNEY+')
-                        .replace('HBO Max', 'HBO')
-                        .toUpperCase();
+                    let displayName = service;
+                    if (service.toLowerCase().includes('amazon') || service.toLowerCase().includes('prime')) {
+                        displayName = 'PRIME';
+                    } else if (service.toLowerCase().includes('disney')) {
+                        displayName = 'DISNEY+';
+                    } else if (service.toLowerCase().includes('hbo') || service.toLowerCase().includes('max')) {
+                        displayName = 'MAX';
+                    } else if (service.toLowerCase().includes('netflix')) {
+                        displayName = 'NETFLIX';
+                    } else if (service.toLowerCase().includes('hulu')) {
+                        displayName = 'HULU';
+                    } else if (service.toLowerCase().includes('peacock')) {
+                        displayName = 'PEACOCK';
+                    } else {
+                        displayName = service.toUpperCase();
+                    }
 
-                    buttons.push({
-                        name: displayName,
-                        link: link,
-                        service: service,
-                        class: 'watch-btn-stream'
-                    });
-                } else if (watchLinks.streaming && !watchLinks.streaming.link) {
-                    // Error state for streaming
-                    const service = watchLinks.streaming.service || 'STREAM';
-                    buttons.push({
-                        name: `${service.toUpperCase()} (MISSING)`,
-                        link: '#',
-                        service: service,
-                        class: 'watch-btn-error',
-                        disabled: true
-                    });
+                    // All streaming services use the same style
+                    // Use logo images for certain services, text for others
+                    if (displayName === 'PRIME') {
+                        buttonsHtml += `<a href="${link}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-stream" aria-label="Watch on Prime Video"><img src="logos and images/amazon prime.png" alt="Prime Video" class="btn-logo"></a>`;
+                    } else if (displayName === 'NETFLIX') {
+                        buttonsHtml += `<a href="${link}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-stream" aria-label="Watch on Netflix"><img src="logos and images/netflix square logo.png" alt="Netflix" class="btn-logo"></a>`;
+                    } else {
+                        buttonsHtml += `<a href="${link}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-stream" aria-label="Watch on ${service}">${displayName}</a>`;
+                    }
                 }
 
-                // 2. Check for Amazon (rent OR buy)
-                // Look for Amazon in both rent and buy, prefer rent if both exist
+                // 2. Purchase Buttons (Amazon + Apple)
                 let amazonLink = null;
+                let appleLink = null;
+
+                // Check for Amazon (rent OR buy)
                 if (watchLinks.rent?.service?.toLowerCase().includes('amazon') && watchLinks.rent?.link) {
                     amazonLink = watchLinks.rent.link;
                 } else if (watchLinks.buy?.service?.toLowerCase().includes('amazon') && watchLinks.buy?.link) {
                     amazonLink = watchLinks.buy.link;
                 }
 
-                if (amazonLink) {
-                    buttons.push({
-                        name: 'AMAZON',
-                        link: amazonLink,
-                        service: 'Amazon',
-                        class: 'watch-btn-amazon'
-                    });
-                }
-
-                // 3. Check for Apple (rent OR buy)
-                // Look for Apple in both rent and buy, prefer rent if both exist
-                let appleLink = null;
+                // Check for Apple (rent OR buy)
                 if (watchLinks.rent?.service?.toLowerCase().includes('apple') && watchLinks.rent?.link) {
                     appleLink = watchLinks.rent.link;
                 } else if (watchLinks.buy?.service?.toLowerCase().includes('apple') && watchLinks.buy?.link) {
                     appleLink = watchLinks.buy.link;
                 }
 
+                // Add purchase buttons directly (not in separate wrapper)
+                if (amazonLink) {
+                    buttonsHtml += `<a href="${amazonLink}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-purchase" aria-label="Rent/Buy on Amazon"><img src="logos and images/pngimg.com - amazon_PNG17.png" alt="Amazon" class="btn-logo"></a>`;
+                }
+
                 if (appleLink) {
-                    buttons.push({
-                        name: 'APPLE',
-                        link: appleLink,
-                        service: 'Apple TV',
-                        class: 'watch-btn-apple'
-                    });
+                    buttonsHtml += `<a href="${appleLink}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-purchase" aria-label="Rent/Buy on Apple TV"><img src="logos and images/apple logo.png" alt="Apple" class="btn-logo"></a>`;
                 }
 
-                // If no buttons at all, show disabled placeholder
-                if (buttons.length === 0) {
-                    buttons.push({
-                        name: 'NOT AVAILABLE',
-                        link: '#',
-                        service: 'None',
-                        class: 'watch-btn-disabled',
-                        disabled: true
-                    });
+                // If no valid links at all, show disabled placeholder
+                if (!buttonsHtml) {
+                    buttonsHtml = '<a href="#" class="watch-btn watch-btn-disabled" aria-disabled="true" title="Link not available" tabindex="-1">NOT AVAILABLE</a>';
                 }
 
-                // Render buttons as HTML
-                return buttons.map(btn => {
-                    if (btn.disabled) {
-                        return `<a href="${btn.link}" class="watch-btn ${btn.class}" aria-disabled="true" title="Link not available" tabindex="-1">${btn.name}</a>`;
-                    } else {
-                        return `<a href="${btn.link}" target="_blank" rel="noopener noreferrer" class="watch-btn ${btn.class}" aria-label="Watch on ${btn.service}">${btn.name}</a>`;
-                    }
-                }).join('');
+                // Wrap all buttons in a single container
+                return `<div class="watch-buttons">${buttonsHtml}</div>`;
             };
 
             const platformButtons = buildPlatformButtons(movie);
@@ -216,6 +199,7 @@ const NRW = {
                     </div>
                 </div>
                 <div class="movie-info">
+                    <div class="movie-title">${movie.title}</div>
                     <span class="director">${movie.crew?.director || 'Director Unknown'}</span> • <span class="country">${(movie.country === 'United States of America' ? 'USA' : movie.country) || 'Country Unknown'}</span>
                 </div>
             </div>`;

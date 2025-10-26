@@ -15,9 +15,27 @@ tracking:
   check_interval_hours: 24  # How often to check
 
 api:
-  # tmdb_api_key: Set via TMDB_API_KEY environment variable
+  # API keys should be set via environment variables (recommended for production)
+  # or uncommented and filled in below (for local development only)
+
+  # TMDB (The Movie Database) - Required
+  # Get your key from: https://www.themoviedb.org/settings/api
+  # Environment variable: TMDB_API_KEY
+  # tmdb_api_key: "YOUR_TMDB_API_KEY_HERE"
+
+  # Watchmode API - Required for streaming links
+  # Get your key from: https://api.watchmode.com/ (free tier: 1000 requests/month)
+  # Environment variable: WATCHMODE_API_KEY
+  # watchmode_api_key: "YOUR_WATCHMODE_API_KEY_HERE"
+
+  # OMDb API - Optional (for fallback poster images)
+  # Get your key from: http://www.omdbapi.com/apikey.aspx (free tier: 1000 requests/day)
+  # Environment variable: OMDB_API_KEY
+  # omdb_api_key: "YOUR_OMDB_API_KEY_HERE"
+
   tmdb_rate_limit: 0.1  # Seconds between API calls
   max_retries: 3
+  max_pages_bootstrap: 49  # Maximum pages to fetch for bootstrap operation
 
 agent_scraper:
   enabled: false  # Disabled due to authentication barriers on all platforms

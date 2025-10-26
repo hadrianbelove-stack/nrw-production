@@ -10,27 +10,11 @@ Automated tracking of theatrical releases becoming available digitally, displaye
 
 ### Bootstrap Date Accuracy (Resolved Oct 2025)
 
-**Issue:** During the initial bootstrap on September 6, 2025, approximately 50 movies were marked as "digitally available" with the discovery date (2025-09-06) rather than their actual digital release dates. This occurred because the legacy tracking system set `digital_date = today` when providers were first detected.
+**Issue:** ~50 movies from the September 2025 bootstrap have approximate digital dates marked with "~" indicators. These dates represent when movies were first discovered, not necessarily when they became digitally available.
 
-**Impact:** Movies with August 2025 premiere dates showing September 6 digital dates are inaccurate by days or weeks.
+**For Users:** The "~" symbol means the exact digital release date is uncertain. The movie was discovered on that date but may have been available earlier.
 
-**Resolution:**
-- All affected movies are flagged with `bootstrap_date: true` in the database
-- Website displays a visual indicator ("~" prefix or tooltip) for bootstrap dates
-- Admin panel highlights these movies for manual correction
-- High-profile titles are being corrected manually over time
-- Future movies use TMDB's release date field for accuracy
-
-**For Users:** If you see a "~" symbol or approximate date indicator, this means the exact digital release date is uncertain. The movie was discovered on that date but may have been available earlier.
-
-**For Developers:** See `IMPLEMENTATION_ROADMAP.md` (CRITICAL-001) and `PROJECT_CHARTER.md` (AMENDMENT-049) for full technical details and implementation.
-
-**Correction Tools:**
-- Admin panel: `/update-date` endpoint for manual corrections
-- CLI tool: `python3 date_verification.py` for batch corrections
-- CSV import: `python3 date_verification.py --csv corrections.csv`
-
-**Prevention:** The current discovery system (integrated into `generate_data.py --discover`) uses TMDB's `release_date` field and no longer sets dates to "today" when providers are detected. This issue will not recur for new movies.
+**For Developers:** See [BOOTSTRAP_DATES.md](BOOTSTRAP_DATES.md) for full technical details, correction tools, and prevention measures. Also see `IMPLEMENTATION_ROADMAP.md` (CRITICAL-001) and `PROJECT_CHARTER.md` (AMENDMENT-049).
 
 ## Quick Start
 ```bash
@@ -55,14 +39,14 @@ The `launch_all.sh` script provides a menu-driven interface to launch all NRW to
 
 - **Basic command:** `./launch_all.sh`
 - **Menu navigation:** Enter 1-5 to select an option
-- **Stopping services:** Press Ctrl+C to stop running services
-- **Returning to menu:** YouTube manager returns to menu after command completes
+- **Stopping services:** Press Ctrl+C to stop and exit
+- **Returning to menu:** YouTube Playlist Manager returns to menu after command completes
 
 ### Menu Options
 
 **Option 1: Launch Public Site**
 - Starts HTTP server on port 8000 (or 8001 if 8000 is busy)
-- Opens browser automatically to `http://localhost:8000`
+- Opens browser automatically to the selected port (8000 or 8001)
 - Displays movie wall interface
 - Press Ctrl+C to stop
 
@@ -166,7 +150,7 @@ Generation: `movie_tracking.json` → `generate_data.py` → `data.json`
 
 Discovery: `generate_data.py --discover` → TMDB API → `movie_tracking.json` (replaces legacy movie_tracker.py)
 
-Watch links: Watchmode API → cache → `data.json.watch_links`
+Watch links: Watchmode API → cache → `data.json` (watch_links section)
 
 Admin QA: `admin.py` (port 5555) → manual corrections → regenerate
 
@@ -177,7 +161,9 @@ Automation: GitHub Actions → `daily_orchestrator.py` → pipeline → auto-com
 - **PROJECT_CHARTER.md** - Governance rules, amendments, API keys, architectural decisions
 - **NRW_DATA_WORKFLOW_EXPLAINED.md** - Data pipeline mechanics
 - **DAILY_CONTEXT.md** - Current state and recent changes (rolling context)
-- **diary/** - Historical session archives
+- **diary/** - Historical session archives (Oct 15, 2025 onwards)
+- **PROJECT_LOG.md** - Deprecated session log (Aug 26 - Oct 14, 2025) - see diary/ for current logs
+- **museum_legacy/** - Archived completion reports, deprecated code, and historical snapshots
 
 ## Admin Panel - Post-Publication Curation
 
@@ -342,7 +328,7 @@ CLI arguments override config file settings.
 ## Configuration
 
 - **config.yaml** - API keys, scraper settings, display parameters
-- **requirements.txt** - Python dependencies
+- **requirements.txt** - Python dependencies (Playwright-based, Selenium removed)
 - **.gitignore** - Excludes cache/, config.yaml, movie_tracking.json
 - **launch_all.sh** - Unified launcher for all NRW tools (menu-driven)
 - **launch_NRW.sh** - Legacy launcher for public site only
@@ -362,208 +348,46 @@ CLI arguments override config file settings.
 ### Agent Scraper Issues
 - Currently enabled in `config.yaml` (line 31: `enabled: true`) as fallback when Watchmode API has no data
 - See `AGENT_SCRAPER_DIAGNOSTICS.md` for details
-- Playwright infrastructure ready for production use
+- Playwright infrastructure in production use (all scrapers migrated)
+- All scrapers now use Playwright: RT scraper, platform scraper, YouTube scraper, agent scraper
 
 ### Watch Links Troubleshooting
 
-#### Problem: All watch links are Google search URLs
+**Common Problem:** Watch links showing as Google search URLs instead of deep links to streaming platforms.
 
-**Symptoms:**
-- Watch links in `data.json` look like: `https://www.google.com/search?q=Movie%20Title%20watch%20Platform`
-- No deep links to Amazon, Apple TV, or other platforms
-- Users have to search manually instead of going directly to movie page
-
-**Root Cause:**
-The Watchmode API key is invalid, expired, or returning no data. The system falls back to Google search URLs.
-
-**Diagnosis:**
-
-1. **Test API Key:**
-   ```bash
-   curl "https://api.watchmode.com/v1/search/?apiKey=YOUR_KEY&search_field=tmdb_movie_id&search_value=507244"
-   ```
-   - 200 OK with data → API works
-   - 401 Unauthorized → API key invalid
-   - 429 Too Many Requests → Rate limit exceeded
-
-2. **Check Logs:**
-   ```bash
-   grep -i watchmode logs/generate_data.log
-   ```
-   Look for error messages or warnings.
-
-3. **Check Statistics:**
-   Run `python3 generate_data.py` and look for:
-   ```
-   Watchmode API Statistics:
-     Watchmode successes: 0  ← Problem if zero
-   ```
-
-**Solutions:**
-
-**Option 1: Get New API Key (Recommended)**
-1. Sign up at https://api.watchmode.com/ (free tier: 1000 calls/month)
-2. Copy your new API key
-3. Set environment variable:
-   ```bash
-   export WATCHMODE_API_KEY="YOUR_NEW_API_KEY"
-   ```
-   Note: You can also set the key in `config.yaml` but environment variables are preferred for security
-4. Regenerate data:
-   ```bash
-   python3 generate_data.py --full
-   ```
-
-### Watch Links System Status (Updated 2025-10-23)
-
-**Three-Tier Strategy Performance:**
-
-| Tier | Source | Coverage | Status |
-|------|--------|----------|--------|
-| 1 | Watchmode API | ⚠️ Not Tested | 🔴 Test Invalid |
-| 2 | Amazon Scraper | 100% (validated) | ✅ Working |
-| 3 | Manual Overrides | TBD (pending re-test) | ⏳ Pending |
-| **Total** | **Combined** | **⚠️ Invalid Test** | **🔴 Re-test Required** |
-
-⚠️ **TEST INVALIDATION NOTICE (2025-10-24)**
-
-The validation test failed due to missing TMDB API key configuration. The script crashed before testing Watchmode API. Only Amazon scraper results are valid.
-
-**Action Required:** Fix config.yaml (add TMDB API key) and re-run validation test.
-
-See `IMPLEMENTATION_ROADMAP.md` (CRITICAL-003) for detailed re-test checklist.
-
-**Last Tested:** 2025-10-24 (INVALID - configuration error)
-**Last Selector Update:** 2025-10-23
-**Next Maintenance:** 2026-01-23 (quarterly)
-
-### Known Limitations
-
-**Watchmode API:**
-- Tends to miss recent 2025 releases: ⚠️ Not tested (configuration error)
-- Coverage: ⚠️ Not tested (re-test required)
-- Free tier: 1,000 requests/month (sufficient for daily automation)
-- **Status:** Configuration error prevented testing - add TMDB API key to config.yaml
-
-**Amazon Scraper (Backup):**
-- Success rate: ~100% (excellent performance)
-- Only runs when Watchmode has no data
-- Focuses on recent releases
-- Some failures expected:
-  - Anti-bot detection: No
-  - Movies not available on Amazon: No (all test movies found)
-  - Selectors may need quarterly updates: Yes
-- Performance: Measured 10.8 seconds per search (266 attempts = ~48 minutes for full regeneration)
-
-**Manual Overrides (Final Fallback):**
-- Required for: ~132 movies (53.4%)
-- Use admin panel to add: http://localhost:5555
-- Format: `admin/watch_link_overrides.json`
-
-**Option 2: Enable Platform Scraper (Amazon/Apple TV)**
-
-**Status:** ✅ Enabled and tested (2025-10-23)
-
-**Configuration:**
-```yaml
-# config.yaml lines 44-61
-platform_scraper:
-  enabled: true
-  headless: true
-  platforms:
-    amazon: true
-    apple_tv: false  # User doesn't need Apple TV
-```
-
-**Test Results:**
-- ✅ Amazon scraper success rate: 100% (validated)
-- ✅ Average search time: 10.8 seconds
-- ✅ Selectors verified: 2025-10-24
-- ❌ Watchmode API: Not tested (TMDB API key missing)
-- ⚠️ Overall coverage: Invalid test - re-run required
-- Known issues: Configuration error - TMDB API key not set in config.yaml
-
-**Test Command:**
+**Quick Diagnosis:** The Watchmode API key may be invalid, expired, or rate-limited. Test with:
 ```bash
-python3 streaming_platform_scraper.py
+curl "https://api.watchmode.com/v1/search/?apiKey=YOUR_KEY&search_field=tmdb_movie_id&search_value=507244"
 ```
 
-**Maintenance:**
-- Selectors may need updates every 3-6 months
-- Check if success rate drops below 40%
-- Update selectors in lines 96-123 of `streaming_platform_scraper.py`
-- Last update: 2025-10-23
+**Quick Fix:**
+1. Get a new API key from https://api.watchmode.com/ (free tier: 1000 calls/month)
+2. Set environment variable: `export WATCHMODE_API_KEY="YOUR_NEW_API_KEY"`
+3. Regenerate data: `python3 generate_data.py --full`
 
-**Option 3: Manual Overrides (Quick Fix)**
-For high-priority movies, add manual deep links:
-1. Edit `overrides/watch_links_overrides.json`:
-   ```json
-   {
-     "507244": {
-       "rent": {
-         "service": "Amazon",
-         "link": "https://www.amazon.com/gp/video/detail/B0XXXXXX"
-       }
-     }
-   }
-   ```
-2. Regenerate data:
-   ```bash
-   python3 generate_data.py
-   ```
+**Comprehensive Guide:** See [WATCH_LINKS_TROUBLESHOOTING.md](WATCH_LINKS_TROUBLESHOOTING.md) for detailed diagnosis, multiple solution options, system status, monitoring guidance, and validation steps.
 
-**Validation:**
+### Scraper Technology Stack
 
-After applying a fix:
-1. Check `data.json` for real deep links (not Google search)
-2. Count success rate:
-   ```bash
-   grep -c "google.com/search" data.json  # Should decrease
-   ```
-3. Test 3-5 links manually in a browser
-4. Verify they go directly to movie pages
+All scrapers use **Playwright** for browser automation:
+- **RT Scraper**: `rt_scraper_playwright.py` - Rotten Tomatoes scores and URLs
+- **Platform Scraper**: `streaming_platform_scraper.py` - Amazon and Apple TV deep links
+- **YouTube Scraper**: `scripts/youtube_trailer_scraper.py` - YouTube trailer links
+- **Agent Scraper**: `agent_link_scraper.py` - Netflix, Disney+, HBO Max, Hulu links
 
-### Monitoring Watch Links Health
+**Migration Completed**: October 2025
+- Selenium and webdriver-manager removed from dependencies
+- 30-40% performance improvement over Selenium
+- Better reliability through auto-waiting and retry logic
+- Backup Selenium versions preserved in `museum_legacy/` and `*_selenium_backup.py` files
 
-**Daily Checks:**
-```bash
-# Run full data generation and check statistics
-python3 generate_data.py --full
-
-# Look for these metrics in output:
-# - Watchmode success rate: Currently 0% (needs investigation)
-# - Platform scraper link attempts: Link-level attempts (e.g., 266 attempts)
-# - Platform scraper success rate: Currently 100% (excellent)
-# - Movies covered: Movie-level coverage (e.g., 115 movies with links)
-# - Final coverage: Currently 46.6% (below 85-90% target)
-```
-
-**Warning Signs:**
-- ⚠️ Watchmode success rate drops below 50% → Check API quota
-- ⚠️ Platform scraper success rate drops below 40% → Update selectors
-- ⚠️ Many "No Amazon link found" messages → Check anti-bot detection
-- ⚠️ Final coverage drops below 80% → Investigate both tiers
-
-**Quick Fixes:**
-```bash
-# If Watchmode API fails (quota exceeded)
-# Wait for quota reset or get new API key from https://api.watchmode.com/
-
-# If Amazon scraper fails (selectors outdated)
-# Run with visible browser to inspect HTML:
-python3 streaming_platform_scraper.py  # headless=False in test function
-
-# If specific movies missing links
-# Add manual overrides via admin panel: http://localhost:5555
-```
-
-**Success Criteria:**
-- At least 50% of Amazon/Apple TV movies have real deep links (Watchmode API handles most)
-- Links work (no 404 errors)
-- Platform scraper statistics show success rate > 40%
-- Watchmode API should handle majority of movies
+**Benefits**:
+- Unified technology stack (easier maintenance)
+- Faster scraping (WebSocket-based protocol)
+- Better anti-bot evasion (modern browser automation)
+- Improved error handling and diagnostics
 
 **Related Documentation:**
-- `IMPLEMENTATION_ROADMAP.md` - CRITICAL-003: Watch Links Broken
-- `DAILY_CONTEXT.md` - Watch Links Enhancement (Oct 22)
-- `generate_data.py` - Lines 815-1121: Watch links waterfall logic
+- [IMPLEMENTATION_ROADMAP.md](IMPLEMENTATION_ROADMAP.md) - CRITICAL-003: Watch Links Broken
+- [DAILY_CONTEXT.md](DAILY_CONTEXT.md) - Watch Links Enhancement (Oct 22)
+- `generate_data.py` lines 815-1121 - Watch links waterfall logic
