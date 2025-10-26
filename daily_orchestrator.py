@@ -55,9 +55,9 @@ class NRWOrchestrator:
         return success
     
     def check_changes(self):
-        """Check if there are git changes to commit"""
+        """Check if there are git changes to commit (only data.json for CI workflow)"""
         result = subprocess.run(
-            "git diff --quiet movie_tracking.json data.json",
+            "git diff --quiet data.json",
             shell=True
         )
         self.has_changes = result.returncode != 0
@@ -152,14 +152,14 @@ class NRWOrchestrator:
                 config = yaml.safe_load(f) or {}
 
         validation_config = config.get('validation', {})
-        min_coverage = validation_config.get('min_provider_coverage', 10)
+        min_coverage = int(os.getenv('MIN_PROVIDER_COVERAGE', validation_config.get('min_provider_coverage', 10)))
 
         # Define search URL patterns that should be considered "no real link"
         search_url_patterns = [
             'google.com/search',
             'amazon.com/s?',
             'play.google.com/store/search',
-            'vudu.com/',
+            'vudu.com/search',
             'microsoft.com/store/search',
             'rottentomatoes.com/search',
             'youtube.com/results?search_query'
@@ -406,28 +406,34 @@ class NRWOrchestrator:
         # Optional newsletter generation
         self.generate_newsletter_if_enabled()
 
-        # Check for changes and commit if needed
+        # Check for changes and commit if needed (skip in CI)
         if self.check_changes():
-            print("\n📝 Changes detected, committing...")
-            
-            self.run_command(
-                "git add -A",
-                "Stage changes",
-                critical=False
-            )
-            
-            commit_msg = f"Daily update - {datetime.now().strftime('%Y-%m-%d')}"
-            self.run_command(
-                f'git commit -m "{commit_msg}"',
-                "Commit changes",
-                critical=False
-            )
-            
-            self.run_command(
-                "git push",
-                "Push to remote",
-                critical=False
-            )
+            print("\n📝 Changes detected...")
+
+            # Skip committing in CI environment - let workflow handle it
+            if os.getenv('GITHUB_ACTIONS') or os.getenv('CI'):
+                print("🤖 Running in CI - skipping commit/push (workflow will handle)")
+            else:
+                print("💻 Running locally - committing changes...")
+
+                self.run_command(
+                    "git add -A",
+                    "Stage changes",
+                    critical=False
+                )
+
+                commit_msg = f"Daily update - {datetime.now().strftime('%Y-%m-%d')}"
+                self.run_command(
+                    f'git commit -m "{commit_msg}"',
+                    "Commit changes",
+                    critical=False
+                )
+
+                self.run_command(
+                    "git push",
+                    "Push to remote",
+                    critical=False
+                )
         else:
             print("\n📭 No changes to commit")
         

@@ -53,8 +53,8 @@ jobs:
       - name: Check for changes
         id: changes
         run: |
-          git diff --quiet -- data.json || echo "changes=true" >> $GITHUB_OUTPUT
-          if [[ "$(git status --porcelain -- data.json)" ]]; then
+          if ! git diff --quiet --exit-code -- data.json; then
+            echo "changes=true" >> $GITHUB_OUTPUT
             echo "Changes detected in repository"
           else
             echo "changes=false" >> $GITHUB_OUTPUT

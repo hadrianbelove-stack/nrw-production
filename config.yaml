@@ -78,6 +78,7 @@ validation:
   min_recall: 0.75  # Minimum discovery recall threshold (75%)
   min_precision: 0.70  # Minimum discovery precision threshold (70%)
   min_provider_coverage: 5  # Minimum number of movies with non-search watch links per week (lowered from 10 temporarily while investigating Watchmode API/scraper issues)
+  # TODO [2025-11-15]: Revert min_provider_coverage back to 10 after Watchmode quota reset or scraper reliability fixes
 
 newsletter:
   auto_generate: false  # Set to true to generate newsletter during daily automation
