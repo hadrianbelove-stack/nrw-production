@@ -38,9 +38,7 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Install Playwright browsers
-        run: |
-          python3 -m playwright install chromium
-          python3 -m playwright install-deps chromium
+        run: python3 -m playwright install chromium --with-deps
 
       - name: Configure Git
         run: |
