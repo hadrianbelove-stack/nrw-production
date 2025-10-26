@@ -17,6 +17,7 @@ from logging.handlers import RotatingFileHandler
 from agent_link_scraper import AgentLinkScraper
 from scripts.youtube_trailer_scraper import YouTubeTrailerScraper
 from rt_scraper_playwright import RTScraperPlaywright
+from wikipedia_scraper_playwright import WikipediaScraperPlaywright
 from constants import PLACEHOLDER_ASINS
 try:
     from streaming_platform_scraper import StreamingPlatformScraper
@@ -169,6 +170,7 @@ class DataGenerator:
         self.youtube_scraper = None  # Lazy initialization for YouTube trailer scraping
         self.youtube_trailer_cache = self.load_cache('youtube_trailer_cache.json')
         self.rt_scraper = None  # Lazy initialization for RT scraping with Playwright
+        self.wikipedia_scraper = None  # Lazy initialization for Wikipedia scraping with Playwright
         self.platform_scraper = None  # Lazy initialization for streaming platform scraper
     
     def load_config(self):
@@ -406,14 +408,12 @@ class DataGenerator:
         return None
     
     def find_wikipedia_url(self, title, year, imdb_id, movie_id=None):
-        """Find Wikipedia URL using waterfall approach
+        """Find Wikipedia URL using Playwright-based scraper with waterfall approach
 
         Priority waterfall:
         1. Overrides (overrides/wikipedia_overrides.json) - Manual curator fixes
-        2. Cache (wikipedia_cache.json) - Previously successful lookups
-        3. Wikidata SPARQL - Query by IMDb ID for structured data
-        4. Wikipedia REST API - Search by title with (year film) suffix
-        5. Log missing and return None
+        2. Playwright Scraper - Uses cache, Wikidata SPARQL, REST API, and web scraping
+        3. Log missing and return None
 
         Args:
             title: Movie title
@@ -424,77 +424,42 @@ class DataGenerator:
         Returns:
             Wikipedia URL string or None if not found
         """
-        # 1. Check overrides first
+        # 1. Check overrides first (manual curator fixes take precedence)
         if imdb_id and imdb_id in self.wikipedia_overrides:
             return f"https://en.wikipedia.org/wiki/{self.wikipedia_overrides[imdb_id]}"
 
-        # 2. Check cache
-        cache_key = f"{title}_{year}"
-        if cache_key in self.wikipedia_cache:
-            cached_data = self.wikipedia_cache[cache_key]
-            if isinstance(cached_data, dict):
-                return cached_data.get('url')
-            return cached_data
+        # 2. Initialize Playwright scraper lazily
+        if self.wikipedia_scraper is None:
+            self.wikipedia_scraper = WikipediaScraperPlaywright(
+                cache_file='wikipedia_cache.json',
+                config=self.config,
+                logger=self.logger
+            )
 
-        # 3. Try Wikidata SPARQL query (if IMDb ID available)
-        if imdb_id:
-            wiki_url = self.find_wikipedia_url_wikidata(imdb_id)
-            if wiki_url:
-                # Cache the result with source attribution
-                self.wikipedia_cache[cache_key] = {
-                    'url': wiki_url,
-                    'title': title,
-                    'cached_at': datetime.now().isoformat(),
-                    'source': 'wikidata'
-                }
-                self.save_cache(self.wikipedia_cache, 'wikipedia_cache.json')
-                return wiki_url
-            else:
-                print(f"  Wikidata lookup failed for {title}, trying Wikipedia REST API...")
-
-        # 4. Try Wikipedia API search with proper headers
+        # 3. Use Playwright scraper with waterfall approach
+        # The scraper internally handles: Cache → Wikidata → REST API → Playwright scraping
         try:
-            headers = {
-                'User-Agent': 'NewReleaseWall/1.0 (https://github.com/hadrianbelove-stack/nrw-production; hadrianbelove@gmail.com)'
-            }
+            wiki_url = self.wikipedia_scraper.find_wikipedia_url(
+                title=title,
+                year=year,
+                imdb_id=imdb_id,
+                use_api=True,
+                use_wikidata=True
+            )
 
-            # Try exact match with (year film) suffix
-            search_title = f"{title} ({year} film)"
-            url = f"https://en.wikipedia.org/api/rest_v1/page/summary/{quote(search_title)}"
-            response = requests.get(url, headers=headers, timeout=5)
-            if response.status_code == 200:
-                data = response.json()
-                wiki_url = data.get('content_urls', {}).get('desktop', {}).get('page')
-                if wiki_url:
-                    self.wikipedia_cache[cache_key] = {'url': wiki_url, 'title': title, 'cached_at': datetime.now().isoformat(), 'source': 'wikipedia_api'}
-                    self.save_cache(self.wikipedia_cache, 'wikipedia_cache.json')
-                    return wiki_url
+            # Update our local cache reference to match scraper's cache
+            self.wikipedia_cache = self.wikipedia_scraper.cache
 
-            # Try without year
-            search_title = f"{title} (film)"
-            url = f"https://en.wikipedia.org/api/rest_v1/page/summary/{quote(search_title)}"
-            response = requests.get(url, headers=headers, timeout=5)
-            if response.status_code == 200:
-                data = response.json()
-                wiki_url = data.get('content_urls', {}).get('desktop', {}).get('page')
-                if wiki_url:
-                    self.wikipedia_cache[cache_key] = {'url': wiki_url, 'title': title, 'cached_at': datetime.now().isoformat(), 'source': 'wikipedia_api'}
-                    self.save_cache(self.wikipedia_cache, 'wikipedia_cache.json')
-                    return wiki_url
+            # Track stats for this attempt
+            self.wikipedia_stats['wikidata_attempts'] = self.wikipedia_scraper.stats.get('wikidata_attempts', 0)
+            self.wikipedia_stats['wikidata_successes'] = self.wikipedia_scraper.stats.get('wikidata_successes', 0)
+
+            return wiki_url
 
         except Exception as e:
-            print(f"Wikipedia search error for {title}: {e}")
-
-        # 5. Fallback to Wikipedia search URL
-        search_fallback_url = f"https://en.wikipedia.org/w/index.php?search={quote(title + ' (' + year + ' film)')}"
-        self.wikipedia_cache[cache_key] = {
-            'url': search_fallback_url,
-            'title': title,
-            'cached_at': datetime.now().isoformat(),
-            'source': 'search_fallback'
-        }
-        self.save_cache(self.wikipedia_cache, 'wikipedia_cache.json')
-        return search_fallback_url
+            print(f"Wikipedia scraper error for {title} ({year}): {e}")
+            self.logger.error(f"Wikipedia scraper error for {title} ({year}): {e}")
+            return None
     
     def log_missing_wikipedia(self, movie_id, title, year, imdb_id):
         """Log missing Wikipedia links for manual review"""
@@ -521,84 +486,6 @@ class DataGenerator:
                     json.dump(missing, f, indent=2)
         except Exception as e:
             print(f"Failed to log missing Wikipedia: {e}")
-
-    def find_wikipedia_url_wikidata(self, imdb_id):
-        """Query Wikidata SPARQL endpoint to find Wikipedia article URL using IMDb ID
-
-        Args:
-            imdb_id: IMDb ID from TMDB external_ids (e.g., 'tt35076553')
-
-        Returns:
-            Wikipedia URL string or None if not found
-        """
-        # Validate input
-        if not imdb_id:
-            return None
-
-        # Increment attempts counter
-        self.wikipedia_stats['wikidata_attempts'] += 1
-
-        try:
-            # Build SPARQL query to find English Wikipedia article by IMDb ID
-            sparql_query = f"""
-            SELECT ?article WHERE {{
-              ?item wdt:P345 "{imdb_id}" .
-              ?article schema:about ?item .
-              ?article schema:isPartOf <https://en.wikipedia.org/> .
-            }}
-            """
-
-            # Query Wikidata SPARQL endpoint
-            url = "https://query.wikidata.org/sparql"
-            headers = {
-                'User-Agent': 'NewReleaseWall/1.0 (https://github.com/hadrianbelove-stack/nrw-production; hadrianbelove@gmail.com)',
-                'Accept': 'application/sparql-results+json'
-            }
-            params = {
-                'query': sparql_query,
-                'format': 'json'
-            }
-
-            response = requests.get(url, params=params, headers=headers, timeout=10)
-
-            # Check response status
-            if response.status_code != 200:
-                print(f"  Wikidata query error: HTTP {response.status_code}")
-                return None
-
-            # Parse JSON response
-            data = response.json()
-            results = data.get('results', {}).get('bindings', [])
-
-            if not results:
-                print(f"  ✗ Wikidata found no Wikipedia link for IMDb {imdb_id}")
-                return None
-
-            # Extract Wikipedia URL from first result
-            wikipedia_url = results[0]['article']['value']
-
-            # Validate URL format
-            if not wikipedia_url or not wikipedia_url.startswith('https://en.wikipedia.org/wiki/'):
-                print(f"  Wikidata returned invalid Wikipedia URL: {wikipedia_url}")
-                return None
-
-            # Success
-            self.wikipedia_stats['wikidata_successes'] += 1
-            print(f"  ✓ Wikidata found Wikipedia link for IMDb {imdb_id}")
-            return wikipedia_url
-
-        except requests.exceptions.Timeout:
-            print(f"  Wikidata query timeout for IMDb {imdb_id}")
-            return None
-        except requests.exceptions.RequestException as e:
-            print(f"  Wikidata network error for IMDb {imdb_id}: {e}")
-            return None
-        except KeyError as e:
-            print(f"  Wikidata response parsing error for IMDb {imdb_id}: {e}")
-            return None
-        except Exception as e:
-            print(f"  Wikidata query error for IMDb {imdb_id}: {e}")
-            return None
 
     def find_trailer_url(self, movie_details):
         """Extract trailer URL from TMDB movie details or scrape YouTube"""
