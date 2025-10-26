@@ -776,12 +776,30 @@ class DataGenerator:
                 print(f"  Warning: Watchmode API failed for {title}: {e}")
 
         # Agent search tier (optional): Try to find deep links for Amazon/Apple TV when Watchmode has no data
+        # OR when Watchmode returned Google fallback URLs
         # Capture lengths before platform scraper to detect if it added links
         streaming_len_before = len(watchmode_streaming)
         rent_len_before = len(watchmode_rent)
         buy_len_before = len(watchmode_buy)
 
-        if StreamingPlatformScraper and (not watchmode_streaming or not watchmode_rent or not watchmode_buy):
+        # Helper function to check if a list contains Google fallback URLs
+        def has_google_fallback(link_list):
+            """Check if any links in the list are Google search fallbacks"""
+            if not link_list:
+                return False
+            return any('google.com/search' in item.get('link', '') for item in link_list)
+
+        # Call platform scraper if:
+        # 1. No data from Watchmode (original logic), OR
+        # 2. Watchmode returned Google fallback URLs (needs real link)
+        should_try_platform_scraper = (
+            not watchmode_streaming or not watchmode_rent or not watchmode_buy or
+            has_google_fallback(watchmode_streaming) or
+            has_google_fallback(watchmode_rent) or
+            has_google_fallback(watchmode_buy)
+        )
+
+        if StreamingPlatformScraper and should_try_platform_scraper:
             self._try_platform_agent_search(title, year, providers, watchmode_streaming, watchmode_rent, watchmode_buy, skip_streaming, skip_rent, skip_buy)
 
         # Check if platform scraper actually added any links
@@ -823,10 +841,10 @@ class DataGenerator:
                             'link': amazon_link  # Same page shows both Prime (free) and rent/buy options
                         }
                     else:
-                        # No Amazon link available, use Google search fallback
+                        # No Amazon link available, leave as null (no Google fallback)
                         watch_links['streaming'] = {
                             'service': service,
-                            'link': self.generate_google_search_fallback(title, year, service)
+                            'link': None
                         }
                 else:
                     # Try agent scraper for supported platforms before returning null
@@ -846,7 +864,7 @@ class DataGenerator:
                 if rent_service:
                     watch_links['rent'] = {
                         'service': rent_service,
-                        'link': self.generate_google_search_fallback(title, year, rent_service)
+                        'link': None  # No Google fallback
                     }
 
         # BUY: Use Watchmode or fallback to platform links (skip if overridden)
@@ -862,7 +880,7 @@ class DataGenerator:
                 if buy_service:
                     watch_links['buy'] = {
                         'service': buy_service,
-                        'link': self.generate_google_search_fallback(title, year, buy_service)
+                        'link': None  # No Google fallback
                     }
 
         # Overlay admin overrides on top of auto-discovered links
@@ -892,9 +910,9 @@ class DataGenerator:
                 link = link_data.get('link')
 
                 if service and link and not self.validate_service_link_consistency(service, link, title):
-                    # Mismatch detected, replace with Google search fallback
-                    self.logger.warning(f"Replacing mismatched {category} link for {title} with Google fallback")
-                    validated_links[category]['link'] = self.generate_google_search_fallback(title, year, service)
+                    # Mismatch detected, set to null (no Google fallback)
+                    self.logger.warning(f"Replacing mismatched {category} link for {title} with null (admin flag needed)")
+                    validated_links[category]['link'] = None
 
         # Cache result with canonical schema (use validated links)
         if validated_links:
@@ -1039,14 +1057,14 @@ class DataGenerator:
 
         # Check if service is supported
         if service not in supported_platforms:
-            print(f"  [DEBUG] '{service}' not supported by agent scraper, returning Google search fallback")
-            return {'service': service, 'link': self.generate_google_search_fallback(title, year, service)}
+            print(f"  [DEBUG] '{service}' not supported by agent scraper, returning null")
+            return {'service': service, 'link': None}
 
         # Initialize agent scraper if needed
         self._init_agent_scraper()
         print(f"  [DEBUG] Agent scraper state: {type(self.agent_scraper).__name__ if self.agent_scraper else 'None or False'}")
         if self.agent_scraper is False:
-            return {'service': service, 'link': self.generate_google_search_fallback(title, year, service)}
+            return {'service': service, 'link': None}
 
         try:
             print(f"  Trying agent scraper for {title} on {service}...")
@@ -1064,14 +1082,14 @@ class DataGenerator:
             else:
                 print(f"  ✗ Agent could not find link for {title} on {service}")
 
-            # Return found link or fallback to Google search
-            final_link = result.get('link') or self.generate_google_search_fallback(title, year, service)
+            # Return found link or null (no Google fallback)
+            final_link = result.get('link') or None
             print(f"  [DEBUG] Returning: {{'service': {service}, 'link': {final_link}}}")
             return {'service': service, 'link': final_link}
 
         except Exception as e:
             print(f"  Error in agent scraper for {title}: {e}")
-            return {'service': service, 'link': self.generate_google_search_fallback(title, year, service)}
+            return {'service': service, 'link': None}
 
     def is_actual_amazon_service(self, provider):
         """
@@ -1230,8 +1248,14 @@ class DataGenerator:
             self.watchmode_stats = {}
         self.watchmode_stats['platform_scraper_attempts'] = self.watchmode_stats.get('platform_scraper_attempts', 0) + 1
 
-        # Try streaming providers (if no Watchmode streaming data and not skipped)
-        if not skip_streaming and not watchmode_streaming and providers.get('streaming'):
+        # Helper to check if links are Google fallbacks
+        def has_google_fallback(link_list):
+            if not link_list:
+                return False
+            return any('google.com/search' in item.get('link', '') for item in link_list)
+
+        # Try streaming providers (if no Watchmode streaming data OR Google fallback, and not skipped)
+        if not skip_streaming and (not watchmode_streaming or has_google_fallback(watchmode_streaming)) and providers.get('streaming'):
             for provider in providers['streaming']:
                 # Filter platforms based on config and validate actual services
                 should_try_provider = False
@@ -1247,6 +1271,8 @@ class DataGenerator:
                         deep_link = self.platform_scraper.get_platform_deep_link(title, year, provider)
                         if deep_link:
                             print(f"  ✓ Platform scraper found streaming link for {title} on {provider}")
+                            # Remove any existing Google fallbacks before adding real link
+                            watchmode_streaming[:] = [s for s in watchmode_streaming if 'google.com/search' not in s.get('link', '')]
                             watchmode_streaming.append({'service': provider, 'link': deep_link})
                             # Track statistics
                             if not hasattr(self, 'watchmode_stats'):
@@ -1262,8 +1288,8 @@ class DataGenerator:
                 else:
                     print(f"  Platform {provider} disabled in config, skipping")
 
-        # Try rent providers (if no Watchmode rent data and not skipped)
-        if not skip_rent and not watchmode_rent and providers.get('rent'):
+        # Try rent providers (if no Watchmode rent data OR Google fallback, and not skipped)
+        if not skip_rent and (not watchmode_rent or has_google_fallback(watchmode_rent)) and providers.get('rent'):
             for provider in providers['rent']:
                 # Filter platforms based on config and validate actual services
                 should_try_provider = False
@@ -1279,6 +1305,8 @@ class DataGenerator:
                         deep_link = self.platform_scraper.get_platform_deep_link(title, year, provider)
                         if deep_link:
                             print(f"  ✓ Platform scraper found rent link for {title} on {provider}")
+                            # Remove any existing Google fallbacks before adding real link
+                            watchmode_rent[:] = [s for s in watchmode_rent if 'google.com/search' not in s.get('link', '')]
                             watchmode_rent.append({'service': provider, 'link': deep_link})
                             # Track statistics
                             if not hasattr(self, 'watchmode_stats'):
@@ -1294,8 +1322,8 @@ class DataGenerator:
                 else:
                     print(f"  Platform {provider} disabled in config, skipping")
 
-        # Try buy providers (if no Watchmode buy data and not skipped)
-        if not skip_buy and not watchmode_buy and providers.get('buy'):
+        # Try buy providers (if no Watchmode buy data OR Google fallback, and not skipped)
+        if not skip_buy and (not watchmode_buy or has_google_fallback(watchmode_buy)) and providers.get('buy'):
             for provider in providers['buy']:
                 # Filter platforms based on config and validate actual services
                 should_try_provider = False
@@ -1311,6 +1339,8 @@ class DataGenerator:
                         deep_link = self.platform_scraper.get_platform_deep_link(title, year, provider)
                         if deep_link:
                             print(f"  ✓ Platform scraper found buy link for {title} on {provider}")
+                            # Remove any existing Google fallbacks before adding real link
+                            watchmode_buy[:] = [s for s in watchmode_buy if 'google.com/search' not in s.get('link', '')]
                             watchmode_buy.append({'service': provider, 'link': deep_link})
                             # Track statistics
                             if not hasattr(self, 'watchmode_stats'):
