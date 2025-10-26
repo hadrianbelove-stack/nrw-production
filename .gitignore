@@ -3,7 +3,6 @@
 __pycache__/
 .DS_Store
 config.yaml  # Keep API keys local only
-movie_tracking.json  # Keep database local unless you want it synced
 cache/
 !cache/.gitkeep
 !cache/screenshots/.gitkeep
@@ -15,7 +14,6 @@ logs/
 # Backup files from safe_write_json
 *.backup.*
 diagnose_*.py
-movie_tracking.json
 current_releases.json
 *_test.py
 NRW_SYNC_*.zip
