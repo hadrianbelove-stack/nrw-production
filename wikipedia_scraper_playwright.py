@@ -6,6 +6,7 @@ import random
 import re
 from datetime import datetime, timedelta
 from urllib.parse import quote
+from playwright_manager import get_playwright_manager
 
 
 class WikipediaScraperPlaywright:
@@ -28,6 +29,9 @@ class WikipediaScraperPlaywright:
         self.browser = None
         self.context = None
         self.page = None
+
+        # Shared manager reference
+        self.manager = get_playwright_manager()
 
         # Rate limiting
         self.last_scrape_time = 0
@@ -130,7 +134,8 @@ class WikipediaScraperPlaywright:
         self._log("Initializing Playwright browser...")
 
         try:
-            self.playwright = sync_playwright().start()
+            # Get shared Playwright instance
+            self.playwright = self.manager.get_playwright()
 
             # Launch browser
             headless = self.config.get('wikipedia_scraper', {}).get('headless', True)
@@ -165,6 +170,9 @@ class WikipediaScraperPlaywright:
                 pass
             self.page = None
 
+        # Shared manager reference
+        self.manager = get_playwright_manager()
+
         if self.context:
             try:
                 self.context.close()
@@ -181,7 +189,7 @@ class WikipediaScraperPlaywright:
 
         if self.playwright:
             try:
-                self.playwright.stop()
+                self.manager.release()
             except:
                 pass
             self.playwright = None

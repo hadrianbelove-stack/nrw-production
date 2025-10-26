@@ -6,6 +6,7 @@ import random
 import re
 from datetime import datetime, timedelta
 from urllib.parse import quote
+from playwright_manager import get_playwright_manager
 
 
 class RTScraperPlaywright:
@@ -28,6 +29,9 @@ class RTScraperPlaywright:
         self.browser = None
         self.context = None
         self.page = None
+
+        # Shared manager reference
+        self.manager = get_playwright_manager()
 
         # Rate limiting
         self.last_scrape_time = 0
@@ -118,15 +122,16 @@ class RTScraperPlaywright:
             self._log(f"Failed to cleanup old screenshots: {e}", level='warning')
 
     def _init_browser(self):
-        """Initialize Playwright browser with context."""
+        """Initialize Playwright browser with context using shared manager."""
         if self.browser is not None:
             self._log("Browser already initialized, reusing...", level='debug')
             return
 
-        self._log("Initializing Playwright browser...")
+        self._log("Initializing Playwright browser via shared manager...")
 
         try:
-            self.playwright = sync_playwright().start()
+            # Get shared Playwright instance
+            self.playwright = self.manager.get_playwright()
 
             # Launch browser
             headless = self.config.get('rt_scraper', {}).get('headless', True)
@@ -153,7 +158,7 @@ class RTScraperPlaywright:
             raise
 
     def _cleanup_browser(self):
-        """Clean up browser resources."""
+        """Clean up browser resources (but keep shared Playwright instance)."""
         if self.page:
             try:
                 self.page.close()
@@ -175,9 +180,10 @@ class RTScraperPlaywright:
                 pass
             self.browser = None
 
+        # Release reference to shared Playwright (don't stop it)
         if self.playwright:
             try:
-                self.playwright.stop()
+                self.manager.release()
             except:
                 pass
             self.playwright = None

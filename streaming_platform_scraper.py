@@ -14,6 +14,7 @@ Performance: ~6-8 seconds per search, 30-40% faster than Selenium version
 """
 
 from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeoutError
+from playwright_manager import get_playwright_manager
 import time
 import urllib.parse
 import os
@@ -49,6 +50,9 @@ class StreamingPlatformScraper:
         self.context = None
         self.page = None
 
+        # Shared manager reference
+        self.manager = get_playwright_manager()
+
         # Clean up old screenshots on initialization
         if self.screenshots_enabled:
             self._cleanup_old_screenshots()
@@ -59,7 +63,8 @@ class StreamingPlatformScraper:
             return
 
         try:
-            self.playwright = sync_playwright().start()
+            # Get shared Playwright instance
+            self.playwright = self.manager.get_playwright()
 
             # Launch Chromium browser
             self.browser = self.playwright.chromium.launch(headless=self.headless)
@@ -91,6 +96,9 @@ class StreamingPlatformScraper:
                 pass
             self.page = None
 
+        # Shared manager reference
+        self.manager = get_playwright_manager()
+
         if self.context:
             try:
                 self.context.close()
@@ -107,7 +115,7 @@ class StreamingPlatformScraper:
 
         if self.playwright:
             try:
-                self.playwright.stop()
+                self.manager.release()
             except:
                 pass
             self.playwright = None

@@ -8,6 +8,11 @@ from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeo
 import time
 import json
 import os
+import sys
+
+# Add parent directory to path for playwright_manager import
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from playwright_manager import get_playwright_manager
 
 class YouTubeTrailerScraper:
     def __init__(self, cache_file='youtube_trailer_cache.json', headless=True):
@@ -20,6 +25,9 @@ class YouTubeTrailerScraper:
         self.browser = None
         self.context = None
         self.page = None
+
+        # Shared manager reference
+        self.manager = get_playwright_manager()
 
     def _load_cache(self):
         """Load cache from file"""
@@ -34,15 +42,17 @@ class YouTubeTrailerScraper:
             json.dump(self.cache, f, indent=2)
 
     def _init_browser(self):
-        """Initialize Playwright browser"""
+        """Initialize Playwright browser using shared manager"""
         if self.browser is not None:
             return
 
-        print("Initializing Playwright browser...")
+        print("[YouTubeTrailerScraper] Initializing browser via shared manager...")
         try:
-            self.playwright = sync_playwright().start()
+            # Get shared Playwright instance
+            self.playwright = self.manager.get_playwright()
 
-            # Launch browser
+            # Get shared browser (or use separate context if needed)
+            # For now, create our own browser to maintain independence
             self.browser = self.playwright.chromium.launch(headless=self.headless)
 
             # Create context with viewport and user agent
@@ -63,7 +73,7 @@ class YouTubeTrailerScraper:
             raise
 
     def _cleanup_browser(self):
-        """Clean up browser resources"""
+        """Clean up browser resources (but keep shared Playwright instance)"""
         if self.page:
             try:
                 self.page.close()
@@ -85,9 +95,10 @@ class YouTubeTrailerScraper:
                 pass
             self.browser = None
 
+        # Release reference to shared Playwright (don't stop it)
         if self.playwright:
             try:
-                self.playwright.stop()
+                self.manager.release()
             except:
                 pass
             self.playwright = None
