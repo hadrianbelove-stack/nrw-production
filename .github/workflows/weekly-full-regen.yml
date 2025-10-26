@@ -39,7 +39,7 @@ jobs:
 
       - name: Install Playwright browsers
         run: |
-          playwright install chromium
+          python3 -m playwright install chromium
           sudo playwright install-deps
 
       - name: Configure Git
