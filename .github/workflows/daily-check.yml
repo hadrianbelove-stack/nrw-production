@@ -61,15 +61,15 @@ jobs:
             echo "No changes detected"
           fi
 
+      - name: Switch to automation branch
+        if: steps.changes.outputs.changes == 'true'
+        run: git checkout -B automation-updates
+
       - name: Commit changes
         if: steps.changes.outputs.changes == 'true'
         run: |
           git add data.json
           git commit -m "Daily update - $(date +%Y-%m-%d) [automated]"
-
-      - name: Switch to automation branch
-        if: steps.changes.outputs.changes == 'true'
-        run: git checkout -B automation-updates
 
       - name: Force push to remote
         if: steps.changes.outputs.changes == 'true'
