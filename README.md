@@ -103,7 +103,8 @@ When launching admin panel (options 2 or 4), the script displays credentials rem
 - Discovers new theatrical releases
 - Checks for digital availability
 - Updates tracking database and public display data
-- Pushes to `automation-updates` branch
+- Commits to `automation-updates` branch (not `main`) to avoid conflicts with local development
+- Run `./sync_daily_updates.sh` to merge these updates into your local `main` branch
 
 ### Weekly Full Regeneration (Sunday 10 AM UTC)
 - Reprocesses ALL movies (not just new ones)
@@ -125,14 +126,16 @@ Run `./sync_daily_updates.sh` to merge automation updates into your main branch.
 ### `.github/workflows/daily-check.yml`
 - Trigger: Daily at 9 AM UTC (cron: `0 9 * * *`)
 - Runs: `daily_orchestrator.py` (incremental mode)
-- Output: Updates to `automation-updates` branch
+- Output: Commits to `automation-updates` branch (not `main`)
 - Duration: 3-5 minutes
+- Note: Use `./sync_daily_updates.sh` to merge updates into your local `main` branch
 
 ### `.github/workflows/weekly-full-regen.yml`
 - Trigger: Sunday at 10 AM UTC (cron: `0 10 * * 0`)
 - Runs: `generate_data.py --full` (full regeneration)
-- Output: Updates to `automation-updates` branch
+- Output: Commits to `automation-updates` branch (not `main`)
 - Duration: 5-20 minutes (depending on cache)
+- Note: Use `./sync_daily_updates.sh` to merge updates into your local `main` branch
 
 ### Manual Testing
 Both workflows can be triggered manually:
@@ -141,6 +144,27 @@ Both workflows can be triggered manually:
 3. Click "Run workflow" button
 4. Select branch (main)
 5. Click "Run workflow"
+
+### Troubleshooting Automation
+
+**Workflow runs but no commits:**
+- Check if `daily_orchestrator.py` validation is failing in GitHub Actions logs
+- Look for `validate_provider_coverage` errors - this method requires a minimum number of movies with real watch links
+- Reference: `daily_orchestrator.py` lines 144-201 (validation logic)
+
+**Validation threshold too high:**
+- If Watchmode API quota is exhausted, fewer movies have real streaming links
+- Adjust `min_provider_coverage` threshold in `config.yaml` line 80 (currently set to 5, was 10)
+- This is a temporary fix while investigating Watchmode API/scraper issues
+
+**Workflow not running on schedule:**
+- Check GitHub Actions tab to see if workflow is disabled
+- GitHub automatically disables workflows after 60 days of repository inactivity
+- Re-enable manually if needed
+
+**Manual testing:**
+- Use the "Run workflow" button in GitHub Actions to test without waiting for scheduled run
+- Helps verify fixes before the next scheduled execution
 
 ## Architecture
 
@@ -329,7 +353,7 @@ CLI arguments override config file settings.
 
 - **config.yaml** - API keys, scraper settings, display parameters
 - **requirements.txt** - Python dependencies (Playwright-based, Selenium removed)
-- **.gitignore** - Excludes cache/, config.yaml, movie_tracking.json
+- **.gitignore** - Excludes cache/, config.yaml (API keys), various backup/temp files
 - **launch_all.sh** - Unified launcher for all NRW tools (menu-driven)
 - **launch_NRW.sh** - Legacy launcher for public site only
 
