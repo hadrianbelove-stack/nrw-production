@@ -107,8 +107,14 @@ class YouTubePlaylistManager:
 
         # Load saved credentials
         if token_path.exists():
-            with open(token_path, 'rb') as token:
-                creds = pickle.load(token)
+            try:
+                with open(token_path, 'rb') as token:
+                    creds = pickle.load(token)
+            except (pickle.UnpicklingError, EOFError, ValueError) as e:
+                self.logger.warning(f"⚠️  Corrupted token file: {e}")
+                self.logger.info("🗑️  Removing corrupted token.pickle...")
+                token_path.unlink()
+                creds = None
 
         # Refresh or get new credentials
         if not creds or not creds.valid:
