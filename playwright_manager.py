@@ -45,16 +45,26 @@ class PlaywrightManager:
     def get_playwright(self):
         """
         Get or create the shared Playwright instance
-        
+
         Returns:
             Playwright: Shared Playwright instance
         """
         with self._lock:
             if self.playwright is None:
                 print("[PlaywrightManager] Initializing shared Playwright instance...")
+
+                # Check for existing event loop
+                import asyncio
+                try:
+                    loop = asyncio.get_running_loop()
+                    print(f"[PlaywrightManager] WARNING: Event loop already running: {loop}")
+                    print(f"[PlaywrightManager] This will cause Playwright sync API to fail!")
+                except RuntimeError:
+                    print("[PlaywrightManager] No event loop detected - safe to proceed")
+
                 self.playwright = sync_playwright().start()
                 print("[PlaywrightManager] Playwright instance created")
-            
+
             self.reference_count += 1
             return self.playwright
     

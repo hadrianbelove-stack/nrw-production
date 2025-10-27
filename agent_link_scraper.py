@@ -151,9 +151,6 @@ class AgentLinkScraper:
                 pass
             self.page = None
 
-        # Shared manager reference
-        self.manager = get_playwright_manager()
-
         if self.context:
             try:
                 self.context.close()
@@ -304,6 +301,10 @@ class AgentLinkScraper:
         except (ValueError, KeyError):
             return True
 
+    def _is_service_cache_expired(self, service_cache):
+        """Check if service-specific cache entry has expired."""
+        return self._is_cache_expired(service_cache)
+
     def find_watch_link(self, movie_id, title, year, service_name):
         """Main entry point to find watch link for a movie on a specific service."""
         print(f"[AgentLinkScraper] Finding link for {title} ({year}) on {service_name}...")
@@ -312,23 +313,34 @@ class AgentLinkScraper:
         # Check cache first
         if movie_id_str in self.cache['movies']:
             cached_entry = self.cache['movies'][movie_id_str]
-            if 'streaming' in cached_entry and not self._is_cache_expired(cached_entry):
+            if 'streaming' in cached_entry:
                 cached_streaming = cached_entry['streaming']
-                if cached_streaming.get('service') == service_name:
+
+                # Handle both old and new cache formats
+                service_cache = None
+                if isinstance(cached_streaming, dict):
+                    if 'service' in cached_streaming and cached_streaming.get('service') == service_name:
+                        # Old format: single streaming entry
+                        service_cache = cached_streaming
+                    elif service_name in cached_streaming:
+                        # New format: per-service entries
+                        service_cache = cached_streaming[service_name]
+
+                if service_cache and not self._is_service_cache_expired(service_cache):
                     print(f"[AgentLinkScraper] ✓ Cache hit for {title} on {service_name}")
                     result_dict = {
                         'service': service_name,
-                        'link': cached_streaming.get('link'),
+                        'link': service_cache.get('link'),
                         'cached': True
                     }
 
                     # Add diagnostic fields from cache if available
-                    if 'selector_used' in cached_entry:
-                        result_dict['selector_used'] = cached_entry['selector_used']
-                    if 'last_error' in cached_entry:
-                        result_dict['last_error'] = cached_entry['last_error']
-                    if 'retry_count' in cached_entry:
-                        result_dict['retry_count'] = cached_entry['retry_count']
+                    if 'selector_used' in service_cache:
+                        result_dict['selector_used'] = service_cache['selector_used']
+                    if 'last_error' in service_cache:
+                        result_dict['last_error'] = service_cache['last_error']
+                    if 'retry_count' in service_cache:
+                        result_dict['retry_count'] = service_cache['retry_count']
 
                     return result_dict
 
@@ -433,39 +445,70 @@ class AgentLinkScraper:
     def _cache_result(self, movie_id, service_name, link, success, diagnostics=None, retry_count=None, last_error=None, selector_used=None):
         """Cache the scraping result with enhanced metadata."""
         if movie_id not in self.cache['movies']:
-            self.cache['movies'][movie_id] = {}
+            self.cache['movies'][movie_id] = {'streaming': {}}
+
+        # Ensure streaming is a dict keyed by service name
+        if 'streaming' not in self.cache['movies'][movie_id]:
+            self.cache['movies'][movie_id]['streaming'] = {}
+        elif not isinstance(self.cache['movies'][movie_id]['streaming'], dict) or 'service' in self.cache['movies'][movie_id]['streaming']:
+            # Migrate old format: streaming was a single dict with service/link fields
+            old_streaming = self.cache['movies'][movie_id]['streaming']
+            if isinstance(old_streaming, dict) and 'service' in old_streaming:
+                old_service = old_streaming.get('service')
+                if old_service:
+                    # Migrate to new format
+                    migrated_entry = {
+                        'link': old_streaming.get('link'),
+                        'scraped_at': self.cache['movies'][movie_id].get('scraped_at', datetime.now().isoformat()),
+                        'expires_at': self.cache['movies'][movie_id].get('expires_at', (datetime.now() + timedelta(days=30)).isoformat()),
+                        'success': self.cache['movies'][movie_id].get('success', False),
+                        'selector_used': self.cache['movies'][movie_id].get('selector_used'),
+                        'retry_count': self.cache['movies'][movie_id].get('retry_count'),
+                        'last_error': self.cache['movies'][movie_id].get('last_error')
+                    }
+                    # Remove None values
+                    migrated_entry = {k: v for k, v in migrated_entry.items() if v is not None}
+                    self.cache['movies'][movie_id]['streaming'] = {old_service: migrated_entry}
+                else:
+                    self.cache['movies'][movie_id]['streaming'] = {}
+            else:
+                self.cache['movies'][movie_id]['streaming'] = {}
 
         # Calculate expiration date
         cache_ttl_days = self.config.get('cache_ttl_days', 30)
         expires_at = datetime.now() + timedelta(days=cache_ttl_days)
 
-        entry = {
-            'streaming': {
-                'service': service_name,
-                'link': link
-            },
+        # Create per-service entry
+        service_entry = {
+            'link': link,
             'scraped_at': datetime.now().isoformat(),
             'expires_at': expires_at.isoformat(),
-            'source': 'agent_scraper',
             'success': success
         }
 
         # Add diagnostic metadata
         if retry_count is not None:
-            entry['retry_count'] = retry_count
+            service_entry['retry_count'] = retry_count
         if last_error is not None:
-            entry['last_error'] = last_error
+            service_entry['last_error'] = last_error
         if selector_used is not None:
-            entry['selector_used'] = selector_used
+            service_entry['selector_used'] = selector_used
 
         # Add diagnostics if provided (for backward compatibility)
         if diagnostics:
             # Rename 'error' field to 'last_error' if present
             if 'error' in diagnostics:
                 diagnostics['last_error'] = diagnostics.pop('error')
-            entry.update(diagnostics)
+            service_entry.update(diagnostics)
 
-        self.cache['movies'][movie_id] = entry
+        # Store per-service result
+        self.cache['movies'][movie_id]['streaming'][service_name] = service_entry
+
+        # Keep top-level metadata for backward compatibility
+        self.cache['movies'][movie_id].update({
+            'source': 'agent_scraper',
+            'last_updated': datetime.now().isoformat()
+        })
 
     def close(self):
         """Cleanup method to quit browser and save cache."""

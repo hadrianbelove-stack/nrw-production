@@ -96,9 +96,6 @@ class StreamingPlatformScraper:
                 pass
             self.page = None
 
-        # Shared manager reference
-        self.manager = get_playwright_manager()
-
         if self.context:
             try:
                 self.context.close()
