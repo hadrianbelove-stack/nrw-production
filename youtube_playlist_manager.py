@@ -401,8 +401,24 @@ class YouTubePlaylistManager:
                     continue
 
             # Apply RT score filter
-            if rt_min and (not movie.get('rt_score') or movie.get('rt_score') < rt_min):
-                continue
+            if rt_min:
+                rt_score = movie.get('rt_score')
+                if not rt_score:
+                    continue
+                # Convert to int (handle "85%", "85", and 85)
+                try:
+                    if isinstance(rt_score, str):
+                        # Remove % symbol if present
+                        rt_score_clean = rt_score.rstrip('%')
+                        rt_score_int = int(rt_score_clean)
+                    else:
+                        rt_score_int = int(rt_score)
+
+                    if rt_score_int < rt_min:
+                        continue
+                except (ValueError, TypeError):
+                    # Skip movies with invalid RT scores
+                    continue
 
             trailers.append({
                 'video_id': video_id,
