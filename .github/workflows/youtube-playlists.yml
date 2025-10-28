@@ -41,8 +41,8 @@ jobs:
           YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
         run: |
           mkdir -p youtube_credentials
-          echo "$YOUTUBE_CLIENT_SECRET" | base64 -d > youtube_credentials/client_secret.json
-          echo "$YOUTUBE_TOKEN" | base64 -d > youtube_credentials/token.pickle
+          echo "$YOUTUBE_CLIENT_SECRET" | tr -d '\n' | base64 -d > youtube_credentials/client_secret.json
+          echo "$YOUTUBE_TOKEN" | tr -d '\n' | base64 -d > youtube_credentials/token.pickle
 
       - name: Validate credentials
         run: |
