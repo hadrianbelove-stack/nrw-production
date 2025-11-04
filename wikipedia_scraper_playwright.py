@@ -137,9 +137,10 @@ class WikipediaScraperPlaywright:
             # Get shared Playwright instance
             self.playwright = self.manager.get_playwright()
 
-            # Launch browser
+            # Use shared browser from PlaywrightManager
             headless = self.config.get('wikipedia_scraper', {}).get('headless', True)
-            self.browser = self.playwright.chromium.launch(headless=headless)
+            self.browser = self.manager.get_browser(headless=headless, browser_type='chromium')
+            self._log("Using shared browser from PlaywrightManager", level='debug')
 
             # Create context with viewport and user agent
             self.context = self.browser.new_context(
@@ -153,8 +154,9 @@ class WikipediaScraperPlaywright:
 
             # Create page
             self.page = self.context.new_page()
+            self._log("Created new browser context for Wikipedia scraper", level='debug')
 
-            self._log("Playwright browser initialized successfully")
+            self._log("Wikipedia scraper initialized with shared browser")
 
         except Exception as e:
             self._log(f"Browser initialization failed: {e}", level='error')
@@ -170,9 +172,6 @@ class WikipediaScraperPlaywright:
                 pass
             self.page = None
 
-        # Shared manager reference
-        self.manager = get_playwright_manager()
-
         if self.context:
             try:
                 self.context.close()
@@ -180,19 +179,16 @@ class WikipediaScraperPlaywright:
                 pass
             self.context = None
 
-        if self.browser:
-            try:
-                self.browser.close()
-            except:
-                pass
-            self.browser = None
-
+        # Browser is managed by PlaywrightManager, not individual scrapers
+        # Only call manager.release() to decrement reference count
         if self.playwright:
             try:
                 self.manager.release()
+                self._log("Released shared browser reference", level='debug')
             except:
                 pass
             self.playwright = None
+            self.browser = None
 
     def _rate_limit(self):
         """Enforce minimum delay between scrapes."""
