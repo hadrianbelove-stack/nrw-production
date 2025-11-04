@@ -1,14 +1,21 @@
 name: Update YouTube Playlists
 
+# DISABLED: Google account suspended Oct 25, 2025
+# See YOUTUBE_WORKFLOW_DISABLED.md for details
+# To re-enable: uncomment the 'on:' section below
+
+# on:
+#   schedule:
+#     # Monday at 10:00 UTC (3 AM PDT / 2 AM PST) - rebuild weekly playlist
+#     - cron: '0 10 * * 1'
+#
+#     # 1st of month at 10:00 UTC (3 AM PDT / 2 AM PST) - create monthly playlist
+#     - cron: '0 10 1 * *'
+#
+#   workflow_dispatch:  # Allow manual trigger
+
 on:
-  schedule:
-    # Monday at 10:00 UTC (3 AM PDT / 2 AM PST) - rebuild weekly playlist
-    - cron: '0 10 * * 1'
-
-    # 1st of month at 10:00 UTC (3 AM PDT / 2 AM PST) - create monthly playlist
-    - cron: '0 10 1 * *'
-
-  workflow_dispatch:  # Allow manual trigger
+  workflow_dispatch:  # Keep manual trigger only for testing after account recovery
     inputs:
       playlist_type:
         description: 'Type of playlist to update'
