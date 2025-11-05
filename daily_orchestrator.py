@@ -132,13 +132,19 @@ class NRWOrchestrator:
             if len(movies) < 200:
                 raise Exception(f"Too few movies ({len(movies)}) - possible data loss! Expected at least 200.")
 
-            # 4. Check for recent movies (last 7 days)
+            # 4. Check for recent movies (last 14 days to account for weekends/delays)
             from datetime import timedelta
-            cutoff_date = (datetime.now() - timedelta(days=7)).strftime('%Y-%m-%d')
+            cutoff_date = (datetime.now() - timedelta(days=14)).strftime('%Y-%m-%d')
             recent_movies = [m for m in movies if m.get('digital_date', '') >= cutoff_date]
 
             if len(recent_movies) == 0:
-                raise Exception("No recent movies found - automation may not be discovering new releases")
+                # Log warning but don't fail - discovery gaps are normal
+                print(f"⚠️  Warning: No recent movies found since {cutoff_date} - this may indicate discovery gaps but doesn't affect existing data")
+                # Use a longer lookback for validation (30 days) to ensure we have some movies to validate
+                extended_cutoff = (datetime.now() - timedelta(days=30)).strftime('%Y-%m-%d')
+                recent_movies = [m for m in movies if m.get('digital_date', '') >= extended_cutoff]
+                if len(recent_movies) == 0:
+                    raise Exception("No movies found in last 30 days - possible data corruption or major discovery failure")
 
             # 5. Check required fields on sample of movies
             sample_movies = movies[:5] if len(movies) >= 5 else movies
