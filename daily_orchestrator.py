@@ -106,9 +106,9 @@ class NRWOrchestrator:
             if len(movies) < 200:
                 raise Exception(f"Too few movies ({len(movies)}) - possible data loss! Expected at least 200.")
 
-            # 4. Check for recent movies (last 7 days)
+            # 4. Check for recent movies (last 14 days to account for weekends/delays)
             from datetime import timedelta
-            cutoff_date = (datetime.now() - timedelta(days=7)).strftime('%Y-%m-%d')
+            cutoff_date = (datetime.now() - timedelta(days=14)).strftime('%Y-%m-%d')
             recent_movies = [m for m in movies if m.get('digital_date', '') >= cutoff_date]
 
             if len(recent_movies) == 0:
