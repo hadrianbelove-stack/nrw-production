@@ -862,10 +862,24 @@ class DataGenerator:
             elif providers.get('rent'):
                 rent_service = select_best_service(providers.get('rent', []), PAID_PRIORITY)
                 if rent_service:
-                    watch_links['rent'] = {
-                        'service': rent_service,
-                        'link': None  # No Google fallback
-                    }
+                    # Try platform scraper for Amazon/Apple TV before returning null
+                    if StreamingPlatformScraper and rent_service in ['Amazon Prime Video', 'Apple TV']:
+                        self._try_platform_agent_search(title, year, providers, [], watchmode_rent, [], True, False, True)
+                        # Check if platform scraper added rent links
+                        if watchmode_rent:
+                            best_service = select_best_service([s['service'] for s in watchmode_rent], PAID_PRIORITY)
+                            for source in watchmode_rent:
+                                if source['service'] == best_service:
+                                    watch_links['rent'] = source
+                                    break
+                        else:
+                            # Try agent scraper for supported services
+                            agent_result = self._try_agent_scraper(movie_id, title, year, rent_service, 'rent')
+                            watch_links['rent'] = agent_result
+                    else:
+                        # Try agent scraper for supported services
+                        agent_result = self._try_agent_scraper(movie_id, title, year, rent_service, 'rent')
+                        watch_links['rent'] = agent_result
 
         # BUY: Use Watchmode or fallback to platform links (skip if overridden)
         if not skip_buy:
@@ -878,10 +892,24 @@ class DataGenerator:
             elif providers.get('buy'):
                 buy_service = select_best_service(providers.get('buy', []), PAID_PRIORITY)
                 if buy_service:
-                    watch_links['buy'] = {
-                        'service': buy_service,
-                        'link': None  # No Google fallback
-                    }
+                    # Try platform scraper for Amazon/Apple TV before returning null
+                    if StreamingPlatformScraper and buy_service in ['Amazon Prime Video', 'Apple TV']:
+                        self._try_platform_agent_search(title, year, providers, [], [], watchmode_buy, True, True, False)
+                        # Check if platform scraper added buy links
+                        if watchmode_buy:
+                            best_service = select_best_service([s['service'] for s in watchmode_buy], PAID_PRIORITY)
+                            for source in watchmode_buy:
+                                if source['service'] == best_service:
+                                    watch_links['buy'] = source
+                                    break
+                        else:
+                            # Try agent scraper for supported services
+                            agent_result = self._try_agent_scraper(movie_id, title, year, buy_service, 'buy')
+                            watch_links['buy'] = agent_result
+                    else:
+                        # Try agent scraper for supported services
+                        agent_result = self._try_agent_scraper(movie_id, title, year, buy_service, 'buy')
+                        watch_links['buy'] = agent_result
 
         # Overlay admin overrides on top of auto-discovered links
         for category, override_data in validated_overrides.items():
@@ -1493,10 +1521,16 @@ class DataGenerator:
         """
         self.discovery_stats['debug_enabled'] = debug
 
-        # Get discovery configuration
+        # Get discovery configuration with CI optimizations
         discovery_config = self.config.get('discovery', {})
-        days_back = discovery_config.get('days_back', 7)
-        max_pages = discovery_config.get('max_pages', 10)
+
+        # Use CI-optimized values if running in CI environment
+        if os.getenv('CI') or os.getenv('GITHUB_ACTIONS'):
+            days_back = int(os.getenv('CI_DISCOVERY_DAYS', discovery_config.get('ci_days_back', 7)))
+            max_pages = int(os.getenv('CI_DISCOVERY_PAGES', discovery_config.get('ci_max_pages', 10)))
+        else:
+            days_back = discovery_config.get('days_back', 7)
+            max_pages = discovery_config.get('max_pages', 10)
 
         # Get hybrid discovery flags
         enable_pass_a = discovery_config.get('enable_pass_a', True)  # Digital releases (release_date + type=4)
@@ -1810,8 +1844,13 @@ class DataGenerator:
                         data_file = 'data.json'
                         if os.path.exists(data_file):
                             try:
+                                # Validate schema before loading
+                                if not self.validate_data_json_schema(data_file):
+                                    self.logger.warning(f"data.json schema validation failed during enrichment check for movie {movie.get('title', 'Unknown')}")
+                                    continue
+
                                 with open(data_file, 'r') as df:
-                                    data_movies = json.load(df)
+                                    data_movies = json.load(df).get('movies', [])
 
                                 # Find corresponding movie in data.json
                                 data_movie = None
@@ -1873,6 +1912,76 @@ class DataGenerator:
             self.logger.error(f"Error during enrichment consistency validation: {e}")
             print(f"  ❌ Error during enrichment consistency validation: {e}")
             return 0
+
+    def validate_data_json_schema(self, file_path='data.json'):
+        """Validate data.json structure before loading
+
+        Checks that:
+        - Root object has required keys: generated_at, count, movies
+        - Movies is a list of dicts (not strings)
+        - Each movie has required keys: id, title, digital_date
+
+        Args:
+            file_path (str): Path to data.json file
+
+        Returns:
+            bool: True if valid, False if invalid
+        """
+        try:
+            if not os.path.exists(file_path):
+                return True  # Valid if file doesn't exist (will be created)
+
+            with open(file_path, 'r') as f:
+                data = json.load(f)
+
+            # Check root structure
+            if not isinstance(data, dict):
+                self.logger.error(f"{file_path} root is not a dict: {type(data)}")
+                return False
+
+            # Check required root keys
+            required_root_keys = ['generated_at', 'count', 'movies']
+            for key in required_root_keys:
+                if key not in data:
+                    self.logger.error(f"{file_path} missing required key: {key}")
+                    return False
+
+            # Check data types
+            if not isinstance(data['generated_at'], str):
+                self.logger.error(f"{file_path} generated_at must be string, got {type(data['generated_at'])}")
+                return False
+
+            if not isinstance(data['count'], int):
+                self.logger.error(f"{file_path} count must be int, got {type(data['count'])}")
+                return False
+
+            if not isinstance(data['movies'], list):
+                self.logger.error(f"{file_path} movies must be list, got {type(data['movies'])}")
+                return False
+
+            # Check movies array structure
+            movies = data['movies']
+            for i, movie in enumerate(movies):
+                if not isinstance(movie, dict):
+                    self.logger.error(f"{file_path} movie[{i}] is not a dict: {type(movie)}")
+                    return False
+
+                # Check required movie keys (digital_date is optional)
+                required_movie_keys = ['id', 'title']
+                for key in required_movie_keys:
+                    if key not in movie:
+                        self.logger.error(f"{file_path} movie[{i}] missing required key: {key}")
+                        return False
+
+            self.logger.info(f"{file_path} schema validation passed: {len(movies)} movies")
+            return True
+
+        except json.JSONDecodeError as e:
+            self.logger.error(f"{file_path} is not valid JSON: {e}")
+            return False
+        except Exception as e:
+            self.logger.error(f"Error validating {file_path} schema: {e}")
+            return False
 
     def _write_discovery_metrics(self, window_days, new_movies_added, sample_titles):
         """Write per-run discovery metrics to metrics/daily.jsonl"""
@@ -2192,13 +2301,23 @@ class DataGenerator:
         existing_movies = []
         existing_ids = set()
         if os.path.exists('data.json'):
-            with open('data.json', 'r') as f:
-                existing_data = json.load(f)
-                existing_movies = existing_data.get('movies', [])
-                existing_ids = {str(m['id']) for m in existing_movies}
-            message = f"Found {len(existing_movies)} existing movies in data.json"
-            self.logger.info(message)
-            print(f"📂 {message}")
+            # Validate schema before loading
+            if self.validate_data_json_schema('data.json'):
+                with open('data.json', 'r') as f:
+                    existing_data = json.load(f)
+                    existing_movies = existing_data.get('movies', [])
+                    existing_ids = {str(m['id']) for m in existing_movies}
+                message = f"Found {len(existing_movies)} existing movies in data.json"
+                self.logger.info(message)
+                print(f"📂 {message}")
+            else:
+                self.logger.error("data.json schema validation failed - treating as corrupted, will rebuild from scratch")
+                print(f"❌ data.json schema validation failed - treating as corrupted, will rebuild from scratch")
+                # Backup corrupted file
+                backup_path = f"data.json.corrupted.validation.{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+                os.rename('data.json', backup_path)
+                self.logger.info(f"Corrupted data.json backed up to {backup_path}")
+                print(f"💾 Corrupted data.json backed up to {backup_path}")
 
         # Validate enrichment consistency before categorization
         print(f"\n🔍 Validating enrichment consistency...")

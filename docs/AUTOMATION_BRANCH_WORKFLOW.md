@@ -33,16 +33,27 @@ automation-updates (automated commits)
 **Schedule**: 9:00 AM UTC daily
 
 **Process**:
-1. Checkout main branch
-2. Run `daily_orchestrator.py` to fetch new releases
-3. Check if data.json changed
-4. If changed:
-   - Switch to `automation-updates` branch (create if doesn't exist)
+1. Checkout automation-updates branch
+2. **Sync main → automation-updates** (merge origin/main to get latest fixes)
+3. Run `daily_orchestrator.py` to fetch new releases
+4. Check if data.json changed
+5. If changed:
    - Commit changes: `Daily update - YYYY-MM-DD [automated]`
    - Force push to `automation-updates`
 
-**Key Lines** (64-76):
+**Key Lines** (51-77):
 ```yaml
+- name: Sync main → automation-updates
+  run: |
+    git fetch origin main
+    git merge origin/main --no-edit || {
+      echo "⚠️ Merge conflict detected - branches have diverged"
+      echo "Manual intervention required to resolve conflicts"
+      echo "Run: git checkout automation-updates && git merge main"
+      git merge --abort
+      exit 1
+    }
+
 - name: Switch to automation branch
   if: steps.changes.outputs.changes == 'true'
   run: git checkout -B automation-updates
@@ -133,6 +144,30 @@ The `automation-updates` branch uses `git push --force` because:
 2. **Prevents Bloat**: Avoid thousands of automated commits in git history
 3. **Clean Merges**: Each merge to main is a single logical update
 4. **Easy Rollback**: If something breaks, just don't merge the branch
+
+## Branch Divergence Prevention
+
+### Automatic Sync (Nov 5, 2025)
+
+**Problem:** The workflow previously ran on `main` but committed to `automation-updates`, causing branch divergence. This led to 10 days of automation failures (Oct 25-Nov 5, 2025) when `automation-updates` was 22 commits behind `main`.
+
+**Solution:**
+- ✅ **Automatic sync in workflow**: GitHub Actions automatically merges main → automation-updates before each run
+- ✅ **Manual sync for user** (daily): Run `./sync_daily_updates.sh` to merge automation-updates → main
+- ✅ **Both branches stay in sync** automatically with no manual intervention needed for bot runs
+
+**How it works:**
+- Bot syncs main → automation-updates (gets latest fixes from user)
+- User syncs automation-updates → main (gets latest data from bot)
+- Two-way sync keeps branches consistent
+
+**Error handling:**
+If the sync fails due to merge conflicts, the workflow fails fast with a clear error message and manual intervention is required:
+```bash
+git checkout automation-updates && git merge main
+```
+
+**Historical note:** This automatic sync was added on Nov 5, 2025 to fix the Oct 25-Nov 5 automation failures caused by branch divergence. Before this fix, the workflow ran on main but committed to automation-updates, causing the branches to drift apart by 22 commits.
 
 ## Branch Lifecycle
 

@@ -23,7 +23,16 @@ jobs:
       MIN_PROVIDER_COVERAGE: ${{ secrets.MIN_PROVIDER_COVERAGE }}
 
     steps:
-      - name: Checkout repository
+      - name: Checkout automation-updates branch
+        uses: actions/checkout@v4
+        with:
+          ref: automation-updates
+          fetch-depth: 0
+        continue-on-error: true
+        id: checkout-automation
+
+      - name: Checkout main branch fallback
+        if: steps.checkout-automation.outcome == 'failure'
         uses: actions/checkout@v4
         with:
           ref: main
@@ -48,6 +57,29 @@ jobs:
           git config user.name "NRW Bot"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
+      - name: Sync main → automation-updates
+        id: sync
+        run: |
+          git fetch origin main
+          # Capture HEAD before merge to detect if merge creates new commits
+          BEFORE_MERGE=$(git rev-parse HEAD)
+          git merge origin/main --no-edit || {
+            echo "⚠️ Merge conflict detected - branches have diverged"
+            echo "Manual intervention required to resolve conflicts"
+            echo "Run: git checkout automation-updates && git merge main"
+            git merge --abort
+            exit 1
+          }
+          # Check if merge created new commits
+          AFTER_MERGE=$(git rev-parse HEAD)
+          if [ "$BEFORE_MERGE" != "$AFTER_MERGE" ]; then
+            echo "merge_commits=true" >> $GITHUB_OUTPUT
+            echo "Merge created new commits"
+          else
+            echo "merge_commits=false" >> $GITHUB_OUTPUT
+            echo "No new commits from merge"
+          fi
+
       - name: Run daily pipeline
         run: python3 daily_orchestrator.py
 
@@ -71,6 +103,10 @@ jobs:
         run: |
           git add data.json
           git commit -m "Daily update - $(date +%Y-%m-%d) [automated]"
+
+      - name: Push merge commits (code-only changes)
+        if: steps.sync.outputs.merge_commits == 'true' && steps.changes.outputs.changes == 'false'
+        run: git push origin automation-updates
 
       - name: Force push to remote
         if: steps.changes.outputs.changes == 'true'

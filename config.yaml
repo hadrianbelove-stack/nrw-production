@@ -15,18 +15,21 @@ tracking:
 discovery:
   days_back: 14  # Discovery window for finding new premieres (expanded to catch more releases)
   max_pages: 20  # Maximum pages to fetch for discovery (increased for expanded discovery)
+  # CI optimizations - reduce load for automated runs
+  ci_days_back: 7  # Reduced discovery window for CI (set via CI_DISCOVERY_DAYS env var)
+  ci_max_pages: 10  # Reduced page limit for CI (set via CI_DISCOVERY_PAGES env var)
   enable_pass_a: true  # Enable Pass A: Direct-to-digital releases (release_date + type=4)
   enable_pass_b: true  # Enable Pass B: Theatrical releases (primary_release_date)
 
 api:
-  # ⚠️ SECURITY WARNING: These keys are for LOCAL DEVELOPMENT ONLY
+  # ⚠️ SECURITY WARNING: Replace these placeholder values with real keys for local development
   # Production environments MUST use environment variables:
   #   - TMDB_API_KEY (overrides tmdb_api_key below)
   #   - WATCHMODE_API_KEY (overrides watchmode_api_key below)
   # See PROJECT_CHARTER.md "API Keys & External Services" for details
 
-  tmdb_api_key: "99b122ce7fa3e9065d7b7dc6e660772d"  # Local dev only - use TMDB_API_KEY env var in production
-  watchmode_api_key: "bBMpVr31lRfUsSFmgoQp0jixDrQt8DIKCVg7EFdp"  # Local dev only - use WATCHMODE_API_KEY env var in production
+  tmdb_api_key: "your_tmdb_api_key_here"  # Get from https://www.themoviedb.org/settings/api
+  watchmode_api_key: "your_watchmode_api_key_here"  # Get from https://api.watchmode.com/
   tmdb_rate_limit: 0.1  # Seconds between API calls
   max_retries: 3
   max_pages_bootstrap: 49  # Maximum pages to fetch for bootstrap operation
@@ -83,8 +86,8 @@ rt_scraper:
 validation:
   min_recall: 0.75  # Minimum discovery recall threshold (75%)
   min_precision: 0.70  # Minimum discovery precision threshold (70%)
-  min_provider_coverage: 5  # Minimum number of movies with non-search watch links per week (lowered from 10 temporarily while investigating Watchmode API/scraper issues)
-  # TODO [2025-11-15]: Revert min_provider_coverage back to 10 after Watchmode quota reset or scraper reliability fixes
+  min_provider_coverage_count: 5  # Minimum number of movies with non-search watch links per week (lowered from 10 temporarily while investigating Watchmode API/scraper issues)
+  # TODO [2025-11-15]: Revert min_provider_coverage_count back to 10 after Watchmode quota reset or scraper reliability fixes
 
 newsletter:
   auto_generate: false  # Set to true to generate newsletter during daily automation
