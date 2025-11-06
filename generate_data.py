@@ -1831,6 +1831,11 @@ class DataGenerator:
             with open('movie_tracking.json', 'r') as f:
                 db = json.load(f)
 
+            # Early check for data.json existence - skip cross-check if missing
+            if not os.path.exists('data.json'):
+                self.logger.info("data.json not found, skipping enrichment consistency cross-check")
+                return 0
+
             inconsistencies_found = 0
             total_available = 0
 
@@ -1959,15 +1964,15 @@ class DataGenerator:
                 self.logger.error(f"{file_path} movies must be list, got {type(data['movies'])}")
                 return False
 
-            # Check movies array structure
+            # Check movies array structure (all movies)
             movies = data['movies']
-            for i, movie in enumerate(movies):
+            for i, movie in enumerate(movies):  # Check all movies
                 if not isinstance(movie, dict):
                     self.logger.error(f"{file_path} movie[{i}] is not a dict: {type(movie)}")
                     return False
 
-                # Check required movie keys (digital_date is optional)
-                required_movie_keys = ['id', 'title']
+                # Check required movie keys
+                required_movie_keys = ['id', 'title', 'digital_date']
                 for key in required_movie_keys:
                     if key not in movie:
                         self.logger.error(f"{file_path} movie[{i}] missing required key: {key}")
@@ -2067,12 +2072,12 @@ class DataGenerator:
                         continue
 
                     # Add new movie with tracking status
-                    digital_date = movie.get('release_date') if pass_type == 'digital' else movie.get('primary_release_date')
+                    # Note: digital_date is intentionally None here - monitoring will set it when providers are detected
                     discovered_movies[movie_id] = {
                         'title': title,
                         'status': 'tracking',
                         'first_seen': datetime.now().strftime('%Y-%m-%d'),
-                        'digital_date': digital_date,
+                        'digital_date': None,
                         'providers': {},
                         'discovery_pass': pass_name  # Track which pass found this movie
                     }
@@ -2306,7 +2311,7 @@ class DataGenerator:
                 with open('data.json', 'r') as f:
                     existing_data = json.load(f)
                     existing_movies = existing_data.get('movies', [])
-                    existing_ids = {str(m['id']) for m in existing_movies}
+                    existing_ids = {str(m['id']) for m in existing_movies if isinstance(m, dict) and 'id' in m}
                 message = f"Found {len(existing_movies)} existing movies in data.json"
                 self.logger.info(message)
                 print(f"📂 {message}")
@@ -2327,7 +2332,7 @@ class DataGenerator:
         cutoff_date = datetime.now() - timedelta(days=days_back)
 
         # Build lookup of existing movies by ID for watch_links validation
-        existing_movies_lookup = {str(m['id']): m for m in existing_movies}
+        existing_movies_lookup = {str(m['id']): m for m in existing_movies if isinstance(m, dict) and 'id' in m}
 
         # Separate movies by enrichment status (Phase 2.1 optimization)
         needs_enrichment = []
@@ -2437,7 +2442,7 @@ class DataGenerator:
         if incremental and already_enriched:
             # Get cached data from existing data.json
             already_enriched_ids = {movie_id for movie_id, _ in already_enriched}
-            raw_cached_movies = [m for m in existing_movies if str(m['id']) in already_enriched_ids]
+            raw_cached_movies = [m for m in existing_movies if isinstance(m, dict) and 'id' in m and str(m['id']) in already_enriched_ids]
 
             # Validate and clean cached movies' watch_links
             cached_movies = []
