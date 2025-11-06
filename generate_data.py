@@ -17,6 +17,7 @@ from logging.handlers import RotatingFileHandler
 from agent_link_scraper import AgentLinkScraper
 from scripts.youtube_trailer_scraper import YouTubeTrailerScraper
 from rt_scraper_playwright import RTScraperPlaywright
+from wikipedia_scraper_playwright import WikipediaScraperPlaywright
 from constants import PLACEHOLDER_ASINS
 try:
     from streaming_platform_scraper import StreamingPlatformScraper
@@ -169,6 +170,7 @@ class DataGenerator:
         self.youtube_scraper = None  # Lazy initialization for YouTube trailer scraping
         self.youtube_trailer_cache = self.load_cache('youtube_trailer_cache.json')
         self.rt_scraper = None  # Lazy initialization for RT scraping with Playwright
+        self.wikipedia_scraper = None  # Lazy initialization for Wikipedia scraping with Playwright
         self.platform_scraper = None  # Lazy initialization for streaming platform scraper
     
     def load_config(self):
@@ -406,14 +408,12 @@ class DataGenerator:
         return None
     
     def find_wikipedia_url(self, title, year, imdb_id, movie_id=None):
-        """Find Wikipedia URL using waterfall approach
+        """Find Wikipedia URL using Playwright-based scraper with waterfall approach
 
         Priority waterfall:
         1. Overrides (overrides/wikipedia_overrides.json) - Manual curator fixes
-        2. Cache (wikipedia_cache.json) - Previously successful lookups
-        3. Wikidata SPARQL - Query by IMDb ID for structured data
-        4. Wikipedia REST API - Search by title with (year film) suffix
-        5. Log missing and return None
+        2. Playwright Scraper - Uses cache, Wikidata SPARQL, REST API, and web scraping
+        3. Log missing and return None
 
         Args:
             title: Movie title
@@ -424,77 +424,42 @@ class DataGenerator:
         Returns:
             Wikipedia URL string or None if not found
         """
-        # 1. Check overrides first
+        # 1. Check overrides first (manual curator fixes take precedence)
         if imdb_id and imdb_id in self.wikipedia_overrides:
             return f"https://en.wikipedia.org/wiki/{self.wikipedia_overrides[imdb_id]}"
 
-        # 2. Check cache
-        cache_key = f"{title}_{year}"
-        if cache_key in self.wikipedia_cache:
-            cached_data = self.wikipedia_cache[cache_key]
-            if isinstance(cached_data, dict):
-                return cached_data.get('url')
-            return cached_data
+        # 2. Initialize Playwright scraper lazily
+        if self.wikipedia_scraper is None:
+            self.wikipedia_scraper = WikipediaScraperPlaywright(
+                cache_file='wikipedia_cache.json',
+                config=self.config,
+                logger=self.logger
+            )
 
-        # 3. Try Wikidata SPARQL query (if IMDb ID available)
-        if imdb_id:
-            wiki_url = self.find_wikipedia_url_wikidata(imdb_id)
-            if wiki_url:
-                # Cache the result with source attribution
-                self.wikipedia_cache[cache_key] = {
-                    'url': wiki_url,
-                    'title': title,
-                    'cached_at': datetime.now().isoformat(),
-                    'source': 'wikidata'
-                }
-                self.save_cache(self.wikipedia_cache, 'wikipedia_cache.json')
-                return wiki_url
-            else:
-                print(f"  Wikidata lookup failed for {title}, trying Wikipedia REST API...")
-
-        # 4. Try Wikipedia API search with proper headers
+        # 3. Use Playwright scraper with waterfall approach
+        # The scraper internally handles: Cache → Wikidata → REST API → Playwright scraping
         try:
-            headers = {
-                'User-Agent': 'NewReleaseWall/1.0 (https://github.com/hadrianbelove-stack/nrw-production; hadrianbelove@gmail.com)'
-            }
+            wiki_url = self.wikipedia_scraper.find_wikipedia_url(
+                title=title,
+                year=year,
+                imdb_id=imdb_id,
+                use_api=True,
+                use_wikidata=True
+            )
 
-            # Try exact match with (year film) suffix
-            search_title = f"{title} ({year} film)"
-            url = f"https://en.wikipedia.org/api/rest_v1/page/summary/{quote(search_title)}"
-            response = requests.get(url, headers=headers, timeout=5)
-            if response.status_code == 200:
-                data = response.json()
-                wiki_url = data.get('content_urls', {}).get('desktop', {}).get('page')
-                if wiki_url:
-                    self.wikipedia_cache[cache_key] = {'url': wiki_url, 'title': title, 'cached_at': datetime.now().isoformat(), 'source': 'wikipedia_api'}
-                    self.save_cache(self.wikipedia_cache, 'wikipedia_cache.json')
-                    return wiki_url
+            # Update our local cache reference to match scraper's cache
+            self.wikipedia_cache = self.wikipedia_scraper.cache
 
-            # Try without year
-            search_title = f"{title} (film)"
-            url = f"https://en.wikipedia.org/api/rest_v1/page/summary/{quote(search_title)}"
-            response = requests.get(url, headers=headers, timeout=5)
-            if response.status_code == 200:
-                data = response.json()
-                wiki_url = data.get('content_urls', {}).get('desktop', {}).get('page')
-                if wiki_url:
-                    self.wikipedia_cache[cache_key] = {'url': wiki_url, 'title': title, 'cached_at': datetime.now().isoformat(), 'source': 'wikipedia_api'}
-                    self.save_cache(self.wikipedia_cache, 'wikipedia_cache.json')
-                    return wiki_url
+            # Track stats for this attempt
+            self.wikipedia_stats['wikidata_attempts'] = self.wikipedia_scraper.stats.get('wikidata_attempts', 0)
+            self.wikipedia_stats['wikidata_successes'] = self.wikipedia_scraper.stats.get('wikidata_successes', 0)
+
+            return wiki_url
 
         except Exception as e:
-            print(f"Wikipedia search error for {title}: {e}")
-
-        # 5. Fallback to Wikipedia search URL
-        search_fallback_url = f"https://en.wikipedia.org/w/index.php?search={quote(title + ' (' + year + ' film)')}"
-        self.wikipedia_cache[cache_key] = {
-            'url': search_fallback_url,
-            'title': title,
-            'cached_at': datetime.now().isoformat(),
-            'source': 'search_fallback'
-        }
-        self.save_cache(self.wikipedia_cache, 'wikipedia_cache.json')
-        return search_fallback_url
+            print(f"Wikipedia scraper error for {title} ({year}): {e}")
+            self.logger.error(f"Wikipedia scraper error for {title} ({year}): {e}")
+            return None
     
     def log_missing_wikipedia(self, movie_id, title, year, imdb_id):
         """Log missing Wikipedia links for manual review"""
@@ -521,84 +486,6 @@ class DataGenerator:
                     json.dump(missing, f, indent=2)
         except Exception as e:
             print(f"Failed to log missing Wikipedia: {e}")
-
-    def find_wikipedia_url_wikidata(self, imdb_id):
-        """Query Wikidata SPARQL endpoint to find Wikipedia article URL using IMDb ID
-
-        Args:
-            imdb_id: IMDb ID from TMDB external_ids (e.g., 'tt35076553')
-
-        Returns:
-            Wikipedia URL string or None if not found
-        """
-        # Validate input
-        if not imdb_id:
-            return None
-
-        # Increment attempts counter
-        self.wikipedia_stats['wikidata_attempts'] += 1
-
-        try:
-            # Build SPARQL query to find English Wikipedia article by IMDb ID
-            sparql_query = f"""
-            SELECT ?article WHERE {{
-              ?item wdt:P345 "{imdb_id}" .
-              ?article schema:about ?item .
-              ?article schema:isPartOf <https://en.wikipedia.org/> .
-            }}
-            """
-
-            # Query Wikidata SPARQL endpoint
-            url = "https://query.wikidata.org/sparql"
-            headers = {
-                'User-Agent': 'NewReleaseWall/1.0 (https://github.com/hadrianbelove-stack/nrw-production; hadrianbelove@gmail.com)',
-                'Accept': 'application/sparql-results+json'
-            }
-            params = {
-                'query': sparql_query,
-                'format': 'json'
-            }
-
-            response = requests.get(url, params=params, headers=headers, timeout=10)
-
-            # Check response status
-            if response.status_code != 200:
-                print(f"  Wikidata query error: HTTP {response.status_code}")
-                return None
-
-            # Parse JSON response
-            data = response.json()
-            results = data.get('results', {}).get('bindings', [])
-
-            if not results:
-                print(f"  ✗ Wikidata found no Wikipedia link for IMDb {imdb_id}")
-                return None
-
-            # Extract Wikipedia URL from first result
-            wikipedia_url = results[0]['article']['value']
-
-            # Validate URL format
-            if not wikipedia_url or not wikipedia_url.startswith('https://en.wikipedia.org/wiki/'):
-                print(f"  Wikidata returned invalid Wikipedia URL: {wikipedia_url}")
-                return None
-
-            # Success
-            self.wikipedia_stats['wikidata_successes'] += 1
-            print(f"  ✓ Wikidata found Wikipedia link for IMDb {imdb_id}")
-            return wikipedia_url
-
-        except requests.exceptions.Timeout:
-            print(f"  Wikidata query timeout for IMDb {imdb_id}")
-            return None
-        except requests.exceptions.RequestException as e:
-            print(f"  Wikidata network error for IMDb {imdb_id}: {e}")
-            return None
-        except KeyError as e:
-            print(f"  Wikidata response parsing error for IMDb {imdb_id}: {e}")
-            return None
-        except Exception as e:
-            print(f"  Wikidata query error for IMDb {imdb_id}: {e}")
-            return None
 
     def find_trailer_url(self, movie_details):
         """Extract trailer URL from TMDB movie details or scrape YouTube"""
@@ -889,12 +776,30 @@ class DataGenerator:
                 print(f"  Warning: Watchmode API failed for {title}: {e}")
 
         # Agent search tier (optional): Try to find deep links for Amazon/Apple TV when Watchmode has no data
+        # OR when Watchmode returned Google fallback URLs
         # Capture lengths before platform scraper to detect if it added links
         streaming_len_before = len(watchmode_streaming)
         rent_len_before = len(watchmode_rent)
         buy_len_before = len(watchmode_buy)
 
-        if StreamingPlatformScraper and (not watchmode_streaming or not watchmode_rent or not watchmode_buy):
+        # Helper function to check if a list contains Google fallback URLs
+        def has_google_fallback(link_list):
+            """Check if any links in the list are Google search fallbacks"""
+            if not link_list:
+                return False
+            return any('google.com/search' in item.get('link', '') for item in link_list)
+
+        # Call platform scraper if:
+        # 1. No data from Watchmode (original logic), OR
+        # 2. Watchmode returned Google fallback URLs (needs real link)
+        should_try_platform_scraper = (
+            not watchmode_streaming or not watchmode_rent or not watchmode_buy or
+            has_google_fallback(watchmode_streaming) or
+            has_google_fallback(watchmode_rent) or
+            has_google_fallback(watchmode_buy)
+        )
+
+        if StreamingPlatformScraper and should_try_platform_scraper:
             self._try_platform_agent_search(title, year, providers, watchmode_streaming, watchmode_rent, watchmode_buy, skip_streaming, skip_rent, skip_buy)
 
         # Check if platform scraper actually added any links
@@ -936,10 +841,10 @@ class DataGenerator:
                             'link': amazon_link  # Same page shows both Prime (free) and rent/buy options
                         }
                     else:
-                        # No Amazon link available, use Google search fallback
+                        # No Amazon link available, leave as null (no Google fallback)
                         watch_links['streaming'] = {
                             'service': service,
-                            'link': self.generate_google_search_fallback(title, year, service)
+                            'link': None
                         }
                 else:
                     # Try agent scraper for supported platforms before returning null
@@ -959,7 +864,7 @@ class DataGenerator:
                 if rent_service:
                     watch_links['rent'] = {
                         'service': rent_service,
-                        'link': self.generate_google_search_fallback(title, year, rent_service)
+                        'link': None  # No Google fallback
                     }
 
         # BUY: Use Watchmode or fallback to platform links (skip if overridden)
@@ -975,7 +880,7 @@ class DataGenerator:
                 if buy_service:
                     watch_links['buy'] = {
                         'service': buy_service,
-                        'link': self.generate_google_search_fallback(title, year, buy_service)
+                        'link': None  # No Google fallback
                     }
 
         # Overlay admin overrides on top of auto-discovered links
@@ -1005,9 +910,9 @@ class DataGenerator:
                 link = link_data.get('link')
 
                 if service and link and not self.validate_service_link_consistency(service, link, title):
-                    # Mismatch detected, replace with Google search fallback
-                    self.logger.warning(f"Replacing mismatched {category} link for {title} with Google fallback")
-                    validated_links[category]['link'] = self.generate_google_search_fallback(title, year, service)
+                    # Mismatch detected, set to null (no Google fallback)
+                    self.logger.warning(f"Replacing mismatched {category} link for {title} with null (admin flag needed)")
+                    validated_links[category]['link'] = None
 
         # Cache result with canonical schema (use validated links)
         if validated_links:
@@ -1152,14 +1057,14 @@ class DataGenerator:
 
         # Check if service is supported
         if service not in supported_platforms:
-            print(f"  [DEBUG] '{service}' not supported by agent scraper, returning Google search fallback")
-            return {'service': service, 'link': self.generate_google_search_fallback(title, year, service)}
+            print(f"  [DEBUG] '{service}' not supported by agent scraper, returning null")
+            return {'service': service, 'link': None}
 
         # Initialize agent scraper if needed
         self._init_agent_scraper()
         print(f"  [DEBUG] Agent scraper state: {type(self.agent_scraper).__name__ if self.agent_scraper else 'None or False'}")
         if self.agent_scraper is False:
-            return {'service': service, 'link': self.generate_google_search_fallback(title, year, service)}
+            return {'service': service, 'link': None}
 
         try:
             print(f"  Trying agent scraper for {title} on {service}...")
@@ -1177,14 +1082,14 @@ class DataGenerator:
             else:
                 print(f"  ✗ Agent could not find link for {title} on {service}")
 
-            # Return found link or fallback to Google search
-            final_link = result.get('link') or self.generate_google_search_fallback(title, year, service)
+            # Return found link or null (no Google fallback)
+            final_link = result.get('link') or None
             print(f"  [DEBUG] Returning: {{'service': {service}, 'link': {final_link}}}")
             return {'service': service, 'link': final_link}
 
         except Exception as e:
             print(f"  Error in agent scraper for {title}: {e}")
-            return {'service': service, 'link': self.generate_google_search_fallback(title, year, service)}
+            return {'service': service, 'link': None}
 
     def is_actual_amazon_service(self, provider):
         """
@@ -1343,8 +1248,14 @@ class DataGenerator:
             self.watchmode_stats = {}
         self.watchmode_stats['platform_scraper_attempts'] = self.watchmode_stats.get('platform_scraper_attempts', 0) + 1
 
-        # Try streaming providers (if no Watchmode streaming data and not skipped)
-        if not skip_streaming and not watchmode_streaming and providers.get('streaming'):
+        # Helper to check if links are Google fallbacks
+        def has_google_fallback(link_list):
+            if not link_list:
+                return False
+            return any('google.com/search' in item.get('link', '') for item in link_list)
+
+        # Try streaming providers (if no Watchmode streaming data OR Google fallback, and not skipped)
+        if not skip_streaming and (not watchmode_streaming or has_google_fallback(watchmode_streaming)) and providers.get('streaming'):
             for provider in providers['streaming']:
                 # Filter platforms based on config and validate actual services
                 should_try_provider = False
@@ -1360,6 +1271,8 @@ class DataGenerator:
                         deep_link = self.platform_scraper.get_platform_deep_link(title, year, provider)
                         if deep_link:
                             print(f"  ✓ Platform scraper found streaming link for {title} on {provider}")
+                            # Remove any existing Google fallbacks before adding real link
+                            watchmode_streaming[:] = [s for s in watchmode_streaming if 'google.com/search' not in s.get('link', '')]
                             watchmode_streaming.append({'service': provider, 'link': deep_link})
                             # Track statistics
                             if not hasattr(self, 'watchmode_stats'):
@@ -1375,8 +1288,8 @@ class DataGenerator:
                 else:
                     print(f"  Platform {provider} disabled in config, skipping")
 
-        # Try rent providers (if no Watchmode rent data and not skipped)
-        if not skip_rent and not watchmode_rent and providers.get('rent'):
+        # Try rent providers (if no Watchmode rent data OR Google fallback, and not skipped)
+        if not skip_rent and (not watchmode_rent or has_google_fallback(watchmode_rent)) and providers.get('rent'):
             for provider in providers['rent']:
                 # Filter platforms based on config and validate actual services
                 should_try_provider = False
@@ -1392,6 +1305,8 @@ class DataGenerator:
                         deep_link = self.platform_scraper.get_platform_deep_link(title, year, provider)
                         if deep_link:
                             print(f"  ✓ Platform scraper found rent link for {title} on {provider}")
+                            # Remove any existing Google fallbacks before adding real link
+                            watchmode_rent[:] = [s for s in watchmode_rent if 'google.com/search' not in s.get('link', '')]
                             watchmode_rent.append({'service': provider, 'link': deep_link})
                             # Track statistics
                             if not hasattr(self, 'watchmode_stats'):
@@ -1407,8 +1322,8 @@ class DataGenerator:
                 else:
                     print(f"  Platform {provider} disabled in config, skipping")
 
-        # Try buy providers (if no Watchmode buy data and not skipped)
-        if not skip_buy and not watchmode_buy and providers.get('buy'):
+        # Try buy providers (if no Watchmode buy data OR Google fallback, and not skipped)
+        if not skip_buy and (not watchmode_buy or has_google_fallback(watchmode_buy)) and providers.get('buy'):
             for provider in providers['buy']:
                 # Filter platforms based on config and validate actual services
                 should_try_provider = False
@@ -1424,6 +1339,8 @@ class DataGenerator:
                         deep_link = self.platform_scraper.get_platform_deep_link(title, year, provider)
                         if deep_link:
                             print(f"  ✓ Platform scraper found buy link for {title} on {provider}")
+                            # Remove any existing Google fallbacks before adding real link
+                            watchmode_buy[:] = [s for s in watchmode_buy if 'google.com/search' not in s.get('link', '')]
                             watchmode_buy.append({'service': provider, 'link': deep_link})
                             # Track statistics
                             if not hasattr(self, 'watchmode_stats'):

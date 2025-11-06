@@ -11,6 +11,32 @@ import yaml
 from datetime import datetime
 from pathlib import Path
 
+
+def has_real_watch_link(movie):
+    """Check if movie has at least one non-search deep link"""
+    # Define search URL patterns that should be considered "no real link"
+    search_url_patterns = [
+        'google.com/search',
+        'amazon.com/s?',
+        'play.google.com/store/search',
+        'vudu.com/search',
+        'microsoft.com/store/search',
+        'rottentomatoes.com/search',
+        'youtube.com/results?search_query'
+    ]
+
+    watch_links = movie.get('watch_links', {})
+    for category in ['streaming', 'rent', 'buy']:
+        if category in watch_links:
+            link_obj = watch_links[category]
+            if isinstance(link_obj, dict) and link_obj.get('link'):
+                link_url = link_obj['link']
+                # Check if it's not a search URL
+                if not any(pattern in link_url for pattern in search_url_patterns):
+                    return True
+    return False
+
+
 class NRWOrchestrator:
     def __init__(self):
         self.start_time = datetime.now()
@@ -160,29 +186,6 @@ class NRWOrchestrator:
         validation_config = config.get('validation', {})
         min_coverage = int(os.getenv('MIN_PROVIDER_COVERAGE', validation_config.get('min_provider_coverage', 10)))
 
-        # Define search URL patterns that should be considered "no real link"
-        search_url_patterns = [
-            'google.com/search',
-            'amazon.com/s?',
-            'play.google.com/store/search',
-            'vudu.com/search',
-            'microsoft.com/store/search',
-            'rottentomatoes.com/search',
-            'youtube.com/results?search_query'
-        ]
-
-        def has_real_watch_link(movie):
-            """Check if movie has at least one non-search deep link"""
-            watch_links = movie.get('watch_links', {})
-            for category in ['streaming', 'rent', 'buy']:
-                if category in watch_links:
-                    link_obj = watch_links[category]
-                    if isinstance(link_obj, dict) and link_obj.get('link'):
-                        link_url = link_obj['link']
-                        # Check if it's not a search URL
-                        if not any(pattern in link_url for pattern in search_url_patterns):
-                            return True
-            return False
 
         # Count movies with real provider links
         movies_with_real_links = [m for m in recent_movies if has_real_watch_link(m)]
@@ -239,7 +242,7 @@ class NRWOrchestrator:
 
             data_movies = data.get('movies', [])
             stats['data_movies'] = len(data_movies)
-            stats['movies_with_links'] = len([m for m in data_movies if any(m.get('watch_links', {}).values())])
+            stats['movies_with_links'] = len([m for m in data_movies if has_real_watch_link(m)])
             stats['movies_with_rt'] = len([m for m in data_movies if m.get('rt_score')])
             stats['movies_with_wikipedia'] = len([m for m in data_movies if m.get('wikipedia_link')])
             stats['movies_with_trailers'] = len([m for m in data_movies if m.get('trailer_link')])

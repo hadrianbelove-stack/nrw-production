@@ -14,6 +14,7 @@ Performance: ~6-8 seconds per search, 30-40% faster than Selenium version
 """
 
 from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeoutError
+from playwright_manager import get_playwright_manager
 import time
 import urllib.parse
 import os
@@ -49,6 +50,9 @@ class StreamingPlatformScraper:
         self.context = None
         self.page = None
 
+        # Shared manager reference
+        self.manager = get_playwright_manager()
+
         # Clean up old screenshots on initialization
         if self.screenshots_enabled:
             self._cleanup_old_screenshots()
@@ -59,7 +63,8 @@ class StreamingPlatformScraper:
             return
 
         try:
-            self.playwright = sync_playwright().start()
+            # Get shared Playwright instance
+            self.playwright = self.manager.get_playwright()
 
             # Launch Chromium browser
             self.browser = self.playwright.chromium.launch(headless=self.headless)
@@ -107,7 +112,7 @@ class StreamingPlatformScraper:
 
         if self.playwright:
             try:
-                self.playwright.stop()
+                self.manager.release()
             except:
                 pass
             self.playwright = None
@@ -304,10 +309,11 @@ class StreamingPlatformScraper:
                         if href and ('/gp/video/detail/' in href or '/dp/' in href):
                             print(f"    Element {j+1}: Checking href = {href}")
 
-                            # Position-based filtering: skip first 2 results (most likely sponsored)
-                            if j < 2:
-                                print(f"    Element {j+1}: Skipping position {j+1} (likely sponsored)")
-                                continue
+                            # Position-based filtering: DISABLED (featured results can be in position 0-1)
+                            # The sponsored detection below will catch actual ads
+                            # if j < 2:
+                            #     print(f"    Element {j+1}: Skipping position {j+1} (likely sponsored)")
+                            #     continue
 
                             # Check for known placeholder ASINs
                             if any(asin in href for asin in PLACEHOLDER_ASINS):
@@ -418,17 +424,41 @@ class StreamingPlatformScraper:
                                     else:
                                         threshold = 0.6 if has_exact_title else 0.7
 
-                                    # Year validation: if year is in search, verify it appears in result
-                                    year_match = True
+                                    # Year validation: flexible ±1 year matching
+                                    # Year is a bonus, not required (some listings don't show year)
+                                    year_bonus = 0  # Bonus points for year matching
+                                    year_penalty = 0  # Penalty for wrong year
                                     if year and year.isdigit():
-                                        year_match = year in text_content
+                                        search_year = int(year)
+                                        # Check for exact year or ±1 year
+                                        if str(search_year) in text_content:
+                                            year_bonus = 10  # Exact match
+                                        elif str(search_year - 1) in text_content or str(search_year + 1) in text_content:
+                                            year_bonus = 5  # Close match (±1 year)
+                                        else:
+                                            # Check if any year appears that's way off (2+ years)
+                                            import re
+                                            years_in_text = re.findall(r'\b(19\d{2}|20\d{2})\b', text_content)
+                                            years_in_text = [int(y) for y in years_in_text]
+                                            if years_in_text:
+                                                closest_year = min(years_in_text, key=lambda y: abs(y - search_year))
+                                                year_diff = abs(closest_year - search_year)
+                                                if year_diff >= 2:
+                                                    year_penalty = 20  # Probably wrong movie
+                                                    print(f"    Element {j+1}: Year mismatch (search: {search_year}, found: {closest_year}, diff: {year_diff} years)")
+                                            # If no year found in text, that's okay (year_bonus = 0, year_penalty = 0)
 
                                     print(f"    Element {j+1}: Title match: {matching_words}/{len(search_title_words)} words ({overlap_percentage:.1%})")
-                                    print(f"    Element {j+1}: Exact title: {has_exact_title}, Year match: {year_match}, Threshold: {threshold:.1%}")
+                                    print(f"    Element {j+1}: Exact title: {has_exact_title}, Year bonus: +{year_bonus}, Year penalty: -{year_penalty}, Threshold: {threshold:.1%}")
 
-                                    if overlap_percentage < threshold or not year_match:
-                                        reason = f"title match {overlap_percentage:.1%} < {threshold:.1%}" if overlap_percentage < threshold else "year mismatch"
-                                        print(f"    Element {j+1}: Insufficient match ({reason}), skipping")
+                                    # Title must still meet minimum threshold
+                                    if overlap_percentage < threshold:
+                                        print(f"    Element {j+1}: Insufficient title match ({overlap_percentage:.1%} < {threshold:.1%}), skipping")
+                                        continue
+
+                                    # Apply year penalty (skip if year is way off)
+                                    if year_penalty > 0:
+                                        print(f"    Element {j+1}: Year penalty applied (probably wrong movie), skipping")
                                         continue
 
                                     # Check for negative keywords that indicate wrong content
@@ -473,7 +503,63 @@ class StreamingPlatformScraper:
                                     else:
                                         print(f"    Element {j+1}: Insufficient video validation (need {keyword_threshold} keywords, found {len(found_keywords)}), skipping")
                                 else:
-                                    print(f"    Element {j+1}: No parent container found for title validation, skipping")
+                                    # No parent container found (likely a featured hero result)
+                                    # For high-confidence video detail links, try alternative title extraction
+                                    if is_high_confidence and '/gp/video/detail/' in href:
+                                        print(f"    Element {j+1}: No parent container, but this is a high-confidence video link")
+                                        print(f"    Element {j+1}: Attempting alternative title validation...")
+
+                                        # Try to get title from the link element itself or nearby elements
+                                        try:
+                                            # Strategy 1: Get text from the link itself
+                                            link_text = element.text_content().strip().lower()
+
+                                            # Strategy 2: Try to find title in nearby elements
+                                            # Look for parent divs that might contain the title
+                                            nearby_text = ""
+                                            try:
+                                                # Try getting text from up to 5 levels of parent
+                                                for level in range(1, 6):
+                                                    parent_candidate = element.locator(f"xpath={'/..' * level}").first
+                                                    if parent_candidate.count() > 0:
+                                                        candidate_text = parent_candidate.text_content().lower()
+                                                        # Check if this text contains meaningful content (not too long, not empty)
+                                                        if 10 < len(candidate_text) < 500:
+                                                            nearby_text = candidate_text
+                                                            print(f"    Element {j+1}: Found text at parent level {level}: {nearby_text[:100]}...")
+                                                            break
+                                            except:
+                                                pass
+
+                                            # Use whichever text source we found
+                                            text_to_check = nearby_text if nearby_text else link_text
+
+                                            if text_to_check:
+                                                # Simple title matching: check if key words from search title appear
+                                                search_words = title.lower().replace('the ', '').replace('a ', '').split()
+                                                # Remove single-character words
+                                                search_words = [w for w in search_words if len(w) > 1]
+
+                                                matches = sum(1 for word in search_words if word in text_to_check)
+                                                match_pct = matches / len(search_words) if search_words else 0
+
+                                                print(f"    Element {j+1}: Simple title match: {matches}/{len(search_words)} words ({match_pct:.1%})")
+
+                                                # Lower threshold for featured results (50% instead of 70%)
+                                                if match_pct >= 0.5:
+                                                    elapsed_time = time.time() - start_time
+                                                    print(f"  ✓ Found Amazon link (featured result, alternative validation): {href}")
+                                                    print(f"  ✓ Title match: {match_pct:.1%}")
+                                                    print(f"  ✓ Search completed in {elapsed_time:.2f} seconds")
+                                                    return href
+                                                else:
+                                                    print(f"    Element {j+1}: Insufficient title match ({match_pct:.1%}), skipping")
+                                            else:
+                                                print(f"    Element {j+1}: No text content found for validation, skipping")
+                                        except Exception as alt_e:
+                                            print(f"    Element {j+1}: Alternative validation failed: {alt_e}")
+                                    else:
+                                        print(f"    Element {j+1}: No parent container found for title validation, skipping")
                             except Exception as e:
                                 print(f"    Element {j+1}: Error validating title/parent: {e}")
                                 # Skip this result rather than proceeding without validation
