@@ -10,7 +10,7 @@ Automated tracking of theatrical releases becoming available digitally, displaye
 
 **Start here for system understanding:**
 
-- 📖 **[SYSTEM_ARCHITECTURE.md](docs/AUTOMATION_BRANCH_WORKFLOW.md)** - How everything works (read this first)
+- 📖 **[SYSTEM_ARCHITECTURE.md](SYSTEM_ARCHITECTURE.md)** - How everything works (read this first)
 - 📋 **[PROJECT_CHARTER.md](PROJECT_CHARTER.md)** - Governance, amendments, API keys
 - 📅 **[DAILY_CONTEXT.md](DAILY_CONTEXT.md)** - Rolling diary of recent work
 - 🔄 **[NRW_DATA_WORKFLOW_EXPLAINED.md](NRW_DATA_WORKFLOW_EXPLAINED.md)** - Data pipeline details
@@ -39,7 +39,7 @@ NRW uses a two-branch strategy to prevent merge conflicts between automation and
 2. Bot generates data and commits to `automation-updates`
 3. You run `./sync_daily_updates.sh` to merge into `main`
 
-**For details:** See [SYSTEM_ARCHITECTURE.md](docs/AUTOMATION_BRANCH_WORKFLOW.md) Section 2 (Two-Branch Deployment Strategy)
+**For details:** See [SYSTEM_ARCHITECTURE.md](SYSTEM_ARCHITECTURE.md) Section 2 (Two-Branch Deployment Strategy)
 
 ## Known Issues
 
@@ -52,7 +52,6 @@ NRW uses a two-branch strategy to prevent merge conflicts between automation and
 ./launch_all.sh
 
 # Or launch specific tools directly:
-./launch_NRW.sh              # Public site (port 8000)
 python3 admin.py             # Admin panel (port 5555, requires auth)
 python3 youtube_playlist_manager.py --help  # YouTube CLI
 ```
@@ -92,7 +91,7 @@ Trigger workflows manually in GitHub Actions tab → Select workflow → "Run wo
 - Display: `index.html` → `assets/app.js` + `data.json`
 - Admin: `admin.py` (port 5555) → manual corrections → regenerate
 
-**For detailed architecture:** See [SYSTEM_ARCHITECTURE.md](docs/AUTOMATION_BRANCH_WORKFLOW.md)
+**For detailed architecture:** See [SYSTEM_ARCHITECTURE.md](SYSTEM_ARCHITECTURE.md)
 
 
 ## Admin Panel
@@ -123,10 +122,11 @@ python3 generate_newsletter.py --format markdown --days 14  # Custom options
 ## Configuration
 
 - **config.yaml** - API keys, scraper settings, display parameters
+  - **Required setup:** Replace placeholder values for `tmdb_api_key` and `watchmode_api_key` with real API keys
+  - Production: Use environment variables `TMDB_API_KEY` and `WATCHMODE_API_KEY` (see [PROJECT_CHARTER.md](PROJECT_CHARTER.md))
 - **requirements.txt** - Python dependencies (Playwright-based, Selenium removed)
 - **.gitignore** - Excludes cache/, config.yaml (API keys), various backup/temp files
 - **launch_all.sh** - Unified launcher for all NRW tools (menu-driven)
-- **launch_NRW.sh** - Legacy launcher for public site only
 
 ## Troubleshooting
 
