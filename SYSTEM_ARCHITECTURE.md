@@ -181,6 +181,279 @@ git diff main automation-updates --stat
 
 ---
 
+## ⚙️ Configuration & Secrets
+
+### 4.1 Configuration Pattern
+
+All API keys follow the 12-factor app pattern:
+1. **Environment variables** (production, CI/CD) - highest priority
+2. **config.yaml** (local development only) - fallback
+3. **Error if neither is set** - fail fast with clear message
+
+### 4.2 API Keys & Secrets
+
+**Required for Production:**
+- `TMDB_API_KEY` - The Movie Database API key
+- `WATCHMODE_API_KEY` - Watchmode streaming links API key
+- `OMDB_API_KEY` - OMDb API key (optional, for fallbacks)
+
+**Admin Panel Security:**
+- `ADMIN_USERNAME` - Admin panel username (default: admin)
+- `ADMIN_PASSWORD` - Admin panel password (default: admin)
+
+**Local Development:**
+See `config.yaml` for local development configuration. Replace placeholder values with real API keys. Never commit real keys to version control.
+
+### 4.3 config.yaml Structure
+
+```yaml
+api:
+  tmdb_api_key: ""  # TMDB API key (can be set via TMDB_API_KEY env var)
+  tmdb_rate_limit: 0.1  # Seconds between API calls
+  max_retries: 3
+
+workflow:
+  daily_check_time: "02:00"  # 2 AM PST
+  weekly_bootstrap_day: "sunday"
+
+display:
+  days_back: 90  # Show movies from last N days
+  min_movies: 20  # Minimum movies to display
+  max_movies: 100  # Maximum movies to display
+
+tracking:
+  bootstrap_days: 7  # Look back N days for new releases
+  check_interval_hours: 24  # How often to check
+
+discovery:
+  max_pages: 10  # Maximum TMDB pages to process
+  days_back: 30  # Look back N days for releases
+  min_movies: 5  # Minimum movies to discover per run
+  timeout: 30    # API timeout in seconds
+
+agent_scraper:
+  enabled: true
+  headless: true
+  rate_limit: 2.0
+  timeout: 10
+  max_retries: 3
+  cache_ttl_days: 30
+  screenshots_enabled: true
+  screenshot_retention_days: 7
+
+rt_scraper:
+  enabled: true
+  headless: true
+  rate_limit: 2.0
+  timeout: 10
+  max_retries: 1
+  cache_ttl_days: 90
+```
+
+### 4.4 Cache Strategies
+
+**Rotten Tomatoes Cache** (`rt_cache.json`): 90-day TTL, ~328 entries
+**Wikipedia Cache** (`wikipedia_cache.json`): 90-day TTL, ~300 entries
+**YouTube Trailer Cache** (`youtube_trailer_cache.json`): 90-day TTL, ~250 entries
+**Agent Links Cache** (`cache/agent_links_cache.json`): 30-day TTL, ~50 entries
+**Watch Links Cache** (`cache/watch_links_cache.json`): 7-day TTL, ~50 entries
+
+**Cache Efficiency**: 99.4% hit rate in normal operation, prevents API quota exhaustion.
+
+**Cache Strategy Per Component**:
+- **Static data (RT ratings, Wikipedia)**: 90-day TTL
+- **Dynamic streaming links**: 7-day TTL (faster platform changes)
+- **Video trailers**: 90-day TTL (stable YouTube URLs)
+- **Agent scraping results**: 30-day TTL (balance between performance and freshness)
+
+## 🌐 External APIs & Rate Limits
+
+### TMDB (The Movie Database)
+- **Sign up:** https://www.themoviedb.org/settings/api
+- **Environment variable:** `TMDB_API_KEY`
+- **Config fallback:** `api.tmdb_api_key` in config.yaml
+- **Usage:** Movie metadata, posters, cast/crew information
+- **Rate limit:** 40 requests per 10 seconds (handled automatically)
+
+### Watchmode API
+- **Sign up:** https://api.watchmode.com/
+- **Environment variable:** `WATCHMODE_API_KEY`
+- **Config fallback:** `api.watchmode_api_key` in config.yaml
+- **Free Tier:** 1,000 requests/month (no credit card required)
+- **Usage:** Deep links to streaming platforms (Netflix, Amazon, HBO Max, etc.)
+- **Endpoints used:**
+  - Search: https://api.watchmode.com/v1/search/ (search by TMDB ID)
+  - Details: https://api.watchmode.com/v1/title/{watchmode_id}/details/ (get streaming sources)
+- **Authentication:** Pass `apiKey` as query parameter
+- **Coverage:** 200+ streaming services in 50+ countries (US data on free tier)
+
+### OMDb API
+- **Sign up:** http://www.omdbapi.com/apikey.aspx
+- **Environment variable:** `OMDB_API_KEY`
+- **Config fallback:** `api.omdb_api_key` in config.yaml (if implemented)
+- **Usage:** Alternative movie data source, poster fallbacks
+- **Free Tier:** 1,000 requests/day
+
+### Agent-Based Link Finding (No API Key Required)
+- **Purpose:** Scrape direct watch links from streaming platforms when Watchmode API has no data
+- **Platforms:** Netflix, Disney+, HBO Max, Hulu
+- **Technology:** Playwright with headless Chrome
+- **Rate Limiting:** 2-second minimum delay between scrapes
+- **Cache:** `cache/agent_links_cache.json`
+- **Usage:** Automatic fallback when Watchmode API returns no data
+- **Optional:** Can be disabled by not initializing agent in `generate_data.py`
+- **Terms of Service:** Web scraping may violate platform ToS; use responsibly
+
+## 🔗 Watch Links Schema & Cache
+
+### Canonical Watch Links Schema
+
+**Official Structure (as defined in [PROJECT_CHARTER.md](PROJECT_CHARTER.md)):**
+
+The `watch_links` field in `data.json` uses a **three-category structure** representing different access methods:
+
+```json
+{
+  "watch_links": {
+    "streaming": {
+      "service": "Netflix",
+      "link": "https://www.netflix.com/title/12345"
+    },
+    "rent": {
+      "service": "Amazon Video",
+      "link": "https://www.amazon.com/..."
+    },
+    "buy": {
+      "service": "Apple TV",
+      "link": "https://tv.apple.com/..."
+    }
+  }
+}
+```
+
+### Category Definitions
+- **`streaming`**: Subscription-based services (Netflix, Prime, Disney+, HBO Max, Hulu, MUBI, Criterion)
+- **`rent`**: Rental options (Amazon Video, Apple TV, Google Play, Vudu)
+- **`buy`**: Purchase options (Amazon Video, Apple TV, Google Play, Microsoft Store)
+
+### Schema Rules
+1. **Optional categories**: Only present when available for the movie (sparse structure)
+2. **Required fields per category**: `service` (string, provider name) and `link` (string URL or null)
+3. **Null links allowed**: `link: null` indicates service is available but URL not found (frontend shows error state)
+4. **No search URLs**: System returns `null` instead of Google/Amazon search fallbacks (curator can add overrides)
+5. **Service priority**: Best service selected per category (Netflix > Disney+ for streaming, Amazon > Apple TV for rent/buy)
+
+### Cache Strategy
+- **Location:** `cache/watch_links_cache.json`
+- **Key:** TMDB ID (string)
+- **Value:** `{links: {...}, cached_at: ISO-8601, source: 'watchmode_api'|'tmdb_providers'}`
+- **Purpose:** Prevents redundant API calls (saves 13,380 calls/month)
+- **Effectiveness:** With cache, monthly usage is ~300 calls (new movies only); without cache, would be 13,680 calls (exceeds free tier)
+- **Migration support:** Automatically migrates legacy `free/paid` format to canonical `streaming/rent/buy` schema
+
+## 📊 Data Contracts
+
+### movie_tracking.json Schema
+
+```json
+{
+  "title": "Movie Name",
+  "tmdb_id": 12345,
+  "status": "available|tracking|removed",
+  "enriched": true,
+  "enrichment_date": "2025-11-05T10:30:00Z",
+  "digital_date": "2025-10-15",
+  "rt_url": "https://...",
+  "rt_rating": 85,
+  "platforms": ["netflix", "hulu"],
+  "manually_corrected": true,
+  "manual_rt_score": true,
+  "last_manual_edit": "2025-10-19T..."
+}
+```
+
+### data.json Schema
+
+Filtered, enriched subset for frontend display:
+
+```json
+{
+  "tmdb_id": 12345,
+  "imdb_id": "tt1234567",
+  "title": "Movie Title",
+  "original_title": "Original Title",
+  "digital_date": "2025-10-15",
+  "poster": "https://image.tmdb.org/...",
+  "crew": {
+    "director": "Director Name",
+    "cast": ["Actor 1", "Actor 2"]
+  },
+  "synopsis": "Movie description...",
+  "metadata": {
+    "runtime": 120
+  },
+  "links": {
+    "trailer": "https://youtube.com/...",
+    "rt": "https://rottentomatoes.com/...",
+    "wikipedia": "https://en.wikipedia.org/..."
+  },
+  "watch_links": {
+    "streaming": {"service": "Netflix", "link": "https://..."},
+    "rent": {"service": "Amazon", "link": "https://..."},
+    "buy": {"service": "Apple TV", "link": "https://..."}
+  }
+}
+```
+
+### Required Fields Per Movie
+- `tmdb_id`, `imdb_id`, `title`, `original_title`
+- `digital_date` (ISO‑8601 format)
+- `poster`, `crew.director`, `crew.cast[]`, `synopsis`
+- `metadata.runtime`
+- `links.{trailer,rt,wikipedia}` (nullable)
+- `watch_links` (optional, but structured per schema above)
+
+### Enrichment Flags
+- `enriched` (boolean): Skip enrichment if true
+- `enrichment_date` (timestamp): When movie was last enriched
+- `manually_corrected` (boolean): Protected from automation overwrites
+- `manual_*` flags: Field-specific manual correction tracking
+
+## 🔄 Pipeline Contracts
+
+### Daily Pipeline Phases
+
+**Phase 1: Discovery** (`generate_data.py --discover`)
+- Finds new theatrical releases from TMDB
+- Updates `movie_tracking.json` with new entries
+- Status: "tracking"
+- Expected: 10-20 movies/day
+
+**Phase 2: Provider Monitoring** (`generate_data.py --check`)
+- Monitors tracking movies for digital availability
+- Updates status from "tracking" to "available"
+- Records digital_date and platform details
+- Expected: 2-5 movies/day transition
+
+**Phase 3: Enrichment** (`generate_data.py` main)
+- Only processes newly available movies (enrichment-on-transition)
+- Adds RT ratings, Wikipedia links, watch links
+- Sets `enriched: true` flag
+- Expected: 1-10 movies/day processing
+
+**Phase 4: Display Generation**
+- Filters available movies for `data.json`
+- Applies admin overrides (hidden/featured)
+- Generates public-facing display data
+- Expected: 250-350 movies in output
+
+### Performance Expectations
+- **Normal operation**: 1-10 movies enriched daily, 30-second runtime
+- **Warning threshold**: 50+ movies (possible corruption)
+- **Critical threshold**: 100+ movies (definite corruption, 2+ hour runtime)
+
+---
+
 ## 🔄 Data Flow Overview
 
 ### 4.1 The Five Phases
@@ -199,6 +472,7 @@ Phase 2: Enrichment (ONLY newly available)
 Phase 3: Quality Assurance
     ↓ admin.py (manual QA interface)
     ↓ Validates: Links, ratings, metadata
+    ↓ See ADMIN_WORKFLOW.md for the operational steps
 
 Phase 4: Display Generation
     ↓ generate_data.py (final step)
@@ -501,6 +775,8 @@ See Section 5 above for detailed enrichment-on-transition caching.
 **Access**: `python3 admin.py` (local only)
 **Features**: Edit movies, force re-enrichment, view logs
 
+**Detailed specification:** [docs/features/ADMIN_PANEL_SPEC.md](docs/features/ADMIN_PANEL_SPEC.md)
+
 ---
 
 ## ⚠️ Common Failure Modes
@@ -609,9 +885,9 @@ for dm in data_movies:       # Iterated over keys, not movies
 - [docs/](./docs/) - Legacy documentation
 
 **Key Amendments to Reference**:
-- AMENDMENT-043: Two-branch deployment strategy
-- AMENDMENT-044: Enrichment-on-transition optimization
-- AMENDMENT-045: Playwright scraper migration
+- [025: Two-Branch Automation Strategy](./PROJECT_CHARTER.md#025-two-branch-automation-strategy): Two-branch deployment strategy
+- [023: Agent-Based Link Finding for Streaming Platforms](./PROJECT_CHARTER.md#023-agent-based-link-finding-for-streaming-platforms): Playwright migration for agent scraper
+- [027: Admin Panel - Post-Publication Curation & Data Quality](./PROJECT_CHARTER.md#027-admin-panel---post-publication-curation--data-quality): Admin panel redesign
 
 ---
 

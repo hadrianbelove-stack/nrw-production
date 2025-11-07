@@ -1,7 +1,126 @@
-#!/usr/bin/env bash
-set -euo pipefail
+#!/bin/bash
+
+# Pre-commit hook to enforce root markdown file whitelist
+# Prevents commits that add new .md files to the repository root
+# outside the seven allowed files per AMENDMENT-032
+
+set -e
+
 # Fail fast on conflict markers
 if git diff --cached | grep -qE '^(<<<<<<<|=======|>>>>>>>)'; then
   echo "Blocked: conflict markers present. Resolve before committing."
   exit 1
 fi
+
+# AMENDMENT-032: Root Markdown Whitelist
+ALLOWED_ROOT_MD_FILES=(
+    "PROJECT_CHARTER.md"
+    "IMPLEMENTATION_ROADMAP.md"
+    "DAILY_CONTEXT.md"
+    "README.md"
+    "SYSTEM_ARCHITECTURE.md"
+    "NRW_DATA_WORKFLOW_EXPLAINED.md"
+    "ADMIN_WORKFLOW.md"
+)
+
+# Get list of staged .md files in repository root
+STAGED_ROOT_MD_FILES=$(git diff --cached --name-only --diff-filter=A | grep '^[^/]*\.md$' || true)
+
+if [ -z "$STAGED_ROOT_MD_FILES" ]; then
+    # No new root .md files staged, commit can proceed
+    exit 0
+fi
+
+# Check each staged root .md file against whitelist
+VIOLATIONS=""
+for file in $STAGED_ROOT_MD_FILES; do
+    ALLOWED=false
+    for allowed_file in "${ALLOWED_ROOT_MD_FILES[@]}"; do
+        if [ "$file" = "$allowed_file" ]; then
+            ALLOWED=true
+            break
+        fi
+    done
+
+    if [ "$ALLOWED" = false ]; then
+        VIOLATIONS="$VIOLATIONS\n  - $file"
+    fi
+done
+
+if [ -n "$VIOLATIONS" ]; then
+    echo "❌ COMMIT REJECTED: Root markdown file violations detected"
+    echo ""
+    echo "The following staged files violate AMENDMENT-032 (Root Markdown Whitelist):"
+    echo -e "$VIOLATIONS"
+    echo ""
+    echo "📋 ALLOWED root .md files:"
+    for allowed_file in "${ALLOWED_ROOT_MD_FILES[@]}"; do
+        echo "  ✅ $allowed_file"
+    done
+    echo ""
+    echo "📁 REQUIRED placement for non-whitelisted files:"
+    echo "  - Session work & analysis → diary/"
+    echo "  - Feature guides → docs/features/"
+    echo "  - Troubleshooting → docs/troubleshooting/"
+    echo "  - Technical docs → docs/"
+    echo ""
+    echo "🔧 TO FIX:"
+    echo "  1. Move the file(s) to appropriate subdirectory"
+    echo "  2. Update any references to the new location"
+    echo "  3. Stage the moved file(s) and try committing again"
+    echo ""
+    echo "Example:"
+    echo "  git reset HEAD your-file.md"
+    echo "  mv your-file.md docs/features/"
+    echo "  git add docs/features/your-file.md"
+    echo "  git commit"
+    echo ""
+    exit 1
+fi
+
+# All staged root .md files are whitelisted, now check charter size limit
+
+# AMENDMENT-032: Charter Size Limit Check
+CHARTER_FILE="PROJECT_CHARTER.md"
+MAX_LINES=1000
+
+if git diff --cached --name-only | grep -q "^$CHARTER_FILE$"; then
+    # Charter is being modified, check line count
+    CHARTER_LINES=$(wc -l < "$CHARTER_FILE" 2>/dev/null || echo "0")
+
+    if [ "$CHARTER_LINES" -gt "$MAX_LINES" ]; then
+        echo "❌ COMMIT REJECTED: PROJECT_CHARTER.md size limit exceeded"
+        echo ""
+        echo "Current size: $CHARTER_LINES lines"
+        echo "Maximum allowed: $MAX_LINES lines"
+        echo "Excess: $((CHARTER_LINES - MAX_LINES)) lines"
+        echo ""
+        echo "📋 AMENDMENT-032 requires charter to remain under $MAX_LINES lines for readability."
+        echo ""
+        echo "🔧 TO FIX:"
+        echo "  1. Extract technical specifications to SYSTEM_ARCHITECTURE.md"
+        echo "  2. Move feature documentation to docs/features/"
+        echo "  3. Ensure governance, amendments, and core rules remain in charter"
+        echo "  4. Update cross-references to point to extracted content locations"
+        echo ""
+        echo "💡 TIP: Use 'wc -l PROJECT_CHARTER.md' to check current line count"
+        echo ""
+        exit 1
+    elif [ "$CHARTER_LINES" -gt 450 ]; then
+        echo "⚠️ WARNING: PROJECT_CHARTER.md exceeds target size (450 lines)"
+        echo ""
+        echo "Current size: $CHARTER_LINES lines"
+        echo "Target: ≤450 lines"
+        echo "Excess: $((CHARTER_LINES - 450)) lines"
+        echo ""
+        echo "💡 RECOMMENDATION: Consider extracting details to SYSTEM_ARCHITECTURE.md or docs/features/"
+        echo "   to keep the charter focused and within the target ≤450 line budget."
+        echo ""
+        echo "📋 This is a soft warning - commit will proceed, but keeping the charter"
+        echo "   lean improves readability and maintainability."
+        echo ""
+    fi
+fi
+
+# All checks passed, commit can proceed
+exit 0
