@@ -2,6 +2,9 @@
 
 # sync_daily_updates.sh - Merge automation data from bot
 #
+# NOTE: The daily workflow now commits directly to main by default.
+# The default flow (automation-updates → main) is typically unnecessary now.
+#
 # Usage:
 #   ./sync_daily_updates.sh                    # automation-updates → main (default)
 #   ./sync_daily_updates.sh --into-automation  # main → automation-updates
@@ -19,13 +22,12 @@
 # 4. Shows latest movies added
 #
 # When to run (default flow):
-# - Daily after automation completes (check GitHub Actions)
-# - Before starting work (ensures you have latest data)
-# - After making local changes (merge automation before committing)
+# - Rarely needed since daily CI commits directly to main
+# - When manually running automation on automation-updates branch
+# - When testing automation-updates → main merging
 #
 # When to run (--into-automation flow):
-# - After making changes to main that should be reflected in automation-updates
-# - Before automation runs (to ensure it has latest main changes)
+# - Use --into-automation when syncing main into automation-updates for special runs
 # - When synchronizing main improvements back to automation branch
 #
 # Troubleshooting:

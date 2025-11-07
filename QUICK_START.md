@@ -59,7 +59,7 @@ Selenium has been removed from dependencies.
 
 ```bash
 git pull origin main
-./launch_NRW.sh  # Starts local server
+./launch_all.sh  # Interactive menu - choose option 1 for public site
 ```
 
 ### Option B: Manual Updates
@@ -74,7 +74,7 @@ python3 daily_orchestrator.py          # Full daily automation
 python3 generate_data.py               # Generate website data
 
 # View website
-./launch_NRW.sh
+./launch_all.sh  # Choose option 1 for public site
 ```
 
 ---
@@ -85,8 +85,7 @@ python3 generate_data.py               # Generate website data
 
 **View locally:**
 ```bash
-./launch_NRW.sh
-# Opens http://localhost:8000
+./launch_all.sh  # Choose option 1 - opens http://localhost:8000
 ```
 
 **Deploy:**
@@ -300,7 +299,7 @@ python3 generate_data.py  # Generate it
 ### "Port 8000 already in use"
 ```bash
 lsof -ti:8000 | xargs kill  # Kill existing server
-./launch_NRW.sh             # Try again
+./launch_all.sh  # Choose option 1 for public site
 ```
 
 ### Admin panel login not working
@@ -317,9 +316,10 @@ python3 admin.py
 - Sign in with correct Google account
 
 ### Newsletter looks broken
-- Open `newsletter_sample.html` in browser
-- Check for HTML errors in console
-- Re-generate: `python3 substack_newsletter_generator.py weekly --output test.html`
+- Re-generate fresh: `python3 substack_newsletter_generator.py weekly --output test.html`
+- Open test.html in browser and check for HTML errors in console
+- Compare with previous newsletters in `newsletters/` directory
+- For reference sample format (Oct 19, 2025), see `museum_legacy/_design/newsletter_sample_2025-10-19.html`
 
 ---
 
@@ -402,7 +402,7 @@ python3 admin.py
 ```bash
 # Daily workflow
 git pull origin main
-./launch_NRW.sh
+./launch_all.sh  # Choose option 1 for public site
 
 # Manual update
 python3 daily_orchestrator.py

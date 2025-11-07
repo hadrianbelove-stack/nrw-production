@@ -79,7 +79,48 @@ python3 youtube_playlist_manager.py auth --verbose
 
 # 4. Check disk space
 df -h .
+
+# 5. Check if OAuth flow is actually completing
+python3 youtube_playlist_manager.py auth 2>&1 | grep -E "Authentication|Credentials|saved"
+# Should see: "✅ Credentials saved to youtube_credentials/token.pickle"
+# If you see "✅ Authentication complete!" but NOT "Credentials saved",
+# there's an exception being swallowed during file write
+
+# 6. Test file write directly
+touch youtube_credentials/test.txt
+ls -la youtube_credentials/test.txt
+rm youtube_credentials/test.txt
+# If this fails, permissions issue confirmed
+
+# 7. Run with Python error output
+python3 -u youtube_playlist_manager.py auth
+# The -u flag disables buffering, shows errors immediately
 ```
+
+#### Common OAuth File Write Issues:
+
+1. **Directory doesn't exist:**
+   ```bash
+   mkdir -p youtube_credentials
+   chmod 755 youtube_credentials
+   ```
+
+2. **Insufficient permissions:**
+   ```bash
+   chmod 755 youtube_credentials/
+   ls -ld youtube_credentials/  # Should show drwxr-xr-x
+   ```
+
+3. **Exception swallowed in code:**
+   - Check youtube_playlist_manager.py for try/except blocks that catch file write errors
+   - Look for logging statements that should appear but don't
+   - Add debug prints around file write operations
+
+4. **Disk full:**
+   ```bash
+   df -h .
+   # Should show available space
+   ```
 
 **Prevention:**
 - Tokens typically last months - shouldn't happen often

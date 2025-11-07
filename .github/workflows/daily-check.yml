@@ -23,16 +23,7 @@ jobs:
       MIN_PROVIDER_COVERAGE: ${{ secrets.MIN_PROVIDER_COVERAGE }}
 
     steps:
-      - name: Checkout automation-updates branch
-        uses: actions/checkout@v4
-        with:
-          ref: automation-updates
-          fetch-depth: 0
-        continue-on-error: true
-        id: checkout-automation
-
-      - name: Checkout main branch fallback
-        if: steps.checkout-automation.outcome == 'failure'
+      - name: Checkout main branch
         uses: actions/checkout@v4
         with:
           ref: main
@@ -57,31 +48,43 @@ jobs:
           git config user.name "NRW Bot"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Sync main → automation-updates
-        id: sync
-        run: |
-          git fetch origin main
-          # Capture HEAD before merge to detect if merge creates new commits
-          BEFORE_MERGE=$(git rev-parse HEAD)
-          git merge origin/main --no-edit || {
-            echo "⚠️ Merge conflict detected - branches have diverged"
-            echo "Manual intervention required to resolve conflicts"
-            echo "Run: git checkout automation-updates && git merge main"
-            git merge --abort
-            exit 1
-          }
-          # Check if merge created new commits
-          AFTER_MERGE=$(git rev-parse HEAD)
-          if [ "$BEFORE_MERGE" != "$AFTER_MERGE" ]; then
-            echo "merge_commits=true" >> $GITHUB_OUTPUT
-            echo "Merge created new commits"
-          else
-            echo "merge_commits=false" >> $GITHUB_OUTPUT
-            echo "No new commits from merge"
-          fi
 
       - name: Run daily pipeline
-        run: python3 daily_orchestrator.py
+        run: python3 daily_orchestrator.py | tee .local_run.log
+
+      - name: Extract per-phase timing summary
+        if: always()
+        run: |
+          if [ -f ".local_run.log" ]; then
+            echo "📊 Per-Phase Performance Summary:"
+            echo "================================"
+            # Extract phase timing lines from the log
+            grep -E "⏱️.*Phase Timings:|✅.*:.*s$|❌.*:.*s$" .local_run.log || echo "No phase timing data found"
+            echo ""
+            # Extract total duration
+            grep -E "⏱️.*Total Duration:" .local_run.log || echo "No total duration found"
+          else
+            echo "⚠️ No log file found (.local_run.log)"
+          fi
+
+      - name: Check for Google search URLs in data.json
+        run: |
+          if [ -f "data.json" ]; then
+            search_urls=$(jq -r '.movies[] | select(.watch_links != null) | .watch_links[] | select(.link != null) | .link' data.json 2>/dev/null | grep -c 'google.com/search' || echo "0")
+            if [ "$search_urls" -gt 0 ]; then
+              echo "ERROR: Found $search_urls Google search URLs in data.json"
+              if [ "${NRW_FAIL_ON_SEARCH_URLS:-false}" = "true" ]; then
+                echo "Failing workflow due to NRW_FAIL_ON_SEARCH_URLS=true"
+                exit 1
+              else
+                echo "WARNING: Google search URLs detected but not failing (set NRW_FAIL_ON_SEARCH_URLS=true to fail)"
+              fi
+            else
+              echo "✓ No Google search URLs found in data.json"
+            fi
+          else
+            echo "WARNING: data.json not found, skipping search URL check"
+          fi
 
       - name: Check for changes
         id: changes
@@ -94,9 +97,6 @@ jobs:
             echo "No changes detected"
           fi
 
-      - name: Switch to automation branch
-        if: steps.changes.outputs.changes == 'true'
-        run: git checkout -B automation-updates
 
       - name: Commit changes
         if: steps.changes.outputs.changes == 'true'
@@ -104,13 +104,9 @@ jobs:
           git add data.json
           git commit -m "Daily update - $(date +%Y-%m-%d) [automated]"
 
-      - name: Push merge commits (code-only changes)
-        if: steps.sync.outputs.merge_commits == 'true' && steps.changes.outputs.changes == 'false'
-        run: git push origin automation-updates
-
-      - name: Force push to remote
+      - name: Push changes to main
         if: steps.changes.outputs.changes == 'true'
-        run: git push --force origin automation-updates
+        run: git push origin main
 
       - name: Create GitHub issue on failure
         if: failure()

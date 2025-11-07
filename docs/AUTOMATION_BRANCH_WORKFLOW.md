@@ -75,28 +75,37 @@ automation-updates (automated commits)
 **Schedule**: 10:00 AM UTC on Sundays
 
 **Process**:
-1. Checkout main branch
-2. Run `generate_data.py --full` to regenerate ALL movie data
-3. Validate data quality
-4. If changed:
+1. Checkout automation-updates branch
+2. **Sync main → automation-updates** (merge origin/main to get latest fixes)
+3. Run `generate_data.py --full` to regenerate ALL movie data
+4. Validate data quality
+5. If changed:
    - Commit changes: `Weekly full regeneration - YYYY-MM-DD [automated]`
-   - Switch to `automation-updates` branch
    - Force push to `automation-updates`
 
-**Key Lines** (69-79):
+**Key Lines** (similar to daily workflow):
 ```yaml
+- name: Sync main → automation-updates
+  run: |
+    git fetch origin main
+    git merge origin/main --no-edit || {
+      echo "⚠️ Merge conflict detected - branches have diverged"
+      git merge --abort
+      exit 1
+    }
+
 - name: Commit changes
   if: steps.changes.outputs.changes == 'true'
   run: |
     git add data.json
     git commit -m "Weekly full regeneration - $(date +%Y-%m-%d) [automated]"
 
-- name: Switch to automation branch
-  run: git checkout -B automation-updates
-
 - name: Force push to remote
+  if: steps.changes.outputs.changes == 'true'
   run: git push --force origin automation-updates
 ```
+
+**Note (Nov 5, 2025):** The weekly workflow was updated to match the daily workflow pattern (checkout automation-updates + sync main) for consistency. Previously, it checked out main and switched to automation-updates only for the commit, which could cause branch divergence issues.
 
 ## Merging to Main
 

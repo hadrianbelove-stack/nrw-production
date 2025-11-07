@@ -1,11 +1,15 @@
 from playwright.sync_api import sync_playwright, Page, Browser, BrowserContext, TimeoutError as PlaywrightTimeoutError
-from playwright_manager import get_playwright_manager
 import time
 import json
 import os
 import random
 from datetime import datetime, timedelta
 from urllib.parse import quote
+
+# Optional shared manager support (disabled by default)
+USE_SHARED_PLAYWRIGHT = os.environ.get('NRW_USE_SHARED_PLAYWRIGHT', 'false').lower() == 'true'
+if USE_SHARED_PLAYWRIGHT:
+    from playwright_manager import get_playwright_manager
 
 
 class AgentLinkScraper:
@@ -22,8 +26,9 @@ class AgentLinkScraper:
         self.context = None
         self.page = None
 
-        # Shared manager reference
-        self.manager = get_playwright_manager()
+        # Manager reference (only if shared mode enabled)
+        self.manager = get_playwright_manager() if USE_SHARED_PLAYWRIGHT else None
+
 
         # Rate limiting
         self.last_scrape_time = 0
@@ -112,8 +117,15 @@ class AgentLinkScraper:
             print("[AgentLinkScraper] Browser already initialized, reusing...")
             return
 
-        print("[AgentLinkScraper] Initializing Playwright browser...")
+        if USE_SHARED_PLAYWRIGHT:
+            print("[AgentLinkScraper] Initializing Playwright browser via shared manager...")
+            self._init_browser_shared()
+        else:
+            print("[AgentLinkScraper] Initializing Playwright browser with local lifecycle...")
+            self._init_browser_local()
 
+    def _init_browser_shared(self):
+        """Initialize browser using shared manager."""
         try:
             # Get shared Playwright instance
             self.playwright = self.manager.get_playwright()
@@ -135,7 +147,37 @@ class AgentLinkScraper:
             # Create page
             self.page = self.context.new_page()
 
-            print("[AgentLinkScraper] ✓ Playwright browser initialized successfully")
+            print("[AgentLinkScraper] ✓ Playwright browser initialized successfully via shared manager")
+
+        except Exception as e:
+            print(f"[AgentLinkScraper] ✗ Browser initialization failed: {e}")
+            self._cleanup_browser()
+            raise
+
+    def _init_browser_local(self):
+        """Initialize browser using local lifecycle."""
+        try:
+            # Start Playwright locally
+            self.playwright = sync_playwright().start()
+
+            # Launch browser
+            headless = self.config.get('headless', True)
+            self.browser = self.playwright.chromium.launch(headless=headless)
+
+            # Create context with viewport and user agent
+            self.context = self.browser.new_context(
+                viewport={'width': 1920, 'height': 1080},
+                user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+            )
+
+            # Set default timeout
+            timeout_ms = self.config.get('agent_scraper', {}).get('timeout', 10) * 1000
+            self.context.set_default_timeout(timeout_ms)
+
+            # Create page
+            self.page = self.context.new_page()
+
+            print("[AgentLinkScraper] ✓ Playwright browser initialized successfully with local lifecycle")
 
         except Exception as e:
             print(f"[AgentLinkScraper] ✗ Browser initialization failed: {e}")
@@ -165,9 +207,13 @@ class AgentLinkScraper:
                 pass
             self.browser = None
 
+        # Cleanup Playwright based on mode
         if self.playwright:
             try:
-                self.manager.release()
+                if USE_SHARED_PLAYWRIGHT and self.manager:
+                    self.manager.release()
+                else:
+                    self.playwright.stop()
             except:
                 pass
             self.playwright = None

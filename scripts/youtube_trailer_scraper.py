@@ -12,7 +12,11 @@ import sys
 
 # Add parent directory to path for playwright_manager import
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from playwright_manager import get_playwright_manager
+
+# Optional shared manager support (disabled by default)
+USE_SHARED_PLAYWRIGHT = os.environ.get('NRW_USE_SHARED_PLAYWRIGHT', 'false').lower() == 'true'
+if USE_SHARED_PLAYWRIGHT:
+    from playwright_manager import get_playwright_manager
 
 class YouTubeTrailerScraper:
     def __init__(self, cache_file='youtube_trailer_cache.json', headless=True):
@@ -26,8 +30,9 @@ class YouTubeTrailerScraper:
         self.context = None
         self.page = None
 
-        # Shared manager reference
-        self.manager = get_playwright_manager()
+        # Manager reference (only if shared mode enabled)
+        self.manager = get_playwright_manager() if USE_SHARED_PLAYWRIGHT else None
+
 
     def _load_cache(self):
         """Load cache from file"""
@@ -42,17 +47,50 @@ class YouTubeTrailerScraper:
             json.dump(self.cache, f, indent=2)
 
     def _init_browser(self):
-        """Initialize Playwright browser using shared manager"""
+        """Initialize Playwright browser"""
         if self.browser is not None:
             return
 
-        print("[YouTubeTrailerScraper] Initializing browser via shared manager...")
+        if USE_SHARED_PLAYWRIGHT:
+            print("[YouTubeTrailerScraper] Initializing browser via shared manager...")
+            self._init_browser_shared()
+        else:
+            print("[YouTubeTrailerScraper] Initializing browser with local lifecycle...")
+            self._init_browser_local()
+
+    def _init_browser_shared(self):
+        """Initialize browser using shared manager"""
         try:
             # Get shared Playwright instance
             self.playwright = self.manager.get_playwright()
 
-            # Get shared browser (or use separate context if needed)
-            # For now, create our own browser to maintain independence
+            # Launch browser
+            self.browser = self.playwright.chromium.launch(headless=self.headless)
+
+            # Create context with viewport and user agent
+            self.context = self.browser.new_context(
+                viewport={'width': 1920, 'height': 1080},
+                user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+            )
+
+            # Set default timeout
+            self.context.set_default_timeout(10000)  # 10 seconds
+
+            # Create page
+            self.page = self.context.new_page()
+
+        except Exception as e:
+            print(f"Browser initialization failed: {e}")
+            self._cleanup_browser()
+            raise
+
+    def _init_browser_local(self):
+        """Initialize browser using local lifecycle"""
+        try:
+            # Start Playwright locally
+            self.playwright = sync_playwright().start()
+
+            # Launch browser
             self.browser = self.playwright.chromium.launch(headless=self.headless)
 
             # Create context with viewport and user agent
@@ -73,7 +111,7 @@ class YouTubeTrailerScraper:
             raise
 
     def _cleanup_browser(self):
-        """Clean up browser resources (but keep shared Playwright instance)"""
+        """Clean up browser resources"""
         if self.page:
             try:
                 self.page.close()
@@ -95,10 +133,13 @@ class YouTubeTrailerScraper:
                 pass
             self.browser = None
 
-        # Release reference to shared Playwright (don't stop it)
+        # Cleanup Playwright based on mode
         if self.playwright:
             try:
-                self.manager.release()
+                if USE_SHARED_PLAYWRIGHT and self.manager:
+                    self.manager.release()
+                else:
+                    self.playwright.stop()
             except:
                 pass
             self.playwright = None

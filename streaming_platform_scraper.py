@@ -14,7 +14,6 @@ Performance: ~6-8 seconds per search, 30-40% faster than Selenium version
 """
 
 from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeoutError
-from playwright_manager import get_playwright_manager
 import time
 import urllib.parse
 import os
@@ -22,6 +21,11 @@ import random
 import re
 from datetime import datetime, timedelta
 from constants import PLACEHOLDER_ASINS
+
+# Optional shared manager support (disabled by default)
+USE_SHARED_PLAYWRIGHT = os.environ.get('NRW_USE_SHARED_PLAYWRIGHT', 'false').lower() == 'true'
+if USE_SHARED_PLAYWRIGHT:
+    from playwright_manager import get_playwright_manager
 
 
 class StreamingPlatformScraper:
@@ -50,18 +54,26 @@ class StreamingPlatformScraper:
         self.context = None
         self.page = None
 
-        # Shared manager reference
-        self.manager = get_playwright_manager()
+        # Manager reference (only if shared mode enabled)
+        self.manager = get_playwright_manager() if USE_SHARED_PLAYWRIGHT else None
+
 
         # Clean up old screenshots on initialization
         if self.screenshots_enabled:
             self._cleanup_old_screenshots()
 
     def _init_browser(self):
-        """Initialize Playwright browser with context (lazy initialization)"""
+        """Initialize Playwright browser with context."""
         if self.browser is not None:
             return
 
+        if USE_SHARED_PLAYWRIGHT:
+            self._init_browser_shared()
+        else:
+            self._init_browser_local()
+
+    def _init_browser_shared(self):
+        """Initialize browser using shared manager."""
         try:
             # Get shared Playwright instance
             self.playwright = self.manager.get_playwright()
@@ -69,7 +81,34 @@ class StreamingPlatformScraper:
             # Launch Chromium browser
             self.browser = self.playwright.chromium.launch(headless=self.headless)
 
-            # Create context with viewport and user agent (same as Selenium version)
+            # Create context with viewport and user agent
+            self.context = self.browser.new_context(
+                viewport={'width': 1920, 'height': 1080},
+                user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+            )
+
+            # Set default timeout
+            timeout_ms = self.timeout_seconds * 1000
+            self.context.set_default_timeout(timeout_ms)
+
+            # Create page
+            self.page = self.context.new_page()
+
+        except Exception as e:
+            print(f"Browser initialization failed: {e}")
+            self._cleanup_browser()
+            raise
+
+    def _init_browser_local(self):
+        """Initialize browser using local lifecycle."""
+        try:
+            # Start Playwright locally
+            self.playwright = sync_playwright().start()
+
+            # Launch Chromium browser
+            self.browser = self.playwright.chromium.launch(headless=self.headless)
+
+            # Create context with viewport and user agent
             self.context = self.browser.new_context(
                 viewport={'width': 1920, 'height': 1080},
                 user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
@@ -110,9 +149,13 @@ class StreamingPlatformScraper:
                 pass
             self.browser = None
 
+        # Cleanup Playwright based on mode
         if self.playwright:
             try:
-                self.manager.release()
+                if USE_SHARED_PLAYWRIGHT and self.manager:
+                    self.manager.release()
+                else:
+                    self.playwright.stop()
             except:
                 pass
             self.playwright = None

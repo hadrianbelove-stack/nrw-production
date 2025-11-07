@@ -6,7 +6,11 @@ import random
 import re
 from datetime import datetime, timedelta
 from urllib.parse import quote
-from playwright_manager import get_playwright_manager
+
+# Optional shared manager support (disabled by default)
+USE_SHARED_PLAYWRIGHT = os.environ.get('NRW_USE_SHARED_PLAYWRIGHT', 'false').lower() == 'true'
+if USE_SHARED_PLAYWRIGHT:
+    from playwright_manager import get_playwright_manager
 
 
 class RTScraperPlaywright:
@@ -30,8 +34,9 @@ class RTScraperPlaywright:
         self.context = None
         self.page = None
 
-        # Shared manager reference
-        self.manager = get_playwright_manager()
+        # Manager reference (only if shared mode enabled)
+        self.manager = get_playwright_manager() if USE_SHARED_PLAYWRIGHT else None
+
 
         # Rate limiting
         self.last_scrape_time = 0
@@ -122,13 +127,20 @@ class RTScraperPlaywright:
             self._log(f"Failed to cleanup old screenshots: {e}", level='warning')
 
     def _init_browser(self):
-        """Initialize Playwright browser with context using shared manager."""
+        """Initialize Playwright browser with context."""
         if self.browser is not None:
             self._log("Browser already initialized, reusing...", level='debug')
             return
 
-        self._log("Initializing Playwright browser via shared manager...")
+        if USE_SHARED_PLAYWRIGHT:
+            self._log("Initializing Playwright browser via shared manager...")
+            self._init_browser_shared()
+        else:
+            self._log("Initializing Playwright browser with local lifecycle...")
+            self._init_browser_local()
 
+    def _init_browser_shared(self):
+        """Initialize browser using shared manager."""
         try:
             # Get shared Playwright instance
             self.playwright = self.manager.get_playwright()
@@ -150,7 +162,37 @@ class RTScraperPlaywright:
             # Create page
             self.page = self.context.new_page()
 
-            self._log("Playwright browser initialized successfully")
+            self._log("Playwright browser initialized successfully via shared manager")
+
+        except Exception as e:
+            self._log(f"Browser initialization failed: {e}", level='error')
+            self._cleanup_browser()
+            raise
+
+    def _init_browser_local(self):
+        """Initialize browser using local lifecycle."""
+        try:
+            # Start Playwright locally
+            self.playwright = sync_playwright().start()
+
+            # Launch browser
+            headless = self.config.get('rt_scraper', {}).get('headless', True)
+            self.browser = self.playwright.chromium.launch(headless=headless)
+
+            # Create context with viewport and user agent
+            self.context = self.browser.new_context(
+                viewport={'width': 1920, 'height': 1080},
+                user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+            )
+
+            # Set default timeout
+            timeout_ms = self.config.get('rt_scraper', {}).get('timeout', 10) * 1000
+            self.context.set_default_timeout(timeout_ms)
+
+            # Create page
+            self.page = self.context.new_page()
+
+            self._log("Playwright browser initialized successfully with local lifecycle")
 
         except Exception as e:
             self._log(f"Browser initialization failed: {e}", level='error')
@@ -158,7 +200,7 @@ class RTScraperPlaywright:
             raise
 
     def _cleanup_browser(self):
-        """Clean up browser resources (but keep shared Playwright instance)."""
+        """Clean up browser resources."""
         if self.page:
             try:
                 self.page.close()
@@ -180,10 +222,13 @@ class RTScraperPlaywright:
                 pass
             self.browser = None
 
-        # Release reference to shared Playwright (don't stop it)
+        # Cleanup Playwright based on mode
         if self.playwright:
             try:
-                self.manager.release()
+                if USE_SHARED_PLAYWRIGHT and self.manager:
+                    self.manager.release()
+                else:
+                    self.playwright.stop()
             except:
                 pass
             self.playwright = None
@@ -376,6 +421,15 @@ class RTScraperPlaywright:
             # Navigate to movie page
             self.page.goto(movie_url, wait_until='domcontentloaded')
             time.sleep(2)  # Wait for dynamic content
+
+            # Add readiness wait for score elements to avoid racing hydration
+            try:
+                self.page.wait_for_selector("score-board", timeout=2000)
+            except:
+                try:
+                    self.page.wait_for_selector("[data-qa='tomatometer']", timeout=2000)
+                except:
+                    pass  # Continue if neither selector is found
 
             # Try selector fallbacks for score
             score_selectors = [

@@ -6,7 +6,11 @@ import random
 import re
 from datetime import datetime, timedelta
 from urllib.parse import quote
-from playwright_manager import get_playwright_manager
+
+# Optional shared manager support (disabled by default)
+USE_SHARED_PLAYWRIGHT = os.environ.get('NRW_USE_SHARED_PLAYWRIGHT', 'false').lower() == 'true'
+if USE_SHARED_PLAYWRIGHT:
+    from playwright_manager import get_playwright_manager
 
 
 class WikipediaScraperPlaywright:
@@ -30,8 +34,9 @@ class WikipediaScraperPlaywright:
         self.context = None
         self.page = None
 
-        # Shared manager reference
-        self.manager = get_playwright_manager()
+        # Manager reference (only if shared mode enabled)
+        self.manager = get_playwright_manager() if USE_SHARED_PLAYWRIGHT else None
+
 
         # Rate limiting
         self.last_scrape_time = 0
@@ -131,8 +136,15 @@ class WikipediaScraperPlaywright:
             self._log("Browser already initialized, reusing...", level='debug')
             return
 
-        self._log("Initializing Playwright browser...")
+        if USE_SHARED_PLAYWRIGHT:
+            self._log("Initializing Playwright browser via shared manager...")
+            self._init_browser_shared()
+        else:
+            self._log("Initializing Playwright browser with local lifecycle...")
+            self._init_browser_local()
 
+    def _init_browser_shared(self):
+        """Initialize browser using shared manager."""
         try:
             # Get shared Playwright instance
             self.playwright = self.manager.get_playwright()
@@ -163,6 +175,36 @@ class WikipediaScraperPlaywright:
             self._cleanup_browser()
             raise
 
+    def _init_browser_local(self):
+        """Initialize browser using local lifecycle."""
+        try:
+            # Start Playwright locally
+            self.playwright = sync_playwright().start()
+
+            # Launch browser
+            headless = self.config.get('wikipedia_scraper', {}).get('headless', True)
+            self.browser = self.playwright.chromium.launch(headless=headless)
+
+            # Create context with viewport and user agent
+            self.context = self.browser.new_context(
+                viewport={'width': 1920, 'height': 1080},
+                user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+            )
+
+            # Set default timeout
+            timeout_ms = self.config.get('wikipedia_scraper', {}).get('timeout', 10) * 1000
+            self.context.set_default_timeout(timeout_ms)
+
+            # Create page
+            self.page = self.context.new_page()
+
+            self._log("Playwright browser initialized successfully with local lifecycle")
+
+        except Exception as e:
+            self._log(f"Browser initialization failed: {e}", level='error')
+            self._cleanup_browser()
+            raise
+
     def _cleanup_browser(self):
         """Clean up browser resources."""
         if self.page:
@@ -179,16 +221,32 @@ class WikipediaScraperPlaywright:
                 pass
             self.context = None
 
-        # Browser is managed by PlaywrightManager, not individual scrapers
-        # Only call manager.release() to decrement reference count
-        if self.playwright:
-            try:
-                self.manager.release()
-                self._log("Released shared browser reference", level='debug')
-            except:
-                pass
-            self.playwright = None
-            self.browser = None
+        if USE_SHARED_PLAYWRIGHT:
+            # Browser is managed by PlaywrightManager, not individual scrapers
+            # Only call manager.release() to decrement reference count
+            if self.playwright:
+                try:
+                    self.manager.release()
+                    self._log("Released shared browser reference", level='debug')
+                except:
+                    pass
+                self.playwright = None
+                self.browser = None
+        else:
+            if self.browser:
+                try:
+                    self.browser.close()
+                except:
+                    pass
+                self.browser = None
+
+            # Stop local Playwright instance
+            if self.playwright:
+                try:
+                    self.playwright.stop()
+                except:
+                    pass
+                self.playwright = None
 
     def _rate_limit(self):
         """Enforce minimum delay between scrapes."""

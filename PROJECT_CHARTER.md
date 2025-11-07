@@ -141,10 +141,10 @@ It exists to:
 
 **Session Start (Every Day)**
 
-1. Run: `./launch_NRW.sh`
-   - Pulls latest data from GitHub automation
-   - Shows status report (total movies, today's new releases)
-   - Starts local server on port 8000 (or 8001 if busy)
+1. Run: `./launch_all.sh` (choose option 1 for public site)
+   - Interactive menu with options for site, admin, YouTube, or all services
+   - Public site option starts server on port 8000 (or 8001 if busy)
+   - Note: For git pull and status report, run `./sync_daily_updates.sh` first
    - Opens browser automatically
 
 2. Read context files in order:
@@ -268,7 +268,7 @@ All API keys follow the 12-factor app pattern:
 - `OMDB_API_KEY` - OMDb API key (optional, for fallbacks)
 
 **Local Development:**
-See `config.yaml` for local development configuration. Copy `config.example.yaml` to `config.yaml` and add your API keys. Never commit `config.yaml` with real keys to version control.
+See `config.yaml` for local development configuration. Replace placeholder values (`your_tmdb_api_key_here`, `your_watchmode_api_key_here`) with your real API keys. Never commit `config.yaml` with real keys to version control.
 
 ### TMDB (The Movie Database)
 - **Sign up:** https://www.themoviedb.org/settings/api
@@ -387,7 +387,7 @@ The `watch_links` field in `data.json` uses a **three-category structure** repre
 - digital_date = first provider day from tracker; never "discovery date".
 
 ### AMENDMENT-032: Runtime vs Pipeline Hierarchy
-- Root: /index.html, /data.json, /assets/{app.js,styles.css}, /PROJECT_CHARTER.md, /PROJECT_LOG.md, /DAILY_CONTEXT.md, /launch_NRW.sh
+- Root: /index.html, /data.json, /assets/{app.js,styles.css}, /PROJECT_CHARTER.md, /PROJECT_LOG.md, /DAILY_CONTEXT.md, /launch_all.sh
 - Root scripts: {generate_data.py} (primary), {museum_legacy/legacy_movie_tracker.py} (historical reference)
 - Data and caches: /overrides/{wikipedia_overrides.json,rt_overrides.json}, /wikipedia_cache.json, /rt_cache.json, /movie_tracking.json
 - Ops: /ops/{archive_daily_context.sh,health_check.py}
@@ -460,7 +460,7 @@ When starting a new session, AI assistants should read these files in order:
 - ✅ `DAILY_CONTEXT.md` created (2025-10-15)
 - ✅ `diary/` directory established
 - ✅ `ops/archive_daily_context.sh` script operational
-- ✅ `launch_NRW.sh` references DAILY_CONTEXT.md in context reminders
+- ✅ `launch_all.sh` provides unified launcher for all NRW tools (supersedes launch_NRW.sh)
 - ⏳ AMENDMENT-021 update pending (remove complete_project_context.md requirement)
 
 **Why this amendment:** AMENDMENT-036 established the basic concept but lacked detail about the three-file loading pattern, token efficiency rationale, and complete workflow. This amendment provides comprehensive documentation for AI assistants and future maintainers.

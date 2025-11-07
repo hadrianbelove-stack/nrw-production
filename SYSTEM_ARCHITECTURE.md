@@ -2,7 +2,7 @@
 
 **Purpose**: This is the authoritative guide to how the NRW movie tracking system works. Read this document FIRST before diving into code or other documentation.
 
-**Last Updated**: 2025-11-05
+**Last Updated**: 2025-11-06
 **Maintained By**: Development Team
 
 ## 📖 Reading Order for AI Assistants
@@ -18,57 +18,68 @@ When analyzing this codebase, read in this order:
 
 ## ⚠️ Critical Sections
 
-- **Section 2**: Two-branch deployment strategy (explains Oct 25-Nov 5 failures)
+- **Section 2**: Branch strategy with single-branch daily workflow
 - **Section 5**: Enrichment-on-transition pattern (prevents 2+ hour runtimes)
 - **Section 8**: Common failure modes overview with links to detailed troubleshooting
 
 ---
 
-## 🔄 Two-Branch Deployment Strategy
+## 🔄 Branch Strategy
 
-### 2.1 Why It Exists
+### 2.1 Single-Branch Daily Workflow (Default)
 
-**Problem Solved**: Merge conflicts between automated bot commits and user development work.
+**Current Implementation**: The daily CI workflow operates on a single-branch model for simplicity.
 
-**Solution**: Separate branches for bot and user work:
-- `main`: User development and final production state
-- `automation-updates`: Bot commits (force-pushed daily)
+**Daily Workflow**:
+1. Checkout `main` branch
+2. Run daily pipeline directly on `main`
+3. Commit and push changes to `main`
 
 **Benefits**:
-- Bot always succeeds (no merge conflicts)
-- User maintains full control over what enters main
-- Clean separation of automated vs manual changes
+- Simplified workflow with no branch synchronization
+- Immediate updates to main branch
+- No merge conflicts between branches
 
-### 2.2 How It Works
+### 2.2 Optional Two-Branch Flow
+
+**When Used**: For special runs requiring isolation from main branch.
+
+**Setup**: Use `sync_daily_updates.sh --into-automation` to sync main into automation-updates branch.
 
 **Branch Roles**:
 - `main`: Source of truth, user development, production deployment
-- `automation-updates`: Disposable branch, bot commits only
+- `automation-updates`: Optional branch for special automation runs
 
-**Daily Sync Process**:
-1. Checkout `automation-updates`
-2. Sync latest changes from `main`
-3. Run data generation
-4. Commit and force-push results
+**Two-Branch Process** (when needed):
+1. Sync main → automation-updates
+2. Run automation on automation-updates
+3. Manually merge automation-updates → main
 
 **User Integration**:
 ```bash
-./sync_daily_updates.sh  # Merges automation-updates into main
+# For special runs only
+./sync_daily_updates.sh --into-automation  # Sync main into automation-updates
+# Run automation on automation-updates
+./sync_daily_updates.sh                    # Merge automation-updates into main
 ```
 
-### 2.3 Daily Workflow
+### 2.3 Current Daily Workflow
 
 ```bash
-# Bot workflow (automated)
+# Bot workflow (automated) - Single branch
+git checkout main
+python3 daily_orchestrator.py
+git add -A
+git commit -m "Daily update $(date)"
+git push origin main
+
+# Optional two-branch workflow (special cases)
 git checkout automation-updates
-git merge origin/main --no-edit  # Sync from main
+git merge origin/main --no-edit
 python3 daily_orchestrator.py
 git add -A
 git commit -m "Daily update $(date)"
 git push --force origin automation-updates
-
-# User workflow (manual)
-./sync_daily_updates.sh  # When ready to merge
 ```
 
 ### 2.4 Critical Failure Mode - Branch Divergence
@@ -228,6 +239,8 @@ Phase 5: User Display
 3. Streaming platform search
 4. TMDB recommendations
 5. Manual override files
+
+**Null-Link Policy**: When no real deep link is available, the backend returns `link: null` (no search fallbacks); the UI renders a disabled NOT AVAILABLE button.
 
 See [NRW_DATA_WORKFLOW_EXPLAINED.md](./NRW_DATA_WORKFLOW_EXPLAINED.md) for detailed data flow documentation.
 
@@ -396,29 +409,25 @@ See [NRW_DATA_WORKFLOW_EXPLAINED.md Section 2.1](./NRW_DATA_WORKFLOW_EXPLAINED.m
 **Schedule**: 10:00 AM UTC on Sundays
 **Trigger**: Also manual via workflow_dispatch
 
-**Process** (updated Nov 5, 2025 to match daily workflow):
-1. Checkout automation-updates branch
-2. Sync main → automation-updates (merge origin/main)
-3. Run `generate_data.py --full`
-4. Validate data quality
-5. Commit and force push to automation-updates
+**Process**:
+1. Checkout main branch
+2. Run `generate_data.py --full`
+3. Validate data quality
+4. Commit and push to main
 
 ### 6.3 Workflow Steps
 
-1. **Checkout Repository** - Get latest code
-2. **🔄 Sync Main to Automation Branch** - *Added Nov 5, 2025*
-3. **Setup Python 3.11** - Runtime environment
-4. **Install Dependencies** - pip install -r requirements.txt
-5. **Set API Keys** - From GitHub secrets
-6. **Run Data Generation** - python3 daily_orchestrator.py
-7. **Validate Results** - 5 validation checks
-8. **Commit Changes** - Git add/commit
-9. **Force Push** - To automation-updates branch
-10. **Report Status** - Success/failure notification
+1. **Checkout main** - Get latest main branch code
+2. **Setup Python 3.11** - Runtime environment
+3. **Install Dependencies** - pip install -r requirements.txt
+4. **Set API Keys** - From GitHub secrets
+5. **Run daily pipeline** - python3 daily_orchestrator.py
+6. **Validate Results** - 5 validation checks
+7. **Commit Changes** - Git add/commit
+8. **Commit & push to main** - Direct push to main branch
+9. **Report Status** - Success/failure notification
 
-**Key Addition**: Step 2 prevents branch divergence (root cause of Oct 25-Nov 5 failures)
-
-**Note**: Both daily and weekly workflows now use the same pattern (checkout automation-updates, sync main, run pipeline, commit) as of Nov 5, 2025. This ensures consistency and prevents branch divergence.
+**Simplified Workflow**: Single-branch approach eliminates sync complexity and branch divergence issues.
 
 ### 6.4 Why Force Push?
 

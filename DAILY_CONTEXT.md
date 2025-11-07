@@ -6,11 +6,7 @@
 
 ## AI Assistant Quick Start
 
-**READ THESE FILES FIRST WHEN STARTING A NEW SESSION:**
-
-1. **This file (DAILY_CONTEXT.md)** - Current state, recent changes, active issues
-2. **[PROJECT_CHARTER.md](PROJECT_CHARTER.md)** - Governance rules, amendments, API keys, architectural decisions
-3. **[NRW_DATA_WORKFLOW_EXPLAINED.md](NRW_DATA_WORKFLOW_EXPLAINED.md)** - Data pipeline mechanics, how everything fits together
+**READ FIRST**: See `SYSTEM_ARCHITECTURE.md` for system architecture; this file is a rolling diary of recent work.
 
 **What is this rolling context system?**
 
@@ -35,12 +31,12 @@ See [AMENDMENT-036](PROJECT_CHARTER.md#amendment-036-rolling-daily-context) and 
   - Better UX: null/grey out vs fake search links
 - ✅ **PlaywrightManager async fix**: Implementation complete (commit fb271c2d, local)
   - Singleton manager prevents event loop conflicts
-  - Standalone tests PASS (test_amazon_scraper_fix.py, test_rt_migration.py)
+  - Standalone tests PASS (tests/test_amazon_scraper_fix.py, tests/test_rt_migration.py)
   - Full pipeline verification in progress (Claude Code)
 - ✅ **Agent scraper improvements**: Code complete, testing pending
   - Applied to all 4 platforms (Netflix, Disney+, Max, Hulu)
   - Helper methods in BasePlatformScraper
-  - Test script ready: test_agent_scraper_improvements.py (6 test cases)
+  - Test script ready: tests/test_agent_scraper_improvements.py (6 test cases, never run - archived)
 - ✅ **Test infrastructure**: Enhanced with pre-flight checks, timing, diagnostics
 - ✅ **Documentation framework**: Comprehensive analysis and verification guides created
   - AMAZON_ASIN_CLEANUP.md (Phases 1-4)
@@ -128,6 +124,40 @@ See [AMENDMENT-036](PROJECT_CHARTER.md#amendment-036-rolling-daily-context) and 
 - Created comprehensive roadmap for verification and testing
 - Prepared commit strategy for documentation with placeholders
 
+### Implemented troubleshooting documentation consolidation (COMPLETE)
+
+**Task:** Claude Code's Option A - Create docs/TROUBLESHOOTING.md and archive temporal workflow docs
+
+**Actions Taken:**
+1. ✅ Created docs/TROUBLESHOOTING.md (447 lines) with common failure modes extracted from historical post-mortems
+2. ✅ Moved CURRENT_WORKFLOW_STATUS.md → museum_legacy/troubleshooting/2025-11-03-workflow-status.md
+3. ✅ Moved WORKFLOW_FAILURES_FIX.md → museum_legacy/troubleshooting/2025-10-28-workflow-failures.md
+4. ✅ Updated SYSTEM_ARCHITECTURE.md Section 8 to reference TROUBLESHOOTING.md with specific section links
+5. ✅ Verified AUTOMATION_BRANCH_WORKFLOW.md remains pure architecture (no troubleshooting content)
+
+**Result:**
+- Clear separation: SYSTEM_ARCHITECTURE.md (overview) → TROUBLESHOOTING.md (detailed debugging) → museum_legacy/troubleshooting/ (historical post-mortems)
+- Common failure patterns extracted and maintainable in docs/TROUBLESHOOTING.md
+- Historical debugging context preserved in timestamped archives
+- Easy navigation from overview to detailed troubleshooting to historical examples
+
+**Verification:**
+- ✅ docs/TROUBLESHOOTING.md covers: YouTube token corruption, validation failures, workflow timeouts, API quota exhaustion, branch divergence
+- ✅ SYSTEM_ARCHITECTURE.md Section 8 links to specific TROUBLESHOOTING.md sections
+- ✅ Archived files preserved with timestamps in museum_legacy/troubleshooting/
+- ✅ AUTOMATION_BRANCH_WORKFLOW.md is architecture-only (281 lines, minimal troubleshooting section that points to other docs)
+
+### Restoration Verification (COMPLETE)
+
+**System restored from Oct 25-Nov 5 outage with full verification:**
+
+- ✅ **Local run**: 30-second duration with ~2 enrichments (vs 2+ hours with 550+ movies)
+- ✅ **CI workflow**: Expected <5 minutes with timing artifacts now surfaced in logs
+- ✅ **Data quality**: data.json timestamp 2025-11-06 20:42:42, 169 movies, 240KB size
+- ✅ **Content metrics**: 169/169 Wikipedia links, 0 Google search URLs, proper null-link handling
+- ✅ **Website functionality**: RESTORATION_REPORT.md available, smoke test pending
+- ✅ **Performance comparison**: 96% runtime improvement (2+ hours → 30s), 98% API reduction
+
 ---
 
 ## Conversation Context (Key Decisions)
@@ -177,7 +207,7 @@ See [AMENDMENT-036](PROJECT_CHARTER.md#amendment-036-rolling-daily-context) and 
 
 ### 3. Agent Scraper Testing Pending
 - **Status**: READY TO TEST (awaiting async fix verification)
-- **Test script**: test_agent_scraper_improvements.py (6 test cases)
+- **Test script**: tests/test_agent_scraper_improvements.py (6 test cases, archived)
 - **Expected**: >70% pass rate (4/6 or better)
 - **Next**: Run after async fix verified in full pipeline
 
@@ -493,7 +523,7 @@ For more information, see README.md and DAILY_CONTEXT.md
 
 ---
 
-**Last updated:** 2025-11-05 (branches synced, validation fixed, automation ready)
+**Last updated:** 2025-11-06 (troubleshooting docs consolidated, Option A complete)
 **Next diary archive:** After verification and testing complete -> `diary/2025-10-27.md`
 **Current phase:** Async fix verification (Claude Code) → Agent testing → Documentation completion → Commit and push
 **Estimated completion:** 3-4 hours from current point

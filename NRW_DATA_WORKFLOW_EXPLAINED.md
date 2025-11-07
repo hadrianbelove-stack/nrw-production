@@ -281,10 +281,14 @@ python3 admin.py
 
 **Current System:** `daily_orchestrator.py` is the production automation script (runs `generate_data.py --discover` for discovery)
 
-**Legacy Systems (Archived):**
-- `daily_update.sh` - Shell script predecessor to `daily_orchestrator.py`
-- `movie_tracker.py` - Original discovery/monitoring system, superseded by `generate_data.py --discover`
-- Both archived in `museum_legacy/` directory for historical reference
+**Deprecated Systems (Stubs in Root for User Experience):**
+- `movie_tracker.py` - Deprecation stub that provides helpful error message and redirects to `generate_data.py --discover`
+- `daily_update.sh` - Deprecation stub that provides helpful error message and redirects to `daily_orchestrator.py`
+- These stubs remain in root to catch old commands and guide users to the new system
+
+**Legacy Implementations (Archived in museum_legacy/):**
+- `legacy_movie_tracker.py` - Original discovery/monitoring implementation
+- `daily_update.sh` - Original shell script automation implementation
 - See PROJECT_CHARTER.md AMENDMENT-025 for migration documentation
 
 **🔍 `ops/health_check.py`** - *The Quality Inspector*
