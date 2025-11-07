@@ -1,32 +1,25 @@
 #!/bin/bash
-cd ~/Downloads/nrw-production || exit 1
+# DEPRECATED: daily_update.sh has been replaced by daily_orchestrator.py
+#
+# This file is maintained only as a stub to redirect users to the new daily automation system.
+# The legacy implementation has been moved to museum_legacy/daily_update.sh for reference.
 
-echo "=== NRW Daily Update - $(date) ==="
-python movie_tracker.py daily
+echo "❌ DEPRECATED: daily_update.sh is no longer supported"
+echo ""
+echo "The daily update functionality has been integrated into the production orchestration system."
+echo "Please use the following command instead:"
+echo ""
+echo "  For complete daily pipeline:"
+echo "    python3 daily_orchestrator.py"
+echo ""
+echo "  For manual steps:"
+echo "    python3 generate_data.py --discover  # Discovery + monitoring"
+echo "    python3 generate_data.py             # Data enrichment"
+echo ""
+echo "The legacy implementation is available at:"
+echo "    museum_legacy/daily_update.sh"
+echo ""
+echo "For more information, see README.md and NRW_DATA_WORKFLOW_EXPLAINED.md"
 
-# echo "Updating Rotten Tomatoes data..."
-# python update_rt_data.py  # ARCHIVED - RT scraping now automatic in generate_data.py
-
-# python date_verification.py  # ARCHIVED - date_verification.py moved to museum_legacy/
-python generate_data.py
-
-echo "=== Summary ==="
-python -c "
-import json
-d = json.load(open('movie_tracking.json'))
-tracking = len([m for m in d['movies'].values() if m['status']=='tracking'])
-digital = len([m for m in d['movies'].values() if m['status']=='available'])
-total = len(d['movies'])
-print(f'Total tracked: {total}')
-print(f'Still tracking: {tracking}')
-print(f'Now digital: {digital}')
-"
-
-if git diff --quiet movie_tracking.json data.json; then
-    echo "No changes to commit"
-else
-    git add -A
-    git commit -m "Daily update - $(date +%Y-%m-%d)"
-    git push
-    echo "Changes committed"
-fi
+# Exit with error code to indicate deprecation
+exit 1
