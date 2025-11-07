@@ -2,7 +2,8 @@
 
 **Purpose:** Canonical tactical planning document for tracking problems, solutions, and implementation status across AI sessions.
 
-**Last Updated:** 2025-10-24
+**Last Updated:** 2025-11-06
+**Next Review:** 2025-11-10
 
 **Companion Document:** `PROJECT_CHARTER.md` (constitutional rules and governance)
 
@@ -13,40 +14,6 @@
 - **Relationship to Log:** `PROJECT_LOG.md` records what happened; this roadmap tracks what's planned
 
 ## Critical Issues (Block Core Functionality)
-
-### CRITICAL-001: Bootstrap Date Inaccuracy
-**Status:** ✅ RESOLVED (2025-10-22)
-
-**Problem:** 50+ movies in `movie_tracking.json` have `digital_date: 2025-09-06` (bootstrap discovery date) instead of actual digital release dates.
-
-**Impact:** Timeline inaccuracy, user confusion, defeats chronological tracking purpose.
-
-**Evidence:**
-- `movie_tracking.json` lines 118, 264, 682, 731, 914, 960, 1046, 1124, etc.
-- `museum_legacy/legacy_movie_tracker.py` line 362: `movie['digital_date'] = datetime.now().isoformat()[:10]`
-- Affects movies with Aug 2025 premiere dates showing Sept 6 digital dates
-
-**Solution Decided:** Metadata flagging + manual correction tools (hybrid approach)
-- Flag bootstrap movies with `bootstrap_date: true`
-- Display visual indicator on frontend ("~" prefix or tooltip)
-- Provide admin tools for manual correction
-- Document limitation in charter (AMENDMENT-049)
-
-**Implementation:**
-- ✅ Created `scripts/flag_bootstrap_dates.py` (one-time flagging)
-- ✅ Modified `generate_data.py` to propagate bootstrap flag
-- ✅ Updated `assets/app.js` for visual indicator
-- ✅ Enhanced `admin.py` to show bootstrap movies
-- ✅ Implemented `date_verification.py` for manual corrections
-- ✅ Added AMENDMENT-049 to charter
-
-**Dependencies:** None
-
-**Related Tickets:** Phase 0de446c5
-
-**Decision Log:**
-- 2025-10-22: Chose metadata flagging over full retroactive correction
-- Rationale: Reelgood scraping unreliable, manual research time-prohibitive, transparency preferred over hiding data
 
 ### CRITICAL-002: Discovery System Validation
 **Status:** ⏳ PENDING - Awaiting valid test environment (not blocked by discovery issues)
@@ -59,12 +26,44 @@
 
 **Note (2025-10-24):** Previous test attempt failed due to TMDB API key configuration error in the test environment, not discovery system issues. The discovery system was never actually tested because the script crashed during initialization (line 179 of generate_data.py). See CRITICAL-003 test invalidation notice (lines 114-127) for full details on the configuration error.
 
+**Validation Plan:**
+- Set TMDB key via env/secret
+- Run `generate_data.py --discover` for a 7–14 day window
+- Confirm N new tracking entries with `digital_date: null` and `status: tracking`
+- Run `--check` to see 1–10 transitions/day with providers
+- Acceptance criteria: ≥80% of known premieres recorded within 48h, transitions detected within 24–48h
+- Owner: TBD
+- Due date: TBD
+
 **Solution Decided:** [Handled in separate validation ticket]
 
 **Dependencies:** Blocks future data accuracy
 
+### CRITICAL-004: Daily Automation Failures (Oct 25–Nov 5)
+**Status:** 🟡 RECOVERING
+
+**Timeline:**
+- Oct 25 failures begin
+- 10 consecutive failures
+- Nov 5 fixes
+- Nov 6 recovery
+
+**Root Causes:**
+- Branch divergence
+- Strict 7-day validation
+- data.json schema bug
+- Playwright CI lifecycle issues
+
+**Resolution:**
+- Auto or simplified single-branch workflow
+- 14-day window + 30-day fallback
+- Schema validation
+- Optional per-scraper Playwright lifecycle
+
+**Dependencies:** Monitor through Nov 10
+
 ### CRITICAL-003: Watch Links Broken - Watchmode API Issue
-**Status:** ✅ RESOLVED (2025-10-24) - Multi-phase optimization completed
+**Status:** 🔴 ACTIVE - Watchmode quota exhausted, scrapers failing in CI
 
 **Problem:** 100% of watch links in `data.json` are Google search fallbacks. No deep links for rent/buy/streaming.
 
@@ -101,12 +100,17 @@
    - Graceful degradation without system failure
    - Result: System remains operational even when quota exhausted
 
-**✅ Final System Status:**
-- Provider monitoring: Restored and operational (checks 1,889 tracking movies daily)
-- Enrichment optimization: 99.4% cache efficiency (318/320 movies cached)
-- Quota management: Watchmode quota tracking active, auto-resets Nov 1st
-- Watch links: 100% coverage (318/318 movies have at least one link)
-- Performance: Data generation in 30 seconds (96% faster than before)
+**Current State (2025-11-06):**
+- Low non-null deep-link coverage
+- Null links are expected when no deep link exists (no Google fallbacks)
+- Watchmode quota may not have reset
+- Platform/agent scrapers unreliable in CI
+
+**Action Plan:**
+- Restore baseline coverage via platform scrapers
+- Verify Watchmode usage and monthly reset
+- Keep null policy and measure `has_real_watch_link` coverage
+- Add a CI guard that fails on `google.com/search` links
 
 **Dependencies:** ✅ COMPLETE - No blockers remain
 
@@ -139,7 +143,9 @@ The original test invalidation notice from 2025-10-24 regarding TMDB API configu
 - [ ] Update DAILY_CONTEXT.md with corrected test results
 
 **Success Criteria:**
-- At least 50% of movies have real deep links (not Google search)
+- Coverage is the number of movies where any watch_links category contains a non-null deep link (excluding search URLs)
+- Reference the `has_real_watch_link()` predicate for measurement
+- UI renders NOT AVAILABLE for nulls
 - Watchmode API returns 200 OK with data OR agent scraper successfully finds links
 - `watchmode_successes` statistic > 0 after regeneration
 
@@ -155,110 +161,6 @@ The original test invalidation notice from 2025-10-24 regarding TMDB API configu
 **Evidence:** `admin.py` lines 15-18 (old code, may have been fixed in Oct 19-20 redesign)
 
 **Solution Decided:** [TBD - verify if still an issue after Oct 19-20 admin panel redesign]
-
-**Dependencies:** None
-
-**Related Tickets:** Phase 55710381
-
-### HIGH-002: Newsletter Export Not Implemented
-**Status:** ✅ COMPLETE (Verified 2025-10-23)
-
-**Problem:** No active newsletter generator. Legacy template exists in `museum_legacy/generate_substack.py` but not integrated.
-
-**Impact:** Cannot export weekly newsletter for distribution.
-
-**Evidence:** User requirement from initial conversation
-
-**Solution Decided:** Create standalone `generate_newsletter.py` script
-- Read `data.json` and `admin/movie_reviews.json`
-- Filter movies by configurable date range (default 7 days)
-- Group by streaming platform (not genre)
-- Feature reviewed movies prominently in Hero Review section
-- Generate 3 formats: markdown (Substack), HTML (email), plain text (quick share)
-- Sections: Hero Review, This Week's Highlights, By Platform, Quick List
-- CLI with `--days`, `--format`, `--output-dir` arguments
-
-**Implementation:**
-- ✅ Created `generate_newsletter.py` with NewsletterGenerator class (542 lines)
-- ✅ Implemented date filtering and review integration
-- ✅ Implemented platform grouping logic with normalization
-- ✅ Implemented markdown formatter (Substack-ready)
-- ✅ Implemented HTML formatter (email-friendly with inline styles)
-- ✅ Implemented plain text formatter (simple list)
-- ✅ Added CLI with configurable parameters (--days, --format, --output-dir)
-- ✅ Added error handling for missing files/data
-- 🔧 Bug fix: Changed `review_text` to `review` (lines 225, 226, 241, 242, 305, 306, 323, 324, 390, 391, 406, 407)
-- ✅ Testing completed (2025-10-23)
-
-**Testing Results (2025-10-23):**
-
-**Functional Testing:**
-- ✅ Script runs without errors
-- ✅ All 3 formats generated successfully
-- ✅ CLI flags work correctly (--days, --format, --output-dir)
-- ✅ Graceful degradation for missing reviews file
-- ✅ Error handling for missing data.json
-- ✅ Date filtering works correctly
-
-**Output Quality:**
-- ✅ Markdown: Well-formatted, valid syntax, all sections present
-- ✅ HTML: Email-compatible, inline styles, visually appealing
-- ✅ Plain Text: Readable, clear hierarchy, suitable for email
-
-**Review Integration:**
-- ⚠️ Bug found: Field name mismatch (`review_text` vs `review`)
-- ✅ After fix: Reviews appear correctly in all formats
-- ✅ Hero Review selection works (featured flag priority)
-- ✅ Highlights section shows review excerpts
-- ✅ Truncation works correctly (200 chars)
-
-**Platform Grouping:**
-- ✅ Provider normalization works ("Amazon Video" → "Amazon Prime Video")
-- ✅ Movies grouped correctly by platform
-- ✅ Platforms sorted by movie count
-- ✅ Up to 5 movies per platform displayed
-
-**Edge Cases:**
-- ✅ Empty reviews file handled gracefully
-- ✅ No movies in date range handled correctly
-- ✅ Special characters in reviews display correctly
-- ✅ Long reviews truncated properly
-
-**Success Criteria Met:**
-- ✅ Can generate newsletter in 3 formats
-- ✅ Reviews integrate correctly (after bug fix)
-- ✅ Platform grouping works
-- ✅ CLI interface functional
-- ✅ Output quality is professional
-
-**Dependencies:** ✅ Review system complete (HIGH-003)
-
-**Related Tickets:** Phase 67e99799
-
-### HIGH-003: Review System Missing
-**Status:** ✅ RESOLVED (2025-10-22)
-
-**Problem:** No UI to add custom reviews for newsletter content.
-
-**Impact:** Cannot create editorial content for newsletter.
-
-**Evidence:** `admin.py` line 18 references `REVIEWS_FILE` but no UI exists
-
-**Solution Decided:** Implement review system following admin override pattern
-- Create `admin/movie_reviews.json` with rich schema (text, author, rating, newsletter flag)
-- Add review UI to admin panel template (textarea, metadata fields, save/delete buttons)
-- Implement `/update-review` and `/delete-review` routes in `admin.py`
-- Load reviews in `generate_data.py` and include in movie display data
-- Add JavaScript handlers for review CRUD operations
-
-**Implementation:**
-- ✅ Created `admin/movie_reviews.json` schema
-- ✅ Added review UI to admin panel template
-- ✅ Implemented backend routes for review CRUD
-- ✅ Integrated reviews into data generation pipeline
-- ✅ Added JavaScript handlers for review operations
-- ✅ Added review statistics to admin panel header
-- ✅ Added review filter button
 
 **Dependencies:** None
 
@@ -587,7 +489,8 @@ The original test invalidation notice from 2025-10-24 regarding TMDB API configu
 |----|-------|----------|--------|--------|
 | CRITICAL-001 | Bootstrap dates | 🔴 Critical | ✅ Resolved | Timeline accuracy |
 | CRITICAL-002 | Discovery validation | 🔴 Critical | ⏳ Pending | Future data |
-| CRITICAL-003 | Watch links broken | 🔴 Critical | 🔴 Blocked | User experience |
+| CRITICAL-003 | Watch links broken | 🔴 Critical | 🔴 Active | User experience |
+| CRITICAL-004 | Daily automation failures | 🔴 Critical | 🟡 Recovering | Stability & coverage |
 | HIGH-001 | Admin panel paths | 🟠 High | ⏸️ Deferred | Admin tool |
 | HIGH-002 | Newsletter export | 🟠 High | ✅ Complete | User requirement |
 | HIGH-003 | Review system | 🟠 High | ✅ Resolved | Newsletter content |
@@ -617,6 +520,8 @@ The original test invalidation notice from 2025-10-24 regarding TMDB API configu
 
 ## Notes for Future Sessions
 
+**Branch Strategy:** Daily CI runs on `main` (single-branch) or, if using a two-branch model, ensure automation-updates is synced from `main` before runs (see SYSTEM_ARCHITECTURE.md §2). Use `./sync_daily_updates.sh` to sync when needed.
+
 **Known Limitations:**
 - GitHub Actions blocked (account flagged, support ticket filed)
 - Reelgood scraping unreliable (authentication barriers)
@@ -644,7 +549,106 @@ The original test invalidation notice from 2025-10-24 regarding TMDB API configu
 - Should bootstrap movies be hidden from public display or shown with indicator?
   - **Decision:** Show with indicator (transparency preferred)
 
+## Resolved Issues
+
+### CRITICAL-001: Bootstrap Date Inaccuracy
+**Status:** ✅ RESOLVED (2025-10-22)
+
+**Problem:** 50+ movies in `movie_tracking.json` have `digital_date: 2025-09-06` (bootstrap discovery date) instead of actual digital release dates.
+
+**Impact:** Timeline inaccuracy, user confusion, defeats chronological tracking purpose.
+
+**Evidence:**
+- `movie_tracking.json` lines 118, 264, 682, 731, 914, 960, 1046, 1124, etc.
+- `museum_legacy/legacy_movie_tracker.py` line 362: `movie['digital_date'] = datetime.now().isoformat()[:10]`
+- Affects movies with Aug 2025 premiere dates showing Sept 6 digital dates
+
+**Solution Decided:** Metadata flagging + manual correction tools (hybrid approach)
+- Flag bootstrap movies with `bootstrap_date: true`
+- Display visual indicator on frontend ("~" prefix or tooltip)
+- Provide admin tools for manual correction
+- Document limitation in charter (AMENDMENT-049)
+
+**Implementation:**
+- ✅ Created `scripts/flag_bootstrap_dates.py` (one-time flagging)
+- ✅ Modified `generate_data.py` to propagate bootstrap flag
+- ✅ Updated `assets/app.js` for visual indicator
+- ✅ Enhanced `admin.py` to show bootstrap movies
+- ✅ Implemented `date_verification.py` for manual corrections
+- ✅ Added AMENDMENT-049 to charter
+
+**Dependencies:** None
+
+**Related Tickets:** Phase 0de446c5
+
+**Decision Log:**
+- 2025-10-22: Chose metadata flagging over full retroactive correction
+- Rationale: Reelgood scraping unreliable, manual research time-prohibitive, transparency preferred over hiding data
+
+### HIGH-002: Newsletter Export Not Implemented
+**Status:** ✅ COMPLETE (Verified 2025-10-23)
+
+**Problem:** No active newsletter generator. Legacy template exists in `museum_legacy/generate_substack.py` but not integrated.
+
+**Impact:** Cannot export weekly newsletter for distribution.
+
+**Evidence:** User requirement from initial conversation
+
+**Solution Decided:** Create standalone `generate_newsletter.py` script
+- Read `data.json` and `admin/movie_reviews.json`
+- Filter movies by configurable date range (default 7 days)
+- Group by streaming platform (not genre)
+- Feature reviewed movies prominently in Hero Review section
+- Generate 3 formats: markdown (Substack), HTML (email), plain text (quick share)
+- Sections: Hero Review, This Week's Highlights, By Platform, Quick List
+- CLI with `--days`, `--format`, `--output-dir` arguments
+
+**Implementation:**
+- ✅ Created `generate_newsletter.py` with NewsletterGenerator class (542 lines)
+- ✅ Implemented date filtering and review integration
+- ✅ Implemented platform grouping logic with normalization
+- ✅ Implemented markdown formatter (Substack-ready)
+- ✅ Implemented HTML formatter (email-friendly with inline styles)
+- ✅ Implemented plain text formatter (simple list)
+- ✅ Added CLI with configurable parameters (--days, --format, --output-dir)
+- ✅ Added error handling for missing files/data
+- 🔧 Bug fix: Changed `review_text` to `review` (lines 225, 226, 241, 242, 305, 306, 323, 324, 390, 391, 406, 407)
+- ✅ Testing completed (2025-10-23)
+
+**Dependencies:** ✅ Review system complete (HIGH-003)
+
+**Related Tickets:** Phase 67e99799
+
+### HIGH-003: Review System Missing
+**Status:** ✅ RESOLVED (2025-10-22)
+
+**Problem:** No UI to add custom reviews for newsletter content.
+
+**Impact:** Cannot create editorial content for newsletter.
+
+**Evidence:** `admin.py` line 18 references `REVIEWS_FILE` but no UI exists
+
+**Solution Decided:** Implement review system following admin override pattern
+- Create `admin/movie_reviews.json` with rich schema (text, author, rating, newsletter flag)
+- Add review UI to admin panel template (textarea, metadata fields, save/delete buttons)
+- Implement `/update-review` and `/delete-review` routes in `admin.py`
+- Load reviews in `generate_data.py` and include in movie display data
+- Add JavaScript handlers for review CRUD operations
+
+**Implementation:**
+- ✅ Created `admin/movie_reviews.json` schema
+- ✅ Added review UI to admin panel template
+- ✅ Implemented backend routes for review CRUD
+- ✅ Integrated reviews into data generation pipeline
+- ✅ Added JavaScript handlers for review operations
+- ✅ Added review statistics to admin panel header
+- ✅ Added review filter button
+
+**Dependencies:** None
+
+**Related Tickets:** Phase 55710381
+
 ---
 
-**Last Updated:** 2025-10-24
-**Next Review:** After discovery validation (CRITICAL-002)
+**Last Updated:** 2025-11-06
+**Next Review:** 2025-11-10
