@@ -11,6 +11,11 @@ display:
 tracking:
   bootstrap_days: 7  # Look back N days for new releases
   check_interval_hours: 24  # How often to check
+  poll_all_tracking: true  # Poll all tracking movies (production requirement)
+  archive_available_on_detect: false  # Archive available movies to separate file (experimental)
+  compaction_batch_size: 50  # Maximum entries to move per compaction run
+  compaction_recent_days: null  # Only compact entries from last N days (null = no age limit)
+  excluded_services: ['fuboTV', 'Philo']  # Services to exclude from watch provider results
   
 discovery:
   days_back: 14  # Discovery window for finding new premieres (expanded to catch more releases)
@@ -22,15 +27,16 @@ discovery:
   enable_pass_b: true  # Enable Pass B: Theatrical releases (primary_release_date)
 
 api:
-  # ⚠️ SECURITY WARNING: Replace these placeholder values with real keys for local development
-  # Production environments MUST use environment variables:
-  #   - TMDB_API_KEY (overrides tmdb_api_key below)
-  #   - WATCHMODE_API_KEY (overrides watchmode_api_key below)
+  # ⚠️ SECURITY: API keys moved to environment variables for security
+  # Set these environment variables for local development and production:
+  #   - TMDB_API_KEY (required) - Get from https://www.themoviedb.org/settings/api
+  #   - WATCHMODE_API_KEY (required) - Get from https://api.watchmode.com/
+  #   - OMDB_API_KEY (optional, for fallbacks)
   # See PROJECT_CHARTER.md "API Keys & External Services" for details
 
-  tmdb_api_key: "99b122ce7fa3e9065d7b7dc6e660772d"  # Get from https://www.themoviedb.org/settings/api
-  watchmode_api_key: "bBMpVr31lRfUsSFmgoQp0jixDrQt8DIKCVg7EFdp"  # Get from https://api.watchmode.com/
-  omdb_api_key: "8eb019b"  # OMDb API key (optional, for fallbacks)
+  # tmdb_api_key: ""  # REMOVED: Use TMDB_API_KEY environment variable
+  # watchmode_api_key: ""  # REMOVED: Use WATCHMODE_API_KEY environment variable
+  # omdb_api_key: ""  # REMOVED: Use OMDB_API_KEY environment variable
   tmdb_rate_limit: 0.1  # Seconds between API calls
   max_retries: 3
   max_pages_bootstrap: 49  # Maximum pages to fetch for bootstrap operation

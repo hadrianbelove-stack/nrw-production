@@ -172,7 +172,30 @@ class DataGenerator:
         self.rt_scraper = None  # Lazy initialization for RT scraping with Playwright
         self.wikipedia_scraper = None  # Lazy initialization for Wikipedia scraping with Playwright
         self.platform_scraper = None  # Lazy initialization for streaming platform scraper
-    
+
+    def get_excluded_services(self):
+        """Get excluded services list from config with defaults.
+
+        Returns:
+            list: List of services to exclude from provider data
+        """
+        return self.config.get('tracking', {}).get('excluded_services', ['fuboTV', 'Philo'])
+
+    def is_excluded_service(self, service_name):
+        """Check if a service should be excluded from provider data.
+
+        Args:
+            service_name (str): Name of the service to check
+
+        Returns:
+            bool: True if service should be excluded, False otherwise
+        """
+        if not service_name:
+            return False
+        service_lower = service_name.lower()
+        excluded_services = self.get_excluded_services()
+        return any(excluded.lower() in service_lower for excluded in excluded_services)
+
     def load_config(self):
         """Load configuration from config.yaml and environment variables"""
         config = {}
@@ -690,20 +713,12 @@ class DataGenerator:
                          'Google Play Movies', 'Google Play', 'Microsoft Store']
 
         # Services to exclude from the database (niche/low-quality services)
-        EXCLUDED_SERVICES = ['fuboTV', 'Philo']
-
-
-        def is_excluded_service(service_name):
-            """Check if a service should be excluded"""
-            if not service_name:
-                return False
-            service_lower = service_name.lower()
-            return any(excluded.lower() in service_lower for excluded in EXCLUDED_SERVICES)
+        # Use centralized helper methods
 
         def select_best_service(service_list, priority_list):
             """Select best service from list based on priority, filtering out excluded services"""
             # Filter out excluded services first
-            filtered_services = [s for s in service_list if not is_excluded_service(s)]
+            filtered_services = [s for s in service_list if not self.is_excluded_service(s)]
 
             if not filtered_services:
                 return None
@@ -762,7 +777,7 @@ class DataGenerator:
                                 continue
 
                             # Skip excluded services
-                            if is_excluded_service(service_name):
+                            if self.is_excluded_service(service_name):
                                 continue
 
                             if source_type == 'sub' and not skip_streaming:
@@ -1617,13 +1632,25 @@ class DataGenerator:
         return new_movies_added
 
     def check_tracking_movies(self, max_to_check=None, priority_days=180):
-        """Check tracking movies for provider availability (monitoring component)
+        """
+        CHANGE DETECTION INVARIANT: This function MUST poll ALL tracking movies to maintain
+        data integrity. Any missing polls could result in permanently missed transitions
+        from 'tracking' to 'available' status, breaking the change detection system.
+
+        Pure change detection: Compare current TMDB providers with our previous DB state.
+        On first appearance, set `digital_date = today` and `status = available`.
+        No reliance on external 'digital release' dates. No fixed polling windows;
+        we prioritize recent titles but do not skip older ones.
+
+        Check tracking movies for provider availability (monitoring component)
 
         Checks movies in 'tracking' status to see if they have gotten digital releases
         by querying TMDB watch/providers API. Updates status to 'available' when providers found.
 
         Args:
             max_to_check: Maximum number of movies to check (None = all)
+                         WARNING: FOR TESTING/DIAGNOSTICS ONLY. Production must always poll
+                         ALL tracking movies to maintain "Always poll ALL tracking" invariant.
             priority_days: Prioritize movies released within this many days (default 180)
 
         Returns:
@@ -1631,6 +1658,21 @@ class DataGenerator:
         """
         import random
         import requests
+        import os
+
+        # Load poll_all_tracking configuration
+        poll_all_tracking = self.config.get('tracking', {}).get('poll_all_tracking', True)
+
+        # Production safety guard: Prevent max_to_check in production
+        if max_to_check is not None:
+            nrw_env = os.getenv('NRW_ENV', '').lower()
+            if nrw_env == 'production':
+                self.logger.error(f"⚠️  PRODUCTION VIOLATION: max_to_check={max_to_check} parameter is forbidden in production")
+                self.logger.error(f"   Production MUST always poll ALL tracking movies to maintain data integrity")
+                raise ValueError("max_to_check parameter violates 'Always poll ALL tracking' production invariant")
+            elif poll_all_tracking:
+                self.logger.warning(f"⚠️  poll_all_tracking is enabled but max_to_check={max_to_check} specified - ignoring limit")
+                max_to_check = None
 
         # Load tracking database
         if not os.path.exists('movie_tracking.json'):
@@ -1663,6 +1705,7 @@ class DataGenerator:
         tracking_movies.sort(key=get_sort_key, reverse=True)
 
         # Apply priority window if specified
+        # Prioritization only; older titles are always included after the priority queue.
         if priority_days:
             cutoff_date = datetime.now() - timedelta(days=priority_days)
             priority_movies = []
@@ -1686,9 +1729,10 @@ class DataGenerator:
             tracking_movies = priority_movies + older_movies
             print(f"  Priority queue (last {priority_days} days): {len(priority_movies)} movies")
             print(f"  Older movies: {len(older_movies)} movies")
+            print(f"  Note: Both priority and older titles will be processed in the same run")
 
-        # Limit if max_to_check specified
-        if max_to_check:
+        # Limit if max_to_check specified (only when poll_all_tracking is false)
+        if max_to_check and not poll_all_tracking:
             tracking_movies = tracking_movies[:max_to_check]
             print(f"  Limiting check to first {len(tracking_movies)} movies")
 
@@ -1751,24 +1795,17 @@ class DataGenerator:
                     buy_providers = us.get('buy', [])
                     stream_providers = us.get('flatrate', [])
 
-                    # Extract provider names (defined in get_watch_links for consistency)
-                    EXCLUDED_SERVICES = ['fuboTV', 'Philo']
-
-                    def is_excluded_service(service_name):
-                        """Check if a service should be excluded"""
-                        if not service_name:
-                            return False
-                        service_lower = service_name.lower()
-                        return any(excluded.lower() in service_lower for excluded in EXCLUDED_SERVICES)
-
-                    rent_names = [p.get('provider_name', '') for p in rent_providers if not is_excluded_service(p.get('provider_name', ''))]
-                    buy_names = [p.get('provider_name', '') for p in buy_providers if not is_excluded_service(p.get('provider_name', ''))]
-                    stream_names = [p.get('provider_name', '') for p in stream_providers if not is_excluded_service(p.get('provider_name', ''))]
+                    # Extract provider names (using centralized excluded services helper)
+                    rent_names = [p.get('provider_name', '') for p in rent_providers if not self.is_excluded_service(p.get('provider_name', ''))]
+                    buy_names = [p.get('provider_name', '') for p in buy_providers if not self.is_excluded_service(p.get('provider_name', ''))]
+                    stream_names = [p.get('provider_name', '') for p in stream_providers if not self.is_excluded_service(p.get('provider_name', ''))]
 
                     # Check if ANY providers exist (after filtering out excluded services)
                     has_providers = bool(rent_names or buy_names or stream_names)
 
                     if has_providers and movie['status'] == 'tracking':
+                        # Status-only lifecycle: Change status to exclude from future polls
+                        # (status != 'tracking' means no longer monitored for availability)
                         movie['status'] = 'available'
                         movie['digital_date'] = datetime.now().strftime('%Y-%m-%d')
                         movie['providers'] = {
@@ -1787,12 +1824,13 @@ class DataGenerator:
 
                 # Incremental save every 100 movies
                 if checked % 100 == 0:
-                    with open('movie_tracking.json', 'w') as f:
-                        json.dump(db, f, indent=2)
-                    print(f"  💾 Progress saved (batch {checked//100})")
+                    if self.atomic_write_json(db, 'movie_tracking.json'):
+                        print(f"  💾 Progress saved (batch {checked//100})")
+                    else:
+                        print(f"  ⚠️ Progress save failed (batch {checked//100})")
 
                 # Rate limiting
-                time.sleep(0.2)
+                time.sleep(self.config.get('api', {}).get('tmdb_rate_limit', 0.25))
 
         except Exception as e:
             self.logger.error(f"Unexpected error during provider checking: {e}")
@@ -1800,16 +1838,61 @@ class DataGenerator:
             print(f"  Processed {checked}/{total_to_check} movies before error")
         finally:
             # Always save database before exiting
-            try:
-                with open('movie_tracking.json', 'w') as f:
-                    json.dump(db, f, indent=2)
+            if self.atomic_write_json(db, 'movie_tracking.json'):
                 print(f"  💾 Final database save completed")
-            except Exception as save_error:
-                self.logger.error(f"Failed to save database: {save_error}")
-                print(f"  ❌ Failed to save database: {save_error}")
+            else:
+                print(f"  ❌ Failed to save database")
 
-        print(f"\n✅ Provider check complete: Found {newly_digital} newly digital movies out of {checked} checked ({failed} failed)")
-        self.logger.info(f"Provider check complete: {newly_digital} newly digital, {checked} checked, {failed} failed")
+        # Generate completion message with full-scan indicator
+        if poll_all_tracking:
+            scan_tag = " (full scan, no limits)"
+        else:
+            scan_tag = ""
+
+        completion_msg = f"Polled {checked} tracking movies, found {newly_digital} changes{scan_tag}. {failed} failed."
+        print(f"\n✅ {completion_msg}")
+        self.logger.info(completion_msg)
+
+        # Emit standardized metrics line for CI parsing
+        print(f"Polled {checked} movies, {newly_digital} changes detected{scan_tag}")
+        self.logger.info(f"Polled {checked} movies, {newly_digital} changes detected{scan_tag}")
+
+        # Incremental compaction: move available movies to archive
+        if self.config.get('tracking', {}).get('archive_available_on_detect', False):
+            batch_size = self.config.get('tracking', {}).get('compaction_batch_size', 50)
+            recent_days = self.config.get('tracking', {}).get('compaction_recent_days')
+
+            # Collect all available movies with digital_date
+            available_movies = []
+            for movie_id, movie in db['movies'].items():
+                if (movie.get('status') == 'available' and
+                    movie.get('digital_date')):
+                    try:
+                        digital_date = datetime.strptime(movie['digital_date'], '%Y-%m-%d')
+                        available_movies.append((movie_id, movie, digital_date))
+                    except:
+                        pass
+
+            # Filter by age if compaction_recent_days is set
+            if recent_days is not None:
+                recent_cutoff = datetime.now() - timedelta(days=recent_days)
+                available_movies = [(mid, m, d) for mid, m, d in available_movies
+                                   if d >= recent_cutoff]
+
+            # Sort by digital_date descending (most recent first)
+            available_movies.sort(key=lambda x: x[2], reverse=True)
+
+            # Take up to batch_size entries for archival
+            to_archive = {}
+            for movie_id, movie, _ in available_movies[:batch_size]:
+                to_archive[movie_id] = movie
+
+            if to_archive:
+                moved_count = self.atomic_move_to_archive(to_archive)
+                if moved_count > 0:
+                    age_filter = f" (from last {recent_days} days)" if recent_days else ""
+                    self.logger.info(f"Compaction: moved {moved_count} available movies to archive{age_filter}")
+                    print(f"📦 Compaction: moved {moved_count} available movies to archive{age_filter}")
 
         return newly_digital
 
@@ -1823,7 +1906,13 @@ class DataGenerator:
             int: Number of inconsistencies found and corrected
         """
         try:
-            # Load movie tracking database
+            # Load all movies (merged from tracking and archived) for iteration
+            combined = self.load_all_movies()
+            if not combined.get('movies'):
+                self.logger.info("No movie tracking database found, skipping enrichment validation")
+                return 0
+
+            # Load the main tracking database for modifications
             if not os.path.exists('movie_tracking.json'):
                 self.logger.info("No movie_tracking.json found, skipping enrichment validation")
                 return 0
@@ -1839,7 +1928,7 @@ class DataGenerator:
             inconsistencies_found = 0
             total_available = 0
 
-            for movie_id, movie in db.get('movies', {}).items():
+            for movie_id, movie in combined.get('movies', {}).items():
                 if movie.get('status') == 'available':
                     total_available += 1
 
@@ -1891,20 +1980,24 @@ class DataGenerator:
                                         # Inconsistency found: enriched=true but no/bad watch_links
                                         reason = "no watch_links" if not watch_links else "empty watch_links" if not any(watch_links.values()) else f"placeholder ASIN {detected_asin}"
                                         self.logger.warning(f"Enrichment inconsistency: {movie.get('title', 'Unknown')} (ID: {movie_id}) marked enriched=true but has {reason}")
-                                        movie['enriched'] = False
-                                        # Remove enrichment_date if present
-                                        if 'enrichment_date' in movie:
-                                            del movie['enrichment_date']
-                                        inconsistencies_found += 1
+
+                                        # Only modify if movie exists in main tracking database
+                                        if movie_id in db.get('movies', {}):
+                                            db['movies'][movie_id]['enriched'] = False
+                                            # Remove enrichment_date if present
+                                            if 'enrichment_date' in db['movies'][movie_id]:
+                                                del db['movies'][movie_id]['enrichment_date']
+                                            inconsistencies_found += 1
 
                             except Exception as e:
                                 self.logger.warning(f"Error checking data.json for movie {movie.get('title', 'Unknown')}: {e}")
 
             # Save corrected database if any inconsistencies were found
             if inconsistencies_found > 0:
-                with open('movie_tracking.json', 'w') as f:
-                    json.dump(db, f, indent=2)
-                self.logger.info(f"Corrected {inconsistencies_found} enrichment inconsistencies in movie_tracking.json")
+                if self.atomic_write_json(db, 'movie_tracking.json'):
+                    self.logger.info(f"Corrected {inconsistencies_found} enrichment inconsistencies in movie_tracking.json")
+                else:
+                    self.logger.error(f"Failed to save corrected enrichment inconsistencies")
 
             # Log summary
             consistent_count = total_available - inconsistencies_found
@@ -1917,6 +2010,121 @@ class DataGenerator:
             self.logger.error(f"Error during enrichment consistency validation: {e}")
             print(f"  ❌ Error during enrichment consistency validation: {e}")
             return 0
+
+    def atomic_write_json(self, data, filepath):
+        """Atomically write JSON data to a file to prevent corruption
+
+        Args:
+            data: Python object to serialize as JSON
+            filepath: Target file path
+
+        Returns:
+            bool: True if successful, False otherwise
+        """
+        import tempfile
+        import shutil
+
+        try:
+            # Atomic write: write temp, fsync, rename
+            with tempfile.NamedTemporaryFile(mode='w', suffix='.json',
+                                           dir='.', delete=False) as temp_f:
+                json.dump(data, temp_f, indent=2)
+                temp_f.flush()
+                os.fsync(temp_f.fileno())
+                temp_path = temp_f.name
+
+            # Atomic rename
+            shutil.move(temp_path, filepath)
+            return True
+
+        except Exception as e:
+            self.logger.error(f"Error during atomic write to {filepath}: {e}")
+            # Cleanup temp file if it exists
+            if 'temp_path' in locals() and os.path.exists(temp_path):
+                try:
+                    os.unlink(temp_path)
+                except:
+                    pass
+            return False
+
+    def atomic_move_to_archive(self, movie_entries):
+        """Atomically move movie entries from tracking to archive database
+
+        Args:
+            movie_entries: Dict of {movie_id: movie_data} to move
+
+        Returns:
+            int: Number of entries successfully moved
+        """
+        if not movie_entries:
+            return 0
+
+        import tempfile
+        import shutil
+
+        moved_count = 0
+
+        try:
+            # Load or create archive database
+            archive_db = {'movies': {}}
+            if os.path.exists('available_tracking.json'):
+                with open('available_tracking.json', 'r') as f:
+                    archive_db = json.load(f)
+                    if 'movies' not in archive_db:
+                        archive_db['movies'] = {}
+
+            # Add new entries to archive
+            archive_db['movies'].update(movie_entries)
+
+            # Atomic write to archive
+            if not self.atomic_write_json(archive_db, 'available_tracking.json'):
+                return 0
+
+            # Now remove from main tracking database
+            if os.path.exists('movie_tracking.json'):
+                with open('movie_tracking.json', 'r') as f:
+                    main_db = json.load(f)
+
+                for movie_id in movie_entries.keys():
+                    if movie_id in main_db.get('movies', {}):
+                        del main_db['movies'][movie_id]
+                        moved_count += 1
+
+                # Atomic write to main database
+                if not self.atomic_write_json(main_db, 'movie_tracking.json'):
+                    return 0
+
+        except Exception as e:
+            self.logger.error(f"Error during atomic move: {e}")
+            return 0
+
+        return moved_count
+
+    def load_all_movies(self):
+        """Load and merge movies from both movie_tracking.json and available_tracking.json
+
+        Returns combined dictionary with all movies for processing functions.
+        This ensures archival doesn't break downstream code that relies on available movies.
+        """
+        combined_movies = {}
+
+        # Load main tracking database
+        if os.path.exists('movie_tracking.json'):
+            with open('movie_tracking.json', 'r') as f:
+                main_db = json.load(f)
+                combined_movies.update(main_db.get('movies', {}))
+
+        # Load archived available movies if archival is enabled
+        if (self.config.get('tracking', {}).get('archive_available_on_detect', False) and
+            os.path.exists('available_tracking.json')):
+            with open('available_tracking.json', 'r') as f:
+                archived_db = json.load(f)
+                # Archived movies take precedence in case of ID conflicts
+                for movie_id, movie_data in archived_db.get('movies', {}).items():
+                    if movie_data.get('status') == 'available':
+                        combined_movies[movie_id] = movie_data
+
+        return {'movies': combined_movies}
 
     def validate_data_json_schema(self, file_path='data.json'):
         """Validate data.json structure before loading
@@ -2294,13 +2502,19 @@ class DataGenerator:
                         If False, regenerate entire data.json from scratch
         """
 
-        # Load tracking database
-        if not os.path.exists('movie_tracking.json'):
-            self.logger.error("No tracking database found. Run 'python movie_tracker.py daily' first")
+        # Load main tracking database for updating enrichment flags
+        if os.path.exists('movie_tracking.json'):
+            with open('movie_tracking.json', 'r') as f:
+                db = json.load(f)
+        else:
+            self.logger.error("No movie_tracking.json found. Run 'python movie_tracker.py daily' first")
             return
 
-        with open('movie_tracking.json', 'r') as f:
-            db = json.load(f)
+        # Load all movies (merged from tracking and archived)
+        combined = self.load_all_movies()
+        if not combined.get('movies'):
+            self.logger.error("No tracking database found. Run 'python movie_tracker.py daily' first")
+            return
 
         # Load existing data.json for merging later
         existing_movies = []
@@ -2339,7 +2553,7 @@ class DataGenerator:
         already_enriched = []
         stale_enrichment = []
 
-        for movie_id, movie_data in db['movies'].items():
+        for movie_id, movie_data in combined['movies'].items():
             if movie_data['status'] == 'available' and movie_data.get('digital_date'):
                 try:
                     digital_date = datetime.strptime(movie_data['digital_date'], '%Y-%m-%d')
@@ -2424,19 +2638,21 @@ class DataGenerator:
                         print(f"  ✓ {processed['title']} - Links: {len(processed['links'])}")
 
                         # Mark as enriched in tracking database
-                        movie_data['enriched'] = True
-                        movie_data['enrichment_date'] = datetime.now().isoformat()
+                        if movie_id in db['movies']:
+                            db['movies'][movie_id]['enriched'] = True
+                            db['movies'][movie_id]['enrichment_date'] = datetime.now().isoformat()
                         enriched_count += 1
 
-                time.sleep(0.2)  # Rate limiting
+                time.sleep(self.config.get('api', {}).get('tmdb_rate_limit', 0.25))  # Rate limiting
 
             except Exception as e:
                 print(f"  ✗ Error processing {movie_data.get('title')}: {e}")
 
         # Save updated tracking database with enrichment flags
-        with open('movie_tracking.json', 'w') as f:
-            json.dump(db, f, indent=2)
-        print(f"\n💾 Enrichment tracking saved: {enriched_count} movies marked as enriched")
+        if self.atomic_write_json(db, 'movie_tracking.json'):
+            print(f"\n💾 Enrichment tracking saved: {enriched_count} movies marked as enriched")
+        else:
+            print(f"\n❌ Failed to save enrichment tracking")
 
         # Merge with existing movies that are already enriched
         if incremental and already_enriched:

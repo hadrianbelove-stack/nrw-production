@@ -58,6 +58,111 @@ jobs:
       - name: Run daily pipeline
         run: python3 daily_orchestrator.py | tee .local_run.log
 
+      - name: Extract discovery metrics
+        if: always()
+        run: |
+          if [ -f ".local_run.log" ]; then
+            echo "📊 Discovery Metrics:"
+            echo "===================="
+
+            # Extract standardized discovery metrics line
+            discovery_line=$(grep -E "^Polled [0-9]+ movies, [0-9]+ changes detected" .local_run.log | tail -n 1 || echo "")
+
+            if [ -n "$discovery_line" ]; then
+              # Parse the line to extract numbers
+              polled=$(echo "$discovery_line" | grep -oE "Polled [0-9]+" | grep -oE "[0-9]+")
+              transitions=$(echo "$discovery_line" | grep -oE ", [0-9]+ changes detected" | grep -oE "[0-9]+")
+
+              echo "Polled Movies: $polled"
+              echo "Changes Detected: $transitions"
+
+              # Add to GitHub step summary
+              {
+                echo "## 🔍 Discovery Metrics"
+                echo ""
+                echo "| Metric | Count |"
+                echo "|--------|-------|"
+                echo "| 🎬 Polled Movies | $polled |"
+                echo "| ⚡ Changes Detected | $transitions |"
+                echo ""
+              } >> $GITHUB_STEP_SUMMARY
+
+              # Export to GitHub environment for later steps
+              echo "DISCOVERY_POLLED=$polled" >> $GITHUB_ENV
+              echo "DISCOVERY_TRANSITIONS=$transitions" >> $GITHUB_ENV
+            else
+              echo "⚠️ No standardized discovery metrics found in log"
+              echo "DISCOVERY_POLLED=0" >> $GITHUB_ENV
+              echo "DISCOVERY_TRANSITIONS=0" >> $GITHUB_ENV
+            fi
+          else
+            echo "⚠️ No log file found (.local_run.log)"
+            echo "DISCOVERY_POLLED=0" >> $GITHUB_ENV
+            echo "DISCOVERY_TRANSITIONS=0" >> $GITHUB_ENV
+          fi
+
+      - name: Check for 14-day discovery stall
+        if: always()
+        run: |
+          if [ -f "metrics/daily.jsonl" ]; then
+            echo "📊 Checking for discovery stalls (14-day window)..."
+
+            # Get last 14 entries and count zero-transition days
+            zero_count=$(tail -n 14 metrics/daily.jsonl | jq -r 'select(.transitions == 0) | .transitions' | wc -l)
+            total_count=$(tail -n 14 metrics/daily.jsonl | wc -l)
+
+            echo "Last 14 days: $zero_count days with 0 transitions out of $total_count total days"
+
+            if [ "$total_count" -ge 14 ] && [ "$zero_count" -eq 14 ]; then
+              echo "🚨 DISCOVERY STALL DETECTED: 0 transitions for 14 consecutive days"
+              echo "DISCOVERY_STALLED=true" >> $GITHUB_ENV
+
+              # Get date range for the stall
+              first_date=$(tail -n 14 metrics/daily.jsonl | head -n 1 | jq -r '.date')
+              last_date=$(tail -n 14 metrics/daily.jsonl | tail -n 1 | jq -r '.date')
+              echo "STALL_START_DATE=$first_date" >> $GITHUB_ENV
+              echo "STALL_END_DATE=$last_date" >> $GITHUB_ENV
+            else
+              echo "✅ No discovery stall detected"
+              echo "DISCOVERY_STALLED=false" >> $GITHUB_ENV
+            fi
+          else
+            echo "⚠️ No metrics file found - cannot check for stalls"
+            echo "DISCOVERY_STALLED=false" >> $GITHUB_ENV
+          fi
+
+      - name: Verify new arrivals in data.json
+        if: always()
+        run: |
+          if [ -f "data.json" ]; then
+            today=$(date -u +%Y-%m-%d)
+
+            # Count new arrivals for today (adjust field name if needed)
+            new_arrivals=$(jq -r --arg d "$today" '[.movies[] | select(.digital_date == $d)] | length' data.json 2>/dev/null || echo "0")
+
+            echo "📊 New Arrivals Verification:"
+            echo "============================"
+            echo "Date: $today"
+            echo "New Arrivals: $new_arrivals"
+
+            # Add to GitHub step summary
+            {
+              echo "## 📅 New Arrivals"
+              echo ""
+              echo "| Metric | Value |"
+              echo "|--------|-------|"
+              echo "| 📅 Date | $today |"
+              echo "| 🆕 New Arrivals | $new_arrivals |"
+              echo ""
+            } >> $GITHUB_STEP_SUMMARY
+
+            # Export for commit message
+            echo "NEW_ARRIVALS=$new_arrivals" >> $GITHUB_ENV
+          else
+            echo "⚠️ data.json not found - cannot verify new arrivals"
+            echo "NEW_ARRIVALS=0" >> $GITHUB_ENV
+          fi
+
       - name: Extract per-phase timing summary
         if: always()
         run: |
@@ -317,6 +422,75 @@ jobs:
 
             console.log(\`Created issue #\${issue.data.number}: \${title}\`);
 
+      - name: Create discovery stall issue
+        if: always() && env.DISCOVERY_STALLED == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const workflowUrl = `${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`;
+            const startDate = process.env.STALL_START_DATE || 'unknown';
+            const endDate = process.env.STALL_END_DATE || 'unknown';
+            const polled = process.env.DISCOVERY_POLLED || '0';
+
+            const title = 'Discovery Stalled: 0 transitions for 14 days';
+
+            const issue = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: title,
+              body: `## 🚨 Discovery System Stalled
+
+            **Alert:** Discovery system has detected 0 transitions for 14 consecutive days.
+
+            **Stall Period:** ${startDate} to ${endDate}
+            **Last Run Polled:** ${polled} movies
+            **Workflow Run:** ${workflowUrl}
+            **Detection Time:** ${new Date().toISOString()}
+
+            ### 🔍 Diagnostic Information:
+            - **Total Days Checked:** 14
+            - **Days with 0 Transitions:** 14
+            - **Last Polled Count:** ${polled}
+
+            ### 🛠️ Investigation Steps:
+            1. **Check Discovery System:**
+               - Verify TMDB API key is valid and not rate-limited
+               - Check \`generate_data.py --discover\` output for errors
+               - Review discovery configuration in \`config.yaml\`
+
+            2. **Check Provider Monitoring:**
+               - Verify \`generate_data.py --check\` is polling tracking movies
+               - Check for API quota exhaustion (Watchmode, etc.)
+               - Review provider scraper health
+
+            3. **Data Validation:**
+               - Ensure \`movie_tracking.json\` has movies in 'tracking' status
+               - Verify discovery date range is appropriate
+               - Check for upstream data source issues
+
+            ### 📊 Expected Behavior:
+            - Average >1 transition per week under normal conditions
+            - Discovery should find new premieres regularly
+            - Provider monitoring should detect status changes
+
+            ### 🔧 Manual Recovery:
+            \`\`\`bash
+            # Test discovery manually
+            python3 generate_data.py --discover --debug
+
+            # Test provider monitoring
+            python3 generate_data.py --check
+
+            # Check metrics history
+            tail -20 metrics/daily.jsonl
+            \`\`\`
+
+            This issue was created automatically by the discovery health monitoring system.`,
+              labels: ['automation', 'discovery-stall', 'critical']
+            });
+
+            console.log(\`Created discovery stall issue #\${issue.data.number}: \${title}\`);
+
       - name: Check for changes
         id: changes
         run: |
@@ -348,6 +522,18 @@ jobs:
           # Build commit message with curation summary
           commit_msg="Daily update - $(date +%Y-%m-%d) [automated]"
 
+          # Add discovery metrics if we have them
+          if [ "${DISCOVERY_POLLED:-0}" != "0" ] || [ "${DISCOVERY_TRANSITIONS:-0}" != "0" ]; then
+            commit_msg="$commit_msg
+
+Discovery: polled=${DISCOVERY_POLLED:-0}, transitions=${DISCOVERY_TRANSITIONS:-0}"
+          fi
+
+          # Add new arrivals count if available
+          if [ "${NEW_ARRIVALS:-0}" != "0" ]; then
+            commit_msg="$commit_msg, arrivals=${NEW_ARRIVALS:-0}"
+          fi
+
           # Add curation summary if we have metrics
           if [ "${CURATION_EDITS:-0}" != "0" ] || [ "${CURATION_ADDITIONS:-0}" != "0" ] || [ "${CURATION_HIDDEN:-0}" != "0" ] || [ "${CURATION_FEATURED:-0}" != "0" ]; then
             commit_msg="$commit_msg
@@ -359,7 +545,7 @@ Curation: edits=${CURATION_EDITS:-0}, adds=${CURATION_ADDITIONS:-0}, hidden=${CU
             fi
           fi
 
-          git add data.json
+          git add data.json metrics/daily.jsonl
           git commit -m "$commit_msg"
 
       - name: Push changes to main

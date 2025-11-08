@@ -17,6 +17,11 @@ We want a beautiful webpage that shows the latest movies available for streaming
 - **Monitoring:** Checks ALL movies in database for digital availability on Netflix, Amazon, etc.
 - **Why:** There is no functional DIGITAL premiere date in APIs. They only show current state. We detect the change by checking daily.
 - **The Core Problem:** APIs don't tell us "this movie became available digitally today" - they only show what's available right now. We have to detect transitions ourselves.
+
+**No API Dates; Full Change Detection Poll**
+
+Always poll ALL tracking movies in `movie_tracking.json` (no time limits). Fetch TMDB providers; if appears (null → value), set `digital_date = today`, `status = available`. Our detection defines availability – no external dates. Once found, status change excludes from future tracking polls (status != "tracking" means no longer monitored). Link: [docs/troubleshooting/change_detection.md](docs/troubleshooting/change_detection.md)
+
 - **When:** Daily (automated) - **CRITICAL:** Must run daily because both new movies appear and providers add movies unpredictably
 - **Magic moment:** When it finds new providers, sets `digital_date` = today, status = "available"
 - **Output:** Updates tracking database with new movies and availability changes

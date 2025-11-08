@@ -435,6 +435,10 @@ Filtered, enriched subset for frontend display:
 - Records digital_date and platform details
 - Expected: 2-5 movies/day transition
 
+**No API Dates; Full Change Detection Poll**
+
+Always poll ALL tracking movies in `movie_tracking.json` (no time limits). Fetch TMDB providers; if appears (null → value), set `digital_date = today`, `status = available`. Our detection defines availability – no external dates. Once found, status change excludes from future tracking polls (status != "tracking" means no longer monitored). Priority ordering is allowed but not skipping. Link: [docs/troubleshooting/change_detection.md](docs/troubleshooting/change_detection.md)
+
 **Phase 3: Enrichment** (`generate_data.py` main)
 - Only processes newly available movies (enrichment-on-transition)
 - Adds RT ratings, Wikipedia links, watch links
@@ -856,7 +860,22 @@ for dm in data_movies:       # Iterated over keys, not movies
 
 **Detailed troubleshooting:** See docs/TROUBLESHOOTING.md for scraper-specific debugging (future enhancement)
 
-### 8.5 Validation Errors
+### 8.5 Change Detection finds 0 transitions
+
+**Symptoms**:
+- Provider checks find no transitions despite known releases
+- Movies stuck in "tracking" status
+- 0 "✓ now on [service]" messages
+
+**Root Cause**: API key issues, TMDB provider API failures, cache problems
+
+**Detection**: Monitor logs for transition counts
+**Fix**: Validate API keys, test TMDB provider endpoint
+**Prevention**: Regular API validation, proper error handling
+
+**Detailed troubleshooting:** [docs/troubleshooting/change_detection.md](docs/troubleshooting/change_detection.md)
+
+### 8.6 Validation Errors
 
 **Symptoms**:
 - "No recent movies found"

@@ -4,7 +4,7 @@ Admin panel for curating movie selections.
 Simple Flask app for editing movie data and controlling visibility.
 """
 
-from flask import Flask, render_template, request, jsonify, redirect, url_for
+from flask import Flask, render_template, request, jsonify, redirect, url_for, Response
 import json
 import os
 import subprocess
@@ -1896,7 +1896,7 @@ def update_ordering() -> dict:
 
 @app.route('/delta-summary', methods=['GET'])
 @auth.login_required
-def get_delta_summary() -> dict:
+def delta_summary() -> Response | tuple[Response, int]:
     """Get current delta summary without creating approval file.
 
     Returns the result of compute_delta_summary() for preview purposes.
@@ -1925,11 +1925,11 @@ def get_delta_summary() -> dict:
         return jsonify({
             'success': False,
             'error': f'Error computing delta summary: {str(e)}'
-        })
+        }), 500
 
 @app.route('/approve', methods=['POST'])
 @auth.login_required
-def approve_changes() -> dict:
+def approve_changes() -> Response | tuple[Response, int]:
     """Create admin approval artifact for orchestrator.
 
     Writes admin/approval.json with validation fields required by
@@ -1962,11 +1962,19 @@ def approve_changes() -> dict:
         reviewer = data.get('reviewer', auth.current_user() or 'admin')
         trigger_generation = data.get('trigger_generation', False)
 
+        # Compute tracking digest and validate it exists
+        tracking_digest = compute_tracking_digest()
+        if tracking_digest is None:
+            return jsonify({
+                'success': False,
+                'error': 'Cannot compute tracking digest - movie_tracking.json not found or unreadable'
+            }), 400
+
         # Create approval artifact
         approval = {
             'timestamp': datetime.utcnow().replace(tzinfo=timezone.utc).isoformat().replace('+00:00', 'Z'),
             'reviewer': reviewer,
-            'tracking_digest': compute_tracking_digest(),
+            'tracking_digest': tracking_digest,
             'delta': compute_delta_summary()
         }
 
@@ -1981,9 +1989,8 @@ def approve_changes() -> dict:
 
         # Create metrics entry if directory exists
         try:
-            if os.path.exists('metrics') or True:  # Create if it doesn't exist
-                os.makedirs('metrics', exist_ok=True)
-                delta = approval['delta']
+            os.makedirs('metrics', exist_ok=True)
+            delta = approval['delta']
 
                 # Calculate session duration
                 global SESSION_START_TIME, SESSION_COUNTERS
@@ -2117,7 +2124,7 @@ def approve_changes() -> dict:
         return jsonify({
             'success': False,
             'error': f'Error creating approval: {str(e)}'
-        })
+        }), 500
 
 if __name__ == '__main__':
     # Parse command line arguments

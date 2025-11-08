@@ -196,9 +196,14 @@ The `apply_admin_overrides()` method in `generate_data.py` handles curation:
 ### Approval Gate Mechanism
 The `daily_orchestrator.py` implements mandatory approval:
 - Validates `admin/approval.json` timestamp (within 2 hours)
-- Checks optional tracking digest for data consistency
+- **Requires** tracking digest for data consistency (ensures `movie_tracking.json` hasn't changed since approval)
 - In CI: exits immediately if approval missing or stale
 - Locally: polls every 5 seconds until approval received
+
+#### Approval Failure Modes
+- **Missing digest**: Approval will fail if `tracking_digest` field is missing or empty
+- **Digest mismatch**: Approval will fail if `movie_tracking.json` has been modified since approval was created
+- **Missing tracking file**: Admin approval creation will fail if `movie_tracking.json` is not found or unreadable
 
 ### Authentication
 The admin panel uses HTTP Basic Authentication with default credentials:

@@ -195,8 +195,11 @@ class NRWOrchestrator:
         if reviewer is not None and (not isinstance(reviewer, str) or not reviewer.strip()):
             raise Exception("Reviewer field must be non-empty string if provided")
 
-        # Optional tracking digest validation
+        # Required tracking digest validation
         tracking_digest = approval.get('tracking_digest')
+        if not tracking_digest or not isinstance(tracking_digest, str) or not tracking_digest.strip():
+            raise Exception("Approval missing required field: tracking_digest")
+
         if tracking_digest:
             try:
                 # Compute current digest of movie_tracking.json
@@ -489,6 +492,53 @@ class NRWOrchestrator:
         except Exception as e:
             print(f"⚠️ Newsletter generation error: {e}")
 
+    def extract_discovery_metrics(self):
+        """Extract discovery metrics from pipeline results for daily tracking"""
+        polled = 0
+        transitions = 0
+
+        # Look for standardized metrics lines in command outputs
+        for result in self.results:
+            if result['success'] and result['output']:
+                output_lines = result['output'].split('\n')
+                for line in output_lines:
+                    # Look for the standardized metrics line: "Polled X movies, Y changes detected"
+                    if line.startswith('Polled ') and 'changes detected' in line:
+                        import re
+                        # Extract numbers using regex
+                        match = re.search(r'Polled (\d+) movies, (\d+) changes detected', line)
+                        if match:
+                            polled = int(match.group(1))
+                            transitions = int(match.group(2))
+                            print(f"📊 Extracted metrics: {polled} polled, {transitions} transitions")
+                            break
+
+        return polled, transitions
+
+    def save_daily_metrics(self, polled, transitions):
+        """Save daily discovery metrics to metrics/daily.jsonl"""
+        try:
+            # Ensure metrics directory exists
+            os.makedirs('metrics', exist_ok=True)
+
+            # Create metrics entry
+            metrics_entry = {
+                'date': datetime.now().strftime('%Y-%m-%d'),
+                'timestamp': datetime.now().isoformat(),
+                'polled': polled,
+                'transitions': transitions
+            }
+
+            # Append to metrics file
+            metrics_file = 'metrics/daily.jsonl'
+            with open(metrics_file, 'a') as f:
+                f.write(json.dumps(metrics_entry) + '\n')
+
+            print(f"✅ Daily metrics saved: {polled} polled, {transitions} transitions")
+
+        except Exception as e:
+            print(f"⚠️ Failed to save daily metrics: {e}")
+
     def print_summary(self):
         """Print execution summary"""
         print("\n" + "=" * 50)
@@ -573,6 +623,10 @@ class NRWOrchestrator:
         # Execute discovery and monitoring pipeline
         for cmd, description, critical in discovery_pipeline:
             self.run_command(cmd, description, critical)
+
+        # Extract and save discovery metrics for stall detection
+        polled, transitions = self.extract_discovery_metrics()
+        self.save_daily_metrics(polled, transitions)
 
         # Phase 3: Mandatory Admin Approval Gate
         print(f"\n📋 Phase 3: Admin Approval Gate")

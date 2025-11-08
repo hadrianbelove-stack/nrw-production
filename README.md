@@ -230,6 +230,9 @@ cat watchmode_quota.json
 **Watch links issues:**
 - See [docs/troubleshooting/WATCH_LINKS_TROUBLESHOOTING.md](docs/troubleshooting/WATCH_LINKS_TROUBLESHOOTING.md)
 
+**Change detection issues:**
+- See [docs/troubleshooting/change_detection.md](docs/troubleshooting/change_detection.md)
+
 **For comprehensive troubleshooting:** See [docs/troubleshooting/](docs/troubleshooting/)
 
 ## Documentation Discipline
