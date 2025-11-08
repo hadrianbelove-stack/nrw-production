@@ -107,8 +107,8 @@ jobs:
           if [ -f "metrics/daily.jsonl" ]; then
             echo "📊 Checking for discovery stalls (14-day window)..."
 
-            # Get last 14 entries and count zero-transition days
-            zero_count=$(tail -n 14 metrics/daily.jsonl | jq -r 'select(.transitions == 0) | .transitions' | wc -l)
+            # Get last 14 entries and count zero-transition days (handle legacy entries)
+            zero_count=$(tail -n 14 metrics/daily.jsonl | jq -r 'select(.transitions == 0 or (.transitions == null and .newly_digital == 0)) | .date' | wc -l)
             total_count=$(tail -n 14 metrics/daily.jsonl | wc -l)
 
             echo "Last 14 days: $zero_count days with 0 transitions out of $total_count total days"
@@ -493,8 +493,9 @@ jobs:
 
       - name: Check for changes
         id: changes
+        if: always()
         run: |
-          if ! git diff --quiet --exit-code -- data.json; then
+          if ! git diff --quiet --exit-code -- data.json metrics/daily.jsonl; then
             echo "changes=true" >> $GITHUB_OUTPUT
             echo "Changes detected in repository"
           else
@@ -517,7 +518,7 @@ jobs:
           echo "✅ Admin artifacts cleaned up (ephemeral policy)"
 
       - name: Commit changes
-        if: steps.changes.outputs.changes == 'true'
+        if: always() && steps.changes.outputs.changes == 'true'
         run: |
           # Build commit message with curation summary
           commit_msg="Daily update - $(date +%Y-%m-%d) [automated]"
@@ -549,7 +550,7 @@ Curation: edits=${CURATION_EDITS:-0}, adds=${CURATION_ADDITIONS:-0}, hidden=${CU
           git commit -m "$commit_msg"
 
       - name: Push changes to main
-        if: steps.changes.outputs.changes == 'true'
+        if: always() && steps.changes.outputs.changes == 'true'
         run: git push origin main
 
       - name: Create success notification

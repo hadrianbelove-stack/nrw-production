@@ -1978,6 +1978,9 @@ def approve_changes() -> Response | tuple[Response, int]:
             'delta': compute_delta_summary()
         }
 
+        # Get delta reference before using it
+        delta = approval['delta']
+
         # Ensure admin directory exists
         os.makedirs('admin', exist_ok=True)
 
@@ -1990,33 +1993,32 @@ def approve_changes() -> Response | tuple[Response, int]:
         # Create metrics entry if directory exists
         try:
             os.makedirs('metrics', exist_ok=True)
-            delta = approval['delta']
 
-                # Calculate session duration
-                global SESSION_START_TIME, SESSION_COUNTERS
-                session_seconds = None
-                if SESSION_START_TIME:
-                    session_duration = datetime.utcnow() - SESSION_START_TIME
-                    session_seconds = int(session_duration.total_seconds())
+            # Calculate session duration
+            global SESSION_START_TIME, SESSION_COUNTERS
+            session_seconds = None
+            if SESSION_START_TIME:
+                session_duration = datetime.utcnow() - SESSION_START_TIME
+                session_seconds = int(session_duration.total_seconds())
 
-                metrics_entry = {
-                    'date': datetime.now().strftime('%Y-%m-%d'),
-                    'timestamp': approval['timestamp'],
-                    'reviewer': reviewer,
-                    'session_seconds': session_seconds,
-                    'movies_reviewed': delta.get('movies_reviewed', 0),
-                    'edits': delta.get('edits', 0),
-                    'additions': delta.get('additions', 0),
-                    'hidden': delta.get('hidden', 0),
-                    'featured': delta.get('featured', 0),
-                    'ordered': delta.get('ordered', 0),
-                    'issues': delta.get('issues', {})
-                }
+            metrics_entry = {
+                'date': datetime.now().strftime('%Y-%m-%d'),
+                'timestamp': approval['timestamp'],
+                'reviewer': reviewer,
+                'session_seconds': session_seconds,
+                'movies_reviewed': delta.get('movies_reviewed', 0),
+                'edits': delta.get('edits', 0),
+                'additions': delta.get('additions', 0),
+                'hidden': delta.get('hidden', 0),
+                'featured': delta.get('featured', 0),
+                'ordered': delta.get('ordered', 0),
+                'issues': delta.get('issues', {})
+            }
 
-                # Append to daily.jsonl atomically
-                with open('metrics/daily.jsonl', 'a') as f:
-                    f.write(json.dumps(metrics_entry) + '\n')
-                    f.flush()
+            # Append to daily.jsonl atomically
+            with open('metrics/daily.jsonl', 'a') as f:
+                f.write(json.dumps(metrics_entry) + '\n')
+                f.flush()
 
         except Exception as e:
             logger.warning(f"Failed to write metrics: {e}")
