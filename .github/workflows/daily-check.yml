@@ -105,21 +105,24 @@ jobs:
         if: always()
         run: |
           if [ -f "metrics/daily.jsonl" ]; then
-            echo "📊 Checking for discovery stalls (14-day window)..."
+            echo "📊 Checking for discovery stalls (14-day unique-date window)..."
 
-            # Get last 14 entries and count zero-transition days (handle legacy entries)
-            zero_count=$(tail -n 14 metrics/daily.jsonl | jq -r 'select(.transitions == 0 or (.transitions == null and .newly_digital == 0)) | .date' | wc -l)
-            total_count=$(tail -n 14 metrics/daily.jsonl | wc -l)
+            # Group entries by date, take the most recent entry per date, then take last 14 unique dates
+            unique_dates_data=$(jq -s 'group_by(.date) | map(sort_by(.timestamp // .date) | last) | sort_by(.date) | .[-14:]' metrics/daily.jsonl)
 
-            echo "Last 14 days: $zero_count days with 0 transitions out of $total_count total days"
+            # Count zero-transition days from the 14 unique dates (handle legacy entries)
+            zero_count=$(echo "$unique_dates_data" | jq '[.[] | select(.transitions == 0 or (.transitions == null and .newly_digital == 0))] | length')
+            total_count=$(echo "$unique_dates_data" | jq 'length')
+
+            echo "Last $total_count unique days: $zero_count days with 0 transitions"
 
             if [ "$total_count" -ge 14 ] && [ "$zero_count" -eq 14 ]; then
-              echo "🚨 DISCOVERY STALL DETECTED: 0 transitions for 14 consecutive days"
+              echo "🚨 DISCOVERY STALL DETECTED: 0 transitions for 14 consecutive unique days"
               echo "DISCOVERY_STALLED=true" >> $GITHUB_ENV
 
-              # Get date range for the stall
-              first_date=$(tail -n 14 metrics/daily.jsonl | head -n 1 | jq -r '.date')
-              last_date=$(tail -n 14 metrics/daily.jsonl | tail -n 1 | jq -r '.date')
+              # Get date range for the stall from unique dates
+              first_date=$(echo "$unique_dates_data" | jq -r '.[0].date')
+              last_date=$(echo "$unique_dates_data" | jq -r '.[-1].date')
               echo "STALL_START_DATE=$first_date" >> $GITHUB_ENV
               echo "STALL_END_DATE=$last_date" >> $GITHUB_ENV
             else
@@ -503,6 +506,22 @@ jobs:
             echo "No changes detected"
           fi
 
+      - name: Capture approval context before cleanup
+        if: always()
+        run: |
+          if [ -f "admin/approval.json" ]; then
+            echo "📋 Capturing approval context before cleanup..."
+            reviewer=$(jq -r '.reviewer // "unknown"' admin/approval.json 2>/dev/null || echo "unknown")
+            timestamp=$(jq -r '.timestamp // "unknown"' admin/approval.json 2>/dev/null || echo "unknown")
+            echo "APPROVAL_REVIEWER=$reviewer" >> $GITHUB_ENV
+            echo "APPROVAL_TIMESTAMP=$timestamp" >> $GITHUB_ENV
+            echo "✅ Approval context captured: reviewer=$reviewer, timestamp=$timestamp"
+          else
+            echo "⚠️ No approval file found - setting defaults"
+            echo "APPROVAL_REVIEWER=system" >> $GITHUB_ENV
+            echo "APPROVAL_TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_ENV
+          fi
+
       - name: Clean up admin artifacts
         if: always()
         run: |
@@ -566,20 +585,9 @@ Curation: edits=${CURATION_EDITS:-0}, adds=${CURATION_ADDITIONS:-0}, hidden=${CU
             const ordered = process.env.CURATION_ORDERED || '0';
             const reviews = process.env.CURATION_REVIEWS || '0';
 
-            // Extract reviewer info if available
-            let reviewer = 'system';
-            let timestamp = new Date().toISOString();
-
-            try {
-              const fs = require('fs');
-              if (fs.existsSync('admin/approval.json')) {
-                const approval = JSON.parse(fs.readFileSync('admin/approval.json', 'utf8'));
-                reviewer = approval.reviewer || 'unknown';
-                timestamp = approval.timestamp || timestamp;
-              }
-            } catch (error) {
-              console.log('Note: Could not read approval info from admin/approval.json');
-            }
+            // Use captured approval context from environment variables
+            const reviewer = process.env.APPROVAL_REVIEWER || 'system';
+            const timestamp = process.env.APPROVAL_TIMESTAMP || new Date().toISOString();
 
             const title = `Daily Update Completed - ${new Date().toLocaleDateString()}`;
             const curationSummary = `edits=${edits}, additions=${additions}, hidden=${hidden}, featured=${featured}`;
