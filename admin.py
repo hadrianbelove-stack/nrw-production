@@ -9,7 +9,9 @@ import json
 import os
 import subprocess
 import sys
-from datetime import datetime
+import argparse
+import hashlib
+from datetime import datetime, timezone
 import yaml
 import glob
 import shutil
@@ -54,6 +56,19 @@ check_production_environment()
 # Load credentials from environment or use defaults (only in development!)
 ADMIN_USERNAME = os.environ.get('ADMIN_USERNAME', 'admin')
 ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'changeme')
+
+# Global flag for full-review mode
+FULL_REVIEW_MODE = False
+
+# Session tracking variables
+SESSION_START_TIME = None
+SESSION_COUNTERS = {
+    'edits': 0,
+    'additions': 0,
+    'hidden': 0,
+    'featured': 0,
+    'ordered': 0
+}
 
 @auth.verify_password
 def verify_password(username: str, password: str) -> Optional[str]:
@@ -123,6 +138,85 @@ def get_tmdb_api_key() -> Optional[str]:
     # Last resort: log warning
     logger.warning("No TMDB API key found in environment or config.yaml")
     return None
+
+def compute_tracking_digest() -> Optional[str]:
+    """Compute SHA-256 hash of movie_tracking.json for approval validation.
+
+    Returns:
+        SHA-256 hex digest string, or None if file not found
+    """
+    try:
+        with open('movie_tracking.json', 'rb') as f:
+            return hashlib.sha256(f.read()).hexdigest()
+    except FileNotFoundError:
+        logger.warning("movie_tracking.json not found for digest computation")
+        return None
+    except Exception as e:
+        logger.error(f"Error computing tracking digest: {e}")
+        return None
+
+def compute_delta_summary() -> dict:
+    """Compute delta summary for approval artifact.
+
+    Returns:
+        Dictionary with counts of various changes since session start
+    """
+    global SESSION_COUNTERS
+
+    hidden = load_json(HIDDEN_FILE, [])
+    featured = load_json(FEATURED_FILE, [])
+    reviews = load_json(REVIEWS_FILE, {})
+    ordering = load_json('admin/ordering.json', [])
+
+    # Load current data to analyze for issues
+    data = load_json(DATA_FILE, {})
+
+    # Handle different data shapes from data.json
+    if data and isinstance(data, dict) and 'movies' in data and isinstance(data['movies'], list):
+        movies_list = data['movies']
+    elif isinstance(data, list):
+        movies_list = data
+    else:
+        movies_list = []
+
+    # Count issues by type
+    issues = {
+        'missing_rt': 0,
+        'missing_trailer': 0,
+        'missing_stream_link': 0,
+        'missing_rent_link': 0,
+        'missing_buy_link': 0
+    }
+
+    for movie in movies_list:
+        # Check for missing RT score
+        if not movie.get('rt_score'):
+            issues['missing_rt'] += 1
+
+        # Check for missing trailer
+        if not movie.get('links', {}).get('trailer'):
+            issues['missing_trailer'] += 1
+
+        # Check for missing stream/rent/buy links
+        watch_links = movie.get('watch_links', {})
+        providers = movie.get('providers', {})
+
+        if not (watch_links.get('streaming') or providers.get('streaming')):
+            issues['missing_stream_link'] += 1
+        if not (watch_links.get('rent') or providers.get('rent')):
+            issues['missing_rent_link'] += 1
+        if not (watch_links.get('buy') or providers.get('buy')):
+            issues['missing_buy_link'] += 1
+
+    return {
+        'edits': SESSION_COUNTERS.get('edits', 0),
+        'additions': SESSION_COUNTERS.get('additions', 0),
+        'hidden': SESSION_COUNTERS.get('hidden', 0),  # Actual changes, not total count
+        'featured': SESSION_COUNTERS.get('featured', 0),  # Actual changes, not total count
+        'ordered': SESSION_COUNTERS.get('ordered', 0),  # Number of ordering operations
+        'movies_reviewed': len(movies_list),
+        'issues': issues
+    }
 
 def get_poster_url(tmdb_id: Union[str, int]) -> Optional[str]:
     """Fetch poster URL from TMDB API.
@@ -346,6 +440,20 @@ def index() -> str:
         featured_count: Number of featured movies
         missing_data_count: Number of movies with incomplete data
     """
+    global SESSION_START_TIME, SESSION_COUNTERS
+
+    # Initialize session tracking on first access in full-review mode
+    if FULL_REVIEW_MODE and SESSION_START_TIME is None:
+        SESSION_START_TIME = datetime.utcnow()
+        SESSION_COUNTERS = {
+            'edits': 0,
+            'additions': 0,
+            'hidden': 0,
+            'featured': 0,
+            'ordered': 0
+        }
+        logger.info(f"Session started at {SESSION_START_TIME.isoformat()}Z for full-review mode")
+
     data = load_json(DATA_FILE, {})
     hidden = load_json(HIDDEN_FILE, [])
     featured = load_json(FEATURED_FILE, [])
@@ -449,7 +557,8 @@ def index() -> str:
         featured_count=featured_count,
         missing_data_count=missing_data_count,
         bootstrap_count=bootstrap_count,
-        reviewed_count=reviewed_count
+        reviewed_count=reviewed_count,
+        full_review_mode=FULL_REVIEW_MODE
     )
 
 """
@@ -561,16 +670,27 @@ def toggle_status() -> dict:
         file_path = STATUS_FILES[status_type]
         status_list = load_json(file_path, [])
 
-        # Toggle logic
+        # Toggle logic and track changes
+        changed = False
         if value and movie_id not in status_list:
             status_list.append(movie_id)
+            changed = True
         elif not value and movie_id in status_list:
             status_list.remove(movie_id)
+            changed = True
 
         # Save file with atomic write
         # Ensure admin directory exists
         os.makedirs('admin', exist_ok=True)
         safe_write_json(file_path, status_list)
+
+        # Increment session counters for tracking real changes
+        global SESSION_COUNTERS
+        if FULL_REVIEW_MODE and changed:
+            if status_type == 'hidden':
+                SESSION_COUNTERS['hidden'] += 1
+            elif status_type == 'featured':
+                SESSION_COUNTERS['featured'] += 1
 
         # Log action
         verb_true, verb_false = STATUS_VERBS[status_type]
@@ -636,26 +756,38 @@ def update_date() -> dict:
 
             safe_write_json('movie_tracking.json', db)
 
-            # Regenerate data.json from movie_tracking.json
-            try:
-                result = subprocess.run(
-                    [sys.executable, 'generate_data.py'],
-                    capture_output=True,
-                    text=True,
-                    timeout=60  # 1 minute timeout
-                )
-                if result.returncode == 0:
-                    logger.info(f"Successfully updated date and regenerated data.json for movie {movie_id}")
-                    return jsonify({'success': True, 'message': f'Date updated to {new_date} and data.json regenerated'})
-                else:
-                    logger.error(f"Date updated but regeneration failed for movie {movie_id}: {result.stderr}")
-                    return jsonify({'success': False, 'error': f'Date updated but regeneration failed: {result.stderr}'})
-            except subprocess.TimeoutExpired:
-                logger.error(f"Date updated but regeneration timed out for movie {movie_id}")
-                return jsonify({'success': False, 'error': 'Date updated but regeneration timed out'})
-            except Exception as e:
-                logger.error(f"Date updated but regeneration failed for movie {movie_id}: {str(e)}")
-                return jsonify({'success': False, 'error': f'Date updated but regeneration failed: {str(e)}'})
+            # Increment session counter for tracking edits
+            global SESSION_COUNTERS
+            if FULL_REVIEW_MODE:
+                SESSION_COUNTERS['edits'] += 1
+
+            # Regenerate data.json from movie_tracking.json (skip in full-review mode)
+            if FULL_REVIEW_MODE:
+                logger.info(f"Date updated for movie {movie_id} (regeneration skipped in full-review mode)")
+                return jsonify({
+                    'success': True,
+                    'message': f'Date updated to {new_date}. Click "Approve & Generate" to regenerate data.json'
+                })
+            else:
+                try:
+                    result = subprocess.run(
+                        [sys.executable, 'generate_data.py'],
+                        capture_output=True,
+                        text=True,
+                        timeout=60  # 1 minute timeout
+                    )
+                    if result.returncode == 0:
+                        logger.info(f"Successfully updated date and regenerated data.json for movie {movie_id}")
+                        return jsonify({'success': True, 'message': f'Date updated to {new_date} and data.json regenerated'})
+                    else:
+                        logger.error(f"Date updated but regeneration failed for movie {movie_id}: {result.stderr}")
+                        return jsonify({'success': False, 'error': f'Date updated but regeneration failed: {result.stderr}'})
+                except subprocess.TimeoutExpired:
+                    logger.error(f"Date updated but regeneration timed out for movie {movie_id}")
+                    return jsonify({'success': False, 'error': 'Date updated but regeneration timed out'})
+                except Exception as e:
+                    logger.error(f"Date updated but regeneration failed for movie {movie_id}: {str(e)}")
+                    return jsonify({'success': False, 'error': f'Date updated but regeneration failed: {str(e)}'})
     except Exception as e:
         logger.error(f"Failed to update date for movie {movie_id}: {str(e)}")
         return jsonify({'success': False, 'error': str(e)})
@@ -768,27 +900,34 @@ def update_review() -> dict:
         # Log action
         logger.info(f"Review saved for movie {movie_id} ({movie_title}) by {author}")
 
-        # Trigger data regeneration
-        try:
-            result = subprocess.run(
-                [sys.executable, 'generate_data.py'],
-                capture_output=True,
-                text=True,
-                timeout=60
-            )
-            if result.returncode != 0:
-                logger.warning(f"Review saved for movie {movie_id} but regeneration failed: {result.stderr}")
-                return jsonify({
-                    'success': True,
-                    'message': 'Review saved but data regeneration failed',
-                    'warning': result.stderr
-                })
-        except Exception as e:
-            logger.warning(f"Review saved for movie {movie_id} but regeneration failed: {str(e)}")
+        # Trigger data regeneration (skip in full-review mode)
+        if FULL_REVIEW_MODE:
+            logger.info(f"Review saved for movie {movie_id} (regeneration skipped in full-review mode)")
             return jsonify({
                 'success': True,
-                'message': f'Review saved but regeneration failed: {str(e)}'
+                'message': 'Review saved. Click "Approve & Generate" to regenerate data.json'
             })
+        else:
+            try:
+                result = subprocess.run(
+                    [sys.executable, 'generate_data.py'],
+                    capture_output=True,
+                    text=True,
+                    timeout=60
+                )
+                if result.returncode != 0:
+                    logger.warning(f"Review saved for movie {movie_id} but regeneration failed: {result.stderr}")
+                    return jsonify({
+                        'success': True,
+                        'message': 'Review saved but data regeneration failed',
+                        'warning': result.stderr
+                    })
+            except Exception as e:
+                logger.warning(f"Review saved for movie {movie_id} but regeneration failed: {str(e)}")
+                return jsonify({
+                    'success': True,
+                    'message': f'Review saved but regeneration failed: {str(e)}'
+                })
 
         return jsonify({
             'success': True,
@@ -852,27 +991,34 @@ def delete_review() -> dict:
         # Log action
         logger.info(f"Review deleted for movie {movie_id}")
 
-        # Trigger data regeneration
-        try:
-            result = subprocess.run(
-                [sys.executable, 'generate_data.py'],
-                capture_output=True,
-                text=True,
-                timeout=60
-            )
-            if result.returncode != 0:
-                logger.warning(f"Review deleted for movie {movie_id} but regeneration failed: {result.stderr}")
-                return jsonify({
-                    'success': True,
-                    'message': 'Review deleted but data regeneration failed',
-                    'warning': result.stderr
-                })
-        except Exception as e:
-            logger.warning(f"Review deleted for movie {movie_id} but regeneration failed: {str(e)}")
+        # Trigger data regeneration (skip in full-review mode)
+        if FULL_REVIEW_MODE:
+            logger.info(f"Review deleted for movie {movie_id} (regeneration skipped in full-review mode)")
             return jsonify({
                 'success': True,
-                'message': f'Review deleted but regeneration failed: {str(e)}'
+                'message': 'Review deleted. Click "Approve & Generate" to regenerate data.json'
             })
+        else:
+            try:
+                result = subprocess.run(
+                    [sys.executable, 'generate_data.py'],
+                    capture_output=True,
+                    text=True,
+                    timeout=60
+                )
+                if result.returncode != 0:
+                    logger.warning(f"Review deleted for movie {movie_id} but regeneration failed: {result.stderr}")
+                    return jsonify({
+                        'success': True,
+                        'message': 'Review deleted but data regeneration failed',
+                        'warning': result.stderr
+                    })
+            except Exception as e:
+                logger.warning(f"Review deleted for movie {movie_id} but regeneration failed: {str(e)}")
+                return jsonify({
+                    'success': True,
+                    'message': f'Review deleted but regeneration failed: {str(e)}'
+                })
 
         return jsonify({
             'success': True,
@@ -1283,29 +1429,42 @@ def update_movie_fields() -> dict:
 
         # Save back to movie_tracking.json (with atomic write and backup)
         safe_write_json(tracking_file, tracking_data)
+
+        # Increment session counter for tracking edits
+        global SESSION_COUNTERS
+        if FULL_REVIEW_MODE and changes_made:
+            SESSION_COUNTERS['edits'] += len(changes_made)
+
         logger.info(f"Saved {len(changes_made)} field changes for movie {movie_id}: {', '.join(changes_made)}")
 
-        # Trigger regeneration of data.json
-        try:
-            result = subprocess.run(
-                [sys.executable, 'generate_data.py'],
-                capture_output=True,
-                text=True,
-                timeout=60
-            )
-            if result.returncode != 0:
-                logger.warning(f"Fields updated for movie {movie_id} but regeneration failed: {result.stderr}")
-                return jsonify({
-                    'success': True,
-                    'message': f'Fields updated ({", ".join(changes_made)}) but regeneration failed',
-                    'warning': result.stderr
-                })
-        except Exception as e:
-            logger.warning(f"Fields updated for movie {movie_id} but regeneration failed: {str(e)}")
+        # Trigger regeneration of data.json (skip in full-review mode)
+        if FULL_REVIEW_MODE:
+            logger.info(f"Fields updated for movie {movie_id} (regeneration skipped in full-review mode): {', '.join(changes_made)}")
             return jsonify({
                 'success': True,
-                'message': f'Fields updated ({", ".join(changes_made)}) but regeneration failed: {str(e)}'
+                'message': f'Fields updated ({", ".join(changes_made)}). Click "Approve & Generate" to regenerate data.json'
             })
+        else:
+            try:
+                result = subprocess.run(
+                    [sys.executable, 'generate_data.py'],
+                    capture_output=True,
+                    text=True,
+                    timeout=60
+                )
+                if result.returncode != 0:
+                    logger.warning(f"Fields updated for movie {movie_id} but regeneration failed: {result.stderr}")
+                    return jsonify({
+                        'success': True,
+                        'message': f'Fields updated ({", ".join(changes_made)}) but regeneration failed',
+                        'warning': result.stderr
+                    })
+            except Exception as e:
+                logger.warning(f"Fields updated for movie {movie_id} but regeneration failed: {str(e)}")
+                return jsonify({
+                    'success': True,
+                    'message': f'Fields updated ({", ".join(changes_made)}) but regeneration failed: {str(e)}'
+                })
 
         logger.info(f"Successfully updated and regenerated for movie {movie_id}: {', '.join(changes_made)}")
         return jsonify({
@@ -1464,9 +1623,519 @@ def create_youtube_playlist() -> dict:
             'traceback': traceback.format_exc()
         })
 
+@app.route('/add-movie', methods=['POST'])
+@auth.login_required
+def add_movie() -> dict:
+    """Add a new movie manually to the tracking database.
+
+    Creates a new entry in movie_tracking.json for movies missed by discovery.
+
+    Authentication:
+        Requires HTTP Basic Auth (@auth.login_required)
+
+    Request JSON:
+        {
+            "tmdb_id": str,  # Required TMDB movie ID (numeric string)
+            "title": str,  # Required movie title
+            "digital_date": str,  # Optional YYYY-MM-DD format
+            "providers": dict,  # Optional provider data
+            "synopsis": str,  # Optional synopsis
+            "poster_url": str  # Optional poster URL
+        }
+
+    Returns:
+        JSON response:
+        {
+            "success": bool,
+            "message": str,
+            "movie_id": str,  # TMDB ID of added movie
+            "error": str  # On failure
+        }
+    """
+    try:
+        data = request.json or {}
+        tmdb_id = str(data.get('tmdb_id', '')).strip()
+        title = str(data.get('title', '')).strip()
+        digital_date = data.get('digital_date', '').strip() if data.get('digital_date') else None
+        providers = data.get('providers', {})
+        synopsis = data.get('synopsis', '').strip() if data.get('synopsis') else None
+        poster_url = data.get('poster_url', '').strip() if data.get('poster_url') else None
+
+        # Validation
+        if not tmdb_id:
+            return jsonify({'success': False, 'error': 'TMDB ID is required'})
+
+        if not title:
+            return jsonify({'success': False, 'error': 'Movie title is required'})
+
+        # Validate TMDB ID is numeric
+        try:
+            int(tmdb_id)
+        except ValueError:
+            return jsonify({'success': False, 'error': 'TMDB ID must be numeric'})
+
+        # Validate digital date format if provided
+        if digital_date:
+            try:
+                datetime.strptime(digital_date, '%Y-%m-%d')
+            except ValueError:
+                return jsonify({
+                    'success': False,
+                    'error': 'Digital date must be in YYYY-MM-DD format'
+                })
+
+        # Load movie tracking database
+        try:
+            with open('movie_tracking.json', 'r') as f:
+                tracking_data = json.load(f)
+        except FileNotFoundError:
+            return jsonify({'success': False, 'error': 'movie_tracking.json not found'})
+
+        # Check if movie already exists
+        if tmdb_id in tracking_data.get('movies', {}):
+            return jsonify({
+                'success': False,
+                'error': f'Movie with TMDB ID {tmdb_id} already exists'
+            })
+
+        # Try to fetch basic TMDB data if API key available
+        tmdb_data = {}
+        api_key = get_tmdb_api_key()
+        if api_key:
+            try:
+                response = requests.get(
+                    f"https://api.themoviedb.org/3/movie/{tmdb_id}",
+                    params={"api_key": api_key},
+                    timeout=10
+                )
+                if response.status_code == 200:
+                    tmdb_data = response.json()
+                    logger.info(f"Fetched TMDB data for {tmdb_id}: {tmdb_data.get('title', 'Unknown')}")
+                else:
+                    logger.warning(f"TMDB API returned {response.status_code} for movie {tmdb_id}")
+            except Exception as e:
+                logger.warning(f"Failed to fetch TMDB data for {tmdb_id}: {e}")
+
+        # Create movie entry
+        now = datetime.now().isoformat()
+        movie_entry = {
+            'id': tmdb_id,
+            'title': title,
+            'manually_added': True,
+            'source': 'admin',
+            'added_date': now,
+            'last_manual_edit': now,
+            'manually_corrected': True
+        }
+
+        # Set status based on digital date
+        if digital_date:
+            movie_entry['digital_date'] = digital_date
+            movie_entry['status'] = 'available'
+        else:
+            movie_entry['status'] = 'tracking'
+
+        # Add TMDB data if available
+        if tmdb_data:
+            if tmdb_data.get('release_date'):
+                movie_entry['theatrical_date'] = tmdb_data['release_date']
+            if tmdb_data.get('overview'):
+                movie_entry['synopsis'] = synopsis or tmdb_data['overview']
+            if tmdb_data.get('poster_path') and not poster_url:
+                movie_entry['poster'] = f"https://image.tmdb.org/t/p/w300{tmdb_data['poster_path']}"
+            if tmdb_data.get('vote_average'):
+                movie_entry['vote_average'] = tmdb_data['vote_average']
+
+        # Add provided optional fields
+        if synopsis:
+            movie_entry['synopsis'] = synopsis
+        if poster_url:
+            movie_entry['poster'] = poster_url
+        if providers:
+            movie_entry['providers'] = providers
+
+        # Add to tracking database
+        if 'movies' not in tracking_data:
+            tracking_data['movies'] = {}
+
+        tracking_data['movies'][tmdb_id] = movie_entry
+
+        # Save atomically
+        safe_write_json('movie_tracking.json', tracking_data)
+
+        # Increment session counter for tracking additions
+        global SESSION_COUNTERS
+        if FULL_REVIEW_MODE:
+            SESSION_COUNTERS['additions'] += 1
+
+        logger.info(f"Manually added movie {tmdb_id}: {title}")
+
+        # Don't regenerate in full-review mode
+        message = f'Movie "{title}" added successfully'
+        if FULL_REVIEW_MODE:
+            message += '. Click "Approve & Generate" to include in data.json'
+        else:
+            # Try to regenerate in normal mode
+            try:
+                result = subprocess.run(
+                    [sys.executable, 'generate_data.py'],
+                    capture_output=True,
+                    text=True,
+                    timeout=60
+                )
+                if result.returncode == 0:
+                    message += ' and data.json regenerated'
+                else:
+                    message += ' but data regeneration failed'
+            except Exception:
+                message += ' but data regeneration failed'
+
+        return jsonify({
+            'success': True,
+            'message': message,
+            'movie_id': tmdb_id,
+            'title': title,
+            'status': movie_entry['status']
+        })
+
+    except Exception as e:
+        logger.error(f"Error adding movie: {str(e)}", exc_info=True)
+        return jsonify({
+            'success': False,
+            'error': f'Error adding movie: {str(e)}'
+        })
+
+@app.route('/update-ordering', methods=['POST'])
+@auth.login_required
+def update_ordering() -> dict:
+    """Update editorial ordering of movies.
+
+    Saves ordered array of TMDB IDs to admin/ordering.json for pinning
+    specific movies to the top of the display list.
+
+    Authentication:
+        Requires HTTP Basic Auth (@auth.login_required)
+
+    Request JSON:
+        {
+            "ordered_ids": list  # Array of TMDB IDs in desired order
+        }
+
+    Returns:
+        JSON response:
+        {
+            "success": bool,
+            "message": str,
+            "ordered_count": int,  # Number of movies in ordering
+            "error": str  # On failure
+        }
+    """
+    try:
+        data = request.json or {}
+        ordered_ids = data.get('ordered_ids', [])
+
+        # Validate that ordered_ids is a list
+        if not isinstance(ordered_ids, list):
+            return jsonify({
+                'success': False,
+                'error': 'ordered_ids must be an array'
+            })
+
+        # Convert all IDs to strings and validate they're not empty
+        normalized_ids = []
+        for movie_id in ordered_ids:
+            movie_id_str = str(movie_id).strip()
+            if movie_id_str:
+                normalized_ids.append(movie_id_str)
+
+        # Ensure admin directory exists
+        os.makedirs('admin', exist_ok=True)
+
+        # Save ordering
+        safe_write_json('admin/ordering.json', normalized_ids)
+
+        # Increment session counter for tracking ordering changes
+        global SESSION_COUNTERS
+        if FULL_REVIEW_MODE:
+            SESSION_COUNTERS['ordered'] += 1
+
+        logger.info(f"Editorial ordering updated with {len(normalized_ids)} movies")
+
+        # Don't regenerate in full-review mode
+        message = f'Editorial ordering updated with {len(normalized_ids)} movies'
+        if FULL_REVIEW_MODE:
+            message += '. Click "Approve & Generate" to apply ordering'
+        else:
+            # Try to regenerate in normal mode
+            try:
+                result = subprocess.run(
+                    [sys.executable, 'generate_data.py'],
+                    capture_output=True,
+                    text=True,
+                    timeout=60
+                )
+                if result.returncode == 0:
+                    message += ' and data.json regenerated'
+                else:
+                    message += ' but data regeneration failed'
+            except Exception:
+                message += ' but data regeneration failed'
+
+        return jsonify({
+            'success': True,
+            'message': message,
+            'ordered_count': len(normalized_ids)
+        })
+
+    except Exception as e:
+        logger.error(f"Error updating ordering: {str(e)}", exc_info=True)
+        return jsonify({
+            'success': False,
+            'error': f'Error updating ordering: {str(e)}'
+        })
+
+@app.route('/delta-summary', methods=['GET'])
+@auth.login_required
+def get_delta_summary() -> dict:
+    """Get current delta summary without creating approval file.
+
+    Returns the result of compute_delta_summary() for preview purposes.
+
+    Authentication:
+        Requires HTTP Basic Auth (@auth.login_required)
+
+    Returns:
+        JSON response:
+        {
+            "success": bool,
+            "delta": dict,  # Delta summary
+            "error": str  # On failure
+        }
+    """
+    try:
+        delta = compute_delta_summary()
+
+        return jsonify({
+            'success': True,
+            'delta': delta
+        })
+
+    except Exception as e:
+        logger.error(f"Error computing delta summary: {str(e)}", exc_info=True)
+        return jsonify({
+            'success': False,
+            'error': f'Error computing delta summary: {str(e)}'
+        })
+
+@app.route('/approve', methods=['POST'])
+@auth.login_required
+def approve_changes() -> dict:
+    """Create admin approval artifact for orchestrator.
+
+    Writes admin/approval.json with validation fields required by
+    the daily_orchestrator.py approval gate. Optionally triggers
+    generation if requested and in full-review mode.
+
+    Authentication:
+        Requires HTTP Basic Auth (@auth.login_required)
+
+    Request JSON:
+        {
+            "reviewer": str,  # Optional reviewer name (defaults to current user)
+            "trigger_generation": bool  # Optional flag to trigger generation (full-review mode only)
+        }
+
+    Returns:
+        JSON response:
+        {
+            "success": bool,
+            "message": str,
+            "approval_file": str,  # Path to created approval file
+            "timestamp": str,  # ISO timestamp of approval
+            "delta": dict,  # Delta summary
+            "generation_status": str,  # Status if generation was triggered
+            "error": str  # On failure
+        }
+    """
+    try:
+        data = request.json or {}
+        reviewer = data.get('reviewer', auth.current_user() or 'admin')
+        trigger_generation = data.get('trigger_generation', False)
+
+        # Create approval artifact
+        approval = {
+            'timestamp': datetime.utcnow().replace(tzinfo=timezone.utc).isoformat().replace('+00:00', 'Z'),
+            'reviewer': reviewer,
+            'tracking_digest': compute_tracking_digest(),
+            'delta': compute_delta_summary()
+        }
+
+        # Ensure admin directory exists
+        os.makedirs('admin', exist_ok=True)
+
+        # Write approval file atomically
+        approval_file = 'admin/approval.json'
+        safe_write_json(approval_file, approval)
+
+        logger.info(f"Admin approval created by {reviewer}")
+
+        # Create metrics entry if directory exists
+        try:
+            if os.path.exists('metrics') or True:  # Create if it doesn't exist
+                os.makedirs('metrics', exist_ok=True)
+                delta = approval['delta']
+
+                # Calculate session duration
+                global SESSION_START_TIME, SESSION_COUNTERS
+                session_seconds = None
+                if SESSION_START_TIME:
+                    session_duration = datetime.utcnow() - SESSION_START_TIME
+                    session_seconds = int(session_duration.total_seconds())
+
+                metrics_entry = {
+                    'date': datetime.now().strftime('%Y-%m-%d'),
+                    'timestamp': approval['timestamp'],
+                    'reviewer': reviewer,
+                    'session_seconds': session_seconds,
+                    'movies_reviewed': delta.get('movies_reviewed', 0),
+                    'edits': delta.get('edits', 0),
+                    'additions': delta.get('additions', 0),
+                    'hidden': delta.get('hidden', 0),
+                    'featured': delta.get('featured', 0),
+                    'ordered': delta.get('ordered', 0),
+                    'issues': delta.get('issues', {})
+                }
+
+                # Append to daily.jsonl atomically
+                with open('metrics/daily.jsonl', 'a') as f:
+                    f.write(json.dumps(metrics_entry) + '\n')
+                    f.flush()
+
+        except Exception as e:
+            logger.warning(f"Failed to write metrics: {e}")
+
+        # Append delta summary to diary
+        try:
+            os.makedirs('diary', exist_ok=True)
+            today_utc = datetime.utcnow().strftime('%Y-%m-%d')
+            diary_file = f'diary/{today_utc}.md'
+
+            # Create diary entry header if file doesn't exist
+            if not os.path.exists(diary_file):
+                header_content = f"""# Daily Log - {today_utc}
+
+## Admin Delta
+
+"""
+                with open(diary_file, 'w') as f:
+                    f.write(header_content)
+
+            # Generate compact JSON delta summary
+            delta_json = {
+                'timestamp': approval['timestamp'],
+                'reviewer': reviewer,
+                'movies_reviewed': delta.get('movies_reviewed', 0),
+                'edits': delta.get('edits', 0),
+                'additions': delta.get('additions', 0),
+                'hidden': delta.get('hidden', 0),
+                'featured': delta.get('featured', 0),
+                'ordered': delta.get('ordered', 0),
+                'issues': delta.get('issues', {})
+            }
+
+            # Append to diary file atomically
+            delta_entry = f"\n**{approval['timestamp']}** - Admin approval by {reviewer}:\n```json\n{json.dumps(delta_json, indent=2)}\n```\n"
+            with open(diary_file, 'a') as f:
+                f.write(delta_entry)
+                f.flush()
+
+            logger.info(f"Admin delta appended to diary {diary_file}")
+
+        except Exception as e:
+            logger.warning(f"Failed to write to diary: {e}")
+
+        response_data = {
+            'success': True,
+            'message': 'Changes approved successfully',
+            'approval_file': approval_file,
+            'timestamp': approval['timestamp'],
+            'reviewer': reviewer,
+            'delta': approval['delta']
+        }
+
+        # Trigger generation if requested and in full-review mode
+        if trigger_generation and FULL_REVIEW_MODE:
+            logger.info(f"Triggering generation after approval by {reviewer}")
+            try:
+                result = subprocess.run(
+                    [sys.executable, 'generate_data.py'],
+                    capture_output=True,
+                    text=True,
+                    timeout=120  # 2 minute timeout
+                )
+
+                if result.returncode == 0:
+                    response_data['message'] = 'Changes approved and data.json generated successfully'
+                    response_data['generation_status'] = 'success'
+                    logger.info(f"Approval and generation completed successfully by {reviewer}")
+                else:
+                    response_data['message'] = 'Changes approved but generation failed'
+                    response_data['generation_status'] = 'failed'
+                    response_data['generation_error'] = result.stderr[-500:] if result.stderr else 'Unknown error'
+                    logger.error(f"Approval succeeded but generation failed: {result.stderr}")
+
+            except subprocess.TimeoutExpired:
+                response_data['message'] = 'Changes approved but generation timed out'
+                response_data['generation_status'] = 'timeout'
+                logger.error("Approval succeeded but generation timed out")
+            except Exception as e:
+                response_data['message'] = f'Changes approved but generation failed: {str(e)}'
+                response_data['generation_status'] = 'error'
+                response_data['generation_error'] = str(e)
+                logger.error(f"Approval succeeded but generation failed: {str(e)}")
+
+        elif trigger_generation and not FULL_REVIEW_MODE:
+            response_data['message'] = 'Changes approved (generation trigger ignored - not in full-review mode)'
+            response_data['generation_status'] = 'skipped'
+
+        # Reset session counters after successful approval
+        if FULL_REVIEW_MODE:
+            SESSION_COUNTERS = {
+                'edits': 0,
+                'additions': 0,
+                'hidden': 0,
+                'featured': 0,
+                'ordered': 0
+            }
+            SESSION_START_TIME = None
+            logger.info("Session counters reset after approval")
+
+        return jsonify(response_data)
+
+    except Exception as e:
+        logger.error(f"Error creating approval: {str(e)}", exc_info=True)
+        return jsonify({
+            'success': False,
+            'error': f'Error creating approval: {str(e)}'
+        })
+
 if __name__ == '__main__':
+    # Parse command line arguments
+    parser = argparse.ArgumentParser(description='NRW Admin Panel')
+    parser.add_argument('--full-review', action='store_true',
+                        help='Enable full-review mode with mandatory approval gate')
+    args = parser.parse_args()
+
+    # Set global full-review mode flag
+    FULL_REVIEW_MODE = args.full_review
+
     print("\n🎬 New Release Wall Admin Panel")
     print("================================")
+
+    if FULL_REVIEW_MODE:
+        print("🔒 FULL REVIEW MODE ENABLED")
+        print("   Auto-regeneration disabled")
+        print("   Use 'Approve & Generate' button to authorize publication")
 
     # Configure debug and host based on environment
     flask_debug = os.environ.get('FLASK_DEBUG', '').lower() in ('true', '1', 'yes')

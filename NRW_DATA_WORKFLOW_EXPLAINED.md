@@ -61,7 +61,7 @@ We want a beautiful webpage that shows the latest movies available for streaming
 - Graceful degradation when Watchmode quota exhausted (uses scrapers only)
 - Monthly quota reset tracking (automatically resets Nov 1st)
 
-**Reference:** See `PHASE_2_1_COMPLETE.md` and `OPTIMIZATION_COMPLETE.md` for detailed implementation documentation.
+**Reference:** See [`museum_legacy/PHASE_2_1_COMPLETE.md`](museum_legacy/PHASE_2_1_COMPLETE.md) and [`museum_legacy/OPTIMIZATION_COMPLETE.md`](museum_legacy/OPTIMIZATION_COMPLETE.md) for detailed implementation documentation.
 
 **📂 Link Resolution System** - *Multi-Tier Intelligent Lookup*
 
@@ -118,18 +118,30 @@ We want a beautiful webpage that shows the latest movies available for streaming
 - Simple approach: Generate URLs like "Inspector_Zende_(film)" → 50% are broken
 - Smart approach: Verify URLs exist, use multiple methods → 80% success rate
 
-### **Phase 3: Quality Assurance & Manual Correction**
-**What happens:** The admin panel serves as a QA gate where you inspect all scraped data, identify incomplete/incorrect movies, and either fix them or hide them before they reach the public site.
+### **Phase 3: Admin Approval Gate (Mandatory)**
+**What happens:** The system pauses after discovery and monitoring, waiting for mandatory admin approval before generating the final data.json for public display.
 
-**🔧 Admin Panel - QA Database Editor** (`admin.py` on port 5555)
+**🔧 Admin Approval Gate** - *Mandatory Pre-Publish Approval*
+
+**Purpose:** Mandatory checkpoint ensuring all changes are reviewed before public display
+
+**The Approval Workflow:**
+```
+Daily Discovery → movie_tracking.json → ADMIN APPROVAL GATE → data.json → Public Site
+                  (raw scraped)         (mandatory review)     (approved)   (visitors)
+```
+
+**How it Works:**
+1. **Discovery Phase:** System runs discovery and monitoring, updating movie_tracking.json
+2. **Approval Gate:** Orchestrator pauses and waits for admin approval
+3. **Full Review Mode:** Admin runs `python3 admin.py --full-review` to inspect changes
+4. **Manual Curation:** Review all discovered/updated movies, fix data, hide/feature as needed
+5. **Approval Artifact:** Click "Approve & Generate" to create admin/approval.json
+6. **Data Generation:** Only after approval does system generate final data.json
+
+**Admin Panel - QA Database Editor** (`admin.py` on port 5555)
 
 **Purpose:** Manual quality control checkpoint - scan scraped data, fix errors, approve for public display
-
-**The QA Workflow:**
-```
-Daily Scraper → movie_tracking.json → ADMIN PANEL (You) → data.json → Public Site
-                (raw scraped)          (QA inspection)     (curated)    (visitors)
-```
 
 **Core Features:**
 
@@ -182,6 +194,8 @@ Daily Scraper → movie_tracking.json → ADMIN PANEL (You) → data.json → Pu
 - Default credentials: `admin` / `changeme` (CHANGE IN PRODUCTION!)
 - Override via environment variables: `ADMIN_USERNAME`, `ADMIN_PASSWORD`
 
+**⚠️ SECURITY WARNING: Change default credentials immediately in any shared or deployed environment; set `ADMIN_USERNAME`/`ADMIN_PASSWORD` via environment variables.**
+
 **Integration with generate_data.py:**
 - Admin corrections in `movie_tracking.json` are read during data generation
 - Hidden movies filtered out (from `admin/hidden_movies.json`)
@@ -222,8 +236,44 @@ python3 admin.py
 - `admin/watch_link_overrides.json` - Manual watch links (temporary - being migrated to movie_tracking.json)
 - `movie_tracking.json` - All data corrections stored here with `manual_*` flags
 
+**Full Review Mode:**
+- `python3 admin.py --full-review` - Enables approval gate mode
+- Auto-regeneration disabled - changes don't immediately update data.json
+- "Approve & Generate" button appears for manual authorization
+- Creates admin/approval.json artifact with approval timestamp and metadata
+
+**Approval Artifact Schema (admin/approval.json):**
+```json
+{
+  "timestamp": "2025-11-07T10:30:00",
+  "reviewer": "admin",
+  "tracking_digest": "sha256:abc123...",
+  "delta": {
+    "edits": 0,
+    "additions": 2,
+    "hidden": 5,
+    "featured": 3,
+    "ordered": 0
+  }
+}
+```
+
+**Approval Validation:**
+- Timestamp must be within 2 hours (prevents stale approvals)
+- Optional tracking_digest ensures movie_tracking.json hasn't changed
+- Delta summary provides audit trail of curator changes
+
+**Artifacts Consumed in Phase 4:**
+- `admin/hidden_movies.json` - Movies excluded from public display
+- `admin/featured_movies.json` - Movies highlighted with special styling
+- `admin/ordering.json` - Editorial ordering (pins specific movies to top)
+- `admin/watch_link_overrides.json` - Manual watch link corrections
+- `manual_*` flags in `movie_tracking.json` - Field-specific manual corrections
+
+For detailed operating steps and daily curation workflow, see [`ADMIN_WORKFLOW.md`](ADMIN_WORKFLOW.md).
+
 ### **Phase 4: Display Generation**
-**What happens:** We create the final JSON file that the website reads, applying admin decisions and enriching with all metadata.
+**What happens:** We incorporate admin curation decisions and then create the final JSON file for the website.
 
 **🔧 `generate_data.py` with Admin Integration**
 - **Data enrichment:** Creates complete movie profiles with all metadata (cast, crew, synopsis, posters, links)
@@ -269,8 +319,10 @@ python3 admin.py
 **🔧 `daily_orchestrator.py`** - *The Modern Orchestra Conductor*
 ```bash
 1. python3 generate_data.py --discover     # Discover new movies + monitor all existing for availability changes
-2. python3 generate_data.py          # Create enriched display data with links (includes RT scraping, agent scraping)
-3. git commit & push                 # Save changes
+2. python3 generate_data.py --check        # Check tracking movies for digital availability
+3. [ADMIN APPROVAL GATE]                   # Wait for admin approval (mandatory)
+4. python3 generate_data.py               # Create enriched display data with links (post-approval only)
+5. git commit & push                       # Save changes
 ```
 
 **Automated via GitHub Actions:**

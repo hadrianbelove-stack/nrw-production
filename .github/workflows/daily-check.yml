@@ -4,6 +4,12 @@ on:
   schedule:
     - cron: '0 9 * * *'  # 9 AM UTC daily
   workflow_dispatch:  # Manual trigger for testing
+    inputs:
+      test_mode:
+        description: 'Enable test mode to simulate approval failures'
+        required: false
+        default: false
+        type: boolean
 
 concurrency:
   group: nrw-automation
@@ -86,6 +92,231 @@ jobs:
             echo "WARNING: data.json not found, skipping search URL check"
           fi
 
+      - name: Simulate approval failure (test mode)
+        if: github.event.inputs.test_mode == 'true'
+        run: |
+          echo "🧪 Test mode enabled - simulating approval failure"
+          if [ -f "admin/approval.json" ]; then
+            # Make approval stale by modifying timestamp
+            jq '.timestamp = "2020-01-01T00:00:00Z"' admin/approval.json > admin/approval_test.json
+            mv admin/approval_test.json admin/approval.json
+            echo "Modified approval timestamp to simulate stale approval"
+          else
+            echo "No approval file to modify - will test missing approval scenario"
+          fi
+
+      - name: Validate approval freshness
+        run: |
+          if [ -f "admin/approval.json" ]; then
+            echo "📋 Approval status:"
+            reviewer=$(jq -r '.reviewer // "unknown"' admin/approval.json)
+            timestamp=$(jq -r '.timestamp // "unknown"' admin/approval.json)
+            echo "  Reviewer: $reviewer"
+            echo "  Timestamp: $timestamp"
+
+            # Validate timestamp is within 2 hours
+            if [ "$timestamp" != "unknown" ] && [ "$timestamp" != "null" ]; then
+              # Convert timestamp to epoch seconds (handle both Z and +00:00 formats)
+              approval_epoch=$(date -d "${timestamp/Z/+00:00}" +%s 2>/dev/null || echo "0")
+              current_epoch=$(date +%s)
+              age_seconds=$((current_epoch - approval_epoch))
+              age_hours=$((age_seconds / 3600))
+
+              echo "  Age: ${age_hours} hours (${age_seconds}s)"
+
+              if [ $age_seconds -gt 7200 ]; then
+                echo "❌ ERROR: Approval is stale (older than 2 hours)"
+                exit 1
+              else
+                echo "✅ Approval is fresh (within 2 hours)"
+              fi
+            else
+              echo "❌ ERROR: Invalid or missing timestamp in approval"
+              exit 1
+            fi
+
+            # Optionally check digest if present
+            if jq -e '.digest' admin/approval.json > /dev/null 2>&1; then
+              digest=$(jq -r '.digest' admin/approval.json)
+              echo "  Digest: $digest"
+            fi
+          else
+            echo "❌ ERROR: admin/approval.json not found - approval required"
+            exit 1
+          fi
+
+      - name: Extract curation diagnostics
+        if: always()
+        run: |
+          if [ -f "admin/approval.json" ]; then
+            echo "📊 Curation Diagnostics:"
+            echo "======================="
+
+            # Extract curation metrics
+            edits=$(jq -r '.edits // 0' admin/approval.json 2>/dev/null || echo "0")
+            additions=$(jq -r '.additions // 0' admin/approval.json 2>/dev/null || echo "0")
+            hidden=$(jq -r '.hidden // 0' admin/approval.json 2>/dev/null || echo "0")
+            featured=$(jq -r '.featured // 0' admin/approval.json 2>/dev/null || echo "0")
+            ordered=$(jq -r '.ordered // 0' admin/approval.json 2>/dev/null || echo "0")
+            movies_reviewed=$(jq -r '.movies_reviewed // 0' admin/approval.json 2>/dev/null || echo "0")
+
+            # Output to both console and GitHub summary
+            {
+              echo "## 📊 Curation Summary"
+              echo ""
+              echo "| Metric | Count |"
+              echo "|--------|-------|"
+              echo "| ✏️ Edits | $edits |"
+              echo "| ➕ Additions | $additions |"
+              echo "| 🚫 Hidden | $hidden |"
+              echo "| ⭐ Featured | $featured |"
+              echo "| 📋 Ordered | $ordered |"
+              echo "| 📝 Reviews | $movies_reviewed |"
+              echo ""
+            } | tee -a $GITHUB_STEP_SUMMARY
+
+            # Store metrics for commit message
+            echo "CURATION_EDITS=$edits" >> $GITHUB_ENV
+            echo "CURATION_ADDITIONS=$additions" >> $GITHUB_ENV
+            echo "CURATION_HIDDEN=$hidden" >> $GITHUB_ENV
+            echo "CURATION_FEATURED=$featured" >> $GITHUB_ENV
+            echo "CURATION_ORDERED=$ordered" >> $GITHUB_ENV
+            echo "CURATION_REVIEWS=$movies_reviewed" >> $GITHUB_ENV
+
+            echo "✅ Curation metrics extracted"
+          else
+            echo "⚠️ No approval file found - curation diagnostics unavailable"
+            # Set zero defaults
+            echo "CURATION_EDITS=0" >> $GITHUB_ENV
+            echo "CURATION_ADDITIONS=0" >> $GITHUB_ENV
+            echo "CURATION_HIDDEN=0" >> $GITHUB_ENV
+            echo "CURATION_FEATURED=0" >> $GITHUB_ENV
+            echo "CURATION_ORDERED=0" >> $GITHUB_ENV
+            echo "CURATION_REVIEWS=0" >> $GITHUB_ENV
+          fi
+
+      - name: Handle approval failure with rollback
+        if: failure()
+        run: |
+          echo "🔍 Checking if failure was due to approval issues..."
+
+          # Check if approval file exists and get its status
+          if [ -f "admin/approval.json" ]; then
+            reviewer=$(jq -r '.reviewer // "unknown"' admin/approval.json 2>/dev/null || echo "unknown")
+            timestamp=$(jq -r '.timestamp // "unknown"' admin/approval.json 2>/dev/null || echo "unknown")
+
+            # Check if approval is stale
+            if [ "$timestamp" != "unknown" ] && [ "$timestamp" != "null" ]; then
+              approval_epoch=$(date -d "${timestamp/Z/+00:00}" +%s 2>/dev/null || echo "0")
+              current_epoch=$(date +%s)
+              age_seconds=$((current_epoch - approval_epoch))
+              age_hours=$((age_seconds / 3600))
+
+              if [ $age_seconds -gt 7200 ]; then
+                echo "🔄 Detected stale approval - performing rollback"
+                echo "APPROVAL_FAILURE_TYPE=stale" >> $GITHUB_ENV
+                echo "APPROVAL_AGE_HOURS=$age_hours" >> $GITHUB_ENV
+                echo "APPROVAL_REVIEWER=$reviewer" >> $GITHUB_ENV
+                echo "APPROVAL_TIMESTAMP=$timestamp" >> $GITHUB_ENV
+              else
+                echo "Approval is fresh, failure due to other reasons"
+                exit 0
+              fi
+            else
+              echo "🔄 Detected invalid approval timestamp - performing rollback"
+              echo "APPROVAL_FAILURE_TYPE=invalid_timestamp" >> $GITHUB_ENV
+              echo "APPROVAL_REVIEWER=$reviewer" >> $GITHUB_ENV
+            fi
+          else
+            echo "🔄 Detected missing approval - performing rollback"
+            echo "APPROVAL_FAILURE_TYPE=missing" >> $GITHUB_ENV
+          fi
+
+          # Perform rollback
+          echo "Attempting to restore data.json from previous commit..."
+          if git show HEAD~1:data.json > /dev/null 2>&1; then
+            git checkout HEAD~1 -- data.json
+            echo "✅ Successfully restored data.json from previous commit"
+          elif [ -f "backups/data.json" ]; then
+            cp backups/data.json data.json
+            echo "✅ Successfully restored data.json from backup"
+          else
+            echo "⚠️ No previous commit or backup found for data.json"
+          fi
+
+          # Set workflow URL for issue creation
+          echo "WORKFLOW_URL=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> $GITHUB_ENV
+
+      - name: Create approval failure issue
+        if: failure() && env.APPROVAL_FAILURE_TYPE
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const failureType = process.env.APPROVAL_FAILURE_TYPE;
+            const workflowUrl = process.env.WORKFLOW_URL;
+            const reviewer = process.env.APPROVAL_REVIEWER || 'unknown';
+            const timestamp = process.env.APPROVAL_TIMESTAMP || 'unknown';
+            const ageHours = process.env.APPROVAL_AGE_HOURS || 'unknown';
+
+            let title, bodyDetails;
+
+            if (failureType === 'missing') {
+              title = 'Daily Update Blocked: Missing Admin Approval';
+              bodyDetails = `**Issue:** No admin/approval.json file found
+            **Action Taken:** Attempted rollback of data.json`;
+            } else if (failureType === 'stale') {
+              title = 'Daily Update Blocked: Stale Admin Approval';
+              bodyDetails = `**Issue:** Admin approval is stale (${ageHours} hours old)
+            **Reviewer:** ${reviewer}
+            **Approval Timestamp:** ${timestamp}
+            **Action Taken:** Attempted rollback of data.json`;
+            } else if (failureType === 'invalid_timestamp') {
+              title = 'Daily Update Blocked: Invalid Approval Timestamp';
+              bodyDetails = `**Issue:** Admin approval has invalid or missing timestamp
+            **Reviewer:** ${reviewer}
+            **Action Taken:** Attempted rollback of data.json`;
+            }
+
+            const issue = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: title,
+              body: `## Daily Update Blocked - Approval Required
+
+            ${bodyDetails}
+
+            **Workflow Run:** ${workflowUrl}
+            **Failure Time:** ${new Date().toISOString()}
+            **Branch:** ${context.ref}
+
+            ### Required Actions:
+            1. **Admin must provide fresh approval** (within 2 hours)
+            2. Create or update \`admin/approval.json\` with valid timestamp
+            3. Re-run the workflow manually or wait for next scheduled run
+
+            ### Approval File Format:
+            \`\`\`json
+            {
+              "reviewer": "admin-username",
+              "timestamp": "${new Date().toISOString()}",
+              "approved": true
+            }
+            \`\`\`
+
+            ### Manual Recovery:
+            If rollback failed, you may need to manually restore data.json:
+            \`\`\`bash
+            git checkout HEAD~1 -- data.json
+            # OR restore from backup if available
+            cp backups/data.json data.json
+            \`\`\`
+
+            This issue was created automatically due to approval validation failure.`,
+              labels: ['automation', 'approval-required', 'blocked']
+            });
+
+            console.log(\`Created issue #\${issue.data.number}: \${title}\`);
+
       - name: Check for changes
         id: changes
         run: |
@@ -97,24 +328,145 @@ jobs:
             echo "No changes detected"
           fi
 
+      - name: Clean up admin artifacts
+        if: always()
+        run: |
+          echo "🧹 Cleaning up ephemeral admin artifacts..."
+          # Remove approval artifacts after processing (per ephemeral policy)
+          rm -f admin/approval.json
+          rm -f admin/ordering.json
+          rm -f admin/hidden_movies.json
+          rm -f admin/featured_movies.json
+          rm -f admin/watch_link_overrides.json
+          rm -f admin/movie_reviews.json
+          rm -f diary/*.md 2>/dev/null || true
+          echo "✅ Admin artifacts cleaned up (ephemeral policy)"
 
       - name: Commit changes
         if: steps.changes.outputs.changes == 'true'
         run: |
+          # Build commit message with curation summary
+          commit_msg="Daily update - $(date +%Y-%m-%d) [automated]"
+
+          # Add curation summary if we have metrics
+          if [ "${CURATION_EDITS:-0}" != "0" ] || [ "${CURATION_ADDITIONS:-0}" != "0" ] || [ "${CURATION_HIDDEN:-0}" != "0" ] || [ "${CURATION_FEATURED:-0}" != "0" ]; then
+            commit_msg="$commit_msg
+
+Curation: edits=${CURATION_EDITS:-0}, adds=${CURATION_ADDITIONS:-0}, hidden=${CURATION_HIDDEN:-0}, featured=${CURATION_FEATURED:-0}"
+
+            if [ "${CURATION_ORDERED:-0}" != "0" ] || [ "${CURATION_REVIEWS:-0}" != "0" ]; then
+              commit_msg="$commit_msg, ordered=${CURATION_ORDERED:-0}, reviews=${CURATION_REVIEWS:-0}"
+            fi
+          fi
+
           git add data.json
-          git commit -m "Daily update - $(date +%Y-%m-%d) [automated]"
+          git commit -m "$commit_msg"
 
       - name: Push changes to main
         if: steps.changes.outputs.changes == 'true'
         run: git push origin main
+
+      - name: Create success notification
+        if: success() && steps.changes.outputs.changes == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const workflowUrl = `${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`;
+            const edits = process.env.CURATION_EDITS || '0';
+            const additions = process.env.CURATION_ADDITIONS || '0';
+            const hidden = process.env.CURATION_HIDDEN || '0';
+            const featured = process.env.CURATION_FEATURED || '0';
+            const ordered = process.env.CURATION_ORDERED || '0';
+            const reviews = process.env.CURATION_REVIEWS || '0';
+
+            // Extract reviewer info if available
+            let reviewer = 'system';
+            let timestamp = new Date().toISOString();
+
+            try {
+              const fs = require('fs');
+              if (fs.existsSync('admin/approval.json')) {
+                const approval = JSON.parse(fs.readFileSync('admin/approval.json', 'utf8'));
+                reviewer = approval.reviewer || 'unknown';
+                timestamp = approval.timestamp || timestamp;
+              }
+            } catch (error) {
+              console.log('Note: Could not read approval info from admin/approval.json');
+            }
+
+            const title = `Daily Update Completed - ${new Date().toLocaleDateString()}`;
+            const curationSummary = `edits=${edits}, additions=${additions}, hidden=${hidden}, featured=${featured}`;
+            const extendedSummary = ordered !== '0' || reviews !== '0' ?
+              `, ordered=${ordered}, reviews=${reviews}` : '';
+
+            // Create a closed issue as a success log entry
+            const issue = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: title,
+              body: `## ✅ Daily Update Successfully Completed
+
+            **Deployment Time:** ${new Date().toISOString()}
+            **Reviewer:** ${reviewer}
+            **Approval Timestamp:** ${timestamp}
+            **Workflow Run:** ${workflowUrl}
+
+            ### 📊 Curation Summary:
+            - **Edits:** ${edits}
+            - **Additions:** ${additions}
+            - **Hidden:** ${hidden}
+            - **Featured:** ${featured}
+            - **Ordered:** ${ordered}
+            - **Reviews:** ${reviews}
+
+            ### 🎯 Impact:
+            ${curationSummary}${extendedSummary}
+
+            **Status:** Public site updated successfully with curated content.
+
+            ---
+            *This log entry was created automatically by the daily automation workflow.*`,
+              labels: ['automation', 'deployment-log', 'success'],
+              state: 'closed'  // Close immediately as it's just a log entry
+            });
+
+            console.log(\`Created success log issue #\${issue.data.number}: \${title}\`);
+
+            // Also add to step summary
+            const summaryMarkdown = \`
+            ## ✅ Deployment Completed Successfully
+
+            **Reviewer:** ${reviewer}
+            **Timestamp:** ${timestamp}
+            **Curation:** ${curationSummary}${extendedSummary}
+
+            📝 **Success Log:** Issue #\${issue.data.number}
+            🔗 **Workflow:** [View Run](${workflowUrl})
+            \`;
+
+            require('fs').appendFileSync(process.env.GITHUB_STEP_SUMMARY, summaryMarkdown);
+
+      - name: Get approval status for failure report
+        if: failure()
+        id: approval-status
+        run: |
+          if [ -f "admin/approval.json" ]; then
+            reviewer=$(jq -r '.reviewer // "unknown"' admin/approval.json 2>/dev/null || echo "unknown")
+            timestamp=$(jq -r '.timestamp // "unknown"' admin/approval.json 2>/dev/null || echo "unknown")
+            echo "approval_status=Present: reviewer=$reviewer, timestamp=$timestamp" >> $GITHUB_OUTPUT
+          else
+            echo "approval_status=Missing" >> $GITHUB_OUTPUT
+          fi
 
       - name: Create GitHub issue on failure
         if: failure()
         uses: actions/github-script@v7
         env:
           WORKFLOW_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          APPROVAL_STATUS: ${{ steps.approval-status.outputs.approval_status }}
         with:
           script: |
+            const approvalInfo = process.env.APPROVAL_STATUS || 'Unknown';
             github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -124,12 +476,14 @@ jobs:
             **Workflow Run:** ${process.env.WORKFLOW_URL}
             **Failure Time:** ${new Date().toISOString()}
             **Branch:** ${context.ref}
+            **Approval Status:** ${approvalInfo}
 
             ### Debugging Steps:
             1. Check the workflow logs at the URL above
             2. Review \`daily_orchestrator.py\` output for specific errors
             3. Verify API keys are properly configured in repository secrets
             4. Check data quality validation errors
+            5. Review approval status above for approval-related failures
 
             ### Manual Recovery:
             If needed, run the daily pipeline manually:

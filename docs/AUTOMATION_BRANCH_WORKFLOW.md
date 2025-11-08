@@ -272,9 +272,71 @@ gh run list --workflow="Daily NRW Update" --limit 1
 gh run watch
 ```
 
+## AMENDMENT-043: Bulletproof Daily Automation Details
+
+**From PROJECT_CHARTER.md (Oct 17, 2025)**
+
+### Problem Solved
+
+Daily automation was causing merge conflicts when user worked locally during the day:
+- Bot and user both commit to `main` branch
+- Git conflicts occur when both modify `data.json` or `movie_tracking.json`
+- User must manually resolve conflicts every morning
+- `git push` can fail silently in GitHub Actions (workflow shows green but push failed)
+- Incremental mode only processes NEW movies (existing 235 movies never get agent scraper links)
+
+### Architecture Benefits
+
+- ✅ **No merge conflicts:** Bot and user never write to same branch
+- ✅ **Bot always succeeds:** Force-push never fails
+- ✅ **User control:** Merge automation data when ready (not forced)
+- ✅ **Data quality:** Validation prevents committing broken data
+- ✅ **Failure visibility:** GitHub issues created automatically
+- ✅ **Retroactive improvements:** Weekly full regen populates agent scraper links for all movies
+- ✅ **Easy rollback:** Don't merge automation-updates if something looks wrong
+
+### Daily Workflow (User)
+
+1. **Morning:** Run `./sync_daily_updates.sh` to merge automation data
+2. **Review:** Check what changed (git diff output)
+3. **Merge:** Automation data merged into main
+4. **Work:** Make changes, test locally
+5. **Commit:** Push changes to main
+6. **Next day:** Repeat
+
+### Data Quality Validation
+
+Created `daily_orchestrator.py` with comprehensive validation:
+- Check data.json exists and is valid JSON
+- Verify minimum 200 movies (prevents data loss)
+- Verify at least 1 movie from last 7 days (ensures discovery working)
+- Sample movies for required fields (title, digital_date, poster)
+- Check watch links coverage (some movies should have links)
+
+### Performance Impact
+
+- **Daily automation:** 3-5 minutes (incremental mode, only new movies)
+- **Weekly full regen:** 15-20 minutes (first run with agent scraper), 5-10 minutes (subsequent runs with cache)
+- **User sync:** <1 second (just git merge)
+
+### Failure Handling
+
+- **Validation failure:** Workflow stops, no commit/push, GitHub issue created
+- **Scraper failure:** Graceful degradation (returns null links), workflow continues
+- **Git push failure:** Impossible (force-push always succeeds)
+- **Merge conflict:** User runs `git merge --abort` and regenerates data.json
+
+### Configuration
+
+No new configuration needed. Uses existing:
+- `config.yaml` for agent_scraper and rt_scraper settings
+- Environment variables for API keys
+- GitHub Actions secrets (none needed - uses default GITHUB_TOKEN)
+
 ## References
 
 - Daily workflow: [.github/workflows/daily-check.yml](../.github/workflows/daily-check.yml)
 - Weekly workflow: [.github/workflows/weekly-full-regen.yml](../.github/workflows/weekly-full-regen.yml)
 - Orchestrator: [daily_orchestrator.py](../daily_orchestrator.py)
 - Data generator: [generate_data.py](../generate_data.py)
+- Amendment source: PROJECT_CHARTER.md AMENDMENT-043

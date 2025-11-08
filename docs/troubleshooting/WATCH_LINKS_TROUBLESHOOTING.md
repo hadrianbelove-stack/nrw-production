@@ -336,7 +336,7 @@ python3 streaming_platform_scraper.py  # Playwright-based, headless=False in tes
 
 - [README.md](README.md) - Quick start and overview
 - [IMPLEMENTATION_ROADMAP.md](IMPLEMENTATION_ROADMAP.md) - CRITICAL-003: Watch Links Broken
-- [DAILY_CONTEXT.md](DAILY_CONTEXT.md) - Watch Links Enhancement (Oct 22)
+- [DAILY_CONTEXT.md](../../DAILY_CONTEXT.md) - Watch Links Enhancement (Oct 22)
 - `generate_data.py` `get_watch_links()` function - Watch links waterfall logic
-- [ADMIN_WORKFLOW.md](ADMIN_WORKFLOW.md) - Manual override workflow
+- [ADMIN_WORKFLOW.md](../../ADMIN_WORKFLOW.md) - Manual override workflow
 - [AMAZON_ASIN_CLEANUP.md](AMAZON_ASIN_CLEANUP.md) - Playwright migration details (Section: Playwright Migration)

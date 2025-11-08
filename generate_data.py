@@ -2638,35 +2638,68 @@ class DataGenerator:
 
     def apply_admin_overrides(self, display_movies):
         """Apply admin panel decisions to final output"""
-        
+
         # Load admin decisions if they exist
         hidden = []
         featured = []
-        
+        ordering = []
+
         if os.path.exists('admin/hidden_movies.json'):
             with open('admin/hidden_movies.json', 'r') as f:
                 hidden = json.load(f)
-        
+
         if os.path.exists('admin/featured_movies.json'):
             with open('admin/featured_movies.json', 'r') as f:
                 featured = json.load(f)
-        
+
+        if os.path.exists('admin/ordering.json'):
+            with open('admin/ordering.json', 'r') as f:
+                ordering_data = json.load(f)
+                if isinstance(ordering_data, list):
+                    ordering = ordering_data
+
         # Filter out hidden movies
-        filtered_movies = [m for m in display_movies 
+        filtered_movies = [m for m in display_movies
                           if str(m['id']) not in hidden]
-        
+
         # Mark featured movies
         for movie in filtered_movies:
             if str(movie['id']) in featured:
                 movie['featured'] = True
-        
+
+        # Apply editorial ordering if specified
+        if ordering:
+            ordered_movies = []
+            remaining_movies = []
+
+            # Create a map of movie ID to movie object for quick lookup
+            movie_map = {str(movie['id']): movie for movie in filtered_movies}
+
+            # Add ordered movies first (in specified order)
+            for movie_id in ordering:
+                movie_id_str = str(movie_id)
+                if movie_id_str in movie_map:
+                    ordered_movies.append(movie_map[movie_id_str])
+                    # Remove from remaining to avoid duplicates
+                    del movie_map[movie_id_str]
+
+            # Add remaining movies in their original order (by digital_date desc)
+            remaining_movies = list(movie_map.values())
+            remaining_movies.sort(key=lambda x: x['digital_date'], reverse=True)
+
+            # Combine ordered + remaining
+            filtered_movies = ordered_movies + remaining_movies
+
         hidden_count = len(display_movies) - len(filtered_movies)
         featured_count = len([m for m in filtered_movies if m.get('featured')])
-        
+        ordered_count = len(ordering) if ordering else 0
+
         print(f"📝 Admin overrides applied:")
         print(f"  Hidden movies: {hidden_count}")
         print(f"  Featured movies: {featured_count}")
-        
+        if ordered_count > 0:
+            print(f"  Editorial ordering: {ordered_count} movies pinned to top")
+
         return filtered_movies
 
 def main():

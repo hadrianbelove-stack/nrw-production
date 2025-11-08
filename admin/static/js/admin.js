@@ -107,6 +107,28 @@ function updateStats() {
 
     // Update reviewed count
     updateReviewedCount();
+
+    // Update issue counts
+    updateIssueCounts();
+}
+
+function updateIssueCounts() {
+    // Count issues by type from current DOM state
+    const noScoreCount = document.querySelectorAll('.movie-card[data-has-score="no"]').length;
+    const noTrailerCount = document.querySelectorAll('.movie-card[data-has-trailer="no"]').length;
+    const noPosterCount = document.querySelectorAll('.movie-card[data-has-poster="no"]').length;
+    const noWatchLinksCount = document.querySelectorAll('.movie-card[data-has-watch-links="no"]').length;
+
+    // Update issue count displays
+    const noScoreElement = document.getElementById('no-score-count');
+    const noTrailerElement = document.getElementById('no-trailer-count');
+    const noPosterElement = document.getElementById('no-poster-count');
+    const noWatchLinksElement = document.getElementById('no-watch-links-count');
+
+    if (noScoreElement) noScoreElement.textContent = noScoreCount;
+    if (noTrailerElement) noTrailerElement.textContent = noTrailerCount;
+    if (noPosterElement) noPosterElement.textContent = noPosterCount;
+    if (noWatchLinksElement) noWatchLinksElement.textContent = noWatchLinksCount;
 }
 
 function updateReviewedCount() {
@@ -116,6 +138,51 @@ function updateReviewedCount() {
 
     // Update reviewed count display
     document.getElementById('reviewed-count').textContent = reviewedCount;
+}
+
+function updateReviewProgress() {
+    // Only update if we're in full-review mode
+    const progressElement = document.getElementById('review-progress-text');
+    if (!progressElement) return;
+
+    const allCards = document.querySelectorAll('.movie-card');
+    const reviewedCards = document.querySelectorAll('.movie-card[data-has-review="yes"]');
+    const missingDataCards = document.querySelectorAll('.movie-card[data-missing-any="yes"]');
+
+    const totalMovies = allCards.length;
+    const reviewedCount = reviewedCards.length;
+    const missingDataCount = missingDataCards.length;
+
+    const reviewProgress = totalMovies > 0 ? Math.round((reviewedCount / totalMovies) * 100) : 0;
+
+    progressElement.textContent = `Progress: ${reviewedCount}/${totalMovies} reviewed (${reviewProgress}%) | ${missingDataCount} missing data`;
+}
+
+// Update review progress on page load and after changes
+document.addEventListener('DOMContentLoaded', function() {
+    updateReviewProgress();
+});
+
+// Override updateStats to also update review progress
+const originalUpdateStats = updateStats;
+updateStats = function() {
+    originalUpdateStats.call(this);
+    updateReviewProgress();
+};
+
+// Check if we're in full-review mode based on presence of approve button
+function isFullReviewMode() {
+    return document.getElementById('approve-btn') !== null;
+}
+
+// Suppress regeneration calls in full-review mode and guide to approval
+function suppressRegenerationInFullReview(actionName = 'save changes') {
+    if (isFullReviewMode()) {
+        const message = `Changes saved. In Full Review Mode, use "Approve & Generate" to publish changes instead of auto-regeneration.`;
+        showSuccess(message);
+        return true;
+    }
+    return false;
 }
 
 function regenerateData() {
@@ -167,6 +234,69 @@ function regenerateData() {
     });
 }
 
+function approveAndGenerate() {
+    const btn = document.getElementById('approve-btn');
+    const status = document.getElementById('regenerate-status');
+
+    // Show confirmation dialog
+    if (!confirm('Are you sure you want to approve all changes and generate the final data.json?')) {
+        return;
+    }
+
+    // Disable button and show loading state
+    btn.disabled = true;
+    btn.style.opacity = '0.5';
+    btn.style.cursor = 'not-allowed';
+    status.textContent = 'Approving changes... (this may take 10-30 seconds)';
+    status.style.color = '#ffc107';
+
+    fetch('/approve', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            trigger_generation: true
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            status.textContent = '✅ ' + (data.message || 'Changes approved and data.json generated!');
+            status.style.color = '#28a745';
+            showSuccess('Changes approved successfully');
+
+            // Display delta summary in status area if available
+            if (data.delta) {
+                const deltaText = `Hidden: ${data.delta.hidden}, Featured: ${data.delta.featured}, Ordered: ${data.delta.ordered}`;
+                status.textContent += ' | ' + deltaText;
+            }
+        } else {
+            status.textContent = '❌ ' + (data.error || 'Approval failed');
+            status.style.color = '#dc3545';
+            alert('Approval failed: ' + (data.error || 'Unknown error'));
+        }
+
+        // Re-enable button
+        btn.disabled = false;
+        btn.style.opacity = '1';
+        btn.style.cursor = 'pointer';
+
+        // Clear status after 10 seconds (longer for approval)
+        setTimeout(() => {
+            status.textContent = '';
+        }, 10000);
+    })
+    .catch(error => {
+        status.textContent = '❌ Error: ' + error;
+        status.style.color = '#dc3545';
+        alert('Error triggering approval: ' + error);
+
+        // Re-enable button
+        btn.disabled = false;
+        btn.style.opacity = '1';
+        btn.style.cursor = 'pointer';
+    });
+}
+
 function filterMovies(filter) {
     const cards = document.querySelectorAll('.movie-card');
     const buttons = document.querySelectorAll('.filter-btn');
@@ -203,6 +333,9 @@ function filterMovies(filter) {
                 break;
             case 'no-poster':
                 card.style.display = card.dataset.hasPoster === 'no' ? 'block' : 'none';
+                break;
+            case 'no-watch-links':
+                card.style.display = card.dataset.hasWatchLinks === 'no' ? 'block' : 'none';
                 break;
             case 'missing-data':
                 card.style.display = card.dataset.missingAny === 'yes' ? 'block' : 'none';
@@ -620,3 +753,576 @@ function createYouTubePlaylist() {
         btn.style.cursor = 'pointer';
     });
 }
+
+// Editorial Ordering Functions
+let orderingMode = false;
+let originalOrder = [];
+
+function toggleOrderingMode() {
+    const grid = document.getElementById('movie-grid');
+    const editBtn = document.getElementById('edit-order-btn');
+    const saveBtn = document.getElementById('save-order-btn');
+    const cancelBtn = document.getElementById('cancel-order-btn');
+
+    orderingMode = !orderingMode;
+
+    if (orderingMode) {
+        // Enter ordering mode
+        grid.classList.add('ordering-mode');
+        editBtn.style.display = 'none';
+        saveBtn.style.display = 'inline-block';
+        cancelBtn.style.display = 'inline-block';
+
+        // Show drag handles
+        document.querySelectorAll('.drag-handle').forEach(handle => {
+            handle.style.display = 'block';
+        });
+
+        // Store original order
+        originalOrder = Array.from(grid.children).map(card => card.dataset.movieId);
+
+        // Enable drag and drop
+        enableDragAndDrop();
+
+        showSuccess('Drag and drop movies to reorder them. Click "Save Order" when done.');
+    } else {
+        // Exit ordering mode
+        exitOrderingMode();
+    }
+}
+
+function exitOrderingMode() {
+    const grid = document.getElementById('movie-grid');
+    const editBtn = document.getElementById('edit-order-btn');
+    const saveBtn = document.getElementById('save-order-btn');
+    const cancelBtn = document.getElementById('cancel-order-btn');
+
+    orderingMode = false;
+    grid.classList.remove('ordering-mode');
+    editBtn.style.display = 'inline-block';
+    saveBtn.style.display = 'none';
+    cancelBtn.style.display = 'none';
+
+    // Hide drag handles
+    document.querySelectorAll('.drag-handle').forEach(handle => {
+        handle.style.display = 'none';
+    });
+
+    // Disable drag and drop
+    disableDragAndDrop();
+
+    // Clear any drag-related classes
+    document.querySelectorAll('.movie-card').forEach(card => {
+        card.classList.remove('dragging', 'drag-over');
+        card.draggable = false;
+    });
+}
+
+function cancelOrdering() {
+    // Restore original order
+    const grid = document.getElementById('movie-grid');
+    const cards = Array.from(grid.children);
+
+    // Sort cards by original order
+    cards.sort((a, b) => {
+        const aIndex = originalOrder.indexOf(a.dataset.movieId);
+        const bIndex = originalOrder.indexOf(b.dataset.movieId);
+        return aIndex - bIndex;
+    });
+
+    // Re-append in original order
+    cards.forEach(card => grid.appendChild(card));
+
+    exitOrderingMode();
+    showSuccess('Ordering cancelled - original order restored');
+}
+
+function saveOrdering() {
+    const grid = document.getElementById('movie-grid');
+    const orderedIds = Array.from(grid.children).map(card => card.dataset.movieId);
+
+    const saveBtn = document.getElementById('save-order-btn');
+    const originalText = saveBtn.textContent;
+
+    // Disable button
+    saveBtn.disabled = true;
+    saveBtn.textContent = '⏳ Saving...';
+
+    fetch('/update-ordering', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            ordered_ids: orderedIds
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Mark cards as pinned
+            updatePinnedIndicators(orderedIds);
+
+            exitOrderingMode();
+            showSuccess(data.message || `Editorial ordering saved with ${data.ordered_count || orderedIds.length} movies`);
+        } else {
+            saveBtn.textContent = '❌ Failed';
+            alert('Failed to save ordering: ' + (data.error || 'Unknown error'));
+
+            setTimeout(() => {
+                saveBtn.textContent = originalText;
+                saveBtn.disabled = false;
+            }, 2000);
+        }
+    })
+    .catch(error => {
+        saveBtn.textContent = '❌ Error';
+        alert('Error saving ordering: ' + error);
+
+        setTimeout(() => {
+            saveBtn.textContent = originalText;
+            saveBtn.disabled = false;
+        }, 2000);
+    });
+}
+
+function updatePinnedIndicators(orderedIds) {
+    // Remove all pinned indicators
+    document.querySelectorAll('.movie-card').forEach(card => {
+        card.classList.remove('pinned-order');
+    });
+
+    // Add pinned indicators for ordered movies
+    orderedIds.forEach(movieId => {
+        const card = document.querySelector(`[data-movie-id="${movieId}"]`);
+        if (card) {
+            card.classList.add('pinned-order');
+        }
+    });
+}
+
+function enableDragAndDrop() {
+    const cards = document.querySelectorAll('.movie-card');
+
+    cards.forEach(card => {
+        card.draggable = true;
+
+        card.addEventListener('dragstart', handleDragStart);
+        card.addEventListener('dragend', handleDragEnd);
+        card.addEventListener('dragover', handleDragOver);
+        card.addEventListener('dragenter', handleDragEnter);
+        card.addEventListener('dragleave', handleDragLeave);
+        card.addEventListener('drop', handleDrop);
+    });
+}
+
+function disableDragAndDrop() {
+    const cards = document.querySelectorAll('.movie-card');
+
+    cards.forEach(card => {
+        card.draggable = false;
+
+        card.removeEventListener('dragstart', handleDragStart);
+        card.removeEventListener('dragend', handleDragEnd);
+        card.removeEventListener('dragover', handleDragOver);
+        card.removeEventListener('dragenter', handleDragEnter);
+        card.removeEventListener('dragleave', handleDragLeave);
+        card.removeEventListener('drop', handleDrop);
+    });
+}
+
+let draggedElement = null;
+
+function handleDragStart(e) {
+    draggedElement = this;
+    this.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/html', this.outerHTML);
+}
+
+function handleDragEnd(e) {
+    this.classList.remove('dragging');
+
+    // Clean up all drag-over classes
+    document.querySelectorAll('.movie-card').forEach(card => {
+        card.classList.remove('drag-over');
+    });
+
+    draggedElement = null;
+}
+
+function handleDragOver(e) {
+    if (e.preventDefault) {
+        e.preventDefault();
+    }
+
+    e.dataTransfer.dropEffect = 'move';
+    return false;
+}
+
+function handleDragEnter(e) {
+    if (this !== draggedElement) {
+        this.classList.add('drag-over');
+    }
+}
+
+function handleDragLeave(e) {
+    this.classList.remove('drag-over');
+}
+
+function handleDrop(e) {
+    if (e.stopPropagation) {
+        e.stopPropagation();
+    }
+
+    if (draggedElement !== this) {
+        // Get the grid and all cards
+        const grid = document.getElementById('movie-grid');
+        const cards = Array.from(grid.children);
+        const draggedIndex = cards.indexOf(draggedElement);
+        const targetIndex = cards.indexOf(this);
+
+        // Remove dragged element from its current position
+        grid.removeChild(draggedElement);
+
+        // Insert it at the new position
+        if (targetIndex < draggedIndex) {
+            // Insert before target
+            grid.insertBefore(draggedElement, this);
+        } else {
+            // Insert after target
+            if (this.nextSibling) {
+                grid.insertBefore(draggedElement, this.nextSibling);
+            } else {
+                grid.appendChild(draggedElement);
+            }
+        }
+    }
+
+    this.classList.remove('drag-over');
+    return false;
+}
+
+// Add Movie Modal Functions
+function showAddMovieModal() {
+    const modal = document.getElementById('add-movie-modal');
+    modal.style.display = 'flex';
+
+    // Clear form fields
+    document.getElementById('add-tmdb-id').value = '';
+    document.getElementById('add-title').value = '';
+    document.getElementById('add-digital-date').value = '';
+    document.getElementById('add-synopsis').value = '';
+    document.getElementById('add-poster-url').value = '';
+    document.getElementById('add-movie-status').textContent = '';
+
+    // Focus TMDB ID field
+    setTimeout(() => {
+        document.getElementById('add-tmdb-id').focus();
+    }, 100);
+}
+
+function hideAddMovieModal() {
+    const modal = document.getElementById('add-movie-modal');
+    modal.style.display = 'none';
+}
+
+function addMovie() {
+    const tmdbId = document.getElementById('add-tmdb-id').value.trim();
+    const title = document.getElementById('add-title').value.trim();
+    const digitalDate = document.getElementById('add-digital-date').value.trim();
+    const synopsis = document.getElementById('add-synopsis').value.trim();
+    const posterUrl = document.getElementById('add-poster-url').value.trim();
+
+    const btn = document.getElementById('add-movie-btn');
+    const status = document.getElementById('add-movie-status');
+
+    // Validation
+    if (!tmdbId) {
+        status.textContent = 'TMDB ID is required';
+        status.style.color = '#dc3545';
+        return;
+    }
+
+    if (!title) {
+        status.textContent = 'Movie title is required';
+        status.style.color = '#dc3545';
+        return;
+    }
+
+    // Validate TMDB ID is numeric
+    if (!/^\d+$/.test(tmdbId)) {
+        status.textContent = 'TMDB ID must be numeric';
+        status.style.color = '#dc3545';
+        return;
+    }
+
+    // Disable button
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = '⏳ Adding...';
+    status.textContent = 'Adding movie...';
+    status.style.color = '#ffc107';
+
+    // Build request data
+    const requestData = {
+        tmdb_id: tmdbId,
+        title: title
+    };
+
+    if (digitalDate) {
+        requestData.digital_date = digitalDate;
+    }
+
+    if (synopsis) {
+        requestData.synopsis = synopsis;
+    }
+
+    if (posterUrl) {
+        requestData.poster_url = posterUrl;
+    }
+
+    // Send to server
+    fetch('/add-movie', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(requestData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            status.textContent = '✅ ' + (data.message || 'Movie added successfully!');
+            status.style.color = '#28a745';
+
+            // Show success and close modal after delay
+            showSuccess(data.message || 'Movie added successfully!');
+
+            setTimeout(() => {
+                hideAddMovieModal();
+
+                // Reload page to show new movie
+                window.location.reload();
+            }, 2000);
+        } else {
+            status.textContent = '❌ ' + (data.error || 'Failed to add movie');
+            status.style.color = '#dc3545';
+
+            // Re-enable button
+            btn.disabled = false;
+            btn.textContent = originalText;
+        }
+    })
+    .catch(error => {
+        status.textContent = '❌ Error: ' + error;
+        status.style.color = '#dc3545';
+
+        // Re-enable button
+        btn.disabled = false;
+        btn.textContent = originalText;
+    });
+}
+
+// Close modal when clicking outside content
+document.addEventListener('click', function(event) {
+    const modal = document.getElementById('add-movie-modal');
+    if (event.target === modal) {
+        hideAddMovieModal();
+    }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        const modal = document.getElementById('add-movie-modal');
+        if (modal.style.display === 'flex') {
+            hideAddMovieModal();
+        }
+    }
+});
+
+// Character Counter and Validation Functions
+function updateCharCounter(textarea, counterId, minLength, maxLength) {
+    const counter = document.getElementById(counterId);
+    const warning = document.getElementById(counterId.replace('-counter-', '-warning-'));
+
+    if (!counter) return;
+
+    const currentLength = textarea.value.length;
+    const fieldType = counterId.includes('synopsis') ? 'synopsis' : 'review';
+
+    // Update counter display
+    counter.textContent = `${currentLength}/${maxLength}`;
+
+    // Remove existing classes
+    counter.classList.remove('warning', 'error');
+
+    // Check for issues
+    const issues = validateText(textarea.value, minLength, maxLength, fieldType);
+
+    if (issues.length > 0) {
+        if (currentLength > maxLength * 0.9) {
+            counter.classList.add('warning');
+        }
+
+        if (issues.some(issue => issue.level === 'error')) {
+            counter.classList.add('error');
+        }
+
+        // Show warnings
+        if (warning) {
+            warning.style.display = 'block';
+            warning.innerHTML = issues.map(issue => issue.message).join('<br>');
+            warning.className = issues.some(issue => issue.level === 'error') ? 'validation-error' : 'validation-warning';
+        }
+    } else {
+        // Hide warnings
+        if (warning) {
+            warning.style.display = 'none';
+        }
+    }
+}
+
+function validateText(text, minLength, maxLength, fieldType) {
+    const issues = [];
+    const length = text.length;
+
+    // Length validation
+    if (length > 0 && length < minLength) {
+        issues.push({
+            level: 'warning',
+            message: `${fieldType} is quite short (recommended: ${minLength}+ characters)`
+        });
+    }
+
+    if (length > maxLength * 0.9) {
+        issues.push({
+            level: 'warning',
+            message: `Approaching character limit (${length}/${maxLength})`
+        });
+    }
+
+    if (length > maxLength) {
+        issues.push({
+            level: 'error',
+            message: `Exceeds character limit! (${length}/${maxLength})`
+        });
+    }
+
+    // Basic formatting checks
+    if (text.includes('<') && text.includes('>')) {
+        issues.push({
+            level: 'warning',
+            message: 'Possible HTML tags detected - these will be displayed as text'
+        });
+    }
+
+    // Check for excessive line breaks
+    const lineBreaks = (text.match(/\n/g) || []).length;
+    if (lineBreaks > 10) {
+        issues.push({
+            level: 'warning',
+            message: 'Many line breaks detected - consider condensing'
+        });
+    }
+
+    return issues;
+}
+
+// Initialize character counters on page load
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize synopsis counters
+    document.querySelectorAll('[id^="synopsis-"]').forEach(textarea => {
+        if (textarea.tagName === 'TEXTAREA') {
+            const movieId = textarea.id.replace('synopsis-', '');
+            const counterId = `synopsis-counter-${movieId}`;
+            updateCharCounter(textarea, counterId, 140, 600);
+        }
+    });
+
+    // Initialize review counters
+    document.querySelectorAll('[id^="review-text-"]').forEach(textarea => {
+        if (textarea.tagName === 'TEXTAREA') {
+            const movieId = textarea.id.replace('review-text-', '');
+            const counterId = `review-counter-${movieId}`;
+            updateCharCounter(textarea, counterId, 50, 2000);
+        }
+    });
+
+    // Load delta summary if in full-review mode
+    if (document.getElementById('delta-sidebar')) {
+        refreshDeltaSummary();
+    }
+});
+
+// Delta Summary Functions
+function refreshDeltaSummary() {
+    const loading = document.getElementById('delta-loading');
+    const content = document.getElementById('delta-content');
+
+    if (!loading || !content) return;
+
+    // Show loading state
+    loading.style.display = 'block';
+    content.style.display = 'none';
+
+    fetch('/delta-summary')
+    .then(response => response.json())
+    .then(data => {
+        if (data.success && data.delta) {
+            updateDeltaDisplay(data.delta);
+            loading.style.display = 'none';
+            content.style.display = 'block';
+        } else {
+            loading.textContent = 'Error loading summary: ' + (data.error || 'Unknown error');
+            loading.style.color = '#dc3545';
+        }
+    })
+    .catch(error => {
+        loading.textContent = 'Error: ' + error;
+        loading.style.color = '#dc3545';
+    });
+}
+
+function updateDeltaDisplay(delta) {
+    // Update main stats
+    const reviewedElement = document.getElementById('delta-reviewed');
+    const editsElement = document.getElementById('delta-edits');
+    const additionsElement = document.getElementById('delta-additions');
+
+    if (reviewedElement) reviewedElement.textContent = delta.movies_reviewed || 0;
+    if (editsElement) editsElement.textContent = delta.edits || 0;
+    if (additionsElement) additionsElement.textContent = delta.additions || 0;
+
+    // Update status changes
+    const hiddenElement = document.getElementById('delta-hidden');
+    const featuredElement = document.getElementById('delta-featured');
+    const orderedElement = document.getElementById('delta-ordered');
+
+    if (hiddenElement) hiddenElement.textContent = delta.hidden || 0;
+    if (featuredElement) featuredElement.textContent = delta.featured || 0;
+    if (orderedElement) orderedElement.textContent = delta.ordered || 0;
+
+    // Update issues
+    const issues = delta.issues || {};
+    const missingRtElement = document.getElementById('delta-missing-rt');
+    const missingTrailerElement = document.getElementById('delta-missing-trailer');
+    const missingStreamElement = document.getElementById('delta-missing-stream');
+    const missingRentElement = document.getElementById('delta-missing-rent');
+    const missingBuyElement = document.getElementById('delta-missing-buy');
+
+    if (missingRtElement) missingRtElement.textContent = issues.missing_rt || 0;
+    if (missingTrailerElement) missingTrailerElement.textContent = issues.missing_trailer || 0;
+    if (missingStreamElement) missingStreamElement.textContent = issues.missing_stream_link || 0;
+    if (missingRentElement) missingRentElement.textContent = issues.missing_rent_link || 0;
+    if (missingBuyElement) missingBuyElement.textContent = issues.missing_buy_link || 0;
+}
+
+// Override updateStats to also refresh delta summary when changes happen
+const originalUpdateStatsWithDelta = updateStats;
+updateStats = function() {
+    originalUpdateStatsWithDelta.call(this);
+
+    // Refresh delta summary if it exists (with debouncing)
+    if (document.getElementById('delta-sidebar')) {
+        clearTimeout(window.deltaRefreshTimeout);
+        window.deltaRefreshTimeout = setTimeout(refreshDeltaSummary, 1000);
+    }
+};

@@ -16,7 +16,7 @@ This is a **living document** that gets overwritten each session with current in
 - **Maintains audit trail** in the diary/ folder
 - **Reduces AI confusion** by keeping focus on current state
 
-See [AMENDMENT-036](PROJECT_CHARTER.md#amendment-036-rolling-daily-context) and [AMENDMENT-037](PROJECT_CHARTER.md#amendment-037-daily-context-system-three-file-loading-pattern) for governance rules.
+See [020: Rolling Daily Context](PROJECT_CHARTER.md#020-rolling-daily-context) and [021: Daily Context System (Three-File Loading Pattern)](PROJECT_CHARTER.md#021-daily-context-system-three-file-loading-pattern) for governance rules.
 
 ---
 
@@ -39,7 +39,7 @@ See [AMENDMENT-036](PROJECT_CHARTER.md#amendment-036-rolling-daily-context) and 
   - Test script ready: tests/test_agent_scraper_improvements.py (6 test cases, never run - archived)
 - ✅ **Test infrastructure**: Enhanced with pre-flight checks, timing, diagnostics
 - ✅ **Documentation framework**: Comprehensive analysis and verification guides created
-  - AMAZON_ASIN_CLEANUP.md (Phases 1-4)
+  - docs/troubleshooting/AMAZON_ASIN_CLEANUP.md (Phases 1-4)
   - SCRAPER_EFFECTIVENESS_ANALYSIS.md
   - ASYNC_FIX_VERIFICATION.md
   - RUN_VERIFICATION_CHECKLIST.md
@@ -107,7 +107,7 @@ See [AMENDMENT-036](PROJECT_CHARTER.md#amendment-036-rolling-daily-context) and 
 **6. Documentation and Analysis**
 - Created ASYNC_FIX_VERIFICATION.md with verification process
 - Created SCRAPER_EFFECTIVENESS_ANALYSIS.md with comprehensive analysis
-- Updated AMAZON_ASIN_CLEANUP.md with async fix and agent scraper sections
+- Updated docs/troubleshooting/AMAZON_ASIN_CLEANUP.md with async fix and agent scraper sections
 - Created RUN_VERIFICATION_CHECKLIST.md for step-by-step verification
 - Enhanced test scripts with timing, diagnostics, and baseline comparison
 
@@ -232,7 +232,7 @@ See [AMENDMENT-036](PROJECT_CHARTER.md#amendment-036-rolling-daily-context) and 
 
 ### Next (After Async Fix Verified)
 1. ⏳ **Run agent scraper tests**: test_agent_scraper_improvements.py --clear-cache
-2. ⏳ **Document results**: Fill placeholders in AMAZON_ASIN_CLEANUP.md and SCRAPER_EFFECTIVENESS_ANALYSIS.md
+2. ⏳ **Document results**: Fill placeholders in docs/troubleshooting/AMAZON_ASIN_CLEANUP.md and SCRAPER_EFFECTIVENESS_ANALYSIS.md
 3. ⏳ **Verify data quality**: Check Google fallbacks = 0, placeholder ASINs = 0
 4. ⏳ **Update documentation**: Add actual success rates and metrics
 
@@ -357,7 +357,7 @@ See [AMENDMENT-036](PROJECT_CHARTER.md#amendment-036-rolling-daily-context) and 
 - **agent_link_scraper.py** - Use PlaywrightManager + Amazon improvements
 - **streaming_platform_scraper.py** - Use PlaywrightManager
 - **test_agent_scraper_improvements.py** - Added pre-flight checks, timing, diagnostics
-- **AMAZON_ASIN_CLEANUP.md** - Added Phase 3 (async fix) and Phase 4 (agent improvements)
+- **docs/troubleshooting/AMAZON_ASIN_CLEANUP.md** - Added Phase 3 (async fix) and Phase 4 (agent improvements)
 - **DAILY_CONTEXT.md** - This file, updated with session summary
 - **RUN_VERIFICATION_CHECKLIST.md** - Enhanced with quick start and troubleshooting
 
@@ -517,7 +517,7 @@ For more information, see README.md and DAILY_CONTEXT.md
 
 ### Context Files (Read These First)
 - **Daily:** This file (DAILY_CONTEXT.md) - Current state and recent changes
-- **Governance:** [PROJECT_CHARTER.md](PROJECT_CHARTER.md) - Rules, amendments, API keys
+- **Governance:** [PROJECT_CHARTER.md](PROJECT_CHARTER.md) - Rules, amendments
 - **Pipeline:** [NRW_DATA_WORKFLOW_EXPLAINED.md](NRW_DATA_WORKFLOW_EXPLAINED.md) - How data flows
 - **History:**  - End-of-session archives (when needed)
 

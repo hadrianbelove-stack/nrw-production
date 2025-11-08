@@ -8,7 +8,9 @@ import json
 import sys
 import os
 import yaml
-from datetime import datetime
+import time
+import hashlib
+from datetime import datetime, timedelta
 from pathlib import Path
 
 
@@ -101,7 +103,116 @@ class NRWOrchestrator:
         )
         self.has_changes = result.returncode != 0
         return self.has_changes
-    
+
+    def wait_for_admin_approval(self, timeout_minutes=60):
+        """Wait for admin approval in admin/approval.json"""
+        approval_file = 'admin/approval.json'
+
+        # Check if running in CI environment
+        is_ci = os.getenv('GITHUB_ACTIONS') or os.getenv('CI')
+
+        if is_ci:
+            # In CI, don't wait - just check if approval exists
+            if not os.path.exists(approval_file):
+                print("❌ CI Environment: No admin approval found")
+                print(f"   Missing file: {approval_file}")
+                print("   Admin must run 'python3 admin.py --full-review' and approve changes")
+                sys.exit(1)
+
+            # Validate the approval
+            try:
+                self.validate_approval()
+                print("✅ CI Environment: Admin approval validated")
+                return True
+            except Exception as e:
+                print(f"❌ CI Environment: Invalid approval: {e}")
+                sys.exit(1)
+
+        # Local environment - wait for approval
+        print(f"\n⏸️  Waiting for admin approval...")
+        print(f"   Please run: python3 admin.py --full-review")
+        print(f"   Then review changes and click 'Approve & Generate'")
+        print(f"   Waiting for: {approval_file}")
+        print(f"   Timeout: {timeout_minutes} minutes")
+
+        start_time = time.time()
+        timeout_seconds = timeout_minutes * 60
+        poll_interval = 5  # Check every 5 seconds
+
+        while time.time() - start_time < timeout_seconds:
+            if os.path.exists(approval_file):
+                try:
+                    self.validate_approval()
+                    print(f"✅ Admin approval received and validated")
+                    return True
+                except Exception as e:
+                    print(f"⚠️  Approval file found but invalid: {e}")
+                    print(f"   Waiting for valid approval...")
+
+            time.sleep(poll_interval)
+
+            # Show progress every 30 seconds
+            elapsed = time.time() - start_time
+            if int(elapsed) % 30 == 0:
+                remaining = (timeout_seconds - elapsed) / 60
+                print(f"   Still waiting... {remaining:.1f} minutes remaining")
+
+        # Timeout
+        print(f"❌ Timeout: No admin approval received after {timeout_minutes} minutes")
+        sys.exit(1)
+
+    def validate_approval(self):
+        """Validate admin/approval.json format and freshness"""
+        approval_file = 'admin/approval.json'
+
+        if not os.path.exists(approval_file):
+            raise Exception(f"Approval file {approval_file} does not exist")
+
+        try:
+            with open(approval_file, 'r') as f:
+                approval = json.load(f)
+        except json.JSONDecodeError as e:
+            raise Exception(f"Invalid JSON in approval file: {e}")
+
+        # Required fields
+        if 'timestamp' not in approval:
+            raise Exception("Approval missing required field: timestamp")
+
+        # Check timestamp freshness (within 2 hours)
+        try:
+            approval_time = datetime.fromisoformat(approval['timestamp'].replace('Z', '+00:00'))
+            now = datetime.now().astimezone()
+            time_diff = now - approval_time
+
+            if time_diff > timedelta(hours=2):
+                raise Exception(f"Approval is stale: {time_diff.total_seconds()/3600:.1f} hours old (max 2 hours)")
+
+        except ValueError as e:
+            raise Exception(f"Invalid timestamp format: {e}")
+
+        # Optional reviewer validation
+        reviewer = approval.get('reviewer')
+        if reviewer is not None and (not isinstance(reviewer, str) or not reviewer.strip()):
+            raise Exception("Reviewer field must be non-empty string if provided")
+
+        # Optional tracking digest validation
+        tracking_digest = approval.get('tracking_digest')
+        if tracking_digest:
+            try:
+                # Compute current digest of movie_tracking.json
+                if os.path.exists('movie_tracking.json'):
+                    with open('movie_tracking.json', 'rb') as f:
+                        current_digest = hashlib.sha256(f.read()).hexdigest()
+
+                    if tracking_digest != current_digest:
+                        raise Exception("Tracking digest mismatch - movie_tracking.json has changed since approval")
+                else:
+                    raise Exception("movie_tracking.json not found for digest validation")
+            except Exception as e:
+                raise Exception(f"Tracking digest validation failed: {e}")
+
+        return approval
+
     def validate_rt_data(self):
         """Validate RT data in data.json (non-critical check)"""
         try:
@@ -444,8 +555,8 @@ class NRWOrchestrator:
             # Use current working directory by default
             print(f"📂 Working directory: {Path.cwd()}")
         
-        # Pipeline steps - using production discovery path
-        pipeline = [
+        # Pipeline steps - modified to include mandatory admin approval gate
+        discovery_pipeline = [
             # Phase 1: Production Discovery (replaces legacy movie_tracker.py daily)
             ("python3 generate_data.py --discover",
              "Discover new premieres using production discovery", True),
@@ -457,27 +568,45 @@ class NRWOrchestrator:
             # Phase 1.75: Validate discovery results (fail if recall drops below threshold)
             ("python3 ops/validate_discovery.py --days-back 7",
              "Validate discovery against ground truth", False),  # Non-critical to avoid blocking automation
-
-            # Phase 2: Generate final display data with enrichment
-            ("python3 generate_data.py",
-             "Generate data.json for website with enriched links", True),
         ]
-        
-        # Execute pipeline
-        for cmd, description, critical in pipeline:
-            success = self.run_command(cmd, description, critical)
-            # If generate_data.py succeeded, validate data quality
-            if success and "generate_data.py" in cmd:
-                print("\n🔍 Validating RT data...")
-                self.validate_rt_data()
 
-                print("\n🔍 Validating data quality...")
+        # Execute discovery and monitoring pipeline
+        for cmd, description, critical in discovery_pipeline:
+            self.run_command(cmd, description, critical)
+
+        # Phase 3: Mandatory Admin Approval Gate
+        print(f"\n📋 Phase 3: Admin Approval Gate")
+        self.wait_for_admin_approval()
+
+        # Phase 4: Generate final display data with enrichment (post-approval only)
+        print(f"\n📊 Phase 4: Post-Approval Data Generation")
+        success = self.run_command(
+            "python3 generate_data.py",
+            "Generate data.json for website with enriched links",
+            True
+        )
+
+        # Validate data quality only after approval and generation
+        if success:
+            print("\n🔍 Validating RT data...")
+            self.validate_rt_data()
+
+            print("\n🔍 Validating data quality...")
+            try:
+                self.validate_data_quality()
+            except Exception as e:
+                # Get approval details for failure context
                 try:
-                    self.validate_data_quality()
-                except Exception as e:
-                    print(f"❌ Data quality validation failed: {e}")
-                    self.print_summary()
-                    sys.exit(1)
+                    approval = self.validate_approval()
+                    reviewer = approval.get('reviewer', 'unknown')
+                    timestamp = approval.get('timestamp', 'unknown')
+                    print(f"❌ Data quality validation failed after approval by {reviewer} at {timestamp}")
+                except:
+                    print(f"❌ Data quality validation failed")
+
+                print(f"   Error: {e}")
+                self.print_summary()
+                sys.exit(1)
 
         # Optional newsletter generation
         self.generate_newsletter_if_enabled()

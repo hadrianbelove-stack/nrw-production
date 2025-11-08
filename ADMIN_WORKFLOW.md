@@ -2,9 +2,20 @@
 
 ## Overview
 
-NRW uses a **"publish first, curate later"** model where movies automatically appear on the public site when discovered by automation. The admin panel is used to refine the display after publication, not to pre-approve content. This approach ensures rapid discovery of new releases while allowing manual curation to maintain quality.
+NRW uses a **mandatory pre-publish approval** model where all discovered changes must be reviewed and approved by an admin before reaching the public site. The admin panel serves as a quality gate ensuring only curated content is published.
 
-**Core Philosophy**: Movies are **visible by default** → Admin curates post-publication
+### Security Reminder ⚠️
+
+**Never use default admin credentials beyond localhost.** Set `ADMIN_USERNAME` and `ADMIN_PASSWORD` environment variables for any non-local usage:
+
+```bash
+export ADMIN_USERNAME="your-secure-username"
+export ADMIN_PASSWORD="your-secure-password"
+```
+
+**Core Philosophy**: Mandatory pre-publish approval → Quality-first curation
+
+**Full Review Mode**: Admin runs `python3 admin.py --full-review` to enable approval gate behavior.
 
 ## Core Workflow Diagram
 
@@ -12,25 +23,43 @@ NRW uses a **"publish first, curate later"** model where movies automatically ap
 GitHub Actions (Daily Automation)
     ↓ Discovers new movies via TMDB API
 movie_tracking.json (All Movies Database)
-    ↓ Processed by generate_data.py
+    ↓ APPROVAL GATE: Orchestrator waits for admin approval
+Admin Panel (http://localhost:5555 --full-review)
+    ↓ Admin reviews changes, curates data
+    ↓ Click "Approve & Generate"
+admin/approval.json (Approval Artifact - ephemeral)
+    ↓ Approval validated by orchestrator
 data.json (Public Display Data)
-    ↓ Movies automatically visible
+    ↓ Only approved content published
 Public Site (http://localhost:8001)
-    ↓ Admin reviews new content
-Admin Panel (http://localhost:5555)
-    ↓ Hide/Feature/Edit actions
-Regenerate data.json
-    ↓ Apply curation changes
-Updated Public Site
 ```
 
+## Artifact Versioning Policy
+
+**Admin artifacts are ephemeral and not versioned in git:**
+- `admin/approval.json` - Approval state (ephemeral)
+- `admin/ordering.json` - Movie ordering preferences (ephemeral)
+- `admin/hidden_movies.json` - Hidden movie IDs (ephemeral)
+- `admin/featured_movies.json` - Featured movie IDs (ephemeral)
+- `admin/watch_link_overrides.json` - Watch link overrides (ephemeral)
+- `admin/movie_reviews.json` - Custom movie reviews (ephemeral)
+- `diary/*.md` - Daily workflow logs (ephemeral)
+
+**Only `data.json` is versioned** as it represents the final published state.
+
+**For CI automation:** Approvals must be created locally before CI runs. Admin artifacts are cleaned up after successful publication to prevent stale state.
+
 **Workflow Steps:**
-1. **Discovery**: GitHub Actions automation discovers new movies
-2. **Auto-Publication**: Movies added to `movie_tracking.json` and appear on public site
-3. **Curation**: Admin uses panel to hide unwanted movies and feature important releases
-4. **Regeneration**: Changes applied to `data.json` to update public display
+1. **Discovery**: Orchestrator runs discovery and monitoring phases
+2. **Approval Gate**: System waits for mandatory admin approval
+3. **Full Review**: Admin runs `admin.py --full-review` to inspect changes
+4. **Curation**: Admin hides/features movies, fixes data, adds manual entries
+5. **Approval**: Click "Approve & Generate" creates approval artifact
+6. **Publication**: Only after approval does system generate data.json
 
 ## Admin Panel Features
+
+**For detailed admin panel implementation:** See [docs/features/ADMIN_PANEL_SPEC.md](docs/features/ADMIN_PANEL_SPEC.md)
 
 ### Hide Button (🚫 Hide)
 Removes movie from public display by adding ID to `admin/hidden_movies.json`.
@@ -65,48 +94,74 @@ Inline editing of all movie metadata with manual correction tracking.
 - Edit fields directly in the admin interface
 - Click "💾 Save All Changes" button
 - Changes tracked with admin override flags
-- Regenerate `data.json` to apply updates
+- In full-review mode, changes are saved but not published until approval
+
+### Approve & Generate Button (✅ Approve & Generate)
+**Full Review Mode Only** - Main approval control for mandatory gate.
+
+**Functionality:**
+- Creates `admin/approval.json` with timestamp and validation metadata
+- Authorizes orchestrator to proceed with data.json generation
+- Includes curator delta summary (edits, additions, hidden, featured counts)
+- Tracks reviewer identity and approval timestamp
+
+**UI Copy**: "Approves curated changes and authorizes generation"
+
+**When to Use:**
+- After completing all curation tasks (hiding/featuring/editing)
+- When satisfied with movie data quality
+- Ready to publish changes to public site
 
 ## Daily Curation Routine
 
 ### Step-by-Step Workflow
 
-1. **Morning Sync**
+1. **Orchestrator Notification**
+   - Daily orchestrator runs discovery and monitoring
+   - System pauses at approval gate, waiting for admin
+   - Terminal shows: "⏸️ Waiting for admin approval..."
+
+2. **Launch Full Review Mode**
    ```bash
-   ./sync_daily_updates.sh
+   python3 admin.py --full-review
    ```
-   Merge automation updates from overnight discovery
+   Opens admin interface at `http://localhost:5555` in approval mode
 
-2. **Launch Admin Panel**
-   ```bash
-   python3 admin.py
-   ```
-   Opens admin interface at `http://localhost:5555`
+3. **Review Discovered Changes**
+   - Examine newly tracked movies and status changes
+   - Check data quality and completeness
+   - Identify candidates for hiding, featuring, or editing
 
-3. **Review New Movies**
-   - Filter by recent dates or use search
-   - Check public site to see new additions
-   - Identify candidates for hiding or featuring
+4. **Manual Movie Addition** (if needed)
+   - Use "Add Movie" form for titles missed by discovery
+   - Provide TMDB ID, title, and basic metadata
+   - System fetches additional details automatically
 
-4. **Hide Unwanted Movies**
+5. **Hide Unwanted Movies**
    - Click "🚫 Hide" for low-quality releases
    - Use for wrong genre, duplicates, or poor quality
-   - Hidden movies removed from public display
+   - Changes saved but not published until approval
 
-5. **Feature Important Releases**
+6. **Feature Important Releases**
    - Click "⭐ Feature" for high-profile titles
    - Highlights movie on public site
    - Use for awards contenders, popular releases
 
-6. **Fix Missing Data**
+7. **Fix Missing Data**
    - Click "⚠️ Missing Data" filter
    - Edit incomplete movie information
    - Add missing RT scores, trailers, or descriptions
 
-7. **Apply Changes**
-   - Click "🔄 Regenerate data.json"
-   - Updates public display with curation changes
-   - Verify changes on public site
+8. **Editorial Ordering** (optional)
+   - Use drag-and-drop to reorder movies
+   - Pin important titles to top of display
+   - Creates `admin/ordering.json` with ordered IDs
+
+9. **Final Approval**
+   - Click "✅ Approve & Generate" button
+   - Creates approval artifact with curator metadata
+   - Orchestrator resumes and generates final data.json
+   - Public site updated with approved changes
 
 ## Filter Reference
 
@@ -125,37 +180,58 @@ The admin panel provides several filter buttons for efficient curation:
 - **`movie_tracking.json`**: Master database containing all discovered movies
 - **`admin/hidden_movies.json`**: List of movie IDs excluded from public display
 - **`admin/featured_movies.json`**: List of movie IDs highlighted on site
+- **`admin/ordering.json`**: Editorial ordering (pins specific movies to top)
+- **`admin/approval.json`**: Approval artifact with timestamp and validation metadata
+- **`metrics/daily.jsonl`**: Curator delta logs for audit trail
 - **`data.json`**: Public display data (filtered by admin overrides)
 
 ### Processing Mechanism
-The `apply_admin_overrides()` method in `generate_data.py` (lines 2197-2228) handles curation:
+The `apply_admin_overrides()` method in `generate_data.py` handles curation:
 - Filters out movies listed in `admin/hidden_movies.json`
 - Marks movies in `admin/featured_movies.json` as featured
+- Applies editorial ordering from `admin/ordering.json`
 - Applies manual data corrections and overrides
 - Generates clean `data.json` for public consumption
 
-### Default Visibility
-Movies are **visible by default** unless explicitly hidden. The automation adds all discovered movies to `movie_tracking.json`, and they appear on the public site through the standard generation process. Only movies added to the hidden list are filtered out.
+### Approval Gate Mechanism
+The `daily_orchestrator.py` implements mandatory approval:
+- Validates `admin/approval.json` timestamp (within 2 hours)
+- Checks optional tracking digest for data consistency
+- In CI: exits immediately if approval missing or stale
+- Locally: polls every 5 seconds until approval received
+
+### Authentication
+The admin panel uses HTTP Basic Authentication with default credentials:
+- **Default credentials**: `admin` / `changeme`
+- **Override**: Set `ADMIN_USERNAME` and `ADMIN_PASSWORD` environment variables
+
+**⚠️ SECURITY WARNING: Change default credentials immediately in any shared or deployed environment; set `ADMIN_USERNAME`/`ADMIN_PASSWORD` via environment variables.**
+
+### Default Approval Requirement
+All discovered changes require **mandatory admin approval** before reaching the public site. The automation adds discovered movies to `movie_tracking.json`, but they only appear on the public site after admin approval through the full-review workflow.
 
 ## FAQ
 
 **Q: Do I need to approve movies before they appear on the site?**
-A: No, movies are automatically visible when discovered by automation. Use the admin panel to remove unwanted movies after they appear.
+A: Yes, the mandatory approval gate requires admin review before any changes reach the public site. Use `python3 admin.py --full-review` to enable approval mode.
+
+**Q: What happens if I don't approve changes?**
+A: The orchestrator will wait indefinitely (locally) or fail (in CI) until approval is provided. No changes reach the public site without explicit approval.
 
 **Q: How do I remove a movie from the public site?**
-A: Use the "🚫 Hide" button in the admin panel, then click "🔄 Regenerate data.json" to apply the change.
-
-**Q: What happens if I don't curate regularly?**
-A: All discovered movies will appear on the public site, which may include low-quality releases or inappropriate content.
+A: Use the "🚫 Hide" button in the admin panel, then click "✅ Approve & Generate" to authorize the change.
 
 **Q: Can I undo hiding a movie?**
-A: Yes, filter by "Hidden" to find the movie, then click "👁️ Show" to make it visible again.
+A: Yes, filter by "Hidden" to find the movie, then click "👁️ Show" and approve the change to make it visible again.
 
-**Q: Do I need to regenerate after every change?**
-A: Yes, changes to hidden/featured status or metadata require regeneration to update `data.json`.
+**Q: Do I need to regenerate after every change in full-review mode?**
+A: No, in full-review mode changes are saved but not published until you click "✅ Approve & Generate".
 
 **Q: How do I find movies that need attention?**
 A: Use the "⚠️ Missing Data" filter to identify incomplete movies requiring manual correction.
+
+**Q: What if I need to add a movie that discovery missed?**
+A: Use the "Add Movie" form to manually add titles by TMDB ID. The system will fetch metadata automatically.
 
 ## Best Practices
 

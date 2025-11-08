@@ -11,7 +11,7 @@
 
 - **AI Assistants:** Read this at session start alongside `PROJECT_CHARTER.md` and `DAILY_CONTEXT.md`
 - **Update Protocol:** Update at end of each session with decisions made and status changes
-- **Relationship to Log:** `PROJECT_LOG.md` records what happened; this roadmap tracks what's planned
+- **Relationship to Log:** `diary/` entries record what happened; this roadmap tracks what's planned
 
 ## Critical Issues (Block Core Functionality)
 
@@ -62,6 +62,36 @@
 
 **Dependencies:** Monitor through Nov 10
 
+### CRITICAL-005: Mandatory Admin Approval Gate
+**Status:** ✅ IMPLEMENTED/ACTIVE
+
+**Problem:** Risk of unreviewed data being published to public site without quality control gate.
+
+**Impact:** Quality and trust issues if incorrect data, missing reviews, or incomplete information reaches end users without editorial oversight.
+
+**Solution:** Admin approval before generation system implemented in admin.py /approve route with validation artifacts.
+
+**Implementation:**
+- Admin panel runs in full-review mode (`python3 admin.py --full-review`)
+- All data changes require explicit admin approval via "Approve & Generate" button
+- Approval creates admin/approval.json artifact with tracking digest and delta summary
+- Daily orchestrator validates approval before allowing data.json generation
+- Metrics logged to metrics/daily.jsonl for tracking approval patterns
+- Diary entries created with delta summaries for historical record
+
+**Success Criteria:**
+- 100% approval before publish (no data.json generation without approval.json)
+- Admin metrics recorded for all approvals with issue counts and reviewer info
+- Quality gate prevents publication of unreviewed content
+
+**Owner:** Admin Panel System
+**Due/Review dates:** Active implementation, ongoing operation
+
+**Reference:**
+- [NRW_DATA_WORKFLOW_EXPLAINED.md](NRW_DATA_WORKFLOW_EXPLAINED.md) - Phase 3: Manual Review & Quality Gate
+- [admin.py](admin.py) - `/approve` route implementation (lines 1799-1921)
+- [ADMIN_WORKFLOW.md](ADMIN_WORKFLOW.md) - Complete workflow documentation
+
 ### CRITICAL-003: Watch Links Broken - Watchmode API Issue
 **Status:** 🔴 ACTIVE - Watchmode quota exhausted, scrapers failing in CI
 
@@ -73,7 +103,7 @@
 - `data.json` lines 47-56: Afterburn has Google search URL for Amazon
 - `data.json` lines 92-97: Ice Fall has Google search URL for Fandango
 - Pattern repeats across all 251 movies
-- `generate_data.py` line 77: Hardcoded Watchmode API key
+- `generate_data.py`: Hardcoded Watchmode API key (see SYSTEM_ARCHITECTURE.md §4 Configuration & Secrets)
 - `config.yaml` line 28: Agent scraper disabled
 
 **Root Cause Investigation:** The original "100% Google search fallbacks" issue was caused by:
@@ -223,7 +253,6 @@ The original test invalidation notice from 2025-10-24 regarding TMDB API configu
 
 **Impact:** Cosmetic polish.
 
-**Evidence:** `PROJECT_LOG.md` line 152
 
 **Solution Decided:** [TBD - CSS improvements]
 
@@ -368,7 +397,7 @@ The original test invalidation notice from 2025-10-24 regarding TMDB API configu
 - Script crashed on line 179 of generate_data.py during initialization
 - Reported "0% Watchmode success" is misleading - Watchmode was never tested
 - Amazon scraper results (100% success) are valid and confirmed
-- Resolution: Add TMDB API key to config.yaml (from PROJECT_CHARTER.md line 259)
+- Resolution: Add TMDB API key to config.yaml (from SYSTEM_ARCHITECTURE.md §4)
 - Next action: Re-run full validation test to get accurate Watchmode statistics
 - Expected outcome: 60-80% Watchmode success, 85-90% final coverage
 - Confirmed integration pipeline functioning correctly
@@ -491,6 +520,7 @@ The original test invalidation notice from 2025-10-24 regarding TMDB API configu
 | CRITICAL-002 | Discovery validation | 🔴 Critical | ⏳ Pending | Future data |
 | CRITICAL-003 | Watch links broken | 🔴 Critical | 🔴 Active | User experience |
 | CRITICAL-004 | Daily automation failures | 🔴 Critical | 🟡 Recovering | Stability & coverage |
+| CRITICAL-005 | Mandatory admin gate | 🔴 Critical | ✅ Implemented | Quality control |
 | HIGH-001 | Admin panel paths | 🟠 High | ⏸️ Deferred | Admin tool |
 | HIGH-002 | Newsletter export | 🟠 High | ✅ Complete | User requirement |
 | HIGH-003 | Review system | 🟠 High | ✅ Resolved | Newsletter content |

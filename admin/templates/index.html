@@ -9,6 +9,16 @@
 <body>
     <div class="header">
         <h1>🎬 New Release Wall - Admin Panel</h1>
+        {% if full_review_mode %}
+        <div class="full-review-banner">
+            <div class="banner-content">
+                🔒 <strong>FULL REVIEW MODE</strong> - Auto-regeneration disabled. Use "Approve & Generate" to publish changes.
+                <div class="review-progress">
+                    <span id="review-progress-text">Progress: Loading...</span>
+                </div>
+            </div>
+        </div>
+        {% endif %}
         <div class="stats">
             <div class="stat-item">
                 <span>Total Movies:</span>
@@ -32,16 +42,29 @@
             </div>
         </div>
         <div class="header-actions">
+            {% if full_review_mode %}
+            <button onclick="approveAndGenerate()"
+                    class="action-btn btn-large success"
+                    id="approve-btn">
+                ✅ Approve & Generate
+            </button>
+            {% else %}
             <button onclick="regenerateData()"
                     class="action-btn btn-large"
                     id="regenerate-btn">
                 🔄 Regenerate data.json
             </button>
+            {% endif %}
             <span id="regenerate-status" class="status-text"></span>
 
             <button onclick="togglePlaylistForm()"
                     class="action-btn btn-large danger">
                 📺 Create YouTube Playlist
+            </button>
+
+            <button onclick="showAddMovieModal()"
+                    class="action-btn btn-large info">
+                ➕ Add Movie
             </button>
         </div>
 
@@ -142,6 +165,53 @@
             <div id="playlist-status" class="status-message"></div>
             <div id="playlist-result" class="result-container"></div>
         </div>
+
+        <!-- Add Movie Modal -->
+        <div id="add-movie-modal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>➕ Add New Movie</h3>
+                    <button class="close-btn" onclick="hideAddMovieModal()">✕</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-field">
+                        <label class="form-label">TMDB ID (required):</label>
+                        <input type="text" id="add-tmdb-id" placeholder="e.g., 12345" class="form-input">
+                        <div class="field-hint">Find movies at <a href="https://www.themoviedb.org" target="_blank">themoviedb.org</a></div>
+                    </div>
+
+                    <div class="form-field">
+                        <label class="form-label">Title (required):</label>
+                        <input type="text" id="add-title" placeholder="Movie title" class="form-input">
+                    </div>
+
+                    <div class="form-field">
+                        <label class="form-label">Digital Release Date (optional):</label>
+                        <input type="date" id="add-digital-date" class="form-input">
+                    </div>
+
+                    <div class="form-field">
+                        <label class="form-label">Synopsis (optional):</label>
+                        <textarea id="add-synopsis" placeholder="Movie description" rows="3" class="form-input"></textarea>
+                    </div>
+
+                    <div class="form-field">
+                        <label class="form-label">Poster URL (optional):</label>
+                        <input type="url" id="add-poster-url" placeholder="https://image.tmdb.org/t/p/w500/..." class="form-input">
+                    </div>
+
+                    <div id="add-movie-status" class="status-message"></div>
+                </div>
+                <div class="modal-footer">
+                    <button class="action-btn success" onclick="addMovie()" id="add-movie-btn">
+                        ➕ Add Movie
+                    </button>
+                    <button class="action-btn secondary" onclick="hideAddMovieModal()">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="filters">
@@ -150,14 +220,121 @@
             ⚠️ Missing Data
             <span class="notification-badge">{{ missing_data_count }}</span>
         </button>
+        <button class="filter-btn issue-filter" onclick="filterMovies('no-score')" title="Missing RT Score">
+            🍅 <span class="issue-count" id="no-score-count">0</span>
+        </button>
+        <button class="filter-btn issue-filter" onclick="filterMovies('no-trailer')" title="Missing Trailer">
+            ▶️ <span class="issue-count" id="no-trailer-count">0</span>
+        </button>
+        <button class="filter-btn issue-filter" onclick="filterMovies('no-poster')" title="Missing Poster">
+            🖼️ <span class="issue-count" id="no-poster-count">0</span>
+        </button>
+        <button class="filter-btn issue-filter" onclick="filterMovies('no-watch-links')" title="Missing Watch Links">
+            📺 <span class="issue-count" id="no-watch-links-count">0</span>
+        </button>
         <button class="filter-btn" onclick="filterMovies('visible')">Visible</button>
         <button class="filter-btn" onclick="filterMovies('hidden')">Hidden</button>
         <button class="filter-btn" onclick="filterMovies('featured')">Featured</button>
         <button class="filter-btn" onclick="filterMovies('reviewed')">📝 Reviewed</button>
         <input type="text" id="search-box" class="search-box" placeholder="Search movies..." onkeyup="searchMovies()">
+
+        <div class="ordering-controls">
+            <button class="action-btn btn-small" id="edit-order-btn" onclick="toggleOrderingMode()">
+                📐 Edit Order
+            </button>
+            <button class="action-btn btn-small success" id="save-order-btn" onclick="saveOrdering()" style="display: none;">
+                💾 Save Order
+            </button>
+            <button class="action-btn btn-small secondary" id="cancel-order-btn" onclick="cancelOrdering()" style="display: none;">
+                ❌ Cancel
+            </button>
+        </div>
     </div>
 
-    <div class="movie-grid" id="movie-grid">
+    <div class="main-content">
+        <!-- Delta Summary Sidebar (only in full-review mode) -->
+        {% if full_review_mode %}
+        <div class="delta-sidebar" id="delta-sidebar">
+            <div class="sidebar-header">
+                <h4>📊 Approval Summary</h4>
+                <button class="refresh-delta-btn" onclick="refreshDeltaSummary()" title="Refresh Summary">🔄</button>
+            </div>
+            <div class="sidebar-content">
+                <div id="delta-loading" class="loading-indicator">Loading...</div>
+                <div id="delta-content" style="display: none;">
+                    <div class="delta-section">
+                        <h5>Movies & Edits</h5>
+                        <div class="delta-stats">
+                            <div class="delta-stat">
+                                <span class="stat-label">Reviewed:</span>
+                                <span class="stat-value" id="delta-reviewed">0</span>
+                            </div>
+                            <div class="delta-stat">
+                                <span class="stat-label">Edits:</span>
+                                <span class="stat-value" id="delta-edits">0</span>
+                            </div>
+                            <div class="delta-stat">
+                                <span class="stat-label">Additions:</span>
+                                <span class="stat-value" id="delta-additions">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="delta-section">
+                        <h5>Status Changes</h5>
+                        <div class="delta-stats">
+                            <div class="delta-stat">
+                                <span class="stat-label">Hidden:</span>
+                                <span class="stat-value" id="delta-hidden">0</span>
+                            </div>
+                            <div class="delta-stat">
+                                <span class="stat-label">Featured:</span>
+                                <span class="stat-value" id="delta-featured">0</span>
+                            </div>
+                            <div class="delta-stat">
+                                <span class="stat-label">Ordered:</span>
+                                <span class="stat-value" id="delta-ordered">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="delta-section">
+                        <h5>Issues Found</h5>
+                        <div class="delta-stats">
+                            <div class="delta-stat">
+                                <span class="stat-label">Missing RT:</span>
+                                <span class="stat-value" id="delta-missing-rt">0</span>
+                            </div>
+                            <div class="delta-stat">
+                                <span class="stat-label">Missing Trailer:</span>
+                                <span class="stat-value" id="delta-missing-trailer">0</span>
+                            </div>
+                            <div class="delta-stat">
+                                <span class="stat-label">Missing Stream:</span>
+                                <span class="stat-value" id="delta-missing-stream">0</span>
+                            </div>
+                            <div class="delta-stat">
+                                <span class="stat-label">Missing Rent:</span>
+                                <span class="stat-value" id="delta-missing-rent">0</span>
+                            </div>
+                            <div class="delta-stat">
+                                <span class="stat-label">Missing Buy:</span>
+                                <span class="stat-value" id="delta-missing-buy">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="delta-section">
+                        <small class="delta-note">
+                            This summary reflects current state and will be included in approval.
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="movie-grid" id="movie-grid">
         {% for movie_id, movie in movies.items() %}
         <div class="movie-card {% if movie_id in hidden %}hidden{% endif %} {% if movie_id in featured %}featured{% endif %}"
              data-movie-id="{{ movie_id }}"
@@ -168,7 +345,12 @@
              data-has-director="{{ 'yes' if movie.director and movie.director != 'Unknown' else 'no' }}"
              data-has-country="{{ 'yes' if movie.get('country') else 'no' }}"
              data-has-review="{{ 'yes' if movie.get('review', {}).get('review') else 'no' }}"
-             data-missing-any="{{ 'yes' if not movie.rt_score or not movie.get('links', {}).get('trailer') or not (movie.poster_url or movie.get('poster')) or not movie.director or movie.director == 'Unknown' or not movie.get('country') else 'no' }}">
+             data-has-watch-links="{{ 'yes' if movie.get('watch_links') and (movie.get('watch_links', {}).get('streaming') or movie.get('watch_links', {}).get('rent') or movie.get('watch_links', {}).get('buy')) else 'no' }}"
+             data-missing-any="{{ 'yes' if not movie.rt_score or not movie.get('links', {}).get('trailer') or not (movie.poster_url or movie.get('poster')) or not movie.director or movie.director == 'Unknown' or not movie.get('country') else 'no' }}"
+             draggable="false">
+            <div class="drag-handle" style="display: none;">
+                <div class="drag-icon">⋮⋮</div>
+            </div>
             {% if movie.poster_url %}
             <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" class="movie-poster">
             {% else %}
@@ -181,6 +363,22 @@
                 <div class="movie-title">{{ movie.title }}</div>
                 <div class="movie-meta">
                     {{ movie.year or '2025' }} • {{ movie.director or 'Unknown Director' }}
+                </div>
+
+                <!-- Issue Badges -->
+                <div class="issue-badges">
+                    {% if not movie.rt_score %}
+                    <span class="issue-badge rt-missing" title="Missing RT Score">🍅</span>
+                    {% endif %}
+                    {% if not movie.get('links', {}).get('trailer') %}
+                    <span class="issue-badge trailer-missing" title="Missing Trailer">▶️</span>
+                    {% endif %}
+                    {% if not (movie.poster_url or movie.get('poster')) %}
+                    <span class="issue-badge poster-missing" title="Missing Poster">🖼️</span>
+                    {% endif %}
+                    {% if not (movie.get('watch_links') and (movie.get('watch_links', {}).get('streaming') or movie.get('watch_links', {}).get('rent') or movie.get('watch_links', {}).get('buy'))) %}
+                    <span class="issue-badge watch-missing" title="Missing Watch Links">📺</span>
+                    {% endif %}
                 </div>
 
                 <!-- Editable Fields Section -->
@@ -276,11 +474,15 @@
                     <div style="margin-bottom: 0.5rem;">
                         <label style="display: block; font-size: 0.75rem; color: #999; margin-bottom: 0.2rem;">
                             Synopsis:
+                            <span class="char-counter" id="synopsis-counter-{{ movie_id }}">0/600</span>
                         </label>
                         <textarea id="synopsis-{{ movie_id }}"
                                   placeholder="Movie description/plot summary"
                                   rows="3"
+                                  maxlength="600"
+                                  oninput="updateCharCounter(this, 'synopsis-counter-{{ movie_id }}', 140, 600)"
                                   style="width: 100%; padding: 0.3rem; background: {% if not movie.get('synopsis') %}#3a1a1a{% else %}#2a2a2a{% endif %}; border: 1px solid {% if not movie.get('synopsis') %}#dc3545{% else %}#3a3a3a{% endif %}; color: white; border-radius: 4px; font-size: 0.75rem; resize: vertical; font-family: inherit;">{{ movie.get('synopsis', '') }}</textarea>
+                        <div class="validation-warning" id="synopsis-warning-{{ movie_id }}" style="display: none;"></div>
                     </div>
 
                     <!-- Poster URL -->
@@ -353,13 +555,17 @@
                     <div class="edit-field-group" style="border-top: 1px solid #3a3a3a; padding-top: 0.5rem; margin-top: 0.5rem;">
                         <label class="edit-label" style="font-weight: bold; color: #66b3ff;">
                             📝 Custom Review (for Newsletter):
+                            <span class="char-counter" id="review-counter-{{ movie_id }}">0/2000</span>
                         </label>
 
                         <!-- Review Text -->
                         <textarea id="review-text-{{ movie_id }}"
                                   placeholder="Write your review here... (This will appear in the newsletter)"
                                   rows="5"
+                                  maxlength="2000"
+                                  oninput="updateCharCounter(this, 'review-counter-{{ movie_id }}', 50, 2000)"
                                   style="width: 100%; padding: 0.5rem; background: {% if movie.get('review', {}).get('review') %}#2a2a2a{% else %}#1a1a1a{% endif %}; border: 1px solid {% if movie.get('review', {}).get('review') %}#3a3a3a{% else %}#555{% endif %}; color: white; border-radius: 4px; font-size: 0.85rem; resize: vertical; font-family: inherit; margin-bottom: 0.5rem;">{{ movie.get('review', {}).get('review', '') }}</textarea>
+                        <div class="validation-warning" id="review-warning-{{ movie_id }}" style="display: none;"></div>
 
                         <!-- Review Metadata Row -->
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.5rem;">
@@ -421,7 +627,7 @@
                         <div style="font-size: 0.7rem; color: #666; margin-top: 0.3rem;">
                             Added: {{ movie.get('review', {}).get('added_date', '')[:10] }}
                             {% if movie.get('review', {}).get('last_modified') %}
-                            | Modified: {{ movie.get('review', {}).get('last_modified', '')[:10] %}
+                            | Modified: {{ movie.get('review', {}).get('last_modified', '')[:10] }}
                             {% endif %}
                         </div>
                         {% endif %}
@@ -474,6 +680,7 @@
             </div>
         </div>
         {% endfor %}
+        </div>
     </div>
 
     <div class="success-msg" id="success-msg">Changes saved!</div>

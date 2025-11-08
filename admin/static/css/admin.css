@@ -274,6 +274,10 @@ h1 {
     background: #6c757d;
 }
 
+.btn-large.info {
+    background: #17a2b8;
+}
+
 .status-text {
     color: #999;
     font-size: 0.85rem;
@@ -501,4 +505,403 @@ h1 {
     align-items: center;
     justify-content: center;
     color: #666;
+}
+
+/* Full Review Mode Banner */
+.full-review-banner {
+    background: linear-gradient(45deg, #ff6b6b, #ffd700);
+    color: #000;
+    padding: 1rem;
+    margin: 1rem 0;
+    border-radius: 8px;
+    border: 2px solid #ff6b6b;
+    box-shadow: 0 4px 8px rgba(255, 107, 107, 0.3);
+}
+
+.banner-content {
+    text-align: center;
+    font-weight: bold;
+}
+
+.review-progress {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: normal;
+}
+
+/* Ordering Controls */
+.ordering-controls {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.btn-small {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.8rem;
+}
+
+/* Drag and Drop */
+.movie-grid.ordering-mode {
+    cursor: grab;
+}
+
+.movie-grid.ordering-mode .movie-card {
+    cursor: grab;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.movie-grid.ordering-mode .movie-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
+}
+
+.movie-card.dragging {
+    opacity: 0.5;
+    transform: rotate(5deg);
+    cursor: grabbing;
+}
+
+.movie-card.drag-over {
+    border-color: #ff6b6b;
+    background: rgba(255, 107, 107, 0.1);
+}
+
+.drag-handle {
+    position: absolute;
+    top: 0.5rem;
+    left: 0.5rem;
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 0.3rem;
+    border-radius: 4px;
+    z-index: 100;
+    cursor: grab;
+}
+
+.drag-handle:active {
+    cursor: grabbing;
+}
+
+.drag-icon {
+    font-size: 1rem;
+    line-height: 1;
+    letter-spacing: -2px;
+}
+
+.movie-card.pinned-order::after {
+    content: "📌";
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: rgba(255, 215, 0, 0.9);
+    color: #000;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    z-index: 10;
+}
+
+/* Modal Styles */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: #2a2a2a;
+    border-radius: 8px;
+    border: 1px solid #3a3a3a;
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid #3a3a3a;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: #ff6b6b;
+    font-size: 1.2rem;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: #999;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.3s;
+}
+
+.close-btn:hover {
+    background: #dc3545;
+    color: white;
+}
+
+.modal-body {
+    padding: 1rem;
+}
+
+.modal-footer {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+    padding: 1rem;
+    border-top: 1px solid #3a3a3a;
+}
+
+.field-hint {
+    font-size: 0.8rem;
+    color: #999;
+    margin-top: 0.3rem;
+}
+
+.field-hint a {
+    color: #66b3ff;
+    text-decoration: none;
+}
+
+.field-hint a:hover {
+    text-decoration: underline;
+}
+
+/* Issue Badges */
+.issue-badges {
+    display: flex;
+    gap: 0.3rem;
+    margin: 0.5rem 0;
+    flex-wrap: wrap;
+}
+
+.issue-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    background: #dc3545;
+    color: white;
+    border-radius: 50%;
+    font-size: 0.7rem;
+    cursor: help;
+    opacity: 0.8;
+    transition: opacity 0.3s;
+}
+
+.issue-badge:hover {
+    opacity: 1;
+}
+
+.issue-badge.rt-missing {
+    background: #ff6b6b;
+}
+
+.issue-badge.trailer-missing {
+    background: #ff0000;
+}
+
+.issue-badge.poster-missing {
+    background: #6c757d;
+}
+
+.issue-badge.watch-missing {
+    background: #17a2b8;
+}
+
+/* Issue Filter Buttons */
+.filter-btn.issue-filter {
+    background: #333;
+    border: 1px solid #666;
+    position: relative;
+}
+
+.filter-btn.issue-filter:hover {
+    background: #444;
+}
+
+.filter-btn.issue-filter.active {
+    background: #ff6b6b;
+    border-color: #ff6b6b;
+}
+
+.issue-count {
+    margin-left: 0.3rem;
+    font-size: 0.8rem;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.1rem 0.4rem;
+    border-radius: 12px;
+    min-width: 1.5rem;
+    text-align: center;
+}
+
+/* Character Counter and Validation */
+.char-counter {
+    float: right;
+    font-size: 0.7rem;
+    color: #999;
+    font-weight: normal;
+}
+
+.char-counter.warning {
+    color: #ffc107;
+}
+
+.char-counter.error {
+    color: #dc3545;
+}
+
+.validation-warning {
+    font-size: 0.7rem;
+    color: #ffc107;
+    margin-top: 0.2rem;
+    padding: 0.2rem;
+    background: rgba(255, 193, 7, 0.1);
+    border-radius: 3px;
+}
+
+.validation-error {
+    font-size: 0.7rem;
+    color: #dc3545;
+    margin-top: 0.2rem;
+    padding: 0.2rem;
+    background: rgba(220, 53, 69, 0.1);
+    border-radius: 3px;
+}
+
+/* Main Content Layout */
+.main-content {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+}
+
+/* Delta Summary Sidebar */
+.delta-sidebar {
+    position: sticky;
+    top: 2rem;
+    min-width: 250px;
+    max-width: 300px;
+    background: #2a2a2a;
+    border: 1px solid #3a3a3a;
+    border-radius: 8px;
+    padding: 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid #3a3a3a;
+    background: #333;
+    border-radius: 8px 8px 0 0;
+}
+
+.sidebar-header h4 {
+    margin: 0;
+    color: #ff6b6b;
+    font-size: 1rem;
+}
+
+.refresh-delta-btn {
+    background: none;
+    border: none;
+    color: #999;
+    cursor: pointer;
+    padding: 0.3rem;
+    border-radius: 3px;
+    transition: all 0.3s;
+}
+
+.refresh-delta-btn:hover {
+    background: #444;
+    color: #fff;
+}
+
+.sidebar-content {
+    padding: 1rem;
+}
+
+.loading-indicator {
+    text-align: center;
+    color: #999;
+    font-style: italic;
+}
+
+.delta-section {
+    margin-bottom: 1rem;
+}
+
+.delta-section:last-child {
+    margin-bottom: 0;
+}
+
+.delta-section h5 {
+    margin: 0 0 0.5rem 0;
+    color: #66b3ff;
+    font-size: 0.9rem;
+    border-bottom: 1px solid #3a3a3a;
+    padding-bottom: 0.3rem;
+}
+
+.delta-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.delta-stat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+}
+
+.stat-label {
+    color: #999;
+}
+
+.stat-value {
+    color: #fff;
+    font-weight: bold;
+    background: #3a3a3a;
+    padding: 0.1rem 0.4rem;
+    border-radius: 12px;
+    min-width: 1.5rem;
+    text-align: center;
+}
+
+.delta-note {
+    color: #666;
+    font-style: italic;
+    line-height: 1.3;
+}
+
+.movie-grid {
+    flex: 1;
 }

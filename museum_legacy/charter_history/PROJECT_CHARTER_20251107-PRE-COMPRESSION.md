@@ -55,11 +55,11 @@ Archive via `diary/YYYY-MM-DD.md` (immutable end-of-session snapshots)
 
 | New ID | Category | Summary | Impact | See Also |
 |--------|----------|---------|--------|----------|
-| 001-011 | Process | AI/ops discipline (numbering, assumptions, run semantics, scripts, safeguards, idle time, summary, mode awareness, operational safeguards, multiple solutions, roadmap discipline) | AI behavior & operator workflow | Ops: README.md §Daily Workflow |
-| 012 | System | Database update cadence - generate_data handles discovery+providers | Daily ops automation | Spec: SYSTEM_ARCHITECTURE.md §Pipeline |
-| 013-019 | Data/UI | Tracking strategy, SSOT contract, waterfall mandate, schema lock, runtime hierarchy, UI contract, pipeline contract | Data integrity & UI consistency | Spec: SYSTEM_ARCHITECTURE.md §Data Contracts |
+| 001-011 | Process | AI/ops discipline (numbering, assumptions, run semantics, scripts, safeguards, idle time, summary, mode awareness, operational safeguards, multiple solutions, roadmap discipline) | AI behavior & operator workflow | README.md §Daily Workflow |
+| 012 | System | Database update cadence - generate_data handles discovery+providers | Daily ops automation | SYSTEM_ARCHITECTURE.md §Pipeline |
+| 013-019 | Data/UI | Tracking strategy, SSOT contract, waterfall mandate, schema lock, runtime hierarchy, UI contract, pipeline contract | Data integrity & UI consistency | SYSTEM_ARCHITECTURE.md §Data Contracts |
 | 020-021 | Context | Rolling daily context; three-file loading pattern | Session start workflow | DAILY_CONTEXT.md |
-| 022 | Feature | Watchmode API integration for watch links | Watch links coverage | Spec: SYSTEM_ARCHITECTURE.md §4 (Configuration & Secrets) |
+| 022 | Feature | Watchmode API integration for watch links | Watch links coverage | docs/features/WATCHMODE.md |
 | 023 | Feature | Agent link scraper (Playwright) + overrides fallback stack | Watch links fallback | docs/features/AGENT_LINK_SCRAPER.md |
 | 024 | Feature | RT scraper inlined, rate limiting, coverage | Enrichment pipeline | docs/features/RT_SCRAPER.md |
 | 025 | Automation | Two-branch automation strategy | CI/CD workflow | docs/AUTOMATION_BRANCH_WORKFLOW.md |
@@ -69,7 +69,7 @@ Archive via `diary/YYYY-MM-DD.md` (immutable end-of-session snapshots)
 | 029 | Data | Bootstrap date accuracy policy & tools | Data quality transparency | date_verification.py |
 | 030 | Feature | Newsletter generation with reviews | Content generation | docs/features/NEWSLETTER_GENERATOR.md |
 | 031 | Ops | Unified launcher for daily operations | Dev ergonomics | docs/features/UNIFIED_LAUNCHER.md |
-| 032 | Governance | Documentation discipline & root cleanliness | Repo hygiene | Ops: README.md §Docs |
+| 032 | Governance | Documentation discipline & root cleanliness | Repo hygiene | README.md §Docs |
 
 ## Active Amendments
 
@@ -117,7 +117,7 @@ Archive via `diary/YYYY-MM-DD.md` (immutable end-of-session snapshots)
 ### 009: Operational Safeguards
 **Decision:** UTC timestamps (with seconds); atomic writes (write→fsync→rename); scripts `cd` repo root; absolute paths; no symlinks in bundles; plain `PROJECT_CHARTER.md` inside bundle = fail.
 **Status:** ✅ Active - prevents operational corruption
-**Spec:** SYSTEM_ARCHITECTURE.md §4 (Configuration & Secrets)
+**Spec:** SYSTEM_ARCHITECTURE.md §Operational Safeguards
 
 ### 010: Multiple Solutions Rule
 **Decision:** Present ≥2-3 distinct options for significant problems. Rate 1-10. Give pros/cons. Recommend best but show alternatives for audit.
@@ -258,59 +258,114 @@ Archive via `diary/YYYY-MM-DD.md` (immutable end-of-session snapshots)
 
 ## Data Contracts (Essentials)
 
-### Core Data Invariants
-- **movie_tracking.json**: Master database (~330 records), status-driven enrichment
-- **data.json**: Frontend display subset (~30 records), filtered by status="available"
-- **Required fields**: tmdb_id, title, digital_date, poster, crew, synopsis, runtime, links
-- **Enrichment pattern**: Only process movies transitioning to "available" status
+### movie_tracking.json Schema
+```json
+{
+  "title": "Movie Name",
+  "tmdb_id": 12345,
+  "status": "available|tracking|removed",
+  "enriched": true,
+  "enrichment_date": "2025-11-05T10:30:00Z",
+  "digital_date": "2025-10-15",
+  "rt_url": "https://...",
+  "rt_rating": 85,
+  "platforms": ["netflix", "hulu"],
+  "manually_corrected": true,
+  "manual_rt_score": true,
+  "last_manual_edit": "2025-10-19T..."
+}
+```
 
-### File Hierarchy
+### data.json Schema
+Filtered, enriched subset for frontend display:
+```json
+{
+  "tmdb_id": 12345,
+  "imdb_id": "tt1234567",
+  "title": "Movie Title",
+  "digital_date": "2025-10-15",
+  "poster": "https://image.tmdb.org/...",
+  "crew": {"director": "Director Name", "cast": ["Actor 1", "Actor 2"]},
+  "synopsis": "Movie description...",
+  "metadata": {"runtime": 120},
+  "links": {"trailer": "https://youtube.com/...", "rt": "https://rottentomatoes.com/...", "wikipedia": "https://en.wikipedia.org/..."},
+  "watch_links": {"streaming": {"service": "Netflix", "link": "https://..."}, "rent": {"service": "Amazon", "link": "https://..."}}
+}
+```
 
-#### Runtime (Repository Root)
-- `index.html`, `data.json`, `assets/` - User-facing interface
-- **Size**: ~2MB total, updated daily via automation
+### Required Fields
+- Core: tmdb_id, imdb_id, title, digital_date, poster, crew.director, crew.cast[], synopsis, metadata.runtime
+- Links: trailer, rt, wikipedia (nullable)
+- Watch Links: streaming/rent/buy categories (optional, structured per schema)
 
-#### Pipeline (Non-Runtime)
-- `movie_tracking.json`, `config.yaml` - Core data and configuration
-- `generate_data.py`, `daily_orchestrator.py`, `admin.py` - Processing engines
-- `cache/`, `overrides/`, `ops/` - Support infrastructure
+## File Hierarchy
 
-#### Archives
-- `diary/` - Session snapshots (immutable), `museum_legacy/` - Deprecated code
+### Runtime Files (Repository Root)
+- `index.html` - Main user interface (~15KB, updated daily)
+- `data.json` - Movie data for frontend (~80KB, updated daily)
+- `assets/` - CSS, images, static files (~2MB, rarely updated)
 
-## Configuration Sources
+### Core Data Files
+- `movie_tracking.json` - Master movie database (~330 records)
+- `config.yaml` - System configuration (API keys, timeouts)
+- `watchmode_quota.json` - API usage tracking
 
-**Configuration priorities**: Environment variables (production) → config.yaml (development) → fail fast
-For full details, see `SYSTEM_ARCHITECTURE.md §4 (Configuration & Secrets)`.
+### Pipeline Files (Non-Runtime)
+- `generate_data.py` - Data processing engine (20-30s runtime)
+- `daily_orchestrator.py` - Daily automation controller (30s runtime)
+- `admin.py` - Web admin interface (on-demand)
+- `cache/` - Scraper cache files (RT, Wikipedia, YouTube, Watch Links)
+- `overrides/` - Manual data fixes and corrections
+- `ops/` - Operational scripts (backup, archive, health checks)
+
+### Archives
+- `diary/` - Daily context archives (YYYY-MM-DD.md, immutable)
+- `museum_legacy/` - Legacy code and deprecated documentation
 
 ## Quick Reference
 
-### Emergency Commands
+### Daily Operations
 ```bash
-# Branch divergence fix
-git checkout automation-updates && git reset --hard main && git push --force
+# Start session
+./launch_all.sh     # Menu interface - choose Option 4 (All Services)
 
-# Data corruption check
-grep "Processing.*movies" logs/    # Normal: 1-10, Warning: 50+, Critical: 100+
+# Manual pipeline
+python3 generate_data.py    # Standard data generation
+python3 admin.py           # QA interface (localhost:5000)
 
-# System restore
-cp movie_tracking.json.backup movie_tracking.json && cat watchmode_quota.json
+# Session end
+./ops/archive_daily_context.sh    # Archive DAILY_CONTEXT.md to diary/
 ```
 
-### Configuration & Performance
-- **Config sources**: Environment variables (production) → config.yaml (development) → fail fast
-- **Normal operation**: 1-10 movies/day, 30s runtime
-- **Critical thresholds**: 50+ movies (warning), 100+ movies (corruption), 2+ hour runtime
+### Emergency Commands
+```bash
+# Fix branch divergence
+git checkout automation-updates && git reset --hard main && git push --force
 
-**Detailed specifications**: SYSTEM_ARCHITECTURE.md §4 (Configuration & Secrets)
-**Daily operations**: README.md §Daily Workflow
+# Check processing load
+grep "Processing.*movies" logs/    # Normal: 1-10 movies, Warning: 50+, Critical: 100+
+
+# Restore from corruption
+cp movie_tracking.json.backup movie_tracking.json
+
+# API quota check
+cat watchmode_quota.json    # Monitor monthly usage vs 1,000 limit
+```
+
+### Configuration Sources
+1. **Environment variables** (production) - `TMDB_API_KEY`, `WATCHMODE_API_KEY`
+2. **config.yaml** (local development) - fallback for API keys and system settings
+3. **Fail fast** - clear error messages if neither is configured
+
+### Performance Targets
+- **Normal operation**: 1-10 movies enriched daily, 30-second runtime
+- **Warning threshold**: 50+ movies (possible corruption)
+- **Critical threshold**: 100+ movies (definite corruption, 2+ hour runtime)
 
 ---
 
 ## Historical Footer
 
-**Archived Amendments:** See museum_legacy/charter_history/AMENDMENT-HISTORICAL-ARCHIVE.md
-**Historical Archives:**
-- [Pre-compression charter](museum_legacy/charter_history/PROJECT_CHARTER_20251107-PRE-COMPRESSION.md) - Full charter before compression
-- [Amendment archives](museum_legacy/charter_history/AMENDMENT-HISTORICAL-ARCHIVE.md) - Historical amendment versions
-**This charter maintained under 400 lines per 032: Documentation discipline.**
+**Archived Amendments:** 18 historical amendments (e.g., original 013-024: Bundles superseded by git workflow).
+**Full archive:** `museum_legacy/charter_history/AMENDMENT-HISTORICAL-ARCHIVE.md`
+**This charter maintained under 450 lines per AMENDMENT-032 documentation discipline.**
