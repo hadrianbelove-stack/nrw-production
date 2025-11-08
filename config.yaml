@@ -28,8 +28,9 @@ api:
   #   - WATCHMODE_API_KEY (overrides watchmode_api_key below)
   # See PROJECT_CHARTER.md "API Keys & External Services" for details
 
-  tmdb_api_key: "your_tmdb_api_key_here"  # Get from https://www.themoviedb.org/settings/api
-  watchmode_api_key: "your_watchmode_api_key_here"  # Get from https://api.watchmode.com/
+  tmdb_api_key: "99b122ce7fa3e9065d7b7dc6e660772d"  # Get from https://www.themoviedb.org/settings/api
+  watchmode_api_key: "bBMpVr31lRfUsSFmgoQp0jixDrQt8DIKCVg7EFdp"  # Get from https://api.watchmode.com/
+  omdb_api_key: "8eb019b"  # OMDb API key (optional, for fallbacks)
   tmdb_rate_limit: 0.1  # Seconds between API calls
   max_retries: 3
   max_pages_bootstrap: 49  # Maximum pages to fetch for bootstrap operation
