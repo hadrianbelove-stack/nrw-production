@@ -544,9 +544,7 @@ jobs:
 
           # Add discovery metrics if we have them
           if [ "${DISCOVERY_POLLED:-0}" != "0" ] || [ "${DISCOVERY_TRANSITIONS:-0}" != "0" ]; then
-            commit_msg="$commit_msg
-
-Discovery: polled=${DISCOVERY_POLLED:-0}, transitions=${DISCOVERY_TRANSITIONS:-0}"
+            commit_msg="$commit_msg"$'\n\n'"Discovery: polled=${DISCOVERY_POLLED:-0}, transitions=${DISCOVERY_TRANSITIONS:-0}"
           fi
 
           # Add new arrivals count if available
@@ -556,9 +554,7 @@ Discovery: polled=${DISCOVERY_POLLED:-0}, transitions=${DISCOVERY_TRANSITIONS:-0
 
           # Add curation summary if we have metrics
           if [ "${CURATION_EDITS:-0}" != "0" ] || [ "${CURATION_ADDITIONS:-0}" != "0" ] || [ "${CURATION_HIDDEN:-0}" != "0" ] || [ "${CURATION_FEATURED:-0}" != "0" ]; then
-            commit_msg="$commit_msg
-
-Curation: edits=${CURATION_EDITS:-0}, adds=${CURATION_ADDITIONS:-0}, hidden=${CURATION_HIDDEN:-0}, featured=${CURATION_FEATURED:-0}"
+            commit_msg="$commit_msg"$'\n\n'"Curation: edits=${CURATION_EDITS:-0}, adds=${CURATION_ADDITIONS:-0}, hidden=${CURATION_HIDDEN:-0}, featured=${CURATION_FEATURED:-0}"
 
             if [ "${CURATION_ORDERED:-0}" != "0" ] || [ "${CURATION_REVIEWS:-0}" != "0" ]; then
               commit_msg="$commit_msg, ordered=${CURATION_ORDERED:-0}, reviews=${CURATION_REVIEWS:-0}"
@@ -662,7 +658,7 @@ Curation: edits=${CURATION_EDITS:-0}, adds=${CURATION_ADDITIONS:-0}, hidden=${CU
         with:
           script: |
             const approvalInfo = process.env.APPROVAL_STATUS || 'Unknown';
-            github.rest.issues.create({
+            await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
               title: `Daily Automation Failed - ${new Date().toISOString().split('T')[0]}`,
