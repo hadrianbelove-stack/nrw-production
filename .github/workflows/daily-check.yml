@@ -58,20 +58,15 @@ jobs:
         run: |
           python3 -m playwright install --with-deps chromium
 
-      - name: Playwright preflight health check
+      - name: Run scraper smoke tests
         run: |
-          echo "🔍 Running Playwright preflight health check..."
-          python3 -c "
-          from playwright_manager import get_playwright_manager
-          import json
-          manager = get_playwright_manager()
-          result = manager.health_check()
-          print(f'Preflight health check result: {json.dumps(result, indent=2)}')
-          if result['status'] != 'healthy':
-              print('❌ Playwright preflight health check failed')
-              exit(1)
-          print('✅ Playwright preflight health check passed')
-          "
+          echo "🧪 Running lightweight headless scraper tests..."
+          python3 -m pytest -q tests/test_platform_scraper.py::test_platform_scraper --max-amazon 3 --max-apple 2
+          python3 -m pytest -q tests/test_amazon_scraper_fix.py
+        continue-on-error: false
+        env:
+          NRW_SCRAPER_HEADLESS: 'true'
+
 
       - name: Run discovery contract tests
         run: |
