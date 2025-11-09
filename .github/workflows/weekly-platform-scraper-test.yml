@@ -36,6 +36,9 @@ jobs:
     - name: Run RT and Wikipedia scraper tests
       run: |
         python3 -m pytest tests/test_rt_and_wikipedia_scrapers.py -v -m slow
+        python3 -m pytest tests/test_wikipedia_scraper.py -v
+        python3 -m pytest tests/test_wikipedia_known_movies.py -v
+        python3 -m pytest tests/test_rt_scraper_inline.py -v
       env:
         NRW_SCRAPER_HEADLESS: 'true'
       continue-on-error: true  # Don't fail workflow if enrichment tests fail
