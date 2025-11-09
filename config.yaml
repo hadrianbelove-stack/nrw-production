@@ -36,16 +36,10 @@ discovery:
   enable_pass_b: true  # Enable Pass B: Theatrical releases (primary_release_date)
 
 api:
-  # ⚠️ SECURITY: API keys moved to environment variables for security
-  # Set these environment variables for local development and production:
-  #   - TMDB_API_KEY (required) - Get from https://www.themoviedb.org/settings/api
-  #   - WATCHMODE_API_KEY (required) - Get from https://api.watchmode.com/
-  #   - OMDB_API_KEY (optional, for fallbacks)
-  # See PROJECT_CHARTER.md "API Keys & External Services" for details
-
-  # tmdb_api_key: ""  # REMOVED: Use TMDB_API_KEY environment variable
-  # watchmode_api_key: ""  # REMOVED: Use WATCHMODE_API_KEY environment variable
-  # omdb_api_key: ""  # REMOVED: Use OMDB_API_KEY environment variable
+  # API keys: Environment variables take precedence, these are fallbacks for local development
+  tmdb_api_key: "99b122ce7fa3e9065d7b7dc6e660772d"  # TMDB API key for movie data
+  watchmode_api_key: "bBMpVr31lRfUsSFmgoQp0jixDrQt8DIKCVg7EFdp"  # Watchmode API key for watch links
+  omdb_api_key: "8eb019b"  # OMDB API key for additional movie data
   tmdb_rate_limit: 0.1  # Seconds between API calls
   max_retries: 3
   max_pages_bootstrap: 49  # Maximum pages to fetch for bootstrap operation
