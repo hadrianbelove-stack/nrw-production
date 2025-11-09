@@ -486,6 +486,7 @@ function saveAllFields(movieId) {
     const trailerLink = document.getElementById(`trailer-link-${movieId}`).value;
     const director = document.getElementById(`director-${movieId}`).value;
     const country = document.getElementById(`country-${movieId}`).value;
+    const year = document.getElementById(`year-${movieId}`).value;
     const synopsis = document.getElementById(`synopsis-${movieId}`).value;
     const posterUrl = document.getElementById(`poster-url-${movieId}`).value;
 
@@ -528,6 +529,7 @@ function saveAllFields(movieId) {
             trailer_link: trailerLink.trim() || null,
             director: director.trim() || null,
             country: country.trim() || null,
+            year: year ? parseInt(year) : null,
             synopsis: synopsis.trim() || null,
             poster_url: posterUrl.trim() || null,
             watch_links: Object.keys(watchLinks).length > 0 ? watchLinks : null

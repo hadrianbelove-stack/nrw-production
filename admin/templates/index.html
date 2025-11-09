@@ -312,14 +312,48 @@
                         </div>
                         <div class="edit-field-group">
                             <label class="edit-label">
-                                RT Score: {{ movie.rt_score or 'N/A' }}
+                                RT Score: <strong>{{ movie.rt_score or 'N/A' }}</strong>
                             </label>
                             <input type="number"
                                    id="rt-score-{{ movie_id }}"
                                    value="{{ movie.rt_score or '' }}"
-                                   placeholder="Enter RT score"
-                                   min="0"
-                                   max="100"
+                                   class="edit-input"
+                                   style="display: none;">
+                        </div>
+                    </div>
+
+                    <!-- Director, Country, and Year Row -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem; margin-bottom: 0.5rem;">
+                        <div class="edit-field-group">
+                            <label class="edit-label">
+                                Director:
+                            </label>
+                            <input type="text"
+                                   id="director-{{ movie_id }}"
+                                   value="{{ movie.director or '' }}"
+                                   placeholder="Director name"
+                                   class="edit-input {% if not movie.director or movie.director == 'Unknown' %}missing{% endif %}">
+                        </div>
+                        <div class="edit-field-group">
+                            <label class="edit-label">
+                                Country:
+                            </label>
+                            <input type="text"
+                                   id="country-{{ movie_id }}"
+                                   value="{{ movie.get('country', '') }}"
+                                   placeholder="Country"
+                                   class="edit-input {% if not movie.get('country') %}missing{% endif %}">
+                        </div>
+                        <div class="edit-field-group">
+                            <label class="edit-label">
+                                Year:
+                            </label>
+                            <input type="number"
+                                   id="year-{{ movie_id }}"
+                                   value="{{ movie.year or '' }}"
+                                   placeholder="Year"
+                                   min="1900"
+                                   max="2100"
                                    class="edit-input">
                         </div>
                     </div>
@@ -356,30 +390,6 @@
                                style="padding: 0.3rem 0.5rem; background: #ff0000; color: white; border-radius: 4px; text-decoration: none; font-size: 0.75rem; display: flex; align-items: center;"
                                title="Open trailer">▶️</a>
                         </div>
-                    </div>
-
-                    <!-- Director -->
-                    <div style="margin-bottom: 0.5rem;">
-                        <label style="display: block; font-size: 0.75rem; color: #999; margin-bottom: 0.2rem;">
-                            Director:
-                        </label>
-                        <input type="text"
-                               id="director-{{ movie_id }}"
-                               value="{{ movie.director or '' }}"
-                               placeholder="Director name"
-                               style="width: 100%; padding: 0.3rem; background: {% if not movie.director or movie.director == 'Unknown' %}#3a1a1a{% else %}#2a2a2a{% endif %}; border: 1px solid {% if not movie.director or movie.director == 'Unknown' %}#dc3545{% else %}#3a3a3a{% endif %}; color: white; border-radius: 4px; font-size: 0.75rem;">
-                    </div>
-
-                    <!-- Country -->
-                    <div style="margin-bottom: 0.5rem;">
-                        <label style="display: block; font-size: 0.75rem; color: #999; margin-bottom: 0.2rem;">
-                            Country:
-                        </label>
-                        <input type="text"
-                               id="country-{{ movie_id }}"
-                               value="{{ movie.get('country', '') }}"
-                               placeholder="Country name"
-                               style="width: 100%; padding: 0.3rem; background: {% if not movie.get('country') %}#3a1a1a{% else %}#2a2a2a{% endif %}; border: 1px solid {% if not movie.get('country') %}#dc3545{% else %}#3a3a3a{% endif %}; color: white; border-radius: 4px; font-size: 0.75rem;">
                     </div>
 
                     <!-- Synopsis -->

@@ -1184,6 +1184,7 @@ def update_movie_fields() -> dict:
             "trailer_link": str,  # Optional, must be valid URL
             "director": str,  # Optional
             "country": str,  # Optional
+            "year": int,  # Optional, 1900-2100
             "poster_url": str,  # Optional, must be valid URL
             "digital_date": str,  # Optional, ISO format YYYY-MM-DD
             "synopsis": str,  # Optional, max 5000 chars
@@ -1205,6 +1206,7 @@ def update_movie_fields() -> dict:
 
     Validation:
         - RT score: Must be integer 0-100
+        - Year: Must be integer 1900-2100
         - URLs: Must start with http:// or https://
         - Date: Must be ISO format YYYY-MM-DD
         - Synopsis: Max 5000 characters
@@ -1366,6 +1368,45 @@ def update_movie_fields() -> dict:
                 movie['country'] = country
                 movie['manual_country'] = True
                 changes_made.append('Country')
+
+        # Update Year
+        if 'year' in data and data['year'] is not None:
+            year_value = data['year']
+
+            # Validate year is an integer
+            if isinstance(year_value, int):
+                year = year_value
+            elif isinstance(year_value, str):
+                year_str = year_value.strip()
+                import re
+                if not re.match(r'^\d+$', year_str):
+                    return jsonify({
+                        'success': False,
+                        'error': 'Year must be a valid integer'
+                    })
+                try:
+                    year = int(year_str)
+                except ValueError:
+                    return jsonify({
+                        'success': False,
+                        'error': 'Year must be a valid integer'
+                    })
+            else:
+                return jsonify({
+                    'success': False,
+                    'error': 'Year must be a valid integer'
+                })
+
+            # Validate year range (1900-2100)
+            if year < 1900 or year > 2100:
+                return jsonify({
+                    'success': False,
+                    'error': 'Year must be between 1900 and 2100'
+                })
+
+            movie['year'] = year
+            movie['manual_year'] = True
+            changes_made.append('Year')
 
         # Update Poster URL
         if 'poster_url' in data:
