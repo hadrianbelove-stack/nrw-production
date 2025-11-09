@@ -92,6 +92,12 @@ def csrf_protect(f):
     decorated_function.__name__ = f.__name__
     return decorated_function
 
+# Make csrf_token available to all templates
+@app.context_processor
+def inject_csrf_token():
+    """Inject CSRF token into all template contexts"""
+    return dict(csrf_token=generate_csrf_token)
+
 # Production environment check and credential enforcement
 def check_production_environment():
     """Enforce secure credentials in production environment"""
