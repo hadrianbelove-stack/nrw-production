@@ -90,7 +90,7 @@ class RTScraperPlaywright:
         else:
             print(f"[RTScraperPlaywright] {message}")
 
-    def _fuzzy_match_title(self, candidate_text, expected_title, threshold=0.6):
+    def _fuzzy_match_title(self, candidate_text, expected_title, threshold=0.8):
         """Fuzzy match candidate text against expected title.
 
         Args:
@@ -459,8 +459,8 @@ class RTScraperPlaywright:
                             except:
                                 surrounding_text = anchor_text
 
-                            # Require fuzzy match against title at ~0.6 similarity
-                            if not self._fuzzy_match_title(anchor_text, title, threshold=0.6):
+                            # Require fuzzy match against title at ~0.8 similarity
+                            if not self._fuzzy_match_title(anchor_text, title, threshold=0.8):
                                 self._log(f"Skipping candidate - title mismatch: {anchor_text[:50]}", level='debug')
                                 continue
 
@@ -489,7 +489,7 @@ class RTScraperPlaywright:
                                 og_title_element = self.page.query_selector('meta[property="og:title"]')
                                 if og_title_element:
                                     og_title = og_title_element.get_attribute('content') or ""
-                                    if self._fuzzy_match_title(og_title, title, threshold=0.6):
+                                    if self._fuzzy_match_title(og_title, title, threshold=0.8):
                                         validated = True
                                         self._log(f"Validated via og:title: {og_title}", level='debug')
 
@@ -498,7 +498,7 @@ class RTScraperPlaywright:
                                     score_board = self.page.query_selector('score-board')
                                     if score_board:
                                         qa_title = score_board.get_attribute('data-qa-title') or ""
-                                        if self._fuzzy_match_title(qa_title, title, threshold=0.6):
+                                        if self._fuzzy_match_title(qa_title, title, threshold=0.8):
                                             validated = True
                                             self._log(f"Validated via score-board: {qa_title}", level='debug')
                             except Exception as e:
