@@ -1,3 +1,7 @@
+function getCSRFToken() {
+    return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+}
+
 function showSuccess(message = 'Changes saved!') {
     const msg = document.getElementById('success-msg');
     msg.textContent = message;
@@ -10,7 +14,10 @@ function showSuccess(message = 'Changes saved!') {
 function toggleHidden(movieId, hide) {
     fetch('/toggle-status', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': getCSRFToken()
+        },
         body: JSON.stringify({movie_id: movieId, status_type: 'hidden', value: hide})
     })
     .then(response => response.json())
@@ -51,7 +58,10 @@ function toggleHidden(movieId, hide) {
 function toggleFeatured(movieId, feature) {
     fetch('/toggle-status', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': getCSRFToken()
+        },
         body: JSON.stringify({movie_id: movieId, status_type: 'featured', value: feature})
     })
     .then(response => response.json())
@@ -114,21 +124,21 @@ function updateStats() {
 
 function updateIssueCounts() {
     // Count issues by type from current DOM state
-    const noScoreCount = document.querySelectorAll('.movie-card[data-has-score="no"]').length;
     const noTrailerCount = document.querySelectorAll('.movie-card[data-has-trailer="no"]').length;
     const noPosterCount = document.querySelectorAll('.movie-card[data-has-poster="no"]').length;
     const noWatchLinksCount = document.querySelectorAll('.movie-card[data-has-watch-links="no"]').length;
+    const missingDataCount = document.querySelectorAll('.movie-card[data-missing-any="yes"]').length;
 
     // Update issue count displays
-    const noScoreElement = document.getElementById('no-score-count');
     const noTrailerElement = document.getElementById('no-trailer-count');
     const noPosterElement = document.getElementById('no-poster-count');
     const noWatchLinksElement = document.getElementById('no-watch-links-count');
+    const missingDataElement = document.getElementById('missing-data-count');
 
-    if (noScoreElement) noScoreElement.textContent = noScoreCount;
     if (noTrailerElement) noTrailerElement.textContent = noTrailerCount;
     if (noPosterElement) noPosterElement.textContent = noPosterCount;
     if (noWatchLinksElement) noWatchLinksElement.textContent = noWatchLinksCount;
+    if (missingDataElement) missingDataElement.textContent = missingDataCount;
 }
 
 function updateReviewedCount() {
@@ -183,7 +193,10 @@ function regenerateData() {
 
     fetch('/regenerate', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'}
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': getCSRFToken()
+        }
     })
     .then(response => response.json())
     .then(data => {
@@ -406,9 +419,6 @@ function filterMovies(filter) {
             case 'featured':
                 card.style.display = card.classList.contains('featured') ? 'block' : 'none';
                 break;
-            case 'no-score':
-                card.style.display = card.dataset.hasScore === 'no' ? 'block' : 'none';
-                break;
             case 'no-trailer':
                 card.style.display = card.dataset.hasTrailer === 'no' ? 'block' : 'none';
                 break;
@@ -506,7 +516,10 @@ function saveAllFields(movieId) {
     // Send to server
     fetch('/update-movie-fields', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': getCSRFToken()
+        },
         body: JSON.stringify({
             movie_id: movieId,
             digital_date: digitalDate || null,
@@ -567,8 +580,6 @@ function saveReview(movieId, btn) {
 
     // Collect review fields
     const reviewText = document.getElementById(`review-text-${movieId}`).value.trim();
-    const author = document.getElementById(`review-author-${movieId}`).value.trim() || 'Admin';
-    const rating = document.getElementById(`review-rating-${movieId}`).value;
     const featured = document.getElementById(`review-featured-${movieId}`).checked;
 
     // Validate review text
@@ -582,12 +593,6 @@ function saveReview(movieId, btn) {
         return;
     }
 
-    // Validate rating if provided
-    if (rating && (parseFloat(rating) < 0 || parseFloat(rating) > 5)) {
-        alert('Rating must be between 0 and 5.');
-        return;
-    }
-
     // Disable button
     btn.disabled = true;
     btn.innerHTML = '⏳ Saving...';
@@ -595,12 +600,13 @@ function saveReview(movieId, btn) {
     // Send to server
     fetch('/update-review', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': getCSRFToken()
+        },
         body: JSON.stringify({
             movie_id: movieId,
             review_text: reviewText,
-            author: author,
-            rating: rating ? parseFloat(rating) : null,
             featured_in_newsletter: featured
         })
     })
@@ -667,7 +673,10 @@ function deleteReview(movieId, btn) {
     // Send to server
     fetch('/delete-review', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': getCSRFToken()
+        },
         body: JSON.stringify({movie_id: movieId})
     })
     .then(response => response.json())
@@ -677,8 +686,6 @@ function deleteReview(movieId, btn) {
 
             // Clear form fields
             document.getElementById(`review-text-${movieId}`).value = '';
-            document.getElementById(`review-author-${movieId}`).value = 'Hadrian Belove';
-            document.getElementById(`review-rating-${movieId}`).value = '';
             document.getElementById(`review-featured-${movieId}`).checked = false;
 
             // Update card data attribute
