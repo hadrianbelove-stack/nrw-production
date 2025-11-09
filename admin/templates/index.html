@@ -299,33 +299,29 @@
 
                 <!-- Editable Fields Section -->
                 <div class="edit-section">
-                    <div class="edit-title">
-                        📝 Edit Fields
-                    </div>
-
-                    <!-- Digital Release Date -->
-                    <div class="edit-field-group">
-                        <label class="edit-label">
-                            Digital Release Date:
-                        </label>
-                        <input type="date"
-                               id="digital-date-{{ movie_id }}"
-                               value="{{ movie.digital_date }}"
-                               class="edit-input">
-                    </div>
-
-                    <!-- RT Score -->
-                    <div class="edit-field-group">
-                        <label class="edit-label">
-                            RT Score (0-100):
-                        </label>
-                        <input type="number"
-                               id="rt-score-{{ movie_id }}"
-                               value="{{ movie.rt_score or '' }}"
-                               placeholder="Enter RT score"
-                               min="0"
-                               max="100"
-                               class="edit-input">
+                    <!-- Digital Release Date and RT Score Row -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.5rem;">
+                        <div class="edit-field-group">
+                            <label class="edit-label">
+                                Digital Release Date:
+                            </label>
+                            <input type="date"
+                                   id="digital-date-{{ movie_id }}"
+                                   value="{{ movie.digital_date }}"
+                                   class="edit-input">
+                        </div>
+                        <div class="edit-field-group">
+                            <label class="edit-label">
+                                RT Score: {{ movie.rt_score or 'N/A' }}
+                            </label>
+                            <input type="number"
+                                   id="rt-score-{{ movie_id }}"
+                                   value="{{ movie.rt_score or '' }}"
+                                   placeholder="Enter RT score"
+                                   min="0"
+                                   max="100"
+                                   class="edit-input">
+                        </div>
                     </div>
 
                     <!-- RT Link -->
