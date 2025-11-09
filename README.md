@@ -14,7 +14,7 @@ Automated tracking of theatrical releases becoming available digitally, displaye
 - 📋 **[PROJECT_CHARTER.md](PROJECT_CHARTER.md)** - Governance & amendments
 - 📅 **[DAILY_CONTEXT.md](DAILY_CONTEXT.md)** - Rolling diary of recent work
 - 🔄 **[NRW_DATA_WORKFLOW_EXPLAINED.md](NRW_DATA_WORKFLOW_EXPLAINED.md)** - Data pipeline details
-  - [Phase 3 (Admin Approval Gate)](NRW_DATA_WORKFLOW_EXPLAINED.md#phase-3-admin-approval-gate) - Mandatory quality assurance
+  - [Optional draft review (advanced)](ADMIN_WORKFLOW.md) - Editorial curation workflow
 
 **Additional guides:**
 - [Full workflow overview (automated + manual)](docs/NRW_FULL_WORKFLOW.md) - Complete system overview
@@ -165,24 +165,7 @@ python3 generate_data.py --full        # Full regeneration (weekly)
 3. **Commit changes**: Git add/commit any modifications made during session
 
 ### Emergency Commands
-```bash
-# Fix branch divergence
-git pull origin main
-
-# Check processing load (Normal: 1-10 movies, Warning: 50+, Critical: 100+)
-grep "Processing.*movies" logs/
-
-# Restore from data corruption
-cp movie_tracking.json.backup movie_tracking.json
-
-# API quota check (monitor monthly usage vs 1,000 limit)
-cat watchmode_quota.json
-```
-
-### Performance Monitoring
-- **Normal operation**: 1-10 movies enriched daily, 30-second runtime
-- **Warning threshold**: 50+ movies (possible corruption)
-- **Critical threshold**: 100+ movies (definite corruption, 2+ hour runtime)
+Quick reference for common issues. **For detailed troubleshooting:** See [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)
 
 ## Configuration
 

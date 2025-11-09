@@ -62,7 +62,6 @@ Archive via `diary/YYYY-MM-DD.md` (immutable end-of-session snapshots)
 | 022 | Feature | Watchmode API integration for watch links | Watch links coverage | Spec: SYSTEM_ARCHITECTURE.md §4 (Configuration & Secrets) |
 | 023 | Feature | Agent link scraper (Playwright) + overrides fallback stack | Watch links fallback | docs/features/AGENT_LINK_SCRAPER.md |
 | 024 | Feature | RT scraper inlined, rate limiting, coverage | Enrichment pipeline | docs/features/RT_SCRAPER.md |
-| 025 | Automation | Two-branch automation strategy | CI/CD workflow | docs/AUTOMATION_BRANCH_WORKFLOW.md |
 | 026 | Ops | OAuth token recovery & incident handling | Reliability operations | diary/ (incident entries) |
 | 027 | Feature | Admin panel post-publication curation model | Data quality curation | docs/features/ADMIN_PANEL_SPEC.md |
 | 028 | System | Production discovery architecture & filter policy | Discovery optimization | docs/features/DISCOVERY_FILTERS.md |
@@ -206,11 +205,6 @@ Archive via `diary/YYYY-MM-DD.md` (immutable end-of-session snapshots)
 **Status:** ✅ Active - waterfall integration complete
 **Spec:** docs/features/RT_SCRAPER.md
 
-### 025: Two-Branch Automation Strategy
-**Decision:** Two-branch strategy (main/automation-updates) to eliminate merge conflicts.
-**Scope:** Bot commits to automation-updates branch, force-push workflow, GitHub issue notifications, weekly full regeneration.
-**Status:** ✅ Active - zero merge conflicts achieved
-**Spec:** docs/AUTOMATION_BRANCH_WORKFLOW.md
 
 ### 026: Authentication Token Management
 **Decision:** Authentication token management and incident recovery procedures.

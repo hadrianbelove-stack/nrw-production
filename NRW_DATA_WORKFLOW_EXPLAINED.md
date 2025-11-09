@@ -123,30 +123,35 @@ Always poll ALL tracking movies in `movie_tracking.json` (no time limits). Fetch
 - Simple approach: Generate URLs like "Inspector_Zende_(film)" → 50% are broken
 - Smart approach: Verify URLs exist, use multiple methods → 80% success rate
 
-### **Phase 3: Admin Approval Gate (Mandatory)**
-**What happens:** The system pauses after discovery and monitoring, waiting for mandatory admin approval before generating the final data.json for public display.
+### **Phase 3: Optional Editorial Review**
+**What happens:** Optional manual curation when editorial review is desired. By default, the daily automation auto-commits discovered content directly to `main` without requiring admin approval.
 
-**🔧 Admin Approval Gate** - *Mandatory Pre-Publish Approval*
+**🔧 Optional Editorial Curation** - *Manual Review When Desired*
 
-**Purpose:** Mandatory checkpoint ensuring all changes are reviewed before public display
+**Purpose:** Optional curation tool for when editorial review is desired
 
-**The Approval Workflow:**
+**Default Workflow (Automated):**
 ```
-Daily Discovery → movie_tracking.json → ADMIN APPROVAL GATE → data.json → Public Site
-                  (raw scraped)         (mandatory review)     (approved)   (visitors)
+Daily Discovery → movie_tracking.json → data.json → Public Site
+                  (automated)          (automated) (auto-update)
 ```
 
-**How it Works:**
+**Optional Curation Workflow:**
+```
+Daily Discovery → movie_tracking.json → OPTIONAL REVIEW → data.json → Public Site
+                  (raw scraped)         (when desired)    (curated)   (visitors)
+```
+
+**How it Works (Optional):**
 1. **Discovery Phase:** System runs discovery and monitoring, updating movie_tracking.json
-2. **Approval Gate:** Orchestrator pauses and waits for admin approval
-3. **Full Review Mode:** Admin runs `python3 admin.py --full-review` to inspect changes
-4. **Manual Curation:** Review all discovered/updated movies, fix data, hide/feature as needed
-5. **Approval Artifact:** Click "Approve & Generate" to create admin/approval.json
-6. **Data Generation:** Only after approval does system generate final data.json
+2. **Optional Review:** Admin can run `python3 admin.py --full-review` to inspect changes
+3. **Manual Curation:** Review all discovered/updated movies, fix data, hide/feature as needed
+4. **Optional Approval:** Click "Approve & Generate" if using approval workflow
+5. **Data Generation:** System generates final data.json (with or without manual review)
 
 **Admin Panel - QA Database Editor** (`admin.py` on port 5555)
 
-**Purpose:** Manual quality control checkpoint - scan scraped data, fix errors, approve for public display
+**Purpose:** Optional quality control tool - scan scraped data, fix errors, and curate for public display when desired
 
 **Core Features:**
 
@@ -247,26 +252,11 @@ python3 admin.py
 - "Approve & Generate" button appears for manual authorization
 - Creates admin/approval.json artifact with approval timestamp and metadata
 
-**Approval Artifact Schema (admin/approval.json):**
-```json
-{
-  "timestamp": "2025-11-07T10:30:00",
-  "reviewer": "admin",
-  "tracking_digest": "sha256:abc123...",
-  "delta": {
-    "edits": 0,
-    "additions": 2,
-    "hidden": 5,
-    "featured": 3,
-    "ordered": 0
-  }
-}
-```
-
-**Approval Validation:**
-- Timestamp must be within 2 hours (prevents stale approvals)
-- Optional tracking_digest ensures movie_tracking.json hasn't changed
-- Delta summary provides audit trail of curator changes
+**Advanced/Optional: Approval Workflow**
+When using the optional approval workflow, the system can track editorial decisions:
+- Optional approval tracking for audit trail
+- Editorial decision logging for curation workflow
+- Can be enabled when formal review process is desired
 
 **Artifacts Consumed in Phase 4:**
 - `admin/hidden_movies.json` - Movies excluded from public display
@@ -325,10 +315,11 @@ For detailed operating steps and daily curation workflow, see [`ADMIN_WORKFLOW.m
 ```bash
 1. python3 generate_data.py --discover     # Discover new movies + monitor all existing for availability changes
 2. python3 generate_data.py --check        # Check tracking movies for digital availability
-3. [ADMIN APPROVAL GATE]                   # Wait for admin approval (mandatory)
-4. python3 generate_data.py               # Create enriched display data with links (post-approval only)
-5. git commit & push                       # Save changes
+3. python3 generate_data.py               # Create enriched display data with links (automated)
+4. git commit & push                       # Save changes (automated)
 ```
+
+**Note:** Daily automation runs without admin approval by default. Optional admin review can be enabled when editorial curation is desired.
 
 **Automated via GitHub Actions:**
 - Runs daily at 9 AM UTC

@@ -2,7 +2,9 @@
 
 ## Overview
 
-NRW uses a **drafts→publish workflow** where daily discovery generates draft content for admin review and selective publishing. The admin panel serves as a quality gate ensuring only curated content is published to production.
+⚠️ **Important**: The drafts→publish workflow is **optional** and not required for daily automation. The daily automation commits directly to `main` without requiring admin approval.
+
+NRW uses a **drafts→publish workflow** where daily discovery generates draft content for optional admin review and selective publishing. The admin panel serves as an optional curation tool when editorial review is desired.
 
 ### Security Reminder ⚠️
 
@@ -13,7 +15,7 @@ export ADMIN_USERNAME="your-secure-username"
 export ADMIN_PASSWORD="your-secure-password"
 ```
 
-**Core Philosophy**: Draft-based review → Selective publishing → Quality-first curation
+**Core Philosophy**: Optional draft-based review → Selective publishing → Quality-first curation (when desired)
 
 ## Core Workflow Diagram
 
@@ -115,15 +117,17 @@ Inline editing of all movie metadata with manual correction tracking.
 - Editing movie titles to correct formatting or accuracy issues
 - Selective publishing of only quality content
 
-## Daily Curation Routine
+## Daily Curation Routine (Optional)
+
+**Note**: This routine is optional. Daily automation runs independently and commits directly to `main` without requiring admin approval.
 
 ### Step-by-Step Workflow
 
 1. **Automated Discovery**
    - GitHub Actions runs daily discovery pipeline
    - System discovers new movies and monitors status changes
-   - Draft files generated in `admin/drafts/` for recent candidates
-   - Admin notified via GitHub issues when drafts are ready
+   - Draft files generated in `admin/drafts/` for recent candidates (optional review)
+   - Daily automation proceeds without waiting for admin approval
 
 2. **Access Admin Panel**
    ```bash
@@ -220,8 +224,8 @@ The admin panel uses HTTP Basic Authentication with default credentials:
 
 **⚠️ SECURITY WARNING: Change default credentials immediately in any shared or deployed environment; set `ADMIN_USERNAME`/`ADMIN_PASSWORD` via environment variables.**
 
-### Draft-Based Content Flow
-All discovered content flows through the **draft system** before reaching the public site. The automation adds movies to `movie_tracking.json` and generates candidate drafts in `admin/drafts/`, but content only appears publicly after admin review and selective publishing.
+### Optional Draft-Based Content Flow
+By default, daily automation auto-commits discovered content directly to `main` without requiring admin approval. When editorial review is desired, the **draft system** provides optional curation. The automation adds movies to `movie_tracking.json` and can generate candidate drafts in `admin/drafts/` for manual review and selective publishing.
 
 ## FAQ
 

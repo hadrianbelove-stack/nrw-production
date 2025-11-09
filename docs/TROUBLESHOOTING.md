@@ -556,6 +556,33 @@ If troubleshooting doesn't resolve the issue:
 
 ---
 
+## Emergency Commands & Performance Monitoring
+
+### Emergency Commands
+
+```bash
+# Fix branch divergence (single-branch workflow eliminates this issue)
+git pull origin main
+
+# Check processing load (Normal: 1-10 movies, Warning: 50+, Critical: 100+)
+grep "Processing.*movies" logs/
+
+# Restore from data corruption
+cp movie_tracking.json.backup movie_tracking.json
+
+# API quota check (monitor monthly usage vs 1,000 limit)
+cat watchmode_quota.json
+```
+
+### Performance Monitoring
+- **Normal operation**: 1-10 movies enriched daily, 30-second runtime
+- **Warning threshold**: 50+ movies (possible corruption)
+- **Critical threshold**: 100+ movies (definite corruption, 2+ hour runtime)
+
+See sections above for detailed troubleshooting when performance thresholds are exceeded.
+
+---
+
 ## Historical Post-Mortems
 
 Detailed debugging sessions with timestamps:

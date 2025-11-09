@@ -40,9 +40,9 @@ When analyzing this codebase, read in this order:
 - Immediate updates to main branch
 - No merge conflicts between branches
 
-### 2.2 Advanced Two-Branch Flow (Optional)
+### 2.2 Legacy: Two-Branch Flow (Deprecated)
 
-**Status**: Deprecated. Single-branch workflow on `main` is now the only supported approach per PROJECT_CHARTER.md.
+**Status**: Legacy (Deprecated). Single-branch workflow on `main` is now the only supported approach per PROJECT_CHARTER.md.
 
 **Current State**:
 - Daily workflow: Single-branch on `main` ✅
@@ -60,16 +60,9 @@ python3 daily_orchestrator.py
 git add -A
 git commit -m "Daily update $(date)"
 git push origin main
-
-# Legacy two-branch workflow (deprecated)
-# The following commands are no longer used but kept for reference:
-# git checkout automation-updates
-# git merge origin/main --no-edit
-# python3 daily_orchestrator.py
-# git add -A
-# git commit -m "Daily update $(date)"
-# git push --force origin automation-updates
 ```
+
+**Legacy (Deprecated)**: Two-branch workflow commands removed. See `docs/legacy/AUTOMATION_BRANCH_WORKFLOW.md` for historical reference.
 
 ### 2.4 Legacy: Branch Divergence Issues (Single-Branch Prevents This)
 
@@ -88,15 +81,9 @@ git push origin main
 
 **Current Solution**: Single-branch workflow eliminates this entire class of failures
 
-### 2.5 Legacy: Manual Sync Commands (No Longer Needed)
+### 2.5 Legacy: Manual Sync Commands (Deprecated)
 
-```bash
-# These commands are no longer needed with single-branch workflow:
-# git checkout automation-updates
-# git reset --hard main
-# git push --force origin automation-updates
-# git diff main automation-updates --stat
-```
+**Legacy (Deprecated)**: Manual sync commands no longer needed with single-branch workflow. See `docs/legacy/AUTOMATION_BRANCH_WORKFLOW.md` for historical commands.
 
 ---
 
@@ -699,13 +686,27 @@ See [NRW_DATA_WORKFLOW_EXPLAINED.md Section 2.1](./NRW_DATA_WORKFLOW_EXPLAINED.m
 # 3. Changes committed directly to main (no merging needed)
 ```
 
-### 6.6 Validation Gates
+### 6.6 Validation & Stall Detection Policy
 
+**Canonical validation windows and stall detection thresholds:**
+
+**Site Freshness Check:**
+- **Window**: 7 days
+- **Threshold**: At least 3 movies released in last 7 days
+- **Action**: Warn-only (workflow continues with warning)
+- **Purpose**: Detect potential discovery issues without blocking automation
+
+**Stall Detection:**
+- **Window**: 3 consecutive days
+- **Threshold**: Zero status transitions (tracking → available)
+- **Action**: CI failure (workflow fails)
+- **Purpose**: Detect critical pipeline failures requiring intervention
+
+**Additional Validation Gates:**
 1. **Data File Existence** - data.json, movie_tracking.json exist
-2. **Recent Movies Check** - At least 3 movies released in last 30 days
-3. **Data Integrity** - Valid JSON structure
-4. **Performance Check** - Runtime under 5 minutes
-5. **API Quota Check** - Under 80% monthly limit
+2. **Data Integrity** - Valid JSON structure
+3. **Performance Check** - Runtime under 5 minutes
+4. **API Quota Check** - Under 80% monthly limit
 
 **For detailed workflow documentation:** See [docs/NRW_FULL_WORKFLOW.md](docs/NRW_FULL_WORKFLOW.md)
 

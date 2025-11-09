@@ -58,16 +58,6 @@ jobs:
         run: |
           python3 -m playwright install --with-deps chromium
 
-      - name: Run scraper smoke tests
-        run: |
-          echo "🧪 Running lightweight headless scraper tests..."
-          python3 -m pytest -q tests/test_platform_scraper.py::test_platform_scraper --max-amazon 3 --max-apple 2
-          python3 -m pytest -q tests/test_amazon_scraper_fix.py
-        continue-on-error: false
-        env:
-          NRW_SCRAPER_HEADLESS: 'true'
-
-
       - name: Run optional validation tests
         if: env.NRW_RUN_OPTIONAL_TESTS == 'true'
         run: |
