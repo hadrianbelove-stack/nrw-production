@@ -277,12 +277,7 @@
             {% endif %}
 
             <div class="movie-info">
-                <div class="movie-title">{{ movie.title }}
-                    {% if movie.digital_date %}<span class="release-date" aria-label="Digital release date {{ movie.digital_date[:10] }}">{{ movie.digital_date[:10] }}</span>{% endif %}
-                </div>
-                <div class="movie-meta">
-                    {{ movie.year or (movie.digital_date[:4] if movie.digital_date else '') }} • {{ movie.director or 'Unknown Director' }}
-                </div>
+                <div class="movie-title">{{ movie.title }}</div>
 
                 <!-- Issue Badges -->
                 <div class="issue-badges">
@@ -299,31 +294,8 @@
 
                 <!-- Editable Fields Section -->
                 <div class="edit-section">
-                    <!-- Digital Release Date and RT Score Row -->
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.5rem;">
-                        <div class="edit-field-group">
-                            <label class="edit-label">
-                                Digital Release Date:
-                            </label>
-                            <input type="date"
-                                   id="digital-date-{{ movie_id }}"
-                                   value="{{ movie.digital_date }}"
-                                   class="edit-input">
-                        </div>
-                        <div class="edit-field-group">
-                            <label class="edit-label">
-                                RT Score: <strong>{{ movie.rt_score or 'N/A' }}</strong>
-                            </label>
-                            <input type="number"
-                                   id="rt-score-{{ movie_id }}"
-                                   value="{{ movie.rt_score or '' }}"
-                                   class="edit-input"
-                                   style="display: none;">
-                        </div>
-                    </div>
-
-                    <!-- Director, Country, and Year Row -->
-                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem; margin-bottom: 0.5rem;">
+                    <!-- Director, Country, Year, Digital Release Date, and RT Score Row -->
+                    <div style="display: grid; grid-template-columns: 1.2fr 0.8fr 0.6fr 1fr 0.6fr; gap: 0.5rem; margin-bottom: 0.5rem;">
                         <div class="edit-field-group">
                             <label class="edit-label">
                                 Director:
@@ -355,6 +327,25 @@
                                    min="1900"
                                    max="2100"
                                    class="edit-input">
+                        </div>
+                        <div class="edit-field-group">
+                            <label class="edit-label">
+                                Digital Date:
+                            </label>
+                            <input type="date"
+                                   id="digital-date-{{ movie_id }}"
+                                   value="{{ movie.digital_date }}"
+                                   class="edit-input">
+                        </div>
+                        <div class="edit-field-group">
+                            <label class="edit-label">
+                                RT Score: <strong>{{ movie.rt_score or 'N/A' }}</strong>
+                            </label>
+                            <input type="number"
+                                   id="rt-score-{{ movie_id }}"
+                                   value="{{ movie.rt_score or '' }}"
+                                   class="edit-input"
+                                   style="display: none;">
                         </div>
                     </div>
 
@@ -562,8 +553,8 @@
                     <button class="action-btn btn-feature" onclick="toggleFeatured('{{ movie_id }}', true)">⭐ Feature</button>
                     {% endif %}
 
-                    {% if movie.rt_url %}
-                    <a href="{{ movie.rt_url }}" target="_blank" class="action-btn btn-rt">RT →</a>
+                    {% if movie.get('links', {}).get('rt') %}
+                    <a href="{{ movie.get('links', {}).get('rt') }}" target="_blank" class="action-btn btn-rt">RT →</a>
                     {% else %}
                     <a href="https://www.rottentomatoes.com/search?search={{ movie.title }}" target="_blank" class="action-btn btn-rt">RT Search</a>
                     {% endif %}

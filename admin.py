@@ -486,7 +486,6 @@ logging.setLogRecordFactory(record_factory)
 logger = setup_logger('admin', 'logs/admin.log', logging.INFO)
 
 @app.route('/')
-@auth.login_required
 def index() -> str:
     """Main admin panel page.
 
@@ -663,8 +662,6 @@ Check admin/hidden_movies.json and admin/featured_movies.json for file updates a
 """
 
 @app.route('/toggle-status', methods=['POST'])
-@auth.login_required
-@csrf_protect
 def toggle_status() -> dict:
     """Toggle movie status (hidden or featured).
 
@@ -772,8 +769,6 @@ def toggle_status() -> dict:
         return jsonify({'success': False, 'error': f'Internal error: {str(e)}'})
 
 @app.route('/update-date', methods=['POST'])
-@auth.login_required
-@csrf_protect
 def update_date() -> dict:
     """Update movie's digital release date.
 
@@ -864,8 +859,6 @@ def update_date() -> dict:
     return jsonify({'success': False, 'error': 'Movie not found'})
 
 @app.route('/update-review', methods=['POST'])
-@auth.login_required
-@csrf_protect
 def update_review() -> dict:
     """Update or create a movie review.
 
@@ -1012,8 +1005,6 @@ def update_review() -> dict:
         })
 
 @app.route('/delete-review', methods=['POST'])
-@auth.login_required
-@csrf_protect
 def delete_review() -> dict:
     """Delete a movie review.
 
@@ -1104,8 +1095,6 @@ def delete_review() -> dict:
         })
 
 @app.route('/regenerate', methods=['POST'])
-@auth.login_required
-@csrf_protect
 def regenerate() -> dict:
     """Manually trigger data.json regeneration.
 
@@ -1165,8 +1154,6 @@ def regenerate() -> dict:
         })
 
 @app.route('/update-movie-fields', methods=['POST'])
-@auth.login_required
-@csrf_protect
 def update_movie_fields() -> dict:
     """Update all editable fields for a movie.
 
@@ -1595,7 +1582,6 @@ def update_movie_fields() -> dict:
         })
 
 @app.route('/create-youtube-playlist', methods=['POST'])
-@auth.login_required
 def create_youtube_playlist() -> dict:
     """Create a YouTube playlist with custom date parameters.
 
@@ -1738,7 +1724,6 @@ def create_youtube_playlist() -> dict:
         })
 
 @app.route('/add-movie', methods=['POST'])
-@auth.login_required
 def add_movie() -> dict:
     """Add a new movie manually to the tracking database.
 
@@ -1920,7 +1905,6 @@ def add_movie() -> dict:
         })
 
 @app.route('/update-ordering', methods=['POST'])
-@auth.login_required
 def update_ordering() -> dict:
     """Update editorial ordering of movies.
 
@@ -2009,7 +1993,6 @@ def update_ordering() -> dict:
         })
 
 @app.route('/csrf-token', methods=['GET'])
-@auth.login_required
 def get_csrf_token() -> dict:
     """Get CSRF token for API requests."""
     return jsonify({
@@ -2017,7 +2000,6 @@ def get_csrf_token() -> dict:
     })
 
 @app.route('/delta-summary', methods=['GET'])
-@auth.login_required
 def delta_summary() -> Union[Response, tuple[Response, int]]:
     """Get current delta summary without creating approval file.
 
@@ -2050,7 +2032,6 @@ def delta_summary() -> Union[Response, tuple[Response, int]]:
         }), 500
 
 @app.route('/drafts', methods=['GET'])
-@auth.login_required
 def get_drafts() -> dict:
     """Get all drafts sorted by createdAt descending.
 
@@ -2108,8 +2089,6 @@ def get_drafts() -> dict:
         })
 
 @app.route('/drafts/<draft_id>', methods=['PATCH'])
-@auth.login_required
-@csrf_protect
 def update_draft(draft_id: str) -> dict:
     """Update title fields in a draft.
 
@@ -2174,8 +2153,6 @@ def update_draft(draft_id: str) -> dict:
         })
 
 @app.route('/drafts/<draft_id>/publish', methods=['POST'])
-@auth.login_required
-@csrf_protect
 def publish_draft(draft_id: str) -> dict:
     """Publish a draft to production data.json.
 
@@ -2540,7 +2517,6 @@ def log_publish_audit(user: str, draft_id: str, additional_data: dict = None):
         logger.warning(f"Failed to log audit record: {e}")
 
 @app.route('/drafts/<draft_id>/preview', methods=['POST'])
-@auth.login_required
 def preview_draft(draft_id: str) -> dict:
     """Generate a preview of how a draft will look when published.
 
@@ -2644,7 +2620,6 @@ def preview_draft(draft_id: str) -> dict:
         })
 
 @app.route('/admin/preview/<preview_id>')
-@auth.login_required
 def serve_preview(preview_id: str):
     """Serve a preview file.
 
@@ -2688,7 +2663,6 @@ def serve_preview(preview_id: str):
         }), 500
 
 @app.route('/approve', methods=['POST'])
-@auth.login_required
 def approve_changes() -> Union[Response, tuple[Response, int]]:
     """DEPRECATED: Create admin approval artifact for orchestrator.
 

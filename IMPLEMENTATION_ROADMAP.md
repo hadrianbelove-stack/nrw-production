@@ -114,35 +114,34 @@
 
 **Dependencies:** Monitor through Nov 10
 
-### CRITICAL-005: Mandatory Admin Approval Gate
+### CRITICAL-005: Optional Editorial Review
 **Status:** ✅ STAGE 2/3 - IMPLEMENTED/ACTIVE
 
-**Problem:** Risk of unreviewed data being published to public site without quality control gate.
+**Problem:** Quality control gate needed for editorial oversight when enabled.
 
-**Impact:** Quality and trust issues if incorrect data, missing reviews, or incomplete information reaches end users without editorial oversight.
+**Impact:** Editorial review is available as an optional workflow but does not gate daily automation by default.
 
-**Solution:** Admin approval before generation system implemented in admin.py /approve route with validation artifacts.
+**Solution:** Optional admin review system with configurable approval workflow.
 
 **Implementation:**
-- Admin panel runs in full-review mode (`python3 admin.py --full-review`)
-- All data changes require explicit admin approval via "Approve & Generate" button
-- Approval creates admin/approval.json artifact with tracking digest and delta summary
-- Daily orchestrator validates approval before allowing data.json generation
-- Metrics logged to metrics/daily.jsonl for tracking approval patterns
-- Diary entries created with delta summaries for historical record
+- Admin panel available for editorial review and data curation
+- Editorial review optional and configurable - does not block automation by default
+- Admin overrides and corrections available via admin interface
+- Review metrics logged when review mode is enabled
+- Optional approval workflow can be enabled per configuration
 
 **Success Criteria:**
-- 100% approval before publish (no data.json generation without approval.json)
-- Admin metrics recorded for all approvals with issue counts and reviewer info
-- Quality gate prevents publication of unreviewed content
+- Editorial review system available when needed
+- Daily automation proceeds without mandatory approval gate
+- Admin tools functional for data quality improvements
 
 **Owner:** Admin Panel System
 **Due/Review dates:** Active implementation, ongoing operation
 
 **Reference:**
-- [NRW_DATA_WORKFLOW_EXPLAINED.md](NRW_DATA_WORKFLOW_EXPLAINED.md) - Phase 3: Manual Review & Quality Gate
-- [admin.py](admin.py) - `/approve` route implementation (lines 1799-1921)
-- [ADMIN_WORKFLOW.md](ADMIN_WORKFLOW.md) - Complete workflow documentation
+- [NRW_DATA_WORKFLOW_EXPLAINED.md](NRW_DATA_WORKFLOW_EXPLAINED.md) - Editorial review workflow
+- [admin.py](admin.py) - Admin interface implementation
+- [SYSTEM_ARCHITECTURE.md](SYSTEM_ARCHITECTURE.md) - System configuration
 
 ### CRITICAL-006: Discovery Health & Stall Alert
 **Status:** 🔴 STAGE 3 - ACTIVE
@@ -157,14 +156,15 @@
 - Early detection of discovery system failures
 
 **Alert Policy:**
-- If 0 transitions detected for 14 consecutive days, auto-create GitHub issue
+- If 0 transitions detected for 3 consecutive days with zero transitions, auto-create GitHub issue (per SYSTEM_ARCHITECTURE.md §6.5)
 - Alert should fire on true stalls with no false positives
 - Include metrics summary and link to failed runs
+- Validation policy details deferred to SYSTEM_ARCHITECTURE.md §6.5
 
 **Implementation:**
 - Log `polled` and `transitions` metrics every run
 - Commit metrics to `metrics/daily.jsonl` for historical tracking
-- CI checks last 14 entries for stall detection
+- CI checks for zero transitions over the last 3 consecutive days (per SYSTEM_ARCHITECTURE.md §6.5)
 - Standardized logging format for metric extraction
 
 **Success Criteria:**
@@ -299,7 +299,7 @@ The original test invalidation notice from 2025-10-24 regarding TMDB API configu
 ### MEDIUM-002: RT Scraping Fragility
 **Status:** 🟢 ACCEPTABLE
 
-**Problem:** Selenium-based RT scraping can be detected and blocked.
+**Problem:** Playwright-based RT scraping can be detected and blocked.
 
 **Impact:** May lose RT scores if scraping breaks.
 
@@ -307,7 +307,7 @@ The original test invalidation notice from 2025-10-24 regarding TMDB API configu
 
 **Solution Decided:** Accept risk, monitor for failures, have manual override system
 
-**Rationale:** RT scraping working currently, cache reduces API calls, manual overrides available
+**Rationale:** RT scraping working currently with Playwright browser contexts and selector strategies, cache reduces API calls, manual overrides available
 
 ## Low Priority Issues
 
@@ -605,7 +605,7 @@ The original test invalidation notice from 2025-10-24 regarding TMDB API configu
 | CRITICAL-002 | Discovery validation | 🔴 Critical | ⏳ Pending | Future data |
 | CRITICAL-003 | Watch links broken | 🔴 Critical | 🔴 Active | User experience |
 | CRITICAL-004 | Daily automation failures | 🔴 Critical | 🟡 Recovering | Stability & coverage |
-| CRITICAL-005 | Mandatory admin gate | 🔴 Critical | ✅ Implemented | Quality control |
+| CRITICAL-005 | Optional editorial review | 🔴 Critical | ✅ Implemented/Active | Quality control |
 | HIGH-001 | Admin panel paths | 🟠 High | ⏸️ Deferred | Admin tool |
 | HIGH-002 | Newsletter export | 🟠 High | ✅ Complete | User requirement |
 | HIGH-003 | Review system | 🟠 High | ✅ Resolved | Newsletter content |

@@ -1,6 +1,13 @@
-function getCSRFToken() {
-    return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-}
+// Global CSRF token
+let csrfToken = null;
+
+// Initialize CSRF token on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const metaTag = document.querySelector('meta[name="csrf-token"]');
+    if (metaTag) {
+        csrfToken = metaTag.getAttribute('content');
+    }
+});
 
 function showSuccess(message = 'Changes saved!') {
     const msg = document.getElementById('success-msg');
@@ -16,8 +23,9 @@ function toggleHidden(movieId, hide) {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-Token': getCSRFToken()
+            'X-CSRF-Token': csrfToken
         },
+        credentials: 'same-origin',
         body: JSON.stringify({movie_id: movieId, status_type: 'hidden', value: hide})
     })
     .then(response => response.json())
@@ -60,8 +68,9 @@ function toggleFeatured(movieId, feature) {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-Token': getCSRFToken()
+            'X-CSRF-Token': csrfToken
         },
+        credentials: 'same-origin',
         body: JSON.stringify({movie_id: movieId, status_type: 'featured', value: feature})
     })
     .then(response => response.json())
@@ -195,8 +204,9 @@ function regenerateData() {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-Token': getCSRFToken()
-        }
+            'X-CSRF-Token': csrfToken
+        },
+        credentials: 'same-origin'
     })
     .then(response => response.json())
     .then(data => {
@@ -330,15 +340,13 @@ function saveDraftTitles(draftId) {
         }
     });
 
-    // Get CSRF token
-    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-
     fetch(`/drafts/${draftId}`, {
         method: 'PATCH',
         headers: {
             'Content-Type': 'application/json',
             'X-CSRF-Token': csrfToken
         },
+        credentials: 'same-origin',
         body: JSON.stringify({ titles: updatedTitles })
     })
     .then(response => response.json())
@@ -368,14 +376,13 @@ function publishDraft(draftId) {
         return;
     }
 
-    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-
     fetch(`/drafts/${draftId}/publish`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'X-CSRF-Token': csrfToken
-        }
+        },
+        credentials: 'same-origin'
     })
     .then(response => response.json())
     .then(data => {
@@ -519,8 +526,9 @@ function saveAllFields(movieId) {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-Token': getCSRFToken()
+            'X-CSRF-Token': csrfToken
         },
+        credentials: 'same-origin',
         body: JSON.stringify({
             movie_id: movieId,
             digital_date: digitalDate || null,
@@ -604,8 +612,9 @@ function saveReview(movieId, btn) {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-Token': getCSRFToken()
+            'X-CSRF-Token': csrfToken
         },
+        credentials: 'same-origin',
         body: JSON.stringify({
             movie_id: movieId,
             review_text: reviewText,
@@ -677,8 +686,9 @@ function deleteReview(movieId, btn) {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-Token': getCSRFToken()
+            'X-CSRF-Token': csrfToken
         },
+        credentials: 'same-origin',
         body: JSON.stringify({movie_id: movieId})
     })
     .then(response => response.json())
@@ -775,7 +785,11 @@ function createYouTubePlaylist() {
     // Send request
     fetch('/create-youtube-playlist', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': csrfToken
+        },
+        credentials: 'same-origin',
         body: JSON.stringify(requestBody)
     })
     .then(response => response.json())
@@ -940,7 +954,11 @@ function saveOrdering() {
 
     fetch('/update-ordering', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': csrfToken
+        },
+        credentials: 'same-origin',
         body: JSON.stringify({
             ordered_ids: orderedIds
         })
@@ -1173,7 +1191,11 @@ function addMovie() {
     // Send to server
     fetch('/add-movie', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': csrfToken
+        },
+        credentials: 'same-origin',
         body: JSON.stringify(requestData)
     })
     .then(response => response.json())

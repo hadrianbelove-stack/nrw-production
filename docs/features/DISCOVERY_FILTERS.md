@@ -177,4 +177,4 @@ python3 daily_orchestrator.py
 ## Related Amendments
 - AMENDMENT-046: Remove TMDB vote_count Filter for Discovery
 - AMENDMENT-047: Production Discovery Architecture
-- AMENDMENT-025: Database Update Cadence (original discovery system)
+- Amendment 012: Database Update Cadence (original discovery system)

@@ -12,7 +12,7 @@ We want a beautiful webpage that shows the latest movies available for streaming
 
 **🔧 `generate_data.py --discover`** - *The Production Discovery System*
 
-⚠️ **DEPRECATION NOTICE:** The legacy `movie_tracker.py` system has been superseded by `generate_data.py --discover`. The legacy implementation is archived at `museum_legacy/legacy_movie_tracker.py` for historical reference. See PROJECT_CHARTER.md AMENDMENT-025 for governance documentation.
+⚠️ **DEPRECATION NOTICE:** The legacy `movie_tracker.py` system has been superseded by `generate_data.py --discover`. The legacy implementation is archived at `museum_legacy/legacy_movie_tracker.py` for historical reference. See PROJECT_CHARTER.md Amendment 012 for governance documentation.
 - **Discovery:** Searches TMDB API for movies released in past 7 days (festival, limited theatrical, theatrical, direct to streaming, etc.)
 - **Monitoring:** Checks ALL movies in database for digital availability on Netflix, Amazon, etc.
 - **Why:** There is no functional DIGITAL premiere date in APIs. They only show current state. We detect the change by checking daily.
@@ -84,22 +84,22 @@ Always poll ALL tracking movies in `movie_tracking.json` (no time limits). Fetch
 - **Tier 2:** `wikipedia_cache.json` - Cached successful lookups
 - **Tier 3:** Wikipedia REST API - Fast HTTP-based search (built into generate_data.py)
 - **Tier 4:** Search URL fallback - When REST API fails
-- **Manual tool:** `wikipedia_scraper.py` - Selenium-based fallback for complex cases (not automated)
-- **Technology:** REST API (primary), Selenium (manual fallback only)
+- **Manual tool:** `wikipedia_scraper.py` - Playwright-based fallback for complex cases (not automated)
+- **Technology:** REST API (primary), Playwright browser context (manual fallback only)
 
 **Rotten Tomatoes Links:**
 - **Tier 1:** `overrides/rt_overrides.json` - Manual fixes
 - **Tier 2:** `rt_cache.json` - Cached RT URLs and scores
-- **Tier 3:** RT Scraper - Selenium-based scraping (inlined into generate_data.py)
+- **Tier 3:** RT Scraper - Playwright-based scraping (inlined into generate_data.py)
 - **Tier 4:** RT search URL fallback - When scraping fails
-- **Technology:** Selenium (inlined), no external class
+- **Technology:** Playwright browser context (inlined), no external class
 - **Cache:** `rt_cache.json` with 90-day expiration
 
 **YouTube Trailer Links:**
 - **Tier 1:** `youtube_trailer_cache.json` - Cached direct watch URLs
-- **Tier 2:** `scripts/youtube_trailer_scraper.py` - Selenium-based scraping
+- **Tier 2:** `scripts/youtube_trailer_scraper.py` - Playwright-based scraping
 - **Tier 3:** YouTube search URL fallback - When scraping fails
-- **Technology:** Selenium (external class), integrated into generate_data.py
+- **Technology:** Playwright browser context (external class), integrated into generate_data.py
 
 **Failure Tracking:**
 - `missing_wikipedia.json` - Logs Wikipedia lookup failures for manual review
@@ -336,7 +336,7 @@ For detailed operating steps and daily curation workflow, see [`ADMIN_WORKFLOW.m
 **Legacy Implementations (Archived in museum_legacy/):**
 - `legacy_movie_tracker.py` - Original discovery/monitoring implementation
 - `daily_update.sh` - Original shell script automation implementation
-- See PROJECT_CHARTER.md AMENDMENT-025 for migration documentation
+- See PROJECT_CHARTER.md Amendment 012 for migration documentation
 
 **🔍 `ops/health_check.py`** - *The Quality Inspector*
 - **What it does:** Checks data.json has correct structure, no broken links
@@ -408,11 +408,11 @@ For detailed operating steps and daily curation workflow, see [`ADMIN_WORKFLOW.m
 **Manual Fallback Tools (Not Automated):**
 
 1. **wikipedia_scraper.py** (Root directory)
-   - **Technology:** Selenium WebDriver with Chrome (kept for emergency fallback)
+   - **Technology:** Playwright browser with Chromium (for emergency fallback)
    - **Use case:** When Wikipedia REST API fails or returns wrong results
    - **Usage:** Manual execution only (not integrated into daily automation)
    - **When to use:** Complex title searches, disambiguation pages, manual verification
-   - **Note:** Selenium kept as emergency backup only; Playwright is primary technology
+   - **Note:** Uses Playwright browser contexts and locator strategies for reliable page interaction
 
 ### **Archived Scrapers (museum_legacy/)**
 
@@ -430,19 +430,20 @@ See `museum_legacy/README.md` for detailed archival documentation.
 
 ### **Technology Comparison**
 
-**Playwright vs Selenium:**
-- **Playwright:** Modern, faster (~30% speed improvement), better auto-wait, screenshot/trace debugging
-- **Selenium:** Legacy but stable, widely used, good for simple scraping
+**Playwright Technology:**
+- **Playwright:** Modern browser automation with faster performance (~30% speed improvement), better auto-wait capabilities, screenshot/trace debugging
+- **Browser contexts:** Isolated browser sessions for reliable scraping
+- **Locator strategies:** Auto-waiting selectors that handle dynamic content reliably
 - **Migration status:** COMPLETED (October 2025) - All active scrapers now use Playwright:
   - Agent scraper: `agent_link_scraper.py` (Netflix, Disney+, HBO Max, Hulu)
   - RT scraper: `rt_scraper_playwright.py` (Rotten Tomatoes)
   - YouTube scraper: `scripts/youtube_trailer_scraper.py` (YouTube trailers)
-- **Selenium backups:** Emergency fallback versions preserved as `*_selenium_backup.py` files
+- **Legacy backups:** Emergency fallback versions preserved as `*_selenium_backup.py` files
 
-**REST APIs vs Scraping:**
+**REST APIs vs Browser Automation:**
 - **REST APIs:** Preferred when available (Wikipedia, TMDB, Watchmode)
-- **Scraping:** Fallback for platforms without APIs (Netflix, Disney+, RT scores)
-- **Principle:** Use official APIs first, scrape only when necessary
+- **Playwright Scraping:** Fallback for platforms without APIs (Netflix, Disney+, RT scores)
+- **Principle:** Use official APIs first, use Playwright browser automation only when necessary
 
 ### **Cache Strategy**
 

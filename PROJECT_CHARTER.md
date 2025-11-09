@@ -279,17 +279,6 @@ For full details, see `SYSTEM_ARCHITECTURE.md §4 (Configuration & Secrets)`.
 
 ## Quick Reference
 
-### Emergency Commands
-```bash
-# Branch divergence fix
-git checkout automation-updates && git reset --hard main && git push --force
-
-# Data corruption check
-grep "Processing.*movies" logs/    # Normal: 1-10, Warning: 50+, Critical: 100+
-
-# System restore
-cp movie_tracking.json.backup movie_tracking.json && cat watchmode_quota.json
-```
 
 ### Configuration & Performance
 - **Config sources**: Environment variables (production) → config.yaml (development) → fail fast

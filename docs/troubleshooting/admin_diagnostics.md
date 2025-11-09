@@ -2,14 +2,14 @@
 
 ## Overview
 
-⚠️ **Note**: Organizations may enable optional admin review gates, but the default automation is ungated. This guide explains how to read and analyze admin metrics when optional review mode is used.
+⚠️ **Note**: Daily automation proceeds ungated by default, with waiting/rejection only when optional review is enabled. This guide explains how to read and analyze admin metrics when optional review mode is used.
 
 This guide explains how to read and analyze admin metrics and delta summaries from the optional admin review system. Use this to understand approval patterns, identify data quality issues, and correlate admin actions with system behavior when editorial curation is enabled.
 
 ## Where Metrics Live
 
 ### `metrics/daily.jsonl`
-Location of structured admin approval data. Each approval creates one JSON line with the following fields:
+Location of structured admin metrics data. When optional review mode is enabled, each approval creates one JSON line with the following fields:
 
 - `date`: UTC date of approval (YYYY-MM-DD)
 - `timestamp`: Full ISO timestamp of approval
@@ -31,11 +31,11 @@ Use `ops/simulate_scenarios.sh` to test various approval gate scenarios:
 # Test low watch links coverage validation
 ./ops/simulate_scenarios.sh low-coverage
 
-# Test missing approval behavior
-./ops/simulate_scenarios.sh missing-approval
+# Test missing review config behavior
+./ops/simulate_scenarios.sh missing-review-config
 
-# Test stale approval validation
-./ops/simulate_scenarios.sh stale-approval
+# Test stale review config validation
+./ops/simulate_scenarios.sh stale-review-config
 
 # Run validation without making changes
 ./ops/simulate_scenarios.sh dry-run
@@ -51,11 +51,11 @@ Use `ops/simulate_scenarios.sh` to test various approval gate scenarios:
 3. **Observe behavior** - Check logs for expected validation behavior
 4. **Restore state** - Run `./ops/simulate_scenarios.sh restore`
 
-### Expected Behaviors
+### Expected Behaviors (When Optional Review Mode is Enabled)
 
 - **Low coverage**: Orchestrator should fail with link coverage error
-- **Missing approval**: Orchestrator should wait for admin approval
-- **Stale approval**: Orchestrator should reject old timestamps (>2 hours)
+- **Missing review config**: If optional review mode is enabled, orchestrator should wait for admin approval
+- **Stale review config**: If optional review mode is enabled, orchestrator should reject old timestamps
 - **Dry run**: Full validation without committing changes
 
 ### Additional Metrics Fields
@@ -64,7 +64,7 @@ Use `ops/simulate_scenarios.sh` to test various approval gate scenarios:
 - `issues`: Object containing counts of data quality issues by type
 
 ### `admin/approval.json`
-Most recent approval artifact containing:
+Most recent approval artifact (when optional review mode is enabled) containing:
 - `timestamp`: When approval was created
 - `reviewer`: Who approved the changes
 - `tracking_digest`: SHA-256 hash of movie_tracking.json for validation
@@ -193,8 +193,8 @@ jq -r '.date' metrics/daily.jsonl | sort | uniq | tail -10
 
 ### Missing Metrics Entries
 **Symptom:** No entries in daily.jsonl for recent dates
-**Cause:** Admin panel not run in full-review mode or approval.json not created
-**Solution:** Run `python3 admin.py --full-review` and use "Approve & Generate" button
+**Cause:** Optional review mode not enabled or admin panel not used
+**Solution:** Enable optional review mode if needed, or run `python3 admin.py --full-review` and use "Approve & Generate" button
 
 ### Inconsistent Delta Data
 **Symptom:** Metrics entry doesn't match approval.json

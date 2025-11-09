@@ -86,7 +86,7 @@ git push origin main
 |---------|------------|------------|-----------|
 | `rt_scraper_playwright.py` | Playwright | 2s delay | 90 days |
 | `agent_link_scraper.py` | Playwright | 2s delay | 30 days |
-| `streaming_platform_scraper.py` | Selenium | 3s delay | 7 days |
+| `streaming_platform_scraper.py` | Playwright | 3s delay | 7 days |
 | `scripts/youtube_trailer_scraper.py` | Playwright | 2s delay | 90 days |
 
 ### 3.5 Directories
@@ -694,7 +694,7 @@ See Section 5 above for detailed enrichment-on-transition caching.
 
 **Migration Status**: RT scraper migrated to Playwright (Oct 2025)
 **Benefits**: Better anti-bot detection, more reliable
-**Remaining**: Other scrapers still use BeautifulSoup/Selenium
+**Remaining**: Other scrapers use Playwright (completed migration)
 
 ### 7.4 Multi-Tier Fallback
 

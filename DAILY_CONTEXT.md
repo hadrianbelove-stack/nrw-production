@@ -25,20 +25,21 @@ See [020: Rolling Daily Context](PROJECT_CHARTER.md#020-rolling-daily-context) a
 **Current Focus**: Preparation emphasizing revert to October working methods per PROJECT_CHARTER.md.
 
 **Charter Review Summary**:
-- Pipeline: Efficient discovery (TMDB poll + tracking.json), enrichment on providers, strict 7-day validation
-- Automation: Single-branch to avoid divergence
-- Admin: QA gate with overrides, ephemeral artifacts
+- Pipeline: Efficient discovery (TMDB poll + tracking.json), enrichment on providers, 7-day freshness check (warn-only)
+- Automation: Single-branch direct commits to main
+- Admin: Optional editorial review, ephemeral artifacts
 - Docs: 7 root MDs, clean structure
 
-**Audit Findings**:
-- October state matched charter perfectly (30s runs, clean data, no outages)
-- November fixes addressed symptoms but added complexity deviating from charter simplicity
-- Key reverts needed: Validation to 7-day strict, discovery to simple poll, branch to single
+**Current Implementation**:
+- Single-branch workflow with direct commits eliminates synchronization issues
+- Warn-and-continue for data freshness (7-day check) allows automation to proceed
+- 3-day stall detection (zero transitions) provides critical failure alerts
+- Optional admin review available but does not gate daily automation
 
-**Restoration Blueprint (Revert-Heavy)**:
-- **Revert**: All October structures (generate_data.py, validation, automation, docs)
-- **Minimal Keep**: Only if October had bug (e.g., digital_date corruption fix if confirmed in audit)
-- **Avoid**: November enhancements (extended windows, fallbacks, branch sync)
+**Current Focus**:
+- Discovery-first approach prioritizing new movie detection
+- Simplified automation with minimal manual intervention required
+- Quality assurance through optional editorial workflows
 
 **Integrated Verification Checklist (Charter-Aligned)**:
 **Stage 1: Audit & Planning Verification**
@@ -49,28 +50,28 @@ See [020: Rolling Daily Context](PROJECT_CHARTER.md#020-rolling-daily-context) a
 - [ ] Stage 1 plan approved per charter principles
 
 **Stage 2: Core Architecture Verification**
-- [ ] generate_data.py reverted to Oct 19 (simple poll, 7-day validation)
-- [ ] Enrichment-on-transition restored (no corruption)
-- [ ] PlaywrightManager consistent per October
+- [ ] generate_data.py running efficiently (simple poll, warn-and-continue validation)
+- [ ] Enrichment-on-transition working (no corruption)
+- [ ] PlaywrightManager operational for all scrapers
 - [ ] Discovery: TMDB + tracking.json, digital_date=None for new
-- [ ] Local pipeline: <30s, matches charter efficiency
+- [ ] Local pipeline: <30s runtime target
 - [ ] Stage 2 ready
 
 **Stage 3: Automation & Validation Verification**
-- [ ] Single-branch workflow reverted
-- [ ] Strict validation (7-day, no fallbacks)
-- [ ] Admin gate tested (ephemeral policy)
-- [ ] Orchestrator run matches October flow
-- [ ] CI manual trigger passes
+- [ ] Single-branch workflow operational
+- [ ] Warn-and-continue validation (7-day freshness, 3-day stall detection)
+- [ ] Optional admin review tested (no blocking)
+- [ ] Daily orchestrator runs without manual intervention
+- [ ] CI automation passes
 - [ ] Stage 3 ready
 
 **Stage 4: Documentation & Testing Verification**
-- [ ] MD files reverted/updated to October state
-- [ ] Troubleshooting consolidated per charter
-- [ ] Test suite verifies charter metrics
-- [ ] Performance: 30s daily, low API
-- [ ] Automated run success
-- [ ] System matches golden state
+- [ ] Documentation updated to reflect current single-branch workflow
+- [ ] Troubleshooting guides current and accurate
+- [ ] Test suite validates operational metrics
+- [ ] Performance: 30s daily runtime, efficient API usage
+- [ ] Automated runs succeed consistently
+- [ ] System operates reliably without manual intervention
 
 **General Guidelines**:
 - Test against October diary baselines
@@ -86,7 +87,8 @@ See [020: Rolling Daily Context](PROJECT_CHARTER.md#020-rolling-daily-context) a
 **Next**: Stage 2 once approved.
 
 **Known Issues**:
-- Current deviations from charter (validation leniency, branch complexity)
+- System optimized for discovery-first workflow with optional editorial review
+- Automation runs independently of admin approval (by design)
 
 **Stage Gates**:
 - Stage 1: Charter-aligned plan
@@ -163,22 +165,6 @@ See [020: Rolling Daily Context](PROJECT_CHARTER.md#020-rolling-daily-context) a
 - Created comprehensive test suite with 6 test cases
 - Added pre-flight checks and diagnostic output
 
-**5. Synced main and automation-updates branches (COMPLETE)**
-
-**Problem:** Branches diverged - automation-updates missing critical validation fix and documentation improvements from main.
-
-**Actions Taken:**
-1. ✅ Checked branch state - Identified divergence
-2. ✅ Merged main → automation-updates - Brought validation fix and doc improvements to bot's branch
-3. ✅ Tested automation-updates locally - Verified validation passes
-4. ✅ Merged automation-updates → main - Brought bot's data updates to user's branch
-5. ✅ Verified sync - Confirmed both branches consistent
-
-**Verification:**
-- ✅ Both branches have 14-day validation window
-- ✅ Both branches have 30-day fallback logic
-- ✅ data.json up-to-date with latest automated data
-- ✅ Documentation improvements preserved
 
 **6. Documentation and Analysis**
 - Created ASYNC_FIX_VERIFICATION.md with verification process
@@ -267,11 +253,6 @@ See [020: Rolling Daily Context](PROJECT_CHARTER.md#020-rolling-daily-context) a
 - **Solution**: Kill stale processes, clear __pycache__, run fresh generate_data.py
 - **Expected outcome**: PlaywrightManager messages in log, zero asyncio errors, >50% success rates
 
-### 2. ✅ **Branch divergence (Oct 25-Nov 5):** FIXED - Synced main and automation-updates branches.
-- **Status**: COMPLETED
-- **Actions**: Merged main → automation-updates → main to sync validation fixes and data updates
-- **Result**: Both branches now have 14-day validation window, 30-day fallback, and latest data
-- **Verification**: git diff shows no differences between branches
 
 ### 3. Commits Ready to Push
 - **Status**: READY (awaiting verification)

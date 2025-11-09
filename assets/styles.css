@@ -374,6 +374,32 @@ header h1 {
     color: #00d4aa;
 }
 
+.info-links .info-btn-neutral {
+    background: rgba(255,255,255,0.05);
+    color: #ccc;
+    border-color: rgba(255,255,255,0.1);
+}
+
+.info-links .info-btn-neutral:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.3);
+    color: #fff;
+}
+
+.info-links .info-btn-disabled {
+    background: #333;
+    color: #999;
+    cursor: default;
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+.info-links .info-btn-disabled:hover {
+    background: #333;
+    color: #999;
+    border-color: rgba(255,255,255,0.2);
+}
+
 .bottom-meta {
     padding-top: 0.5rem;
     margin-top: 0.5rem;

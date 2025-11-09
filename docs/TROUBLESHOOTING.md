@@ -448,11 +448,15 @@ cat watchmode_quota.json
 - Workflow checkout logic issues
 
 **Current Solution:**
-- Single-branch workflow on `main` eliminates branch divergence
-- No synchronization needed
-- Direct commits after admin approval
+Single-branch quick fix for any divergence issues:
+```bash
+git pull origin main
+python3 generate_data.py
+```
 
-**Legacy Commands** (no longer needed):
+<details>
+<summary>Legacy Commands (no longer needed with single-branch workflow)</summary>
+
 ```bash
 # git log main..automation-updates --oneline
 # git log automation-updates..main --oneline
@@ -460,6 +464,7 @@ cat watchmode_quota.json
 # git merge origin/main --no-edit
 # git push origin automation-updates
 ```
+</details>
 
 For current workflow, see [docs/NRW_FULL_WORKFLOW.md](NRW_FULL_WORKFLOW.md).
 

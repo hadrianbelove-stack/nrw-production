@@ -267,7 +267,8 @@ const NRW = {
 
             if (movie.links?.rt) {
                 const rtText = movie.rt_score ? `RT ${movie.rt_score}` : 'RT';
-                infoLinks.push(`<a href="${movie.links.rt}" target="_blank" class="info-btn">${rtText}</a>`);
+                const rtClass = movie.rt_score ? 'info-btn' : 'info-btn info-btn-neutral';
+                infoLinks.push(`<a href="${movie.links.rt}" target="_blank" class="${rtClass}">${rtText}</a>`);
             }
 
             if (movie.links?.wikipedia !== null) {
@@ -296,7 +297,7 @@ const NRW = {
                 </div>
                 <div class="movie-info">
                     <div class="movie-title">${movie.title}</div>
-                    <span class="director">${movie.crew?.director || 'Director Unknown'}</span> • <span class="country">${(movie.country === 'United States of America' ? 'USA' : movie.country) || 'Country Unknown'}</span>
+                    <span class="director">${movie.crew?.director || 'Unknown Director'}</span> • <span class="country">${(movie.country === 'United States of America' ? 'USA' : movie.country) || 'Unknown Country'}</span>
                 </div>
             </div>`;
         });

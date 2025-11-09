@@ -14,7 +14,7 @@ The RT Scraper is an integrated component of the NRW data pipeline that automati
 ### Inlined RT Scraping Logic
 
 - **Removed:** `from scripts.rt_scraper import RTScraper` import
-- **Added:** `_init_rt_driver()` method to DataGenerator for lazy Selenium initialization
+- **Added:** `_init_rt_browser()` method to DataGenerator for lazy Playwright browser initialization
 - **Added:** `_rt_rate_limit()` method for enforcing 2-second delays between scrapes
 - **Added:** `_scrape_rt_page(title, year)` method with scraping logic from scripts/rt_scraper.py
 - **Added:** `_save_rt_cache()` method for cache persistence
@@ -44,8 +44,8 @@ The RT Scraper is an integrated component of the NRW data pipeline that automati
 ### Driver Cleanup
 
 - Added RT driver cleanup to `generate_display_data()` method
-- Ensures Selenium browser is closed at end of run
-- Prevents zombie Chrome processes
+- Ensures Playwright browser context is closed at end of run
+- Prevents zombie Chromium processes
 
 ## Waterfall Priority
 
@@ -53,7 +53,7 @@ The RT scraper follows this priority order:
 
 1. **RT overrides** (`overrides/rt_overrides.json`) - Manual curator fixes
 2. **RT cache** (`cache/rt_cache.json`) - Previously scraped results
-3. **RT scraper** (NEW - inlined) - Selenium-based scraping
+3. **RT scraper** (NEW - inlined) - Playwright-based scraping
 4. **RT search URL** - Fallback when scraping fails
 
 ## Score Extraction Status
@@ -81,7 +81,7 @@ The RT scraper follows this priority order:
 ## Performance Impact
 
 - **Cache hit:** ~0ms (instant return)
-- **Fresh scrape:** ~6-8 seconds (2s rate limit + 2s search + 2s movie page)
+- **Fresh scrape:** ~4-6 seconds (2s rate limit + Playwright auto-waiting + page navigation)
 - **Full regeneration:** Adds ~2-3 minutes if 20-30 movies need RT scraping
 - **Daily automation:** Adds ~30-60 seconds (5-10 new movies per day)
 
@@ -115,8 +115,8 @@ These files will be archived to `museum_legacy/` in subsequent phase.
 
 ## Rollback Plan
 
-- If issues arise, revert to external RTScraper class from scripts/rt_scraper.py
-- Restore import and external class usage
+- If issues arise, revert to external RTScraper class with Playwright browser contexts
+- Restore import and external class usage with Playwright locator strategies
 - No data loss (RT scraping is additive)
 
 ## Implementation Status

@@ -5,10 +5,10 @@
 # Usage: ./ops/simulate_scenarios.sh <scenario>
 #
 # Scenarios:
-#   low-coverage    - Inject low link coverage by nulling watch_links
-#   missing-approval - Remove approval file to test orchestrator waiting
-#   stale-approval  - Create approval with old timestamp
-#   dry-run        - Run orchestrator with validation only
+#   low-coverage          - Inject low link coverage by nulling watch_links
+#   missing-review-config - Remove approval file to test orchestrator waiting (if optional review enabled)
+#   stale-review-config   - Create approval with old timestamp (if optional review enabled)
+#   dry-run              - Run orchestrator with validation only
 #
 # See docs/troubleshooting/admin_diagnostics.md for usage guide
 #
@@ -29,15 +29,15 @@ usage() {
     echo "Usage: $0 <scenario>"
     echo ""
     echo "Available scenarios:"
-    echo "  low-coverage     - Test low watch links coverage validation"
-    echo "  missing-approval - Test missing approval.json behavior"
-    echo "  stale-approval   - Test stale approval timestamp validation"
-    echo "  dry-run         - Run orchestrator validation without changes"
-    echo "  restore         - Restore original data.json backup"
+    echo "  low-coverage           - Test low watch links coverage validation"
+    echo "  missing-review-config  - Test missing review configuration behavior (if optional review enabled)"
+    echo "  stale-review-config    - Test stale review timestamp validation (if optional review enabled)"
+    echo "  dry-run               - Run orchestrator validation without changes"
+    echo "  restore               - Restore original data.json backup"
     echo ""
     echo "Examples:"
     echo "  $0 low-coverage"
-    echo "  $0 missing-approval"
+    echo "  $0 missing-review-config"
     echo "  $0 restore"
     echo ""
     echo "For detailed usage: see docs/troubleshooting/admin_diagnostics.md"
@@ -129,9 +129,9 @@ with open('data.json', 'w') as f:
     echo "3. Run: $0 restore"
 }
 
-# Simulate missing approval scenario
-simulate_missing_approval() {
-    log "Simulating missing approval scenario"
+# Simulate missing review config scenario
+simulate_missing_review_config() {
+    log "Simulating missing review config scenario (if optional review enabled)"
 
     # Remove approval file if it exists
     if [[ -f "$PROJECT_ROOT/admin/approval.json" ]]; then
@@ -142,19 +142,19 @@ simulate_missing_approval() {
         rm "$PROJECT_ROOT/admin/approval.json"
     fi
 
-    success "Missing approval scenario prepared"
-    warning "admin/approval.json removed (if existed)"
+    success "Missing review config scenario prepared"
+    warning "admin/approval.json removed (if existed) - only affects workflow if optional review is enabled"
     echo ""
     echo "Next steps:"
     echo "1. Run: python3 daily_orchestrator.py"
-    echo "2. Observe approval waiting behavior"
-    echo "3. In another terminal: python3 admin.py --full-review"
-    echo "4. Approve changes to continue"
+    echo "2. If optional review is enabled, observe review waiting behavior"
+    echo "3. If optional review is enabled, in another terminal: python3 admin.py --full-review"
+    echo "4. If optional review is enabled, approve changes to continue"
 }
 
-# Simulate stale approval scenario
-simulate_stale_approval() {
-    log "Simulating stale approval scenario"
+# Simulate stale review config scenario
+simulate_stale_review_config() {
+    log "Simulating stale review config scenario (if optional review enabled)"
 
     # Create approval with old timestamp (4 hours ago)
     mkdir -p "$PROJECT_ROOT/admin"
@@ -192,13 +192,13 @@ with open('admin/approval.json', 'w') as f:
 print(f'Created stale approval dated: {stale_time.isoformat()}Z')
 "
 
-    success "Stale approval scenario prepared"
-    warning "admin/approval.json created with 4-hour-old timestamp"
+    success "Stale review config scenario prepared"
+    warning "admin/approval.json created with 4-hour-old timestamp - only affects workflow if optional review is enabled"
     echo ""
     echo "Next steps:"
     echo "1. Run: python3 daily_orchestrator.py"
-    echo "2. Observe approval validation failure due to staleness"
-    echo "3. Create fresh approval to continue"
+    echo "2. If optional review is enabled, observe review validation failure due to staleness"
+    echo "3. If optional review is enabled, create fresh approval to continue"
 }
 
 # Run orchestrator in dry-run mode
@@ -260,11 +260,11 @@ main() {
         "low-coverage")
             simulate_low_coverage
             ;;
-        "missing-approval")
-            simulate_missing_approval
+        "missing-review-config")
+            simulate_missing_review_config
             ;;
-        "stale-approval")
-            simulate_stale_approval
+        "stale-review-config")
+            simulate_stale_review_config
             ;;
         "dry-run")
             simulate_dry_run

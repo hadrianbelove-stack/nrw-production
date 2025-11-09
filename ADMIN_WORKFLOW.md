@@ -1,5 +1,7 @@
 # Admin Workflow Guide
 
+**Daily automation runs ungated by default and commits directly to `main`. The drafts→publish flow is an optional editorial workflow.**
+
 ## Overview
 
 ⚠️ **Note**: Drafts→publish workflow is optional; daily automation runs ungated by default.

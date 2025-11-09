@@ -122,7 +122,7 @@ Trigger workflows manually in GitHub Actions tab → Select workflow → "Run wo
 - Edit metadata with inline editing
 - Fix missing data (RT scores, Wikipedia, trailers)
 
-**Note:** Admin artifacts (approvals, ordering preferences, diary entries) are ephemeral and not versioned in git. Only the final `data.json` is committed to preserve clean version history. See [ADMIN_WORKFLOW.md](ADMIN_WORKFLOW.md) for details.
+**Note:** Admin artifacts (drafts, ordering preferences, and curation overrides) are ephemeral and not versioned in git. Drafts are optional and not required for daily automation. Only the final `data.json` is committed to preserve clean version history. See [ADMIN_WORKFLOW.md](ADMIN_WORKFLOW.md) for details.
 - Create YouTube playlists
 
 **For detailed workflow and best practices:** See [ADMIN_WORKFLOW.md](ADMIN_WORKFLOW.md)
