@@ -81,7 +81,7 @@ Always poll ALL tracking movies in `movie_tracking.json` (no time limits). Fetch
 
 **Wikipedia Links:**
 - **Tier 1:** `overrides/wikipedia_overrides.json` - Manual fixes for wrong links
-- **Tier 2:** `wikipedia_cache.json` - Cached successful lookups
+- **Tier 2:** `cache/wikipedia_cache.json` - Cached successful lookups
 - **Tier 3:** Wikipedia REST API - Fast HTTP-based search (built into generate_data.py)
 - **Tier 4:** Search URL fallback - When REST API fails
 - **Manual tool:** `wikipedia_scraper.py` - Playwright-based fallback for complex cases (not automated)
@@ -89,14 +89,14 @@ Always poll ALL tracking movies in `movie_tracking.json` (no time limits). Fetch
 
 **Rotten Tomatoes Links:**
 - **Tier 1:** `overrides/rt_overrides.json` - Manual fixes
-- **Tier 2:** `rt_cache.json` - Cached RT URLs and scores
-- **Tier 3:** RT Scraper - Playwright-based scraping (inlined into generate_data.py)
+- **Tier 2:** `cache/rt_cache.json` - Cached RT URLs and scores
+- **Tier 3:** RT Scraper - Playwright-based scraping (handled by rt_scraper_playwright.py and invoked by generate_data.py)
 - **Tier 4:** RT search URL fallback - When scraping fails
-- **Technology:** Playwright browser context (inlined), no external class
-- **Cache:** `rt_cache.json` with 90-day expiration
+- **Technology:** Playwright browser context (external RTScraperPlaywright class)
+- **Cache:** `cache/rt_cache.json` with 90-day expiration
 
 **YouTube Trailer Links:**
-- **Tier 1:** `youtube_trailer_cache.json` - Cached direct watch URLs
+- **Tier 1:** `cache/youtube_trailer_cache.json` - Cached direct watch URLs
 - **Tier 2:** `scripts/youtube_trailer_scraper.py` - Playwright-based scraping
 - **Tier 3:** YouTube search URL fallback - When scraping fails
 - **Technology:** Playwright browser context (external class), integrated into generate_data.py
@@ -350,11 +350,12 @@ For detailed operating steps and daily curation workflow, see [`ADMIN_WORKFLOW.m
 ```
 /index.html, /data.json, /assets/     ← Runtime files (what users see)
 /movie_tracking.json                  ← Master tracking database
-/wikipedia_cache.json, /rt_cache.json ← Speed optimization (root directory)
-/youtube_trailer_cache.json           ← YouTube scraper cache (root directory)
+/cache/wikipedia_cache.json           ← Wikipedia link cache
+/cache/rt_cache.json                  ← Rotten Tomatoes cache
+/cache/youtube_trailer_cache.json     ← YouTube trailer cache
 /agent_link_scraper.py                ← Playwright-based watch link scraper
-/wikipedia_scraper.py                 ← Manual fallback tool (Selenium)
-/scripts/youtube_trailer_scraper.py   ← YouTube scraper (Selenium, integrated)
+/wikipedia_scraper.py                 ← Manual fallback tool (Playwright browser context, auto-wait, locator strategies)
+/scripts/youtube_trailer_scraper.py   ← YouTube scraper (Playwright browser context, auto-wait, locator strategies)
 /admin/                               ← Editorial control files (hidden, featured, watch link overrides)
 /cache/                               ← Watchmode API cache, agent scraper cache, screenshots
 /overrides/                           ← Manual fixes for Wikipedia and RT links
@@ -448,9 +449,13 @@ See `museum_legacy/README.md` for detailed archival documentation.
 ### **Cache Strategy**
 
 **Cache Locations:**
-- **Root directory:** `wikipedia_cache.json`, `rt_cache.json`, `youtube_trailer_cache.json` (legacy location, works fine)
-- **cache/ directory:** `watch_links_cache.json`, `agent_links_cache.json`, `screenshots/` (new organized location)
-- **Why split:** Historical (old caches in root), new caches in cache/ directory
+- **cache/ directory:** All caches now standardized in `cache/` directory
+  - `cache/wikipedia_cache.json` - Wikipedia link cache
+  - `cache/rt_cache.json` - Rotten Tomatoes cache with 90-day TTL
+  - `cache/youtube_trailer_cache.json` - YouTube trailer cache
+  - `cache/watch_links_cache.json` - Watchmode API cache with 30-day TTL
+  - `cache/agent_links_cache.json` - Agent scraper cache with 30-day TTL
+  - `cache/screenshots/` - Diagnostic screenshots for failed scrapes
 
 **Cache Expiration:**
 - **Watch links:** 30 days (platforms can change URLs)
