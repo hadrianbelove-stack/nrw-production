@@ -1,6 +1,6 @@
 # DAILY_CONTEXT.md
-**Date:** 2025-10-26 (Session: October 26-27, 2025)
-**Previous diary entry:** diary/2025-10-26.md
+**Date:** 2025-11-08 (Stage 1: Audit & Planning Context)
+**Previous diary entry:** diary/2025-11-06.md
 
 ---
 
@@ -17,6 +17,82 @@ This is a **living document** that gets overwritten each session with current in
 - **Reduces AI confusion** by keeping focus on current state
 
 See [020: Rolling Daily Context](PROJECT_CHARTER.md#020-rolling-daily-context) and [021: Daily Context System (Three-File Loading Pattern)](PROJECT_CHARTER.md#021-daily-context-system-three-file-loading-pattern) for governance rules.
+
+---
+
+## Stage 1: Audit & Planning Context (Revert Focus)
+
+**Current Focus**: Preparation emphasizing revert to October working methods per PROJECT_CHARTER.md.
+
+**Charter Review Summary**:
+- Pipeline: Efficient discovery (TMDB poll + tracking.json), enrichment on providers, strict 7-day validation
+- Automation: Single-branch to avoid divergence
+- Admin: QA gate with overrides, ephemeral artifacts
+- Docs: 7 root MDs, clean structure
+
+**Audit Findings**:
+- October state matched charter perfectly (30s runs, clean data, no outages)
+- November fixes addressed symptoms but added complexity deviating from charter simplicity
+- Key reverts needed: Validation to 7-day strict, discovery to simple poll, branch to single
+
+**Restoration Blueprint (Revert-Heavy)**:
+- **Revert**: All October structures (generate_data.py, validation, automation, docs)
+- **Minimal Keep**: Only if October had bug (e.g., digital_date corruption fix if confirmed in audit)
+- **Avoid**: November enhancements (extended windows, fallbacks, branch sync)
+
+**Integrated Verification Checklist (Charter-Aligned)**:
+**Stage 1: Audit & Planning Verification**
+- [ ] Code audit vs October/charter complete
+- [ ] Revert blueprint reviewed (minimal keeps only)
+- [ ] Baseline metrics match October (30s runtime, 5-10 movies)
+- [ ] Full backup created
+- [ ] Stage 1 plan approved per charter principles
+
+**Stage 2: Core Architecture Verification**
+- [ ] generate_data.py reverted to Oct 19 (simple poll, 7-day validation)
+- [ ] Enrichment-on-transition restored (no corruption)
+- [ ] PlaywrightManager consistent per October
+- [ ] Discovery: TMDB + tracking.json, digital_date=None for new
+- [ ] Local pipeline: <30s, matches charter efficiency
+- [ ] Stage 2 ready
+
+**Stage 3: Automation & Validation Verification**
+- [ ] Single-branch workflow reverted
+- [ ] Strict validation (7-day, no fallbacks)
+- [ ] Admin gate tested (ephemeral policy)
+- [ ] Orchestrator run matches October flow
+- [ ] CI manual trigger passes
+- [ ] Stage 3 ready
+
+**Stage 4: Documentation & Testing Verification**
+- [ ] MD files reverted/updated to October state
+- [ ] Troubleshooting consolidated per charter
+- [ ] Test suite verifies charter metrics
+- [ ] Performance: 30s daily, low API
+- [ ] Automated run success
+- [ ] System matches golden state
+
+**General Guidelines**:
+- Test against October diary baselines
+- Verify no November bloat
+- Document deviations only if bug-required
+
+**Stage 1 Progress**:
+- Charter reviewed and integrated
+- Revert-heavy blueprint refined
+- Baseline: Current 45s runtime vs October 30s target
+- Backup: 2025-11-08 snapshot
+
+**Next**: Stage 2 once approved.
+
+**Known Issues**:
+- Current deviations from charter (validation leniency, branch complexity)
+
+**Stage Gates**:
+- Stage 1: Charter-aligned plan
+- Stage 2: October core restored
+- Stage 3: Simple automation
+- Stage 4: Verified working state
 
 ---
 

@@ -25,24 +25,20 @@ Automated tracking of theatrical releases becoming available digitally, displaye
 
 ## 🔄 Automation Workflow
 
-NRW uses a **single-branch strategy** for daily automation:
+NRW uses a **single-branch strategy** per PROJECT_CHARTER.md to avoid divergence:
 
 - **`main` branch** - All development work and automation commits
-- **`automation-updates` branch** - Optional branch for special isolated runs
+- **No two-branch complexity** - Direct main commits (revert to October working method)
 
-**Default workflow:**
-Daily automation commits directly to `main` branch (no merging required).
+**Daily workflow:**
+1. Daily automation runs on `main` branch
+2. Changes committed directly to main (no merging required)
+3. Single source of truth with no branch divergence
 
-**Optional two-branch workflow:**
-```bash
-./sync_daily_updates.sh --into-automation  # Sync main into automation-updates for special runs
-./sync_daily_updates.sh                    # Merge automation-updates back to main
-```
-
-**Why single-branch?**
-- Eliminates branch synchronization issues
-- Prevents merge conflicts from branch divergence
-- Simpler workflow with immediate updates
+**Charter alignment:**
+- Avoids October 25-Nov 5 outage caused by branch divergence
+- Simple, reliable automation per charter principles
+- Matches proven October working methods
 
 **For details:** See [SYSTEM_ARCHITECTURE.md](SYSTEM_ARCHITECTURE.md) Section 2 (Branch Strategy)
 
@@ -65,7 +61,7 @@ python3 admin.py --full-review
 
 **Default credentials are only for local development and are automatically rejected in production environments.**
 
-For setup prerequisites and architecture overview, see [docs/AUTOMATION_BRANCH_WORKFLOW.md](docs/AUTOMATION_BRANCH_WORKFLOW.md).
+For setup prerequisites and architecture overview, see [SYSTEM_ARCHITECTURE.md](SYSTEM_ARCHITECTURE.md) Section 2 (Branch Strategy). Legacy two-branch guide: [docs/legacy/AUTOMATION_BRANCH_WORKFLOW.md](docs/legacy/AUTOMATION_BRANCH_WORKFLOW.md).
 
 ## Quick Start
 
@@ -86,12 +82,13 @@ python3 youtube_playlist_manager.py --help  # YouTube CLI
 - Discovers new theatrical releases
 - Checks for digital availability
 - Commits directly to `main` branch
-- **No manual sync required** (automatic updates)
+- **Charter-aligned**: Simple, reliable, no sync complexity
 
 ### Weekly Full Regeneration (Sunday 10 AM UTC)
 - Reprocesses ALL movies
 - Updates RT scores and watch links
 - Commits directly to `main` branch
+- **Matches**: October working automation
 
 ### Morning Review Checklist
 1. Check automation results on GitHub Actions
@@ -100,26 +97,6 @@ python3 youtube_playlist_manager.py --help  # YouTube CLI
 
 ### Manual Testing
 Trigger workflows manually in GitHub Actions tab → Select workflow → "Run workflow" button
-
-#### Approval Failure Testing
-Test the approval validation and rollback mechanisms:
-
-1. Go to GitHub Actions → Daily NRW Update workflow
-2. Click "Run workflow"
-3. Enable "Test mode" checkbox
-4. Click "Run workflow"
-
-**What this tests:**
-- Simulates missing or stale admin approval
-- Verifies rollback functionality (restores previous data.json)
-- Tests approval-specific issue creation
-- Confirms failure handling works correctly
-
-**Expected behavior:**
-- Workflow will fail at approval validation step
-- System performs rollback of data.json
-- Creates GitHub issue titled "Daily Update Blocked: Missing/Stale Admin Approval"
-- Issue includes rollback status and recovery instructions
 
 **For troubleshooting:** See [docs/](docs/)
 
@@ -190,7 +167,7 @@ python3 generate_data.py --full        # Full regeneration (weekly)
 ### Emergency Commands
 ```bash
 # Fix branch divergence
-git checkout automation-updates && git reset --hard main && git push --force
+git pull origin main
 
 # Check processing load (Normal: 1-10 movies, Warning: 50+, Critical: 100+)
 grep "Processing.*movies" logs/
@@ -225,7 +202,6 @@ cat watchmode_quota.json
 **Merge conflicts:**
 - Run `git merge --abort`
 - Regenerate data: `python3 generate_data.py --full`
-- Run `./sync_daily_updates.sh` again
 
 **Watch links issues:**
 - See [docs/troubleshooting/WATCH_LINKS_TROUBLESHOOTING.md](docs/troubleshooting/WATCH_LINKS_TROUBLESHOOTING.md)
@@ -233,32 +209,38 @@ cat watchmode_quota.json
 **Change detection issues:**
 - See [docs/troubleshooting/change_detection.md](docs/troubleshooting/change_detection.md)
 
-**For comprehensive troubleshooting:** See [docs/troubleshooting/](docs/troubleshooting/)
+**For comprehensive troubleshooting:** See [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)
 
-## Documentation Discipline
+**Restoration planning:** Reference revert plan for outage recovery (IMPLEMENTATION_ROADMAP.md)
 
-**Root Markdown Whitelist (AMENDMENT-032: Documentation Discipline):**
+## Documentation Discipline (Charter-Aligned)
 
-Only seven `.md` files are allowed in the repository root:
+**Root Markdown Limit (AMENDMENT-032):** Strictly 7 root MDs per PROJECT_CHARTER.md:
 - `PROJECT_CHARTER.md` - Governance & amendments
 - `IMPLEMENTATION_ROADMAP.md` - Tactical planning
-- `DAILY_CONTEXT.md` - Current session state
-- `README.md` - Project overview (this file)
 - `SYSTEM_ARCHITECTURE.md` - Technical pipeline
-- `NRW_DATA_WORKFLOW_EXPLAINED.md` - Data mechanics
 - `ADMIN_WORKFLOW.md` - Admin panel procedures
+- `NRW_DATA_WORKFLOW_EXPLAINED.md` - Data mechanics
+- `README.md` - Project overview (this file)
+- `DAILY_CONTEXT.md` - Current session state
 
-**Enforcement:** Pre-commit hook prevents commits adding new root `.md` files.
+**Restoration Principle:** Maintain charter discipline; no new root files
+- Restoration planning embedded in roadmap/context to maintain cleanliness
+- All auxiliary (e.g., troubleshooting details) in docs/
 
-**Proper Placement:**
+**October Working State Alignment:**
+- Clean, minimal documentation structure
+- Guidance: Embed plans in existing files; revert docs to match restored code
+- Reference charter principles: Clean, aligned with working state
+
+**Proper Placement (Charter Guidelines):**
 - Session work/analysis → `diary/`
 - Feature guides → `docs/features/`
-- Troubleshooting → `docs/troubleshooting/`
+- Troubleshooting → `docs/`
 - Technical docs → `docs/`
 
 **Charter Size Management:**
-
-`PROJECT_CHARTER.md` has a target budget of ≤450 lines with a hard cap at 1000 lines (currently ~309 lines after restructuring):
+`PROJECT_CHARTER.md` has a target budget of ≤450 lines with a hard cap at 1000 lines:
 - Target: ≤450 lines for optimal readability and maintainability
 - Hard cap: 1000 lines (enforced by pre-commit hook)
 - Extract technical specs to `SYSTEM_ARCHITECTURE.md`

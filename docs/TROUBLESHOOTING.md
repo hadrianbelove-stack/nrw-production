@@ -3,7 +3,7 @@
 **Purpose:** Common failure modes for NRW automation workflows and how to fix them.
 
 **Related Docs:**
-- [AUTOMATION_BRANCH_WORKFLOW.md](AUTOMATION_BRANCH_WORKFLOW.md) - How workflows are designed to work
+- [legacy/AUTOMATION_BRANCH_WORKFLOW.md](legacy/AUTOMATION_BRANCH_WORKFLOW.md) - Legacy two-branch workflow (deprecated)
 - [museum_legacy/troubleshooting/](../museum_legacy/troubleshooting/) - Historical post-mortems with detailed debugging
 
 **Last Updated:** 2025-11-06
@@ -253,15 +253,13 @@ git diff movie_tracking.json
 **Solutions:**
 
 ```bash
-# 1. Check if branches are diverged
-git fetch origin
-git log main..automation-updates --oneline
-git log automation-updates..main --oneline
-
-# 2. If diverged, sync immediately
-git checkout automation-updates
-git merge origin/main --no-edit
-git push origin automation-updates
+# Legacy commands (no longer needed with single-branch workflow):
+# git fetch origin
+# git log main..automation-updates --oneline
+# git log automation-updates..main --oneline
+# git checkout automation-updates
+# git merge origin/main --no-edit
+# git push origin automation-updates
 
 # 3. Check enrichment stats in movie_tracking.json
 python3 -c "
@@ -283,12 +281,96 @@ time python3 generate_data.py
 ```
 
 **Prevention:**
-- Automatic sync added to workflows (Nov 5, 2025) - see [AUTOMATION_BRANCH_WORKFLOW.md](AUTOMATION_BRANCH_WORKFLOW.md#24-critical-failure-mode---branch-divergence)
+- Automatic sync added to workflows (Nov 5, 2025) - see [legacy/AUTOMATION_BRANCH_WORKFLOW.md](legacy/AUTOMATION_BRANCH_WORKFLOW.md#24-critical-failure-mode---branch-divergence)
 - Monitor workflow runtime in GitHub Actions
 - Alert on runtimes > 5 minutes
 
 **See Also:**
 - [SYSTEM_ARCHITECTURE.md Section 2.4](../SYSTEM_ARCHITECTURE.md) - Branch divergence failure mode
+
+---
+
+### 6. Enrichment Flag Corruption
+
+**Symptoms:**
+- Startup error: `🚨 CONSISTENCY CHECK FAILED: X% available movies have enriched=false`
+- Error message: `Pre-commit validation failed - enrichment changes rejected to prevent corruption`
+- Bulk changes from `enriched=true` to `enriched=false` detected
+- Workflows running for 2+ hours due to re-enriching already enriched movies
+
+**Root Causes:**
+1. **Bug in enrichment logic** - Code incorrectly resetting enriched flags
+2. **Database corruption** - File corruption causing enriched flags to be lost
+3. **Merge conflicts** - Git merge corrupted the enrichment flags structure
+4. **Manual editing errors** - Incorrect manual edits to movie_tracking.json
+
+**Solutions:**
+
+#### Restore from backup:
+
+```bash
+# 1. List available backups
+ls -la backups/movie_tracking.backup-*.json
+
+# 2. Find the most recent backup before corruption
+ls -lt backups/movie_tracking.backup-*.json | head -5
+
+# 3. Restore from backup (replace YYYYMMDD_HHMMSS with actual timestamp)
+cp backups/movie_tracking.backup-YYYYMMDD_HHMMSS.json movie_tracking.json
+
+# 4. Verify restoration fixed the issue
+python3 -c "
+import json
+with open('movie_tracking.json') as f:
+    db = json.load(f)
+    movies = list(db['movies'].values())
+    available = [m for m in movies if m.get('status') == 'available']
+    enriched_false = sum(1 for m in available if m.get('enriched') is False)
+    print(f'Available movies with enriched=false: {enriched_false}/{len(available)} ({enriched_false/len(available)*100:.1f}%)')
+    print('Should be < 10% for healthy state')
+"
+
+# 5. Test the fix
+python3 generate_data.py --check
+```
+
+#### If no recent backup available:
+
+```bash
+# 1. Manually fix enrichment flags for available movies
+python3 -c "
+import json
+with open('movie_tracking.json') as f:
+    db = json.load(f)
+
+# Fix enrichment flags for movies that should be enriched
+fixed = 0
+for movie_id, movie in db['movies'].items():
+    if (movie.get('status') == 'available' and
+        movie.get('enriched') is False):
+        # Check if movie has enrichment data
+        if (movie.get('digital_date') and
+            any(key in movie for key in ['watch_links', 'rt_score', 'trailer_link'])):
+            movie['enriched'] = True
+            fixed += 1
+
+if fixed > 0:
+    with open('movie_tracking.json', 'w') as f:
+        json.dump(db, f, indent=2)
+    print(f'Fixed enrichment flags for {fixed} movies')
+else:
+    print('No enrichment flags needed fixing')
+"
+```
+
+**Prevention:**
+- Atomic journaling now creates timestamped backups automatically
+- Pre-commit validation blocks suspicious bulk flag changes
+- Startup consistency checks detect corruption early
+- Monitor for workflows taking > 10 minutes (indicates re-enrichment)
+
+**Background:**
+The enrichment system tracks which movies have been processed with additional metadata (watch links, RT scores, etc.). When enriched flags are corrupted, the system re-processes all movies, causing 2+ hour runtimes and excessive API usage.
 
 ---
 
@@ -353,39 +435,40 @@ cat watchmode_quota.json
 
 ---
 
-### 5. Branch Divergence
+### 5. Legacy: Branch Divergence (No Longer Applicable)
 
-**Symptoms:**
+> **⚠️ LEGACY ISSUE**: This section describes problems that occurred with the deprecated two-branch workflow. Single-branch workflow eliminates these issues entirely.
+
+**Historical Symptoms:**
 - Automation runs on old code
 - Features you added aren't being used by the bot
 - Merge conflicts when trying to sync branches
-- `automation-updates` is X commits behind `main`
+- automation-updates branch behind main
 
-**Root Causes:**
-- User commits to `main` but bot doesn't sync before running
-- Manual intervention broke the sync cycle
-- Workflow checkout logic incorrect
+**Historical Root Causes:**
+- Two-branch system synchronization complexity
+- Manual intervention breaking sync cycle
+- Workflow checkout logic issues
 
-**Solutions:**
+**Current Solution:**
+- Single-branch workflow on `main` eliminates branch divergence
+- No synchronization needed
+- Direct commits after admin approval
 
-See [AUTOMATION_BRANCH_WORKFLOW.md - Branch Divergence Prevention](AUTOMATION_BRANCH_WORKFLOW.md#branch-divergence-prevention) for complete details.
-
-**Quick fix:**
-
+**Legacy Commands** (no longer needed):
 ```bash
-# Check divergence
-git log main..automation-updates --oneline
-git log automation-updates..main --oneline
-
-# Sync automation-updates with main
-git checkout automation-updates
-git merge origin/main --no-edit
-git push origin automation-updates
+# git log main..automation-updates --oneline
+# git log automation-updates..main --oneline
+# git checkout automation-updates
+# git merge origin/main --no-edit
+# git push origin automation-updates
 ```
+
+For current workflow, see [docs/NRW_FULL_WORKFLOW.md](NRW_FULL_WORKFLOW.md).
 
 **Prevention:**
 - Automatic sync now built into workflows (Nov 5, 2025)
-- Run `./sync_daily_updates.sh` regularly to merge automation data into main
+- Daily automation now runs directly on main branch (no sync required)
 - Both directions stay in sync automatically
 
 ---
@@ -466,7 +549,7 @@ If troubleshooting doesn't resolve the issue:
 
 1. **Check historical post-mortems** in [museum_legacy/troubleshooting/](../museum_legacy/troubleshooting/)
 2. **Review architecture docs** in [SYSTEM_ARCHITECTURE.md](../SYSTEM_ARCHITECTURE.md)
-3. **Examine workflow configuration** in [AUTOMATION_BRANCH_WORKFLOW.md](AUTOMATION_BRANCH_WORKFLOW.md)
+3. **Examine workflow configuration** in [legacy/AUTOMATION_BRANCH_WORKFLOW.md](legacy/AUTOMATION_BRANCH_WORKFLOW.md)
 4. **Check recent code changes** - `git log --oneline -20`
 5. **Run workflows with debug logging** (if available)
 6. **File a GitHub issue** with detailed logs and symptoms

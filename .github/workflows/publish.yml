@@ -1,0 +1,213 @@
+name: "Publish Draft"
+
+on:
+  repository_dispatch:
+    types: [publish-draft]
+  push:
+    paths:
+      - 'data.json'
+  workflow_dispatch:
+    inputs:
+      draft_id:
+        description: 'Draft ID to publish (for manual testing)'
+        required: false
+        type: string
+
+concurrency:
+  group: nrw-publish
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  issues: write
+  pages: write
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Validate data.json
+        run: |
+          echo "🔍 Validating data.json before deployment..."
+
+          # Check file exists and is valid JSON
+          if [ ! -f "data.json" ]; then
+            echo "❌ ERROR: data.json not found"
+            exit 1
+          fi
+
+          # Validate JSON syntax
+          if ! jq empty data.json 2>/dev/null; then
+            echo "❌ ERROR: data.json is not valid JSON"
+            exit 1
+          fi
+
+          # Basic structure validation
+          movie_count=$(jq '.movies | length' data.json)
+          echo "📊 Found $movie_count movies in data.json"
+
+          if [ "$movie_count" -lt 50 ]; then
+            echo "⚠️ WARNING: Low movie count ($movie_count) - expected at least 50"
+          else
+            echo "✅ Movie count validation passed"
+          fi
+
+          # Check for required fields
+          if jq -e '.generated_at and .count and .movies' data.json > /dev/null; then
+            echo "✅ Required fields validation passed"
+          else
+            echo "❌ ERROR: Missing required fields in data.json"
+            exit 1
+          fi
+
+      - name: Run site build and tests
+        run: |
+          echo "🏗️ Building site and running tests..."
+
+          # Run any build steps (if applicable)
+          # Example: npm run build
+
+          # Run tests to ensure data integrity
+          if [ -f "tests/test_data_integrity.py" ]; then
+            python -m pytest tests/test_data_integrity.py -v
+          fi
+
+          echo "✅ Build and tests completed"
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload to GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Extract publish metadata
+        if: always()
+        run: |
+          # Extract metadata from data.json or event payload
+          if [ "${{ github.event_name }}" = "repository_dispatch" ]; then
+            draft_id="${{ github.event.client_payload.draft_id }}"
+          elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            draft_id="${{ github.event.inputs.draft_id }}"
+          else
+            draft_id="manual"
+          fi
+
+          published_at=$(jq -r '.published_at // "unknown"' data.json)
+          movie_count=$(jq '.movies | length' data.json)
+
+          echo "DRAFT_ID=$draft_id" >> $GITHUB_ENV
+          echo "PUBLISHED_AT=$published_at" >> $GITHUB_ENV
+          echo "MOVIE_COUNT=$movie_count" >> $GITHUB_ENV
+
+      - name: Create deployment success notification
+        if: success()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const workflowUrl = `${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`;
+            const draftId = process.env.DRAFT_ID || 'unknown';
+            const publishedAt = process.env.PUBLISHED_AT || new Date().toISOString();
+            const movieCount = process.env.MOVIE_COUNT || '0';
+            const siteUrl = '${{ steps.deployment.outputs.page_url }}';
+
+            const title = `Site Published Successfully - ${new Date().toLocaleDateString()}`;
+
+            // Create a closed issue as a deployment log entry
+            const issue = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: title,
+              body: `## ✅ Site Deployment Successful
+
+            **Deployment Time:** ${new Date().toISOString()}
+            **Published Draft ID:** ${draftId}
+            **Data Timestamp:** ${publishedAt}
+            **Movie Count:** ${movieCount}
+            **Site URL:** [${siteUrl}](${siteUrl})
+            **Workflow Run:** ${workflowUrl}
+
+            ### 📊 Deployment Summary:
+            - **Movies Published:** ${movieCount}
+            - **Deployment Status:** ✅ Success
+            - **Site URL:** [Live Site](${siteUrl})
+
+            ### 🎯 Impact:
+            Public site has been updated with new content from draft ${draftId}.
+
+            ---
+            *This log entry was created automatically by the publish workflow.*`,
+              labels: ['automation', 'deployment-success', 'published'],
+              state: 'closed'  // Close immediately as it's just a log entry
+            });
+
+            console.log(`Created deployment success issue #${issue.data.number}: ${title}`);
+
+      - name: Create deployment failure notification
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const workflowUrl = `${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`;
+            const draftId = process.env.DRAFT_ID || 'unknown';
+
+            const title = `Site Deployment Failed - ${new Date().toLocaleDateString()}`;
+
+            const issue = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: title,
+              body: `## ❌ Site Deployment Failed
+
+            **Failure Time:** ${new Date().toISOString()}
+            **Failed Draft ID:** ${draftId}
+            **Workflow Run:** ${workflowUrl}
+            **Branch:** ${context.ref}
+
+            ### 🔍 Debugging Steps:
+            1. Check the workflow logs at the URL above
+            2. Verify data.json validation errors
+            3. Check GitHub Pages settings and permissions
+            4. Review build and test failures
+            5. Check for deployment conflicts
+
+            ### 🛠️ Manual Recovery:
+            1. **Fix data.json issues** if validation failed
+            2. **Re-run the publish workflow** manually
+            3. **Check Pages settings** in repository settings
+
+            ### 📊 Impact:
+            - Site deployment failed
+            - Previous version remains live
+            - Draft ${draftId} was not published
+
+            This issue was created automatically by the failed publish workflow.`,
+              labels: ['automation', 'deployment-failure', 'critical']
+            });
+
+            console.log(`Created deployment failure issue #${issue.data.number}: ${title}`);

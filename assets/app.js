@@ -1,5 +1,7 @@
 const NRW = {
     allMovies: [],
+    currentPage: 1,
+    moviesPerPage: 60,
     
     // Helper function for Wikipedia URLs with safe fallbacks
     wikiUrlFor(movie) {
@@ -13,17 +15,20 @@ const NRW = {
     
     async init() {
         try {
+            // Parse URL parameters for pagination state
+            this.parseUrlParams();
+
             const response = await fetch('data.json');
             const data = await response.json();
-            
+
             if (data.movies && data.movies.length > 0) {
                 const today = new Date();
                 this.allMovies = data.movies.filter(m => {
                     if (!m.digital_date) return false;
                     return new Date(m.digital_date) <= today;
                 });
-                
-                this.renderWall(this.allMovies);
+
+                this.renderPaginatedWall();
             } else {
                 document.getElementById('wall').innerHTML = '<p>No movies in database</p>';
             }
@@ -31,6 +36,97 @@ const NRW = {
             console.error('Load failed:', err);
             document.getElementById('wall').innerHTML = '<p>Failed to load movies</p>';
         }
+    },
+
+    parseUrlParams() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const page = parseInt(urlParams.get('page'));
+        if (page && page > 0) {
+            this.currentPage = page;
+        }
+    },
+
+    updateUrl() {
+        const url = new URL(window.location);
+        if (this.currentPage > 1) {
+            url.searchParams.set('page', this.currentPage);
+        } else {
+            url.searchParams.delete('page');
+        }
+        window.history.replaceState({}, '', url);
+    },
+
+    renderPaginatedWall() {
+        const sortedMovies = [...this.allMovies].sort((a, b) => {
+            return new Date(b.digital_date) - new Date(a.digital_date);
+        });
+
+        const totalPages = Math.ceil(sortedMovies.length / this.moviesPerPage);
+        const startIndex = (this.currentPage - 1) * this.moviesPerPage;
+        const endIndex = startIndex + this.moviesPerPage;
+        const currentPageMovies = sortedMovies.slice(startIndex, endIndex);
+
+        this.renderWall(currentPageMovies);
+        this.renderPaginationControls(totalPages);
+        this.updateUrl();
+    },
+
+    renderPaginationControls(totalPages) {
+        const paginationContainer = document.getElementById('pagination');
+        const paginationBottomContainer = document.getElementById('pagination-bottom');
+
+        if (totalPages <= 1) {
+            if (paginationContainer) paginationContainer.innerHTML = '';
+            if (paginationBottomContainer) paginationBottomContainer.innerHTML = '';
+            return;
+        }
+
+        let html = `
+            <div class="pagination-info">
+                Showing ${(this.currentPage - 1) * this.moviesPerPage + 1}-${Math.min(this.currentPage * this.moviesPerPage, this.allMovies.length)} of ${this.allMovies.length} movies
+            </div>
+            <nav class="pagination-nav" aria-label="Movie pagination">
+        `;
+
+        // Previous button
+        if (this.currentPage > 1) {
+            html += `<button onclick="NRW.goToPage(${this.currentPage - 1})" aria-label="Previous page">&laquo; Previous</button>`;
+        }
+
+        // Page numbers (show current and 2 pages on each side)
+        const startPage = Math.max(1, this.currentPage - 2);
+        const endPage = Math.min(totalPages, this.currentPage + 2);
+
+        if (startPage > 1) {
+            html += `<button onclick="NRW.goToPage(1)">1</button>`;
+            if (startPage > 2) html += '<span class="pagination-ellipsis">...</span>';
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
+            const isActive = i === this.currentPage ? ' active' : '';
+            html += `<button onclick="NRW.goToPage(${i})" class="pagination-btn${isActive}" ${isActive ? 'aria-current="page"' : ''}>${i}</button>`;
+        }
+
+        if (endPage < totalPages) {
+            if (endPage < totalPages - 1) html += '<span class="pagination-ellipsis">...</span>';
+            html += `<button onclick="NRW.goToPage(${totalPages})">${totalPages}</button>`;
+        }
+
+        // Next button
+        if (this.currentPage < totalPages) {
+            html += `<button onclick="NRW.goToPage(${this.currentPage + 1})" aria-label="Next page">Next &raquo;</button>`;
+        }
+
+        html += '</nav>';
+
+        if (paginationContainer) paginationContainer.innerHTML = html;
+        if (paginationBottomContainer) paginationBottomContainer.innerHTML = html;
+    },
+
+    goToPage(page) {
+        this.currentPage = page;
+        this.renderPaginatedWall();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     },
 
 

@@ -13,13 +13,11 @@ import sys
 # Add parent directory to path for playwright_manager import
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# Optional shared manager support (disabled by default)
-USE_SHARED_PLAYWRIGHT = os.environ.get('NRW_USE_SHARED_PLAYWRIGHT', 'false').lower() == 'true'
-if USE_SHARED_PLAYWRIGHT:
-    from playwright_manager import get_playwright_manager
+# Shared manager support (enabled by default)
+from playwright_manager import get_playwright_manager
 
 class YouTubeTrailerScraper:
-    def __init__(self, cache_file='youtube_trailer_cache.json', headless=True):
+    def __init__(self, cache_file='cache/youtube_trailer_cache.json', headless=True):
         self.cache_file = cache_file
         self.cache = self._load_cache()
         self.headless = headless
@@ -30,8 +28,8 @@ class YouTubeTrailerScraper:
         self.context = None
         self.page = None
 
-        # Manager reference (only if shared mode enabled)
-        self.manager = get_playwright_manager() if USE_SHARED_PLAYWRIGHT else None
+        # Manager reference
+        self.manager = get_playwright_manager()
 
 
     def _load_cache(self):
@@ -43,6 +41,7 @@ class YouTubeTrailerScraper:
 
     def _save_cache(self):
         """Save cache to file"""
+        os.makedirs(os.path.dirname(self.cache_file), exist_ok=True)
         with open(self.cache_file, 'w') as f:
             json.dump(self.cache, f, indent=2)
 
@@ -51,12 +50,8 @@ class YouTubeTrailerScraper:
         if self.browser is not None:
             return
 
-        if USE_SHARED_PLAYWRIGHT:
-            print("[YouTubeTrailerScraper] Initializing browser via shared manager...")
-            self._init_browser_shared()
-        else:
-            print("[YouTubeTrailerScraper] Initializing browser with local lifecycle...")
-            self._init_browser_local()
+        print("[YouTubeTrailerScraper] Initializing browser via shared manager...")
+        self._init_browser_shared()
 
     def _init_browser_shared(self):
         """Initialize browser using shared manager"""
@@ -133,13 +128,10 @@ class YouTubeTrailerScraper:
                 pass
             self.browser = None
 
-        # Cleanup Playwright based on mode
+        # Cleanup Playwright via shared manager
         if self.playwright:
             try:
-                if USE_SHARED_PLAYWRIGHT and self.manager:
-                    self.manager.release()
-                else:
-                    self.playwright.stop()
+                self.manager.release()
             except:
                 pass
             self.playwright = None

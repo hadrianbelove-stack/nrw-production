@@ -19,34 +19,37 @@ import urllib.parse
 import os
 import random
 import re
+import json
 from datetime import datetime, timedelta
-from constants import PLACEHOLDER_ASINS
+from constants import PLACEHOLDER_ASINS, get_scraper_config
 
-# Optional shared manager support (disabled by default)
-USE_SHARED_PLAYWRIGHT = os.environ.get('NRW_USE_SHARED_PLAYWRIGHT', 'false').lower() == 'true'
-if USE_SHARED_PLAYWRIGHT:
-    from playwright_manager import get_playwright_manager
+# Shared manager support (enabled by default)
+from playwright_manager import get_playwright_manager
 
 
 class StreamingPlatformScraper:
-    def __init__(self, headless=True, timeout_seconds=30, rate_limit_seconds=None, **kwargs):
+    def __init__(self, headless=True, timeout_seconds=None, rate_limit_seconds=None, config=None, **kwargs):
         """Initialize Playwright browser with anti-bot measures"""
 
-        # Store configuration
+        # Get centralized scraper configuration with defaults
+        self.scraper_config = get_scraper_config(config, 'streaming_platform_scraper')
+
+        # Store configuration with defaults from centralized config
         self.headless = headless
-        self.timeout_seconds = timeout_seconds
-        self.rate_limit_seconds = rate_limit_seconds
+        self.timeout_seconds = timeout_seconds or self.scraper_config.get('timeout', 30)
+        self.rate_limit_seconds = rate_limit_seconds or self.scraper_config.get('rate_limit', 2.0)
 
-        # Retry and backoff configuration
-        self.max_retries = kwargs.get('max_retries', 3)
-        self.base_delay = kwargs.get('base_delay', 0.5)
-        self.max_delay = kwargs.get('max_delay', 5.0)
-        self.jitter_ratio = kwargs.get('jitter_ratio', 0.2)
+        # Retry and backoff configuration from centralized config
+        self.max_retries = kwargs.get('max_retries') or self.scraper_config.get('max_retries', 3)
+        backoff_config = self.scraper_config.get('exponential_backoff', {})
+        self.base_delay = kwargs.get('base_delay') or backoff_config.get('base_delay', 0.5)
+        self.max_delay = kwargs.get('max_delay') or backoff_config.get('max_delay', 5.0)
+        self.jitter_ratio = kwargs.get('jitter_ratio') or backoff_config.get('jitter_ratio', 0.2)
 
-        # Screenshots configuration
+        # Screenshots configuration from centralized config
         self.screenshot_dir = 'cache/screenshots'
-        self.screenshots_enabled = kwargs.get('screenshots_enabled', True)
-        self.screenshot_retention_days = kwargs.get('screenshot_retention_days', 7)
+        self.screenshots_enabled = kwargs.get('screenshots_enabled') or self.scraper_config.get('screenshots_enabled', True)
+        self.screenshot_retention_days = kwargs.get('screenshot_retention_days') or self.scraper_config.get('screenshot_retention_days', 7)
 
         # Browser components (lazy initialization)
         self.playwright = None
@@ -54,23 +57,53 @@ class StreamingPlatformScraper:
         self.context = None
         self.page = None
 
-        # Manager reference (only if shared mode enabled)
-        self.manager = get_playwright_manager() if USE_SHARED_PLAYWRIGHT else None
+        # Manager reference
+        self.manager = get_playwright_manager()
+
+        # Operational counters for structured logging
+        self.counters = {
+            'start_count': 0,
+            'stop_count': 0,
+            'retry_count': 0,
+            'error_count': 0
+        }
+
+        # Performance tracking
+        self.stats = {
+            'searches': 0,
+            'successes': 0,
+            'failures': 0,
+            'timeouts': 0
+        }
 
 
         # Clean up old screenshots on initialization
         if self.screenshots_enabled:
             self._cleanup_old_screenshots()
 
+    def _log(self, message, level='info'):
+        """Log message with component prefix."""
+        timestamp = datetime.now().strftime('%H:%M:%S')
+        print(f"[{timestamp}][StreamingPlatformScraper] {message}")
+
+    def _log_metrics(self, operation, data):
+        """Log structured metrics for operations."""
+        metrics_data = {
+            'timestamp': datetime.now().isoformat(),
+            'component': 'streaming_platform_scraper',
+            'operation': operation,
+            'counters': self.counters.copy(),
+            'stats': self.stats.copy(),
+            'data': data
+        }
+        self._log(f"METRICS: {json.dumps(metrics_data)}")
+
     def _init_browser(self):
         """Initialize Playwright browser with context."""
         if self.browser is not None:
             return
 
-        if USE_SHARED_PLAYWRIGHT:
-            self._init_browser_shared()
-        else:
-            self._init_browser_local()
+        self._init_browser_shared()
 
     def _init_browser_shared(self):
         """Initialize browser using shared manager."""
@@ -149,13 +182,10 @@ class StreamingPlatformScraper:
                 pass
             self.browser = None
 
-        # Cleanup Playwright based on mode
+        # Cleanup Playwright via shared manager
         if self.playwright:
             try:
-                if USE_SHARED_PLAYWRIGHT and self.manager:
-                    self.manager.release()
-                else:
-                    self.playwright.stop()
+                self.manager.release()
             except:
                 pass
             self.playwright = None

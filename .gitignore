@@ -30,8 +30,10 @@ sync_tmp_*/
 output/
 .nrw_http_pid
 
-# Cache files (ephemeral data)
+# Cache files (ephemeral data) - now organized under cache/
 *_cache.json
+cache/*.json
+# Legacy cache file locations (for backwards compatibility)
 rt_cache.json
 wikipedia_cache.json
 youtube_trailer_cache.json

@@ -129,6 +129,60 @@ class PlaywrightManager:
             
             self.reference_count = 0
 
+    def health_check(self):
+        """
+        Perform a basic health check by launching browser, opening a blank page, and closing
+
+        Returns:
+            dict: Health check results with status, timing, and error info
+        """
+        import time
+
+        result = {
+            'status': 'unknown',
+            'duration_ms': 0,
+            'error': None,
+            'browser_type': 'chromium',
+            'headless': True,
+            'timestamp': time.time()
+        }
+
+        start_time = time.time()
+
+        try:
+            print("[PlaywrightManager] Starting health check...")
+
+            # Get browser instance
+            browser = self.get_browser(headless=True, browser_type='chromium')
+
+            # Create a new context for the health check
+            context = browser.new_context()
+
+            # Open a blank page
+            page = context.new_page()
+            page.goto('about:blank')
+
+            # Simple verification - check page title exists
+            title = page.title()
+            print(f"[PlaywrightManager] Health check page loaded: '{title}'")
+
+            # Clean up
+            context.close()
+
+            result['status'] = 'healthy'
+            result['duration_ms'] = int((time.time() - start_time) * 1000)
+
+            print(f"[PlaywrightManager] Health check passed in {result['duration_ms']}ms")
+
+        except Exception as e:
+            result['status'] = 'unhealthy'
+            result['error'] = str(e)
+            result['duration_ms'] = int((time.time() - start_time) * 1000)
+
+            print(f"[PlaywrightManager] Health check failed after {result['duration_ms']}ms: {e}")
+
+        return result
+
 
 # Global singleton instance
 _manager = None

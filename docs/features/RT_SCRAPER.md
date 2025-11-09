@@ -52,7 +52,7 @@ The RT Scraper is an integrated component of the NRW data pipeline that automati
 The RT scraper follows this priority order:
 
 1. **RT overrides** (`overrides/rt_overrides.json`) - Manual curator fixes
-2. **RT cache** (`rt_cache.json`) - Previously scraped results
+2. **RT cache** (`cache/rt_cache.json`) - Previously scraped results
 3. **RT scraper** (NEW - inlined) - Selenium-based scraping
 4. **RT search URL** - Fallback when scraping fails
 
@@ -62,7 +62,7 @@ The RT scraper follows this priority order:
 - ✅ Implemented in `_scrape_rt_page()` method (generate_data.py:181-291)
 - ✅ 6 selector fallbacks for score elements (lines 244-251)
 - ✅ Regex pattern `r'(\d+)%'` extracts percentage scores (line 261)
-- ✅ Cached in rt_cache.json with 90-day TTL
+- ✅ Cached in cache/rt_cache.json with 90-day TTL
 - ✅ Rate limiting enforced (2-second delays between scrapes)
 - ✅ Integrated into waterfall at tier 4 (line 630)
 - ✅ Test results: 100% success rate on 4 test cases (including live scraping)
@@ -72,7 +72,7 @@ The RT scraper follows this priority order:
 
 ## Cache Structure
 
-- **File:** `rt_cache.json`
+- **File:** `cache/rt_cache.json`
 - **Key:** `{title}_{year}` (e.g., "Landmarks_2025")
 - **Value:** `{url: string, score: string}` or `null` for failures
 - **Format:** Same as before (backward compatible)

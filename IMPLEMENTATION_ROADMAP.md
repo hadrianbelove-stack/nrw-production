@@ -2,7 +2,7 @@
 
 **Purpose:** Canonical tactical planning document for tracking problems, solutions, and implementation status across AI sessions.
 
-**Last Updated:** 2025-11-06
+**Last Updated:** 2025-11-08
 **Next Review:** 2025-11-10
 
 **Companion Document:** `PROJECT_CHARTER.md` (constitutional rules and governance)
@@ -13,10 +13,62 @@
 - **Update Protocol:** Update at end of each session with decisions made and status changes
 - **Relationship to Log:** `diary/` entries record what happened; this roadmap tracks what's planned
 
+## Revert-Heavy Phased Restoration Roadmap
+
+**CRITICAL-007: System Restoration (Revert to October)**
+- **Status**: STAGE 1 IN PROGRESS
+- **Problem**: Post-recovery complexity deviates from PROJECT_CHARTER.md working methods
+- **Impact**: Risk of inefficiency without reverting to proven October state
+- **Solution**: Four-stage revert: Audit → Core Revert → Automation Simplify → Docs/Verify. Prioritize October methods per charter.
+
+**Restoration Blueprint (Revert-First Plan)**:
+- **Executive Summary**: Restore October 19-20 golden state aligning with charter (30s runs, strict validation, clean polling). Minimal November integrations only for confirmed bugs (e.g., line 1848 corruption fix).
+
+- **Revert List**: generate_data.py structure (simple TMDB poll, 7-day validation), single-branch automation, admin QA workflow, Playwright patterns, doc structure.
+- **Minimal Keep List**: Only bug-specific November fixes (digital_date None for discoveries if October had issue; data rebuild if needed).
+- **Avoid List**: November over-engineering (14/30-day fallbacks, two-branch sync, softened checks).
+
+**Stage Breakdown**:
+1. **Audit & Planning** (Current): Blueprint/checklist vs charter. Deliverables: Revert decisions documented, baselines. Success: Plan aligns with October/charter.
+2. **Core Architecture**: Revert generate_data.py/scrapers/admin.py to October. Goal: Efficient pipeline matching charter metrics.
+3. **Automation & Validation**: Revert to single-branch, strict validation. Goal: Simple automation per charter.
+4. **Documentation & Testing**: Update docs to October state, verify against charter. Goal: Clean, operational system.
+
+**Stage 1 Details (Current Focus)**:
+- **Audit Components**: Compare vs October diary/charter (e.g., discovery: TMDB + tracking.json poll, no date assumptions).
+- **Charter Alignment**: Ensure 30s efficiency, strict gates, low API use.
+- **Risks & Mitigations**: Over-integration: Revert-only rule. Regressions: Test against October baselines.
+
+**Updated Critical Issues**:
+- CRITICAL-002: Discovery validation → Stage 2 (revert to October strictness)
+- CRITICAL-003: Watch links → Stage 2 (restore October fallback)
+- CRITICAL-004: Daily automation → Stage 3 (single-branch revert)
+- CRITICAL-005: Admin gate → Stage 2/3 (October QA focus)
+- CRITICAL-006: Stall alert → Stage 3 (simplify per charter)
+
+**Session Log (2025-11-08)**:
+- Refined to revert-heavy strategy per user feedback and charter review
+- Emphasized October methods (working discovery, strict validation, single-branch)
+- Integrated minimal keeps only for bugs
+- Blueprint updated for charter alignment
+
+**Priority Matrix**:
+1. Stage 1 complete (High: Align with charter)
+2. Stage 2 core revert (High: Restore efficiency)
+3. Stage 3 automation (Medium: Simplify)
+4. Stage 4 verify (Medium: Confirm working state)
+
+**Timeline**:
+- Stage 1: 1-2 days
+- Stage 2: 2-3 days
+- Stage 3: 2-3 days
+- Stage 4: 2-3 days
+- Total: 7-11 days to October restoration
+
 ## Critical Issues (Block Core Functionality)
 
 ### CRITICAL-002: Discovery System Validation
-**Status:** ⏳ PENDING - Awaiting valid test environment (not blocked by discovery issues)
+**Status:** ⏳ STAGE 2 - Awaiting valid test environment (not blocked by discovery issues)
 
 **Problem:** Discovery system found 0 new movies in Oct 22 test. Core function not validated.
 
@@ -40,7 +92,7 @@
 **Dependencies:** Blocks future data accuracy
 
 ### CRITICAL-004: Daily Automation Failures (Oct 25–Nov 5)
-**Status:** 🟡 RECOVERING
+**Status:** 🟡 STAGE 3 - RECOVERING
 
 **Timeline:**
 - Oct 25 failures begin
@@ -63,7 +115,7 @@
 **Dependencies:** Monitor through Nov 10
 
 ### CRITICAL-005: Mandatory Admin Approval Gate
-**Status:** ✅ IMPLEMENTED/ACTIVE
+**Status:** ✅ STAGE 2/3 - IMPLEMENTED/ACTIVE
 
 **Problem:** Risk of unreviewed data being published to public site without quality control gate.
 
@@ -93,7 +145,7 @@
 - [ADMIN_WORKFLOW.md](ADMIN_WORKFLOW.md) - Complete workflow documentation
 
 ### CRITICAL-006: Discovery Health & Stall Alert
-**Status:** 🔴 ACTIVE
+**Status:** 🔴 STAGE 3 - ACTIVE
 
 **Problem:** Change detection can silently stall without notification, causing core value loss.
 
@@ -126,7 +178,7 @@
 - [.github/workflows/daily-check.yml](.github/workflows/daily-check.yml) - CI implementation
 
 ### CRITICAL-003: Watch Links Broken - Watchmode API Issue
-**Status:** 🔴 ACTIVE - Watchmode quota exhausted, scrapers failing in CI
+**Status:** 🔴 STAGE 2 - ACTIVE - Watchmode quota exhausted, scrapers failing in CI
 
 **Problem:** 100% of watch links in `data.json` are Google search fallbacks. No deep links for rent/buy/streaming.
 
@@ -583,7 +635,7 @@ The original test invalidation notice from 2025-10-24 regarding TMDB API configu
 
 ## Notes for Future Sessions
 
-**Branch Strategy:** Daily CI runs on `main` (single-branch) or, if using a two-branch model, ensure automation-updates is synced from `main` before runs (see SYSTEM_ARCHITECTURE.md §2). Use `./sync_daily_updates.sh` to sync when needed.
+**Branch Strategy:** Daily CI runs on `main` (single-branch) with direct commits for simplified workflow per PROJECT_CHARTER.md.
 
 **Known Limitations:**
 - GitHub Actions blocked (account flagged, support ticket filed)

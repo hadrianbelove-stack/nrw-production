@@ -4,14 +4,15 @@ Admin panel for curating movie selections.
 Simple Flask app for editing movie data and controlling visibility.
 """
 
-from flask import Flask, render_template, request, jsonify, redirect, url_for, Response
+from flask import Flask, render_template, request, jsonify, redirect, url_for, Response, session
 import json
 import os
 import subprocess
 import sys
 import argparse
 import hashlib
-from datetime import datetime, timezone
+import secrets
+from datetime import datetime, timezone, timedelta
 import yaml
 import glob
 import shutil
@@ -26,9 +27,70 @@ app = Flask(__name__,
             static_folder='admin/static',
             static_url_path='/admin/static')
 
+# Configure session security
+app.secret_key = os.environ.get('FLASK_SECRET_KEY', secrets.token_hex(32))
+
+# Security headers and HTTPS enforcement
+@app.before_request
+def security_headers():
+    """Enforce security policies before each request."""
+    # HTTPS enforcement in production
+    if os.environ.get('FLASK_ENV') == 'production' and not request.is_secure:
+        return redirect(request.url.replace('http://', 'https://'), code=301)
+
+@app.after_request
+def apply_security_headers(response):
+    """Apply security headers to all responses."""
+    # Prevent clickjacking
+    response.headers['X-Frame-Options'] = 'DENY'
+    # Prevent content type sniffing
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    # XSS protection
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    # Referrer policy
+    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+
+    # CSP for admin panel (strict)
+    csp = (
+        "default-src 'self'; "
+        "script-src 'self' 'unsafe-inline'; "
+        "style-src 'self' 'unsafe-inline'; "
+        "img-src 'self' data: https:; "
+        "font-src 'self'; "
+        "connect-src 'self'"
+    )
+    response.headers['Content-Security-Policy'] = csp
+
+    return response
+
 from flask_httpauth import HTTPBasicAuth
 
 auth = HTTPBasicAuth()
+
+# CSRF Protection
+def generate_csrf_token():
+    """Generate a CSRF token for the current session"""
+    if 'csrf_token' not in session:
+        session['csrf_token'] = secrets.token_hex(32)
+    return session['csrf_token']
+
+def validate_csrf_token():
+    """Validate CSRF token from request headers or form data"""
+    token = request.headers.get('X-CSRF-Token') or request.form.get('csrf_token')
+    return token and session.get('csrf_token') == token
+
+def csrf_protect(f):
+    """Decorator to protect endpoints with CSRF validation"""
+    def decorated_function(*args, **kwargs):
+        if request.method in ['POST', 'PATCH', 'PUT', 'DELETE']:
+            if not validate_csrf_token():
+                return jsonify({
+                    'success': False,
+                    'error': 'Invalid or missing CSRF token'
+                }), 403
+        return f(*args, **kwargs)
+    decorated_function.__name__ = f.__name__
+    return decorated_function
 
 # Production environment check and credential enforcement
 def check_production_environment():
@@ -1894,6 +1956,14 @@ def update_ordering() -> dict:
             'error': f'Error updating ordering: {str(e)}'
         })
 
+@app.route('/csrf-token', methods=['GET'])
+@auth.login_required
+def get_csrf_token() -> dict:
+    """Get CSRF token for API requests."""
+    return jsonify({
+        'csrf_token': generate_csrf_token()
+    })
+
 @app.route('/delta-summary', methods=['GET'])
 @auth.login_required
 def delta_summary() -> Response | tuple[Response, int]:
@@ -1927,14 +1997,651 @@ def delta_summary() -> Response | tuple[Response, int]:
             'error': f'Error computing delta summary: {str(e)}'
         }), 500
 
+@app.route('/drafts', methods=['GET'])
+@auth.login_required
+def get_drafts() -> dict:
+    """Get all drafts sorted by createdAt descending.
+
+    Returns drafts with newest first for admin review.
+
+    Authentication:
+        Requires HTTP Basic Auth (@auth.login_required)
+
+    Returns:
+        JSON response:
+        {
+            "success": bool,
+            "drafts": list,  # Array of draft objects sorted by createdAt desc
+            "count": int,  # Total number of drafts
+            "error": str  # On failure
+        }
+    """
+    try:
+        drafts_dir = 'admin/drafts'
+
+        if not os.path.exists(drafts_dir):
+            return jsonify({
+                'success': True,
+                'drafts': [],
+                'count': 0
+            })
+
+        drafts = []
+
+        # Load all draft files
+        for filename in os.listdir(drafts_dir):
+            if filename.endswith('.json'):
+                file_path = os.path.join(drafts_dir, filename)
+                try:
+                    with open(file_path, 'r') as f:
+                        draft = json.load(f)
+                        drafts.append(draft)
+                except Exception as e:
+                    logger.warning(f"Failed to load draft {filename}: {e}")
+
+        # Sort by createdAt descending (newest first)
+        drafts.sort(key=lambda x: x.get('createdAt', ''), reverse=True)
+
+        return jsonify({
+            'success': True,
+            'drafts': drafts,
+            'count': len(drafts)
+        })
+
+    except Exception as e:
+        logger.error(f"Error getting drafts: {str(e)}", exc_info=True)
+        return jsonify({
+            'success': False,
+            'error': f'Error getting drafts: {str(e)}'
+        })
+
+@app.route('/drafts/<draft_id>', methods=['PATCH'])
+@auth.login_required
+@csrf_protect
+def update_draft(draft_id: str) -> dict:
+    """Update title fields in a draft.
+
+    Allows inline editing of draft titles before publishing.
+
+    Authentication:
+        Requires HTTP Basic Auth (@auth.login_required)
+
+    Request JSON:
+        {
+            "titles": list  # Updated array of titles
+        }
+
+    Returns:
+        JSON response:
+        {
+            "success": bool,
+            "message": str,
+            "error": str  # On failure
+        }
+    """
+    try:
+        data = request.json or {}
+        new_titles = data.get('titles', [])
+
+        if not isinstance(new_titles, list):
+            return jsonify({
+                'success': False,
+                'error': 'titles must be an array'
+            })
+
+        # Load existing draft
+        draft_file = f'admin/drafts/{draft_id}.json'
+        if not os.path.exists(draft_file):
+            return jsonify({
+                'success': False,
+                'error': f'Draft {draft_id} not found'
+            })
+
+        with open(draft_file, 'r') as f:
+            draft = json.load(f)
+
+        # Update titles
+        draft['titles'] = new_titles
+        draft['lastModified'] = datetime.now().isoformat()
+
+        # Save atomically
+        safe_write_json(draft_file, draft)
+
+        logger.info(f"Draft {draft_id} updated by {auth.current_user()}")
+
+        return jsonify({
+            'success': True,
+            'message': 'Draft updated successfully'
+        })
+
+    except Exception as e:
+        logger.error(f"Error updating draft {draft_id}: {str(e)}", exc_info=True)
+        return jsonify({
+            'success': False,
+            'error': f'Error updating draft: {str(e)}'
+        })
+
+@app.route('/drafts/<draft_id>/publish', methods=['POST'])
+@auth.login_required
+@csrf_protect
+def publish_draft(draft_id: str) -> dict:
+    """Publish a draft to production data.json.
+
+    Validates the draft, writes to production data atomically,
+    and triggers site update.
+
+    Authentication:
+        Requires HTTP Basic Auth (@auth.login_required)
+
+    Returns:
+        JSON response:
+        {
+            "success": bool,
+            "message": str,
+            "publishedId": str,  # Draft ID that was published
+            "timestamp": str,  # ISO timestamp of publish
+            "error": str  # On failure
+        }
+    """
+    try:
+        # Load draft
+        draft_file = f'admin/drafts/{draft_id}.json'
+        if not os.path.exists(draft_file):
+            return jsonify({
+                'success': False,
+                'error': f'Draft {draft_id} not found'
+            })
+
+        with open(draft_file, 'r') as f:
+            draft = json.load(f)
+
+        # Validate draft
+        validation_result = validate_draft(draft)
+        if not validation_result['valid']:
+            return jsonify({
+                'success': False,
+                'error': f'Draft validation failed: {validation_result["error"]}'
+            })
+
+        # Load current data.json
+        if not os.path.exists('data.json'):
+            return jsonify({
+                'success': False,
+                'error': 'data.json not found'
+            })
+
+        with open('data.json', 'r') as f:
+            current_data = json.load(f)
+
+        # Apply title changes from draft before atomic write
+        movie_ids = draft.get('movieIds', [])
+        draft_titles = draft.get('titles', [])
+
+        # Validate title array and movieIds alignment
+        if len(draft_titles) != len(movie_ids):
+            return jsonify({
+                'success': False,
+                'error': f'Title count ({len(draft_titles)}) does not match movie IDs count ({len(movie_ids)})'
+            })
+
+        # Validate non-empty titles
+        for i, title in enumerate(draft_titles):
+            if not title or not title.strip():
+                return jsonify({
+                    'success': False,
+                    'error': f'Empty title at index {i} for movie ID {movie_ids[i]}'
+                })
+
+        # Apply title changes to movies in current_data
+        if 'movies' in current_data:
+            movies_by_id = {str(movie.get('id', '')): movie for movie in current_data['movies']}
+            for i, movie_id in enumerate(movie_ids):
+                if str(movie_id) in movies_by_id and i < len(draft_titles):
+                    movies_by_id[str(movie_id)]['title'] = draft_titles[i].strip()
+
+        # Update data.json atomically
+        current_data['published_at'] = datetime.now().isoformat()
+        current_data['published_draft_id'] = draft_id
+
+        # Write to temp file first, then rename atomically
+        temp_file = 'data.json.tmp'
+        try:
+            with open(temp_file, 'w') as f:
+                json.dump(current_data, f, indent=2)
+            os.replace(temp_file, 'data.json')
+        except Exception as e:
+            if os.path.exists(temp_file):
+                os.remove(temp_file)
+            raise e
+
+        # Trigger site update (repository dispatch or commit)
+        trigger_site_update(draft_id)
+
+        # Log audit record
+        log_publish_audit(auth.current_user(), draft_id)
+
+        # Remove published draft
+        os.remove(draft_file)
+
+        logger.info(f"Draft {draft_id} published by {auth.current_user()}")
+
+        return jsonify({
+            'success': True,
+            'message': 'Draft published successfully',
+            'publishedId': draft_id,
+            'timestamp': datetime.now().isoformat()
+        })
+
+    except Exception as e:
+        logger.error(f"Error publishing draft {draft_id}: {str(e)}", exc_info=True)
+        return jsonify({
+            'success': False,
+            'error': f'Error publishing draft: {str(e)}'
+        })
+
+def validate_draft(draft: dict) -> dict:
+    """Validate a draft before publishing.
+
+    Runs schema checks, slug uniqueness, and data quality rules.
+
+    Args:
+        draft: Draft object to validate
+
+    Returns:
+        dict: {'valid': bool, 'error': str}
+    """
+    try:
+        # Check required fields
+        required_fields = ['id', 'createdAt', 'movieIds']
+        for field in required_fields:
+            if field not in draft:
+                return {'valid': False, 'error': f'Missing required field: {field}'}
+
+        # Check movie IDs are valid
+        movie_ids = draft.get('movieIds', [])
+        if not movie_ids:
+            return {'valid': False, 'error': 'Draft has no movie IDs'}
+
+        # Validate against tracking data
+        try:
+            with open('movie_tracking.json', 'r') as f:
+                tracking_data = json.load(f)
+        except FileNotFoundError:
+            return {'valid': False, 'error': 'movie_tracking.json not found'}
+
+        movies_db = tracking_data.get('movies', {})
+        for movie_id in movie_ids:
+            if str(movie_id) not in movies_db:
+                return {'valid': False, 'error': f'Movie ID {movie_id} not found in tracking database'}
+
+        # Check source digest if provided
+        source_digest = draft.get('sourceDigest')
+        if source_digest:
+            with open('movie_tracking.json', 'rb') as f:
+                current_digest = hashlib.sha256(f.read()).hexdigest()
+            if source_digest != current_digest:
+                return {'valid': False, 'error': 'Source data has changed since draft was created'}
+
+        # Additional data quality checks when publishing
+        try:
+            result = validate_data_quality_for_publish()
+            if not result['valid']:
+                return result
+        except Exception as e:
+            return {'valid': False, 'error': f'Data quality check failed: {str(e)}'}
+
+        return {'valid': True, 'error': None}
+
+    except Exception as e:
+        return {'valid': False, 'error': f'Validation error: {str(e)}'}
+
+def validate_data_quality_for_publish() -> dict:
+    """Run data quality checks before publishing.
+
+    Returns:
+        dict: {'valid': bool, 'error': str}
+    """
+    try:
+        # Check data.json exists and is valid
+        if not os.path.exists('data.json'):
+            return {'valid': False, 'error': 'data.json file not found'}
+
+        file_size = os.path.getsize('data.json')
+        if file_size < 1000:  # Less than 1KB
+            return {'valid': False, 'error': f'data.json file suspiciously small: {file_size} bytes'}
+
+        # Load and validate JSON structure
+        with open('data.json', 'r') as f:
+            try:
+                data = json.load(f)
+            except json.JSONDecodeError as e:
+                return {'valid': False, 'error': f'data.json is not valid JSON: {e}'}
+
+        # Validate schema structure
+        if not isinstance(data, dict):
+            return {'valid': False, 'error': f'data.json root is not a dict: {type(data)}'}
+
+        # Check required root keys
+        required_root_keys = ['generated_at', 'count', 'movies']
+        for key in required_root_keys:
+            if key not in data:
+                return {'valid': False, 'error': f'data.json missing required key: {key}'}
+
+        # Check data types
+        if not isinstance(data['movies'], list):
+            return {'valid': False, 'error': f'data.json movies must be list, got {type(data["movies"])}'}
+
+        # Check minimum movie count
+        movies = data['movies']
+        if len(movies) < 50:
+            return {'valid': False, 'error': f'Very low movie count ({len(movies)}) - expected at least 50'}
+
+        # Check for recent movies (7-day window)
+        from datetime import timedelta
+        cutoff_date = (datetime.now() - timedelta(days=7)).strftime('%Y-%m-%d')
+        recent_movies = [m for m in movies if m.get('digital_date', '') >= cutoff_date]
+
+        if len(recent_movies) == 0:
+            return {'valid': False, 'error': f'No recent movies found in last 7 days (since {cutoff_date})'}
+
+        return {'valid': True, 'error': None}
+
+    except Exception as e:
+        return {'valid': False, 'error': f'Data quality validation error: {str(e)}'}
+
+def trigger_site_update(draft_id: str):
+    """Trigger site update after successful publish.
+
+    Tries repository_dispatch first, falls back to git commit/push.
+
+    Args:
+        draft_id: ID of the published draft
+    """
+    try:
+        # Try to trigger GitHub repository dispatch
+        result = subprocess.run([
+            'gh', 'api', 'repos/:owner/:repo/dispatches',
+            '--method', 'POST',
+            '--field', 'event_type=publish-draft',
+            '--field', f'client_payload[draft_id]={draft_id}'
+        ], capture_output=True, text=True)
+
+        if result.returncode == 0:
+            logger.info(f"Repository dispatch triggered for draft {draft_id}")
+            return
+
+        logger.warning(f"Repository dispatch failed: {result.stderr}")
+
+    except Exception as e:
+        logger.warning(f"GitHub CLI failed: {e}")
+
+    # Fallback: commit and push data.json to trigger publish workflow
+    try:
+        # Configure git identity for commits
+        subprocess.run(['git', 'config', 'user.email', 'noreply@nrw.bot'],
+                      capture_output=True, check=True)
+        subprocess.run(['git', 'config', 'user.name', 'NRW Admin Bot'],
+                      capture_output=True, check=True)
+
+        # Add, commit and push data.json
+        subprocess.run(['git', 'add', 'data.json'],
+                      capture_output=True, check=True)
+
+        commit_msg = f"Publish draft {draft_id}\n\n🤖 Generated with [Claude Code](https://claude.ai/code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>"
+        subprocess.run(['git', 'commit', '-m', commit_msg],
+                      capture_output=True, check=True)
+
+        subprocess.run(['git', 'push', 'origin', 'main'],
+                      capture_output=True, check=True)
+
+        logger.info(f"Git fallback successful - committed and pushed data.json for draft {draft_id}")
+
+    except subprocess.CalledProcessError as e:
+        logger.error(f"Git fallback failed: {e}")
+
+        # Final fallback: try GitHub REST API directly
+        try:
+            import os
+            token = os.environ.get('GITHUB_TOKEN') or os.environ.get('PUBLISH_TOKEN')
+            if not token:
+                logger.error("No GitHub token available for API fallback")
+                return
+
+            import urllib.request
+            import json as json_lib
+
+            # Get repository info from git remote
+            result = subprocess.run(['git', 'remote', 'get-url', 'origin'],
+                                  capture_output=True, text=True)
+            if result.returncode != 0:
+                logger.error("Could not get git remote URL")
+                return
+
+            remote_url = result.stdout.strip()
+            # Extract owner/repo from git URL
+            if 'github.com' in remote_url:
+                parts = remote_url.replace('.git', '').split('/')
+                owner_repo = f"{parts[-2]}/{parts[-1]}"
+
+                # Make GitHub API request
+                api_url = f"https://api.github.com/repos/{owner_repo}/dispatches"
+                data = json_lib.dumps({
+                    'event_type': 'publish-draft',
+                    'client_payload': {'draft_id': draft_id}
+                }).encode('utf-8')
+
+                req = urllib.request.Request(api_url, data, {
+                    'Authorization': f'token {token}',
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json'
+                })
+
+                urllib.request.urlopen(req)
+                logger.info(f"GitHub API fallback successful for draft {draft_id}")
+
+        except Exception as api_e:
+            logger.error(f"GitHub API fallback also failed: {api_e}")
+            logger.error("All trigger methods failed - manual intervention required")
+
+def log_publish_audit(user: str, draft_id: str, additional_data: dict = None):
+    """Log audit record for publish action.
+
+    Args:
+        user: Username who performed the publish
+        draft_id: ID of the draft that was published
+        additional_data: Optional additional audit data
+    """
+    try:
+        os.makedirs('metrics', exist_ok=True)
+
+        audit_entry = {
+            'timestamp': datetime.now().isoformat(),
+            'action': 'publish_draft',
+            'user': user,
+            'draft_id': draft_id,
+            'user_agent': request.headers.get('User-Agent', 'unknown'),
+            'ip_address': request.remote_addr,
+            'session_id': session.get('csrf_token', 'unknown')[:8]  # First 8 chars for session tracking
+        }
+
+        if additional_data:
+            audit_entry.update(additional_data)
+
+        # Write to both audit logs
+        with open('metrics/publish.jsonl', 'a') as f:
+            f.write(json.dumps(audit_entry) + '\n')
+            f.flush()
+
+        # Also write to daily.jsonl for consolidated metrics
+        daily_entry = {
+            'date': datetime.now().strftime('%Y-%m-%d'),
+            'timestamp': audit_entry['timestamp'],
+            'user': user,
+            'action': 'publish_draft',
+            'draft_id': draft_id
+        }
+        with open('metrics/daily.jsonl', 'a') as f:
+            f.write(json.dumps(daily_entry) + '\n')
+            f.flush()
+
+    except Exception as e:
+        logger.warning(f"Failed to log audit record: {e}")
+
+@app.route('/drafts/<draft_id>/preview', methods=['POST'])
+@auth.login_required
+def preview_draft(draft_id: str) -> dict:
+    """Generate a preview of how a draft will look when published.
+
+    Creates a temporary preview artifact or URL using the edited content.
+
+    Authentication:
+        Requires HTTP Basic Auth (@auth.login_required)
+
+    Returns:
+        JSON response:
+        {
+            "success": bool,
+            "preview_url": str,  # URL to preview content
+            "preview_data": dict,  # Preview data object
+            "expires_at": str,  # Preview expiration time
+            "error": str  # On failure
+        }
+    """
+    try:
+        # Load draft
+        draft_file = f'admin/drafts/{draft_id}.json'
+        if not os.path.exists(draft_file):
+            return jsonify({
+                'success': False,
+                'error': f'Draft {draft_id} not found'
+            })
+
+        with open(draft_file, 'r') as f:
+            draft = json.load(f)
+
+        # Load current data.json to build preview
+        if not os.path.exists('data.json'):
+            return jsonify({
+                'success': False,
+                'error': 'data.json not found for preview generation'
+            })
+
+        with open('data.json', 'r') as f:
+            current_data = json.load(f)
+
+        # Get movie IDs from draft
+        movie_ids = draft.get('movieIds', [])
+        draft_titles = draft.get('titles', [])
+
+        # Build preview data with updated titles
+        preview_movies = []
+        current_movies = {str(m.get('id', '')): m for m in current_data.get('movies', [])}
+
+        for i, movie_id in enumerate(movie_ids):
+            if str(movie_id) in current_movies:
+                movie = current_movies[str(movie_id)].copy()
+                # Use edited title if available
+                if i < len(draft_titles) and draft_titles[i]:
+                    movie['title'] = draft_titles[i]
+                    movie['title_edited'] = True
+                preview_movies.append(movie)
+
+        # Create preview data structure
+        preview_data = {
+            'generated_at': datetime.now().isoformat(),
+            'preview_of_draft': draft_id,
+            'count': len(preview_movies),
+            'movies': preview_movies,
+            'is_preview': True,
+            'expires_at': (datetime.now() + timedelta(hours=1)).isoformat()
+        }
+
+        # Generate preview file or URL
+        preview_id = f"preview_{draft_id}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+
+        # Option 1: Save as temporary file (expires in 1 hour)
+        os.makedirs('admin/previews', exist_ok=True)
+        preview_file = f'admin/previews/{preview_id}.json'
+
+        with open(preview_file, 'w') as f:
+            json.dump(preview_data, f, indent=2)
+
+        # Option 2: Generate preview URL (if using a preview service)
+        # For now, we'll use a local file approach
+        preview_url = f'/admin/preview/{preview_id}'
+
+        logger.info(f"Preview generated for draft {draft_id} by {auth.current_user()}")
+
+        return jsonify({
+            'success': True,
+            'preview_url': preview_url,
+            'preview_data': {
+                'movie_count': len(preview_movies),
+                'edited_titles': sum(1 for t in draft_titles if t),
+                'draft_id': draft_id
+            },
+            'expires_at': preview_data['expires_at'],
+            'preview_id': preview_id
+        })
+
+    except Exception as e:
+        logger.error(f"Error generating preview for draft {draft_id}: {str(e)}", exc_info=True)
+        return jsonify({
+            'success': False,
+            'error': f'Error generating preview: {str(e)}'
+        })
+
+@app.route('/admin/preview/<preview_id>')
+@auth.login_required
+def serve_preview(preview_id: str):
+    """Serve a preview file.
+
+    Authentication:
+        Requires HTTP Basic Auth (@auth.login_required)
+
+    Returns:
+        JSON preview data or 404 if expired/not found
+    """
+    try:
+        preview_file = f'admin/previews/{preview_id}.json'
+
+        if not os.path.exists(preview_file):
+            return jsonify({
+                'error': 'Preview not found or expired'
+            }), 404
+
+        # Check if preview has expired
+        with open(preview_file, 'r') as f:
+            preview_data = json.load(f)
+
+        expires_at = preview_data.get('expires_at')
+        if expires_at:
+            try:
+                exp_time = datetime.fromisoformat(expires_at.replace('Z', '+00:00'))
+                if datetime.now() > exp_time.replace(tzinfo=None):
+                    # Preview expired - clean up and return 404
+                    os.remove(preview_file)
+                    return jsonify({
+                        'error': 'Preview has expired'
+                    }), 404
+            except:
+                pass  # If we can't parse expiry, serve the preview anyway
+
+        return jsonify(preview_data)
+
+    except Exception as e:
+        logger.error(f"Error serving preview {preview_id}: {str(e)}")
+        return jsonify({
+            'error': 'Error serving preview'
+        }), 500
+
 @app.route('/approve', methods=['POST'])
 @auth.login_required
 def approve_changes() -> Response | tuple[Response, int]:
-    """Create admin approval artifact for orchestrator.
+    """DEPRECATED: Create admin approval artifact for orchestrator.
 
-    Writes admin/approval.json with validation fields required by
-    the daily_orchestrator.py approval gate. Optionally triggers
-    generation if requested and in full-review mode.
+    This endpoint is deprecated in favor of the drafts→publish workflow.
+    Use GET /drafts to list drafts and POST /drafts/:id/publish instead.
 
     Authentication:
         Requires HTTP Basic Auth (@auth.login_required)
@@ -1958,6 +2665,9 @@ def approve_changes() -> Response | tuple[Response, int]:
         }
     """
     try:
+        # Add deprecation warning
+        logger.warning(f"DEPRECATED: /approve endpoint called by {auth.current_user()}. Use drafts→publish workflow instead.")
+
         data = request.json or {}
         reviewer = data.get('reviewer', auth.current_user() or 'admin')
         trigger_generation = data.get('trigger_generation', False)

@@ -62,10 +62,10 @@ This document provides a high-level overview of the complete NRW workflow, combi
 1. Discovery: Find new movies and availability changes
 2. Enrichment: Process 1-10 newly available movies only
 3. Generation: Create updated `data.json` with latest data
-4. Commit: Save changes to `automation-updates` branch
+4. Commit: Save changes to `main` branch
 
 **Admin Review** (User-triggered):
-1. Sync automation updates: `./sync_daily_updates.sh`
+1. Pull latest changes: `git pull origin main`
 2. Launch admin panel: `python3 admin.py`
 3. Review new movies and apply curation decisions
 4. Regenerate data: Click "🔄 Regenerate data.json"

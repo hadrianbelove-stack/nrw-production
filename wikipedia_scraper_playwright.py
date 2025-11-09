@@ -6,17 +6,16 @@ import random
 import re
 from datetime import datetime, timedelta
 from urllib.parse import quote
+from constants import get_scraper_config
 
-# Optional shared manager support (disabled by default)
-USE_SHARED_PLAYWRIGHT = os.environ.get('NRW_USE_SHARED_PLAYWRIGHT', 'false').lower() == 'true'
-if USE_SHARED_PLAYWRIGHT:
-    from playwright_manager import get_playwright_manager
+# Shared manager support (enabled by default)
+from playwright_manager import get_playwright_manager
 
 
 class WikipediaScraperPlaywright:
     """Wikipedia scraper using Playwright for finding movie pages."""
 
-    def __init__(self, cache_file='wikipedia_cache.json', config=None, logger=None):
+    def __init__(self, cache_file='cache/wikipedia_cache.json', config=None, logger=None):
         """Initialize the Wikipedia scraper with configuration.
 
         Args:
@@ -28,26 +27,36 @@ class WikipediaScraperPlaywright:
         self.config = config or {}
         self.logger = logger
 
+        # Get centralized scraper configuration with defaults
+        self.scraper_config = get_scraper_config(config, 'wikipedia_scraper')
+
         # Browser components (lazy initialization)
         self.playwright = None
         self.browser = None
         self.context = None
         self.page = None
 
-        # Manager reference (only if shared mode enabled)
-        self.manager = get_playwright_manager() if USE_SHARED_PLAYWRIGHT else None
-
+        # Manager reference
+        self.manager = get_playwright_manager()
 
         # Rate limiting
         self.last_scrape_time = 0
-        self.rate_limit = self.config.get('wikipedia_scraper', {}).get('rate_limit', 1.0)
+        self.rate_limit = self.scraper_config.get('rate_limit', 2.0)
 
         # Cache
         self.cache = self._load_cache()
 
         # Screenshots for diagnostics
         self.screenshot_dir = 'cache/screenshots/wikipedia'
-        self.screenshots_enabled = self.config.get('wikipedia_scraper', {}).get('screenshots_enabled', True)
+        self.screenshots_enabled = self.scraper_config.get('screenshots_enabled', True)
+
+        # Operational counters for structured logging
+        self.counters = {
+            'start_count': 0,
+            'stop_count': 0,
+            'retry_count': 0,
+            'error_count': 0
+        }
 
         # Clean up old screenshots on initialization
         if self.screenshots_enabled:
@@ -83,6 +92,22 @@ class WikipediaScraperPlaywright:
         else:
             print(f"[WikipediaScraperPlaywright] {message}")
 
+    def _log_metrics(self, operation, data):
+        """Log structured metrics for operations."""
+        metrics_data = {
+            'timestamp': datetime.now().isoformat(),
+            'component': 'wikipedia_scraper_playwright',
+            'operation': operation,
+            'counters': self.counters.copy(),
+            'stats': getattr(self, 'stats', {}).copy(),
+            'data': data
+        }
+
+        if self.logger:
+            self.logger.info(f"METRICS: {json.dumps(metrics_data)}")
+        else:
+            print(f"[WikipediaScraperPlaywright] METRICS: {json.dumps(metrics_data)}")
+
     def _load_cache(self):
         """Load Wikipedia cache from disk."""
         if os.path.exists(self.cache_file):
@@ -96,6 +121,7 @@ class WikipediaScraperPlaywright:
     def _save_cache(self):
         """Save Wikipedia cache to disk."""
         try:
+            os.makedirs(os.path.dirname(self.cache_file), exist_ok=True)
             with open(self.cache_file, 'w', encoding='utf-8') as f:
                 json.dump(self.cache, f, indent=2, ensure_ascii=False)
             self._log(f"Cache saved: {len(self.cache)} entries", level='debug')
@@ -136,12 +162,8 @@ class WikipediaScraperPlaywright:
             self._log("Browser already initialized, reusing...", level='debug')
             return
 
-        if USE_SHARED_PLAYWRIGHT:
-            self._log("Initializing Playwright browser via shared manager...")
-            self._init_browser_shared()
-        else:
-            self._log("Initializing Playwright browser with local lifecycle...")
-            self._init_browser_local()
+        self._log("Initializing Playwright browser via shared manager...")
+        self._init_browser_shared()
 
     def _init_browser_shared(self):
         """Initialize browser using shared manager."""
@@ -221,32 +243,16 @@ class WikipediaScraperPlaywright:
                 pass
             self.context = None
 
-        if USE_SHARED_PLAYWRIGHT:
-            # Browser is managed by PlaywrightManager, not individual scrapers
-            # Only call manager.release() to decrement reference count
-            if self.playwright:
-                try:
-                    self.manager.release()
-                    self._log("Released shared browser reference", level='debug')
-                except:
-                    pass
-                self.playwright = None
-                self.browser = None
-        else:
-            if self.browser:
-                try:
-                    self.browser.close()
-                except:
-                    pass
-                self.browser = None
-
-            # Stop local Playwright instance
-            if self.playwright:
-                try:
-                    self.playwright.stop()
-                except:
-                    pass
-                self.playwright = None
+        # Browser is managed by PlaywrightManager, not individual scrapers
+        # Only call manager.release() to decrement reference count
+        if self.playwright:
+            try:
+                self.manager.release()
+                self._log("Released shared browser reference", level='debug')
+            except:
+                pass
+            self.playwright = None
+            self.browser = None
 
     def _rate_limit(self):
         """Enforce minimum delay between scrapes."""

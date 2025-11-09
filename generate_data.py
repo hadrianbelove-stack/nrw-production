@@ -18,7 +18,7 @@ from agent_link_scraper import AgentLinkScraper
 from scripts.youtube_trailer_scraper import YouTubeTrailerScraper
 from rt_scraper_playwright import RTScraperPlaywright
 from wikipedia_scraper_playwright import WikipediaScraperPlaywright
-from constants import PLACEHOLDER_ASINS
+from constants import PLACEHOLDER_ASINS, get_scraper_config
 try:
     from streaming_platform_scraper import StreamingPlatformScraper
 except ImportError:
@@ -81,6 +81,9 @@ class DataGenerator:
         # Initialize logger FIRST before any operations that might log
         self.logger = setup_logger('data_generator', 'logs/admin.log', logging.INFO)
 
+        # Default enrichment flag (will be overridden by CLI)
+        self.enrichment_enabled = True
+
         self.config = self.load_config()
         # Get TMDB API key from environment or config.yaml (12-factor app pattern)
         self.tmdb_key = os.environ.get('TMDB_API_KEY')
@@ -114,8 +117,8 @@ class DataGenerator:
                 "Get a free key from https://api.watchmode.com/"
             )
             self.watchmode_key = None
-        self.wikipedia_cache = self.load_cache('wikipedia_cache.json')
-        self.rt_cache = self.load_cache('rt_cache.json')
+        self.wikipedia_cache = self.load_cache('cache/wikipedia_cache.json')
+        self.rt_cache = self.load_cache('cache/rt_cache.json')
         self.wikipedia_overrides = self.load_cache('overrides/wikipedia_overrides.json')
         self.rt_overrides = self.load_cache('overrides/rt_overrides.json')
         self.watch_links_overrides = self.load_cache('overrides/watch_links_overrides.json')
@@ -168,10 +171,135 @@ class DataGenerator:
 
         self.agent_scraper = None  # Lazy initialization
         self.youtube_scraper = None  # Lazy initialization for YouTube trailer scraping
-        self.youtube_trailer_cache = self.load_cache('youtube_trailer_cache.json')
+        self.youtube_trailer_cache = self.load_cache('cache/youtube_trailer_cache.json')
         self.rt_scraper = None  # Lazy initialization for RT scraping with Playwright
         self.wikipedia_scraper = None  # Lazy initialization for Wikipedia scraping with Playwright
         self.platform_scraper = None  # Lazy initialization for streaming platform scraper
+
+        # Perform startup consistency checks
+        self.perform_startup_consistency_check()
+
+    def perform_startup_consistency_check(self):
+        """Perform consistency checks at startup to detect corrupted enrichment flags"""
+        if not os.path.exists('movie_tracking.json'):
+            return  # No tracking file to check
+
+        try:
+            with open('movie_tracking.json', 'r') as f:
+                db = json.load(f)
+
+            movies = db.get('movies', {})
+            if not movies:
+                return
+
+            # Sample 50 entries for consistency check
+            sample_size = min(50, len(movies))
+            sample_movies = list(movies.values())[:sample_size]
+
+            available_movies = [m for m in sample_movies if m.get('status') == 'available']
+            if not available_movies:
+                return
+
+            enriched_false_count = sum(1 for m in available_movies if m.get('enriched') is False)
+            total_available = len(available_movies)
+
+            # Check if proportion of enriched=false is suspiciously high
+            if total_available > 0:
+                proportion = enriched_false_count / total_available
+                threshold = 0.10  # 10% threshold
+
+                if proportion > threshold:
+                    self.logger.error(
+                        f"🚨 CONSISTENCY CHECK FAILED: {enriched_false_count}/{total_available} "
+                        f"({proportion:.1%}) available movies have enriched=false (threshold: {threshold:.1%})"
+                    )
+                    print(f"🚨 CONSISTENCY CHECK FAILED:")
+                    print(f"   {enriched_false_count}/{total_available} ({proportion:.1%}) available movies have enriched=false")
+                    print(f"   This suggests bulk enrichment flag corruption!")
+                    print(f"   To restore from backup:")
+                    print(f"   1. List backups: ls -la backups/movie_tracking.backup-*.json")
+                    print(f"   2. Restore: cp backups/movie_tracking.backup-YYYYMMDD_HHMMSS.json movie_tracking.json")
+                    print(f"   3. Retry operation")
+
+                    # Import sys here to avoid circular imports
+                    import sys
+                    sys.exit(1)
+                else:
+                    self.logger.debug(f"✅ Consistency check passed: {enriched_false_count}/{total_available} ({proportion:.1%}) have enriched=false")
+
+        except Exception as e:
+            self.logger.warning(f"Could not perform startup consistency check: {e}")
+
+    def validate_enrichment_changes(self, new_db, filepath):
+        """Validate enrichment changes to prevent bulk corruption
+
+        Args:
+            new_db: New database to be written
+            filepath: Path to existing file to compare against
+
+        Returns:
+            bool: True if changes are valid, False if suspicious bulk changes detected
+        """
+        try:
+            if not os.path.exists(filepath):
+                return True  # No existing file to compare against
+
+            # Load current database
+            with open(filepath, 'r') as f:
+                current_db = json.load(f)
+
+            current_movies = current_db.get('movies', {})
+            new_movies = new_db.get('movies', {})
+
+            # Count status transitions and enrichment changes
+            status_changes = 0
+            enriched_to_false_changes = 0
+            total_available = 0
+
+            for movie_id, new_movie in new_movies.items():
+                current_movie = current_movies.get(movie_id, {})
+
+                current_status = current_movie.get('status', '')
+                new_status = new_movie.get('status', '')
+
+                current_enriched = current_movie.get('enriched', False)
+                new_enriched = new_movie.get('enriched', False)
+
+                # Count status transitions
+                if current_status != new_status:
+                    status_changes += 1
+
+                # Count suspicious enriched=false changes for available movies
+                if (new_status == 'available' and
+                    current_enriched is True and
+                    new_enriched is False):
+                    enriched_to_false_changes += 1
+
+                if new_status == 'available':
+                    total_available += 1
+
+            # Check for suspicious bulk changes
+            if total_available > 10:  # Only check if we have enough movies
+                corruption_threshold = max(5, total_available * 0.20)  # 20% or 5 movies, whichever is higher
+
+                if enriched_to_false_changes >= corruption_threshold:
+                    self.logger.error(
+                        f"Bulk enrichment corruption detected: {enriched_to_false_changes} "
+                        f"movies changing from enriched=true to enriched=false "
+                        f"(threshold: {corruption_threshold:.0f})"
+                    )
+                    print(f"🚨 BULK ENRICHMENT CORRUPTION DETECTED:")
+                    print(f"   {enriched_to_false_changes} available movies changing enriched=true → enriched=false")
+                    print(f"   This suggests a bug or corruption in the enrichment logic!")
+                    print(f"   Changes blocked to prevent data corruption.")
+                    return False
+
+            self.logger.debug(f"Enrichment validation passed: {enriched_to_false_changes} enriched→false changes, {status_changes} status changes")
+            return True
+
+        except Exception as e:
+            self.logger.warning(f"Could not validate enrichment changes: {e}")
+            return True  # Allow changes if validation fails
 
     def get_excluded_services(self):
         """Get excluded services list from config with defaults.
@@ -278,6 +406,12 @@ class DataGenerator:
     def _init_agent_scraper(self):
         """Initialize agent scraper if not already initialized"""
         if self.agent_scraper is None:
+            # Check enrichment flag first
+            if not self.enrichment_enabled:
+                self.logger.debug("Agent scraper disabled - enrichment not enabled")
+                self.agent_scraper = False
+                return
+
             # Check if agent scraper is enabled in config
             agent_config = self.config.get('agent_scraper', {})
             enabled = agent_config.get('enabled', True)  # Default to True if not specified
@@ -315,9 +449,15 @@ class DataGenerator:
         if self.rt_scraper is not None:
             return self.rt_scraper is not False
 
+        # Check enrichment flag first
+        if not self.enrichment_enabled:
+            self.logger.debug("RT scraper disabled - enrichment not enabled")
+            self.rt_scraper = False
+            return False
+
         try:
             self.rt_scraper = RTScraperPlaywright(
-                cache_file='rt_cache.json',
+                cache_file='cache/rt_cache.json',
                 config=self.config,
                 logger=self.logger
             )
@@ -453,6 +593,11 @@ class DataGenerator:
 
         # 2. Initialize Playwright scraper lazily
         if self.wikipedia_scraper is None:
+            # Check enrichment flag first
+            if not self.enrichment_enabled:
+                self.logger.debug("Wikipedia scraper disabled - enrichment not enabled")
+                return None
+
             self.wikipedia_scraper = WikipediaScraperPlaywright(
                 cache_file='wikipedia_cache.json',
                 config=self.config,
@@ -541,8 +686,13 @@ class DataGenerator:
 
         # 5. Try scraping YouTube for the trailer
         if self.youtube_scraper is None:
+            # Check enrichment flag first
+            if not self.enrichment_enabled:
+                self.logger.debug("YouTube trailer scraper disabled - enrichment not enabled")
+                return None
+
             self.youtube_scraper = YouTubeTrailerScraper(
-                cache_file='youtube_trailer_cache.json',
+                cache_file='cache/youtube_trailer_cache.json',
                 headless=True
             )
 
@@ -1262,20 +1412,21 @@ class DataGenerator:
 
         # Initialize platform scraper if needed (lazy initialization)
         if self.platform_scraper is None:
+            # Check enrichment flag first
+            if not self.enrichment_enabled:
+                self.logger.debug("Platform scraper disabled - enrichment not enabled")
+                self.platform_scraper = False
+                return
+
             try:
                 print(f"  Initializing platform scraper for {title}...")
-                # Read settings from config
+                # Pass full config to allow scraper to use centralized defaults
                 headless_mode = platform_config.get('headless', True)
-                timeout_seconds = platform_config.get('timeout', 30)
-                rate_limit_seconds = platform_config.get('rate_limit', None)
-                max_retries = platform_config.get('max_retries', 3)
                 self.platform_scraper = StreamingPlatformScraper(
                     headless=headless_mode,
-                    timeout_seconds=timeout_seconds,
-                    rate_limit_seconds=rate_limit_seconds,
-                    max_retries=max_retries
+                    config=self.config
                 )
-                print(f"  Platform scraper initialized (headless={headless_mode}, timeout={timeout_seconds}s)")
+                print(f"  Platform scraper initialized (headless={headless_mode}, timeout={self.platform_scraper.timeout_seconds}s)")
             except Exception as e:
                 print(f"  Warning: Could not initialize platform scraper: {e}")
                 self.platform_scraper = False
@@ -1525,11 +1676,56 @@ class DataGenerator:
             self.logger.error(f"Failed to compute 3-day baseline: {e}")
             return None
 
-    def discover_new_premieres(self, debug=False):
+    def _load_discovery_state(self, state_file):
+        """Load discovery state from metrics/discovery_state.json"""
+        try:
+            if os.path.exists(state_file):
+                with open(state_file, 'r') as f:
+                    return json.load(f)
+            else:
+                # Return default state if file doesn't exist
+                return {
+                    'last_success_at': None,
+                    'last_success_date': None
+                }
+        except Exception as e:
+            self.logger.warning(f"Failed to load discovery state from {state_file}: {e}")
+            return {
+                'last_success_at': None,
+                'last_success_date': None
+            }
+
+    def _update_discovery_state(self, state_file):
+        """Atomically update discovery state after successful discovery"""
+        try:
+            now = datetime.now()
+            new_state = {
+                'last_success_at': now.isoformat(),
+                'last_success_date': now.strftime('%Y-%m-%d')
+            }
+
+            # Ensure metrics directory exists
+            os.makedirs(os.path.dirname(state_file), exist_ok=True)
+
+            # Write atomically with temporary file
+            temp_file = state_file + '.tmp'
+            with open(temp_file, 'w') as f:
+                json.dump(new_state, f, indent=2)
+
+            # Atomic move
+            os.rename(temp_file, state_file)
+
+            self.logger.info(f"Discovery state updated: {new_state['last_success_date']}")
+        except Exception as e:
+            self.logger.error(f"Failed to update discovery state: {e}")
+
+    def discover_new_premieres(self, debug=False, since_date=None, bootstrap=False):
         """Discover new movie premieres and add them to movie_tracking.json
 
         Args:
             debug: Enable detailed logging of discovery process
+            since_date: Discovery since date (YYYY-MM-DD) for manual override
+            bootstrap: Bootstrap discovery state by using full discovery.days_back window
 
         Returns:
             Number of new movies added
@@ -1541,11 +1737,53 @@ class DataGenerator:
 
         # Use CI-optimized values if running in CI environment
         if os.getenv('CI') or os.getenv('GITHUB_ACTIONS'):
-            days_back = int(os.getenv('CI_DISCOVERY_DAYS', discovery_config.get('ci_days_back', 7)))
+            fallback_days_back = int(os.getenv('CI_DISCOVERY_DAYS', discovery_config.get('ci_days_back', 7)))
             max_pages = int(os.getenv('CI_DISCOVERY_PAGES', discovery_config.get('ci_max_pages', 10)))
         else:
-            days_back = discovery_config.get('days_back', 7)
-            max_pages = discovery_config.get('max_pages', 10)
+            fallback_days_back = discovery_config.get('days_back', 14)
+            max_pages = discovery_config.get('max_pages', 20)
+
+        # Load discovery state for stateful incremental discovery
+        state_file = 'metrics/discovery_state.json'
+        discovery_state = self._load_discovery_state(state_file)
+
+        # Calculate since_date with stateful logic
+        if since_date:
+            # Manual override
+            try:
+                since_datetime = datetime.strptime(since_date, '%Y-%m-%d')
+                if debug:
+                    self.logger.info(f"Using manual since_date override: {since_date}")
+            except ValueError:
+                self.logger.warning(f"Invalid since_date format '{since_date}', falling back to state-based discovery")
+                since_datetime = None
+                since_date = None
+        else:
+            since_datetime = None
+
+        if not since_date:
+            if bootstrap or not discovery_state.get('last_success_date'):
+                # Bootstrap mode or missing state - use full window
+                days_back = fallback_days_back
+                since_datetime = datetime.now() - timedelta(days=days_back)
+                if debug:
+                    self.logger.info(f"Bootstrap mode: using full discovery window ({days_back} days)")
+            else:
+                # Incremental mode - use last success with 1-day overlap
+                last_success_date = discovery_state.get('last_success_date')
+                try:
+                    since_datetime = datetime.strptime(last_success_date, '%Y-%m-%d') - timedelta(days=1)
+                    days_back = (datetime.now() - since_datetime).days
+                    if debug:
+                        self.logger.info(f"Incremental mode: since {last_success_date} with 1-day overlap")
+                except (ValueError, TypeError):
+                    # Invalid state, fall back to full window
+                    days_back = fallback_days_back
+                    since_datetime = datetime.now() - timedelta(days=days_back)
+                    if debug:
+                        self.logger.info(f"Invalid state, falling back to full discovery window ({days_back} days)")
+
+        days_back = max(1, (datetime.now() - since_datetime).days)  # Ensure at least 1 day
 
         # Get hybrid discovery flags
         enable_pass_a = discovery_config.get('enable_pass_a', True)  # Digital releases (release_date + type=4)
@@ -1568,7 +1806,7 @@ class DataGenerator:
 
         # Calculate date range for discovery
         end_date = datetime.now()
-        start_date = end_date - timedelta(days=days_back)
+        start_date = since_datetime
 
         self.logger.info(f"Discovering new premieres from {start_date.strftime('%Y-%m-%d')} to {end_date.strftime('%Y-%m-%d')}")
 
@@ -1628,6 +1866,30 @@ class DataGenerator:
         self.logger.info(f"Discovery complete: {new_movies_added} new movies added from {self.discovery_stats['pages_fetched']} pages")
         if debug or new_movies_added == 0:
             self.logger.info(f"Discovery stats: {self.discovery_stats['total_results']} total results, {self.discovery_stats['duplicates_skipped']} duplicates")
+
+        # Emit JSON artifact for robust metrics capture
+        try:
+            os.makedirs('metrics', exist_ok=True)
+            discovery_run_data = {
+                'timestamp': datetime.now().isoformat(),
+                'operation': 'discover_premieres',
+                'discovered': new_movies_added,
+                'pages_fetched': self.discovery_stats['pages_fetched'],
+                'total_results': self.discovery_stats['total_results'],
+                'duplicates_skipped': self.discovery_stats['duplicates_skipped']
+            }
+
+            with open('metrics/discovery_run.json', 'w') as f:
+                json.dump(discovery_run_data, f, indent=2)
+
+            print(f"📊 Discovery metrics saved to metrics/discovery_run.json")
+            self.logger.info(f"Discovery metrics saved: {discovery_run_data}")
+        except Exception as e:
+            self.logger.warning(f"Failed to save discovery metrics artifact: {e}")
+
+        # Update discovery state after successful discovery that wrote movie_tracking.json
+        if new_movies_added > 0:  # Only update state if we wrote movie_tracking.json
+            self._update_discovery_state(state_file)
 
         return new_movies_added
 
@@ -1857,6 +2119,26 @@ class DataGenerator:
         print(f"Polled {checked} movies, {newly_digital} changes detected{scan_tag}")
         self.logger.info(f"Polled {checked} movies, {newly_digital} changes detected{scan_tag}")
 
+        # Emit JSON artifact for robust metrics capture
+        try:
+            os.makedirs('metrics', exist_ok=True)
+            discovery_run_data = {
+                'timestamp': datetime.now().isoformat(),
+                'operation': 'check_tracking',
+                'polled': checked,
+                'transitions': newly_digital,
+                'scan_tag': scan_tag.strip() if scan_tag else None,
+                'failed': failed
+            }
+
+            with open('metrics/discovery_run.json', 'w') as f:
+                json.dump(discovery_run_data, f, indent=2)
+
+            print(f"📊 Metrics saved to metrics/discovery_run.json")
+            self.logger.info(f"Discovery metrics saved: {discovery_run_data}")
+        except Exception as e:
+            self.logger.warning(f"Failed to save metrics artifact: {e}")
+
         # Incremental compaction: move available movies to archive
         if self.config.get('tracking', {}).get('archive_available_on_detect', False):
             batch_size = self.config.get('tracking', {}).get('compaction_batch_size', 50)
@@ -2012,7 +2294,7 @@ class DataGenerator:
             return 0
 
     def atomic_write_json(self, data, filepath):
-        """Atomically write JSON data to a file to prevent corruption
+        """Atomically write JSON data with timestamped backup to prevent corruption
 
         Args:
             data: Python object to serialize as JSON
@@ -2021,17 +2303,26 @@ class DataGenerator:
         Returns:
             bool: True if successful, False otherwise
         """
-        import tempfile
         import shutil
 
         try:
-            # Atomic write: write temp, fsync, rename
-            with tempfile.NamedTemporaryFile(mode='w', suffix='.json',
-                                           dir='.', delete=False) as temp_f:
+            # Create backups directory if it doesn't exist
+            os.makedirs('backups', exist_ok=True)
+
+            # Create timestamped backup of existing file
+            if os.path.exists(filepath):
+                timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                backup_filename = f"{os.path.splitext(os.path.basename(filepath))[0]}.backup-{timestamp}.json"
+                backup_path = os.path.join('backups', backup_filename)
+                shutil.copy2(filepath, backup_path)
+                self.logger.debug(f"Created backup: {backup_path}")
+
+            # Atomic write: write to .tmp file then rename
+            temp_path = f"{filepath}.tmp"
+            with open(temp_path, 'w') as temp_f:
                 json.dump(data, temp_f, indent=2)
                 temp_f.flush()
                 os.fsync(temp_f.fileno())
-                temp_path = temp_f.name
 
             # Atomic rename
             shutil.move(temp_path, filepath)
@@ -2040,9 +2331,9 @@ class DataGenerator:
         except Exception as e:
             self.logger.error(f"Error during atomic write to {filepath}: {e}")
             # Cleanup temp file if it exists
-            if 'temp_path' in locals() and os.path.exists(temp_path):
+            if os.path.exists(f"{filepath}.tmp"):
                 try:
-                    os.unlink(temp_path)
+                    os.unlink(f"{filepath}.tmp")
                 except:
                     pass
             return False
@@ -2648,6 +2939,12 @@ class DataGenerator:
             except Exception as e:
                 print(f"  ✗ Error processing {movie_data.get('title')}: {e}")
 
+        # Pre-commit validation: prevent bulk enrichment flag corruption
+        if not self.validate_enrichment_changes(db, 'movie_tracking.json'):
+            self.logger.error("Pre-commit validation failed - aborting write to prevent corruption")
+            print("❌ Pre-commit validation failed - enrichment changes rejected to prevent corruption")
+            return []
+
         # Save updated tracking database with enrichment flags
         if self.atomic_write_json(db, 'movie_tracking.json'):
             print(f"\n💾 Enrichment tracking saved: {enriched_count} movies marked as enriched")
@@ -2724,7 +3021,7 @@ class DataGenerator:
                 self.logger.warning(f"Failed to close RT scraper: {e}")
 
         # Save caches (RT cache is managed by rt_scraper)
-        self.save_cache(self.wikipedia_cache, 'wikipedia_cache.json')
+        self.save_cache(self.wikipedia_cache, 'cache/wikipedia_cache.json')
         
         message = f"Generated data.json with {len(display_movies)} movies"
         self.logger.info(message)
@@ -2765,9 +3062,10 @@ class DataGenerator:
         print(f"  Cache hit rate: {cache_hit_rate:.1f}%")
         print(f"  Watchmode success rate: {success_rate:.1f}%")
 
-        # Phase 3: Print Watchmode quota report
+        # Phase 3: Print Watchmode quota report and save metrics
         if self.watchmode_client:
             self.watchmode_client.print_quota_report()
+            self.watchmode_client.save_run_metrics()
 
         print(f"\n📊 Agent Scraper Usage:")
         print(f"  Agent enabled: {self.config.get('agent_scraper', {}).get('enabled', True)}")
@@ -2924,6 +3222,9 @@ def main():
     parser.add_argument('--debug', action='store_true', help='Enable debug logging for discovery and agent scraper')
     parser.add_argument('--discover', action='store_true', help='Run discovery to find new premieres before generating data')
     parser.add_argument('--check', action='store_true', help='Check tracking movies for digital availability (provider monitoring)')
+    parser.add_argument('--since', type=str, help='Discovery since date (YYYY-MM-DD) for stateful incremental discovery')
+    parser.add_argument('--bootstrap', action='store_true', help='Bootstrap discovery state by using full discovery.days_back window')
+    parser.add_argument('--enrichment', action='store_true', help='Enable enrichment (scrapers, link fetching) explicitly')
 
     args = parser.parse_args()
     incremental = not args.full
@@ -2934,7 +3235,19 @@ def main():
         os.environ['AGENT_SCRAPER_DEBUG'] = 'true'
         print("🐛 Debug mode enabled for discovery and agent scraper")
 
+    # Set enrichment flag: false for discovery/monitoring, true for final generation
+    if args.discover or args.check:
+        enrichment_enabled = args.enrichment  # Only enable if explicitly requested
+        if enrichment_enabled:
+            print("🎯 Enrichment enabled for discovery/monitoring mode")
+        else:
+            print("🚫 Enrichment disabled for discovery/monitoring mode")
+    else:
+        enrichment_enabled = True  # Always enabled for final generation phase
+        print("🎯 Enrichment enabled for final generation phase")
+
     generator = DataGenerator()
+    generator.enrichment_enabled = enrichment_enabled
 
     if args.debug:
         generator.logger.setLevel(logging.DEBUG)
@@ -2944,7 +3257,11 @@ def main():
     discovered_count = 0
     if args.discover:
         print("🔍 Running discovery for new premieres...")
-        discovered_count = generator.discover_new_premieres(debug=args.debug)
+        discovered_count = generator.discover_new_premieres(
+            debug=args.debug,
+            since_date=args.since,
+            bootstrap=args.bootstrap
+        )
         print(f"✅ Discovery complete: {discovered_count} new movies added")
 
     # Check tracking movies for digital availability if requested
@@ -2953,20 +3270,7 @@ def main():
         print("\n🔍 Checking tracking movies for digital availability...")
         newly_digital_count = generator.check_tracking_movies()
 
-    # Save daily metrics if discovery was run
-    if args.discover:
-        generator.save_daily_metrics(discovered=discovered_count, newly_digital=newly_digital_count)
-
-        # Show 3-day baseline
-        baseline = generator.get_3_day_baseline()
-        if baseline:
-            print(f"\n📈 3-Day Baseline:")
-            if baseline['discovery_avg'] is not None:
-                print(f"  Discovery average: {baseline['discovery_avg']} movies/day")
-                print(f"  Newly digital average: {baseline['newly_digital_avg']} movies/day")
-                print(f"  Based on: {', '.join(baseline['dates'])}")
-            else:
-                print(f"  {baseline['note']}")
+    # CLI metrics handling removed - orchestrator now handles metrics consolidation from discovery_run.json
 
     generator.generate_display_data(incremental=incremental, force_refresh=force_refresh)
 

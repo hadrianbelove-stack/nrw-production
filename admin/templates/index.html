@@ -3,22 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>New Release Wall - Admin Panel</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
 </head>
 <body>
     <div class="header">
         <h1>🎬 New Release Wall - Admin Panel</h1>
-        {% if full_review_mode %}
-        <div class="full-review-banner">
+        <div class="drafts-banner">
             <div class="banner-content">
-                🔒 <strong>FULL REVIEW MODE</strong> - Auto-regeneration disabled. Use "Approve & Generate" to publish changes.
-                <div class="review-progress">
-                    <span id="review-progress-text">Progress: Loading...</span>
+                🚀 <strong>DRAFTS MODE</strong> - Review and publish drafts below.
+                <div class="drafts-status">
+                    <span id="drafts-status-text">Loading drafts...</span>
                 </div>
             </div>
         </div>
-        {% endif %}
         <div class="stats">
             <div class="stat-item">
                 <span>Total Movies:</span>
@@ -42,19 +41,11 @@
             </div>
         </div>
         <div class="header-actions">
-            {% if full_review_mode %}
-            <button onclick="approveAndGenerate()"
-                    class="action-btn btn-large success"
-                    id="approve-btn">
-                ✅ Approve & Generate
-            </button>
-            {% else %}
             <button onclick="regenerateData()"
                     class="action-btn btn-large"
                     id="regenerate-btn">
                 🔄 Regenerate data.json
             </button>
-            {% endif %}
             <span id="regenerate-status" class="status-text"></span>
 
             <button onclick="togglePlaylistForm()"
@@ -252,87 +243,17 @@
     </div>
 
     <div class="main-content">
-        <!-- Delta Summary Sidebar (only in full-review mode) -->
-        {% if full_review_mode %}
-        <div class="delta-sidebar" id="delta-sidebar">
-            <div class="sidebar-header">
-                <h4>📊 Approval Summary</h4>
-                <button class="refresh-delta-btn" onclick="refreshDeltaSummary()" title="Refresh Summary">🔄</button>
+        <!-- Drafts Section -->
+        <div class="drafts-section">
+            <div class="section-header">
+                <h3>📝 Drafts</h3>
+                <span class="section-description">Review and publish drafts</span>
             </div>
-            <div class="sidebar-content">
-                <div id="delta-loading" class="loading-indicator">Loading...</div>
-                <div id="delta-content" style="display: none;">
-                    <div class="delta-section">
-                        <h5>Movies & Edits</h5>
-                        <div class="delta-stats">
-                            <div class="delta-stat">
-                                <span class="stat-label">Reviewed:</span>
-                                <span class="stat-value" id="delta-reviewed">0</span>
-                            </div>
-                            <div class="delta-stat">
-                                <span class="stat-label">Edits:</span>
-                                <span class="stat-value" id="delta-edits">0</span>
-                            </div>
-                            <div class="delta-stat">
-                                <span class="stat-label">Additions:</span>
-                                <span class="stat-value" id="delta-additions">0</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="delta-section">
-                        <h5>Status Changes</h5>
-                        <div class="delta-stats">
-                            <div class="delta-stat">
-                                <span class="stat-label">Hidden:</span>
-                                <span class="stat-value" id="delta-hidden">0</span>
-                            </div>
-                            <div class="delta-stat">
-                                <span class="stat-label">Featured:</span>
-                                <span class="stat-value" id="delta-featured">0</span>
-                            </div>
-                            <div class="delta-stat">
-                                <span class="stat-label">Ordered:</span>
-                                <span class="stat-value" id="delta-ordered">0</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="delta-section">
-                        <h5>Issues Found</h5>
-                        <div class="delta-stats">
-                            <div class="delta-stat">
-                                <span class="stat-label">Missing RT:</span>
-                                <span class="stat-value" id="delta-missing-rt">0</span>
-                            </div>
-                            <div class="delta-stat">
-                                <span class="stat-label">Missing Trailer:</span>
-                                <span class="stat-value" id="delta-missing-trailer">0</span>
-                            </div>
-                            <div class="delta-stat">
-                                <span class="stat-label">Missing Stream:</span>
-                                <span class="stat-value" id="delta-missing-stream">0</span>
-                            </div>
-                            <div class="delta-stat">
-                                <span class="stat-label">Missing Rent:</span>
-                                <span class="stat-value" id="delta-missing-rent">0</span>
-                            </div>
-                            <div class="delta-stat">
-                                <span class="stat-label">Missing Buy:</span>
-                                <span class="stat-value" id="delta-missing-buy">0</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="delta-section">
-                        <small class="delta-note">
-                            This summary reflects current state and will be included in approval.
-                        </small>
-                    </div>
-                </div>
+            <div id="drafts-list" class="drafts-container">
+                <div class="loading-indicator">Loading drafts...</div>
             </div>
         </div>
-        {% endif %}
+
 
         <div class="movie-grid" id="movie-grid">
         {% for movie_id, movie in movies.items() %}

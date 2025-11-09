@@ -6,10 +6,8 @@ import random
 from datetime import datetime, timedelta
 from urllib.parse import quote
 
-# Optional shared manager support (disabled by default)
-USE_SHARED_PLAYWRIGHT = os.environ.get('NRW_USE_SHARED_PLAYWRIGHT', 'false').lower() == 'true'
-if USE_SHARED_PLAYWRIGHT:
-    from playwright_manager import get_playwright_manager
+# Shared manager support (enabled by default)
+from playwright_manager import get_playwright_manager
 
 
 class AgentLinkScraper:
@@ -26,8 +24,8 @@ class AgentLinkScraper:
         self.context = None
         self.page = None
 
-        # Manager reference (only if shared mode enabled)
-        self.manager = get_playwright_manager() if USE_SHARED_PLAYWRIGHT else None
+        # Manager reference
+        self.manager = get_playwright_manager()
 
 
         # Rate limiting
@@ -117,12 +115,8 @@ class AgentLinkScraper:
             print("[AgentLinkScraper] Browser already initialized, reusing...")
             return
 
-        if USE_SHARED_PLAYWRIGHT:
-            print("[AgentLinkScraper] Initializing Playwright browser via shared manager...")
-            self._init_browser_shared()
-        else:
-            print("[AgentLinkScraper] Initializing Playwright browser with local lifecycle...")
-            self._init_browser_local()
+        print("[AgentLinkScraper] Initializing Playwright browser via shared manager...")
+        self._init_browser_shared()
 
     def _init_browser_shared(self):
         """Initialize browser using shared manager."""
@@ -207,13 +201,10 @@ class AgentLinkScraper:
                 pass
             self.browser = None
 
-        # Cleanup Playwright based on mode
+        # Cleanup Playwright via shared manager
         if self.playwright:
             try:
-                if USE_SHARED_PLAYWRIGHT and self.manager:
-                    self.manager.release()
-                else:
-                    self.playwright.stop()
+                self.manager.release()
             except:
                 pass
             self.playwright = None

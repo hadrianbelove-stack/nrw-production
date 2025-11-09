@@ -94,7 +94,37 @@ class NRWOrchestrator:
                 sys.exit(1)
         
         return success
-    
+
+    def run_command_with_retries(self, cmd, description, critical=True, max_retries=2, retry_delays=None):
+        """Execute command with retry logic and exponential backoff"""
+        if retry_delays is None:
+            retry_delays = [30, 45]  # Default delays in seconds
+
+        max_retries = min(max_retries, len(retry_delays))  # Ensure we don't exceed available delays
+
+        for attempt in range(max_retries + 1):  # +1 for initial attempt
+            if attempt > 0:
+                delay = retry_delays[attempt - 1]
+                print(f"⏳ Retrying {description} in {delay}s (attempt {attempt + 1}/{max_retries + 1})...")
+                time.sleep(delay)
+
+            success = self.run_command(cmd, description, critical=False)  # Don't exit on failure for retries
+
+            if success:
+                if attempt > 0:
+                    print(f"✅ {description} succeeded on attempt {attempt + 1}")
+                return True
+            else:
+                if attempt < max_retries:
+                    print(f"❌ Attempt {attempt + 1} failed, will retry...")
+                else:
+                    print(f"❌ All {max_retries + 1} attempts failed for {description}")
+                    if critical:
+                        self.print_summary()
+                        sys.exit(1)
+
+        return False
+
     def check_changes(self):
         """Check if there are git changes to commit (only data.json for CI workflow)"""
         result = subprocess.run(
@@ -104,117 +134,66 @@ class NRWOrchestrator:
         self.has_changes = result.returncode != 0
         return self.has_changes
 
-    def wait_for_admin_approval(self, timeout_minutes=60):
-        """Wait for admin approval in admin/approval.json"""
-        approval_file = 'admin/approval.json'
+    def emit_drafts(self):
+        """Emit candidate items to admin/drafts/ as individual JSON files"""
+        print("\n📝 Emitting drafts for admin review...")
 
-        # Check if running in CI environment
-        is_ci = os.getenv('GITHUB_ACTIONS') or os.getenv('CI')
+        # Ensure drafts directory exists
+        os.makedirs('admin/drafts', exist_ok=True)
 
-        if is_ci:
-            # In CI, don't wait - just check if approval exists
-            if not os.path.exists(approval_file):
-                print("❌ CI Environment: No admin approval found")
-                print(f"   Missing file: {approval_file}")
-                print("   Admin must run 'python3 admin.py --full-review' and approve changes")
-                sys.exit(1)
-
-            # Validate the approval
-            try:
-                self.validate_approval()
-                print("✅ CI Environment: Admin approval validated")
-                return True
-            except Exception as e:
-                print(f"❌ CI Environment: Invalid approval: {e}")
-                sys.exit(1)
-
-        # Local environment - wait for approval
-        print(f"\n⏸️  Waiting for admin approval...")
-        print(f"   Please run: python3 admin.py --full-review")
-        print(f"   Then review changes and click 'Approve & Generate'")
-        print(f"   Waiting for: {approval_file}")
-        print(f"   Timeout: {timeout_minutes} minutes")
-
-        start_time = time.time()
-        timeout_seconds = timeout_minutes * 60
-        poll_interval = 5  # Check every 5 seconds
-
-        while time.time() - start_time < timeout_seconds:
-            if os.path.exists(approval_file):
-                try:
-                    self.validate_approval()
-                    print(f"✅ Admin approval received and validated")
-                    return True
-                except Exception as e:
-                    print(f"⚠️  Approval file found but invalid: {e}")
-                    print(f"   Waiting for valid approval...")
-
-            time.sleep(poll_interval)
-
-            # Show progress every 30 seconds
-            elapsed = time.time() - start_time
-            if int(elapsed) % 30 == 0:
-                remaining = (timeout_seconds - elapsed) / 60
-                print(f"   Still waiting... {remaining:.1f} minutes remaining")
-
-        # Timeout
-        print(f"❌ Timeout: No admin approval received after {timeout_minutes} minutes")
-        sys.exit(1)
-
-    def validate_approval(self):
-        """Validate admin/approval.json format and freshness"""
-        approval_file = 'admin/approval.json'
-
-        if not os.path.exists(approval_file):
-            raise Exception(f"Approval file {approval_file} does not exist")
-
+        # Load generated data to create draft items
         try:
-            with open(approval_file, 'r') as f:
-                approval = json.load(f)
-        except json.JSONDecodeError as e:
-            raise Exception(f"Invalid JSON in approval file: {e}")
+            with open('data.json', 'r') as f:
+                data = json.load(f)
+        except FileNotFoundError:
+            print("❌ data.json not found - cannot emit drafts")
+            return False
 
-        # Required fields
-        if 'timestamp' not in approval:
-            raise Exception("Approval missing required field: timestamp")
+        movies = data.get('movies', [])
+        if not movies:
+            print("⚠️ No movies found in data.json")
+            return False
 
-        # Check timestamp freshness (within 2 hours)
+        # Get recent movies (last 7 days) as candidates for drafts
+        from datetime import timedelta
+        cutoff_date = (datetime.now() - timedelta(days=7)).strftime('%Y-%m-%d')
+        recent_movies = [m for m in movies if m.get('digital_date', '') >= cutoff_date]
+
+        if not recent_movies:
+            print(f"⚠️ No recent movies found since {cutoff_date}")
+            return False
+
+        # Compute source digest for validation
+        source_digest = None
+        if os.path.exists('movie_tracking.json'):
+            with open('movie_tracking.json', 'rb') as f:
+                source_digest = hashlib.sha256(f.read()).hexdigest()
+
+        # Create draft for recent movies
+        draft_id = datetime.now().strftime('%Y%m%d_%H%M%S')
+        draft = {
+            'id': draft_id,
+            'createdAt': datetime.now().isoformat(),
+            'titles': [movie.get('title', 'Unknown') for movie in recent_movies],
+            'movieIds': [str(movie.get('id', '')) for movie in recent_movies],
+            'sourceDigest': source_digest,
+            'movieCount': len(recent_movies),
+            'dateRange': f"{cutoff_date} to {datetime.now().strftime('%Y-%m-%d')}"
+        }
+
+        # Save draft file
+        draft_file = f'admin/drafts/{draft_id}.json'
         try:
-            approval_time = datetime.fromisoformat(approval['timestamp'].replace('Z', '+00:00'))
-            now = datetime.now().astimezone()
-            time_diff = now - approval_time
+            with open(draft_file, 'w') as f:
+                json.dump(draft, f, indent=2)
+            print(f"✅ Draft emitted: {draft_file}")
+            print(f"   Movies: {len(recent_movies)} candidates")
+            print(f"   Date range: {draft['dateRange']}")
+            return True
+        except Exception as e:
+            print(f"❌ Failed to write draft: {e}")
+            return False
 
-            if time_diff > timedelta(hours=2):
-                raise Exception(f"Approval is stale: {time_diff.total_seconds()/3600:.1f} hours old (max 2 hours)")
-
-        except ValueError as e:
-            raise Exception(f"Invalid timestamp format: {e}")
-
-        # Optional reviewer validation
-        reviewer = approval.get('reviewer')
-        if reviewer is not None and (not isinstance(reviewer, str) or not reviewer.strip()):
-            raise Exception("Reviewer field must be non-empty string if provided")
-
-        # Required tracking digest validation
-        tracking_digest = approval.get('tracking_digest')
-        if not tracking_digest or not isinstance(tracking_digest, str) or not tracking_digest.strip():
-            raise Exception("Approval missing required field: tracking_digest")
-
-        if tracking_digest:
-            try:
-                # Compute current digest of movie_tracking.json
-                if os.path.exists('movie_tracking.json'):
-                    with open('movie_tracking.json', 'rb') as f:
-                        current_digest = hashlib.sha256(f.read()).hexdigest()
-
-                    if tracking_digest != current_digest:
-                        raise Exception("Tracking digest mismatch - movie_tracking.json has changed since approval")
-                else:
-                    raise Exception("movie_tracking.json not found for digest validation")
-            except Exception as e:
-                raise Exception(f"Tracking digest validation failed: {e}")
-
-        return approval
 
     def validate_rt_data(self):
         """Validate RT data in data.json (non-critical check)"""
@@ -246,9 +225,21 @@ class NRWOrchestrator:
     def validate_data_quality(self):
         """Comprehensive data quality checks to prevent committing broken data"""
         try:
-            # 1. Check file existence
+            # 1. Check file existence and size
             if not os.path.exists('data.json'):
                 raise Exception("data.json file not found")
+
+            file_size = os.path.getsize('data.json')
+            file_size_mb = file_size / (1024 * 1024)
+
+            # Size sanity checks
+            if file_size < 1000:  # Less than 1KB
+                raise Exception(f"data.json file suspiciously small: {file_size} bytes")
+
+            if file_size_mb > 100:  # More than 100MB
+                print(f"⚠️ Warning: data.json is very large: {file_size_mb:.1f}MB")
+
+            print(f"📊 data.json file size: {file_size_mb:.2f}MB")
 
             # 2. Load and validate JSON
             with open('data.json', 'r') as f:
@@ -277,16 +268,32 @@ class NRWOrchestrator:
             if not isinstance(data['movies'], list):
                 raise Exception(f"data.json movies must be list, got {type(data['movies'])}")
 
-            # Check that movies are dicts with required keys
-            for i, movie in enumerate(data['movies'][:5]):  # Check first 5 for performance
+            # Check all movies for basic structural checks with early exit on errors
+            movies = data['movies']
+            error_count = 0
+            max_errors = 50  # Early exit after first 50 errors
+
+            for i, movie in enumerate(movies):
                 if not isinstance(movie, dict):
-                    raise Exception(f"data.json movie[{i}] is not a dict: {type(movie)}")
+                    error_count += 1
+                    print(f"⚠️ Error {error_count}: movie[{i}] is not a dict: {type(movie)}")
+                    if error_count >= max_errors:
+                        raise Exception(f"Too many structural errors ({error_count}+) - stopping validation")
+                    continue
 
                 # Check required movie keys (digital_date is optional)
                 required_movie_keys = ['id', 'title']
                 for key in required_movie_keys:
                     if key not in movie:
-                        raise Exception(f"data.json movie[{i}] missing required key: {key}")
+                        error_count += 1
+                        print(f"⚠️ Error {error_count}: movie[{i}] missing required key: {key}")
+                        if error_count >= max_errors:
+                            raise Exception(f"Too many structural errors ({error_count}+) - stopping validation")
+
+            if error_count > 0:
+                print(f"⚠️ Found {error_count} structural issues in movies data")
+                if error_count >= max_errors:
+                    raise Exception(f"Found {error_count}+ structural errors - data quality unacceptable")
 
             # 3. Check minimum movie count (warn on low counts)
             movies = data['movies']  # Already validated to exist and be a list
@@ -295,21 +302,33 @@ class NRWOrchestrator:
             elif len(movies) < 150:
                 print(f"⚠️  Warning: Movie count is low ({len(movies)}) - expected 150+, but continuing")
 
-            # 4. Check for recent movies (last 14 days to account for weekends/delays)
+            # 4. Check for recent movies - strict 7-day window per charter
             from datetime import timedelta
-            cutoff_date = (datetime.now() - timedelta(days=14)).strftime('%Y-%m-%d')
+            import yaml
+
+            # Load validation configuration
+            config = {}
+            if os.path.exists('config.yaml'):
+                with open('config.yaml', 'r') as f:
+                    config = yaml.safe_load(f) or {}
+
+            validation_config = config.get('validation', {})
+            recent_days = validation_config.get('recent_days', 7)  # Default to 7-day window
+            fail_on_no_recent = validation_config.get('fail_on_no_recent', False)  # Default to warn behavior
+            cutoff_date = (datetime.now() - timedelta(days=recent_days)).strftime('%Y-%m-%d')
             recent_movies = [m for m in movies if m.get('digital_date', '') >= cutoff_date]
 
             if len(recent_movies) == 0:
-                # Log warning but don't fail - discovery gaps are normal
-                print(f"⚠️  Warning: No recent movies found since {cutoff_date} - this may indicate discovery gaps but doesn't affect existing data")
-                # Use a longer lookback for validation (30 days) to ensure we have some movies to validate
-                extended_cutoff = (datetime.now() - timedelta(days=30)).strftime('%Y-%m-%d')
-                recent_movies = [m for m in movies if m.get('digital_date', '') >= extended_cutoff]
-                if len(recent_movies) == 0:
-                    print(f"⚠️  Warning: No movies found in last 30 days - discovery may be down, but existing data is still valid")
-                    print(f"   Continuing with validation using full dataset")
-                    recent_movies = movies[:20]  # Use first 20 movies for validation instead
+                if fail_on_no_recent:
+                    # Fail validation when flag is true
+                    raise Exception(f"No recent movies found in last {recent_days} days (since {cutoff_date}). This indicates discovery system failure or data quality issues.")
+                else:
+                    # Warning instead of failure - allow pipeline to continue
+                    print(f"⚠️ Warning: No recent movies found in last {recent_days} days (since {cutoff_date}). Continuing with validation.")
+                # Skip provider coverage validation when no recent movies
+                skip_provider_check = True
+            else:
+                skip_provider_check = False
 
             # 5. Check required fields on sample of movies
             sample_movies = movies[:5] if len(movies) >= 5 else movies
@@ -327,11 +346,16 @@ class NRWOrchestrator:
             movies_with_wikipedia = [m for m in movies if m.get('wikipedia_link')]
             movies_with_trailers = [m for m in movies if m.get('trailer_link')]
 
-            # 7. Provider coverage sanity check
-            self.validate_provider_coverage(recent_movies)
+            # 7. Provider coverage sanity check (only if we have recent movies)
+            if not skip_provider_check:
+                self.validate_provider_coverage(recent_movies)
 
             # Print validation summary
-            print(f"✅ Quality check passed: {len(movies)} total, {len(recent_movies)} recent")
+            if len(recent_movies) == 0:
+                print(f"✅ Quality check completed: {len(movies)} total, {len(recent_movies)} recent")
+                print(f"   Note: No recent movies found but pipeline is continuing")
+            else:
+                print(f"✅ Quality check passed: {len(movies)} total, {len(recent_movies)} recent")
             print(f"   Data coverage: {len(movies_with_links)} with watch links, {len(movies_with_rt)} with RT scores")
             print(f"   Additional links: {len(movies_with_wikipedia)} Wikipedia, {len(movies_with_trailers)} trailers")
 
@@ -420,6 +444,56 @@ class NRWOrchestrator:
 
         return stats
 
+    def get_link_source_mix(self):
+        """Analyze link sources in data.json (Watchmode vs platform scrapers vs none)"""
+        try:
+            with open('data.json', 'r') as f:
+                data = json.load(f)
+
+            movies = data.get('movies', [])
+            link_sources = {
+                'watchmode': 0,
+                'platform_scrapers': 0,
+                'search_urls': 0,
+                'no_links': 0
+            }
+
+            search_url_patterns = [
+                'google.com/search',
+                'amazon.com/s?',
+                'play.google.com/store/search'
+            ]
+
+            for movie in movies:
+                watch_links = movie.get('watch_links', {})
+                has_any_links = False
+                has_search_urls = False
+
+                # Check all link categories
+                for category in ['streaming', 'rent', 'buy']:
+                    if category in watch_links:
+                        link_obj = watch_links[category]
+                        if isinstance(link_obj, dict) and link_obj.get('link'):
+                            has_any_links = True
+                            link_url = link_obj['link']
+
+                            # Check if it's a search URL
+                            if any(pattern in link_url for pattern in search_url_patterns):
+                                has_search_urls = True
+
+                if has_search_urls:
+                    link_sources['search_urls'] += 1
+                elif has_any_links:
+                    # Assume Watchmode if we have real links (more detailed tracking would need to be added to link generation)
+                    link_sources['watchmode'] += 1
+                else:
+                    link_sources['no_links'] += 1
+
+            return link_sources
+
+        except Exception as e:
+            return {'error': str(e)}
+
     def generate_newsletter_if_enabled(self):
         """Generate newsletter if auto-generation is enabled in config"""
         try:
@@ -493,11 +567,31 @@ class NRWOrchestrator:
             print(f"⚠️ Newsletter generation error: {e}")
 
     def extract_discovery_metrics(self):
-        """Extract discovery metrics from pipeline results for daily tracking"""
+        """Extract discovery metrics from JSON artifact or fallback to log parsing"""
         polled = 0
         transitions = 0
 
-        # Look for standardized metrics lines in command outputs
+        # First try to read from JSON artifact
+        try:
+            if os.path.exists('metrics/discovery_run.json'):
+                with open('metrics/discovery_run.json', 'r') as f:
+                    discovery_data = json.load(f)
+
+                if discovery_data.get('operation') == 'check_tracking':
+                    polled = discovery_data.get('polled', 0)
+                    transitions = discovery_data.get('transitions', 0)
+                    print(f"📊 Metrics from JSON artifact: {polled} polled, {transitions} transitions")
+                    return polled, transitions
+                elif discovery_data.get('operation') == 'discover_premieres':
+                    discovered = discovery_data.get('discovered', 0)
+                    print(f"📊 Discovery metrics from JSON: {discovered} new movies discovered")
+                    # For discovery operations, transitions = discovered
+                    return 0, discovered
+
+        except Exception as e:
+            print(f"⚠️ Failed to read JSON artifact: {e}, falling back to log parsing")
+
+        # Fallback to log parsing if JSON artifact not available
         for result in self.results:
             if result['success'] and result['output']:
                 output_lines = result['output'].split('\n')
@@ -510,34 +604,177 @@ class NRWOrchestrator:
                         if match:
                             polled = int(match.group(1))
                             transitions = int(match.group(2))
-                            print(f"📊 Extracted metrics: {polled} polled, {transitions} transitions")
+                            print(f"📊 Extracted metrics from logs: {polled} polled, {transitions} transitions")
                             break
 
         return polled, transitions
 
-    def save_daily_metrics(self, polled, transitions):
-        """Save daily discovery metrics to metrics/daily.jsonl"""
+    def save_daily_metrics(self):
+        """Save consolidated daily metrics to metrics/daily.jsonl from discovery_run.json"""
+        max_retries = 3
+        retry_delay = 0.5  # 500ms
+
+        for attempt in range(max_retries):
+            try:
+                # Ensure metrics directory exists
+                os.makedirs('metrics', exist_ok=True)
+
+                # Read metrics from discovery_run.json (single source of truth)
+                discovered_today = 0
+                polled = 0
+                transitions = 0
+
+                if os.path.exists('metrics/discovery_run.json'):
+                    with open('metrics/discovery_run.json', 'r') as f:
+                        discovery_data = json.load(f)
+
+                    # Handle both discovery and tracking operations
+                    operation = discovery_data.get('operation')
+
+                    if operation == 'discover_premieres':
+                        discovered_today = discovery_data.get('discovered', 0)
+                        # For discovery operations, transitions = discovered
+                        transitions = discovered_today
+                    elif operation == 'check_tracking':
+                        polled = discovery_data.get('polled', 0)
+                        transitions = discovery_data.get('transitions', 0)
+                    else:
+                        # Legacy format or unknown operation - extract what we can
+                        discovered_today = discovery_data.get('discovered', 0)
+                        polled = discovery_data.get('polled', 0)
+                        transitions = discovery_data.get('transitions', discovered_today)
+
+                # Create consolidated metrics entry
+                metrics_entry = {
+                    'date': datetime.now().strftime('%Y-%m-%d'),
+                    'timestamp': datetime.now().isoformat(),
+                    'discovered_today': discovered_today,
+                    'polled': polled,
+                    'transitions': transitions
+                }
+
+                # Append to metrics file with durable write
+                metrics_file = 'metrics/daily.jsonl'
+                with open(metrics_file, 'a') as f:
+                    f.write(json.dumps(metrics_entry) + '\n')
+                    f.flush()  # Flush Python buffer to OS
+                    os.fsync(f.fileno())  # Force OS to write to disk
+
+                print(f"✅ Daily metrics saved: {discovered_today} discovered, {polled} polled, {transitions} transitions")
+                return  # Success, exit retry loop
+
+            except Exception as e:
+                print(f"⚠️ Failed to save daily metrics (attempt {attempt + 1}/{max_retries}): {e}")
+                if attempt < max_retries - 1:
+                    time.sleep(retry_delay)
+                    retry_delay *= 2  # Exponential backoff
+                else:
+                    print(f"❌ All {max_retries} attempts to save metrics failed")
+
+    def detect_stall(self):
+        """Surface 3-day stall detection after metrics are saved"""
         try:
-            # Ensure metrics directory exists
-            os.makedirs('metrics', exist_ok=True)
-
-            # Create metrics entry
-            metrics_entry = {
-                'date': datetime.now().strftime('%Y-%m-%d'),
-                'timestamp': datetime.now().isoformat(),
-                'polled': polled,
-                'transitions': transitions
-            }
-
-            # Append to metrics file
             metrics_file = 'metrics/daily.jsonl'
-            with open(metrics_file, 'a') as f:
-                f.write(json.dumps(metrics_entry) + '\n')
+            if not os.path.exists(metrics_file):
+                print("⚠️  No metrics file found - cannot detect stalls")
+                return False
 
-            print(f"✅ Daily metrics saved: {polled} polled, {transitions} transitions")
+            # Read last entries from daily.jsonl
+            recent_entries = []
+            with open(metrics_file, 'r') as f:
+                for line in f:
+                    if line.strip():
+                        recent_entries.append(json.loads(line))
+
+            if len(recent_entries) < 3:
+                print(f"📊 Stall detection: Need 3 days of data, have {len(recent_entries)}")
+                return False
+
+            # Get last 3 unique dates
+            unique_dates = {}
+            for entry in reversed(recent_entries):  # Process most recent first
+                date = entry.get('date')
+                if date and date not in unique_dates:
+                    unique_dates[date] = entry
+                    if len(unique_dates) >= 3:
+                        break
+
+            if len(unique_dates) < 3:
+                print(f"📊 Stall detection: Need 3 unique dates, have {len(unique_dates)}")
+                return False
+
+            # Check if all 3 days have transitions == 0
+            last_3_entries = list(unique_dates.values())
+            stall_dates = []
+
+            for entry in last_3_entries:
+                transitions = entry.get('transitions', 0)
+                date = entry.get('date')
+
+                if transitions == 0:
+                    stall_dates.append(date)
+
+            if len(stall_dates) >= 3:
+                # All 3 days had no transitions - this is a stall
+                print("\n" + "🚨" * 20)
+                print("🚨 3-DAY STALL DETECTED 🚨")
+                print("🚨" * 20)
+                print(f"📅 Stalled dates: {', '.join(sorted(stall_dates))}")
+                print("🔍 No movie transitions detected for 3+ consecutive unique days")
+                print("💡 This may indicate:")
+                print("   - API/scraper failures preventing movie detection")
+                print("   - All tracked movies already digital (normal in mature state)")
+                print("   - Discovery system not finding new releases")
+
+                # Optionally persist stall state
+                self._persist_stall_state(stall_dates, last_3_entries)
+
+                # Check environment setting for failure behavior
+                fail_on_stall = os.getenv('NRW_FAIL_ON_STALL', 'false').lower() == 'true'
+                if fail_on_stall:
+                    print("💥 NRW_FAIL_ON_STALL=true - exiting with error")
+                    return True  # Indicate stall detected
+                else:
+                    print("✅ NRW_FAIL_ON_STALL=false - continuing despite stall")
+                    return False
+
+            else:
+                print(f"📊 Stall check: {len(stall_dates)}/3 days with no transitions - system healthy")
+                return False
 
         except Exception as e:
-            print(f"⚠️ Failed to save daily metrics: {e}")
+            print(f"⚠️  Stall detection failed: {e}")
+            return False
+
+    def _persist_stall_state(self, stall_dates, entries):
+        """Persist stall detection state to metrics/stall_state.json"""
+        try:
+            os.makedirs('metrics', exist_ok=True)
+
+            stall_state = {
+                'timestamp': datetime.now().isoformat(),
+                'stall_detected': True,
+                'window_size': 3,
+                'stall_dates': sorted(stall_dates),
+                'entries_checked': len(entries),
+                'stall_details': [
+                    {
+                        'date': entry.get('date'),
+                        'transitions': entry.get('transitions', 0),
+                        'discovered_today': entry.get('discovered_today', 0),
+                        'polled': entry.get('polled', 0)
+                    }
+                    for entry in entries
+                ]
+            }
+
+            with open('metrics/stall_state.json', 'w') as f:
+                json.dump(stall_state, f, indent=2)
+
+            print(f"📊 Stall state persisted to metrics/stall_state.json")
+
+        except Exception as e:
+            print(f"⚠️  Failed to persist stall state: {e}")
 
     def print_summary(self):
         """Print execution summary"""
@@ -564,7 +801,27 @@ class NRWOrchestrator:
                 print(f"RT scores: {stats['movies_with_rt']} ({rt_pct:.1f}%)")
                 print(f"Wikipedia: {stats['movies_with_wikipedia']} ({wiki_pct:.1f}%)")
                 print(f"Trailers: {stats['movies_with_trailers']} ({trailer_pct:.1f}%)")
-        
+
+        # Link source mix analysis
+        link_sources = self.get_link_source_mix()
+        if 'error' not in link_sources:
+            print(f"\n🔗 Link Source Mix:")
+            total_movies = sum(link_sources.values())
+            if total_movies > 0:
+                for source, count in link_sources.items():
+                    pct = (count / total_movies) * 100
+                    print(f"{source.replace('_', ' ').title()}: {count} ({pct:.1f}%)")
+
+                # Fail on search URLs if enabled
+                if link_sources['search_urls'] > 0:
+                    fail_on_search = os.getenv('NRW_FAIL_ON_SEARCH_URLS', 'false').lower() == 'true'
+                    if fail_on_search:
+                        print(f"❌ ERROR: Found {link_sources['search_urls']} Google search URLs in data.json")
+                        print("   Set NRW_FAIL_ON_SEARCH_URLS=false to disable this check")
+                        sys.exit(1)
+                    else:
+                        print(f"⚠️ Warning: Found {link_sources['search_urls']} search URLs (set NRW_FAIL_ON_SEARCH_URLS=true to fail on this)")
+
         # Phase timing summary
         if self.phase_timings:
             print(f"\n⏱️  Phase Timings:")
@@ -605,42 +862,63 @@ class NRWOrchestrator:
             # Use current working directory by default
             print(f"📂 Working directory: {Path.cwd()}")
         
+        # Load orchestrator configuration
+        config = {}
+        if os.path.exists('config.yaml'):
+            with open('config.yaml', 'r') as f:
+                config = yaml.safe_load(f) or {}
+
+        orchestrator_config = config.get('orchestrator', {})
+        discovery_retries = int(os.getenv('DISCOVERY_RETRIES', orchestrator_config.get('discovery_retries', 2)))
+        retry_delays = orchestrator_config.get('discovery_retry_delays', [30, 45])
+
         # Pipeline steps - modified to include mandatory admin approval gate
         discovery_pipeline = [
-            # Phase 1: Production Discovery (replaces legacy movie_tracker.py daily)
+            # Phase 1: Production Discovery (replaces legacy movie_tracker.py daily) - with retries
             ("python3 generate_data.py --discover",
-             "Discover new premieres using production discovery", True),
+             "Discover new premieres using production discovery", True, True),  # Last True indicates retry
 
             # Phase 1.5: Check tracking movies for digital availability (provider monitoring)
             ("python3 generate_data.py --check",
-             "Check tracking movies for digital availability", True),
+             "Check tracking movies for digital availability", True, False),  # Last False indicates no retry
 
             # Phase 1.75: Validate discovery results (fail if recall drops below threshold)
             ("python3 ops/validate_discovery.py --days-back 7",
-             "Validate discovery against ground truth", False),  # Non-critical to avoid blocking automation
+             "Validate discovery against ground truth", False, False),  # Non-critical to avoid blocking automation
         ]
 
         # Execute discovery and monitoring pipeline
-        for cmd, description, critical in discovery_pipeline:
-            self.run_command(cmd, description, critical)
+        for step in discovery_pipeline:
+            if len(step) == 4:
+                cmd, description, critical, use_retry = step
+                if use_retry:
+                    self.run_command_with_retries(cmd, description, critical, discovery_retries, retry_delays)
+                else:
+                    self.run_command(cmd, description, critical)
+            else:
+                # Backward compatibility for 3-element tuples
+                cmd, description, critical = step
+                self.run_command(cmd, description, critical)
 
-        # Extract and save discovery metrics for stall detection
-        polled, transitions = self.extract_discovery_metrics()
-        self.save_daily_metrics(polled, transitions)
+        # Save consolidated daily metrics for stall detection (reads from discovery_run.json)
+        self.save_daily_metrics()
 
-        # Phase 3: Mandatory Admin Approval Gate
-        print(f"\n📋 Phase 3: Admin Approval Gate")
-        self.wait_for_admin_approval()
+        # Surface 3-day stall detection after metrics are saved
+        stall_detected = self.detect_stall()
+        if stall_detected:
+            # Exit with non-zero code if stall detected and NRW_FAIL_ON_STALL=true
+            self.print_summary()
+            sys.exit(1)
 
-        # Phase 4: Generate final display data with enrichment (post-approval only)
-        print(f"\n📊 Phase 4: Post-Approval Data Generation")
+        # Phase 3: Generate final display data with enrichment
+        print(f"\n📊 Phase 3: Data Generation")
         success = self.run_command(
             "python3 generate_data.py",
             "Generate data.json for website with enriched links",
             True
         )
 
-        # Validate data quality only after approval and generation
+        # Validate data quality after generation
         if success:
             print("\n🔍 Validating RT data...")
             self.validate_rt_data()
@@ -649,58 +927,31 @@ class NRWOrchestrator:
             try:
                 self.validate_data_quality()
             except Exception as e:
-                # Get approval details for failure context
-                try:
-                    approval = self.validate_approval()
-                    reviewer = approval.get('reviewer', 'unknown')
-                    timestamp = approval.get('timestamp', 'unknown')
-                    print(f"❌ Data quality validation failed after approval by {reviewer} at {timestamp}")
-                except:
-                    print(f"❌ Data quality validation failed")
-
-                print(f"   Error: {e}")
+                print(f"❌ Data quality validation failed: {e}")
                 self.print_summary()
                 sys.exit(1)
+
+        # Phase 4: Emit drafts for admin review and STOP
+        print(f"\n📝 Phase 4: Draft Generation")
+        if not self.emit_drafts():
+            print("⚠️ Failed to emit drafts - stopping pipeline")
+            self.print_summary()
+            sys.exit(1)
 
         # Optional newsletter generation
         self.generate_newsletter_if_enabled()
 
-        # Check for changes and commit if needed (skip in CI)
-        if self.check_changes():
-            print("\n📝 Changes detected...")
+        # Pipeline stops here - do not write production data.json or commit changes
+        # Admin will review drafts and trigger publish workflow
+        print("\n📝 Drafts emitted successfully - pipeline complete")
+        print("   Review drafts in admin panel and publish when ready")
 
-            # Skip committing in CI environment - let workflow handle it
-            if os.getenv('GITHUB_ACTIONS') or os.getenv('CI'):
-                print("🤖 Running in CI - skipping commit/push (workflow will handle)")
-            else:
-                print("💻 Running locally - committing changes...")
-
-                self.run_command(
-                    "git add -A",
-                    "Stage changes",
-                    critical=False
-                )
-
-                commit_msg = f"Daily update - {datetime.now().strftime('%Y-%m-%d')}"
-                self.run_command(
-                    f'git commit -m "{commit_msg}"',
-                    "Commit changes",
-                    critical=False
-                )
-
-                self.run_command(
-                    "git push",
-                    "Push to remote",
-                    critical=False
-                )
-        else:
-            print("\n📭 No changes to commit")
-        
         # Final summary
         self.print_summary()
-        
+
         # Success message
-        print("\n✨ Daily update complete!")
+        print("\n✨ Daily update complete - drafts ready for admin review!")
+        print("   Use admin panel to review and publish drafts")
         return 0
 
 def main():

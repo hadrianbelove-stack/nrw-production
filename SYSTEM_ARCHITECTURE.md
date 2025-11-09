@@ -40,28 +40,16 @@ When analyzing this codebase, read in this order:
 - Immediate updates to main branch
 - No merge conflicts between branches
 
-### 2.2 Optional Two-Branch Flow
+### 2.2 Advanced Two-Branch Flow (Optional)
 
-**When Used**: For special runs requiring isolation from main branch.
+**Status**: Deprecated. Single-branch workflow on `main` is now the only supported approach per PROJECT_CHARTER.md.
 
-**Setup**: Use `sync_daily_updates.sh --into-automation` to sync main into automation-updates branch.
+**Current State**:
+- Daily workflow: Single-branch on `main` ✅
+- Weekly workflow: Single-branch on `main` ✅
 
 **Branch Roles**:
-- `main`: Source of truth, user development, production deployment
-- `automation-updates`: Optional branch for special automation runs
-
-**Two-Branch Process** (when needed):
-1. Sync main → automation-updates
-2. Run automation on automation-updates
-3. Manually merge automation-updates → main
-
-**User Integration**:
-```bash
-# For special runs only
-./sync_daily_updates.sh --into-automation  # Sync main into automation-updates
-# Run automation on automation-updates
-./sync_daily_updates.sh                    # Merge automation-updates into main
-```
+- `main`: Source of truth, all development, all automation
 
 ### 2.3 Current Daily Workflow
 
@@ -73,52 +61,41 @@ git add -A
 git commit -m "Daily update $(date)"
 git push origin main
 
-# Optional two-branch workflow (special cases)
-git checkout automation-updates
-git merge origin/main --no-edit
-python3 daily_orchestrator.py
-git add -A
-git commit -m "Daily update $(date)"
-git push --force origin automation-updates
+# Legacy two-branch workflow (deprecated)
+# The following commands are no longer used but kept for reference:
+# git checkout automation-updates
+# git merge origin/main --no-edit
+# python3 daily_orchestrator.py
+# git add -A
+# git commit -m "Daily update $(date)"
+# git push --force origin automation-updates
 ```
 
-### 2.4 Critical Failure Mode - Branch Divergence
+### 2.4 Legacy: Branch Divergence Issues (Single-Branch Prevents This)
 
-**What Happens**: When branches aren't synced, automation runs on stale code.
+**Historical Issue**: When using multiple branches, automation could run on stale code.
 
-**Impact**:
+**Impact** (no longer applicable with single-branch):
 - 2+ hour runtimes instead of 30 seconds
 - Validation failures
 - API quota exhaustion
 - Data corruption cascades
 
-**Recent Example**: Oct 25-Nov 5, 2025
-- `automation-updates` was 22 commits behind `main`
+**Historical Example**: Oct 25-Nov 5, 2025
+- Two-branch system had synchronization issues
 - Bot ran old enrichment logic on corrupted data
-- Processed 550+ movies instead of designed 5-10
 - Runtime: 2.3 hours, validation timeouts
 
-**Detection**:
-```bash
-# Check if branches are synchronized
-git log main..automation-updates --oneline
-git log automation-updates..main --oneline
-```
+**Current Solution**: Single-branch workflow eliminates this entire class of failures
 
-**Fix**: Sync branches immediately
-**Prevention**: Automatic sync added to workflow (Nov 5, 2025)
-
-### 2.5 Manual Sync Commands
+### 2.5 Legacy: Manual Sync Commands (No Longer Needed)
 
 ```bash
-# Emergency sync (if automated sync fails)
-# Note: Workflow uses merge, but emergency sync can use reset for clean slate
-git checkout automation-updates
-git reset --hard main
-git push --force origin automation-updates
-
-# Check sync status
-git diff main automation-updates --stat
+# These commands are no longer needed with single-branch workflow:
+# git checkout automation-updates
+# git reset --hard main
+# git push --force origin automation-updates
+# git diff main automation-updates --stat
 ```
 
 ---
@@ -148,7 +125,6 @@ git diff main automation-updates --stat
 | `daily_orchestrator.py` | Daily automation controller | 30s | Daily |
 | `generate_data.py` | Data processing engine | 20-30s | Daily |
 | `admin.py` | Web admin interface | N/A | On-demand |
-| `sync_daily_updates.sh` | Branch sync utility | 5s | User-triggered |
 
 ### 3.4 Scrapers
 
@@ -173,9 +149,9 @@ git diff main automation-updates --stat
 
 ### 3.6 Cache Files
 
-**Rotten Tomatoes Cache** (`rt_cache.json`): 90-day TTL, ~328 entries
-**Wikipedia Cache** (`wikipedia_cache.json`): 90-day TTL, ~300 entries
-**YouTube Trailer Cache** (`youtube_trailer_cache.json`): 90-day TTL, ~250 entries
+**Rotten Tomatoes Cache** (`cache/rt_cache.json`): 90-day TTL, ~328 entries
+**Wikipedia Cache** (`cache/wikipedia_cache.json`): 90-day TTL, ~300 entries
+**YouTube Trailer Cache** (`cache/youtube_trailer_cache.json`): 90-day TTL, ~250 entries
 **Agent Links Cache** (`cache/agent_links_cache.json`): 30-day TTL, ~50 entries
 **Watch Links Cache** (`cache/watch_links_cache.json`): 7-day TTL, ~50 entries
 
@@ -252,9 +228,9 @@ rt_scraper:
 
 ### 4.4 Cache Strategies
 
-**Rotten Tomatoes Cache** (`rt_cache.json`): 90-day TTL, ~328 entries
-**Wikipedia Cache** (`wikipedia_cache.json`): 90-day TTL, ~300 entries
-**YouTube Trailer Cache** (`youtube_trailer_cache.json`): 90-day TTL, ~250 entries
+**Rotten Tomatoes Cache** (`cache/rt_cache.json`): 90-day TTL, ~328 entries
+**Wikipedia Cache** (`cache/wikipedia_cache.json`): 90-day TTL, ~300 entries
+**YouTube Trailer Cache** (`cache/youtube_trailer_cache.json`): 90-day TTL, ~250 entries
 **Agent Links Cache** (`cache/agent_links_cache.json`): 30-day TTL, ~50 entries
 **Watch Links Cache** (`cache/watch_links_cache.json`): 7-day TTL, ~50 entries
 
@@ -707,25 +683,20 @@ See [NRW_DATA_WORKFLOW_EXPLAINED.md Section 2.1](./NRW_DATA_WORKFLOW_EXPLAINED.m
 
 **Simplified Workflow**: Single-branch approach eliminates sync complexity and branch divergence issues.
 
-### 6.4 Why Force Push?
+### 6.4 Legacy: Force Push Strategy (No Longer Used)
 
-**Disposable Branch Concept**: `automation-updates` is ephemeral
-- No history preservation needed
-- Prevents merge conflicts
-- User maintains control over main branch
-- Clean slate each day
+**Historical Concept**: In the two-branch system, automation-updates was ephemeral
+- No longer applicable with single-branch workflow
+- Single-branch commits directly to main (no force pushing needed)
+- User maintains control with admin approval gates
 
 ### 6.5 User Sync Workflow
 
 ```bash
-# When ready to merge automation updates
-./sync_daily_updates.sh
-
-# What it does:
+# Single-branch workflow - direct commits to main
 # 1. git checkout main
 # 2. git pull origin main
-# 3. git merge automation-updates
-# 4. git push origin main
+# 3. Changes committed directly to main (no merging needed)
 ```
 
 ### 6.6 Validation Gates
@@ -736,7 +707,7 @@ See [NRW_DATA_WORKFLOW_EXPLAINED.md Section 2.1](./NRW_DATA_WORKFLOW_EXPLAINED.m
 4. **Performance Check** - Runtime under 5 minutes
 5. **API Quota Check** - Under 80% monthly limit
 
-**For detailed workflow documentation:** See [docs/AUTOMATION_BRANCH_WORKFLOW.md](docs/AUTOMATION_BRANCH_WORKFLOW.md)
+**For detailed workflow documentation:** See [docs/NRW_FULL_WORKFLOW.md](docs/NRW_FULL_WORKFLOW.md)
 
 ---
 
@@ -796,15 +767,11 @@ This section provides a quick overview of failure patterns. Each subsection belo
 - 2+ hour runtimes
 - Processing 100+ movies
 
-**Root Cause**: `automation-updates` branch behind `main`
+**Historical Root Cause**: Two-branch system had synchronization issues
 
-**Detection**:
-```bash
-git log main..automation-updates --oneline
-```
-
-**Fix**: Sync branches immediately
-**Prevention**: Automatic sync in daily workflow (added Nov 5)
+**Current Solution**: Single-branch workflow eliminates this issue entirely
+- No branch synchronization needed
+- Direct commits to main prevent divergence
 
 **Detailed troubleshooting:** [docs/TROUBLESHOOTING.md - Branch Divergence](docs/TROUBLESHOOTING.md#5-branch-divergence)
 

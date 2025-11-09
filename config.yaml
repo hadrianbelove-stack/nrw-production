@@ -1,4 +1,13 @@
 # NRW Configuration
+#
+# Scraper Configuration Notes:
+# - All scrapers (rt_scraper, wikipedia_scraper, streaming_platform_scraper) now use
+#   centralized defaults from constants.py (SCRAPER_DEFAULTS)
+# - Per-scraper configs below override the centralized defaults
+# - Centralized defaults: timeout=15s, rate_limit=2.0s, max_retries=3,
+#   exponential_backoff={base_delay=0.5s, max_delay=5.0s, jitter_ratio=0.2},
+#   cache_ttl_days=30, screenshots_enabled=true, screenshot_retention_days=7
+
 workflow:
   daily_check_time: "02:00"  # 2 AM PST
   weekly_bootstrap_day: "sunday"
@@ -91,10 +100,18 @@ rt_scraper:
     jitter_ratio: 0.2  # Randomness factor (±20%)
 
 validation:
+  recent_days: 7  # Strict recent movie validation window (days) - per PROJECT_CHARTER.md
   min_recall: 0.75  # Minimum discovery recall threshold (75%)
   min_precision: 0.70  # Minimum discovery precision threshold (70%)
   min_provider_coverage_count: 5  # Minimum number of movies with non-search watch links per week (lowered from 10 temporarily while investigating Watchmode API/scraper issues)
   # TODO [2025-11-15]: Revert min_provider_coverage_count back to 10 after Watchmode quota reset or scraper reliability fixes
+  approval_ttl_hours: 6  # Approval freshness grace window (6 hours default)
+  fail_on_no_recent: false  # When true, fail validation if no recent movies found. When false (default), warn and continue.
+
+orchestrator:
+  discovery_retries: 2  # Additional retry attempts for discovery (total attempts = 1 + retries)
+  discovery_retry_delays: [30, 45]  # Retry delays in seconds (exponential backoff)
+  skip_approval: true  # Default to bypass approval gate during development (NRW_SKIP_APPROVAL override)
 
 newsletter:
   auto_generate: false  # Set to true to generate newsletter during daily automation

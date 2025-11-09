@@ -6,17 +6,16 @@ import random
 import re
 from datetime import datetime, timedelta
 from urllib.parse import quote
+from constants import get_scraper_config
 
-# Optional shared manager support (disabled by default)
-USE_SHARED_PLAYWRIGHT = os.environ.get('NRW_USE_SHARED_PLAYWRIGHT', 'false').lower() == 'true'
-if USE_SHARED_PLAYWRIGHT:
-    from playwright_manager import get_playwright_manager
+# Shared manager support (enabled by default)
+from playwright_manager import get_playwright_manager
 
 
 class RTScraperPlaywright:
     """Rotten Tomatoes scraper using Playwright for scores and URLs."""
 
-    def __init__(self, cache_file='rt_cache.json', config=None, logger=None):
+    def __init__(self, cache_file='cache/rt_cache.json', config=None, logger=None):
         """Initialize the RT scraper with configuration.
 
         Args:
@@ -28,26 +27,37 @@ class RTScraperPlaywright:
         self.config = config or {}
         self.logger = logger
 
+        # Apply scraper defaults
+        self.scraper_config = get_scraper_config(config, 'rt_scraper')
+
         # Browser components (lazy initialization)
         self.playwright = None
         self.browser = None
         self.context = None
         self.page = None
 
-        # Manager reference (only if shared mode enabled)
-        self.manager = get_playwright_manager() if USE_SHARED_PLAYWRIGHT else None
+        # Manager reference
+        self.manager = get_playwright_manager()
 
 
         # Rate limiting
         self.last_scrape_time = 0
-        self.rate_limit = self.config.get('rt_scraper', {}).get('rate_limit', 2.0)
+        self.rate_limit = self.scraper_config.get('rate_limit')
 
         # Cache
         self.cache = self._load_cache()
 
         # Screenshots for diagnostics
         self.screenshot_dir = 'cache/screenshots/rt'
-        self.screenshots_enabled = self.config.get('rt_scraper', {}).get('screenshots_enabled', True)
+        self.screenshots_enabled = self.scraper_config.get('screenshots_enabled')
+
+        # Operational counters for structured logging (integrated with existing stats)
+        self.counters = {
+            'start_count': 0,
+            'stop_count': 0,
+            'retry_count': 0,
+            'error_count': 0
+        }
 
         # Clean up old screenshots on initialization
         if self.screenshots_enabled:
@@ -79,6 +89,22 @@ class RTScraperPlaywright:
         else:
             print(f"[RTScraperPlaywright] {message}")
 
+    def _log_metrics(self, operation, data):
+        """Log structured metrics for operations."""
+        metrics_data = {
+            'timestamp': datetime.now().isoformat(),
+            'component': 'rt_scraper_playwright',
+            'operation': operation,
+            'counters': self.counters.copy(),
+            'stats': getattr(self, 'stats', {}).copy(),
+            'data': data
+        }
+
+        if self.logger:
+            self.logger.info(f"METRICS: {json.dumps(metrics_data)}")
+        else:
+            print(f"[RTScraperPlaywright] METRICS: {json.dumps(metrics_data)}")
+
     def _load_cache(self):
         """Load RT cache from disk."""
         if os.path.exists(self.cache_file):
@@ -92,6 +118,7 @@ class RTScraperPlaywright:
     def _save_cache(self):
         """Save RT cache to disk."""
         try:
+            os.makedirs(os.path.dirname(self.cache_file), exist_ok=True)
             with open(self.cache_file, 'w', encoding='utf-8') as f:
                 json.dump(self.cache, f, indent=2, ensure_ascii=False)
             self._log(f"Cache saved: {len(self.cache)} entries", level='debug')
@@ -132,12 +159,11 @@ class RTScraperPlaywright:
             self._log("Browser already initialized, reusing...", level='debug')
             return
 
-        if USE_SHARED_PLAYWRIGHT:
-            self._log("Initializing Playwright browser via shared manager...")
-            self._init_browser_shared()
-        else:
-            self._log("Initializing Playwright browser with local lifecycle...")
-            self._init_browser_local()
+        self.counters['start_count'] += 1
+        self._log_metrics("browser_start", {"start_count": self.counters['start_count']})
+
+        self._log("Initializing Playwright browser via shared manager...")
+        self._init_browser_shared()
 
     def _init_browser_shared(self):
         """Initialize browser using shared manager."""
@@ -156,7 +182,7 @@ class RTScraperPlaywright:
             )
 
             # Set default timeout
-            timeout_ms = self.config.get('rt_scraper', {}).get('timeout', 10) * 1000
+            timeout_ms = self.scraper_config.get('timeout') * 1000
             self.context.set_default_timeout(timeout_ms)
 
             # Create page
@@ -186,7 +212,7 @@ class RTScraperPlaywright:
             )
 
             # Set default timeout
-            timeout_ms = self.config.get('rt_scraper', {}).get('timeout', 10) * 1000
+            timeout_ms = self.scraper_config.get('timeout') * 1000
             self.context.set_default_timeout(timeout_ms)
 
             # Create page
@@ -201,6 +227,9 @@ class RTScraperPlaywright:
 
     def _cleanup_browser(self):
         """Clean up browser resources."""
+        self.counters['stop_count'] += 1
+        self._log_metrics("browser_stop", {"stop_count": self.counters['stop_count']})
+
         if self.page:
             try:
                 self.page.close()
@@ -222,13 +251,10 @@ class RTScraperPlaywright:
                 pass
             self.browser = None
 
-        # Cleanup Playwright based on mode
+        # Cleanup Playwright via shared manager
         if self.playwright:
             try:
-                if USE_SHARED_PLAYWRIGHT and self.manager:
-                    self.manager.release()
-                else:
-                    self.playwright.stop()
+                self.manager.release()
             except:
                 pass
             self.playwright = None
@@ -248,19 +274,23 @@ class RTScraperPlaywright:
     def _retry_with_backoff(self, fn, max_attempts=None, base_delay=None, max_delay=None, jitter_ratio=None):
         """Retry function with exponential backoff."""
         if max_attempts is None:
-            max_attempts = self.config.get('rt_scraper', {}).get('max_retries', 3)
+            max_attempts = self.scraper_config.get('max_retries')
 
         # Get exponential backoff config values
-        backoff_config = self.config.get('rt_scraper', {}).get('exponential_backoff', {})
+        backoff_config = self.scraper_config.get('exponential_backoff', {})
         if base_delay is None:
-            base_delay = backoff_config.get('base_delay', 0.5)
+            base_delay = backoff_config.get('base_delay')
         if max_delay is None:
-            max_delay = backoff_config.get('max_delay', 5.0)
+            max_delay = backoff_config.get('max_delay')
         if jitter_ratio is None:
-            jitter_ratio = backoff_config.get('jitter_ratio', 0.2)
+            jitter_ratio = backoff_config.get('jitter_ratio')
 
         last_error = None
         for attempt in range(max_attempts):
+            if attempt > 0:
+                self.counters['retry_count'] += 1
+                self._log_metrics("retry_attempt", {"attempt": attempt, "max_attempts": max_attempts})
+
             try:
                 result = fn()
                 if result is not None:
@@ -281,6 +311,8 @@ class RTScraperPlaywright:
 
             except (PlaywrightTimeoutError, Exception) as e:
                 last_error = e
+                self.counters['error_count'] += 1
+                self._log_metrics("scrape_error", {"attempt": attempt + 1, "error": str(e), "error_type": type(e).__name__})
                 self._log(f"Attempt {attempt + 1} error: {e}", level='debug')
                 if attempt < max_attempts - 1:
                     delay = min(max_delay, base_delay * (2 ** attempt))

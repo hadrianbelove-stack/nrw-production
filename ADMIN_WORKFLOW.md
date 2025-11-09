@@ -2,7 +2,7 @@
 
 ## Overview
 
-NRW uses a **mandatory pre-publish approval** model where all discovered changes must be reviewed and approved by an admin before reaching the public site. The admin panel serves as a quality gate ensuring only curated content is published.
+NRW uses a **drafts→publish workflow** where daily discovery generates draft content for admin review and selective publishing. The admin panel serves as a quality gate ensuring only curated content is published to production.
 
 ### Security Reminder ⚠️
 
@@ -13,9 +13,7 @@ export ADMIN_USERNAME="your-secure-username"
 export ADMIN_PASSWORD="your-secure-password"
 ```
 
-**Core Philosophy**: Mandatory pre-publish approval → Quality-first curation
-
-**Full Review Mode**: Admin runs `python3 admin.py --full-review` to enable approval gate behavior.
+**Core Philosophy**: Draft-based review → Selective publishing → Quality-first curation
 
 ## Core Workflow Diagram
 
@@ -23,39 +21,40 @@ export ADMIN_PASSWORD="your-secure-password"
 GitHub Actions (Daily Automation)
     ↓ Discovers new movies via TMDB API
 movie_tracking.json (All Movies Database)
-    ↓ APPROVAL GATE: Orchestrator waits for admin approval
-Admin Panel (http://localhost:5555 --full-review)
-    ↓ Admin reviews changes, curates data
-    ↓ Click "Approve & Generate"
-admin/approval.json (Approval Artifact - ephemeral)
-    ↓ Approval validated by orchestrator
+    ↓ Generates drafts with candidate content
+admin/drafts/ (Draft Queue - awaiting review)
+    ↓ Admin reviews drafts, edits titles
+Admin Panel (http://localhost:5555)
+    ↓ Click "Publish" on approved drafts
 data.json (Public Display Data)
-    ↓ Only approved content published
-Public Site (http://localhost:8001)
+    ↓ Deploy Workflow triggers automatically
+Public Site (GitHub Pages or deployment target)
 ```
 
-## Artifact Versioning Policy
+## Artifact Management
 
-**Admin artifacts are ephemeral and not versioned in git:**
-- `admin/approval.json` - Approval state (ephemeral)
+**Admin artifacts are organized by purpose:**
+- `admin/drafts/*.json` - Individual draft files (preserved until published)
 - `admin/ordering.json` - Movie ordering preferences (ephemeral)
 - `admin/hidden_movies.json` - Hidden movie IDs (ephemeral)
 - `admin/featured_movies.json` - Featured movie IDs (ephemeral)
 - `admin/watch_link_overrides.json` - Watch link overrides (ephemeral)
 - `admin/movie_reviews.json` - Custom movie reviews (ephemeral)
-- `diary/*.md` - Daily workflow logs (ephemeral)
+- `metrics/publish.jsonl` - Publish audit trail (persistent)
+- `metrics/daily.jsonl` - Daily metrics and user actions (persistent)
 
-**Only `data.json` is versioned** as it represents the final published state.
-
-**For CI automation:** Approvals must be created locally before CI runs. Admin artifacts are cleaned up after successful publication to prevent stale state.
+**Versioned in git:**
+- `data.json` - Current published state
+- `admin/drafts/` - Pending draft queue
 
 **Workflow Steps:**
-1. **Discovery**: Orchestrator runs discovery and monitoring phases
-2. **Approval Gate**: System waits for mandatory admin approval
-3. **Full Review**: Admin runs `admin.py --full-review` to inspect changes
-4. **Curation**: Admin hides/features movies, fixes data, adds manual entries
-5. **Approval**: Click "Approve & Generate" creates approval artifact
-6. **Publication**: Only after approval does system generate data.json
+1. **Daily Discovery**: GitHub Actions discovers new movies and status changes
+2. **Draft Generation**: System creates drafts in `admin/drafts/` for recent candidates
+3. **Admin Review**: Admin accesses panel to review newest drafts first
+4. **Draft Editing**: Admin edits movie titles and metadata as needed
+5. **Selective Publishing**: Admin clicks "Publish" on approved drafts only
+6. **Atomic Publication**: System validates, writes `data.json`, and triggers deployment
+7. **Audit Trail**: All publish actions logged with user, timestamp, and metadata
 
 ## Admin Panel Features
 
@@ -94,74 +93,75 @@ Inline editing of all movie metadata with manual correction tracking.
 - Edit fields directly in the admin interface
 - Click "💾 Save All Changes" button
 - Changes tracked with admin override flags
-- In full-review mode, changes are saved but not published until approval
+- Changes take effect immediately when data.json is regenerated
 
-### Approve & Generate Button (✅ Approve & Generate)
-**Full Review Mode Only** - Main approval control for mandatory gate.
+### Draft Review Interface
+**Primary workflow for content publishing** - Review and publish individual drafts.
 
 **Functionality:**
-- Creates `admin/approval.json` with timestamp and validation metadata
-- Authorizes orchestrator to proceed with data.json generation
-- Includes curator delta summary (edits, additions, hidden, featured counts)
-- Tracks reviewer identity and approval timestamp
+- Lists all pending drafts sorted by creation date (newest first)
+- Shows draft metadata: creation time, movie count, date range
+- Allows inline editing of movie titles before publishing
+- Individual "Publish" button for each draft
 
-**UI Copy**: "Approves curated changes and authorizes generation"
+**UI Elements:**
+- **Draft List**: Displays pending drafts with timestamps and content preview
+- **Edit Titles**: Click to modify movie titles within a draft
+- **Publish Button**: Validates and publishes selected draft to production
+- **Preview**: Shows how draft will appear when published
 
 **When to Use:**
-- After completing all curation tasks (hiding/featuring/editing)
-- When satisfied with movie data quality
-- Ready to publish changes to public site
+- Daily review of new drafts generated by discovery system
+- Editing movie titles to correct formatting or accuracy issues
+- Selective publishing of only quality content
 
 ## Daily Curation Routine
 
 ### Step-by-Step Workflow
 
-1. **Orchestrator Notification**
-   - Daily orchestrator runs discovery and monitoring
-   - System pauses at approval gate, waiting for admin
-   - Terminal shows: "⏸️ Waiting for admin approval..."
+1. **Automated Discovery**
+   - GitHub Actions runs daily discovery pipeline
+   - System discovers new movies and monitors status changes
+   - Draft files generated in `admin/drafts/` for recent candidates
+   - Admin notified via GitHub issues when drafts are ready
 
-2. **Launch Full Review Mode**
+2. **Access Admin Panel**
    ```bash
-   python3 admin.py --full-review
+   python3 admin.py
    ```
-   Opens admin interface at `http://localhost:5555` in approval mode
+   Opens admin interface at `http://localhost:5555`
 
-3. **Review Discovered Changes**
-   - Examine newly tracked movies and status changes
-   - Check data quality and completeness
-   - Identify candidates for hiding, featuring, or editing
+3. **Review Draft Queue**
+   - Navigate to "Drafts" section in admin panel
+   - Review newest drafts first (sorted by creation date)
+   - Each draft shows: creation time, movie count, titles preview
 
-4. **Manual Movie Addition** (if needed)
-   - Use "Add Movie" form for titles missed by discovery
-   - Provide TMDB ID, title, and basic metadata
-   - System fetches additional details automatically
+4. **Edit Draft Content**
+   - Click "Edit" on individual drafts to modify titles
+   - Correct formatting, fix spelling, improve clarity
+   - Changes saved automatically to draft file
 
-5. **Hide Unwanted Movies**
-   - Click "🚫 Hide" for low-quality releases
-   - Use for wrong genre, duplicates, or poor quality
-   - Changes saved but not published until approval
+5. **Quality Assessment**
+   - Review movie titles for appropriateness and accuracy
+   - Verify draft contains quality content worth publishing
+   - Check for duplicate or low-quality releases
 
-6. **Feature Important Releases**
-   - Click "⭐ Feature" for high-profile titles
-   - Highlights movie on public site
-   - Use for awards contenders, popular releases
+6. **Selective Publishing**
+   - Click "Publish" on drafts with quality content
+   - System validates draft and writes to `data.json` atomically
+   - Deployment workflow triggers automatically
+   - Published draft removed from queue
 
-7. **Fix Missing Data**
-   - Click "⚠️ Missing Data" filter
-   - Edit incomplete movie information
-   - Add missing RT scores, trailers, or descriptions
+7. **Monitor Deployment**
+   - Check GitHub Actions for successful deployment
+   - Verify published content appears on live site
+   - Review audit logs in `metrics/publish.jsonl`
 
-8. **Editorial Ordering** (optional)
-   - Use drag-and-drop to reorder movies
-   - Pin important titles to top of display
-   - Creates `admin/ordering.json` with ordered IDs
-
-9. **Final Approval**
-   - Click "✅ Approve & Generate" button
-   - Creates approval artifact with curator metadata
-   - Orchestrator resumes and generates final data.json
-   - Public site updated with approved changes
+8. **Ongoing Curation** (as needed)
+   - Use main admin interface for movie-level operations
+   - Hide/feature individual movies
+   - Add manual entries for missed releases
+   - Edit metadata and watch links
 
 ## Filter Reference
 
@@ -181,7 +181,7 @@ The admin panel provides several filter buttons for efficient curation:
 - **`admin/hidden_movies.json`**: List of movie IDs excluded from public display
 - **`admin/featured_movies.json`**: List of movie IDs highlighted on site
 - **`admin/ordering.json`**: Editorial ordering (pins specific movies to top)
-- **`admin/approval.json`**: Approval artifact with timestamp and validation metadata
+- **`admin/drafts/*.json`**: Individual draft files awaiting review and publishing
 - **`metrics/daily.jsonl`**: Curator delta logs for audit trail
 - **`data.json`**: Public display data (filtered by admin overrides)
 
@@ -193,17 +193,25 @@ The `apply_admin_overrides()` method in `generate_data.py` handles curation:
 - Applies manual data corrections and overrides
 - Generates clean `data.json` for public consumption
 
-### Approval Gate Mechanism
-The `daily_orchestrator.py` implements mandatory approval:
-- Validates `admin/approval.json` timestamp (within 2 hours)
-- **Requires** tracking digest for data consistency (ensures `movie_tracking.json` hasn't changed since approval)
-- In CI: exits immediately if approval missing or stale
-- Locally: polls every 5 seconds until approval received
+### Draft Publishing Mechanism
+The `admin.py` implements secure draft publishing with validation:
+- Validates draft schema and required fields before publishing
+- Performs atomic write to `data.json` using temporary files
+- Triggers deployment via repository dispatch or direct commit
+- Removes published draft from queue to prevent re-publishing
 
-#### Approval Failure Modes
-- **Missing digest**: Approval will fail if `tracking_digest` field is missing or empty
-- **Digest mismatch**: Approval will fail if `movie_tracking.json` has been modified since approval was created
-- **Missing tracking file**: Admin approval creation will fail if `movie_tracking.json` is not found or unreadable
+#### Draft Validation
+- **Schema Check**: Ensures draft has required fields (id, createdAt, titles, sourceDigest)
+- **Content Validation**: Verifies movie titles are non-empty and properly formatted
+- **Uniqueness Check**: Prevents duplicate slug generation conflicts
+- **Link Sanity**: Basic validation of any watch links or metadata
+
+#### Security Features
+- **Authentication**: HTTP Basic Auth required for all admin endpoints
+- **CSRF Protection**: Token validation for all state-changing operations
+- **Audit Logging**: All publish actions logged with user, timestamp, and metadata
+- **HTTPS Enforcement**: Automatic redirect to HTTPS in production environments
+- **Session Security**: Secure session configuration with proper secret key
 
 ### Authentication
 The admin panel uses HTTP Basic Authentication with default credentials:
@@ -212,31 +220,34 @@ The admin panel uses HTTP Basic Authentication with default credentials:
 
 **⚠️ SECURITY WARNING: Change default credentials immediately in any shared or deployed environment; set `ADMIN_USERNAME`/`ADMIN_PASSWORD` via environment variables.**
 
-### Default Approval Requirement
-All discovered changes require **mandatory admin approval** before reaching the public site. The automation adds discovered movies to `movie_tracking.json`, but they only appear on the public site after admin approval through the full-review workflow.
+### Draft-Based Content Flow
+All discovered content flows through the **draft system** before reaching the public site. The automation adds movies to `movie_tracking.json` and generates candidate drafts in `admin/drafts/`, but content only appears publicly after admin review and selective publishing.
 
 ## FAQ
 
-**Q: Do I need to approve movies before they appear on the site?**
-A: Yes, the mandatory approval gate requires admin review before any changes reach the public site. Use `python3 admin.py --full-review` to enable approval mode.
+**Q: How do I publish new content to the site?**
+A: Review drafts in the admin panel, edit titles if needed, then click "Publish" on approved drafts. The system handles deployment automatically.
 
-**Q: What happens if I don't approve changes?**
-A: The orchestrator will wait indefinitely (locally) or fail (in CI) until approval is provided. No changes reach the public site without explicit approval.
+**Q: What happens to unpublished drafts?**
+A: Drafts remain in the queue (`admin/drafts/`) until manually published or removed. They don't appear on the public site and don't expire automatically.
 
 **Q: How do I remove a movie from the public site?**
-A: Use the "🚫 Hide" button in the admin panel, then click "✅ Approve & Generate" to authorize the change.
+A: Use the "🚫 Hide" button in the main admin panel for individual movies, then regenerate data.json through normal curation workflow.
 
-**Q: Can I undo hiding a movie?**
-A: Yes, filter by "Hidden" to find the movie, then click "👁️ Show" and approve the change to make it visible again.
+**Q: Can I edit movie titles before publishing?**
+A: Yes, use the "Edit" button in the drafts interface to modify titles before publishing. Changes are saved to the draft file.
 
-**Q: Do I need to regenerate after every change in full-review mode?**
-A: No, in full-review mode changes are saved but not published until you click "✅ Approve & Generate".
+**Q: Do drafts include all discovered movies?**
+A: No, drafts contain only recent candidates (typically last 7 days). Use the main admin interface for comprehensive movie management.
 
 **Q: How do I find movies that need attention?**
-A: Use the "⚠️ Missing Data" filter to identify incomplete movies requiring manual correction.
+A: Use the "⚠️ Missing Data" filter in the main admin panel to identify incomplete movies requiring manual correction.
 
 **Q: What if I need to add a movie that discovery missed?**
-A: Use the "Add Movie" form to manually add titles by TMDB ID. The system will fetch metadata automatically.
+A: Use the "Add Movie" form in the main admin panel to manually add titles by TMDB ID. The system will fetch metadata automatically.
+
+**Q: How can I track what was published?**
+A: Check the audit logs at `metrics/publish.jsonl` or review GitHub issue notifications for deployment status.
 
 ## Best Practices
 

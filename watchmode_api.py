@@ -42,9 +42,21 @@ class WatchmodeAPI:
         # Check if month has rolled over and reset quota
         self._check_monthly_reset()
 
+        # Initialize per-run metrics tracking
+        self.run_metrics = {
+            'calls_made': 0,
+            'quota_exhausted': False,
+            'link_counts': {
+                'watchmode_sources': 0,
+                'platform_scrapers': 0,
+                'no_links': 0
+            },
+            'start_time': datetime.now().isoformat()
+        }
+
     def _load_quota_tracker(self) -> Dict[str, Any]:
-        """Load quota tracker from watchmode_quota.json"""
-        quota_file = 'watchmode_quota.json'
+        """Load quota tracker from cache/watchmode_quota.json"""
+        quota_file = 'cache/watchmode_quota.json'
 
         if os.path.exists(quota_file):
             try:
@@ -105,9 +117,10 @@ class WatchmodeAPI:
             print(f"⚠️  Warning: Failed to check monthly reset: {e}")
 
     def _save_quota_tracker(self):
-        """Save quota tracker to watchmode_quota.json"""
-        quota_file = 'watchmode_quota.json'
+        """Save quota tracker to cache/watchmode_quota.json"""
+        quota_file = 'cache/watchmode_quota.json'
         try:
+            os.makedirs('cache', exist_ok=True)
             with open(quota_file, 'w') as f:
                 json.dump(self.quota_tracker, f, indent=2)
         except Exception as e:
@@ -154,8 +167,11 @@ class WatchmodeAPI:
         }
 
     def _track_call(self, title: str, tmdb_id: str, call_type: str, success: bool):
-        """Track an API call in history"""
+        """Track an API call in history and run metrics"""
         self.quota_tracker['calls_this_month'] += 1
+
+        # Track per-run metrics
+        self.run_metrics['calls_made'] += 1
 
         # Add to call history (keep last 100 calls)
         call_record = {
@@ -382,6 +398,41 @@ class WatchmodeAPI:
                 timestamp = datetime.fromisoformat(call['timestamp']).strftime('%Y-%m-%d %H:%M')
                 success_icon = "✓" if call['success'] else "✗"
                 print(f"     {success_icon} {timestamp} - {call['title']} ({call['type']})")
+
+    def track_link_source(self, source_type: str):
+        """Track the type of link source used for metrics"""
+        if source_type in self.run_metrics['link_counts']:
+            self.run_metrics['link_counts'][source_type] += 1
+
+    def mark_quota_exhausted(self):
+        """Mark that quota was exhausted during this run"""
+        self.run_metrics['quota_exhausted'] = True
+
+    def save_run_metrics(self):
+        """Save per-run metrics to metrics/watchmode.jsonl"""
+        try:
+            # Ensure metrics directory exists
+            os.makedirs('metrics', exist_ok=True)
+
+            # Create metrics entry
+            metrics_entry = {
+                'timestamp': datetime.now().isoformat(),
+                'run_start': self.run_metrics['start_time'],
+                'calls_used': self.run_metrics['calls_made'],
+                'quota_exhausted': self.run_metrics['quota_exhausted'],
+                'link_counts': self.run_metrics['link_counts'].copy(),
+                'total_quota': self.quota_limit,
+                'calls_remaining': max(0, self.quota_limit - self.quota_tracker['calls_this_month'])
+            }
+
+            # Append to metrics file
+            with open('metrics/watchmode.jsonl', 'a') as f:
+                f.write(json.dumps(metrics_entry) + '\n')
+
+            print(f"📊 Watchmode metrics saved: {metrics_entry['calls_used']} calls, quota_exhausted={metrics_entry['quota_exhausted']}")
+
+        except Exception as e:
+            print(f"⚠️ Failed to save Watchmode metrics: {e}")
 
 
 # Convenience function for backwards compatibility

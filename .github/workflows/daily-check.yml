@@ -4,12 +4,6 @@ on:
   schedule:
     - cron: '0 9 * * *'  # 9 AM UTC daily
   workflow_dispatch:  # Manual trigger for testing
-    inputs:
-      test_mode:
-        description: 'Enable test mode to simulate approval failures'
-        required: false
-        default: false
-        type: boolean
 
 concurrency:
   group: nrw-automation
@@ -27,8 +21,24 @@ jobs:
       OMDB_API_KEY: ${{ secrets.OMDB_API_KEY }}
       WATCHMODE_API_KEY: ${{ secrets.WATCHMODE_API_KEY }}
       MIN_PROVIDER_COVERAGE: ${{ secrets.MIN_PROVIDER_COVERAGE }}
+      # Playwright configuration
+      NRW_USE_SHARED_PLAYWRIGHT: 'true'  # Use shared PlaywrightManager (now default behavior)
+      # Draft generation configuration
+      NRW_DRAFTS_ENABLED: 'true'  # Enable draft generation
 
     steps:
+      - name: Branch guard
+        run: |
+          EXPECTED_BRANCH="${OVERRIDE_EXPECTED_BRANCH:-main}"
+          CURRENT_BRANCH="${GITHUB_REF#refs/heads/}"
+          if [[ "$CURRENT_BRANCH" != "$EXPECTED_BRANCH" ]]; then
+            echo "❌ Workflow running on unexpected branch: $CURRENT_BRANCH"
+            echo "Expected: $EXPECTED_BRANCH"
+            echo "Set OVERRIDE_EXPECTED_BRANCH env var to override this check"
+            exit 1
+          fi
+          echo "✅ Branch guard passed: running on $CURRENT_BRANCH"
+
       - name: Checkout main branch
         uses: actions/checkout@v4
         with:
@@ -46,8 +56,34 @@ jobs:
 
       - name: Install Playwright browsers
         run: |
-          python3 -m playwright install chromium
-          python3 -m playwright install-deps chromium
+          python3 -m playwright install --with-deps chromium
+
+      - name: Playwright preflight health check
+        run: |
+          echo "🔍 Running Playwright preflight health check..."
+          python3 -c "
+          from playwright_manager import get_playwright_manager
+          import json
+          manager = get_playwright_manager()
+          result = manager.health_check()
+          print(f'Preflight health check result: {json.dumps(result, indent=2)}')
+          if result['status'] != 'healthy':
+              print('❌ Playwright preflight health check failed')
+              exit(1)
+          print('✅ Playwright preflight health check passed')
+          "
+
+      - name: Run discovery contract tests
+        run: |
+          echo "🧪 Running discovery and provider detection contract tests..."
+          python3 -m pytest tests/test_discovery_contract.py -v
+        continue-on-error: true
+
+      - name: Run newsletter mapping tests
+        run: |
+          echo "🧪 Running newsletter mapping tests (optional)..."
+          python3 -m pytest tests/test_newsletter_mapping.py -v
+        continue-on-error: true  # Optional - don't fail CI if newsletter tests fail
 
       - name: Configure Git
         run: |
@@ -101,23 +137,23 @@ jobs:
             echo "DISCOVERY_TRANSITIONS=0" >> $GITHUB_ENV
           fi
 
-      - name: Check for 14-day discovery stall
+      - name: Check for 3-day discovery stall
         if: always()
         run: |
           if [ -f "metrics/daily.jsonl" ]; then
-            echo "📊 Checking for discovery stalls (14-day unique-date window)..."
+            echo "📊 Checking for discovery stalls (3-day unique-date window)..."
 
-            # Group entries by date, take the most recent entry per date, then take last 14 unique dates
-            unique_dates_data=$(jq -s 'group_by(.date) | map(sort_by(.timestamp // .date) | last) | sort_by(.date) | .[-14:]' metrics/daily.jsonl)
+            # Group entries by date, take the most recent entry per date, then take last 3 unique dates
+            unique_dates_data=$(jq -s 'group_by(.date) | map(sort_by(.timestamp // .date) | last) | sort_by(.date) | .[-3:]' metrics/daily.jsonl)
 
-            # Count zero-transition days from the 14 unique dates (handle legacy entries)
+            # Count zero-transition days from the 3 unique dates (handle legacy entries)
             zero_count=$(echo "$unique_dates_data" | jq '[.[] | select(.transitions == 0 or (.transitions == null and .newly_digital == 0))] | length')
             total_count=$(echo "$unique_dates_data" | jq 'length')
 
             echo "Last $total_count unique days: $zero_count days with 0 transitions"
 
-            if [ "$total_count" -ge 14 ] && [ "$zero_count" -eq 14 ]; then
-              echo "🚨 DISCOVERY STALL DETECTED: 0 transitions for 14 consecutive unique days"
+            if [ "$total_count" -ge 3 ] && [ "$zero_count" -eq 3 ]; then
+              echo "🚨 DISCOVERY STALL DETECTED: 0 transitions for 3 consecutive unique days"
               echo "DISCOVERY_STALLED=true" >> $GITHUB_ENV
 
               # Get date range for the stall from unique dates
@@ -125,6 +161,12 @@ jobs:
               last_date=$(echo "$unique_dates_data" | jq -r '.[-1].date')
               echo "STALL_START_DATE=$first_date" >> $GITHUB_ENV
               echo "STALL_END_DATE=$last_date" >> $GITHUB_ENV
+
+              # Check if we should fail the workflow
+              if [ "${NRW_FAIL_ON_STALL:-false}" = "true" ]; then
+                echo "💥 NRW_FAIL_ON_STALL=true - marking job as failed"
+                exit 1
+              fi
             else
               echo "✅ No discovery stall detected"
               echo "DISCOVERY_STALLED=false" >> $GITHUB_ENV
@@ -200,233 +242,68 @@ jobs:
             echo "WARNING: data.json not found, skipping search URL check"
           fi
 
-      - name: Simulate approval failure (test mode)
-        if: github.event.inputs.test_mode == 'true'
+      - name: Check for drafts
+        id: drafts
         run: |
-          echo "🧪 Test mode enabled - simulating approval failure"
-          if [ -f "admin/approval.json" ]; then
-            # Make approval stale by modifying timestamp
-            jq '.timestamp = "2020-01-01T00:00:00Z"' admin/approval.json > admin/approval_test.json
-            mv admin/approval_test.json admin/approval.json
-            echo "Modified approval timestamp to simulate stale approval"
-          else
-            echo "No approval file to modify - will test missing approval scenario"
-          fi
+          if [ -d "admin/drafts" ] && [ "$(ls -A admin/drafts)" ]; then
+            draft_count=$(ls admin/drafts/*.json 2>/dev/null | wc -l || echo "0")
+            echo "📝 Generated $draft_count draft(s) for admin review"
+            echo "draft_count=$draft_count" >> $GITHUB_OUTPUT
+            echo "has_drafts=true" >> $GITHUB_OUTPUT
 
-      - name: Validate approval freshness
-        run: |
-          if [ -f "admin/approval.json" ]; then
-            echo "📋 Approval status:"
-            reviewer=$(jq -r '.reviewer // "unknown"' admin/approval.json)
-            timestamp=$(jq -r '.timestamp // "unknown"' admin/approval.json)
-            echo "  Reviewer: $reviewer"
-            echo "  Timestamp: $timestamp"
-
-            # Validate timestamp is within 2 hours
-            if [ "$timestamp" != "unknown" ] && [ "$timestamp" != "null" ]; then
-              # Convert timestamp to epoch seconds (handle both Z and +00:00 formats)
-              approval_epoch=$(date -d "${timestamp/Z/+00:00}" +%s 2>/dev/null || echo "0")
-              current_epoch=$(date +%s)
-              age_seconds=$((current_epoch - approval_epoch))
-              age_hours=$((age_seconds / 3600))
-
-              echo "  Age: ${age_hours} hours (${age_seconds}s)"
-
-              if [ $age_seconds -gt 7200 ]; then
-                echo "❌ ERROR: Approval is stale (older than 2 hours)"
-                exit 1
-              else
-                echo "✅ Approval is fresh (within 2 hours)"
+            # List draft files for summary
+            for draft in admin/drafts/*.json; do
+              if [ -f "$draft" ]; then
+                draft_id=$(basename "$draft" .json)
+                echo "  - Draft: $draft_id"
               fi
-            else
-              echo "❌ ERROR: Invalid or missing timestamp in approval"
-              exit 1
-            fi
-
-            # Optionally check digest if present
-            if jq -e '.digest' admin/approval.json > /dev/null 2>&1; then
-              digest=$(jq -r '.digest' admin/approval.json)
-              echo "  Digest: $digest"
-            fi
+            done
           else
-            echo "❌ ERROR: admin/approval.json not found - approval required"
-            exit 1
+            echo "📭 No drafts generated"
+            echo "draft_count=0" >> $GITHUB_OUTPUT
+            echo "has_drafts=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Extract curation diagnostics
+      - name: Extract draft summary
         if: always()
         run: |
-          if [ -f "admin/approval.json" ]; then
-            echo "📊 Curation Diagnostics:"
-            echo "======================="
+          echo "📊 Draft Generation Summary:"
+          echo "==========================="
 
-            # Extract curation metrics
-            edits=$(jq -r '.edits // 0' admin/approval.json 2>/dev/null || echo "0")
-            additions=$(jq -r '.additions // 0' admin/approval.json 2>/dev/null || echo "0")
-            hidden=$(jq -r '.hidden // 0' admin/approval.json 2>/dev/null || echo "0")
-            featured=$(jq -r '.featured // 0' admin/approval.json 2>/dev/null || echo "0")
-            ordered=$(jq -r '.ordered // 0' admin/approval.json 2>/dev/null || echo "0")
-            movies_reviewed=$(jq -r '.movies_reviewed // 0' admin/approval.json 2>/dev/null || echo "0")
+          draft_count=${{ steps.drafts.outputs.draft_count }}
 
-            # Output to both console and GitHub summary
-            {
-              echo "## 📊 Curation Summary"
-              echo ""
-              echo "| Metric | Count |"
-              echo "|--------|-------|"
-              echo "| ✏️ Edits | $edits |"
-              echo "| ➕ Additions | $additions |"
-              echo "| 🚫 Hidden | $hidden |"
-              echo "| ⭐ Featured | $featured |"
-              echo "| 📋 Ordered | $ordered |"
-              echo "| 📝 Reviews | $movies_reviewed |"
-              echo ""
-            } | tee -a $GITHUB_STEP_SUMMARY
+          # Output to both console and GitHub summary
+          {
+            echo "## 📝 Draft Generation Summary"
+            echo ""
+            echo "| Metric | Count |"
+            echo "|--------|-------|"
+            echo "| 📝 Drafts Generated | $draft_count |"
+            echo "| 🔍 Polled Movies | ${DISCOVERY_POLLED:-0} |"
+            echo "| ⚡ Changes Detected | ${DISCOVERY_TRANSITIONS:-0} |"
+            echo ""
+            if [ "$draft_count" -gt 0 ]; then
+              echo "### ✅ Next Steps:"
+              echo "1. Admin should review drafts in the admin panel"
+              echo "2. Edit titles if needed"
+              echo "3. Publish approved drafts to production"
+            else
+              echo "### ℹ️ Status:"
+              echo "No new drafts generated - no recent movie updates found"
+            fi
+            echo ""
+          } | tee -a $GITHUB_STEP_SUMMARY
 
-            # Store metrics for commit message
-            echo "CURATION_EDITS=$edits" >> $GITHUB_ENV
-            echo "CURATION_ADDITIONS=$additions" >> $GITHUB_ENV
-            echo "CURATION_HIDDEN=$hidden" >> $GITHUB_ENV
-            echo "CURATION_FEATURED=$featured" >> $GITHUB_ENV
-            echo "CURATION_ORDERED=$ordered" >> $GITHUB_ENV
-            echo "CURATION_REVIEWS=$movies_reviewed" >> $GITHUB_ENV
-
-            echo "✅ Curation metrics extracted"
-          else
-            echo "⚠️ No approval file found - curation diagnostics unavailable"
-            # Set zero defaults
-            echo "CURATION_EDITS=0" >> $GITHUB_ENV
-            echo "CURATION_ADDITIONS=0" >> $GITHUB_ENV
-            echo "CURATION_HIDDEN=0" >> $GITHUB_ENV
-            echo "CURATION_FEATURED=0" >> $GITHUB_ENV
-            echo "CURATION_ORDERED=0" >> $GITHUB_ENV
-            echo "CURATION_REVIEWS=0" >> $GITHUB_ENV
-          fi
-
-      - name: Handle approval failure with rollback
+      - name: Handle pipeline failure
         if: failure()
         run: |
-          echo "🔍 Checking if failure was due to approval issues..."
-
-          # Check if approval file exists and get its status
-          if [ -f "admin/approval.json" ]; then
-            reviewer=$(jq -r '.reviewer // "unknown"' admin/approval.json 2>/dev/null || echo "unknown")
-            timestamp=$(jq -r '.timestamp // "unknown"' admin/approval.json 2>/dev/null || echo "unknown")
-
-            # Check if approval is stale
-            if [ "$timestamp" != "unknown" ] && [ "$timestamp" != "null" ]; then
-              approval_epoch=$(date -d "${timestamp/Z/+00:00}" +%s 2>/dev/null || echo "0")
-              current_epoch=$(date +%s)
-              age_seconds=$((current_epoch - approval_epoch))
-              age_hours=$((age_seconds / 3600))
-
-              if [ $age_seconds -gt 7200 ]; then
-                echo "🔄 Detected stale approval - performing rollback"
-                echo "APPROVAL_FAILURE_TYPE=stale" >> $GITHUB_ENV
-                echo "APPROVAL_AGE_HOURS=$age_hours" >> $GITHUB_ENV
-                echo "APPROVAL_REVIEWER=$reviewer" >> $GITHUB_ENV
-                echo "APPROVAL_TIMESTAMP=$timestamp" >> $GITHUB_ENV
-              else
-                echo "Approval is fresh, failure due to other reasons"
-                exit 0
-              fi
-            else
-              echo "🔄 Detected invalid approval timestamp - performing rollback"
-              echo "APPROVAL_FAILURE_TYPE=invalid_timestamp" >> $GITHUB_ENV
-              echo "APPROVAL_REVIEWER=$reviewer" >> $GITHUB_ENV
-            fi
-          else
-            echo "🔄 Detected missing approval - performing rollback"
-            echo "APPROVAL_FAILURE_TYPE=missing" >> $GITHUB_ENV
-          fi
-
-          # Perform rollback
-          echo "Attempting to restore data.json from previous commit..."
-          if git show HEAD~1:data.json > /dev/null 2>&1; then
-            git checkout HEAD~1 -- data.json
-            echo "✅ Successfully restored data.json from previous commit"
-          elif [ -f "backups/data.json" ]; then
-            cp backups/data.json data.json
-            echo "✅ Successfully restored data.json from backup"
-          else
-            echo "⚠️ No previous commit or backup found for data.json"
-          fi
-
-          # Set workflow URL for issue creation
+          echo "🔍 Discovery pipeline failed - checking for issues..."
           echo "WORKFLOW_URL=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> $GITHUB_ENV
+          echo "FAILURE_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_ENV
 
-      - name: Create approval failure issue
-        if: failure() && env.APPROVAL_FAILURE_TYPE
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const failureType = process.env.APPROVAL_FAILURE_TYPE;
-            const workflowUrl = process.env.WORKFLOW_URL;
-            const reviewer = process.env.APPROVAL_REVIEWER || 'unknown';
-            const timestamp = process.env.APPROVAL_TIMESTAMP || 'unknown';
-            const ageHours = process.env.APPROVAL_AGE_HOURS || 'unknown';
-
-            let title, bodyDetails;
-
-            if (failureType === 'missing') {
-              title = 'Daily Update Blocked: Missing Admin Approval';
-              bodyDetails = `**Issue:** No admin/approval.json file found
-            **Action Taken:** Attempted rollback of data.json`;
-            } else if (failureType === 'stale') {
-              title = 'Daily Update Blocked: Stale Admin Approval';
-              bodyDetails = `**Issue:** Admin approval is stale (${ageHours} hours old)
-            **Reviewer:** ${reviewer}
-            **Approval Timestamp:** ${timestamp}
-            **Action Taken:** Attempted rollback of data.json`;
-            } else if (failureType === 'invalid_timestamp') {
-              title = 'Daily Update Blocked: Invalid Approval Timestamp';
-              bodyDetails = `**Issue:** Admin approval has invalid or missing timestamp
-            **Reviewer:** ${reviewer}
-            **Action Taken:** Attempted rollback of data.json`;
-            }
-
-            const issue = await github.rest.issues.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title: title,
-              body: `## Daily Update Blocked - Approval Required
-
-            ${bodyDetails}
-
-            **Workflow Run:** ${workflowUrl}
-            **Failure Time:** ${new Date().toISOString()}
-            **Branch:** ${context.ref}
-
-            ### Required Actions:
-            1. **Admin must provide fresh approval** (within 2 hours)
-            2. Create or update \`admin/approval.json\` with valid timestamp
-            3. Re-run the workflow manually or wait for next scheduled run
-
-            ### Approval File Format:
-            \`\`\`json
-            {
-              "reviewer": "admin-username",
-              "timestamp": "${new Date().toISOString()}",
-              "approved": true
-            }
-            \`\`\`
-
-            ### Manual Recovery:
-            If rollback failed, you may need to manually restore data.json:
-            \`\`\`bash
-            git checkout HEAD~1 -- data.json
-            # OR restore from backup if available
-            cp backups/data.json data.json
-            \`\`\`
-
-            This issue was created automatically due to approval validation failure.`,
-              labels: ['automation', 'approval-required', 'blocked']
-            });
-
-            console.log(\`Created issue #\${issue.data.number}: \${title}\`);
 
       - name: Create discovery stall issue
-        if: always() && env.DISCOVERY_STALLED == 'true'
+        if: always() && env.DISCOVERY_STALLED == 'true' && env.NRW_NOTIFICATIONS == 'true'
         uses: actions/github-script@v7
         with:
           script: |
@@ -435,7 +312,7 @@ jobs:
             const endDate = process.env.STALL_END_DATE || 'unknown';
             const polled = process.env.DISCOVERY_POLLED || '0';
 
-            const title = 'Discovery Stalled: 0 transitions for 14 days';
+            const title = 'Discovery Stalled: 0 transitions for 3 days';
 
             const issue = await github.rest.issues.create({
               owner: context.repo.owner,
@@ -443,7 +320,7 @@ jobs:
               title: title,
               body: `## 🚨 Discovery System Stalled
 
-            **Alert:** Discovery system has detected 0 transitions for 14 consecutive days.
+            **Alert:** Discovery system has detected 0 transitions for 3 consecutive days.
 
             **Stall Period:** ${startDate} to ${endDate}
             **Last Run Polled:** ${polled} movies
@@ -451,8 +328,8 @@ jobs:
             **Detection Time:** ${new Date().toISOString()}
 
             ### 🔍 Diagnostic Information:
-            - **Total Days Checked:** 14
-            - **Days with 0 Transitions:** 14
+            - **Total Days Checked:** 3
+            - **Days with 0 Transitions:** 3
             - **Last Polled Count:** ${polled}
 
             ### 🛠️ Investigation Steps:
@@ -498,7 +375,7 @@ jobs:
         id: changes
         if: always()
         run: |
-          if ! git diff --quiet --exit-code -- data.json metrics/daily.jsonl; then
+          if ! git diff --quiet --exit-code -- admin/drafts/ metrics/daily.jsonl; then
             echo "changes=true" >> $GITHUB_OUTPUT
             echo "Changes detected in repository"
           else
@@ -506,175 +383,163 @@ jobs:
             echo "No changes detected"
           fi
 
-      - name: Capture approval context before cleanup
+      - name: Preserve drafts
         if: always()
         run: |
-          if [ -f "admin/approval.json" ]; then
-            echo "📋 Capturing approval context before cleanup..."
-            reviewer=$(jq -r '.reviewer // "unknown"' admin/approval.json 2>/dev/null || echo "unknown")
-            timestamp=$(jq -r '.timestamp // "unknown"' admin/approval.json 2>/dev/null || echo "unknown")
-            echo "APPROVAL_REVIEWER=$reviewer" >> $GITHUB_ENV
-            echo "APPROVAL_TIMESTAMP=$timestamp" >> $GITHUB_ENV
-            echo "✅ Approval context captured: reviewer=$reviewer, timestamp=$timestamp"
-          else
-            echo "⚠️ No approval file found - setting defaults"
-            echo "APPROVAL_REVIEWER=system" >> $GITHUB_ENV
-            echo "APPROVAL_TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_ENV
-          fi
+          echo "📝 Preserving generated drafts..."
+          # Ensure drafts directory exists and is preserved
+          mkdir -p admin/drafts
+          echo "✅ Drafts preserved"
 
-      - name: Clean up admin artifacts
+      - name: Archive metrics artifacts
         if: always()
-        run: |
-          echo "🧹 Cleaning up ephemeral admin artifacts..."
-          # Remove approval artifacts after processing (per ephemeral policy)
-          rm -f admin/approval.json
-          rm -f admin/ordering.json
-          rm -f admin/hidden_movies.json
-          rm -f admin/featured_movies.json
-          rm -f admin/watch_link_overrides.json
-          rm -f admin/movie_reviews.json
-          rm -f diary/*.md 2>/dev/null || true
-          echo "✅ Admin artifacts cleaned up (ephemeral policy)"
+        uses: actions/upload-artifact@v4
+        with:
+          name: discovery-metrics-${{ github.run_id }}
+          path: |
+            metrics/discovery_run.json
+            metrics/*.jsonl
+            .local_run.log
+          retention-days: 30
 
-      - name: Commit changes
+      - name: Commit drafts and metrics
         if: always() && steps.changes.outputs.changes == 'true'
         run: |
-          # Build commit message with curation summary
-          commit_msg="Daily update - $(date +%Y-%m-%d) [automated]"
+          # Build commit message with discovery summary
+          draft_count=${{ steps.drafts.outputs.draft_count }}
+          if [ "$draft_count" -gt 0 ]; then
+            commit_msg="Daily discovery - $(date +%Y-%m-%d) [drafts]"
+          else
+            commit_msg="Daily discovery - $(date +%Y-%m-%d) [metrics]"
+          fi
 
           # Add discovery metrics if we have them
           if [ "${DISCOVERY_POLLED:-0}" != "0" ] || [ "${DISCOVERY_TRANSITIONS:-0}" != "0" ]; then
             commit_msg="$commit_msg"$'\n\n'"Discovery: polled=${DISCOVERY_POLLED:-0}, transitions=${DISCOVERY_TRANSITIONS:-0}"
           fi
 
-          # Add new arrivals count if available
-          if [ "${NEW_ARRIVALS:-0}" != "0" ]; then
-            commit_msg="$commit_msg, arrivals=${NEW_ARRIVALS:-0}"
+          # Add draft count
+          if [ "$draft_count" -gt 0 ]; then
+            commit_msg="$commit_msg, drafts=${draft_count}"
           fi
 
-          # Add curation summary if we have metrics
-          if [ "${CURATION_EDITS:-0}" != "0" ] || [ "${CURATION_ADDITIONS:-0}" != "0" ] || [ "${CURATION_HIDDEN:-0}" != "0" ] || [ "${CURATION_FEATURED:-0}" != "0" ]; then
-            commit_msg="$commit_msg"$'\n\n'"Curation: edits=${CURATION_EDITS:-0}, adds=${CURATION_ADDITIONS:-0}, hidden=${CURATION_HIDDEN:-0}, featured=${CURATION_FEATURED:-0}"
+          # Stage generated files (but not data.json - that's published by admin)
+          # TODO: When auto-publish is re-enabled, add data.json here: git add admin/drafts/ metrics/daily.jsonl data.json
+          git add admin/drafts/ metrics/daily.jsonl
 
-            if [ "${CURATION_ORDERED:-0}" != "0" ] || [ "${CURATION_REVIEWS:-0}" != "0" ]; then
-              commit_msg="$commit_msg, ordered=${CURATION_ORDERED:-0}, reviews=${CURATION_REVIEWS:-0}"
+          # Only commit if there are staged changes and set flag accordingly
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            echo "COMMIT_MADE=false" >> $GITHUB_ENV
+          else
+            if git commit -m "$commit_msg"; then
+              echo "COMMIT_MADE=true" >> $GITHUB_ENV
+            else
+              echo "Commit failed"
+              echo "COMMIT_MADE=false" >> $GITHUB_ENV
             fi
           fi
 
-          git add data.json metrics/daily.jsonl
-          git commit -m "$commit_msg"
-
       - name: Push changes to main
-        if: always() && steps.changes.outputs.changes == 'true'
+        if: always() && env.COMMIT_MADE == 'true'
         run: git push origin main
 
-      - name: Create success notification
-        if: success() && steps.changes.outputs.changes == 'true'
+      - name: Create draft notification
+        if: success() && steps.drafts.outputs.has_drafts == 'true' && env.NRW_NOTIFICATIONS == 'true'
         uses: actions/github-script@v7
+        env:
+          DRAFT_COUNT: ${{ steps.drafts.outputs.draft_count }}
         with:
           script: |
             const workflowUrl = `${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`;
-            const edits = process.env.CURATION_EDITS || '0';
-            const additions = process.env.CURATION_ADDITIONS || '0';
-            const hidden = process.env.CURATION_HIDDEN || '0';
-            const featured = process.env.CURATION_FEATURED || '0';
-            const ordered = process.env.CURATION_ORDERED || '0';
-            const reviews = process.env.CURATION_REVIEWS || '0';
+            const draftCount = process.env.DRAFT_COUNT || '0';
+            const polled = process.env.DISCOVERY_POLLED || '0';
+            const transitions = process.env.DISCOVERY_TRANSITIONS || '0';
 
-            // Use captured approval context from environment variables
-            const reviewer = process.env.APPROVAL_REVIEWER || 'system';
-            const timestamp = process.env.APPROVAL_TIMESTAMP || new Date().toISOString();
+            const title = `Drafts Generated - ${new Date().toLocaleDateString()}`;
 
-            const title = `Daily Update Completed - ${new Date().toLocaleDateString()}`;
-            const curationSummary = `edits=${edits}, additions=${additions}, hidden=${hidden}, featured=${featured}`;
-            const extendedSummary = ordered !== '0' || reviews !== '0' ?
-              `, ordered=${ordered}, reviews=${reviews}` : '';
-
-            // Create a closed issue as a success log entry
+            // Create a notification issue for admin review
             const issue = await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
               title: title,
-              body: `## ✅ Daily Update Successfully Completed
+              body: `## 📝 New Drafts Ready for Review
 
-            **Deployment Time:** ${new Date().toISOString()}
-            **Reviewer:** ${reviewer}
-            **Approval Timestamp:** ${timestamp}
+            **Discovery Run:** ${new Date().toISOString()}
             **Workflow Run:** ${workflowUrl}
 
-            ### 📊 Curation Summary:
-            - **Edits:** ${edits}
-            - **Additions:** ${additions}
-            - **Hidden:** ${hidden}
-            - **Featured:** ${featured}
-            - **Ordered:** ${ordered}
-            - **Reviews:** ${reviews}
+            ### 📊 Discovery Summary:
+            - **Movies Polled:** ${polled}
+            - **Changes Detected:** ${transitions}
+            - **Drafts Generated:** ${draftCount}
 
-            ### 🎯 Impact:
-            ${curationSummary}${extendedSummary}
+            ### 📝 Next Steps:
+            1. **Admin Review Required:** Open the admin panel to review drafts
+            2. **Edit Titles:** Modify titles if needed before publishing
+            3. **Publish:** Click 'Publish' for approved drafts
 
-            **Status:** Public site updated successfully with curated content.
+            ### 🔗 Admin Panel:
+            Access the admin panel to review and publish these drafts.
+
+            **Status:** Drafts are ready for admin review and publishing.
 
             ---
-            *This log entry was created automatically by the daily automation workflow.*`,
-              labels: ['automation', 'deployment-log', 'success'],
-              state: 'closed'  // Close immediately as it's just a log entry
+            *This notification was created automatically by the daily discovery workflow.*`,
+              labels: ['automation', 'drafts-ready', 'admin-action-required']
             });
 
-            console.log(\`Created success log issue #\${issue.data.number}: \${title}\`);
+            console.log(`Created draft notification issue #${issue.data.number}: ${title}`);
 
             // Also add to step summary
-            const summaryMarkdown = \`
-            ## ✅ Deployment Completed Successfully
+            const summaryMarkdown = `
+            ## 📝 Drafts Generated Successfully
 
-            **Reviewer:** ${reviewer}
-            **Timestamp:** ${timestamp}
-            **Curation:** ${curationSummary}${extendedSummary}
+            **Draft Count:** ${draftCount}
+            **Discovery:** polled=${polled}, transitions=${transitions}
 
-            📝 **Success Log:** Issue #\${issue.data.number}
+            📝 **Notification:** Issue #${issue.data.number}
             🔗 **Workflow:** [View Run](${workflowUrl})
-            \`;
+
+            **⚠️ Admin action required to publish drafts**
+            `;
 
             require('fs').appendFileSync(process.env.GITHUB_STEP_SUMMARY, summaryMarkdown);
 
-      - name: Get approval status for failure report
+      - name: Get pipeline status for failure report
         if: failure()
-        id: approval-status
+        id: pipeline-status
         run: |
-          if [ -f "admin/approval.json" ]; then
-            reviewer=$(jq -r '.reviewer // "unknown"' admin/approval.json 2>/dev/null || echo "unknown")
-            timestamp=$(jq -r '.timestamp // "unknown"' admin/approval.json 2>/dev/null || echo "unknown")
-            echo "approval_status=Present: reviewer=$reviewer, timestamp=$timestamp" >> $GITHUB_OUTPUT
-          else
-            echo "approval_status=Missing" >> $GITHUB_OUTPUT
-          fi
+          echo "pipeline_status=Discovery pipeline failed" >> $GITHUB_OUTPUT
+          echo "failure_time=${FAILURE_TIME:-$(date -u +%Y-%m-%dT%H:%M:%SZ)}" >> $GITHUB_OUTPUT
 
       - name: Create GitHub issue on failure
-        if: failure()
+        if: failure() && env.NRW_NOTIFICATIONS == 'true'
         uses: actions/github-script@v7
         env:
           WORKFLOW_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          APPROVAL_STATUS: ${{ steps.approval-status.outputs.approval_status }}
+          PIPELINE_STATUS: ${{ steps.pipeline-status.outputs.pipeline_status }}
+          FAILURE_TIME: ${{ steps.pipeline-status.outputs.failure_time }}
         with:
           script: |
-            const approvalInfo = process.env.APPROVAL_STATUS || 'Unknown';
+            const pipelineStatus = process.env.PIPELINE_STATUS || 'Unknown';
+            const failureTime = process.env.FAILURE_TIME || new Date().toISOString();
             await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              title: `Daily Automation Failed - ${new Date().toISOString().split('T')[0]}`,
-              body: `## Daily Automation Failure
+              title: `Daily Discovery Failed - ${new Date().toISOString().split('T')[0]}`,
+              body: `## Daily Discovery Pipeline Failure
 
             **Workflow Run:** ${process.env.WORKFLOW_URL}
-            **Failure Time:** ${new Date().toISOString()}
+            **Failure Time:** ${failureTime}
             **Branch:** ${context.ref}
-            **Approval Status:** ${approvalInfo}
+            **Pipeline Status:** ${pipelineStatus}
 
             ### Debugging Steps:
             1. Check the workflow logs at the URL above
             2. Review \`daily_orchestrator.py\` output for specific errors
             3. Verify API keys are properly configured in repository secrets
             4. Check data quality validation errors
-            5. Review approval status above for approval-related failures
+            5. Review discovery system health
 
             ### Manual Recovery:
             If needed, run the daily pipeline manually:
@@ -682,6 +547,11 @@ jobs:
             python3 daily_orchestrator.py
             \`\`\`
 
-            This issue was created automatically by the failed workflow.`,
-              labels: ['automation', 'bug']
+            ### Impact:
+            - No drafts were generated
+            - Admin panel will not have new content to review
+            - Site content remains unchanged
+
+            This issue was created automatically by the failed discovery workflow.`,
+              labels: ['automation', 'discovery-failure', 'bug']
             })
