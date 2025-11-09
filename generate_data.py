@@ -176,6 +176,9 @@ class DataGenerator:
         self.wikipedia_scraper = None  # Lazy initialization for Wikipedia scraping with Playwright
         self.platform_scraper = None  # Lazy initialization for streaming platform scraper
 
+        # ASIN cache for Amazon links to avoid repeated searches
+        self._amazon_asin_cache = {}
+
         # Perform startup consistency checks
         self.perform_startup_consistency_check()
 
@@ -965,7 +968,7 @@ class DataGenerator:
         )
 
         if StreamingPlatformScraper and should_try_platform_scraper:
-            self._try_platform_agent_search(title, year, providers, watchmode_streaming, watchmode_rent, watchmode_buy, skip_streaming, skip_rent, skip_buy)
+            self._try_platform_scraper(title, year, providers, watchmode_streaming, watchmode_rent, watchmode_buy, skip_streaming, skip_rent, skip_buy)
 
         # Check if platform scraper actually added any links
         platform_scraper_used = (
@@ -1028,8 +1031,8 @@ class DataGenerator:
                 rent_service = select_best_service(providers.get('rent', []), PAID_PRIORITY)
                 if rent_service:
                     # Try platform scraper for Amazon/Apple TV before returning null
-                    if StreamingPlatformScraper and rent_service in ['Amazon Prime Video', 'Apple TV']:
-                        self._try_platform_agent_search(title, year, providers, [], watchmode_rent, [], True, False, True)
+                    if StreamingPlatformScraper and (self.is_actual_amazon_service(rent_service) or self.is_actual_apple_service(rent_service)):
+                        self._try_platform_scraper(title, year, providers, [], watchmode_rent, [], True, False, True)
                         # Check if platform scraper added rent links
                         if watchmode_rent:
                             best_service = select_best_service([s['service'] for s in watchmode_rent], PAID_PRIORITY)
@@ -1058,8 +1061,8 @@ class DataGenerator:
                 buy_service = select_best_service(providers.get('buy', []), PAID_PRIORITY)
                 if buy_service:
                     # Try platform scraper for Amazon/Apple TV before returning null
-                    if StreamingPlatformScraper and buy_service in ['Amazon Prime Video', 'Apple TV']:
-                        self._try_platform_agent_search(title, year, providers, [], [], watchmode_buy, True, True, False)
+                    if StreamingPlatformScraper and (self.is_actual_amazon_service(buy_service) or self.is_actual_apple_service(buy_service)):
+                        self._try_platform_scraper(title, year, providers, [], [], watchmode_buy, True, True, False)
                         # Check if platform scraper added buy links
                         if watchmode_buy:
                             best_service = select_best_service([s['service'] for s in watchmode_buy], PAID_PRIORITY)
@@ -1079,6 +1082,9 @@ class DataGenerator:
         # Overlay admin overrides on top of auto-discovered links
         for category, override_data in validated_overrides.items():
             watch_links[category] = override_data
+
+        # Normalize relative URLs to absolute URLs as second line of defense
+        watch_links = self._normalize_watch_links_urls(watch_links)
 
         # Validate schema before caching and returning
         validated_links = self.validate_watch_links_schema(watch_links, title)
@@ -1146,6 +1152,65 @@ class DataGenerator:
                 time.sleep(sleep_time)
 
             self._last_platform_scraper_time = time.time()
+
+    def _get_platform_deep_link_with_cache(self, title, year, provider):
+        """Get platform deep link with ASIN caching for Amazon services"""
+        # Check ASIN cache for Amazon links first
+        cached_asin = self._amazon_asin_cache.get((title.lower(), str(year or '').strip()))
+        if cached_asin and self.is_actual_amazon_service(provider):
+            print(f"  ✓ Using cached Amazon ASIN {cached_asin} for {title}")
+            return f"https://www.amazon.com/gp/video/detail/{cached_asin}"
+
+        # No cache hit, perform actual search
+        self._enforce_platform_scraper_rate_limit()
+        deep_link = self.platform_scraper.get_platform_deep_link(title, year, provider)
+
+        # Cache Amazon ASIN if found
+        if deep_link and self.is_actual_amazon_service(provider):
+            import re
+            asin_match = re.search(r'/gp/video/detail/([A-Z0-9]{10})', deep_link)
+            if asin_match:
+                self._amazon_asin_cache[(title.lower(), str(year or '').strip())] = asin_match.group(1)
+
+        return deep_link
+
+    def _normalize_watch_links_urls(self, watch_links):
+        """
+        Normalize relative Amazon and Apple TV links to absolute URLs.
+
+        Args:
+            watch_links: Dict with streaming/rent/buy categories
+
+        Returns:
+            Dict: watch_links with normalized URLs
+        """
+        if not watch_links:
+            return watch_links
+
+        normalized = watch_links.copy()
+
+        for category in ['streaming', 'rent', 'buy']:
+            if category in normalized and isinstance(normalized[category], dict):
+                link_data = normalized[category]
+                if link_data.get('link'):
+                    original_link = link_data['link']
+                    service = link_data.get('service', '')
+
+                    # Normalize Amazon links
+                    if 'amazon' in service.lower() or 'amazon.com' in original_link.lower():
+                        from urllib.parse import urljoin
+                        normalized_link = urljoin('https://www.amazon.com', original_link)
+                        if normalized_link != original_link:
+                            link_data['link'] = normalized_link
+
+                    # Normalize Apple TV links
+                    elif 'apple' in service.lower() or 'tv.apple.com' in original_link.lower():
+                        from urllib.parse import urljoin
+                        normalized_link = urljoin('https://tv.apple.com', original_link)
+                        if normalized_link != original_link:
+                            link_data['link'] = normalized_link
+
+        return normalized
 
     def validate_watch_links_schema(self, watch_links, movie_title='Unknown'):
         """
@@ -1264,7 +1329,12 @@ class DataGenerator:
             self.watchmode_stats['agent_attempts'] += 1
 
             result = self.agent_scraper.find_watch_link(movie_id, title, year, service)
-            print(f"  [DEBUG] Agent result: {result}")
+
+            # Defensive logging and guard against None result shape
+            print(f"  [DEBUG] Agent result type: {type(result).__name__}, value: {result}")
+            if not isinstance(result, dict):
+                print(f"  [WARNING] Agent result was not a dict, converting to {{'link': None}}")
+                result = {'link': None}
 
             if result.get('cached'):
                 self.watchmode_stats['agent_cache_hits'] += 1
@@ -1273,14 +1343,14 @@ class DataGenerator:
                 self.watchmode_stats['agent_successes'] += 1
                 print(f"  ✓ Agent found link for {title} on {service}")
             else:
+                self.watchmode_stats['agent_failures'] += 1
                 print(f"  ✗ Agent could not find link for {title} on {service}")
 
             # Return found link or null (no Google fallback)
-            final_link = result.get('link') or None
-            print(f"  [DEBUG] Returning: {{'service': {service}, 'link': {final_link}}}")
-            return {'service': service, 'link': final_link}
+            return {'service': service, 'link': result.get('link')}
 
         except Exception as e:
+            self.watchmode_stats['agent_failures'] += 1
             print(f"  Error in agent scraper for {title}: {e}")
             return {'service': service, 'link': None}
 
@@ -1392,8 +1462,8 @@ class DataGenerator:
         self.logger.warning(f"Service/link mismatch for {title}: service='{service}' but link='{link}'")
         return False
 
-    def _try_platform_agent_search(self, title, year, providers, watchmode_streaming, watchmode_rent, watchmode_buy, skip_streaming, skip_rent, skip_buy):
-        """Try platform scraper (Selenium) for Amazon/Apple TV when Watchmode API has no data"""
+    def _try_platform_scraper(self, title, year, providers, watchmode_streaming, watchmode_rent, watchmode_buy, skip_streaming, skip_rent, skip_buy):
+        """Try platform scraper (Playwright) for Amazon/Apple TV when Watchmode API has no data"""
 
         # Check if platform scraper is enabled in config
         platform_config = self.config.get('platform_scraper', {})
@@ -1461,8 +1531,7 @@ class DataGenerator:
                 if should_try_provider:
                     try:
                         print(f"  Trying platform scraper for {title} streaming on {provider}...")
-                        self._enforce_platform_scraper_rate_limit()
-                        deep_link = self.platform_scraper.get_platform_deep_link(title, year, provider)
+                        deep_link = self._get_platform_deep_link_with_cache(title, year, provider)
                         if deep_link:
                             print(f"  ✓ Platform scraper found streaming link for {title} on {provider}")
                             # Remove any existing Google fallbacks before adding real link
@@ -1495,8 +1564,7 @@ class DataGenerator:
                 if should_try_provider:
                     try:
                         print(f"  Trying platform scraper for {title} rent on {provider}...")
-                        self._enforce_platform_scraper_rate_limit()
-                        deep_link = self.platform_scraper.get_platform_deep_link(title, year, provider)
+                        deep_link = self._get_platform_deep_link_with_cache(title, year, provider)
                         if deep_link:
                             print(f"  ✓ Platform scraper found rent link for {title} on {provider}")
                             # Remove any existing Google fallbacks before adding real link
@@ -1529,8 +1597,7 @@ class DataGenerator:
                 if should_try_provider:
                     try:
                         print(f"  Trying platform scraper for {title} buy on {provider}...")
-                        self._enforce_platform_scraper_rate_limit()
-                        deep_link = self.platform_scraper.get_platform_deep_link(title, year, provider)
+                        deep_link = self._get_platform_deep_link_with_cache(title, year, provider)
                         if deep_link:
                             print(f"  ✓ Platform scraper found buy link for {title} on {provider}")
                             # Remove any existing Google fallbacks before adding real link
@@ -3149,6 +3216,12 @@ class DataGenerator:
                 print(f"  Average results per page: {avg_results_per_page:.1f}")
             if self.discovery_stats['debug_enabled']:
                 print(f"  Debug mode was enabled for this run")
+
+        # Clear ASIN cache at end of generation run to bound memory
+        cache_size = len(self._amazon_asin_cache)
+        self._amazon_asin_cache.clear()
+        if cache_size > 0:
+            print(f"\n📦 Amazon ASIN cache cleared ({cache_size} entries)")
 
     def apply_admin_overrides(self, display_movies):
         """Apply admin panel decisions to final output"""

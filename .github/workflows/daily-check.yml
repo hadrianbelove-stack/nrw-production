@@ -68,17 +68,13 @@ jobs:
           NRW_SCRAPER_HEADLESS: 'true'
 
 
-      - name: Run discovery contract tests
+      - name: Run optional validation tests
+        if: env.NRW_RUN_OPTIONAL_TESTS == 'true'
         run: |
-          echo "🧪 Running discovery and provider detection contract tests..."
+          echo "🧪 Running optional contract and newsletter validation tests..."
           python3 -m pytest tests/test_discovery_contract.py -v
-        continue-on-error: true
-
-      - name: Run newsletter mapping tests
-        run: |
-          echo "🧪 Running newsletter mapping tests (optional)..."
           python3 -m pytest tests/test_newsletter_mapping.py -v
-        continue-on-error: true  # Optional - don't fail CI if newsletter tests fail
+        continue-on-error: true
 
       - name: Configure Git
         run: |

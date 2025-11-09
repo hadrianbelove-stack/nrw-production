@@ -57,6 +57,65 @@ def validate_result(url, platform_name, movie_title):
     return {"valid": True, "reason": "Valid URL"}
 
 
+def test_platform_scraper_smoke():
+    """
+    Lightweight smoke test for platform scraper with deterministic known titles.
+    Uses 2-3 stable, older titles known to exist on Amazon/Apple.
+    """
+    print("Running deterministic platform scraper smoke test...")
+
+    # Use older, stable titles from studio catalogs / public domain
+    stable_test_movies = [
+        ("The Godfather", "1972"),  # Classic title, widely available
+        ("Jaws", "1975"),           # Universal catalog title
+        ("Casablanca", "1942")      # Classic, public domain
+    ]
+
+    scraper = None
+    results = {"amazon": 0, "apple": 0, "total": 0}
+
+    try:
+        # Initialize with minimal config for CI
+        scraper = StreamingPlatformScraper(
+            headless=True,
+            timeout_seconds=10,
+            screenshots_enabled=False
+        )
+
+        for title, year in stable_test_movies:
+            results["total"] += 1
+            print(f"Testing: {title} ({year})")
+
+            # Test Amazon
+            amazon_result = scraper.get_platform_deep_link(title, year, "Amazon Video")
+            if amazon_result and "amazon.com" in amazon_result and all(asin not in amazon_result for asin in PLACEHOLDER_ASINS):
+                results["amazon"] += 1
+                print(f"  ✓ Amazon: Found valid link")
+            else:
+                print(f"  ✗ Amazon: No valid link")
+
+            # Test Apple TV
+            apple_result = scraper.get_platform_deep_link(title, year, "Apple TV")
+            if apple_result and "tv.apple.com" in apple_result:
+                results["apple"] += 1
+                print(f"  ✓ Apple TV: Found valid link")
+            else:
+                print(f"  ✗ Apple TV: No valid link")
+
+    except Exception as e:
+        print(f"Error in smoke test: {e}")
+        return False
+
+    finally:
+        if scraper:
+            scraper.close()
+
+    # Pass if at least one platform found at least one valid link
+    success = results["amazon"] > 0 or results["apple"] > 0
+    print(f"Smoke test result: {results['amazon']} Amazon + {results['apple']} Apple successes out of {results['total']} movies")
+    return success
+
+
 def test_platform_scraper(headless=False, debug=False, max_amazon_tests=None, max_apple_tests=None):
     """Main test function for platform scraper.
 
@@ -372,6 +431,8 @@ def main():
                        help="Maximum number of Amazon movies to test (default: all 15)")
     parser.add_argument("--max-apple", type=int, default=None,
                        help="Maximum number of Apple TV movies to test (default: all 9)")
+    parser.add_argument("--smoke", action="store_true",
+                       help="Run lightweight smoke test only")
 
     args = parser.parse_args()
 
@@ -381,12 +442,21 @@ def main():
 
     # Run tests
     try:
-        stats = test_platform_scraper(
-            headless=args.headless,
-            debug=args.debug,
-            max_amazon_tests=args.max_amazon,
-            max_apple_tests=args.max_apple
-        )
+        if args.smoke:
+            success = test_platform_scraper_smoke()
+            if success:
+                print("\n✓ SMOKE TEST PASSED")
+                sys.exit(0)
+            else:
+                print("\n✗ SMOKE TEST FAILED")
+                sys.exit(1)
+        else:
+            stats = test_platform_scraper(
+                headless=args.headless,
+                debug=args.debug,
+                max_amazon_tests=args.max_amazon,
+                max_apple_tests=args.max_apple
+            )
 
         # Exit code based on success rate
         total_searches = stats["amazon"]["total"] + stats["apple"]["total"]
