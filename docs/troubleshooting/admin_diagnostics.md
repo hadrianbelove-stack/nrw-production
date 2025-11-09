@@ -2,7 +2,9 @@
 
 ## Overview
 
-This guide explains how to read and analyze admin metrics and delta summaries from the mandatory admin approval gate system. Use this to understand approval patterns, identify data quality issues, and correlate admin actions with system behavior.
+⚠️ **Note**: Organizations may enable optional admin review gates, but the default automation is ungated. This guide explains how to read and analyze admin metrics when optional review mode is used.
+
+This guide explains how to read and analyze admin metrics and delta summaries from the optional admin review system. Use this to understand approval patterns, identify data quality issues, and correlate admin actions with system behavior when editorial curation is enabled.
 
 ## Where Metrics Live
 

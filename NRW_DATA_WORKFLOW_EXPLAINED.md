@@ -124,13 +124,13 @@ Always poll ALL tracking movies in `movie_tracking.json` (no time limits). Fetch
 - Smart approach: Verify URLs exist, use multiple methods → 80% success rate
 
 ### **Phase 3: Optional Editorial Review**
-**What happens:** Optional manual curation when editorial review is desired. By default, the daily automation auto-commits discovered content directly to `main` without requiring admin approval.
+**What happens:** Optional manual curation when editorial review is desired. By default, the daily automation auto-commits discovered content directly to `main` and produces data.json without requiring admin approval.
 
 **🔧 Optional Editorial Curation** - *Manual Review When Desired*
 
 **Purpose:** Optional curation tool for when editorial review is desired
 
-**Default Workflow (Automated):**
+**Default Workflow (Automated - No Approval Gate):**
 ```
 Daily Discovery → movie_tracking.json → data.json → Public Site
                   (automated)          (automated) (auto-update)
@@ -144,10 +144,10 @@ Daily Discovery → movie_tracking.json → OPTIONAL REVIEW → data.json → Pu
 
 **How it Works (Optional):**
 1. **Discovery Phase:** System runs discovery and monitoring, updating movie_tracking.json
-2. **Optional Review:** Admin can run `python3 admin.py --full-review` to inspect changes
-3. **Manual Curation:** Review all discovered/updated movies, fix data, hide/feature as needed
-4. **Optional Approval:** Click "Approve & Generate" if using approval workflow
-5. **Data Generation:** System generates final data.json (with or without manual review)
+2. **Automated Generation:** System generates data.json directly (no approval required)
+3. **Optional Review:** Editors can run `python3 admin.py` to inspect and curate content anytime
+4. **Manual Curation:** Review all discovered/updated movies, fix data, hide/feature as needed
+5. **Publish Drafts:** Editors can publish curated drafts when desired (optional workflow)
 
 **Admin Panel - QA Database Editor** (`admin.py` on port 5555)
 
@@ -246,19 +246,18 @@ python3 admin.py
 - `admin/watch_link_overrides.json` - Manual watch links (temporary - being migrated to movie_tracking.json)
 - `movie_tracking.json` - All data corrections stored here with `manual_*` flags
 
-**Full Review Mode:**
-- `python3 admin.py --full-review` - Enables approval gate mode
-- Auto-regeneration disabled - changes don't immediately update data.json
-- "Approve & Generate" button appears for manual authorization
-- Creates admin/approval.json artifact with approval timestamp and metadata
+**Full Review Mode (Optional):**
+- `python3 admin.py --full-review` - Enables optional review mode when desired
+- Changes applied when editors choose to regenerate data.json
+- Optional workflow for organizations wanting editorial gates
 
-**Advanced/Optional: Approval Workflow**
-When using the optional approval workflow, the system can track editorial decisions:
-- Optional approval tracking for audit trail
-- Editorial decision logging for curation workflow
-- Can be enabled when formal review process is desired
+**Advanced/Optional: Editorial Workflow**
+When using optional editorial curation, the system provides:
+- Editorial decision tools for content curation
+- Manual override capabilities for data corrections
+- Can be used when desired without blocking automation
 
-**Artifacts Consumed in Phase 4:**
+**Artifacts Used in Phase 4:**
 - `admin/hidden_movies.json` - Movies excluded from public display
 - `admin/featured_movies.json` - Movies highlighted with special styling
 - `admin/ordering.json` - Editorial ordering (pins specific movies to top)

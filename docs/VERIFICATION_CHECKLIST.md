@@ -19,10 +19,10 @@
 
 ## Stage 3: Automation & Validation Verification
 - [ ] Single-branch workflow implemented in daily-check.yml
-- [ ] Validation resilience kept (14-day window) but simplified
-- [ ] Admin approval gate tested (local and CI)
+- [ ] Validation policy per SYSTEM_ARCHITECTURE.md §6.5
+- [ ] Optional admin review mode tested (local and CI)
 - [ ] Ephemeral artifacts policy enforced
-- [ ] Full orchestrator run successful (approval → generation)
+- [ ] Full orchestrator run successful (ungated automation)
 - [ ] Stall detection and issue creation working
 - [ ] GitHub Actions manual trigger passes
 - [ ] Stage 3 complete, automation ready

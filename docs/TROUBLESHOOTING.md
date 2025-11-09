@@ -3,7 +3,6 @@
 **Purpose:** Common failure modes for NRW automation workflows and how to fix them.
 
 **Related Docs:**
-- [legacy/AUTOMATION_BRANCH_WORKFLOW.md](legacy/AUTOMATION_BRANCH_WORKFLOW.md) - Legacy two-branch workflow (deprecated)
 - [museum_legacy/troubleshooting/](../museum_legacy/troubleshooting/) - Historical post-mortems with detailed debugging
 
 **Last Updated:** 2025-11-06
@@ -281,12 +280,11 @@ time python3 generate_data.py
 ```
 
 **Prevention:**
-- Automatic sync added to workflows (Nov 5, 2025) - see [legacy/AUTOMATION_BRANCH_WORKFLOW.md](legacy/AUTOMATION_BRANCH_WORKFLOW.md#24-critical-failure-mode---branch-divergence)
 - Monitor workflow runtime in GitHub Actions
 - Alert on runtimes > 5 minutes
 
 **See Also:**
-- [SYSTEM_ARCHITECTURE.md Section 2.4](../SYSTEM_ARCHITECTURE.md) - Branch divergence failure mode
+- [SYSTEM_ARCHITECTURE.md Section 2](../SYSTEM_ARCHITECTURE.md) - Branch strategy and workflow
 
 ---
 
@@ -446,7 +444,6 @@ cat watchmode_quota.json
 - automation-updates branch behind main
 
 **Historical Root Causes:**
-- Two-branch system synchronization complexity
 - Manual intervention breaking sync cycle
 - Workflow checkout logic issues
 
@@ -549,10 +546,9 @@ If troubleshooting doesn't resolve the issue:
 
 1. **Check historical post-mortems** in [museum_legacy/troubleshooting/](../museum_legacy/troubleshooting/)
 2. **Review architecture docs** in [SYSTEM_ARCHITECTURE.md](../SYSTEM_ARCHITECTURE.md)
-3. **Examine workflow configuration** in [legacy/AUTOMATION_BRANCH_WORKFLOW.md](legacy/AUTOMATION_BRANCH_WORKFLOW.md)
-4. **Check recent code changes** - `git log --oneline -20`
-5. **Run workflows with debug logging** (if available)
-6. **File a GitHub issue** with detailed logs and symptoms
+3. **Check recent code changes** - `git log --oneline -20`
+4. **Run workflows with debug logging** (if available)
+5. **File a GitHub issue** with detailed logs and symptoms
 
 ---
 

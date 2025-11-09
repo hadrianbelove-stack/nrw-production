@@ -40,18 +40,8 @@ When analyzing this codebase, read in this order:
 - Immediate updates to main branch
 - No merge conflicts between branches
 
-### 2.2 Legacy: Two-Branch Flow (Deprecated)
 
-**Status**: Legacy (Deprecated). Single-branch workflow on `main` is now the only supported approach per PROJECT_CHARTER.md.
-
-**Current State**:
-- Daily workflow: Single-branch on `main` ✅
-- Weekly workflow: Single-branch on `main` ✅
-
-**Branch Roles**:
-- `main`: Source of truth, all development, all automation
-
-### 2.3 Current Daily Workflow
+### 2.2 Current Daily Workflow
 
 ```bash
 # Bot workflow (automated) - Single branch
@@ -61,29 +51,6 @@ git add -A
 git commit -m "Daily update $(date)"
 git push origin main
 ```
-
-**Legacy (Deprecated)**: Two-branch workflow commands removed. See `docs/legacy/AUTOMATION_BRANCH_WORKFLOW.md` for historical reference.
-
-### 2.4 Legacy: Branch Divergence Issues (Single-Branch Prevents This)
-
-**Historical Issue**: When using multiple branches, automation could run on stale code.
-
-**Impact** (no longer applicable with single-branch):
-- 2+ hour runtimes instead of 30 seconds
-- Validation failures
-- API quota exhaustion
-- Data corruption cascades
-
-**Historical Example**: Oct 25-Nov 5, 2025
-- Two-branch system had synchronization issues
-- Bot ran old enrichment logic on corrupted data
-- Runtime: 2.3 hours, validation timeouts
-
-**Current Solution**: Single-branch workflow eliminates this entire class of failures
-
-### 2.5 Legacy: Manual Sync Commands (Deprecated)
-
-**Legacy (Deprecated)**: Manual sync commands no longer needed with single-branch workflow. See `docs/legacy/AUTOMATION_BRANCH_WORKFLOW.md` for historical commands.
 
 ---
 
@@ -670,14 +637,7 @@ See [NRW_DATA_WORKFLOW_EXPLAINED.md Section 2.1](./NRW_DATA_WORKFLOW_EXPLAINED.m
 
 **Simplified Workflow**: Single-branch approach eliminates sync complexity and branch divergence issues.
 
-### 6.4 Legacy: Force Push Strategy (No Longer Used)
-
-**Historical Concept**: In the two-branch system, automation-updates was ephemeral
-- No longer applicable with single-branch workflow
-- Single-branch commits directly to main (no force pushing needed)
-- User maintains control with admin approval gates
-
-### 6.5 User Sync Workflow
+### 6.4 User Sync Workflow
 
 ```bash
 # Single-branch workflow - direct commits to main
@@ -686,7 +646,7 @@ See [NRW_DATA_WORKFLOW_EXPLAINED.md Section 2.1](./NRW_DATA_WORKFLOW_EXPLAINED.m
 # 3. Changes committed directly to main (no merging needed)
 ```
 
-### 6.6 Validation & Stall Detection Policy
+### 6.5 Validation & Stall Detection Policy
 
 **Canonical validation windows and stall detection thresholds:**
 
@@ -872,7 +832,6 @@ for dm in data_movies:       # Iterated over keys, not movies
 - [docs/](./docs/) - Legacy documentation
 
 **Key Amendments to Reference**:
-- [025: Two-Branch Automation Strategy](./PROJECT_CHARTER.md#025-two-branch-automation-strategy): Two-branch deployment strategy
 - [023: Agent-Based Link Finding for Streaming Platforms](./PROJECT_CHARTER.md#023-agent-based-link-finding-for-streaming-platforms): Playwright migration for agent scraper
 - [027: Admin Panel - Post-Publication Curation & Data Quality](./PROJECT_CHARTER.md#027-admin-panel---post-publication-curation--data-quality): Admin panel redesign
 

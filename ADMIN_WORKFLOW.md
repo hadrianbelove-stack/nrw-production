@@ -2,7 +2,7 @@
 
 ## Overview
 
-⚠️ **Important**: The drafts→publish workflow is **optional** and not required for daily automation. The daily automation commits directly to `main` without requiring admin approval.
+⚠️ **Note**: Drafts→publish workflow is optional; daily automation runs ungated by default.
 
 NRW uses a **drafts→publish workflow** where daily discovery generates draft content for optional admin review and selective publishing. The admin panel serves as an optional curation tool when editorial review is desired.
 
@@ -251,7 +251,7 @@ A: Use the "⚠️ Missing Data" filter in the main admin panel to identify inco
 A: Use the "Add Movie" form in the main admin panel to manually add titles by TMDB ID. The system will fetch metadata automatically.
 
 **Q: How can I track what was published?**
-A: Check the audit logs at `metrics/publish.jsonl` or review GitHub issue notifications for deployment status.
+A: Check the audit logs at `metrics/publish.jsonl` for deployment status.
 
 ## Best Practices
 

@@ -24,9 +24,9 @@
 **Restoration Blueprint (Revert-First Plan)**:
 - **Executive Summary**: Restore October 19-20 golden state aligning with charter (30s runs, strict validation, clean polling). Minimal November integrations only for confirmed bugs (e.g., line 1848 corruption fix).
 
-- **Revert List**: generate_data.py structure (simple TMDB poll, 7-day validation), single-branch automation, admin QA workflow, Playwright patterns, doc structure.
+- **Revert List**: generate_data.py structure (simple TMDB poll, validation per SYSTEM_ARCHITECTURE.md §6.5), single-branch automation, admin QA workflow, Playwright patterns, doc structure.
 - **Minimal Keep List**: Only bug-specific November fixes (digital_date None for discoveries if October had issue; data rebuild if needed).
-- **Avoid List**: November over-engineering (14/30-day fallbacks, two-branch sync, softened checks).
+- **Avoid List**: November over-engineering (14/30-day fallbacks, softened checks).
 
 **Stage Breakdown**:
 1. **Audit & Planning** (Current): Blueprint/checklist vs charter. Deliverables: Revert decisions documented, baselines. Success: Plan aligns with October/charter.
@@ -102,13 +102,13 @@
 
 **Root Causes:**
 - Branch divergence
-- Strict 7-day validation
+- Data validation issues (see SYSTEM_ARCHITECTURE.md §6.5 for canonical policy)
 - data.json schema bug
 - Playwright CI lifecycle issues
 
 **Resolution:**
 - Auto or simplified single-branch workflow
-- 14-day window + 30-day fallback
+- Validation policy per SYSTEM_ARCHITECTURE.md §6.5
 - Schema validation
 - Optional per-scraper Playwright lifecycle
 

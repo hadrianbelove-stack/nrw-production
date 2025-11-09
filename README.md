@@ -61,7 +61,7 @@ python3 admin.py --full-review
 
 **Default credentials are only for local development and are automatically rejected in production environments.**
 
-For setup prerequisites and architecture overview, see [SYSTEM_ARCHITECTURE.md](SYSTEM_ARCHITECTURE.md) Section 2 (Branch Strategy). Legacy two-branch guide: [docs/legacy/AUTOMATION_BRANCH_WORKFLOW.md](docs/legacy/AUTOMATION_BRANCH_WORKFLOW.md).
+For setup prerequisites and architecture overview, see [SYSTEM_ARCHITECTURE.md](SYSTEM_ARCHITECTURE.md) Section 2 (Branch Strategy).
 
 ## Quick Start
 

@@ -209,7 +209,6 @@ See [020: Rolling Daily Context](PROJECT_CHARTER.md#020-rolling-daily-context) a
 2. ✅ Moved CURRENT_WORKFLOW_STATUS.md → museum_legacy/troubleshooting/2025-11-03-workflow-status.md
 3. ✅ Moved WORKFLOW_FAILURES_FIX.md → museum_legacy/troubleshooting/2025-10-28-workflow-failures.md
 4. ✅ Updated SYSTEM_ARCHITECTURE.md Section 8 to reference TROUBLESHOOTING.md with specific section links
-5. ✅ Verified AUTOMATION_BRANCH_WORKFLOW.md remains pure architecture (no troubleshooting content)
 
 **Result:**
 - Clear separation: SYSTEM_ARCHITECTURE.md (overview) → TROUBLESHOOTING.md (detailed debugging) → museum_legacy/troubleshooting/ (historical post-mortems)
@@ -221,7 +220,6 @@ See [020: Rolling Daily Context](PROJECT_CHARTER.md#020-rolling-daily-context) a
 - ✅ docs/TROUBLESHOOTING.md covers: YouTube token corruption, validation failures, workflow timeouts, API quota exhaustion, branch divergence
 - ✅ SYSTEM_ARCHITECTURE.md Section 8 links to specific TROUBLESHOOTING.md sections
 - ✅ Archived files preserved with timestamps in museum_legacy/troubleshooting/
-- ✅ AUTOMATION_BRANCH_WORKFLOW.md is architecture-only (281 lines, minimal troubleshooting section that points to other docs)
 
 ### Restoration Verification (COMPLETE)
 
