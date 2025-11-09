@@ -592,8 +592,7 @@ def index() -> str:
     # Calculate missing data count
     missing_data_count = sum(
         1 for movie in processed_movies.values()
-        if not movie.get('rt_score')
-        or not movie.get('links', {}).get('trailer')
+        if not movie.get('links', {}).get('trailer')
         or not (movie.get('poster_url') or movie.get('poster'))
         or not movie.get('director')
         or movie.get('director') == 'Unknown'
@@ -659,6 +658,7 @@ Check admin/hidden_movies.json and admin/featured_movies.json for file updates a
 
 @app.route('/toggle-status', methods=['POST'])
 @auth.login_required
+@csrf_protect
 def toggle_status() -> dict:
     """Toggle movie status (hidden or featured).
 
@@ -767,6 +767,7 @@ def toggle_status() -> dict:
 
 @app.route('/update-date', methods=['POST'])
 @auth.login_required
+@csrf_protect
 def update_date() -> dict:
     """Update movie's digital release date.
 
@@ -858,6 +859,7 @@ def update_date() -> dict:
 
 @app.route('/update-review', methods=['POST'])
 @auth.login_required
+@csrf_protect
 def update_review() -> dict:
     """Update or create a movie review.
 
@@ -1005,6 +1007,7 @@ def update_review() -> dict:
 
 @app.route('/delete-review', methods=['POST'])
 @auth.login_required
+@csrf_protect
 def delete_review() -> dict:
     """Delete a movie review.
 
@@ -1096,6 +1099,7 @@ def delete_review() -> dict:
 
 @app.route('/regenerate', methods=['POST'])
 @auth.login_required
+@csrf_protect
 def regenerate() -> dict:
     """Manually trigger data.json regeneration.
 
@@ -1156,6 +1160,7 @@ def regenerate() -> dict:
 
 @app.route('/update-movie-fields', methods=['POST'])
 @auth.login_required
+@csrf_protect
 def update_movie_fields() -> dict:
     """Update all editable fields for a movie.
 
@@ -1966,7 +1971,7 @@ def get_csrf_token() -> dict:
 
 @app.route('/delta-summary', methods=['GET'])
 @auth.login_required
-def delta_summary() -> Response | tuple[Response, int]:
+def delta_summary() -> Union[Response, tuple[Response, int]]:
     """Get current delta summary without creating approval file.
 
     Returns the result of compute_delta_summary() for preview purposes.
@@ -2637,7 +2642,7 @@ def serve_preview(preview_id: str):
 
 @app.route('/approve', methods=['POST'])
 @auth.login_required
-def approve_changes() -> Response | tuple[Response, int]:
+def approve_changes() -> Union[Response, tuple[Response, int]]:
     """DEPRECATED: Create admin approval artifact for orchestrator.
 
     This endpoint is deprecated in favor of the drafts→publish workflow.
