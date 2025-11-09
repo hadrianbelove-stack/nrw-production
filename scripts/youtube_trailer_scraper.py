@@ -59,8 +59,8 @@ class YouTubeTrailerScraper:
             # Get shared Playwright instance
             self.playwright = self.manager.get_playwright()
 
-            # Launch browser
-            self.browser = self.playwright.chromium.launch(headless=self.headless)
+            # Get shared browser from manager
+            self.browser = self.manager.get_browser(headless=self.headless, browser_type='chromium')
 
             # Create context with viewport and user agent
             self.context = self.browser.new_context(

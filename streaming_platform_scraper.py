@@ -111,8 +111,8 @@ class StreamingPlatformScraper:
             # Get shared Playwright instance
             self.playwright = self.manager.get_playwright()
 
-            # Launch Chromium browser
-            self.browser = self.playwright.chromium.launch(headless=self.headless)
+            # Get shared browser from manager
+            self.browser = self.manager.get_browser(headless=self.headless, browser_type='chromium')
 
             # Create context with viewport and user agent
             self.context = self.browser.new_context(
@@ -405,31 +405,10 @@ class StreamingPlatformScraper:
 
                             if not is_sponsored:
                                 try:
-                                    # Strategy 2: Check for 'sponsored' keyword in any ancestor class or data attribute
-                                    parent = element.locator("xpath=./ancestor::div[contains(@class, 'sponsored') or contains(@data-testid, 'sponsored') or contains(@id, 'AdHolder')]").first
+                                    # Strategy 2: Check for specific sponsored attributes and classes
+                                    parent = element.locator("xpath=./ancestor::div[contains(@data-component-type, 'sp-sponsored-result') or contains(@id, 'AdHolder') or contains(@class, 'sp-sponsored')]").first
                                     if parent.count() > 0:
                                         is_sponsored = True
-                                except:
-                                    pass
-
-                            if not is_sponsored:
-                                try:
-                                    # Strategy 3: Check for ad-related IDs and classes
-                                    parent = element.locator("xpath=./ancestor::div[contains(@id, 'ad-') or contains(@class, 'AdHolder') or contains(@class, 'sp-sponsored')]").first
-                                    if parent.count() > 0:
-                                        is_sponsored = True
-                                except:
-                                    pass
-
-                            if not is_sponsored:
-                                # Strategy 4: Look for "Sponsored" text in nearby elements (within 3 ancestors)
-                                try:
-                                    parent = element.locator("xpath=./ancestor::div[contains(., 'Sponsored')]").first
-                                    if parent.count() > 0:
-                                        # Verify "Sponsored" text is actually visible (not deep in nested content)
-                                        sponsored_text = parent.text_content()
-                                        if sponsored_text and 'Sponsored' in sponsored_text and len(sponsored_text) < 500:  # Reasonable text length
-                                            is_sponsored = True
                                 except:
                                     pass
 
@@ -525,14 +504,31 @@ class StreamingPlatformScraper:
                                     print(f"    Element {j+1}: Exact title: {has_exact_title}, Year bonus: +{year_bonus}, Year penalty: -{year_penalty}, Threshold: {threshold:.1%}")
 
                                     # Title must still meet minimum threshold
-                                    if overlap_percentage < threshold:
-                                        print(f"    Element {j+1}: Insufficient title match ({overlap_percentage:.1%} < {threshold:.1%}), skipping")
+                                    # For high-confidence selectors that target /gp/video/detail/, lower threshold
+                                    if is_high_confidence and '/gp/video/detail/' in href:
+                                        adjusted_threshold = 0.4  # Lower threshold for high-confidence video selectors
+                                    else:
+                                        adjusted_threshold = threshold
+
+                                    if overlap_percentage < adjusted_threshold:
+                                        print(f"    Element {j+1}: Insufficient title match ({overlap_percentage:.1%} < {adjusted_threshold:.1%}), skipping")
                                         continue
 
-                                    # Apply year penalty (skip if year is way off)
-                                    if year_penalty > 0:
-                                        print(f"    Element {j+1}: Year penalty applied (probably wrong movie), skipping")
-                                        continue
+                                    # Apply year penalty check, but bypass for high-confidence video detail links
+                                    if not (is_high_confidence and '/gp/video/detail/' in href):
+                                        # For /dp/ links, skip year penalty if ASIN is present and no obvious negatives
+                                        if '/dp/' in href and year_penalty > 0:
+                                            # Extract ASIN to verify this is a real product
+                                            asin_match = re.search(r'/dp/([A-Z0-9]{10})', href)
+                                            if asin_match and not any(neg in result_text for neg in ['not available', 'unavailable', 'pre-order']):
+                                                print(f"    Element {j+1}: /dp/ link with ASIN {asin_match.group(1)}, ignoring year penalty")
+                                                # Skip year penalty for /dp/ links with valid ASIN
+                                            else:
+                                                print(f"    Element {j+1}: Year penalty applied (probably wrong movie), skipping")
+                                                continue
+                                        elif year_penalty > 0:
+                                            print(f"    Element {j+1}: Year penalty applied (probably wrong movie), skipping")
+                                            continue
 
                                     # Check for negative keywords that indicate wrong content
                                     negative_keywords = ['not available', 'unavailable', 'coming soon', 'pre-order', 'tv series', 'season']
@@ -544,12 +540,30 @@ class StreamingPlatformScraper:
                                     # For high-confidence selectors, accept if title matches
                                     if is_high_confidence and '/gp/video/detail/' in href:
                                         elapsed_time = time.time() - start_time
-                                        print(f"  ✓ Found Amazon link (high-confidence): {href}")
+                                        # Extract ASIN and construct canonical URL
+                                        asin_match = re.search(r'/gp/video/detail/([A-Z0-9]{10})', href)
+                                        if asin_match:
+                                            canonical_href = f"https://www.amazon.com/gp/video/detail/{asin_match.group(1)}"
+                                        else:
+                                            canonical_href = urllib.parse.urljoin('https://www.amazon.com', href)
+                                        print(f"  ✓ Found Amazon link (high-confidence): {canonical_href}")
                                         print(f"  ✓ Title match: {overlap_percentage:.1%}")
                                         print(f"  ✓ Search completed in {elapsed_time:.2f} seconds using {selector_type} selector")
-                                        return href
+                                        return canonical_href
 
-                                    # Stricter video keyword validation: require at least 2 keywords
+                                    # For /dp/ links, use relaxed validation if ASIN is present
+                                    if '/dp/' in href:
+                                        asin_match = re.search(r'/dp/([A-Z0-9]{10})', href)
+                                        if asin_match and not any(neg in result_text for neg in ['not available', 'unavailable', 'pre-order']):
+                                            # Convert /dp/ links to canonical /gp/video/detail/ format
+                                            elapsed_time = time.time() - start_time
+                                            canonical_href = f"https://www.amazon.com/gp/video/detail/{asin_match.group(1)}"
+                                            print(f"  ✓ Found Amazon /dp/ link with ASIN {asin_match.group(1)}, canonicalized: {canonical_href}")
+                                            print(f"  ✓ Title match: {overlap_percentage:.1%}")
+                                            print(f"  ✓ Search completed in {elapsed_time:.2f} seconds using {selector_type} selector")
+                                            return canonical_href
+
+                                    # Stricter video keyword validation for non-/dp/ links
                                     video_keywords = ['prime video', 'stream', 'watch', 'rent', 'buy', 'included with prime', 'digital video', 'hd']
                                     found_keywords = [kw for kw in video_keywords if kw in text_content]
 
@@ -568,11 +582,17 @@ class StreamingPlatformScraper:
                                     keyword_threshold = 2 if not has_video_indicators else 1
                                     if len(found_keywords) >= keyword_threshold:
                                         elapsed_time = time.time() - start_time
-                                        print(f"  ✓ Found Amazon link: {href}")
+                                        # Extract ASIN and construct canonical URL
+                                        asin_match = re.search(r'/(dp|gp/video/detail)/([A-Z0-9]{10})', href)
+                                        if asin_match:
+                                            canonical_href = f"https://www.amazon.com/gp/video/detail/{asin_match.group(2)}"
+                                        else:
+                                            canonical_href = urllib.parse.urljoin('https://www.amazon.com', href)
+                                        print(f"  ✓ Found Amazon link: {canonical_href}")
                                         print(f"  ✓ Matched keywords: {found_keywords}")
                                         print(f"  ✓ Title match: {overlap_percentage:.1%}")
                                         print(f"  ✓ Search completed in {elapsed_time:.2f} seconds using {selector_type} selector")
-                                        return href
+                                        return canonical_href
                                     else:
                                         print(f"    Element {j+1}: Insufficient video validation (need {keyword_threshold} keywords, found {len(found_keywords)}), skipping")
                                 else:
@@ -621,10 +641,16 @@ class StreamingPlatformScraper:
                                                 # Lower threshold for featured results (50% instead of 70%)
                                                 if match_pct >= 0.5:
                                                     elapsed_time = time.time() - start_time
-                                                    print(f"  ✓ Found Amazon link (featured result, alternative validation): {href}")
+                                                    # Extract ASIN and construct canonical URL
+                                                    asin_match = re.search(r'/(dp|gp/video/detail)/([A-Z0-9]{10})', href)
+                                                    if asin_match:
+                                                        canonical_href = f"https://www.amazon.com/gp/video/detail/{asin_match.group(2)}"
+                                                    else:
+                                                        canonical_href = urllib.parse.urljoin('https://www.amazon.com', href)
+                                                    print(f"  ✓ Found Amazon link (featured result, alternative validation): {canonical_href}")
                                                     print(f"  ✓ Title match: {match_pct:.1%}")
                                                     print(f"  ✓ Search completed in {elapsed_time:.2f} seconds")
-                                                    return href
+                                                    return canonical_href
                                                 else:
                                                     print(f"    Element {j+1}: Insufficient title match ({match_pct:.1%}), skipping")
                                             else:
@@ -687,6 +713,8 @@ class StreamingPlatformScraper:
             # Try multiple selectors for search results (in order of preference)
             selectors = [
                 "a[href*='/movie/'][href*='umc.cmc']",
+                "[data-test-lockup-type='MOVIE'] a[href*='umc.cmc']",
+                ".shelf-grid__list-item a[href*='/movie/']",
                 ".shelf-grid__list-item a",
                 "[data-test-id='lockup'] a",
                 "a[href*='umc.cmc']"
@@ -720,14 +748,18 @@ class StreamingPlatformScraper:
                             # Filter stopwords from title
                             title_words = {word for word in normalized_title.split() if word and word not in stopwords and len(word) > 1}
 
-                            # Require at least two non-stopword matches or exact title presence
+                            # Enhanced title matching: exact title OR word overlap
                             matching_words = sum(1 for word in title_words if word in normalized_link_text)
                             has_exact_title = normalized_title in normalized_link_text
 
-                            if (len(title_words) <= 2 and (has_exact_title or matching_words >= 2)) or (len(title_words) > 2 and matching_words >= 2):
-                                print(f"  ✓ Found Apple TV link: {href}")
+                            # Accept if exact title appears OR sufficient word overlap
+                            title_match = has_exact_title or (len(title_words) <= 2 and matching_words >= 2) or (len(title_words) > 2 and matching_words >= 2)
+
+                            if title_match:
+                                normalized_href = urllib.parse.urljoin('https://tv.apple.com', href)
+                                print(f"  ✓ Found Apple TV link: {normalized_href}")
                                 print(f"  ✓ Title match: {matching_words}/{len(title_words)} words, exact: {has_exact_title}")
-                                return href
+                                return normalized_href
                 except PlaywrightTimeoutError:
                     print(f"  Selector not found within timeout: {selector}")
                     continue
@@ -758,9 +790,15 @@ class StreamingPlatformScraper:
         try:
             # Route to appropriate platform search
             if 'Amazon' in service_name:
-                return self.find_amazon_link(title, year)
+                result = self.find_amazon_link(title, year)
+                if result:
+                    return urllib.parse.urljoin('https://www.amazon.com', result)
+                return result
             elif 'Apple' in service_name:
-                return self.find_apple_tv_link(title, year)
+                result = self.find_apple_tv_link(title, year)
+                if result:
+                    return urllib.parse.urljoin('https://tv.apple.com', result)
+                return result
             else:
                 # Unsupported platform (Netflix, Disney+, etc.)
                 print(f"  Platform '{service_name}' not supported by agent search")

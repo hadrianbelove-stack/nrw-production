@@ -124,18 +124,20 @@ class AgentLinkScraper:
             # Get shared Playwright instance
             self.playwright = self.manager.get_playwright()
 
-            # Launch browser
+            # Get shared browser from manager
             headless = self.config.get('headless', True)
-            self.browser = self.playwright.chromium.launch(headless=headless)
+            self.browser = self.manager.get_browser(headless=headless, browser_type='chromium')
 
-            # Create context with viewport and user agent
+            # Create context with viewport, user agent, and stealth headers
             self.context = self.browser.new_context(
                 viewport={'width': 1920, 'height': 1080},
-                user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+                user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                accept_language='en-US,en;q=0.9',
+                extra_http_headers={'DNT': '1', 'Upgrade-Insecure-Requests': '1'}
             )
 
             # Set default timeout
-            timeout_ms = self.config.get('timeout', 10) * 1000
+            timeout_ms = self.config.get('agent_scraper', {}).get('timeout', 10) * 1000
             self.context.set_default_timeout(timeout_ms)
 
             # Create page
@@ -158,10 +160,12 @@ class AgentLinkScraper:
             headless = self.config.get('headless', True)
             self.browser = self.playwright.chromium.launch(headless=headless)
 
-            # Create context with viewport and user agent
+            # Create context with viewport, user agent, and stealth headers
             self.context = self.browser.new_context(
                 viewport={'width': 1920, 'height': 1080},
-                user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+                user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                accept_language='en-US,en;q=0.9',
+                extra_http_headers={'DNT': '1', 'Upgrade-Insecure-Requests': '1'}
             )
 
             # Set default timeout
@@ -627,6 +631,8 @@ class BasePlatformScraper:
                     year_diff = abs(closest_year - search_year_int)
                     if year_diff >= 2:
                         year_penalty = 20  # Probably wrong movie
+                # If search_year present but no year found in result_text, treat as neutral (year_penalty=0)
+                # This handles cases where year is missing rather than conflicting
 
         return (year_bonus, year_penalty)
 
@@ -654,8 +660,8 @@ class NetflixScraper(BasePlatformScraper):
             print(f"[NetflixScraper] Navigating to: {search_url}")
             self.page.goto(search_url, wait_until='networkidle')
 
-            # Short initial wait for dynamic content
-            self.page.wait_for_timeout(500)
+            # Short randomized wait for dynamic content (stealth hardening)
+            self.page.wait_for_timeout(random.randint(400, 900))
 
             # Try each selector sequentially
             for i, selector in enumerate(self.SELECTORS):
@@ -663,7 +669,7 @@ class NetflixScraper(BasePlatformScraper):
                     print(f"[NetflixScraper] Trying selector {i+1}/{len(self.SELECTORS)}: {selector}")
 
                     # Use configurable timeout for selector wait
-                    timeout_ms = self.config.get('timeout', 10) * 1000
+                    timeout_ms = self.config.get('agent_scraper', {}).get('timeout', 10) * 1000
                     try:
                         self.page.wait_for_selector(selector, timeout=timeout_ms)
                         elements = self.page.locator(selector).all()
@@ -722,9 +728,13 @@ class NetflixScraper(BasePlatformScraper):
                                         except Exception:
                                             pass  # Continue to normal validation
 
-                                    # Position-based filtering: skip first 2 results (likely sponsored)
+                                    # Skip strict validation for high-confidence selectors
+                                    if i < 2:
+                                        continue
+
+                                    # Position-based filtering: skip first result (likely sponsored)
                                     # Only apply this if not high-confidence or alternative validation failed
-                                    if j < 2 and i >= 2:  # Only skip for non-high-confidence selectors
+                                    if j == 0 and i >= 2:  # Only skip for non-high-confidence selectors
                                         print(f"[NetflixScraper] Element {j+1}: Skipping position {j+1} (likely sponsored)")
                                         continue
 
@@ -733,17 +743,22 @@ class NetflixScraper(BasePlatformScraper):
                                         # Enhanced title validation
                                         try:
                                             parent_text = element.locator("xpath=./..").text_content().lower()
-                                            is_match, overlap_percentage, has_exact_title = self.validate_title_match(title, parent_text)
+                                            # Use relaxed threshold for high-confidence selectors
+                                            threshold = 0.5 if i < 2 else 0.7
+                                            is_match, overlap_percentage, has_exact_title = self.validate_title_match(title, parent_text, threshold)
 
                                             if not is_match:
                                                 print(f"[NetflixScraper] Element {j+1}: Title match failed ({overlap_percentage:.1%}), skipping")
                                                 continue
 
-                                            # Year validation
-                                            year_bonus, year_penalty = self.validate_year_match(year, parent_text)
-                                            if year_penalty > 0:
-                                                print(f"[NetflixScraper] Element {j+1}: Year penalty applied (probably wrong movie), skipping")
-                                                continue
+                                            # Year validation (skip for high-confidence selectors)
+                                            if i >= 2:  # Only apply year validation for non-high-confidence selectors
+                                                year_bonus, year_penalty = self.validate_year_match(year, parent_text)
+                                                if year_penalty > 0:
+                                                    print(f"[NetflixScraper] Element {j+1}: Year penalty applied (probably wrong movie), skipping")
+                                                    continue
+                                            else:
+                                                year_bonus = 0
 
                                             # Negative keyword detection
                                             negative_keywords = ['not available', 'unavailable', 'coming soon', 'pre-order', 'tv series', 'season']
@@ -844,8 +859,8 @@ class DisneyPlusScraper(BasePlatformScraper):
             print(f"[DisneyPlusScraper] Navigating to: {search_url}")
             self.page.goto(search_url, wait_until='networkidle')
 
-            # Short initial wait for dynamic content
-            self.page.wait_for_timeout(500)
+            # Short randomized wait for dynamic content (stealth hardening)
+            self.page.wait_for_timeout(random.randint(400, 900))
 
             # Try each selector sequentially
             for i, selector in enumerate(self.SELECTORS):
@@ -853,7 +868,7 @@ class DisneyPlusScraper(BasePlatformScraper):
                     print(f"[DisneyPlusScraper] Trying selector {i+1}/{len(self.SELECTORS)}: {selector}")
 
                     # Use configurable timeout for selector wait
-                    timeout_ms = self.config.get('timeout', 10) * 1000
+                    timeout_ms = self.config.get('agent_scraper', {}).get('timeout', 10) * 1000
                     try:
                         self.page.wait_for_selector(selector, timeout=timeout_ms)
                         elements = self.page.locator(selector).all()
@@ -911,9 +926,13 @@ class DisneyPlusScraper(BasePlatformScraper):
                                         except Exception:
                                             pass  # Continue to normal validation
 
-                                    # Position-based filtering: skip first 2 results (likely sponsored)
+                                    # Skip strict validation for high-confidence selectors
+                                    if i < 2:
+                                        continue
+
+                                    # Position-based filtering: skip first result (likely sponsored)
                                     # Only apply this if not high-confidence or alternative validation failed
-                                    if j < 2 and i >= 2:  # Only skip for non-high-confidence selectors
+                                    if j == 0 and i >= 2:  # Only skip for non-high-confidence selectors
                                         print(f"[DisneyPlusScraper] Element {j+1}: Skipping position {j+1} (likely sponsored)")
                                         continue
 
@@ -922,17 +941,22 @@ class DisneyPlusScraper(BasePlatformScraper):
                                         # Enhanced title validation
                                         try:
                                             parent_text = element.locator("xpath=./..").text_content().lower()
-                                            is_match, overlap_percentage, has_exact_title = self.validate_title_match(title, parent_text)
+                                            # Use relaxed threshold for high-confidence selectors
+                                            threshold = 0.5 if i < 2 else 0.7
+                                            is_match, overlap_percentage, has_exact_title = self.validate_title_match(title, parent_text, threshold)
 
                                             if not is_match:
                                                 print(f"[DisneyPlusScraper] Element {j+1}: Title match failed ({overlap_percentage:.1%}), skipping")
                                                 continue
 
-                                            # Year validation
-                                            year_bonus, year_penalty = self.validate_year_match(year, parent_text)
-                                            if year_penalty > 0:
-                                                print(f"[DisneyPlusScraper] Element {j+1}: Year penalty applied (probably wrong movie), skipping")
-                                                continue
+                                            # Year validation (skip for high-confidence selectors)
+                                            if i >= 2:  # Only apply year validation for non-high-confidence selectors
+                                                year_bonus, year_penalty = self.validate_year_match(year, parent_text)
+                                                if year_penalty > 0:
+                                                    print(f"[DisneyPlusScraper] Element {j+1}: Year penalty applied (probably wrong movie), skipping")
+                                                    continue
+                                            else:
+                                                year_bonus = 0
 
                                             # Negative keyword detection
                                             negative_keywords = ['not available', 'unavailable', 'coming soon', 'pre-order', 'tv series', 'season']
@@ -1033,8 +1057,8 @@ class HBOMaxScraper(BasePlatformScraper):
             print(f"[HBOMaxScraper] Navigating to: {search_url}")
             self.page.goto(search_url, wait_until='networkidle')
 
-            # Short initial wait for dynamic content
-            self.page.wait_for_timeout(500)
+            # Short randomized wait for dynamic content (stealth hardening)
+            self.page.wait_for_timeout(random.randint(400, 900))
 
             # Try each selector sequentially
             for i, selector in enumerate(self.SELECTORS):
@@ -1042,7 +1066,7 @@ class HBOMaxScraper(BasePlatformScraper):
                     print(f"[HBOMaxScraper] Trying selector {i+1}/{len(self.SELECTORS)}: {selector}")
 
                     # Use configurable timeout for selector wait
-                    timeout_ms = self.config.get('timeout', 10) * 1000
+                    timeout_ms = self.config.get('agent_scraper', {}).get('timeout', 10) * 1000
                     try:
                         self.page.wait_for_selector(selector, timeout=timeout_ms)
                         elements = self.page.locator(selector).all()
@@ -1100,9 +1124,13 @@ class HBOMaxScraper(BasePlatformScraper):
                                         except Exception:
                                             pass  # Continue to normal validation
 
-                                    # Position-based filtering: skip first 2 results (likely sponsored)
+                                    # Skip strict validation for high-confidence selectors
+                                    if i < 2:
+                                        continue
+
+                                    # Position-based filtering: skip first result (likely sponsored)
                                     # Only apply this if not high-confidence or alternative validation failed
-                                    if j < 2 and i >= 2:  # Only skip for non-high-confidence selectors
+                                    if j == 0 and i >= 2:  # Only skip for non-high-confidence selectors
                                         print(f"[HBOMaxScraper] Element {j+1}: Skipping position {j+1} (likely sponsored)")
                                         continue
 
@@ -1111,17 +1139,22 @@ class HBOMaxScraper(BasePlatformScraper):
                                         # Enhanced title validation
                                         try:
                                             parent_text = element.locator("xpath=./..").text_content().lower()
-                                            is_match, overlap_percentage, has_exact_title = self.validate_title_match(title, parent_text)
+                                            # Use relaxed threshold for high-confidence selectors
+                                            threshold = 0.5 if i < 2 else 0.7
+                                            is_match, overlap_percentage, has_exact_title = self.validate_title_match(title, parent_text, threshold)
 
                                             if not is_match:
                                                 print(f"[HBOMaxScraper] Element {j+1}: Title match failed ({overlap_percentage:.1%}), skipping")
                                                 continue
 
-                                            # Year validation
-                                            year_bonus, year_penalty = self.validate_year_match(year, parent_text)
-                                            if year_penalty > 0:
-                                                print(f"[HBOMaxScraper] Element {j+1}: Year penalty applied (probably wrong movie), skipping")
-                                                continue
+                                            # Year validation (skip for high-confidence selectors)
+                                            if i >= 2:  # Only apply year validation for non-high-confidence selectors
+                                                year_bonus, year_penalty = self.validate_year_match(year, parent_text)
+                                                if year_penalty > 0:
+                                                    print(f"[HBOMaxScraper] Element {j+1}: Year penalty applied (probably wrong movie), skipping")
+                                                    continue
+                                            else:
+                                                year_bonus = 0
 
                                             # Negative keyword detection
                                             negative_keywords = ['not available', 'unavailable', 'coming soon', 'pre-order', 'tv series', 'season']
@@ -1222,8 +1255,8 @@ class HuluScraper(BasePlatformScraper):
             print(f"[HuluScraper] Navigating to: {search_url}")
             self.page.goto(search_url, wait_until='networkidle')
 
-            # Short initial wait for dynamic content
-            self.page.wait_for_timeout(500)
+            # Short randomized wait for dynamic content (stealth hardening)
+            self.page.wait_for_timeout(random.randint(400, 900))
 
             # Try each selector sequentially
             for i, selector in enumerate(self.SELECTORS):
@@ -1231,7 +1264,7 @@ class HuluScraper(BasePlatformScraper):
                     print(f"[HuluScraper] Trying selector {i+1}/{len(self.SELECTORS)}: {selector}")
 
                     # Use configurable timeout for selector wait
-                    timeout_ms = self.config.get('timeout', 10) * 1000
+                    timeout_ms = self.config.get('agent_scraper', {}).get('timeout', 10) * 1000
                     try:
                         self.page.wait_for_selector(selector, timeout=timeout_ms)
                         elements = self.page.locator(selector).all()
@@ -1289,9 +1322,13 @@ class HuluScraper(BasePlatformScraper):
                                         except Exception:
                                             pass  # Continue to normal validation
 
-                                    # Position-based filtering: skip first 2 results (likely sponsored)
+                                    # Skip strict validation for high-confidence selectors
+                                    if i < 2:
+                                        continue
+
+                                    # Position-based filtering: skip first result (likely sponsored)
                                     # Only apply this if not high-confidence or alternative validation failed
-                                    if j < 2 and i >= 2:  # Only skip for non-high-confidence selectors
+                                    if j == 0 and i >= 2:  # Only skip for non-high-confidence selectors
                                         print(f"[HuluScraper] Element {j+1}: Skipping position {j+1} (likely sponsored)")
                                         continue
 
@@ -1300,17 +1337,22 @@ class HuluScraper(BasePlatformScraper):
                                         # Enhanced title validation
                                         try:
                                             parent_text = element.locator("xpath=./..").text_content().lower()
-                                            is_match, overlap_percentage, has_exact_title = self.validate_title_match(title, parent_text)
+                                            # Use relaxed threshold for high-confidence selectors
+                                            threshold = 0.5 if i < 2 else 0.7
+                                            is_match, overlap_percentage, has_exact_title = self.validate_title_match(title, parent_text, threshold)
 
                                             if not is_match:
                                                 print(f"[HuluScraper] Element {j+1}: Title match failed ({overlap_percentage:.1%}), skipping")
                                                 continue
 
-                                            # Year validation
-                                            year_bonus, year_penalty = self.validate_year_match(year, parent_text)
-                                            if year_penalty > 0:
-                                                print(f"[HuluScraper] Element {j+1}: Year penalty applied (probably wrong movie), skipping")
-                                                continue
+                                            # Year validation (skip for high-confidence selectors)
+                                            if i >= 2:  # Only apply year validation for non-high-confidence selectors
+                                                year_bonus, year_penalty = self.validate_year_match(year, parent_text)
+                                                if year_penalty > 0:
+                                                    print(f"[HuluScraper] Element {j+1}: Year penalty applied (probably wrong movie), skipping")
+                                                    continue
+                                            else:
+                                                year_bonus = 0
 
                                             # Negative keyword detection
                                             negative_keywords = ['not available', 'unavailable', 'coming soon', 'pre-order', 'tv series', 'season']
