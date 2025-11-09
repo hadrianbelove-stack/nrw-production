@@ -380,8 +380,30 @@ class WikipediaScraperPlaywright:
             # Check if we landed directly on an article (exact match)
             current_url = self.page.url
             if "/wiki/" in current_url and "Special:Search" not in current_url:
-                self._log(f"Direct hit: {current_url}", level='debug')
-                return current_url
+                # Check for disambiguation page indicators
+                is_disambiguation = False
+                try:
+                    # Check for various disambiguation indicators
+                    disambig_selectors = [
+                        "#disambigbox",  # Disambiguation box
+                        ".hatnote a[href*='disambiguation']",  # Hatnote with disambiguation link
+                        "body.mw-disambig"  # Body class for disambiguation
+                    ]
+
+                    for selector in disambig_selectors:
+                        if self.page.query_selector(selector):
+                            is_disambiguation = True
+                            self._log(f"Disambiguation page detected: {current_url}", level='debug')
+                            break
+                except Exception:
+                    pass
+
+                # If not a disambiguation page, return the direct hit
+                if not is_disambiguation:
+                    self._log(f"Direct hit: {current_url}", level='debug')
+                    return current_url
+                else:
+                    self._log(f"Disambiguation page found, will parse search results instead", level='debug')
 
             # Look for search results
             search_selectors = [
@@ -466,13 +488,34 @@ class WikipediaScraperPlaywright:
             cached_data = self.cache[cache_key]
             if isinstance(cached_data, dict):
                 url = cached_data.get('url')
-                # Skip search fallbacks - try scraping instead
-                if url and 'index.php?search=' not in url:
+                source = cached_data.get('source', '')
+
+                # Skip search fallback sources - they should be retried
+                if source == 'search_fallback':
+                    # Check if fallback has expired (3-day TTL)
+                    cached_at_str = cached_data.get('cached_at', '')
+                    if cached_at_str:
+                        try:
+                            cached_at = datetime.fromisoformat(cached_at_str)
+                            fallback_ttl_days = 3
+                            if datetime.now() - cached_at < timedelta(days=fallback_ttl_days):
+                                # Fallback still valid, return it
+                                self.stats['cache_hits'] += 1
+                                self._log(f"Cache hit for search fallback (within {fallback_ttl_days}-day TTL): {title} ({year})", level='debug')
+                                return url
+                            else:
+                                self._log(f"Search fallback expired for {title}, will re-scrape", level='debug')
+                        except (ValueError, TypeError):
+                            pass
+                    # Expired or invalid fallback - skip and re-scrape
+                    self._log(f"Skipping expired search fallback for {title}, will re-scrape", level='debug')
+                # For non-fallback sources, check if URL is valid
+                elif url and 'index.php?search=' not in url:
                     self.stats['cache_hits'] += 1
                     self._log(f"Cache hit for {title} ({year})", level='debug')
                     return url
                 else:
-                    self._log(f"Cache contains search fallback for {title}, will re-scrape", level='debug')
+                    self._log(f"Cache contains invalid URL for {title}, will re-scrape", level='debug')
             elif cached_data and 'index.php?search=' not in cached_data:
                 self.stats['cache_hits'] += 1
                 return cached_data

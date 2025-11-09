@@ -6,6 +6,7 @@ import random
 import re
 from datetime import datetime, timedelta
 from urllib.parse import quote
+from difflib import SequenceMatcher
 from constants import get_scraper_config
 
 # Shared manager support (enabled by default)
@@ -42,7 +43,7 @@ class RTScraperPlaywright:
 
         # Rate limiting
         self.last_scrape_time = 0
-        self.rate_limit = self.scraper_config.get('rate_limit')
+        self.rate_limit = self.scraper_config.get('rate_limit') or 1.5  # Default to 1.5s if not configured
 
         # Cache
         self.cache = self._load_cache()
@@ -88,6 +89,29 @@ class RTScraperPlaywright:
                 self.logger.info(message)
         else:
             print(f"[RTScraperPlaywright] {message}")
+
+    def _fuzzy_match_title(self, candidate_text, expected_title, threshold=0.6):
+        """Fuzzy match candidate text against expected title.
+
+        Args:
+            candidate_text: Text from search result
+            expected_title: Expected movie title
+            threshold: Minimum similarity ratio (default: 0.6)
+
+        Returns:
+            bool: True if similarity ratio meets threshold
+        """
+        if not candidate_text or not expected_title:
+            return False
+
+        # Normalize both strings for comparison
+        candidate_normalized = candidate_text.lower().strip()
+        expected_normalized = expected_title.lower().strip()
+
+        # Calculate similarity ratio
+        similarity = SequenceMatcher(None, candidate_normalized, expected_normalized).ratio()
+
+        return similarity >= threshold
 
     def _log_metrics(self, operation, data):
         """Log structured metrics for operations."""
@@ -171,9 +195,9 @@ class RTScraperPlaywright:
             # Get shared Playwright instance
             self.playwright = self.manager.get_playwright()
 
-            # Launch browser
+            # Get shared browser from PlaywrightManager
             headless = self.config.get('rt_scraper', {}).get('headless', True)
-            self.browser = self.playwright.chromium.launch(headless=headless)
+            self.browser = self.manager.get_browser(headless=headless, browser_type='chromium')
 
             # Create context with viewport and user agent
             self.context = self.browser.new_context(
@@ -244,11 +268,9 @@ class RTScraperPlaywright:
                 pass
             self.context = None
 
+        # Browser is managed by PlaywrightManager - don't close it directly
+        # Only release our reference to allow proper cleanup
         if self.browser:
-            try:
-                self.browser.close()
-            except:
-                pass
             self.browser = None
 
         # Cleanup Playwright via shared manager
@@ -420,16 +442,82 @@ class RTScraperPlaywright:
                 try:
                     elements = self.page.query_selector_all(selector)
                     if elements:
-                        href = elements[0].get_attribute('href')
-                        if href and '/m/' in href:
+                        # Iterate through first 5-8 anchors and verify each candidate
+                        for element in elements[:8]:
+                            href = element.get_attribute('href')
+                            if not href or '/m/' not in href:
+                                continue
+
+                            # Get anchor text and nearby title text
+                            anchor_text = element.text_content() or ""
+
+                            # Try to find surrounding title text
+                            parent_element = element.evaluate_handle("el => el.closest('search-page-media-row') || el.parentElement")
+                            surrounding_text = ""
+                            try:
+                                surrounding_text = parent_element.as_element().text_content() or ""
+                            except:
+                                surrounding_text = anchor_text
+
+                            # Require fuzzy match against title at ~0.6 similarity
+                            if not self._fuzzy_match_title(anchor_text, title, threshold=0.6):
+                                self._log(f"Skipping candidate - title mismatch: {anchor_text[:50]}", level='debug')
+                                continue
+
+                            # Prefer candidates whose surrounding text contains the year
+                            year_str = str(year)
+                            has_year = year_str in surrounding_text
+
+                            if has_year:
+                                self._log(f"Found candidate with year match: {anchor_text[:50]}", level='debug')
+
                             # Ensure absolute URL
                             if href.startswith('http'):
-                                movie_url = href
+                                candidate_url = href
                             else:
-                                movie_url = f"https://www.rottentomatoes.com{href}"
-                            self._log(f"Found with selector: {selector}", level='debug')
+                                candidate_url = f"https://www.rottentomatoes.com{href}"
+
+                            # Navigate to candidate movie page to validate
+                            self._log(f"Validating candidate: {candidate_url}", level='debug')
+                            self.page.goto(candidate_url, wait_until='domcontentloaded')
+                            time.sleep(1)
+
+                            # Read og:title meta or score-board data-qa-title to verify
+                            validated = False
+                            try:
+                                # Try og:title meta tag
+                                og_title_element = self.page.query_selector('meta[property="og:title"]')
+                                if og_title_element:
+                                    og_title = og_title_element.get_attribute('content') or ""
+                                    if self._fuzzy_match_title(og_title, title, threshold=0.6):
+                                        validated = True
+                                        self._log(f"Validated via og:title: {og_title}", level='debug')
+
+                                # Try score-board data-qa-title attribute
+                                if not validated:
+                                    score_board = self.page.query_selector('score-board')
+                                    if score_board:
+                                        qa_title = score_board.get_attribute('data-qa-title') or ""
+                                        if self._fuzzy_match_title(qa_title, title, threshold=0.6):
+                                            validated = True
+                                            self._log(f"Validated via score-board: {qa_title}", level='debug')
+                            except Exception as e:
+                                self._log(f"Validation check error: {e}", level='debug')
+
+                            if validated:
+                                movie_url = candidate_url
+                                self._log(f"Found validated match with selector: {selector}", level='debug')
+                                break
+                            else:
+                                self._log(f"Validation failed for {candidate_url}, trying next", level='debug')
+                                # Go back to search page for next candidate
+                                self.page.goto(search_url, wait_until='domcontentloaded')
+                                time.sleep(1)
+
+                        if movie_url:
                             break
-                except Exception:
+                except Exception as e:
+                    self._log(f"Selector {selector} error: {e}", level='debug')
                     continue
 
             if not movie_url:
@@ -450,9 +538,10 @@ class RTScraperPlaywright:
                 self._capture_failure_diagnostics(title, year, "No RT page found")
                 return None
 
-            # Navigate to movie page
-            self.page.goto(movie_url, wait_until='domcontentloaded')
-            time.sleep(2)  # Wait for dynamic content
+            # Ensure we're on the movie page (may be redundant if validated during search)
+            if self.page.url != movie_url:
+                self.page.goto(movie_url, wait_until='domcontentloaded')
+                time.sleep(2)  # Wait for dynamic content
 
             # Add readiness wait for score elements to avoid racing hydration
             try:
@@ -463,54 +552,76 @@ class RTScraperPlaywright:
                 except:
                     pass  # Continue if neither selector is found
 
-            # Try selector fallbacks for score
-            score_selectors = [
-                "rt-text[slot='criticsScore']",  # Primary
-                "score-board",  # Fallback 1
-                "[data-qa='tomatometer']",  # Fallback 2
-                "[data-qa='tomatometer-value']",  # Fallback 3
-                ".tomatometer-score",  # Fallback 4
-                "score-icon-critic"  # Fallback 5
-            ]
-
+            # Extract score - try attribute-based reading first
             score = None
-            # Define multiple regex patterns to try in order
-            regex_patterns = [
-                r'(\d+)\s*%',                          # Basic pattern: number followed by %
-                r'tomatometer\s*:?\s*(\d+)\s*%',       # Pattern with tomatometer prefix
-                r'(\d+)\s*percent',                     # Pattern with "percent" instead of %
-                r'critics?\s*score\s*:?\s*(\d+)',      # Pattern with "critic score" prefix
-                r'fresh\s*:?\s*(\d+)',                 # Pattern with "fresh" prefix
-            ]
 
-            for selector in score_selectors:
-                try:
-                    element = self.page.query_selector(selector)
-                    if element:
-                        # Get text from multiple sources
-                        text_sources = [
-                            element.text_content() or "",
-                            element.get_attribute('textContent') or "",
-                            element.get_attribute('aria-label') or "",
-                            element.get_attribute('data-score') or "",
-                            element.inner_html() or ""
-                        ]
+            # Attempt 1: Try score-board attributes (preferred method)
+            try:
+                score_board = self.page.query_selector("score-board")
+                if score_board:
+                    # Try tomatometerscore attribute
+                    tomatometer_score = score_board.get_attribute('tomatometerscore')
+                    if tomatometer_score and tomatometer_score.isdigit():
+                        score = f"{tomatometer_score}%"
+                        self._log(f"Found score via score-board tomatometerscore attribute: {score}", level='debug')
 
-                        # Concatenate all text sources for matching
-                        combined_text = " ".join(text_sources).lower()
+                    # Fallback to audiencescore if tomatometer not found
+                    if not score:
+                        audience_score = score_board.get_attribute('audiencescore')
+                        if audience_score and audience_score.isdigit():
+                            score = f"{audience_score}%"
+                            self._log(f"Found score via score-board audiencescore attribute: {score}", level='debug')
+            except Exception as e:
+                self._log(f"Attribute-based score extraction error: {e}", level='debug')
 
-                        # Try each regex pattern until one matches
-                        for pattern in regex_patterns:
-                            match = re.search(pattern, combined_text, re.IGNORECASE)
-                            if match:
-                                score = match.group(1) + "%"
-                                self._log(f"Found score with selector: {selector}, pattern: {pattern}", level='debug')
+            # Attempt 2: Fallback to text/regex approach if attributes not available
+            if not score:
+                score_selectors = [
+                    "rt-text[slot='criticsScore']",  # Primary
+                    "score-board",  # Fallback 1
+                    "[data-qa='tomatometer']",  # Fallback 2
+                    "[data-qa='tomatometer-value']",  # Fallback 3
+                    ".tomatometer-score",  # Fallback 4
+                    "score-icon-critic"  # Fallback 5
+                ]
+
+                # Define multiple regex patterns to try in order
+                regex_patterns = [
+                    r'(\d+)\s*%',                          # Basic pattern: number followed by %
+                    r'tomatometer\s*:?\s*(\d+)\s*%',       # Pattern with tomatometer prefix
+                    r'(\d+)\s*percent',                     # Pattern with "percent" instead of %
+                    r'critics?\s*score\s*:?\s*(\d+)',      # Pattern with "critic score" prefix
+                    r'fresh\s*:?\s*(\d+)',                 # Pattern with "fresh" prefix
+                ]
+
+                for selector in score_selectors:
+                    try:
+                        element = self.page.query_selector(selector)
+                        if element:
+                            # Get text from multiple sources
+                            text_sources = [
+                                element.text_content() or "",
+                                element.get_attribute('textContent') or "",
+                                element.get_attribute('aria-label') or "",
+                                element.get_attribute('data-score') or "",
+                                element.inner_html() or ""
+                            ]
+
+                            # Concatenate all text sources for matching
+                            combined_text = " ".join(text_sources).lower()
+
+                            # Try each regex pattern until one matches
+                            for pattern in regex_patterns:
+                                match = re.search(pattern, combined_text, re.IGNORECASE)
+                                if match:
+                                    score = match.group(1) + "%"
+                                    self._log(f"Found score with selector: {selector}, pattern: {pattern}", level='debug')
+                                    break
+
+                            if score:
                                 break
-
-                        if score:
-                            break
-                except Exception:
-                    continue
+                    except Exception:
+                        continue
 
             # Create result
             result = {
