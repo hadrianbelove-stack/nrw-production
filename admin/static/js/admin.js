@@ -1,3 +1,26 @@
+// Pending changes counter
+let pendingChangesCount = 0;
+
+function incrementPendingCount() {
+    pendingChangesCount++;
+    updatePendingBadge();
+}
+
+function resetPendingCount() {
+    pendingChangesCount = 0;
+    updatePendingBadge();
+}
+
+function updatePendingBadge() {
+    const btn = document.getElementById('regenerate-btn');
+    if (!btn) return;
+
+    if (pendingChangesCount > 0) {
+        btn.innerHTML = `💾 Save Changes (${pendingChangesCount})`;
+    } else {
+        btn.innerHTML = '💾 Save Changes';
+    }
+}
 
 function showSuccess(message = 'Changes saved!') {
     const msg = document.getElementById('success-msg');
@@ -43,6 +66,9 @@ function toggleHidden(movieId, hide) {
             // Update stats
             updateStats();
 
+            // Increment pending changes counter
+            incrementPendingCount();
+
             showSuccess(hide ? 'Movie hidden' : 'Movie shown');
         }
     })
@@ -85,6 +111,9 @@ function toggleFeatured(movieId, feature) {
 
             // Update stats
             updateStats();
+
+            // Increment pending changes counter
+            incrementPendingCount();
 
             showSuccess(feature ? 'Movie featured' : 'Movie unfeatured');
         }
@@ -157,8 +186,8 @@ function regenerateData() {
             status.style.color = '#28a745';
             showSuccess('Changes saved successfully');
 
-            // Immediately refresh pending changes status
-            checkPendingChanges();
+            // Reset pending changes counter
+            resetPendingCount();
         } else {
             status.textContent = '✗ ' + (data.error || 'Save failed');
             status.style.color = '#dc3545';
@@ -485,6 +514,9 @@ function saveAllFields(movieId) {
             btn.innerHTML = '✅ Saved!';
             btn.style.background = '#28a745';
             showSuccess(data.message || 'All fields updated successfully!');
+
+            // Increment pending changes counter
+            incrementPendingCount();
 
             // Update field backgrounds to show they're no longer missing
             if (rtScore) document.getElementById(`rt-score-${movieId}`).style.background = '#2a2a2a';
@@ -1147,36 +1179,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (document.getElementById('drafts-list')) {
         fetchDrafts();
     }
-
-    // Check for pending changes and poll every 5 seconds
-    checkPendingChanges();
-    setInterval(checkPendingChanges, 5000);
 });
-
-// Pending Changes Functions
-function checkPendingChanges() {
-    fetch('/pending-changes')
-        .then(response => response.json())
-        .then(data => {
-            const btn = document.getElementById('regenerate-btn');
-            if (!btn) return;
-
-            if (data.has_pending_changes) {
-                // Highlight button when changes are pending
-                btn.classList.add('pending-changes');
-                btn.style.animation = 'pulse 2s infinite';
-                btn.title = 'You have unsaved changes. Click to save.';
-            } else {
-                // Normal state when no changes
-                btn.classList.remove('pending-changes');
-                btn.style.animation = '';
-                btn.title = 'Rebuild data.json from tracking database';
-            }
-        })
-        .catch(error => {
-            console.error('Error checking pending changes:', error);
-        });
-}
 
 // Delta Summary Functions
 function refreshDeltaSummary() {
