@@ -124,40 +124,45 @@ def test_enrichment_service_methods():
         return False
 
 def test_generate_data_integration():
-    """Test that generate_data.py works with new enrichment service"""
+    """Test that pipeline/generator.py has DataGenerator with enrichment service"""
     print("\n" + "="*60)
-    print("TEST 3: Integration with generate_data.py")
+    print("TEST 3: Integration with DataGenerator")
     print("="*60)
 
     try:
-        # Import without initializing (to avoid TMDB API key requirement)
-        from generate_data import DataGenerator
+        # Import from pipeline module
+        from pipeline import DataGenerator
         import logging
 
-        test_result("DataGenerator imports successfully", True)
+        test_result("DataGenerator imports from pipeline", True)
 
-        # Check that EnrichmentService is imported
+        # Check that EnrichmentService is imported and used
         import inspect
         init_source = inspect.getsource(DataGenerator.__init__)
-        has_enrichment_import = 'from pipeline import EnrichmentService' in init_source
-        test_result(
-            "DataGenerator imports EnrichmentService",
-            has_enrichment_import,
-            "Found import in __init__"
-        )
 
         has_enrichment_init = 'self.enrichment = EnrichmentService' in init_source
         test_result(
             "DataGenerator initializes enrichment service",
             has_enrichment_init,
-            "Found self.enrichment initialization"
+            "Found self.enrichment initialization in pipeline/generator.py"
         )
 
         has_cache_injection = 'self.enrichment.set_cache_references' in init_source
         test_result(
             "DataGenerator injects cache references",
             has_cache_injection,
-            "Found cache injection call"
+            "Found cache injection call in pipeline/generator.py"
+        )
+
+        # Verify generate_data.py imports from pipeline
+        with open('generate_data.py', 'r') as f:
+            wrapper_content = f.read()
+
+        wrapper_imports_pipeline = 'from pipeline import DataGenerator' in wrapper_content
+        test_result(
+            "generate_data.py imports from pipeline",
+            wrapper_imports_pipeline,
+            "Found 'from pipeline import DataGenerator' in wrapper"
         )
 
         return True
@@ -175,45 +180,52 @@ def test_method_replacements():
     print("="*60)
 
     try:
-        with open('generate_data.py', 'r') as f:
-            content = f.read()
+        # Check pipeline/generator.py (where DataGenerator now lives)
+        with open('pipeline/generator.py', 'r') as f:
+            generator_content = f.read()
 
         # Check that enrichment service calls exist
-        enrichment_calls = content.count('self.enrichment.')
+        enrichment_calls = generator_content.count('self.enrichment.')
         test_result(
-            "Enrichment service calls present",
+            "Enrichment service calls present in generator",
             enrichment_calls >= 6,
-            f"Found {enrichment_calls} calls to self.enrichment.*"
+            f"Found {enrichment_calls} calls to self.enrichment.* in pipeline/generator.py"
         )
 
-        # Check for migration comment
-        has_migration_comment = 'moved to pipeline/enrichment.py (2025-11-10)' in content
+        # Check that generate_data.py is now a thin wrapper
+        with open('generate_data.py', 'r') as f:
+            wrapper_content = f.read()
+
+        wrapper_lines = len(wrapper_content.splitlines())
         test_result(
-            "Migration comment present",
-            has_migration_comment,
-            "Found documentation of extraction"
+            "generate_data.py is thin CLI wrapper",
+            wrapper_lines < 150,
+            f"generate_data.py is {wrapper_lines} lines (should be ~110)"
         )
 
-        # Check that old method definitions were removed
-        has_old_get_watch_links = 'def get_watch_links(self, movie_id, title, year, providers' in content
+        # Check that methods are in enrichment module
+        with open('pipeline/enrichment.py', 'r') as f:
+            enrichment_content = f.read()
+
+        has_get_watch_links = 'def get_watch_links(self, movie_id, title, year, providers' in enrichment_content
         test_result(
-            "Old get_watch_links method removed",
-            not has_old_get_watch_links,
-            "Method definition not found (good)"
+            "get_watch_links method in enrichment module",
+            has_get_watch_links,
+            "Method found in pipeline/enrichment.py"
         )
 
-        has_old_try_agent = 'def _try_agent_scraper(self, movie_id' in content
+        has_try_agent = 'def _try_agent_scraper(self, movie_id' in enrichment_content
         test_result(
-            "Old _try_agent_scraper method removed",
-            not has_old_try_agent,
-            "Method definition not found (good)"
+            "_try_agent_scraper method in enrichment module",
+            has_try_agent,
+            "Method found in pipeline/enrichment.py"
         )
 
-        has_old_append_affiliate = 'def append_affiliate_tag(self, url, service_name):' in content
+        has_append_affiliate = 'def append_affiliate_tag(self, url, service_name' in enrichment_content
         test_result(
-            "Old append_affiliate_tag method removed",
-            not has_old_append_affiliate,
-            "Method definition not found (good)"
+            "append_affiliate_tag method in enrichment module",
+            has_append_affiliate,
+            "Method found in pipeline/enrichment.py"
         )
 
         return True

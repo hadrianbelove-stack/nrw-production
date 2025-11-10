@@ -25,21 +25,31 @@
 
 ## Pipeline Services
 
-1. **generator.py** (77K) - Main DataGenerator class
-2. **enrichment.py** (50K) - Watch link discovery
-3. **storage.py** (25K) - File I/O + retention
-4. **validation.py** (17K) - Data validation
-5. **telemetry.py** (12K) - Metrics tracking
-6. **__init__.py** (606B) - Exports
+1. **generator.py** (77K, 1,718 lines) - Main DataGenerator class
+2. **enrichment.py** (50K, 1,086 lines) - Watch link discovery
+3. **storage.py** (25K, 657 lines) - File I/O + retention
+4. **validation.py** (17K, 401 lines) - Data validation
+5. **telemetry.py** (12K, 382 lines) - Metrics tracking
+6. **__init__.py** (606B, 22 lines) - Exports
+
+**Total:** 4,266 lines in pipeline modules
+**Service calls in generator.py:** 25 total (15 storage + 4 validation + 6 enrichment)
 
 ---
 
 ## Testing: 100% Pass Rate
 
-- Extraction tests: 21/21 ✅
-- Error handling: 12/12 ✅  
-- Retention policy: 8/8 ✅
-- **Total: 41/41 (100%)**
+**Extraction tests (21):**
+- test_storage_extraction.py: 7/7 ✅
+- test_validation_extraction.py: 7/7 ✅
+- test_enrichment_extraction.py: 7/7 ✅
+
+**Error handling & validation (20):**
+- test_comprehensive_error_handling.py: 8/8 ✅
+- test_retention_policy.py: 8/8 ✅
+- test_type_guards.py: 4/4 ✅
+
+**Total: 41/41 tests passing (100%)**
 
 ---
 
