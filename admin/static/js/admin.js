@@ -1028,6 +1028,20 @@ function validateText(text, minLength, maxLength, fieldType) {
 
 // Initialize character counters on page load
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize pending changes count from server
+    fetch('/pending-changes')
+        .then(response => response.json())
+        .then(data => {
+            if (data.has_pending_changes) {
+                // Initialize count from server (default to 1 if count not present for backward compatibility)
+                pendingChangesCount = data.pending_change_count || 1;
+                updatePendingBadge();
+            }
+        })
+        .catch(error => {
+            console.error('Failed to fetch pending changes:', error);
+        });
+
     // Initialize Save Changes button state
     updatePendingBadge();
 
@@ -1039,84 +1053,4 @@ document.addEventListener('DOMContentLoaded', function() {
             updateCharCounter(textarea, counterId, 140, 600);
         }
     });
-
-    // Load delta summary
-    if (document.getElementById('delta-sidebar')) {
-        refreshDeltaSummary();
-    }
 });
-
-// Delta Summary Functions
-function refreshDeltaSummary() {
-    const loading = document.getElementById('delta-loading');
-    const content = document.getElementById('delta-content');
-
-    if (!loading || !content) return;
-
-    // Show loading state
-    loading.style.display = 'block';
-    content.style.display = 'none';
-
-    fetch('/delta-summary')
-    .then(response => response.json())
-    .then(data => {
-        if (data.success && data.delta) {
-            updateDeltaDisplay(data.delta);
-            loading.style.display = 'none';
-            content.style.display = 'block';
-        } else {
-            loading.textContent = 'Error loading summary: ' + (data.error || 'Unknown error');
-            loading.style.color = '#dc3545';
-        }
-    })
-    .catch(error => {
-        loading.textContent = 'Error: ' + error;
-        loading.style.color = '#dc3545';
-    });
-}
-
-function updateDeltaDisplay(delta) {
-    // Update main stats
-    const newFilmsElement = document.getElementById('delta-new-films');
-    const editsElement = document.getElementById('delta-edits');
-    const additionsElement = document.getElementById('delta-additions');
-
-    if (newFilmsElement) newFilmsElement.textContent = delta.new_films_released || 0;
-    if (editsElement) editsElement.textContent = delta.edits || 0;
-    if (additionsElement) additionsElement.textContent = delta.additions || 0;
-
-    // Update status changes
-    const hiddenElement = document.getElementById('delta-hidden');
-    const featuredElement = document.getElementById('delta-featured');
-    const orderedElement = document.getElementById('delta-ordered');
-
-    if (hiddenElement) hiddenElement.textContent = delta.hidden || 0;
-    if (featuredElement) featuredElement.textContent = delta.featured || 0;
-    if (orderedElement) orderedElement.textContent = delta.ordered || 0;
-
-    // Update issues
-    const issues = delta.issues || {};
-    const missingRtElement = document.getElementById('delta-missing-rt');
-    const missingTrailerElement = document.getElementById('delta-missing-trailer');
-    const missingStreamElement = document.getElementById('delta-missing-stream');
-    const missingRentElement = document.getElementById('delta-missing-rent');
-    const missingBuyElement = document.getElementById('delta-missing-buy');
-
-    if (missingRtElement) missingRtElement.textContent = issues.missing_rt || 0;
-    if (missingTrailerElement) missingTrailerElement.textContent = issues.missing_trailer || 0;
-    if (missingStreamElement) missingStreamElement.textContent = issues.missing_stream_link || 0;
-    if (missingRentElement) missingRentElement.textContent = issues.missing_rent_link || 0;
-    if (missingBuyElement) missingBuyElement.textContent = issues.missing_buy_link || 0;
-}
-
-// Override updateStats to also refresh delta summary when changes happen
-const originalUpdateStatsWithDelta = updateStats;
-updateStats = function() {
-    originalUpdateStatsWithDelta.call(this);
-
-    // Refresh delta summary if it exists (with debouncing)
-    if (document.getElementById('delta-sidebar')) {
-        clearTimeout(window.deltaRefreshTimeout);
-        window.deltaRefreshTimeout = setTimeout(refreshDeltaSummary, 1000);
-    }
-};

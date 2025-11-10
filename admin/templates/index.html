@@ -232,6 +232,86 @@
     </div>
 
     <div class="main-content">
+        <!-- Delta Summary Sidebar -->
+        <div id="delta-sidebar" class="delta-sidebar">
+            <div class="sidebar-header">
+                <h4>📊 Change Summary</h4>
+                <button class="refresh-delta-btn" onclick="refreshDeltaSummary()" title="Refresh">
+                    🔄
+                </button>
+            </div>
+            <div class="sidebar-content">
+                <div id="delta-loading" class="loading-indicator">
+                    Loading summary...
+                </div>
+                <div id="delta-content" style="display: none;">
+                    <!-- Main Changes Section -->
+                    <div class="delta-section">
+                        <h5>🎬 New Content</h5>
+                        <div class="delta-stats">
+                            <div class="delta-stat">
+                                <span class="stat-label">New Films Released</span>
+                                <span class="stat-value" id="delta-new-films">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Status Changes Section -->
+                    <div class="delta-section">
+                        <h5>🎯 Status Changes</h5>
+                        <div class="delta-stats">
+                            <div class="delta-stat">
+                                <span class="stat-label">Hidden</span>
+                                <span class="stat-value" id="delta-hidden">0</span>
+                            </div>
+                            <div class="delta-stat">
+                                <span class="stat-label">Featured</span>
+                                <span class="stat-value" id="delta-featured">0</span>
+                            </div>
+                            <div class="delta-stat">
+                                <span class="stat-label">Custom Order</span>
+                                <span class="stat-value" id="delta-ordered">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Data Quality Section -->
+                    <div class="delta-section">
+                        <h5>⚠️ Missing Data</h5>
+                        <div class="delta-stats">
+                            <div class="delta-stat">
+                                <span class="stat-label">RT Scores</span>
+                                <span class="stat-value" id="delta-missing-rt">0</span>
+                            </div>
+                            <div class="delta-stat">
+                                <span class="stat-label">Trailers</span>
+                                <span class="stat-value" id="delta-missing-trailer">0</span>
+                            </div>
+                            <div class="delta-stat">
+                                <span class="stat-label">Stream Links</span>
+                                <span class="stat-value" id="delta-missing-stream">0</span>
+                            </div>
+                            <div class="delta-stat">
+                                <span class="stat-label">Rent Links</span>
+                                <span class="stat-value" id="delta-missing-rent">0</span>
+                            </div>
+                            <div class="delta-stat">
+                                <span class="stat-label">Buy Links</span>
+                                <span class="stat-value" id="delta-missing-buy">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Note -->
+                    <div class="delta-section">
+                        <p class="delta-note" style="font-size: 0.75rem;">
+                            💡 Click "Save Changes" to rebuild data.json with current edits.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="movie-grid" id="movie-grid">
         {% for movie_id, movie in movies.items() %}
         <div class="movie-card {% if movie_id in hidden %}hidden{% endif %} {% if movie_id in featured %}featured{% endif %}"

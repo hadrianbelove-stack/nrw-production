@@ -111,6 +111,22 @@ def has_pending_changes() -> bool:
     """
     return os.path.exists(PENDING_CHANGES_FLAG)
 
+def get_pending_changes_count() -> int:
+    """Get the count of pending changes (draft files).
+
+    Returns:
+        Number of pending draft files, or 0 if none
+    """
+    try:
+        drafts_dir = 'admin/drafts'
+        if not os.path.exists(drafts_dir):
+            return 0
+        draft_files = [f for f in os.listdir(drafts_dir) if f.endswith('.json')]
+        return len(draft_files)
+    except Exception as e:
+        logger.warning(f"Failed to count pending changes: {e}")
+        return 0
+
 def load_json(filepath: str, default: Optional[Union[dict, list]] = None) -> Union[dict, list]:
     """Load JSON file with fallback to default value.
 
@@ -184,6 +200,11 @@ def compute_tracking_digest() -> Optional[str]:
 
 def compute_delta_summary() -> dict:
     """Compute delta summary for change tracking.
+
+    NOTE: This function supports the /delta-summary endpoint, which is staged for
+    a future Operations/Tools tab in the admin panel. See IMPLEMENTATION_ROADMAP.md
+    Phase 2 for planned maintenance features (manual full regen, RT score refresh,
+    link rebuilding, etc.). Currently unused but intentionally preserved.
 
     Returns:
         Dictionary with counts of various changes and issues,
@@ -871,8 +892,7 @@ def update_movie_fields() -> dict:
         {
             "success": bool,
             "message": str,  # Lists fields updated
-            "error": str,  # On validation or save failure
-            "warning": str  # If save succeeded but regeneration failed
+            "error": str  # On validation or save failure
         }
 
     Validation:
@@ -1612,11 +1632,13 @@ def pending_changes() -> dict:
     Returns:
         JSON response:
         {
-            "has_pending_changes": bool
+            "has_pending_changes": bool,
+            "pending_change_count": int
         }
     """
     return jsonify({
-        'has_pending_changes': has_pending_changes()
+        'has_pending_changes': has_pending_changes(),
+        'pending_change_count': get_pending_changes_count()
     })
 
 @app.route('/delta-summary', methods=['GET'])
@@ -1650,6 +1672,47 @@ def delta_summary() -> Union[Response, tuple[Response, int]]:
             'success': False,
             'error': f'Error computing delta summary: {str(e)}'
         }), 500
+
+
+@app.route('/filter-data', methods=['GET'])
+def filter_data() -> dict:
+    """Get hidden and featured movie IDs for frontend filtering.
+
+    Returns:
+        dict: JSON response with hidden and featured movie ID lists
+    """
+    try:
+        # Load hidden movies
+        hidden_ids = []
+        if os.path.exists(HIDDEN_FILE):
+            try:
+                with open(HIDDEN_FILE, 'r') as f:
+                    hidden_ids = json.load(f)
+            except (json.JSONDecodeError, TypeError):
+                hidden_ids = []
+
+        # Load featured movies
+        featured_ids = []
+        if os.path.exists(FEATURED_FILE):
+            try:
+                with open(FEATURED_FILE, 'r') as f:
+                    featured_ids = json.load(f)
+            except (json.JSONDecodeError, TypeError):
+                featured_ids = []
+
+        return jsonify({
+            'success': True,
+            'hidden': hidden_ids,
+            'featured': featured_ids
+        })
+
+    except Exception as e:
+        logger.error(f"Error loading filter data: {str(e)}", exc_info=True)
+        return jsonify({
+            'success': False,
+            'error': f'Error loading filter data: {str(e)}'
+        }), 500
+
 
 if __name__ == '__main__':
     print("\n🎬 NRW Admin Panel - Local Curation Mode (No Authentication Required) - Port: 5556")

@@ -1,5 +1,9 @@
 const NRW = {
     allMovies: [],
+    filteredMovies: [],
+    hiddenMovies: [],
+    featuredMovies: [],
+    currentFilter: 'visible',
     currentPage: 1,
     moviesPerPage: 60,
     
@@ -18,8 +22,22 @@ const NRW = {
             // Parse URL parameters for pagination state
             this.parseUrlParams();
 
-            const response = await fetch('data.json');
-            const data = await response.json();
+            // Load movie data and filter data in parallel
+            const [movieResponse, filterResponse] = await Promise.all([
+                fetch('data.json'),
+                fetch('http://localhost:5556/filter-data')
+            ]);
+
+            const data = await movieResponse.json();
+
+            // Load filter data (hidden/featured lists)
+            if (filterResponse.ok) {
+                const filterData = await filterResponse.json();
+                if (filterData.success) {
+                    this.hiddenMovies = filterData.hidden || [];
+                    this.featuredMovies = filterData.featured || [];
+                }
+            }
 
             if (data.movies && data.movies.length > 0) {
                 const today = new Date();
@@ -28,6 +46,8 @@ const NRW = {
                     return new Date(m.digital_date) <= today;
                 });
 
+                this.setupFilterEventListeners();
+                this.applyFilter();
                 this.renderPaginatedWall();
             } else {
                 document.getElementById('wall').innerHTML = '<p>No movies in database</p>';
@@ -56,8 +76,47 @@ const NRW = {
         window.history.replaceState({}, '', url);
     },
 
+    setupFilterEventListeners() {
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        filterButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                // Update active button
+                filterButtons.forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+
+                // Update filter and re-render
+                this.currentFilter = e.target.dataset.filter;
+                this.currentPage = 1; // Reset to page 1 when changing filters
+                this.applyFilter();
+                this.renderPaginatedWall();
+            });
+        });
+    },
+
+    applyFilter() {
+        const filter = this.currentFilter;
+
+        this.filteredMovies = this.allMovies.filter(movie => {
+            const movieId = movie.id;
+            const isHidden = this.hiddenMovies.includes(movieId);
+            const isFeatured = this.featuredMovies.includes(movieId);
+
+            switch (filter) {
+                case 'visible':
+                    return !isHidden; // Show non-hidden movies
+                case 'hidden':
+                    return isHidden; // Show only hidden movies
+                case 'featured':
+                    return isFeatured; // Show only featured movies
+                case 'all':
+                default:
+                    return true; // Show all movies
+            }
+        });
+    },
+
     renderPaginatedWall() {
-        const sortedMovies = [...this.allMovies].sort((a, b) => {
+        const sortedMovies = [...this.filteredMovies].sort((a, b) => {
             return new Date(b.digital_date) - new Date(a.digital_date);
         });
 
@@ -83,7 +142,7 @@ const NRW = {
 
         let html = `
             <div class="pagination-info">
-                Showing ${(this.currentPage - 1) * this.moviesPerPage + 1}-${Math.min(this.currentPage * this.moviesPerPage, this.allMovies.length)} of ${this.allMovies.length} movies
+                Showing ${(this.currentPage - 1) * this.moviesPerPage + 1}-${Math.min(this.currentPage * this.moviesPerPage, this.filteredMovies.length)} of ${this.filteredMovies.length} movies
             </div>
             <nav class="pagination-nav" aria-label="Movie pagination">
         `;

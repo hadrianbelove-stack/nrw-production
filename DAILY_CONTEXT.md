@@ -132,7 +132,17 @@ See [020: Rolling Daily Context](PROJECT_CHARTER.md#020-rolling-daily-context) a
 
 ---
 
-## What We Did Today (2025-10-26 to 2025-10-27)
+## What We Did Today (2025-11-10)
+
+### Code Cleanup (2025-11-10)
+- **Removed newsletter integration:** Deleted `newsletters/` directory (6 orphaned files), removed `generate_newsletter_if_enabled()` method from `daily_orchestrator.py` (72 lines), cleaned up newsletter config in `config.yaml`
+- **Removed weekly workflow:** Deleted `.github/workflows/weekly-full-regen.yml` (118 lines) - was disabled and used outdated validation logic
+- **Documented staged features:** Added comments to `compute_delta_summary()` in `admin.py` explaining it's staged for Phase 2 Operations tab
+- **Updated roadmap:** Added Phase 2 section to `IMPLEMENTATION_ROADMAP.md` documenting planned Operations/Tools tab for intentional maintenance tasks
+- **Charter compliance:** Cleanup aligns with Amendment 015 (minimal implementation) - removed unused features, documented intentional staging
+- **Result:** Removed 196+ lines of dead code, deleted 6 orphaned files, clearer architectural direction
+
+## Previous Work (2025-10-26 to 2025-10-27)
 
 ### Major Implementations Completed
 
@@ -246,7 +256,12 @@ See [020: Rolling Daily Context](PROJECT_CHARTER.md#020-rolling-daily-context) a
 
 ## Known Issues
 
-### 1. Async Fix Verification In Progress
+### 1. Weekly Workflow Removed
+- **Status**: COMPLETED - Deleted broken weekly regeneration workflow
+- **Replacement**: Phase 2 Operations Tab for intentional maintenance tasks
+- **Next**: Implement Operations Tab UI when needed
+
+### 2. Async Fix Verification In Progress
 - **Status**: IN PROGRESS (User working in Claude Code)
 - **Issue**: Need to verify PlaywrightManager fix works in full pipeline
 - **Root cause identified**: Previous logs used cached Python modules from before fix
@@ -275,6 +290,11 @@ See [020: Rolling Daily Context](PROJECT_CHARTER.md#020-rolling-daily-context) a
 ---
 
 ## Next Priorities
+
+### Current Focus
+- **Operations Tab**: Future enhancement, not immediate priority
+- **Documentation**: All cleanup properly documented in roadmap
+- **Architecture**: Clear separation between editing UI and maintenance tools
 
 ### Immediate (User Working in Claude Code)
 1. 🔄 **IN PROGRESS**: Complete async fix verification

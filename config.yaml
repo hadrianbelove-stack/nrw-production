@@ -120,14 +120,6 @@ orchestrator:
   discovery_retry_delays: [30, 45]  # Retry delays in seconds (exponential backoff)
   skip_approval: true  # Default to bypass approval gate during development (NRW_SKIP_APPROVAL override)
 
-newsletter:
-  auto_generate: false  # Set to true to generate newsletter during daily automation
-  days_back: 7  # Default date range for newsletter (7 = weekly, 30 = monthly)
-  output_dir: "newsletters/"  # Directory for generated newsletters
-  formats:
-    - markdown  # Generate markdown format
-    - html      # Generate HTML format
-    - text      # Generate plain text format
 
 # Affiliate Program Configuration
 # Sign up for affiliate programs to earn commissions on movie rentals/purchases

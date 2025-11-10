@@ -494,77 +494,6 @@ class NRWOrchestrator:
         except Exception as e:
             return {'error': str(e)}
 
-    def generate_newsletter_if_enabled(self):
-        """Generate newsletter if auto-generation is enabled in config"""
-        try:
-            # Load configuration
-            config = {}
-            if os.path.exists('config.yaml'):
-                with open('config.yaml', 'r') as f:
-                    config = yaml.safe_load(f) or {}
-
-            newsletter_config = config.get('newsletter', {})
-            auto_generate = newsletter_config.get('auto_generate', False)
-
-            if auto_generate:
-                print("\n📧 Generating weekly newsletter...")
-
-                # Get configuration values
-                days_back = newsletter_config.get('days_back', 7)
-                output_dir = newsletter_config.get('output_dir', 'newsletters/')
-                formats = newsletter_config.get('formats', ['markdown', 'html', 'text'])
-
-                # Build command
-                cmd_parts = ['python3', 'generate_newsletter.py']
-                cmd_parts.extend(['--days', str(days_back)])
-                cmd_parts.extend(['--output-dir', output_dir])
-
-                if formats:
-                    if len(formats) == 3 and 'markdown' in formats and 'html' in formats and 'text' in formats:
-                        cmd_parts.extend(['--format', 'all'])
-                    else:
-                        # Generate each format separately
-                        for fmt in formats:
-                            if fmt in ['markdown', 'html', 'text']:
-                                result = subprocess.run(
-                                    cmd_parts + ['--format', fmt],
-                                    capture_output=True,
-                                    text=True,
-                                    timeout=60
-                                )
-                                if result.returncode == 0:
-                                    print(f"✅ Generated {fmt} newsletter")
-                                    if result.stdout.strip():
-                                        for line in result.stdout.strip().split('\n')[-2:]:  # Last 2 lines
-                                            if line.strip():
-                                                print(f"   {line}")
-                                else:
-                                    print(f"⚠️ Newsletter generation failed for {fmt}: {result.stderr}")
-                        return
-
-                # Run single command for all formats
-                result = subprocess.run(
-                    cmd_parts,
-                    capture_output=True,
-                    text=True,
-                    timeout=60
-                )
-
-                if result.returncode == 0:
-                    print("✅ Newsletter generated successfully")
-                    if result.stdout.strip():
-                        # Show last few lines of output
-                        for line in result.stdout.strip().split('\n')[-3:]:
-                            if line.strip():
-                                print(f"   {line}")
-                else:
-                    print(f"⚠️ Newsletter generation failed: {result.stderr}")
-
-            else:
-                print("\n📧 Newsletter auto-generation disabled (set newsletter.auto_generate: true in config.yaml)")
-
-        except Exception as e:
-            print(f"⚠️ Newsletter generation error: {e}")
 
     def extract_discovery_metrics(self):
         """Extract discovery metrics from JSON artifact or fallback to log parsing"""
@@ -938,8 +867,6 @@ class NRWOrchestrator:
             self.print_summary()
             sys.exit(1)
 
-        # Optional newsletter generation
-        self.generate_newsletter_if_enabled()
 
         # Pipeline stops here - do not write production data.json or commit changes
         # Admin will review drafts and trigger publish workflow

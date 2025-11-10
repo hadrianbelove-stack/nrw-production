@@ -65,7 +65,7 @@ The RT scraper follows this priority order:
 ## Score Extraction Status
 
 **Verification Complete (Oct 18, 2025):**
-- ✅ Implemented in `RTScraperPlaywright.scrape_rt_url()` method (rt_scraper_playwright.py)
+- ✅ Implemented in `RTScraperPlaywright.scrape_rt_score()` method (rt_scraper_playwright.py)
 - ✅ 6 selector fallbacks for score elements
 - ✅ Regex pattern `r'(\d+)%'` extracts percentage scores
 - ✅ Cached in cache/rt_cache.json with 90-day TTL

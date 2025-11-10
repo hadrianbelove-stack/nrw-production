@@ -1,7 +1,6 @@
 # New Release Wall (NRW) - Automated Movie Tracker
 
 ![Daily NRW Update](https://github.com/hadrianbelove-stack/nrw-production/actions/workflows/daily-check.yml/badge.svg)
-![Weekly Full Regeneration](https://github.com/hadrianbelove-stack/nrw-production/actions/workflows/weekly-full-regen.yml/badge.svg)
 
 ## Overview
 Automated tracking of theatrical releases becoming available digitally, displayed in Netflix-style interface.
@@ -79,17 +78,16 @@ python3 youtube_playlist_manager.py --help  # YouTube CLI
 
 ## Automation
 
+### Automation Strategy
+- **Daily:** Discovery, monitoring, and publishing (via `.github/workflows/daily-check.yml`)
+- **Manual:** Full regeneration and maintenance tasks (via admin panel Operations tab - planned)
+- **Philosophy:** Intentional maintenance over automated complexity
+
 ### Daily Updates (9 AM UTC)
 - Discovers new theatrical releases
 - Checks for digital availability
 - Commits directly to `main` branch
 - **Charter-aligned**: Simple, reliable, no sync complexity
-
-### Weekly Full Regeneration (Sunday 10 AM UTC)
-- Reprocesses ALL movies
-- Updates RT scores and watch links
-- Commits directly to `main` branch
-- **Matches**: October working automation
 
 ### Morning Review Checklist
 1. Check automation results on GitHub Actions
@@ -147,7 +145,7 @@ python3 admin.py           # Access at localhost:5556
 # Discovery and monitoring
 python3 generate_data.py --discover    # Find new releases
 python3 generate_data.py --check       # Monitor for digital availability
-python3 generate_data.py --full        # Full regeneration (weekly)
+python3 generate_data.py --full        # Full regeneration (manual, via admin panel)
 ```
 
 ### Session End

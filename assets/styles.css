@@ -70,8 +70,8 @@ header h1 {
 
 /* Inline date divider cards */
 .date-divider-card {
-    width: 215px;  /* Same width as movie cards */
-    height: 320px; /* Same height as movie cards */
+    width: 237px;  /* Same width as movie cards (189px + some margin) */
+    height: 352px; /* Same height as movie cards (282px + some margin) */
     background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
     border: 3px solid #00d4aa;
     border-radius: 15px;
@@ -129,8 +129,8 @@ header h1 {
 }
 
 .movie-card {
-    width: 172px;
-    height: 256px;
+    width: 189px;
+    height: 282px;
     perspective: 1000px;
     cursor: pointer;
     transition: transform 0.3s ease;
@@ -192,7 +192,7 @@ header h1 {
     font-size: 0.9rem;
     color: #bbb;
     line-height: 1.2;
-    max-width: 189px;
+    max-width: 207px;
     margin-left: auto;
     margin-right: auto;
 }

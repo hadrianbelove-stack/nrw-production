@@ -52,6 +52,32 @@
 - Integrated minimal keeps only for bugs
 - Blueprint updated for charter alignment
 
+## Phase 2: Admin Operations Tab (Planned)
+
+**Status:** Foundation staged, UI pending
+**Purpose:** Provide manual triggers for occasional maintenance tasks
+
+### Rationale
+Replaces automated weekly full regeneration with intentional, admin-triggered maintenance. Aligns with user preference: "basically as we improve the system we might want to occasionally apply the new principles to old data, but we would do it then on purpose."
+
+### Staged Components
+- Delta summary endpoint exists (`/delta-summary` in `admin.py`)
+- `compute_delta_summary()` function provides data quality metrics
+
+### Planned Features
+1. **Manual Full Regeneration** - Apply scraper improvements to historical data on demand
+2. **Refresh All RT Scores** - Update Rotten Tomatoes scores for existing movies
+3. **Rebuild Watch Links** - Re-scrape streaming links for all available movies
+4. **Delta Dashboard** - Visual summary of data quality issues (missing RT, trailers, links)
+5. **Cache Management** - Clear and rebuild various cache layers
+6. **Data Integrity Validation** - Run comprehensive checks on `movie_tracking.json` and `data.json`
+
+### Implementation Notes
+- Operations tab separate from main editing interface
+- Each operation runs in background with progress indicators
+- Admin chooses timing based on actual improvements made
+- No automated scheduling - all actions intentional
+
 **Priority Matrix**:
 1. Stage 1 complete (High: Align with charter)
 2. Stage 2 core revert (High: Restore efficiency)
