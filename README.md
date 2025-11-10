@@ -6,6 +6,19 @@
 ## Overview
 Automated tracking of theatrical releases becoming available digitally, displayed in Netflix-style interface.
 
+## Quick Start
+
+1. Make executable: `chmod +x launch_all.sh`
+2. Run: `./launch_all.sh`
+3. Select option 3 (Launch All) for full stack
+4. Access: Admin http://localhost:5556 (curation, no auth), Site http://localhost:3000
+
+Menu-driven interface handles everything - no separate terminals needed.
+
+For full menu details, see [docs/features/UNIFIED_LAUNCHER.md](docs/features/UNIFIED_LAUNCHER.md). Ctrl+C in 'All' mode stops both services cleanly.
+
+**Ports:** Standard Admin 5556, Site 3000; custom via env vars in launcher.
+
 ## 📚 Documentation
 
 **Start here for system understanding:**
@@ -19,7 +32,7 @@ Automated tracking of theatrical releases becoming available digitally, displaye
 **Additional guides:**
 - [Full workflow overview (automated + manual)](docs/NRW_FULL_WORKFLOW.md) - Complete system overview
 - [Admin diagnostics](docs/troubleshooting/admin_diagnostics.md) - Metrics and approval pattern analysis
-- [docs/features/](docs/features/) - Feature setup guides (YouTube, Substack, newsletter)
+- [docs/features/](docs/features/) - Feature setup guides (YouTube, Substack)
 - [docs/troubleshooting/](docs/troubleshooting/) - Troubleshooting guides
 - [docs/](docs/) - Technical documentation
 
@@ -48,33 +61,21 @@ NRW uses a **single-branch strategy** per PROJECT_CHARTER.md to avoid divergence
 
 ## Setup
 
-### Security Note ⚠️
+### Local Development
 
-**Admin Panel Credentials:** If using the admin panel beyond localhost, set `ADMIN_USERNAME` and `ADMIN_PASSWORD` as environment variables. Never use defaults in production.
-
-```bash
-# Set secure credentials before running admin panel
-export ADMIN_USERNAME="your-secure-username"
-export ADMIN_PASSWORD="your-secure-password"
-python3 admin.py --full-review
-```
-
-**Default credentials are only for local development and are automatically rejected in production environments.**
+**No authentication required** - the admin panel runs without credentials for local development.
 
 For setup prerequisites and architecture overview, see [SYSTEM_ARCHITECTURE.md](SYSTEM_ARCHITECTURE.md) Section 2 (Branch Strategy).
 
-## Quick Start
+## Launch Commands
 
 ```bash
-# Interactive launcher with menu (recommended)
+# Unified launcher (recommended)
 ./launch_all.sh
 
-# Or launch specific tools directly:
-python3 admin.py             # Admin panel (port 5555, requires auth)
+# Additional tools:
 python3 youtube_playlist_manager.py --help  # YouTube CLI
 ```
-
-**For detailed usage and features:** See inline menu help
 
 ## Automation
 
@@ -106,16 +107,16 @@ Trigger workflows manually in GitHub Actions tab → Select workflow → "Run wo
 - Discovery: `generate_data.py --discover` → TMDB API → `movie_tracking.json`
 - Generation: `movie_tracking.json` → `generate_data.py` → `data.json`
 - Display: `index.html` → `assets/app.js` + `data.json`
-- Admin: `admin.py` (port 5555) → manual corrections → regenerate
+- Admin: `admin.py` (port 5556) → manual corrections → regenerate
 
 **For detailed architecture:** See [SYSTEM_ARCHITECTURE.md](SYSTEM_ARCHITECTURE.md)
 
 
 ## Admin Panel
 
-**Launch:** `./launch_all.sh` (option 2) or `python3 admin.py` → `http://localhost:5555`
+**Launch:** `./launch_all.sh` or `python3 admin.py` → `http://localhost:5556`
 
-**Authentication:** See SYSTEM_ARCHITECTURE.md §4.2 (API Keys & Secrets)
+**Authentication:** None required for local development
 
 **Key features:**
 - Hide/feature movies (post-publication curation)
@@ -127,22 +128,12 @@ Trigger workflows manually in GitHub Actions tab → Select workflow → "Run wo
 
 **For detailed workflow and best practices:** See [ADMIN_WORKFLOW.md](ADMIN_WORKFLOW.md)
 
-## Newsletter Generation
-
-Generate weekly newsletters in multiple formats (Markdown, HTML, plain text).
-
-```bash
-python3 generate_newsletter.py  # Generate all formats for past 7 days
-python3 generate_newsletter.py --format markdown --days 14  # Custom options
-```
-
-**For detailed usage, output formats, workflow, and troubleshooting:** See [docs/features/SUBSTACK_NEWSLETTER_GUIDE.md](docs/features/SUBSTACK_NEWSLETTER_GUIDE.md)
 
 ## Daily Workflow
 
 ### Session Start
 1. **Load context**: Read DAILY_CONTEXT.md → PROJECT_CHARTER.md → NRW_DATA_WORKFLOW_EXPLAINED.md
-2. **Start services**: Run `./launch_all.sh` and choose Option 4 (All Services)
+2. **Start services**: Run `./launch_all.sh` (select option 3 for full stack)
 3. **Check status**: Review daily automation results and any issues in DAILY_CONTEXT.md
 
 ### Manual Pipeline Operations
@@ -150,8 +141,8 @@ python3 generate_newsletter.py --format markdown --days 14  # Custom options
 # Standard data generation
 python3 generate_data.py
 
-# Quality assurance interface
-python3 admin.py           # Access at localhost:5555
+# Quality assurance interface (or via launcher option 1)
+python3 admin.py           # Access at localhost:5556
 
 # Discovery and monitoring
 python3 generate_data.py --discover    # Find new releases

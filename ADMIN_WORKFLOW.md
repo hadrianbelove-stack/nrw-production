@@ -8,14 +8,15 @@
 
 NRW uses a **drafts→publish workflow** where daily discovery generates draft content for optional admin review and selective publishing. The admin panel serves as an optional curation tool when editorial review is desired.
 
-### Security Reminder ⚠️
+### Launch via Single Script
 
-**Never use default admin credentials beyond localhost.** Set `ADMIN_USERNAME` and `ADMIN_PASSWORD` environment variables for any non-local usage:
+**Launch via `./launch_all.sh` to start admin panel (port 5556)**
 
 ```bash
-export ADMIN_USERNAME="your-secure-username"
-export ADMIN_PASSWORD="your-secure-password"
+./launch_all.sh
 ```
+
+No authentication required for local use.
 
 **Core Philosophy**: Optional draft-based review → Selective publishing → Quality-first curation (when desired)
 
@@ -28,7 +29,7 @@ movie_tracking.json (All Movies Database)
     ↓ Generates drafts with candidate content
 admin/drafts/ (Draft Queue - awaiting review)
     ↓ Admin reviews drafts, edits titles
-Admin Panel (http://localhost:5555)
+Admin Panel (http://localhost:5556)
     ↓ Click "Publish" on approved drafts
 data.json (Public Display Data)
     ↓ Deploy Workflow triggers automatically
@@ -133,9 +134,9 @@ Inline editing of all movie metadata with manual correction tracking.
 
 2. **Access Admin Panel**
    ```bash
-   python3 admin.py
+   ./launch_all.sh
    ```
-   Opens admin interface at `http://localhost:5555`
+   Opens admin interface at `http://localhost:5556`
 
 3. **Review Draft Queue**
    - Navigate to "Drafts" section in admin panel
@@ -212,19 +213,17 @@ The `admin.py` implements secure draft publishing with validation:
 - **Uniqueness Check**: Prevents duplicate slug generation conflicts
 - **Link Sanity**: Basic validation of any watch links or metadata
 
-#### Security Features
-- **Authentication**: HTTP Basic Auth required for all admin endpoints
-- **CSRF Protection**: Token validation for all state-changing operations
+#### Local Development Features
+- **No Authentication**: Direct access enabled for local development
 - **Audit Logging**: All publish actions logged with user, timestamp, and metadata
-- **HTTPS Enforcement**: Automatic redirect to HTTPS in production environments
-- **Session Security**: Secure session configuration with proper secret key
+- **Session Security**: Secure session configuration for safety
+- **Development Mode**: Simplified access without credentials
 
-### Authentication
-The admin panel uses HTTP Basic Authentication with default credentials:
-- **Default credentials**: `admin` / `changeme`
-- **Override**: Set `ADMIN_USERNAME` and `ADMIN_PASSWORD` environment variables
-
-**⚠️ SECURITY WARNING: Change default credentials immediately in any shared or deployed environment; set `ADMIN_USERNAME`/`ADMIN_PASSWORD` via environment variables.**
+### Access
+The admin panel runs without authentication for local development:
+- **Local access**: http://localhost:5556 (no credentials needed)
+- **Launch command**: `./launch_all.sh` starts both admin and site
+- **Development mode**: Direct access enabled for ease of use
 
 ### Optional Draft-Based Content Flow
 By default, daily automation auto-commits discovered content directly to `main` without requiring admin approval. When editorial review is desired, the **draft system** provides optional curation. The automation adds movies to `movie_tracking.json` and can generate candidate drafts in `admin/drafts/` for manual review and selective publishing.

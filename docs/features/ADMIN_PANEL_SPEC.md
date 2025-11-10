@@ -85,7 +85,7 @@ All edits saved to `movie_tracking.json` with flags:
 ## Implementation Details
 
 ### File Structure
-**File:** `admin.py` (Flask application on port 5555)
+**File:** `admin.py` (Flask application on port 5556)
 
 ### Routes
 - `/` - Main admin panel with inline editing UI
@@ -103,7 +103,7 @@ Embedded JavaScript with fetch API for AJAX operations
 ## Daily Curation Workflow
 
 ### Morning Routine
-1. Open http://localhost:5555 (after automation has run)
+1. Open http://localhost:5556 (after automation has run)
 2. Review new movies on public site to identify candidates for hiding/featuring
 3. Click "⚠️ Missing Data (93)" to see incomplete movies
 4. For each flagged movie:

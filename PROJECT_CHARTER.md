@@ -23,14 +23,8 @@ The New Release Wall is a **Blockbuster wall for the streaming age**. It exists 
 
 ## Core Rules
 1. **Immutable Charter** — `PROJECT_CHARTER.md` in repo root is the sacrosanct source. Updated only via amendments.
-2. **Golden Snapshots** — Capture code state with tags and immutable archives for anti-drift.
-3. **Session Workflow**
-   - Steps are numbered (7a, 7b…)
-   - Every block declares run condition (*Run now*, *Wait*, *Run in parallel*)
-   - No vague phrases
-   - Optional steps list pros/cons
-   - End each batch with **⚡ To keep moving** summary
-4. **Tactical Planning** — `IMPLEMENTATION_ROADMAP.md` serves as the canonical tactical plan for prioritized implementation work
+2. **No Unauthorized Coding** — Assistant must never write, modify, or create code without explicit user approval. All unspecified changes must be presented as suggestions with clear explanations of what the code does and why it's needed. User approval required before any implementation.
+3. **Tactical Planning** — `IMPLEMENTATION_ROADMAP.md` serves as the canonical tactical plan for prioritized implementation work
 
 ## Current System State
 - **Runtime entry:** `index.html` loads `assets/styles.css` and `assets/app.js`, then initializes the wall
@@ -53,22 +47,16 @@ Archive via `diary/YYYY-MM-DD.md` (immutable end-of-session snapshots)
 
 ## Active Amendment Table
 
-| New ID | Category | Summary | Impact | See Also |
+| ID | Category | Summary | Impact | See Also |
 |--------|----------|---------|--------|----------|
 | 001-011 | Process | AI/ops discipline (numbering, assumptions, run semantics, scripts, safeguards, idle time, summary, mode awareness, operational safeguards, multiple solutions, roadmap discipline) | AI behavior & operator workflow | Ops: README.md §Daily Workflow |
-| 012 | System | Database update cadence - generate_data handles discovery+providers | Daily ops automation | Spec: SYSTEM_ARCHITECTURE.md §Pipeline |
-| 013-019 | Data/UI | Tracking strategy, SSOT contract, waterfall mandate, schema lock, runtime hierarchy, UI contract, pipeline contract | Data integrity & UI consistency | Spec: SYSTEM_ARCHITECTURE.md §Data Contracts |
-| 020-021 | Context | Rolling daily context; three-file loading pattern | Session start workflow | DAILY_CONTEXT.md |
-| 022 | Feature | Watchmode API integration for watch links | Watch links coverage | Spec: SYSTEM_ARCHITECTURE.md §4 (Configuration & Secrets) |
-| 023 | Feature | Agent link scraper (Playwright) + overrides fallback stack | Watch links fallback | docs/features/AGENT_LINK_SCRAPER.md |
-| 024 | Feature | RT scraper inlined, rate limiting, coverage | Enrichment pipeline | docs/features/RT_SCRAPER.md |
-| 026 | Ops | OAuth token recovery & incident handling | Reliability operations | diary/ (incident entries) |
-| 027 | Feature | Admin panel post-publication curation model | Data quality curation | docs/features/ADMIN_PANEL_SPEC.md |
-| 028 | System | Production discovery architecture & filter policy | Discovery optimization | docs/features/DISCOVERY_FILTERS.md |
-| 029 | Data | Bootstrap date accuracy policy & tools | Data quality transparency | date_verification.py |
-| 030 | Feature | Newsletter generation with reviews | Content generation | docs/features/NEWSLETTER_GENERATOR.md |
-| 031 | Ops | Unified launcher for daily operations | Dev ergonomics | docs/features/UNIFIED_LAUNCHER.md |
-| 032 | Governance | Documentation discipline & root cleanliness | Repo hygiene | Ops: README.md §Docs |
+| 012-013 | Context | Rolling daily context & three-file loading pattern | Session management | DAILY_CONTEXT.md |
+| 014 | Governance | Documentation discipline & root cleanliness | Repo hygiene | Ops: README.md §Docs |
+| 015 | Process | Minimal implementation principle | Prevents scope creep | Applied to all changes |
+| 016 | Process | Source first discipline | Prevents assumption mistakes | Applied to all references |
+| 017 | Governance | Charter vs implementation separation | Keeps charter clean | PROJECT_CHARTER.md vs IMPLEMENTATION_ROADMAP.md |
+
+**Note:** Former tactical amendments (022-031) moved to IMPLEMENTATION_ROADMAP.md as completed implementation decisions, not governance principles.
 
 ## Active Amendments
 
@@ -175,78 +163,41 @@ Archive via `diary/YYYY-MM-DD.md` (immutable end-of-session snapshots)
 **Status:** ✅ Active - legacy tracker archived
 **Spec:** SYSTEM_ARCHITECTURE.md §Daily Pipeline
 
-### 020: Rolling Daily Context
+### 012: Rolling Daily Context
 **Decision:** DAILY_CONTEXT.md = living document, always current, overwritten each session. diary/YYYY-MM-DD.md = end-of-session archives (immutable).
 **Scope:** Replaces stale complete_project_context.md. Format: Current State, What We Did, Known Issues, Next Priorities, Files Changed.
 **Status:** ✅ Active - start sessions by reading DAILY_CONTEXT.md; end by archiving to diary/
 **Spec:** DAILY_CONTEXT.md
 
-### 021: Daily Context System (Three-File Loading Pattern)
+### 013: Daily Context System (Three-File Loading Pattern)
 **Decision:** Three-file loading pattern for token-efficient session handoffs.
 **Scope:** DAILY_CONTEXT.md (primary), PROJECT_CHARTER.md (governance), NRW_DATA_WORKFLOW_EXPLAINED.md (technical). Archive via ops/archive_daily_context.sh.
 **Status:** ✅ Active - diary/ archives immutable, supersedes complete_project_context.md
 **Spec:** DAILY_CONTEXT.md
 
-### 022: Watchmode API Integration for Watch Links
-**Decision:** Watchmode API integration for direct streaming platform links.
-**Scope:** Two-step API (TMDB ID → Watchmode ID → deep links), watch_links schema {streaming/rent/buy}, cache system, 1,000 requests/month budget.
-**Status:** ✅ Active - ~75% of free tier usage, Agent fallback for gaps
-**Spec:** docs/features/WATCHMODE.md
-
-### 023: Agent-Based Link Finding for Streaming Platforms
-**Decision:** Agent-based Playwright scraper with overrides stack for Watchmode gaps.
-**Scope:** Three-tier system (Watchmode → Playwright scraping → null), manual overrides, 6 selectors per platform, screenshot diagnostics.
-**Status:** ✅ Active - Netflix/Disney+/HBO Max/Hulu fallback support
-**Spec:** docs/features/AGENT_LINK_SCRAPER.md
-
-### 024: RT Scraper Integration and Inlining
-**Decision:** Inline RT scraper into generate_data.py with unified rate limiting.
-**Scope:** RT consolidation, 2-second rate limiting, 72.9% coverage, selector fallbacks.
-**Status:** ✅ Active - waterfall integration complete
-**Spec:** docs/features/RT_SCRAPER.md
-
-
-### 026: Authentication Token Management
-**Decision:** Authentication token management and incident recovery procedures.
-**Scope:** OAuth expiration handling, manual commit fallback, retroactive diary creation, work preservation priority.
-**Status:** ✅ Active - manual commit button as failsafe
-**Spec:** diary/ (incident entries)
-
-### 027: Admin Panel - Post-Publication Curation & Data Quality
-**Decision:** Admin panel post-publication curation model with inline editing.
-**Scope:** QA database editor, missing data detection, manual corrections, YouTube integration, daily curation workflow.
-**Status:** ✅ Active - 93 flagged movies, inline editing operational
-**Spec:** docs/features/ADMIN_PANEL_SPEC.md
-
-### 028: Production Discovery Architecture
-**Decision:** Production discovery architecture with consolidation and filter policy.
-**Scope:** Unified generate_data.py discovery, remove vote_count filter, provider availability primary filter, legacy system archived.
-**Status:** ✅ Active - 5-10x discovery rate increase, 1,956 stuck movies fixed
-**Spec:** docs/features/DISCOVERY_FILTERS.md
-
-### 029: Bootstrap Date Accuracy & Data Quality Policy
-**Decision:** Bootstrap date accuracy policy with transparency and correction tools.
-**Scope:** Flag 50+ legacy movies with bootstrap_date=true, manual correction via admin panel/date_verification.py, visual indicators on frontend.
-**Status:** ✅ Active - transparency over hiding, gradual manual correction
-**Spec:** date_verification.py
-
-### 030: Newsletter & Reviews System
-**Decision:** Newsletter generation system with editorial reviews and multi-format output.
-**Scope:** Review storage in admin panel, newsletter generator (Markdown/HTML/plain text), platform grouping, CLI interface, weekly/monthly distribution.
-**Status:** ✅ Active - editorial review workflow operational
-**Spec:** docs/features/NEWSLETTER_GENERATOR.md
-
-### 031: Unified Launcher for Daily Operations
-**Decision:** Unified launcher (launch_all.sh) with menu interface for all NRW tools.
-**Scope:** Menu-driven interface, process management, browser auto-open, Option 4 (All Services) for daily workflow.
-**Status:** ✅ Active - single entry point replaces individual scripts
-**Spec:** docs/features/UNIFIED_LAUNCHER.md
-
-### 032: Documentation Discipline & Root Cleanliness
+### 014: Documentation Discipline & Root Cleanliness
 **Decision:** Root cleanliness with seven-file whitelist and docs/ organization.
 **Scope:** Seven root .md files only, session findings → diary/, features → docs/features/, troubleshooting → docs/troubleshooting/, pre-commit hook enforcement.
 **Status:** ✅ Active - PROJECT_CHARTER.md under 1000 lines, never create root .md without approval
 **Spec:** README.md §Docs
+
+### 015: Minimal Implementation Principle
+**Decision:** Implement only what is explicitly requested. No feature additions, improvements, or anticipatory work without explicit approval.
+**Scope:** Covers both code changes and file creation. Default to simplest possible implementation.
+**Status:** ✅ Active - prevents over-engineering and scope creep
+**Spec:** Applied to all implementation decisions
+
+### 016: Source First Discipline
+**Decision:** Never reference or implement based on documents, requirements, or specifications without reading them first using available tools.
+**Scope:** Applies to amendments, configs, existing code, and external requirements.
+**Status:** ✅ Active - prevents building wrong solutions based on assumptions
+**Spec:** Must use Read tool before claiming what documents say
+
+### 017: Charter vs Implementation Separation
+**Decision:** Charter contains only timeless governance principles. All tactical decisions belong in IMPLEMENTATION_ROADMAP.md.
+**Scope:** Test: "Is this how to work (charter) or what to build (roadmap)?"
+**Status:** ✅ Active - keeps charter focused on governance
+**Spec:** PROJECT_CHARTER.md vs IMPLEMENTATION_ROADMAP.md
 
 # PART 3: CURRENT CONFIGURATION
 

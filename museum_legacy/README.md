@@ -226,8 +226,8 @@ This directory contains scrapers that have been superseded by better solutions o
 #### rt_scraper.py
 - **Archived:** Oct 17, 2025
 - **Original Purpose:** Basic RT search and URL extraction (v1)
-- **Why Archived:** Superseded by `scripts/rt_scraper.py` (v2), then inlined into generate_data.py (v3)
-- **Replacement:** Inlined RT scraper in `generate_data.py`
+- **Why Archived:** Old version, replaced by external `rt_scraper_playwright.py` (Playwright) invoked by `generate_data.py`
+- **Replacement:** External `rt_scraper_playwright.py` (Playwright) invoked by `generate_data.py`
 - **Technology:** Selenium-based browser automation (no cache management)
 - **Migration Notes:** Use inlined RT scraper (automatic during data generation)
 

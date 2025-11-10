@@ -66,7 +66,7 @@ This document provides a high-level overview of the complete NRW workflow, combi
 
 **Admin Review** (User-triggered):
 1. Pull latest changes: `git pull origin main`
-2. Launch admin panel: `python3 admin.py`
+2. Launch admin panel: `./launch_all.sh`
 3. Review new movies and apply curation decisions
 4. Regenerate data: Click "🔄 Regenerate data.json"
 

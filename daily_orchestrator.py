@@ -872,7 +872,7 @@ class NRWOrchestrator:
         discovery_retries = int(os.getenv('DISCOVERY_RETRIES', orchestrator_config.get('discovery_retries', 2)))
         retry_delays = orchestrator_config.get('discovery_retry_delays', [30, 45])
 
-        # Pipeline steps - modified to include mandatory admin approval gate
+        # Pipeline steps for daily discovery and publication
         discovery_pipeline = [
             # Phase 1: Production Discovery (replaces legacy movie_tracker.py daily) - with retries
             ("python3 generate_data.py --discover",

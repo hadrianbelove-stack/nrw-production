@@ -100,7 +100,7 @@ If you need to understand test purpose and status, refer to the sections below. 
 - **Context**: Created during async fix verification
 - **Status**: UNKNOWN (never run or documented)
 
-#### test_rt_scraper_inline.py
+#### test_rt_scraper_playwright.py
 - **Purpose**: Test inlined RT scraper functionality
 - **Context**: Created when RT scraping was migrated into generate_data.py (Oct 17-19, 2025)
 - **Status**: UNKNOWN (isolation test, results not documented)
@@ -122,7 +122,7 @@ If you need to understand test purpose and status, refer to the sections below. 
 | test_eventloop_in_generate.py | UNKNOWN | N/A | Debugging tool |
 | test_wikipedia_scraper.py | UNKNOWN | N/A | Never documented |
 | test_wikipedia_known_movies.py | UNKNOWN | N/A | Never documented |
-| test_rt_scraper_inline.py | UNKNOWN | N/A | Never documented |
+| test_rt_scraper_playwright.py | UNKNOWN | N/A | Never documented |
 
 ## Historical Context
 

@@ -17,9 +17,22 @@ function updatePendingBadge() {
 
     if (pendingChangesCount > 0) {
         btn.innerHTML = `💾 Save Changes (${pendingChangesCount})`;
+        btn.disabled = false;
+        btn.style.opacity = '1';
+        btn.style.cursor = 'pointer';
+        btn.classList.remove('saved');
     } else {
-        btn.innerHTML = '💾 Save Changes';
+        btn.innerHTML = '✓ Saved';
+        btn.disabled = true;
+        btn.style.opacity = '0.5';
+        btn.style.cursor = 'not-allowed';
+        btn.classList.add('saved');
     }
+}
+
+function viewSite() {
+    // Open the main site in a new tab
+    window.open('../index.html', '_blank');
 }
 
 function showSuccess(message = 'Changes saved!') {
@@ -213,158 +226,6 @@ function regenerateData() {
         btn.disabled = false;
         btn.style.opacity = '1';
         btn.style.cursor = 'pointer';
-    });
-}
-
-// Draft management functions
-let drafts = [];
-
-function fetchDrafts() {
-    fetch('/drafts')
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            drafts = data.drafts || [];
-            renderDraftsList(drafts);
-        } else {
-            console.error('Failed to fetch drafts:', data.error);
-        }
-    })
-    .catch(error => {
-        console.error('Error fetching drafts:', error);
-    });
-}
-
-function renderDraftsList(drafts) {
-    const container = document.getElementById('drafts-list');
-    if (!container) return;
-
-    if (drafts.length === 0) {
-        container.innerHTML = '<div class="draft-empty">No drafts available</div>';
-        return;
-    }
-
-    // Sort by creation date, newest first
-    const sortedDrafts = drafts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-    container.innerHTML = sortedDrafts.map(draft => `
-        <div class="draft-item" data-draft-id="${draft.id}">
-            <div class="draft-header">
-                <h4>Draft ${draft.id}</h4>
-                <span class="draft-date">${new Date(draft.createdAt).toLocaleDateString()}</span>
-            </div>
-            <div class="draft-stats">
-                <span>${draft.movieIds?.length || 0} movies</span>
-                ${draft.lastModified ? `<span>Modified: ${new Date(draft.lastModified).toLocaleDateString()}</span>` : ''}
-            </div>
-            <div class="draft-actions">
-                <button class="action-btn btn-small" onclick="editDraftTitles('${draft.id}')">✏️ Edit Titles</button>
-                <button class="action-btn btn-small success" onclick="publishDraft('${draft.id}')">🚀 Publish</button>
-            </div>
-            <div class="draft-titles-editor" id="titles-editor-${draft.id}" style="display: none;">
-                <h5>Edit Movie Titles</h5>
-                <div class="titles-list" id="titles-list-${draft.id}"></div>
-                <div class="editor-actions">
-                    <button class="action-btn btn-small" onclick="saveDraftTitles('${draft.id}')">💾 Save</button>
-                    <button class="action-btn btn-small" onclick="cancelEditTitles('${draft.id}')">❌ Cancel</button>
-                </div>
-            </div>
-        </div>
-    `).join('');
-}
-
-function editDraftTitles(draftId) {
-    const draft = drafts.find(d => d.id === draftId);
-    if (!draft) return;
-
-    const editor = document.getElementById(`titles-editor-${draftId}`);
-    const titlesList = document.getElementById(`titles-list-${draftId}`);
-
-    if (!editor || !titlesList) return;
-
-    // Render title inputs
-    const titlesHtml = (draft.movieIds || []).map((movieId, index) => {
-        const title = (draft.titles && draft.titles[index]) || '';
-        return `
-            <div class="title-input-row">
-                <span class="movie-id">Movie ${movieId}:</span>
-                <input type="text"
-                       class="title-input"
-                       id="title-${draftId}-${index}"
-                       value="${title}"
-                       placeholder="Enter movie title">
-            </div>
-        `;
-    }).join('');
-
-    titlesList.innerHTML = titlesHtml;
-    editor.style.display = 'block';
-}
-
-function saveDraftTitles(draftId) {
-    const draft = drafts.find(d => d.id === draftId);
-    if (!draft) return;
-
-    // Collect updated titles
-    const updatedTitles = [];
-    (draft.movieIds || []).forEach((movieId, index) => {
-        const input = document.getElementById(`title-${draftId}-${index}`);
-        if (input) {
-            updatedTitles.push(input.value.trim());
-        }
-    });
-
-    fetch(`/drafts/${draftId}`, {
-        method: 'PATCH',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ titles: updatedTitles })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showSuccess('Draft titles updated successfully');
-            cancelEditTitles(draftId);
-            fetchDrafts(); // Refresh the list
-        } else {
-            alert('Failed to update titles: ' + (data.error || 'Unknown error'));
-        }
-    })
-    .catch(error => {
-        alert('Error updating titles: ' + error);
-    });
-}
-
-function cancelEditTitles(draftId) {
-    const editor = document.getElementById(`titles-editor-${draftId}`);
-    if (editor) {
-        editor.style.display = 'none';
-    }
-}
-
-function publishDraft(draftId) {
-    if (!confirm(`Are you sure you want to publish draft ${draftId}? This will update the live site.`)) {
-        return;
-    }
-
-    fetch(`/drafts/${draftId}/publish`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showSuccess(`Draft ${draftId} published successfully!`);
-            fetchDrafts(); // Refresh the list (published draft should be removed)
-        } else {
-            alert('Failed to publish draft: ' + (data.error || 'Unknown error'));
-        }
-    })
-    .catch(error => {
-        alert('Error publishing draft: ' + error);
     });
 }
 
@@ -792,6 +653,9 @@ function saveOrdering() {
             // Mark cards as pinned
             updatePinnedIndicators(orderedIds);
 
+            // Increment pending changes counter
+            incrementPendingCount();
+
             exitOrderingMode();
             showSuccess(data.message || `Editorial ordering saved with ${data.ordered_count || orderedIds.length} movies`);
         } else {
@@ -1025,6 +889,9 @@ function addMovie() {
             status.textContent = '✅ ' + (data.message || 'Movie added successfully!');
             status.style.color = '#28a745';
 
+            // Increment pending changes counter
+            incrementPendingCount();
+
             // Show success and close modal after delay
             showSuccess(data.message || 'Movie added successfully!');
 
@@ -1161,6 +1028,9 @@ function validateText(text, minLength, maxLength, fieldType) {
 
 // Initialize character counters on page load
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Save Changes button state
+    updatePendingBadge();
+
     // Initialize synopsis counters
     document.querySelectorAll('[id^="synopsis-"]').forEach(textarea => {
         if (textarea.tagName === 'TEXTAREA') {
@@ -1173,11 +1043,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Load delta summary
     if (document.getElementById('delta-sidebar')) {
         refreshDeltaSummary();
-    }
-
-    // Fetch and render drafts if drafts section exists
-    if (document.getElementById('drafts-list')) {
-        fetchDrafts();
     }
 });
 

@@ -617,6 +617,63 @@ The original test invalidation notice from 2025-10-24 regarding TMDB API configu
 | FUTURE-001 | Pagination | 📋 Future | 📋 Acknowledged | Performance |
 | FUTURE-002 | Schema gaps | 📋 Future | 🟢 Acceptable | Data quality |
 
+## Completed Tactical Decisions (Moved from Charter)
+
+**Note:** These were removed from PROJECT_CHARTER.md (2025-11-09) as they are implementation decisions, not governance principles.
+
+**022: Watchmode API Integration for Watch Links**
+- **Decision:** Watchmode API integration for direct streaming platform links
+- **Scope:** Two-step API (TMDB ID → Watchmode ID → deep links), watch_links schema {streaming/rent/buy}, cache system, 1,000 requests/month budget
+- **Status:** ✅ Completed - ~75% of free tier usage, Agent fallback for gaps
+- **Spec:** docs/features/WATCHMODE.md
+
+**023: Agent-Based Link Finding for Streaming Platforms**
+- **Decision:** Agent-based Playwright scraper with overrides stack for Watchmode gaps
+- **Scope:** Three-tier system (Watchmode → Playwright scraping → null), manual overrides, 6 selectors per platform, screenshot diagnostics
+- **Status:** ✅ Completed - Netflix/Disney+/HBO Max/Hulu fallback support
+- **Spec:** docs/features/AGENT_LINK_SCRAPER.md
+
+**024: RT Scraper Integration and Inlining**
+- **Decision:** Inline RT scraper into generate_data.py with unified rate limiting
+- **Scope:** RT consolidation, 2-second rate limiting, 72.9% coverage, selector fallbacks
+- **Status:** ✅ Completed - waterfall integration complete
+- **Spec:** docs/features/RT_SCRAPER.md
+
+**026: Authentication Token Management**
+- **Decision:** Authentication token management and incident recovery procedures
+- **Scope:** OAuth expiration handling, manual commit fallback, retroactive diary creation, work preservation priority
+- **Status:** ✅ Completed - manual commit button as failsafe
+- **Spec:** diary/ (incident entries)
+
+**027: Admin Panel - Post-Publication Curation & Data Quality**
+- **Decision:** Admin panel post-publication curation model with inline editing
+- **Scope:** QA database editor, missing data detection, manual corrections, YouTube integration, daily curation workflow
+- **Status:** ✅ Completed - 93 flagged movies, inline editing operational
+- **Spec:** docs/features/ADMIN_PANEL_SPEC.md
+
+**028: Production Discovery Architecture**
+- **Decision:** Production discovery architecture with consolidation and filter policy
+- **Scope:** Unified generate_data.py discovery, remove vote_count filter, provider availability primary filter, legacy system archived
+- **Status:** ✅ Completed - 5-10x discovery rate increase, 1,956 stuck movies fixed
+- **Spec:** docs/features/DISCOVERY_FILTERS.md
+
+**029: Bootstrap Date Accuracy & Data Quality Policy**
+- **Decision:** Bootstrap date accuracy policy with transparency and correction tools
+- **Scope:** Flag 50+ legacy movies with bootstrap_date=true, manual correction via admin panel/date_verification.py, visual indicators on frontend
+- **Status:** ✅ Completed - transparency over hiding, gradual manual correction
+- **Spec:** date_verification.py
+
+**030: Newsletter & Reviews System**
+- **Decision:** Newsletter generation system with editorial reviews and multi-format output
+- **Scope:** Review storage in admin panel, newsletter generator (Markdown/HTML/plain text), platform grouping, CLI interface, weekly/monthly distribution
+- **Status:** ✅ Completed - editorial review workflow operational
+
+**031: Unified Launcher for Daily Operations**
+- **Decision:** Single-command launcher (launch_all.sh) for both admin panel and public site
+- **Scope:** One-command launch, background admin + foreground site, port conflict handling, no authentication
+- **Status:** ✅ Completed - single `./launch_all.sh` command for both services
+- **Spec:** docs/features/UNIFIED_LAUNCHER.md
+
 ## Implementation Sequence
 
 **Completed:**

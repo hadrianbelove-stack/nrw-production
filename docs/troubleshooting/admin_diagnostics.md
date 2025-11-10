@@ -194,7 +194,7 @@ jq -r '.date' metrics/daily.jsonl | sort | uniq | tail -10
 ### Missing Metrics Entries
 **Symptom:** No entries in daily.jsonl for recent dates
 **Cause:** Optional review mode not enabled or admin panel not used
-**Solution:** Enable optional review mode if needed, or run `python3 admin.py --full-review` and use "Approve & Generate" button
+**Solution:** Enable optional review mode if needed, or run `./launch_all.sh` and use "Approve & Generate" button
 
 ### Inconsistent Delta Data
 **Symptom:** Metrics entry doesn't match approval.json

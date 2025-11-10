@@ -22,7 +22,7 @@ The RT Scraper is an integrated component of the NRW data pipeline that automati
   - Page scraping with selector fallbacks
   - Cache persistence and retrieval
   - Statistics tracking (attempts, successes, cache hits)
-- **Methods:** `scrape_rt_url(title, year)` - Main entry point called by `DataGenerator.find_rt_url()`
+- **Methods:** `scrape_rt_score(title, year)` - Main entry point called by `DataGenerator.find_rt_url()`, returns `{url, score}`
 
 ### Rate Limiting
 
@@ -80,9 +80,9 @@ The RT scraper follows this priority order:
 
 - **File:** `cache/rt_cache.json`
 - **Key:** `{title}_{year}` (e.g., "Landmarks_2025")
-- **Value:** `{url: string, score: string}` or `null` for failures
-- **Format:** Same as before (backward compatible)
-- **TTL:** 90 days (RT links are stable)
+- **Value:** `{url: string, score: string, title: string, scraped_at: string}` or `null` for failures
+- **Format:** Includes `scraped_at` ISO timestamp field for TTL calculation
+- **TTL:** 90 days (RT links are stable), TTL depends on `scraped_at` timestamp
 
 ## Performance Impact
 
@@ -105,8 +105,9 @@ rt_scraper:
 
 ## Files Deprecated
 
-- `scripts/rt_scraper.py` - Superseded by `rt_scraper_playwright.py` (Playwright migration)
-- Root `rt_scraper.py` - Old Selenium version, replaced by Playwright version
+- `museum_legacy/scripts_rt_scraper.py` - Superseded by `rt_scraper_playwright.py` (Playwright migration)
+- `museum_legacy/scripts/rt_scrape.py` - Old scripts version, archived
+- `museum_legacy/rt_scraper.py` - Root Selenium version, replaced by Playwright version
 - `update_rt_data.py` - No longer needed (RT scraping is automatic)
 - `bootstrap_rt_cache.py` - No longer needed (RT scraping is automatic)
 
@@ -114,7 +115,7 @@ These files have been archived to `museum_legacy/`.
 
 ## Testing
 
-- Standalone tests available in `tests/test_rt_scraper_inline.py`
+- Standalone tests available in `tests/test_rt_scraper_playwright.py`
 - Tests cache hits, fresh scrapes, rate limiting, error handling
 - Verifies statistics tracking
 - Tests with known movies: "Landmarks", "Inspector Zende", "The Substance"

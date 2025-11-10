@@ -78,7 +78,7 @@ git push origin main
 |--------|---------|---------|-----------|
 | `daily_orchestrator.py` | Daily automation controller | 30s | Daily |
 | `generate_data.py` | Data processing engine | 20-30s | Daily |
-| `admin.py` | Web admin interface | N/A | On-demand |
+| `admin.py` | Web admin interface | N/A | Via `./launch_all.sh` |
 
 ### 3.4 Scrapers
 
@@ -127,9 +127,10 @@ All API keys follow the 12-factor app pattern:
 - `WATCHMODE_API_KEY` - Watchmode streaming links API key
 - `OMDB_API_KEY` - OMDb API key (optional, for fallbacks)
 
-**Admin Panel Security:**
-- `ADMIN_USERNAME` - Admin panel username (default: admin)
-- `ADMIN_PASSWORD` - Admin panel password (default: admin)
+**Launch Method:**
+- `./launch_all.sh` - launches both admin panel (5556) and public site (3000)
+- Background admin + foreground site, single command operation
+- No authentication required for local development
 
 **Local Development:**
 See `config.yaml` for local development configuration. Replace placeholder values with real API keys. Never commit real keys to version control.
@@ -404,7 +405,7 @@ Phase 2: Enrichment (ONLY newly available)
     ↓ Caching: 99.4% efficiency (328/330 cached)
 
 Phase 3: Quality Assurance
-    ↓ admin.py (manual QA interface)
+    ↓ admin.py (manual QA interface - launch via ./launch_all.sh)
     ↓ Validates: Links, ratings, metadata
     ↓ See ADMIN_WORKFLOW.md for the operational steps
 
@@ -708,7 +709,7 @@ See Section 5 above for detailed enrichment-on-transition caching.
 ### 7.5 Admin Panel
 
 **Purpose**: Manual data quality assurance
-**Access**: `python3 admin.py` (local only)
+**Access**: `./launch_all.sh` (launches both admin and site)
 **Features**: Edit movies, force re-enrichment, view logs
 
 **Detailed specification:** [docs/features/ADMIN_PANEL_SPEC.md](docs/features/ADMIN_PANEL_SPEC.md)

@@ -57,7 +57,7 @@ def main():
 
     # Initialize RT scraper
     print("\n🚀 Initializing RT scraper with Playwright...")
-    with RTScraperPlaywright(cache_file='rt_cache.json', config=config) as scraper:
+    with RTScraperPlaywright(cache_file='cache/rt_cache.json', config=config) as scraper:
         print("✅ RT scraper initialized successfully\n")
 
         # Test each movie

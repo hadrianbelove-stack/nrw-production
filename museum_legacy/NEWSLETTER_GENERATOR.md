@@ -107,7 +107,7 @@ Created new `generate_newsletter.py` instead of modifying `substack_newsletter_g
 ## Workflow Integration
 
 ### Content Creation Process
-1. **Curator writes reviews** in admin panel (`python3 admin.py`)
+1. **Curator writes reviews** in admin panel (`./launch_all.sh`)
 2. **Mark top pick** as "featured in newsletter"
 3. **Generate newsletter** with `python3 generate_newsletter.py`
 4. **Copy content** to distribution channels:

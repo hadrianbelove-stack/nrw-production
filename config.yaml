@@ -1,12 +1,25 @@
 # NRW Configuration
 #
+# Launch: Use `./launch_all.sh` to start both admin panel (5556) and site (3000)
+# No authentication required for local development
+#
 # Scraper Configuration Notes:
-# - All scrapers (rt_scraper, wikipedia_scraper, streaming_platform_scraper) now use
-#   centralized defaults from constants.py (SCRAPER_DEFAULTS)
+# - All scrapers use centralized defaults from constants.py (SCRAPER_DEFAULTS)
 # - Per-scraper configs below override the centralized defaults
 # - Centralized defaults: timeout=15s, rate_limit=2.0s, max_retries=3,
 #   exponential_backoff={base_delay=0.5s, max_delay=5.0s, jitter_ratio=0.2},
 #   cache_ttl_days=30, screenshots_enabled=true, screenshot_retention_days=7
+
+# Ports for local development (configurable via environment variables)
+ports:
+  admin_port: 5556  # Admin panel port (ADMIN_PORT env var)
+  site_port: 3000   # Public site port (SITE_PORT env var)
+  site_fallback: 3001  # Fallback if site_port is busy
+
+# Unified launcher configuration (launch_all.sh)
+launcher:
+  admin_port: 5556  # Default admin port for launcher
+  site_port: 3000   # Default site port for launcher
 
 workflow:
   daily_check_time: "02:00"  # 2 AM PST

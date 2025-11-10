@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Test script for inlined RT scraping functionality
-Verifies RT scraping works correctly after being inlined into generate_data.py
+Test script for Playwright RT scraping functionality
+Verifies RT scraping works correctly with external rt_scraper_playwright.py module
 """
 
 import sys
@@ -10,11 +10,11 @@ import json
 import time
 from datetime import datetime
 
-def test_rt_scraper_inline():
-    """Test inlined RT scraping functionality"""
+def test_rt_scraper_playwright():
+    """Test Playwright RT scraping functionality"""
 
     print("============================================================")
-    print("RT SCRAPER INLINE TEST")
+    print("RT SCRAPER PLAYWRIGHT TEST")
     print("============================================================")
 
     try:
@@ -120,12 +120,12 @@ def test_rt_scraper_inline():
         print(f"  rt_cache_hits: {generator.watchmode_stats['rt_cache_hits']}")
 
         # Cleanup
-        if hasattr(generator, 'rt_driver') and generator.rt_driver and generator.rt_driver is not False:
+        if hasattr(generator, 'rt_scraper'):
             try:
-                generator.rt_driver.quit()
-                print(f"\n✓ RT driver cleanup successful")
+                generator.rt_scraper.close()
+                print(f"\n✓ RT scraper cleanup successful")
             except Exception as e:
-                print(f"\n✗ RT driver cleanup failed: {e}")
+                print(f"\n✗ RT scraper cleanup failed: {e}")
 
         print(f"\n{'✅ All tests completed successfully' if failed_tests == 0 else '⚠️  Some tests failed'}")
 
@@ -186,8 +186,8 @@ def test_cache_behavior():
             print("   ✗ Results differ between calls")
 
         # Cleanup
-        if hasattr(generator, 'rt_driver') and generator.rt_driver and generator.rt_driver is not False:
-            generator.rt_driver.quit()
+        if hasattr(generator, 'rt_scraper'):
+            generator.rt_scraper.close()
 
     except Exception as e:
         print(f"✗ Cache test error: {e}")
@@ -196,7 +196,7 @@ def test_cache_behavior():
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(description="Test inlined RT scraper functionality")
+    parser = argparse.ArgumentParser(description="Test Playwright RT scraper functionality")
     parser.add_argument("--visible", action="store_true", help="Run with visible browser (for debugging selectors)")
     parser.add_argument("--cache-test", action="store_true", help="Run cache behavior test only")
 
@@ -208,7 +208,7 @@ if __name__ == "__main__":
     if args.cache_test:
         test_cache_behavior()
     else:
-        success = test_rt_scraper_inline()
+        success = test_rt_scraper_playwright()
         if not success:
             test_cache_behavior()
 

@@ -602,7 +602,7 @@ class DataGenerator:
                 return None
 
             self.wikipedia_scraper = WikipediaScraperPlaywright(
-                cache_file='wikipedia_cache.json',
+                cache_file='cache/wikipedia_cache.json',
                 config=self.config,
                 logger=self.logger
             )

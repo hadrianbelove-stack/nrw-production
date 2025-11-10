@@ -915,3 +915,26 @@ h1 {
 .movie-grid {
     flex: 1;
 }
+
+/* Pending Changes Button Styles */
+.action-btn.pending-changes {
+    background: linear-gradient(135deg, #ff6b6b, #ff8c8c);
+    box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
+    font-weight: bold;
+}
+
+.action-btn.pending-changes:hover {
+    background: linear-gradient(135deg, #ff8c8c, #ffaaaa);
+    box-shadow: 0 0 30px rgba(255, 107, 107, 0.7);
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 30px rgba(255, 107, 107, 0.8);
+    }
+}

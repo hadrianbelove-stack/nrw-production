@@ -3,21 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>New Release Wall - Admin Panel</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
 </head>
 <body>
     <div class="header">
         <h1>🎬 New Release Wall - Admin Panel</h1>
-        <div class="drafts-banner">
-            <div class="banner-content">
-                🚀 <strong>DRAFTS MODE</strong> - Review and publish drafts below.
-                <div class="drafts-status">
-                    <span id="drafts-status-text">Loading drafts...</span>
-                </div>
-            </div>
-        </div>
         <div class="stats">
             <div class="stat-item">
                 <span>Total Movies:</span>
@@ -35,16 +26,18 @@
                 <span>Featured:</span>
                 <span class="stat-value" id="featured-count">{{ featured_count }}</span>
             </div>
-            <div class="stat-item">
-                <span>Reviewed:</span>
-                <span class="stat-value" id="reviewed-count">{{ reviewed_count }}</span>
-            </div>
         </div>
         <div class="header-actions">
+            <button onclick="viewSite()"
+                    class="action-btn btn-large"
+                    style="background: #17a2b8;">
+                🌐 VIEW SITE
+            </button>
+
             <button onclick="regenerateData()"
                     class="action-btn btn-large"
                     id="regenerate-btn">
-                🔄 Regenerate data.json
+                💾 Save Changes
             </button>
             <span id="regenerate-status" class="status-text"></span>
 
@@ -223,7 +216,6 @@
         <button class="filter-btn" onclick="filterMovies('visible')">Visible</button>
         <button class="filter-btn" onclick="filterMovies('hidden')">Hidden</button>
         <button class="filter-btn" onclick="filterMovies('featured')">Featured</button>
-        <button class="filter-btn" onclick="filterMovies('reviewed')">📝 Reviewed</button>
         <input type="text" id="search-box" class="search-box" placeholder="Search movies..." onkeyup="searchMovies()">
 
         <div class="ordering-controls">
@@ -240,18 +232,6 @@
     </div>
 
     <div class="main-content">
-        <!-- Drafts Section -->
-        <div class="drafts-section">
-            <div class="section-header">
-                <h3>📝 Drafts</h3>
-                <span class="section-description">Review and publish drafts</span>
-            </div>
-            <div id="drafts-list" class="drafts-container">
-                <div class="loading-indicator">Loading drafts...</div>
-            </div>
-        </div>
-
-
         <div class="movie-grid" id="movie-grid">
         {% for movie_id, movie in movies.items() %}
         <div class="movie-card {% if movie_id in hidden %}hidden{% endif %} {% if movie_id in featured %}featured{% endif %}"
@@ -261,7 +241,6 @@
              data-has-poster="{{ 'yes' if movie.poster_url or movie.get('poster') else 'no' }}"
              data-has-director="{{ 'yes' if movie.director and movie.director != 'Unknown' else 'no' }}"
              data-has-country="{{ 'yes' if movie.get('country') else 'no' }}"
-             data-has-review="{{ 'yes' if movie.get('review', {}).get('review') else 'no' }}"
              data-has-watch-links="{{ 'yes' if movie.get('watch_links') and (movie.get('watch_links', {}).get('streaming') or movie.get('watch_links', {}).get('rent') or movie.get('watch_links', {}).get('buy')) else 'no' }}"
              data-missing-any="{{ 'yes' if not movie.get('links', {}).get('trailer') or not (movie.poster_url or movie.get('poster')) or not movie.director or movie.director == 'Unknown' or not movie.get('country') else 'no' }}"
              draggable="false">
@@ -462,59 +441,6 @@
                                    placeholder="https://..."
                                    style="flex: 1; padding: 0.3rem; background: #2a2a2a; border: 1px solid #3a3a3a; color: white; border-radius: 4px; font-size: 0.75rem;">
                         </div>
-                    </div>
-
-                    <!-- Review Section -->
-                    <div class="edit-field-group" style="border-top: 1px solid #3a3a3a; padding-top: 0.5rem; margin-top: 0.5rem;">
-                        <label class="edit-label" style="font-weight: bold; color: #66b3ff;">
-                            📝 Custom Review (for Newsletter):
-                            <span class="char-counter" id="review-counter-{{ movie_id }}">0/2000</span>
-                        </label>
-
-                        <!-- Review Text -->
-                        <textarea id="review-text-{{ movie_id }}"
-                                  placeholder="Write your review here... (This will appear in the newsletter)"
-                                  rows="5"
-                                  maxlength="2000"
-                                  oninput="updateCharCounter(this, 'review-counter-{{ movie_id }}', 50, 2000)"
-                                  style="width: 100%; padding: 0.5rem; background: {% if movie.get('review', {}).get('review') %}#2a2a2a{% else %}#1a1a1a{% endif %}; border: 1px solid {% if movie.get('review', {}).get('review') %}#3a3a3a{% else %}#555{% endif %}; color: white; border-radius: 4px; font-size: 0.85rem; resize: vertical; font-family: inherit; margin-bottom: 0.5rem;">{{ movie.get('review', {}).get('review', '') }}</textarea>
-                        <div class="validation-warning" id="review-warning-{{ movie_id }}" style="display: none;"></div>
-
-
-                        <!-- Newsletter Feature Checkbox -->
-                        <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: #ccc; cursor: pointer;">
-                            <input type="checkbox"
-                                   id="review-featured-{{ movie_id }}"
-                                   {% if movie.get('review', {}).get('featured_in_newsletter') %}checked{% endif %}
-                                   style="cursor: pointer;">
-                            <span>⭐ Feature this review in newsletter</span>
-                        </label>
-
-                        <!-- Review Action Buttons -->
-                        <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
-                            <button class="action-btn"
-                                    onclick="saveReview('{{ movie_id }}', this)"
-                                    style="flex: 1; background: #007bff; padding: 0.5rem;">
-                                💾 Save Review
-                            </button>
-                            {% if movie.get('review', {}).get('review') %}
-                            <button class="action-btn"
-                                    onclick="deleteReview('{{ movie_id }}', this)"
-                                    style="background: #dc3545; padding: 0.5rem;">
-                                🗑️ Delete
-                            </button>
-                            {% endif %}
-                        </div>
-
-                        <!-- Review Metadata Display (if exists) -->
-                        {% if movie.get('review', {}).get('added_date') %}
-                        <div style="font-size: 0.7rem; color: #666; margin-top: 0.3rem;">
-                            Added: {{ movie.get('review', {}).get('added_date', '')[:10] }}
-                            {% if movie.get('review', {}).get('last_modified') %}
-                            | Modified: {{ movie.get('review', {}).get('last_modified', '')[:10] }}
-                            {% endif %}
-                        </div>
-                        {% endif %}
                     </div>
 
                     <!-- Save All Changes Button -->

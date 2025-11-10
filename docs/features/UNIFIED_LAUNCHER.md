@@ -1,280 +1,184 @@
-# Unified Launcher Specification
+# Unified Launcher (Amendment 031)
 
-**Spec-Moved-From:** PROJECT_CHARTER.md
-**Amendment:** AMENDMENT-052
-**Date:** 2025-10-23
-**Maintainer:** Development Team
+Menu interface for all NRW services. Run `./launch_all.sh` for options. Replaces individual scripts.
 
 ## Overview
 
-The Unified Launcher (`launch_all.sh`) is a menu-driven interface that consolidates launching all NRW tools into a single command. It eliminates the need to remember multiple separate commands and provides streamlined access to the public site, admin panel, and YouTube management tools.
+The Unified Launcher provides a menu-driven interface per Amendment 031, serving as the single entry point for all NRW services. This eliminates the need for separate terminal commands and provides guided access to admin panel, public site, and utilities.
 
-## Context
+## Menu Options
 
-Previously, users needed to remember three separate commands to launch different NRW tools:
-- `./launch_NRW.sh` for the public site
-- `python3 admin.py` for the admin panel
-- `python3 youtube_playlist_manager.py [args]` for YouTube management
+### Main Menu Interface
 
-This created friction for daily operations and onboarding new users to the project.
+```
+┌─────────────────────────────────────────────────────────┐
+│           🎬 NRW Unified Launcher                       │
+│        Single Entry Point for All Services             │
+└─────────────────────────────────────────────────────────┘
 
-## Solution
+1. Launch Admin Panel (background, port 5556)
+2. Launch Public Site (foreground, port 3000)
+3. Launch All (admin bg + site fg, auto-open browsers)
+4. Utilities (health checks, stop services)
+0. Exit
 
-Create `launch_all.sh` as unified launcher with menu-driven interface providing:
-- Four menu options: (1) Public Site, (2) Admin Panel, (3) YouTube Manager, (4) All Services
-- Browser auto-open for web interfaces (site and admin)
-- Process management with graceful cleanup on Ctrl+C
-- Authentication reminder for admin panel access
-
-## Implementation
-
-### Script Architecture
-**File:** `launch_all.sh` (~430 lines)
-
-### Menu Interface
-Menu-driven interface with 5 options:
-- **Option 1:** Public Site - HTTP server on port 8000/8001, auto-open browser
-- **Option 2:** Admin Panel - Flask server on port 5555, auth reminder, auto-open browser
-- **Option 3:** YouTube Playlist Manager - Executes `python3 youtube_playlist_manager.py --help` and displays output
-- **Option 4:** All Services - Launch site + admin simultaneously, both auto-open
-- **Option 5:** Exit - Clean shutdown
-
-### Process Management
-
-#### Global Variables
-- `SITE_PID` - Process ID for public site server
-- `ADMIN_PID` - Process ID for admin panel server
-- `YOUTUBE_PID` - Process ID for YouTube manager (if applicable)
-
-#### Cleanup Function
-- Checks if PIDs exist and running with `kill -0`
-- Graceful shutdown with `kill $PID` for each service
-- Automatic cleanup on script exit or Ctrl+C
-- Registered cleanup with `trap` for EXIT, INT, TERM signals
-
-#### Service Lifecycle
-- Tracks PIDs for all launched processes
-- Cleanup function ensures complete shutdown
-- Prevents orphaned processes
-- Staggered launches (2-second delay between services)
-
-### Authentication Integration
-
-#### Admin Panel Credentials
-- Displays credentials box when launching admin panel (options 2 or 4)
-- Shows generic reminder with pointer to `PROJECT_CHARTER.md`
-- No in-script credentials (security best practice)
-- Security note about changing defaults in production
-
-#### Display Format
-Large box display for admin credentials to reduce login friction and ensure visibility.
-
-### Browser Integration
-
-#### Auto-Open Capability
-- Detects `open` (macOS) or `xdg-open` (Linux)
-- Auto-opens URLs for web interfaces
-- Displays URLs if no opener available
-- Staggered browser opens for option 4 (site first, admin after 1 second)
-
-#### Error Handling
-- Graceful fallback for missing browser opener
-- Clear URL display when auto-open unavailable
-- No script failure if browser detection fails
-
-### Error Handling and Validation
-
-#### Port Management
-- Port availability checking using `lsof`
-- Readiness checks include `lsof` if available
-- Curl-based HTTP probes as fallback
-- Clear error messages for port conflicts
-
-#### Dependency Validation
-- python3 and git required
-- Graceful fallbacks for missing tools (`lsof`, browser opener)
-- Helpful error messages for missing dependencies
-- Script continues with reduced functionality when possible
-
-#### Service Readiness
-- HTTP probes to verify services are running
-- Timeout-based readiness checks
-- Clear status messages for user feedback
-- Fallback checks when preferred tools unavailable
-
-## Design Decisions
-
-### Menu-Driven vs. Command-Line Flags
-- **Menu interface:** More discoverable for new users
-- **Reduces cognitive load:** No need to remember flags
-- **Interactive experience:** Guides users through options
-- **Self-documenting:** All options visible in menu
-
-### Process Management Strategy
-- **Track all PIDs:** Ensures complete cleanup
-- **Graceful shutdown:** Proper service termination
-- **Staggered launches:** Prevents port conflicts and startup races
-- **Signal handling:** Robust cleanup on interruption
-
-### YouTube CLI Integration
-- **Interactive prompt:** For commands rather than background service
-- **Matches CLI nature:** YouTube manager is command-line tool
-- **Help display:** Shows available commands to users
-- **No background process:** Aligns with tool's design
-
-### Browser Auto-Open Strategy
-- **Automatic for web interfaces:** Reduces manual steps
-- **Manual for CLI tools:** Appropriate for command-line tools
-- **Fallback display:** Shows URLs when auto-open fails
-- **User choice:** Can ignore auto-open if preferred
-
-### Authentication Prominence
-- **Large box display:** Ensures credentials are visible
-- **Reduces login friction:** Easy access to authentication info
-- **Security conscious:** Points to external documentation
-- **Production awareness:** Reminds about default credential changes
-
-### Backward Compatibility
-- **Original scripts unchanged:** `launch_NRW.sh`, `admin.py` remain supported
-- **No breaking changes:** Existing workflows continue to work
-- **Migration optional:** Users can adopt unified launcher gradually
-- **Automation support:** Direct launches still available for scripting
-
-## File Structure
-
-### Files Created
-- `launch_all.sh` - Unified launcher script (~430 lines)
-
-### Files Modified
-- `README.md` - Updated Quick Start section, added comprehensive Unified Launcher documentation
-- `DAILY_CONTEXT.md` - Added launcher to Quick Reference section, updated admin panel instructions
-- `PROJECT_CHARTER.md` - This amendment documentation
-
-### Files Unchanged (Backward Compatibility)
-- `launch_NRW.sh` - Public site launcher (existing, still supported)
-- `admin.py` - Admin panel (existing, still supported)
-- `youtube_playlist_manager.py` - YouTube CLI (existing, still supported)
-
-## Usage Patterns
-
-### Primary Command
-```bash
-./launch_all.sh
+Environment overrides: ADMIN_PORT=5556 SITE_PORT=3000
 ```
 
-### Recommended Daily Workflow
-Select option 4 (All Services) for comprehensive access:
-- Public site for viewing current wall
-- Admin panel for curation and management
-- Both services ready simultaneously
+### Option 1: Admin Panel
+- **Launch:** Admin panel in background on port 5556
+- **Authentication:** No auth required for local curation
+- **Features:** Direct access to curation interface
+- **Health Check:** Automatic verification via `/health` endpoint
+- **Auto-open:** Optional browser launch to admin URL
 
-### YouTube Playlist Management
-Select option 3 for interactive CLI:
-- Displays available commands
-- Guides users through YouTube workflows
-- Maintains command-line nature of tool
+### Option 2: Public Site
+- **Launch:** Public site in foreground on port 3000
+- **Mode:** Interactive (blocks until Ctrl+C)
+- **Features:** View current movie wall
+- **Server:** Python3 HTTP server
+- **Port Fallback:** Uses 3001 if 3000 occupied
 
-### Direct Launches (Still Supported)
-For automation and scripting:
-- `./launch_NRW.sh` - Direct public site launch
-- `python3 admin.py` - Direct admin panel launch
-- `python3 youtube_playlist_manager.py` - Direct YouTube CLI
+### Option 3: Launch All (Recommended)
+- **Admin:** Launched in background with auto-open
+- **Site:** Launched in background with auto-open
+- **Combined:** Both services with browser launch
+- **Process Management:** Single Ctrl+C stops both services
+- **Display:** Shows both URLs clearly
+- **Monitoring:** Watches for process failures
 
-## Service Configuration
+### Option 4: Utilities
+- **Health Check:** Verify admin (`/health`) and site (`/`) endpoints
+- **Stop Services:** Kill processes on standard ports using lsof
+- **View Logs:** Display recent admin log entries
+- **Sub-menu:** Returns to main menu after operations
 
-### Port Assignments
-- **Public Site:** 8000 (primary), 8001 (if 8000 busy)
-- **Admin Panel:** 5555 (fixed)
-- **Port Detection:** Automatic checking and fallback
+## Features
 
-### Service Dependencies
-- **Python 3:** Required for all services
-- **Git:** Required for repository operations
-- **lsof:** Optional, for port checking
-- **Browser opener:** Optional, for auto-open functionality
+### Port Conflict Handling
+- **Admin:** 5556 → 5557 fallback if occupied
+- **Site:** 3000 → 3001 fallback if occupied
+- **Detection:** Uses `lsof` when available
+- **Messages:** Clear warnings when fallbacks triggered
 
-### Service Integration
-- **Staggered startup:** Prevents resource conflicts
-- **Readiness probes:** Ensures services are available before proceeding
-- **Clean shutdown:** All services terminated properly
+### Process Tracking
+- **PID Management:** Tracks `ADMIN_PID` and `SITE_PID`
+- **Health Monitoring:** Continuous process validation
+- **Clean Shutdown:** Proper termination on exit/Ctrl+C
+- **Signal Handling:** Responds to INT/TERM for cleanup
 
-## Performance Characteristics
+### Environment Variable Overrides
+```bash
+# Custom ports
+ADMIN_PORT=5557 ./launch_all.sh
+SITE_PORT=8000 ./launch_all.sh
 
-### Startup Time
-- **Menu display:** Instant
-- **Service launch:** 2-3 seconds per service
-- **Browser open:** Additional 1-2 seconds
-- **Total time:** 5-10 seconds for all services
+# Combined
+ADMIN_PORT=5557 SITE_PORT=8000 ./launch_all.sh
+```
 
-### Resource Usage
-- **Memory:** Minimal overhead (bash script)
-- **CPU:** Brief spikes during service startup
-- **Network:** Port binding for HTTP services
-- **Disk:** No additional storage requirements
+### Browser Auto-Open
+- **Detection:** Uses `open` command when available (macOS)
+- **Launch All:** Opens both admin and site URLs
+- **Individual:** Opens respective service URL
+- **Fallback:** Shows URLs if auto-open unavailable
 
-### Scalability
-- **Additional services:** Easy to add new menu options
-- **Process tracking:** Scales with number of services
-- **Cleanup complexity:** Linear with service count
-- **Menu size:** Manageable for reasonable number of options
+### Tool Detection
+- **Python:** Prefers `python3`, falls back to `python`
+- **Port Checking:** Uses `lsof` when available
+- **Error Handling:** Graceful degradation for missing tools
+- **Dependencies:** Validates required tools on startup
 
-## Maintenance Considerations
+## Troubleshooting
 
-### Code Organization
-- **Modular functions:** Separate functions for each service type
-- **Reusable logic:** Browser detection, port checking shared
-- **Clear separation:** Setup, launch, and cleanup phases distinct
-- **Error boundaries:** Isolated error handling per function
+### Port Issues
+```bash
+# Check what's using ports
+lsof -i :5556
+lsof -i :3000
 
-### Configuration Management
-- **Hardcoded ports:** Simple but could be configurable
-- **Service paths:** Relative to script directory
-- **Command paths:** Uses system PATH for flexibility
-- **Feature detection:** Runtime capability checking
+# Force stop services via utilities menu (option 4 → option 2)
+```
 
-### Future Extensibility
-- **New services:** Add to menu and process tracking
-- **Configuration file:** Could add for advanced options
-- **Remote services:** Could support non-local services
-- **Service health:** Could add monitoring capabilities
+### Python Not Found
+- Script auto-detects `python3` vs `python`
+- Use appropriate alias/symlink if neither found
+- Ensure Python 3.x is installed and in PATH
 
-## Related Files
+### Process Cleanup
+- Launcher handles cleanup automatically
+- Ctrl+C in 'All' mode stops both services
+- Use utilities menu for manual stop if needed
 
-### Implementation Files
-- `launch_all.sh` - Unified launcher (new)
-- `launch_NRW.sh` - Public site launcher (existing, still supported)
-- `admin.py` - Admin panel (existing, still supported)
-- `youtube_playlist_manager.py` - YouTube CLI (existing, still supported)
+### Browser Auto-Open
+- Works with `open` command (macOS primarily)
+- Shows URLs when auto-open unavailable
+- Manual navigation if browser detection fails
 
-### Documentation Files
-- `README.md` - Usage documentation and quick start
-- `DAILY_CONTEXT.md` - Quick reference and daily workflow
-- `PROJECT_CHARTER.md` - Governance and amendment history
+## Daily Workflow Integration
 
-## Rationale
+### Recommended Usage
+**Option 3 (Launch All)** for development/testing:
+- Starts both admin and site services
+- Auto-opens browsers for immediate access
+- Single Ctrl+C stops everything cleanly
+- Ideal for daily curation and preview
 
-### User Experience Benefits
-- **Single entry point:** Eliminates need to remember multiple commands
-- **Improved discovery:** Menu interface aids exploration and onboarding
-- **Optimized workflow:** Option 4 (All Services) streamlines daily operations
-- **Reduced friction:** Authentication reminders and auto-open reduce barriers
+### Curation Workflow
+1. Launch all services (option 3)
+2. Use admin panel for curation (auto-opened)
+3. Preview changes on site (auto-opened)
+4. Ctrl+C when finished
 
-### Technical Benefits
-- **Process management:** Prevents orphaned processes through proper cleanup
-- **Error handling:** Graceful degradation when tools are missing
-- **Backward compatibility:** Maintains existing automation and scripting workflows
-- **Maintainability:** Centralized launcher simplifies future service additions
+### Individual Service Access
+- **Option 1:** Admin-only for quick edits
+- **Option 2:** Site-only for preview/testing
+- **Option 4:** Utilities for health checks and cleanup
 
-### Operational Benefits
-- **Training simplification:** New users learn single command
-- **Consistency:** Uniform interface across all NRW tools
-- **Reliability:** Robust error handling and cleanup procedures
-- **Flexibility:** Supports both interactive and automation use cases
+## Technical Implementation
+
+### Script Structure
+- **Tool Detection:** Validates dependencies at startup
+- **Menu Loop:** Interactive selection with validation
+- **Service Functions:** Modular launch functions per service
+- **Process Management:** PID tracking and signal handling
+- **Error Handling:** Graceful fallbacks and clear messages
+
+### File Location
+```
+launch_all.sh          # Root level - primary entry point
+docs/features/         # This documentation
+```
+
+### Backward Compatibility
+Legacy commands still supported:
+```bash
+python3 admin.py       # Direct admin launch
+python3 -m http.server 3000  # Direct site launch
+```
+
+## Root Cleanliness Compliance
+
+Per Amendment 032, this launcher:
+- **Single Entry Point:** No additional root files created
+- **Documentation:** Properly placed in `docs/features/`
+- **Port Configuration:** Embedded in script (no separate config files)
+- **Clean Interface:** Replaces multiple commands with unified menu
+
+## Amendment 031 Compliance
+
+This implementation fulfills Amendment 031 requirements:
+- ✅ Menu-driven interface
+- ✅ Single entry point for all services
+- ✅ Option 3 "Launch All" for full stack
+- ✅ Auto-open browsers in combined mode
+- ✅ Process management and clean shutdown
+- ✅ Port conflict handling and fallbacks
+- ✅ Environment variable support for customization
 
 ## Status
-✅ Implemented and documented
-✅ Full menu interface with all service options
-✅ Process management and cleanup implemented
-✅ Browser auto-open and authentication reminders working
-✅ Backward compatibility maintained
-✅ Documentation updated across relevant files
+
+✅ **Implemented:** Menu-driven unified launcher
+✅ **Documented:** Complete usage and troubleshooting guide
+✅ **Tested:** Port handling, process management, cleanup
+✅ **Integrated:** Updated README.md and workflow documentation

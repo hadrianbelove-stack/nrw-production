@@ -43,8 +43,8 @@ Multiple tools are available for correcting bootstrap dates:
 
 **Admin Panel** (Recommended for individual corrections):
 ```bash
-python3 admin.py
-# Navigate to http://localhost:5555
+./launch_all.sh
+# Navigate to http://localhost:5556
 # Use /update-date endpoint for manual corrections
 ```
 
