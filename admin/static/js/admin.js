@@ -1,13 +1,3 @@
-// Global CSRF token
-let csrfToken = null;
-
-// Initialize CSRF token on page load
-document.addEventListener('DOMContentLoaded', function() {
-    const metaTag = document.querySelector('meta[name="csrf-token"]');
-    if (metaTag) {
-        csrfToken = metaTag.getAttribute('content');
-    }
-});
 
 function showSuccess(message = 'Changes saved!') {
     const msg = document.getElementById('success-msg');
@@ -22,10 +12,8 @@ function toggleHidden(movieId, hide) {
     fetch('/toggle-status', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-Token': csrfToken
+            'Content-Type': 'application/json'
         },
-        credentials: 'same-origin',
         body: JSON.stringify({movie_id: movieId, status_type: 'hidden', value: hide})
     })
     .then(response => response.json())
@@ -67,10 +55,8 @@ function toggleFeatured(movieId, feature) {
     fetch('/toggle-status', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-Token': csrfToken
+            'Content-Type': 'application/json'
         },
-        credentials: 'same-origin',
         body: JSON.stringify({movie_id: movieId, status_type: 'featured', value: feature})
     })
     .then(response => response.json())
@@ -124,9 +110,6 @@ function updateStats() {
     document.getElementById('hidden-count').textContent = hidden;
     document.getElementById('featured-count').textContent = featured;
 
-    // Update reviewed count
-    updateReviewedCount();
-
     // Update issue counts
     updateIssueCounts();
 }
@@ -150,45 +133,6 @@ function updateIssueCounts() {
     if (missingDataElement) missingDataElement.textContent = missingDataCount;
 }
 
-function updateReviewedCount() {
-    // Recalculate reviewed count from current DOM state
-    const reviewedCards = document.querySelectorAll('.movie-card[data-has-review="yes"]');
-    const reviewedCount = reviewedCards.length;
-
-    // Update reviewed count display
-    document.getElementById('reviewed-count').textContent = reviewedCount;
-}
-
-function updateReviewProgress() {
-    // Only update if we're in full-review mode
-    const progressElement = document.getElementById('review-progress-text');
-    if (!progressElement) return;
-
-    const allCards = document.querySelectorAll('.movie-card');
-    const reviewedCards = document.querySelectorAll('.movie-card[data-has-review="yes"]');
-    const missingDataCards = document.querySelectorAll('.movie-card[data-missing-any="yes"]');
-
-    const totalMovies = allCards.length;
-    const reviewedCount = reviewedCards.length;
-    const missingDataCount = missingDataCards.length;
-
-    const reviewProgress = totalMovies > 0 ? Math.round((reviewedCount / totalMovies) * 100) : 0;
-
-    progressElement.textContent = `Progress: ${reviewedCount}/${totalMovies} reviewed (${reviewProgress}%) | ${missingDataCount} missing data`;
-}
-
-// Update review progress on page load and after changes
-document.addEventListener('DOMContentLoaded', function() {
-    updateReviewProgress();
-});
-
-// Override updateStats to also update review progress
-const originalUpdateStats = updateStats;
-updateStats = function() {
-    originalUpdateStats.call(this);
-    updateReviewProgress();
-};
-
 function regenerateData() {
     const btn = document.getElementById('regenerate-btn');
     const status = document.getElementById('regenerate-status');
@@ -197,27 +141,28 @@ function regenerateData() {
     btn.disabled = true;
     btn.style.opacity = '0.5';
     btn.style.cursor = 'not-allowed';
-    status.textContent = 'Regenerating... (this may take 10-30 seconds)';
+    status.textContent = 'Saving changes... (this may take 10-30 seconds)';
     status.style.color = '#ffc107';
 
     fetch('/regenerate', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-Token': csrfToken
-        },
-        credentials: 'same-origin'
+            'Content-Type': 'application/json'
+        }
     })
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            status.textContent = '✓ ' + (data.message || 'Regeneration complete!');
+            status.textContent = '✓ ' + (data.message || 'Changes saved!');
             status.style.color = '#28a745';
-            showSuccess('data.json regenerated successfully');
+            showSuccess('Changes saved successfully');
+
+            // Immediately refresh pending changes status
+            checkPendingChanges();
         } else {
-            status.textContent = '✗ ' + (data.error || 'Regeneration failed');
+            status.textContent = '✗ ' + (data.error || 'Save failed');
             status.style.color = '#dc3545';
-            alert('Regeneration failed: ' + (data.error || 'Unknown error'));
+            alert('Save failed: ' + (data.error || 'Unknown error'));
         }
 
         // Re-enable button
@@ -233,7 +178,7 @@ function regenerateData() {
     .catch(error => {
         status.textContent = '✗ Error: ' + error;
         status.style.color = '#dc3545';
-        alert('Error triggering regeneration: ' + error);
+        alert('Error saving changes: ' + error);
 
         // Re-enable button
         btn.disabled = false;
@@ -343,10 +288,8 @@ function saveDraftTitles(draftId) {
     fetch(`/drafts/${draftId}`, {
         method: 'PATCH',
         headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-Token': csrfToken
+            'Content-Type': 'application/json'
         },
-        credentials: 'same-origin',
         body: JSON.stringify({ titles: updatedTitles })
     })
     .then(response => response.json())
@@ -379,10 +322,8 @@ function publishDraft(draftId) {
     fetch(`/drafts/${draftId}/publish`, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-Token': csrfToken
-        },
-        credentials: 'same-origin'
+            'Content-Type': 'application/json'
+        }
     })
     .then(response => response.json())
     .then(data => {
@@ -437,9 +378,6 @@ function filterMovies(filter) {
                 break;
             case 'missing-data':
                 card.style.display = card.dataset.missingAny === 'yes' ? 'block' : 'none';
-                break;
-            case 'reviewed':
-                card.style.display = card.dataset.hasReview === 'yes' ? 'block' : 'none';
                 break;
         }
     });
@@ -525,10 +463,8 @@ function saveAllFields(movieId) {
     fetch('/update-movie-fields', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-Token': csrfToken
+            'Content-Type': 'application/json'
         },
-        credentials: 'same-origin',
         body: JSON.stringify({
             movie_id: movieId,
             digital_date: digitalDate || null,
@@ -582,147 +518,6 @@ function saveAllFields(movieId) {
             btn.innerHTML = originalText;
             btn.disabled = false;
         }, 2000);
-    });
-}
-
-function saveReview(movieId, btn) {
-    const originalText = btn.innerHTML;
-
-    // Collect review fields
-    const reviewText = document.getElementById(`review-text-${movieId}`).value.trim();
-    const featured = document.getElementById(`review-featured-${movieId}`).checked;
-
-    // Validate review text
-    if (!reviewText) {
-        alert('Please enter review text before saving.');
-        return;
-    }
-
-    if (reviewText.length > 5000) {
-        alert('Review text is too long (max 5000 characters).');
-        return;
-    }
-
-    // Disable button
-    btn.disabled = true;
-    btn.innerHTML = '⏳ Saving...';
-
-    // Send to server
-    fetch('/update-review', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-Token': csrfToken
-        },
-        credentials: 'same-origin',
-        body: JSON.stringify({
-            movie_id: movieId,
-            review_text: reviewText,
-            featured_in_newsletter: featured
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            btn.innerHTML = '✅ Saved!';
-            btn.style.background = '#28a745';
-            showSuccess(data.message || 'Review saved successfully!');
-
-            // Update card data attribute
-            const card = document.querySelector(`[data-movie-id="${movieId}"]`);
-            card.dataset.hasReview = 'yes';
-
-            // Update textarea background to show it's no longer empty
-            document.getElementById(`review-text-${movieId}`).style.background = '#2a2a2a';
-            document.getElementById(`review-text-${movieId}`).style.borderColor = '#3a3a3a';
-
-            // Update reviewed count in header
-            updateReviewedCount();
-
-            // Reset button after 2 seconds
-            setTimeout(() => {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-                btn.style.background = '#007bff';
-            }, 2000);
-        } else {
-            btn.innerHTML = '❌ Failed';
-            btn.style.background = '#dc3545';
-            alert(data.error || 'Failed to save review');
-
-            setTimeout(() => {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-                btn.style.background = '#007bff';
-            }, 2000);
-        }
-    })
-    .catch(error => {
-        btn.innerHTML = '❌ Error';
-        btn.style.background = '#dc3545';
-        alert('Error saving review: ' + error);
-
-        setTimeout(() => {
-            btn.innerHTML = originalText;
-            btn.disabled = false;
-            btn.style.background = '#007bff';
-        }, 2000);
-    });
-}
-
-function deleteReview(movieId, btn) {
-    if (!confirm('Are you sure you want to delete this review?')) {
-        return;
-    }
-
-    const originalText = btn.innerHTML;
-
-    // Disable button
-    btn.disabled = true;
-    btn.innerHTML = '⏳ Deleting...';
-
-    // Send to server
-    fetch('/delete-review', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-Token': csrfToken
-        },
-        credentials: 'same-origin',
-        body: JSON.stringify({movie_id: movieId})
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showSuccess('Review deleted');
-
-            // Clear form fields
-            document.getElementById(`review-text-${movieId}`).value = '';
-            document.getElementById(`review-featured-${movieId}`).checked = false;
-
-            // Update card data attribute
-            const card = document.querySelector(`[data-movie-id="${movieId}"]`);
-            card.dataset.hasReview = 'no';
-
-            // Update textarea background to show it's empty
-            document.getElementById(`review-text-${movieId}`).style.background = '#1a1a1a';
-            document.getElementById(`review-text-${movieId}`).style.borderColor = '#555';
-
-            // Update reviewed count in header
-            updateReviewedCount();
-
-            // Hide delete button (will require page reload to show again)
-            btn.style.display = 'none';
-        } else {
-            alert(data.error || 'Failed to delete review');
-            btn.innerHTML = originalText;
-            btn.disabled = false;
-        }
-    })
-    .catch(error => {
-        alert('Error deleting review: ' + error);
-        btn.innerHTML = originalText;
-        btn.disabled = false;
     });
 }
 
@@ -786,10 +581,8 @@ function createYouTubePlaylist() {
     fetch('/create-youtube-playlist', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-Token': csrfToken
+            'Content-Type': 'application/json'
         },
-        credentials: 'same-origin',
         body: JSON.stringify(requestBody)
     })
     .then(response => response.json())
@@ -955,10 +748,8 @@ function saveOrdering() {
     fetch('/update-ordering', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-Token': csrfToken
+            'Content-Type': 'application/json'
         },
-        credentials: 'same-origin',
         body: JSON.stringify({
             ordered_ids: orderedIds
         })
@@ -1192,10 +983,8 @@ function addMovie() {
     fetch('/add-movie', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-Token': csrfToken
+            'Content-Type': 'application/json'
         },
-        credentials: 'same-origin',
         body: JSON.stringify(requestData)
     })
     .then(response => response.json())
@@ -1258,7 +1047,7 @@ function updateCharCounter(textarea, counterId, minLength, maxLength) {
     if (!counter) return;
 
     const currentLength = textarea.value.length;
-    const fieldType = counterId.includes('synopsis') ? 'synopsis' : 'review';
+    const fieldType = counterId.includes('synopsis') ? 'synopsis' : 'text';
 
     // Update counter display
     counter.textContent = `${currentLength}/${maxLength}`;
@@ -1349,16 +1138,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Initialize review counters
-    document.querySelectorAll('[id^="review-text-"]').forEach(textarea => {
-        if (textarea.tagName === 'TEXTAREA') {
-            const movieId = textarea.id.replace('review-text-', '');
-            const counterId = `review-counter-${movieId}`;
-            updateCharCounter(textarea, counterId, 50, 2000);
-        }
-    });
-
-    // Load delta summary if in full-review mode
+    // Load delta summary
     if (document.getElementById('delta-sidebar')) {
         refreshDeltaSummary();
     }
@@ -1367,7 +1147,36 @@ document.addEventListener('DOMContentLoaded', function() {
     if (document.getElementById('drafts-list')) {
         fetchDrafts();
     }
+
+    // Check for pending changes and poll every 5 seconds
+    checkPendingChanges();
+    setInterval(checkPendingChanges, 5000);
 });
+
+// Pending Changes Functions
+function checkPendingChanges() {
+    fetch('/pending-changes')
+        .then(response => response.json())
+        .then(data => {
+            const btn = document.getElementById('regenerate-btn');
+            if (!btn) return;
+
+            if (data.has_pending_changes) {
+                // Highlight button when changes are pending
+                btn.classList.add('pending-changes');
+                btn.style.animation = 'pulse 2s infinite';
+                btn.title = 'You have unsaved changes. Click to save.';
+            } else {
+                // Normal state when no changes
+                btn.classList.remove('pending-changes');
+                btn.style.animation = '';
+                btn.title = 'Rebuild data.json from tracking database';
+            }
+        })
+        .catch(error => {
+            console.error('Error checking pending changes:', error);
+        });
+}
 
 // Delta Summary Functions
 function refreshDeltaSummary() {
@@ -1400,11 +1209,11 @@ function refreshDeltaSummary() {
 
 function updateDeltaDisplay(delta) {
     // Update main stats
-    const reviewedElement = document.getElementById('delta-reviewed');
+    const newFilmsElement = document.getElementById('delta-new-films');
     const editsElement = document.getElementById('delta-edits');
     const additionsElement = document.getElementById('delta-additions');
 
-    if (reviewedElement) reviewedElement.textContent = delta.movies_reviewed || 0;
+    if (newFilmsElement) newFilmsElement.textContent = delta.new_films_released || 0;
     if (editsElement) editsElement.textContent = delta.edits || 0;
     if (additionsElement) additionsElement.textContent = delta.additions || 0;
 
