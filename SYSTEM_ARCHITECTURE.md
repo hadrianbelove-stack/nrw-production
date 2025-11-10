@@ -2,7 +2,7 @@
 
 **Purpose**: This is the authoritative guide to how the NRW movie tracking system works. Read this document FIRST before diving into code or other documentation.
 
-**Last Updated**: 2025-11-06
+**Last Updated**: 2025-11-10
 **Maintained By**: Development Team
 
 ## 📖 Reading Order for AI Assistants
@@ -79,6 +79,24 @@ git push origin main
 | `daily_orchestrator.py` | Daily automation controller | 30s | Daily |
 | `generate_data.py` | Data processing engine | 20-30s | Daily |
 | `admin.py` | Web admin interface | N/A | Via `./launch_all.sh` |
+
+### 3.3a Pipeline Modules (New - 2025-11-10)
+
+| Module | Purpose | Lines | Status |
+|--------|---------|-------|--------|
+| `pipeline/storage.py` | File I/O operations, atomic writes, backups, retention policy | 433 | ✅ Production |
+| `pipeline/validation.py` | Schema validation, consistency checks | 433 | ✅ Production |
+| `pipeline/enrichment.py` | Watch link discovery, provider enrichment | 1,086 | ✅ Production |
+
+**Modularization Progress:** Extracted 1,952 lines (22 methods) from generate_data.py monolith
+- **Before:** 3,350 lines in single file
+- **After:** 3,378 lines (integration) + 3 focused modules
+- **Services:** Storage, Validation, Enrichment fully integrated
+- **Method Calls:** 65 call sites updated (23 storage + 8 validation + 34 enrichment)
+- **Testing:** 22/22 extraction tests + 20/20 error handling tests (100%)
+- **Note:** Old method definitions kept in generate_data.py for safety (future cleanup)
+
+**See:** [docs/pipeline_extraction_2025-11-10/](docs/pipeline_extraction_2025-11-10/) for detailed documentation
 
 ### 3.4 Scrapers
 

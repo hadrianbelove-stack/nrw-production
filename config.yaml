@@ -38,7 +38,31 @@ tracking:
   compaction_batch_size: 50  # Maximum entries to move per compaction run
   compaction_recent_days: null  # Only compact entries from last N days (null = no age limit)
   excluded_services: ['fuboTV', 'Philo']  # Services to exclude from watch provider results
-  
+
+# Backup retention policy for quarantined corrupt files
+# Prevents unbounded disk growth from .corrupted-* files in backups/ directory
+backups:
+  retention_days: 30  # Delete quarantined files older than N days (30 days default for production)
+  cleanup_check_interval_hours: 1  # Minimum time between cleanup checks (rate limiting)
+  enabled: true  # Enable automatic cleanup of old quarantined files
+
+# Structured telemetry and metrics across Storage, Validation, Enrichment services
+# Emits events with fields: service, action, file, item_id, result, duration_ms, error
+# Maintains counters: quarantined_files, validated_items, enriched_items, retry_count
+telemetry:
+  enabled: true  # Enable structured telemetry logging
+  console: false  # Log telemetry events to console (set false to reduce noise)
+  file: true  # Write telemetry to JSONL file
+  file_path: 'metrics/telemetry.jsonl'  # Path to telemetry log file (JSONL format)
+  metrics_dir: 'metrics'  # Directory for metrics and summary files
+  # Counters tracked:
+  # - quarantined_files: Files moved to backups/ due to corruption
+  # - validated_items: Items passing schema validation
+  # - enriched_items: Movies successfully enriched with watch links
+  # - cache_hits: Cache hits across all services
+  # - api_calls: External API calls (Watchmode, TMDB, etc)
+  # - retry_count: Total retry attempts across services
+
 discovery:
   days_back: 14  # Discovery window for finding new premieres (expanded to catch more releases)
   max_pages: 20  # Maximum pages to fetch for discovery (increased for expanded discovery)
