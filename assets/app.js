@@ -22,22 +22,13 @@ const NRW = {
             // Parse URL parameters for pagination state
             this.parseUrlParams();
 
-            // Load movie data and filter data in parallel
-            const [movieResponse, filterResponse] = await Promise.all([
-                fetch('data.json'),
-                fetch('http://localhost:5556/filter-data')
-            ]);
-
+            // Load movie data (includes hidden/featured arrays as of 2025-11-09)
+            const movieResponse = await fetch('data.json');
             const data = await movieResponse.json();
 
-            // Load filter data (hidden/featured lists)
-            if (filterResponse.ok) {
-                const filterData = await filterResponse.json();
-                if (filterData.success) {
-                    this.hiddenMovies = filterData.hidden || [];
-                    this.featuredMovies = filterData.featured || [];
-                }
-            }
+            // Load filter data (hidden/featured lists) from data.json
+            this.hiddenMovies = data.hidden || [];
+            this.featuredMovies = data.featured || [];
 
             if (data.movies && data.movies.length > 0) {
                 const today = new Date();

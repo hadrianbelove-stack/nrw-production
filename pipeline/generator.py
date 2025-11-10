@@ -675,9 +675,11 @@ class DataGenerator:
         except Exception as e:
             self.logger.warning(f"Failed to save discovery metrics artifact: {e}")
 
-        # Update discovery state after successful discovery that wrote movie_tracking.json
-        if new_movies_added > 0:  # Only update state if we wrote movie_tracking.json
-            self._update_discovery_state(state_file)
+        # Update discovery state after successful discovery
+        # CRITICAL: Always update state so next run checks from today forward
+        # Even if 0 movies found, we still successfully checked this date range
+        # This prevents getting stuck in bootstrap mode checking same dates forever
+        self._update_discovery_state(state_file)
 
         return new_movies_added
 

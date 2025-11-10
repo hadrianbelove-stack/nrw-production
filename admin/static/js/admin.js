@@ -317,32 +317,50 @@ function saveAllFields(movieId) {
     // Collect all field values
     const digitalDate = document.getElementById(`digital-date-${movieId}`).value;
     const rtScore = document.getElementById(`rt-score-${movieId}`).value;
-    const rtLink = document.getElementById(`rt-link-${movieId}`).value;
-    const trailerLink = document.getElementById(`trailer-link-${movieId}`).value;
     const director = document.getElementById(`director-${movieId}`).value;
     const country = document.getElementById(`country-${movieId}`).value;
     const year = document.getElementById(`year-${movieId}`).value;
+    const runtime = document.getElementById(`runtime-${movieId}`).value;
     const synopsis = document.getElementById(`synopsis-${movieId}`).value;
-    const posterUrl = document.getElementById(`poster-url-${movieId}`).value;
 
-    // Collect watch links
-    const streamingService = document.getElementById(`streaming-service-${movieId}`).value;
-    const streamingLink = document.getElementById(`streaming-link-${movieId}`).value;
-    const rentService = document.getElementById(`rent-service-${movieId}`).value;
-    const rentLink = document.getElementById(`rent-link-${movieId}`).value;
-    const buyService = document.getElementById(`buy-service-${movieId}`).value;
-    const buyLink = document.getElementById(`buy-link-${movieId}`).value;
+    // Get links from the universal system (check for existing values in hidden fields)
+    const rtLink = document.getElementById(`rt-link-${movieId}`) ?
+        document.getElementById(`rt-link-${movieId}`).value : '';
+    const trailerLink = document.getElementById(`trailer-link-${movieId}`) ?
+        document.getElementById(`trailer-link-${movieId}`).value : '';
+    const posterUrl = document.getElementById(`poster-url-${movieId}`) ?
+        document.getElementById(`poster-url-${movieId}`).value : '';
+    const wikipediaLink = document.getElementById(`wikipedia-link-${movieId}`) ?
+        document.getElementById(`wikipedia-link-${movieId}`).value : '';
+
+    // Convert MM/DD date back to full ISO format for backend
+    const digitalDateInput = document.getElementById(`digital-date-${movieId}`).value;
+    let fullDigitalDate = '';
+    if (digitalDateInput && digitalDateInput.includes('/')) {
+        const [month, day] = digitalDateInput.split('/');
+        const currentYear = new Date().getFullYear();
+        fullDigitalDate = `${currentYear}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    }
+
+    // Collect watch links - streaming and VOD separate
+    const streamingService = document.getElementById(`streaming-service-${movieId}`) ?
+        document.getElementById(`streaming-service-${movieId}`).value : '';
+    const streamingLink = document.getElementById(`streaming-link-${movieId}`) ?
+        document.getElementById(`streaming-link-${movieId}`).value : '';
+    const vodService = document.getElementById(`vod-service-${movieId}`) ?
+        document.getElementById(`vod-service-${movieId}`).value : '';
+    const vodLink = document.getElementById(`vod-link-${movieId}`) ?
+        document.getElementById(`vod-link-${movieId}`).value : '';
 
     // Build watch links object
     const watchLinks = {};
     if (streamingService && streamingLink) {
         watchLinks.streaming = {service: streamingService, link: streamingLink};
     }
-    if (rentService && rentLink) {
-        watchLinks.rent = {service: rentService, link: rentLink};
-    }
-    if (buyService && buyLink) {
-        watchLinks.buy = {service: buyService, link: buyLink};
+    if (vodService && vodLink) {
+        // VOD goes to both rent and buy (same link for both)
+        watchLinks.rent = {service: vodService, link: vodLink};
+        watchLinks.buy = {service: vodService, link: vodLink};
     }
 
     // Disable button
@@ -357,13 +375,15 @@ function saveAllFields(movieId) {
         },
         body: JSON.stringify({
             movie_id: movieId,
-            digital_date: digitalDate || null,
+            digital_date: fullDigitalDate || null,
             rt_score: rtScore ? parseInt(rtScore) : null,
             rt_link: rtLink.trim() || null,
             trailer_link: trailerLink.trim() || null,
+            wikipedia_link: wikipediaLink.trim() || null,
             director: director.trim() || null,
             country: country.trim() || null,
             year: year ? parseInt(year) : null,
+            runtime: runtime ? parseInt(runtime) : null,
             synopsis: synopsis.trim() || null,
             poster_url: posterUrl.trim() || null,
             watch_links: Object.keys(watchLinks).length > 0 ? watchLinks : null
@@ -1054,3 +1074,240 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+// Link editing interface
+let currentLinkModes = {}; // Track which link type is active for each movie
+
+function setLinkMode(movieId, linkType) {
+    // Update current mode
+    currentLinkModes[movieId] = linkType;
+
+    // Update button states
+    const buttons = document.querySelectorAll(`[onclick*="setLinkMode('${movieId}',"]`);
+    buttons.forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+
+    // Get current value for this link type
+    let currentValue = '';
+    const indicator = document.getElementById(`link-mode-indicator-${movieId}`);
+    const input = document.getElementById(`universal-link-${movieId}`);
+    const saveBtn = document.getElementById(`save-link-${movieId}`);
+
+    switch(linkType) {
+        case 'trailer':
+            const trailerField = document.getElementById(`trailer-link-${movieId}`);
+            if (trailerField) {
+                currentValue = trailerField.value;
+            }
+            input.placeholder = 'https://www.youtube.com/watch?v=...';
+            indicator.textContent = '▶️ Editing trailer link';
+            break;
+        case 'rt':
+            const rtField = document.getElementById(`rt-link-${movieId}`);
+            if (rtField) {
+                currentValue = rtField.value;
+            }
+            input.placeholder = 'https://www.rottentomatoes.com/m/...';
+            indicator.textContent = '🍅 Editing RT link';
+            break;
+        case 'poster':
+            const posterField = document.getElementById(`poster-url-${movieId}`);
+            if (posterField) {
+                currentValue = posterField.value;
+            }
+            input.placeholder = 'https://image.tmdb.org/t/p/w500/...';
+            indicator.textContent = '🖼️ Editing poster URL';
+            break;
+        case 'wikipedia':
+            const wikiField = document.getElementById(`wikipedia-link-${movieId}`);
+            if (wikiField) {
+                currentValue = wikiField.value;
+            }
+            input.placeholder = 'https://en.wikipedia.org/wiki/...';
+            indicator.textContent = '📚 Editing Wikipedia link';
+            break;
+    }
+
+    // Set current value and enable editing
+    input.value = currentValue;
+    input.readOnly = false;
+    input.style.background = '#2a2a2a';
+    saveBtn.disabled = false;
+    saveBtn.style.opacity = '1';
+
+    // Focus the input
+    input.focus();
+}
+
+function saveLinkField(movieId) {
+    const linkType = currentLinkModes[movieId];
+    if (!linkType) return;
+
+    const input = document.getElementById(`universal-link-${movieId}`);
+    const newValue = input.value;
+
+    // Update the appropriate hidden field based on current mode
+    let targetFieldId = '';
+    let targetField = null;
+
+    switch(linkType) {
+        case 'trailer':
+            targetFieldId = `trailer-link-${movieId}`;
+            break;
+        case 'rt':
+            targetFieldId = `rt-link-${movieId}`;
+            break;
+        case 'poster':
+            targetFieldId = `poster-url-${movieId}`;
+            break;
+        case 'wikipedia':
+            targetFieldId = `wikipedia-link-${movieId}`;
+            break;
+    }
+
+    // Try to find existing field or create data to save
+    targetField = document.getElementById(targetFieldId);
+    if (targetField) {
+        targetField.value = newValue;
+    }
+
+    // Update button color based on whether link exists
+    const button = document.querySelector(`[onclick*="setLinkMode('${movieId}', '${linkType}')"]`);
+    if (button) {
+        button.classList.remove('link-good', 'link-bad');
+        button.classList.add(newValue ? 'link-good' : 'link-bad');
+    }
+
+    // Reset interface
+    input.readOnly = true;
+    input.style.background = '#1a1a1a';
+    input.value = '';
+    input.placeholder = 'Select a button above to edit that link...';
+
+    const saveBtn = document.getElementById(`save-link-${movieId}`);
+    saveBtn.disabled = true;
+    saveBtn.style.opacity = '0.6';
+
+    const indicator = document.getElementById(`link-mode-indicator-${movieId}`);
+    indicator.textContent = 'Click a button above to edit that link';
+
+    // Remove active state from buttons
+    const buttons = document.querySelectorAll(`[onclick*="setLinkMode('${movieId}',"]`);
+    buttons.forEach(btn => btn.classList.remove('active'));
+
+    // Clear current mode
+    delete currentLinkModes[movieId];
+
+    // Increment pending changes
+    incrementPendingCount();
+
+    // Show success feedback
+    const oldText = saveBtn.innerHTML;
+    saveBtn.innerHTML = '✓';
+    setTimeout(() => {
+        saveBtn.innerHTML = oldText;
+    }, 1000);
+}
+
+// Watch service editing interface
+let currentWatchModes = {}; // Track which service type is active for each movie
+
+function setWatchService(movieId, serviceType, serviceName) {
+    // Update current mode
+    currentWatchModes[movieId] = {type: serviceType, service: serviceName};
+
+    // Update button states for this service type
+    const buttons = document.querySelectorAll(`[onclick*="setWatchService('${movieId}', '${serviceType}',"]`);
+    buttons.forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+
+    // Get current value for this service
+    let currentValue = '';
+    const input = document.getElementById(`${serviceType}-link-${movieId}`);
+    const saveBtn = document.getElementById(`save-${serviceType}-${movieId}`);
+
+    if (serviceName === 'ADD') {
+        // Custom service - let user type it in
+        currentValue = '';
+        input.placeholder = `Enter link for custom ${serviceType} service...`;
+    } else {
+        // Pre-defined service - load existing link if available
+        const existingLinks = getExistingWatchLinks(movieId, serviceType);
+        currentValue = existingLinks[serviceName] || '';
+        input.placeholder = `Enter ${serviceName} link...`;
+    }
+
+    // Set current value and enable editing
+    input.value = currentValue;
+    input.readOnly = false;
+    input.style.background = '#2a2a2a';
+    saveBtn.disabled = false;
+    saveBtn.style.opacity = '1';
+
+    // Focus the input
+    input.focus();
+}
+
+function getExistingWatchLinks(movieId, serviceType) {
+    // This would ideally get current values from the form fields
+    // For now, return empty object - values will be loaded from template
+    return {};
+}
+
+function saveWatchService(movieId) {
+    const watchMode = currentWatchModes[movieId];
+    if (!watchMode) return;
+
+    const {type: serviceType, service: serviceName} = watchMode;
+    const input = document.getElementById(`${serviceType}-link-${movieId}`);
+    const newValue = input.value;
+
+    // Update appropriate hidden fields or prepare for save
+    if (serviceType === 'streaming') {
+        // Update streaming service data
+        const serviceField = document.getElementById(`streaming-service-${movieId}`);
+        if (serviceField) {
+            serviceField.value = serviceName === 'ADD' ? 'Custom' : serviceName;
+        }
+    } else if (serviceType === 'vod') {
+        // Update VOD service data
+        const serviceField = document.getElementById(`vod-service-${movieId}`);
+        if (serviceField) {
+            serviceField.value = serviceName === 'ADD' ? 'Custom' : serviceName;
+        }
+    }
+
+    // Update button color based on whether link exists
+    const button = document.querySelector(`[onclick*="setWatchService('${movieId}', '${serviceType}', '${serviceName}')"]`);
+    if (button && serviceName !== 'ADD') {
+        button.classList.remove('link-good', 'link-bad');
+        button.classList.add(newValue ? 'link-good' : 'link-bad');
+    }
+
+    // Reset interface
+    input.readOnly = true;
+    input.style.background = '#1a1a1a';
+    input.value = '';
+    input.placeholder = 'Select service above to add link...';
+
+    const saveBtn = document.getElementById(`save-${serviceType}-${movieId}`);
+    saveBtn.disabled = true;
+    saveBtn.style.opacity = '0.6';
+
+    // Remove active state from buttons
+    const buttons = document.querySelectorAll(`[onclick*="setWatchService('${movieId}', '${serviceType}',"]`);
+    buttons.forEach(btn => btn.classList.remove('active'));
+
+    // Clear current mode
+    delete currentWatchModes[movieId];
+
+    // Increment pending changes
+    incrementPendingCount();
+
+    // Show success feedback
+    const oldText = saveBtn.innerHTML;
+    saveBtn.innerHTML = '✓';
+    setTimeout(() => {
+        saveBtn.innerHTML = oldText;
+    }, 1000);
+}

@@ -21,6 +21,7 @@ from logging.handlers import RotatingFileHandler
 import traceback
 from typing import Dict, List, Optional, Union, Any, Tuple
 import requests
+from file_lock import safe_write_json, safe_write_json_atomic
 
 app = Flask(__name__,
             template_folder='admin/templates',
@@ -342,68 +343,114 @@ def format_subprocess_output(text: Optional[str], max_chars: int = 500) -> str:
         return ''
     return text[-max_chars:] if len(text) > max_chars else text
 
-def safe_write_json(filepath: str, data: Union[dict, list], indent: int = 2, max_backups: int = 10) -> bool:
+
+def validate_movie_update_request(data: dict) -> tuple[bool, Optional[str]]:
     """
-    Safely write JSON data to a file with atomic operations and backup creation.
+    Validate JSON request for movie field updates.
 
     Args:
-        filepath (str): Path to the JSON file to write
-        data (dict): Python dictionary to serialize as JSON
-        indent (int): JSON indentation level (default 2)
-        max_backups (int): Maximum number of backup files to keep (default 10)
+        data: Request JSON data
 
     Returns:
-        bool: True on success
+        Tuple of (is_valid: bool, error_message: Optional[str])
 
-    Raises:
-        Exception: On write failure (original file remains untouched)
+    Schema:
+        - movie_id: required, non-empty string
+        - rt_score: optional, integer 0-100
+        - rt_link, trailer_link, wikipedia_link, poster_url: optional, valid HTTP(S) URL
+        - director, country: optional, string max 200 chars
+        - year: optional, integer 1900-2100
+        - runtime: optional, integer 1-500
+        - digital_date: optional, ISO format YYYY-MM-DD
+        - synopsis: optional, string max 5000 chars
+        - watch_links: optional, dict with streaming/rent/buy keys
     """
-    try:
-        # Step 1: Create timestamped backup if original file exists
-        if os.path.exists(filepath):
-            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-            backup_file = f"{filepath}.backup.{timestamp}"
-            shutil.copy2(filepath, backup_file)
+    # List of allowed fields
+    ALLOWED_FIELDS = {
+        'movie_id', 'rt_score', 'rt_link', 'trailer_link', 'wikipedia_link',
+        'director', 'country', 'year', 'runtime', 'poster_url',
+        'digital_date', 'synopsis', 'watch_links'
+    }
 
-        # Step 2: Write to temporary file
-        temp_file = f"{filepath}.tmp"
+    # Check for unexpected fields
+    unexpected = set(data.keys()) - ALLOWED_FIELDS
+    if unexpected:
+        return False, f"Unexpected fields: {', '.join(unexpected)}"
+
+    # Validate movie_id (required)
+    if 'movie_id' not in data or not data['movie_id']:
+        return False, "movie_id is required and cannot be empty"
+
+    if not isinstance(data['movie_id'], (str, int)):
+        return False, "movie_id must be a string or integer"
+
+    # Validate string length limits
+    if 'director' in data and data['director']:
+        if len(str(data['director'])) > 200:
+            return False, "director must be 200 characters or less"
+
+    if 'country' in data and data['country']:
+        if len(str(data['country'])) > 200:
+            return False, "country must be 200 characters or less"
+
+    if 'synopsis' in data and data['synopsis']:
+        if len(str(data['synopsis'])) > 5000:
+            return False, "synopsis must be 5000 characters or less"
+
+    # Validate URLs (basic check - detailed validation happens in endpoint)
+    url_fields = ['rt_link', 'trailer_link', 'wikipedia_link', 'poster_url']
+    for field in url_fields:
+        if field in data and data[field]:
+            url = str(data[field]).strip()
+            if url and not url.startswith(('http://', 'https://')):
+                return False, f"{field} must be a valid URL starting with http:// or https://"
+
+    # Validate year range
+    if 'year' in data and data['year'] is not None:
         try:
-            with open(temp_file, 'w') as f:
-                json.dump(data, f, indent=indent)
-        except Exception:
-            # Clean up temp file if write failed
-            if os.path.exists(temp_file):
-                os.remove(temp_file)
-            raise
+            year = int(data['year'])
+            if year < 1900 or year > 2100:
+                return False, "year must be between 1900 and 2100"
+        except (ValueError, TypeError):
+            return False, "year must be a valid integer"
 
-        # Step 3: Atomic rename (all-or-nothing)
-        os.replace(temp_file, filepath)
-
-        # Step 4: Cleanup old backups
+    # Validate runtime range
+    if 'runtime' in data and data['runtime'] is not None:
         try:
-            backup_pattern = f"{filepath}.backup.*"
-            backup_files = glob.glob(backup_pattern)
-            if len(backup_files) > max_backups:
-                # Sort by timestamp (newest first)
-                backup_files.sort(reverse=True)
-                # Remove old backups beyond max_backups
-                for old_backup in backup_files[max_backups:]:
-                    os.remove(old_backup)
-        except Exception:
-            # Backup cleanup failure shouldn't fail the write
-            pass
+            runtime = int(data['runtime'])
+            if runtime < 1 or runtime > 500:
+                return False, "runtime must be between 1 and 500 minutes"
+        except (ValueError, TypeError):
+            return False, "runtime must be a valid integer"
 
-        return True
+    # Validate RT score
+    if 'rt_score' in data and data['rt_score'] is not None:
+        try:
+            score = int(data['rt_score'])
+            if score < 0 or score > 100:
+                return False, "rt_score must be between 0 and 100"
+        except (ValueError, TypeError):
+            return False, "rt_score must be a valid integer"
 
-    except Exception as e:
-        # Ensure temp file is cleaned up
-        temp_file = f"{filepath}.tmp"
-        if os.path.exists(temp_file):
-            try:
-                os.remove(temp_file)
-            except:
-                pass
-        raise
+    # Validate watch_links structure
+    if 'watch_links' in data and data['watch_links']:
+        if not isinstance(data['watch_links'], dict):
+            return False, "watch_links must be a dictionary"
+
+        allowed_categories = {'streaming', 'rent', 'buy'}
+        for category, link_data in data['watch_links'].items():
+            if category not in allowed_categories:
+                return False, f"watch_links category must be one of: {', '.join(allowed_categories)}"
+
+            if not isinstance(link_data, dict):
+                return False, f"watch_links.{category} must be a dictionary"
+
+            if 'service' not in link_data or 'link' not in link_data:
+                return False, f"watch_links.{category} must have 'service' and 'link' keys"
+
+    return True, None
+
+# safe_write_json now imported from file_lock.py (with file locking support)
 
 
 def setup_logger(name: str, log_file: str = 'logs/admin.log', level: int = logging.INFO) -> logging.Logger:
@@ -874,6 +921,7 @@ def update_movie_fields() -> dict:
             "rt_score": int,  # Optional, 0-100
             "rt_link": str,  # Optional, must be valid URL
             "trailer_link": str,  # Optional, must be valid URL
+            "wikipedia_link": str,  # Optional, must be valid URL
             "director": str,  # Optional
             "country": str,  # Optional
             "year": int,  # Optional, 1900-2100
@@ -909,6 +957,13 @@ def update_movie_fields() -> dict:
     """
     try:
         data = request.json
+
+        # Validate request schema first (new as of 2025-11-09)
+        is_valid, error_msg = validate_movie_update_request(data)
+        if not is_valid:
+            logger.warning(f"Invalid update request: {error_msg}")
+            return jsonify({'success': False, 'error': error_msg})
+
         raw_movie_id = data.get('movie_id')
 
         # Validate movie_id exists and is not None before str() conversion
@@ -1028,6 +1083,28 @@ def update_movie_fields() -> dict:
                 movie['manual_trailer'] = True
                 changes_made.append('Trailer')
 
+        # Update Wikipedia Link
+        if 'wikipedia_link' in data:
+            wikipedia_link = data['wikipedia_link'].strip() if data['wikipedia_link'] else ''
+
+            if wikipedia_link == '':
+                # Empty string clears the field
+                if 'wikipedia' in movie.get('links', {}):
+                    del movie['links']['wikipedia']
+                movie['manual_wikipedia'] = False
+                changes_made.append('Wikipedia (cleared)')
+            else:
+                # VALIDATION: URL must start with http:// or https://
+                if not wikipedia_link.startswith(('http://', 'https://')):
+                    return jsonify({
+                        'success': False,
+                        'error': 'Wikipedia link must be a valid URL starting with http:// or https://'
+                    })
+
+                movie['links']['wikipedia'] = wikipedia_link
+                movie['manual_wikipedia'] = True
+                changes_made.append('Wikipedia')
+
         # Update Director
         if 'director' in data:
             director = str(data['director']).strip() if data['director'] else ''
@@ -1098,6 +1175,45 @@ def update_movie_fields() -> dict:
             movie['year'] = year
             movie['manual_year'] = True
             changes_made.append('Year')
+
+        # Update Runtime
+        if 'runtime' in data and data['runtime'] is not None:
+            runtime_value = data['runtime']
+
+            # Validate runtime is an integer
+            if isinstance(runtime_value, int):
+                runtime = runtime_value
+            elif isinstance(runtime_value, str):
+                runtime_str = runtime_value.strip()
+                import re
+                if not re.match(r'^\d+$', runtime_str):
+                    return jsonify({
+                        'success': False,
+                        'error': 'Runtime must be a valid integer'
+                    })
+                try:
+                    runtime = int(runtime_str)
+                except ValueError:
+                    return jsonify({
+                        'success': False,
+                        'error': 'Runtime must be a valid integer'
+                    })
+            else:
+                return jsonify({
+                    'success': False,
+                    'error': 'Runtime must be a valid integer'
+                })
+
+            # Validate runtime range (1-500 minutes)
+            if runtime < 1 or runtime > 500:
+                return jsonify({
+                    'success': False,
+                    'error': 'Runtime must be between 1 and 500 minutes'
+                })
+
+            movie['runtime'] = runtime
+            movie['manual_runtime'] = True
+            changes_made.append('Runtime')
 
         # Update Poster URL
         if 'poster_url' in data:
