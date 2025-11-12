@@ -87,6 +87,11 @@ class DataGenerator:
         from pipeline import StorageService
         self.storage = StorageService(self.logger)
 
+        # Initialize enrichment state manager (2025-11-11)
+        # Separate persistence for enrichment tracking to prevent race conditions
+        from enrichment_state import EnrichmentStateManager
+        self.enrichment_state = EnrichmentStateManager()
+
         # Default enrichment flag (will be overridden by CLI)
         self.enrichment_enabled = True
 
@@ -1169,6 +1174,202 @@ class DataGenerator:
             self.logger.error(f"Unexpected error fetching page {page}: {e}")
             return None
 
+    # ============================================================================
+    # Essential helper methods (2025-11-11 - added during enrichment state fix)
+    # ============================================================================
+
+    def simplify_provider_name(self, provider_name):
+        """Simplify provider names for display
+        Examples:
+        - 'Amazon Prime Video' → 'Amazon'
+        - 'Viaplay Amazon Channel' → 'Amazon'
+        - 'AMC Plus Apple TV Channel' → 'AMC+'
+        """
+        if not provider_name:
+            return provider_name
+
+        # Most specific patterns first (check AMC before Amazon)
+        simplifications = [
+            ('amc', 'AMC+'),
+            ('netflix', 'Netflix'),
+            ('disney', 'Disney+'),
+            ('hulu', 'Hulu'),
+            ('hbo max', 'Max'),
+            ('paramount', 'Paramount+'),
+            ('peacock', 'Peacock'),
+            ('amazon', 'Amazon'),
+            ('apple tv', 'Apple TV'),
+            ('shudder', 'Shudder'),
+            ('mubi', 'MUBI'),
+            ('criterion', 'Criterion'),
+            ('vudu', 'Vudu'),
+            ('google play', 'Google Play'),
+            ('youtube', 'YouTube'),
+            ('fandango', 'Fandango'),
+        ]
+
+        provider_lower = provider_name.lower()
+        for pattern, simplified in simplifications:
+            if pattern in provider_lower:
+                return simplified
+
+        return provider_name
+
+
+    def get_movie_details(self, movie_id):
+        """Get full movie details from TMDB"""
+        url = f"https://api.themoviedb.org/3/movie/{movie_id}"
+        params = {
+            'api_key': self.tmdb_key,
+            'append_to_response': 'credits,videos,external_ids'
+        }
+        
+        try:
+            response = requests.get(url, params=params)
+            if response.status_code == 200:
+                return response.json()
+        except Exception as e:
+            print(f"Error fetching details for {movie_id}: {e}")
+        return None
+    
+
+    def find_wikipedia_url(self, title, year, imdb_id, movie_id=None):
+        """Find Wikipedia URL using Playwright-based scraper with waterfall approach
+
+        Priority waterfall:
+        1. Overrides (overrides/wikipedia_overrides.json) - Manual curator fixes
+        2. Playwright Scraper - Uses cache, Wikidata SPARQL, REST API, and web scraping
+        3. Log missing and return None
+
+        Args:
+            title: Movie title
+            year: Release year
+            imdb_id: IMDb ID from TMDB external_ids (e.g., 'tt35076553')
+            movie_id: TMDB ID for logging purposes
+
+        Returns:
+            Wikipedia URL string or None if not found
+        """
+        # 1. Check overrides first (manual curator fixes take precedence)
+        if imdb_id and imdb_id in self.wikipedia_overrides:
+            return f"https://en.wikipedia.org/wiki/{self.wikipedia_overrides[imdb_id]}"
+
+        # 2. Initialize Playwright scraper lazily
+        if self.wikipedia_scraper is None:
+            # Check enrichment flag first
+            if not self.enrichment_enabled:
+                self.logger.debug("Wikipedia scraper disabled - enrichment not enabled")
+                return None
+
+            self.wikipedia_scraper = WikipediaScraperPlaywright(
+                cache_file='cache/wikipedia_cache.json',
+                config=self.config,
+                logger=self.logger
+            )
+
+        # 3. Use Playwright scraper with waterfall approach
+        # The scraper internally handles: Cache → Wikidata → REST API → Playwright scraping
+        try:
+            wiki_url = self.wikipedia_scraper.find_wikipedia_url(
+                title=title,
+                year=year,
+                imdb_id=imdb_id,
+                use_api=True,
+                use_wikidata=True
+            )
+
+            # Update our local cache reference to match scraper's cache
+            self.wikipedia_cache = self.wikipedia_scraper.cache
+
+            # Track stats for this attempt
+            self.wikipedia_stats['wikidata_attempts'] = self.wikipedia_scraper.stats.get('wikidata_attempts', 0)
+            self.wikipedia_stats['wikidata_successes'] = self.wikipedia_scraper.stats.get('wikidata_successes', 0)
+
+            return wiki_url
+
+        except Exception as e:
+            print(f"Wikipedia scraper error for {title} ({year}): {e}")
+            self.logger.error(f"Wikipedia scraper error for {title} ({year}): {e}")
+            return None
+    
+
+    def find_trailer_url(self, movie_details):
+        """Extract trailer URL from TMDB movie details or scrape YouTube"""
+        title = movie_details.get('title', '')
+        year = movie_details.get('release_date', '')[:4] if movie_details.get('release_date') else ''
+
+        # 1. Check manual overrides first
+        override_key = f"{title}_{year}"
+        if override_key in self.trailer_overrides:
+            return self.trailer_overrides[override_key]
+
+        videos = movie_details.get('videos', {}).get('results', [])
+
+        # 2. Prioritize official trailers from TMDB
+        for video in videos:
+            if video['type'] == 'Trailer' and video['site'] == 'YouTube':
+                return f"https://www.youtube.com/watch?v={video['key']}"
+
+        # 3. Fall back to any YouTube video from TMDB
+        for video in videos:
+            if video['site'] == 'YouTube':
+                return f"https://www.youtube.com/watch?v={video['key']}"
+
+        # 4. Check YouTube scraper cache
+        cache_key = f"{title}_{year}"
+        if cache_key in self.youtube_trailer_cache:
+            cached_url = self.youtube_trailer_cache[cache_key]
+            if cached_url:  # Don't return None from cache, keep trying
+                return cached_url
+
+        # 5. Try scraping YouTube for the trailer
+        if self.youtube_scraper is None:
+            # Check enrichment flag first
+            if not self.enrichment_enabled:
+                self.logger.debug("YouTube trailer scraper disabled - enrichment not enabled")
+                return None
+
+            self.youtube_scraper = YouTubeTrailerScraper(
+                cache_file='cache/youtube_trailer_cache.json',
+                headless=True
+            )
+
+        scraped_url = self.youtube_scraper.find_trailer(title, year)
+        if scraped_url:
+            return scraped_url
+
+        # 6. Final fallback: generate YouTube search URL
+        search_query = quote(f"{title} {year} trailer")
+        return f"https://www.youtube.com/results?search_query={search_query}"
+    
+
+    def find_rt_url(self, title, year, imdb_id):
+        """Find Rotten Tomatoes URL and score"""
+        # 1. Check overrides first
+        if imdb_id and imdb_id in self.rt_overrides:
+            override = self.rt_overrides[imdb_id]
+            if isinstance(override, dict):
+                return override
+            return {'url': override, 'score': None}
+
+        # 2. Check if RT scraper is enabled
+        enabled = self.config.get('rt_scraper', {}).get('enabled', True)
+        if not enabled:
+            print("  RT scraping disabled via config")
+            search_query = quote(f"{title} {year}")
+            return {'url': f"https://www.rottentomatoes.com/search?search={search_query}", 'score': None}
+
+        # 3. Use RT scraper (handles caching internally)
+        result = self.scrape_rt_score(title, year)
+        if result:
+            return result
+
+        # 4. Fall back to search
+        search_query = quote(f"{title} {year}")
+        return {'url': f"https://www.rottentomatoes.com/search?search={search_query}", 'score': None}
+
+
+
     def process_movie(self, movie_id, movie_data, movie_details, force_refresh=False):
         """Process a single movie into display format"""
         if not movie_details:
@@ -1282,17 +1483,15 @@ class DataGenerator:
             days_back: How many days back to look for available movies
             incremental: If True, only process NEW movies not already in data.json (default)
                         If False, regenerate entire data.json from scratch
+
+        ARCHITECTURE NOTE (2025-11-11):
+        This function is now READ-ONLY for movie_tracking.json. Enrichment state
+        is tracked separately in enrichment_state.json to prevent race conditions
+        where display generation overwrites discovery results.
         """
 
-        # Load main tracking database for updating enrichment flags
-        if os.path.exists('movie_tracking.json'):
-            with open('movie_tracking.json', 'r') as f:
-                db = json.load(f)
-        else:
-            self.logger.error("No movie_tracking.json found. Run 'python movie_tracker.py daily' first")
-            return
-
         # Load all movies (merged from tracking and archived)
+        # READ-ONLY: We no longer write back to movie_tracking.json
         archive_enabled = self.config.get('tracking', {}).get('archive_available_on_detect', False)
         combined = self.storage.load_all_movies(archive_enabled=archive_enabled)
         if not combined.get('movies'):
@@ -1341,9 +1540,9 @@ class DataGenerator:
                 try:
                     digital_date = datetime.strptime(movie_data['digital_date'], '%Y-%m-%d')
                     if digital_date >= cutoff_date:
-                        # Check enrichment status
-                        is_enriched = movie_data.get('enriched', False)
-                        enrichment_date = movie_data.get('enrichment_date')
+                        # Check enrichment status from separate enrichment state
+                        is_enriched = self.enrichment_state.is_enriched(movie_id)
+                        enrichment_date = self.enrichment_state.get_enrichment_date(movie_id)
 
                         # Check if enrichment is stale (> 90 days old)
                         is_stale = False
@@ -1420,10 +1619,8 @@ class DataGenerator:
                         new_movies.append(processed)
                         print(f"  ✓ {processed['title']} - Links: {len(processed['links'])}")
 
-                        # Mark as enriched in tracking database
-                        if movie_id in db['movies']:
-                            db['movies'][movie_id]['enriched'] = True
-                            db['movies'][movie_id]['enrichment_date'] = datetime.now().isoformat()
+                        # Mark as enriched in separate enrichment state (not in movie_tracking.json)
+                        self.enrichment_state.mark_enriched(movie_id)
                         enriched_count += 1
 
                 time.sleep(self.config.get('api', {}).get('tmdb_rate_limit', 0.25))  # Rate limiting
@@ -1431,17 +1628,11 @@ class DataGenerator:
             except Exception as e:
                 print(f"  ✗ Error processing {movie_data.get('title')}: {e}")
 
-        # Pre-commit validation: prevent bulk enrichment flag corruption
-        if not self.validate_enrichment_changes(db, 'movie_tracking.json'):
-            self.logger.error("Pre-commit validation failed - aborting write to prevent corruption")
-            print("❌ Pre-commit validation failed - enrichment changes rejected to prevent corruption")
-            return []
-
-        # Save updated tracking database with enrichment flags
-        if self.storage.atomic_write_json(db, 'movie_tracking.json'):
-            print(f"\n💾 Enrichment tracking saved: {enriched_count} movies marked as enriched")
-        else:
-            print(f"\n❌ Failed to save enrichment tracking")
+        # Save enrichment state to separate file
+        # This prevents race conditions with discovery/monitoring writes to movie_tracking.json
+        self.enrichment_state.save()
+        print(f"\n💾 Enrichment tracking saved: {enriched_count} movies marked as enriched")
+        self.logger.info(f"Enrichment state saved: {enriched_count} movies marked as enriched")
 
         # Merge with existing movies that are already enriched
         if incremental and already_enriched:
