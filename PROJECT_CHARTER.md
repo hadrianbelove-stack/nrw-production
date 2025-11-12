@@ -141,7 +141,7 @@ Archive via `diary/YYYY-MM-DD.md` (immutable end-of-session snapshots)
 
 ### 016: Data Schema Lock v1
 **Decision:** Lock data.json schema v1 with required fields and optional watch_links.
-**Scope:** Required: tmdb_id, title, digital_date, poster, crew, synopsis, runtime, links. Optional: watch_links {streaming/rent/buy}.
+**Scope:** Required: tmdb_id, title, digital_date, poster, crew, synopsis, runtime, links. Optional: watch_links {streaming/vod}.
 **Status:** ✅ Active - digital_date = first provider availability
 **Spec:** SYSTEM_ARCHITECTURE.md §Data Contracts
 

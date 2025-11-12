@@ -24,7 +24,7 @@ def validate_watch_links_data(data_file='data.json'):
     validation_warnings = 0
     validation_passes = 0
 
-    valid_categories = ['streaming', 'rent', 'buy']
+    valid_categories = ['streaming', 'vod']
 
     for movie in movies:
         watch_links = movie.get('watch_links', {})

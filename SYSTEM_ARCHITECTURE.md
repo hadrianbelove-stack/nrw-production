@@ -259,7 +259,7 @@ rt_scraper:
 
 **Official Structure (as defined in [PROJECT_CHARTER.md](PROJECT_CHARTER.md)):**
 
-The `watch_links` field in `data.json` uses a **three-category structure** representing different access methods:
+The `watch_links` field in `data.json` uses a **two-category structure** representing different access methods:
 
 ```json
 {
@@ -268,13 +268,9 @@ The `watch_links` field in `data.json` uses a **three-category structure** repre
       "service": "Netflix",
       "link": "https://www.netflix.com/title/12345"
     },
-    "rent": {
-      "service": "Amazon Video",
+    "vod": {
+      "service": "Amazon",
       "link": "https://www.amazon.com/..."
-    },
-    "buy": {
-      "service": "Apple TV",
-      "link": "https://tv.apple.com/..."
     }
   }
 }
@@ -282,15 +278,14 @@ The `watch_links` field in `data.json` uses a **three-category structure** repre
 
 ### Category Definitions
 - **`streaming`**: Subscription-based services (Netflix, Prime, Disney+, HBO Max, Hulu, MUBI, Criterion)
-- **`rent`**: Rental options (Amazon Video, Apple TV, Google Play, Vudu)
-- **`buy`**: Purchase options (Amazon Video, Apple TV, Google Play, Microsoft Store)
+- **`vod`**: Video on Demand - rental and purchase options (Amazon, Apple TV, Google Play, Vudu, Microsoft Store)
 
 ### Schema Rules
 1. **Optional categories**: Only present when available for the movie (sparse structure)
 2. **Required fields per category**: `service` (string, provider name) and `link` (string URL or null)
 3. **Null links allowed**: `link: null` indicates service is available but URL not found (frontend shows error state)
 4. **No search URLs**: System returns `null` instead of Google/Amazon search fallbacks (curator can add overrides)
-5. **Service priority**: Best service selected per category (Netflix > Disney+ for streaming, Amazon > Apple TV for rent/buy)
+5. **Service priority**: Best service selected per category (Netflix > Disney+ for streaming, Amazon > Apple TV for vod)
 
 ### Cache Strategy
 - **Location:** `cache/watch_links_cache.json`
@@ -298,7 +293,7 @@ The `watch_links` field in `data.json` uses a **three-category structure** repre
 - **Value:** `{links: {...}, cached_at: ISO-8601, source: 'watchmode_api'|'tmdb_providers'}`
 - **Purpose:** Prevents redundant API calls (saves 13,380 calls/month)
 - **Effectiveness:** With cache, monthly usage is ~300 calls (new movies only); without cache, would be 13,680 calls (exceeds free tier)
-- **Migration support:** Automatically migrates legacy `free/paid` format to canonical `streaming/rent/buy` schema
+- **Migration support:** Automatically migrates legacy `free/paid` or `rent/buy` format to canonical `streaming/vod` schema
 
 ## 📊 Data Contracts
 
@@ -348,8 +343,7 @@ Filtered, enriched subset for frontend display:
   },
   "watch_links": {
     "streaming": {"service": "Netflix", "link": "https://..."},
-    "rent": {"service": "Amazon", "link": "https://..."},
-    "buy": {"service": "Apple TV", "link": "https://..."}
+    "vod": {"service": "Amazon", "link": "https://..."}
   }
 }
 ```

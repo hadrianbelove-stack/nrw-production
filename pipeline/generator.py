@@ -663,19 +663,41 @@ class DataGenerator:
         # Emit JSON artifact for robust metrics capture
         try:
             os.makedirs('metrics', exist_ok=True)
+
+            # Calculate scan window for audit trail
+            start_date = since_datetime.strftime('%Y-%m-%d')
+            end_date = datetime.now().strftime('%Y-%m-%d')
+
+            # Determine discovery mode
+            if since_date:
+                mode = 'manual'
+            elif bootstrap or not discovery_state.get('last_success_date'):
+                mode = 'bootstrap'
+            else:
+                mode = 'incremental'
+
             discovery_run_data = {
                 'timestamp': datetime.now().isoformat(),
                 'operation': 'discover_premieres',
-                'discovered': new_movies_added,
-                'pages_fetched': self.discovery_stats['pages_fetched'],
-                'total_results': self.discovery_stats['total_results'],
-                'duplicates_skipped': self.discovery_stats['duplicates_skipped']
+                'scan_window': {
+                    'start_date': start_date,
+                    'end_date': end_date,
+                    'days_back': days_back,
+                    'mode': mode,
+                    'bootstrap': bootstrap
+                },
+                'results': {
+                    'discovered': new_movies_added,
+                    'pages_fetched': self.discovery_stats['pages_fetched'],
+                    'total_results': self.discovery_stats['total_results'],
+                    'duplicates_skipped': self.discovery_stats['duplicates_skipped']
+                }
             }
 
             with open('metrics/discovery_run.json', 'w') as f:
                 json.dump(discovery_run_data, f, indent=2)
 
-            print(f"📊 Discovery metrics saved to metrics/discovery_run.json")
+            print(f"📊 Discovery metrics saved: {start_date} to {end_date} ({mode} mode, {new_movies_added} found)")
             self.logger.info(f"Discovery metrics saved: {discovery_run_data}")
         except Exception as e:
             self.logger.warning(f"Failed to save discovery metrics artifact: {e}")
@@ -920,10 +942,18 @@ class DataGenerator:
             discovery_run_data = {
                 'timestamp': datetime.now().isoformat(),
                 'operation': 'check_tracking',
-                'polled': checked,
-                'transitions': newly_digital,
-                'scan_tag': scan_tag.strip() if scan_tag else None,
-                'failed': failed
+                'scan_context': {
+                    'poll_all_tracking': poll_all_tracking,
+                    'max_to_check': max_to_check,
+                    'priority_days': priority_days,
+                    'full_scan': poll_all_tracking
+                },
+                'results': {
+                    'polled': checked,
+                    'transitions': newly_digital,
+                    'failed': failed,
+                    'scan_tag': scan_tag.strip() if scan_tag else None
+                }
             }
 
             with open('metrics/discovery_run.json', 'w') as f:
@@ -1369,6 +1399,602 @@ class DataGenerator:
         return {'url': f"https://www.rottentomatoes.com/search?search={search_query}", 'score': None}
 
 
+
+
+    # ============================================================================
+    # Additional helper methods from backup (2025-11-11 - Option 1 bulk copy)
+    # TODO: Review and refactor these during next cleanup phase
+    # ============================================================================
+
+    def _init_agent_scraper(self):
+        """Initialize agent scraper if not already initialized"""
+        if self.agent_scraper is None:
+            # Check enrichment flag first
+            if not self.enrichment_enabled:
+                self.logger.debug("Agent scraper disabled - enrichment not enabled")
+                self.agent_scraper = False
+                return
+
+            # Check if agent scraper is enabled in config
+            agent_config = self.config.get('agent_scraper', {})
+            enabled = agent_config.get('enabled', True)  # Default to True if not specified
+
+            if not enabled:
+                self.logger.debug("Agent scraper disabled in config.yaml")
+                self.agent_scraper = False
+                return
+
+            # Check if playwright is available
+            try:
+                from playwright.sync_api import sync_playwright
+            except ImportError:
+                self.logger.debug("Playwright not installed, agent scraper disabled")
+                self.logger.debug("Install with: pip install playwright && playwright install chromium")
+                self.agent_scraper = False
+                return
+
+            try:
+                # Read config settings
+                cache_file = 'cache/agent_links_cache.json'  # Could be configurable
+
+                self.logger.debug("Initializing agent scraper with Playwright...")
+                self.agent_scraper = AgentLinkScraper(
+                    cache_file=cache_file,
+                    config=agent_config  # Pass entire config dict
+                )
+                self.logger.debug("Agent scraper initialized (Playwright)")
+            except Exception as e:
+                self.logger.exception(f"Failed to initialize agent scraper: {e}")
+                self.agent_scraper = False  # Mark as failed to prevent retries
+
+
+    def _init_rt_scraper(self):
+        """Initialize RT scraper with Playwright (lazy initialization)"""
+        if self.rt_scraper is not None:
+            return self.rt_scraper is not False
+
+        # Check enrichment flag first
+        if not self.enrichment_enabled:
+            self.logger.debug("RT scraper disabled - enrichment not enabled")
+            self.rt_scraper = False
+            return False
+
+        try:
+            self.rt_scraper = RTScraperPlaywright(
+                cache_file='cache/rt_cache.json',
+                config=self.config,
+                logger=self.logger
+            )
+            self.logger.debug("RT scraper initialized successfully")
+            return True
+        except Exception as e:
+            self.logger.error(f"Failed to initialize RT scraper: {e}")
+            self.rt_scraper = False  # Mark as failed to prevent retries
+            return False
+
+
+    def scrape_rt_score(self, title, year):
+        """Public wrapper function to scrape RT score for external consumers
+
+        Args:
+            title: Movie title
+            year: Release year
+
+        Returns:
+            dict: {'url': ..., 'score': ...} or None if not found
+        """
+        # Initialize scraper if needed
+        if not self._init_rt_scraper():
+            return None
+
+        # Check scraper availability
+        if self.rt_scraper is False:
+            return None
+
+        # Use the new Playwright scraper
+        try:
+            result = self.rt_scraper.scrape_rt_score(title, year)
+
+            # Update stats from scraper
+            scraper_stats = self.rt_scraper.get_stats()
+            self.watchmode_stats['rt_attempts'] = scraper_stats['attempts']
+            self.watchmode_stats['rt_successes'] = scraper_stats['successes']
+            self.watchmode_stats['rt_cache_hits'] = scraper_stats['cache_hits']
+
+            return result
+        except Exception as e:
+            self.logger.error(f"RT scraping error: {e}")
+            return None
+
+
+    def load_cache(self, filename):
+        if os.path.exists(filename):
+            with open(filename, 'r') as f:
+                return json.load(f)
+        return {}
+    
+
+    def save_cache(self, data, filename):
+        os.makedirs(os.path.dirname(filename) if '/' in filename else '.', exist_ok=True)
+        with open(filename, 'w') as f:
+            json.dump(data, f, indent=2)
+
+
+    def generate_google_search_fallback(self, title, year, service):
+        """Generate a Google search URL as fallback when no direct link is available"""
+        search_query = quote(f"{title} {year} watch {service}")
+        return f"https://www.google.com/search?q={search_query}"
+
+
+    def log_missing_wikipedia(self, movie_id, title, year, imdb_id):
+        """Log missing Wikipedia links for manual review"""
+        try:
+            missing_file = 'missing_wikipedia.json'
+            if os.path.exists(missing_file):
+                with open(missing_file, 'r') as f:
+                    missing = json.load(f)
+            else:
+                missing = {"missing": []}
+            
+            entry = {
+                "tmdb_id": movie_id,
+                "title": title,
+                "year": year,
+                "imdb_id": imdb_id,
+                "timestamp": datetime.now().isoformat()
+            }
+            
+            # Avoid duplicates
+            if not any(m['tmdb_id'] == movie_id for m in missing['missing']):
+                missing['missing'].append(entry)
+                with open(missing_file, 'w') as f:
+                    json.dump(missing, f, indent=2)
+        except Exception as e:
+            print(f"Failed to log missing Wikipedia: {e}")
+
+
+    def get_watch_links(self, movie_id, title, year, providers, force_refresh=False, tracking_data=None):
+        """Get deep links with canonical streaming/rent/buy structure
+
+        Priority waterfall:
+        1. Manual watch links from movie_tracking.json - highest priority
+        2. Admin overrides (admin/watch_link_overrides.json) - backward compatibility
+        3. Cache (cache/watch_links_cache.json)
+        4. Watchmode API
+        5. Agent scraper (Netflix, Disney+, HBO Max, Hulu)
+        6. TMDB provider names with null links
+
+        Returns: {
+            'streaming': {'service': 'Netflix', 'link': 'https://...'},  # subscription streaming
+            'rent': {'service': 'Amazon', 'link': 'https://...'},        # rental
+            'buy': {'service': 'Apple TV', 'link': 'https://...'}        # purchase
+        }
+        """
+        # 1. Check manual watch links from tracking data FIRST (highest priority)
+        if tracking_data and 'watch_links' in tracking_data and tracking_data.get('manual_watch_links'):
+            manual_links = tracking_data['watch_links']
+            try:
+                validated_manual = self.validator.validate_watch_links_schema(manual_links, title)
+                if validated_manual:
+                    print(f"  Using manual watch links from tracking data for {title}: {list(validated_manual.keys())}")
+                    self.watchmode_stats['manual_tracking_hits'] = self.watchmode_stats.get('manual_tracking_hits', 0) + 1
+
+                    # Cache the validated manual links
+                    cache_key = str(movie_id)
+                    now = datetime.now().isoformat()
+                    self.watch_links_cache[cache_key] = {
+                        'links': validated_manual,
+                        'cached_at': now,
+                        'source': 'manual_tracking'
+                    }
+                    self.storage.save_cache(self.watch_links_cache, 'cache/watch_links_cache.json')
+
+                    return validated_manual
+            except Exception as e:
+                print(f"  Warning: Invalid manual watch links in tracking data for {title}: {e}")
+
+        # 2. Check overrides/watch_links_overrides.json (highest priority after manual tracking)
+        cache_key = str(movie_id)
+        if cache_key in self.watch_links_overrides:
+            override_data = self.watch_links_overrides[cache_key]
+            try:
+                validated_override = self.validator.validate_watch_links_schema(override_data, title)
+                if validated_override:
+                    print(f"  Using override from watch_links_overrides.json for {title}: {list(validated_override.keys())}")
+                    self.watchmode_stats['override_hits'] = self.watchmode_stats.get('override_hits', 0) + 1
+                    return validated_override
+            except Exception as e:
+                print(f"  Warning: Invalid override in watch_links_overrides.json for {title}: {e}")
+
+        # 3. Check admin overrides (backward compatibility)
+        validated_overrides = {}
+        if cache_key in self.watch_link_overrides:
+            overrides = self.watch_link_overrides[cache_key]
+            # Validate overrides but continue with waterfall for non-overridden categories
+            for category in ['streaming', 'rent', 'buy']:
+                if category in overrides:
+                    override_data = overrides[category]
+                    # Validate structure
+                    if isinstance(override_data, dict) and 'service' in override_data and 'link' in override_data:
+                        # Validate service name is non-empty string
+                        service = override_data['service']
+                        if not service or not isinstance(service, str) or not service.strip():
+                            print(f"  Warning: Invalid override service name for {title} {category}: {service}")
+                            continue
+                        # Validate URL if link is not None/empty
+                        link = override_data['link']
+                        if link and isinstance(link, str) and (link.startswith('http://') or link.startswith('https://')):
+                            validated_overrides[category] = override_data
+                        elif not link:  # Empty link means "no override for this category"
+                            continue
+                        else:
+                            print(f"  Warning: Invalid override link for {title} {category}: {link}")
+
+            if validated_overrides:
+                print(f"  Using admin overrides for {title}: {list(validated_overrides.keys())}")
+                self.watchmode_stats['override_hits'] += 1
+
+        # 2. Check cache (unless force refresh)
+        if not force_refresh and cache_key in self.watch_links_cache:
+            cached = self.watch_links_cache[cache_key]
+            if cached.get('links'):
+                self.watchmode_stats['cache_hits'] += 1
+
+                # Check for placeholder ASINs in cached links and purge if found
+                has_placeholder_asin = False
+                detected_asin = None
+                for category in ['streaming', 'rent', 'buy']:
+                    category_data = cached['links'].get(category, {})
+                    if category_data and isinstance(category_data, dict):
+                        link = category_data.get('link', '')
+                        if link and any(asin in link for asin in PLACEHOLDER_ASINS):
+                            detected_asin = next(asin for asin in PLACEHOLDER_ASINS if asin in link)
+                            has_placeholder_asin = True
+                            break
+
+                if has_placeholder_asin:
+                    # Delete the cache entry with placeholder ASIN
+                    del self.watch_links_cache[cache_key]
+                    self.storage.save_cache(self.watch_links_cache, 'cache/watch_links_cache.json')
+                    print(f"  Purged cache entry {cache_key} containing placeholder ASIN {detected_asin}")
+                else:
+                    # Migrate legacy cache format if needed
+                    migrated_links = self.enrichment.migrate_legacy_cache_format(cached['links'])
+                    if migrated_links != cached['links']:
+                        # Update cache with migrated format
+                        self.watch_links_cache[cache_key]['links'] = migrated_links
+
+                        # Recompute source metadata based on whether any category has a non-null link
+                        has_links = any(
+                            link.get('link') is not None
+                            for link in migrated_links.values()
+                            if isinstance(link, dict)
+                        )
+                        source_type = 'watchmode_api' if has_links else 'tmdb_providers'
+                        self.watch_links_cache[cache_key]['source'] = source_type
+                        self.watch_links_cache[cache_key]['cached_at'] = datetime.now().isoformat()
+
+                        self.storage.save_cache(self.watch_links_cache, 'cache/watch_links_cache.json')
+                    return migrated_links
+
+        # Service priority hierarchies
+        STREAMING_PRIORITY = ['Netflix', 'Disney+', 'Disney Plus', 'HBO Max', 'Max',
+                              'Hulu', 'Amazon Prime Video', 'Prime Video', 'Apple TV+',
+                              'Paramount+', 'Paramount Plus', 'Peacock', 'MUBI', 'Shudder', 'Criterion Channel']
+
+        PAID_PRIORITY = ['Amazon Video', 'Amazon', 'Prime Video', 'Apple TV', 'Vudu',
+                         'Google Play Movies', 'Google Play', 'Microsoft Store']
+
+        # Services to exclude from the database (niche/low-quality services)
+        # Use centralized helper methods
+
+        def select_best_service(service_list, priority_list):
+            """Select best service from list based on priority, filtering out excluded services"""
+            # Filter out excluded services first
+            filtered_services = [s for s in service_list if not self.enrichment.is_excluded_service(s)]
+
+            if not filtered_services:
+                return None
+
+            for priority_service in priority_list:
+                for available_service in filtered_services:
+                    if priority_service.lower() in available_service.lower():
+                        return available_service
+            # If no priority match, return first available (from filtered list)
+            return filtered_services[0] if filtered_services else None
+
+        # Collect sources from Watchmode API (skip categories that already have overrides)
+        watchmode_streaming = []
+        watchmode_rent = []
+        watchmode_buy = []
+
+        # Skip external API calls for categories that already have overrides
+        skip_streaming = 'streaming' in validated_overrides
+        skip_rent = 'rent' in validated_overrides
+        skip_buy = 'buy' in validated_overrides
+
+        # Phase 3: Quota-aware Watchmode API calls with graceful degradation
+        if not self.watchmode_enabled or not self.watchmode_client:
+            self.logger.debug(f"Watchmode API disabled, skipping for {title}")
+        else:
+            try:
+                # Use quota-aware API client (automatically checks quota and tracks calls)
+                search_results = self.watchmode_client.search_by_tmdb_id(movie_id, title)
+
+                if search_results and search_results.get('title_results'):
+                    watchmode_id = search_results['title_results'][0]['id']
+
+                    # Get details with sources (quota-aware)
+                    details = self.watchmode_client.get_title_details(watchmode_id, title, movie_id)
+
+                    if details:
+                        sources = details.get('sources', [])
+
+                        # Track statistics (maintain backward compatibility)
+                        self.watchmode_stats['search_calls'] += 1
+                        self.watchmode_stats['source_calls'] += 1
+
+                        if sources:
+                            self.watchmode_stats['watchmode_successes'] += 1
+
+                        # Collect US sources by type
+                        for source in sources:
+                            if source.get('region') != 'US':
+                                continue
+
+                            service_name = source.get('name', '')
+                            web_url = source.get('web_url', '')
+                            source_type = source.get('type', '')
+
+                            if not service_name or not web_url:
+                                continue
+
+                            # Skip excluded services
+                            if self.enrichment.is_excluded_service(service_name):
+                                continue
+
+                            if source_type == 'sub' and not skip_streaming:
+                                watchmode_streaming.append({'service': service_name, 'link': web_url})
+                            elif source_type == 'rent' and not skip_rent:
+                                watchmode_rent.append({'service': service_name, 'link': web_url})
+                            elif source_type == 'buy' and not skip_buy:
+                                watchmode_buy.append({'service': service_name, 'link': web_url})
+
+            except Exception as e:
+                print(f"  Warning: Watchmode API failed for {title}: {e}")
+
+        # Agent search tier (optional): Try to find deep links for Amazon/Apple TV when Watchmode has no data
+        # OR when Watchmode returned Google fallback URLs
+        # Capture lengths before platform scraper to detect if it added links
+        streaming_len_before = len(watchmode_streaming)
+        rent_len_before = len(watchmode_rent)
+        buy_len_before = len(watchmode_buy)
+
+        # Helper function to check if a list contains Google fallback URLs
+        def has_google_fallback(link_list):
+            """Check if any links in the list are Google search fallbacks"""
+            if not link_list:
+                return False
+            return any('google.com/search' in item.get('link', '') for item in link_list)
+
+        # Call platform scraper if:
+        # 1. No data from Watchmode (original logic), OR
+        # 2. Watchmode returned Google fallback URLs (needs real link)
+        should_try_platform_scraper = (
+            not watchmode_streaming or not watchmode_rent or not watchmode_buy or
+            has_google_fallback(watchmode_streaming) or
+            has_google_fallback(watchmode_rent) or
+            has_google_fallback(watchmode_buy)
+        )
+
+        if StreamingPlatformScraper and should_try_platform_scraper:
+            self.enrichment.try_platform_scraper(title, year, providers, watchmode_streaming, watchmode_rent, watchmode_buy, skip_streaming, skip_rent, skip_buy)
+
+        # Check if platform scraper actually added any links
+        platform_scraper_used = (
+            len(watchmode_streaming) > streaming_len_before or
+            len(watchmode_rent) > rent_len_before or
+            len(watchmode_buy) > buy_len_before
+        )
+
+        # Build final watch_links with canonical streaming/rent/buy structure
+        watch_links = {}
+
+        # STREAMING: Prefer Watchmode, fallback to TMDB providers with smart Amazon handling (skip if overridden)
+        if not skip_streaming:
+            if watchmode_streaming:
+                # Use Watchmode streaming data
+                best_service = select_best_service([s['service'] for s in watchmode_streaming], STREAMING_PRIORITY)
+                for source in watchmode_streaming:
+                    if source['service'] == best_service:
+                        watch_links['streaming'] = source
+                        break
+            elif providers.get('streaming'):
+                # Fallback to TMDB provider data
+                service = select_best_service(providers['streaming'], STREAMING_PRIORITY)
+
+                # SMART FALLBACK: If TMDB says "Amazon Prime Video" but Watchmode didn't find subscription,
+                # reuse any Amazon rent/buy link we have (it's the same detail page on Amazon)
+                if 'Amazon Prime Video' in service and (watchmode_rent or watchmode_buy):
+                    # Find any Amazon link in rent or buy sources
+                    amazon_link = None
+                    for source in watchmode_rent + watchmode_buy:
+                        if 'Amazon' in source['service'] and source.get('link'):
+                            amazon_link = source['link']
+                            break
+
+                    if amazon_link:
+                        watch_links['streaming'] = {
+                            'service': service,
+                            'link': amazon_link  # Same page shows both Prime (free) and rent/buy options
+                        }
+                    else:
+                        # No Amazon link available, leave as null (no Google fallback)
+                        watch_links['streaming'] = {
+                            'service': service,
+                            'link': None
+                        }
+                else:
+                    # Try agent scraper for supported platforms before returning null
+                    agent_result = self.enrichment.try_agent_scraper(movie_id, title, year, service, 'streaming')
+                    watch_links['streaming'] = agent_result
+
+        # RENT: Use Watchmode or fallback to platform links (skip if overridden)
+        if not skip_rent:
+            if watchmode_rent:
+                best_service = select_best_service([s['service'] for s in watchmode_rent], PAID_PRIORITY)
+                for source in watchmode_rent:
+                    if source['service'] == best_service:
+                        watch_links['rent'] = source
+                        break
+            elif providers.get('rent'):
+                rent_service = select_best_service(providers.get('rent', []), PAID_PRIORITY)
+                if rent_service:
+                    # Try platform scraper for Amazon/Apple TV before returning null
+                    if StreamingPlatformScraper and (self.enrichment.is_actual_amazon_service(rent_service) or self.enrichment.is_actual_apple_service(rent_service)):
+                        self.enrichment.try_platform_scraper(title, year, providers, [], watchmode_rent, [], True, False, True)
+                        # Check if platform scraper added rent links
+                        if watchmode_rent:
+                            best_service = select_best_service([s['service'] for s in watchmode_rent], PAID_PRIORITY)
+                            for source in watchmode_rent:
+                                if source['service'] == best_service:
+                                    watch_links['rent'] = source
+                                    break
+                        else:
+                            # Try agent scraper for supported services
+                            agent_result = self.enrichment.try_agent_scraper(movie_id, title, year, rent_service, 'rent')
+                            watch_links['rent'] = agent_result
+                    else:
+                        # Try agent scraper for supported services
+                        agent_result = self.enrichment.try_agent_scraper(movie_id, title, year, rent_service, 'rent')
+                        watch_links['rent'] = agent_result
+
+        # BUY: Use Watchmode or fallback to platform links (skip if overridden)
+        if not skip_buy:
+            if watchmode_buy:
+                best_service = select_best_service([s['service'] for s in watchmode_buy], PAID_PRIORITY)
+                for source in watchmode_buy:
+                    if source['service'] == best_service:
+                        watch_links['buy'] = source
+                        break
+            elif providers.get('buy'):
+                buy_service = select_best_service(providers.get('buy', []), PAID_PRIORITY)
+                if buy_service:
+                    # Try platform scraper for Amazon/Apple TV before returning null
+                    if StreamingPlatformScraper and (self.enrichment.is_actual_amazon_service(buy_service) or self.enrichment.is_actual_apple_service(buy_service)):
+                        self.enrichment.try_platform_scraper(title, year, providers, [], [], watchmode_buy, True, True, False)
+                        # Check if platform scraper added buy links
+                        if watchmode_buy:
+                            best_service = select_best_service([s['service'] for s in watchmode_buy], PAID_PRIORITY)
+                            for source in watchmode_buy:
+                                if source['service'] == best_service:
+                                    watch_links['buy'] = source
+                                    break
+                        else:
+                            # Try agent scraper for supported services
+                            agent_result = self.enrichment.try_agent_scraper(movie_id, title, year, buy_service, 'buy')
+                            watch_links['buy'] = agent_result
+                    else:
+                        # Try agent scraper for supported services
+                        agent_result = self.enrichment.try_agent_scraper(movie_id, title, year, buy_service, 'buy')
+                        watch_links['buy'] = agent_result
+
+        # Overlay admin overrides on top of auto-discovered links
+        for category, override_data in validated_overrides.items():
+            watch_links[category] = override_data
+
+        # Normalize relative URLs to absolute URLs as second line of defense
+        watch_links = self.enrichment.normalize_watch_links_urls(watch_links)
+
+        # Validate schema before caching and returning
+        validated_links = self.validator.validate_watch_links_schema(watch_links, title)
+
+        # Apply affiliate tags to all validated links (after validation, before caching)
+        for category in ['streaming', 'rent', 'buy']:
+            if category in validated_links and isinstance(validated_links[category], dict):
+                link_data = validated_links[category]
+                if link_data.get('link') and link_data.get('service'):
+                    # Append affiliate tag to the link
+                    original_link = link_data['link']
+                    tagged_link = self.enrichment.append_affiliate_tag(original_link, link_data['service'])
+                    if tagged_link != original_link:
+                        validated_links[category]['link'] = tagged_link
+                        self.logger.debug(f"Added affiliate tag to {category} link for {title}: {link_data['service']}")
+
+        # Validate service/link consistency and fix mismatches
+        for category in ['streaming', 'rent', 'buy']:
+            if category in validated_links and isinstance(validated_links[category], dict):
+                link_data = validated_links[category]
+                service = link_data.get('service')
+                link = link_data.get('link')
+
+                if service and link and not self.enrichment.validate_service_link_consistency(service, link, title):
+                    # Mismatch detected, set to null (no Google fallback)
+                    self.logger.warning(f"Replacing mismatched {category} link for {title} with null (admin flag needed)")
+                    validated_links[category]['link'] = None
+
+        # Cache result with canonical schema (use validated links)
+        if validated_links:
+            # Determine source type based on where links came from
+            has_links = any(
+                link.get('link') is not None
+                for link in validated_links.values()
+                if isinstance(link, dict)
+            )
+
+            # Use platform_scraper_used to accurately determine if platform scraper added links
+            if platform_scraper_used:
+                source_type = 'agent_search'
+            elif has_links:
+                source_type = 'watchmode_api'
+            else:
+                source_type = 'tmdb_providers'
+
+            self.watch_links_cache[cache_key] = {
+                'links': validated_links,
+                'cached_at': datetime.now().isoformat(),
+                'source': source_type
+            }
+            self.storage.save_cache(self.watch_links_cache, 'cache/watch_links_cache.json')
+
+        return validated_links
+
+
+    def _enforce_platform_scraper_rate_limit(self):
+        """Enforce rate limiting for platform scraper calls"""
+        if hasattr(self.platform_scraper, 'rate_limit_seconds') and self.platform_scraper.rate_limit_seconds:
+            if not hasattr(self, '_last_platform_scraper_time'):
+                self._last_platform_scraper_time = 0
+
+            time_since_last = time.time() - self._last_platform_scraper_time
+            if time_since_last < self.platform_scraper.rate_limit_seconds:
+                sleep_time = self.platform_scraper.rate_limit_seconds - time_since_last
+                print(f"  Rate limiting: sleeping {sleep_time:.1f}s before platform scraper")
+                time.sleep(sleep_time)
+
+            self._last_platform_scraper_time = time.time()
+
+
+    def _get_platform_deep_link_with_cache(self, title, year, provider):
+        """Get platform deep link with ASIN caching for Amazon services"""
+        # Check ASIN cache for Amazon links first
+        cached_asin = self._amazon_asin_cache.get((title.lower(), str(year or '').strip()))
+        if cached_asin and self.enrichment.is_actual_amazon_service(provider):
+            print(f"  ✓ Using cached Amazon ASIN {cached_asin} for {title}")
+            return f"https://www.amazon.com/gp/video/detail/{cached_asin}"
+
+        # No cache hit, perform actual search
+        self.enrichment.enforce_platform_scraper_rate_limit()
+        deep_link = self.platform_scraper.get_platform_deep_link(title, year, provider)
+
+        # Cache Amazon ASIN if found
+        if deep_link and self.enrichment.is_actual_amazon_service(provider):
+            import re
+            asin_match = re.search(r'/gp/video/detail/([A-Z0-9]{10})', deep_link)
+            if asin_match:
+                self._amazon_asin_cache[(title.lower(), str(year or '').strip())] = asin_match.group(1)
+
+        return deep_link
 
     def process_movie(self, movie_id, movie_data, movie_details, force_refresh=False):
         """Process a single movie into display format"""
@@ -1840,6 +2466,141 @@ class DataGenerator:
         self._amazon_asin_cache.clear()
         if cache_size > 0:
             print(f"\n📦 Amazon ASIN cache cleared ({cache_size} entries)")
+
+        # Save scraper health metrics for operational monitoring
+        self._save_scraper_health_metrics()
+
+    def _save_scraper_health_metrics(self):
+        """
+        Aggregate and save scraper health metrics for operational monitoring.
+
+        Tracks success rates, cache hits, and failure patterns across all scrapers
+        to enable proactive maintenance and debugging.
+        """
+        from datetime import datetime
+        import os
+
+        # Calculate success rates
+        def calc_rate(successes, attempts):
+            if attempts == 0:
+                return None
+            return round((successes / attempts) * 100, 1)
+
+        # Aggregate health metrics from all scrapers
+        health = {
+            "timestamp": datetime.now().isoformat(),
+            "scrapers": {
+                "rt_scraper": {
+                    "attempts": self.watchmode_stats['rt_attempts'],
+                    "successes": self.watchmode_stats['rt_successes'],
+                    "cache_hits": self.watchmode_stats['rt_cache_hits'],
+                    "success_rate": calc_rate(
+                        self.watchmode_stats['rt_successes'],
+                        self.watchmode_stats['rt_attempts']
+                    ),
+                    "cache_hit_rate": calc_rate(
+                        self.watchmode_stats['rt_cache_hits'],
+                        self.watchmode_stats['rt_attempts']
+                    )
+                },
+                "wikipedia_scraper": {
+                    "wikidata_attempts": self.wikipedia_stats['wikidata_attempts'],
+                    "wikidata_successes": self.wikipedia_stats['wikidata_successes'],
+                    "success_rate": calc_rate(
+                        self.wikipedia_stats['wikidata_successes'],
+                        self.wikipedia_stats['wikidata_attempts']
+                    )
+                },
+                "watchmode_api": {
+                    "search_calls": self.watchmode_stats['search_calls'],
+                    "source_calls": self.watchmode_stats['source_calls'],
+                    "cache_hits": self.watchmode_stats['cache_hits'],
+                    "successes": self.watchmode_stats['watchmode_successes'],
+                    "success_rate": calc_rate(
+                        self.watchmode_stats['watchmode_successes'],
+                        self.watchmode_stats['search_calls']
+                    ),
+                    "cache_hit_rate": calc_rate(
+                        self.watchmode_stats['cache_hits'],
+                        self.watchmode_stats['search_calls']
+                    )
+                },
+                "agent_scraper": {
+                    "attempts": self.watchmode_stats['agent_attempts'],
+                    "successes": self.watchmode_stats['agent_successes'],
+                    "cache_hits": self.watchmode_stats['agent_cache_hits'],
+                    "success_rate": calc_rate(
+                        self.watchmode_stats['agent_successes'],
+                        self.watchmode_stats['agent_attempts']
+                    )
+                },
+                "platform_scraper": {
+                    "attempts": getattr(self.enrichment, 'platform_scraper_stats', {}).get('attempts', 0),
+                    "successes": getattr(self.enrichment, 'platform_scraper_stats', {}).get('successes', 0),
+                    "failures": getattr(self.enrichment, 'platform_scraper_stats', {}).get('failures', 0),
+                    "success_rate": calc_rate(
+                        getattr(self.enrichment, 'platform_scraper_stats', {}).get('successes', 0),
+                        getattr(self.enrichment, 'platform_scraper_stats', {}).get('attempts', 0)
+                    )
+                }
+            },
+            "validation": {
+                "passes": self.watchmode_stats['schema_validation_passes'],
+                "warnings": self.watchmode_stats['schema_validation_warnings'],
+                "pass_rate": calc_rate(
+                    self.watchmode_stats['schema_validation_passes'],
+                    self.watchmode_stats['schema_validation_passes'] +
+                    self.watchmode_stats['schema_validation_warnings']
+                )
+            }
+        }
+
+        # Ensure metrics directory exists
+        os.makedirs('metrics', exist_ok=True)
+
+        # Append to scraper_health.jsonl (one JSON object per line for historical tracking)
+        health_file = 'metrics/scraper_health.jsonl'
+        try:
+            with open(health_file, 'a') as f:
+                import json
+                f.write(json.dumps(health) + '\n')
+
+            # Also save as latest snapshot for easy viewing
+            with open('metrics/scraper_health_latest.json', 'w') as f:
+                json.dump(health, f, indent=2)
+
+            # Print concise health summary
+            print(f"\n💊 Scraper Health Summary:")
+
+            # RT Scraper
+            rt_rate = health['scrapers']['rt_scraper']['success_rate']
+            if rt_rate is not None:
+                status = "✅" if rt_rate >= 80 else "⚠️" if rt_rate >= 50 else "❌"
+                print(f"  RT Scraper: {status} {rt_rate}% success ({health['scrapers']['rt_scraper']['successes']}/{health['scrapers']['rt_scraper']['attempts']})")
+
+            # Wikipedia Scraper
+            wiki_rate = health['scrapers']['wikipedia_scraper']['success_rate']
+            if wiki_rate is not None:
+                status = "✅" if wiki_rate >= 80 else "⚠️" if wiki_rate >= 50 else "❌"
+                print(f"  Wikipedia: {status} {wiki_rate}% success ({health['scrapers']['wikipedia_scraper']['wikidata_successes']}/{health['scrapers']['wikipedia_scraper']['wikidata_attempts']})")
+
+            # Watchmode API
+            wm_rate = health['scrapers']['watchmode_api']['success_rate']
+            if wm_rate is not None:
+                status = "✅" if wm_rate >= 80 else "⚠️" if wm_rate >= 50 else "❌"
+                print(f"  Watchmode API: {status} {wm_rate}% success ({health['scrapers']['watchmode_api']['successes']}/{health['scrapers']['watchmode_api']['search_calls']})")
+
+            # Validation
+            val_rate = health['validation']['pass_rate']
+            if val_rate is not None:
+                status = "✅" if val_rate >= 95 else "⚠️" if val_rate >= 90 else "❌"
+                print(f"  Validation: {status} {val_rate}% pass rate")
+
+            print(f"  📊 Health metrics saved to {health_file}")
+
+        except Exception as e:
+            self.logger.error(f"Failed to save scraper health metrics: {e}")
+            print(f"  ⚠️  Failed to save health metrics: {e}")
 
     def apply_admin_overrides(self, display_movies):
         """Apply admin panel decisions to final output"""

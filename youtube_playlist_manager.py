@@ -807,6 +807,7 @@ Examples:
         print("Make sure you're signed in to your NRW YouTube account.\n")
         try:
             manager = YouTubePlaylistManager()
+            manager._authenticate()  # Actually trigger authentication
             print("\n✅ Authentication complete!")
             print(f"Credentials saved to youtube_credentials/")
         except Exception as e:

@@ -264,7 +264,7 @@ Replaces automated weekly full regeneration with intentional, admin-triggered ma
 ### CRITICAL-003: Watch Links Broken - Watchmode API Issue
 **Status:** 🔴 STAGE 2 - ACTIVE - Watchmode quota exhausted, scrapers failing in CI
 
-**Problem:** 100% of watch links in `data.json` are Google search fallbacks. No deep links for rent/buy/streaming.
+**Problem:** 100% of watch links in `data.json` are Google search fallbacks. No deep links for VOD/streaming.
 
 **Impact:** Users cannot directly access movies on streaming platforms. Defeats the "where to watch" value proposition.
 
@@ -707,7 +707,7 @@ The original test invalidation notice from 2025-10-24 regarding TMDB API configu
 
 **022: Watchmode API Integration for Watch Links**
 - **Decision:** Watchmode API integration for direct streaming platform links
-- **Scope:** Two-step API (TMDB ID → Watchmode ID → deep links), watch_links schema {streaming/rent/buy}, cache system, 1,000 requests/month budget
+- **Scope:** Two-step API (TMDB ID → Watchmode ID → deep links), watch_links schema {streaming/vod}, cache system, 1,000 requests/month budget
 - **Status:** ✅ Completed - ~75% of free tier usage, Agent fallback for gaps
 - **Spec:** docs/features/WATCHMODE.md
 

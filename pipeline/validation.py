@@ -22,7 +22,7 @@ class ValidationService:
     Centralized validation operations for data integrity and schema compliance.
 
     Responsibilities:
-        - Validate watch_links schema (streaming/rent/buy structure)
+        - Validate watch_links schema (streaming/vod structure)
         - Validate enrichment consistency (enriched=true requires watch_links)
         - Validate data.json schema before loading
         - Track validation metrics and warnings
@@ -69,7 +69,7 @@ class ValidationService:
 
     def validate_watch_links_schema(self, watch_links: Dict, movie_title: str = 'Unknown') -> Dict:
         """
-        Runtime validation that watch_links conform to canonical streaming/rent/buy schema.
+        Runtime validation that watch_links conform to canonical streaming/vod schema.
 
         Args:
             watch_links: Dict to validate (typically from get_watch_links)
@@ -81,8 +81,7 @@ class ValidationService:
         Schema:
             {
                 'streaming': {'service': str, 'link': str|None},
-                'rent': {'service': str, 'link': str|None},
-                'buy': {'service': str, 'link': str|None}
+                'vod': {'service': str, 'link': str|None}
             }
         """
         # Type check: Verify watch_links is a dict
@@ -95,10 +94,10 @@ class ValidationService:
 
         validated_links = {}
         had_warnings = False
-        valid_categories = ['streaming', 'rent', 'buy']
+        valid_categories = ['streaming', 'vod']
 
         for category, category_data in watch_links.items():
-            # Category validation: Check that all keys are in ['streaming', 'rent', 'buy']
+            # Category validation: Check that all keys are in ['streaming', 'vod']
             if category not in valid_categories:
                 self.logger.warning(f"Invalid watch link category '{category}' for {movie_title}")
                 had_warnings = True
@@ -252,7 +251,7 @@ class ValidationService:
 
                                     if watch_links and isinstance(watch_links, dict):
                                         # Check for placeholder ASINs in any category
-                                        for category in ['streaming', 'rent', 'buy']:
+                                        for category in ['streaming', 'vod']:
                                             category_data = watch_links.get(category, {})
                                             if category_data and isinstance(category_data, dict):
                                                 link = category_data.get('link', '')

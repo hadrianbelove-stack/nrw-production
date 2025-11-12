@@ -358,9 +358,8 @@ function saveAllFields(movieId) {
         watchLinks.streaming = {service: streamingService, link: streamingLink};
     }
     if (vodService && vodLink) {
-        // VOD goes to both rent and buy (same link for both)
-        watchLinks.rent = {service: vodService, link: vodLink};
-        watchLinks.buy = {service: vodService, link: vodLink};
+        // VOD is a single category (not separate rent/buy anymore)
+        watchLinks.vod = {service: vodService, link: vodLink};
     }
 
     // Disable button

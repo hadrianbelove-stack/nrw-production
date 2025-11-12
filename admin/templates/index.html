@@ -231,7 +231,7 @@
              data-has-poster="{{ 'yes' if movie.poster_url or movie.get('poster') else 'no' }}"
              data-has-director="{{ 'yes' if movie.director and movie.director != 'Unknown' else 'no' }}"
              data-has-country="{{ 'yes' if movie.get('country') else 'no' }}"
-             data-has-watch-links="{{ 'yes' if movie.get('watch_links') and (movie.get('watch_links', {}).get('streaming') or movie.get('watch_links', {}).get('rent') or movie.get('watch_links', {}).get('buy')) else 'no' }}"
+             data-has-watch-links="{{ 'yes' if movie.get('watch_links') and (movie.get('watch_links', {}).get('streaming') or movie.get('watch_links', {}).get('vod')) else 'no' }}"
              data-missing-any="{{ 'yes' if not movie.get('links', {}).get('trailer') or not (movie.poster_url or movie.get('poster')) or not movie.director or movie.director == 'Unknown' or not movie.get('country') else 'no' }}"
              draggable="false">
             <div class="drag-handle" style="display: none;">
@@ -256,7 +256,7 @@
                     {% if not (movie.poster_url or movie.get('poster')) %}
                     <span class="issue-badge poster-missing" title="Missing Poster">🖼️</span>
                     {% endif %}
-                    {% if not (movie.get('watch_links') and (movie.get('watch_links', {}).get('streaming') or movie.get('watch_links', {}).get('rent') or movie.get('watch_links', {}).get('buy'))) %}
+                    {% if not (movie.get('watch_links') and (movie.get('watch_links', {}).get('streaming') or movie.get('watch_links', {}).get('vod'))) %}
                     <span class="issue-badge watch-missing" title="Missing Watch Links">📺</span>
                     {% endif %}
                 </div>
@@ -473,33 +473,33 @@
                             VOD:
                         </label>
                         <div style="display: flex; gap: 0.3rem; margin-bottom: 0.3rem;">
-                            {% set rent_providers = movie.get('providers', {}).get('rent', []) %}
-                            {% set buy_providers = movie.get('providers', {}).get('buy', []) %}
+                            {# Combine rent and buy providers into VOD #}
+                            {% set vod_providers = movie.get('providers', {}).get('rent', []) + movie.get('providers', {}).get('buy', []) %}
 
-                            {% set has_amazon = 'Amazon Prime Video' in rent_providers or 'Amazon Prime Video' in buy_providers or 'Amazon Video' in rent_providers or 'Amazon Video' in buy_providers %}
+                            {% set has_amazon = 'Amazon Prime Video' in vod_providers or 'Amazon Video' in vod_providers %}
                             {% if has_amazon %}
                             <button type="button"
-                                    class="service-btn {% if movie.get('watch_links', {}).get('rent', {}).get('service') == 'Amazon' or movie.get('watch_links', {}).get('buy', {}).get('service') == 'Amazon' %}link-good{% else %}link-bad{% endif %}"
+                                    class="service-btn {% if movie.get('watch_links', {}).get('vod', {}).get('service') == 'Amazon' %}link-good{% else %}link-bad{% endif %}"
                                     onclick="setWatchService('{{ movie_id }}', 'vod', 'Amazon')"
                                     style="padding: 0.4rem 0.6rem; border: none; border-radius: 4px; font-size: 0.7rem; cursor: pointer; color: white; font-weight: bold;">
                                 AMAZON
                             </button>
                             {% endif %}
 
-                            {% set has_apple = 'Apple TV' in rent_providers or 'Apple TV' in buy_providers or 'Apple iTunes' in rent_providers or 'Apple iTunes' in buy_providers %}
+                            {% set has_apple = 'Apple TV' in vod_providers or 'Apple iTunes' in vod_providers %}
                             {% if has_apple %}
                             <button type="button"
-                                    class="service-btn {% if movie.get('watch_links', {}).get('rent', {}).get('service') == 'Apple TV' or movie.get('watch_links', {}).get('buy', {}).get('service') == 'Apple TV' %}link-good{% else %}link-bad{% endif %}"
+                                    class="service-btn {% if movie.get('watch_links', {}).get('vod', {}).get('service') == 'Apple TV' %}link-good{% else %}link-bad{% endif %}"
                                     onclick="setWatchService('{{ movie_id }}', 'vod', 'Apple TV')"
                                     style="padding: 0.4rem 0.6rem; border: none; border-radius: 4px; font-size: 0.7rem; cursor: pointer; color: white; font-weight: bold;">
                                 ITUNES
                             </button>
                             {% endif %}
 
-                            {% set has_vudu = 'Vudu' in rent_providers or 'Vudu' in buy_providers %}
+                            {% set has_vudu = 'Vudu' in vod_providers %}
                             {% if has_vudu %}
                             <button type="button"
-                                    class="service-btn {% if movie.get('watch_links', {}).get('rent', {}).get('service') == 'Vudu' or movie.get('watch_links', {}).get('buy', {}).get('service') == 'Vudu' %}link-good{% else %}link-bad{% endif %}"
+                                    class="service-btn {% if movie.get('watch_links', {}).get('vod', {}).get('service') == 'Vudu' %}link-good{% else %}link-bad{% endif %}"
                                     onclick="setWatchService('{{ movie_id }}', 'vod', 'Vudu')"
                                     style="padding: 0.4rem 0.6rem; border: none; border-radius: 4px; font-size: 0.7rem; cursor: pointer; color: white; font-weight: bold;">
                                 VUDU
@@ -507,7 +507,7 @@
                             {% endif %}
 
                             <button type="button"
-                                    class="service-btn {% if (movie.get('watch_links', {}).get('rent') or movie.get('watch_links', {}).get('buy')) and (movie.get('watch_links', {}).get('rent', {}).get('service', '') not in ['Amazon', 'Apple TV', 'Vudu'] and movie.get('watch_links', {}).get('buy', {}).get('service', '') not in ['Amazon', 'Apple TV', 'Vudu']) %}link-good{% else %}link-bad{% endif %}"
+                                    class="service-btn {% if movie.get('watch_links', {}).get('vod') and movie.get('watch_links', {}).get('vod', {}).get('service', '') not in ['Amazon', 'Apple TV', 'Vudu'] %}link-good{% else %}link-bad{% endif %}"
                                     onclick="setWatchService('{{ movie_id }}', 'vod', 'ADD')"
                                     style="padding: 0.4rem 0.6rem; border: none; border-radius: 4px; font-size: 0.7rem; cursor: pointer; color: white; font-weight: bold;">
                                 ADD
@@ -530,7 +530,7 @@
 
                         <!-- Hidden fields for compatibility with existing save function -->
                         <input type="hidden" id="streaming-service-{{ movie_id }}" value="{% if movie.get('watch_links', {}).get('streaming') %}{{ movie['watch_links']['streaming']['service'] }}{% endif %}">
-                        <input type="hidden" id="vod-service-{{ movie_id }}" value="{% if movie.get('watch_links', {}).get('rent') %}{{ movie['watch_links']['rent']['service'] }}{% elif movie.get('watch_links', {}).get('buy') %}{{ movie['watch_links']['buy']['service'] }}{% endif %}">
+                        <input type="hidden" id="vod-service-{{ movie_id }}" value="{% if movie.get('watch_links', {}).get('vod') %}{{ movie['watch_links']['vod']['service'] }}{% endif %}">
                     </div>
 
                 </div>

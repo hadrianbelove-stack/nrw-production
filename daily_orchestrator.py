@@ -28,7 +28,7 @@ def has_real_watch_link(movie):
     ]
 
     watch_links = movie.get('watch_links', {})
-    for category in ['streaming', 'rent', 'buy']:
+    for category in ['streaming', 'vod']:
         if category in watch_links:
             link_obj = watch_links[category]
             if isinstance(link_obj, dict) and link_obj.get('link'):
@@ -134,65 +134,6 @@ class NRWOrchestrator:
         self.has_changes = result.returncode != 0
         return self.has_changes
 
-    def emit_drafts(self):
-        """Emit candidate items to admin/drafts/ as individual JSON files"""
-        print("\n📝 Emitting drafts for admin review...")
-
-        # Ensure drafts directory exists
-        os.makedirs('admin/drafts', exist_ok=True)
-
-        # Load generated data to create draft items
-        try:
-            with open('data.json', 'r') as f:
-                data = json.load(f)
-        except FileNotFoundError:
-            print("❌ data.json not found - cannot emit drafts")
-            return False
-
-        movies = data.get('movies', [])
-        if not movies:
-            print("⚠️ No movies found in data.json")
-            return False
-
-        # Get recent movies (last 7 days) as candidates for drafts
-        from datetime import timedelta
-        cutoff_date = (datetime.now() - timedelta(days=7)).strftime('%Y-%m-%d')
-        recent_movies = [m for m in movies if m.get('digital_date', '') >= cutoff_date]
-
-        if not recent_movies:
-            print(f"⚠️ No recent movies found since {cutoff_date}")
-            return False
-
-        # Compute source digest for validation
-        source_digest = None
-        if os.path.exists('movie_tracking.json'):
-            with open('movie_tracking.json', 'rb') as f:
-                source_digest = hashlib.sha256(f.read()).hexdigest()
-
-        # Create draft for recent movies
-        draft_id = datetime.now().strftime('%Y%m%d_%H%M%S')
-        draft = {
-            'id': draft_id,
-            'createdAt': datetime.now().isoformat(),
-            'titles': [movie.get('title', 'Unknown') for movie in recent_movies],
-            'movieIds': [str(movie.get('id', '')) for movie in recent_movies],
-            'sourceDigest': source_digest,
-            'movieCount': len(recent_movies),
-            'dateRange': f"{cutoff_date} to {datetime.now().strftime('%Y-%m-%d')}"
-        }
-
-        # Save draft file
-        draft_file = f'admin/drafts/{draft_id}.json'
-        try:
-            with open(draft_file, 'w') as f:
-                json.dump(draft, f, indent=2)
-            print(f"✅ Draft emitted: {draft_file}")
-            print(f"   Movies: {len(recent_movies)} candidates")
-            print(f"   Date range: {draft['dateRange']}")
-            return True
-        except Exception as e:
-            print(f"❌ Failed to write draft: {e}")
-            return False
 
 
     def validate_rt_data(self):
@@ -470,7 +411,7 @@ class NRWOrchestrator:
                 has_search_urls = False
 
                 # Check all link categories
-                for category in ['streaming', 'rent', 'buy']:
+                for category in ['streaming', 'vod']:
                     if category in watch_links:
                         link_obj = watch_links[category]
                         if isinstance(link_obj, dict) and link_obj.get('link'):
@@ -619,21 +560,31 @@ class NRWOrchestrator:
                 print(f"📊 Stall detection: Need 3 days of data, have {len(recent_entries)}")
                 return False
 
-            # Get last 3 unique dates
-            unique_dates = {}
-            for entry in reversed(recent_entries):  # Process most recent first
+            # Group entries by date and select the last entry per date by timestamp
+            from collections import defaultdict
+            entries_by_date = defaultdict(list)
+            for entry in recent_entries:
                 date = entry.get('date')
-                if date and date not in unique_dates:
-                    unique_dates[date] = entry
-                    if len(unique_dates) >= 3:
-                        break
+                if date:
+                    entries_by_date[date].append(entry)
 
-            if len(unique_dates) < 3:
-                print(f"📊 Stall detection: Need 3 unique dates, have {len(unique_dates)}")
+            # For each date, select the entry with the latest timestamp
+            last_entry_per_date = {}
+            for date, entries in entries_by_date.items():
+                # Sort by timestamp and take the last one (most recent)
+                sorted_entries = sorted(entries, key=lambda e: e.get('timestamp', ''))
+                last_entry_per_date[date] = sorted_entries[-1]
+
+            if len(last_entry_per_date) < 3:
+                print(f"📊 Stall detection: Need 3 unique dates, have {len(last_entry_per_date)}")
                 return False
 
+            # Get the last 3 dates (by date value, most recent first)
+            sorted_dates = sorted(last_entry_per_date.keys(), reverse=True)
+            last_3_dates = sorted_dates[:3]
+            last_3_entries = [last_entry_per_date[date] for date in last_3_dates]
+
             # Check if all 3 days have transitions == 0
-            last_3_entries = list(unique_dates.values())
             stall_dates = []
 
             for entry in last_3_entries:
@@ -860,25 +811,11 @@ class NRWOrchestrator:
                 self.print_summary()
                 sys.exit(1)
 
-        # Phase 4: Emit drafts for admin review and STOP
-        print(f"\n📝 Phase 4: Draft Generation")
-        if not self.emit_drafts():
-            print("⚠️ Failed to emit drafts - stopping pipeline")
-            self.print_summary()
-            sys.exit(1)
-
-
-        # Pipeline stops here - do not write production data.json or commit changes
-        # Admin will review drafts and trigger publish workflow
-        print("\n📝 Drafts emitted successfully - pipeline complete")
-        print("   Review drafts in admin panel and publish when ready")
-
         # Final summary
         self.print_summary()
 
         # Success message
-        print("\n✨ Daily update complete - drafts ready for admin review!")
-        print("   Use admin panel to review and publish drafts")
+        print("\n✨ Daily update complete - data.json ready for auto-publish!")
         return 0
 
 def main():

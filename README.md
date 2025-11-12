@@ -26,11 +26,9 @@ For full menu details, see [docs/features/UNIFIED_LAUNCHER.md](docs/features/UNI
 - 📋 **[PROJECT_CHARTER.md](PROJECT_CHARTER.md)** - Governance & amendments
 - 📅 **[DAILY_CONTEXT.md](DAILY_CONTEXT.md)** - Rolling diary of recent work
 - 🔄 **[NRW_DATA_WORKFLOW_EXPLAINED.md](NRW_DATA_WORKFLOW_EXPLAINED.md)** - Data pipeline details
-  - [Optional draft review (advanced)](ADMIN_WORKFLOW.md) - Editorial curation workflow
 
 **Additional guides:**
 - [Full workflow overview (automated + manual)](docs/NRW_FULL_WORKFLOW.md) - Complete system overview
-- [Admin diagnostics](docs/troubleshooting/admin_diagnostics.md) - Metrics and approval pattern analysis
 - [docs/features/](docs/features/) - Feature setup guides (YouTube, Substack)
 - [docs/troubleshooting/](docs/troubleshooting/) - Troubleshooting guides
 - [docs/](docs/) - Technical documentation
@@ -86,8 +84,9 @@ python3 youtube_playlist_manager.py --help  # YouTube CLI
 ### Daily Updates (9 AM UTC)
 - Discovers new theatrical releases
 - Checks for digital availability
-- Commits directly to `main` branch
+- Auto-publishes `data.json` directly to `main` branch
 - **Charter-aligned**: Simple, reliable, no sync complexity
+- **Curation model**: Publish-then-curate via admin panel hide/feature controls
 
 ### Morning Review Checklist
 1. Check automation results on GitHub Actions
@@ -121,7 +120,7 @@ Trigger workflows manually in GitHub Actions tab → Select workflow → "Run wo
 - Edit metadata with inline editing
 - Fix missing data (RT scores, Wikipedia, trailers)
 
-**Note:** Admin artifacts (drafts, ordering preferences, and curation overrides) are ephemeral and not versioned in git. Drafts are optional and not required for daily automation. Only the final `data.json` is committed to preserve clean version history. See [ADMIN_WORKFLOW.md](ADMIN_WORKFLOW.md) for details.
+**Note:** Admin artifacts (ordering preferences and curation overrides) are ephemeral and not versioned in git. Only the final `data.json` is committed to preserve clean version history.
 - Create YouTube playlists
 
 **For detailed workflow and best practices:** See [ADMIN_WORKFLOW.md](ADMIN_WORKFLOW.md)
@@ -161,6 +160,8 @@ Quick reference for common issues. **For detailed troubleshooting:** See [docs/T
 - **config.yaml** - API keys, scraper settings, display parameters
   - **Required setup:** Replace placeholder values for `tmdb_api_key` and `watchmode_api_key` with real API keys
   - Production: Use environment variables `TMDB_API_KEY` and `WATCHMODE_API_KEY` (see [SYSTEM_ARCHITECTURE.md §4](SYSTEM_ARCHITECTURE.md))
+- **Environment flags** (set in `.github/workflows/daily-check.yml`):
+  - `NRW_FAIL_ON_STALL` - Fail workflow on 3-day discovery stall (default: `false`)
 - **requirements.txt** - Python dependencies (Playwright-based, Selenium removed)
 - **.gitignore** - Excludes cache/, config.yaml (API keys), various backup/temp files
 - **launch_all.sh** - Unified launcher for all NRW tools (menu-driven)

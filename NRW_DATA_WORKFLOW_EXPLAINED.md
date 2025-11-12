@@ -8,7 +8,7 @@ We want a beautiful webpage that shows the latest movies available for streaming
 ## **📊 The Data Journey: From API to Your Screen**
 
 ### **Phase 1: Daily Discovery & Monitoring**
-**What happens:** We check if tracked movies became available for digital (streaming/rental/buy) AND discover new movies to track.
+**What happens:** We check if tracked movies became available for digital (streaming/VOD (rental/purchase)) AND discover new movies to track.
 
 **🔧 `generate_data.py --discover`** - *The Production Discovery System*
 - **Discovery:** Searches TMDB API for movies released in past 7 days (festival, limited theatrical, theatrical, direct to streaming, etc.)
@@ -22,7 +22,7 @@ We want a beautiful webpage that shows the latest movies available for streaming
 - **Example:** `{"1404864": {"title": "Inspector Zende", "status": "tracking", "digital_date": null}}`
 
 ### **Phase 2: Database Enrichment & Link Resolution**
-**What happens:** We take movies that became digitally available and fill out ALL their details - cast, director, synopsis, posters, trailers, Wikipedia pages, review links, watch links (streaming/rent/buy).
+**What happens:** We take movies that became digitally available and fill out ALL their details - cast, director, synopsis, posters, trailers, Wikipedia pages, review links, watch links (streaming/vod).
 
 **🔧 `generate_data.py`** - *The Complete Data Enricher*
 - **Smart caching:** Only processes movies transitioning from "tracking" to "available" (1-10 per day)
@@ -80,7 +80,7 @@ Daily Discovery → movie_tracking.json → OPTIONAL REVIEW → data.json → Pu
 
 **📄 `data.json`** - *The Website Menu*
 - **What it is:** Clean, final dataset of recent movies with verified data and working links
-- **Structure:** Each movie has poster, synopsis, director, cast, trailer, RT link, Wikipedia link, watch_links (streaming/rent/buy)
+- **Structure:** Each movie has poster, synopsis, director, cast, trailer, RT link, Wikipedia link, watch_links (streaming/vod)
 - **Key rule:** Only verified links included - null indicates link failure (not hidden with search URLs)
 
 ### **Phase 5: User Display**

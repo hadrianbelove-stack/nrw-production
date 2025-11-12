@@ -132,7 +132,7 @@ class AgentLinkScraper:
             self.context = self.browser.new_context(
                 viewport={'width': 1920, 'height': 1080},
                 user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                accept_language='en-US,en;q=0.9',
+                locale='en-US',
                 extra_http_headers={'DNT': '1', 'Upgrade-Insecure-Requests': '1'}
             )
 
@@ -164,7 +164,7 @@ class AgentLinkScraper:
             self.context = self.browser.new_context(
                 viewport={'width': 1920, 'height': 1080},
                 user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                accept_language='en-US,en;q=0.9',
+                locale='en-US',
                 extra_http_headers={'DNT': '1', 'Upgrade-Insecure-Requests': '1'}
             )
 

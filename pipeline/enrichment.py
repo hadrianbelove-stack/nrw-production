@@ -121,7 +121,7 @@ class EnrichmentService:
 
     def get_watch_links(self, movie_id, title, year, providers, force_refresh=False, tracking_data=None):
         """
-        Get deep links with canonical streaming/rent/buy structure.
+        Get deep links with canonical streaming/vod structure.
 
         Priority waterfall:
         1. Manual watch links from movie_tracking.json - highest priority
@@ -135,7 +135,7 @@ class EnrichmentService:
             movie_id: TMDB movie ID
             title: Movie title
             year: Release year
-            providers: Dict with streaming/rent/buy provider lists from TMDB
+            providers: Dict with streaming/vod provider lists from TMDB
             force_refresh: Skip cache and re-fetch
             tracking_data: Movie tracking data with optional manual_watch_links
 
@@ -187,7 +187,7 @@ class EnrichmentService:
         if cache_key in self.watch_link_overrides:
             overrides = self.watch_link_overrides[cache_key]
             # Validate overrides but continue with waterfall for non-overridden categories
-            for category in ['streaming', 'rent', 'buy']:
+            for category in ['streaming', 'vod']:
                 if category in overrides:
                     override_data = overrides[category]
                     # Validate structure
@@ -219,7 +219,7 @@ class EnrichmentService:
                 # Check for placeholder ASINs in cached links and purge if found
                 has_placeholder_asin = False
                 detected_asin = None
-                for category in ['streaming', 'rent', 'buy']:
+                for category in ['streaming', 'vod']:
                     category_data = cached['links'].get(category, {})
                     if category_data and isinstance(category_data, dict):
                         link = category_data.get('link', '')
@@ -377,7 +377,7 @@ class EnrichmentService:
             len(watchmode_buy) > buy_len_before
         )
 
-        # Build final watch_links with canonical streaming/rent/buy structure
+        # Build final watch_links with canonical streaming/vod structure
         watch_links = {}
 
         # STREAMING: Prefer Watchmode, fallback to TMDB providers with smart Amazon handling (skip if overridden)
@@ -419,65 +419,44 @@ class EnrichmentService:
                     agent_result = self.try_agent_scraper(movie_id, title, year, service, 'streaming')
                     watch_links['streaming'] = agent_result
 
-        # RENT: Use Watchmode or fallback to platform links (skip if overridden)
-        if not skip_rent:
-            if watchmode_rent:
-                best_service = select_best_service([s['service'] for s in watchmode_rent], PAID_PRIORITY)
-                for source in watchmode_rent:
-                    if source['service'] == best_service:
-                        watch_links['rent'] = source
-                        break
-            elif providers.get('rent'):
-                rent_service = select_best_service(providers.get('rent', []), PAID_PRIORITY)
-                if rent_service:
-                    # Try platform scraper for Amazon/Apple TV before returning null
-                    if has_platform_scraper and (self.is_actual_amazon_service(rent_service) or self.is_actual_apple_service(rent_service)):
-                        self.try_platform_scraper(title, year, providers, [], watchmode_rent, [], True, False, True)
-                        # Check if platform scraper added rent links
-                        if watchmode_rent:
-                            best_service = select_best_service([s['service'] for s in watchmode_rent], PAID_PRIORITY)
-                            for source in watchmode_rent:
-                                if source['service'] == best_service:
-                                    watch_links['rent'] = source
-                                    break
-                        else:
-                            # Try agent scraper for supported services
-                            agent_result = self.try_agent_scraper(movie_id, title, year, rent_service, 'rent')
-                            watch_links['rent'] = agent_result
-                    else:
-                        # Try agent scraper for supported services
-                        agent_result = self.try_agent_scraper(movie_id, title, year, rent_service, 'rent')
-                        watch_links['rent'] = agent_result
+        # VOD: Combine rent and buy into single VOD category
+        # Use Watchmode or fallback to platform links (skip if both rent and buy are overridden)
+        if not (skip_rent and skip_buy):
+            # Combine rent and buy sources
+            vod_sources = watchmode_rent + watchmode_buy
 
-        # BUY: Use Watchmode or fallback to platform links (skip if overridden)
-        if not skip_buy:
-            if watchmode_buy:
-                best_service = select_best_service([s['service'] for s in watchmode_buy], PAID_PRIORITY)
-                for source in watchmode_buy:
+            if vod_sources:
+                # Pick best service from combined rent+buy options
+                best_service = select_best_service([s['service'] for s in vod_sources], PAID_PRIORITY)
+                for source in vod_sources:
                     if source['service'] == best_service:
-                        watch_links['buy'] = source
+                        watch_links['vod'] = source
                         break
-            elif providers.get('buy'):
-                buy_service = select_best_service(providers.get('buy', []), PAID_PRIORITY)
-                if buy_service:
-                    # Try platform scraper for Amazon/Apple TV before returning null
-                    if has_platform_scraper and (self.is_actual_amazon_service(buy_service) or self.is_actual_apple_service(buy_service)):
-                        self.try_platform_scraper(title, year, providers, [], [], watchmode_buy, True, True, False)
-                        # Check if platform scraper added buy links
-                        if watchmode_buy:
-                            best_service = select_best_service([s['service'] for s in watchmode_buy], PAID_PRIORITY)
-                            for source in watchmode_buy:
-                                if source['service'] == best_service:
-                                    watch_links['buy'] = source
-                                    break
+            else:
+                # Try rent providers first, then buy providers
+                vod_providers = providers.get('rent', []) + providers.get('buy', [])
+                if vod_providers:
+                    vod_service = select_best_service(vod_providers, PAID_PRIORITY)
+                    if vod_service:
+                        # Try platform scraper for Amazon/Apple TV before returning null
+                        if has_platform_scraper and (self.is_actual_amazon_service(vod_service) or self.is_actual_apple_service(vod_service)):
+                            self.try_platform_scraper(title, year, providers, [], watchmode_rent, watchmode_buy, True, False, False)
+                            # Check if platform scraper added vod links
+                            vod_sources = watchmode_rent + watchmode_buy
+                            if vod_sources:
+                                best_service = select_best_service([s['service'] for s in vod_sources], PAID_PRIORITY)
+                                for source in vod_sources:
+                                    if source['service'] == best_service:
+                                        watch_links['vod'] = source
+                                        break
+                            else:
+                                # Try agent scraper for supported services
+                                agent_result = self.try_agent_scraper(movie_id, title, year, vod_service, 'vod')
+                                watch_links['vod'] = agent_result
                         else:
                             # Try agent scraper for supported services
-                            agent_result = self.try_agent_scraper(movie_id, title, year, buy_service, 'buy')
-                            watch_links['buy'] = agent_result
-                    else:
-                        # Try agent scraper for supported services
-                        agent_result = self.try_agent_scraper(movie_id, title, year, buy_service, 'buy')
-                        watch_links['buy'] = agent_result
+                            agent_result = self.try_agent_scraper(movie_id, title, year, vod_service, 'vod')
+                            watch_links['vod'] = agent_result
 
         # Overlay admin overrides on top of auto-discovered links
         for category, override_data in validated_overrides.items():
@@ -490,7 +469,7 @@ class EnrichmentService:
         validated_links = self.validator.validate_watch_links_schema(watch_links, title)
 
         # Apply affiliate tags to all validated links (after validation, before caching)
-        for category in ['streaming', 'rent', 'buy']:
+        for category in ['streaming', 'vod']:
             if category in validated_links and isinstance(validated_links[category], dict):
                 link_data = validated_links[category]
                 if link_data.get('link') and link_data.get('service'):
@@ -502,7 +481,7 @@ class EnrichmentService:
                         self.logger.debug(f"Added affiliate tag to {category} link for {title}: {link_data['service']}")
 
         # Validate service/link consistency and fix mismatches
-        for category in ['streaming', 'rent', 'buy']:
+        for category in ['streaming', 'vod']:
             if category in validated_links and isinstance(validated_links[category], dict):
                 link_data = validated_links[category]
                 service = link_data.get('service')
@@ -548,7 +527,7 @@ class EnrichmentService:
             title: Movie title
             year: Release year
             service: Service name to try
-            category: Category (streaming/rent/buy)
+            category: Category (streaming/vod)
 
         Returns:
             Dict: {'service': service_name, 'link': url_or_none}
@@ -621,7 +600,7 @@ class EnrichmentService:
         Args:
             title: Movie title
             year: Release year
-            providers: Dict with streaming/rent/buy provider lists from TMDB
+            providers: Dict with streaming/vod provider lists from TMDB
             watchmode_streaming: List of streaming sources to append to
             watchmode_rent: List of rent sources to append to
             watchmode_buy: List of buy sources to append to
@@ -814,7 +793,7 @@ class EnrichmentService:
         Normalize relative Amazon and Apple TV links to absolute URLs.
 
         Args:
-            watch_links: Dict with streaming/rent/buy categories
+            watch_links: Dict with streaming/vod categories
 
         Returns:
             Dict: watch_links with normalized URLs
@@ -824,7 +803,7 @@ class EnrichmentService:
 
         normalized = watch_links.copy()
 
-        for category in ['streaming', 'rent', 'buy']:
+        for category in ['streaming', 'vod']:
             if category in normalized and isinstance(normalized[category], dict):
                 link_data = normalized[category]
                 if link_data.get('link'):
@@ -847,7 +826,7 @@ class EnrichmentService:
 
     def migrate_legacy_cache_format(self, links):
         """
-        Migrate legacy free/paid cache format to streaming/rent/buy and normalize URLs.
+        Migrate legacy free/paid cache format to streaming/vod and normalize URLs.
 
         Args:
             links: Dict with watch links (potentially in old format)
@@ -886,20 +865,29 @@ class EnrichmentService:
                 continue  # Skip default key entirely
             migrated[key] = value
 
-        # Convert old 'free/paid' keys to 'streaming/rent'
+        # Convert old 'free/paid' keys to 'streaming/vod'
         if 'free' in migrated:
             migrated['streaming'] = migrated.pop('free')
         if 'paid' in migrated:
-            migrated['rent'] = migrated.pop('paid')
+            migrated['vod'] = migrated.pop('paid')
+
+        # Convert old 'rent/buy' keys to single 'vod' (pick first non-null)
+        if 'rent' in migrated or 'buy' in migrated:
+            # Prefer rent over buy (arbitrary choice, both are VOD)
+            if 'rent' in migrated:
+                migrated['vod'] = migrated.pop('rent')
+                migrated.pop('buy', None)  # Remove buy if it exists
+            elif 'buy' in migrated:
+                migrated['vod'] = migrated.pop('buy')
 
         # Normalize all link objects to remove search URLs
-        for category in ['streaming', 'rent', 'buy']:
+        for category in ['streaming', 'vod']:
             if category in migrated:
                 migrated[category] = normalize_link(migrated[category])
 
         # Ensure we only return canonical categories
         final_migrated = {}
-        for category in ['streaming', 'rent', 'buy']:
+        for category in ['streaming', 'vod']:
             if category in migrated:
                 final_migrated[category] = migrated[category]
 

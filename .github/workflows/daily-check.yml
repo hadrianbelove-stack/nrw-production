@@ -23,8 +23,6 @@ jobs:
       MIN_PROVIDER_COVERAGE: ${{ secrets.MIN_PROVIDER_COVERAGE }}
       # Playwright configuration
       NRW_USE_SHARED_PLAYWRIGHT: 'true'  # Use shared PlaywrightManager (now default behavior)
-      # Draft generation configuration
-      NRW_DRAFTS_ENABLED: 'true'  # Enable draft generation
 
     steps:
       - name: Branch guard
@@ -223,55 +221,21 @@ jobs:
             echo "WARNING: data.json not found, skipping search URL check"
           fi
 
-      - name: Check for drafts
-        id: drafts
-        run: |
-          if [ -d "admin/drafts" ] && [ "$(ls -A admin/drafts)" ]; then
-            draft_count=$(ls admin/drafts/*.json 2>/dev/null | wc -l || echo "0")
-            echo "📝 Generated $draft_count draft(s) for admin review"
-            echo "draft_count=$draft_count" >> $GITHUB_OUTPUT
-            echo "has_drafts=true" >> $GITHUB_OUTPUT
-
-            # List draft files for summary
-            for draft in admin/drafts/*.json; do
-              if [ -f "$draft" ]; then
-                draft_id=$(basename "$draft" .json)
-                echo "  - Draft: $draft_id"
-              fi
-            done
-          else
-            echo "📭 No drafts generated"
-            echo "draft_count=0" >> $GITHUB_OUTPUT
-            echo "has_drafts=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Extract draft summary
+      - name: Extract discovery summary
         if: always()
         run: |
-          echo "📊 Draft Generation Summary:"
-          echo "==========================="
-
-          draft_count=${{ steps.drafts.outputs.draft_count }}
+          echo "📊 Discovery Summary:"
+          echo "===================="
 
           # Output to both console and GitHub summary
           {
-            echo "## 📝 Draft Generation Summary"
+            echo "## 📊 Discovery Summary"
             echo ""
             echo "| Metric | Count |"
             echo "|--------|-------|"
-            echo "| 📝 Drafts Generated | $draft_count |"
             echo "| 🔍 Polled Movies | ${DISCOVERY_POLLED:-0} |"
             echo "| ⚡ Changes Detected | ${DISCOVERY_TRANSITIONS:-0} |"
-            echo ""
-            if [ "$draft_count" -gt 0 ]; then
-              echo "### ✅ Next Steps:"
-              echo "1. Admin should review drafts in the admin panel"
-              echo "2. Edit titles if needed"
-              echo "3. Publish approved drafts to production"
-            else
-              echo "### ℹ️ Status:"
-              echo "No new drafts generated - no recent movie updates found"
-            fi
+            echo "| 🆕 New Arrivals | ${NEW_ARRIVALS:-0} |"
             echo ""
           } | tee -a $GITHUB_STEP_SUMMARY
 
@@ -356,21 +320,14 @@ jobs:
         id: changes
         if: always()
         run: |
-          if ! git diff --quiet --exit-code -- admin/drafts/ metrics/daily.jsonl; then
+          # Check for changes in data.json and metrics
+          if ! git diff --quiet --exit-code -- data.json metrics/daily.jsonl; then
             echo "changes=true" >> $GITHUB_OUTPUT
             echo "Changes detected in repository"
           else
             echo "changes=false" >> $GITHUB_OUTPUT
             echo "No changes detected"
           fi
-
-      - name: Preserve drafts
-        if: always()
-        run: |
-          echo "📝 Preserving generated drafts..."
-          # Ensure drafts directory exists and is preserved
-          mkdir -p admin/drafts
-          echo "✅ Drafts preserved"
 
       - name: Archive metrics artifacts
         if: always()
@@ -383,30 +340,25 @@ jobs:
             .local_run.log
           retention-days: 30
 
-      - name: Commit drafts and metrics
+      - name: Commit changes
         if: always() && steps.changes.outputs.changes == 'true'
         run: |
           # Build commit message with discovery summary
-          draft_count=${{ steps.drafts.outputs.draft_count }}
-          if [ "$draft_count" -gt 0 ]; then
-            commit_msg="Daily discovery - $(date +%Y-%m-%d) [drafts]"
-          else
-            commit_msg="Daily discovery - $(date +%Y-%m-%d) [metrics]"
-          fi
+          commit_msg="Daily discovery - $(date +%Y-%m-%d)"
 
           # Add discovery metrics if we have them
           if [ "${DISCOVERY_POLLED:-0}" != "0" ] || [ "${DISCOVERY_TRANSITIONS:-0}" != "0" ]; then
             commit_msg="$commit_msg"$'\n\n'"Discovery: polled=${DISCOVERY_POLLED:-0}, transitions=${DISCOVERY_TRANSITIONS:-0}"
           fi
 
-          # Add draft count
-          if [ "$draft_count" -gt 0 ]; then
-            commit_msg="$commit_msg, drafts=${draft_count}"
+          # Add new arrivals count
+          if [ "${NEW_ARRIVALS:-0}" != "0" ]; then
+            commit_msg="$commit_msg, new_arrivals=${NEW_ARRIVALS:-0}"
           fi
 
-          # Stage generated files (but not data.json - that's published by admin)
-          # TODO: When auto-publish is re-enabled, add data.json here: git add admin/drafts/ metrics/daily.jsonl data.json
-          git add admin/drafts/ metrics/daily.jsonl
+          # Stage generated files (data.json and metrics)
+          echo "📦 Staging data.json and metrics"
+          git add metrics/daily.jsonl data.json
 
           # Only commit if there are staged changes and set flag accordingly
           if git diff --cached --quiet; then
@@ -425,66 +377,6 @@ jobs:
         if: always() && env.COMMIT_MADE == 'true'
         run: git push origin main
 
-      - name: Create draft notification
-        if: success() && steps.drafts.outputs.has_drafts == 'true' && env.NRW_NOTIFICATIONS == 'true'
-        uses: actions/github-script@v7
-        env:
-          DRAFT_COUNT: ${{ steps.drafts.outputs.draft_count }}
-        with:
-          script: |
-            const workflowUrl = `${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`;
-            const draftCount = process.env.DRAFT_COUNT || '0';
-            const polled = process.env.DISCOVERY_POLLED || '0';
-            const transitions = process.env.DISCOVERY_TRANSITIONS || '0';
-
-            const title = `Drafts Generated - ${new Date().toLocaleDateString()}`;
-
-            // Create a notification issue for admin review
-            const issue = await github.rest.issues.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title: title,
-              body: `## 📝 New Drafts Ready for Review
-
-            **Discovery Run:** ${new Date().toISOString()}
-            **Workflow Run:** ${workflowUrl}
-
-            ### 📊 Discovery Summary:
-            - **Movies Polled:** ${polled}
-            - **Changes Detected:** ${transitions}
-            - **Drafts Generated:** ${draftCount}
-
-            ### 📝 Next Steps:
-            1. **Admin Review Required:** Open the admin panel to review drafts
-            2. **Edit Titles:** Modify titles if needed before publishing
-            3. **Publish:** Click 'Publish' for approved drafts
-
-            ### 🔗 Admin Panel:
-            Access the admin panel to review and publish these drafts.
-
-            **Status:** Drafts are ready for admin review and publishing.
-
-            ---
-            *This notification was created automatically by the daily discovery workflow.*`,
-              labels: ['automation', 'drafts-ready', 'admin-action-required']
-            });
-
-            console.log(`Created draft notification issue #${issue.data.number}: ${title}`);
-
-            // Also add to step summary
-            const summaryMarkdown = `
-            ## 📝 Drafts Generated Successfully
-
-            **Draft Count:** ${draftCount}
-            **Discovery:** polled=${polled}, transitions=${transitions}
-
-            📝 **Notification:** Issue #${issue.data.number}
-            🔗 **Workflow:** [View Run](${workflowUrl})
-
-            **⚠️ Admin action required to publish drafts**
-            `;
-
-            require('fs').appendFileSync(process.env.GITHUB_STEP_SUMMARY, summaryMarkdown);
 
       - name: Get pipeline status for failure report
         if: failure()
@@ -529,9 +421,8 @@ jobs:
             \`\`\`
 
             ### Impact:
-            - No drafts were generated
-            - Admin panel will not have new content to review
-            - Site content remains unchanged
+            - Discovery pipeline failed
+            - Site content may not be updated
 
             This issue was created automatically by the failed discovery workflow.`,
               labels: ['automation', 'discovery-failure', 'bug']

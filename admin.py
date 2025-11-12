@@ -112,21 +112,6 @@ def has_pending_changes() -> bool:
     """
     return os.path.exists(PENDING_CHANGES_FLAG)
 
-def get_pending_changes_count() -> int:
-    """Get the count of pending changes (draft files).
-
-    Returns:
-        Number of pending draft files, or 0 if none
-    """
-    try:
-        drafts_dir = 'admin/drafts'
-        if not os.path.exists(drafts_dir):
-            return 0
-        draft_files = [f for f in os.listdir(drafts_dir) if f.endswith('.json')]
-        return len(draft_files)
-    except Exception as e:
-        logger.warning(f"Failed to count pending changes: {e}")
-        return 0
 
 def load_json(filepath: str, default: Optional[Union[dict, list]] = None) -> Union[dict, list]:
     """Load JSON file with fallback to default value.
@@ -363,7 +348,7 @@ def validate_movie_update_request(data: dict) -> tuple[bool, Optional[str]]:
         - runtime: optional, integer 1-500
         - digital_date: optional, ISO format YYYY-MM-DD
         - synopsis: optional, string max 5000 chars
-        - watch_links: optional, dict with streaming/rent/buy keys
+        - watch_links: optional, dict with streaming/vod keys
     """
     # List of allowed fields
     ALLOWED_FIELDS = {
@@ -437,7 +422,7 @@ def validate_movie_update_request(data: dict) -> tuple[bool, Optional[str]]:
         if not isinstance(data['watch_links'], dict):
             return False, "watch_links must be a dictionary"
 
-        allowed_categories = {'streaming', 'rent', 'buy'}
+        allowed_categories = {'streaming', 'vod'}
         for category, link_data in data['watch_links'].items():
             if category not in allowed_categories:
                 return False, f"watch_links category must be one of: {', '.join(allowed_categories)}"
@@ -580,7 +565,7 @@ def index() -> str:
         # Build provider_list from providers or watch_links
         providers = set()
         if movie_copy.get('providers'):
-            for category in ['streaming', 'rent', 'buy']:
+            for category in ['streaming', 'vod']:
                 if category in movie_copy['providers']:
                     providers.update(movie_copy['providers'][category])
         if movie_copy.get('watch_links'):
@@ -1296,7 +1281,7 @@ def update_movie_fields() -> dict:
                     })
 
                 # Validate each category and normalize trimmed values
-                for category in ['streaming', 'rent', 'buy']:
+                for category in ['streaming', 'vod']:
                     if category in watch_links:
                         cat_data = watch_links[category]
 
@@ -1754,7 +1739,7 @@ def pending_changes() -> dict:
     """
     return jsonify({
         'has_pending_changes': has_pending_changes(),
-        'pending_change_count': get_pending_changes_count()
+        'pending_change_count': 0  # Draft system removed - always 0
     })
 
 @app.route('/delta-summary', methods=['GET'])
