@@ -642,18 +642,9 @@ class DataGenerator:
         # Save updated database
         if new_movies_added > 0:
             db['last_update'] = datetime.now().isoformat()
-            with open('movie_tracking.json', 'w') as f:
-                json.dump(db, f, indent=2)
-
-        # Collect sample titles for metrics
-        sample_titles = []
-        for movie_data in list(all_discovered_movies.values())[:5]:  # Get up to 5 sample titles
-            sample_titles.append(movie_data['title'])
-
-        # Write per-run metrics
-        self._write_discovery_metrics(
-            days_back, new_movies_added, sample_titles
-        )
+            if not self.storage.atomic_write_json(db, 'movie_tracking.json', backup=True):
+                self.logger.error("Failed to save movie_tracking.json after discovery")
+                raise IOError("Discovery database write failed")
 
         # Log discovery summary
         self.logger.info(f"Discovery complete: {new_movies_added} new movies added from {self.discovery_stats['pages_fetched']} pages")
@@ -1012,35 +1003,6 @@ class DataGenerator:
     # load_all_movies moved to pipeline/storage.py (2025-11-10)
 
     # validate_data_json_schema moved to pipeline/validation.py (2025-11-10)
-
-    def _write_discovery_metrics(self, window_days, new_movies_added, sample_titles):
-        """Write per-run discovery metrics to metrics/daily.jsonl"""
-        try:
-            # Ensure metrics directory exists
-            os.makedirs('metrics', exist_ok=True)
-
-            # Create metrics object
-            metrics_object = {
-                'date': datetime.now().strftime('%Y-%m-%d'),
-                'timestamp': datetime.now().isoformat(),
-                'window_days': window_days,
-                'pages_fetched': self.discovery_stats['pages_fetched'],
-                'total_results': self.discovery_stats['total_results'],
-                'new_movies_added': new_movies_added,
-                'duplicates_skipped': self.discovery_stats['duplicates_skipped'],
-                'api_calls': self.discovery_stats['api_calls'],
-                'sample_titles': sample_titles[:5]  # Limit to 5 samples
-            }
-
-            # Append to daily metrics log (JSONL format)
-            metrics_file = 'metrics/daily.jsonl'
-            with open(metrics_file, 'a') as f:
-                f.write(json.dumps(metrics_object) + '\n')
-
-            self.logger.info(f"Discovery metrics written to {metrics_file}")
-
-        except Exception as e:
-            self.logger.error(f"Failed to write discovery metrics: {e}")
 
     def _run_discovery_pass(self, pass_name, pass_type, start_date, end_date, max_pages, discovered_movies, existing_ids, debug):
         """Run a single discovery pass (A or B)
@@ -2509,20 +2471,6 @@ class DataGenerator:
                     "success_rate": calc_rate(
                         self.wikipedia_stats['wikidata_successes'],
                         self.wikipedia_stats['wikidata_attempts']
-                    )
-                },
-                "watchmode_api": {
-                    "search_calls": self.watchmode_stats['search_calls'],
-                    "source_calls": self.watchmode_stats['source_calls'],
-                    "cache_hits": self.watchmode_stats['cache_hits'],
-                    "successes": self.watchmode_stats['watchmode_successes'],
-                    "success_rate": calc_rate(
-                        self.watchmode_stats['watchmode_successes'],
-                        self.watchmode_stats['search_calls']
-                    ),
-                    "cache_hit_rate": calc_rate(
-                        self.watchmode_stats['cache_hits'],
-                        self.watchmode_stats['search_calls']
                     )
                 },
                 "agent_scraper": {

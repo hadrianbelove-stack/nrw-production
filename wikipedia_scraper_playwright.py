@@ -491,7 +491,7 @@ class WikipediaScraperPlaywright:
                 source = cached_data.get('source', '')
 
                 # Skip search fallback sources - they should be retried
-                if source == 'search_fallback':
+                if source == 'search_fallback' or cached_data.get('is_search_fallback'):
                     # Check if fallback has expired (3-day TTL)
                     cached_at_str = cached_data.get('cached_at', '')
                     if cached_at_str:
@@ -632,11 +632,15 @@ class WikipediaScraperPlaywright:
 
     def _cache_result(self, cache_key, url, title, source):
         """Cache the Wikipedia URL result."""
+        # Mark search fallbacks explicitly
+        is_search_fallback = 'index.php?search=' in url
+
         self.cache[cache_key] = {
             'url': url,
             'title': title,
             'cached_at': datetime.now().isoformat(),
-            'source': source
+            'source': source,
+            'is_search_fallback': is_search_fallback
         }
         self._save_cache()
 

@@ -725,98 +725,137 @@ class NRWOrchestrator:
     
     def run(self):
         """Execute the complete daily pipeline"""
-        print(f"🚀 NRW Daily Update - {datetime.now().strftime('%Y-%m-%d %H:%M')}")
-        print("=" * 50)
+        # Acquire exclusive lock to prevent concurrent runs
+        # Skip lock in CI environments (fresh container each run)
+        is_ci = os.getenv('CI') == 'true' or os.getenv('GITHUB_ACTIONS') == 'true'
+        lock_file = '.nrw_orchestrator.lock'
 
-        # Ensure we're in the right directory (handle both local and CI environments)
-        forced_cwd = os.getenv('NRW_FORCE_CWD')
-        if forced_cwd:
-            forced_path = Path(forced_cwd).expanduser()
-            if forced_path.exists():
-                os.chdir(forced_path)
-                print(f"📂 Working directory (forced): {forced_path}")
+        if not is_ci and os.path.exists(lock_file):
+            # Check if lock is stale (> 2 hours old)
+            lock_age = time.time() - os.path.getmtime(lock_file)
+            if lock_age < 7200:  # 2 hours
+                print(f"❌ Another orchestrator is running (lock age: {lock_age/60:.1f} minutes)")
+                print(f"   If this is incorrect, remove {lock_file}")
+                sys.exit(1)
             else:
-                print(f"⚠️  Forced directory {forced_path} does not exist, using current directory")
-                print(f"📂 Working directory: {Path.cwd()}")
-        else:
-            # Use current working directory by default
-            print(f"📂 Working directory: {Path.cwd()}")
-        
-        # Load orchestrator configuration
-        config = {}
-        if os.path.exists('config.yaml'):
-            with open('config.yaml', 'r') as f:
-                config = yaml.safe_load(f) or {}
+                print(f"⚠️  Removing stale lock file (age: {lock_age/3600:.1f} hours)")
+                os.remove(lock_file)
+        elif is_ci and os.path.exists(lock_file):
+            # In CI, always remove any existing lock (fresh container)
+            print(f"🔧 CI environment detected, removing any existing lock file")
+            os.remove(lock_file)
 
-        orchestrator_config = config.get('orchestrator', {})
-        discovery_retries = int(os.getenv('DISCOVERY_RETRIES', orchestrator_config.get('discovery_retries', 2)))
-        retry_delays = orchestrator_config.get('discovery_retry_delays', [30, 45])
+        # Create lock file with PID and timestamp
+        try:
+            with open(lock_file, 'w') as f:
+                json.dump({
+                    'pid': os.getpid(),
+                    'started_at': datetime.now().isoformat(),
+                    'hostname': os.uname().nodename if hasattr(os, 'uname') else 'unknown'
+                }, f)
+        except Exception as e:
+            print(f"⚠️  Failed to create lock file: {e}")
 
-        # Pipeline steps for daily discovery and publication
-        discovery_pipeline = [
-            # Phase 1: Production Discovery (replaces legacy movie_tracker.py daily) - with retries
-            ("python3 generate_data.py --discover",
-             "Discover new premieres using production discovery", True, True),  # Last True indicates retry
+        try:
+            print(f"🚀 NRW Daily Update - {datetime.now().strftime('%Y-%m-%d %H:%M')}")
+            print("=" * 50)
 
-            # Phase 1.5: Check tracking movies for digital availability (provider monitoring)
-            ("python3 generate_data.py --check",
-             "Check tracking movies for digital availability", True, False),  # Last False indicates no retry
-
-            # Phase 1.75: Validate discovery results (fail if recall drops below threshold)
-            ("python3 ops/validate_discovery.py --days-back 7",
-             "Validate discovery against ground truth", False, False),  # Non-critical to avoid blocking automation
-        ]
-
-        # Execute discovery and monitoring pipeline
-        for step in discovery_pipeline:
-            if len(step) == 4:
-                cmd, description, critical, use_retry = step
-                if use_retry:
-                    self.run_command_with_retries(cmd, description, critical, discovery_retries, retry_delays)
+            # Ensure we're in the right directory (handle both local and CI environments)
+            forced_cwd = os.getenv('NRW_FORCE_CWD')
+            if forced_cwd:
+                forced_path = Path(forced_cwd).expanduser()
+                if forced_path.exists():
+                    os.chdir(forced_path)
+                    print(f"📂 Working directory (forced): {forced_path}")
                 else:
-                    self.run_command(cmd, description, critical)
+                    print(f"⚠️  Forced directory {forced_path} does not exist, using current directory")
+                    print(f"📂 Working directory: {Path.cwd()}")
             else:
-                # Backward compatibility for 3-element tuples
-                cmd, description, critical = step
-                self.run_command(cmd, description, critical)
+                # Use current working directory by default
+                print(f"📂 Working directory: {Path.cwd()}")
 
-        # Save consolidated daily metrics for stall detection (reads from discovery_run.json)
-        self.save_daily_metrics()
+            # Load orchestrator configuration
+            config = {}
+            if os.path.exists('config.yaml'):
+                with open('config.yaml', 'r') as f:
+                    config = yaml.safe_load(f) or {}
 
-        # Surface 3-day stall detection after metrics are saved
-        stall_detected = self.detect_stall()
-        if stall_detected:
-            # Exit with non-zero code if stall detected and NRW_FAIL_ON_STALL=true
-            self.print_summary()
-            sys.exit(1)
+            orchestrator_config = config.get('orchestrator', {})
+            discovery_retries = int(os.getenv('DISCOVERY_RETRIES', orchestrator_config.get('discovery_retries', 2)))
+            retry_delays = orchestrator_config.get('discovery_retry_delays', [30, 45])
 
-        # Phase 3: Generate final display data with enrichment
-        print(f"\n📊 Phase 3: Data Generation")
-        success = self.run_command(
-            "python3 generate_data.py",
-            "Generate data.json for website with enriched links",
-            True
-        )
+            # Pipeline steps for daily discovery and publication
+            discovery_pipeline = [
+                # Phase 1: Production Discovery (replaces legacy movie_tracker.py daily) - with retries
+                ("python3 generate_data.py --discover",
+                 "Discover new premieres using production discovery", True, True),  # Last True indicates retry
 
-        # Validate data quality after generation
-        if success:
-            print("\n🔍 Validating RT data...")
-            self.validate_rt_data()
+                # Phase 1.5: Check tracking movies for digital availability (provider monitoring)
+                ("python3 generate_data.py --check",
+                 "Check tracking movies for digital availability", True, False),  # Last False indicates no retry
 
-            print("\n🔍 Validating data quality...")
-            try:
-                self.validate_data_quality()
-            except Exception as e:
-                print(f"❌ Data quality validation failed: {e}")
+                # Phase 1.75: Validate discovery results (fail if recall drops below threshold)
+                ("python3 ops/validate_discovery.py --days-back 7",
+                 "Validate discovery against ground truth", False, False),  # Non-critical to avoid blocking automation
+            ]
+
+            # Execute discovery and monitoring pipeline
+            for step in discovery_pipeline:
+                if len(step) == 4:
+                    cmd, description, critical, use_retry = step
+                    if use_retry:
+                        self.run_command_with_retries(cmd, description, critical, discovery_retries, retry_delays)
+                    else:
+                        self.run_command(cmd, description, critical)
+                else:
+                    # Backward compatibility for 3-element tuples
+                    cmd, description, critical = step
+                    self.run_command(cmd, description, critical)
+
+            # Save consolidated daily metrics for stall detection (reads from discovery_run.json)
+            self.save_daily_metrics()
+
+            # Surface 3-day stall detection after metrics are saved
+            stall_detected = self.detect_stall()
+            if stall_detected:
+                # Exit with non-zero code if stall detected and NRW_FAIL_ON_STALL=true
                 self.print_summary()
                 sys.exit(1)
 
-        # Final summary
-        self.print_summary()
+            # Phase 3: Generate final display data with enrichment
+            print(f"\n📊 Phase 3: Data Generation")
+            success = self.run_command(
+                "python3 generate_data.py",
+                "Generate data.json for website with enriched links",
+                True
+            )
 
-        # Success message
-        print("\n✨ Daily update complete - data.json ready for auto-publish!")
-        return 0
+            # Validate data quality after generation
+            if success:
+                print("\n🔍 Validating RT data...")
+                self.validate_rt_data()
+
+                print("\n🔍 Validating data quality...")
+                try:
+                    self.validate_data_quality()
+                except Exception as e:
+                    print(f"❌ Data quality validation failed: {e}")
+                    self.print_summary()
+                    sys.exit(1)
+
+            # Final summary
+            self.print_summary()
+
+            # Success message
+            print("\n✨ Daily update complete - data.json ready for auto-publish!")
+            return 0
+        finally:
+            # Always remove lock file
+            if os.path.exists(lock_file):
+                try:
+                    os.remove(lock_file)
+                except:
+                    pass
 
 def main():
     """Entry point with error handling"""

@@ -76,6 +76,9 @@ class StreamingPlatformScraper:
             'timeouts': 0
         }
 
+        # ASIN cache for Amazon lookups
+        self.asin_cache_file = 'cache/amazon_asin_cache.json'
+        self._amazon_asin_cache = self._load_asin_cache()
 
         # Clean up old screenshots on initialization
         if self.screenshots_enabled:
@@ -97,6 +100,25 @@ class StreamingPlatformScraper:
             'data': data
         }
         self._log(f"METRICS: {json.dumps(metrics_data)}")
+
+    def _load_asin_cache(self):
+        """Load Amazon ASIN cache from disk."""
+        if os.path.exists(self.asin_cache_file):
+            try:
+                with open(self.asin_cache_file, 'r') as f:
+                    return json.load(f)
+            except Exception as e:
+                self._log(f"Failed to load ASIN cache: {e}", level='warning')
+        return {}
+
+    def _save_asin_cache(self):
+        """Save Amazon ASIN cache to disk."""
+        try:
+            os.makedirs(os.path.dirname(self.asin_cache_file), exist_ok=True)
+            with open(self.asin_cache_file, 'w') as f:
+                json.dump(self._amazon_asin_cache, f, indent=2)
+        except Exception as e:
+            self._log(f"Failed to save ASIN cache: {e}", level='error')
 
     def _init_browser(self):
         """Initialize Playwright browser with context."""

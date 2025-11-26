@@ -75,7 +75,6 @@ discovery:
 api:
   # API keys: Environment variables take precedence, these are fallbacks for local development
   tmdb_api_key: "99b122ce7fa3e9065d7b7dc6e660772d"  # TMDB API key for movie data
-  watchmode_api_key: "bBMpVr31lRfUsSFmgoQp0jixDrQt8DIKCVg7EFdp"  # Watchmode API key for watch links
   omdb_api_key: "8eb019b"  # OMDB API key for additional movie data
   tmdb_rate_limit: 0.1  # Seconds between API calls
   max_retries: 3
@@ -134,8 +133,7 @@ validation:
   recent_days: 7  # Strict recent movie validation window (days) - per PROJECT_CHARTER.md
   min_recall: 0.75  # Minimum discovery recall threshold (75%)
   min_precision: 0.70  # Minimum discovery precision threshold (70%)
-  min_provider_coverage_count: 5  # Minimum number of movies with non-search watch links per week (lowered from 10 temporarily while investigating Watchmode API/scraper issues)
-  # TODO [2025-11-15]: Revert min_provider_coverage_count back to 10 after Watchmode quota reset or scraper reliability fixes
+  min_provider_coverage_count: 10  # Minimum number of movies with non-search watch links per week
   approval_ttl_hours: 6  # Approval freshness grace window (6 hours default)
   fail_on_no_recent: false  # When true, fail validation if no recent movies found. When false (default), warn and continue.
 

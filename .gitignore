@@ -33,11 +33,20 @@ output/
 # Cache files (ephemeral data) - now organized under cache/
 *_cache.json
 cache/*.json
+cache/screenshots/*.png
+cache/screenshots/*.html
 # Legacy cache file locations (for backwards compatibility)
 rt_cache.json
 wikipedia_cache.json
 youtube_trailer_cache.json
 watchmode_quota.json
+
+# Orchestrator lock file
+.nrw_orchestrator.lock
+
+# Scraper health metrics (generated)
+metrics/scraper_health.json
+metrics/scraper_health_history.jsonl
 
 # Editor and temporary files
 *.swp
