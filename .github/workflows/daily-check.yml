@@ -18,6 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 120  # 2 hour timeout (was hitting 6h default limit)
     env:
+      PYTHONUNBUFFERED: '1'  # Disable Python output buffering for real-time logs
       TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
       OMDB_API_KEY: ${{ secrets.OMDB_API_KEY }}
       WATCHMODE_API_KEY: ${{ secrets.WATCHMODE_API_KEY }}
