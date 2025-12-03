@@ -730,20 +730,20 @@ class NRWOrchestrator:
         is_ci = os.getenv('CI') == 'true' or os.getenv('GITHUB_ACTIONS') == 'true'
         lock_file = '.nrw_orchestrator.lock'
 
-        if not is_ci and os.path.exists(lock_file):
-            # Check if lock is stale (> 2 hours old)
-            lock_age = time.time() - os.path.getmtime(lock_file)
-            if lock_age < 7200:  # 2 hours
-                print(f"❌ Another orchestrator is running (lock age: {lock_age/60:.1f} minutes)")
-                print(f"   If this is incorrect, remove {lock_file}")
-                sys.exit(1)
-            else:
-                print(f"⚠️  Removing stale lock file (age: {lock_age/3600:.1f} hours)")
-                os.remove(lock_file)
-        elif is_ci and os.path.exists(lock_file):
-            # In CI, always remove any existing lock (fresh container)
-            print(f"🔧 CI environment detected, removing any existing lock file")
-            os.remove(lock_file)
+        # PID-aware stale lock cleanup
+        if os.path.exists(lock_file):
+            try:
+                with open(lock_file, 'r') as f:
+                    lock_info = json.load(f)
+                pid = lock_info.get('pid')
+                if pid and os.path.exists(f'/proc/{pid}'):  # Linux check
+                    print(f'❌ Active process {pid} holds lock')
+                    sys.exit(1)
+                else:
+                    print(f'⚠️ Removing stale lock (PID {pid} not running)')
+                    os.remove(lock_file)
+            except:
+                os.remove(lock_file)  # Force remove corrupted lock
 
         # Create lock file with PID and timestamp
         try:
@@ -811,6 +811,17 @@ class NRWOrchestrator:
                     # Backward compatibility for 3-element tuples
                     cmd, description, critical = step
                     self.run_command(cmd, description, critical)
+
+            # Phase 2: Post-check Health Check
+            if os.path.exists('metrics/discovery_run.json'):
+                with open('metrics/discovery_run.json') as f:
+                    metrics = json.load(f)
+                polled = metrics.get('results', {}).get('polled', 0)
+                health_config = orchestrator_config.get('health', {})
+                min_polled = health_config.get('min_polled', 1000)
+                if polled == 0 or polled < min_polled:
+                    print(f'🚨 HEALTH FAIL: Polled only {polled} - expected {min_polled}+')
+                    sys.exit(1)
 
             # Save consolidated daily metrics for stall detection (reads from discovery_run.json)
             self.save_daily_metrics()

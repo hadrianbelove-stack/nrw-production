@@ -8,13 +8,17 @@ We want a beautiful webpage that shows the latest movies available for streaming
 ## **📊 The Data Journey: From API to Your Screen**
 
 ### **Phase 1: Daily Discovery & Monitoring**
-**What happens:** We check if tracked movies became available for digital (streaming/VOD (rental/purchase)) AND discover new movies to track.
+**What happens:** We discover new movies to track AND check if tracked movies became available for digital (streaming/VOD (rental/purchase)).
 
 **🔧 `generate_data.py --discover`** - *The Production Discovery System*
 - **Discovery:** Searches TMDB API for movies released in past 7 days (festival, limited theatrical, theatrical, direct to streaming, etc.)
-- **Monitoring:** Checks ALL movies in database for digital availability on Netflix, Amazon, etc.
+- **Adds to database:** New movies get status = "tracking", digital_date = null
+
+**🔧 `generate_data.py --check`** - *The Provider Monitoring System*
+- **Monitoring:** Checks ALL movies in database with status = "tracking" for digital availability on Netflix, Amazon, etc.
 - **The Core Problem:** APIs don't tell us "this movie became available digitally today" - they only show what's available right now. We have to detect transitions ourselves.
 - **Magic moment:** When it finds new providers, sets `digital_date` = today, status = "available"
+- **State file:** Writes list of newly available movie IDs to `metrics/newly_available.json`
 
 **📄 `movie_tracking.json`** - *The Master Database*
 - **What it is:** Complete database of all movies we're monitoring (~330 movies)
@@ -22,11 +26,12 @@ We want a beautiful webpage that shows the latest movies available for streaming
 - **Example:** `{"1404864": {"title": "Inspector Zende", "status": "tracking", "digital_date": null}}`
 
 ### **Phase 2: Database Enrichment & Link Resolution**
-**What happens:** We take movies that became digitally available and fill out ALL their details - cast, director, synopsis, posters, trailers, Wikipedia pages, review links, watch links (streaming/vod).
+**What happens:** We take movies that JUST BECAME digitally available (from today's provider check) and fill out ALL their details - cast, director, synopsis, posters, trailers, Wikipedia pages, review links, watch links (streaming/vod).
 
 **🔧 `generate_data.py`** - *The Complete Data Enricher*
-- **Smart caching:** Only processes movies transitioning from "tracking" to "available" (1-10 per day)
-- **Performance:** 98% cost reduction through enrichment-on-transition pattern
+- **Enrichment-on-transition:** Reads `metrics/newly_available.json` to find which movies became available TODAY
+- **Smart filtering:** Only processes movies in the state file (1-10 per day) + stale enrichment (>90 days old, batch of 10)
+- **Performance:** 95%+ cost reduction by avoiding re-enrichment of already-processed movies
 - **Link resolution:** Multi-tier waterfall (overrides → cache → API → scraper → null)
 - **TMDB API calls:** Fetches complete movie details including cast, crew, synopsis, posters
 
@@ -97,9 +102,11 @@ Daily Discovery → movie_tracking.json → OPTIONAL REVIEW → data.json → Pu
 
 **🔧 `daily_orchestrator.py`** - *The Modern Orchestra Conductor*
 ```bash
-1. python3 generate_data.py --discover     # Discover new movies + monitor existing for availability
+1. python3 generate_data.py --discover     # Discover new movies to track (TMDB API search)
 2. python3 generate_data.py --check        # Check tracking movies for digital availability
-3. python3 generate_data.py               # Create enriched display data with links
+                                           # → Writes metrics/newly_available.json with IDs
+3. python3 generate_data.py               # Enrich ONLY newly available movies from step 2
+                                           # → Reads metrics/newly_available.json
 4. git commit & push                       # Save changes (automated)
 ```
 

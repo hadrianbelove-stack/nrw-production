@@ -376,6 +376,7 @@ Filtered, enriched subset for frontend display:
 - Monitors tracking movies for digital availability
 - Updates status from "tracking" to "available"
 - Records digital_date and platform details
+- **Writes state file:** `metrics/newly_available.json` with list of movie IDs that transitioned
 - Expected: 2-5 movies/day transition
 
 **No API Dates; Full Change Detection Poll**
@@ -383,10 +384,13 @@ Filtered, enriched subset for frontend display:
 Always poll ALL tracking movies in `movie_tracking.json` (no time limits). Fetch TMDB providers; if appears (null → value), set `digital_date = today`, `status = available`. Our detection defines availability – no external dates. Once found, status change excludes from future tracking polls (status != "tracking" means no longer monitored). Priority ordering is allowed but not skipping. Link: [docs/troubleshooting/change_detection.md](docs/troubleshooting/change_detection.md)
 
 **Phase 3: Enrichment** (`generate_data.py` main)
-- Only processes newly available movies (enrichment-on-transition)
+- **Reads state file:** `metrics/newly_available.json` to determine which movies transitioned TODAY
+- **Enrichment-on-transition:** Only processes movies from state file (strict filtering)
+- **Fallback:** If no state file, falls back to `enriched` flag check (legacy behavior)
+- **Stale re-enrichment:** Also processes movies with >90 day old enrichment data (batch of 10)
 - Adds RT ratings, Wikipedia links, watch links
-- Sets `enriched: true` flag
-- Expected: 1-10 movies/day processing
+- Sets `enriched: true` flag in `enrichment_state.json`
+- Expected: 1-10 movies/day processing (new arrivals) + up to 10 stale movies
 
 **Phase 4: Display Generation**
 - Filters available movies for `data.json`

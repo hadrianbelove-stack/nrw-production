@@ -752,10 +752,15 @@ class DataGenerator:
         with open('movie_tracking.json', 'r') as f:
             db = json.load(f)
 
+        print(f'DB loaded: {len(db.get("movies", {}))} total movies')
+        tracking_count = len([m for m in db['movies'].values() if m['status'] == 'tracking'])
+        print(f"🔍 Raw tracking filter: {tracking_count} movies")
+
         # Get all tracking movies with their IDs
         tracking_movies = [(movie_id, movie) for movie_id, movie in db['movies'].items()
                           if movie['status'] == 'tracking']
 
+        print(f"🔍 Assigned tracking_movies list: {len(tracking_movies)}")
         print(f"🔍 Found {len(tracking_movies)} movies in tracking status")
 
         if not tracking_movies:
@@ -810,6 +815,7 @@ class DataGenerator:
         checked = 0
         failed = 0
         total_to_check = len(tracking_movies)
+        newly_available_ids = []  # Track movie IDs that transition to available
 
         print(f"\n🎬 Checking {total_to_check} movies for digital availability...\n")
 
@@ -888,6 +894,7 @@ class DataGenerator:
                         movie['enrichment_date'] = None
 
                         newly_digital += 1
+                        newly_available_ids.append(movie_id)  # Track for enrichment state file
                         # Show which service it appeared on
                         first_service = stream_names[0] if stream_names else rent_names[0] if rent_names else buy_names[0]
                         print(f"  ✓ {movie['title']} now on {first_service}!")
@@ -952,6 +959,25 @@ class DataGenerator:
 
             print(f"📊 Metrics saved to metrics/discovery_run.json")
             self.logger.info(f"Discovery metrics saved: {discovery_run_data}")
+
+            # Write enrichment state file with newly available movie IDs
+            # This file is consumed by generate_display_data() to determine which movies need enrichment
+            newly_available_data = {
+                'date': datetime.now().strftime('%Y-%m-%d'),
+                'timestamp': datetime.now().isoformat(),
+                'movie_ids': newly_available_ids,
+                'count': len(newly_available_ids)
+            }
+
+            with open('metrics/newly_available.json', 'w') as f:
+                json.dump(newly_available_data, f, indent=2)
+
+            if newly_available_ids:
+                print(f"📝 Wrote {len(newly_available_ids)} newly available movie IDs to metrics/newly_available.json")
+                self.logger.info(f"Enrichment state file created with {len(newly_available_ids)} movie IDs: {newly_available_ids}")
+            else:
+                print(f"📝 No newly available movies - empty state file written")
+
         except Exception as e:
             self.logger.warning(f"Failed to save metrics artifact: {e}")
 
@@ -2118,6 +2144,31 @@ class DataGenerator:
         # Build lookup of existing movies by ID for watch_links validation
         existing_movies_lookup = {str(m['id']): m for m in existing_movies if isinstance(m, dict) and 'id' in m}
 
+        # Load enrichment state file to determine which movies just became available
+        # This implements enrichment-on-transition pattern (only enrich NEW arrivals)
+        newly_available_ids = set()
+        today = datetime.now().strftime('%Y-%m-%d')
+
+        if os.path.exists('metrics/newly_available.json'):
+            try:
+                with open('metrics/newly_available.json', 'r') as f:
+                    state_data = json.load(f)
+                    state_date = state_data.get('date')
+
+                    # Only use state file if it's from today (fresh from Phase 2)
+                    if state_date == today:
+                        newly_available_ids = set(state_data.get('movie_ids', []))
+                        print(f"\n📋 Loaded {len(newly_available_ids)} newly available movie IDs from today's provider check")
+                        self.logger.info(f"Using enrichment state file from {state_date} with {len(newly_available_ids)} IDs")
+                    else:
+                        print(f"\n⚠️  Enrichment state file is from {state_date}, not today ({today}) - ignoring")
+                        self.logger.warning(f"Stale enrichment state file from {state_date}, expected {today}")
+            except Exception as e:
+                print(f"\n⚠️  Failed to load enrichment state file: {e}")
+                self.logger.warning(f"Failed to load metrics/newly_available.json: {e}")
+        else:
+            print(f"\n📝 No enrichment state file found - will use enrichment_state.json instead")
+
         # Separate movies by enrichment status (Phase 2.1 optimization)
         needs_enrichment = []
         already_enriched = []
@@ -2142,30 +2193,46 @@ class DataGenerator:
                             except:
                                 pass
 
-                        if not is_enriched:
-                            needs_enrichment.append((movie_id, movie_data))
-                        elif is_stale:
-                            stale_enrichment.append((movie_id, movie_data))
-                        else:
-                            # Before classifying as already_enriched, validate watch_links for placeholders
-                            existing_movie = existing_movies_lookup.get(movie_id)
-                            has_valid_links = True
-
-                            if existing_movie and 'watch_links' in existing_movie:
-                                validated_links = self.validator.validate_watch_links_schema(
-                                    existing_movie['watch_links'],
-                                    movie_data.get('title', 'Unknown')
-                                )
-                                # If validation removes all categories or results in empty dict,
-                                # don't classify as already_enriched
-                                if not validated_links:
-                                    has_valid_links = False
-
-                            if has_valid_links:
-                                already_enriched.append((movie_id, movie_data))
-                            else:
-                                # Movie has placeholder ASINs or invalid links, needs re-enrichment
+                        # ENRICHMENT-ON-TRANSITION: Only enrich if movie just became available today
+                        # If we have a state file with newly available IDs, use that
+                        # Otherwise fall back to enriched flag check
+                        if newly_available_ids:
+                            # State file exists - strict enrichment-on-transition mode
+                            if movie_id in newly_available_ids:
+                                # Movie just transitioned today - needs enrichment
                                 needs_enrichment.append((movie_id, movie_data))
+                            elif is_stale:
+                                # Old movie but enrichment data is stale
+                                stale_enrichment.append((movie_id, movie_data))
+                            else:
+                                # Already enriched and not stale - skip
+                                already_enriched.append((movie_id, movie_data))
+                        else:
+                            # No state file - fall back to enriched flag logic
+                            if not is_enriched:
+                                needs_enrichment.append((movie_id, movie_data))
+                            elif is_stale:
+                                stale_enrichment.append((movie_id, movie_data))
+                            else:
+                                # Before classifying as already_enriched, validate watch_links for placeholders
+                                existing_movie = existing_movies_lookup.get(movie_id)
+                                has_valid_links = True
+
+                                if existing_movie and 'watch_links' in existing_movie:
+                                    validated_links = self.validator.validate_watch_links_schema(
+                                        existing_movie['watch_links'],
+                                        movie_data.get('title', 'Unknown')
+                                    )
+                                    # If validation removes all categories or results in empty dict,
+                                    # don't classify as already_enriched
+                                    if not validated_links:
+                                        has_valid_links = False
+
+                                if has_valid_links:
+                                    already_enriched.append((movie_id, movie_data))
+                                else:
+                                    # Movie has placeholder ASINs or invalid links, needs re-enrichment
+                                    needs_enrichment.append((movie_id, movie_data))
 
                 except Exception as e:
                     self.logger.warning(f"Error parsing date for {movie_data.get('title')}: {e}")

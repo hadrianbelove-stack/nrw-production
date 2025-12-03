@@ -16,7 +16,7 @@ permissions:
 jobs:
   daily-update:
     runs-on: ubuntu-latest
-    timeout-minutes: 120  # 2 hour timeout (was hitting 6h default limit)
+    timeout-minutes: 30  # Was default 6h? Increase for 3000+ polls
     env:
       PYTHONUNBUFFERED: '1'  # Disable Python output buffering for real-time logs
       TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}

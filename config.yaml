@@ -141,6 +141,9 @@ orchestrator:
   discovery_retries: 2  # Additional retry attempts for discovery (total attempts = 1 + retries)
   discovery_retry_delays: [30, 45]  # Retry delays in seconds (exponential backoff)
   skip_approval: true  # Default to bypass approval gate during development (NRW_SKIP_APPROVAL override)
+  health:
+    min_polled: 1000  # Fail if fewer polled
+    stall_days: 3     # Stall threshold
 
 
 # Affiliate Program Configuration
