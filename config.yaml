@@ -63,12 +63,16 @@ telemetry:
   # - api_calls: External API calls (Watchmode, TMDB, etc)
   # - retry_count: Total retry attempts across services
 
+# INTAKE configuration (legacy key name "discovery" preserved for compatibility)
+# Controls: generate_data.py --intake (finding NEW movie premieres from TMDB)
+# NOT used by: generate_data.py --discover (provider-availability checks)
+# For provider-availability settings, see: orchestrator.health section below
 discovery:
-  days_back: 14  # Discovery window for finding new premieres (expanded to catch more releases)
-  max_pages: 20  # Maximum pages to fetch for discovery (increased for expanded discovery)
+  days_back: 7  # Intake window for finding new premieres from TMDB (controls how far back intake looks)
+  max_pages: 20  # Intake page limit - maximum TMDB pages to process during intake phase
   # CI optimizations - reduce load for automated runs
-  ci_days_back: 7  # Reduced discovery window for CI (set via CI_DISCOVERY_DAYS env var)
-  ci_max_pages: 10  # Reduced page limit for CI (set via CI_DISCOVERY_PAGES env var)
+  ci_days_back: 7  # Reduced intake window for CI (set via CI_DISCOVERY_DAYS env var)
+  ci_max_pages: 10  # Reduced intake page limit for CI (set via CI_DISCOVERY_PAGES env var)
   enable_pass_a: true  # Enable Pass A: Direct-to-digital releases (release_date + type=4)
   enable_pass_b: true  # Enable Pass B: Theatrical releases (primary_release_date)
 
@@ -131,19 +135,19 @@ rt_scraper:
 
 validation:
   recent_days: 7  # Strict recent movie validation window (days) - per PROJECT_CHARTER.md
-  min_recall: 0.75  # Minimum discovery recall threshold (75%)
-  min_precision: 0.70  # Minimum discovery precision threshold (70%)
+  min_recall: 0.75  # Minimum intake recall - how well intake finds recent premieres from TMDB (75%)
+  min_precision: 0.70  # Minimum intake precision - how well intake filters recent premieres (70%)
   min_provider_coverage_count: 10  # Minimum number of movies with non-search watch links per week
   approval_ttl_hours: 6  # Approval freshness grace window (6 hours default)
   fail_on_no_recent: false  # When true, fail validation if no recent movies found. When false (default), warn and continue.
 
 orchestrator:
-  discovery_retries: 2  # Additional retry attempts for discovery (total attempts = 1 + retries)
-  discovery_retry_delays: [30, 45]  # Retry delays in seconds (exponential backoff)
+  discovery_retries: 2  # Additional retry attempts for provider-availability discovery (total attempts = 1 + retries)
+  discovery_retry_delays: [30, 45]  # Retry delays for provider-availability discovery in seconds (exponential backoff)
   skip_approval: true  # Default to bypass approval gate during development (NRW_SKIP_APPROVAL override)
   health:
-    min_polled: 1000  # Fail if fewer polled
-    stall_days: 3     # Stall threshold
+    min_polled: 1000  # Fail if fewer than N tracking movies are polled during provider-availability discovery (generate_data.py --discover)
+    stall_days: 3     # Number of consecutive days with zero tracking→available transitions in provider-availability discovery phase
 
 
 # Affiliate Program Configuration

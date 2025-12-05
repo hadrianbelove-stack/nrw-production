@@ -437,31 +437,31 @@ class NRWOrchestrator:
 
 
     def extract_discovery_metrics(self):
-        """Extract discovery metrics from JSON artifact or fallback to log parsing"""
+        """Extract discovery metrics from dedicated discovery JSON artifact or fallback to log parsing"""
         polled = 0
         transitions = 0
 
-        # First try to read from JSON artifact
+        # Primary path: Read from dedicated discovery JSON artifact for provider availability
         try:
             if os.path.exists('metrics/discovery_run.json'):
                 with open('metrics/discovery_run.json', 'r') as f:
                     discovery_data = json.load(f)
 
-                if discovery_data.get('operation') == 'check_tracking':
-                    polled = discovery_data.get('polled', 0)
-                    transitions = discovery_data.get('transitions', 0)
-                    print(f"📊 Metrics from JSON artifact: {polled} polled, {transitions} transitions")
+                operation = discovery_data.get('operation')
+                if operation == 'discover_availability':
+                    results = discovery_data.get('results', {})
+                    polled = results.get('polled', 0)
+                    transitions = results.get('transitions', 0)
+                    print(f"📊 Discovery metrics from JSON artifact: {polled} polled, {transitions} transitions")
                     return polled, transitions
-                elif discovery_data.get('operation') == 'discover_premieres':
-                    discovered = discovery_data.get('discovered', 0)
-                    print(f"📊 Discovery metrics from JSON: {discovered} new movies discovered")
-                    # For discovery operations, transitions = discovered
-                    return 0, discovered
+                else:
+                    print(f"⚠️ Unexpected operation in discovery_run.json: {operation} (expected 'discover_availability')")
 
         except Exception as e:
-            print(f"⚠️ Failed to read JSON artifact: {e}, falling back to log parsing")
+            print(f"⚠️ Failed to read discovery JSON artifact: {e}")
 
-        # Fallback to log parsing if JSON artifact not available
+        # Fallback to log parsing if JSON artifact not available or invalid
+        print("📊 Falling back to log parsing for discovery metrics")
         for result in self.results:
             if result['success'] and result['output']:
                 output_lines = result['output'].split('\n')
@@ -480,7 +480,7 @@ class NRWOrchestrator:
         return polled, transitions
 
     def save_daily_metrics(self):
-        """Save consolidated daily metrics to metrics/daily.jsonl from discovery_run.json"""
+        """Save consolidated daily metrics to metrics/daily.jsonl from separate intake and discovery files"""
         max_retries = 3
         retry_delay = 0.5  # 500ms
 
@@ -489,30 +489,40 @@ class NRWOrchestrator:
                 # Ensure metrics directory exists
                 os.makedirs('metrics', exist_ok=True)
 
-                # Read metrics from discovery_run.json (single source of truth)
+                # Read metrics from separate intake and discovery files
                 discovered_today = 0
                 polled = 0
                 transitions = 0
 
+                # Read intake metrics
+                if os.path.exists('metrics/intake_run.json'):
+                    with open('metrics/intake_run.json', 'r') as f:
+                        intake_data = json.load(f)
+
+                    if intake_data.get('operation') == 'intake_premieres':
+                        results = intake_data.get('results', {})
+                        discovered_today = results.get('discovered', 0)
+
+                # Read discovery metrics for polled and transitions
                 if os.path.exists('metrics/discovery_run.json'):
                     with open('metrics/discovery_run.json', 'r') as f:
                         discovery_data = json.load(f)
 
-                    # Handle both discovery and tracking operations
-                    operation = discovery_data.get('operation')
-
-                    if operation == 'discover_premieres':
-                        discovered_today = discovery_data.get('discovered', 0)
-                        # For discovery operations, transitions = discovered
-                        transitions = discovered_today
-                    elif operation == 'check_tracking':
-                        polled = discovery_data.get('polled', 0)
-                        transitions = discovery_data.get('transitions', 0)
+                    if discovery_data.get('operation') == 'discover_availability':
+                        results = discovery_data.get('results', {})
+                        polled = results.get('polled', 0)
+                        transitions = results.get('transitions', 0)
                     else:
-                        # Legacy format or unknown operation - extract what we can
-                        discovered_today = discovery_data.get('discovered', 0)
-                        polled = discovery_data.get('polled', 0)
-                        transitions = discovery_data.get('transitions', discovered_today)
+                        # LEGACY SUPPORT (SCHEDULED FOR REMOVAL): Historical combined schema
+                        # TODO: Remove after 2025-12-31 when all historical backfill needs are complete
+                        # This branch handles pre-separation metrics where discovery_run.json contained intake operations
+                        operation = discovery_data.get('operation')
+                        if operation == 'intake_premieres':
+                            # Minimal historical support: treat intake as discovery for legacy compatibility
+                            discovered_today = discovery_data.get('results', {}).get('discovered', 0)
+                            transitions = discovered_today
+                            print(f"⚠️ DEPRECATED: Using legacy combined schema (intake in discovery_run.json)")
+                        # Drop support for unknown operations - they should not exist in historical files
 
                 # Create consolidated metrics entry
                 metrics_entry = {
@@ -602,9 +612,9 @@ class NRWOrchestrator:
                 print(f"📅 Stalled dates: {', '.join(sorted(stall_dates))}")
                 print("🔍 No movie transitions detected for 3+ consecutive unique days")
                 print("💡 This may indicate:")
-                print("   - API/scraper failures preventing movie detection")
+                print("   - API/scraper failures preventing provider detection")
                 print("   - All tracked movies already digital (normal in mature state)")
-                print("   - Discovery system not finding new releases")
+                print("   - Intake system not finding new premieres to track")
 
                 # Optionally persist stall state
                 self._persist_stall_state(stall_dates, last_3_entries)
@@ -786,17 +796,13 @@ class NRWOrchestrator:
 
             # Pipeline steps for daily discovery and publication
             discovery_pipeline = [
-                # Phase 1: Production Discovery (replaces legacy movie_tracker.py daily) - with retries
+                # Phase 1: Intake new premieres from TMDB
+                ("python3 generate_data.py --intake",
+                 "Intake new premieres using production discovery", True, True),  # Last True indicates retry
+
+                # Phase 2: Discovery – check tracked movies for digital availability
                 ("python3 generate_data.py --discover",
-                 "Discover new premieres using production discovery", True, True),  # Last True indicates retry
-
-                # Phase 1.5: Check tracking movies for digital availability (provider monitoring)
-                ("python3 generate_data.py --check",
-                 "Check tracking movies for digital availability", True, False),  # Last False indicates no retry
-
-                # Phase 1.75: Validate discovery results (fail if recall drops below threshold)
-                ("python3 ops/validate_discovery.py --days-back 7",
-                 "Validate discovery against ground truth", False, False),  # Non-critical to avoid blocking automation
+                 "Discover provider availability for tracking movies", True, False),  # Last False indicates no retry
             ]
 
             # Execute discovery and monitoring pipeline
@@ -812,18 +818,77 @@ class NRWOrchestrator:
                     cmd, description, critical = step
                     self.run_command(cmd, description, critical)
 
-            # Phase 2: Post-check Health Check
-            if os.path.exists('metrics/discovery_run.json'):
-                with open('metrics/discovery_run.json') as f:
-                    metrics = json.load(f)
-                polled = metrics.get('results', {}).get('polled', 0)
-                health_config = orchestrator_config.get('health', {})
-                min_polled = health_config.get('min_polled', 1000)
-                if polled == 0 or polled < min_polled:
-                    print(f'🚨 HEALTH FAIL: Polled only {polled} - expected {min_polled}+')
+            # Phase 2: Health Check (immediately after provider-availability discovery)
+            health_config = orchestrator_config.get('health', {})
+            min_polled = health_config.get('min_polled', 1000)
+            recency_tolerance_hours = health_config.get('recency_tolerance_hours', 2)
+
+            # Check discovery metrics after discovery phase - MUST exist and be current
+            if not os.path.exists('metrics/discovery_run.json'):
+                print('🚨 HEALTH FAIL: metrics/discovery_run.json is MISSING after discovery phase')
+                print('   Discovery phase did not emit metrics for this run cycle.')
+                print('   This indicates generate_data.py --discover failed silently or was not executed.')
+                sys.exit(1)
+
+            with open('metrics/discovery_run.json') as f:
+                discovery_metrics = json.load(f)
+
+            # Validate recency - ensure metrics are from current run, not stale
+            metrics_timestamp = discovery_metrics.get('timestamp')
+            if not metrics_timestamp:
+                print('🚨 HEALTH FAIL: discovery_run.json has no timestamp field')
+                print('   Cannot verify metrics recency - treating as stale.')
+                sys.exit(1)
+
+            try:
+                metrics_dt = datetime.fromisoformat(metrics_timestamp.replace('Z', '+00:00'))
+                now = datetime.now(metrics_dt.tzinfo) if metrics_dt.tzinfo else datetime.now()
+                age_hours = (now - metrics_dt).total_seconds() / 3600
+
+                if age_hours > recency_tolerance_hours:
+                    print(f'🚨 HEALTH FAIL: discovery_run.json is STALE')
+                    print(f'   Metrics timestamp: {metrics_timestamp}')
+                    print(f'   Age: {age_hours:.1f} hours (tolerance: {recency_tolerance_hours}h)')
+                    print(f'   Discovery metrics are from a previous run, not the current cycle.')
                     sys.exit(1)
 
-            # Save consolidated daily metrics for stall detection (reads from discovery_run.json)
+                print(f'📊 Metrics recency validated: {age_hours:.1f}h old (within {recency_tolerance_hours}h tolerance)')
+
+            except (ValueError, TypeError) as e:
+                print(f'🚨 HEALTH FAIL: Cannot parse discovery_run.json timestamp: {e}')
+                print(f'   Raw timestamp value: {metrics_timestamp}')
+                sys.exit(1)
+
+            operation = discovery_metrics.get('operation')
+            print(f'📊 Health check: validating discovery operation "{operation}"')
+
+            if operation == 'discover_availability':
+                polled = discovery_metrics.get('results', {}).get('polled', 0)
+                print(f'📊 Using polled metric: {polled}')
+                if polled == 0 or polled < min_polled:
+                    print(f'🚨 HEALTH FAIL: discover_availability polled only {polled} - expected {min_polled}+')
+                    sys.exit(1)
+                print(f'✅ Health check passed: discover_availability polled {polled} movies')
+            else:
+                print(f'🚨 HEALTH FAIL: discovery_run.json has unexpected operation "{operation}"')
+                print(f'   Expected "discover_availability" but got "{operation}"')
+                sys.exit(1)
+
+            # Check intake metrics if available
+            if os.path.exists('metrics/intake_run.json'):
+                with open('metrics/intake_run.json') as f:
+                    intake_metrics = json.load(f)
+                operation = intake_metrics.get('operation')
+
+                if operation == 'intake_premieres':
+                    discovered = intake_metrics.get('results', {}).get('discovered', 0)
+                    print(f'📊 Using discovered metric: {discovered}')
+                    print(f'📊 Health check: intake_premieres discovered {discovered} new movies')
+                    # Skip polled threshold check for intake operations
+                else:
+                    print(f'⚠️ Health check: Unknown operation type "{operation}", skipping validation')
+
+            # Save consolidated daily metrics for stall detection (reads from separate intake and discovery files)
             self.save_daily_metrics()
 
             # Surface 3-day stall detection after metrics are saved

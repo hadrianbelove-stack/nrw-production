@@ -16,7 +16,7 @@ permissions:
 jobs:
   daily-update:
     runs-on: ubuntu-latest
-    timeout-minutes: 30  # Was default 6h? Increase for 3000+ polls
+    timeout-minutes: 120  # Increased for full provider-availability discovery on ~4k titles
     env:
       PYTHONUNBUFFERED: '1'  # Disable Python output buffering for real-time logs
       TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
@@ -79,7 +79,7 @@ jobs:
         if: always()
         run: |
           if [ -f ".local_run.log" ]; then
-            echo "📊 Discovery Metrics:"
+            echo "📊 Discovery Metrics (Provider Availability):"
             echo "===================="
 
             # Extract standardized discovery metrics line
@@ -95,7 +95,7 @@ jobs:
 
               # Add to GitHub step summary
               {
-                echo "## 🔍 Discovery Metrics"
+                echo "## 🔍 Discovery Metrics (Provider Availability)"
                 echo ""
                 echo "| Metric | Count |"
                 echo "|--------|-------|"
@@ -118,30 +118,27 @@ jobs:
             echo "DISCOVERY_TRANSITIONS=0" >> $GITHUB_ENV
           fi
 
-      - name: Check for 3-day discovery stall
+      # Stall detection is implemented in daily_orchestrator.py (detect_stall() method)
+      # This step only reads the orchestrator's output from metrics/stall_state.json
+      # Do NOT reimplement stall detection logic here - keep as read-only consumer
+      - name: Read stall detection from orchestrator
         if: always()
         run: |
-          if [ -f "metrics/daily.jsonl" ]; then
-            echo "📊 Checking for discovery stalls (3-day unique-date window)..."
+          # Read stall state from orchestrator's output instead of reimplementing logic
+          if [ -f "metrics/stall_state.json" ]; then
+            echo "📊 Reading stall detection from orchestrator..."
 
-            # Group entries by date, take the most recent entry per date, then take last 3 unique dates
-            unique_dates_data=$(jq -s 'group_by(.date) | map(sort_by(.timestamp // .date) | last) | sort_by(.date) | .[-3:]' metrics/daily.jsonl)
+            stall_detected=$(jq -r '.stall_detected // false' metrics/stall_state.json)
 
-            # Count zero-transition days from the 3 unique dates (handle legacy entries)
-            zero_count=$(echo "$unique_dates_data" | jq '[.[] | select(.transitions == 0 or (.transitions == null and .newly_digital == 0))] | length')
-            total_count=$(echo "$unique_dates_data" | jq 'length')
-
-            echo "Last $total_count unique days: $zero_count days with 0 transitions"
-
-            if [ "$total_count" -ge 3 ] && [ "$zero_count" -eq 3 ]; then
-              echo "🚨 DISCOVERY STALL DETECTED: 0 transitions for 3 consecutive unique days"
+            if [ "$stall_detected" = "true" ]; then
+              echo "🚨 DISCOVERY STALL DETECTED (from orchestrator)"
               echo "DISCOVERY_STALLED=true" >> $GITHUB_ENV
 
-              # Get date range for the stall from unique dates
-              first_date=$(echo "$unique_dates_data" | jq -r '.[0].date')
-              last_date=$(echo "$unique_dates_data" | jq -r '.[-1].date')
-              echo "STALL_START_DATE=$first_date" >> $GITHUB_ENV
-              echo "STALL_END_DATE=$last_date" >> $GITHUB_ENV
+              # Extract date range if available
+              start_date=$(jq -r '.stall_period.start_date // "unknown"' metrics/stall_state.json)
+              end_date=$(jq -r '.stall_period.end_date // "unknown"' metrics/stall_state.json)
+              echo "STALL_START_DATE=$start_date" >> $GITHUB_ENV
+              echo "STALL_END_DATE=$end_date" >> $GITHUB_ENV
 
               # Check if we should fail the workflow
               if [ "${NRW_FAIL_ON_STALL:-false}" = "true" ]; then
@@ -149,11 +146,11 @@ jobs:
                 exit 1
               fi
             else
-              echo "✅ No discovery stall detected"
+              echo "✅ No discovery stall detected (from orchestrator)"
               echo "DISCOVERY_STALLED=false" >> $GITHUB_ENV
             fi
           else
-            echo "⚠️ No metrics file found - cannot check for stalls"
+            echo "⚠️ No stall state file found - assuming no stall detected"
             echo "DISCOVERY_STALLED=false" >> $GITHUB_ENV
           fi
 
@@ -226,12 +223,12 @@ jobs:
       - name: Extract discovery summary
         if: always()
         run: |
-          echo "📊 Discovery Summary:"
+          echo "📊 Discovery Summary (Provider Availability):"
           echo "===================="
 
           # Output to both console and GitHub summary
           {
-            echo "## 📊 Discovery Summary"
+            echo "## 📊 Discovery Summary (Provider Availability)"
             echo ""
             echo "| Metric | Count |"
             echo "|--------|-------|"
@@ -249,7 +246,7 @@ jobs:
           echo "FAILURE_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_ENV
 
 
-      - name: Create discovery stall issue
+      - name: Create NRW provider-availability stall issue
         if: always() && env.DISCOVERY_STALLED == 'true' && env.NRW_NOTIFICATIONS == 'true'
         uses: actions/github-script@v7
         with:
@@ -259,15 +256,15 @@ jobs:
             const endDate = process.env.STALL_END_DATE || 'unknown';
             const polled = process.env.DISCOVERY_POLLED || '0';
 
-            const title = 'Discovery Stalled: 0 transitions for 3 days';
+            const title = 'NRW Provider-Availability Stalled: 0 transitions for 3 days';
 
             const issue = await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
               title: title,
-              body: `## 🚨 Discovery System Stalled
+              body: `## 🚨 NRW Provider-Availability System Stalled
 
-            **Alert:** Discovery system has detected 0 transitions for 3 consecutive days.
+            **Alert:** NRW provider-availability discovery has detected 0 transitions for 3 consecutive days.
 
             **Stall Period:** ${startDate} to ${endDate}
             **Last Run Polled:** ${polled} movies
@@ -280,40 +277,44 @@ jobs:
             - **Last Polled Count:** ${polled}
 
             ### 🛠️ Investigation Steps:
-            1. **Check Discovery System:**
+            1. **Check Intake System:**
                - Verify TMDB API key is valid and not rate-limited
-               - Check \`generate_data.py --discover\` output for errors
-               - Review discovery configuration in \`config.yaml\`
+               - Check \`generate_data.py --intake\` output for TMDB premieres intake
+               - Review intake configuration in \`config.yaml\`
 
-            2. **Check Provider Monitoring:**
-               - Verify \`generate_data.py --check\` is polling tracking movies
+            2. **Check Provider-Availability Discovery:**
+               - Verify \`generate_data.py --discover\` is polling tracking movies for provider availability
                - Check for API quota exhaustion (Watchmode, etc.)
                - Review provider scraper health
 
             3. **Data Validation:**
                - Ensure \`movie_tracking.json\` has movies in 'tracking' status
-               - Verify discovery date range is appropriate
+               - Verify provider-availability discovery date range is appropriate
                - Check for upstream data source issues
 
             ### 📊 Expected Behavior:
             - Average >1 transition per week under normal conditions
-            - Discovery should find new premieres regularly
-            - Provider monitoring should detect status changes
+            - Intake should find new premieres regularly
+            - Provider-availability discovery should detect streaming status changes for tracked movies
 
             ### 🔧 Manual Recovery:
             \`\`\`bash
-            # Test discovery manually
-            python3 generate_data.py --discover --debug
+            # Run full NRW Daily Update pipeline
+            python3 daily_orchestrator.py
 
-            # Test provider monitoring
-            python3 generate_data.py --check
+            # Or test individual phases:
+            # Test intake manually
+            python3 generate_data.py --intake --debug
+
+            # Test provider-availability discovery
+            python3 generate_data.py --discover --debug
 
             # Check metrics history
             tail -20 metrics/daily.jsonl
             \`\`\`
 
-            This issue was created automatically by the discovery health monitoring system.`,
-              labels: ['automation', 'discovery-stall', 'critical']
+            This issue was created automatically by the NRW provider-availability health monitoring system.`,
+              labels: ['automation', 'nrw-provider-availability-stall', 'critical']
             });
 
             console.log(\`Created discovery stall issue #\${issue.data.number}: \${title}\`);
@@ -337,6 +338,7 @@ jobs:
         with:
           name: discovery-metrics-${{ github.run_id }}
           path: |
+            metrics/intake_run.json
             metrics/discovery_run.json
             metrics/*.jsonl
             .local_run.log
@@ -346,7 +348,7 @@ jobs:
         if: always() && steps.changes.outputs.changes == 'true'
         run: |
           # Build commit message with discovery summary
-          commit_msg="Daily discovery - $(date +%Y-%m-%d)"
+          commit_msg="Daily NRW Update - $(date +%Y-%m-%d)"
 
           # Add discovery metrics if we have them
           if [ "${DISCOVERY_POLLED:-0}" != "0" ] || [ "${DISCOVERY_TRANSITIONS:-0}" != "0" ]; then
@@ -384,10 +386,10 @@ jobs:
         if: failure()
         id: pipeline-status
         run: |
-          echo "pipeline_status=Discovery pipeline failed" >> $GITHUB_OUTPUT
+          echo "pipeline_status=NRW Daily Update pipeline failed" >> $GITHUB_OUTPUT
           echo "failure_time=${FAILURE_TIME:-$(date -u +%Y-%m-%dT%H:%M:%SZ)}" >> $GITHUB_OUTPUT
 
-      - name: Create GitHub issue on failure
+      - name: Create NRW Daily Update failure issue
         if: failure() && env.NRW_NOTIFICATIONS == 'true'
         uses: actions/github-script@v7
         env:
@@ -401,8 +403,8 @@ jobs:
             await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              title: `Daily Discovery Failed - ${new Date().toISOString().split('T')[0]}`,
-              body: `## Daily Discovery Pipeline Failure
+              title: `NRW Daily Update Failed - ${new Date().toISOString().split('T')[0]}`,
+              body: `## NRW Daily Update Pipeline Failure
 
             **Workflow Run:** ${process.env.WORKFLOW_URL}
             **Failure Time:** ${failureTime}
@@ -414,18 +416,18 @@ jobs:
             2. Review \`daily_orchestrator.py\` output for specific errors
             3. Verify API keys are properly configured in repository secrets
             4. Check data quality validation errors
-            5. Review discovery system health
+            5. Review intake (\`--intake\`), provider-availability discovery (\`--discover\`), and enrichment phases
 
             ### Manual Recovery:
-            If needed, run the daily pipeline manually:
+            If needed, run the NRW Daily Update pipeline manually:
             \`\`\`bash
             python3 daily_orchestrator.py
             \`\`\`
 
             ### Impact:
-            - Discovery pipeline failed
+            - NRW Daily Update pipeline failed
             - Site content may not be updated
 
-            This issue was created automatically by the failed discovery workflow.`,
-              labels: ['automation', 'discovery-failure', 'bug']
+            This issue was created automatically by the NRW Daily Update workflow.`,
+              labels: ['automation', 'nrw-daily-update-failure', 'bug']
             })
