@@ -2,38 +2,38 @@
 
 ## Overview
 
-This document covers troubleshooting issues with the discovery and provider detection workflows, specifically focusing on correct status transitions and digital_date handling.
+This document covers troubleshooting issues with the intake and provider detection workflows, specifically focusing on correct status transitions and digital_date handling.
 
 ## Contract Requirements
 
-### Discovery Workflow Contract
-When new titles are discovered via `--discover`:
+### Intake Workflow Contract
+When new titles are ingested via `--intake`:
 - **Status**: Must be `'tracking'`
-- **Digital Date**: Must be `None` (not set during discovery)
+- **Digital Date**: Must be `None` (not set during intake)
 - **Enriched**: Must be `false`
-- **Added Date**: Set to discovery date
+- **Added Date**: Set to intake date
 
 ### Provider Detection Contract
-When provider availability is detected via `--check`:
+When provider availability is detected via `--discover`:
 - **Status**: Transitions from `'tracking'` → `'available'`
 - **Digital Date**: Set to **today's date** (detection date, not release date)
 - **Enriched**: Remains `false` (enrichment happens separately)
 
 ## Common Issues
 
-### Issue 1: Discovery Sets digital_date Incorrectly
+### Issue 1: Intake Sets digital_date Incorrectly
 
 **Symptoms:**
-- New movies have `digital_date` set immediately after discovery
-- Movies transition directly to `available` status during `--discover`
-- Contract test failures: `digital_date` should be `None` for discovered movies
+- New movies have `digital_date` set immediately after intake
+- Movies transition directly to `available` status during `--intake`
+- Contract test failures: `digital_date` should be `None` for intake movies
 
 **Root Cause:**
-Discovery logic incorrectly setting `digital_date` based on release dates or availability data.
+Intake logic incorrectly setting `digital_date` based on release dates or availability data.
 
 **Solution:**
 ```bash
-# 1. Check recent discoveries
+# 1. Check recent intakes
 python3 -c "
 import json
 with open('movie_tracking.json') as f:
@@ -48,8 +48,8 @@ with open('movie_tracking.json') as f:
 # 2. Run contract tests to identify violations
 python3 -m pytest tests/test_discovery_contract.py::TestDiscoveryContract::test_discovery_creates_tracking_movies -v
 
-# 3. If violations found, check discovery logic in generate_data.py
-# Look for lines that set digital_date during discovery phase
+# 3. If violations found, check intake logic in generate_data.py
+# Look for lines that set digital_date during intake phase
 ```
 
 ### Issue 2: Provider Detection Sets Wrong Date
@@ -150,8 +150,8 @@ python3 -m pytest tests/test_discovery_contract.py::TestProviderDetectionContrac
 
 ### Manual Workflow Testing
 ```bash
-# 1. Test discovery (should create tracking movies)
-python3 generate_data.py --discover
+# 1. Test intake (should create tracking movies)
+python3 generate_data.py --intake
 
 # Check that new movies have status=tracking, digital_date=None
 python3 -c "
@@ -165,7 +165,7 @@ with open('movie_tracking.json') as f:
 "
 
 # 2. Test provider detection (should transition to available)
-python3 generate_data.py --check
+python3 generate_data.py --discover
 
 # Check that available movies have digital_date=today
 python3 -c "
@@ -193,7 +193,7 @@ with open('movie_tracking.json') as f:
    grep -E "(status|digital_date)" logs/admin.log | tail -20
    ```
 
-3. **Use separate phases**: Keep discovery and provider detection in separate workflow steps to maintain clear contracts.
+3. **Use separate phases**: Keep intake and provider detection in separate workflow steps to maintain clear contracts.
 
 4. **Validate dates**: Ensure `digital_date` is always current date when set by provider detection, never historical.
 

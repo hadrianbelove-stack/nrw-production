@@ -96,7 +96,7 @@ Extracted all data validation and consistency checking logic from `generate_data
 ### Methods Extracted
 
 1. **validate_watch_links_schema(watch_links, movie_title)** - Validates streaming/rent/buy schema
-2. **validate_enrichment_consistency()** - Cross-checks enriched movies have watch_links
+2. ~~**validate_enrichment_consistency()**~~ - DELETED 2025-12-05 (was causing loop bug)
 3. **validate_data_json_schema(file_path)** - Validates data.json structure before loading
 
 ### Validation Rules
@@ -108,11 +108,10 @@ Extracted all data validation and consistency checking logic from `generate_data
 - Placeholder detection: Rejects known placeholder ASINs
 - Statistics tracking: Passes and warnings counted
 
-**Enrichment Consistency:**
-- Cross-checks `enriched=true` flag against actual watch_links data
-- Detects missing, empty, or placeholder watch_links
-- Automatically corrects inconsistencies in tracking database
-- Integrates with StorageService for atomic updates
+**Enrichment Consistency:** ~~DELETED 2025-12-05~~
+- ~~Cross-checks `enriched=true` flag against actual watch_links data~~
+- Was causing loop bug (reading data.json inside movie loop)
+- Unnecessary with correct architecture (movies → data.json on discovery)
 
 **Data JSON Schema:**
 - Required root keys: `generated_at`, `count`, `movies`
@@ -153,7 +152,7 @@ Extracted all data validation and consistency checking logic from `generate_data
 
 Ran `python3 generate_data.py` to verify:
 - ✅ `validate_data_json_schema` running successfully (224 movies validated)
-- ✅ `validate_enrichment_consistency` completed (400/400 valid, 0 corrected)
+- ❌ `validate_enrichment_consistency` DELETED 2025-12-05 (loop bug)
 - ✅ No errors or crashes
 - ✅ Statistics properly tracked in shared dict
 
@@ -379,7 +378,7 @@ Added documentation comments at extraction sites:
 # load_all_movies moved to pipeline/storage.py (2025-11-10)
 
 # validate_watch_links_schema moved to pipeline/validation.py (2025-11-10)
-# validate_enrichment_consistency moved to pipeline/validation.py (2025-11-10)
+# validate_enrichment_consistency DELETED (2025-12-05) - was causing loop bug
 # validate_data_json_schema moved to pipeline/validation.py (2025-11-10)
 ```
 

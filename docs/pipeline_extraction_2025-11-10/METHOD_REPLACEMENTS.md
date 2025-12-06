@@ -36,8 +36,8 @@ self.validate_data_json_schema(...)    →  self.validator.validate_data_json_sc
 
 ### Consistency Validation
 ```python
-# Before                                        # After
-self.validate_enrichment_consistency()    →   self.validator.validate_enrichment_consistency()
+# DELETED 2025-12-05 - was causing loop bug
+# self.validate_enrichment_consistency() - no longer exists
 ```
 
 ## Phase 3: Enrichment Service (30+ occurrences)

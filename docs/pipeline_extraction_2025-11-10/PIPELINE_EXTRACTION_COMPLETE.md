@@ -88,9 +88,9 @@ self.get_watch_links(...)     → self.enrichment.get_watch_links(...)
 - `atomic_move_to_archive`
 - `load_all_movies`
 
-**Phase 2 - Validation (3 methods, 281 lines)**
+**Phase 2 - Validation (2 methods, ~170 lines)**
 - `validate_watch_links_schema`
-- `validate_enrichment_consistency`
+- ~~`validate_enrichment_consistency`~~ DELETED 2025-12-05 (loop bug)
 - `validate_data_json_schema`
 
 **Phase 3 - Enrichment (13 methods, 962 lines)**

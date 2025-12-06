@@ -1,6 +1,6 @@
 # Ground Truth Data for Discovery Validation
 
-This directory contains curated ground truth data for validating the discovery system's performance.
+This directory contains curated ground truth data for validating the NRW provider-availability discovery performance.
 
 ## File Format
 
@@ -23,11 +23,12 @@ movies:
 
 ## Usage
 
-The validation harness (`ops/validate_discovery.py`) loads ground truth data for the specified time period and compares it against discovered movies to calculate:
+This ground truth data was previously used by a validation harness (`ops/validate_discovery.py`) that compared discovered movies against manually curated data. The validation system has been removed from the automated pipeline as it lacked current ground truth data and provided limited value.
 
-- **Recall**: What percentage of ground truth movies were discovered
-- **Precision**: What percentage of discovered movies are in ground truth
-- **F1 Score**: Harmonic mean of recall and precision
+The ground truth framework could potentially be used for:
+- Manual validation of NRW provider-availability discovery quality
+- One-off analysis of recall and precision metrics
+- Research into NRW system performance
 
 ## Creating Ground Truth Files
 

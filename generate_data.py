@@ -27,27 +27,27 @@ def main():
     parser.add_argument(
         '--debug',
         action='store_true',
-        help='Enable debug logging for discovery and agent scraper'
+        help='Enable debug logging for provider discovery and agent scraper'
+    )
+    parser.add_argument(
+        '--intake',
+        action='store_true',
+        help='Intake: Find new movie premieres from TMDB API and add to tracking database'
     )
     parser.add_argument(
         '--discover',
         action='store_true',
-        help='Run discovery to find new premieres before generating data'
-    )
-    parser.add_argument(
-        '--check',
-        action='store_true',
-        help='Check tracking movies for digital availability (provider monitoring)'
+        help='Discovery: Check provider availability for all tracking movies'
     )
     parser.add_argument(
         '--since',
         type=str,
-        help='Discovery since date (YYYY-MM-DD) for stateful incremental discovery'
+        help='Provider discovery since date (YYYY-MM-DD) for stateful incremental checks'
     )
     parser.add_argument(
         '--bootstrap',
         action='store_true',
-        help='Bootstrap discovery state by using full discovery.days_back window'
+        help='Bootstrap provider discovery state using full discovery.days_back window'
     )
     parser.add_argument(
         '--enrichment',
@@ -62,15 +62,15 @@ def main():
     # Set debug mode globally (could be passed to DataGenerator if needed)
     if args.debug:
         os.environ['AGENT_SCRAPER_DEBUG'] = 'true'
-        print("🐛 Debug mode enabled for discovery and agent scraper")
+        print("🐛 Debug mode enabled for intake/discovery and agent scraper")
 
-    # Set enrichment flag: false for discovery/monitoring, true for final generation
-    if args.discover or args.check:
+    # Set enrichment flag: false for intake/discovery, true for final generation
+    if args.intake or args.discover:
         enrichment_enabled = args.enrichment  # Only enable if explicitly requested
         if enrichment_enabled:
-            print("🎯 Enrichment enabled for discovery/monitoring mode")
+            print("🎯 Enrichment enabled for intake/discovery mode")
         else:
-            print("🚫 Enrichment disabled for discovery/monitoring mode")
+            print("🚫 Enrichment disabled for intake/discovery mode")
     else:
         enrichment_enabled = True  # Always enabled for final generation phase
         print("🎯 Enrichment enabled for final generation phase")
@@ -85,19 +85,19 @@ def main():
 
     # Run discovery if requested
     discovered_count = 0
-    if args.discover:
-        print("🔍 Running discovery for new premieres...")
+    if args.intake:
+        print("🔍 Running intake for new premieres...")
         discovered_count = generator.discover_new_premieres(
             debug=args.debug,
             since_date=args.since,
             bootstrap=args.bootstrap
         )
-        print(f"✅ Discovery complete: {discovered_count} new movies added")
+        print(f"✅ Intake complete: {discovered_count} new movies added")
 
     # Check tracking movies for digital availability if requested
     newly_digital_count = 0
-    if args.check:
-        print("\n🔍 Checking tracking movies for digital availability...")
+    if args.discover:
+        print("\n🔍 Discovering provider availability for tracking movies...")
         newly_digital_count = generator.check_tracking_movies()
 
     # CLI metrics handling removed - orchestrator now handles metrics consolidation from discovery_run.json

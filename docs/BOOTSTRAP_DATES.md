@@ -2,7 +2,7 @@
 
 ## Overview
 
-During the initial bootstrap on September 6, 2025, approximately 50 movies were marked as "digitally available" with the discovery date (2025-09-06) rather than their actual digital release dates. This occurred because the legacy tracking system set `digital_date = today` when providers were first detected.
+During the initial bootstrap on September 6, 2025, approximately 50 movies were marked as "digitally available" with the bootstrap date (2025-09-06) rather than their actual digital release dates. This occurred because the legacy tracking system set `digital_date = today` when providers were first detected.
 
 ## Impact
 
@@ -66,17 +66,17 @@ tmdb_id,correct_digital_date,source
 
 ## Prevention
 
-The current discovery system (integrated into `generate_data.py --discover`) uses TMDB's `release_date` field and no longer sets dates to "today" when providers are detected. This issue will not recur for new movies.
+The current provider discovery system (integrated into `generate_data.py --discover`) uses TMDB's `release_date` field and no longer sets dates to "today" when providers are detected. This issue will not recur for new movies.
 
 **How It Works Now:**
-1. Discovery finds new theatrical releases via TMDB API
+1. Intake finds new theatrical releases via TMDB API
 2. System checks TMDB's `release_date` field for digital release date
 3. If digital release date is available, use it (not today's date)
 4. If not available, mark as "not yet digital" and monitor for provider availability
-5. When providers appear, use the earliest known date (not discovery date)
+5. When providers appear, use the earliest known date (not detection date)
 
 **Code Reference:**
-- `generate_data.py` lines 1200-1350: Discovery logic with TMDB release_date integration
+- `generate_data.py` lines 1200-1350: Intake logic with TMDB release_date integration
 - `generate_data.py` lines 450-550: Provider monitoring without date override
 
 ## Related Documentation

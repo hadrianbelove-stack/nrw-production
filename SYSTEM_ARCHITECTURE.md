@@ -61,7 +61,7 @@ git push origin main
 | File | Purpose | Size | Updates |
 |------|---------|------|---------|
 | `index.html` | Main user interface | ~15KB | Daily |
-| `data.json` | Movie data for frontend | ~80KB | Daily |
+| `data.json` | Movie data for frontend (minimal + enriched) | ~80KB | Daily |
 | `assets/` | CSS, images, static files | ~2MB | Rarely |
 
 ### 3.2 Core Data Files
@@ -174,10 +174,10 @@ tracking:
   bootstrap_days: 7  # Look back N days for new releases
   check_interval_hours: 24  # How often to check
 
-discovery:
-  max_pages: 10  # Maximum TMDB pages to process
-  days_back: 30  # Look back N days for releases
-  min_movies: 5  # Minimum movies to discover per run
+discovery:  # Intake configuration (key name kept for compatibility)
+  max_pages: 10  # Maximum TMDB pages to process during intake
+  days_back: 30  # Intake window for finding new premieres
+  min_movies: 5  # Minimum movies to intake per run
   timeout: 30    # API timeout in seconds
 
 agent_scraper:
@@ -366,14 +366,14 @@ Filtered, enriched subset for frontend display:
 
 ### Daily Pipeline Phases
 
-**Phase 1: Discovery** (`generate_data.py --discover`)
-- Finds new theatrical releases from TMDB
+**Phase 1: Intake** (`generate_data.py --intake`)
+- Intake of new theatrical releases from TMDB
 - Updates `movie_tracking.json` with new entries
-- Status: "tracking"
+- Status: "tracking", `digital_date` unset
 - Expected: 10-20 movies/day
 
-**Phase 2: Provider Monitoring** (`generate_data.py --check`)
-- Monitors tracking movies for digital availability
+**Phase 2: Discovery** (`generate_data.py --discover`)
+- Discovers provider availability for all `status="tracking"` movies
 - Updates status from "tracking" to "available"
 - Records digital_date and platform details
 - **Writes state file:** `metrics/newly_available.json` with list of movie IDs that transitioned
@@ -392,11 +392,14 @@ Always poll ALL tracking movies in `movie_tracking.json` (no time limits). Fetch
 - Sets `enriched: true` flag in `enrichment_state.json`
 - Expected: 1-10 movies/day processing (new arrivals) + up to 10 stale movies
 
-**Phase 4: Display Generation**
-- Filters available movies for `data.json`
+**Phase 4: Display Generation** (Updated 2025-12-05)
+- Builds display movies from ALL eligible movies (status = 'available', within days_back)
+- Creates minimal stubs for movies not yet in data.json
+- Overlays enrichment data when available (non-blocking)
+- If enrichment fails, keeps minimal/existing data instead of dropping movie
 - Applies admin overrides (hidden/featured)
 - Generates public-facing display data
-- Expected: 250-350 movies in output
+- Expected: All available movies appear, 250-350 with enrichment
 
 ### Performance Expectations
 - **Normal operation**: 1-10 movies enriched daily, 30-second runtime
@@ -410,8 +413,9 @@ Always poll ALL tracking movies in `movie_tracking.json` (no time limits). Fetch
 ### 4.1 The Five Phases
 
 ```
-Phase 1: Discovery & Monitoring
-    ↓ generate_data.py --discover
+Phase 1: Intake & Discovery
+    ↓ generate_data.py --intake (new premieres from TMDB)
+    ↓ generate_data.py --discover (provider availability)
     ↓ Updates: movie_tracking.json
     ↓ Tracks: 330+ movies across platforms
 
@@ -425,9 +429,10 @@ Phase 3: Quality Assurance
     ↓ Validates: Links, ratings, metadata
     ↓ See ADMIN_WORKFLOW.md for the operational steps
 
-Phase 4: Display Generation
+Phase 4: Display Generation (Updated 2025-12-05)
     ↓ generate_data.py (final step)
-    ↓ Generates: data.json, index.html
+    ↓ Creates: ALL available movies in data.json (minimal + enriched)
+    ↓ Enrichment failures no longer hide movies
 
 Phase 5: User Display
     ↓ index.html + assets/

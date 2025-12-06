@@ -1,7 +1,7 @@
-# YouTube Workflow Disabled
+# YouTube Workflow Status
 
-**Status:** DISABLED as of November 3, 2025
-**Reason:** Google account suspension
+**Status:** ✅ RESTORED as of December 4, 2025
+**Previous Issue:** Google account suspension (October 25 - December 4, 2025)
 
 ## Problem
 
@@ -30,35 +30,30 @@ Starting on Sep 20, 2026, this account will be considered for deletion.
 - **Oct 27, 2025:** First YouTube workflow failure detected
 - **Nov 3, 2025:** Root cause identified, workflow disabled
 
-## Recovery Options
+## ✅ Account Recovery Completed
 
-### Option 1: Appeal Account Suspension (Recommended)
+### Recovery Actions Taken (December 4, 2025)
 
-If you want to preserve the existing YouTube channel and its content:
+1. **Account Appeal:** ✅ SUCCESSFUL
+   - Google account access restored
+   - YouTube Data API access confirmed working
+   - Channel access restored
 
-1. **Submit Appeal:**
-   - Visit: https://accounts.google.com/signin/v2/recoveryidentifier
-   - Follow the account recovery process
-   - Explain this is a legitimate project for a movie review website
-   - Provide evidence of legitimate use
+2. **Authentication Updated:** ✅ COMPLETED
+   - Generated new OAuth token using `scripts/diagnose_youtube_auth.py`
+   - Updated GitHub secret: `YOUTUBE_TOKEN`
+   - Verified authentication working
 
-2. **Wait for Review:**
-   - Google reviews can take 3-7 business days
-   - May require additional verification
+3. **Workflow Re-enabled:** ✅ COMPLETED
+   - Uncommented schedule triggers in `.github/workflows/youtube-playlists.yml`
+   - Tested manual workflow run successfully
+   - Weekly (Monday) and monthly (1st) playlists scheduled
 
-3. **After Restoration:**
-   - Access Google Cloud Console
-   - Verify YouTube Data API is still enabled
-   - Generate new OAuth token:
-     ```bash
-     python3 scripts/manual_token_generator.py
-     ```
-   - Update GitHub secrets:
-     ```bash
-     gh secret set YOUTUBE_TOKEN < youtube_token_base64.txt
-     gh secret set YOUTUBE_CLIENT_SECRET < youtube_client_secret_base64.txt
-     ```
-   - Re-enable workflow by uncommenting schedule in `.github/workflows/youtube-playlists.yml`
+### Workflow Status
+- ✅ **Weekly Playlist:** Every Monday at 10:00 UTC (2/3 AM Pacific)
+- ✅ **Monthly Playlist:** 1st of each month at 10:00 UTC (2/3 AM Pacific)
+- ✅ **Manual Trigger:** Available for immediate testing
+- ✅ **Authentication:** Valid until December 5, 2025 (auto-refreshed)
 
 ### Option 2: Create New Setup
 

@@ -60,7 +60,7 @@ telemetry:
   # - validated_items: Items passing schema validation
   # - enriched_items: Movies successfully enriched with watch links
   # - cache_hits: Cache hits across all services
-  # - api_calls: External API calls (Watchmode, TMDB, etc)
+  # - api_calls: External API calls (TMDB, etc)
   # - retry_count: Total retry attempts across services
 
 # INTAKE configuration (legacy key name "discovery" preserved for compatibility)
@@ -87,7 +87,7 @@ api:
 # Agent scraper (Playwright): For Netflix/Disney+/HBO Max/Hulu - DISABLED due to authentication barriers
 # Uses playwright for stealth browsing but blocked by login requirements
 agent_scraper:
-  enabled: true  # Enabled as fallback when Watchmode API has no data
+  enabled: true  # Enabled as fallback when TMDB API has no links
   headless: true  # Run browser in headless mode (required for CI)
   rate_limit: 2.0  # Minimum seconds between scrapes
   timeout: 10  # Page load timeout in seconds
@@ -100,11 +100,11 @@ agent_scraper:
     max_delay: 5.0  # Maximum retry delay (seconds)
     jitter_ratio: 0.2  # Randomness factor (±20%)
 
-# Platform scraper (Playwright): For Amazon/Apple TV - ENABLED as Watchmode fallback
+# Platform scraper (Playwright): For Amazon/Apple TV - ENABLED as TMDB fallback
 # Uses Playwright for Amazon/Apple TV since they don't require authentication
-# Only runs when Watchmode API has no data, focuses on recent releases
+# Only runs when TMDB API has no direct links, focuses on recent releases
 platform_scraper:
-  enabled: true  # Enable Playwright-based Amazon/Apple TV scraper as Watchmode fallback
+  enabled: true  # Enable Playwright-based Amazon/Apple TV scraper as TMDB fallback
   headless: true  # Run browser in headless mode for production
   rate_limit: 2.0  # Seconds between scrapes to avoid rate limiting
   timeout: 10  # Page load timeout in seconds

@@ -41,7 +41,7 @@ NRW uses a **single-branch strategy** per PROJECT_CHARTER.md to avoid divergence
 - **No two-branch complexity** - Direct main commits (revert to October working method)
 
 **Daily workflow:**
-1. Daily automation runs on `main` branch
+1. Intakes new theatrical releases and discovers provider availability
 2. Changes committed directly to main (no merging required)
 3. Single source of truth with no branch divergence
 
@@ -82,8 +82,8 @@ python3 youtube_playlist_manager.py --help  # YouTube CLI
 - **Philosophy:** Intentional maintenance over automated complexity
 
 ### Daily Updates (9 AM UTC)
-- Discovers new theatrical releases
-- Checks for digital availability
+- Intakes new theatrical releases from TMDB
+- Discovers provider availability for tracking movies
 - Auto-publishes `data.json` directly to `main` branch
 - **Charter-aligned**: Simple, reliable, no sync complexity
 - **Curation model**: Publish-then-curate via admin panel hide/feature controls
@@ -101,7 +101,8 @@ Trigger workflows manually in GitHub Actions tab → Select workflow → "Run wo
 ## Architecture
 
 **Data flow:**
-- Discovery: `generate_data.py --discover` → TMDB API → `movie_tracking.json`
+- Intake: `generate_data.py --intake` → TMDB API → `movie_tracking.json`
+- Discovery: `generate_data.py --discover` → Provider availability for tracked movies
 - Generation: `movie_tracking.json` → `generate_data.py` → `data.json`
 - Display: `index.html` → `assets/app.js` + `data.json`
 - Admin: `admin.py` (port 5556) → manual corrections → regenerate
@@ -141,9 +142,9 @@ python3 generate_data.py
 # Quality assurance interface (or via launcher option 1)
 python3 admin.py           # Access at localhost:5556
 
-# Discovery and monitoring
-python3 generate_data.py --discover    # Find new releases
-python3 generate_data.py --check       # Monitor for digital availability
+# Intake and discovery operations
+python3 generate_data.py --intake      # Intake new premieres from TMDB into tracking database
+python3 generate_data.py --discover    # Discover provider availability for tracking movies
 python3 generate_data.py --full        # Full regeneration (manual, via admin panel)
 ```
 
@@ -161,7 +162,7 @@ Quick reference for common issues. **For detailed troubleshooting:** See [docs/T
   - **Required setup:** Replace placeholder values for `tmdb_api_key` and `watchmode_api_key` with real API keys
   - Production: Use environment variables `TMDB_API_KEY` and `WATCHMODE_API_KEY` (see [SYSTEM_ARCHITECTURE.md §4](SYSTEM_ARCHITECTURE.md))
 - **Environment flags** (set in `.github/workflows/daily-check.yml`):
-  - `NRW_FAIL_ON_STALL` - Fail workflow on 3-day discovery stall (default: `false`)
+  - `NRW_FAIL_ON_STALL` - Fail workflow on 3-day stall in provider-availability discovery (default: `false`)
 - **requirements.txt** - Python dependencies (Playwright-based, Selenium removed)
 - **.gitignore** - Excludes cache/, config.yaml (API keys), various backup/temp files
 - **launch_all.sh** - Unified launcher for all NRW tools (menu-driven)

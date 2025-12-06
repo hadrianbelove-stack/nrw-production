@@ -65,7 +65,7 @@
 
 **Methods to delete:**
 - Phase 1 (5): load_cache, save_cache, atomic_write_json, atomic_move_to_archive, load_all_movies
-- Phase 2 (3): validate_watch_links_schema, validate_enrichment_consistency, validate_data_json_schema  
+- Phase 2 (2): validate_watch_links_schema, validate_data_json_schema (validate_enrichment_consistency DELETED 2025-12-05)  
 - Phase 3 (13): get_watch_links, try_agent_scraper, try_platform_scraper, +10 more enrichment methods
 
 ## Success Metrics

@@ -4,12 +4,12 @@ This document provides a high-level overview of the complete NRW workflow, combi
 
 ## 📊 Five-Phase Data Pipeline Summary
 
-### Phase 1: Daily Discovery & Monitoring
+### Phase 1: Intake & Provider Discovery
 **Automated** - Runs daily at 9 AM UTC via GitHub Actions
-- Discovers new theatrical releases from TMDB API (past 7 days)
-- Monitors ALL tracked movies for digital availability changes
-- Updates `movie_tracking.json` with new discoveries and availability transitions
-- **Output**: 10-20 new movies discovered, 2-5 transitions to "available" status
+- **Intake** (`--intake`): Ingests new theatrical releases from TMDB API (past 7 days)
+- **Discovery** (`--discover`): Monitors ALL tracked movies for provider availability changes
+- Updates `movie_tracking.json` with new intake and availability transitions
+- **Output**: 10-20 new movies ingested, 2-5 transitions to "available" status
 
 ### Phase 2: Database Enrichment & Link Resolution
 **Automated** - Enrichment-on-transition pattern (only newly available movies)
@@ -94,4 +94,4 @@ For system architecture and troubleshooting:
 - **Editorial Control**: Feature trending releases, hide inappropriate content
 - **Data Protection**: Manual corrections preserved from automation overwrites
 
-This combined approach ensures both rapid discovery of new releases and high-quality user experience through careful curation.
+This combined approach ensures both rapid intake of new releases and high-quality user experience through careful curation.

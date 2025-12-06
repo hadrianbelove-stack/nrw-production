@@ -222,7 +222,7 @@ class TestValidationServiceParity:
     Tests:
         - validate_watch_links_schema()
         - validate_data_json_schema()
-        - validate_enrichment_consistency()
+        (validate_enrichment_consistency deleted 2025-12-05 - was causing loop bug)
     """
 
     @staticmethod

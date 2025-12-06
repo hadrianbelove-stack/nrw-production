@@ -7,11 +7,11 @@
 
 ## Overview
 
-The discovery filters system controls how the NRW movie tracking system discovers new theatrical releases from TMDB. The system evolved from restrictive filtering (vote_count requirements) to a wider discovery approach that relies on provider availability as the primary filter.
+The discovery filters system controls how the NRW movie tracking system intakes new theatrical releases from TMDB and discovers provider availability. The system evolved from restrictive filtering (vote_count requirements) to a wider intake approach that relies on provider availability as the primary filter.
 
 ## Problem Context
 
-Discovery rate was too low (2 movies in 3 days). Analysis revealed the `vote_count.gte: 1` filter in `movie_tracker.py` was blocking brand-new releases with 0 TMDB votes, preventing discovery of movies that would later become available on streaming platforms.
+Intake rate was too low (2 movies in 3 days). Analysis revealed the `vote_count.gte: 1` filter in `movie_tracker.py` was blocking brand-new releases with 0 TMDB votes, preventing intake of movies that would later become available on streaming platforms.
 
 ## Filter Evolution
 
@@ -29,7 +29,7 @@ discover_params = {
 **Problems:**
 - Movies often have 0 votes for 1-3 days after premiere
 - Blocked legitimate theatrical releases
-- Discovery rate: ~2 movies/day (too low)
+- Intake rate: ~2 movies/day (too low)
 
 ### Current Approach (Oct 21, 2025+)
 ```python
@@ -43,7 +43,7 @@ discover_params = {
 ```
 
 **Benefits:**
-- Discovery rate: 10-20 movies/day (5-10x increase)
+- Intake rate: 10-20 movies/day (5-10x increase)
 - Provider availability acts as natural filter
 - No missed releases due to vote timing
 
@@ -52,7 +52,7 @@ discover_params = {
 ### Primary Filter: Provider Availability
 The system uses **provider availability** as the main quality filter rather than TMDB vote counts:
 
-1. **Wide Discovery:** Track all theatrical releases (no vote filter)
+1. **Wide Intake:** Track all theatrical releases (no vote filter)
 2. **Provider Filter:** Only movies with distribution deals get providers
 3. **Wall Display:** Only movies with providers appear on public wall
 4. **Natural Quality:** Movies without distribution deals never reach users
@@ -61,14 +61,14 @@ The system uses **provider availability** as the main quality filter rather than
 
 **Alternative filters evaluated but not implemented:**
 
-1. **`popularity.desc` sorting** - User prefers chronological discovery
-2. **`region: 'US'` filter** - Would reduce results (user wants wider discovery)
-3. **`with_release_type: '2|3'` filter** - Would reduce results (user wants wider discovery)
+1. **`popularity.desc` sorting** - User prefers chronological intake
+2. **`region: 'US'` filter** - Would reduce results (user wants wider intake)
+3. **`with_release_type: '2|3'` filter** - Would reduce results (user wants wider intake)
 
 **Future considerations:**
 - If spam/fake movies appear: Consider adding `vote_average.gte: 4.0` or popularity threshold
 - If too many irrelevant movies: Consider adding region or release_type filters
-- If discovery rate is still low: Investigate TMDB API parameters or date range
+- If intake rate is still low: Investigate TMDB API parameters or date range
 
 ## Current Implementation
 
@@ -78,9 +78,9 @@ The discovery system was consolidated into `generate_data.py` as part of AMENDME
 ```
 daily_orchestrator.py
   ↓
-generate_data.py --discover  (find new theatrical releases)
+generate_data.py --intake    (intake new premieres from TMDB into tracking database)
   ↓
-generate_data.py --check     (monitor tracking movies for digital availability)
+generate_data.py --discover  (discover provider availability for tracking movies)
   ↓
 generate_data.py             (generate enriched display data)
 ```
@@ -91,13 +91,13 @@ generate_data.py             (generate enriched display data)
 - **NEVER use in production pipeline**
 
 ### Configuration
-Discovery settings are controlled via `config.yaml`:
+Intake settings are controlled via `config.yaml` (discovery key name preserved for backward compatibility):
 
 ```yaml
 discovery:
-  max_pages: 10  # Maximum TMDB pages to process
-  days_back: 30  # Look back N days for releases
-  min_movies: 5  # Minimum movies to discover per run
+  max_pages: 10  # Maximum TMDB pages to process during intake
+  days_back: 30  # Look back N days for releases during intake
+  min_movies: 5  # Minimum movies to intake per run
   timeout: 30    # API timeout in seconds
 ```
 
@@ -107,18 +107,18 @@ discovery:
 ## Performance Metrics
 
 ### Target Metrics
-- **Discovery rate:** 10-20 movies/day (3-day average)
+- **Intake rate:** 10-20 movies/day (3-day average)
 - **Digital conversion:** 2-5 movies/day become available
 - **Total tracking:** 600-900 movies after 1 month
 - **Wall display:** 250-350 movies (limited by 90-day window)
 
 ### Monitoring
 - **Baseline script:** `scripts/baseline_metrics.py`
-- **Daily tracking:** Discovery count, newly-digital count, total tracking/available
+- **Daily tracking:** Intake count, newly-digital count, total tracking/available
 - **Metrics storage:** `metrics/daily.jsonl` for 3-day baselining
 
 ### Success Criteria
-- 3-day average discovery: 10-20 movies/day
+- 3-day average intake: 10-20 movies/day
 - Quality maintained: No spam movies appearing on wall
 - Provider filtering working: Only movies with distribution deals appear on wall
 
@@ -126,11 +126,11 @@ discovery:
 
 ### Manual Testing
 ```bash
-# Test discovery
-python3 generate_data.py --discover --debug
+# Test intake
+python3 generate_data.py --intake --debug
 
 # Test provider monitoring
-python3 generate_data.py --check
+python3 generate_data.py --discover
 
 # View metrics
 python3 scripts/baseline_metrics.py
@@ -145,7 +145,7 @@ python3 daily_orchestrator.py
 1. **Vote count is unreliable for new releases:** Movies often have 0 votes for 1-3 days after premiere
 2. **Provider availability is the real filter:** Movies without distribution deals never get providers, so they never appear on the wall
 3. **90-day window is based on digital_date:** Long premiere-to-provider gaps don't cause movies to be missed
-4. **Empirical approach:** Start wider, narrow later if needed based on actual results
+4. **Empirical approach:** Start with wider intake, narrow later if needed based on actual results
 
 ### Provider-First Filtering
 - More accurate than vote counts for quality assessment
@@ -155,24 +155,24 @@ python3 daily_orchestrator.py
 
 ## Implementation Status
 
-- ✅ Vote count filter removed from discovery
-- ✅ Consolidated discovery into generate_data.py (AMENDMENT-047)
+- ✅ Vote count filter removed from intake
+- ✅ Consolidated intake/discovery into generate_data.py (AMENDMENT-047)
 - ✅ Provider monitoring implemented
-- ✅ Configuration-driven discovery settings
+- ✅ Configuration-driven intake settings
 - ✅ Baseline metrics tracking
 - ✅ Legacy movie_tracker.py archived
 
 ## Monitoring Plan
 
 ### Day 1-3: Initial Testing
-- Run discovery, document new movie count
-- Monitor discovery rates and quality
+- Run intake, document new movie count
+- Monitor intake rates and quality
 - Calculate 3-day average
 
 ### Ongoing Monitoring
 - **If spam/fake movies appear:** Consider adding `vote_average.gte: 4.0` or popularity threshold
 - **If too many irrelevant movies:** Consider adding region or release_type filters
-- **If discovery rate is still low:** Investigate TMDB API parameters or date range
+- **If intake rate is still low:** Investigate TMDB API parameters or date range
 
 ## Related Amendments
 - AMENDMENT-046: Remove TMDB vote_count Filter for Discovery

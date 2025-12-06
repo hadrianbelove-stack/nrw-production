@@ -171,7 +171,8 @@ This directory contains scrapers that have been superseded by better solutions o
 - **Archived:** Oct 22, 2025
 - **Original Purpose:** Core discovery and monitoring system for movie releases
 - **Why Archived:** Replaced by integrated discovery in `generate_data.py` (AMENDMENT-047)
-- **Replacement:** `python3 generate_data.py --discover` and `python3 generate_data.py --check`
+- **Replacement:** `python3 generate_data.py --intake` and `python3 generate_data.py --discover`
+- **Historical Note:** Pre-rename this used `--discover` (title ingestion) and `--check` (provider monitoring). Current production uses `--intake` (title ingestion) and `--discover` (provider monitoring) as defined in SYSTEM_ARCHITECTURE.md.
 - **Technology:** TMDB API with pagination and rate limiting
 - **Migration Notes:** Production discovery is now consolidated into generate_data.py
 

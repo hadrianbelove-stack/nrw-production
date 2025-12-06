@@ -124,7 +124,7 @@ Example metrics entry:
 ### Zero Movies Reviewed
 **Pattern:** `"movies_reviewed": 0`
 **Indicates:** No data.json generated or approval on empty dataset
-**Action:** Check if discovery phase ran successfully
+**Action:** Check if intake (`--intake`) and discovery (`--discover`) phases ran successfully
 
 ### High Featured Count
 **Pattern:** `"featured": 20+`

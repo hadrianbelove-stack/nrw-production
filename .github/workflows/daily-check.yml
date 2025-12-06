@@ -21,7 +21,6 @@ jobs:
       PYTHONUNBUFFERED: '1'  # Disable Python output buffering for real-time logs
       TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
       OMDB_API_KEY: ${{ secrets.OMDB_API_KEY }}
-      WATCHMODE_API_KEY: ${{ secrets.WATCHMODE_API_KEY }}
       MIN_PROVIDER_COVERAGE: ${{ secrets.MIN_PROVIDER_COVERAGE }}
       # Playwright configuration
       NRW_USE_SHARED_PLAYWRIGHT: 'true'  # Use shared PlaywrightManager (now default behavior)

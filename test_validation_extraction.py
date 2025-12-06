@@ -219,12 +219,8 @@ def test_method_replacements():
             f"Found {validate_data_json_calls} calls"
         )
 
-        validate_enrichment_calls = content.count('self.validator.validate_enrichment_consistency(')
-        test_result(
-            "validate_enrichment_consistency calls replaced",
-            validate_enrichment_calls >= 1,
-            f"Found {validate_enrichment_calls} calls"
-        )
+        # validate_enrichment_consistency was DELETED 2025-12-05 (loop bug)
+        # No longer testing for its presence
 
         # Check that old method definitions were removed/commented
         has_old_validate_watch = 'def validate_watch_links_schema(self, watch_links' in content
@@ -234,12 +230,7 @@ def test_method_replacements():
             "Method definition not found (good)"
         )
 
-        has_old_validate_enrichment = 'def validate_enrichment_consistency(self):' in content
-        test_result(
-            "Old validate_enrichment_consistency method removed",
-            not has_old_validate_enrichment,
-            "Method definition not found (good)"
-        )
+        # validate_enrichment_consistency was DELETED 2025-12-05 - skip check
 
         has_old_validate_data = 'def validate_data_json_schema(self, file_path' in content
         test_result(
@@ -333,11 +324,11 @@ def test_backward_compatibility():
 
         # Test that validation methods are accessible
         has_validate_watch = hasattr(mock_gen.validator, 'validate_watch_links_schema')
-        has_validate_enrichment = hasattr(mock_gen.validator, 'validate_enrichment_consistency')
+        # validate_enrichment_consistency DELETED 2025-12-05 (loop bug)
         has_validate_data = hasattr(mock_gen.validator, 'validate_data_json_schema')
 
         test_result("validate_watch_links_schema method accessible", has_validate_watch)
-        test_result("validate_enrichment_consistency method accessible", has_validate_enrichment)
+        # validate_enrichment_consistency test removed - function deleted 2025-12-05
         test_result("validate_data_json_schema method accessible", has_validate_data)
 
         # Test that methods work

@@ -16,7 +16,7 @@ This document details the complete reapplication of all three phases of pipeline
 
 ### 2. pipeline/validation.py (402 lines)
 - `ValidationService` class
-- Methods: `validate_watch_links_schema`, `validate_enrichment_consistency`, `validate_data_json_schema`
+- Methods: `validate_watch_links_schema`, `validate_data_json_schema` (validate_enrichment_consistency DELETED 2025-12-05)
 
 ### 3. pipeline/enrichment.py (1,087 lines)
 - `EnrichmentService` class
@@ -85,7 +85,7 @@ self.enrichment.set_cache_references(
 
 #### Phase 2 - Validation (8 occurrences)
 - `self.validate_watch_links_schema(` → `self.validator.validate_watch_links_schema(`
-- `self.validate_enrichment_consistency(` → `self.validator.validate_enrichment_consistency(`
+- ~~`self.validate_enrichment_consistency(`~~ DELETED 2025-12-05 (loop bug)
 - `self.validate_data_json_schema(` → `self.validator.validate_data_json_schema(`
 
 #### Phase 3 - Enrichment (9+ occurrences)
@@ -113,9 +113,9 @@ Methods to delete (with line ranges):
 - `atomic_move_to_archive`: lines 2408-2460 (53 lines)
 - `load_all_movies`: lines 2461-2486 (26 lines)
 
-#### Phase 2 - Validation Methods (281 lines total)
+#### Phase 2 - Validation Methods (~170 lines total)
 - `validate_watch_links_schema`: lines 1215-1310 (96 lines)
-- `validate_enrichment_consistency`: lines 2248-2362 (115 lines)
+- ~~`validate_enrichment_consistency`~~: DELETED 2025-12-05 (was causing loop bug)
 - `validate_data_json_schema`: lines 2487-2556 (70 lines)
 
 #### Phase 3 - Enrichment Methods (962 lines total)

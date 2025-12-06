@@ -26,8 +26,7 @@ try:
 except ImportError:
     StreamingPlatformScraper = None
 
-# Phase 3: Watchmode API with quota management
-from watchmode_api import create_watchmode_client
+# Phase 3: TMDB-only provider discovery (Watchmode removed for cost/quota reasons)
 
 
 def setup_logger(name, log_file='logs/admin.log', level=logging.INFO):
@@ -112,24 +111,11 @@ class DataGenerator:
             )
             raise ValueError("TMDB_API_KEY is required")
 
-        # Watchmode API - Get new key from https://api.watchmode.com/ (free tier: 1000 calls/month)
-        self.watchmode_key = os.environ.get('WATCHMODE_API_KEY')
-        if not self.watchmode_key:
-            # Try fallback from config.yaml
-            self.watchmode_key = self.config.get('api', {}).get('watchmode_api_key')
-
-        # Phase 3: Initialize Watchmode API with quota management
-        self.watchmode_client = create_watchmode_client(self.watchmode_key, quota_limit=1000)
-        self.watchmode_enabled = self.watchmode_client is not None
-
-        if not self.watchmode_enabled:
-            self.logger.error(
-                "WATCHMODE_API_KEY not found or using placeholder value. "
-                "Please set the WATCHMODE_API_KEY environment variable or add "
-                "'watchmode_api_key' to the 'api' section in config.yaml. "
-                "Get a free key from https://api.watchmode.com/"
-            )
-            self.watchmode_key = None
+        # Phase 3: TMDB-only provider discovery (no external API needed)
+        # Watchmode API removed for cost/quota reasons - using TMDB providers instead
+        self.watchmode_client = None
+        self.watchmode_enabled = False
+        self.watchmode_key = None
         self.wikipedia_cache = self.storage.load_cache('cache/wikipedia_cache.json')
         self.rt_cache = self.storage.load_cache('cache/rt_cache.json')
         self.wikipedia_overrides = self.storage.load_cache('overrides/wikipedia_overrides.json')
@@ -157,13 +143,17 @@ class DataGenerator:
             'watchmode_successes': 0,
             'agent_attempts': 0,
             'agent_successes': 0,
+            'agent_failures': 0,  # Added - required by EnrichmentService
             'agent_cache_hits': 0,
             'override_hits': 0,
             'rt_attempts': 0,
             'rt_successes': 0,
             'rt_cache_hits': 0,
             'schema_validation_warnings': 0,
-            'schema_validation_passes': 0
+            'schema_validation_passes': 0,
+            'platform_scraper_attempts': 0,
+            'platform_scraper_successes': 0,
+            'platform_scraper_failures': 0
         }
 
         # Initialize validation service (extracted 2025-11-10) - shares watchmode_stats dict
@@ -508,7 +498,7 @@ class DataGenerator:
             # Atomic move
             os.rename(temp_file, state_file)
 
-            self.logger.info(f"Discovery state updated: {new_state['last_success_date']}")
+            self.logger.info(f"Intake state updated: {new_state['last_success_date']}")
         except Exception as e:
             self.logger.error(f"Failed to update discovery state: {e}")
 
@@ -601,7 +591,7 @@ class DataGenerator:
         end_date = datetime.now()
         start_date = since_datetime
 
-        self.logger.info(f"Discovering new premieres from {start_date.strftime('%Y-%m-%d')} to {end_date.strftime('%Y-%m-%d')}")
+        self.logger.info(f"Intaking new premieres from {start_date.strftime('%Y-%m-%d')} to {end_date.strftime('%Y-%m-%d')}")
 
         new_movies_added = 0
         all_discovered_movies = {}
@@ -647,9 +637,9 @@ class DataGenerator:
                 raise IOError("Discovery database write failed")
 
         # Log discovery summary
-        self.logger.info(f"Discovery complete: {new_movies_added} new movies added from {self.discovery_stats['pages_fetched']} pages")
+        self.logger.info(f"Intake complete: {new_movies_added} new movies added from {self.discovery_stats['pages_fetched']} pages")
         if debug or new_movies_added == 0:
-            self.logger.info(f"Discovery stats: {self.discovery_stats['total_results']} total results, {self.discovery_stats['duplicates_skipped']} duplicates")
+            self.logger.info(f"Intake stats: {self.discovery_stats['total_results']} total results, {self.discovery_stats['duplicates_skipped']} duplicates")
 
         # Emit JSON artifact for robust metrics capture
         try:
@@ -669,7 +659,7 @@ class DataGenerator:
 
             discovery_run_data = {
                 'timestamp': datetime.now().isoformat(),
-                'operation': 'discover_premieres',
+                'operation': 'intake_premieres',
                 'scan_window': {
                     'start_date': start_date,
                     'end_date': end_date,
@@ -685,11 +675,11 @@ class DataGenerator:
                 }
             }
 
-            with open('metrics/discovery_run.json', 'w') as f:
+            with open('metrics/intake_run.json', 'w') as f:
                 json.dump(discovery_run_data, f, indent=2)
 
-            print(f"📊 Discovery metrics saved: {start_date} to {end_date} ({mode} mode, {new_movies_added} found)")
-            self.logger.info(f"Discovery metrics saved: {discovery_run_data}")
+            print(f"📊 Intake metrics saved to metrics/intake_run.json: {start_date} to {end_date} ({mode} mode, {new_movies_added} found)")
+            self.logger.info(f"Intake metrics saved: {discovery_run_data}")
         except Exception as e:
             self.logger.warning(f"Failed to save discovery metrics artifact: {e}")
 
@@ -879,6 +869,9 @@ class DataGenerator:
                     # Check if ANY providers exist (after filtering out excluded services)
                     has_providers = bool(rent_names or buy_names or stream_names)
 
+                    # Always update has_providers flag based on current provider availability
+                    movie['has_providers'] = has_providers
+
                     if has_providers and movie['status'] == 'tracking':
                         # Status-only lifecycle: Change status to exclude from future polls
                         # (status != 'tracking' means no longer monitored for availability)
@@ -892,6 +885,69 @@ class DataGenerator:
                         # Mark for enrichment (Phase 2.1 optimization)
                         movie['enriched'] = False
                         movie['enrichment_date'] = None
+
+                        # Upsert minimal record into data.json on transition
+                        try:
+                            # Load current data.json if valid
+                            data = {}
+                            if os.path.exists('data.json'):
+                                if self.validator.validate_data_json_schema('data.json'):
+                                    with open('data.json', 'r') as f:
+                                        data = json.load(f)
+                                else:
+                                    self.logger.warning("data.json schema validation failed during upsert - initializing empty structure")
+
+                            # Initialize structure if missing
+                            if 'generated_at' not in data:
+                                data['generated_at'] = datetime.now().isoformat()
+                            if 'count' not in data:
+                                data['count'] = 0
+                            if 'movies' not in data:
+                                data['movies'] = []
+                            if 'hidden' not in data:
+                                data['hidden'] = []
+                            if 'featured' not in data:
+                                data['featured'] = []
+
+                            # Normalize TMDB ID to string for consistency
+                            movie_id_str = str(movie_id)
+
+                            # Find existing movie or create new minimal entry
+                            existing_movie = None
+                            for i, existing in enumerate(data['movies']):
+                                if isinstance(existing, dict) and str(existing.get('id')) == movie_id_str:
+                                    existing_movie = i
+                                    break
+
+                            # Build minimal movie dict
+                            minimal_movie = {
+                                'id': movie_id_str,
+                                'title': movie.get('title', 'Unknown Title'),
+                                'digital_date': movie.get('digital_date'),
+                                'providers': movie.get('providers', {}),
+                                'links': {},
+                                'watch_links': {}
+                            }
+
+                            # Update existing or append new
+                            if existing_movie is not None:
+                                # Update existing movie with discovery fields
+                                existing = data['movies'][existing_movie]
+                                existing.update({
+                                    'title': minimal_movie['title'],
+                                    'digital_date': minimal_movie['digital_date'],
+                                    'providers': minimal_movie['providers']
+                                })
+                            else:
+                                # Append new minimal movie
+                                data['movies'].append(minimal_movie)
+                                data['count'] = len(data['movies'])
+
+                            # Write atomically
+                            self.storage.atomic_write_json(data, 'data.json')
+
+                        except Exception as e:
+                            self.logger.warning(f"Failed to upsert minimal movie {movie_id} to data.json: {e}")
 
                         newly_digital += 1
                         newly_available_ids.append(movie_id)  # Track for enrichment state file
@@ -939,7 +995,7 @@ class DataGenerator:
             os.makedirs('metrics', exist_ok=True)
             discovery_run_data = {
                 'timestamp': datetime.now().isoformat(),
-                'operation': 'check_tracking',
+                'operation': 'discover_availability',
                 'scan_context': {
                     'poll_all_tracking': poll_all_tracking,
                     'max_to_check': max_to_check,
@@ -958,7 +1014,7 @@ class DataGenerator:
                 json.dump(discovery_run_data, f, indent=2)
 
             print(f"📊 Metrics saved to metrics/discovery_run.json")
-            self.logger.info(f"Discovery metrics saved: {discovery_run_data}")
+            self.logger.info(f"Provider discovery metrics saved: {discovery_run_data}")
 
             # Write enrichment state file with newly available movie IDs
             # This file is consumed by generate_display_data() to determine which movies need enrichment
@@ -1020,7 +1076,7 @@ class DataGenerator:
 
         return newly_digital
 
-    # validate_enrichment_consistency moved to pipeline/validation.py (2025-11-10)
+    # validate_enrichment_consistency DELETED (2025-12-05) - was causing loop bug
 
     # atomic_write_json moved to pipeline/storage.py (2025-11-10)
 
@@ -1984,6 +2040,98 @@ class DataGenerator:
 
         return deep_link
 
+
+    def get_enrichment_only_fields(self, movie_id, movie_data, movie_details, force_refresh=False):
+        """Extract enrichment-only fields (RT, Wikipedia, trailers, watch_links) for overlay"""
+        if not movie_details:
+            return None
+
+        title = movie_details['title']
+        year = movie_details.get('release_date', '')[:4] if movie_details.get('release_date') else ''
+        imdb_id = movie_details.get('external_ids', {}).get('imdb_id')
+
+        # Build links object with enrichment sources
+        links = {}
+
+        # Wikipedia link
+        wiki_url = self.find_wikipedia_url(title, year, imdb_id, movie_id)
+        if wiki_url:
+            links['wikipedia'] = wiki_url
+
+        # Trailer link
+        trailer_url = self.find_trailer_url(movie_details)
+        if trailer_url:
+            links['trailer'] = trailer_url
+
+        # RT link and score
+        rt_data = self.find_rt_url(title, year, imdb_id)
+        rt_score = None
+        if rt_data:
+            if isinstance(rt_data, dict):
+                links['rt'] = rt_data.get('url')
+                rt_score = rt_data.get('score')
+            else:
+                links['rt'] = rt_data
+
+        # Watch links (deep links to streaming platforms)
+        watch_links_raw = self.enrichment.get_watch_links(movie_id, title, year, movie_data.get('providers', {}), force_refresh, tracking_data=movie_data)
+
+        # Simplify provider names in watch links
+        watch_links = {}
+        for category, link_obj in watch_links_raw.items():
+            if isinstance(link_obj, dict) and 'service' in link_obj:
+                simplified_service = self.simplify_provider_name(link_obj['service'])
+                watch_links[category] = {
+                    'service': simplified_service,
+                    'link': link_obj.get('link')
+                }
+            else:
+                watch_links[category] = link_obj
+
+        # Extract additional TMDB metadata for overlay
+        credits = movie_details.get('credits', {})
+        director = "Unknown"
+        cast = []
+
+        for crew in credits.get('crew', []):
+            if crew['job'] == 'Director':
+                director = crew['name']
+                break
+
+        for actor in credits.get('cast', [])[:2]:  # Top 2 actors
+            cast.append(actor['name'])
+
+        genres = [g['name'] for g in movie_details.get('genres', [])]
+        studio = None
+        production_companies = movie_details.get('production_companies', [])
+        if production_companies:
+            studio = production_companies[0]['name']
+
+        runtime = movie_details.get('runtime')
+        country = None
+        production_countries = movie_details.get('production_countries', [])
+        if production_countries:
+            country = production_countries[0]['name']
+
+        # Return enrichment fields that can be safely overlaid
+        return {
+            'title': title,  # May be corrected version
+            'poster': f"https://image.tmdb.org/t/p/w500{movie_details['poster_path']}" if movie_details.get('poster_path') else None,
+            'synopsis': movie_details.get('overview', 'No synopsis available.'),
+            'crew': {
+                'director': director,
+                'cast': cast
+            },
+            'genres': genres,
+            'studio': studio,
+            'runtime': runtime,
+            'year': int(year) if year else None,
+            'country': country,
+            'rt_score': rt_score,
+            'links': links,
+            'watch_links': watch_links
+        }
+
     def process_movie(self, movie_id, movie_data, movie_details, force_refresh=False):
         """Process a single movie into display format"""
         if not movie_details:
@@ -2098,10 +2246,13 @@ class DataGenerator:
             incremental: If True, only process NEW movies not already in data.json (default)
                         If False, regenerate entire data.json from scratch
 
-        ARCHITECTURE NOTE (2025-11-11):
-        This function is now READ-ONLY for movie_tracking.json. Enrichment state
-        is tracked separately in enrichment_state.json to prevent race conditions
-        where display generation overwrites discovery results.
+        ARCHITECTURE NOTE (2025-12-05):
+        Movies are no longer gated on successful enrichment. This function builds
+        data.json from ALL eligible movies first (minimal stubs), then overlays
+        enrichment when possible. Enrichment failures no longer hide movies.
+
+        Data flow: Discovery → data.json (minimal) → Enrichment Overlay
+        Previous: Discovery → Enrichment Gate → data.json (failures hide movies)
         """
 
         # Load all movies (merged from tracking and archived)
@@ -2133,10 +2284,6 @@ class DataGenerator:
                 os.rename('data.json', backup_path)
                 self.logger.info(f"Corrupted data.json backed up to {backup_path}")
                 print(f"💾 Corrupted data.json backed up to {backup_path}")
-
-        # Validate enrichment consistency before categorization
-        print(f"\n🔍 Validating enrichment consistency...")
-        self.validator.validate_enrichment_consistency()
 
         # Filter to recently available movies
         cutoff_date = datetime.now() - timedelta(days=days_back)
@@ -2245,80 +2392,93 @@ class DataGenerator:
         print(f"   🆕 Need enrichment: {len(needs_enrichment)}")
         print(f"   ⏰ Stale (>90 days, will re-enrich): {len(stale_enrichment)}")
 
+        # Build display_index from ALL eligible movies (status=available, within days_back)
+        display_index = {}
+
+        # Add all eligible movies to display_index
+        all_eligible = needs_enrichment + already_enriched + stale_enrichment
+        for movie_id, movie_data in all_eligible:
+            # Initialize display_index[movie_id] with existing or minimal entry
+            if movie_id in existing_movies_lookup:
+                # Use existing entry as base
+                display_index[movie_id] = existing_movies_lookup[movie_id].copy()
+            else:
+                # Create minimal dict for new movies
+                display_index[movie_id] = {
+                    'id': movie_id,
+                    'title': movie_data.get('title', 'Unknown Title'),
+                    'digital_date': movie_data.get('digital_date'),
+                    'providers': movie_data.get('providers', {}),
+                    'links': {},
+                    'watch_links': {}
+                }
+
+        # Determine which movies to enrich this run
+        to_enrich = []
         if incremental:
             # Re-enrich stale movies in batches (max 10 per run to avoid quota issues)
             stale_to_process = stale_enrichment[:10]
             if stale_to_process:
                 print(f"   📝 Re-enriching {len(stale_to_process)} stale movies (batch of 10)")
-            needs_enrichment.extend(stale_to_process)
+            to_enrich = needs_enrichment + stale_to_process
         else:
             # Full mode: re-enrich everything
             print(f"   🔄 FULL MODE: Re-enriching ALL movies")
-            needs_enrichment.extend(already_enriched)
-            needs_enrichment.extend(stale_enrichment)
+            to_enrich = needs_enrichment + already_enriched + stale_enrichment
 
-        print(f"\n🎬 Processing {len(needs_enrichment)} movies (enrichment phase)...")
-        print(f"   API savings: {len(already_enriched)} movies skipped (95% cost reduction)")
+        print(f"\n🎬 Processing {len(to_enrich)} movies (enrichment phase)...")
+        print(f"   API savings: {len(already_enriched) - (0 if incremental else len(already_enriched))} movies skipped")
 
-        # Process only movies that need enrichment
-        new_movies = []
+        # Enrich movies in the to_enrich list
         enriched_count = 0
 
-        for movie_id, movie_data in needs_enrichment:
+        for movie_id, movie_data in to_enrich:
             try:
                 # Get full movie details (movie_id is the TMDB ID)
                 movie_details = self.get_movie_details(movie_id)
                 if movie_details:
-                    processed = self.process_movie(movie_id, movie_data, movie_details, force_refresh)
-                    if processed:
-                        new_movies.append(processed)
-                        print(f"  ✓ {processed['title']} - Links: {len(processed['links'])}")
+                    # Look up existing entry in display_index
+                    existing_entry = display_index[movie_id].copy()
 
-                        # Mark as enriched in separate enrichment state (not in movie_tracking.json)
-                        self.enrichment_state.mark_enriched(movie_id)
-                        enriched_count += 1
+                    # For new movies (not in data.json), use process_movie for full dict
+                    if movie_id not in existing_movies_lookup:
+                        enriched_dict = self.process_movie(movie_id, movie_data, movie_details, force_refresh)
+                        if enriched_dict:
+                            display_index[movie_id] = enriched_dict
+                            print(f"  ✓ {enriched_dict['title']} - Links: {len(enriched_dict['links'])}")
+                            # Mark as enriched and count success
+                            self.enrichment_state.mark_enriched(movie_id)
+                            enriched_count += 1
+                        else:
+                            print(f"  ✗ process_movie failed for {movie_data.get('title')} - keeping minimal entry")
+                            # Don't mark as enriched on failure
+                    else:
+                        # For existing movies, overlay only enrichment fields
+                        enrichment_fields = self.get_enrichment_only_fields(movie_id, movie_data, movie_details, force_refresh)
+                        if enrichment_fields:
+                            existing_entry.update(enrichment_fields)
+                            display_index[movie_id] = existing_entry
+                            print(f"  ✓ {existing_entry['title']} - Links: {len(enrichment_fields.get('links', {}))}")
+                            # Mark as enriched and count success
+                            self.enrichment_state.mark_enriched(movie_id)
+                            enriched_count += 1
+                        else:
+                            print(f"  ✗ enrichment overlay failed for {movie_data.get('title')} - keeping existing entry")
+                            # Don't mark as enriched on failure
 
                 time.sleep(self.config.get('api', {}).get('tmdb_rate_limit', 0.25))  # Rate limiting
 
             except Exception as e:
-                print(f"  ✗ Error processing {movie_data.get('title')}: {e}")
+                print(f"  ✗ Error enriching {movie_data.get('title')}: {e} - keeping minimal/existing entry")
+                # Movie stays in display_index with minimal or cached entry
 
         # Save enrichment state to separate file
-        # This prevents race conditions with discovery/monitoring writes to movie_tracking.json
         self.enrichment_state.save()
         print(f"\n💾 Enrichment tracking saved: {enriched_count} movies marked as enriched")
         self.logger.info(f"Enrichment state saved: {enriched_count} movies marked as enriched")
 
-        # Merge with existing movies that are already enriched
-        if incremental and already_enriched:
-            # Get cached data from existing data.json
-            already_enriched_ids = {movie_id for movie_id, _ in already_enriched}
-            raw_cached_movies = [m for m in existing_movies if isinstance(m, dict) and 'id' in m and str(m['id']) in already_enriched_ids]
-
-            # Validate and clean cached movies' watch_links
-            cached_movies = []
-            for movie in raw_cached_movies:
-                if 'watch_links' in movie:
-                    validated_links = self.validator.validate_watch_links_schema(
-                        movie['watch_links'],
-                        movie.get('title', 'Unknown')
-                    )
-                    # Replace watch_links with validated result
-                    movie_copy = movie.copy()
-                    movie_copy['watch_links'] = validated_links
-
-                    # Only include movie if it has valid links after validation
-                    if validated_links:
-                        cached_movies.append(movie_copy)
-                    # If validated result is empty, drop the movie (it will be re-enriched in next run)
-                else:
-                    # Movie without watch_links, include as-is
-                    cached_movies.append(movie)
-
-            print(f"\n📋 Using {len(cached_movies)} cached movies + {len(new_movies)} newly enriched = {len(cached_movies) + len(new_movies)} total")
-            display_movies = cached_movies + new_movies
-        else:
-            display_movies = new_movies
+        # Convert display_index to list for final processing
+        display_movies = list(display_index.values())
         
         # Sort by digital release date (newest first)
         display_movies.sort(key=lambda x: x['digital_date'], reverse=True)
@@ -2476,9 +2636,9 @@ class DataGenerator:
             if self.watchmode_stats['schema_validation_warnings'] > total_validations * 0.05:  # Alert if warnings > 5%
                 print(f"  ⚠️  WARNING: High validation failure rate ({self.watchmode_stats['schema_validation_warnings']}/{total_validations}) - check for systematic schema issues")
 
-        # Discovery statistics (if discovery was run)
+        # Intake statistics (if intake was run - TMDB API premiere ingestion)
         if self.discovery_stats['api_calls'] > 0:
-            print(f"\n🔍 Discovery Statistics:")
+            print(f"\n🔍 Intake Statistics (TMDB Premieres):")
             print(f"  API calls: {self.discovery_stats['api_calls']}")
             print(f"  Pages fetched: {self.discovery_stats['pages_fetched']}")
             print(f"  Total results: {self.discovery_stats['total_results']}")

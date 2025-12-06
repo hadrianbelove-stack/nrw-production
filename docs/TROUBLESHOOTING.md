@@ -138,7 +138,7 @@ python3 -u youtube_playlist_manager.py auth
 ### 2. Validation Failures - No Recent Movies
 
 **Symptoms:**
-- GitHub Actions error: `No recent movies found - automation may not be discovering new releases`
+- GitHub Actions error: `No recent movies found - automation may not be ingesting new releases`
 - Workflow fails at data quality validation step
 - `data.json` shows no movies with `digital_date` in last 7 days
 - Consecutive daily failures creating a cascading cycle
@@ -329,7 +329,7 @@ with open('movie_tracking.json') as f:
 "
 
 # 5. Test the fix
-python3 generate_data.py --check
+python3 generate_data.py --discover
 ```
 
 #### If no recent backup available:

@@ -7,14 +7,14 @@ We want a beautiful webpage that shows the latest movies available for streaming
 
 ## **📊 The Data Journey: From API to Your Screen**
 
-### **Phase 1: Daily Discovery & Monitoring**
-**What happens:** We discover new movies to track AND check if tracked movies became available for digital (streaming/VOD (rental/purchase)).
+### **Phase 1: Intake & Discovery Overview**
+**What happens:** We intake new movies to track AND discover when tracked movies become available for digital (streaming/VOD (rental/purchase)).
 
-**🔧 `generate_data.py --discover`** - *The Production Discovery System*
-- **Discovery:** Searches TMDB API for movies released in past 7 days (festival, limited theatrical, theatrical, direct to streaming, etc.)
+**🔧 `generate_data.py --intake`** - *Intake: New Premiere Ingestion*
+- **Intake:** Searches TMDB API for movies released in past 7 days (festival, limited theatrical, theatrical, direct to streaming, etc.)
 - **Adds to database:** New movies get status = "tracking", digital_date = null
 
-**🔧 `generate_data.py --check`** - *The Provider Monitoring System*
+**🔧 `generate_data.py --discover`** - *Discovery: Provider Availability*
 - **Monitoring:** Checks ALL movies in database with status = "tracking" for digital availability on Netflix, Amazon, etc.
 - **The Core Problem:** APIs don't tell us "this movie became available digitally today" - they only show what's available right now. We have to detect transitions ourselves.
 - **Magic moment:** When it finds new providers, sets `digital_date` = today, status = "available"
@@ -29,7 +29,7 @@ We want a beautiful webpage that shows the latest movies available for streaming
 **What happens:** We take movies that JUST BECAME digitally available (from today's provider check) and fill out ALL their details - cast, director, synopsis, posters, trailers, Wikipedia pages, review links, watch links (streaming/vod).
 
 **🔧 `generate_data.py`** - *The Complete Data Enricher*
-- **Enrichment-on-transition:** Reads `metrics/newly_available.json` to find which movies became available TODAY
+- **Enrichment-on-transition:** Reads `metrics/newly_available.json` to find which movies were discovered as digitally available TODAY
 - **Smart filtering:** Only processes movies in the state file (1-10 per day) + stale enrichment (>90 days old, batch of 10)
 - **Performance:** 95%+ cost reduction by avoiding re-enrichment of already-processed movies
 - **Link resolution:** Multi-tier waterfall (overrides → cache → API → scraper → null)
@@ -55,14 +55,14 @@ We want a beautiful webpage that shows the latest movies available for streaming
 
 **Default Workflow (Automated - No Approval Gate):**
 ```
-Daily Discovery → movie_tracking.json → data.json → Public Site
-                  (automated)          (automated) (auto-update)
+Daily Intake & Discovery → movie_tracking.json → data.json (minimal) → Enrichment Overlay → Public Site
+                          (automated)          (immediate)         (when possible)    (auto-update)
 ```
 
 **Optional Curation Workflow:**
 ```
-Daily Discovery → movie_tracking.json → OPTIONAL REVIEW → data.json → Public Site
-                  (raw scraped)         (when desired)    (curated)   (visitors)
+Daily Intake & Discovery → movie_tracking.json → OPTIONAL REVIEW → data.json (minimal) → Enrichment → Public Site
+                          (raw scraped)         (when desired)    (immediate)        (overlay)   (visitors)
 ```
 
 **Admin Panel Features** (`./launch_all.sh` → http://localhost:5556):
@@ -83,10 +83,11 @@ Daily Discovery → movie_tracking.json → OPTIONAL REVIEW → data.json → Pu
 - **Admin filtering:** Applies decisions from `admin/hidden_movies.json` (removes from display)
 - **Admin featuring:** Marks movies from `admin/featured_movies.json` with `"featured": true` flag
 
-**📄 `data.json`** - *The Website Menu*
-- **What it is:** Clean, final dataset of recent movies with verified data and working links
-- **Structure:** Each movie has poster, synopsis, director, cast, trailer, RT link, Wikipedia link, watch_links (streaming/vod)
-- **Key rule:** Only verified links included - null indicates link failure (not hidden with search URLs)
+**📄 `data.json`** - *The Website Menu* (Updated 2025-12-05)
+- **What it is:** Complete dataset of ALL available movies (minimal records + enriched data when available)
+- **Structure:** Movies include basic info (title, date, providers) plus enriched data when successful (poster, synopsis, director, cast, trailer, RT link, Wikipedia link, watch_links)
+- **Key change:** Enrichment failures no longer hide movies - minimal records remain visible
+- **Reliability:** All discovered movies appear; enrichment overlays when possible
 
 ### **Phase 5: User Display**
 **What happens:** User visits the website and sees the beautiful movie wall.
@@ -102,10 +103,10 @@ Daily Discovery → movie_tracking.json → OPTIONAL REVIEW → data.json → Pu
 
 **🔧 `daily_orchestrator.py`** - *The Modern Orchestra Conductor*
 ```bash
-1. python3 generate_data.py --discover     # Discover new movies to track (TMDB API search)
-2. python3 generate_data.py --check        # Check tracking movies for digital availability
+1. python3 generate_data.py --intake       # Intake new premieres from TMDB into tracking database
+2. python3 generate_data.py --discover     # Discover provider availability for tracking movies
                                            # → Writes metrics/newly_available.json with IDs
-3. python3 generate_data.py               # Enrich ONLY newly available movies from step 2
+3. python3 generate_data.py               # Enrich movies discovered as digitally available from step 2
                                            # → Reads metrics/newly_available.json
 4. git commit & push                       # Save changes (automated)
 ```

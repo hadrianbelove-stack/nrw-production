@@ -148,7 +148,7 @@ Embedded JavaScript with fetch API for AJAX operations
 
 ### Why Post-Publication Curation
 - **Scrapers are imperfect** - APIs have gaps, platforms change, data is incomplete
-- **Publish-first model** - Reduces manual bottleneck, allows rapid discovery of new releases
+- **Publish-first model** - Reduces manual bottleneck, allows rapid intake of new releases
 - **Manual QA ensures quality** - Quality control through post-publication refinement
 
 ### Why Inline Editing

@@ -117,10 +117,10 @@ Archive via `diary/YYYY-MM-DD.md` (immutable end-of-session snapshots)
 **Spec:** IMPLEMENTATION_ROADMAP.md
 
 ### 012: Database Update Cadence
-**Decision:** `generate_data.py` handles discovery and provider checking. Single source for movie discovery.
+**Decision:** `generate_data.py` handles both `intake` (new premiere ingestion from TMDB) and `discovery` (provider availability detection for tracked titles). Single source of truth for both which titles are tracked and when they become digitally available.
 **Scope:** Legacy tracker archived to museum_legacy/. Daily workflow: data generation → verification → commit.
 **Status:** ✅ Active - automated daily updates via GitHub Actions
-**Spec:** SYSTEM_ARCHITECTURE.md §Pipeline
+**Spec:** SYSTEM_ARCHITECTURE.md §Daily Pipeline Phases
 
 ### 013: Inclusive Tracking Strategy
 **Decision:** Track all movie releases using premiere date as authoritative.

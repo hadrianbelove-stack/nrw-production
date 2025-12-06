@@ -1,0 +1,34 @@
+{
+  "timestamp": "2025-12-05T13:31:48.648510",
+  "scrapers": {
+    "rt_scraper": {
+      "attempts": 0,
+      "successes": 0,
+      "cache_hits": 0,
+      "success_rate": null,
+      "cache_hit_rate": null
+    },
+    "wikipedia_scraper": {
+      "wikidata_attempts": 0,
+      "wikidata_successes": 0,
+      "success_rate": null
+    },
+    "agent_scraper": {
+      "attempts": 14,
+      "successes": 0,
+      "cache_hits": 0,
+      "success_rate": 0.0
+    },
+    "platform_scraper": {
+      "attempts": 0,
+      "successes": 0,
+      "failures": 0,
+      "success_rate": null
+    }
+  },
+  "validation": {
+    "passes": 281,
+    "warnings": 0,
+    "pass_rate": 100.0
+  }
+}

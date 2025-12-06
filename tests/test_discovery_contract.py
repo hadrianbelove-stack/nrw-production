@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
-Contract tests for discovery and provider detection workflows.
+Contract tests for intake and provider discovery workflows.
 
-These tests simulate discovery output and provider detection to ensure
+These tests simulate intake and provider discovery to ensure
 proper status transitions and digital_date handling as specified in Comment 4.
 
 Test scenarios:
-1. Discovery finds new titles → status='tracking', digital_date=None
-2. Provider detection finds availability → status='available', digital_date=today
+1. Intake (`--intake`) finds new premieres → status='tracking', digital_date=None
+2. Discovery (`--discover`) detects provider availability → status='available', digital_date=today
 3. Workflow integration ensures contract compliance
 """
 
@@ -208,7 +208,7 @@ discovery:
         # Step 1: Initial state (empty database)
         tracking_db = {'movies': {}}
 
-        # Step 2: Discovery phase - new movie found
+        # Step 2: Intake phase - new movie found via TMDB
         discovered_movie = {
             'id': 67890,
             'title': 'Integration Test Movie',
@@ -228,7 +228,7 @@ discovery:
             'tmdb_id': discovered_movie['id']
         }
 
-        # Verify discovery phase contract
+        # Verify intake phase contract
         movie_after_discovery = tracking_db['movies'][movie_id]
         self.assertEqual(movie_after_discovery['status'], 'tracking')
         self.assertIsNone(movie_after_discovery['digital_date'])

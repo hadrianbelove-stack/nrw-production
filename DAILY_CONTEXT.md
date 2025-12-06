@@ -170,7 +170,7 @@ See [020: Rolling Daily Context](PROJECT_CHARTER.md#020-rolling-daily-context) a
 - ✅ Ran `python3 generate_data.py` successfully
 - ✅ All three services (Storage, Validation, Enrichment) working
 - ✅ validate_data_json_schema working (224 movies validated)
-- ✅ validate_enrichment_consistency completed (400/400 valid, 0 corrected)
+- ❌ validate_enrichment_consistency DELETED (2025-12-05) - was causing loop bug
 - ✅ Enrichment service accessible and initialized
 - ✅ No errors or crashes
 
@@ -520,16 +520,16 @@ See [020: Rolling Daily Context](PROJECT_CHARTER.md#020-rolling-daily-context) a
 ### Manual Pipeline (if needed)
 ❌ DEPRECATED: movie_tracker.py is no longer supported
 
-The movie tracking functionality has been integrated into the production discovery system.
+The movie tracking functionality has been integrated into the NRW production system.
 Please use the following commands instead:
 
-  For daily discovery:
+  For provider-availability discovery:
     python3 generate_data.py --discover
 
   For full data generation:
     python3 generate_data.py
 
-  For the complete daily pipeline:
+  For the complete NRW Daily Update pipeline:
     python3 daily_orchestrator.py
 
 The legacy implementation is available at:
@@ -619,16 +619,16 @@ Movies with reviews: 1
   Validation pass rate: 100.0%
 ❌ DEPRECATED: movie_tracker.py is no longer supported
 
-The movie tracking functionality has been integrated into the production discovery system.
+The movie tracking functionality has been integrated into the NRW production system.
 Please use the following commands instead:
 
-  For daily discovery:
+  For provider-availability discovery:
     python3 generate_data.py --discover
 
   For full data generation:
     python3 generate_data.py
 
-  For the complete daily pipeline:
+  For the complete NRW Daily Update pipeline:
     python3 daily_orchestrator.py
 
 The legacy implementation is available at:
