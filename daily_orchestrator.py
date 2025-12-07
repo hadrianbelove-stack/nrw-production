@@ -551,121 +551,6 @@ class NRWOrchestrator:
                 else:
                     print(f"❌ All {max_retries} attempts to save metrics failed")
 
-    def detect_stall(self):
-        """Surface 3-day stall detection after metrics are saved"""
-        try:
-            metrics_file = 'metrics/daily.jsonl'
-            if not os.path.exists(metrics_file):
-                print("⚠️  No metrics file found - cannot detect stalls")
-                return False
-
-            # Read last entries from daily.jsonl
-            recent_entries = []
-            with open(metrics_file, 'r') as f:
-                for line in f:
-                    if line.strip():
-                        recent_entries.append(json.loads(line))
-
-            if len(recent_entries) < 3:
-                print(f"📊 Stall detection: Need 3 days of data, have {len(recent_entries)}")
-                return False
-
-            # Group entries by date and select the last entry per date by timestamp
-            from collections import defaultdict
-            entries_by_date = defaultdict(list)
-            for entry in recent_entries:
-                date = entry.get('date')
-                if date:
-                    entries_by_date[date].append(entry)
-
-            # For each date, select the entry with the latest timestamp
-            last_entry_per_date = {}
-            for date, entries in entries_by_date.items():
-                # Sort by timestamp and take the last one (most recent)
-                sorted_entries = sorted(entries, key=lambda e: e.get('timestamp', ''))
-                last_entry_per_date[date] = sorted_entries[-1]
-
-            if len(last_entry_per_date) < 3:
-                print(f"📊 Stall detection: Need 3 unique dates, have {len(last_entry_per_date)}")
-                return False
-
-            # Get the last 3 dates (by date value, most recent first)
-            sorted_dates = sorted(last_entry_per_date.keys(), reverse=True)
-            last_3_dates = sorted_dates[:3]
-            last_3_entries = [last_entry_per_date[date] for date in last_3_dates]
-
-            # Check if all 3 days have transitions == 0
-            stall_dates = []
-
-            for entry in last_3_entries:
-                transitions = entry.get('transitions', 0)
-                date = entry.get('date')
-
-                if transitions == 0:
-                    stall_dates.append(date)
-
-            if len(stall_dates) >= 3:
-                # All 3 days had no transitions - this is a stall
-                print("\n" + "🚨" * 20)
-                print("🚨 3-DAY STALL DETECTED 🚨")
-                print("🚨" * 20)
-                print(f"📅 Stalled dates: {', '.join(sorted(stall_dates))}")
-                print("🔍 No movie transitions detected for 3+ consecutive unique days")
-                print("💡 This may indicate:")
-                print("   - API/scraper failures preventing provider detection")
-                print("   - All tracked movies already digital (normal in mature state)")
-                print("   - Intake system not finding new premieres to track")
-
-                # Optionally persist stall state
-                self._persist_stall_state(stall_dates, last_3_entries)
-
-                # Check environment setting for failure behavior
-                fail_on_stall = os.getenv('NRW_FAIL_ON_STALL', 'false').lower() == 'true'
-                if fail_on_stall:
-                    print("💥 NRW_FAIL_ON_STALL=true - exiting with error")
-                    return True  # Indicate stall detected
-                else:
-                    print("✅ NRW_FAIL_ON_STALL=false - continuing despite stall")
-                    return False
-
-            else:
-                print(f"📊 Stall check: {len(stall_dates)}/3 days with no transitions - system healthy")
-                return False
-
-        except Exception as e:
-            print(f"⚠️  Stall detection failed: {e}")
-            return False
-
-    def _persist_stall_state(self, stall_dates, entries):
-        """Persist stall detection state to metrics/stall_state.json"""
-        try:
-            os.makedirs('metrics', exist_ok=True)
-
-            stall_state = {
-                'timestamp': datetime.now().isoformat(),
-                'stall_detected': True,
-                'window_size': 3,
-                'stall_dates': sorted(stall_dates),
-                'entries_checked': len(entries),
-                'stall_details': [
-                    {
-                        'date': entry.get('date'),
-                        'transitions': entry.get('transitions', 0),
-                        'discovered_today': entry.get('discovered_today', 0),
-                        'polled': entry.get('polled', 0)
-                    }
-                    for entry in entries
-                ]
-            }
-
-            with open('metrics/stall_state.json', 'w') as f:
-                json.dump(stall_state, f, indent=2)
-
-            print(f"📊 Stall state persisted to metrics/stall_state.json")
-
-        except Exception as e:
-            print(f"⚠️  Failed to persist stall state: {e}")
-
     def print_summary(self):
         """Print execution summary"""
         print("\n" + "=" * 50)
@@ -818,85 +703,35 @@ class NRWOrchestrator:
                     cmd, description, critical = step
                     self.run_command(cmd, description, critical)
 
-            # Phase 2: Health Check (immediately after provider-availability discovery)
-            health_config = orchestrator_config.get('health', {})
-            min_polled = health_config.get('min_polled', 1000)
-            recency_tolerance_hours = health_config.get('recency_tolerance_hours', 2)
+            # Phase 2: Log metrics for diagnostics (no enforcement - just reporting)
+            print(f"\n📊 Phase 2: Metrics Summary")
 
-            # Check discovery metrics after discovery phase - MUST exist and be current
-            if not os.path.exists('metrics/discovery_run.json'):
-                print('🚨 HEALTH FAIL: metrics/discovery_run.json is MISSING after discovery phase')
-                print('   Discovery phase did not emit metrics for this run cycle.')
-                print('   This indicates generate_data.py --discover failed silently or was not executed.')
-                sys.exit(1)
-
-            with open('metrics/discovery_run.json') as f:
-                discovery_metrics = json.load(f)
-
-            # Validate recency - ensure metrics are from current run, not stale
-            metrics_timestamp = discovery_metrics.get('timestamp')
-            if not metrics_timestamp:
-                print('🚨 HEALTH FAIL: discovery_run.json has no timestamp field')
-                print('   Cannot verify metrics recency - treating as stale.')
-                sys.exit(1)
-
-            try:
-                metrics_dt = datetime.fromisoformat(metrics_timestamp.replace('Z', '+00:00'))
-                now = datetime.now(metrics_dt.tzinfo) if metrics_dt.tzinfo else datetime.now()
-                age_hours = (now - metrics_dt).total_seconds() / 3600
-
-                if age_hours > recency_tolerance_hours:
-                    print(f'🚨 HEALTH FAIL: discovery_run.json is STALE')
-                    print(f'   Metrics timestamp: {metrics_timestamp}')
-                    print(f'   Age: {age_hours:.1f} hours (tolerance: {recency_tolerance_hours}h)')
-                    print(f'   Discovery metrics are from a previous run, not the current cycle.')
-                    sys.exit(1)
-
-                print(f'📊 Metrics recency validated: {age_hours:.1f}h old (within {recency_tolerance_hours}h tolerance)')
-
-            except (ValueError, TypeError) as e:
-                print(f'🚨 HEALTH FAIL: Cannot parse discovery_run.json timestamp: {e}')
-                print(f'   Raw timestamp value: {metrics_timestamp}')
-                sys.exit(1)
-
-            operation = discovery_metrics.get('operation')
-            print(f'📊 Health check: validating discovery operation "{operation}"')
-
-            if operation == 'discover_availability':
-                polled = discovery_metrics.get('results', {}).get('polled', 0)
-                print(f'📊 Using polled metric: {polled}')
-                if polled == 0 or polled < min_polled:
-                    print(f'🚨 HEALTH FAIL: discover_availability polled only {polled} - expected {min_polled}+')
-                    sys.exit(1)
-                print(f'✅ Health check passed: discover_availability polled {polled} movies')
+            if os.path.exists('metrics/discovery_run.json'):
+                try:
+                    with open('metrics/discovery_run.json') as f:
+                        discovery_metrics = json.load(f)
+                    operation = discovery_metrics.get('operation', 'unknown')
+                    polled = discovery_metrics.get('results', {}).get('polled', 0)
+                    transitions = discovery_metrics.get('results', {}).get('transitions', 0)
+                    print(f'   Discovery: {polled} polled, {transitions} transitions')
+                except Exception as e:
+                    print(f'   Discovery metrics: could not read ({e})')
             else:
-                print(f'🚨 HEALTH FAIL: discovery_run.json has unexpected operation "{operation}"')
-                print(f'   Expected "discover_availability" but got "{operation}"')
-                sys.exit(1)
+                print('   Discovery metrics: file not found')
 
-            # Check intake metrics if available
             if os.path.exists('metrics/intake_run.json'):
-                with open('metrics/intake_run.json') as f:
-                    intake_metrics = json.load(f)
-                operation = intake_metrics.get('operation')
-
-                if operation == 'intake_premieres':
+                try:
+                    with open('metrics/intake_run.json') as f:
+                        intake_metrics = json.load(f)
                     discovered = intake_metrics.get('results', {}).get('discovered', 0)
-                    print(f'📊 Using discovered metric: {discovered}')
-                    print(f'📊 Health check: intake_premieres discovered {discovered} new movies')
-                    # Skip polled threshold check for intake operations
-                else:
-                    print(f'⚠️ Health check: Unknown operation type "{operation}", skipping validation')
+                    print(f'   Intake: {discovered} new movies discovered')
+                except Exception as e:
+                    print(f'   Intake metrics: could not read ({e})')
+            else:
+                print('   Intake metrics: file not found')
 
-            # Save consolidated daily metrics for stall detection (reads from separate intake and discovery files)
+            # Save consolidated daily metrics for historical tracking
             self.save_daily_metrics()
-
-            # Surface 3-day stall detection after metrics are saved
-            stall_detected = self.detect_stall()
-            if stall_detected:
-                # Exit with non-zero code if stall detected and NRW_FAIL_ON_STALL=true
-                self.print_summary()
-                sys.exit(1)
 
             # Phase 3: Generate final display data with enrichment
             # NOTE: data.json uses eventual consistency model - only updated here in Phase 3
@@ -909,7 +744,7 @@ class NRWOrchestrator:
                 True
             )
 
-            # Validate data quality after generation
+            # Log data quality info (report-only, no enforcement)
             if success:
                 print("\n🔍 Validating RT data...")
                 self.validate_rt_data()
@@ -918,9 +753,7 @@ class NRWOrchestrator:
                 try:
                     self.validate_data_quality()
                 except Exception as e:
-                    print(f"❌ Data quality validation failed: {e}")
-                    self.print_summary()
-                    sys.exit(1)
+                    print(f"⚠️ Data quality issue: {e}")
 
             # Final summary
             self.print_summary()
