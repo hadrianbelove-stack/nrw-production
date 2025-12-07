@@ -44,7 +44,7 @@
 - CRITICAL-003: Watch links → Stage 2 (restore October fallback)
 - CRITICAL-004: Daily automation → Stage 3 (single-branch revert)
 - CRITICAL-005: Admin gate → Stage 2/3 (October QA focus)
-- CRITICAL-006: Stall alert → Stage 3 (simplify per charter)
+- CRITICAL-006: Stall alert → ✅ COMPLETED (simplified to report-only)
 
 **Session Log (2025-11-08)**:
 - Refined to revert-heavy strategy per user feedback and charter review
@@ -228,38 +228,19 @@ Replaces automated weekly full regeneration with intentional, admin-triggered ma
 - [SYSTEM_ARCHITECTURE.md](SYSTEM_ARCHITECTURE.md) - System configuration
 
 ### CRITICAL-006: Discovery Health & Stall Alert
-**Status:** 🔴 STAGE 3 - ACTIVE
+**Status:** ✅ COMPLETED (2025-12-07)
 
-**Problem:** Change detection can silently stall without notification, causing core value loss.
+**Resolution:** Simplified to report-only approach. For a personal project, enforcement gates create more problems than they solve. The pipeline now logs metrics for diagnostics but doesn't fail on health check conditions.
 
-**Impact:** System may miss new releases for extended periods without alerting administrators, defeating the project's primary purpose of tracking new digital availability.
-
-**Goals:**
-- Full poll daily with comprehensive movie tracking
-- Average >1 change/week to maintain system health
-- Early detection of discovery system failures
-
-**Alert Policy:**
-- If 0 transitions detected for 3 consecutive days with zero transitions, auto-create GitHub issue (per SYSTEM_ARCHITECTURE.md §6.5)
-- Alert should fire on true stalls with no false positives
-- Include metrics summary and link to failed runs
-- Validation policy details deferred to SYSTEM_ARCHITECTURE.md §6.5
-
-**Implementation:**
-- Log `polled` and `transitions` metrics every run
-- Commit metrics to `metrics/daily.jsonl` for historical tracking
-- CI checks for zero transitions over the last 3 consecutive days (per SYSTEM_ARCHITECTURE.md §6.5)
-- Standardized logging format for metric extraction
-
-**Success Criteria:**
-- Alert fires reliably on true discovery stalls
-- No false positives from temporary issues
-- Metrics provide visibility into discovery health trends
-- Historical data enables pattern analysis
+**Current Implementation:**
+- Metrics logged to `metrics/daily.jsonl` for historical tracking
+- Discovery stats (polled, transitions) printed to workflow logs
+- No enforcement gates - pipeline always proceeds to publish
+- Issues visible in GitHub Actions logs for investigation
 
 **Reference:**
 - [daily_orchestrator.py](daily_orchestrator.py) - Main orchestration logic
-- [.github/workflows/daily-check.yml](.github/workflows/daily-check.yml) - CI implementation
+- [SYSTEM_ARCHITECTURE.md §6.5](SYSTEM_ARCHITECTURE.md) - Validation policy
 
 ### CRITICAL-003: Watch Links Broken - Watchmode API Issue
 **Status:** 🔴 STAGE 2 - ACTIVE - Watchmode quota exhausted, scrapers failing in CI

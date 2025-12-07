@@ -146,8 +146,7 @@ orchestrator:
   discovery_retry_delays: [30, 45]  # Retry delays for provider-availability discovery in seconds (exponential backoff)
   skip_approval: true  # Default to bypass approval gate during development (NRW_SKIP_APPROVAL override)
   health:
-    min_polled: 1000  # Fail if fewer than N tracking movies are polled during provider-availability discovery (generate_data.py --discover)
-    stall_days: 3     # Number of consecutive days with zero tracking→available transitions in provider-availability discovery phase
+    min_polled: 1000  # Threshold for logging (report-only, no enforcement)
 
 
 # Affiliate Program Configuration

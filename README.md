@@ -161,8 +161,6 @@ Quick reference for common issues. **For detailed troubleshooting:** See [docs/T
 - **config.yaml** - API keys, scraper settings, display parameters
   - **Required setup:** Replace placeholder values for `tmdb_api_key` and `watchmode_api_key` with real API keys
   - Production: Use environment variables `TMDB_API_KEY` and `WATCHMODE_API_KEY` (see [SYSTEM_ARCHITECTURE.md §4](SYSTEM_ARCHITECTURE.md))
-- **Environment flags** (set in `.github/workflows/daily-check.yml`):
-  - `NRW_FAIL_ON_STALL` - Fail workflow on 3-day stall in provider-availability discovery (default: `false`)
 - **requirements.txt** - Python dependencies (Playwright-based, Selenium removed)
 - **.gitignore** - Excludes cache/, config.yaml (API keys), various backup/temp files
 - **launch_all.sh** - Unified launcher for all NRW tools (menu-driven)

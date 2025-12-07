@@ -1,4 +1,15 @@
 # DAILY_CONTEXT.md
+
+## 🚨 CRITICAL PIPELINE STATUS UPDATE - December 6, 2025
+**PIPELINE NOT FUNCTIONAL** - Core movie tracking broken despite symptom fixes:
+- **Intake:** 45-day failure (Oct 23 - Dec 5) - zero new movies added
+- **Discovery:** No newly available movies since Dec 4, current workflow hanging 80+ minutes
+- **Status:** Enrichment timing bugs fixed but intake/discovery fundamentally broken
+
+*Historical context below from November pipeline modularization work*
+
+---
+
 **Date:** 2025-11-10 (Pipeline Modularization - Phases 1-3 Complete + Backup Retention)
 **Previous diary entry:** diary/2025-11-06.md
 
@@ -34,8 +45,8 @@ See [020: Rolling Daily Context](PROJECT_CHARTER.md#020-rolling-daily-context) a
 
 **Current Implementation**:
 - Single-branch workflow with direct commits eliminates synchronization issues
-- Warn-and-continue for data freshness (7-day check) allows automation to proceed
-- 3-day stall detection (zero transitions) provides critical failure alerts
+- Warn-and-continue for data freshness allows automation to proceed
+- Metrics logging for diagnostics (no enforcement gates)
 - Optional admin review available but does not gate daily automation
 
 **Current Focus**:
@@ -61,7 +72,7 @@ See [020: Rolling Daily Context](PROJECT_CHARTER.md#020-rolling-daily-context) a
 
 **Stage 3: Automation & Validation Verification**
 - [ ] Single-branch workflow operational
-- [ ] Warn-and-continue validation (7-day freshness, 3-day stall detection)
+- [ ] Warn-and-continue validation (report-only, no enforcement gates)
 - [ ] Optional admin review tested (no blocking)
 - [ ] Daily orchestrator runs without manual intervention
 - [ ] CI automation passes

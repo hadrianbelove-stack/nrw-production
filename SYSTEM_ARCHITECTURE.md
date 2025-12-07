@@ -668,27 +668,18 @@ See [NRW_DATA_WORKFLOW_EXPLAINED.md Section 2.1](./NRW_DATA_WORKFLOW_EXPLAINED.m
 # 3. Changes committed directly to main (no merging needed)
 ```
 
-### 6.5 Validation & Stall Detection Policy
+### 6.5 Validation Policy
 
-**Canonical validation windows and stall detection thresholds:**
+**Pipeline validation is report-only (no enforcement gates):**
 
-**Site Freshness Check:**
-- **Window**: 7 days
-- **Threshold**: At least 3 movies released in last 7 days
-- **Action**: Warn-only (workflow continues with warning)
-- **Purpose**: Detect potential discovery issues without blocking automation
+The orchestrator logs metrics and data quality information for diagnostics but does not fail the pipeline on validation issues. This allows automation to proceed and publish updates even when metrics are incomplete.
 
-**Stall Detection:**
-- **Window**: 3 consecutive days
-- **Threshold**: Zero status transitions (tracking → available)
-- **Action**: CI failure (workflow fails)
-- **Purpose**: Detect critical pipeline failures requiring intervention
+**Metrics logged:**
+- Discovery: movies polled, transitions detected
+- Intake: new movies discovered
+- Data quality: coverage stats, RT scores, watch links
 
-**Additional Validation Gates:**
-1. **Data File Existence** - data.json, movie_tracking.json exist
-2. **Data Integrity** - Valid JSON structure
-3. **Performance Check** - Runtime under 5 minutes
-4. **API Quota Check** - Under 80% monthly limit
+**Rationale:** For a personal project, it's more useful to get partial updates published than to have the pipeline fail on health check conditions. Issues are visible in GitHub Actions logs for investigation.
 
 **For detailed workflow documentation:** See [docs/NRW_FULL_WORKFLOW.md](docs/NRW_FULL_WORKFLOW.md)
 

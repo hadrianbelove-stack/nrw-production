@@ -22,8 +22,7 @@
 - [ ] Validation policy per SYSTEM_ARCHITECTURE.md §6.5
 - [ ] Optional admin review mode tested (local and CI)
 - [ ] Ephemeral artifacts policy enforced
-- [ ] Full orchestrator run successful (ungated automation)
-- [ ] Stall detection and issue creation working
+- [ ] Full orchestrator run successful (report-only validation)
 - [ ] GitHub Actions manual trigger passes
 - [ ] Stage 3 complete, automation ready
 

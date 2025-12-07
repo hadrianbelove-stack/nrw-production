@@ -65,7 +65,7 @@ Four stages: Audit/Planning → Core Restoration → Automation Cleanup → Docu
 
 **Audit Components**: Compare generate_data.py (Oct 19 vs now), scrapers, admin.py, workflows
 
-**Keep List**: Nov 5-8 fixes (branch sync, 7-day freshness check with 3-day stall detection per SYSTEM_ARCHITECTURE.md §6.5, data rebuild, discovery digital_date)
+**Keep List**: Nov 5-8 fixes (branch sync, report-only validation, data rebuild, discovery digital_date)
 
 **Restore List**: Oct 19 clean structures (enrichment-on-transition, Playwright patterns, admin QA)
 
