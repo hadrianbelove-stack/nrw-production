@@ -78,7 +78,10 @@ def setup_logger(name, log_file='logs/admin.log', level=logging.INFO):
 
 
 class DataGenerator:
-    def __init__(self):
+    def __init__(self, enrichment_enabled: bool = True):
+        # Set enrichment flag immediately to avoid timing bugs
+        self.enrichment_enabled = enrichment_enabled
+
         # Initialize logger FIRST before any operations that might log
         self.logger = setup_logger('data_generator', 'logs/admin.log', logging.INFO)
 
@@ -90,9 +93,6 @@ class DataGenerator:
         # Separate persistence for enrichment tracking to prevent race conditions
         from enrichment_state import EnrichmentStateManager
         self.enrichment_state = EnrichmentStateManager()
-
-        # Default enrichment flag (will be overridden by CLI)
-        self.enrichment_enabled = True
 
         self.config = self.load_config()
 

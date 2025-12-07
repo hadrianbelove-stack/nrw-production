@@ -102,8 +102,12 @@ def main():
 
     # CLI metrics handling removed - orchestrator now handles metrics consolidation from discovery_run.json
 
-    # Generate the final display data
-    generator.generate_display_data(incremental=incremental, force_refresh=force_refresh)
+    # Generate the final display data (only for final generation phase, not intake/discovery)
+    if not args.intake and not args.discover:
+        print("\n🎬 Generating final display data...")
+        generator.generate_display_data(incremental=incremental, force_refresh=force_refresh)
+    else:
+        print("📋 Intake/discovery phase complete - skipping display data generation")
 
 
 if __name__ == "__main__":

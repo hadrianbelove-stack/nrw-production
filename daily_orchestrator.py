@@ -45,6 +45,11 @@ class NRWOrchestrator:
         self.results = []
         self.has_changes = False
         self.phase_timings = []  # Track timing for each phase
+        # Failure tracking for end-of-run reporting (never exit, always report)
+        self.failures = []  # List of {phase, severity, message, context}
+        self.warnings = []  # Non-critical issues
+        self.health_issues = []  # Health check results
+        self.stall_status = {'stalled': False}  # Stall detection results
         
     def run_command(self, cmd, description, critical=True):
         """Execute command with error handling"""
@@ -89,7 +94,14 @@ class NRWOrchestrator:
             print(f"❌ Failed: {description} ({phase_duration.total_seconds():.1f}s)")
             if result.stderr:
                 print(f"   Error: {result.stderr.strip()}")
-            # Best-effort: log failure but continue (no sys.exit)
+            # Track failure for end-of-run report (best-effort: continue, don't exit)
+            self.failures.append({
+                'phase': description,
+                'severity': 'error',
+                'message': f'Phase failed with exit code {result.returncode}',
+                'context': result.stderr.strip()[:500] if result.stderr else None,
+                'stdout_preview': result.stdout.strip()[:500] if result.stdout else None
+            })
 
         return success
 
@@ -117,7 +129,9 @@ class NRWOrchestrator:
                     print(f"❌ Attempt {attempt + 1} failed, will retry...")
                 else:
                     print(f"❌ All {max_retries + 1} attempts failed for {description}")
-                    # Best-effort: log failure but continue (no sys.exit)
+                    # Note: failure already tracked by run_command, just add retry context
+                    if self.failures and self.failures[-1]['phase'] == description:
+                        self.failures[-1]['message'] += f' (after {max_retries + 1} attempts)'
 
         return False
 
@@ -547,6 +561,302 @@ class NRWOrchestrator:
                 else:
                     print(f"❌ All {max_retries} attempts to save metrics failed")
 
+    def _get_metrics_age_hours(self, timestamp_str):
+        """Calculate age of metrics timestamp in hours"""
+        try:
+            metrics_dt = datetime.fromisoformat(timestamp_str.replace('Z', '+00:00'))
+            now = datetime.now(metrics_dt.tzinfo) if metrics_dt.tzinfo else datetime.now()
+            return (now - metrics_dt).total_seconds() / 3600
+        except (ValueError, TypeError):
+            return 999  # Return large number if can't parse
+
+    def check_discovery_health(self):
+        """Health check for discovery phase - reports issues but never fails pipeline"""
+        print("\n🔍 Running discovery health checks...")
+        issues = []
+
+        # Check metrics file exists
+        if not os.path.exists('metrics/discovery_run.json'):
+            issues.append({
+                'check': 'metrics_exist',
+                'severity': 'error',
+                'message': 'discovery_run.json MISSING - discovery phase may have crashed'
+            })
+            self.health_issues = issues
+            return issues
+
+        try:
+            with open('metrics/discovery_run.json') as f:
+                metrics = json.load(f)
+
+            # Check recency (should be from current run)
+            timestamp = metrics.get('timestamp')
+            if timestamp:
+                age_hours = self._get_metrics_age_hours(timestamp)
+                if age_hours > 2:
+                    issues.append({
+                        'check': 'metrics_stale',
+                        'severity': 'warning',
+                        'message': f'Metrics are {age_hours:.1f}h old (may be from previous run)'
+                    })
+                else:
+                    print(f"   ✅ Metrics recency: {age_hours:.1f}h old")
+
+            # Check operation type
+            operation = metrics.get('operation')
+            if operation != 'discover_availability':
+                issues.append({
+                    'check': 'operation_type',
+                    'severity': 'warning',
+                    'message': f'Unexpected operation "{operation}" (expected discover_availability)'
+                })
+
+            # Check polled count
+            polled = metrics.get('results', {}).get('polled', 0)
+            transitions = metrics.get('results', {}).get('transitions', 0)
+
+            if polled == 0:
+                issues.append({
+                    'check': 'zero_polled',
+                    'severity': 'error',
+                    'message': 'Discovery polled 0 movies - TMDB API may be failing'
+                })
+            elif polled < 100:
+                issues.append({
+                    'check': 'low_polled',
+                    'severity': 'warning',
+                    'message': f'Discovery only polled {polled} movies (expected 1000+)'
+                })
+            else:
+                print(f"   ✅ Discovery polled: {polled} movies, {transitions} transitions")
+
+        except json.JSONDecodeError as e:
+            issues.append({
+                'check': 'metrics_parse',
+                'severity': 'error',
+                'message': f'Failed to parse discovery metrics JSON: {e}'
+            })
+        except Exception as e:
+            issues.append({
+                'check': 'metrics_read',
+                'severity': 'error',
+                'message': f'Failed to read discovery metrics: {e}'
+            })
+
+        # Check intake metrics too
+        if os.path.exists('metrics/intake_run.json'):
+            try:
+                with open('metrics/intake_run.json') as f:
+                    intake = json.load(f)
+                discovered = intake.get('results', {}).get('discovered', 0)
+                print(f"   ✅ Intake: {discovered} new movies discovered")
+            except Exception as e:
+                issues.append({
+                    'check': 'intake_read',
+                    'severity': 'warning',
+                    'message': f'Failed to read intake metrics: {e}'
+                })
+        else:
+            issues.append({
+                'check': 'intake_missing',
+                'severity': 'warning',
+                'message': 'intake_run.json missing - intake phase may have failed'
+            })
+
+        # Report issues
+        for issue in issues:
+            icon = "❌" if issue['severity'] == 'error' else "⚠️"
+            print(f"   {icon} {issue['message']}")
+            if issue['severity'] == 'error':
+                self.failures.append({
+                    'phase': 'Health Check',
+                    'severity': issue['severity'],
+                    'message': issue['message'],
+                    'context': issue['check']
+                })
+            else:
+                self.warnings.append({
+                    'phase': 'Health Check',
+                    'message': issue['message']
+                })
+
+        self.health_issues = issues
+
+        if not issues:
+            print("   ✅ All health checks passed")
+
+        return issues
+
+    def check_for_stall(self):
+        """Detect multi-day stalls - reports but never fails pipeline"""
+        print("\n🔍 Checking for multi-day stalls...")
+
+        try:
+            metrics_file = 'metrics/daily.jsonl'
+            if not os.path.exists(metrics_file):
+                print("   ⚠️ No metrics file found - cannot detect stalls")
+                return
+
+            # Read entries from daily.jsonl
+            recent_entries = []
+            with open(metrics_file, 'r') as f:
+                for line in f:
+                    if line.strip():
+                        try:
+                            recent_entries.append(json.loads(line))
+                        except json.JSONDecodeError:
+                            continue
+
+            if len(recent_entries) < 3:
+                print(f"   📊 Need 3 days of data for stall detection, have {len(recent_entries)}")
+                return
+
+            # Group entries by date and select the last entry per date
+            from collections import defaultdict
+            entries_by_date = defaultdict(list)
+            for entry in recent_entries:
+                date = entry.get('date')
+                if date:
+                    entries_by_date[date].append(entry)
+
+            # For each date, select the entry with the latest timestamp
+            last_entry_per_date = {}
+            for date, entries in entries_by_date.items():
+                sorted_entries = sorted(entries, key=lambda e: e.get('timestamp', ''))
+                last_entry_per_date[date] = sorted_entries[-1]
+
+            if len(last_entry_per_date) < 3:
+                print(f"   📊 Need 3 unique dates, have {len(last_entry_per_date)}")
+                return
+
+            # Get the last 3 dates (most recent first)
+            sorted_dates = sorted(last_entry_per_date.keys(), reverse=True)
+            last_3_dates = sorted_dates[:3]
+            last_3_entries = [last_entry_per_date[date] for date in last_3_dates]
+
+            # Check if all 3 days have transitions == 0
+            stall_dates = []
+            for entry in last_3_entries:
+                transitions = entry.get('transitions', 0)
+                date = entry.get('date')
+                if transitions == 0:
+                    stall_dates.append(date)
+
+            if len(stall_dates) >= 3:
+                # 3-day stall detected
+                self.stall_status = {
+                    'stalled': True,
+                    'days': len(stall_dates),
+                    'dates': sorted(stall_dates),
+                    'entries': [
+                        {
+                            'date': e.get('date'),
+                            'transitions': e.get('transitions', 0),
+                            'discovered': e.get('discovered_today', 0),
+                            'polled': e.get('polled', 0)
+                        }
+                        for e in last_3_entries
+                    ]
+                }
+
+                # Add as warning (not failure - could be normal in mature system)
+                self.warnings.append({
+                    'phase': 'Stall Detection',
+                    'message': f'3-day stall detected: no transitions since {min(stall_dates)}'
+                })
+
+                print(f"   🔴 STALL DETECTED: {len(stall_dates)} consecutive days with 0 transitions")
+                print(f"   📅 Stalled dates: {', '.join(sorted(stall_dates))}")
+
+                # Persist stall state for external monitoring
+                self._persist_stall_state(stall_dates, last_3_entries)
+            else:
+                print(f"   ✅ No stall: {3 - len(stall_dates)}/3 recent days had transitions")
+                self.stall_status = {'stalled': False, 'days_without_transitions': len(stall_dates)}
+
+        except Exception as e:
+            print(f"   ⚠️ Stall detection failed: {e}")
+            self.warnings.append({
+                'phase': 'Stall Detection',
+                'message': f'Stall detection failed: {e}'
+            })
+
+    def _persist_stall_state(self, stall_dates, entries):
+        """Persist stall detection state to metrics/stall_state.json"""
+        try:
+            os.makedirs('metrics', exist_ok=True)
+
+            stall_state = {
+                'timestamp': datetime.now().isoformat(),
+                'stall_detected': True,
+                'window_size': 3,
+                'stall_dates': sorted(stall_dates),
+                'entries_checked': len(entries),
+                'stall_details': [
+                    {
+                        'date': entry.get('date'),
+                        'transitions': entry.get('transitions', 0),
+                        'discovered_today': entry.get('discovered_today', 0),
+                        'polled': entry.get('polled', 0)
+                    }
+                    for entry in entries
+                ]
+            }
+
+            with open('metrics/stall_state.json', 'w') as f:
+                json.dump(stall_state, f, indent=2)
+
+            print(f"   📊 Stall state saved to metrics/stall_state.json")
+
+        except Exception as e:
+            print(f"   ⚠️ Failed to persist stall state: {e}")
+
+    def save_run_diagnostics(self):
+        """Save comprehensive diagnostics to metrics/run_diagnostics.json"""
+        try:
+            os.makedirs('metrics', exist_ok=True)
+
+            diagnostics = {
+                'timestamp': datetime.now().isoformat(),
+                'duration_seconds': (datetime.now() - self.start_time).total_seconds(),
+                'overall_success': len(self.failures) == 0,
+                'failure_count': len(self.failures),
+                'warning_count': len(self.warnings),
+
+                # Phase results
+                'phases': [
+                    {
+                        'name': r['step'],
+                        'success': r['success'],
+                        'duration_seconds': r['duration'].total_seconds(),
+                        'error': r['error'][:1000] if not r['success'] and r.get('error') else None,
+                        'output_preview': r['output'][:500] if r.get('output') else None
+                    }
+                    for r in self.results
+                ],
+
+                # Health check results
+                'health_issues': self.health_issues,
+
+                # Stall detection
+                'stall_status': self.stall_status,
+
+                # All failures and warnings
+                'failures': self.failures,
+                'warnings': self.warnings,
+
+                # Data quality snapshot
+                'data_quality': self.get_statistics()
+            }
+
+            with open('metrics/run_diagnostics.json', 'w') as f:
+                json.dump(diagnostics, f, indent=2)
+
+            print(f"📊 Diagnostics saved to metrics/run_diagnostics.json")
+
+        except Exception as e:
+            print(f"⚠️ Failed to save diagnostics: {e}")
+
     def print_summary(self):
         """Print execution summary"""
         print("\n" + "=" * 50)
@@ -607,7 +917,41 @@ class NRWOrchestrator:
             print(f"❌ Failed: {len(failed)} steps")
             for r in failed:
                 print(f"   - {r['step']}")
-    
+
+        # Failure report section
+        if self.failures:
+            print("\n" + "🚨" * 20)
+            print("🚨 FAILURES DETECTED")
+            print("🚨" * 20)
+            for f in self.failures:
+                print(f"❌ [{f['phase']}] {f['message']}")
+                if f.get('context'):
+                    # Truncate long context for display
+                    context = f['context'][:200] + '...' if len(str(f['context'])) > 200 else f['context']
+                    print(f"   Context: {context}")
+
+        if self.warnings:
+            print("\n⚠️  WARNINGS:")
+            for w in self.warnings:
+                print(f"   - [{w.get('phase', 'Unknown')}] {w['message']}")
+
+        # Stall alert
+        if self.stall_status.get('stalled'):
+            print("\n" + "🔴" * 20)
+            print(f"🔴 STALL ALERT: {self.stall_status['days']} days with no transitions")
+            print(f"🔴 Dates: {', '.join(self.stall_status['dates'])}")
+            print("🔴" * 20)
+
+        # Final status line (for easy grep in CI logs)
+        print("\n" + "=" * 50)
+        if self.failures:
+            print(f"🔴 RUN STATUS: COMPLETED WITH {len(self.failures)} FAILURE(S)")
+        elif self.warnings:
+            print(f"🟡 RUN STATUS: COMPLETED WITH {len(self.warnings)} WARNING(S)")
+        else:
+            print(f"🟢 RUN STATUS: COMPLETED SUCCESSFULLY")
+        print("=" * 50)
+
     def run(self):
         """Execute the complete daily pipeline"""
         # Acquire exclusive lock to prevent concurrent runs
@@ -693,35 +1037,14 @@ class NRWOrchestrator:
                     cmd, description, critical = step
                     self.run_command(cmd, description, critical)
 
-            # Phase 2: Log metrics for diagnostics (no enforcement - just reporting)
-            print(f"\n📊 Phase 2: Metrics Summary")
-
-            if os.path.exists('metrics/discovery_run.json'):
-                try:
-                    with open('metrics/discovery_run.json') as f:
-                        discovery_metrics = json.load(f)
-                    operation = discovery_metrics.get('operation', 'unknown')
-                    polled = discovery_metrics.get('results', {}).get('polled', 0)
-                    transitions = discovery_metrics.get('results', {}).get('transitions', 0)
-                    print(f'   Discovery: {polled} polled, {transitions} transitions')
-                except Exception as e:
-                    print(f'   Discovery metrics: could not read ({e})')
-            else:
-                print('   Discovery metrics: file not found')
-
-            if os.path.exists('metrics/intake_run.json'):
-                try:
-                    with open('metrics/intake_run.json') as f:
-                        intake_metrics = json.load(f)
-                    discovered = intake_metrics.get('results', {}).get('discovered', 0)
-                    print(f'   Intake: {discovered} new movies discovered')
-                except Exception as e:
-                    print(f'   Intake metrics: could not read ({e})')
-            else:
-                print('   Intake metrics: file not found')
+            # Health checks and metrics (report-only, never fail)
+            self.check_discovery_health()
 
             # Save consolidated daily metrics for historical tracking
             self.save_daily_metrics()
+
+            # Check for multi-day stalls (report-only)
+            self.check_for_stall()
 
             # Phase 3: Generate final display data with enrichment
             # NOTE: data.json uses eventual consistency model - only updated here in Phase 3
@@ -744,12 +1067,19 @@ class NRWOrchestrator:
                     self.validate_data_quality()
                 except Exception as e:
                     print(f"⚠️ Data quality issue: {e}")
+                    self.warnings.append({
+                        'phase': 'Data Quality',
+                        'message': str(e)
+                    })
+
+            # Save comprehensive diagnostics for debugging
+            self.save_run_diagnostics()
 
             # Final summary
             self.print_summary()
 
             # Success message
-            print("\n✨ Daily update complete - data.json ready for auto-publish!")
+            print("\n✨ Daily update complete - diagnostics saved to metrics/run_diagnostics.json")
             return 0
         finally:
             # Always remove lock file
