@@ -88,6 +88,7 @@ Daily Intake & Discovery → movie_tracking.json → OPTIONAL REVIEW → data.js
 - **Structure:** Movies include basic info (title, date, providers) plus enriched data when successful (poster, synopsis, director, cast, trailer, RT link, Wikipedia link, watch_links)
 - **Key change:** Enrichment failures no longer hide movies - minimal records remain visible
 - **Reliability:** All discovered movies appear; enrichment overlays when possible
+- **Data Consistency:** Uses eventual consistency model - `data.json` is only updated in Phase 3 (final generation) and may temporarily lag behind tracking state between discovery and enrichment phases
 
 ### **Phase 5: User Display**
 **What happens:** User visits the website and sees the beautiful movie wall.

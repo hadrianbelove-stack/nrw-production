@@ -899,6 +899,9 @@ class NRWOrchestrator:
                 sys.exit(1)
 
             # Phase 3: Generate final display data with enrichment
+            # NOTE: data.json uses eventual consistency model - only updated here in Phase 3
+            # This means data.json may temporarily lag behind movie_tracking.json between
+            # discovery (Phase 2) and final generation (Phase 3)
             print(f"\n📊 Phase 3: Data Generation")
             success = self.run_command(
                 "python3 generate_data.py",
