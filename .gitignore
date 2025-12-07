@@ -13,7 +13,8 @@ logs/
 
 # Backup files from safe_write_json
 *.backup.*
-backups/
+backups/*
+!backups/.gitkeep
 diagnose_*.py
 current_releases.json
 *_test.py

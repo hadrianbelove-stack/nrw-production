@@ -1,0 +1,3 @@
+# Keep backups directory in git
+# This ensures the directory exists in GitHub Actions environment
+# Backup files are gitignored but the directory structure is preserved
