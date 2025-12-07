@@ -886,68 +886,6 @@ class DataGenerator:
                         movie['enriched'] = False
                         movie['enrichment_date'] = None
 
-                        # Upsert minimal record into data.json on transition
-                        try:
-                            # Load current data.json if valid
-                            data = {}
-                            if os.path.exists('data.json'):
-                                if self.validator.validate_data_json_schema('data.json'):
-                                    with open('data.json', 'r') as f:
-                                        data = json.load(f)
-                                else:
-                                    self.logger.warning("data.json schema validation failed during upsert - initializing empty structure")
-
-                            # Initialize structure if missing
-                            if 'generated_at' not in data:
-                                data['generated_at'] = datetime.now().isoformat()
-                            if 'count' not in data:
-                                data['count'] = 0
-                            if 'movies' not in data:
-                                data['movies'] = []
-                            if 'hidden' not in data:
-                                data['hidden'] = []
-                            if 'featured' not in data:
-                                data['featured'] = []
-
-                            # Normalize TMDB ID to string for consistency
-                            movie_id_str = str(movie_id)
-
-                            # Find existing movie or create new minimal entry
-                            existing_movie = None
-                            for i, existing in enumerate(data['movies']):
-                                if isinstance(existing, dict) and str(existing.get('id')) == movie_id_str:
-                                    existing_movie = i
-                                    break
-
-                            # Build minimal movie dict
-                            minimal_movie = {
-                                'id': movie_id_str,
-                                'title': movie.get('title', 'Unknown Title'),
-                                'digital_date': movie.get('digital_date'),
-                                'providers': movie.get('providers', {}),
-                                'links': {},
-                                'watch_links': {}
-                            }
-
-                            # Update existing or append new
-                            if existing_movie is not None:
-                                # Update existing movie with discovery fields
-                                existing = data['movies'][existing_movie]
-                                existing.update({
-                                    'title': minimal_movie['title'],
-                                    'digital_date': minimal_movie['digital_date'],
-                                    'providers': minimal_movie['providers']
-                                })
-                            else:
-                                # Append new minimal movie
-                                data['movies'].append(minimal_movie)
-                                data['count'] = len(data['movies'])
-
-                            # Write atomically
-                            self.storage.atomic_write_json(data, 'data.json')
-
-                        except Exception as e:
-                            self.logger.warning(f"Failed to upsert minimal movie {movie_id} to data.json: {e}")
 
                         newly_digital += 1
                         newly_available_ids.append(movie_id)  # Track for enrichment state file
