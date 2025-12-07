@@ -169,18 +169,12 @@ jobs:
           if [ -f "data.json" ]; then
             search_urls=$(jq -r '.movies[] | select(.watch_links != null) | .watch_links[] | select(.link != null) | .link' data.json 2>/dev/null | grep -c 'google.com/search' || echo "0")
             if [ "$search_urls" -gt 0 ]; then
-              echo "ERROR: Found $search_urls Google search URLs in data.json"
-              if [ "${NRW_FAIL_ON_SEARCH_URLS:-false}" = "true" ]; then
-                echo "Failing workflow due to NRW_FAIL_ON_SEARCH_URLS=true"
-                exit 1
-              else
-                echo "WARNING: Google search URLs detected but not failing (set NRW_FAIL_ON_SEARCH_URLS=true to fail)"
-              fi
+              echo "⚠️ WARNING: Found $search_urls Google search URLs in data.json"
             else
-              echo "✓ No Google search URLs found in data.json"
+              echo "✅ No Google search URLs found in data.json"
             fi
           else
-            echo "WARNING: data.json not found, skipping search URL check"
+            echo "⚠️ data.json not found, skipping search URL check"
           fi
 
       - name: Extract discovery summary

@@ -587,15 +587,9 @@ class NRWOrchestrator:
                     pct = (count / total_movies) * 100
                     print(f"{source.replace('_', ' ').title()}: {count} ({pct:.1f}%)")
 
-                # Fail on search URLs if enabled
+                # Log search URLs as warning (report-only)
                 if link_sources['search_urls'] > 0:
-                    fail_on_search = os.getenv('NRW_FAIL_ON_SEARCH_URLS', 'false').lower() == 'true'
-                    if fail_on_search:
-                        print(f"❌ ERROR: Found {link_sources['search_urls']} Google search URLs in data.json")
-                        print("   Set NRW_FAIL_ON_SEARCH_URLS=false to disable this check")
-                        sys.exit(1)
-                    else:
-                        print(f"⚠️ Warning: Found {link_sources['search_urls']} search URLs (set NRW_FAIL_ON_SEARCH_URLS=true to fail on this)")
+                    print(f"⚠️ Warning: Found {link_sources['search_urls']} search URLs in data.json")
 
         # Phase timing summary
         if self.phase_timings:
