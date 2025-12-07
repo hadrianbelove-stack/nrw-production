@@ -89,10 +89,8 @@ class NRWOrchestrator:
             print(f"❌ Failed: {description} ({phase_duration.total_seconds():.1f}s)")
             if result.stderr:
                 print(f"   Error: {result.stderr.strip()}")
-            if critical:
-                self.print_summary()
-                sys.exit(1)
-        
+            # Best-effort: log failure but continue (no sys.exit)
+
         return success
 
     def run_command_with_retries(self, cmd, description, critical=True, max_retries=2, retry_delays=None):
@@ -119,9 +117,7 @@ class NRWOrchestrator:
                     print(f"❌ Attempt {attempt + 1} failed, will retry...")
                 else:
                     print(f"❌ All {max_retries + 1} attempts failed for {description}")
-                    if critical:
-                        self.print_summary()
-                        sys.exit(1)
+                    # Best-effort: log failure but continue (no sys.exit)
 
         return False
 
