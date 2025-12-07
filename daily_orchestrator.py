@@ -9,7 +9,6 @@ import sys
 import os
 import yaml
 import time
-import hashlib
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -446,49 +445,6 @@ class NRWOrchestrator:
             return {'error': str(e)}
 
 
-    def extract_discovery_metrics(self):
-        """Extract discovery metrics from dedicated discovery JSON artifact or fallback to log parsing"""
-        polled = 0
-        transitions = 0
-
-        # Primary path: Read from dedicated discovery JSON artifact for provider availability
-        try:
-            if os.path.exists('metrics/discovery_run.json'):
-                with open('metrics/discovery_run.json', 'r') as f:
-                    discovery_data = json.load(f)
-
-                operation = discovery_data.get('operation')
-                if operation == 'discover_availability':
-                    results = discovery_data.get('results', {})
-                    polled = results.get('polled', 0)
-                    transitions = results.get('transitions', 0)
-                    print(f"📊 Discovery metrics from JSON artifact: {polled} polled, {transitions} transitions")
-                    return polled, transitions
-                else:
-                    print(f"⚠️ Unexpected operation in discovery_run.json: {operation} (expected 'discover_availability')")
-
-        except Exception as e:
-            print(f"⚠️ Failed to read discovery JSON artifact: {e}")
-
-        # Fallback to log parsing if JSON artifact not available or invalid
-        print("📊 Falling back to log parsing for discovery metrics")
-        for result in self.results:
-            if result['success'] and result['output']:
-                output_lines = result['output'].split('\n')
-                for line in output_lines:
-                    # Look for the standardized metrics line: "Polled X movies, Y changes detected"
-                    if line.startswith('Polled ') and 'changes detected' in line:
-                        import re
-                        # Extract numbers using regex
-                        match = re.search(r'Polled (\d+) movies, (\d+) changes detected', line)
-                        if match:
-                            polled = int(match.group(1))
-                            transitions = int(match.group(2))
-                            print(f"📊 Extracted metrics from logs: {polled} polled, {transitions} transitions")
-                            break
-
-        return polled, transitions
-
     def save_daily_metrics(self):
         """Save consolidated daily metrics to metrics/daily.jsonl from separate intake and discovery files"""
         max_retries = 3
@@ -577,10 +533,19 @@ class NRWOrchestrator:
 
         # Check metrics file exists
         if not os.path.exists('metrics/discovery_run.json'):
-            issues.append({
+            issue = {
                 'check': 'metrics_exist',
                 'severity': 'error',
                 'message': 'discovery_run.json MISSING - discovery phase may have crashed'
+            }
+            issues.append(issue)
+            # Track failure before early return (so it shows in summary)
+            print(f"   ❌ {issue['message']}")
+            self.failures.append({
+                'phase': 'Health Check',
+                'severity': 'error',
+                'message': issue['message'],
+                'context': issue['check']
             })
             self.health_issues = issues
             return issues
@@ -959,20 +924,30 @@ class NRWOrchestrator:
         is_ci = os.getenv('CI') == 'true' or os.getenv('GITHUB_ACTIONS') == 'true'
         lock_file = '.nrw_orchestrator.lock'
 
-        # PID-aware stale lock cleanup
+        # PID-aware stale lock cleanup (cross-platform: works on macOS and Linux)
         if os.path.exists(lock_file):
             try:
                 with open(lock_file, 'r') as f:
                     lock_info = json.load(f)
                 pid = lock_info.get('pid')
-                if pid and os.path.exists(f'/proc/{pid}'):  # Linux check
-                    print(f'❌ Active process {pid} holds lock')
-                    sys.exit(1)
+                if pid:
+                    try:
+                        os.kill(pid, 0)  # Signal 0 doesn't kill, just checks if process exists
+                        print(f'❌ Active process {pid} holds lock')
+                        sys.exit(1)
+                    except OSError:
+                        # Process doesn't exist - stale lock
+                        print(f'⚠️ Removing stale lock (PID {pid} not running)')
+                        os.remove(lock_file)
                 else:
-                    print(f'⚠️ Removing stale lock (PID {pid} not running)')
+                    print(f'⚠️ Removing corrupted lock (no PID)')
                     os.remove(lock_file)
-            except:
-                os.remove(lock_file)  # Force remove corrupted lock
+            except json.JSONDecodeError:
+                print(f'⚠️ Removing corrupted lock (invalid JSON)')
+                os.remove(lock_file)
+            except Exception as e:
+                print(f'⚠️ Removing lock file due to error: {e}')
+                os.remove(lock_file)
 
         # Create lock file with PID and timestamp
         try:
