@@ -808,15 +808,19 @@ class DataGenerator:
         newly_available_ids = []  # Track movie IDs that transition to available
 
         print(f"\n🎬 Checking {total_to_check} movies for digital availability...\n")
+        discovery_start_time = time.time()
 
         try:
             for movie_id, movie in tracking_movies:
                 checked += 1
 
-                # Progress indicator every 50 movies
-                if checked % 50 == 0 or checked == total_to_check:
+                # Progress indicator every 100 movies (less noisy but still informative)
+                if checked % 100 == 0 or checked == total_to_check:
                     progress_pct = (checked / total_to_check) * 100
-                    print(f"  Progress: {checked}/{total_to_check} ({progress_pct:.1f}%) - Found {newly_digital} newly digital, {failed} failed")
+                    elapsed = time.time() - discovery_start_time
+                    rate = checked / elapsed if elapsed > 0 else 0
+                    remaining = (total_to_check - checked) / rate if rate > 0 else 0
+                    print(f"  📊 Discovery: {checked}/{total_to_check} ({progress_pct:.1f}%) | {newly_digital} found | {int(elapsed//60)}m elapsed | ~{int(remaining//60)}m remaining")
 
                 # Check providers with retry logic
                 url = f"https://api.themoviedb.org/3/movie/{movie_id}/watch/providers"
@@ -2369,8 +2373,18 @@ class DataGenerator:
 
         # Enrich movies in the to_enrich list
         enriched_count = 0
+        total_to_enrich = len(to_enrich)
+        enrichment_start_time = time.time()
 
-        for movie_id, movie_data in to_enrich:
+        for idx, (movie_id, movie_data) in enumerate(to_enrich):
+            # Progress indicator every 10 movies
+            if (idx + 1) % 10 == 0 or idx == total_to_enrich - 1:
+                progress_pct = ((idx + 1) / total_to_enrich) * 100
+                elapsed = time.time() - enrichment_start_time
+                rate = (idx + 1) / elapsed if elapsed > 0 else 0
+                remaining = (total_to_enrich - idx - 1) / rate if rate > 0 else 0
+                print(f"  📊 Enrichment: {idx + 1}/{total_to_enrich} ({progress_pct:.1f}%) | {enriched_count} success | {int(elapsed//60)}m elapsed | ~{int(remaining//60)}m remaining")
+
             try:
                 # Get full movie details (movie_id is the TMDB ID)
                 movie_details = self.get_movie_details(movie_id)
