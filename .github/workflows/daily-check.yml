@@ -229,6 +229,16 @@ jobs:
             .local_run.log
           retention-days: 30
 
+      - name: Archive data artifacts (recovery backup)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: data-backup-${{ github.run_id }}
+          path: |
+            movie_tracking.json
+            data.json
+          retention-days: 7
+
       - name: Commit changes
         if: always() && steps.changes.outputs.changes == 'true'
         run: |
@@ -264,7 +274,14 @@ jobs:
 
       - name: Push changes to main
         if: always() && env.COMMIT_MADE == 'true'
-        run: git push origin main
+        run: |
+          # Pull latest changes first to avoid conflicts (rebase our commit on top)
+          git pull --rebase origin main || {
+            echo "⚠️ Rebase failed, attempting merge strategy..."
+            git rebase --abort 2>/dev/null || true
+            git pull origin main --no-rebase
+          }
+          git push origin main
 
 
       - name: Get pipeline status for failure report
