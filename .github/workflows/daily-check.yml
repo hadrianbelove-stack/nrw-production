@@ -16,7 +16,7 @@ permissions:
 jobs:
   daily-update:
     runs-on: ubuntu-latest
-    timeout-minutes: 120  # Increased for full provider-availability discovery on ~4k titles
+    timeout-minutes: 180  # 3 hours for full pipeline: intake + discovery (~4.7k titles) + generation
     env:
       PYTHONUNBUFFERED: '1'  # Disable Python output buffering for real-time logs
       TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
@@ -207,8 +207,9 @@ jobs:
         id: changes
         if: always()
         run: |
-          # Check for changes in data.json and metrics
-          if ! git diff --quiet --exit-code -- data.json metrics/daily.jsonl; then
+          # Check for changes in data.json, metrics/daily.jsonl, and diagnostics files
+          # Note: metrics/run_diagnostics.json tracks orchestrator health over time
+          if ! git diff --quiet --exit-code -- data.json metrics/daily.jsonl metrics/run_diagnostics.json; then
             echo "changes=true" >> $GITHUB_OUTPUT
             echo "Changes detected in repository"
           else
@@ -244,9 +245,9 @@ jobs:
             commit_msg="$commit_msg, new_arrivals=${NEW_ARRIVALS:-0}"
           fi
 
-          # Stage generated files (data.json and metrics)
-          echo "📦 Staging data.json and metrics"
-          git add metrics/daily.jsonl data.json
+          # Stage generated files (data.json, daily metrics, and diagnostics)
+          echo "📦 Staging data.json, daily metrics, and diagnostics"
+          git add data.json metrics/daily.jsonl metrics/run_diagnostics.json
 
           # Only commit if there are staged changes and set flag accordingly
           if git diff --cached --quiet; then
