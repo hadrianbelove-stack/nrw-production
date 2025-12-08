@@ -993,9 +993,8 @@ class NRWOrchestrator:
             except Exception as e:
                 print(f"⚠️  Failed to create lock file: {e}")
 
-            try:
-                print(f"🚀 NRW Daily Update - {datetime.now().strftime('%Y-%m-%d %H:%M')}")
-                print("=" * 50)
+            print(f"🚀 NRW Daily Update - {datetime.now().strftime('%Y-%m-%d %H:%M')}")
+            print("=" * 50)
 
             # Ensure we're in the right directory (handle both local and CI environments)
             forced_cwd = os.getenv('NRW_FORCE_CWD')
@@ -1089,13 +1088,6 @@ class NRWOrchestrator:
             # Success message
             print("\n✨ Daily update complete - diagnostics saved to metrics/run_diagnostics.json")
             return 0
-            finally:
-                # Always remove lock file
-                if os.path.exists(lock_file):
-                    try:
-                        os.remove(lock_file)
-                    except:
-                        pass
         except KeyboardInterrupt:
             print("\n\n⚠️  Orchestrator interrupted by user")
             # Record the interruption as a failure
@@ -1128,6 +1120,14 @@ class NRWOrchestrator:
                 # If saving diagnostics fails, just print basic info
                 print(f"\n❌ Failed to save diagnostics for orchestrator error: {e}")
             return 0  # Best-effort: record failure but don't fail CI
+        finally:
+            # Always remove lock file
+            lock_file = '.nrw_orchestrator.lock'
+            if os.path.exists(lock_file):
+                try:
+                    os.remove(lock_file)
+                except:
+                    pass
 
 def main():
     """Entry point - orchestrator handles all exceptions with best-effort policy"""
