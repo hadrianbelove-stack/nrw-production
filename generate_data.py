@@ -76,8 +76,7 @@ def main():
         print("🎯 Enrichment enabled for final generation phase")
 
     # Initialize data generator from pipeline module
-    generator = DataGenerator()
-    generator.enrichment_enabled = enrichment_enabled
+    generator = DataGenerator(enrichment_enabled=enrichment_enabled)
 
     if args.debug:
         generator.logger.setLevel(logging.DEBUG)
@@ -107,7 +106,7 @@ def main():
         print("\n🎬 Generating final display data...")
         generator.generate_display_data(incremental=incremental, force_refresh=force_refresh)
     else:
-        print("📋 Intake/discovery phase complete - skipping display data generation")
+        print("📋 Intake/discovery phase complete")
 
 
 if __name__ == "__main__":

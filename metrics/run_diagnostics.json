@@ -1,0 +1,65 @@
+{
+  "timestamp": "2025-12-07T13:06:36.525530",
+  "duration_seconds": 0.000734,
+  "overall_success": true,
+  "failure_count": 0,
+  "warning_count": 2,
+  "phases": [],
+  "health_issues": [
+    {
+      "check": "metrics_stale",
+      "severity": "warning",
+      "message": "Metrics are 62.7h old (may be from previous run)"
+    }
+  ],
+  "stall_status": {
+    "stalled": true,
+    "days": 3,
+    "dates": [
+      "2025-11-23",
+      "2025-11-24",
+      "2025-11-25"
+    ],
+    "entries": [
+      {
+        "date": "2025-11-25",
+        "transitions": 0,
+        "discovered": 0,
+        "polled": 0
+      },
+      {
+        "date": "2025-11-24",
+        "transitions": 0,
+        "discovered": 0,
+        "polled": 0
+      },
+      {
+        "date": "2025-11-23",
+        "transitions": 0,
+        "discovered": 0,
+        "polled": 0
+      }
+    ]
+  },
+  "failures": [],
+  "warnings": [
+    {
+      "phase": "Health Check",
+      "message": "Metrics are 62.7h old (may be from previous run)"
+    },
+    {
+      "phase": "Stall Detection",
+      "message": "3-day stall detected: no transitions since 2025-11-23"
+    }
+  ],
+  "data_quality": {
+    "total": 5375,
+    "tracking": 4771,
+    "available": 604,
+    "data_movies": 440,
+    "movies_with_links": 0,
+    "movies_with_rt": 43,
+    "movies_with_wikipedia": 0,
+    "movies_with_trailers": 0
+  }
+}

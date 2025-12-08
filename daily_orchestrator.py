@@ -558,14 +558,46 @@ class NRWOrchestrator:
             timestamp = metrics.get('timestamp')
             if timestamp:
                 age_hours = self._get_metrics_age_hours(timestamp)
-                if age_hours > 2:
-                    issues.append({
-                        'check': 'metrics_stale',
-                        'severity': 'warning',
-                        'message': f'Metrics are {age_hours:.1f}h old (may be from previous run)'
-                    })
-                else:
-                    print(f"   ✅ Metrics recency: {age_hours:.1f}h old")
+
+                # Parse timestamp to compare with orchestrator start time
+                try:
+                    metrics_dt = datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
+                    # Convert to naive datetime for comparison with self.start_time
+                    if metrics_dt.tzinfo:
+                        metrics_dt = metrics_dt.replace(tzinfo=None)
+
+                    # Check if metrics are from current run (within tolerance)
+                    time_diff = abs((metrics_dt - self.start_time).total_seconds())
+                    tolerance_minutes = 5  # Allow 5 minute tolerance for clock skew
+
+                    if metrics_dt < self.start_time - timedelta(minutes=tolerance_minutes):
+                        issues.append({
+                            'check': 'metrics_not_updated_for_current_run',
+                            'severity': 'error',
+                            'message': f'Current run did not produce fresh discovery metrics (metrics from {metrics_dt.strftime("%H:%M")}, run started {self.start_time.strftime("%H:%M")})'
+                        })
+                        print(f"   ❌ Current run did not update discovery metrics")
+                    elif age_hours > 2:
+                        # This is the existing age-based warning for genuinely old metrics
+                        issues.append({
+                            'check': 'metrics_stale',
+                            'severity': 'warning',
+                            'message': f'Metrics are {age_hours:.1f}h old (may be from previous run)'
+                        })
+                    else:
+                        print(f"   ✅ Metrics recency: {age_hours:.1f}h old, from current run")
+
+                except (ValueError, TypeError) as e:
+                    # Fallback to age-only check if timestamp parsing fails
+                    print(f"   ⚠️ Could not parse metrics timestamp for current-run check: {e}")
+                    if age_hours > 2:
+                        issues.append({
+                            'check': 'metrics_stale',
+                            'severity': 'warning',
+                            'message': f'Metrics are {age_hours:.1f}h old (may be from previous run)'
+                        })
+                    else:
+                        print(f"   ✅ Metrics recency: {age_hours:.1f}h old")
 
             # Check operation type
             operation = metrics.get('operation')
@@ -918,51 +950,52 @@ class NRWOrchestrator:
         print("=" * 50)
 
     def run(self):
-        """Execute the complete daily pipeline"""
-        # Acquire exclusive lock to prevent concurrent runs
-        # Skip lock in CI environments (fresh container each run)
-        is_ci = os.getenv('CI') == 'true' or os.getenv('GITHUB_ACTIONS') == 'true'
-        lock_file = '.nrw_orchestrator.lock'
+        """Execute the complete daily pipeline with best-effort exception handling"""
+        try:
+            # Acquire exclusive lock to prevent concurrent runs
+            # Skip lock in CI environments (fresh container each run)
+            is_ci = os.getenv('CI') == 'true' or os.getenv('GITHUB_ACTIONS') == 'true'
+            lock_file = '.nrw_orchestrator.lock'
 
-        # PID-aware stale lock cleanup (cross-platform: works on macOS and Linux)
-        if os.path.exists(lock_file):
-            try:
-                with open(lock_file, 'r') as f:
-                    lock_info = json.load(f)
-                pid = lock_info.get('pid')
-                if pid:
-                    try:
-                        os.kill(pid, 0)  # Signal 0 doesn't kill, just checks if process exists
-                        print(f'❌ Active process {pid} holds lock')
-                        sys.exit(1)
-                    except OSError:
-                        # Process doesn't exist - stale lock
-                        print(f'⚠️ Removing stale lock (PID {pid} not running)')
+            # PID-aware stale lock cleanup (cross-platform: works on macOS and Linux)
+            if os.path.exists(lock_file):
+                try:
+                    with open(lock_file, 'r') as f:
+                        lock_info = json.load(f)
+                    pid = lock_info.get('pid')
+                    if pid:
+                        try:
+                            os.kill(pid, 0)  # Signal 0 doesn't kill, just checks if process exists
+                            print(f'❌ Active process {pid} holds lock')
+                            return 1  # Hard lock conflict should fail
+                        except OSError:
+                            # Process doesn't exist - stale lock
+                            print(f'⚠️ Removing stale lock (PID {pid} not running)')
+                            os.remove(lock_file)
+                    else:
+                        print(f'⚠️ Removing corrupted lock (no PID)')
                         os.remove(lock_file)
-                else:
-                    print(f'⚠️ Removing corrupted lock (no PID)')
+                except json.JSONDecodeError:
+                    print(f'⚠️ Removing corrupted lock (invalid JSON)')
                     os.remove(lock_file)
-            except json.JSONDecodeError:
-                print(f'⚠️ Removing corrupted lock (invalid JSON)')
-                os.remove(lock_file)
+                except Exception as e:
+                    print(f'⚠️ Removing lock file due to error: {e}')
+                    os.remove(lock_file)
+
+            # Create lock file with PID and timestamp
+            try:
+                with open(lock_file, 'w') as f:
+                    json.dump({
+                        'pid': os.getpid(),
+                        'started_at': datetime.now().isoformat(),
+                        'hostname': os.uname().nodename if hasattr(os, 'uname') else 'unknown'
+                    }, f)
             except Exception as e:
-                print(f'⚠️ Removing lock file due to error: {e}')
-                os.remove(lock_file)
+                print(f"⚠️  Failed to create lock file: {e}")
 
-        # Create lock file with PID and timestamp
-        try:
-            with open(lock_file, 'w') as f:
-                json.dump({
-                    'pid': os.getpid(),
-                    'started_at': datetime.now().isoformat(),
-                    'hostname': os.uname().nodename if hasattr(os, 'uname') else 'unknown'
-                }, f)
-        except Exception as e:
-            print(f"⚠️  Failed to create lock file: {e}")
-
-        try:
-            print(f"🚀 NRW Daily Update - {datetime.now().strftime('%Y-%m-%d %H:%M')}")
-            print("=" * 50)
+            try:
+                print(f"🚀 NRW Daily Update - {datetime.now().strftime('%Y-%m-%d %H:%M')}")
+                print("=" * 50)
 
             # Ensure we're in the right directory (handle both local and CI environments)
             forced_cwd = os.getenv('NRW_FORCE_CWD')
@@ -1056,25 +1089,50 @@ class NRWOrchestrator:
             # Success message
             print("\n✨ Daily update complete - diagnostics saved to metrics/run_diagnostics.json")
             return 0
-        finally:
-            # Always remove lock file
-            if os.path.exists(lock_file):
-                try:
-                    os.remove(lock_file)
-                except:
-                    pass
+            finally:
+                # Always remove lock file
+                if os.path.exists(lock_file):
+                    try:
+                        os.remove(lock_file)
+                    except:
+                        pass
+        except KeyboardInterrupt:
+            print("\n\n⚠️  Orchestrator interrupted by user")
+            # Record the interruption as a failure
+            self.failures.append({
+                'phase': 'Orchestrator',
+                'severity': 'error',
+                'message': 'Orchestrator interrupted by user (SIGINT)',
+                'context': 'KeyboardInterrupt'
+            })
+            try:
+                self.save_run_diagnostics()
+                self.print_summary()
+            except:
+                # If saving diagnostics fails, just print basic info
+                print(f"\n❌ Failed to save diagnostics after interruption")
+            return 0  # Best-effort: don't fail CI on user interruption
+        except Exception as e:
+            print(f"\n❌ Unexpected orchestrator error: {e}")
+            # Record the unexpected exception as a failure
+            self.failures.append({
+                'phase': 'Orchestrator',
+                'severity': 'error',
+                'message': f'Unexpected exception: {e}',
+                'context': str(type(e).__name__)
+            })
+            try:
+                self.save_run_diagnostics()
+                self.print_summary()
+            except:
+                # If saving diagnostics fails, just print basic info
+                print(f"\n❌ Failed to save diagnostics for orchestrator error: {e}")
+            return 0  # Best-effort: record failure but don't fail CI
 
 def main():
-    """Entry point with error handling"""
-    try:
-        orchestrator = NRWOrchestrator()
-        return orchestrator.run()
-    except KeyboardInterrupt:
-        print("\n\n⚠️  Update interrupted by user")
-        return 130
-    except Exception as e:
-        print(f"\n❌ Unexpected error: {e}")
-        return 1
+    """Entry point - orchestrator handles all exceptions with best-effort policy"""
+    orchestrator = NRWOrchestrator()
+    return orchestrator.run()
 
 if __name__ == "__main__":
     sys.exit(main())
