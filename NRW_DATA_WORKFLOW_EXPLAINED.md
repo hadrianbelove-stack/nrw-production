@@ -1,5 +1,17 @@
 # **NRW Data Workflow - Complete Overview**
 
+## 🚨 **INCIDENT TIMEFRAME NOTICE - December 6, 2025**
+**HISTORICAL INCIDENT (Dec 6, 2025):** A significant pipeline dysfunction occurred with intake failure (Oct 23 - Dec 5) and discovery issues. The orchestrator has since been enhanced with best-effort reporting and comprehensive diagnostics.
+
+**CURRENT HEALTH MODEL:** The orchestrator now provides nuanced status reporting with three run status indicators:
+- 🟢 **GREEN:** All phases completed successfully with no failures
+- 🟡 **YELLOW:** Completed with warnings (non-critical issues detected)
+- 🔴 **RED:** Completed with failures (errors detected but pipeline continues)
+
+*Note: The orchestrator uses a best-effort policy - it reports all issues but does not fail CI unless there are hard crashes.*
+
+---
+
 ## **🎯 End Goal: A Netflix-Style Movie Wall**
 We want a beautiful webpage that shows the latest movies available for streaming/rental, with working links to trailers, reviews, and Wikipedia pages. Think "Blockbuster wall for the streaming age."
 
@@ -119,6 +131,37 @@ Daily Intake & Discovery → movie_tracking.json → OPTIONAL REVIEW → data.js
 - Commits results to repository
 
 **Note:** Daily automation runs without admin approval by default. Optional admin review can be enabled when editorial curation is desired.
+
+## **🏥 Current Health Model & Status Indicators**
+
+The orchestrator provides comprehensive health monitoring with nuanced status reporting:
+
+### **Run Status Indicators**
+- 🟢 **GREEN (Completed Successfully):** All phases executed without failures or warnings
+- 🟡 **YELLOW (Completed with Warnings):** Non-critical issues detected but core functionality working
+- 🔴 **RED (Completed with Failures):** Errors detected in phases but pipeline continues with best-effort policy
+
+### **Health Check Criteria**
+The orchestrator evaluates these factors for overall health:
+
+**Discovery Health Checks:**
+- ✅ Metrics files exist (`metrics/discovery_run.json`, `metrics/intake_run.json`)
+- ✅ Metrics are from current run (not stale artifacts from previous runs)
+- ✅ Discovery polled > 0 movies (TMDB API functional)
+- ✅ Operation type matches expected phase (`discover_availability`, `intake_premieres`)
+
+**Data Quality Monitoring:**
+- ✅ JSON structure validation and file size checks
+- ✅ Minimum movie count thresholds
+- ✅ Provider coverage validation for recent movies
+- ✅ Watch link quality assessment (real links vs search URLs)
+
+**Stall Detection:**
+- ⚠️ 3-day consecutive periods with zero transitions detected as potential system stalls
+- 📊 Stall state persisted to `metrics/stall_state.json` for external monitoring
+
+**Best-Effort Policy:**
+The orchestrator records all failures and warnings in `metrics/run_diagnostics.json` but continues execution. Only hard crashes (lock conflicts) result in non-zero exit codes.
 
 ---
 

@@ -104,7 +104,7 @@ discovery:
             with open('movie_tracking.json', 'w') as f:
                 json.dump(tracking_db, f)
 
-            generator = DataGenerator()
+            generator = DataGenerator(enrichment_enabled=True)
 
             # Simulate processing a discovered movie
             movie_data = mock_tmdb_response['results'][0]

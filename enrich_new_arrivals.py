@@ -127,7 +127,7 @@ def run_enrichment(batch_size=20, no_limit=False):
     try:
         from pipeline.generator import DataGenerator
 
-        generator = DataGenerator()
+        generator = DataGenerator(enrichment_enabled=True)
 
     except Exception as e:
         print(f"Failed to initialize generator: {e}")

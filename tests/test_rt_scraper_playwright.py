@@ -23,7 +23,7 @@ def test_rt_scraper_playwright():
 
         # Initialize generator
         print("Initializing DataGenerator...")
-        generator = DataGenerator()
+        generator = DataGenerator(enrichment_enabled=True)
 
         # Test movies with known RT pages
         test_cases = [
@@ -150,7 +150,7 @@ def test_cache_behavior():
 
     try:
         from generate_data import DataGenerator
-        generator = DataGenerator()
+        generator = DataGenerator(enrichment_enabled=True)
 
         test_title = "The Substance"
         test_year = 2024

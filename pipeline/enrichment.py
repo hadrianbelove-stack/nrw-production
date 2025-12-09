@@ -68,6 +68,9 @@ class EnrichmentService:
         self.watchmode_client = watchmode_client
         self.enrichment_enabled = enrichment_enabled
 
+        # Log enrichment flag state for debugging
+        self.logger.info(f"EnrichmentService initialized with enrichment_enabled={enrichment_enabled}")
+
         # Scraper instances (lazy initialization)
         self.agent_scraper = agent_scraper
         self.platform_scraper = platform_scraper
