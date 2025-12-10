@@ -1,64 +1,108 @@
 {
-  "timestamp": "2025-12-07T13:06:36.525530",
-  "duration_seconds": 0.000734,
-  "overall_success": true,
-  "failure_count": 0,
-  "warning_count": 2,
-  "phases": [],
+  "timestamp": "2025-12-10T23:08:13.689326",
+  "duration_seconds": 76.071801,
+  "overall_success": false,
+  "failure_count": 6,
+  "warning_count": 0,
+  "phases": [
+    {
+      "name": "Intake new premieres using production discovery",
+      "success": false,
+      "duration_seconds": 0.379948,
+      "error": "Traceback (most recent call last):\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 14, in <module>\n    from pipeline import DataGenerator\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/__init__.py\", line 10, in <module>\n    from pipeline.generator import DataGenerator, setup_logger\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/generator.py\", line 23, in <module>\n    from constants import PLACEHOLDER_ASINS, get_scraper_config, MAX_ENRICHMENT_BATCH, ENRICHMENT_LOOP_TIMEOUT_MINUTES\nImportError: cannot import name 'MAX_ENRICHMENT_BATCH' from 'constants' (/home/runner/work/nrw-production/nrw-production/constants.py)\n",
+      "output_preview": null
+    },
+    {
+      "name": "Intake new premieres using production discovery",
+      "success": false,
+      "duration_seconds": 0.167988,
+      "error": "Traceback (most recent call last):\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 14, in <module>\n    from pipeline import DataGenerator\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/__init__.py\", line 10, in <module>\n    from pipeline.generator import DataGenerator, setup_logger\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/generator.py\", line 23, in <module>\n    from constants import PLACEHOLDER_ASINS, get_scraper_config, MAX_ENRICHMENT_BATCH, ENRICHMENT_LOOP_TIMEOUT_MINUTES\nImportError: cannot import name 'MAX_ENRICHMENT_BATCH' from 'constants' (/home/runner/work/nrw-production/nrw-production/constants.py)\n",
+      "output_preview": null
+    },
+    {
+      "name": "Intake new premieres using production discovery",
+      "success": false,
+      "duration_seconds": 0.169376,
+      "error": "Traceback (most recent call last):\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 14, in <module>\n    from pipeline import DataGenerator\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/__init__.py\", line 10, in <module>\n    from pipeline.generator import DataGenerator, setup_logger\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/generator.py\", line 23, in <module>\n    from constants import PLACEHOLDER_ASINS, get_scraper_config, MAX_ENRICHMENT_BATCH, ENRICHMENT_LOOP_TIMEOUT_MINUTES\nImportError: cannot import name 'MAX_ENRICHMENT_BATCH' from 'constants' (/home/runner/work/nrw-production/nrw-production/constants.py)\n",
+      "output_preview": null
+    },
+    {
+      "name": "Discover provider availability for tracking movies",
+      "success": false,
+      "duration_seconds": 0.169672,
+      "error": "Traceback (most recent call last):\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 14, in <module>\n    from pipeline import DataGenerator\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/__init__.py\", line 10, in <module>\n    from pipeline.generator import DataGenerator, setup_logger\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/generator.py\", line 23, in <module>\n    from constants import PLACEHOLDER_ASINS, get_scraper_config, MAX_ENRICHMENT_BATCH, ENRICHMENT_LOOP_TIMEOUT_MINUTES\nImportError: cannot import name 'MAX_ENRICHMENT_BATCH' from 'constants' (/home/runner/work/nrw-production/nrw-production/constants.py)\n",
+      "output_preview": null
+    },
+    {
+      "name": "Generate data.json for website with enriched links",
+      "success": false,
+      "duration_seconds": 0.171224,
+      "error": "Traceback (most recent call last):\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 14, in <module>\n    from pipeline import DataGenerator\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/__init__.py\", line 10, in <module>\n    from pipeline.generator import DataGenerator, setup_logger\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/generator.py\", line 23, in <module>\n    from constants import PLACEHOLDER_ASINS, get_scraper_config, MAX_ENRICHMENT_BATCH, ENRICHMENT_LOOP_TIMEOUT_MINUTES\nImportError: cannot import name 'MAX_ENRICHMENT_BATCH' from 'constants' (/home/runner/work/nrw-production/nrw-production/constants.py)\n",
+      "output_preview": null
+    }
+  ],
   "health_issues": [
     {
-      "check": "metrics_stale",
-      "severity": "warning",
-      "message": "Metrics are 62.7h old (may be from previous run)"
+      "check": "metrics_not_updated_for_current_run",
+      "severity": "error",
+      "message": "Current run did not produce fresh discovery metrics (metrics from 23:10, run started 23:06)"
     }
   ],
   "stall_status": {
-    "stalled": true,
-    "days": 3,
-    "dates": [
-      "2025-11-23",
-      "2025-11-24",
-      "2025-11-25"
-    ],
-    "entries": [
-      {
-        "date": "2025-11-25",
-        "transitions": 0,
-        "discovered": 0,
-        "polled": 0
-      },
-      {
-        "date": "2025-11-24",
-        "transitions": 0,
-        "discovered": 0,
-        "polled": 0
-      },
-      {
-        "date": "2025-11-23",
-        "transitions": 0,
-        "discovered": 0,
-        "polled": 0
-      }
-    ]
+    "stalled": false,
+    "days_without_transitions": 0
   },
-  "failures": [],
-  "warnings": [
+  "failures": [
     {
-      "phase": "Health Check",
-      "message": "Metrics are 62.7h old (may be from previous run)"
+      "phase": "Intake new premieres using production discovery",
+      "severity": "error",
+      "message": "Phase failed with exit code 1",
+      "context": "Traceback (most recent call last):\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 14, in <module>\n    from pipeline import DataGenerator\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/__init__.py\", line 10, in <module>\n    from pipeline.generator import DataGenerator, setup_logger\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/generator.py\", line 23, in <module>\n    from constants import PLACEHOLDER_ASINS, get_scraper_config, M",
+      "stdout_preview": null
     },
     {
-      "phase": "Stall Detection",
-      "message": "3-day stall detected: no transitions since 2025-11-23"
+      "phase": "Intake new premieres using production discovery",
+      "severity": "error",
+      "message": "Phase failed with exit code 1",
+      "context": "Traceback (most recent call last):\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 14, in <module>\n    from pipeline import DataGenerator\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/__init__.py\", line 10, in <module>\n    from pipeline.generator import DataGenerator, setup_logger\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/generator.py\", line 23, in <module>\n    from constants import PLACEHOLDER_ASINS, get_scraper_config, M",
+      "stdout_preview": null
+    },
+    {
+      "phase": "Intake new premieres using production discovery",
+      "severity": "error",
+      "message": "Phase failed with exit code 1 (after 3 attempts)",
+      "context": "Traceback (most recent call last):\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 14, in <module>\n    from pipeline import DataGenerator\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/__init__.py\", line 10, in <module>\n    from pipeline.generator import DataGenerator, setup_logger\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/generator.py\", line 23, in <module>\n    from constants import PLACEHOLDER_ASINS, get_scraper_config, M",
+      "stdout_preview": null
+    },
+    {
+      "phase": "Discover provider availability for tracking movies",
+      "severity": "error",
+      "message": "Phase failed with exit code 1",
+      "context": "Traceback (most recent call last):\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 14, in <module>\n    from pipeline import DataGenerator\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/__init__.py\", line 10, in <module>\n    from pipeline.generator import DataGenerator, setup_logger\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/generator.py\", line 23, in <module>\n    from constants import PLACEHOLDER_ASINS, get_scraper_config, M",
+      "stdout_preview": null
+    },
+    {
+      "phase": "Health Check",
+      "severity": "error",
+      "message": "Current run did not produce fresh discovery metrics (metrics from 23:10, run started 23:06)",
+      "context": "metrics_not_updated_for_current_run"
+    },
+    {
+      "phase": "Generate data.json for website with enriched links",
+      "severity": "error",
+      "message": "Phase failed with exit code 1",
+      "context": "Traceback (most recent call last):\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 14, in <module>\n    from pipeline import DataGenerator\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/__init__.py\", line 10, in <module>\n    from pipeline.generator import DataGenerator, setup_logger\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/generator.py\", line 23, in <module>\n    from constants import PLACEHOLDER_ASINS, get_scraper_config, M",
+      "stdout_preview": null
     }
   ],
+  "warnings": [],
   "data_quality": {
     "total": 5375,
-    "tracking": 4771,
-    "available": 604,
-    "data_movies": 440,
-    "movies_with_links": 0,
-    "movies_with_rt": 43,
+    "tracking": 4734,
+    "available": 641,
+    "data_movies": 478,
+    "movies_with_links": 1,
+    "movies_with_rt": 66,
     "movies_with_wikipedia": 0,
     "movies_with_trailers": 0
   }
