@@ -9,7 +9,7 @@ Handles movie discovery, tracking, enrichment, and display data generation.
 import json
 import requests
 import yaml
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import time
 import os
 import re
@@ -20,7 +20,7 @@ from agent_link_scraper import AgentLinkScraper
 from scripts.youtube_trailer_scraper import YouTubeTrailerScraper
 from rt_scraper_playwright import RTScraperPlaywright
 from wikipedia_scraper_playwright import WikipediaScraperPlaywright
-from constants import PLACEHOLDER_ASINS, get_scraper_config
+from constants import PLACEHOLDER_ASINS, get_scraper_config, MAX_ENRICHMENT_BATCH, ENRICHMENT_LOOP_TIMEOUT_MINUTES
 try:
     from streaming_platform_scraper import StreamingPlatformScraper
 except ImportError:
@@ -960,15 +960,35 @@ class DataGenerator:
 
             # Write enrichment state file with newly available movie IDs
             # This file is consumed by generate_display_data() to determine which movies need enrichment
+            print(f"📝 Creating enrichment state file for {len(newly_available_ids)} newly available movies")
+            self.logger.info(f"Creating enrichment state file for {len(newly_available_ids)} newly available movies")
+
+            # Use consistent datetime object for both date and timestamp to prevent discrepancies
+            # State file uses UTC timestamps for consistency with CI and other metrics
+            now = datetime.now(timezone.utc)
+            today_date = now.strftime('%Y-%m-%d')
+            print(f"📅 State file date: {today_date}")
+            self.logger.info(f"State file date: {today_date}")
+
             newly_available_data = {
-                'date': datetime.now().strftime('%Y-%m-%d'),
-                'timestamp': datetime.now().isoformat(),
+                'date': today_date,
+                'timestamp': now.isoformat(),
                 'movie_ids': newly_available_ids,
                 'count': len(newly_available_ids)
             }
 
-            with open('metrics/newly_available.json', 'w') as f:
-                json.dump(newly_available_data, f, indent=2)
+            try:
+                with open('metrics/newly_available.json', 'w') as f:
+                    json.dump(newly_available_data, f, indent=2)
+
+                # Verify file was written successfully
+                file_size = os.path.getsize('metrics/newly_available.json')
+                print(f"✅ State file written successfully: {file_size} bytes")
+                self.logger.info(f"State file written successfully: {file_size} bytes")
+            except Exception as write_error:
+                print(f"❌ Failed to write state file: {write_error}")
+                self.logger.error(f"Failed to write enrichment state file: {write_error}")
+                raise
 
             if newly_available_ids:
                 print(f"📝 Wrote {len(newly_available_ids)} newly available movie IDs to metrics/newly_available.json")
@@ -2233,9 +2253,41 @@ class DataGenerator:
         # Build lookup of existing movies by ID for watch_links validation
         existing_movies_lookup = {str(m['id']): m for m in existing_movies if isinstance(m, dict) and 'id' in m}
 
+        # Pre-flight check: ensure metrics directory and state file environment is ready
+        print("🔍 Pre-flight check: validating state file environment...")
+        try:
+            # Ensure metrics directory exists
+            if not os.path.exists('metrics'):
+                print("📁 Creating metrics directory")
+                os.makedirs('metrics', exist_ok=True)
+                self.logger.info("Created metrics directory")
+
+            # Check if state file exists and is readable
+            state_file_path = 'metrics/newly_available.json'
+            if os.path.exists(state_file_path):
+                try:
+                    with open(state_file_path, 'r') as f:
+                        test_data = json.load(f)
+                    print(f"✅ State file exists and is readable")
+                    self.logger.info("State file pre-flight check passed")
+                except json.JSONDecodeError as e:
+                    print(f"⚠️  State file exists but has invalid JSON: {e}")
+                    self.logger.warning(f"State file JSON validation failed: {e}")
+                except Exception as e:
+                    print(f"⚠️  State file exists but is not readable: {e}")
+                    self.logger.warning(f"State file read error: {e}")
+            else:
+                print(f"📄 State file doesn't exist yet - will be created if needed")
+                self.logger.info("State file not found - will create if needed")
+
+        except Exception as e:
+            print(f"❌ Pre-flight check failed: {e}")
+            self.logger.error(f"State file pre-flight check failed: {e}")
+
         # Load enrichment state file to determine which movies just became available
         # This implements enrichment-on-transition pattern (only enrich NEW arrivals)
         newly_available_ids = set()
+        state_fresh = False
         today = datetime.now().strftime('%Y-%m-%d')
 
         if os.path.exists('metrics/newly_available.json'):
@@ -2247,21 +2299,69 @@ class DataGenerator:
                     # Only use state file if it's from today (fresh from Phase 2)
                     if state_date == today:
                         newly_available_ids = set(state_data.get('movie_ids', []))
+                        state_fresh = True
                         print(f"\n📋 Loaded {len(newly_available_ids)} newly available movie IDs from today's provider check")
                         self.logger.info(f"Using enrichment state file from {state_date} with {len(newly_available_ids)} IDs")
                     else:
-                        print(f"\n⚠️  Enrichment state file is from {state_date}, not today ({today}) - ignoring")
+                        print(f"\n⚠️  Enrichment state file is from {state_date}, not today ({today}) - creating fresh empty state file")
+                        print(f"🚫 Skipping new enrichment for this run due to stale state file; only stale items will be processed")
                         self.logger.warning(f"Stale enrichment state file from {state_date}, expected {today}")
+                        self.logger.warning(f"Skipping new enrichment for this run due to stale state file; only stale items will be processed")
+
+                        # Create fresh empty state file to prevent future runs from seeing stale data
+                        empty_state_data = {
+                            'date': today,
+                            'timestamp': datetime.now().isoformat(),
+                            'movie_ids': [],
+                            'count': 0
+                        }
+
+                        try:
+                            # Ensure metrics directory exists
+                            os.makedirs('metrics', exist_ok=True)
+                            with open('metrics/newly_available.json', 'w') as f:
+                                json.dump(empty_state_data, f, indent=2)
+                            print(f"🔄 Created empty state file for today to prevent stale data issues")
+                            self.logger.info(f"Created fresh empty state file for {today}")
+                        except Exception as write_error:
+                            print(f"❌ Failed to create fresh state file: {write_error}")
+                            self.logger.error(f"Failed to create fresh state file: {write_error}")
             except Exception as e:
                 print(f"\n⚠️  Failed to load enrichment state file: {e}")
+                print(f"🚫 Skipping new enrichment for this run due to unreadable state file; only stale items will be processed")
                 self.logger.warning(f"Failed to load metrics/newly_available.json: {e}")
+                self.logger.warning(f"Skipping new enrichment for this run due to unreadable state file; only stale items will be processed")
         else:
-            print(f"\n📝 No enrichment state file found - will use enrichment_state.json instead")
+            print(f"\n📝 No enrichment state file found - creating empty state file for today")
+            print(f"🚫 Skipping new enrichment for this run due to missing state file; only stale items will be processed")
+            self.logger.info(f"No enrichment state file found - creating empty state file for today")
+            self.logger.warning(f"Skipping new enrichment for this run due to missing state file; only stale items will be processed")
+
+            # Create fresh empty state file when none exists
+            empty_state_data = {
+                'date': today,
+                'timestamp': datetime.now().isoformat(),
+                'movie_ids': [],
+                'count': 0
+            }
+
+            try:
+                # Ensure metrics directory exists
+                os.makedirs('metrics', exist_ok=True)
+                with open('metrics/newly_available.json', 'w') as f:
+                    json.dump(empty_state_data, f, indent=2)
+                print(f"🔄 Created empty state file for today")
+                self.logger.info(f"Created empty state file for {today}")
+            except Exception as write_error:
+                print(f"❌ Failed to create state file: {write_error}")
+                self.logger.error(f"Failed to create state file: {write_error}")
+                print(f"\n📝 Will use enrichment_state.json fallback instead")
 
         # Separate movies by enrichment status (Phase 2.1 optimization)
         needs_enrichment = []
         already_enriched = []
         stale_enrichment = []
+        deferred_enrichment = []
 
         for movie_id, movie_data in combined['movies'].items():
             if movie_data['status'] == 'available' and movie_data.get('digital_date'):
@@ -2283,10 +2383,9 @@ class DataGenerator:
                                 pass
 
                         # ENRICHMENT-ON-TRANSITION: Only enrich if movie just became available today
-                        # If we have a state file with newly available IDs, use that
-                        # Otherwise fall back to enriched flag check
-                        if newly_available_ids:
-                            # State file exists - strict enrichment-on-transition mode
+                        # Requires fresh newly_available.json state file - no fallback processing
+                        if state_fresh:
+                            # State file is fresh - strict enrichment-on-transition mode
                             if movie_id in newly_available_ids:
                                 # Movie just transitioned today - needs enrichment
                                 needs_enrichment.append((movie_id, movie_data))
@@ -2297,48 +2396,35 @@ class DataGenerator:
                                 # Already enriched and not stale - skip
                                 already_enriched.append((movie_id, movie_data))
                         else:
-                            # No state file - fall back to enriched flag logic
-                            if not is_enriched:
-                                needs_enrichment.append((movie_id, movie_data))
-                            elif is_stale:
+                            # State file not fresh - defer new enrichment
+                            if is_stale:
+                                # Still process stale enrichment
                                 stale_enrichment.append((movie_id, movie_data))
+                            elif is_enriched:
+                                # Already enriched and not stale - preserve existing
+                                already_enriched.append((movie_id, movie_data))
                             else:
-                                # Before classifying as already_enriched, validate watch_links for placeholders
-                                existing_movie = existing_movies_lookup.get(movie_id)
-                                has_valid_links = True
-
-                                if existing_movie and 'watch_links' in existing_movie:
-                                    validated_links = self.validator.validate_watch_links_schema(
-                                        existing_movie['watch_links'],
-                                        movie_data.get('title', 'Unknown')
-                                    )
-                                    # If validation removes all categories or results in empty dict,
-                                    # don't classify as already_enriched
-                                    if not validated_links:
-                                        has_valid_links = False
-
-                                if has_valid_links:
-                                    already_enriched.append((movie_id, movie_data))
-                                else:
-                                    # Movie has placeholder ASINs or invalid links, needs re-enrichment
-                                    needs_enrichment.append((movie_id, movie_data))
+                                # Unenriched movies are deferred until fresh state available
+                                deferred_enrichment.append((movie_id, movie_data))
 
                 except Exception as e:
                     self.logger.warning(f"Error parsing date for {movie_data.get('title')}: {e}")
 
         # Phase 2.1 Optimization Report
-        total_available = len(needs_enrichment) + len(already_enriched) + len(stale_enrichment)
+        total_available = len(needs_enrichment) + len(already_enriched) + len(stale_enrichment) + len(deferred_enrichment)
         print(f"\n📊 Phase 2.1 Enrichment Optimization:")
         print(f"   Total available movies (last {days_back} days): {total_available}")
         print(f"   ✅ Already enriched (cached): {len(already_enriched)}")
         print(f"   🆕 Need enrichment: {len(needs_enrichment)}")
         print(f"   ⏰ Stale (>90 days, will re-enrich): {len(stale_enrichment)}")
+        if not state_fresh and deferred_enrichment:
+            print(f"   ⏸️  Deferred (no fresh state file): {len(deferred_enrichment)} unenriched movies will be picked up once fresh state is available")
 
         # Build display_index from ALL eligible movies (status=available, within days_back)
         display_index = {}
 
         # Add all eligible movies to display_index
-        all_eligible = needs_enrichment + already_enriched + stale_enrichment
+        all_eligible = needs_enrichment + already_enriched + stale_enrichment + deferred_enrichment
         for movie_id, movie_data in all_eligible:
             # Initialize display_index[movie_id] with existing or minimal entry
             if movie_id in existing_movies_lookup:
@@ -2365,25 +2451,70 @@ class DataGenerator:
             to_enrich = needs_enrichment + stale_to_process
         else:
             # Full mode: re-enrich everything
-            print(f"   🔄 FULL MODE: Re-enriching ALL movies")
-            to_enrich = needs_enrichment + already_enriched + stale_enrichment
+            # Check if full mode is explicitly allowed
+            allow_full_enrichment = os.environ.get('ALLOW_FULL_ENRICHMENT', '').lower() == 'true'
+
+            if not allow_full_enrichment:
+                print(f"   ⚠️  FULL MODE requested but ALLOW_FULL_ENRICHMENT not set - defaulting to incremental mode")
+                self.logger.warning("Full enrichment mode blocked - set ALLOW_FULL_ENRICHMENT=true to enable")
+
+                # Fall back to incremental mode behavior
+                stale_to_process = stale_enrichment[:10]
+                if stale_to_process:
+                    print(f"   📝 Re-enriching {len(stale_to_process)} stale movies (batch of 10)")
+                to_enrich = needs_enrichment + stale_to_process
+            else:
+                print(f"   🔄 FULL MODE: Re-enriching ALL movies (this is a heavy maintenance operation)")
+                print(f"   ⚠️  Warning: Full mode will attempt to re-enrich all {len(already_enriched)} already-enriched movies")
+                self.logger.warning(f"Full enrichment mode enabled - will re-enrich all {len(already_enriched)} movies")
+                to_enrich = needs_enrichment + already_enriched + stale_enrichment
+
+        # Apply emergency batch limit to prevent runaway enrichment
+        original_count = len(to_enrich)
+        batch_cap_triggered = len(to_enrich) > MAX_ENRICHMENT_BATCH
+        if batch_cap_triggered:
+            print(f"\n⚠️  SAFETY LIMIT: Capping enrichment from {original_count} to {MAX_ENRICHMENT_BATCH} movies")
+            self.logger.warning(f"Enrichment batch capped from {original_count} to {MAX_ENRICHMENT_BATCH} movies")
+            to_enrich = to_enrich[:MAX_ENRICHMENT_BATCH]
 
         print(f"\n🎬 Processing {len(to_enrich)} movies (enrichment phase)...")
+        if original_count > len(to_enrich):
+            print(f"   ⚠️  Batch limited: {original_count - len(to_enrich)} movies deferred to next run")
         print(f"   API savings: {len(already_enriched) - (0 if incremental else len(already_enriched))} movies skipped")
+        print(f"   ⏱️  Enrichment timeout: {ENRICHMENT_LOOP_TIMEOUT_MINUTES} minutes")
 
         # Enrich movies in the to_enrich list
         enriched_count = 0
+        circuit_breaker_skipped = 0
         total_to_enrich = len(to_enrich)
         enrichment_start_time = time.time()
+        loop_timeout_triggered = False
 
         for idx, (movie_id, movie_data) in enumerate(to_enrich):
+            # Check if we've exceeded timeout
+            elapsed_minutes = (time.time() - enrichment_start_time) / 60
+            if elapsed_minutes >= ENRICHMENT_LOOP_TIMEOUT_MINUTES:
+                print(f"\n⏱️  TIMEOUT: Enrichment stopped after {elapsed_minutes:.1f} minutes ({idx}/{total_to_enrich} movies processed)")
+                self.logger.warning(f"Enrichment timeout after {elapsed_minutes:.1f} minutes, processed {idx}/{total_to_enrich} movies")
+                loop_timeout_triggered = True
+                break
+
+            # Circuit breaker check - skip movies with too many consecutive failures
+            if self.enrichment_state.should_skip_for_failures(movie_id, threshold=5):
+                failure_count = self.enrichment_state.get_failure_count(movie_id)
+                print(f"  🚫 Skipping {movie_data.get('title')} (circuit breaker: {failure_count} consecutive failures)")
+                self.logger.warning(f"Circuit breaker triggered for movie ID {movie_id} ({movie_data.get('title')}) - {failure_count} consecutive failures")
+                circuit_breaker_skipped += 1
+                continue
+
             # Progress indicator every 10 movies
             if (idx + 1) % 10 == 0 or idx == total_to_enrich - 1:
                 progress_pct = ((idx + 1) / total_to_enrich) * 100
                 elapsed = time.time() - enrichment_start_time
                 rate = (idx + 1) / elapsed if elapsed > 0 else 0
                 remaining = (total_to_enrich - idx - 1) / rate if rate > 0 else 0
-                print(f"  📊 Enrichment: {idx + 1}/{total_to_enrich} ({progress_pct:.1f}%) | {enriched_count} success | {int(elapsed//60)}m elapsed | ~{int(remaining//60)}m remaining")
+                circuit_breaker_info = f" | {circuit_breaker_skipped} skipped" if circuit_breaker_skipped > 0 else ""
+                print(f"  📊 Enrichment: {idx + 1}/{total_to_enrich} ({progress_pct:.1f}%) | {enriched_count} success{circuit_breaker_info} | {int(elapsed//60)}m elapsed | ~{int(remaining//60)}m remaining")
 
             try:
                 # Get full movie details (movie_id is the TMDB ID)
@@ -2398,12 +2529,13 @@ class DataGenerator:
                         if enriched_dict:
                             display_index[movie_id] = enriched_dict
                             print(f"  ✓ {enriched_dict['title']} - Links: {len(enriched_dict['links'])}")
-                            # Mark as enriched and count success
+                            # Mark as enriched and reset failure count
                             self.enrichment_state.mark_enriched(movie_id)
                             enriched_count += 1
                         else:
                             print(f"  ✗ process_movie failed for {movie_data.get('title')} - keeping minimal entry")
-                            # Don't mark as enriched on failure
+                            # Record failure for circuit breaker
+                            self.enrichment_state.record_failure(movie_id, "process_movie failed")
                     else:
                         # For existing movies, overlay only enrichment fields
                         enrichment_fields = self.get_enrichment_only_fields(movie_id, movie_data, movie_details, force_refresh)
@@ -2411,23 +2543,45 @@ class DataGenerator:
                             existing_entry.update(enrichment_fields)
                             display_index[movie_id] = existing_entry
                             print(f"  ✓ {existing_entry['title']} - Links: {len(enrichment_fields.get('links', {}))}")
-                            # Mark as enriched and count success
+                            # Mark as enriched and reset failure count
                             self.enrichment_state.mark_enriched(movie_id)
                             enriched_count += 1
                         else:
                             print(f"  ✗ enrichment overlay failed for {movie_data.get('title')} - keeping existing entry")
-                            # Don't mark as enriched on failure
+                            # Record failure for circuit breaker
+                            self.enrichment_state.record_failure(movie_id, "enrichment overlay failed")
+
+                else:
+                    print(f"  ✗ get_movie_details failed for {movie_data.get('title')} - keeping minimal/existing entry")
+                    # Record failure for circuit breaker
+                    self.enrichment_state.record_failure(movie_id, "get_movie_details failed")
+
+                # Checkpoint save every 5 movies to prevent data loss on crashes
+                if (idx + 1) % 5 == 0:
+                    self.enrichment_state.save()
+                    print(f"  💾 Checkpoint: Enrichment state saved after {idx + 1} movies processed")
+                    self.logger.info(f"Checkpoint: Enrichment state saved after {idx + 1} movies processed")
 
                 time.sleep(self.config.get('api', {}).get('tmdb_rate_limit', 0.25))  # Rate limiting
 
             except Exception as e:
                 print(f"  ✗ Error enriching {movie_data.get('title')}: {e} - keeping minimal/existing entry")
+                # Record failure for circuit breaker
+                self.enrichment_state.record_failure(movie_id, f"Exception: {str(e)[:100]}")
                 # Movie stays in display_index with minimal or cached entry
+
+                # Checkpoint save every 5 movies even on exceptions
+                if (idx + 1) % 5 == 0:
+                    self.enrichment_state.save()
+                    print(f"  💾 Checkpoint: Enrichment state saved after {idx + 1} movies processed")
+                    self.logger.info(f"Checkpoint: Enrichment state saved after {idx + 1} movies processed")
 
         # Save enrichment state to separate file
         self.enrichment_state.save()
         print(f"\n💾 Enrichment tracking saved: {enriched_count} movies marked as enriched")
-        self.logger.info(f"Enrichment state saved: {enriched_count} movies marked as enriched")
+        if circuit_breaker_skipped > 0:
+            print(f"🚫 Circuit breaker: {circuit_breaker_skipped} movies skipped due to consecutive failures")
+        self.logger.info(f"Enrichment state saved: {enriched_count} movies marked as enriched, {circuit_breaker_skipped} skipped by circuit breaker")
 
         # Convert display_index to list for final processing
         display_movies = list(display_index.values())
@@ -2438,6 +2592,28 @@ class DataGenerator:
         # Apply admin panel overrides (hide/feature movies)
         display_movies, hidden_ids, featured_ids = self.apply_admin_overrides(display_movies)
 
+        # Save enrichment metrics for orchestrator diagnostics
+        enrichment_duration_seconds = time.time() - enrichment_start_time
+        enrichment_metrics = {
+            'timestamp': datetime.now().isoformat(),
+            'batch_cap_triggered': batch_cap_triggered,
+            'loop_timeout_triggered': loop_timeout_triggered,
+            'movies_requested': original_count,
+            'movies_processed': len(to_enrich),
+            'movies_enriched': enriched_count,
+            'movies_deferred': max(0, original_count - len(to_enrich)),
+            'enrichment_duration_seconds': enrichment_duration_seconds,
+            'max_batch_size': MAX_ENRICHMENT_BATCH,
+            'timeout_limit_minutes': ENRICHMENT_LOOP_TIMEOUT_MINUTES
+        }
+
+        try:
+            os.makedirs('metrics', exist_ok=True)
+            with open('metrics/enrichment_run.json', 'w') as f:
+                json.dump(enrichment_metrics, f, indent=2)
+        except Exception as e:
+            self.logger.warning(f"Failed to save enrichment metrics: {e}")
+
         # Save display data (includes hidden/featured for frontend filtering)
         output_data = {
             'generated_at': datetime.now().isoformat(),
@@ -2446,7 +2622,7 @@ class DataGenerator:
             'hidden': hidden_ids,  # For frontend filtering (as of 2025-11-09)
             'featured': featured_ids  # For frontend filtering (as of 2025-11-09)
         }
-        
+
         with open('data.json', 'w') as f:
             json.dump(output_data, f, indent=2)
         
