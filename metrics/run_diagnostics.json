@@ -1,106 +1,52 @@
 {
-  "timestamp": "2025-12-10T23:08:13.689326",
-  "duration_seconds": 76.071801,
+  "timestamp": "2025-12-11T02:59:12.816961",
+  "duration_seconds": 5043.568729,
   "overall_success": false,
-  "failure_count": 6,
+  "failure_count": 1,
   "warning_count": 0,
   "phases": [
     {
       "name": "Intake new premieres using production discovery",
-      "success": false,
-      "duration_seconds": 0.379948,
-      "error": "Traceback (most recent call last):\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 14, in <module>\n    from pipeline import DataGenerator\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/__init__.py\", line 10, in <module>\n    from pipeline.generator import DataGenerator, setup_logger\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/generator.py\", line 23, in <module>\n    from constants import PLACEHOLDER_ASINS, get_scraper_config, MAX_ENRICHMENT_BATCH, ENRICHMENT_LOOP_TIMEOUT_MINUTES\nImportError: cannot import name 'MAX_ENRICHMENT_BATCH' from 'constants' (/home/runner/work/nrw-production/nrw-production/constants.py)\n",
-      "output_preview": null
-    },
-    {
-      "name": "Intake new premieres using production discovery",
-      "success": false,
-      "duration_seconds": 0.167988,
-      "error": "Traceback (most recent call last):\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 14, in <module>\n    from pipeline import DataGenerator\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/__init__.py\", line 10, in <module>\n    from pipeline.generator import DataGenerator, setup_logger\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/generator.py\", line 23, in <module>\n    from constants import PLACEHOLDER_ASINS, get_scraper_config, MAX_ENRICHMENT_BATCH, ENRICHMENT_LOOP_TIMEOUT_MINUTES\nImportError: cannot import name 'MAX_ENRICHMENT_BATCH' from 'constants' (/home/runner/work/nrw-production/nrw-production/constants.py)\n",
-      "output_preview": null
-    },
-    {
-      "name": "Intake new premieres using production discovery",
-      "success": false,
-      "duration_seconds": 0.169376,
-      "error": "Traceback (most recent call last):\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 14, in <module>\n    from pipeline import DataGenerator\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/__init__.py\", line 10, in <module>\n    from pipeline.generator import DataGenerator, setup_logger\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/generator.py\", line 23, in <module>\n    from constants import PLACEHOLDER_ASINS, get_scraper_config, MAX_ENRICHMENT_BATCH, ENRICHMENT_LOOP_TIMEOUT_MINUTES\nImportError: cannot import name 'MAX_ENRICHMENT_BATCH' from 'constants' (/home/runner/work/nrw-production/nrw-production/constants.py)\n",
-      "output_preview": null
+      "success": true,
+      "duration_seconds": 3.901923,
+      "error": null,
+      "output_preview": "\ud83d\udeab Enrichment disabled for intake/discovery mode\n\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2025-12-06 to 2025-12-11 (incremental mode, 246 found)\n\u2705 Intake complete: 246 new movies added\n\ud83d\udccb Intake/discovery phase complete\n"
     },
     {
       "name": "Discover provider availability for tracking movies",
-      "success": false,
-      "duration_seconds": 0.169672,
-      "error": "Traceback (most recent call last):\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 14, in <module>\n    from pipeline import DataGenerator\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/__init__.py\", line 10, in <module>\n    from pipeline.generator import DataGenerator, setup_logger\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/generator.py\", line 23, in <module>\n    from constants import PLACEHOLDER_ASINS, get_scraper_config, MAX_ENRICHMENT_BATCH, ENRICHMENT_LOOP_TIMEOUT_MINUTES\nImportError: cannot import name 'MAX_ENRICHMENT_BATCH' from 'constants' (/home/runner/work/nrw-production/nrw-production/constants.py)\n",
-      "output_preview": null
+      "success": true,
+      "duration_seconds": 953.953502,
+      "error": null,
+      "output_preview": "\ud83d\udeab Enrichment disabled for intake/discovery mode\n\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 5621 total movies\n\ud83d\udd0d Raw tracking filter: 4980 movies\n\ud83d\udd0d Assigned tracking_movies list: 4980\n\ud83d\udd0d Found 4980 movies in tracking status\n  Priority queue (last 180 days): 1467 movies\n  Older movies: 3513 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 4980 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/4980 (2.0%) | 0 found | 0m elaps"
     },
     {
       "name": "Generate data.json for website with enriched links",
       "success": false,
-      "duration_seconds": 0.171224,
-      "error": "Traceback (most recent call last):\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 14, in <module>\n    from pipeline import DataGenerator\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/__init__.py\", line 10, in <module>\n    from pipeline.generator import DataGenerator, setup_logger\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/generator.py\", line 23, in <module>\n    from constants import PLACEHOLDER_ASINS, get_scraper_config, MAX_ENRICHMENT_BATCH, ENRICHMENT_LOOP_TIMEOUT_MINUTES\nImportError: cannot import name 'MAX_ENRICHMENT_BATCH' from 'constants' (/home/runner/work/nrw-production/nrw-production/constants.py)\n",
-      "output_preview": null
+      "duration_seconds": 4085.699325,
+      "error": "2025-12-11 01:51:07 [INFO] EnrichmentService initialized with enrichment_enabled=True\n2025-12-11 01:51:07 [INFO] data.json schema validation passed: 478 movies\n2025-12-11 01:51:07 [INFO] Found 478 existing movies in data.json\n2025-12-11 01:51:07 [INFO] State file pre-flight check passed\n2025-12-11 01:51:07 [INFO] Using enrichment state file from 2025-12-11 with 25 IDs\n2025-12-11 01:51:07 [INFO] Wikipedia Scraper initialized with Playwright, cache_file=cache/wikipedia_cache.json\n2025-12-11 01:51:07 [INFO] Cache loaded: 0 entries\n2025-12-11 01:51:07 [INFO] Screenshots: enabled\n2025-12-11 01:51:08 [INFO] Initializing Playwright browser via shared manager...\n2025-12-11 01:51:10 [INFO] Wikipedia scraper initialized with shared browser\n2025-12-11 01:51:12 [WARNING] No Wikipedia page found for Pig Hill (2025)\n2025-12-11 01:51:13 [INFO] Screenshot saved: cache/screenshots/wikipedia/Pig_Hill_2025_20251211_015112.png\n2025-12-11 01:51:15 [WARNING] No Wikipedia page found for Pig Hill (2025)\n2025-",
+      "output_preview": "\ud83c\udfaf Enrichment enabled for final generation phase\n\n\ud83c\udfac Generating final display data...\n\ud83d\udcc2 Found 478 existing movies in data.json\n\ud83d\udd0d Pre-flight check: validating state file environment...\n\u2705 State file exists and is readable\n\n\ud83d\udccb Loaded 25 newly available movie IDs from today's provider check\n\n\ud83d\udcca Phase 2.1 Enrichment Optimization:\n   Total available movies (last 90 days): 504\n   \u2705 Already enriched (cached): 479\n   \ud83c\udd95 Need enrichment: 25\n   \u23f0 Stale (>90 days, will re-enrich): 0\n\n\ud83c\udfac Processing 25 movies (enri"
     }
   ],
-  "health_issues": [
-    {
-      "check": "metrics_not_updated_for_current_run",
-      "severity": "error",
-      "message": "Current run did not produce fresh discovery metrics (metrics from 23:10, run started 23:06)"
-    }
-  ],
+  "health_issues": [],
   "stall_status": {
     "stalled": false,
     "days_without_transitions": 0
   },
   "failures": [
     {
-      "phase": "Intake new premieres using production discovery",
-      "severity": "error",
-      "message": "Phase failed with exit code 1",
-      "context": "Traceback (most recent call last):\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 14, in <module>\n    from pipeline import DataGenerator\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/__init__.py\", line 10, in <module>\n    from pipeline.generator import DataGenerator, setup_logger\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/generator.py\", line 23, in <module>\n    from constants import PLACEHOLDER_ASINS, get_scraper_config, M",
-      "stdout_preview": null
-    },
-    {
-      "phase": "Intake new premieres using production discovery",
-      "severity": "error",
-      "message": "Phase failed with exit code 1",
-      "context": "Traceback (most recent call last):\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 14, in <module>\n    from pipeline import DataGenerator\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/__init__.py\", line 10, in <module>\n    from pipeline.generator import DataGenerator, setup_logger\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/generator.py\", line 23, in <module>\n    from constants import PLACEHOLDER_ASINS, get_scraper_config, M",
-      "stdout_preview": null
-    },
-    {
-      "phase": "Intake new premieres using production discovery",
-      "severity": "error",
-      "message": "Phase failed with exit code 1 (after 3 attempts)",
-      "context": "Traceback (most recent call last):\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 14, in <module>\n    from pipeline import DataGenerator\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/__init__.py\", line 10, in <module>\n    from pipeline.generator import DataGenerator, setup_logger\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/generator.py\", line 23, in <module>\n    from constants import PLACEHOLDER_ASINS, get_scraper_config, M",
-      "stdout_preview": null
-    },
-    {
-      "phase": "Discover provider availability for tracking movies",
-      "severity": "error",
-      "message": "Phase failed with exit code 1",
-      "context": "Traceback (most recent call last):\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 14, in <module>\n    from pipeline import DataGenerator\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/__init__.py\", line 10, in <module>\n    from pipeline.generator import DataGenerator, setup_logger\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/generator.py\", line 23, in <module>\n    from constants import PLACEHOLDER_ASINS, get_scraper_config, M",
-      "stdout_preview": null
-    },
-    {
-      "phase": "Health Check",
-      "severity": "error",
-      "message": "Current run did not produce fresh discovery metrics (metrics from 23:10, run started 23:06)",
-      "context": "metrics_not_updated_for_current_run"
-    },
-    {
       "phase": "Generate data.json for website with enriched links",
       "severity": "error",
       "message": "Phase failed with exit code 1",
-      "context": "Traceback (most recent call last):\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 14, in <module>\n    from pipeline import DataGenerator\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/__init__.py\", line 10, in <module>\n    from pipeline.generator import DataGenerator, setup_logger\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/generator.py\", line 23, in <module>\n    from constants import PLACEHOLDER_ASINS, get_scraper_config, M",
-      "stdout_preview": null
+      "context": "2025-12-11 01:51:07 [INFO] EnrichmentService initialized with enrichment_enabled=True\n2025-12-11 01:51:07 [INFO] data.json schema validation passed: 478 movies\n2025-12-11 01:51:07 [INFO] Found 478 existing movies in data.json\n2025-12-11 01:51:07 [INFO] State file pre-flight check passed\n2025-12-11 01:51:07 [INFO] Using enrichment state file from 2025-12-11 with 25 IDs\n2025-12-11 01:51:07 [INFO] Wikipedia Scraper initialized with Playwright, cache_file=cache/wikipedia_cache.json\n2025-12-11 01:51:",
+      "stdout_preview": "\ud83c\udfaf Enrichment enabled for final generation phase\n\n\ud83c\udfac Generating final display data...\n\ud83d\udcc2 Found 478 existing movies in data.json\n\ud83d\udd0d Pre-flight check: validating state file environment...\n\u2705 State file exists and is readable\n\n\ud83d\udccb Loaded 25 newly available movie IDs from today's provider check\n\n\ud83d\udcca Phase 2.1 Enrichment Optimization:\n   Total available movies (last 90 days): 504\n   \u2705 Already enriched (cached): 479\n   \ud83c\udd95 Need enrichment: 25\n   \u23f0 Stale (>90 days, will re-enrich): 0\n\n\ud83c\udfac Processing 25 movies (enri"
     }
   ],
   "warnings": [],
   "data_quality": {
-    "total": 5375,
-    "tracking": 4734,
-    "available": 641,
-    "data_movies": 478,
+    "total": 5621,
+    "tracking": 4955,
+    "available": 666,
+    "data_movies": 503,
     "movies_with_links": 1,
     "movies_with_rt": 66,
     "movies_with_wikipedia": 0,
