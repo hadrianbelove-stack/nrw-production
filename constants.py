@@ -20,6 +20,10 @@ SCRAPER_DEFAULTS = {
     'screenshot_retention_days': 7  # Auto-delete old screenshots
 }
 
+# Enrichment Safety Limits
+MAX_ENRICHMENT_BATCH = 100  # Maximum movies to enrich in a single run
+ENRICHMENT_LOOP_TIMEOUT_MINUTES = 60  # Overall timeout for enrichment loop
+
 def get_scraper_config(config, scraper_name):
     """
     Get scraper configuration with defaults applied.
