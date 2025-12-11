@@ -682,6 +682,95 @@ class NRWOrchestrator:
         if not issues:
             print("   ✅ All health checks passed")
 
+    def validate_state_file(self):
+        """Validate that Phase 2 created a fresh state file with today's date."""
+        print("🔍 Validating enrichment state file...")
+        issues = []
+        today = datetime.now().strftime('%Y-%m-%d')
+        state_file_path = 'metrics/newly_available.json'
+
+        try:
+            if not os.path.exists(state_file_path):
+                print(f"   ⚠️ Phase 2 completed but state file is missing: {state_file_path}")
+                issues.append({
+                    'check': 'state_file_missing',
+                    'severity': 'warning',
+                    'message': f'Enrichment state file missing after Phase 2: {state_file_path}'
+                })
+                self.warnings.append({
+                    'phase': 'Health Check',
+                    'message': f'Enrichment state file missing after Phase 2: {state_file_path}'
+                })
+            else:
+                with open(state_file_path) as f:
+                    state_data = json.load(f)
+
+                state_date = state_data.get('date')
+                movie_count = state_data.get('count', 0)
+                timestamp = state_data.get('timestamp')
+
+                if state_date != today:
+                    print(f"   ⚠️ Phase 2 completed but state file is stale (date={state_date}, expected={today})")
+                    issues.append({
+                        'check': 'state_file_stale',
+                        'severity': 'warning',
+                        'message': f'Enrichment state file has stale date: {state_date} (expected {today})'
+                    })
+                    self.warnings.append({
+                        'phase': 'Health Check',
+                        'message': f'Enrichment state file has stale date: {state_date} (expected {today})'
+                    })
+                else:
+                    print(f"   ✅ State file is fresh: {movie_count} newly available movies, date={state_date}")
+
+                # Check for timestamp/date consistency
+                if timestamp and state_date:
+                    try:
+                        timestamp_date = timestamp.split('T')[0]  # Extract date part from ISO timestamp
+                        if timestamp_date != state_date:
+                            print(f"   ⚠️ State file has inconsistent date fields: date={state_date}, timestamp date={timestamp_date}")
+                            issues.append({
+                                'check': 'state_file_inconsistent_dates',
+                                'severity': 'warning',
+                                'message': f'State file date/timestamp mismatch: date={state_date}, timestamp={timestamp_date}'
+                            })
+                            self.warnings.append({
+                                'phase': 'Health Check',
+                                'message': f'State file date/timestamp mismatch: date={state_date}, timestamp={timestamp_date}'
+                            })
+                    except Exception as ts_error:
+                        print(f"   ⚠️ Could not validate timestamp consistency: {ts_error}")
+
+        except json.JSONDecodeError as e:
+            print(f"   ❌ State file exists but is invalid JSON: {e}")
+            issues.append({
+                'check': 'state_file_parse',
+                'severity': 'error',
+                'message': f'Enrichment state file invalid JSON: {e}'
+            })
+            self.failures.append({
+                'phase': 'Health Check',
+                'severity': 'error',
+                'message': f'Enrichment state file invalid JSON: {e}',
+                'context': 'state_file_parse'
+            })
+        except Exception as e:
+            print(f"   ❌ Failed to validate state file: {e}")
+            issues.append({
+                'check': 'state_file_read',
+                'severity': 'warning',
+                'message': f'Failed to validate enrichment state file: {e}'
+            })
+            self.warnings.append({
+                'phase': 'Health Check',
+                'message': f'Failed to validate enrichment state file: {e}'
+            })
+
+        # Merge issues into self.health_issues
+        if not hasattr(self, 'health_issues') or self.health_issues is None:
+            self.health_issues = []
+        self.health_issues.extend(issues)
+
         return issues
 
     def check_for_stall(self):
@@ -843,7 +932,10 @@ class NRWOrchestrator:
                 'warnings': self.warnings,
 
                 # Data quality snapshot
-                'data_quality': self.get_statistics()
+                'data_quality': self.get_statistics(),
+
+                # Enrichment safety metrics
+                'enrichment_metrics': self._get_enrichment_metrics()
             }
 
             with open('metrics/run_diagnostics.json', 'w') as f:
@@ -853,6 +945,25 @@ class NRWOrchestrator:
 
         except Exception as e:
             print(f"⚠️ Failed to save diagnostics: {e}")
+
+    def _get_enrichment_metrics(self):
+        """Read enrichment safety metrics from enrichment_run.json"""
+        try:
+            if os.path.exists('metrics/enrichment_run.json'):
+                with open('metrics/enrichment_run.json') as f:
+                    return json.load(f)
+        except Exception as e:
+            print(f"⚠️ Failed to read enrichment metrics: {e}")
+
+        # Return default metrics if file doesn't exist or can't be read
+        return {
+            'batch_cap_triggered': None,
+            'loop_timeout_triggered': None,
+            'movies_processed': None,
+            'movies_enriched': None,
+            'enrichment_duration_seconds': None,
+            'error': 'metrics file not available'
+        }
 
     def print_summary(self):
         """Print execution summary"""
@@ -879,6 +990,9 @@ class NRWOrchestrator:
                 print(f"RT scores: {stats['movies_with_rt']} ({rt_pct:.1f}%)")
                 print(f"Wikipedia: {stats['movies_with_wikipedia']} ({wiki_pct:.1f}%)")
                 print(f"Trailers: {stats['movies_with_trailers']} ({trailer_pct:.1f}%)")
+
+        # State file diagnostics
+        self.print_state_file_diagnostics()
 
         # Link source mix analysis
         link_sources = self.get_link_source_mix()
@@ -948,6 +1062,58 @@ class NRWOrchestrator:
         else:
             print(f"🟢 RUN STATUS: COMPLETED SUCCESSFULLY")
         print("=" * 50)
+
+    def print_state_file_diagnostics(self):
+        """Print state file status in the summary report"""
+        state_file_path = 'metrics/newly_available.json'
+
+        try:
+            if os.path.exists(state_file_path):
+                with open(state_file_path) as f:
+                    state_data = json.load(f)
+
+                date = state_data.get('date', 'unknown')
+                timestamp = state_data.get('timestamp', 'unknown')
+                count = state_data.get('count', 0)
+                movie_ids = state_data.get('movie_ids', [])
+
+                today = datetime.now().strftime('%Y-%m-%d')
+
+                print(f"\n📋 State File:")
+                print(f"Movies: {count}, Date: {date}, Timestamp: {timestamp}")
+
+                # Check for discrepancies
+                if date != today:
+                    print(f"⚠️  State file date mismatch (expected {today})")
+
+                # Check timestamp/date consistency
+                if timestamp and timestamp.startswith(date):
+                    print(f"✅ Date/timestamp consistent")
+                elif timestamp and '\"' not in str(timestamp):
+                    try:
+                        timestamp_date = timestamp.split('T')[0]
+                        if timestamp_date != date:
+                            print(f"⚠️  Date/timestamp mismatch (date={date}, timestamp date={timestamp_date})")
+                        else:
+                            print(f"✅ Date/timestamp consistent")
+                    except:
+                        print(f"⚠️  Could not verify timestamp consistency")
+
+                # Show a few movie IDs for diagnostics
+                if movie_ids and len(movie_ids) > 0:
+                    sample_ids = movie_ids[:3]  # Show first 3
+                    sample_str = ', '.join(map(str, sample_ids))
+                    if len(movie_ids) > 3:
+                        sample_str += f", ... (+{len(movie_ids)-3} more)"
+                    print(f"Sample IDs: {sample_str}")
+
+            else:
+                print(f"\n📋 State File: Not found ({state_file_path})")
+
+        except json.JSONDecodeError as e:
+            print(f"\n📋 State File: Invalid JSON - {e}")
+        except Exception as e:
+            print(f"\n📋 State File: Error reading - {e}")
 
     def run(self):
         """Execute the complete daily pipeline with best-effort exception handling"""
