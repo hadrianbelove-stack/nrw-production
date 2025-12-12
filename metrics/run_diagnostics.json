@@ -1,30 +1,30 @@
 {
-  "timestamp": "2025-12-11T10:45:46.325866",
-  "duration_seconds": 4890.132177,
-  "overall_success": false,
-  "failure_count": 1,
+  "timestamp": "2025-12-12T04:09:25.311033",
+  "duration_seconds": 5349.302487,
+  "overall_success": true,
+  "failure_count": 0,
   "warning_count": 0,
   "phases": [
     {
       "name": "Intake new premieres using production discovery",
       "success": true,
-      "duration_seconds": 3.285503,
+      "duration_seconds": 3.408318,
       "error": null,
-      "output_preview": "\ud83d\udeab Enrichment disabled for intake/discovery mode\n\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2025-12-06 to 2025-12-11 (incremental mode, 248 found)\n\u2705 Intake complete: 248 new movies added\n\ud83d\udccb Intake/discovery phase complete\n"
+      "output_preview": "\ud83d\udeab Enrichment disabled for intake/discovery mode\n\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2025-12-06 to 2025-12-12 (incremental mode, 263 found)\n\u2705 Intake complete: 263 new movies added\n\ud83d\udccb Intake/discovery phase complete\n"
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 799.078807,
+      "duration_seconds": 818.439214,
       "error": null,
-      "output_preview": "\ud83d\udeab Enrichment disabled for intake/discovery mode\n\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 5623 total movies\n\ud83d\udd0d Raw tracking filter: 4982 movies\n\ud83d\udd0d Assigned tracking_movies list: 4982\n\ud83d\udd0d Found 4982 movies in tracking status\n  Priority queue (last 180 days): 1467 movies\n  Older movies: 3515 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 4982 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/4982 (2.0%) | 0 found | 0m elaps"
+      "output_preview": "\ud83d\udeab Enrichment disabled for intake/discovery mode\n\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 5638 total movies\n\ud83d\udd0d Raw tracking filter: 4997 movies\n\ud83d\udd0d Assigned tracking_movies list: 4997\n\ud83d\udd0d Found 4997 movies in tracking status\n  Priority queue (last 180 days): 1467 movies\n  Older movies: 3530 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 4997 movies for digital availability...\n\n  \u2713 INERTIA now on Amazon Video!\n  \ud83d\udcca Discovery: 100"
     },
     {
       "name": "Generate data.json for website with enriched links",
-      "success": false,
-      "duration_seconds": 4087.753357,
-      "error": "2025-12-11 09:37:38 [INFO] EnrichmentService initialized with enrichment_enabled=True\n2025-12-11 09:37:38 [INFO] data.json schema validation passed: 503 movies\n2025-12-11 09:37:38 [INFO] Found 503 existing movies in data.json\n2025-12-11 09:37:38 [INFO] State file pre-flight check passed\n2025-12-11 09:37:38 [INFO] Using enrichment state file from 2025-12-11 with 26 IDs\n2025-12-11 09:37:38 [INFO] Wikipedia Scraper initialized with Playwright, cache_file=cache/wikipedia_cache.json\n2025-12-11 09:37:38 [INFO] Cache loaded: 0 entries\n2025-12-11 09:37:38 [INFO] Screenshots: enabled\n2025-12-11 09:37:40 [INFO] Initializing Playwright browser via shared manager...\n2025-12-11 09:37:41 [INFO] Wikipedia scraper initialized with shared browser\n2025-12-11 09:37:43 [WARNING] No Wikipedia page found for Pig Hill (2025)\n2025-12-11 09:37:44 [INFO] Screenshot saved: cache/screenshots/wikipedia/Pig_Hill_2025_20251211_093743.png\n2025-12-11 09:37:46 [WARNING] No Wikipedia page found for Pig Hill (2025)\n2025-",
-      "output_preview": "\ud83c\udfaf Enrichment enabled for final generation phase\n\n\ud83c\udfac Generating final display data...\n\ud83d\udcc2 Found 503 existing movies in data.json\n\ud83d\udd0d Pre-flight check: validating state file environment...\n\u2705 State file exists and is readable\n\n\ud83d\udccb Loaded 26 newly available movie IDs from today's provider check\n\n\ud83d\udcca Phase 2.1 Enrichment Optimization:\n   Total available movies (last 90 days): 505\n   \u2705 Already enriched (cached): 479\n   \ud83c\udd95 Need enrichment: 26\n   \u23f0 Stale (>90 days, will re-enrich): 0\n\n\ud83c\udfac Processing 26 movies (enri"
+      "success": true,
+      "duration_seconds": 4527.411385,
+      "error": null,
+      "output_preview": "\ud83c\udfaf Enrichment enabled for final generation phase\n\n\ud83c\udfac Generating final display data...\n\ud83d\udcc2 Found 504 existing movies in data.json\n\ud83d\udd0d Pre-flight check: validating state file environment...\n\u2705 State file exists and is readable\n\n\ud83d\udccb Loaded 33 newly available movie IDs from today's provider check\n\n\ud83d\udcca Phase 2.1 Enrichment Optimization:\n   Total available movies (last 90 days): 499\n   \u2705 Already enriched (cached): 466\n   \ud83c\udd95 Need enrichment: 33\n   \u23f0 Stale (>90 days, will re-enrich): 0\n\n\ud83c\udfac Processing 33 movies (enri"
     }
   ],
   "health_issues": [],
@@ -32,35 +32,27 @@
     "stalled": false,
     "days_without_transitions": 0
   },
-  "failures": [
-    {
-      "phase": "Generate data.json for website with enriched links",
-      "severity": "error",
-      "message": "Phase failed with exit code 1",
-      "context": "2025-12-11 09:37:38 [INFO] EnrichmentService initialized with enrichment_enabled=True\n2025-12-11 09:37:38 [INFO] data.json schema validation passed: 503 movies\n2025-12-11 09:37:38 [INFO] Found 503 existing movies in data.json\n2025-12-11 09:37:38 [INFO] State file pre-flight check passed\n2025-12-11 09:37:38 [INFO] Using enrichment state file from 2025-12-11 with 26 IDs\n2025-12-11 09:37:38 [INFO] Wikipedia Scraper initialized with Playwright, cache_file=cache/wikipedia_cache.json\n2025-12-11 09:37:",
-      "stdout_preview": "\ud83c\udfaf Enrichment enabled for final generation phase\n\n\ud83c\udfac Generating final display data...\n\ud83d\udcc2 Found 503 existing movies in data.json\n\ud83d\udd0d Pre-flight check: validating state file environment...\n\u2705 State file exists and is readable\n\n\ud83d\udccb Loaded 26 newly available movie IDs from today's provider check\n\n\ud83d\udcca Phase 2.1 Enrichment Optimization:\n   Total available movies (last 90 days): 505\n   \u2705 Already enriched (cached): 479\n   \ud83c\udd95 Need enrichment: 26\n   \u23f0 Stale (>90 days, will re-enrich): 0\n\n\ud83c\udfac Processing 26 movies (enri"
-    }
-  ],
+  "failures": [],
   "warnings": [],
   "data_quality": {
-    "total": 5623,
-    "tracking": 4956,
-    "available": 667,
-    "data_movies": 504,
+    "total": 5638,
+    "tracking": 4964,
+    "available": 674,
+    "data_movies": 498,
     "movies_with_links": 1,
-    "movies_with_rt": 66,
+    "movies_with_rt": 61,
     "movies_with_wikipedia": 0,
     "movies_with_trailers": 0
   },
   "enrichment_metrics": {
-    "timestamp": "2025-12-11T10:45:45.691611",
+    "timestamp": "2025-12-12T04:09:24.549296",
     "batch_cap_triggered": false,
     "loop_timeout_triggered": true,
-    "movies_requested": 26,
-    "movies_processed": 26,
-    "movies_enriched": 8,
+    "movies_requested": 33,
+    "movies_processed": 33,
+    "movies_enriched": 10,
     "movies_deferred": 0,
-    "enrichment_duration_seconds": 4086.9010882377625,
+    "enrichment_duration_seconds": 4526.462559700012,
     "max_batch_size": 100,
     "timeout_limit_minutes": 60
   }
