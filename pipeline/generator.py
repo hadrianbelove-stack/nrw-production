@@ -2004,95 +2004,194 @@ class DataGenerator:
 
 
     def get_enrichment_only_fields(self, movie_id, movie_data, movie_details, force_refresh=False):
-        """Extract enrichment-only fields (RT, Wikipedia, trailers, watch_links) for overlay"""
+        """Extract enrichment-only fields with graceful partial failure handling
+
+        This method implements a graceful degradation strategy where individual
+        enrichment source failures don't prevent saving partial data. Each source
+        (Wikipedia, trailers, RT scores, watch links) is wrapped in try-catch blocks.
+
+        Returns:
+            dict: Always returns a dictionary with available data, never None
+        """
         if not movie_details:
+            self.logger.error(f"Movie details missing for movie_id {movie_id}")
             return None
 
-        title = movie_details['title']
-        year = movie_details.get('release_date', '')[:4] if movie_details.get('release_date') else ''
+        # Safely extract basic info with fallbacks
+        title = movie_details.get('title', f'Unknown Movie {movie_id}')
+        release_date = movie_details.get('release_date', '')
+        year = release_date[:4] if release_date else ''
         imdb_id = movie_details.get('external_ids', {}).get('imdb_id')
 
-        # Build links object with enrichment sources
-        links = {}
+        # Start timing this movie's enrichment
+        import time
+        movie_start_time = time.time()
 
-        # Wikipedia link
-        wiki_url = self.find_wikipedia_url(title, year, imdb_id, movie_id)
-        if wiki_url:
-            links['wikipedia'] = wiki_url
-
-        # Trailer link
-        trailer_url = self.find_trailer_url(movie_details)
-        if trailer_url:
-            links['trailer'] = trailer_url
-
-        # RT link and score
-        rt_data = self.find_rt_url(title, year, imdb_id)
-        rt_score = None
-        if rt_data:
-            if isinstance(rt_data, dict):
-                links['rt'] = rt_data.get('url')
-                rt_score = rt_data.get('score')
-            else:
-                links['rt'] = rt_data
-
-        # Watch links (deep links to streaming platforms)
-        watch_links_raw = self.enrichment.get_watch_links(movie_id, title, year, movie_data.get('providers', {}), force_refresh, tracking_data=movie_data)
-
-        # Simplify provider names in watch links
-        watch_links = {}
-        for category, link_obj in watch_links_raw.items():
-            if isinstance(link_obj, dict) and 'service' in link_obj:
-                simplified_service = self.simplify_provider_name(link_obj['service'])
-                watch_links[category] = {
-                    'service': simplified_service,
-                    'link': link_obj.get('link')
-                }
-            else:
-                watch_links[category] = link_obj
-
-        # Extract additional TMDB metadata for overlay
-        credits = movie_details.get('credits', {})
-        director = "Unknown"
-        cast = []
-
-        for crew in credits.get('crew', []):
-            if crew['job'] == 'Director':
-                director = crew['name']
-                break
-
-        for actor in credits.get('cast', [])[:2]:  # Top 2 actors
-            cast.append(actor['name'])
-
-        genres = [g['name'] for g in movie_details.get('genres', [])]
-        studio = None
-        production_companies = movie_details.get('production_companies', [])
-        if production_companies:
-            studio = production_companies[0]['name']
-
-        runtime = movie_details.get('runtime')
-        country = None
-        production_countries = movie_details.get('production_countries', [])
-        if production_countries:
-            country = production_countries[0]['name']
-
-        # Return enrichment fields that can be safely overlaid
-        return {
-            'title': title,  # May be corrected version
+        # Initialize result with basic TMDB data (always available)
+        result = {
+            'title': title,
             'poster': f"https://image.tmdb.org/t/p/w500{movie_details['poster_path']}" if movie_details.get('poster_path') else None,
             'synopsis': movie_details.get('overview', 'No synopsis available.'),
-            'crew': {
-                'director': director,
-                'cast': cast
-            },
-            'genres': genres,
-            'studio': studio,
-            'runtime': runtime,
-            'year': int(year) if year else None,
-            'country': country,
-            'rt_score': rt_score,
-            'links': links,
-            'watch_links': watch_links
+            'runtime': movie_details.get('runtime'),
+            'year': int(year) if year.isdigit() else None,
+            'rt_score': None,
+            'links': {},
+            'watch_links': {}
         }
+
+        # Track enrichment success/failure for detailed logging
+        enrichment_results = {
+            'wikipedia': 'not_attempted',
+            'trailer': 'not_attempted',
+            'rt_score': 'not_attempted',
+            'watch_links': 'not_attempted'
+        }
+
+        # Wikipedia link (isolated failure handling)
+        try:
+            wiki_url = self.find_wikipedia_url(title, year, imdb_id, movie_id)
+            if wiki_url:
+                result['links']['wikipedia'] = wiki_url
+                enrichment_results['wikipedia'] = 'success'
+                self.logger.debug(f"Wikipedia: Found page for {title} ({year})")
+            else:
+                enrichment_results['wikipedia'] = 'not_found'
+                self.logger.debug(f"Wikipedia: No page found for {title} ({year})")
+        except Exception as e:
+            enrichment_results['wikipedia'] = 'error'
+            self.logger.warning(f"Wikipedia: Error for {title} ({year}): {type(e).__name__}: {str(e)[:100]}")
+
+        # Trailer link (isolated failure handling)
+        try:
+            trailer_url = self.find_trailer_url(movie_details)
+            if trailer_url:
+                result['links']['trailer'] = trailer_url
+                enrichment_results['trailer'] = 'success'
+                self.logger.debug(f"Trailer: Found for {title} ({year})")
+            else:
+                enrichment_results['trailer'] = 'not_found'
+                self.logger.debug(f"Trailer: Not found for {title} ({year})")
+        except Exception as e:
+            enrichment_results['trailer'] = 'error'
+            self.logger.warning(f"Trailer: Error for {title} ({year}): {type(e).__name__}: {str(e)[:100]}")
+
+        # RT score and link (isolated failure handling)
+        try:
+            rt_data = self.find_rt_url(title, year, imdb_id)
+            if rt_data:
+                if isinstance(rt_data, dict):
+                    if rt_data.get('url'):
+                        result['links']['rt'] = rt_data.get('url')
+                    result['rt_score'] = rt_data.get('score')
+                else:
+                    result['links']['rt'] = rt_data
+                enrichment_results['rt_score'] = 'success'
+                self.logger.debug(f"RT: Found data for {title} ({year}) - Score: {result['rt_score']}")
+            else:
+                enrichment_results['rt_score'] = 'not_found'
+                self.logger.debug(f"RT: No data found for {title} ({year})")
+        except Exception as e:
+            enrichment_results['rt_score'] = 'error'
+            self.logger.warning(f"RT: Error for {title} ({year}): {type(e).__name__}: {str(e)[:100]}")
+
+        # Watch links (isolated failure handling)
+        try:
+            watch_links_raw = self.enrichment.get_watch_links(movie_id, title, year, movie_data.get('providers', {}), force_refresh, tracking_data=movie_data)
+
+            # Simplify provider names in watch links
+            for category, link_obj in watch_links_raw.items():
+                if isinstance(link_obj, dict) and 'service' in link_obj:
+                    simplified_service = self.simplify_provider_name(link_obj['service'])
+                    result['watch_links'][category] = {
+                        'service': simplified_service,
+                        'link': link_obj.get('link')
+                    }
+                else:
+                    result['watch_links'][category] = link_obj
+
+            if result['watch_links']:
+                enrichment_results['watch_links'] = 'success'
+                self.logger.debug(f"Watch Links: Found {len(result['watch_links'])} categories for {title} ({year})")
+            else:
+                enrichment_results['watch_links'] = 'not_found'
+                self.logger.debug(f"Watch Links: No links found for {title} ({year})")
+        except Exception as e:
+            enrichment_results['watch_links'] = 'error'
+            self.logger.warning(f"Watch Links: Error for {title} ({year}): {type(e).__name__}: {str(e)[:100]}")
+
+        # Extract additional TMDB metadata (with safe fallbacks)
+        try:
+            credits = movie_details.get('credits', {})
+            director = "Unknown"
+            cast = []
+
+            for crew in credits.get('crew', []):
+                if crew['job'] == 'Director':
+                    director = crew['name']
+                    break
+
+            for actor in credits.get('cast', [])[:2]:  # Top 2 actors
+                cast.append(actor['name'])
+
+            genres = [g['name'] for g in movie_details.get('genres', [])]
+            studio = None
+            production_companies = movie_details.get('production_companies', [])
+            if production_companies:
+                studio = production_companies[0]['name']
+
+            country = None
+            production_countries = movie_details.get('production_countries', [])
+            if production_countries:
+                country = production_countries[0]['name']
+
+            # Add metadata to result
+            result.update({
+                'crew': {
+                    'director': director,
+                    'cast': cast
+                },
+                'genres': genres,
+                'studio': studio,
+                'country': country
+            })
+        except Exception as e:
+            self.logger.warning(f"TMDB Metadata: Error extracting for {title} ({year}): {type(e).__name__}: {str(e)[:100]}")
+            # Add fallback metadata
+            result.update({
+                'crew': {'director': 'Unknown', 'cast': []},
+                'genres': [],
+                'studio': None,
+                'country': None
+            })
+
+        # Calculate enrichment timing and log detailed results
+        movie_duration = time.time() - movie_start_time
+
+        # Create enrichment summary for logging
+        success_count = len([v for v in enrichment_results.values() if v == 'success'])
+        error_count = len([v for v in enrichment_results.values() if v == 'error'])
+        not_found_count = len([v for v in enrichment_results.values() if v == 'not_found'])
+
+        # Enhanced console output with component-level status
+        status_icons = {
+            'success': '✓',
+            'not_found': '○',
+            'error': '✗',
+            'not_attempted': '?'
+        }
+
+        wiki_icon = status_icons.get(enrichment_results['wikipedia'], '?')
+        trailer_icon = status_icons.get(enrichment_results['trailer'], '?')
+        rt_icon = status_icons.get(enrichment_results['rt_score'], '?')
+        links_icon = status_icons.get(enrichment_results['watch_links'], '?')
+
+        print(f"  ⚡ {title} ({movie_duration:.1f}s) - Wiki:{wiki_icon} Trailer:{trailer_icon} RT:{rt_icon} Links:{links_icon} | {success_count} success, {error_count} errors")
+
+        # Detailed logging for metrics
+        self.logger.info(f"Enrichment completed for {title} ({year}) in {movie_duration:.1f}s: {enrichment_results}")
+
+        # Always return result - never None for partial failures
+        return result
 
     def process_movie(self, movie_id, movie_data, movie_details, force_refresh=False):
         """Process a single movie into display format"""
