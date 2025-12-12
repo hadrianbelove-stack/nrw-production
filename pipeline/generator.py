@@ -2656,7 +2656,7 @@ class DataGenerator:
         print(f"✅ {message}")  # Also print to console for visibility
         wiki_count = len([m for m in display_movies if m['links'].get('wikipedia')])
         trailer_count = len([m for m in display_movies if m['links'].get('trailer') and 'watch?v=' in m['links']['trailer']])
-        rt_count = len([m for m in display_movies if m['rt_score']])
+        rt_count = len([m for m in display_movies if m.get('rt_score')])
         reviewed_count = len([m for m in display_movies if m.get('review')])
 
         self.logger.info(f"Wikipedia links found: {wiki_count}")
