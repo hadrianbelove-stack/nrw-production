@@ -1,6 +1,6 @@
 {
-  "timestamp": "2025-12-13T10:34:37.079870",
-  "duration_seconds": 4623.483235,
+  "timestamp": "2025-12-14T10:44:19.217969",
+  "duration_seconds": 5164.313672,
   "overall_success": true,
   "failure_count": 0,
   "warning_count": 0,
@@ -8,23 +8,23 @@
     {
       "name": "Intake new premieres using production discovery",
       "success": true,
-      "duration_seconds": 3.711371,
+      "duration_seconds": 5.123458,
       "error": null,
-      "output_preview": "\ud83d\udeab Enrichment disabled for intake/discovery mode\n\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2025-12-06 to 2025-12-13 (incremental mode, 277 found)\n\u2705 Intake complete: 277 new movies added\n\ud83d\udccb Intake/discovery phase complete\n"
+      "output_preview": "\ud83d\udeab Enrichment disabled for intake/discovery mode\n\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2025-12-06 to 2025-12-14 (incremental mode, 292 found)\n\u2705 Intake complete: 292 new movies added\n\ud83d\udccb Intake/discovery phase complete\n"
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 797.883013,
+      "duration_seconds": 1137.722688,
       "error": null,
-      "output_preview": "\ud83d\udeab Enrichment disabled for intake/discovery mode\n\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 5652 total movies\n\ud83d\udd0d Raw tracking filter: 5011 movies\n\ud83d\udd0d Assigned tracking_movies list: 5011\n\ud83d\udd0d Found 5011 movies in tracking status\n  Priority queue (last 180 days): 1467 movies\n  Older movies: 3544 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 5011 movies for digital availability...\n\n  \u2713 INERTIA now on Amazon Video!\n  \ud83d\udcca Discovery: 100"
+      "output_preview": "\ud83d\udeab Enrichment disabled for intake/discovery mode\n\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 5667 total movies\n\ud83d\udd0d Raw tracking filter: 5026 movies\n\ud83d\udd0d Assigned tracking_movies list: 5026\n\ud83d\udd0d Found 5026 movies in tracking status\n  Priority queue (last 180 days): 1467 movies\n  Older movies: 3559 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 5026 movies for digital availability...\n\n  \u2713 INERTIA now on Amazon Video!\n  \ud83d\udcca Discovery: 100"
     },
     {
       "name": "Generate data.json for website with enriched links",
       "success": true,
-      "duration_seconds": 3821.847585,
+      "duration_seconds": 4021.424268,
       "error": null,
-      "output_preview": "\ud83c\udfaf Enrichment enabled for final generation phase\n\n\ud83c\udfac Generating final display data...\n\ud83d\udcc2 Found 501 existing movies in data.json\n\ud83d\udd0d Pre-flight check: validating state file environment...\n\u2705 State file exists and is readable\n\n\ud83d\udccb Loaded 36 newly available movie IDs from today's provider check\n\n\ud83d\udcca Phase 2.1 Enrichment Optimization:\n   Total available movies (last 90 days): 502\n   \u2705 Already enriched (cached): 466\n   \ud83c\udd95 Need enrichment: 36\n   \u23f0 Stale (>90 days, will re-enrich): 0\n\n\ud83c\udfac Processing 36 movies (enri"
+      "output_preview": "\ud83c\udfaf Enrichment enabled for final generation phase\n\n\ud83c\udfac Generating final display data...\n\ud83d\udcc2 Found 501 existing movies in data.json\n\ud83d\udd0d Pre-flight check: validating state file environment...\n\u2705 State file exists and is readable\n\n\ud83d\udccb Loaded 47 newly available movie IDs from today's provider check\n\n\ud83d\udcca Phase 2.1 Enrichment Optimization:\n   Total available movies (last 90 days): 513\n   \u2705 Already enriched (cached): 466\n   \ud83c\udd95 Need enrichment: 47\n   \u23f0 Stale (>90 days, will re-enrich): 0\n\n\ud83c\udfac Processing 47 movies (enri"
     }
   ],
   "health_issues": [],
@@ -35,24 +35,24 @@
   "failures": [],
   "warnings": [],
   "data_quality": {
-    "total": 5652,
-    "tracking": 4975,
-    "available": 677,
-    "data_movies": 501,
+    "total": 5667,
+    "tracking": 4979,
+    "available": 688,
+    "data_movies": 512,
     "movies_with_links": 1,
     "movies_with_rt": 61,
     "movies_with_wikipedia": 0,
     "movies_with_trailers": 0
   },
   "enrichment_metrics": {
-    "timestamp": "2025-12-13T10:34:36.435010",
+    "timestamp": "2025-12-14T10:44:18.565749",
     "batch_cap_triggered": false,
     "loop_timeout_triggered": true,
-    "movies_requested": 36,
-    "movies_processed": 36,
-    "movies_enriched": 9,
+    "movies_requested": 47,
+    "movies_processed": 47,
+    "movies_enriched": 8,
     "movies_deferred": 0,
-    "enrichment_duration_seconds": 3821.0064511299133,
+    "enrichment_duration_seconds": 4020.5883219242096,
     "max_batch_size": 100,
     "timeout_limit_minutes": 60
   }
