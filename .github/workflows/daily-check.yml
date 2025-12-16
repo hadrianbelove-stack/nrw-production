@@ -207,9 +207,9 @@ jobs:
         id: changes
         if: always()
         run: |
-          # Check for changes in data.json, metrics/daily.jsonl, and diagnostics files
+          # Check for changes in data.json, movie_tracking.json, and all metrics files
           # Note: metrics/run_diagnostics.json tracks orchestrator health over time
-          if ! git diff --quiet --exit-code -- data.json metrics/daily.jsonl metrics/run_diagnostics.json; then
+          if ! git diff --quiet --exit-code -- data.json movie_tracking.json metrics/; then
             echo "changes=true" >> $GITHUB_OUTPUT
             echo "Changes detected in repository"
           else
@@ -255,9 +255,9 @@ jobs:
             commit_msg="$commit_msg, new_arrivals=${NEW_ARRIVALS:-0}"
           fi
 
-          # Stage generated files (data.json, daily metrics, and diagnostics)
-          echo "📦 Staging data.json, daily metrics, and diagnostics"
-          git add data.json metrics/daily.jsonl metrics/run_diagnostics.json
+          # Stage generated files (data.json, movie_tracking.json, and all metrics)
+          echo "📦 Staging data.json, movie_tracking.json, and all metrics files"
+          git add data.json movie_tracking.json metrics/
 
           # Only commit if there are staged changes and set flag accordingly
           if git diff --cached --quiet; then
