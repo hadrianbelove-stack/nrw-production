@@ -84,9 +84,9 @@ api:
   max_retries: 3
   max_pages_bootstrap: 49  # Maximum pages to fetch for bootstrap operation
 
-# Agent scraper (Playwright): For Netflix/Disney+/HBO Max/Hulu - DISABLED due to authentication barriers
+# Streaming scraper (Playwright): For Netflix/Disney+/HBO Max/Hulu - DISABLED due to authentication barriers
 # Uses playwright for stealth browsing but blocked by login requirements
-agent_scraper:
+streaming_scraper:
   enabled: true  # Enabled as fallback when TMDB API has no links
   headless: true  # Run browser in headless mode (required for CI)
   rate_limit: 2.0  # Minimum seconds between scrapes
@@ -100,10 +100,10 @@ agent_scraper:
     max_delay: 5.0  # Maximum retry delay (seconds)
     jitter_ratio: 0.2  # Randomness factor (±20%)
 
-# Platform scraper (Playwright): For Amazon/Apple TV - ENABLED as TMDB fallback
+# VOD scraper (Playwright): For Amazon/Apple TV - ENABLED as TMDB fallback
 # Uses Playwright for Amazon/Apple TV since they don't require authentication
 # Only runs when TMDB API has no direct links, focuses on recent releases
-platform_scraper:
+vod_scraper:
   enabled: true  # Enable Playwright-based Amazon/Apple TV scraper as TMDB fallback
   headless: true  # Run browser in headless mode for production
   rate_limit: 2.0  # Seconds between scrapes to avoid rate limiting
@@ -117,7 +117,7 @@ platform_scraper:
     expected_update_frequency: "quarterly"  # How often selectors typically need updates
     # Migrated from Selenium to Playwright on 2025-10-25 for improved reliability and performance
     # Expected performance improvement: 30-40% faster (6-8s vs 10s per search)
-    # Implementation: streaming_platform_scraper.py (Playwright-based, shares patterns with agent_scraper.py)
+    # Implementation: streaming_platform_scraper.py (Playwright-based, shares patterns with agent_link_scraper.py)
 
 rt_scraper:
   enabled: true  # Enable/disable RT scraping

@@ -403,7 +403,7 @@ class NRWOrchestrator:
             movies = data.get('movies', [])
             link_sources = {
                 'watchmode': 0,
-                'platform_scrapers': 0,
+                'streaming_scrapers': 0,
                 'search_urls': 0,
                 'no_links': 0
             }

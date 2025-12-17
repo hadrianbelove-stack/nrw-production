@@ -1,0 +1,125 @@
+# Pipeline Incident Summary - December 6, 2025
+
+**Incident Date:** December 6, 2025 (reported hanging)
+**Status:** 📚 HISTORICAL INCIDENT - REFERENCE DOCUMENT
+
+**NOTE:** This document describes a historical incident. The orchestrator has since been enhanced with best-effort reporting, comprehensive diagnostics, and nuanced health status indicators. See `NRW_DATA_WORKFLOW_EXPLAINED.md` for current health model.
+
+---
+
+## STATUS CLARIFICATION
+
+### ✅ SYMPTOMS RESOLVED
+- **Hanging Issue Fixed:** Constructor injection timing bug resolved
+- **Phase Boundary Violations:** Fixed enrichment running during intake/discovery
+- **GitHub Actions:** No longer timing out during phase execution
+
+### 🚨 SYSTEM REMAINS BROKEN
+- **Intake Failure:** 45-day blackout (Oct 23 - Dec 5) - ZERO new movies added
+- **Discovery Failure:** No newly available movies detected since Dec 4
+- **Current Workflow:** Hanging 84+ minutes (abnormal, should be ~15min)
+
+---
+
+## CRITICAL FINDINGS
+
+### 1. Intake System Breakdown
+- **Last Success:** October 22, 2025 (180 movies)
+- **Failure Window:** October 23 - December 5 (45 days)
+- **Missing Data:** Thousands of movie premieres (festivals, digital, theatrical)
+- **Database State:** 5,308 movies total, only 1,428 have intake timestamps
+
+### 2. Discovery System Issues
+- **Last Success:** December 4, 2025 (46 newly available movies)
+- **Current State:** No discovery completion since Dec 4
+- **Workload:** 4,704 movies in "tracking" status awaiting provider checks
+- **Current Workflow:** Running 84+ minutes (likely hanging)
+
+### 3. Data Integrity Impact
+- **Missing Movie Premieres:** 45-day gap in new content capture
+- **Stale Availability Data:** No updates on digital availability since Dec 4
+- **User Impact:** Website showing outdated content
+
+---
+
+## TECHNICAL FIXES IMPLEMENTED
+
+### Constructor Injection Fix
+```python
+# BEFORE: Late flag setting after construction
+generator = DataGenerator()  # enrichment_enabled=True by default
+generator.enrichment_enabled = False  # Too late!
+
+# AFTER: Flag set during construction
+generator = DataGenerator(enrichment_enabled=enrichment_enabled)
+```
+
+### Phase Boundary Enforcement
+- Added guards preventing enrichment during intake/discovery
+- Conditional execution of display data generation
+- Proper phase separation in orchestrator
+
+### Timestamp Tracking
+- Added `added_at` and `intake_run_date` fields for new movies
+- Will help track future intake success/failures
+
+---
+
+## UNRESOLVED CRITICAL ISSUES
+
+### 1. Root Cause Unknown
+- **Question:** What broke intake around October 22, 2025?
+- **Need:** Investigation of commits, deployments, configuration changes
+- **Impact:** Cannot prevent recurrence without understanding cause
+
+### 2. Discovery Phase Problems
+- **Current:** 84+ minute runtime suggests hanging/timeout
+- **Workload:** 4,704 movies may exceed GitHub Actions limits
+- **Rate Limiting:** Possible TMDB API throttling issues
+
+### 3. Incremental Date Logic
+- **Narrow Windows:** Daily runs checking 1-2 days may miss movies
+- **TMDB Changes:** Release dates frequently updated, need wider windows
+- **Test Evidence:** Found 10 movies in Dec 1-6 vs 0 in Dec 5-6
+
+---
+
+## IMMEDIATE ACTIONS REQUIRED
+
+### Priority 1: Stop Current Hanging Workflow
+- Current workflow running 84+ minutes needs investigation/cancellation
+- Determine what's causing discovery phase to hang
+
+### Priority 2: Investigate October 22 Break Point
+- Review commits, deployments, config changes around Oct 22
+- Identify what caused 45-day intake failure
+
+### Priority 3: Discovery Workload Analysis
+- 4,704 movies may be too many for single GitHub Actions run
+- Consider batching or timeout adjustments
+- Verify TMDB API rate limiting
+
+---
+
+## EVIDENCE REQUIREMENTS FOR "SYSTEM HEALTHY"
+
+Pipeline should NOT be considered functional until:
+
+1. **New Intake Metrics:** Fresh metrics/intake_run.json with discovered > 0
+2. **New Discovery Metrics:** Fresh metrics/newly_available.json with recent dates
+3. **Data.json Updates:** Verifiable new movies appearing in data.json
+4. **Consistent Operation:** Multiple successive daily runs completing successfully
+
+---
+
+## NEXT STEPS
+
+1. **Immediate:** Cancel/investigate current 84+ minute workflow
+2. **Investigation:** Determine root cause of October 22 intake failure
+3. **Testing:** Validate intake/discovery with wider date ranges
+4. **Monitoring:** Implement alerts for zero-movie intake results
+5. **Backfill:** Execute historical intake for Oct 23 - Dec 5 gap
+
+---
+
+**CRITICAL:** Do not characterize pipeline as "functional" or "resolved" based solely on hanging symptom fix. Core movie tracking capabilities remain broken.

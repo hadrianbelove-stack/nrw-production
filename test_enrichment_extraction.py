@@ -214,9 +214,9 @@ def test_method_replacements():
             "Method found in pipeline/enrichment.py"
         )
 
-        has_try_agent = 'def _try_agent_scraper(self, movie_id' in enrichment_content
+        has_try_agent = 'def try_vod_scraper(self, title, year' in enrichment_content
         test_result(
-            "_try_agent_scraper method in enrichment module",
+            "try_vod_scraper method in enrichment module",
             has_try_agent,
             "Method found in pipeline/enrichment.py"
         )
@@ -310,7 +310,6 @@ def test_backward_compatibility():
                     storage_service=self.storage,
                     validator_service=self.validator,
                     stats_dict=self.watchmode_stats,
-                    watchmode_client=None,
                     enrichment_enabled=True
                 )
 
@@ -321,12 +320,12 @@ def test_backward_compatibility():
 
         # Test that enrichment methods are accessible
         has_get_watch_links = hasattr(mock_gen.enrichment, 'get_watch_links')
-        has_try_agent = hasattr(mock_gen.enrichment, 'try_agent_scraper')
+        has_try_agent = hasattr(mock_gen.enrichment, 'try_vod_scraper')
         has_is_amazon = hasattr(mock_gen.enrichment, 'is_actual_amazon_service')
         has_append_tag = hasattr(mock_gen.enrichment, 'append_affiliate_tag')
 
         test_result("get_watch_links method accessible", has_get_watch_links)
-        test_result("try_agent_scraper method accessible", has_try_agent)
+        test_result("try_vod_scraper method accessible", has_try_agent)
         test_result("is_actual_amazon_service method accessible", has_is_amazon)
         test_result("append_affiliate_tag method accessible", has_append_tag)
 

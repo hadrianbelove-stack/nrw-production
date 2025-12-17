@@ -103,9 +103,9 @@ git push origin main
 | Scraper | Technology | Rate Limit | Cache TTL |
 |---------|------------|------------|-----------|
 | `rt_scraper_playwright.py` | Playwright | 2s delay | 90 days |
-| `agent_link_scraper.py` | Playwright | 2s delay | 30 days |
-| `streaming_platform_scraper.py` | Playwright | 3s delay | 7 days |
-| `scripts/youtube_trailer_scraper.py` | Playwright | 2s delay | 90 days |
+| `agent_link_scraper.py` (VOD scraper) | Playwright | 2s delay | 30 days |
+| `streaming_platform_scraper.py` (Streamer scraper) | Playwright | 3s delay | 7 days |
+| `scripts/youtube_trailer_scraper.py` (Trailer scraper) | Playwright | 2s delay | 90 days |
 
 ### 3.5 Directories
 

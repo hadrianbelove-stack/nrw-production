@@ -44,10 +44,10 @@ def test_enrichment_disabled():
                     assert generator.enrichment.enrichment_enabled == False, f"Expected enrichment service enrichment_enabled=False, got {generator.enrichment.enrichment_enabled}"
 
                     # Try to trigger agent scraper initialization
-                    generator.enrichment._init_agent_scraper()
+                    generator.enrichment._init_vod_scraper()
 
                     # Verify agent scraper was NOT initialized (should be False, not an object)
-                    assert generator.enrichment.agent_scraper == False, f"Expected agent_scraper=False when enrichment disabled, got {generator.enrichment.agent_scraper}"
+                    assert generator.enrichment.vod_scraper == False, f"Expected vod_scraper=False when enrichment disabled, got {generator.enrichment.vod_scraper}"
 
                     print("✅ enrichment_enabled=False correctly prevents agent scraper initialization")
                     return True
@@ -92,10 +92,10 @@ def test_enrichment_enabled():
                     mock_scraper = MagicMock()
                     with patch('pipeline.enrichment.AgentLinkScraper', return_value=mock_scraper):
                         # Try to trigger agent scraper initialization
-                        generator.enrichment._init_agent_scraper()
+                        generator.enrichment._init_vod_scraper()
 
                         # Verify agent scraper WAS initialized (should be the mock object)
-                        assert generator.enrichment.agent_scraper == mock_scraper, f"Expected agent_scraper to be initialized when enrichment enabled, got {generator.enrichment.agent_scraper}"
+                        assert generator.enrichment.vod_scraper == mock_scraper, f"Expected vod_scraper to be initialized when enrichment enabled, got {generator.enrichment.vod_scraper}"
 
                     print("✅ enrichment_enabled=True correctly allows agent scraper initialization")
                     return True

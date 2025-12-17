@@ -183,10 +183,10 @@ def run_enrichment(batch_size=20, no_limit=False):
     # Cleanup scrapers
     print("\nCleaning up scrapers...")
     try:
-        if generator.agent_scraper and generator.agent_scraper != False:
-            generator.agent_scraper.close()
-        if generator.platform_scraper and generator.platform_scraper != False:
-            generator.platform_scraper.close()
+        if generator.vod_scraper and generator.vod_scraper != False:
+            generator.vod_scraper.close()
+        if generator.streaming_scraper and generator.streaming_scraper != False:
+            generator.streaming_scraper.close()
         if generator.rt_scraper and generator.rt_scraper is not False:
             generator.rt_scraper.close()
         if generator.wikipedia_scraper and generator.wikipedia_scraper is not False:
