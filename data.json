@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "generated_at": "2025-12-17T00:52:00.384426",
   "count": 531,
   "movies": [
@@ -448,9 +449,15 @@
       "watch_links": {}
     },
     {
+=======
+  "generated_at": "2025-12-13T12:09:02.806975",
+  "count": 519,
+  "movies": [
+    {
+>>>>>>> 08619ac (Fix enrichment pipeline data loss with persistent queue system)
       "id": "1476740",
       "title": "Influencers",
-      "digital_date": "2025-12-14",
+      "digital_date": "2025-12-13",
       "bootstrap_date": false,
       "manually_corrected": false,
       "poster": "https://image.tmdb.org/t/p/w500/xhIeXsIybA0rgQ6xLfy2yqFFWZf.jpg",
@@ -494,59 +501,30 @@
       }
     },
     {
-      "id": "1352624",
-      "title": "The Mastermind",
-      "digital_date": "2025-12-14",
+      "id": "1444973",
+      "title": "Jatadhara",
+      "digital_date": "2025-12-13",
       "bootstrap_date": false,
       "manually_corrected": false,
-      "poster": "https://image.tmdb.org/t/p/w500/w41wCJGcQM4Bdd0OeQ26UNi5o39.jpg",
-      "synopsis": "In a sedate Massachusetts suburb circa 1970, unemployed family man and amateur art thief J.B. Mooney sets out on his first heist. With the museum cased and accomplices recruited, he has an airtight plan. Or so he thinks.",
+      "poster": "https://image.tmdb.org/t/p/w500/91aJa79gHiTUWh86XFRMaD2MGjj.jpg",
+      "synopsis": "Shiva, a rational ghost hunter, man of science and reason\u2014is drawn back to the mystery of a powerful guardian spirit named Dhanapisachi, pulled into a world where his beliefs are tested.",
       "crew": {
-        "director": "Kelly Reichardt",
+        "director": "Venkat Kalyan",
         "cast": [
-          "Josh O'Connor",
-          "Alana Haim"
+          "Sudheer Babu",
+          "Sonakshi Sinha"
         ]
       },
       "genres": [
-        "Drama",
-        "Crime"
+        "Action",
+        "Horror",
+        "Thriller"
       ],
-      "studio": "filmscience",
-      "runtime": 110,
+      "studio": "Ess Kay Gee Entertainment",
+      "runtime": 135,
       "year": 2025,
-      "country": "United Kingdom",
+      "country": "India",
       "rt_score": null,
-      "providers": {
-        "rent": [],
-        "buy": [
-          "Amazon Video",
-          "Fandango At Home"
-        ],
-        "streaming": [
-          "MUBI Amazon Channel"
-        ]
-      },
-      "links": {
-        "wikipedia": "https://en.wikipedia.org/wiki/The_Mastermind_(2025_film)",
-        "trailer": "https://www.youtube.com/watch?v=ASH5vXpi3xA",
-        "rt": "https://www.rottentomatoes.com/search?search=The%20Mastermind%202025"
-      },
-      "watch_links": {
-        "streaming": {
-          "service": "MUBI",
-          "link": null
-        },
-        "vod": {
-          "service": "Amazon",
-          "link": null
-        }
-      }
-    },
-    {
-      "id": "1444973",
-      "title": "Jatadhara",
-      "digital_date": "2025-12-14",
       "providers": {
         "rent": [],
         "buy": [],
@@ -555,13 +533,44 @@
           "Amazon Prime Video with Ads"
         ]
       },
-      "links": {},
-      "watch_links": {}
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Jatadhara",
+        "trailer": "https://www.youtube.com/watch?v=PX-Sir6GiFc",
+        "rt": "https://www.rottentomatoes.com/search?search=Jatadhara%202025"
+      },
+      "watch_links": {
+        "streaming": {
+          "service": "Amazon",
+          "link": null
+        }
+      }
     },
     {
       "id": "812583",
       "title": "Wake Up Dead Man: A Knives Out Mystery",
-      "digital_date": "2025-12-14",
+      "digital_date": "2025-12-13",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "poster": "https://image.tmdb.org/t/p/w500/qCOGGi8JBVEZMc3DVby8rUivyXz.jpg",
+      "synopsis": "When young priest Jud Duplenticy is sent to assist charismatic firebrand Monsignor Jefferson Wicks, it\u2019s clear that all is not well in the pews. After a sudden and seemingly impossible murder rocks the town, the lack of an obvious suspect prompts local police chief Geraldine Scott to join forces with renowned detective Benoit Blanc to unravel a mystery that defies all logic.",
+      "crew": {
+        "director": "Rian Johnson",
+        "cast": [
+          "Daniel Craig",
+          "Josh O'Connor"
+        ]
+      },
+      "genres": [
+        "Thriller",
+        "Mystery",
+        "Comedy",
+        "Drama"
+      ],
+      "studio": "T-Street",
+      "runtime": 145,
+      "year": 2025,
+      "country": "United States of America",
+      "rt_score": "92%",
       "providers": {
         "rent": [],
         "buy": [],
@@ -569,13 +578,42 @@
           "Netflix"
         ]
       },
-      "links": {},
-      "watch_links": {}
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Wake_Up_Dead_Man",
+        "trailer": "https://www.youtube.com/watch?v=0hc8yz5-d5Y",
+        "rt": "https://www.rottentomatoes.com/m/wake_up_dead_man_a_knives_out_mystery"
+      },
+      "watch_links": {
+        "streaming": {
+          "service": "Netflix",
+          "link": null
+        }
+      }
     },
     {
       "id": "1586368",
-      "title": "Corey Feldman Vs The World",
-      "digital_date": "2025-12-14",
+      "title": "Corey Feldman vs. the World",
+      "digital_date": "2025-12-13",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "poster": "https://image.tmdb.org/t/p/w500/neNy3q90D5XjGqxS7iRFVoKJ4q.jpg",
+      "synopsis": "With unprecedented access, this years-in-the-making v\u00e9rit\u00e9 documentary embeds with Corey Feldman as he mounts a surreal rock tour with a band of lingerie-clad \"angels\". The tour goes horribly awry, forcing Feldman to confront his long-held allegations about abuse in Hollywood and his own darkest secrets.",
+      "crew": {
+        "director": "Marcie Hume",
+        "cast": [
+          "Corey Feldman",
+          "Courtney Anne Mitchell"
+        ]
+      },
+      "genres": [
+        "Documentary",
+        "Music"
+      ],
+      "studio": "Cool & Happy",
+      "runtime": 98,
+      "year": 2025,
+      "country": "United States of America",
+      "rt_score": null,
       "providers": {
         "rent": [
           "Google Play Movies",
@@ -587,13 +625,41 @@
         ],
         "streaming": []
       },
-      "links": {},
-      "watch_links": {}
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/w/index.php?search=Corey%20Feldman%20vs.%20the%20World%20%282025%20film%29",
+        "trailer": "https://www.youtube.com/watch?v=VedhvGgA0RM",
+        "rt": "https://www.rottentomatoes.com/search?search=Corey%20Feldman%20vs.%20the%20World%202025"
+      },
+      "watch_links": {
+        "vod": {
+          "service": "Google Play",
+          "link": null
+        }
+      }
     },
     {
       "id": "1584595",
       "title": "Zahir",
-      "digital_date": "2025-12-14",
+      "digital_date": "2025-12-13",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "poster": "https://image.tmdb.org/t/p/w500/hFaVEpUqY87Z3gxAUke1aJxcvXu.jpg",
+      "synopsis": "When Katherine Choong suggested to her friend \u00c9line Le Menestrel that they tackle the Zahir, a classic route in the Swiss Alps and a demanding gem of the Wendenst\u00f6cke, \u00c9line agreed... on one condition: that they only use sustainable transport to get to the foot of the wall.  As the days passed suspended on the rock, they realized the scale of the challenge: intense commitment, tiny holds, accumulated fatigue from cycling... every movement became a challenge.  Between motivation and euphoria, perseverance and doubt, would Katherine and \u00c9line manage to reach their Zahir, that summit where audacity and wild beauty come together?",
+      "crew": {
+        "director": "Julien Nadiras",
+        "cast": [
+          "Katherine Choong",
+          "Eline Le Menestrel"
+        ]
+      },
+      "genres": [
+        "Documentary"
+      ],
+      "studio": "Julien Nadiras",
+      "runtime": 29,
+      "year": 2025,
+      "country": null,
+      "rt_score": null,
       "providers": {
         "rent": [
           "Amazon Video"
@@ -603,13 +669,39 @@
         ],
         "streaming": []
       },
-      "links": {},
-      "watch_links": {}
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Zahir_Raihan",
+        "trailer": "https://www.youtube.com/watch?v=OujknWpXP6k",
+        "rt": "https://www.rottentomatoes.com/search?search=Zahir%202025"
+      },
+      "watch_links": {
+        "vod": {
+          "service": "Amazon",
+          "link": null
+        }
+      }
     },
     {
       "id": "1583382",
       "title": "Stolen Children",
-      "digital_date": "2025-12-14",
+      "digital_date": "2025-12-13",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "poster": "https://image.tmdb.org/t/p/w500/rc23EVOFuAOs1SeJkIsKsJgw1z7.jpg",
+      "synopsis": "Martyna Wojciechowska and Jowita Baraniecka deliver rigorously reported investigative journalism into a case that continues to stir deep public emotion. The film takes us to Georgia, where the shadows of the post-Soviet past still loom large. At its center is investigative reporter Tamuna Museridze, who sets out to unravel a profoundly personal mystery. As she follows the trail of a widespread 1990s scheme in which newborns were taken from Georgian maternity wards and trafficked across the world, she exposes networks, mechanisms, and long-buried secrets along with family tragedies that remain just as painful today. The scale of the practice is staggering: as many as 100,000 children were stolen from hospitals and sold. Among them were Amy and Ano, twin sisters separated at birth who finally found each other in 2024 through social media.",
+      "crew": {
+        "director": "Martyna Wojciechowska",
+        "cast": []
+      },
+      "genres": [
+        "Documentary",
+        "History"
+      ],
+      "studio": "TVN Warner Bros. Discovery",
+      "runtime": 97,
+      "year": 2025,
+      "country": "Poland",
+      "rt_score": null,
       "providers": {
         "rent": [],
         "buy": [],
@@ -618,13 +710,41 @@
           "HBO Max Amazon Channel"
         ]
       },
-      "links": {},
-      "watch_links": {}
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/w/index.php?search=Stolen%20Children%20%282025%20film%29",
+        "trailer": "https://www.youtube.com/watch?v=xPSoETclqj4",
+        "rt": "https://www.rottentomatoes.com/search?search=Stolen%20Children%202025"
+      },
+      "watch_links": {
+        "streaming": {
+          "service": "Max",
+          "link": null
+        }
+      }
     },
     {
       "id": "1562010",
       "title": "Taylor Swift | The Eras Tour | The Final Show",
-      "digital_date": "2025-12-14",
+      "digital_date": "2025-12-13",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "poster": "https://image.tmdb.org/t/p/w500/zziixUT6aqMiy3WN3mnOes0SEWi.jpg",
+      "synopsis": "Filmed at the end of the tour in Vancouver, B.C., with the entire Tortured Poets Department set.",
+      "crew": {
+        "director": "Glenn Weiss",
+        "cast": [
+          "Taylor Swift",
+          "Mike Meadows"
+        ]
+      },
+      "genres": [
+        "Music"
+      ],
+      "studio": "Taylor Swift Productions",
+      "runtime": 207,
+      "year": 2025,
+      "country": "United States of America",
+      "rt_score": null,
       "providers": {
         "rent": [],
         "buy": [],
@@ -632,13 +752,43 @@
           "Disney Plus"
         ]
       },
-      "links": {},
-      "watch_links": {}
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/w/index.php?search=Taylor%20Swift%20%7C%20The%20Eras%20Tour%20%7C%20The%20Final%20Show%20%282025%20film%29",
+        "trailer": "https://www.youtube.com/watch?v=S1MO3bRG9qw",
+        "rt": "https://www.rottentomatoes.com/m/taylor_swift_the_eras_tour_the_final_show"
+      },
+      "watch_links": {
+        "streaming": {
+          "service": "Disney+",
+          "link": null
+        }
+      }
     },
     {
       "id": "1517401",
       "title": "Bat Out of Hell: The Musical",
-      "digital_date": "2025-12-14",
+      "digital_date": "2025-12-13",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "poster": "https://image.tmdb.org/t/p/w500/7GGhL12GaULOJ5J0LRAzXcVNmmQ.jpg",
+      "synopsis": "Step into the dystopian city of Obsidian, where a rebellious gang called The Lost can never grow old. At the heart of this rock opera is a fiery romance between their leader, Strat, and Raven, the sheltered daughter of the city\u2019s tyrannical ruler, Falco\u2014a love story as defiant as the music itself.",
+      "crew": {
+        "director": "Jay Scheib",
+        "cast": [
+          "Glenn Adamson",
+          "Katie Tonkinson"
+        ]
+      },
+      "genres": [
+        "Music",
+        "Romance",
+        "Fantasy"
+      ],
+      "studio": "CinemaLive (GB)",
+      "runtime": 135,
+      "year": 2025,
+      "country": "United Kingdom",
+      "rt_score": null,
       "providers": {
         "rent": [],
         "buy": [],
@@ -646,13 +796,42 @@
           "Broadway HD Amazon Channel"
         ]
       },
-      "links": {},
-      "watch_links": {}
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Bat_Out_of_Hell:_The_Musical",
+        "trailer": "https://www.youtube.com/watch?v=LPrixtnWPm4",
+        "rt": "https://www.rottentomatoes.com/search?search=Bat%20Out%20of%20Hell%3A%20The%20Musical%202025"
+      },
+      "watch_links": {
+        "streaming": {
+          "service": "Amazon",
+          "link": null
+        }
+      }
     },
     {
       "id": "1465743",
-      "title": "Wizkid: Long Live Lagos",
-      "digital_date": "2025-12-14",
+      "title": "Music Box: Wizkid: Long Live Lagos",
+      "digital_date": "2025-12-13",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "poster": "https://image.tmdb.org/t/p/w500/pbH4C2nZRqLGEKTGmoaVIgLGniZ.jpg",
+      "synopsis": "From Lagos to London, this powerful documentary follows Wizkid\u2019s rise as a global icon reshaping how Africa is seen \u2014 and heard \u2014 around the world. Blending intimate moments, explosive performances, and cultural commentary, the film captures how Wizkid is using his platform to change perceptions, reclaim African identity, and inspire a new generation.",
+      "crew": {
+        "director": "Karam Gill",
+        "cast": [
+          "Wizkid",
+          "Femi-Anikulapo Kuti"
+        ]
+      },
+      "genres": [
+        "Documentary",
+        "Music"
+      ],
+      "studio": "HBO Documentary Films",
+      "runtime": 86,
+      "year": 2025,
+      "country": "United States of America",
+      "rt_score": null,
       "providers": {
         "rent": [],
         "buy": [],
@@ -661,13 +840,40 @@
           "HBO Max Amazon Channel"
         ]
       },
-      "links": {},
-      "watch_links": {}
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/w/index.php?search=Music%20Box%3A%20Wizkid%3A%20Long%20Live%20Lagos%20%282025%20film%29",
+        "trailer": "https://www.youtube.com/watch?v=XRXUSCBzDIg",
+        "rt": "https://www.rottentomatoes.com/search?search=Music%20Box%3A%20Wizkid%3A%20Long%20Live%20Lagos%202025"
+      },
+      "watch_links": {
+        "streaming": {
+          "service": "Max",
+          "link": null
+        }
+      }
     },
     {
       "id": "1596349",
       "title": "Dream Big: The Olympia Movie",
-      "digital_date": "2025-12-14",
+      "digital_date": "2025-12-13",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "poster": "https://image.tmdb.org/t/p/w500/fMfd3Md1POEzOToXMwDNpKCC1HR.jpg",
+      "synopsis": "A global fascination with strength, human performance and physique transformation has created massive commerce, impacting regional economies throughout the world. At the top of this movement is the most prestigious fitness experience in the world - \"The Olympia.\" Dream Big: The Olympia Movie celebrates 60 years of history, passion, and cultural impact behind bodybuilding's ultimate stage.",
+      "crew": {
+        "director": "Vlad Yudin",
+        "cast": [
+          "Darrell Brown"
+        ]
+      },
+      "genres": [
+        "Documentary"
+      ],
+      "studio": null,
+      "runtime": 98,
+      "year": 2025,
+      "country": null,
+      "rt_score": null,
       "providers": {
         "rent": [],
         "buy": [
@@ -678,58 +884,10 @@
         ],
         "streaming": []
       },
-      "links": {},
-      "watch_links": {}
-    },
-    {
-      "id": "1554297",
-      "title": "Have We Met This Christmas?",
-      "digital_date": "2025-12-13",
-      "providers": {
-        "rent": [],
-        "buy": [],
-        "streaming": [
-          "Pure Flix",
-          "Great American Pure Flix Amazon Channel"
-        ]
-      },
-      "links": {},
-      "watch_links": {}
-    },
-    {
-      "id": "1525972",
-      "title": "Broken Mary: The Kevin Matthews Story",
-      "digital_date": "2025-12-12",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "poster": "https://image.tmdb.org/t/p/w500/bIjHjhWeGF1LXAZYdqN7Vl1tnj1.jpg",
-      "synopsis": "It\u2019s Chicago in the 1980s and \u201890s, and Kevin Matthews has it all as one of the nation\u2019s most recognized on-air radio personalities. He\u2019s partying with celebrities, rubbing shoulders with famous athletes, and the world is at his fingertips. Then everything changes \u2013 he\u2019s diagnosed with a debilitating illness and the spotlight gradually slips away. At the height of his anguish, he stumbles upon a broken statue of the Virgin Mary, and his life takes an unexpected turn. In this moment of spiritual awakening, Kevin finds his true purpose and calling, discovering what matters most. Calling himself \u201cMary\u2019s Roadie,\u201d he offers his fans something deeper: inspiration and hope.",
-      "crew": {
-        "director": "Jonathan Cipiti",
-        "cast": [
-          "Kevin Matthews",
-          "Mancow Muller"
-        ]
-      },
-      "genres": [
-        "Documentary"
-      ],
-      "studio": "Windrider Productions",
-      "runtime": 95,
-      "year": 2025,
-      "country": "United States of America",
-      "rt_score": "99%",
-      "providers": {
-        "rent": [
-          "Amazon Video"
-        ],
-        "buy": [],
-        "streaming": []
-      },
       "links": {
-        "wikipedia": "https://en.wikipedia.org/w/index.php?search=Broken%20Mary%3A%20The%20Kevin%20Matthews%20Story%20%282025%20film%29",
-        "trailer": "https://www.youtube.com/watch?v=zR0BHRJHVrU",
-        "rt": "https://www.rottentomatoes.com/m/broken_mary_the_kevin_matthews_story"
+        "wikipedia": "https://en.wikipedia.org/w/index.php?search=Dream%20Big%3A%20The%20Olympia%20Movie%20%282025%20film%29",
+        "trailer": "https://www.youtube.com/watch?v=AHSj58s1K_k",
+        "rt": "https://www.rottentomatoes.com/search?search=Dream%20Big%3A%20The%20Olympia%20Movie%202025"
       },
       "watch_links": {
         "vod": {
@@ -739,9 +897,251 @@
       }
     },
     {
+      "id": "1435092",
+      "title": "Goodbye June",
+      "digital_date": "2025-12-13",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "poster": "https://image.tmdb.org/t/p/w500/xJ4SNjqfS8DyCOoxK0KD3e1b2JB.jpg",
+      "synopsis": "Four siblings' lives change drastically when their ailing mother takes a turn for the worse over the holiday season.",
+      "crew": {
+        "director": "Kate Winslet",
+        "cast": [
+          "Kate Winslet",
+          "Toni Collette"
+        ]
+      },
+      "genres": [
+        "Drama"
+      ],
+      "studio": "Working Title Films",
+      "runtime": 114,
+      "year": 2025,
+      "country": "United Kingdom",
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Netflix"
+        ]
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Goodbye_June_(film)",
+        "trailer": "https://www.youtube.com/watch?v=vIDoYSWCuzQ",
+        "rt": "https://www.rottentomatoes.com/search?search=Goodbye%20June%202025"
+      },
+      "watch_links": {
+        "streaming": {
+          "service": "Netflix",
+          "link": null
+        }
+      }
+    },
+    {
+      "id": "1595856",
+      "title": "Boo-Yah: A Portrait of Stuart Scott",
+      "digital_date": "2025-12-13",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "poster": "https://image.tmdb.org/t/p/w500/w7V3lOur4lCYKZV8np53atCM2t.jpg",
+      "synopsis": "\"Boo-Yah\" traces Stuart's journey from local television in North Carolina to becoming one of ESPN's most influential voices. At a time when hip-hop and popular culture were often marginalized in mainstream media and few Black anchors held national prominence, Stuart brought both unapologetically to \"SportsCenter,\" blending sharp analysis, pop culture and swagger in a way that spoke to a new generation of fans.",
+      "crew": {
+        "director": "Andre Gaines",
+        "cast": [
+          "Stuart Scott",
+          "Charles Barkley"
+        ]
+      },
+      "genres": [
+        "Documentary"
+      ],
+      "studio": "ESPN Films",
+      "runtime": 90,
+      "year": 2025,
+      "country": "United States of America",
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Disney Plus"
+        ]
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/w/index.php?search=Boo-Yah%3A%20A%20Portrait%20of%20Stuart%20Scott%20%282025%20film%29",
+        "trailer": "https://www.youtube.com/watch?v=wWlKwhdZ7FE",
+        "rt": "https://www.rottentomatoes.com/search?search=Boo-Yah%3A%20A%20Portrait%20of%20Stuart%20Scott%202025"
+      },
+      "watch_links": {
+        "streaming": {
+          "service": "Disney+",
+          "link": null
+        }
+      }
+    },
+    {
+      "id": "1554297",
+      "title": "Have We Met This Christmas?",
+      "digital_date": "2025-12-13",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "poster": "https://image.tmdb.org/t/p/w500/8zmJbO0UmWWnM2KL5QAorRskYvi.jpg",
+      "synopsis": "After a car accident leaves ambitious real estate executive Katie Sloan (McKellar) with amnesia at a cozy mountain inn, she unexpectedly falls for the innkeeper\u2019s son (Hutch) from her forgotten past \u2013 while helping his family fight to save their beloved lodge before her memory returns and threatens their second chance at love.",
+      "crew": {
+        "director": "John Morrison Newman",
+        "cast": [
+          "Danica McKellar",
+          "Jesse Hutch"
+        ]
+      },
+      "genres": [
+        "TV Movie",
+        "Comedy",
+        "Romance"
+      ],
+      "studio": "Second Buffalo Pictures",
+      "runtime": 84,
+      "year": 2025,
+      "country": "United States of America",
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Pure Flix",
+          "Great American Pure Flix Amazon Channel"
+        ]
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/w/index.php?search=Have%20We%20Met%20This%20Christmas%3F%20%282025%20film%29",
+        "trailer": "https://www.youtube.com/watch?v=5U8KfAMEx7w",
+        "rt": "https://www.rottentomatoes.com/search?search=Have%20We%20Met%20This%20Christmas%3F%202025"
+      },
+      "watch_links": {
+        "streaming": {
+          "service": "Pure Flix",
+          "link": null
+        }
+      }
+    },
+    {
+      "id": "1567245",
+      "title": "Thank God: Christmas at Keller Ranch",
+      "digital_date": "2025-12-13",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "poster": "https://image.tmdb.org/t/p/w500/aibRoWQd9QnCyxCCZE6iri4YIhh.jpg",
+      "synopsis": "After pro-hockey player Wes Campbell suffers an injury during a high-profile game just three weeks before Christmas, he is referred to Keller Ranch in Nashville to recover. There, he meets no-nonsense rancher Maggie Keller, a single mom to son Dawson, an equestrian-assisted therapist. Despite his initial skepticism, Wes is desperate to return to the ice and decides to give equine therapy a shot. As Maggie manages to break down Wes\u2019 walls, he also helps her heal from the grief of her husband\u2019s death. But as an unexpected romance blossoms between the two, will it go the distance or is it just a holiday fling?",
+      "crew": {
+        "director": "Stefan Brogren",
+        "cast": [
+          "Tyler Hilton",
+          "Arielle Kebbel"
+        ]
+      },
+      "genres": [
+        "TV Movie",
+        "Drama"
+      ],
+      "studio": null,
+      "runtime": 90,
+      "year": 2025,
+      "country": null,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/w/index.php?search=Thank%20God%3A%20Christmas%20at%20Keller%20Ranch%20%282025%20film%29",
+        "trailer": "https://www.youtube.com/watch?v=UOyyOmQxlsc",
+        "rt": "https://www.rottentomatoes.com/search?search=Thank%20God%3A%20Christmas%20at%20Keller%20Ranch%202025"
+      },
+      "watch_links": {
+        "vod": {
+          "service": "Amazon",
+          "link": null
+        }
+      }
+    },
+    {
+      "id": "1352624",
+      "title": "The Mastermind",
+      "digital_date": "2025-12-13",
+      "providers": {
+        "rent": [],
+        "buy": [
+          "Amazon Video",
+          "Fandango At Home"
+        ],
+        "streaming": [
+          "MUBI Amazon Channel"
+        ]
+      },
+      "links": {},
+      "watch_links": {}
+    },
+    {
+      "id": "1151586",
+      "title": "Pig Hill",
+      "digital_date": "2025-12-12",
+      "providers": {
+        "rent": [
+          "Amazon Video",
+          "Apple TV",
+          "Google Play Movies",
+          "YouTube",
+          "Fandango At Home"
+        ],
+        "buy": [
+          "Amazon Video",
+          "Apple TV",
+          "Google Play Movies",
+          "YouTube",
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
+      "links": {},
+      "watch_links": {}
+    },
+    {
+      "id": "1442671",
+      "title": "RiffTrax Live: Timecop",
+      "digital_date": "2025-12-12",
+      "providers": {
+        "rent": [],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
+      "links": {},
+      "watch_links": {}
+    },
+    {
+      "id": "1525972",
+      "title": "Broken Mary: The Kevin Matthews Story",
+      "digital_date": "2025-12-12",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
+      "links": {},
+      "watch_links": {}
+    },
+    {
       "id": "1223601",
       "title": "Sisu: Road to Revenge",
       "digital_date": "2025-12-12",
+<<<<<<< HEAD
       "bootstrap_date": false,
       "manually_corrected": false,
       "poster": "https://image.tmdb.org/t/p/w500/jNsttCWZyPtW66MjhUozBzVsRb7.jpg",
@@ -762,6 +1162,8 @@
       "year": 2025,
       "country": "Finland",
       "rt_score": null,
+=======
+>>>>>>> 08619ac (Fix enrichment pipeline data loss with persistent queue system)
       "providers": {
         "rent": [
           "Amazon Video"
@@ -769,44 +1171,13 @@
         "buy": [],
         "streaming": []
       },
-      "links": {
-        "wikipedia": "https://en.wikipedia.org/wiki/Sisu:_Road_to_Revenge",
-        "trailer": "https://www.youtube.com/watch?v=VmStqCXIgio",
-        "rt": "https://www.rottentomatoes.com/search?search=Sisu%3A%20Road%20to%20Revenge%202025"
-      },
-      "watch_links": {
-        "vod": {
-          "service": "Amazon",
-          "link": null
-        }
-      }
+      "links": {},
+      "watch_links": {}
     },
     {
       "id": "1484068",
       "title": "INERTIA",
       "digital_date": "2025-12-12",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "poster": "https://image.tmdb.org/t/p/w500/iEQlmzgukybDoc2yom4UBhD2OxV.jpg",
-      "synopsis": "Caught between a troubled past and an uncertain future, a boy with strange powers learns growing up is about finding who you are, not what you can do.",
-      "crew": {
-        "director": "Will Martinko",
-        "cast": [
-          "John Brocagh Lynn",
-          "Reese Grove"
-        ]
-      },
-      "genres": [
-        "Science Fiction",
-        "Comedy",
-        "Romance",
-        "Drama"
-      ],
-      "studio": "Breaking Glass Pictures",
-      "runtime": 82,
-      "year": 2025,
-      "country": null,
-      "rt_score": null,
       "providers": {
         "rent": [
           "Amazon Video",
@@ -818,42 +1189,67 @@
         ],
         "streaming": []
       },
-      "links": {
-        "wikipedia": "https://en.wikipedia.org/w/index.php?search=INERTIA%20%282025%20film%29",
-        "trailer": "https://www.youtube.com/watch?v=tTh07Lwfiz8",
-        "rt": "https://www.rottentomatoes.com/search?search=INERTIA%202025"
+      "links": {},
+      "watch_links": {}
+    },
+    {
+      "id": "1564100",
+      "title": "Six Candies",
+      "digital_date": "2025-12-12",
+      "providers": {
+        "rent": [
+          "Apple TV",
+          "Fandango At Home"
+        ],
+        "buy": [
+          "Apple TV",
+          "Fandango At Home"
+        ],
+        "streaming": []
       },
-      "watch_links": {
-        "vod": {
-          "service": "Amazon",
-          "link": null
-        }
-      }
+      "links": {},
+      "watch_links": {}
+    },
+    {
+      "id": "1287322",
+      "title": "Christy",
+      "digital_date": "2025-12-12",
+      "providers": {
+        "rent": [
+          "Amazon Video",
+          "Apple TV",
+          "Fandango At Home",
+          "Plex"
+        ],
+        "buy": [
+          "Amazon Video",
+          "Apple TV",
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
+      "links": {},
+      "watch_links": {}
+    },
+    {
+      "id": "1546143",
+      "title": "KPop Demon Hunters: Fireplace",
+      "digital_date": "2025-12-12",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Netflix Kids",
+          "Netflix Standard with Ads"
+        ]
+      },
+      "links": {},
+      "watch_links": {}
     },
     {
       "id": "1407862",
       "title": "Lost in the Spotlight",
       "digital_date": "2025-12-12",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "poster": "https://image.tmdb.org/t/p/w500/yQ44md3qKEv4ZCDugkYaYIU2T4k.jpg",
-      "synopsis": "Just as he lands a prestigious role, a famous actor mysteriously loses his ability to act, sparking a journey of self-discovery amid public pressure.",
-      "crew": {
-        "director": "Ernest Prakasa",
-        "cast": [
-          "Vino G. Bastian",
-          "Dea Panendra"
-        ]
-      },
-      "genres": [
-        "Drama",
-        "Comedy"
-      ],
-      "studio": "Imajinari",
-      "runtime": 114,
-      "year": 2025,
-      "country": "Indonesia",
-      "rt_score": null,
       "providers": {
         "rent": [],
         "buy": [],
@@ -862,17 +1258,58 @@
           "Netflix Standard with Ads"
         ]
       },
-      "links": {
-        "wikipedia": "https://en.wikipedia.org/w/index.php?search=Lost%20in%20the%20Spotlight%20%282025%20film%29",
-        "trailer": "https://www.youtube.com/watch?v=AbGllkR2UZo",
-        "rt": "https://www.rottentomatoes.com/search?search=Lost%20in%20the%20Spotlight%202025"
+      "links": {},
+      "watch_links": {}
+    },
+    {
+      "id": "1591045",
+      "title": "Wednesday: Fireplace",
+      "digital_date": "2025-12-12",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
       },
-      "watch_links": {
-        "streaming": {
-          "service": "Netflix",
-          "link": null
-        }
-      }
+      "links": {},
+      "watch_links": {}
+    },
+    {
+      "id": "1575377",
+      "title": "The Christmas Showdown",
+      "digital_date": "2025-12-12",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "HBO Max",
+          "HBO Max Amazon Channel",
+          "Discovery+ Amazon Channel",
+          "Discovery +"
+        ]
+      },
+      "links": {},
+      "watch_links": {}
+    },
+    {
+      "id": "1418715",
+      "title": "Horror in the High Desert 4: Majesty",
+      "digital_date": "2025-12-12",
+      "providers": {
+        "rent": [
+          "Amazon Video",
+          "Apple TV"
+        ],
+        "buy": [
+          "Amazon Video",
+          "Apple TV"
+        ],
+        "streaming": []
+      },
+      "links": {},
+      "watch_links": {}
     },
     {
       "id": "1580353",
@@ -884,6 +1321,38 @@
         "streaming": [
           "Netflix",
           "Netflix Standard with Ads"
+        ]
+      },
+      "links": {},
+      "watch_links": {}
+    },
+    {
+      "id": "1516208",
+      "title": "She's Making a List",
+      "digital_date": "2025-12-12",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Hallmark+ Amazon Channel",
+          "Hallmark+ Apple TV Channel",
+          "Hallmark TV Amazon Channel"
+        ]
+      },
+      "links": {},
+      "watch_links": {}
+    },
+    {
+      "id": "1545997",
+      "title": "Single on the 25th",
+      "digital_date": "2025-12-12",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Hallmark+ Amazon Channel",
+          "Hallmark+ Apple TV Channel",
+          "Hallmark TV Amazon Channel"
         ]
       },
       "links": {},
@@ -934,6 +1403,7 @@
       "watch_links": {}
     },
     {
+<<<<<<< HEAD
       "id": "1255775",
       "title": "Merv",
       "digital_date": "2025-12-12",
@@ -1299,9 +1769,11 @@
       "watch_links": {}
     },
     {
+=======
+>>>>>>> 08619ac (Fix enrichment pipeline data loss with persistent queue system)
       "id": "911430",
       "title": "F1",
-      "digital_date": "2025-12-11",
+      "digital_date": "2025-12-12",
       "providers": {
         "rent": [
           "Google Play Movies",
@@ -1320,9 +1792,24 @@
       "watch_links": {}
     },
     {
+      "id": "1255775",
+      "title": "Merv",
+      "digital_date": "2025-12-12",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Amazon Prime Video",
+          "Amazon Prime Video with Ads"
+        ]
+      },
+      "links": {},
+      "watch_links": {}
+    },
+    {
       "id": "882569",
       "title": "Guy Ritchie's The Covenant",
-      "digital_date": "2025-12-11",
+      "digital_date": "2025-12-12",
       "providers": {
         "rent": [
           "Amazon Video",
@@ -1348,7 +1835,7 @@
     {
       "id": "446164",
       "title": "Before We Vanish",
-      "digital_date": "2025-12-11",
+      "digital_date": "2025-12-12",
       "providers": {
         "rent": [
           "Amazon Video",
@@ -1372,7 +1859,7 @@
     {
       "id": "47620",
       "title": "Poison",
-      "digital_date": "2025-12-11",
+      "digital_date": "2025-12-12",
       "providers": {
         "rent": [
           "Amazon Video",
@@ -1388,7 +1875,6 @@
         ],
         "streaming": [
           "Criterion Channel",
-          "Metrograph",
           "Kino Film Collection"
         ]
       },
@@ -1398,13 +1884,15 @@
     {
       "id": "1585382",
       "title": "Angel and Demon",
-      "digital_date": "2025-12-11",
+      "digital_date": "2025-12-12",
       "providers": {
         "rent": [
-          "Amazon Video"
+          "Amazon Video",
+          "Fandango At Home"
         ],
         "buy": [
-          "Amazon Video"
+          "Amazon Video",
+          "Fandango At Home"
         ],
         "streaming": []
       },
@@ -1414,11 +1902,12 @@
     {
       "id": "1585189",
       "title": "The Mighty Oaks",
-      "digital_date": "2025-12-11",
+      "digital_date": "2025-12-12",
       "providers": {
         "rent": [
           "Amazon Video",
-          "Apple TV"
+          "Apple TV",
+          "Fandango At Home"
         ],
         "buy": [
           "Amazon Video",
@@ -1433,17 +1922,20 @@
     {
       "id": "1584468",
       "title": "Down River",
-      "digital_date": "2025-12-11",
+      "digital_date": "2025-12-12",
       "providers": {
         "rent": [
           "Amazon Video",
           "Apple TV",
+          "Google Play Movies",
           "YouTube",
+          "Fandango At Home",
           "Plex"
         ],
         "buy": [
           "Amazon Video",
           "Apple TV",
+          "Google Play Movies",
           "YouTube",
           "Fandango At Home"
         ],
@@ -1455,7 +1947,7 @@
     {
       "id": "1505013",
       "title": "Masaka Kids, A Rhythm Within",
-      "digital_date": "2025-12-11",
+      "digital_date": "2025-12-12",
       "providers": {
         "rent": [],
         "buy": [],
@@ -1470,7 +1962,7 @@
     {
       "id": "1414749",
       "title": "Manor of Darkness",
-      "digital_date": "2025-12-11",
+      "digital_date": "2025-12-12",
       "providers": {
         "rent": [
           "Amazon Video"
@@ -1486,11 +1978,12 @@
     {
       "id": "1288072",
       "title": "Keeper",
-      "digital_date": "2025-12-11",
+      "digital_date": "2025-12-12",
       "providers": {
         "rent": [
           "Amazon Video",
           "Apple TV",
+          "Fandango At Home",
           "Plex"
         ],
         "buy": [
@@ -1506,19 +1999,21 @@
     {
       "id": "1218925",
       "title": "Chainsaw Man - The Movie: Reze Arc",
-      "digital_date": "2025-12-11",
+      "digital_date": "2025-12-12",
       "providers": {
         "rent": [
           "Amazon Video",
           "Apple TV",
           "Google Play Movies",
-          "YouTube"
+          "YouTube",
+          "Fandango At Home"
         ],
         "buy": [
           "Amazon Video",
           "Apple TV",
           "Google Play Movies",
-          "YouTube"
+          "YouTube",
+          "Fandango At Home"
         ],
         "streaming": []
       },
@@ -1528,15 +2023,17 @@
     {
       "id": "1033148",
       "title": "Die My Love",
-      "digital_date": "2025-12-11",
+      "digital_date": "2025-12-12",
       "providers": {
         "rent": [
           "Amazon Video",
-          "Apple TV"
+          "Apple TV",
+          "Fandango At Home"
         ],
         "buy": [
           "Amazon Video",
-          "Apple TV"
+          "Apple TV",
+          "Fandango At Home"
         ],
         "streaming": []
       },
@@ -1546,13 +2043,15 @@
     {
       "id": "1595111",
       "title": "Skinwalker Island",
-      "digital_date": "2025-12-11",
+      "digital_date": "2025-12-12",
       "providers": {
         "rent": [
-          "Apple TV"
+          "Apple TV",
+          "Fandango At Home"
         ],
         "buy": [
-          "Apple TV"
+          "Apple TV",
+          "Fandango At Home"
         ],
         "streaming": []
       },
@@ -1562,7 +2061,7 @@
     {
       "id": "1586820",
       "title": "Elmo and Mark Rober's Merry Giftmas",
-      "digital_date": "2025-12-11",
+      "digital_date": "2025-12-12",
       "providers": {
         "rent": [],
         "buy": [],
@@ -1577,7 +2076,7 @@
     {
       "id": "1400382",
       "title": "Predators",
-      "digital_date": "2025-12-11",
+      "digital_date": "2025-12-12",
       "providers": {
         "rent": [],
         "buy": [],
@@ -1586,6 +2085,104 @@
           "Paramount Plus Essential",
           "Paramount Plus Premium"
         ]
+      },
+      "links": {},
+      "watch_links": {}
+    },
+    {
+      "id": "1547548",
+      "title": "Ruthless Atonement",
+      "digital_date": "2025-12-12",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
+      "links": {},
+      "watch_links": {}
+    },
+    {
+      "id": "1591008",
+      "title": "The Independent",
+      "digital_date": "2025-12-12",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": [
+          "Amazon Prime Video",
+          "Amazon Prime Video with Ads"
+        ]
+      },
+      "links": {},
+      "watch_links": {}
+    },
+    {
+      "id": "1367575",
+      "title": "A Line of Fire",
+      "digital_date": "2025-12-12",
+      "providers": {
+        "rent": [
+          "Amazon Video",
+          "Apple TV",
+          "Google Play Movies",
+          "YouTube",
+          "Fandango At Home",
+          "Plex"
+        ],
+        "buy": [
+          "Amazon Video",
+          "Apple TV",
+          "Google Play Movies",
+          "YouTube",
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
+      "links": {},
+      "watch_links": {}
+    },
+    {
+      "id": "1288316",
+      "title": "Eyes of the Abyss",
+      "digital_date": "2025-12-12",
+      "providers": {
+        "rent": [
+          "Amazon Video",
+          "Apple TV",
+          "Google Play Movies",
+          "YouTube",
+          "Fandango At Home"
+        ],
+        "buy": [
+          "Amazon Video",
+          "Apple TV",
+          "Google Play Movies",
+          "YouTube",
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
+      "links": {},
+      "watch_links": {}
+    },
+    {
+      "id": "1596169",
+      "title": "LIMIAR",
+      "digital_date": "2025-12-12",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
       },
       "links": {},
       "watch_links": {}

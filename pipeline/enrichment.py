@@ -42,9 +42,8 @@ class EnrichmentService:
         storage_service: Optional[Any] = None,
         validator_service: Optional[Any] = None,
         stats_dict: Optional[Dict] = None,
-        watchmode_client: Optional[Any] = None,
-        agent_scraper: Optional[Any] = None,
-        platform_scraper: Optional[Any] = None,
+        streaming_scraper: Optional[Any] = None,
+        vod_scraper: Optional[Any] = None,
         enrichment_enabled: bool = True
     ):
         """
@@ -56,27 +55,26 @@ class EnrichmentService:
             storage_service: StorageService instance for file operations
             validator_service: ValidationService instance for schema validation
             stats_dict: Shared statistics dict to update (optional, creates new if not provided)
-            watchmode_client: Watchmode API client instance
-            agent_scraper: Agent link scraper instance (lazy init if None)
-            platform_scraper: Platform scraper instance (lazy init if None)
+            streaming_scraper: Streaming scraper instance (lazy init if None)
+            vod_scraper: VOD scraper instance (lazy init if None)
             enrichment_enabled: Whether enrichment is enabled globally
         """
         self.logger = logger or logging.getLogger(__name__)
         self.config = config or {}
         self.storage = storage_service
         self.validator = validator_service
-        self.watchmode_client = watchmode_client
         self.enrichment_enabled = enrichment_enabled
 
         # Log enrichment flag state for debugging
         self.logger.info(f"EnrichmentService initialized with enrichment_enabled={enrichment_enabled}")
 
         # Scraper instances (lazy initialization)
-        self.agent_scraper = agent_scraper
-        self.platform_scraper = platform_scraper
+        self.streaming_scraper = streaming_scraper
+        self.vod_scraper = vod_scraper
 
         # Rate limiting state
-        self._last_platform_scraper_time = 0
+        self._last_streaming_scraper_time = 0
+        self._last_vod_scraper_time = 0
 
         # Amazon ASIN cache for reusing deep links
         self._amazon_asin_cache = {}
@@ -90,13 +88,13 @@ class EnrichmentService:
                 'override_hits': 0,
                 'manual_tracking_hits': 0,
                 'watchmode_successes': 0,
-                'agent_attempts': 0,
-                'agent_successes': 0,
-                'agent_failures': 0,
-                'agent_cache_hits': 0,
-                'platform_scraper_attempts': 0,
-                'platform_scraper_successes': 0,
-                'platform_scraper_failures': 0,
+                'streaming_attempts': 0,
+                'streaming_successes': 0,
+                'streaming_failures': 0,
+                'streaming_cache_hits': 0,
+                'streaming_attempts': 0,
+                'streaming_successes': 0,
+                'streaming_failures': 0,
                 'search_calls': 0,
                 'source_calls': 0
             }
@@ -280,71 +278,20 @@ class EnrichmentService:
             return filtered_services[0] if filtered_services else None
 
         # Collect sources from Watchmode API (skip categories that already have overrides)
-        watchmode_streaming = []
-        watchmode_rent = []
-        watchmode_buy = []
+        tmdb_streaming = []
+        tmdb_rent = []
+        tmdb_buy = []
 
         # Skip external API calls for categories that already have overrides
         skip_streaming = 'streaming' in validated_overrides
         skip_rent = 'rent' in validated_overrides
         skip_buy = 'buy' in validated_overrides
 
-        # Phase 5: Quota-aware Watchmode API calls with graceful degradation
-        if not self.watchmode_enabled or not self.watchmode_client:
-            self.logger.debug(f"Watchmode API disabled, skipping for {title}")
-        else:
-            try:
-                # Use quota-aware API client (automatically checks quota and tracks calls)
-                search_results = self.watchmode_client.search_by_tmdb_id(movie_id, title)
-
-                if search_results and search_results.get('title_results'):
-                    watchmode_id = search_results['title_results'][0]['id']
-
-                    # Get details with sources (quota-aware)
-                    details = self.watchmode_client.get_title_details(watchmode_id, title, movie_id)
-
-                    if details:
-                        sources = details.get('sources', [])
-
-                        # Track statistics (maintain backward compatibility)
-                        self.stats['search_calls'] += 1
-                        self.stats['source_calls'] += 1
-
-                        if sources:
-                            self.stats['watchmode_successes'] += 1
-
-                        # Collect US sources by type
-                        for source in sources:
-                            if source.get('region') != 'US':
-                                continue
-
-                            service_name = source.get('name', '')
-                            web_url = source.get('web_url', '')
-                            source_type = source.get('type', '')
-
-                            if not service_name or not web_url:
-                                continue
-
-                            # Skip excluded services
-                            if self.is_excluded_service(service_name):
-                                continue
-
-                            if source_type == 'sub' and not skip_streaming:
-                                watchmode_streaming.append({'service': service_name, 'link': web_url})
-                            elif source_type == 'rent' and not skip_rent:
-                                watchmode_rent.append({'service': service_name, 'link': web_url})
-                            elif source_type == 'buy' and not skip_buy:
-                                watchmode_buy.append({'service': service_name, 'link': web_url})
-
-            except Exception as e:
-                print(f"  Warning: Watchmode API failed for {title}: {e}")
-
-        # Agent search tier (optional): Try to find deep links for Amazon/Apple TV when Watchmode has no data
-        # OR when Watchmode returned Google fallback URLs
+        # Agent search tier (optional): Try to find deep links for Amazon/Apple TV when needed
         # Capture lengths before platform scraper to detect if it added links
-        streaming_len_before = len(watchmode_streaming)
-        rent_len_before = len(watchmode_rent)
-        buy_len_before = len(watchmode_buy)
+        streaming_len_before = len(tmdb_streaming)
+        rent_len_before = len(tmdb_rent)
+        buy_len_before = len(tmdb_buy)
 
         # Helper function to check if a list contains Google fallback URLs
         def has_google_fallback(link_list):
@@ -356,28 +303,28 @@ class EnrichmentService:
         # Call platform scraper if:
         # 1. No data from Watchmode (original logic), OR
         # 2. Watchmode returned Google fallback URLs (needs real link)
-        should_try_platform_scraper = (
-            not watchmode_streaming or not watchmode_rent or not watchmode_buy or
-            has_google_fallback(watchmode_streaming) or
-            has_google_fallback(watchmode_rent) or
-            has_google_fallback(watchmode_buy)
+        should_try_vod_scraper = (
+            not tmdb_streaming or not tmdb_rent or not tmdb_buy or
+            has_google_fallback(tmdb_streaming) or
+            has_google_fallback(tmdb_rent) or
+            has_google_fallback(tmdb_buy)
         )
 
         # Import StreamingPlatformScraper dynamically to avoid circular import
         try:
             from streaming_platform_scraper import StreamingPlatformScraper
-            has_platform_scraper = True
+            has_vod_scraper = True
         except ImportError:
-            has_platform_scraper = False
+            has_vod_scraper = False
 
-        if has_platform_scraper and should_try_platform_scraper:
-            self.try_platform_scraper(title, year, providers, watchmode_streaming, watchmode_rent, watchmode_buy, skip_streaming, skip_rent, skip_buy)
+        if has_vod_scraper and should_try_vod_scraper:
+            self.try_vod_scraper(title, year, providers, tmdb_streaming, tmdb_rent, tmdb_buy, skip_streaming, skip_rent, skip_buy)
 
         # Check if platform scraper actually added any links
-        platform_scraper_used = (
-            len(watchmode_streaming) > streaming_len_before or
-            len(watchmode_rent) > rent_len_before or
-            len(watchmode_buy) > buy_len_before
+        vod_scraper_used = (
+            len(tmdb_streaming) > streaming_len_before or
+            len(tmdb_rent) > rent_len_before or
+            len(tmdb_buy) > buy_len_before
         )
 
         # Build final watch_links with canonical streaming/vod structure
@@ -385,10 +332,10 @@ class EnrichmentService:
 
         # STREAMING: Prefer Watchmode, fallback to TMDB providers with smart Amazon handling (skip if overridden)
         if not skip_streaming:
-            if watchmode_streaming:
+            if tmdb_streaming:
                 # Use Watchmode streaming data
-                best_service = select_best_service([s['service'] for s in watchmode_streaming], STREAMING_PRIORITY)
-                for source in watchmode_streaming:
+                best_service = select_best_service([s['service'] for s in tmdb_streaming], STREAMING_PRIORITY)
+                for source in tmdb_streaming:
                     if source['service'] == best_service:
                         watch_links['streaming'] = source
                         break
@@ -398,10 +345,10 @@ class EnrichmentService:
 
                 # SMART FALLBACK: If TMDB says "Amazon Prime Video" but Watchmode didn't find subscription,
                 # reuse any Amazon rent/buy link we have (it's the same detail page on Amazon)
-                if 'Amazon Prime Video' in service and (watchmode_rent or watchmode_buy):
+                if 'Amazon Prime Video' in service and (tmdb_rent or tmdb_buy):
                     # Find any Amazon link in rent or buy sources
                     amazon_link = None
-                    for source in watchmode_rent + watchmode_buy:
+                    for source in tmdb_rent + tmdb_buy:
                         if 'Amazon' in source['service'] and source.get('link'):
                             amazon_link = source['link']
                             break
@@ -419,14 +366,14 @@ class EnrichmentService:
                         }
                 else:
                     # Try agent scraper for supported platforms before returning null
-                    agent_result = self.try_agent_scraper(movie_id, title, year, service, 'streaming')
+                    agent_result = self.try_streaming_scraper(movie_id, title, year, service, 'streaming')
                     watch_links['streaming'] = agent_result
 
         # VOD: Combine rent and buy into single VOD category
         # Use Watchmode or fallback to platform links (skip if both rent and buy are overridden)
         if not (skip_rent and skip_buy):
             # Combine rent and buy sources
-            vod_sources = watchmode_rent + watchmode_buy
+            vod_sources = tmdb_rent + tmdb_buy
 
             if vod_sources:
                 # Pick best service from combined rent+buy options
@@ -442,10 +389,10 @@ class EnrichmentService:
                     vod_service = select_best_service(vod_providers, PAID_PRIORITY)
                     if vod_service:
                         # Try platform scraper for Amazon/Apple TV before returning null
-                        if has_platform_scraper and (self.is_actual_amazon_service(vod_service) or self.is_actual_apple_service(vod_service)):
-                            self.try_platform_scraper(title, year, providers, [], watchmode_rent, watchmode_buy, True, False, False)
+                        if has_vod_scraper and (self.is_actual_amazon_service(vod_service) or self.is_actual_apple_service(vod_service)):
+                            self.try_vod_scraper(title, year, providers, [], tmdb_rent, tmdb_buy, True, False, False)
                             # Check if platform scraper added vod links
-                            vod_sources = watchmode_rent + watchmode_buy
+                            vod_sources = tmdb_rent + tmdb_buy
                             if vod_sources:
                                 best_service = select_best_service([s['service'] for s in vod_sources], PAID_PRIORITY)
                                 for source in vod_sources:
@@ -454,11 +401,11 @@ class EnrichmentService:
                                         break
                             else:
                                 # Try agent scraper for supported services
-                                agent_result = self.try_agent_scraper(movie_id, title, year, vod_service, 'vod')
+                                agent_result = self.try_streaming_scraper(movie_id, title, year, vod_service, 'vod')
                                 watch_links['vod'] = agent_result
                         else:
                             # Try agent scraper for supported services
-                            agent_result = self.try_agent_scraper(movie_id, title, year, vod_service, 'vod')
+                            agent_result = self.try_streaming_scraper(movie_id, title, year, vod_service, 'vod')
                             watch_links['vod'] = agent_result
 
         # Overlay admin overrides on top of auto-discovered links
@@ -504,8 +451,8 @@ class EnrichmentService:
                 if isinstance(link, dict)
             )
 
-            # Use platform_scraper_used to accurately determine if platform scraper added links
-            if platform_scraper_used:
+            # Use vod_scraper_used to accurately determine if streamer scraper added links
+            if vod_scraper_used:
                 source_type = 'agent_search'
             elif has_links:
                 source_type = 'watchmode_api'
@@ -521,7 +468,7 @@ class EnrichmentService:
 
         return validated_links
 
-    def try_agent_scraper(self, movie_id, title, year, service, category):
+    def try_streaming_scraper(self, movie_id, title, year, service, category):
         """
         Try agent scraper for supported platforms.
 
@@ -544,16 +491,16 @@ class EnrichmentService:
             return {'service': service, 'link': None}
 
         # Initialize agent scraper if needed
-        self._init_agent_scraper()
-        print(f"  [DEBUG] Agent scraper state: {type(self.agent_scraper).__name__ if self.agent_scraper else 'None or False'}")
-        if self.agent_scraper is False:
+        self._init_streaming_scraper()
+        print(f"  [DEBUG] Agent scraper state: {type(self.streaming_scraper).__name__ if self.streaming_scraper else 'None or False'}")
+        if self.streaming_scraper is False:
             return {'service': service, 'link': None}
 
         try:
             print(f"  Trying agent scraper for {title} on {service}...")
-            self.stats['agent_attempts'] += 1
+            self.stats['streaming_attempts'] += 1
 
-            result = self.agent_scraper.find_watch_link(movie_id, title, year, service)
+            result = self.streaming_scraper.find_watch_link(movie_id, title, year, service)
 
             # Defensive logging and guard against None result shape
             print(f"  [DEBUG] Agent result type: {type(result).__name__}, value: {result}")
@@ -562,41 +509,63 @@ class EnrichmentService:
                 result = {'link': None}
 
             if result.get('cached'):
-                self.stats['agent_cache_hits'] += 1
+                self.stats['vod_cache_hits'] += 1
 
             if result.get('link'):
-                self.stats['agent_successes'] += 1
+                self.stats['streaming_successes'] += 1
                 print(f"  ✓ Agent found link for {title} on {service}")
             else:
-                self.stats['agent_failures'] += 1
+                self.stats['streaming_failures'] += 1
                 print(f"  ✗ Agent could not find link for {title} on {service}")
 
             # Return found link or null (no Google fallback)
             return {'service': service, 'link': result.get('link')}
 
         except Exception as e:
-            self.stats['agent_failures'] += 1
+            self.stats['streaming_failures'] += 1
             print(f"  Error in agent scraper for {title}: {e}")
             return {'service': service, 'link': None}
 
-    def _init_agent_scraper(self):
+    def _init_streaming_scraper(self):
         """Initialize agent scraper if not already initialized"""
-        if self.agent_scraper is None:
+        if self.streaming_scraper is None:
             # Check enrichment flag first
             if not self.enrichment_enabled:
                 self.logger.debug("Agent scraper disabled - enrichment not enabled")
-                self.agent_scraper = False
+                self.streaming_scraper = False
                 return
 
             try:
                 from agent_link_scraper import AgentLinkScraper
-                self.agent_scraper = AgentLinkScraper()
+                self.streaming_scraper = AgentLinkScraper()
                 self.logger.info("Agent scraper initialized")
             except Exception as e:
                 self.logger.warning(f"Could not initialize agent scraper: {e}")
-                self.agent_scraper = False
+                self.streaming_scraper = False
 
-    def try_platform_scraper(self, title, year, providers, watchmode_streaming, watchmode_rent, watchmode_buy, skip_streaming, skip_rent, skip_buy):
+    def _init_vod_scraper(self):
+        """Initialize VOD scraper (Amazon/Apple TV) if needed."""
+        if self.vod_scraper is None:
+            # Check enrichment flag first
+            if not self.enrichment_enabled:
+                self.logger.debug("VOD scraper disabled - enrichment not enabled")
+                self.vod_scraper = False
+                return
+
+            try:
+                from streaming_platform_scraper import StreamingPlatformScraper
+                vod_config = self.config.get('vod_scraper', {})
+                headless_mode = vod_config.get('headless', True)
+                self.vod_scraper = StreamingPlatformScraper(
+                    headless=headless_mode,
+                    config=self.config
+                )
+                print(f"  VOD scraper initialized (headless={headless_mode}, timeout={self.vod_scraper.timeout_seconds}s)")
+            except Exception as e:
+                print(f"  Warning: Could not initialize VOD scraper: {e}")
+                self.vod_scraper = False
+
+    def try_vod_scraper(self, title, year, providers, tmdb_streaming, tmdb_rent, tmdb_buy, skip_streaming, skip_rent, skip_buy):
         """
         Try platform scraper (Playwright) for Amazon/Apple TV when Watchmode API has no data.
 
@@ -604,9 +573,9 @@ class EnrichmentService:
             title: Movie title
             year: Release year
             providers: Dict with streaming/vod provider lists from TMDB
-            watchmode_streaming: List of streaming sources to append to
-            watchmode_rent: List of rent sources to append to
-            watchmode_buy: List of buy sources to append to
+            tmdb_streaming: List of streaming sources to append to
+            tmdb_rent: List of rent sources to append to
+            tmdb_buy: List of buy sources to append to
             skip_streaming: Skip streaming category
             skip_rent: Skip rent category
             skip_buy: Skip buy category
@@ -618,13 +587,13 @@ class EnrichmentService:
             return
 
         # Check if platform scraper is enabled in config
-        platform_config = self.config.get('platform_scraper', {})
-        if not platform_config.get('enabled', True):
+        vod_config = self.config.get('vod_scraper', {})
+        if not vod_config.get('enabled', True):
             print(f"  Platform scraper disabled in config, skipping {title}")
             return
 
         # Check if Amazon is enabled
-        platforms_config = platform_config.get('platforms', {})
+        platforms_config = vod_config.get('platforms', {})
         amazon_enabled = platforms_config.get('amazon', True)
         apple_tv_enabled = platforms_config.get('apple_tv', True)
 
@@ -632,35 +601,16 @@ class EnrichmentService:
             print(f"  No platforms enabled in config, skipping {title}")
             return
 
-        # Initialize platform scraper if needed (lazy initialization)
-        if self.platform_scraper is None:
-            # Check enrichment flag first
-            if not self.enrichment_enabled:
-                self.logger.debug("Platform scraper disabled - enrichment not enabled")
-                self.platform_scraper = False
-                return
-
-            try:
-                print(f"  Initializing platform scraper for {title}...")
-                # Pass full config to allow scraper to use centralized defaults
-                headless_mode = platform_config.get('headless', True)
-                self.platform_scraper = StreamingPlatformScraper(
-                    headless=headless_mode,
-                    config=self.config
-                )
-                print(f"  Platform scraper initialized (headless={headless_mode}, timeout={self.platform_scraper.timeout_seconds}s)")
-            except Exception as e:
-                print(f"  Warning: Could not initialize platform scraper: {e}")
-                self.platform_scraper = False
-                return
+        # Initialize VOD scraper if needed
+        self._init_vod_scraper()
 
         # Skip if initialization failed
-        if self.platform_scraper is False:
+        if self.vod_scraper is False:
             print(f"  Platform scraper initialization failed, skipping {title}")
             return
 
         # Track platform scraper attempts
-        self.stats['platform_scraper_attempts'] = self.stats.get('platform_scraper_attempts', 0) + 1
+        self.stats['vod_attempts'] = self.stats.get('vod_attempts', 0) + 1
 
         # Helper to check if links are Google fallbacks
         def has_google_fallback(link_list):
@@ -669,7 +619,7 @@ class EnrichmentService:
             return any('google.com/search' in item.get('link', '') for item in link_list)
 
         # Try streaming providers (if no Watchmode streaming data OR Google fallback, and not skipped)
-        if not skip_streaming and (not watchmode_streaming or has_google_fallback(watchmode_streaming)) and providers.get('streaming'):
+        if not skip_streaming and (not tmdb_streaming or has_google_fallback(tmdb_streaming)) and providers.get('streaming'):
             for provider in providers['streaming']:
                 # Filter platforms based on config and validate actual services
                 should_try_provider = False
@@ -685,18 +635,18 @@ class EnrichmentService:
                         if deep_link:
                             print(f"  ✓ Platform scraper found streaming link for {title} on {provider}")
                             # Remove any existing Google fallbacks before adding real link
-                            watchmode_streaming[:] = [s for s in watchmode_streaming if 'google.com/search' not in s.get('link', '')]
-                            watchmode_streaming.append({'service': provider, 'link': deep_link})
-                            self.stats['platform_scraper_successes'] = self.stats.get('platform_scraper_successes', 0) + 1
+                            tmdb_streaming[:] = [s for s in tmdb_streaming if 'google.com/search' not in s.get('link', '')]
+                            tmdb_streaming.append({'service': provider, 'link': deep_link})
+                            self.stats['vod_successes'] = self.stats.get('vod_successes', 0) + 1
                             break  # Found a link, stop searching
                     except Exception as e:
                         print(f"  Error in platform scraper for {title} streaming on {provider}: {e}")
-                        self.stats['platform_scraper_failures'] = self.stats.get('platform_scraper_failures', 0) + 1
+                        self.stats['vod_failures'] = self.stats.get('vod_failures', 0) + 1
                 else:
                     print(f"  Platform {provider} disabled in config, skipping")
 
         # Try rent providers (if no Watchmode rent data OR Google fallback, and not skipped)
-        if not skip_rent and (not watchmode_rent or has_google_fallback(watchmode_rent)) and providers.get('rent'):
+        if not skip_rent and (not tmdb_rent or has_google_fallback(tmdb_rent)) and providers.get('rent'):
             for provider in providers['rent']:
                 # Filter platforms based on config and validate actual services
                 should_try_provider = False
@@ -712,18 +662,18 @@ class EnrichmentService:
                         if deep_link:
                             print(f"  ✓ Platform scraper found rent link for {title} on {provider}")
                             # Remove any existing Google fallbacks before adding real link
-                            watchmode_rent[:] = [s for s in watchmode_rent if 'google.com/search' not in s.get('link', '')]
-                            watchmode_rent.append({'service': provider, 'link': deep_link})
-                            self.stats['platform_scraper_successes'] = self.stats.get('platform_scraper_successes', 0) + 1
+                            tmdb_rent[:] = [s for s in tmdb_rent if 'google.com/search' not in s.get('link', '')]
+                            tmdb_rent.append({'service': provider, 'link': deep_link})
+                            self.stats['vod_successes'] = self.stats.get('vod_successes', 0) + 1
                             break  # Found a link, stop searching
                     except Exception as e:
                         print(f"  Error in platform scraper for {title} rent on {provider}: {e}")
-                        self.stats['platform_scraper_failures'] = self.stats.get('platform_scraper_failures', 0) + 1
+                        self.stats['vod_failures'] = self.stats.get('vod_failures', 0) + 1
                 else:
                     print(f"  Platform {provider} disabled in config, skipping")
 
         # Try buy providers (if no Watchmode buy data OR Google fallback, and not skipped)
-        if not skip_buy and (not watchmode_buy or has_google_fallback(watchmode_buy)) and providers.get('buy'):
+        if not skip_buy and (not tmdb_buy or has_google_fallback(tmdb_buy)) and providers.get('buy'):
             for provider in providers['buy']:
                 # Filter platforms based on config and validate actual services
                 should_try_provider = False
@@ -739,13 +689,13 @@ class EnrichmentService:
                         if deep_link:
                             print(f"  ✓ Platform scraper found buy link for {title} on {provider}")
                             # Remove any existing Google fallbacks before adding real link
-                            watchmode_buy[:] = [s for s in watchmode_buy if 'google.com/search' not in s.get('link', '')]
-                            watchmode_buy.append({'service': provider, 'link': deep_link})
-                            self.stats['platform_scraper_successes'] = self.stats.get('platform_scraper_successes', 0) + 1
+                            tmdb_buy[:] = [s for s in tmdb_buy if 'google.com/search' not in s.get('link', '')]
+                            tmdb_buy.append({'service': provider, 'link': deep_link})
+                            self.stats['vod_successes'] = self.stats.get('vod_successes', 0) + 1
                             break  # Found a link, stop searching
                     except Exception as e:
                         print(f"  Error in platform scraper for {title} buy on {provider}: {e}")
-                        self.stats['platform_scraper_failures'] = self.stats.get('platform_scraper_failures', 0) + 1
+                        self.stats['vod_failures'] = self.stats.get('vod_failures', 0) + 1
                 else:
                     print(f"  Platform {provider} disabled in config, skipping")
 
@@ -768,8 +718,8 @@ class EnrichmentService:
             return f"https://www.amazon.com/gp/video/detail/{cached_asin}"
 
         # No cache hit, perform actual search
-        self.enforce_platform_scraper_rate_limit()
-        deep_link = self.platform_scraper.get_platform_deep_link(title, year, provider)
+        self.enforce_vod_scraper_rate_limit()
+        deep_link = self.vod_scraper.get_platform_deep_link(title, year, provider)
 
         # Cache Amazon ASIN if found
         if deep_link and self.is_actual_amazon_service(provider):
@@ -780,16 +730,16 @@ class EnrichmentService:
 
         return deep_link
 
-    def enforce_platform_scraper_rate_limit(self):
+    def enforce_vod_scraper_rate_limit(self):
         """Enforce rate limiting for platform scraper calls"""
-        if hasattr(self.platform_scraper, 'rate_limit_seconds') and self.platform_scraper.rate_limit_seconds:
-            time_since_last = time.time() - self._last_platform_scraper_time
-            if time_since_last < self.platform_scraper.rate_limit_seconds:
-                sleep_time = self.platform_scraper.rate_limit_seconds - time_since_last
+        if hasattr(self.vod_scraper, 'rate_limit_seconds') and self.vod_scraper.rate_limit_seconds:
+            time_since_last = time.time() - self._last_vod_scraper_time
+            if time_since_last < self.vod_scraper.rate_limit_seconds:
+                sleep_time = self.vod_scraper.rate_limit_seconds - time_since_last
                 print(f"  Rate limiting: sleeping {sleep_time:.1f}s before platform scraper")
                 time.sleep(sleep_time)
 
-            self._last_platform_scraper_time = time.time()
+            self._last_vod_scraper_time = time.time()
 
     def normalize_watch_links_urls(self, watch_links):
         """

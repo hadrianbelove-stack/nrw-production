@@ -113,9 +113,6 @@ class DataGenerator:
 
         # Phase 3: TMDB-only provider discovery (no external API needed)
         # Watchmode API removed for cost/quota reasons - using TMDB providers instead
-        self.watchmode_client = None
-        self.watchmode_enabled = False
-        self.watchmode_key = None
         self.wikipedia_cache = self.storage.load_cache('cache/wikipedia_cache.json')
         self.rt_cache = self.storage.load_cache('cache/rt_cache.json')
         self.wikipedia_overrides = self.storage.load_cache('overrides/wikipedia_overrides.json')
@@ -137,26 +134,23 @@ class DataGenerator:
 
         # Watchmode usage statistics
         self.watchmode_stats = {
-            'search_calls': 0,
-            'source_calls': 0,
             'cache_hits': 0,
-            'watchmode_successes': 0,
-            'agent_attempts': 0,
-            'agent_successes': 0,
-            'agent_failures': 0,  # Added - required by EnrichmentService
-            'agent_cache_hits': 0,
+            'streaming_attempts': 0,
+            'streaming_successes': 0,
+            'streaming_failures': 0,  # Added - required by EnrichmentService
+            'streaming_cache_hits': 0,
             'override_hits': 0,
             'rt_attempts': 0,
             'rt_successes': 0,
             'rt_cache_hits': 0,
-            'youtube_attempts': 0,
-            'youtube_successes': 0,
-            'youtube_cache_hits': 0,
+            'trailer_attempts': 0,
+            'trailer_successes': 0,
+            'trailer_cache_hits': 0,
             'schema_validation_warnings': 0,
             'schema_validation_passes': 0,
-            'platform_scraper_attempts': 0,
-            'platform_scraper_successes': 0,
-            'platform_scraper_failures': 0
+            'search_calls': 0,  # Added - missing key causing crash
+            'source_calls': 0,  # Added - missing key causing crash
+            'watchmode_successes': 0  # Added - used in success rate calculation
         }
 
         # Initialize validation service (extracted 2025-11-10) - shares watchmode_stats dict
@@ -168,6 +162,18 @@ class DataGenerator:
             stats_dict=self.watchmode_stats
         )
 
+        # Initialize scraper instances before enrichment service
+        self.streaming_scraper = None  # Initialize attribute first
+        self.vod_scraper = None  # Initialize attribute first
+        self._init_streaming_scraper()  # Initialize streaming scraper
+        self.trailer_scraper = None  # Lazy initialization for trailer scraping
+        self.youtube_trailer_cache = self.storage.load_cache('cache/youtube_trailer_cache.json')
+        self.rt_scraper = None  # Lazy initialization for RT scraping with Playwright
+        self.wikipedia_scraper = None  # Lazy initialization for Wikipedia scraping with Playwright
+
+        # ASIN cache for Amazon links to avoid repeated searches
+        self._amazon_asin_cache = {}
+
         # Initialize enrichment service (extracted 2025-11-10) - shares watchmode_stats dict
         from pipeline import EnrichmentService
         self.enrichment = EnrichmentService(
@@ -176,7 +182,8 @@ class DataGenerator:
             storage_service=self.storage,
             validator_service=self.validator,
             stats_dict=self.watchmode_stats,
-            watchmode_client=self.watchmode_client,
+            streaming_scraper=self.streaming_scraper,
+            vod_scraper=self.vod_scraper,
             enrichment_enabled=self.enrichment_enabled
         )
         # Inject cache references into enrichment service
@@ -202,15 +209,6 @@ class DataGenerator:
             'debug_enabled': False
         }
 
-        self.agent_scraper = None  # Lazy initialization
-        self.youtube_scraper = None  # Lazy initialization for YouTube trailer scraping
-        self.youtube_trailer_cache = self.storage.load_cache('cache/youtube_trailer_cache.json')
-        self.rt_scraper = None  # Lazy initialization for RT scraping with Playwright
-        self.wikipedia_scraper = None  # Lazy initialization for Wikipedia scraping with Playwright
-        self.platform_scraper = None  # Lazy initialization for streaming platform scraper
-
-        # ASIN cache for Amazon links to avoid repeated searches
-        self._amazon_asin_cache = {}
 
         # Perform startup consistency checks
         self.perform_startup_consistency_check()
@@ -371,16 +369,16 @@ class DataGenerator:
     # - get_excluded_services
     # - is_excluded_service
     # - append_affiliate_tag
-    # - _init_agent_scraper
+    # - _init_streaming_scraper
     # - get_watch_links (main enrichment orchestration)
-    # - _enforce_platform_scraper_rate_limit
+    # - _enforce_vod_scraper_rate_limit
     # - _get_platform_deep_link_with_cache
     # - _normalize_watch_links_urls
-    # - _try_agent_scraper
+    # - _try_streaming_scraper
     # - is_actual_amazon_service
     # - is_actual_apple_service
     # - validate_service_link_consistency
-    # - _try_platform_scraper
+    # - _try_vod_scraper
     # - _migrate_legacy_cache_format
     #
     # These methods are now accessed via self.enrichment.method_name()
@@ -999,11 +997,27 @@ class DataGenerator:
             print(f"📅 State file date: {today_date}")
             self.logger.info(f"State file date: {today_date}")
 
+            # Load existing queue and merge with new discoveries (persistent queue)
+            existing_queue = set()
+            if os.path.exists('metrics/newly_available.json'):
+                try:
+                    with open('metrics/newly_available.json', 'r') as f:
+                        existing_data = json.load(f)
+                        existing_queue = set(existing_data.get('movie_ids', []))
+                except Exception as e:
+                    print(f"⚠️  Could not load existing queue: {e}")
+
+            # Merge new discoveries with existing queue
+            merged_queue = existing_queue.union(set(newly_available_ids))
+            new_count = len(newly_available_ids)
+            existing_count = len(existing_queue)
+            total_count = len(merged_queue)
+
             newly_available_data = {
                 'date': today_date,
                 'timestamp': now.isoformat(),
-                'movie_ids': newly_available_ids,
-                'count': len(newly_available_ids)
+                'movie_ids': list(merged_queue),
+                'count': total_count
             }
 
             try:
@@ -1019,11 +1033,13 @@ class DataGenerator:
                 self.logger.error(f"Failed to write enrichment state file: {write_error}")
                 raise
 
-            if newly_available_ids:
-                print(f"📝 Wrote {len(newly_available_ids)} newly available movie IDs to metrics/newly_available.json")
-                self.logger.info(f"Enrichment state file created with {len(newly_available_ids)} movie IDs: {newly_available_ids}")
+            if new_count > 0:
+                print(f"📝 Persistent queue updated: {new_count} new discoveries")
+                print(f"   Queue totals: {existing_count} existing + {new_count} new = {total_count} pending enrichment")
+                self.logger.info(f"Persistent queue: {new_count} new discoveries added, {total_count} total pending: {newly_available_ids}")
             else:
-                print(f"📝 No newly available movies - empty state file written")
+                print(f"📝 No new discoveries - queue unchanged ({total_count} movies still pending)")
+                self.logger.info(f"No new discoveries - persistent queue unchanged with {total_count} pending movies")
 
         except Exception as e:
             self.logger.warning(f"Failed to save metrics artifact: {e}")
@@ -1388,29 +1404,29 @@ class DataGenerator:
                 return cached_url
 
         # 5. Try scraping YouTube for the trailer
-        if self.youtube_scraper is None:
+        if self.trailer_scraper is None:
             # Check enrichment flag first
             if not self.enrichment_enabled:
                 self.logger.debug("YouTube trailer scraper disabled - enrichment not enabled")
                 return None
 
-            self.youtube_scraper = YouTubeTrailerScraper(
+            self.trailer_scraper = YouTubeTrailerScraper(
                 cache_file='cache/youtube_trailer_cache.json',
                 headless=True
             )
 
         # Check if this is a cache hit first
         cache_key = f"{title}_{year}"
-        is_cache_hit = cache_key in self.youtube_scraper.cache
+        is_cache_hit = cache_key in self.trailer_scraper.cache
 
-        # Track YouTube scraper usage
-        self.watchmode_stats['youtube_attempts'] += 1
+        # Track trailer scraper usage
+        self.watchmode_stats['trailer_attempts'] += 1
         if is_cache_hit:
-            self.watchmode_stats['youtube_cache_hits'] += 1
+            self.watchmode_stats['trailer_cache_hits'] += 1
 
-        scraped_url = self.youtube_scraper.find_trailer(title, year)
+        scraped_url = self.trailer_scraper.find_trailer(title, year)
         if scraped_url:
-            self.watchmode_stats['youtube_successes'] += 1
+            self.watchmode_stats['trailer_successes'] += 1
             return scraped_url
 
         # 6. Final fallback: generate YouTube search URL
@@ -1451,22 +1467,22 @@ class DataGenerator:
     # TODO: Review and refactor these during next cleanup phase
     # ============================================================================
 
-    def _init_agent_scraper(self):
+    def _init_streaming_scraper(self):
         """Initialize agent scraper if not already initialized"""
-        if self.agent_scraper is None:
+        if self.streaming_scraper is None:
             # Check enrichment flag first
             if not self.enrichment_enabled:
                 self.logger.debug("Agent scraper disabled - enrichment not enabled")
-                self.agent_scraper = False
+                self.streaming_scraper = False
                 return
 
             # Check if agent scraper is enabled in config
-            agent_config = self.config.get('agent_scraper', {})
-            enabled = agent_config.get('enabled', True)  # Default to True if not specified
+            streaming_config = self.config.get('streaming_scraper', {})
+            enabled = streaming_config.get('enabled', True)  # Default to True if not specified
 
             if not enabled:
                 self.logger.debug("Agent scraper disabled in config.yaml")
-                self.agent_scraper = False
+                self.streaming_scraper = False
                 return
 
             # Check if playwright is available
@@ -1475,7 +1491,7 @@ class DataGenerator:
             except ImportError:
                 self.logger.debug("Playwright not installed, agent scraper disabled")
                 self.logger.debug("Install with: pip install playwright && playwright install chromium")
-                self.agent_scraper = False
+                self.streaming_scraper = False
                 return
 
             try:
@@ -1483,14 +1499,14 @@ class DataGenerator:
                 cache_file = 'cache/agent_links_cache.json'  # Could be configurable
 
                 self.logger.debug("Initializing agent scraper with Playwright...")
-                self.agent_scraper = AgentLinkScraper(
+                self.streaming_scraper = AgentLinkScraper(
                     cache_file=cache_file,
-                    config=agent_config  # Pass entire config dict
+                    config=streaming_config  # Pass entire config dict
                 )
                 self.logger.debug("Agent scraper initialized (Playwright)")
             except Exception as e:
                 self.logger.exception(f"Failed to initialize agent scraper: {e}")
-                self.agent_scraper = False  # Mark as failed to prevent retries
+                self.streaming_scraper = False  # Mark as failed to prevent retries
 
 
     def _init_rt_scraper(self):
@@ -1748,72 +1764,15 @@ class DataGenerator:
             # If no priority match, return first available (from filtered list)
             return filtered_services[0] if filtered_services else None
 
-        # Collect sources from Watchmode API (skip categories that already have overrides)
-        watchmode_streaming = []
-        watchmode_rent = []
-        watchmode_buy = []
-
         # Skip external API calls for categories that already have overrides
         skip_streaming = 'streaming' in validated_overrides
         skip_rent = 'rent' in validated_overrides
         skip_buy = 'buy' in validated_overrides
 
-        # Phase 3: Quota-aware Watchmode API calls with graceful degradation
-        if not self.watchmode_enabled or not self.watchmode_client:
-            self.logger.debug(f"Watchmode API disabled, skipping for {title}")
-        else:
-            try:
-                # Use quota-aware API client (automatically checks quota and tracks calls)
-                search_results = self.watchmode_client.search_by_tmdb_id(movie_id, title)
-
-                if search_results and search_results.get('title_results'):
-                    watchmode_id = search_results['title_results'][0]['id']
-
-                    # Get details with sources (quota-aware)
-                    details = self.watchmode_client.get_title_details(watchmode_id, title, movie_id)
-
-                    if details:
-                        sources = details.get('sources', [])
-
-                        # Track statistics (maintain backward compatibility)
-                        self.watchmode_stats['search_calls'] += 1
-                        self.watchmode_stats['source_calls'] += 1
-
-                        if sources:
-                            self.watchmode_stats['watchmode_successes'] += 1
-
-                        # Collect US sources by type
-                        for source in sources:
-                            if source.get('region') != 'US':
-                                continue
-
-                            service_name = source.get('name', '')
-                            web_url = source.get('web_url', '')
-                            source_type = source.get('type', '')
-
-                            if not service_name or not web_url:
-                                continue
-
-                            # Skip excluded services
-                            if self.enrichment.is_excluded_service(service_name):
-                                continue
-
-                            if source_type == 'sub' and not skip_streaming:
-                                watchmode_streaming.append({'service': service_name, 'link': web_url})
-                            elif source_type == 'rent' and not skip_rent:
-                                watchmode_rent.append({'service': service_name, 'link': web_url})
-                            elif source_type == 'buy' and not skip_buy:
-                                watchmode_buy.append({'service': service_name, 'link': web_url})
-
-            except Exception as e:
-                print(f"  Warning: Watchmode API failed for {title}: {e}")
-
-        # Agent search tier (optional): Try to find deep links for Amazon/Apple TV when Watchmode has no data
-        # OR when Watchmode returned Google fallback URLs
-        # Capture lengths before platform scraper to detect if it added links
-        streaming_len_before = len(watchmode_streaming)
-        rent_len_before = len(watchmode_rent)
-        buy_len_before = len(watchmode_buy)
+        # Initialize empty provider lists (TMDB providers will be processed by scrapers)
+        tmdb_streaming = []
+        tmdb_rent = []
+        tmdb_buy = []
 
         # Helper function to check if a list contains Google fallback URLs
         def has_google_fallback(link_list):
@@ -1825,21 +1784,21 @@ class DataGenerator:
         # Call platform scraper if:
         # 1. No data from Watchmode (original logic), OR
         # 2. Watchmode returned Google fallback URLs (needs real link)
-        should_try_platform_scraper = (
-            not watchmode_streaming or not watchmode_rent or not watchmode_buy or
-            has_google_fallback(watchmode_streaming) or
-            has_google_fallback(watchmode_rent) or
-            has_google_fallback(watchmode_buy)
+        should_try_vod_scraper = (
+            not tmdb_streaming or not tmdb_rent or not tmdb_buy or
+            has_google_fallback(tmdb_streaming) or
+            has_google_fallback(tmdb_rent) or
+            has_google_fallback(tmdb_buy)
         )
 
-        if StreamingPlatformScraper and should_try_platform_scraper:
-            self.enrichment.try_platform_scraper(title, year, providers, watchmode_streaming, watchmode_rent, watchmode_buy, skip_streaming, skip_rent, skip_buy)
+        if StreamingPlatformScraper and should_try_vod_scraper:
+            self.enrichment.try_vod_scraper(title, year, providers, tmdb_streaming, tmdb_rent, tmdb_buy, skip_streaming, skip_rent, skip_buy)
 
         # Check if platform scraper actually added any links
-        platform_scraper_used = (
-            len(watchmode_streaming) > streaming_len_before or
-            len(watchmode_rent) > rent_len_before or
-            len(watchmode_buy) > buy_len_before
+        vod_scraper_used = (
+            len(tmdb_streaming) > streaming_len_before or
+            len(tmdb_rent) > rent_len_before or
+            len(tmdb_buy) > buy_len_before
         )
 
         # Build final watch_links with canonical streaming/rent/buy structure
@@ -1847,10 +1806,10 @@ class DataGenerator:
 
         # STREAMING: Prefer Watchmode, fallback to TMDB providers with smart Amazon handling (skip if overridden)
         if not skip_streaming:
-            if watchmode_streaming:
+            if tmdb_streaming:
                 # Use Watchmode streaming data
-                best_service = select_best_service([s['service'] for s in watchmode_streaming], STREAMING_PRIORITY)
-                for source in watchmode_streaming:
+                best_service = select_best_service([s['service'] for s in tmdb_streaming], STREAMING_PRIORITY)
+                for source in tmdb_streaming:
                     if source['service'] == best_service:
                         watch_links['streaming'] = source
                         break
@@ -1860,10 +1819,10 @@ class DataGenerator:
 
                 # SMART FALLBACK: If TMDB says "Amazon Prime Video" but Watchmode didn't find subscription,
                 # reuse any Amazon rent/buy link we have (it's the same detail page on Amazon)
-                if 'Amazon Prime Video' in service and (watchmode_rent or watchmode_buy):
+                if 'Amazon Prime Video' in service and (tmdb_rent or tmdb_buy):
                     # Find any Amazon link in rent or buy sources
                     amazon_link = None
-                    for source in watchmode_rent + watchmode_buy:
+                    for source in tmdb_rent + tmdb_buy:
                         if 'Amazon' in source['service'] and source.get('link'):
                             amazon_link = source['link']
                             break
@@ -1881,14 +1840,14 @@ class DataGenerator:
                         }
                 else:
                     # Try agent scraper for supported platforms before returning null
-                    agent_result = self.enrichment.try_agent_scraper(movie_id, title, year, service, 'streaming')
+                    agent_result = self.enrichment.try_streaming_scraper(movie_id, title, year, service, 'streaming')
                     watch_links['streaming'] = agent_result
 
         # RENT: Use Watchmode or fallback to platform links (skip if overridden)
         if not skip_rent:
-            if watchmode_rent:
-                best_service = select_best_service([s['service'] for s in watchmode_rent], PAID_PRIORITY)
-                for source in watchmode_rent:
+            if tmdb_rent:
+                best_service = select_best_service([s['service'] for s in tmdb_rent], PAID_PRIORITY)
+                for source in tmdb_rent:
                     if source['service'] == best_service:
                         watch_links['rent'] = source
                         break
@@ -1897,28 +1856,28 @@ class DataGenerator:
                 if rent_service:
                     # Try platform scraper for Amazon/Apple TV before returning null
                     if StreamingPlatformScraper and (self.enrichment.is_actual_amazon_service(rent_service) or self.enrichment.is_actual_apple_service(rent_service)):
-                        self.enrichment.try_platform_scraper(title, year, providers, [], watchmode_rent, [], True, False, True)
+                        self.enrichment.try_vod_scraper(title, year, providers, [], tmdb_rent, [], True, False, True)
                         # Check if platform scraper added rent links
-                        if watchmode_rent:
-                            best_service = select_best_service([s['service'] for s in watchmode_rent], PAID_PRIORITY)
-                            for source in watchmode_rent:
+                        if tmdb_rent:
+                            best_service = select_best_service([s['service'] for s in tmdb_rent], PAID_PRIORITY)
+                            for source in tmdb_rent:
                                 if source['service'] == best_service:
                                     watch_links['rent'] = source
                                     break
                         else:
                             # Try agent scraper for supported services
-                            agent_result = self.enrichment.try_agent_scraper(movie_id, title, year, rent_service, 'rent')
+                            agent_result = self.enrichment.try_streaming_scraper(movie_id, title, year, rent_service, 'rent')
                             watch_links['rent'] = agent_result
                     else:
                         # Try agent scraper for supported services
-                        agent_result = self.enrichment.try_agent_scraper(movie_id, title, year, rent_service, 'rent')
+                        agent_result = self.enrichment.try_streaming_scraper(movie_id, title, year, rent_service, 'rent')
                         watch_links['rent'] = agent_result
 
         # BUY: Use Watchmode or fallback to platform links (skip if overridden)
         if not skip_buy:
-            if watchmode_buy:
-                best_service = select_best_service([s['service'] for s in watchmode_buy], PAID_PRIORITY)
-                for source in watchmode_buy:
+            if tmdb_buy:
+                best_service = select_best_service([s['service'] for s in tmdb_buy], PAID_PRIORITY)
+                for source in tmdb_buy:
                     if source['service'] == best_service:
                         watch_links['buy'] = source
                         break
@@ -1927,21 +1886,21 @@ class DataGenerator:
                 if buy_service:
                     # Try platform scraper for Amazon/Apple TV before returning null
                     if StreamingPlatformScraper and (self.enrichment.is_actual_amazon_service(buy_service) or self.enrichment.is_actual_apple_service(buy_service)):
-                        self.enrichment.try_platform_scraper(title, year, providers, [], [], watchmode_buy, True, True, False)
+                        self.enrichment.try_vod_scraper(title, year, providers, [], [], tmdb_buy, True, True, False)
                         # Check if platform scraper added buy links
-                        if watchmode_buy:
-                            best_service = select_best_service([s['service'] for s in watchmode_buy], PAID_PRIORITY)
-                            for source in watchmode_buy:
+                        if tmdb_buy:
+                            best_service = select_best_service([s['service'] for s in tmdb_buy], PAID_PRIORITY)
+                            for source in tmdb_buy:
                                 if source['service'] == best_service:
                                     watch_links['buy'] = source
                                     break
                         else:
                             # Try agent scraper for supported services
-                            agent_result = self.enrichment.try_agent_scraper(movie_id, title, year, buy_service, 'buy')
+                            agent_result = self.enrichment.try_streaming_scraper(movie_id, title, year, buy_service, 'buy')
                             watch_links['buy'] = agent_result
                     else:
                         # Try agent scraper for supported services
-                        agent_result = self.enrichment.try_agent_scraper(movie_id, title, year, buy_service, 'buy')
+                        agent_result = self.enrichment.try_streaming_scraper(movie_id, title, year, buy_service, 'buy')
                         watch_links['buy'] = agent_result
 
         # Overlay admin overrides on top of auto-discovered links
@@ -1987,8 +1946,8 @@ class DataGenerator:
                 if isinstance(link, dict)
             )
 
-            # Use platform_scraper_used to accurately determine if platform scraper added links
-            if platform_scraper_used:
+            # Use vod_scraper_used to accurately determine if streamer scraper added links
+            if vod_scraper_used:
                 source_type = 'agent_search'
             elif has_links:
                 source_type = 'watchmode_api'
@@ -2005,19 +1964,19 @@ class DataGenerator:
         return validated_links
 
 
-    def _enforce_platform_scraper_rate_limit(self):
+    def _enforce_vod_scraper_rate_limit(self):
         """Enforce rate limiting for platform scraper calls"""
-        if hasattr(self.platform_scraper, 'rate_limit_seconds') and self.platform_scraper.rate_limit_seconds:
-            if not hasattr(self, '_last_platform_scraper_time'):
-                self._last_platform_scraper_time = 0
+        if hasattr(self.vod_scraper, 'rate_limit_seconds') and self.vod_scraper.rate_limit_seconds:
+            if not hasattr(self, '_last_vod_scraper_time'):
+                self._last_vod_scraper_time = 0
 
-            time_since_last = time.time() - self._last_platform_scraper_time
-            if time_since_last < self.platform_scraper.rate_limit_seconds:
-                sleep_time = self.platform_scraper.rate_limit_seconds - time_since_last
+            time_since_last = time.time() - self._last_vod_scraper_time
+            if time_since_last < self.vod_scraper.rate_limit_seconds:
+                sleep_time = self.vod_scraper.rate_limit_seconds - time_since_last
                 print(f"  Rate limiting: sleeping {sleep_time:.1f}s before platform scraper")
                 time.sleep(sleep_time)
 
-            self._last_platform_scraper_time = time.time()
+            self._last_vod_scraper_time = time.time()
 
 
     def _get_platform_deep_link_with_cache(self, title, year, provider):
@@ -2029,8 +1988,8 @@ class DataGenerator:
             return f"https://www.amazon.com/gp/video/detail/{cached_asin}"
 
         # No cache hit, perform actual search
-        self.enrichment.enforce_platform_scraper_rate_limit()
-        deep_link = self.platform_scraper.get_platform_deep_link(title, year, provider)
+        self.enrichment.enforce_vod_scraper_rate_limit()
+        deep_link = self.vod_scraper.get_platform_deep_link(title, year, provider)
 
         # Cache Amazon ASIN if found
         if deep_link and self.enrichment.is_actual_amazon_service(provider):
@@ -2482,38 +2441,27 @@ class DataGenerator:
             try:
                 with open('metrics/newly_available.json', 'r') as f:
                     state_data = json.load(f)
-                    state_date = state_data.get('date')
+                    all_pending_ids = set(state_data.get('movie_ids', []))
+                    state_date = state_data.get('date', 'unknown')
 
-                    # Only use state file if it's from today (fresh from Phase 2)
-                    if state_date == today:
-                        newly_available_ids = set(state_data.get('movie_ids', []))
-                        state_fresh = True
-                        print(f"\n📋 Loaded {len(newly_available_ids)} newly available movie IDs from today's provider check")
-                        self.logger.info(f"Using enrichment state file from {state_date} with {len(newly_available_ids)} IDs")
+                    # Filter out already enriched movies from pending list
+                    unenriched_ids = set()
+                    for movie_id in all_pending_ids:
+                        if not self.enrichment_state.is_enriched(str(movie_id)):
+                            unenriched_ids.add(movie_id)
+
+                    newly_available_ids = unenriched_ids
+                    state_fresh = True
+
+                    if all_pending_ids:
+                        enriched_count = len(all_pending_ids) - len(unenriched_ids)
+                        print(f"\n📋 Loaded pending movies: {len(all_pending_ids)} total, {enriched_count} already enriched, {len(unenriched_ids)} need enrichment")
+                        if state_date != today:
+                            print(f"ℹ️  State file from {state_date} - processing accumulated movies until enriched")
                     else:
-                        print(f"\n⚠️  Enrichment state file is from {state_date}, not today ({today}) - creating fresh empty state file")
-                        print(f"🚫 Skipping new enrichment for this run due to stale state file; only stale items will be processed")
-                        self.logger.warning(f"Stale enrichment state file from {state_date}, expected {today}")
-                        self.logger.warning(f"Skipping new enrichment for this run due to stale state file; only stale items will be processed")
+                        print(f"\n📋 No pending movies to enrich")
 
-                        # Create fresh empty state file to prevent future runs from seeing stale data
-                        empty_state_data = {
-                            'date': today,
-                            'timestamp': datetime.now().isoformat(),
-                            'movie_ids': [],
-                            'count': 0
-                        }
-
-                        try:
-                            # Ensure metrics directory exists
-                            os.makedirs('metrics', exist_ok=True)
-                            with open('metrics/newly_available.json', 'w') as f:
-                                json.dump(empty_state_data, f, indent=2)
-                            print(f"🔄 Created empty state file for today to prevent stale data issues")
-                            self.logger.info(f"Created fresh empty state file for {today}")
-                        except Exception as write_error:
-                            print(f"❌ Failed to create fresh state file: {write_error}")
-                            self.logger.error(f"Failed to create fresh state file: {write_error}")
+                    self.logger.info(f"Persistent queue: {len(unenriched_ids)} movies pending enrichment from accumulated discoveries")
             except Exception as e:
                 print(f"\n⚠️  Failed to load enrichment state file: {e}")
                 print(f"🚫 Skipping new enrichment for this run due to unreadable state file; only stale items will be processed")
@@ -2771,6 +2719,39 @@ class DataGenerator:
             print(f"🚫 Circuit breaker: {circuit_breaker_skipped} movies skipped due to consecutive failures")
         self.logger.info(f"Enrichment state saved: {enriched_count} movies marked as enriched, {circuit_breaker_skipped} skipped by circuit breaker")
 
+        # Clean up newly_available.json - remove successfully enriched movies from persistent queue
+        if enriched_count > 0 and os.path.exists('metrics/newly_available.json'):
+            try:
+                with open('metrics/newly_available.json', 'r') as f:
+                    queue_data = json.load(f)
+
+                original_queue = set(queue_data.get('movie_ids', []))
+                # Remove movies that are now enriched
+                updated_queue = set()
+                for movie_id in original_queue:
+                    if not self.enrichment_state.is_enriched(str(movie_id)):
+                        updated_queue.add(movie_id)
+
+                cleaned_count = len(original_queue) - len(updated_queue)
+                if cleaned_count > 0:
+                    # Update the persistent queue
+                    updated_data = {
+                        'date': datetime.now().strftime('%Y-%m-%d'),
+                        'timestamp': datetime.now().isoformat(),
+                        'movie_ids': list(updated_queue),
+                        'count': len(updated_queue)
+                    }
+
+                    with open('metrics/newly_available.json', 'w') as f:
+                        json.dump(updated_data, f, indent=2)
+
+                    print(f"🧹 Cleaned persistent queue: {cleaned_count} enriched movies removed, {len(updated_queue)} remain")
+                    self.logger.info(f"Persistent queue cleanup: {cleaned_count} movies removed after enrichment, {len(updated_queue)} remaining")
+
+            except Exception as e:
+                print(f"⚠️  Failed to clean persistent queue: {e}")
+                self.logger.warning(f"Failed to clean persistent queue: {e}")
+
         # Convert display_index to list for final processing
         display_movies = list(display_index.values())
         
@@ -2815,16 +2796,16 @@ class DataGenerator:
             json.dump(output_data, f, indent=2)
         
         # Cleanup agent scraper if initialized
-        if self.agent_scraper and self.agent_scraper != False:
+        if self.streaming_scraper and self.streaming_scraper != False:
             try:
-                self.agent_scraper.close()
+                self.streaming_scraper.close()
             except Exception as e:
                 self.logger.warning(f"Failed to close agent scraper: {e}")
 
         # Cleanup platform scraper if initialized
-        if self.platform_scraper and self.platform_scraper != False:
+        if self.vod_scraper and self.vod_scraper != False:
             try:
-                self.platform_scraper.close()
+                self.vod_scraper.close()
             except Exception as e:
                 self.logger.warning(f"Failed to close platform scraper: {e}")
 
@@ -2878,53 +2859,51 @@ class DataGenerator:
         print(f"  Cache hit rate: {cache_hit_rate:.1f}%")
         print(f"  Watchmode success rate: {success_rate:.1f}%")
 
-        # Phase 3: Print Watchmode quota report and save metrics
-        if self.watchmode_client:
-            self.watchmode_client.print_quota_report()
-            self.watchmode_client.save_run_metrics()
+        # Phase 3: TMDB-only metrics (Watchmode removed)
 
         print(f"\n📊 Agent Scraper Usage:")
-        print(f"  Agent enabled: {self.config.get('agent_scraper', {}).get('enabled', True)}")
-        print(f"  Agent initialized: {self.agent_scraper is not None and self.agent_scraper is not False}")
-        print(f"  Agent attempts: {self.watchmode_stats['agent_attempts']}")
-        print(f"  Agent successes: {self.watchmode_stats['agent_successes']}")
-        print(f"  Agent cache hits: {self.watchmode_stats['agent_cache_hits']}")
-        if self.watchmode_stats['agent_attempts'] > 0:
-            agent_success_rate = (self.watchmode_stats['agent_successes'] / self.watchmode_stats['agent_attempts'] * 100)
-            print(f"  Agent success rate: {agent_success_rate:.1f}%")
+        print(f"  Streaming enabled: {self.config.get('streaming_scraper', {}).get('enabled', True)}")
+        print(f"  Agent initialized: {self.streaming_scraper is not None and self.streaming_scraper is not False}")
+        print(f"  VOD attempts: {self.watchmode_stats['streaming_attempts']}")
+        print(f"  VOD successes: {self.watchmode_stats['streaming_successes']}")
+        print(f"  VOD cache hits: {self.watchmode_stats['streaming_cache_hits']}")
+        print(f"  VOD failures: {self.watchmode_stats['streaming_failures']}")
+        if self.watchmode_stats['streaming_attempts'] > 0:
+            vod_success_rate = (self.watchmode_stats['streaming_successes'] / self.watchmode_stats['streaming_attempts'] * 100)
+            print(f"  VOD success rate: {vod_success_rate:.1f}%")
         else:
-            print(f"  ⚠️  Agent scraper was never called (check if movies have Netflix/Disney+/Hulu providers)")
+            print(f"  ⚠️  VOD scraper was never called (check if movies have Netflix/Disney+/Hulu providers)")
 
         print(f"\n📊 Platform Scraper Statistics (Amazon/Apple TV):")
-        platform_config = self.config.get('platform_scraper', {})
-        print(f"  Platform scraper enabled: {platform_config.get('enabled', True)}")
-        print(f"  Platform scraper initialized: {self.platform_scraper is not None and self.platform_scraper is not False}")
-        platforms_config = platform_config.get('platforms', {})
+        vod_config = self.config.get('vod_scraper', {})
+        print(f"  VOD scraper enabled: {vod_config.get('enabled', True)}")
+        print(f"  VOD scraper initialized: {self.vod_scraper is not None and self.vod_scraper is not False}")
+        platforms_config = vod_config.get('platforms', {})
         print(f"  Amazon enabled: {platforms_config.get('amazon', True)}")
         print(f"  Apple TV enabled: {platforms_config.get('apple_tv', True)}")
 
-        platform_attempts = self.watchmode_stats.get('platform_scraper_attempts', 0)
-        platform_successes = self.watchmode_stats.get('platform_scraper_successes', 0)
-        platform_failures = self.watchmode_stats.get('platform_scraper_failures', 0)
+        platform_attempts = self.watchmode_stats.get('vod_attempts', 0)
+        platform_successes = self.watchmode_stats.get('vod_successes', 0)
+        platform_failures = self.watchmode_stats.get('vod_failures', 0)
 
-        print(f"  Platform scraper attempts: {platform_attempts}")
-        print(f"  Platform scraper successes: {platform_successes}")
-        print(f"  Platform scraper failures: {platform_failures}")
+        print(f"  VOD scraper attempts: {platform_attempts}")
+        print(f"  VOD scraper successes: {platform_successes}")
+        print(f"  VOD scraper failures: {platform_failures}")
 
         if platform_attempts > 0:
             platform_success_rate = (platform_successes / platform_attempts * 100)
-            print(f"  Platform scraper success rate: {platform_success_rate:.1f}%")
+            print(f"  VOD scraper success rate: {platform_success_rate:.1f}%")
 
             # Compare with Watchmode success rate
             if success_rate > 0:
                 comparison = "higher" if platform_success_rate > success_rate else "lower"
                 print(f"  Success rate vs Watchmode API: {platform_success_rate:.1f}% ({comparison} than {success_rate:.1f}%)")
         else:
-            print(f"  ⚠️  Platform scraper was never called (check if movies have Amazon/Apple TV providers)")
+            print(f"  ⚠️  VOD scraper was never called (check if movies have Amazon/Apple TV providers)")
 
         # Show maintenance info
-        last_update = platform_config.get('maintenance', {}).get('last_selector_update', 'unknown')
-        update_freq = platform_config.get('maintenance', {}).get('expected_update_frequency', 'quarterly')
+        last_update = vod_config.get('maintenance', {}).get('last_selector_update', 'unknown')
+        update_freq = vod_config.get('maintenance', {}).get('expected_update_frequency', 'quarterly')
         print(f"  Last selector update: {last_update}")
         print(f"  Expected update frequency: {update_freq}")
 
@@ -2936,13 +2915,13 @@ class DataGenerator:
             rt_success_rate = (self.watchmode_stats['rt_successes'] / self.watchmode_stats['rt_attempts'] * 100)
             print(f"  RT success rate: {rt_success_rate:.1f}%")
 
-        print(f"\n📊 YouTube Scraper Usage:")
-        print(f"  YouTube attempts: {self.watchmode_stats['youtube_attempts']}")
-        print(f"  YouTube successes: {self.watchmode_stats['youtube_successes']}")
-        print(f"  YouTube cache hits: {self.watchmode_stats['youtube_cache_hits']}")
-        if self.watchmode_stats['youtube_attempts'] > 0:
-            youtube_success_rate = (self.watchmode_stats['youtube_successes'] / self.watchmode_stats['youtube_attempts'] * 100)
-            print(f"  YouTube success rate: {youtube_success_rate:.1f}%")
+        print(f"\n📊 Trailer Scraper Usage:")
+        print(f"  Trailer attempts: {self.watchmode_stats['trailer_attempts']}")
+        print(f"  Trailer successes: {self.watchmode_stats['trailer_successes']}")
+        print(f"  Trailer cache hits: {self.watchmode_stats['trailer_cache_hits']}")
+        if self.watchmode_stats['trailer_attempts'] > 0:
+            trailer_success_rate = (self.watchmode_stats['trailer_successes'] / self.watchmode_stats['trailer_attempts'] * 100)
+            print(f"  Trailer success rate: {trailer_success_rate:.1f}%")
 
         print(f"\n📊 Admin Override Usage:")
         print(f"  Manual tracking hits: {self.watchmode_stats.get('manual_tracking_hits', 0)}")
@@ -3024,35 +3003,36 @@ class DataGenerator:
                         self.wikipedia_stats['wikidata_attempts']
                     )
                 },
-                "youtube_scraper": {
-                    "attempts": self.watchmode_stats['youtube_attempts'],
-                    "successes": self.watchmode_stats['youtube_successes'],
-                    "cache_hits": self.watchmode_stats['youtube_cache_hits'],
+                "trailer_scraper": {
+                    "attempts": self.watchmode_stats['trailer_attempts'],
+                    "successes": self.watchmode_stats['trailer_successes'],
+                    "cache_hits": self.watchmode_stats['trailer_cache_hits'],
                     "success_rate": calc_rate(
-                        self.watchmode_stats['youtube_successes'],
-                        self.watchmode_stats['youtube_attempts']
+                        self.watchmode_stats['trailer_successes'],
+                        self.watchmode_stats['trailer_attempts']
                     ),
                     "cache_hit_rate": calc_rate(
-                        self.watchmode_stats['youtube_cache_hits'],
-                        self.watchmode_stats['youtube_attempts']
+                        self.watchmode_stats['trailer_cache_hits'],
+                        self.watchmode_stats['trailer_attempts']
                     )
                 },
-                "agent_scraper": {
-                    "attempts": self.watchmode_stats['agent_attempts'],
-                    "successes": self.watchmode_stats['agent_successes'],
-                    "cache_hits": self.watchmode_stats['agent_cache_hits'],
+                "streaming_scraper": {
+                    "attempts": self.watchmode_stats['streaming_attempts'],
+                    "successes": self.watchmode_stats['streaming_successes'],
+                    "failures": self.watchmode_stats['streaming_failures'],
+                    "cache_hits": self.watchmode_stats['streaming_cache_hits'],
                     "success_rate": calc_rate(
-                        self.watchmode_stats['agent_successes'],
-                        self.watchmode_stats['agent_attempts']
+                        self.watchmode_stats['streaming_successes'],
+                        self.watchmode_stats['streaming_attempts']
                     )
                 },
-                "platform_scraper": {
-                    "attempts": getattr(self.enrichment, 'platform_scraper_stats', {}).get('attempts', 0),
-                    "successes": getattr(self.enrichment, 'platform_scraper_stats', {}).get('successes', 0),
-                    "failures": getattr(self.enrichment, 'platform_scraper_stats', {}).get('failures', 0),
+                "vod_scraper": {
+                    "attempts": self.watchmode_stats.get('vod_attempts', 0),
+                    "successes": self.watchmode_stats.get('vod_successes', 0),
+                    "failures": self.watchmode_stats.get('vod_failures', 0),
                     "success_rate": calc_rate(
-                        getattr(self.enrichment, 'platform_scraper_stats', {}).get('successes', 0),
-                        getattr(self.enrichment, 'platform_scraper_stats', {}).get('attempts', 0)
+                        self.watchmode_stats.get('vod_successes', 0),
+                        self.watchmode_stats.get('vod_attempts', 0)
                     )
                 }
             },
@@ -3097,10 +3077,7 @@ class DataGenerator:
                 print(f"  Wikipedia: {status} {wiki_rate}% success ({health['scrapers']['wikipedia_scraper']['wikidata_successes']}/{health['scrapers']['wikipedia_scraper']['wikidata_attempts']})")
 
             # Watchmode API
-            wm_rate = health['scrapers']['watchmode_api']['success_rate']
-            if wm_rate is not None:
-                status = "✅" if wm_rate >= 80 else "⚠️" if wm_rate >= 50 else "❌"
-                print(f"  Watchmode API: {status} {wm_rate}% success ({health['scrapers']['watchmode_api']['successes']}/{health['scrapers']['watchmode_api']['search_calls']})")
+            # Watchmode API removed - using TMDB providers instead
 
             # Validation
             val_rate = health['validation']['pass_rate']
