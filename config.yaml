@@ -39,12 +39,13 @@ tracking:
   compaction_recent_days: null  # Only compact entries from last N days (null = no age limit)
   excluded_services: ['fuboTV', 'Philo']  # Services to exclude from watch provider results
 
-# Backup retention policy for quarantined corrupt files
-# Prevents unbounded disk growth from .corrupted-* files in backups/ directory
+# Backup retention policy for quarantined corrupt files and atomic write backups
+# Prevents unbounded disk growth from .corrupted-* and .backup-* files in backups/ directory
 backups:
-  retention_days: 30  # Delete quarantined files older than N days (30 days default for production)
+  retention_days: 30  # Delete backup files older than N days (30 days default for production)
   cleanup_check_interval_hours: 1  # Minimum time between cleanup checks (rate limiting)
-  enabled: true  # Enable automatic cleanup of old quarantined files
+  enabled: true  # Enable automatic cleanup of old backup files
+  include_backup_files: false  # Enable cleanup of .backup-*.json files from atomic writes (default: false)
 
 # Structured telemetry and metrics across Storage, Validation, Enrichment services
 # Emits events with fields: service, action, file, item_id, result, duration_ms, error
@@ -79,7 +80,7 @@ discovery:
 api:
   # API keys: Environment variables take precedence, these are fallbacks for local development
   tmdb_api_key: "99b122ce7fa3e9065d7b7dc6e660772d"  # TMDB API key for movie data
-  omdb_api_key: "8eb019b"  # OMDB API key for additional movie data
+  omdb_api_key: "539723d9"  # OMDB API key for additional movie data
   tmdb_rate_limit: 0.1  # Seconds between API calls
   max_retries: 3
   max_pages_bootstrap: 49  # Maximum pages to fetch for bootstrap operation
