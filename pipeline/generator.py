@@ -924,6 +924,11 @@ class DataGenerator:
                     if needs_enrichment:
                         newly_available_ids.append(movie_id)  # Track for enrichment state file
 
+                        # ARCHITECTURAL FIX: Immediately add newly discovered movie to data.json
+                        # Movies should appear on site upon discovery, not contingent on enrichment success
+                        if movie['status'] == 'available' and needs_enrichment:
+                            self.add_movie_to_site_immediately(movie_id, movie)
+
                 # Incremental save every 100 movies
                 if checked % 100 == 0:
                     if self.storage.atomic_write_json(db, 'movie_tracking.json'):
@@ -1304,7 +1309,7 @@ class DataGenerator:
             'api_key': self.tmdb_key,
             'append_to_response': 'credits,videos,external_ids'
         }
-        
+
         try:
             response = requests.get(url, params=params)
             if response.status_code == 200:
@@ -1312,6 +1317,253 @@ class DataGenerator:
         except Exception as e:
             print(f"Error fetching details for {movie_id}: {e}")
         return None
+
+    def add_movie_to_site_immediately(self, movie_id, movie_data):
+        """
+        ENHANCED: Add newly discovered movie to data.json immediately upon discovery
+
+        This is the PRIMARY path for getting movies into data.json.
+        Enrichment becomes a secondary overlay process.
+
+        ENHANCEMENTS:
+        - Atomic writes with backups
+        - Fallback for TMDB failures (never skips writing)
+        - Schema validation before reading
+        - Discovery metadata tracking
+        - Enhanced error handling
+
+        Args:
+            movie_id: TMDB movie ID (string)
+            movie_data: Movie data from movie_tracking.json with basic info and providers
+
+        Returns:
+            bool: True if successful, False otherwise
+        """
+        try:
+            # Load current data.json with validation - CRITICAL: Do not proceed if loading fails
+            data_movies = []
+            if os.path.exists('data.json'):
+                try:
+                    # Validate schema before loading
+                    if not self.validator.validate_data_json_schema('data.json'):
+                        # Schema validation failed - abort to prevent data loss
+                        error_msg = "data.json schema validation failed"
+                        self.logger.error(f"Immediate write aborted for {movie_id}: {error_msg}")
+                        print(f"   ❌ Schema validation failed - aborting immediate write to protect existing data")
+
+                        # Optionally quarantine the bad file
+                        quarantine_path = f"data.json.quarantine.{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+                        try:
+                            os.rename('data.json', quarantine_path)
+                            self.logger.warning(f"Quarantined invalid data.json to {quarantine_path}")
+                            print(f"   🚨 Invalid data.json quarantined to {quarantine_path}")
+                        except Exception as quarantine_error:
+                            self.logger.error(f"Failed to quarantine invalid data.json: {quarantine_error}")
+
+                        return False
+
+                    # Use storage method for safer reading if available
+                    if hasattr(self.storage, 'load_json') and callable(self.storage.load_json):
+                        try:
+                            existing_data = self.storage.load_json('data.json')
+                            data_movies = existing_data.get('movies', []) if existing_data else []
+                        except Exception as storage_error:
+                            raise Exception(f"Storage load_json failed: {storage_error}")
+                    else:
+                        # Fallback to direct file reading
+                        with open('data.json', 'r') as f:
+                            existing_data = json.load(f)
+                            data_movies = existing_data.get('movies', [])
+
+                    self.logger.debug(f"Loaded {len(data_movies)} existing movies from data.json")
+
+                except Exception as e:
+                    # CRITICAL: Do NOT continue with empty list - abort to prevent data loss
+                    self.logger.error(f"Failed to load data.json for immediate write: {e}")
+                    print(f"   ❌ Cannot load data.json - aborting immediate write to protect existing data")
+
+                    # Backup the problematic file
+                    backup_path = f"data.json.backup.failed_read.{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+                    try:
+                        import shutil
+                        shutil.copy2('data.json', backup_path)
+                        self.logger.info(f"Backed up problematic data.json to {backup_path}")
+                        print(f"   💾 Problematic data.json backed up to {backup_path}")
+                    except Exception as backup_error:
+                        self.logger.error(f"Failed to backup problematic data.json: {backup_error}")
+
+                    return False
+            else:
+                # data.json doesn't exist - safe to create new one
+                data_movies = []
+                self.logger.info("data.json doesn't exist - creating new file")
+
+            # Check if movie already exists
+            existing_index = None
+            for i, existing in enumerate(data_movies):
+                if str(existing.get('id')) == str(movie_id):
+                    existing_index = i
+                    break
+
+            if existing_index is not None:
+                title = movie_data.get('title', f'Movie {movie_id}')
+                self.logger.info(f"Movie {title} ({movie_id}) already in data.json - skipping")
+                print(f"   📝 Movie {title} already in data.json - skipping immediate add")
+                return True
+
+            # Get TMDB details with fallback
+            movie_details = None
+            try:
+                movie_details = self.get_movie_details(movie_id)
+            except Exception as e:
+                self.logger.warning(f"TMDB fetch failed for {movie_id}: {e}")
+                # Continue with minimal data - don't fail discovery
+
+            # Create movie entry (minimal or full based on TMDB availability)
+            if movie_details:
+                basic_entry = self._create_full_basic_entry(movie_id, movie_data, movie_details)
+            else:
+                basic_entry = self._create_minimal_entry(movie_id, movie_data)
+                self.logger.info(f"Created minimal entry for {movie_id} due to TMDB unavailability")
+
+            # Add discovery metadata
+            basic_entry.update({
+                '_discovery_date': datetime.now().isoformat(),
+                '_discovery_source': 'provider_availability_check',
+                '_enrichment_status': 'pending'
+            })
+
+            # Add to beginning of movies list (newest first)
+            data_movies.insert(0, basic_entry)
+
+            # Save with atomic write and backup
+            updated_data = {
+                'generated_at': datetime.now().isoformat(),
+                'count': len(data_movies),
+                'movies': data_movies,
+                '_metadata': {
+                    'last_discovery_write': datetime.now().isoformat(),
+                    'discovery_count': sum(1 for m in data_movies if m.get('_discovery_source')),
+                    'schema_version': '2.0'
+                }
+            }
+
+            # Use atomic write to prevent corruption
+            if not self.storage.atomic_write_json(updated_data, 'data.json', backup=True):
+                raise IOError("Atomic write to data.json failed")
+
+            title = basic_entry.get('title', f'Movie {movie_id}')
+            self.logger.info(f"Discovery-driven add: {title} ({movie_id}) -> data.json")
+            print(f"   ✅ Added {title} to site immediately (discovery-driven)")
+
+            return True
+
+        except Exception as e:
+            title = movie_data.get('title', f'Movie {movie_id}')
+            self.logger.error(f"Failed immediate site add for {movie_id}: {e}")
+            print(f"   ❌ Failed to add {title} to site: {e}")
+
+            # CRITICAL: Return False but don't raise - discovery should continue
+            return False
+
+    def _create_minimal_entry(self, movie_id, movie_data):
+        """Create minimal movie entry when TMDB details unavailable
+
+        This ensures movies appear on site even if TMDB API is down
+        """
+        current_time = datetime.now().isoformat()
+
+        return {
+            'id': str(movie_id),
+            'title': movie_data.get('title', f'Movie {movie_id}'),
+            'digital_date': movie_data.get('digital_date'),
+            'bootstrap_date': False,
+            'manually_corrected': False,
+            'poster': None,  # Will be filled by enrichment
+            'synopsis': '',  # Will be filled by enrichment
+            'crew': {'director': 'Unknown', 'cast': []},  # Will be filled by enrichment
+            'genres': [],    # Will be filled by enrichment
+            'studio': 'Unknown',  # Will be filled by enrichment
+            'runtime': None,      # Will be filled by enrichment
+            'year': None,         # Will be filled by enrichment
+            'country': 'Unknown', # Will be filled by enrichment
+            'rt_score': None,     # Will be filled by enrichment
+            'providers': movie_data.get('providers', {'rent': [], 'buy': [], 'streaming': []}),
+            'links': {'wikipedia': None, 'trailer': None, 'rt': None},
+            'watch_links': {},
+            '_enrichment_status': 'pending',
+            '_discovery_date': current_time,
+            '_tmdb_fetch_failed': True,
+            '_minimal_entry': True
+        }
+
+    def _create_full_basic_entry(self, movie_id, movie_data, movie_details):
+        """Create full basic entry with TMDB details"""
+        current_time = datetime.now().isoformat()
+
+        # Start with minimal entry structure
+        entry = {
+            'id': str(movie_id),
+            'title': movie_details.get('title', movie_data.get('title', f'Movie {movie_id}')),
+            'digital_date': movie_data.get('digital_date'),
+            'bootstrap_date': False,
+            'manually_corrected': False,
+            'synopsis': movie_details.get('overview', ''),
+            'genres': [genre['name'] for genre in movie_details.get('genres', [])],
+            'runtime': movie_details.get('runtime'),
+            'year': int(movie_details.get('release_date', '1900')[:4]) if movie_details.get('release_date') else None,
+            'rt_score': None,  # Will be filled by enrichment
+            'providers': movie_data.get('providers', {'rent': [], 'buy': [], 'streaming': []}),
+            'links': {'wikipedia': None, 'trailer': None, 'rt': None},
+            'watch_links': {},
+            '_enrichment_status': 'pending',
+            '_discovery_date': current_time,
+            '_tmdb_fetch_failed': False,
+            '_minimal_entry': False
+        }
+
+        # Add poster with error handling
+        if movie_details.get('poster_path'):
+            entry['poster'] = f"https://image.tmdb.org/t/p/w500{movie_details['poster_path']}"
+        else:
+            entry['poster'] = None
+
+        # Add studio with error handling
+        production_companies = movie_details.get('production_companies', [])
+        if production_companies and len(production_companies) > 0:
+            entry['studio'] = production_companies[0].get('name', 'Unknown')
+        else:
+            entry['studio'] = 'Unknown'
+
+        # Add country with error handling
+        production_countries = movie_details.get('production_countries', [])
+        if production_countries and len(production_countries) > 0:
+            entry['country'] = production_countries[0].get('name', 'Unknown')
+        else:
+            entry['country'] = 'Unknown'
+
+        # Add cast/crew with error handling
+        entry['crew'] = {'director': 'Unknown', 'cast': []}
+        if movie_details.get('credits'):
+            try:
+                credits = movie_details['credits']
+
+                # Get director
+                directors = [person['name'] for person in credits.get('crew', [])
+                            if person.get('job') == 'Director' and person.get('name')]
+                if directors:
+                    entry['crew']['director'] = directors[0]
+
+                # Get main cast (first 5)
+                cast = [person['name'] for person in credits.get('cast', [])[:5]
+                       if person.get('name')]
+                entry['crew']['cast'] = cast
+
+            except Exception as e:
+                self.logger.warning(f"Failed to parse credits for {movie_id}: {e}")
+                # Keep default values
+
+        return entry
     
 
     def find_wikipedia_url(self, title, year, imdb_id, movie_id=None):
