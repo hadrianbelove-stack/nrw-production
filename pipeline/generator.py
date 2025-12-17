@@ -1463,6 +1463,33 @@ class DataGenerator:
             self.logger.error(f"Failed immediate site add for {movie_id}: {e}")
             print(f"   ❌ Failed to add {title} to site: {e}")
 
+            # JSONL failure-context logging for postmortems
+            try:
+                import os
+                import json
+                from datetime import datetime
+
+                os.makedirs('logs', exist_ok=True)
+
+                # Build failure context
+                failure_context = {
+                    'movie_id': str(movie_id),
+                    'title': title,
+                    'error_type': type(e).__name__,
+                    'error_message': str(e),
+                    'timestamp': datetime.now().isoformat(),
+                    'tmdb_available': 'movie_details' in locals() and movie_details is not None,
+                    'data_json_exists': os.path.exists('data.json')
+                }
+
+                # Append as JSON line to failure log
+                with open('logs/immediate_write_failures.jsonl', 'a') as f:
+                    f.write(json.dumps(failure_context) + '\n')
+
+            except Exception as log_error:
+                # Don't let logging errors break the main flow
+                self.logger.error(f"Failed to log immediate write failure: {log_error}")
+
             # CRITICAL: Return False but don't raise - discovery should continue
             return False
 
@@ -1564,7 +1591,52 @@ class DataGenerator:
                 # Keep default values
 
         return entry
-    
+
+    def get_imdb_from_omdb(self, title, year):
+        """Fallback to get IMDb ID from OMDb API when TMDB doesn't have it.
+
+        Args:
+            title: Movie title
+            year: Release year (can be empty string)
+
+        Returns:
+            str: IMDb ID (e.g., 'tt12345678') or None if not found
+        """
+        omdb_key = self.config.get('api', {}).get('omdb_api_key')
+        if not omdb_key:
+            self.logger.debug("OMDb API key not configured, skipping IMDb fallback")
+            return None
+
+        try:
+            from urllib.parse import quote
+
+            # Build OMDb API URL
+            url = f"http://www.omdbapi.com/?t={quote(title)}&apikey={omdb_key}"
+            if year:
+                url += f"&y={year}"
+
+            response = requests.get(url, timeout=5)
+
+            if response.status_code != 200:
+                self.logger.debug(f"OMDb API error: HTTP {response.status_code}")
+                return None
+
+            data = response.json()
+
+            if data.get('Response') == 'False':
+                self.logger.debug(f"OMDb: No match for '{title}' ({year})")
+                return None
+
+            imdb_id = data.get('imdbID')
+            if imdb_id:
+                self.logger.debug(f"OMDb: Found IMDb ID {imdb_id} for '{title}' ({year})")
+                return imdb_id
+
+            return None
+
+        except Exception as e:
+            self.logger.debug(f"OMDb API error for '{title}': {e}")
+            return None
 
     def find_wikipedia_url(self, title, year, imdb_id, movie_id=None):
         """Find Wikipedia URL using Playwright-based scraper with waterfall approach
@@ -2273,6 +2345,10 @@ class DataGenerator:
         year = release_date[:4] if release_date else ''
         imdb_id = movie_details.get('external_ids', {}).get('imdb_id')
 
+        # OMDb fallback: If TMDB doesn't have IMDb ID, try OMDb
+        if not imdb_id:
+            imdb_id = self.get_imdb_from_omdb(title, year)
+
         # Start timing this movie's enrichment
         import time
         movie_start_time = time.time()
@@ -2447,11 +2523,15 @@ class DataGenerator:
         """Process a single movie into display format"""
         if not movie_details:
             return None
-        
+
         title = movie_details['title']
         year = movie_details.get('release_date', '')[:4] if movie_details.get('release_date') else ''
         imdb_id = movie_details.get('external_ids', {}).get('imdb_id')
-        
+
+        # OMDb fallback: If TMDB doesn't have IMDb ID, try OMDb
+        if not imdb_id:
+            imdb_id = self.get_imdb_from_omdb(title, year)
+
         # Extract key people
         credits = movie_details.get('credits', {})
         director = "Unknown"

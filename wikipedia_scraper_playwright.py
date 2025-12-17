@@ -403,7 +403,43 @@ class WikipediaScraperPlaywright:
                     self._log(f"Direct hit: {current_url}", level='debug')
                     return current_url
                 else:
-                    self._log(f"Disambiguation page found, will parse search results instead", level='debug')
+                    # Try to find the film link on the disambiguation page
+                    self._log(f"Disambiguation page found, looking for film link...", level='debug')
+
+                    # Disambiguation pages have links in the main content area
+                    # Look for links containing "film" and optionally the year
+                    disambig_links = self.page.query_selector_all("#mw-content-text ul li a")
+
+                    best_match = None
+                    for link in disambig_links:
+                        try:
+                            href = link.get_attribute('href')
+                            link_text = link.text_content().lower()
+
+                            # Skip non-article links
+                            if not href or not href.startswith('/wiki/') or ':' in href:
+                                continue
+
+                            # Look for film-related links
+                            if 'film' in link_text or 'movie' in link_text:
+                                # Prefer links with the year
+                                if str(year) in link_text or str(year) in href:
+                                    wiki_url = f"https://en.wikipedia.org{href}"
+                                    self._log(f"Disambiguation: Found film+year match: {wiki_url}", level='debug')
+                                    return wiki_url
+                                # Save as fallback if no year match yet
+                                if not best_match:
+                                    best_match = href
+                        except Exception:
+                            continue
+
+                    # Use best match if found
+                    if best_match:
+                        wiki_url = f"https://en.wikipedia.org{best_match}"
+                        self._log(f"Disambiguation: Found film match: {wiki_url}", level='debug')
+                        return wiki_url
+
+                    self._log(f"Disambiguation: No film link found, falling back to search", level='debug')
 
             # Look for search results
             search_selectors = [
