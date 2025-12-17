@@ -149,6 +149,9 @@ class DataGenerator:
             'rt_attempts': 0,
             'rt_successes': 0,
             'rt_cache_hits': 0,
+            'youtube_attempts': 0,
+            'youtube_successes': 0,
+            'youtube_cache_hits': 0,
             'schema_validation_warnings': 0,
             'schema_validation_passes': 0,
             'platform_scraper_attempts': 0,
@@ -876,9 +879,11 @@ class DataGenerator:
                     # Always update has_providers flag based on current provider availability
                     movie['has_providers'] = has_providers
 
+                    # Check if this movie needs enrichment
+                    needs_enrichment = False
+
                     if has_providers and movie['status'] == 'tracking':
-                        # Status-only lifecycle: Change status to exclude from future polls
-                        # (status != 'tracking' means no longer monitored for availability)
+                        # Newly discovered movie - always needs enrichment
                         movie['status'] = 'available'
                         movie['digital_date'] = datetime.now().strftime('%Y-%m-%d')
                         movie['providers'] = {
@@ -890,12 +895,36 @@ class DataGenerator:
                         movie['enriched'] = False
                         movie['enrichment_date'] = None
 
-
                         newly_digital += 1
-                        newly_available_ids.append(movie_id)  # Track for enrichment state file
+                        needs_enrichment = True
+
                         # Show which service it appeared on
                         first_service = stream_names[0] if stream_names else rent_names[0] if rent_names else buy_names[0]
                         print(f"  ✓ {movie['title']} now on {first_service}!")
+
+                    elif has_providers and movie['status'] == 'available':
+                        # Already available movie - check if it needs enrichment
+                        is_enriched = self.enrichment_state.is_enriched(movie_id)
+
+                        if not is_enriched:
+                            # Never been enriched - check if it became available recently
+                            digital_date_str = movie.get('digital_date', '')
+                            if digital_date_str:
+                                try:
+                                    digital_date = datetime.strptime(digital_date_str, '%Y-%m-%d')
+                                    days_since_available = (datetime.now() - digital_date).days
+
+                                    if days_since_available <= 7:
+                                        # Available in last 7 days and never enriched
+                                        needs_enrichment = True
+                                        print(f"  🔄 {movie['title']} available {days_since_available} days ago, needs enrichment")
+                                except ValueError:
+                                    # Invalid date format, skip
+                                    pass
+
+                    # Add to enrichment queue if needed
+                    if needs_enrichment:
+                        newly_available_ids.append(movie_id)  # Track for enrichment state file
 
                 # Incremental save every 100 movies
                 if checked % 100 == 0:
@@ -1370,8 +1399,18 @@ class DataGenerator:
                 headless=True
             )
 
+        # Check if this is a cache hit first
+        cache_key = f"{title}_{year}"
+        is_cache_hit = cache_key in self.youtube_scraper.cache
+
+        # Track YouTube scraper usage
+        self.watchmode_stats['youtube_attempts'] += 1
+        if is_cache_hit:
+            self.watchmode_stats['youtube_cache_hits'] += 1
+
         scraped_url = self.youtube_scraper.find_trailer(title, year)
         if scraped_url:
+            self.watchmode_stats['youtube_successes'] += 1
             return scraped_url
 
         # 6. Final fallback: generate YouTube search URL
@@ -2230,28 +2269,63 @@ class DataGenerator:
         if production_countries:
             country = production_countries[0]['name']
         
-        # Build links object with waterfall approach
+        # Build links object with waterfall approach and graceful failure handling
         links = {}
-
-        # Wikipedia link
-        wiki_url = self.find_wikipedia_url(title, year, imdb_id, movie_id)
-        if wiki_url:
-            links['wikipedia'] = wiki_url
-        
-        # Trailer link
-        trailer_url = self.find_trailer_url(movie_details)
-        if trailer_url:
-            links['trailer'] = trailer_url
-        
-        # RT link and score
-        rt_data = self.find_rt_url(title, year, imdb_id)
         rt_score = None
-        if rt_data:
-            if isinstance(rt_data, dict):
-                links['rt'] = rt_data.get('url')
-                rt_score = rt_data.get('score')
+
+        # Track enrichment success/failure for detailed logging
+        enrichment_results = {
+            'wikipedia': 'not_attempted',
+            'trailer': 'not_attempted',
+            'rt_score': 'not_attempted'
+        }
+
+        # Wikipedia link (isolated failure handling)
+        try:
+            wiki_url = self.find_wikipedia_url(title, year, imdb_id, movie_id)
+            if wiki_url:
+                links['wikipedia'] = wiki_url
+                enrichment_results['wikipedia'] = 'success'
+                self.logger.debug(f"Wikipedia: Found page for {title} ({year})")
             else:
-                links['rt'] = rt_data
+                enrichment_results['wikipedia'] = 'not_found'
+                self.logger.debug(f"Wikipedia: No page found for {title} ({year})")
+        except Exception as e:
+            enrichment_results['wikipedia'] = 'error'
+            self.logger.warning(f"Wikipedia: Error for {title} ({year}): {type(e).__name__}: {str(e)[:100]}")
+
+        # Trailer link (isolated failure handling)
+        try:
+            trailer_url = self.find_trailer_url(movie_details)
+            if trailer_url:
+                links['trailer'] = trailer_url
+                enrichment_results['trailer'] = 'success'
+                self.logger.debug(f"Trailer: Found for {title} ({year})")
+            else:
+                enrichment_results['trailer'] = 'not_found'
+                self.logger.debug(f"Trailer: Not found for {title} ({year})")
+        except Exception as e:
+            enrichment_results['trailer'] = 'error'
+            self.logger.warning(f"Trailer: Error for {title} ({year}): {type(e).__name__}: {str(e)[:100]}")
+
+        # RT link and score (isolated failure handling)
+        try:
+            rt_data = self.find_rt_url(title, year, imdb_id)
+            if rt_data:
+                if isinstance(rt_data, dict):
+                    if rt_data.get('url'):
+                        links['rt'] = rt_data.get('url')
+                    rt_score = rt_data.get('score')
+                else:
+                    links['rt'] = rt_data
+                enrichment_results['rt_score'] = 'success'
+                self.logger.debug(f"RT: Found data for {title} ({year}) - Score: {rt_score}")
+            else:
+                enrichment_results['rt_score'] = 'not_found'
+                self.logger.debug(f"RT: No data found for {title} ({year})")
+        except Exception as e:
+            enrichment_results['rt_score'] = 'error'
+            self.logger.warning(f"RT: Error for {title} ({year}): {type(e).__name__}: {str(e)[:100]}")
 
         # Watch links (deep links to streaming platforms)
         watch_links_raw = self.enrichment.get_watch_links(movie_id, title, year, movie_data.get('providers', {}), force_refresh, tracking_data=movie_data)
@@ -2296,6 +2370,21 @@ class DataGenerator:
         review = self.reviews.get(str(movie_id))
         if review:
             movie_dict['review'] = review
+
+        # Log enrichment results with visual indicators
+        status_icons = {
+            'success': '✓',
+            'not_found': '○',
+            'error': '✗',
+            'not_attempted': '?'
+        }
+
+        wiki_icon = status_icons.get(enrichment_results['wikipedia'], '?')
+        trailer_icon = status_icons.get(enrichment_results['trailer'], '?')
+        rt_icon = status_icons.get(enrichment_results['rt_score'], '?')
+        watch_icon = '✓' if watch_links else '○'
+
+        self.logger.info(f"  [{wiki_icon}] Wikipedia  [{trailer_icon}] Trailer  [{rt_icon}] RT  [{watch_icon}] Watch  | {title} ({year})")
 
         return movie_dict
     
@@ -2847,6 +2936,14 @@ class DataGenerator:
             rt_success_rate = (self.watchmode_stats['rt_successes'] / self.watchmode_stats['rt_attempts'] * 100)
             print(f"  RT success rate: {rt_success_rate:.1f}%")
 
+        print(f"\n📊 YouTube Scraper Usage:")
+        print(f"  YouTube attempts: {self.watchmode_stats['youtube_attempts']}")
+        print(f"  YouTube successes: {self.watchmode_stats['youtube_successes']}")
+        print(f"  YouTube cache hits: {self.watchmode_stats['youtube_cache_hits']}")
+        if self.watchmode_stats['youtube_attempts'] > 0:
+            youtube_success_rate = (self.watchmode_stats['youtube_successes'] / self.watchmode_stats['youtube_attempts'] * 100)
+            print(f"  YouTube success rate: {youtube_success_rate:.1f}%")
+
         print(f"\n📊 Admin Override Usage:")
         print(f"  Manual tracking hits: {self.watchmode_stats.get('manual_tracking_hits', 0)}")
         print(f"  Override hits: {self.watchmode_stats['override_hits']}")
@@ -2925,6 +3022,19 @@ class DataGenerator:
                     "success_rate": calc_rate(
                         self.wikipedia_stats['wikidata_successes'],
                         self.wikipedia_stats['wikidata_attempts']
+                    )
+                },
+                "youtube_scraper": {
+                    "attempts": self.watchmode_stats['youtube_attempts'],
+                    "successes": self.watchmode_stats['youtube_successes'],
+                    "cache_hits": self.watchmode_stats['youtube_cache_hits'],
+                    "success_rate": calc_rate(
+                        self.watchmode_stats['youtube_successes'],
+                        self.watchmode_stats['youtube_attempts']
+                    ),
+                    "cache_hit_rate": calc_rate(
+                        self.watchmode_stats['youtube_cache_hits'],
+                        self.watchmode_stats['youtube_attempts']
                     )
                 },
                 "agent_scraper": {
