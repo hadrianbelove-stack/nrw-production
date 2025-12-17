@@ -2,7 +2,7 @@
 
 **Purpose**: This is the authoritative guide to how the NRW movie tracking system works. Read this document FIRST before diving into code or other documentation.
 
-**Last Updated**: 2025-11-10
+**Last Updated**: 2025-12-17
 **Maintained By**: Development Team
 
 ## 📖 Reading Order for AI Assistants
@@ -103,6 +103,7 @@ git push origin main
 | Scraper | Technology | Rate Limit | Cache TTL |
 |---------|------------|------------|-----------|
 | `rt_scraper_playwright.py` | Playwright | 2s delay | 90 days |
+| `wikipedia_scraper_playwright.py` | 4-tier waterfall | 1s delay | 90 days |
 | `agent_link_scraper.py` (VOD scraper) | Playwright | 2s delay | 30 days |
 | `streaming_platform_scraper.py` (Streamer scraper) | Playwright | 3s delay | 7 days |
 | `scripts/youtube_trailer_scraper.py` (Trailer scraper) | Playwright | 2s delay | 90 days |
@@ -143,7 +144,7 @@ All API keys follow the 12-factor app pattern:
 **Required for Production:**
 - `TMDB_API_KEY` - The Movie Database API key
 - `WATCHMODE_API_KEY` - Watchmode streaming links API key
-- `OMDB_API_KEY` - OMDb API key (optional, for fallbacks)
+- `OMDB_API_KEY` - OMDb API key (used for IMDb ID fallback in Wikipedia lookup)
 
 **Launch Method:**
 - `./launch_all.sh` - launches both admin panel (5556) and public site (3000)
@@ -239,8 +240,9 @@ rt_scraper:
 ### OMDb API
 - **Sign up:** http://www.omdbapi.com/apikey.aspx
 - **Environment variable:** `OMDB_API_KEY`
-- **Config fallback:** `api.omdb_api_key` in config.yaml (if implemented)
-- **Usage:** Alternative movie data source, poster fallbacks
+- **Config fallback:** `api.omdb_api_key` in config.yaml
+- **Usage:** IMDb ID fallback for Wikipedia/Wikidata lookup when TMDB doesn't have IMDb ID
+- **Implementation:** `get_imdb_from_omdb()` method in `pipeline/generator.py`
 - **Free Tier:** 1,000 requests/day
 
 ### Agent-Based Link Finding (No API Key Required)
@@ -344,9 +346,16 @@ Filtered, enriched subset for frontend display:
   "watch_links": {
     "streaming": {"service": "Netflix", "link": "https://..."},
     "vod": {"service": "Amazon", "link": "https://..."}
-  }
+  },
+  "_discovery_date": "2025-12-17T10:30:45Z",
+  "_discovery_source": "apple_itunes",
+  "_enrichment_status": "completed",
+  "_minimal_entry": false,
+  "_tmdb_fetch_failed": false
 }
 ```
+
+**Note**: Underscore-prefixed metadata fields (`_discovery_date`, `_enrichment_status`, etc.) are added during December 2025 immediate-writing enhancements. These fields provide discovery and enrichment tracking but are ignored by the frontend display logic.
 
 ### Required Fields Per Movie
 - `tmdb_id`, `imdb_id`, `title`, `original_title`
@@ -392,14 +401,18 @@ Always poll ALL tracking movies in `movie_tracking.json` (no time limits). Fetch
 - Sets `enriched: true` flag in `enrichment_state.json`
 - Expected: 1-10 movies/day processing (new arrivals) + up to 10 stale movies
 
-**Phase 4: Display Generation** (Updated 2025-12-05)
+**Phase 4: Display Generation** (Updated 2025-12-17)
+- **Immediate Writing Enhancement**: Uses atomic writes with backup (`storage.atomic_write_json(backup=True)`) to prevent data corruption
+- **TMDB Fallback Robustness**: Creates minimal movie entries when TMDB API fails instead of skipping movies entirely
 - Builds display movies from ALL eligible movies (status = 'available', within days_back)
 - Creates minimal stubs for movies not yet in data.json
 - Overlays enrichment data when available (non-blocking)
 - If enrichment fails, keeps minimal/existing data instead of dropping movie
+- **Metadata Handling**: Supports underscore-prefixed metadata fields (`_discovery_date`, `_enrichment_status`, etc.) that are ignored by frontend
 - Applies admin overrides (hidden/featured)
 - Generates public-facing display data
 - Expected: All available movies appear, 250-350 with enrichment
+- **Failure Logging**: Immediate-write failures logged to `logs/immediate_write_failures.jsonl`
 
 ### Performance Expectations
 - **Normal operation**: 1-10 movies enriched daily, 30-second runtime
@@ -429,10 +442,12 @@ Phase 3: Quality Assurance
     ↓ Validates: Links, ratings, metadata
     ↓ See ADMIN_WORKFLOW.md for the operational steps
 
-Phase 4: Display Generation (Updated 2025-12-05)
+Phase 4: Display Generation (Updated 2025-12-17)
     ↓ generate_data.py (final step)
+    ↓ Enhanced immediate writing: atomic writes with TMDB fallback
     ↓ Creates: ALL available movies in data.json (minimal + enriched)
     ↓ Enrichment failures no longer hide movies
+    ↓ Metadata tracking: underscore-prefixed discovery fields
 
 Phase 5: User Display
     ↓ index.html + assets/
@@ -718,7 +733,40 @@ See Section 5 above for detailed enrichment-on-transition caching.
 4. TMDB recommendations
 5. Manual override files
 
-### 7.5 Admin Panel
+### 7.5 Wikipedia Scraper Waterfall
+
+The Wikipedia scraper uses a 4-tier waterfall approach for reliable Wikipedia link discovery:
+
+**Tier 1: Cache Lookup** (instant)
+- Check `cache/wikipedia_cache.json` for `{title}_{year}` key
+- 90-day TTL before re-scraping
+- Cache hit skips all subsequent tiers
+
+**Tier 2: Wikidata SPARQL Query** (fast, accurate)
+- Query Wikidata using IMDb ID (P345 property)
+- Returns official English Wikipedia article sitelink
+- Requires IMDb ID (from TMDB or OMDb fallback)
+- Most reliable method when IMDb ID is available
+
+**Tier 3: Wikipedia REST API** (fast)
+- Direct search of English Wikipedia by movie title + year
+- Uses `/w/api.php?action=opensearch` endpoint
+- Falls back here when no IMDb ID available
+
+**Tier 4: Playwright Headless Search** (slow, last resort)
+- Google search: `"Movie Title" "year" site:en.wikipedia.org film`
+- Handles disambiguation pages by finding film-related links
+- Stealth mode with 1s delay between requests
+- Used when API methods fail
+
+**IMDb ID Acquisition Flow**:
+1. Check TMDB external_ids for IMDb ID
+2. If not found, call OMDb API fallback (`get_imdb_from_omdb()` in `pipeline/generator.py`)
+3. IMDb ID enables Tier 2 Wikidata queries
+
+**Cache Key Format**: `{title}_{year}` (e.g., `The Matrix_1999`)
+
+### 7.6 Admin Panel
 
 **Purpose**: Manual data quality assurance
 **Access**: `./launch_all.sh` (launches both admin and site)
@@ -850,6 +898,6 @@ for dm in data_movies:       # Iterated over keys, not movies
 
 ---
 
-**Last Updated**: 2025-11-05
+**Last Updated**: 2025-12-17
 **Maintained By**: Development Team
 **Questions**: See DAILY_CONTEXT.md or create GitHub issue

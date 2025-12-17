@@ -60,7 +60,7 @@ class TestEnrichmentWorkflow(unittest.TestCase):
 
         # Mock external dependencies to isolate enrichment logic
         self.generator.get_tmdb_details = Mock(return_value={'tmdb_id': 123})
-        self.generator.get_omdb_details = Mock(return_value={'imdb_rating': 7.5})
+        self.generator.get_imdb_from_omdb = Mock(return_value='tt1234567')  # IMDb ID fallback
         self.generator.get_rt_score = Mock(return_value=85)
         self.generator.get_watchmode_links = Mock(return_value={'netflix': 'test-link'})
         self.generator.get_wikipedia_link = Mock(return_value='https://en.wikipedia.org/wiki/test')

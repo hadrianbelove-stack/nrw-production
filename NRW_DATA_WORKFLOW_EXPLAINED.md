@@ -58,7 +58,7 @@ We want a beautiful webpage that shows the latest movies available for streaming
 
 **Wikipedia/RT/YouTube Links:**
 - Similar multi-tier approach with manual overrides → cache → API/scraper → fallback
-- **Wikipedia:** REST API (primary), Playwright fallback (manual only)
+- **Wikipedia:** 4-tier waterfall (Cache → Wikidata SPARQL → REST API → Playwright). Uses OMDb API fallback for IMDb ID when TMDB doesn't have it.
 - **Rotten Tomatoes:** Playwright scraper with 90-day cache
 - **YouTube Trailers:** Playwright scraper integrated into generate_data.py
 
