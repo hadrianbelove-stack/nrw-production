@@ -6,7 +6,6 @@ import random
 import re
 from datetime import datetime, timedelta
 from urllib.parse import quote
-from difflib import SequenceMatcher
 from constants import get_scraper_config
 
 # Shared manager support (enabled by default)
@@ -90,28 +89,7 @@ class RTScraperPlaywright:
         else:
             print(f"[RTScraperPlaywright] {message}")
 
-    def _fuzzy_match_title(self, candidate_text, expected_title, threshold=0.8):
-        """Fuzzy match candidate text against expected title.
 
-        Args:
-            candidate_text: Text from search result
-            expected_title: Expected movie title
-            threshold: Minimum similarity ratio (default: 0.6)
-
-        Returns:
-            bool: True if similarity ratio meets threshold
-        """
-        if not candidate_text or not expected_title:
-            return False
-
-        # Normalize both strings for comparison
-        candidate_normalized = candidate_text.lower().strip()
-        expected_normalized = expected_title.lower().strip()
-
-        # Calculate similarity ratio
-        similarity = SequenceMatcher(None, candidate_normalized, expected_normalized).ratio()
-
-        return similarity >= threshold
 
     def _log_metrics(self, operation, data):
         """Log structured metrics for operations."""
@@ -148,6 +126,86 @@ class RTScraperPlaywright:
             self._log(f"Cache saved: {len(self.cache)} entries", level='debug')
         except Exception as e:
             self._log(f"Failed to save cache: {e}", level='error')
+
+    def _extract_score_from_rt_page(self, rt_url):
+        """Navigate to RT page and extract the actual score.
+
+        Args:
+            rt_url: The Rotten Tomatoes URL to scrape
+
+        Returns:
+            str: The score (e.g., "85%") or None if not found
+        """
+        try:
+            self._log(f"Navigating to RT page: {rt_url}", level='debug')
+            self.page.goto(rt_url, wait_until='domcontentloaded')
+            time.sleep(2)  # Wait for dynamic content to load
+
+            # RT score selectors (Rotten Tomatoes uses various formats)
+            score_selectors = [
+                # Modern RT pages - critic score
+                '[data-testid="critic-score"] .percentage',
+                '[data-testid="critics-score"] .percentage',
+                # Alternative modern selectors
+                '.scoreboard__critic .percentage',
+                '.scoreboard__critic score-icon-critic-fresh .percentage',
+                '.scoreboard__critic score-icon-critic-rotten .percentage',
+                # Legacy selectors
+                '.mop-ratings-wrap__percentage',
+                '.meter-value',
+                '.critic-score .percentage',
+                # General percentage patterns
+                '[class*="percentage"]',
+                '[class*="score"] [class*="percentage"]'
+            ]
+
+            for selector in score_selectors:
+                try:
+                    elements = self.page.query_selector_all(selector)
+                    for element in elements:
+                        text = element.text_content() or ""
+                        text = text.strip()
+
+                        # Look for percentage pattern
+                        score_match = re.search(r'(\d+)%?', text)
+                        if score_match:
+                            score = score_match.group(1)
+                            self._log(f"Found score on RT page: {score}% (selector: {selector})", level='debug')
+                            return f"{score}%"
+
+                except Exception as e:
+                    self._log(f"Error with selector {selector}: {e}", level='debug')
+                    continue
+
+            # If no score found with selectors, try extracting from page text
+            try:
+                # Get the text content of the body element
+                body_element = self.page.query_selector('body')
+                if body_element:
+                    page_text = body_element.text_content()
+                    # Look for patterns like "85% Critics" or "Fresh 85%"
+                    score_patterns = [
+                        r'(\d+)%\s*(?:Critics|Critic)',
+                        r'(?:Fresh|Rotten)\s*(\d+)%',
+                        r'Tomatometer.*?(\d+)%',
+                    ]
+
+                    for pattern in score_patterns:
+                        match = re.search(pattern, page_text, re.IGNORECASE)
+                        if match:
+                            score = match.group(1)
+                            self._log(f"Found score in page text: {score}% (pattern: {pattern})", level='debug')
+                            return f"{score}%"
+
+            except Exception as e:
+                self._log(f"Error extracting score from page text: {e}", level='debug')
+
+            self._log(f"No score found on RT page: {rt_url}", level='warning')
+            return None
+
+        except Exception as e:
+            self._log(f"Error navigating to RT page {rt_url}: {e}", level='error')
+            return None
 
     def _cleanup_old_screenshots(self):
         """Delete old screenshots based on retention policy."""
@@ -199,11 +257,39 @@ class RTScraperPlaywright:
             headless = self.config.get('rt_scraper', {}).get('headless', True)
             self.browser = self.manager.get_browser(headless=headless, browser_type='chromium')
 
-            # Create context with viewport and user agent
+            # Create context with viewport and user agent (stealth configuration)
             self.context = self.browser.new_context(
                 viewport={'width': 1920, 'height': 1080},
                 user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
             )
+
+            # Hide automation signals
+            self.context.add_init_script("""
+                // Remove webdriver property
+                Object.defineProperty(navigator, 'webdriver', {
+                    get: () => undefined,
+                });
+
+                // Add fake chrome runtime
+                Object.defineProperty(window, 'chrome', {
+                    get: () => ({
+                        runtime: {},
+                    }),
+                });
+
+                // Override plugins length
+                Object.defineProperty(navigator, 'plugins', {
+                    get: () => [1, 2, 3, 4, 5],
+                });
+
+                // Override permissions
+                const originalQuery = window.navigator.permissions.query;
+                window.navigator.permissions.query = (parameters) => (
+                    parameters.name === 'notifications' ?
+                        Promise.resolve({ state: Notification.permission }) :
+                        originalQuery(parameters)
+                );
+            """)
 
             # Set default timeout
             timeout_ms = self.scraper_config.get('timeout') * 1000
@@ -229,11 +315,39 @@ class RTScraperPlaywright:
             headless = self.config.get('rt_scraper', {}).get('headless', True)
             self.browser = self.playwright.chromium.launch(headless=headless)
 
-            # Create context with viewport and user agent
+            # Create context with viewport and user agent (stealth configuration)
             self.context = self.browser.new_context(
                 viewport={'width': 1920, 'height': 1080},
                 user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
             )
+
+            # Hide automation signals
+            self.context.add_init_script("""
+                // Remove webdriver property
+                Object.defineProperty(navigator, 'webdriver', {
+                    get: () => undefined,
+                });
+
+                // Add fake chrome runtime
+                Object.defineProperty(window, 'chrome', {
+                    get: () => ({
+                        runtime: {},
+                    }),
+                });
+
+                // Override plugins length
+                Object.defineProperty(navigator, 'plugins', {
+                    get: () => [1, 2, 3, 4, 5],
+                });
+
+                // Override permissions
+                const originalQuery = window.navigator.permissions.query;
+                window.navigator.permissions.query = (parameters) => (
+                    parameters.name === 'notifications' ?
+                        Promise.resolve({ state: Notification.permission }) :
+                        originalQuery(parameters)
+                );
+            """)
 
             # Set default timeout
             timeout_ms = self.scraper_config.get('timeout') * 1000
@@ -399,7 +513,7 @@ class RTScraperPlaywright:
             return True
 
     def _scrape_rt_page(self, title, year):
-        """Scrape RT search page to find movie URL and score using Playwright.
+        """Search Google for Rotten Tomatoes link and extract URL + score.
 
         Args:
             title: Movie title
@@ -418,249 +532,111 @@ class RTScraperPlaywright:
         self.stats['attempts'] += 1
 
         try:
-            # Build search URL
-            search_query = f"{title} {year}"
-            search_url = f"https://www.rottentomatoes.com/search?search={quote(search_query)}"
+            # Build Google search query: "TITLE" YEAR "Rotten Tomatoes"
+            search_query = f'"{title}" {year} "Rotten Tomatoes"'
+            google_search_url = f"https://www.google.com/search?q={quote(search_query)}"
 
-            self._log(f"Searching RT: {title} ({year})", level='debug')
+            self._log(f"Google search: {search_query}", level='debug')
 
-            # Navigate to search page
-            self.page.goto(search_url, wait_until='domcontentloaded')
-            time.sleep(2)  # Wait for dynamic content
+            # Navigate to Google search
+            self.page.goto(google_search_url, wait_until='domcontentloaded')
+            time.sleep(1)  # Wait for results to load
 
-            # Try selector fallbacks for search results
-            search_selectors = [
-                "search-page-media-row a[data-qa='info-name']",  # Primary
-                "a[data-qa='thumbnail-link']",  # Fallback 1
-                "a[href*='/m/'][data-qa='info-name']",  # Fallback 2
-                "search-page-result a[href*='/m/']",  # Fallback 3
-                "a[href*='/m/']"  # Generic movie link
+            # Extract RT link from Google search results
+            # Google search results use <a> tags with href containing the target URL
+            rt_link = None
+            rt_score = None
+
+            # Try to find RT link in search results
+            search_result_selectors = [
+                'a[href*="rottentomatoes.com/m/"]',  # Direct RT movie link
+                'a[href*="rottentomatoes.com"]',      # Any RT link
             ]
 
-            movie_url = None
-            for selector in search_selectors:
+            for selector in search_result_selectors:
                 try:
                     elements = self.page.query_selector_all(selector)
                     if elements:
-                        # Iterate through first 5-8 anchors and verify each candidate
-                        for element in elements[:8]:
+                        self._log(f"Found {len(elements)} RT links with selector: {selector}", level='debug')
+
+                        for element in elements:
                             href = element.get_attribute('href')
-                            if not href or '/m/' not in href:
+                            if not href:
                                 continue
 
-                            # Get anchor text and nearby title text
-                            anchor_text = element.text_content() or ""
-
-                            # Try to find surrounding title text
-                            parent_element = element.evaluate_handle("el => el.closest('search-page-media-row') || el.parentElement")
-                            surrounding_text = ""
-                            try:
-                                surrounding_text = parent_element.as_element().text_content() or ""
-                            except:
-                                surrounding_text = anchor_text
-
-                            # Require fuzzy match against title at ~0.8 similarity
-                            if not self._fuzzy_match_title(anchor_text, title, threshold=0.8):
-                                self._log(f"Skipping candidate - title mismatch: {anchor_text[:50]}", level='debug')
-                                continue
-
-                            # Prefer candidates whose surrounding text contains the year
-                            year_str = str(year)
-                            has_year = year_str in surrounding_text
-
-                            if has_year:
-                                self._log(f"Found candidate with year match: {anchor_text[:50]}", level='debug')
-
-                            # Ensure absolute URL
-                            if href.startswith('http'):
-                                candidate_url = href
+                            # Extract actual URL from Google redirect
+                            # Google wraps URLs in /url?q=... format
+                            if '/url?q=' in href:
+                                # Extract URL from Google redirect
+                                url_start = href.find('/url?q=') + 7
+                                url_end = href.find('&', url_start)
+                                if url_end == -1:
+                                    url_end = len(href)
+                                rt_link = href[url_start:url_end]
                             else:
-                                candidate_url = f"https://www.rottentomatoes.com{href}"
+                                rt_link = href
 
-                            # Navigate to candidate movie page to validate
-                            self._log(f"Validating candidate: {candidate_url}", level='debug')
-                            self.page.goto(candidate_url, wait_until='domcontentloaded')
-                            time.sleep(1)
-
-                            # Read og:title meta or score-board data-qa-title to verify
-                            validated = False
-                            try:
-                                # Try og:title meta tag
-                                og_title_element = self.page.query_selector('meta[property="og:title"]')
-                                if og_title_element:
-                                    og_title = og_title_element.get_attribute('content') or ""
-                                    if self._fuzzy_match_title(og_title, title, threshold=0.8):
-                                        validated = True
-                                        self._log(f"Validated via og:title: {og_title}", level='debug')
-
-                                # Try score-board data-qa-title attribute
-                                if not validated:
-                                    score_board = self.page.query_selector('score-board')
-                                    if score_board:
-                                        qa_title = score_board.get_attribute('data-qa-title') or ""
-                                        if self._fuzzy_match_title(qa_title, title, threshold=0.8):
-                                            validated = True
-                                            self._log(f"Validated via score-board: {qa_title}", level='debug')
-                            except Exception as e:
-                                self._log(f"Validation check error: {e}", level='debug')
-
-                            if validated:
-                                movie_url = candidate_url
-                                self._log(f"Found validated match with selector: {selector}", level='debug')
+                            # Validate it's a real RT movie page
+                            if rt_link and '/m/' in rt_link and 'rottentomatoes.com' in rt_link:
+                                self._log(f"Found RT link: {rt_link}", level='debug')
                                 break
-                            else:
-                                self._log(f"Validation failed for {candidate_url}, trying next", level='debug')
-                                # Go back to search page for next candidate
-                                self.page.goto(search_url, wait_until='domcontentloaded')
-                                time.sleep(1)
 
-                        if movie_url:
+                        if rt_link:
                             break
                 except Exception as e:
-                    self._log(f"Selector {selector} error: {e}", level='debug')
+                    self._log(f"Error with selector {selector}: {e}", level='debug')
                     continue
 
-            if not movie_url:
-                self._log(f"No RT page found for {title} ({year})", level='warning')
+            if not rt_link:
+                self._log(f"No RT link found in Google search for {title} ({year})", level='warning')
                 # Cache the failure
                 cache_key = f"{title}_{year}"
-                cached_failure = {
+                self.cache[cache_key] = {
                     'url': None,
                     'score': None,
                     'title': title,
                     'scraped_at': datetime.now().isoformat()
                 }
-                self.cache[cache_key] = cached_failure
                 self._save_cache()
                 self.stats['failures'] += 1
-
-                # Capture diagnostics
-                self._capture_failure_diagnostics(title, year, "No RT page found")
                 return None
 
-            # Ensure we're on the movie page (may be redundant if validated during search)
-            if self.page.url != movie_url:
-                self.page.goto(movie_url, wait_until='domcontentloaded')
-                time.sleep(2)  # Wait for dynamic content
-
-            # Add readiness wait for score elements to avoid racing hydration
-            try:
-                self.page.wait_for_selector("score-board", timeout=2000)
-            except:
-                try:
-                    self.page.wait_for_selector("[data-qa='tomatometer']", timeout=2000)
-                except:
-                    pass  # Continue if neither selector is found
-
-            # Extract score - try attribute-based reading first
-            score = None
-
-            # Attempt 1: Try score-board attributes (preferred method)
-            try:
-                score_board = self.page.query_selector("score-board")
-                if score_board:
-                    # Try tomatometerscore attribute
-                    tomatometer_score = score_board.get_attribute('tomatometerscore')
-                    if tomatometer_score and tomatometer_score.isdigit():
-                        score = f"{tomatometer_score}%"
-                        self._log(f"Found score via score-board tomatometerscore attribute: {score}", level='debug')
-
-                    # Fallback to audiencescore if tomatometer not found
-                    if not score:
-                        audience_score = score_board.get_attribute('audiencescore')
-                        if audience_score and audience_score.isdigit():
-                            score = f"{audience_score}%"
-                            self._log(f"Found score via score-board audiencescore attribute: {score}", level='debug')
-            except Exception as e:
-                self._log(f"Attribute-based score extraction error: {e}", level='debug')
-
-            # Attempt 2: Fallback to text/regex approach if attributes not available
-            if not score:
-                score_selectors = [
-                    "rt-text[slot='criticsScore']",  # Primary
-                    "score-board",  # Fallback 1
-                    "[data-qa='tomatometer']",  # Fallback 2
-                    "[data-qa='tomatometer-value']",  # Fallback 3
-                    ".tomatometer-score",  # Fallback 4
-                    "score-icon-critic"  # Fallback 5
-                ]
-
-                # Define multiple regex patterns to try in order
-                regex_patterns = [
-                    r'(\d+)\s*%',                          # Basic pattern: number followed by %
-                    r'tomatometer\s*:?\s*(\d+)\s*%',       # Pattern with tomatometer prefix
-                    r'(\d+)\s*percent',                     # Pattern with "percent" instead of %
-                    r'critics?\s*score\s*:?\s*(\d+)',      # Pattern with "critic score" prefix
-                    r'fresh\s*:?\s*(\d+)',                 # Pattern with "fresh" prefix
-                ]
-
-                for selector in score_selectors:
-                    try:
-                        element = self.page.query_selector(selector)
-                        if element:
-                            # Get text from multiple sources
-                            text_sources = [
-                                element.text_content() or "",
-                                element.get_attribute('textContent') or "",
-                                element.get_attribute('aria-label') or "",
-                                element.get_attribute('data-score') or "",
-                                element.inner_html() or ""
-                            ]
-
-                            # Concatenate all text sources for matching
-                            combined_text = " ".join(text_sources).lower()
-
-                            # Try each regex pattern until one matches
-                            for pattern in regex_patterns:
-                                match = re.search(pattern, combined_text, re.IGNORECASE)
-                                if match:
-                                    score = match.group(1) + "%"
-                                    self._log(f"Found score with selector: {selector}, pattern: {pattern}", level='debug')
-                                    break
-
-                            if score:
-                                break
-                    except Exception:
-                        continue
+            # Extract score from actual RT page (more reliable than Google snippets)
+            rt_score = self._extract_score_from_rt_page(rt_link)
 
             # Create result
             result = {
-                'url': movie_url,
-                'score': score
+                'url': rt_link,
+                'score': rt_score
             }
 
-            self._log(f"RT scraping successful: {movie_url} (Score: {score or 'N/A'})", level='debug')
+            self._log(f"Google search successful: {rt_link} (Score: {rt_score or 'N/A'})", level='debug')
 
             # Cache the result
             cache_key = f"{title}_{year}"
-            cached_result = {
+            self.cache[cache_key] = {
                 'url': result['url'],
                 'score': result['score'],
                 'title': title,
                 'scraped_at': datetime.now().isoformat()
             }
-            self.cache[cache_key] = cached_result
             self._save_cache()
             self.stats['successes'] += 1
 
             return result
 
         except Exception as e:
-            self._log(f"RT scraping error for {title} ({year}): {e}", level='error')
+            self._log(f"Google search error for {title} ({year}): {e}", level='error')
             # Cache the failure
             cache_key = f"{title}_{year}"
-            cached_failure = {
+            self.cache[cache_key] = {
                 'url': None,
                 'score': None,
                 'title': title,
                 'scraped_at': datetime.now().isoformat()
             }
-            self.cache[cache_key] = cached_failure
             self._save_cache()
             self.stats['failures'] += 1
-
-            # Capture diagnostics
-            self._capture_failure_diagnostics(title, year, str(e))
             return None
 
     def scrape_rt_score(self, title, year):

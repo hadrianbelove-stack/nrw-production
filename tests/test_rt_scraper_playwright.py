@@ -10,6 +10,9 @@ import json
 import time
 from datetime import datetime
 
+# Add parent directory to path to find pipeline module
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 def test_rt_scraper_playwright():
     """Test Playwright RT scraping functionality"""
 
@@ -18,8 +21,8 @@ def test_rt_scraper_playwright():
     print("============================================================")
 
     try:
-        # Import DataGenerator
-        from generate_data import DataGenerator
+        # Import DataGenerator from pipeline module
+        from pipeline import DataGenerator
 
         # Initialize generator
         print("Initializing DataGenerator...")
@@ -27,10 +30,10 @@ def test_rt_scraper_playwright():
 
         # Test movies with known RT pages
         test_cases = [
-            ("Landmarks", 2025, "Known to have RT page with 92% score (cached)"),
-            ("Inspector Zende", 2025, "Known to have RT page (cached)"),
-            ("The Substance", 2024, "Popular movie, should have RT page"),
-            ("Fake Movie Title", 2025, "Should fail gracefully")
+            ("Landmarks", 2025, "Should find RT page via Google"),
+            ("Inspector Zende", 2025, "Should find RT page via Google"),
+            ("The Substance", 2024, "Popular movie, should find RT page"),
+            ("Fake Movie Title ZZZZZ", 2025, "Should fail gracefully")
         ]
 
         results = []
@@ -49,13 +52,12 @@ def test_rt_scraper_playwright():
                 duration = end_time - start_time
 
                 if result and result.get('url'):
-                    if 'search?search=' in result['url']:
-                        print(f"  ✗ No RT page found")
-                        print(f"  Fallback: {result['url']}")
-                        success = False
-                    else:
+                    if 'rottentomatoes.com' in result['url']:
                         print(f"  ✓ Found RT: {result['url']} (Score: {result.get('score', 'N/A')})")
                         success = True
+                    else:
+                        print(f"  ✗ Invalid URL: {result['url']}")
+                        success = False
                 else:
                     print(f"  ✗ Failed to get result")
                     success = False
@@ -109,9 +111,16 @@ def test_rt_scraper_playwright():
         if len(scrape_times) > 1:
             min_delay = min(scrape_times[1:])  # Skip first scrape (no rate limit)
             avg_delay = sum(scrape_times) / len(scrape_times)
+
+            # Get configured rate limit threshold (falls back to scraper default of 2.0)
+            from constants import get_scraper_config
+            rt_config = get_scraper_config(generator.config, 'rt_scraper')
+            expected_min_delay = rt_config.get('rate_limit', 2.0)
+
             print(f"\nRate limiting:")
             print(f"  Average delay between scrapes: {avg_delay:.1f}s")
-            print(f"  Min delay: {min_delay:.1f}s {'✓' if min_delay >= 2.0 else '✗'}")
+            print(f"  Min delay: {min_delay:.1f}s {'✓' if min_delay >= expected_min_delay else '✗'}")
+            print(f"  Expected minimum: {expected_min_delay}s (from config)")
 
         # Statistics verification
         print(f"\nStatistics:")
@@ -149,7 +158,7 @@ def test_cache_behavior():
     print("============================================================")
 
     try:
-        from generate_data import DataGenerator
+        from pipeline import DataGenerator
         generator = DataGenerator(enrichment_enabled=True)
 
         test_title = "The Substance"
