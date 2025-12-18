@@ -1,41 +1,41 @@
 {
-  "timestamp": "2025-12-17T10:42:49.112076",
+  "timestamp": "2025-12-18T10:48:41.389265",
   "scrapers": {
     "rt_scraper": {
-      "attempts": 34,
-      "successes": 1,
+      "attempts": 24,
+      "successes": 0,
       "cache_hits": 0,
-      "success_rate": 2.9,
+      "success_rate": 0.0,
       "cache_hit_rate": 0.0
     },
     "wikipedia_scraper": {
-      "wikidata_attempts": 11,
-      "wikidata_successes": 0,
-      "success_rate": 0.0
+      "wikidata_attempts": 8,
+      "wikidata_successes": 3,
+      "success_rate": 37.5
     },
     "trailer_scraper": {
-      "attempts": 4,
-      "successes": 3,
+      "attempts": 1,
+      "successes": 1,
       "cache_hits": 0,
-      "success_rate": 75.0,
+      "success_rate": 100.0,
       "cache_hit_rate": 0.0
     },
     "streaming_scraper": {
-      "attempts": 2,
+      "attempts": 1,
       "successes": 0,
-      "failures": 2,
+      "failures": 1,
       "cache_hits": 0,
       "success_rate": 0.0
     },
     "vod_scraper": {
-      "attempts": 18,
+      "attempts": 12,
       "successes": 0,
       "failures": 0,
       "success_rate": 0.0
     }
   },
   "validation": {
-    "passes": 12,
+    "passes": 8,
     "warnings": 0,
     "pass_rate": 100.0
   }
