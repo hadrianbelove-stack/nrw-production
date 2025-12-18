@@ -720,9 +720,11 @@ See Section 5 above for detailed enrichment-on-transition caching.
 
 ### 7.3 Playwright Scrapers
 
-**Migration Status**: RT scraper migrated to Playwright (Oct 2025)
-**Benefits**: Better anti-bot detection, more reliable
-**Remaining**: Other scrapers use Playwright (completed migration)
+**Migration Status**: RT scraper enhanced with direct page scraping (Dec 2025)
+**Latest Enhancement**: Two-stage approach - Google search for URL discovery + direct RT page score extraction
+**Benefits**: Better anti-bot detection, stealth automation, authoritative scoring from actual RT pages
+**Stealth Features**: Hidden webdriver signals, fake browser plugins, reduced automation detection
+**Architecture**: Replaced unreliable Google snippet parsing with direct RT page scraping
 
 ### 7.4 Multi-Tier Fallback
 

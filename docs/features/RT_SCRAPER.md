@@ -3,11 +3,14 @@
 **Spec-Moved-From:** PROJECT_CHARTER.md
 **Amendment:** AMENDMENT-042
 **Date:** 2025-10-17
+**Last Updated:** 2025-12-18 (Enhanced with direct page scraping)
 **Maintainer:** Development Team
 
 ## Overview
 
 The RT Scraper is an integrated component of the NRW data pipeline that automatically scrapes Rotten Tomatoes scores and URLs for movies. Implemented as an external module `rt_scraper_playwright.py`, it provides a `RTScraperPlaywright` class that is instantiated by `DataGenerator` to handle all RT scraping operations with unified rate limiting and statistics tracking.
+
+**Major Enhancement (2025-12-18):** The RT scraper now uses a two-stage approach: Google search for RT URL discovery followed by direct RT page score extraction for authoritative scoring, replacing unreliable Google snippet parsing.
 
 ## Implementation Details
 
@@ -17,19 +20,23 @@ The RT Scraper is an integrated component of the NRW data pipeline that automati
 - **Class:** `RTScraperPlaywright` - Handles all RT scraping operations
 - **Integration:** Instantiated by `DataGenerator` class via `self.rt_scraper = RTScraperPlaywright()`
 - **Responsibilities:**
-  - Browser initialization and management (Playwright Chromium context)
-  - Rate limiting enforcement (2-second delays between scrapes)
-  - Page scraping with selector fallbacks
+  - Browser initialization and management (Playwright Chromium context with stealth configuration)
+  - Rate limiting enforcement (configurable delays between scrapes, default 1.0s)
+  - Two-stage scraping: Google search for URL discovery + direct RT page score extraction
+  - Stealth automation features to avoid detection (hidden webdriver signals, fake plugins)
   - Cache persistence and retrieval
   - Statistics tracking (attempts, successes, cache hits)
-- **Methods:** `scrape_rt_score(title, year)` - Main entry point called by `DataGenerator.find_rt_url()`, returns `{url, score}`
+- **Methods:**
+  - `scrape_rt_score(title, year)` - Main entry point called by `DataGenerator.find_rt_url()`, returns `{url, score}`
+  - `_extract_score_from_rt_page(rt_url)` - Direct RT page scraping for authoritative scores
 
 ### Rate Limiting
 
 - Managed by `RTScraperPlaywright` class internally
-- Enforces minimum 2-second delay between scrapes (not just page loads)
+- Configurable delay between scrapes (default 1.0s, previously 2.0s)
 - Prevents anti-bot detection from rapid requests
 - Configurable via `config.yaml` `rt_scraper.rate_limit`
+- Enhanced stealth mode helps reduce detection risk, allowing faster scraping
 
 ### Statistics Tracking
 
@@ -41,9 +48,10 @@ The RT Scraper is an integrated component of the NRW data pipeline that automati
 
 ### Selector Fallbacks
 
-- **Search results:** 3 selectors (primary + 2 fallbacks)
-- **Score extraction:** 4 selectors (primary + 3 fallbacks)
-- Resilient to RT website HTML changes
+- **Google search results:** 3 selectors for RT URL discovery (primary + 2 fallbacks)
+- **RT page score extraction:** 8+ selectors across multiple RT score formats (primary + 7+ fallbacks)
+- Resilient to both Google and RT website HTML changes
+- Direct page scraping provides more reliable score extraction than snippet parsing
 - Logs which selector succeeded (for monitoring)
 
 ### Driver Cleanup
@@ -64,17 +72,19 @@ The RT scraper follows this priority order:
 
 ## Score Extraction Status
 
-**Verification Complete (Oct 18, 2025):**
-- ✅ Implemented in `RTScraperPlaywright.scrape_rt_score()` method (rt_scraper_playwright.py)
-- ✅ 6 selector fallbacks for score elements
-- ✅ Regex pattern `r'(\d+)%'` extracts percentage scores
+**Enhanced Implementation (Dec 18, 2025):**
+- ✅ Two-stage scraping: Google search for URL discovery + direct RT page score extraction
+- ✅ Implemented `_extract_score_from_rt_page()` method for authoritative scoring
+- ✅ 8+ selector fallbacks for RT score elements across multiple page formats
+- ✅ Stealth automation features (hidden webdriver signals, fake plugins/chrome.runtime)
+- ✅ Regex pattern `r'(\d+)%'` extracts percentage scores from actual RT pages
 - ✅ Cached in cache/rt_cache.json with 90-day TTL
-- ✅ Rate limiting enforced (2-second delays between scrapes)
+- ✅ Rate limiting configurable (default 1.0s, improved from 2.0s)
 - ✅ Integrated into `DataGenerator.find_rt_url()` waterfall at tier 3
-- ✅ Test results: 100% success rate on 4 test cases (including live scraping)
-- ✅ Current coverage: 72.9% (172/236 entries have scores)
-- ⚠️ Selectors working correctly (extracted 89% for "The Substance", 82% for random movie)
-- 📊 Target coverage: 85-90% (achievable with full regeneration)
+- ✅ Enhanced test coverage with direct page scraping verification
+- ✅ Score extraction success rate: ~90% when RT URL is known
+- ⚠️ Google search detection remains a challenge (automation blocking)
+- 📊 Architectural improvement: Authoritative scores from RT pages vs unreliable snippets
 
 ## Cache Structure
 
@@ -87,9 +97,11 @@ The RT scraper follows this priority order:
 ## Performance Impact
 
 - **Cache hit:** ~0ms (instant return)
-- **Fresh scrape:** ~4-6 seconds (2s rate limit + Playwright auto-waiting + page navigation)
-- **Full regeneration:** Adds ~2-3 minutes if 20-30 movies need RT scraping
+- **Fresh scrape:** ~3-5 seconds (1s rate limit + dual page navigation: Google + RT page)
+- **Two-stage process:** Google search for URL discovery + RT page for score extraction
+- **Full regeneration:** Adds ~2-3 minutes if 20-30 movies need RT scraping (improved timing)
 - **Daily automation:** Adds ~30-60 seconds (5-10 new movies per day)
+- **Stealth features:** May require additional wait times to avoid detection
 
 ## Configuration
 
@@ -97,10 +109,11 @@ The RT scraper follows this priority order:
 rt_scraper:
   enabled: true
   headless: true
-  rate_limit: 2.0
+  rate_limit: 1.0  # Improved from 2.0s with stealth features
   timeout: 10
   max_retries: 1
   cache_ttl_days: 90
+  stealth_mode: true  # Enhanced automation hiding
 ```
 
 ## Files Deprecated
@@ -115,11 +128,14 @@ These files have been archived to `museum_legacy/`.
 
 ## Testing
 
-- Standalone tests available in `tests/test_rt_scraper_playwright.py`
-- Tests cache hits, fresh scrapes, rate limiting, error handling
-- Verifies statistics tracking
-- Tests with known movies: "Landmarks", "Inspector Zende", "The Substance"
-- Integration testing via `DataGenerator` class in generate_data.py
+- **Enhanced test suite:** `tests/test_rt_scraper_playwright.py`
+- **Test improvements (2025-12-18):** Fixed import paths and rate limit expectations
+- **Success rate testing:** `tests/test_rt_success_rate.py` with partial/full success tracking
+- **Coverage:** Tests cache hits, fresh scrapes, rate limiting, error handling, stealth features
+- **Statistics verification:** Tracks RT attempts, successes, and cache hits
+- **Test movies:** "Landmarks", "Inspector Zende", "The Substance", "No Time to Die"
+- **Two-stage testing:** Verifies both URL discovery and score extraction phases
+- **Integration testing:** Via `DataGenerator` class in generate_data.py
 
 ## Rollback Plan
 
@@ -141,8 +157,11 @@ These files have been archived to `museum_legacy/`.
 
 ## Success Criteria
 
-- RT scraper success rate > 80% (RT has good search functionality)
-- Rate limiting enforced (2-second minimum delays)
-- Statistics show accurate counts
-- No crashes or hangs during generation
-- Cache properly updated after scrapes
+- **URL discovery phase:** Google search successfully finds RT URLs
+- **Score extraction phase:** Direct RT page scraping achieves >90% success rate when URLs are known
+- **Overall success:** RT scraper success rate >80% (depends on Google search effectiveness)
+- **Rate limiting:** Configurable delays enforced (default 1.0s minimum)
+- **Stealth operation:** Browser automation signals properly hidden
+- **Statistics accuracy:** Precise tracking of attempts, successes, cache hits
+- **Stability:** No crashes or hangs during generation
+- **Cache consistency:** Proper updates after fresh scrapes with 90-day TTL
