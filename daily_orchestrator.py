@@ -1225,8 +1225,8 @@ class NRWOrchestrator:
             # discovery (Phase 2) and final generation (Phase 3)
             print(f"\n📊 Phase 3: Data Generation")
             success = self.run_command(
-                "python3 generate_data.py",
-                "Generate data.json for website with enriched links",
+                "python3 generate_data.py --enrichment",
+                "Generate data.json for website with enriched links (including enhanced RT scraper)",
                 True
             )
 
