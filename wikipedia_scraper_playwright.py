@@ -583,7 +583,7 @@ class WikipediaScraperPlaywright:
             return wiki_url
 
         # Failed - cache the failure as search fallback
-        search_fallback_url = f"https://en.wikipedia.org/w/index.php?search={quote(title + ' (' + year + ' film)')}"
+        search_fallback_url = f"https://en.wikipedia.org/w/index.php?search={quote(title + ' (' + str(year) + ' film)')}"
         self._cache_result(cache_key, search_fallback_url, title, 'search_fallback')
         return search_fallback_url
 
