@@ -236,6 +236,10 @@ class ValidationService:
                         self.logger.error(f"{file_path} movie[{i}] missing required key: {key}")
                         return False
 
+                # Optional metadata field validation (keep fields optional for legacy compatibility)
+                if not self._validate_metadata_fields(movie, f"movie[{i}]", file_path):
+                    return False
+
             self.logger.info(f"{file_path} schema validation passed: {len(movies)} movies")
             return True
 
@@ -263,3 +267,64 @@ class ValidationService:
             'schema_validation_warnings': 0,
             'schema_validation_passes': 0
         }
+
+    def _validate_metadata_fields(self, movie: Dict, movie_context: str, file_path: str) -> bool:
+        """
+        Validate optional metadata fields in movie entries.
+
+        Validates underscore-prefixed metadata when present:
+        - _discovery_source: Must be non-empty string
+        - _enrichment_status: Must be in allowed set (pending/completed/failed/error)
+        - _minimal_entry: Must be boolean
+        - _tmdb_fetch_failed: Must be boolean
+        - _digital_date_source: Must be in allowed set (detection/tmdb_type4)
+
+        Args:
+            movie: Movie dict to validate
+            movie_context: Context string for logging (e.g., "movie[0]")
+            file_path: File path for logging context
+
+        Returns:
+            bool: True if all present metadata fields are valid, False otherwise
+
+        Note:
+            All metadata fields are optional for legacy compatibility.
+        """
+        # _discovery_source: Non-empty string validation
+        if '_discovery_source' in movie:
+            discovery_source = movie['_discovery_source']
+            if not isinstance(discovery_source, str) or not discovery_source.strip():
+                self.logger.error(f"{file_path} {movie_context} _discovery_source must be non-empty string")
+                return False
+
+        # _enrichment_status: Allowed values validation
+        if '_enrichment_status' in movie:
+            enrichment_status = movie['_enrichment_status']
+            allowed_statuses = {'pending', 'completed', 'failed', 'error'}
+            if not isinstance(enrichment_status, str) or enrichment_status not in allowed_statuses:
+                self.logger.error(f"{file_path} {movie_context} _enrichment_status must be one of {allowed_statuses}, got '{enrichment_status}'")
+                return False
+
+        # _minimal_entry: Boolean validation
+        if '_minimal_entry' in movie:
+            minimal_entry = movie['_minimal_entry']
+            if not isinstance(minimal_entry, bool):
+                self.logger.error(f"{file_path} {movie_context} _minimal_entry must be boolean, got {type(minimal_entry)}")
+                return False
+
+        # _tmdb_fetch_failed: Boolean validation
+        if '_tmdb_fetch_failed' in movie:
+            tmdb_fetch_failed = movie['_tmdb_fetch_failed']
+            if not isinstance(tmdb_fetch_failed, bool):
+                self.logger.error(f"{file_path} {movie_context} _tmdb_fetch_failed must be boolean, got {type(tmdb_fetch_failed)}")
+                return False
+
+        # _digital_date_source: Allowed values validation
+        if '_digital_date_source' in movie:
+            digital_date_source = movie['_digital_date_source']
+            allowed_sources = {'detection', 'tmdb_type4'}
+            if not isinstance(digital_date_source, str) or digital_date_source not in allowed_sources:
+                self.logger.error(f"{file_path} {movie_context} _digital_date_source must be one of {allowed_sources}, got '{digital_date_source}'")
+                return False
+
+        return True

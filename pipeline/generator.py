@@ -1318,6 +1318,38 @@ class DataGenerator:
             print(f"Error fetching details for {movie_id}: {e}")
         return None
 
+    def fetch_tmdb_type4_date(self, movie_id):
+        """
+        Fetch US Type 4 (Digital) release date from TMDB release_dates endpoint.
+
+        Args:
+            movie_id: TMDB movie ID (string or int)
+
+        Returns:
+            str: Date in YYYY-MM-DD format if Type 4 found, None otherwise
+        """
+        url = f"https://api.themoviedb.org/3/movie/{movie_id}/release_dates"
+        params = {'api_key': self.tmdb_key}
+
+        try:
+            response = requests.get(url, params=params, timeout=10)
+            if response.status_code != 200:
+                return None
+
+            data = response.json()
+            for entry in data.get('results', []):
+                if entry.get('iso_3166_1') == 'US':
+                    for release in entry.get('release_dates', []):
+                        if release.get('type') == 4:  # Type 4 = Digital
+                            release_date = release.get('release_date', '')
+                            if release_date:
+                                # Return YYYY-MM-DD portion only
+                                return release_date[:10]
+            return None
+        except Exception as e:
+            self.logger.debug(f"Type 4 date lookup failed for {movie_id}: {e}")
+            return None
+
     def add_movie_to_site_immediately(self, movie_id, movie_data):
         """
         ENHANCED: Add newly discovered movie to data.json immediately upon discovery
@@ -2370,7 +2402,8 @@ class DataGenerator:
             'wikipedia': 'not_attempted',
             'trailer': 'not_attempted',
             'rt_score': 'not_attempted',
-            'watch_links': 'not_attempted'
+            'watch_links': 'not_attempted',
+            'digital_date': 'not_attempted'
         }
 
         # Wikipedia link (isolated failure handling)
@@ -2490,6 +2523,22 @@ class DataGenerator:
                 'country': None
             })
 
+        # Digital date correction from TMDB Type 4 (isolated failure handling)
+        try:
+            type4_date = self.fetch_tmdb_type4_date(movie_id)
+            if type4_date:
+                result['digital_date'] = type4_date
+                result['_digital_date_source'] = 'tmdb_type4'
+                enrichment_results['digital_date'] = 'success'
+                self.logger.debug(f"Digital Date: Corrected to {type4_date} for {title}")
+            else:
+                result['_digital_date_source'] = 'detection'
+                enrichment_results['digital_date'] = 'not_found'
+        except Exception as e:
+            enrichment_results['digital_date'] = 'error'
+            result['_digital_date_source'] = 'detection'
+            self.logger.warning(f"Digital Date: Error for {title}: {type(e).__name__}: {str(e)[:100]}")
+
         # Calculate enrichment timing and log detailed results
         movie_duration = time.time() - movie_start_time
 
@@ -2510,8 +2559,9 @@ class DataGenerator:
         trailer_icon = status_icons.get(enrichment_results['trailer'], '?')
         rt_icon = status_icons.get(enrichment_results['rt_score'], '?')
         links_icon = status_icons.get(enrichment_results['watch_links'], '?')
+        date_icon = status_icons.get(enrichment_results['digital_date'], '?')
 
-        print(f"  ⚡ {title} ({movie_duration:.1f}s) - Wiki:{wiki_icon} Trailer:{trailer_icon} RT:{rt_icon} Links:{links_icon} | {success_count} success, {error_count} errors")
+        print(f"  ⚡ {title} ({movie_duration:.1f}s) - Wiki:{wiki_icon} Trailer:{trailer_icon} RT:{rt_icon} Links:{links_icon} Date:{date_icon} | {success_count} success, {error_count} errors")
 
         # Detailed logging for metrics
         self.logger.info(f"Enrichment completed for {title} ({year}) in {movie_duration:.1f}s: {enrichment_results}")
