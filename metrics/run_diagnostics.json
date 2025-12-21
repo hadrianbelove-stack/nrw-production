@@ -1,30 +1,30 @@
 {
-  "timestamp": "2025-12-20T09:51:25.980540",
-  "duration_seconds": 1996.676863,
-  "overall_success": true,
-  "failure_count": 0,
+  "timestamp": "2025-12-21T09:33:58.214097",
+  "duration_seconds": 941.09756,
+  "overall_success": false,
+  "failure_count": 1,
   "warning_count": 0,
   "phases": [
     {
       "name": "Intake new premieres using production discovery",
       "success": true,
-      "duration_seconds": 2.858301,
+      "duration_seconds": 2.771491,
       "error": null,
-      "output_preview": "\ud83d\udeab Enrichment disabled for intake/discovery mode\n\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2025-12-18 to 2025-12-20 (incremental mode, 63 found)\n\u2705 Intake complete: 63 new movies added\n\ud83d\udccb Intake/discovery phase complete\n"
+      "output_preview": "\ud83d\udeab Enrichment disabled for intake/discovery mode\n\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2025-12-19 to 2025-12-21 (incremental mode, 43 found)\n\u2705 Intake complete: 43 new movies added\n\ud83d\udccb Intake/discovery phase complete\n"
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 824.89794,
+      "duration_seconds": 938.098826,
       "error": null,
-      "output_preview": "\ud83d\udeab Enrichment disabled for intake/discovery mode\n\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 6363 total movies\n\ud83d\udd0d Raw tracking filter: 5634 movies\n\ud83d\udd0d Assigned tracking_movies list: 5634\n\ud83d\udd0d Found 5634 movies in tracking status\n  Priority queue (last 180 days): 1456 movies\n  Older movies: 4178 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 5634 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/5634 (1.8%) | 0 found | 0m elaps"
+      "output_preview": "\ud83d\udeab Enrichment disabled for intake/discovery mode\n\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 6406 total movies\n\ud83d\udd0d Raw tracking filter: 5671 movies\n\ud83d\udd0d Assigned tracking_movies list: 5671\n\ud83d\udd0d Found 5671 movies in tracking status\n  Priority queue (last 180 days): 1456 movies\n  Older movies: 4215 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 5671 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/5671 (1.8%) | 0 found | 0m elaps"
     },
     {
       "name": "Generate data.json for website with enriched links (including enhanced RT scraper)",
-      "success": true,
-      "duration_seconds": 1168.884821,
-      "error": null,
-      "output_preview": "\ud83c\udfaf Enrichment enabled for final generation phase\n[AgentLinkScraper] Initialized with Playwright, cache_file=cache/agent_links_cache.json\n[AgentLinkScraper] Cache loaded: 0 entries\n[AgentLinkScraper] Screenshots: enabled\n[AgentLinkScraper] Supported platforms: ['Netflix', 'Disney+', 'Disney Plus', 'HBO Max', 'Max', 'Hulu']\n\n\ud83c\udfac Generating final display data...\n\ud83d\udcc2 Found 553 existing movies in data.json\n\ud83d\udd0d Pre-flight check: validating state file environment...\n\u2705 State file exists and is readable\n\n\ud83d\udccb Load"
+      "success": false,
+      "duration_seconds": 0.214837,
+      "error": "2025-12-21 09:33:58 [INFO] EnrichmentService initialized with enrichment_enabled=True\n2025-12-21 09:33:58 [ERROR] \ud83d\udea8 CONSISTENCY CHECK FAILED: 1/8 (12.5%) available movies have enriched=false (threshold: 10.0%)\n",
+      "output_preview": "\ud83c\udfaf Enrichment enabled for final generation phase\n[AgentLinkScraper] Initialized with Playwright, cache_file=cache/agent_links_cache.json\n[AgentLinkScraper] Cache loaded: 0 entries\n[AgentLinkScraper] Screenshots: enabled\n[AgentLinkScraper] Supported platforms: ['Netflix', 'Disney+', 'Disney Plus', 'HBO Max', 'Max', 'Hulu']\n\ud83d\udea8 CONSISTENCY CHECK FAILED:\n   1/8 (12.5%) available movies have enriched=false\n   This suggests bulk enrichment flag corruption!\n   To restore from backup:\n   1. List backups: "
     }
   ],
   "health_issues": [],
@@ -32,12 +32,20 @@
     "stalled": false,
     "days_without_transitions": 1
   },
-  "failures": [],
+  "failures": [
+    {
+      "phase": "Generate data.json for website with enriched links (including enhanced RT scraper)",
+      "severity": "error",
+      "message": "Phase failed with exit code 1",
+      "context": "2025-12-21 09:33:58 [INFO] EnrichmentService initialized with enrichment_enabled=True\n2025-12-21 09:33:58 [ERROR] \ud83d\udea8 CONSISTENCY CHECK FAILED: 1/8 (12.5%) available movies have enriched=false (threshold: 10.0%)",
+      "stdout_preview": "\ud83c\udfaf Enrichment enabled for final generation phase\n[AgentLinkScraper] Initialized with Playwright, cache_file=cache/agent_links_cache.json\n[AgentLinkScraper] Cache loaded: 0 entries\n[AgentLinkScraper] Screenshots: enabled\n[AgentLinkScraper] Supported platforms: ['Netflix', 'Disney+', 'Disney Plus', 'HBO Max', 'Max', 'Hulu']\n\ud83d\udea8 CONSISTENCY CHECK FAILED:\n   1/8 (12.5%) available movies have enriched=false\n   This suggests bulk enrichment flag corruption!\n   To restore from backup:\n   1. List backups: "
+    }
+  ],
   "warnings": [],
   "data_quality": {
-    "total": 6363,
-    "tracking": 5628,
-    "available": 735,
+    "total": 6406,
+    "tracking": 5660,
+    "available": 746,
     "data_movies": 559,
     "movies_with_links": 0,
     "movies_with_rt": 3,
