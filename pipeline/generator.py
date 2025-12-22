@@ -2618,8 +2618,25 @@ class DataGenerator:
         enrichment_results = {
             'wikipedia': 'not_attempted',
             'trailer': 'not_attempted',
-            'rt_score': 'not_attempted'
+            'rt_score': 'not_attempted',
+            'digital_date': 'not_attempted'
         }
+
+        # Digital date correction from TMDB Type 4 (isolated failure handling)
+        digital_date = movie_data.get('digital_date')
+        digital_date_source = 'detection'
+        try:
+            type4_date = self.fetch_tmdb_type4_date(movie_id)
+            if type4_date:
+                digital_date = type4_date
+                digital_date_source = 'tmdb_type4'
+                enrichment_results['digital_date'] = 'success'
+                self.logger.debug(f"Digital Date: Corrected to {type4_date} for {title}")
+            else:
+                enrichment_results['digital_date'] = 'not_found'
+        except Exception as e:
+            enrichment_results['digital_date'] = 'error'
+            self.logger.warning(f"Digital Date: Error for {title}: {type(e).__name__}: {str(e)[:100]}")
 
         # Wikipedia link (isolated failure handling)
         try:
@@ -2687,7 +2704,8 @@ class DataGenerator:
         movie_dict = {
             'id': movie_id,
             'title': title,
-            'digital_date': movie_data.get('digital_date'),
+            'digital_date': digital_date,
+            '_digital_date_source': digital_date_source,
             'bootstrap_date': movie_data.get('bootstrap_date', False),
             'manually_corrected': movie_data.get('manually_corrected', False),
             'poster': f"https://image.tmdb.org/t/p/w500{movie_details['poster_path']}" if movie_details.get('poster_path') else None,
@@ -2723,9 +2741,10 @@ class DataGenerator:
         wiki_icon = status_icons.get(enrichment_results['wikipedia'], '?')
         trailer_icon = status_icons.get(enrichment_results['trailer'], '?')
         rt_icon = status_icons.get(enrichment_results['rt_score'], '?')
+        date_icon = status_icons.get(enrichment_results['digital_date'], '?')
         watch_icon = '✓' if watch_links else '○'
 
-        self.logger.info(f"  [{wiki_icon}] Wikipedia  [{trailer_icon}] Trailer  [{rt_icon}] RT  [{watch_icon}] Watch  | {title} ({year})")
+        self.logger.info(f"  [{wiki_icon}] Wikipedia  [{trailer_icon}] Trailer  [{rt_icon}] RT  [{date_icon}] Date  [{watch_icon}] Watch  | {title} ({year})")
 
         return movie_dict
     
