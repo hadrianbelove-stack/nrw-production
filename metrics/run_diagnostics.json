@@ -1,120 +1,58 @@
 {
-  "timestamp": "2025-12-25T09:22:36.440973",
-  "duration_seconds": 76.253285,
-  "overall_success": false,
-  "failure_count": 6,
+  "timestamp": "2025-12-26T02:23:33.642121",
+  "duration_seconds": 976.059474,
+  "overall_success": true,
+  "failure_count": 0,
   "warning_count": 0,
   "phases": [
     {
       "name": "Intake new premieres using production discovery",
-      "success": false,
-      "duration_seconds": 0.367183,
-      "error": "2025-12-25 09:21:20 [INFO] EnrichmentService initialized with enrichment_enabled=False\n2025-12-25 09:21:20 [ERROR] \ud83d\udea8 CONSISTENCY CHECK FAILED: 1/8 (12.5%) available movies have enriched=false (threshold: 10.0%)\n",
-      "output_preview": "\ud83d\udeab Enrichment disabled for intake/discovery mode\n\ud83d\udea8 CONSISTENCY CHECK FAILED:\n   1/8 (12.5%) available movies have enriched=false\n   This suggests bulk enrichment flag corruption!\n   To restore from backup:\n   1. List backups: ls -la backups/movie_tracking.backup-*.json\n   2. Restore: cp backups/movie_tracking.backup-YYYYMMDD_HHMMSS.json movie_tracking.json\n   3. Retry operation\n"
-    },
-    {
-      "name": "Intake new premieres using production discovery",
-      "success": false,
-      "duration_seconds": 0.225514,
-      "error": "2025-12-25 09:21:50 [INFO] EnrichmentService initialized with enrichment_enabled=False\n2025-12-25 09:21:50 [ERROR] \ud83d\udea8 CONSISTENCY CHECK FAILED: 1/8 (12.5%) available movies have enriched=false (threshold: 10.0%)\n",
-      "output_preview": "\ud83d\udeab Enrichment disabled for intake/discovery mode\n\ud83d\udea8 CONSISTENCY CHECK FAILED:\n   1/8 (12.5%) available movies have enriched=false\n   This suggests bulk enrichment flag corruption!\n   To restore from backup:\n   1. List backups: ls -la backups/movie_tracking.backup-*.json\n   2. Restore: cp backups/movie_tracking.backup-YYYYMMDD_HHMMSS.json movie_tracking.json\n   3. Retry operation\n"
-    },
-    {
-      "name": "Intake new premieres using production discovery",
-      "success": false,
-      "duration_seconds": 0.214423,
-      "error": "2025-12-25 09:22:35 [INFO] EnrichmentService initialized with enrichment_enabled=False\n2025-12-25 09:22:35 [ERROR] \ud83d\udea8 CONSISTENCY CHECK FAILED: 1/8 (12.5%) available movies have enriched=false (threshold: 10.0%)\n",
-      "output_preview": "\ud83d\udeab Enrichment disabled for intake/discovery mode\n\ud83d\udea8 CONSISTENCY CHECK FAILED:\n   1/8 (12.5%) available movies have enriched=false\n   This suggests bulk enrichment flag corruption!\n   To restore from backup:\n   1. List backups: ls -la backups/movie_tracking.backup-*.json\n   2. Restore: cp backups/movie_tracking.backup-YYYYMMDD_HHMMSS.json movie_tracking.json\n   3. Retry operation\n"
+      "success": true,
+      "duration_seconds": 2.482121,
+      "error": null,
+      "output_preview": "\ud83d\udeab Enrichment disabled for intake/discovery mode\n\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2025-12-25 to 2025-12-26 (incremental mode, 1 found)\n\u2705 Intake complete: 1 new movies added\n\ud83d\udccb Intake/discovery phase complete\n"
     },
     {
       "name": "Discover provider availability for tracking movies",
-      "success": false,
-      "duration_seconds": 0.217943,
-      "error": "2025-12-25 09:22:36 [INFO] EnrichmentService initialized with enrichment_enabled=False\n2025-12-25 09:22:36 [ERROR] \ud83d\udea8 CONSISTENCY CHECK FAILED: 1/8 (12.5%) available movies have enriched=false (threshold: 10.0%)\n",
-      "output_preview": "\ud83d\udeab Enrichment disabled for intake/discovery mode\n\ud83d\udea8 CONSISTENCY CHECK FAILED:\n   1/8 (12.5%) available movies have enriched=false\n   This suggests bulk enrichment flag corruption!\n   To restore from backup:\n   1. List backups: ls -la backups/movie_tracking.backup-*.json\n   2. Restore: cp backups/movie_tracking.backup-YYYYMMDD_HHMMSS.json movie_tracking.json\n   3. Retry operation\n"
+      "success": true,
+      "duration_seconds": 973.312003,
+      "error": null,
+      "output_preview": "\ud83d\udeab Enrichment disabled for intake/discovery mode\n\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 6638 total movies\n\ud83d\udd0d Raw tracking filter: 5859 movies\n\ud83d\udd0d Assigned tracking_movies list: 5859\n\ud83d\udd0d Found 5859 movies in tracking status\n  Priority queue (last 180 days): 1452 movies\n  Older movies: 4407 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 5859 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/5859 (1.7%) | 0 found | 0m elaps"
     },
     {
       "name": "Generate data.json for website with enriched links (including enhanced RT scraper)",
-      "success": false,
-      "duration_seconds": 0.214617,
-      "error": "2025-12-25 09:22:36 [INFO] EnrichmentService initialized with enrichment_enabled=True\n2025-12-25 09:22:36 [ERROR] \ud83d\udea8 CONSISTENCY CHECK FAILED: 1/8 (12.5%) available movies have enriched=false (threshold: 10.0%)\n",
-      "output_preview": "\ud83c\udfaf Enrichment enabled for final generation phase\n[AgentLinkScraper] Initialized with Playwright, cache_file=cache/agent_links_cache.json\n[AgentLinkScraper] Cache loaded: 0 entries\n[AgentLinkScraper] Screenshots: enabled\n[AgentLinkScraper] Supported platforms: ['Netflix', 'Disney+', 'Disney Plus', 'HBO Max', 'Max', 'Hulu']\n\ud83d\udea8 CONSISTENCY CHECK FAILED:\n   1/8 (12.5%) available movies have enriched=false\n   This suggests bulk enrichment flag corruption!\n   To restore from backup:\n   1. List backups: "
+      "success": true,
+      "duration_seconds": 0.230034,
+      "error": null,
+      "output_preview": "\ud83c\udfaf Enrichment enabled for final generation phase\n[AgentLinkScraper] Initialized with Playwright, cache_file=cache/agent_links_cache.json\n[AgentLinkScraper] Cache loaded: 0 entries\n[AgentLinkScraper] Screenshots: enabled\n[AgentLinkScraper] Supported platforms: ['Netflix', 'Disney+', 'Disney Plus', 'HBO Max', 'Max', 'Hulu']\n\n\ud83c\udfac Generating final display data...\n\u274c data.json schema validation failed - treating as corrupted, will rebuild from scratch\n\ud83d\udcbe Corrupted data.json backed up to data.json.corrupte"
     }
   ],
-  "health_issues": [
-    {
-      "check": "metrics_not_updated_for_current_run",
-      "severity": "error",
-      "message": "Current run did not produce fresh discovery metrics (metrics from 09:33, run started 09:21)"
-    }
-  ],
+  "health_issues": [],
   "stall_status": {
     "stalled": false,
-    "days_without_transitions": 0
+    "days_without_transitions": 1
   },
-  "failures": [
-    {
-      "phase": "Intake new premieres using production discovery",
-      "severity": "error",
-      "message": "Phase failed with exit code 1",
-      "context": "2025-12-25 09:21:20 [INFO] EnrichmentService initialized with enrichment_enabled=False\n2025-12-25 09:21:20 [ERROR] \ud83d\udea8 CONSISTENCY CHECK FAILED: 1/8 (12.5%) available movies have enriched=false (threshold: 10.0%)",
-      "stdout_preview": "\ud83d\udeab Enrichment disabled for intake/discovery mode\n\ud83d\udea8 CONSISTENCY CHECK FAILED:\n   1/8 (12.5%) available movies have enriched=false\n   This suggests bulk enrichment flag corruption!\n   To restore from backup:\n   1. List backups: ls -la backups/movie_tracking.backup-*.json\n   2. Restore: cp backups/movie_tracking.backup-YYYYMMDD_HHMMSS.json movie_tracking.json\n   3. Retry operation"
-    },
-    {
-      "phase": "Intake new premieres using production discovery",
-      "severity": "error",
-      "message": "Phase failed with exit code 1",
-      "context": "2025-12-25 09:21:50 [INFO] EnrichmentService initialized with enrichment_enabled=False\n2025-12-25 09:21:50 [ERROR] \ud83d\udea8 CONSISTENCY CHECK FAILED: 1/8 (12.5%) available movies have enriched=false (threshold: 10.0%)",
-      "stdout_preview": "\ud83d\udeab Enrichment disabled for intake/discovery mode\n\ud83d\udea8 CONSISTENCY CHECK FAILED:\n   1/8 (12.5%) available movies have enriched=false\n   This suggests bulk enrichment flag corruption!\n   To restore from backup:\n   1. List backups: ls -la backups/movie_tracking.backup-*.json\n   2. Restore: cp backups/movie_tracking.backup-YYYYMMDD_HHMMSS.json movie_tracking.json\n   3. Retry operation"
-    },
-    {
-      "phase": "Intake new premieres using production discovery",
-      "severity": "error",
-      "message": "Phase failed with exit code 1 (after 3 attempts)",
-      "context": "2025-12-25 09:22:35 [INFO] EnrichmentService initialized with enrichment_enabled=False\n2025-12-25 09:22:35 [ERROR] \ud83d\udea8 CONSISTENCY CHECK FAILED: 1/8 (12.5%) available movies have enriched=false (threshold: 10.0%)",
-      "stdout_preview": "\ud83d\udeab Enrichment disabled for intake/discovery mode\n\ud83d\udea8 CONSISTENCY CHECK FAILED:\n   1/8 (12.5%) available movies have enriched=false\n   This suggests bulk enrichment flag corruption!\n   To restore from backup:\n   1. List backups: ls -la backups/movie_tracking.backup-*.json\n   2. Restore: cp backups/movie_tracking.backup-YYYYMMDD_HHMMSS.json movie_tracking.json\n   3. Retry operation"
-    },
-    {
-      "phase": "Discover provider availability for tracking movies",
-      "severity": "error",
-      "message": "Phase failed with exit code 1",
-      "context": "2025-12-25 09:22:36 [INFO] EnrichmentService initialized with enrichment_enabled=False\n2025-12-25 09:22:36 [ERROR] \ud83d\udea8 CONSISTENCY CHECK FAILED: 1/8 (12.5%) available movies have enriched=false (threshold: 10.0%)",
-      "stdout_preview": "\ud83d\udeab Enrichment disabled for intake/discovery mode\n\ud83d\udea8 CONSISTENCY CHECK FAILED:\n   1/8 (12.5%) available movies have enriched=false\n   This suggests bulk enrichment flag corruption!\n   To restore from backup:\n   1. List backups: ls -la backups/movie_tracking.backup-*.json\n   2. Restore: cp backups/movie_tracking.backup-YYYYMMDD_HHMMSS.json movie_tracking.json\n   3. Retry operation"
-    },
-    {
-      "phase": "Health Check",
-      "severity": "error",
-      "message": "Current run did not produce fresh discovery metrics (metrics from 09:33, run started 09:21)",
-      "context": "metrics_not_updated_for_current_run"
-    },
-    {
-      "phase": "Generate data.json for website with enriched links (including enhanced RT scraper)",
-      "severity": "error",
-      "message": "Phase failed with exit code 1",
-      "context": "2025-12-25 09:22:36 [INFO] EnrichmentService initialized with enrichment_enabled=True\n2025-12-25 09:22:36 [ERROR] \ud83d\udea8 CONSISTENCY CHECK FAILED: 1/8 (12.5%) available movies have enriched=false (threshold: 10.0%)",
-      "stdout_preview": "\ud83c\udfaf Enrichment enabled for final generation phase\n[AgentLinkScraper] Initialized with Playwright, cache_file=cache/agent_links_cache.json\n[AgentLinkScraper] Cache loaded: 0 entries\n[AgentLinkScraper] Screenshots: enabled\n[AgentLinkScraper] Supported platforms: ['Netflix', 'Disney+', 'Disney Plus', 'HBO Max', 'Max', 'Hulu']\n\ud83d\udea8 CONSISTENCY CHECK FAILED:\n   1/8 (12.5%) available movies have enriched=false\n   This suggests bulk enrichment flag corruption!\n   To restore from backup:\n   1. List backups: "
-    }
-  ],
+  "failures": [],
   "warnings": [],
   "data_quality": {
-    "total": 6406,
-    "tracking": 5660,
-    "available": 746,
-    "data_movies": 559,
+    "total": 6638,
+    "tracking": 5859,
+    "available": 779,
+    "data_movies": 603,
     "movies_with_links": 0,
-    "movies_with_rt": 3,
+    "movies_with_rt": 0,
     "movies_with_wikipedia": 0,
     "movies_with_trailers": 0
   },
   "enrichment_metrics": {
-    "timestamp": "2025-12-20T09:51:25.725983",
+    "timestamp": "2025-12-26T02:23:33.585691",
     "batch_cap_triggered": false,
     "loop_timeout_triggered": false,
-    "movies_requested": 6,
-    "movies_processed": 6,
-    "movies_enriched": 6,
+    "movies_requested": 0,
+    "movies_processed": 0,
+    "movies_enriched": 0,
     "movies_deferred": 0,
-    "enrichment_duration_seconds": 1168.4427659511566,
+    "enrichment_duration_seconds": 0.0011217594146728516,
     "max_batch_size": 100,
     "timeout_limit_minutes": 60
   }
