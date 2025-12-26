@@ -236,57 +236,6 @@ class DataGenerator:
 
         return config
 
-    def perform_startup_consistency_check(self):
-        """Perform consistency checks at startup to detect corrupted enrichment flags"""
-        if not os.path.exists('movie_tracking.json'):
-            return  # No tracking file to check
-
-        try:
-            with open('movie_tracking.json', 'r') as f:
-                db = json.load(f)
-
-            movies = db.get('movies', {})
-            if not movies:
-                return
-
-            # Sample 50 entries for consistency check
-            sample_size = min(50, len(movies))
-            sample_movies = list(movies.values())[:sample_size]
-
-            available_movies = [m for m in sample_movies if m.get('status') == 'available']
-            if not available_movies:
-                return
-
-            enriched_false_count = sum(1 for m in available_movies if m.get('enriched') is False)
-            total_available = len(available_movies)
-
-            # Check if proportion of enriched=false is suspiciously high
-            if total_available > 0:
-                proportion = enriched_false_count / total_available
-                threshold = 0.10  # 10% threshold
-
-                if proportion > threshold:
-                    self.logger.error(
-                        f"🚨 CONSISTENCY CHECK FAILED: {enriched_false_count}/{total_available} "
-                        f"({proportion:.1%}) available movies have enriched=false (threshold: {threshold:.1%})"
-                    )
-                    print(f"🚨 CONSISTENCY CHECK FAILED:")
-                    print(f"   {enriched_false_count}/{total_available} ({proportion:.1%}) available movies have enriched=false")
-                    print(f"   This suggests bulk enrichment flag corruption!")
-                    print(f"   To restore from backup:")
-                    print(f"   1. List backups: ls -la backups/movie_tracking.backup-*.json")
-                    print(f"   2. Restore: cp backups/movie_tracking.backup-YYYYMMDD_HHMMSS.json movie_tracking.json")
-                    print(f"   3. Retry operation")
-
-                    # Import sys here to avoid circular imports
-                    import sys
-                    sys.exit(1)
-                else:
-                    self.logger.debug(f"✅ Consistency check passed: {enriched_false_count}/{total_available} ({proportion:.1%}) have enriched=false")
-
-        except Exception as e:
-            self.logger.warning(f"Could not perform startup consistency check: {e}")
-
     def validate_enrichment_changes(self, new_db, filepath):
         """Validate enrichment changes to prevent bulk corruption
 
@@ -1493,10 +1442,6 @@ class DataGenerator:
 
             # JSONL failure-context logging for postmortems
             try:
-                import os
-                import json
-                from datetime import datetime
-
                 os.makedirs('logs', exist_ok=True)
 
                 # Build failure context
@@ -1531,7 +1476,7 @@ class DataGenerator:
         return {
             'id': str(movie_id),
             'title': movie_data.get('title', f'Movie {movie_id}'),
-            'digital_date': movie_data.get('digital_date'),
+            'digital_date': current_time,  # ISO timestamp when added to data.json
             'bootstrap_date': False,
             'manually_corrected': False,
             'poster': None,  # Will be filled by enrichment
@@ -1560,7 +1505,7 @@ class DataGenerator:
         entry = {
             'id': str(movie_id),
             'title': movie_details.get('title', movie_data.get('title', f'Movie {movie_id}')),
-            'digital_date': movie_data.get('digital_date'),
+            'digital_date': current_time,  # ISO timestamp when added to data.json
             'bootstrap_date': False,
             'manually_corrected': False,
             'synopsis': movie_details.get('overview', ''),
