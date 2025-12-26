@@ -7,8 +7,7 @@ complex mocking, making it suitable for CI environments.
 
 Key tests:
 - Enrichment filtering logic (enriched=False vs enriched=True)
-- Stale movie detection (>90 days)
-- Batch processing limits (max 10 stale movies)
+- Caching effectiveness for enriched movies
 - Performance regression protection (avoid 300+ movie processing)
 """
 
@@ -24,7 +23,6 @@ class TestEnrichmentLogic(unittest.TestCase):
         """Set up test data and dates."""
         self.today = datetime.now()
         self.recent_date = (self.today - timedelta(days=30)).strftime('%Y-%m-%d')
-        self.stale_date = (self.today - timedelta(days=100)).strftime('%Y-%m-%d')
 
     def create_test_movies(self, movie_configs):
         """Create test movie data structure."""
@@ -46,36 +44,22 @@ class TestEnrichmentLogic(unittest.TestCase):
         """
         Simulate the enrichment filtering logic from generate_data.py.
 
-        This mirrors the logic found in lines 2337-2380 of generate_data.py.
+        This mirrors the logic found in generate_display_data() of generate_data.py.
         """
         needs_enrichment = []
         already_enriched = []
-        stale_enrichment = []
 
         for movie_id, movie_data in db['movies'].items():
             if movie_data['status'] == 'available' and movie_data.get('digital_date'):
                 # Check enrichment status
                 is_enriched = movie_data.get('enriched', False)
-                enrichment_date = movie_data.get('enrichment_date')
-
-                # Check if enrichment is stale (> 90 days old)
-                is_stale = False
-                if is_enriched and enrichment_date:
-                    try:
-                        enrich_dt = datetime.fromisoformat(enrichment_date)
-                        age_days = (self.today - enrich_dt).days
-                        is_stale = age_days > 90
-                    except:
-                        pass
 
                 if not is_enriched:
                     needs_enrichment.append((movie_id, movie_data))
-                elif is_stale:
-                    stale_enrichment.append((movie_id, movie_data))
                 else:
                     already_enriched.append((movie_id, movie_data))
 
-        return needs_enrichment, already_enriched, stale_enrichment
+        return needs_enrichment, already_enriched
 
     def test_selective_enrichment(self):
         """Test that only movies with enriched=False get processed."""
@@ -91,12 +75,11 @@ class TestEnrichmentLogic(unittest.TestCase):
         ]
 
         db = self.create_test_movies(movie_configs)
-        needs_enrichment, already_enriched, stale_enrichment = self.simulate_enrichment_filtering(db)
+        needs_enrichment, already_enriched = self.simulate_enrichment_filtering(db)
 
         # Assertions
         self.assertEqual(len(needs_enrichment), 3, "Should have 3 unenriched movies")
         self.assertEqual(len(already_enriched), 2, "Should have 2 enriched movies")
-        self.assertEqual(len(stale_enrichment), 0, "Should have 0 stale movies")
 
         # Verify correct movies are categorized
         unenriched_ids = {movie_id for movie_id, _ in needs_enrichment}
@@ -124,12 +107,11 @@ class TestEnrichmentLogic(unittest.TestCase):
             })
 
         db = self.create_test_movies(movie_configs)
-        needs_enrichment, already_enriched, stale_enrichment = self.simulate_enrichment_filtering(db)
+        needs_enrichment, already_enriched = self.simulate_enrichment_filtering(db)
 
         # All movies should be cached (already_enriched)
         self.assertEqual(len(needs_enrichment), 0, "No movies should need enrichment")
         self.assertEqual(len(already_enriched), 50, "All movies should be cached")
-        self.assertEqual(len(stale_enrichment), 0, "No movies should be stale")
 
         # Calculate performance savings
         total_movies = len(db['movies'])
@@ -137,49 +119,6 @@ class TestEnrichmentLogic(unittest.TestCase):
         self.assertEqual(cached_percentage, 100, "Should achieve 100% cache hit rate")
 
         print("✅ Caching effectiveness test passed - 100% cache hit rate")
-
-    def test_stale_movie_batch_processing(self):
-        """Test that stale movies (>90 days) are detected and batched properly."""
-        print("\n🧪 Testing stale movie batch processing...")
-
-        # Create many stale movies (more than batch limit)
-        movie_configs = []
-        for i in range(25):  # 25 stale movies
-            enrichment_date = (self.today - timedelta(days=100 + i)).isoformat()
-            movie_configs.append({
-                'id': f'stale_{i}',
-                'enriched': True,
-                'enrichment_date': enrichment_date,
-                'digital_date': self.recent_date
-            })
-
-        # Add some fresh movies
-        for i in range(5):
-            enrichment_date = (self.today - timedelta(days=30)).isoformat()
-            movie_configs.append({
-                'id': f'fresh_{i}',
-                'enriched': True,
-                'enrichment_date': enrichment_date,
-                'digital_date': self.recent_date
-            })
-
-        db = self.create_test_movies(movie_configs)
-        needs_enrichment, already_enriched, stale_enrichment = self.simulate_enrichment_filtering(db)
-
-        # Verify staleness detection
-        self.assertEqual(len(stale_enrichment), 25, "Should detect 25 stale movies")
-        self.assertEqual(len(already_enriched), 5, "Should have 5 fresh movies")
-        self.assertEqual(len(needs_enrichment), 0, "Should have 0 unenriched movies")
-
-        # Simulate incremental batch processing (max 10 stale movies)
-        batch_limit = 10
-        stale_to_process = stale_enrichment[:batch_limit]
-        final_processing_count = len(needs_enrichment) + len(stale_to_process)
-
-        self.assertEqual(len(stale_to_process), 10, "Should batch exactly 10 stale movies")
-        self.assertEqual(final_processing_count, 10, "Should process exactly 10 movies total")
-
-        print("✅ Stale movie batch processing test passed")
 
     def test_performance_regression_protection(self):
         """Test protection against processing excessive numbers of movies."""
@@ -196,7 +135,7 @@ class TestEnrichmentLogic(unittest.TestCase):
             })
 
         db = self.create_test_movies(movie_configs)
-        needs_enrichment, already_enriched, stale_enrichment = self.simulate_enrichment_filtering(db)
+        needs_enrichment, already_enriched = self.simulate_enrichment_filtering(db)
 
         # In worst case, all 100 would need enrichment
         # This test ensures we're aware of the performance implications
@@ -224,21 +163,11 @@ class TestEnrichmentLogic(unittest.TestCase):
         # Create realistic production-like scenario
         movie_configs = []
 
-        # 100 recently enriched movies (should be cached)
+        # 100 enriched movies (should be cached)
         for i in range(100):
             enrichment_date = (self.today - timedelta(days=10)).isoformat()
             movie_configs.append({
                 'id': f'recent_{i}',
-                'enriched': True,
-                'enrichment_date': enrichment_date,
-                'digital_date': self.recent_date
-            })
-
-        # 20 stale movies (>90 days old, should be re-enriched in batch)
-        for i in range(20):
-            enrichment_date = (self.today - timedelta(days=100 + i)).isoformat()
-            movie_configs.append({
-                'id': f'stale_{i}',
                 'enriched': True,
                 'enrichment_date': enrichment_date,
                 'digital_date': self.recent_date
@@ -254,26 +183,19 @@ class TestEnrichmentLogic(unittest.TestCase):
             })
 
         db = self.create_test_movies(movie_configs)
-        needs_enrichment, already_enriched, stale_enrichment = self.simulate_enrichment_filtering(db)
+        needs_enrichment, already_enriched = self.simulate_enrichment_filtering(db)
 
         # Verify categorization
-        self.assertEqual(len(already_enriched), 100, "Recent movies should be cached")
+        self.assertEqual(len(already_enriched), 100, "Enriched movies should be cached")
         self.assertEqual(len(needs_enrichment), 5, "New movies should need enrichment")
-        self.assertEqual(len(stale_enrichment), 20, "Should detect stale movies")
-
-        # Simulate incremental batch processing
-        stale_batch = stale_enrichment[:10]  # Max 10 stale per batch
-        total_to_process = len(needs_enrichment) + len(stale_batch)
 
         # Performance assertions
-        self.assertEqual(total_to_process, 15, "Should process 5 new + 10 stale = 15 total")
-
         total_movies = len(db['movies'])
-        processing_percentage = (total_to_process / total_movies) * 100
+        processing_percentage = (len(needs_enrichment) / total_movies) * 100
         cached_percentage = (len(already_enriched) / total_movies) * 100
 
-        self.assertLess(processing_percentage, 20, "Should process <20% of total movies")
-        self.assertGreaterEqual(cached_percentage, 80, "Should cache >=80% of movies")
+        self.assertLess(processing_percentage, 10, "Should process <10% of total movies")
+        self.assertGreaterEqual(cached_percentage, 90, "Should cache >=90% of movies")
 
         print(f"   📊 Performance: {cached_percentage:.1f}% cached, {processing_percentage:.1f}% processed")
         print("✅ Realistic mixed scenario test passed")
@@ -291,11 +213,10 @@ class TestEnrichmentLogic(unittest.TestCase):
         ]
 
         db = self.create_test_movies(movie_configs)
-        needs_enrichment, already_enriched, stale_enrichment = self.simulate_enrichment_filtering(db)
+        needs_enrichment, already_enriched = self.simulate_enrichment_filtering(db)
 
-        # Should handle invalid dates gracefully (treat as non-stale)
+        # All enriched movies should be cached regardless of date format
         self.assertEqual(len(already_enriched), 4, "Should handle invalid dates gracefully")
-        self.assertEqual(len(stale_enrichment), 0, "Invalid dates should not be marked stale")
         self.assertEqual(len(needs_enrichment), 0, "Should not re-enrich movies with invalid dates")
 
         print("✅ Invalid date handling test passed")

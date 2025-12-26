@@ -209,10 +209,6 @@ class DataGenerator:
             'debug_enabled': False
         }
 
-
-        # Perform startup consistency checks
-        self.perform_startup_consistency_check()
-
     def load_config(self):
         """Load configuration from config.yaml and environment variables"""
         config = {}
@@ -2897,7 +2893,6 @@ class DataGenerator:
         # Separate movies by enrichment status (Phase 2.1 optimization)
         needs_enrichment = []
         already_enriched = []
-        stale_enrichment = []
         deferred_enrichment = []
 
         for movie_id, movie_data in combined['movies'].items():
@@ -2907,17 +2902,6 @@ class DataGenerator:
                     if digital_date >= cutoff_date:
                         # Check enrichment status from separate enrichment state
                         is_enriched = self.enrichment_state.is_enriched(movie_id)
-                        enrichment_date = self.enrichment_state.get_enrichment_date(movie_id)
-
-                        # Check if enrichment is stale (> 90 days old)
-                        is_stale = False
-                        if is_enriched and enrichment_date:
-                            try:
-                                enrich_dt = datetime.fromisoformat(enrichment_date)
-                                age_days = (datetime.now() - enrich_dt).days
-                                is_stale = age_days > 90
-                            except:
-                                pass
 
                         # ENRICHMENT-ON-TRANSITION: Only enrich if movie just became available today
                         # Requires fresh newly_available.json state file - no fallback processing
@@ -2926,19 +2910,13 @@ class DataGenerator:
                             if movie_id in newly_available_ids:
                                 # Movie just transitioned today - needs enrichment
                                 needs_enrichment.append((movie_id, movie_data))
-                            elif is_stale:
-                                # Old movie but enrichment data is stale
-                                stale_enrichment.append((movie_id, movie_data))
                             else:
-                                # Already enriched and not stale - skip
+                                # Already enriched - skip
                                 already_enriched.append((movie_id, movie_data))
                         else:
                             # State file not fresh - defer new enrichment
-                            if is_stale:
-                                # Still process stale enrichment
-                                stale_enrichment.append((movie_id, movie_data))
-                            elif is_enriched:
-                                # Already enriched and not stale - preserve existing
+                            if is_enriched:
+                                # Already enriched - preserve existing
                                 already_enriched.append((movie_id, movie_data))
                             else:
                                 # Unenriched movies are deferred until fresh state available
@@ -2948,12 +2926,11 @@ class DataGenerator:
                     self.logger.warning(f"Error parsing date for {movie_data.get('title')}: {e}")
 
         # Phase 2.1 Optimization Report
-        total_available = len(needs_enrichment) + len(already_enriched) + len(stale_enrichment) + len(deferred_enrichment)
+        total_available = len(needs_enrichment) + len(already_enriched) + len(deferred_enrichment)
         print(f"\n📊 Phase 2.1 Enrichment Optimization:")
         print(f"   Total available movies (last {days_back} days): {total_available}")
         print(f"   ✅ Already enriched (cached): {len(already_enriched)}")
         print(f"   🆕 Need enrichment: {len(needs_enrichment)}")
-        print(f"   ⏰ Stale (>90 days, will re-enrich): {len(stale_enrichment)}")
         if not state_fresh and deferred_enrichment:
             print(f"   ⏸️  Deferred (no fresh state file): {len(deferred_enrichment)} unenriched movies will be picked up once fresh state is available")
 
@@ -2961,7 +2938,7 @@ class DataGenerator:
         display_index = {}
 
         # Add all eligible movies to display_index
-        all_eligible = needs_enrichment + already_enriched + stale_enrichment + deferred_enrichment
+        all_eligible = needs_enrichment + already_enriched + deferred_enrichment
         for movie_id, movie_data in all_eligible:
             # Initialize display_index[movie_id] with existing or minimal entry
             if movie_id in existing_movies_lookup:
@@ -2981,11 +2958,8 @@ class DataGenerator:
         # Determine which movies to enrich this run
         to_enrich = []
         if incremental:
-            # Re-enrich stale movies in batches (max 10 per run to avoid quota issues)
-            stale_to_process = stale_enrichment[:10]
-            if stale_to_process:
-                print(f"   📝 Re-enriching {len(stale_to_process)} stale movies (batch of 10)")
-            to_enrich = needs_enrichment + stale_to_process
+            # Only enrich newly discovered movies
+            to_enrich = needs_enrichment
         else:
             # Full mode: re-enrich everything
             # Check if full mode is explicitly allowed
@@ -2994,17 +2968,12 @@ class DataGenerator:
             if not allow_full_enrichment:
                 print(f"   ⚠️  FULL MODE requested but ALLOW_FULL_ENRICHMENT not set - defaulting to incremental mode")
                 self.logger.warning("Full enrichment mode blocked - set ALLOW_FULL_ENRICHMENT=true to enable")
-
-                # Fall back to incremental mode behavior
-                stale_to_process = stale_enrichment[:10]
-                if stale_to_process:
-                    print(f"   📝 Re-enriching {len(stale_to_process)} stale movies (batch of 10)")
-                to_enrich = needs_enrichment + stale_to_process
+                to_enrich = needs_enrichment
             else:
                 print(f"   🔄 FULL MODE: Re-enriching ALL movies (this is a heavy maintenance operation)")
                 print(f"   ⚠️  Warning: Full mode will attempt to re-enrich all {len(already_enriched)} already-enriched movies")
                 self.logger.warning(f"Full enrichment mode enabled - will re-enrich all {len(already_enriched)} movies")
-                to_enrich = needs_enrichment + already_enriched + stale_enrichment
+                to_enrich = needs_enrichment + already_enriched
 
         # Apply emergency batch limit to prevent runaway enrichment
         original_count = len(to_enrich)

@@ -42,7 +42,7 @@ We want a beautiful webpage that shows the latest movies available for streaming
 
 **🔧 `generate_data.py`** - *The Complete Data Enricher*
 - **Enrichment-on-transition:** Reads `metrics/newly_available.json` to find which movies were discovered as digitally available TODAY
-- **Smart filtering:** Only processes movies in the state file (1-10 per day) + stale enrichment (>90 days old, batch of 10)
+- **Smart filtering:** Only processes movies in the state file (1-10 per day) that haven't been enriched yet
 - **Performance:** 95%+ cost reduction by avoiding re-enrichment of already-processed movies
 - **Link resolution:** Multi-tier waterfall (overrides → cache → API → scraper → null)
 - **TMDB API calls:** Fetches complete movie details including cast, crew, synopsis, posters

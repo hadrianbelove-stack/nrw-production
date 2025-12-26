@@ -159,15 +159,6 @@ class EnrichmentStateManager:
         if movie_id in self.state:
             self.state[movie_id]['enriched'] = False
 
-    def mark_stale(self, movie_id: str) -> None:
-        """
-        Mark a movie's enrichment as stale (for re-enrichment).
-
-        Args:
-            movie_id: TMDB movie ID (string)
-        """
-        self.mark_unenriched(movie_id)
-
     def batch_mark_enriched(self, movie_ids: Set[str]) -> int:
         """
         Mark multiple movies as enriched in one operation.

@@ -396,10 +396,9 @@ Always poll ALL tracking movies in `movie_tracking.json` (no time limits). Fetch
 - **Reads state file:** `metrics/newly_available.json` to determine which movies transitioned TODAY
 - **Enrichment-on-transition:** Only processes movies from state file (strict filtering)
 - **Fallback:** If no state file, falls back to `enriched` flag check (legacy behavior)
-- **Stale re-enrichment:** Also processes movies with >90 day old enrichment data (batch of 10)
 - Adds RT ratings, Wikipedia links, watch links
 - Sets `enriched: true` flag in `enrichment_state.json`
-- Expected: 1-10 movies/day processing (new arrivals) + up to 10 stale movies
+- Expected: 1-10 movies/day processing (new arrivals only)
 
 **Phase 4: Display Generation** (Updated 2025-12-17)
 - **Immediate Writing Enhancement**: Uses atomic writes with backup (`storage.atomic_write_json(backup=True)`) to prevent data corruption
@@ -602,21 +601,18 @@ flowchart TD
     B -->|No| C[Skip - Not Available]
     B -->|Yes| D{enriched = true?}
 
-    D -->|Yes| E[Check Cache Age]
-    E --> F{Age > 90 days?}
-    F -->|No| G[✅ Use Cache - FAST PATH]
-    F -->|Yes| H[🔄 Re-enrich - Stale Data]
+    D -->|Yes| E[✅ Use Cache - FAST PATH]
 
-    D -->|No| I[🔴 Full Enrichment Required]
-    I --> J[Scrape RT Rating]
-    J --> K[Scrape Wikipedia]
-    K --> L[Find Watch Links]
-    L --> M[Update Flags]
-    M --> N[✅ Enrichment Complete]
+    D -->|No| F[🔴 Full Enrichment Required]
+    F --> G[Scrape RT Rating]
+    G --> H[Scrape Wikipedia]
+    H --> I[Find Watch Links]
+    I --> J[Update Flags]
+    J --> K[✅ Enrichment Complete]
 
-    O[❌ CORRUPTION DETECTED] --> P[ALL enriched = false]
-    P --> Q[330+ movies to process]
-    Q --> R[⚠️ CRITICAL: 2+ hour runtime]
+    L[❌ CORRUPTION DETECTED] --> M[ALL enriched = false]
+    M --> N[330+ movies to process]
+    N --> O[⚠️ CRITICAL: 2+ hour runtime]
 
     style G fill:#90EE90
     style I fill:#FFB6C1
