@@ -225,6 +225,7 @@ jobs:
           path: |
             metrics/intake_run.json
             metrics/discovery_run.json
+            metrics/newly_available.json
             metrics/*.jsonl
             .local_run.log
           retention-days: 30

@@ -86,7 +86,7 @@ class NRWOrchestrator:
             print(f"✅ {description} complete ({phase_duration.total_seconds():.1f}s)")
             if result.stdout.strip():
                 # Print relevant output
-                for line in result.stdout.strip().split('\n')[:5]:  # First 5 lines
+                for line in result.stdout.strip().split('\n')[:50]:  # First 50 lines
                     if line.strip():
                         print(f"   {line}")
         else:
