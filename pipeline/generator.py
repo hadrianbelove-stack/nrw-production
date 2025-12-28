@@ -1471,12 +1471,13 @@ class DataGenerator:
 
         This ensures movies appear on site even if TMDB API is down
         """
-        current_time = datetime.now().isoformat()
+        # Use date from movie_tracking if available, otherwise today
+        digital_date = movie_data.get('digital_date') or datetime.now().strftime('%Y-%m-%d')
 
         return {
             'id': str(movie_id),
             'title': movie_data.get('title', f'Movie {movie_id}'),
-            'digital_date': current_time,  # ISO timestamp when added to data.json
+            'digital_date': digital_date,  # YYYY-MM-DD format for display
             'bootstrap_date': False,
             'manually_corrected': False,
             'poster': None,  # Will be filled by enrichment
@@ -1492,20 +1493,21 @@ class DataGenerator:
             'links': {'wikipedia': None, 'trailer': None, 'rt': None},
             'watch_links': {},
             '_enrichment_status': 'pending',
-            '_discovery_date': current_time,
+            '_discovered_at': datetime.now().isoformat(),  # ISO timestamp when we found it
             '_tmdb_fetch_failed': True,
             '_minimal_entry': True
         }
 
     def _create_full_basic_entry(self, movie_id, movie_data, movie_details):
         """Create full basic entry with TMDB details"""
-        current_time = datetime.now().isoformat()
+        # Use date from movie_tracking if available, otherwise today
+        digital_date = movie_data.get('digital_date') or datetime.now().strftime('%Y-%m-%d')
 
         # Start with minimal entry structure
         entry = {
             'id': str(movie_id),
             'title': movie_details.get('title', movie_data.get('title', f'Movie {movie_id}')),
-            'digital_date': current_time,  # ISO timestamp when added to data.json
+            'digital_date': digital_date,  # YYYY-MM-DD format for display
             'bootstrap_date': False,
             'manually_corrected': False,
             'synopsis': movie_details.get('overview', ''),
@@ -1517,7 +1519,7 @@ class DataGenerator:
             'links': {'wikipedia': None, 'trailer': None, 'rt': None},
             'watch_links': {},
             '_enrichment_status': 'pending',
-            '_discovery_date': current_time,
+            '_discovered_at': datetime.now().isoformat(),  # ISO timestamp when we found it
             '_tmdb_fetch_failed': False,
             '_minimal_entry': False
         }
