@@ -934,6 +934,7 @@ class DataGenerator:
 
             print(f"📊 Metrics saved to metrics/discovery_run.json")
             self.logger.info(f"Provider discovery metrics saved: {discovery_run_data}")
+            print("🔍 DEBUG: About to write state file - execution reached line 937")
 
             # Write enrichment state file with newly available movie IDs
             # This file is consumed by generate_display_data() to determine which movies need enrichment
