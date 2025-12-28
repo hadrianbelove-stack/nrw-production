@@ -1,9 +1,16 @@
 # NRW Implementation Roadmap
 
+⚠️ **HISTORICAL DOCUMENT** - Last updated November 8, 2025
+
+**Status:** This document reflects tactical planning from November 2025 and may be outdated. For current system status, see:
+- [DAILY_CONTEXT.md](DAILY_CONTEXT.md) - Current pipeline status (updated Dec 28, 2025)
+- [SYSTEM_ARCHITECTURE.md](SYSTEM_ARCHITECTURE.md) - Current architecture & known issues
+- [PROJECT_CHARTER.md](PROJECT_CHARTER.md) - Governance & constitutional rules
+
 **Purpose:** Canonical tactical planning document for tracking problems, solutions, and implementation status across AI sessions.
 
-**Last Updated:** 2025-11-08
-**Next Review:** 2025-11-10
+**Last Updated:** 2025-11-08 (Historical - 50+ days old)
+**Next Review:** TBD (Restoration plan appears abandoned)
 
 **Companion Document:** `PROJECT_CHARTER.md` (constitutional rules and governance)
 

@@ -2,7 +2,7 @@
 
 **Purpose**: This is the authoritative guide to how the NRW movie tracking system works. Read this document FIRST before diving into code or other documentation.
 
-**Last Updated**: 2025-12-17
+**Last Updated**: 2025-12-28
 **Maintained By**: Development Team
 
 ## 📖 Reading Order for AI Assistants
@@ -68,7 +68,9 @@ git push origin main
 
 | File | Purpose | Records | Format |
 |------|---------|---------|---------|
-| `movie_tracking.json` | Master movie database | ~330 | JSON array |
+| `movie_tracking.json` | Master movie database | 6,735 (785 available, 5,950 tracking) | JSON object |
+| `data.json` | Display data (90-day window) | 609 | JSON object |
+| `enrichment_state.json` | Enrichment tracking (⚠️ currently empty/broken) | Should have ~384 | JSON object |
 | `config.yaml` | System configuration | N/A | YAML |
 | `watchmode_quota.json` | API usage tracking | N/A | JSON |
 
@@ -881,6 +883,237 @@ for dm in data_movies:       # Iterated over keys, not movies
 
 ---
 
+## 🔍 Debugging Guide & Current Issues (Added 2025-12-28)
+
+### 9.1 Current Pipeline State
+
+**As of December 28, 2025**, the pipeline has the following known issues:
+
+#### Issue #1: Discovery Not Writing Queue File ❌
+
+**Location**: `pipeline/generator.py`, lines 938-980
+**Symptom**: `metrics/newly_available.json` frozen since Dec 25
+**Impact**: New transitions (Dec 26-28: 39 movies) not queued for enrichment
+
+**Expected Behavior**:
+```python
+# After discovery phase completes
+newly_available_ids = ['1074048', '1603898', '1317288']  # Today's transitions
+with open('metrics/newly_available.json', 'w') as f:
+    json.dump({'movie_ids': newly_available_ids, 'date': today}, f)
+```
+
+**Actual Behavior**:
+- File timestamp: Dec 25, 20:44 (3 days stale)
+- Contents: 11 old movie IDs
+- New transitions never written
+
+**Debug Steps**:
+1. Check if `newly_available_ids` list is empty at write time
+2. Add logging at lines 869-870 (list append) and 940 (file write)
+3. Verify write permissions on metrics/ directory
+
+#### Issue #2: Empty Enrichment State File ❌
+
+**Location**: `enrichment_state.json`
+**Symptom**: File contains `{}` instead of ~384 entries
+**Impact**: All enrichment logic broken - `is_enriched()` always returns `False`
+
+**When Emptied**: Dec 16, 2025
+**Backup Available**: `enrichment_state.json.backup_20251205_132723` (485 entries)
+
+**Effects**:
+- Already-enriched movies get re-queued during discovery
+- Circuit breaker disabled (no failure history)
+- All movies from stale queue pass through enrichment filter
+
+**Quick Fix**:
+```bash
+cp backups/enrichment_state.json.backup_20251205_132723 enrichment_state.json
+```
+
+#### Issue #3: Data Divergence Across 3 Files ⚠️
+
+**The Problem**: Enrichment status tracked in 3 places with no synchronization
+
+1. `movie_tracking.json` - Has `enriched: true/false` flag (384 enriched)
+2. `enrichment_state.json` - Tracks same thing (currently 0 entries)
+3. `metrics/newly_available.json` - Queue of movies needing enrichment (11 stale IDs)
+
+**Current State Divergence**:
+- movie_tracking.json: 384 movies with `enriched=true`
+- enrichment_state.json: 0 movies tracked
+- data.json: Only 6 of 609 movies have RT/Wikipedia links (1% vs expected 50%)
+- newly_available queue: 11 movies from Dec 25 (missing 39 from Dec 26-28)
+
+**Root Cause**: Architectural complexity without synchronization
+
+**Recommendation**: Eliminate redundancy, use single source of truth (movie_tracking.json only)
+
+### 9.2 Debugging Checklist
+
+When debugging enrichment issues, check these files in order:
+
+**1. Check Discovery Metrics**:
+```bash
+cat metrics/discovery_run.json | jq '{polled, transitions}'
+# Should show: {polled: 5953, transitions: 3}
+```
+
+**2. Check Queue File**:
+```bash
+cat metrics/newly_available.json | jq '{date, count, first_3: .movie_ids[0:3]}'
+# Should have today's date and recent transitions
+```
+
+**3. Check Enrichment State**:
+```bash
+jq 'keys | length' enrichment_state.json
+# Should have ~384 entries, NOT 0
+```
+
+**4. Check Tracking DB**:
+```bash
+jq '[.movies | to_entries[] | select(.value.enriched == true)] | length' movie_tracking.json
+# Should match enrichment_state.json count
+```
+
+**5. Check Display Data**:
+```bash
+jq '[.movies[] | select(.links.rt)] | length' data.json
+# Should be ~50-60, NOT 6
+```
+
+**If these numbers don't match**, you have data divergence.
+
+### 9.3 File Read/Write Map by Phase
+
+Understanding what each pipeline phase reads and writes:
+
+**PHASE 1: INTAKE**
+```
+READ:  movie_tracking.json (check for duplicates)
+WRITE: movie_tracking.json (append new movies)
+       metrics/intake_run.json (metrics)
+```
+
+**PHASE 2: DISCOVERY**
+```
+READ:  movie_tracking.json (status="tracking" movies)
+       data.json (for immediate writing)
+       enrichment_state.json (check is_enriched())
+WRITE: movie_tracking.json (update status, dates)
+       data.json (immediate minimal entries)
+       metrics/discovery_run.json (metrics)
+       metrics/newly_available.json (queue) ❌ CURRENTLY BROKEN
+```
+
+**PHASE 3: ENRICHMENT**
+```
+READ:  movie_tracking.json (all movies)
+       data.json (existing display data)
+       enrichment_state.json (filter enriched) ❌ CURRENTLY EMPTY
+       metrics/newly_available.json (queue) ❌ CURRENTLY STALE
+       cache/*.json (RT, Wikipedia, watch links)
+WRITE: data.json (final enriched)
+       enrichment_state.json (updated status)
+       metrics/enrichment_run.json (metrics)
+       cache/*.json (updated caches)
+```
+
+**ORCHESTRATOR**
+```
+READ:  metrics/*.json (all phase metrics)
+WRITE: metrics/daily.jsonl (historical log)
+       metrics/run_diagnostics.json (full report)
+```
+
+### 9.4 Movie Lifecycle Diagram
+
+```
+1. INTAKE (Discover new theatrical release)
+   TMDB API → movie_tracking.json
+   {status: "tracking", digital_date: null, enriched: null}
+
+2. DISCOVERY (Detect digital availability)
+   TMDB providers API → Providers found → movie_tracking.json
+   {status: "available", digital_date: "2025-12-28", enriched: false}
+   └─> IMMEDIATE WRITE: add_movie_to_site_immediately() → data.json
+       {minimal entry with _enrichment_status: "pending"}
+
+3. QUEUE (Discovery phase)
+   newly_available_ids.append(movie_id)
+   └─> SHOULD WRITE: metrics/newly_available.json
+       ❌ CURRENTLY NOT HAPPENING
+
+4. ENRICHMENT (Enrichment phase)
+   Read queue → Filter → Enrich → Update state
+   RT scraping + Wikipedia + YouTube + Watch links
+   └─> WRITE: data.json (full enriched entry)
+       enrichment_state.json {enriched: true}
+       movie_tracking.json {enriched: true}
+
+5. DISPLAY (Frontend)
+   data.json → index.html → User sees movie wall
+```
+
+### 9.5 Common Debug Commands
+
+**Check recent git commits**:
+```bash
+git log --oneline --since="3 days ago"
+```
+
+**Find movies by enrichment status**:
+```bash
+jq '[.movies | to_entries[] | select(.value.enriched == false and .value.status == "available")] | length' movie_tracking.json
+```
+
+**Find recent transitions**:
+```bash
+jq '[.movies | to_entries[] | select(.value.digital_date >= "2025-12-25")] | length' movie_tracking.json
+```
+
+**Check cache hit rates**:
+```bash
+jq 'keys | length' cache/rt_cache.json
+jq 'keys | length' cache/wikipedia_cache.json
+```
+
+**Verify enrichment consistency**:
+```bash
+# Count enriched in tracking DB
+jq '[.movies | to_entries[] | select(.value.enriched == true)] | length' movie_tracking.json
+
+# Count enriched in state file
+jq 'keys | length' enrichment_state.json
+
+# These should match!
+```
+
+### 9.6 Performance Monitoring
+
+**Normal Operation Indicators**:
+- Intake: 10-20 movies/day added to tracking
+- Discovery: 2-5 transitions/day (tracking → available)
+- Enrichment: 1-10 movies/day processed
+- Runtime: 30-60 seconds total
+- Cache hit rate: 98%+
+
+**Warning Signs**:
+- Processing 50+ movies (possible corruption)
+- Runtime > 5 minutes (performance issue)
+- Cache hit rate < 90% (cache problem)
+- 0 transitions for 3+ days (API issue)
+
+**Critical Alerts**:
+- Processing 100+ movies (definite corruption)
+- Runtime > 30 minutes (cascade failure)
+- Validation timeouts (data integrity issue)
+- Queue file unchanged for 7+ days (write failure)
+
+---
+
 ## 📚 Additional Documentation
 
 **Related Documentation**:
@@ -896,6 +1129,6 @@ for dm in data_movies:       # Iterated over keys, not movies
 
 ---
 
-**Last Updated**: 2025-12-17
+**Last Updated**: 2025-12-28
 **Maintained By**: Development Team
 **Questions**: See DAILY_CONTEXT.md or create GitHub issue

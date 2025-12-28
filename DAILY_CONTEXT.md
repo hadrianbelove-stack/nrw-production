@@ -1,17 +1,32 @@
 # DAILY_CONTEXT.md
 
-## 🚨 CRITICAL PIPELINE STATUS UPDATE - December 6, 2025
-**PIPELINE NOT FUNCTIONAL** - Core movie tracking broken despite symptom fixes:
-- **Intake:** 45-day failure (Oct 23 - Dec 5) - zero new movies added
-- **Discovery:** No newly available movies since Dec 4, current workflow hanging 80+ minutes
-- **Status:** Enrichment timing bugs fixed but intake/discovery fundamentally broken
-
-*Historical context below from November pipeline modularization work*
-
----
-
-**Date:** 2025-11-10 (Pipeline Modularization - Phases 1-3 Complete + Backup Retention)
+**Date:** 2025-12-28 (Repository Audit & Cleanup)
 **Previous diary entry:** diary/2025-11-06.md
+
+## Current Pipeline Status
+
+**CORE FUNCTIONALITY: OPERATIONAL** ✅
+- **Intake:** Working - discovering new theatrical releases daily
+- **Discovery:** Working - detecting digital availability transitions (2-5 movies/day)
+- **Enrichment:** Partial - only 1% enriched vs expected 50% (known issues below)
+- **Display:** Working - 609 movies displayed, daily updates running
+
+**Current Data State:**
+- **Tracking:** 6,735 movies total (5,950 tracking, 785 available)
+- **Display:** 609 movies (90-day window)
+- **Enriched:** 6 of 609 with RT/Wikipedia links (❌ should be ~60)
+
+## Known Issues (Dec 28, 2025)
+
+⚠️ **Issue #1:** Discovery not writing queue file (`metrics/newly_available.json` frozen since Dec 25)
+⚠️ **Issue #2:** Enrichment state file empty (`enrichment_state.json` has `{}` instead of ~384 entries)
+⚠️ **Issue #3:** Data divergence across 3 tracking files (no synchronization)
+
+**Impact:** Only 1% of movies getting enriched instead of expected 50%
+
+**See:** [SYSTEM_ARCHITECTURE.md Section 9](SYSTEM_ARCHITECTURE.md) for detailed debugging guide
+
+*Historical pipeline modularization context below from November 2025*
 
 ---
 
@@ -33,81 +48,27 @@ See [020: Rolling Daily Context](PROJECT_CHARTER.md#020-rolling-daily-context) a
 
 ---
 
-## Stage 1: Audit & Planning Context (Revert Focus)
+## System Summary
 
-**Current Focus**: Preparation emphasizing revert to October working methods per PROJECT_CHARTER.md.
-
-**Charter Review Summary**:
-- Pipeline: Efficient discovery (TMDB poll + tracking.json), enrichment on providers, 7-day freshness check (warn-only)
-- Automation: Single-branch direct commits to main
-- Admin: Optional editorial review, ephemeral artifacts
-- Docs: 7 root MDs, clean structure
+**Charter Governance**:
+- Pipeline: Efficient discovery (TMDB poll + tracking.json), enrichment on transition, modular services
+- Automation: Single-branch workflow, direct commits to main, daily 9 AM UTC runs
+- Admin: Optional editorial review (launch_all.sh), ephemeral artifacts
+- Docs: 6 root MD files (charter allows 7)
 
 **Current Implementation**:
-- Single-branch workflow with direct commits eliminates synchronization issues
-- Warn-and-continue for data freshness allows automation to proceed
-- Metrics logging for diagnostics (no enforcement gates)
-- Optional admin review available but does not gate daily automation
+- ✅ Single-branch workflow (no synchronization issues)
+- ✅ Modular pipeline services (storage, validation, enrichment - Nov 2025)
+- ✅ Enrichment-on-transition pattern (98% cache hit rate)
+- ✅ Daily automation functional (GitHub Actions running)
+- ⚠️ Enrichment queue file write failures (Dec 25-28)
+- ⚠️ Empty enrichment state file (needs restoration)
 
-**Current Focus**:
-- Discovery-first approach prioritizing new movie detection
-- Simplified automation with minimal manual intervention required
-- Quality assurance through optional editorial workflows
-
-**Integrated Verification Checklist (Charter-Aligned)**:
-**Stage 1: Audit & Planning Verification**
-- [ ] Code audit vs October/charter complete
-- [ ] Revert blueprint reviewed (minimal keeps only)
-- [ ] Baseline metrics match October (30s runtime, 5-10 movies)
-- [ ] Full backup created
-- [ ] Stage 1 plan approved per charter principles
-
-**Stage 2: Core Architecture Verification**
-- [ ] generate_data.py running efficiently (simple poll, warn-and-continue validation)
-- [ ] Enrichment-on-transition working (no corruption)
-- [ ] PlaywrightManager operational for all scrapers
-- [ ] Discovery: TMDB + tracking.json, digital_date=None for new
-- [ ] Local pipeline: <30s runtime target
-- [ ] Stage 2 ready
-
-**Stage 3: Automation & Validation Verification**
-- [ ] Single-branch workflow operational
-- [ ] Warn-and-continue validation (report-only, no enforcement gates)
-- [ ] Optional admin review tested (no blocking)
-- [ ] Daily orchestrator runs without manual intervention
-- [ ] CI automation passes
-- [ ] Stage 3 ready
-
-**Stage 4: Documentation & Testing Verification**
-- [ ] Documentation updated to reflect current single-branch workflow
-- [ ] Troubleshooting guides current and accurate
-- [ ] Test suite validates operational metrics
-- [ ] Performance: 30s daily runtime, efficient API usage
-- [ ] Automated runs succeed consistently
-- [ ] System operates reliably without manual intervention
-
-**General Guidelines**:
-- Test against October diary baselines
-- Verify no November bloat
-- Document deviations only if bug-required
-
-**Stage 1 Progress**:
-- Charter reviewed and integrated
-- Revert-heavy blueprint refined
-- Baseline: Current 45s runtime vs October 30s target
-- Backup: 2025-11-08 snapshot
-
-**Next**: Stage 2 once approved.
-
-**Known Issues**:
-- System optimized for discovery-first workflow with optional editorial review
-- Automation runs independently of admin approval (by design)
-
-**Stage Gates**:
-- Stage 1: Charter-aligned plan
-- Stage 2: October core restored
-- Stage 3: Simple automation
-- Stage 4: Verified working state
+**Performance Metrics**:
+- Runtime: 30-60 seconds per daily run
+- API efficiency: 98%+ cache hit rate
+- Discovery: 2-5 transitions/day detected
+- Enrichment: Currently only processing stale queue (needs fix)
 
 ---
 
