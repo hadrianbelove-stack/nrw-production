@@ -1405,7 +1405,7 @@ class DataGenerator:
 
             # Add discovery metadata
             basic_entry.update({
-                '_discovery_date': datetime.now().isoformat(),
+                '_discovered_at': datetime.now().isoformat(),
                 '_discovery_source': 'provider_availability_check',
                 '_enrichment_status': 'pending'
             })

@@ -80,7 +80,7 @@ The pipeline tracks discovery and enrichment metadata using underscore-prefixed 
 
 | Field | Type | Format | Description |
 |-------|------|--------|-------------|
-| `_discovery_date` | string | ISO timestamp | When the movie was discovered (e.g., "2025-12-17T10:30:45Z") |
+| `_discovered_at` | string | ISO timestamp | When the movie was discovered (e.g., "2025-12-17T10:30:45Z") |
 | `_discovery_source` | string | non-empty | Source of discovery (e.g., "apple_itunes", "amazon_prime") |
 | `_enrichment_status` | string | enum | Status: `pending`, `completed`, `failed`, `error` |
 | `_minimal_entry` | boolean | true/false | Whether this is a minimal entry due to TMDB failure |
@@ -95,7 +95,7 @@ The pipeline tracks discovery and enrichment metadata using underscore-prefixed 
   "title": "Example Movie",
   "digital_date": "2025-01-15",
   "genre": "Action",
-  "_discovery_date": "2025-12-17T10:30:45Z",
+  "_discovered_at": "2025-12-17T10:30:45Z",
   "_discovery_source": "apple_itunes",
   "_enrichment_status": "completed",
   "_minimal_entry": false,
@@ -106,7 +106,7 @@ The pipeline tracks discovery and enrichment metadata using underscore-prefixed 
 
 ### Validation Rules
 
-- **_discovery_date**: Must be a valid ISO 8601 timestamp string
+- **_discovered_at**: Must be a valid ISO 8601 timestamp string
 - **_discovery_source**: Must be a non-empty string
 - **_enrichment_status**: Must be one of: `pending`, `completed`, `failed`, `error`
 - **_minimal_entry**: Must be boolean (`true` or `false`)
@@ -143,7 +143,7 @@ The NRW pipeline has been successfully enhanced with robust discovery-first arch
 - ✅ **Atomic writes**: `storage.atomic_write_json(updated_data, 'data.json', backup=True)`
 - ✅ **TMDB fallback**: Creates minimal entries via `_create_minimal_entry()` when TMDB fails
 - ✅ **Schema validation**: Validates data.json before reading
-- ✅ **Discovery metadata**: Adds `_discovery_date`, `_discovery_source`, `_enrichment_status`
+- ✅ **Discovery metadata**: Adds `_discovered_at`, `_discovery_source`, `_enrichment_status`
 - ✅ **Never skips writing**: Always writes a movie entry, even with minimal data
 
 ```python
@@ -326,7 +326,7 @@ print(f'Discovery → Data.json coverage: {coverage:.1f}% ({len(queue_ids & data
 python3 -c "
 import json
 with open('data.json') as f: data = json.load(f)
-movies_with_metadata = sum(1 for m in data['movies'] if '_discovery_date' in m)
+movies_with_metadata = sum(1 for m in data['movies'] if '_discovered_at' in m)
 print(f'Movies with discovery metadata: {movies_with_metadata}/{len(data[\"movies\"])}')
 "
 ```

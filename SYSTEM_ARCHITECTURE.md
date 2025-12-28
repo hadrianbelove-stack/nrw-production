@@ -347,7 +347,7 @@ Filtered, enriched subset for frontend display:
     "streaming": {"service": "Netflix", "link": "https://..."},
     "vod": {"service": "Amazon", "link": "https://..."}
   },
-  "_discovery_date": "2025-12-17T10:30:45Z",
+  "_discovered_at": "2025-12-17T10:30:45Z",
   "_discovery_source": "apple_itunes",
   "_enrichment_status": "completed",
   "_minimal_entry": false,
@@ -355,7 +355,7 @@ Filtered, enriched subset for frontend display:
 }
 ```
 
-**Note**: Underscore-prefixed metadata fields (`_discovery_date`, `_enrichment_status`, etc.) are added during December 2025 immediate-writing enhancements. These fields provide discovery and enrichment tracking but are ignored by the frontend display logic.
+**Note**: Underscore-prefixed metadata fields (`_discovered_at`, `_enrichment_status`, etc.) are added during December 2025 immediate-writing enhancements. These fields provide discovery and enrichment tracking but are ignored by the frontend display logic.
 
 ### Required Fields Per Movie
 - `tmdb_id`, `imdb_id`, `title`, `original_title`
@@ -407,7 +407,7 @@ Always poll ALL tracking movies in `movie_tracking.json` (no time limits). Fetch
 - Creates minimal stubs for movies not yet in data.json
 - Overlays enrichment data when available (non-blocking)
 - If enrichment fails, keeps minimal/existing data instead of dropping movie
-- **Metadata Handling**: Supports underscore-prefixed metadata fields (`_discovery_date`, `_enrichment_status`, etc.) that are ignored by frontend
+- **Metadata Handling**: Supports underscore-prefixed metadata fields (`_discovered_at`, `_enrichment_status`, etc.) that are ignored by frontend
 - Applies admin overrides (hidden/featured)
 - Generates public-facing display data
 - Expected: All available movies appear, 250-350 with enrichment
