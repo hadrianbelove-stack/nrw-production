@@ -15,9 +15,15 @@ logs/
 *.backup.*
 backups/*
 !backups/.gitkeep
+/data.json.backup
+/data.json.corrupted.*
+/data.json.pre_test*
+/data.json.quarantine.*
 diagnose_*.py
 current_releases.json
 *_test.py
+verify_*.py
+verification_report.json
 NRW_SYNC_*.zip
 NRW_SYNC_*.sha256
 NRW_SYNC_*.manifest*
@@ -84,3 +90,27 @@ admin/featured_movies.json
 admin/watch_link_overrides.json
 admin/movie_reviews.json
 diary/*.md
+
+# Root cleanliness - Amendment 014/017: Seven-file MD whitelist
+/*.md
+!README.md
+!CODEBASE_MAP.md
+!SYSTEM_ARCHITECTURE.md
+!PROJECT_CHARTER.md
+!DAILY_CONTEXT.md
+!IMPLEMENTATION_ROADMAP.md
+!NRW_DATA_WORKFLOW_EXPLAINED.md
+
+# Block root .txt files except requirements and youtube token
+/*.txt
+!requirements.txt
+!youtube_token_base64.txt
+
+# Block backup scripts and debug files in root
+/*.backup
+/*.backup-*
+/*.bak
+/debug.html
+/test.html
+/nrw*admin*
+/nrw*launcher*
