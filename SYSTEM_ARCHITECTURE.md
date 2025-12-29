@@ -177,7 +177,7 @@ tracking:
   bootstrap_days: 7  # Look back N days for new releases
   check_interval_hours: 24  # How often to check
 
-discovery:  # Intake configuration (key name kept for compatibility)
+intake:     # Intake configuration (renamed from 'discovery' for clarity)
   max_pages: 10  # Maximum TMDB pages to process during intake
   days_back: 30  # Intake window for finding new premieres
   min_movies: 5  # Minimum movies to intake per run

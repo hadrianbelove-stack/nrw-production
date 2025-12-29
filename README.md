@@ -142,9 +142,9 @@ python3 generate_data.py
 # Quality assurance interface (or via launcher option 1)
 python3 admin.py           # Access at localhost:5556
 
-# Intake and discovery operations
+# Intake and provider discovery operations
 python3 generate_data.py --intake      # Intake new premieres from TMDB into tracking database
-python3 generate_data.py --discover    # Discover provider availability for tracking movies
+python3 generate_data.py --discover    # Provider discovery: check availability for tracking movies
 python3 generate_data.py --full        # Full regeneration (manual, via admin panel)
 ```
 
