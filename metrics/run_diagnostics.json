@@ -1,6 +1,6 @@
 {
-  "timestamp": "2025-12-29T01:10:00.926555",
-  "duration_seconds": 4553.44591,
+  "timestamp": "2025-12-29T10:57:59.780707",
+  "duration_seconds": 5387.23089,
   "overall_success": true,
   "failure_count": 0,
   "warning_count": 0,
@@ -8,21 +8,21 @@
     {
       "name": "Intake new premieres using production discovery",
       "success": true,
-      "duration_seconds": 1.565378,
+      "duration_seconds": 1.768611,
       "error": null,
-      "output_preview": "\ud83d\udeab Enrichment disabled for intake/discovery mode\n\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2025-12-27 to 2025-12-28 (incremental mode, 0 found)\n\u2705 Intake complete: 0 new movies added\n\ud83d\udccb Intake/discovery phase complete\n"
+      "output_preview": "\ud83d\udeab Enrichment disabled for intake/provider discovery mode\n\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2025-12-27 to 2025-12-29 (incremental mode, 23 found)\n\u2705 Intake complete: 23 new movies added\n\ud83d\udccb Intake/provider discovery phase complete\n"
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 875.264759,
+      "duration_seconds": 935.635091,
       "error": null,
-      "output_preview": "\ud83d\udeab Enrichment disabled for intake/discovery mode\n\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 6748 total movies\n\ud83d\udd0d Raw tracking filter: 5958 movies\n\ud83d\udd0d Assigned tracking_movies list: 5958\n\ud83d\udd0d Found 5958 movies in tracking status\n  Priority queue (last 180 days): 1452 movies\n  Older movies: 4506 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 5958 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/5958 (1.7%) | 0 found | 0m elaps"
+      "output_preview": "\ud83d\udeab Enrichment disabled for intake/provider discovery mode\n\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 6771 total movies\n\ud83d\udd0d Raw tracking filter: 5981 movies\n\ud83d\udd0d Assigned tracking_movies list: 5981\n\ud83d\udd0d Found 5981 movies in tracking status\n  Priority queue (last 180 days): 1452 movies\n  Older movies: 4529 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 5981 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/5981 (1.7%) | 0 found |"
     },
     {
       "name": "Generate data.json for website with enriched links (including enhanced RT scraper)",
       "success": true,
-      "duration_seconds": 3676.578075,
+      "duration_seconds": 4449.78896,
       "error": null,
       "output_preview": "\ud83c\udfaf Enrichment enabled for final generation phase\n[AgentLinkScraper] Initialized with Playwright, cache_file=cache/agent_links_cache.json\n[AgentLinkScraper] Cache loaded: 0 entries\n[AgentLinkScraper] Screenshots: enabled\n[AgentLinkScraper] Supported platforms: ['Netflix', 'Disney+', 'Disney Plus', 'HBO Max', 'Max', 'Hulu']\n\n\ud83c\udfac Generating final display data...\n\ud83d\udcc2 Found 614 existing movies in data.json\n\ud83d\udd0d Pre-flight check: validating state file environment...\n\u2705 State file exists and is readable\n\n\ud83d\udccb Load"
     }
@@ -35,24 +35,24 @@
   "failures": [],
   "warnings": [],
   "data_quality": {
-    "total": 6748,
-    "tracking": 5958,
+    "total": 6771,
+    "tracking": 5981,
     "available": 790,
     "data_movies": 614,
     "movies_with_links": 0,
-    "movies_with_rt": 6,
+    "movies_with_rt": 13,
     "movies_with_wikipedia": 0,
     "movies_with_trailers": 0
   },
   "enrichment_metrics": {
-    "timestamp": "2025-12-29T01:10:00.550216",
-    "batch_cap_triggered": false,
+    "timestamp": "2025-12-29T10:57:59.428214",
+    "batch_cap_triggered": true,
     "loop_timeout_triggered": true,
-    "movies_requested": 16,
-    "movies_processed": 16,
+    "movies_requested": 608,
+    "movies_processed": 100,
     "movies_enriched": 14,
-    "movies_deferred": 0,
-    "enrichment_duration_seconds": 3676.028411388397,
+    "movies_deferred": 508,
+    "enrichment_duration_seconds": 4449.265535354614,
     "max_batch_size": 100,
     "timeout_limit_minutes": 60
   }
