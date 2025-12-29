@@ -467,7 +467,7 @@ class NRWOrchestrator:
 
                     if intake_data.get('operation') == 'intake_premieres':
                         results = intake_data.get('results', {})
-                        discovered_today = results.get('discovered', 0)
+                        discovered_today = results.get('discovered', results.get('intaked', 0))
 
                 # Read discovery metrics for polled and transitions
                 if os.path.exists('metrics/discovery_run.json'):
@@ -485,7 +485,8 @@ class NRWOrchestrator:
                         operation = discovery_data.get('operation')
                         if operation == 'intake_premieres':
                             # Minimal historical support: treat intake as discovery for legacy compatibility
-                            discovered_today = discovery_data.get('results', {}).get('discovered', 0)
+                            results = discovery_data.get('results', {})
+                            discovered_today = results.get('discovered', results.get('intaked', 0))
                             transitions = discovered_today
                             print(f"⚠️ DEPRECATED: Using legacy combined schema (intake in discovery_run.json)")
                         # Drop support for unknown operations - they should not exist in historical files

@@ -200,7 +200,7 @@ class DataGenerator:
         }
 
         # Discovery statistics
-        self.discovery_stats = {
+        self.intake_stats = {
             'pages_fetched': 0,
             'total_results': 0,
             'new_movies_added': 0,
@@ -331,41 +331,6 @@ class DataGenerator:
     # ============================================================================
 
 
-    def save_daily_metrics(self, discovered=0, newly_digital=0):
-        """Save daily discovery and availability metrics for 3-day baselining"""
-        try:
-            # Ensure metrics directory exists
-            os.makedirs('metrics', exist_ok=True)
-
-            # Load current tracking database for counts
-            total_tracking = 0
-            total_available = 0
-            if os.path.exists('movie_tracking.json'):
-                with open('movie_tracking.json', 'r') as f:
-                    db = json.load(f)
-                    movies = db.get('movies', {})
-                    total_tracking = len([m for m in movies.values() if m.get('status') == 'tracking'])
-                    total_available = len([m for m in movies.values() if m.get('status') == 'available'])
-
-            # Create metrics entry
-            metrics_entry = {
-                'date': datetime.now().strftime('%Y-%m-%d'),
-                'discovered': discovered,
-                'newly_digital': newly_digital,
-                'total_tracking': total_tracking,
-                'total_available': total_available,
-                'timestamp': datetime.now().isoformat()
-            }
-
-            # Append to daily metrics log (JSONL format)
-            metrics_file = 'metrics/daily.jsonl'
-            with open(metrics_file, 'a') as f:
-                f.write(json.dumps(metrics_entry) + '\n')
-
-            self.logger.info(f"Daily metrics saved: {discovered} discovered, {newly_digital} newly digital")
-
-        except Exception as e:
-            self.logger.error(f"Failed to save daily metrics: {e}")
 
     def get_3_day_baseline(self):
         """Compute 3-day average for discovery and newly-digital counts"""
@@ -405,8 +370,8 @@ class DataGenerator:
             self.logger.error(f"Failed to compute 3-day baseline: {e}")
             return None
 
-    def _load_discovery_state(self, state_file):
-        """Load discovery state from metrics/discovery_state.json"""
+    def _load_intake_state(self, state_file):
+        """Load intake state from metrics/discovery_state.json"""
         try:
             if os.path.exists(state_file):
                 with open(state_file, 'r') as f:
@@ -418,14 +383,14 @@ class DataGenerator:
                     'last_success_date': None
                 }
         except Exception as e:
-            self.logger.warning(f"Failed to load discovery state from {state_file}: {e}")
+            self.logger.warning(f"Failed to load intake state from {state_file}: {e}")
             return {
                 'last_success_at': None,
                 'last_success_date': None
             }
 
-    def _update_discovery_state(self, state_file):
-        """Atomically update discovery state after successful discovery"""
+    def _update_intake_state(self, state_file):
+        """Atomically update intake state after successful intake"""
         try:
             now = datetime.now()
             new_state = {
@@ -446,7 +411,7 @@ class DataGenerator:
 
             self.logger.info(f"Intake state updated: {new_state['last_success_date']}")
         except Exception as e:
-            self.logger.error(f"Failed to update discovery state: {e}")
+            self.logger.error(f"Failed to update intake state: {e}")
 
     def discover_new_premieres(self, debug=False, since_date=None, bootstrap=False):
         """Discover new movie premieres and add them to movie_tracking.json
@@ -459,22 +424,23 @@ class DataGenerator:
         Returns:
             Number of new movies added
         """
-        self.discovery_stats['debug_enabled'] = debug
+        self.intake_stats['debug_enabled'] = debug
 
-        # Get discovery configuration with CI optimizations
-        discovery_config = self.config.get('discovery', {})
+        # Get intake configuration with CI optimizations
+        # Support legacy 'discovery' key fallback - prefer 'intake' key
+        intake_config = self.config.get('intake', self.config.get('discovery', {}))
 
         # Use CI-optimized values if running in CI environment
         if os.getenv('CI') or os.getenv('GITHUB_ACTIONS'):
-            fallback_days_back = int(os.getenv('CI_DISCOVERY_DAYS', discovery_config.get('ci_days_back', 7)))
-            max_pages = int(os.getenv('CI_DISCOVERY_PAGES', discovery_config.get('ci_max_pages', 10)))
+            fallback_days_back = int(os.getenv('CI_DISCOVERY_DAYS', intake_config.get('ci_days_back', 7)))
+            max_pages = int(os.getenv('CI_DISCOVERY_PAGES', intake_config.get('ci_max_pages', 10)))
         else:
-            fallback_days_back = discovery_config.get('days_back', 14)
-            max_pages = discovery_config.get('max_pages', 20)
+            fallback_days_back = intake_config.get('days_back', 14)
+            max_pages = intake_config.get('max_pages', 20)
 
-        # Load discovery state for stateful incremental discovery
+        # Load intake state for stateful incremental intake
         state_file = 'metrics/discovery_state.json'
-        discovery_state = self._load_discovery_state(state_file)
+        discovery_state = self._load_intake_state(state_file)
 
         # Calculate since_date with stateful logic
         if since_date:
@@ -514,13 +480,13 @@ class DataGenerator:
 
         days_back = max(1, (datetime.now() - since_datetime).days)  # Ensure at least 1 day
 
-        # Get hybrid discovery flags
-        enable_pass_a = discovery_config.get('enable_pass_a', True)  # Digital releases (release_date + type=4)
-        enable_pass_b = discovery_config.get('enable_pass_b', True)  # Theatrical releases (primary_release_date)
+        # Get hybrid intake flags
+        enable_pass_a = intake_config.get('enable_pass_a', True)  # Digital releases (release_date + type=4)
+        enable_pass_b = intake_config.get('enable_pass_b', True)  # Theatrical releases (primary_release_date)
 
         if debug:
-            self.logger.info(f"Starting discovery: days_back={days_back}, max_pages={max_pages}")
-            self.logger.info(f"Discovery passes: A={enable_pass_a}, B={enable_pass_b}")
+            self.logger.info(f"Starting intake: days_back={days_back}, max_pages={max_pages}")
+            self.logger.info(f"Intake passes: A={enable_pass_a}, B={enable_pass_b}")
 
         # Load existing tracking database
         if os.path.exists('movie_tracking.json'):
@@ -540,36 +506,36 @@ class DataGenerator:
         self.logger.info(f"Intaking new premieres from {start_date.strftime('%Y-%m-%d')} to {end_date.strftime('%Y-%m-%d')}")
 
         new_movies_added = 0
-        all_discovered_movies = {}
+        all_intaked_movies = {}
 
         # Pass A: Direct-to-digital releases (release_date + type=4)
         if enable_pass_a:
             if debug:
                 self.logger.info("Starting Pass A: Direct-to-digital releases")
 
-            pass_a_count = self._run_discovery_pass(
+            pass_a_count = self._run_intake_pass(
                 'A', 'digital', start_date, end_date, max_pages,
-                all_discovered_movies, existing_ids, debug
+                all_intaked_movies, existing_ids, debug
             )
 
             if debug:
-                self.logger.info(f"Pass A completed: {pass_a_count} movies discovered")
+                self.logger.info(f"Pass A completed: {pass_a_count} movies intaked")
 
         # Pass B: Theatrical releases (primary_release_date)
         if enable_pass_b:
             if debug:
                 self.logger.info("Starting Pass B: Theatrical releases")
 
-            pass_b_count = self._run_discovery_pass(
+            pass_b_count = self._run_intake_pass(
                 'B', 'theatrical', start_date, end_date, max_pages,
-                all_discovered_movies, existing_ids, debug
+                all_intaked_movies, existing_ids, debug
             )
 
             if debug:
-                self.logger.info(f"Pass B completed: {pass_b_count} movies discovered")
+                self.logger.info(f"Pass B completed: {pass_b_count} movies intaked")
 
-        # Merge all discovered movies into database
-        for movie_id, movie_data in all_discovered_movies.items():
+        # Merge all intaked movies into database
+        for movie_id, movie_data in all_intaked_movies.items():
             if movie_id not in existing_ids:
                 db['movies'][movie_id] = movie_data
                 new_movies_added += 1
@@ -583,9 +549,9 @@ class DataGenerator:
                 raise IOError("Discovery database write failed")
 
         # Log discovery summary
-        self.logger.info(f"Intake complete: {new_movies_added} new movies added from {self.discovery_stats['pages_fetched']} pages")
+        self.logger.info(f"Intake complete: {new_movies_added} new movies added from {self.intake_stats['pages_fetched']} pages")
         if debug or new_movies_added == 0:
-            self.logger.info(f"Intake stats: {self.discovery_stats['total_results']} total results, {self.discovery_stats['duplicates_skipped']} duplicates")
+            self.logger.info(f"Intake stats: {self.intake_stats['total_results']} total results, {self.intake_stats['duplicates_skipped']} duplicates")
 
         # Emit JSON artifact for robust metrics capture
         try:
@@ -603,7 +569,7 @@ class DataGenerator:
             else:
                 mode = 'incremental'
 
-            discovery_run_data = {
+            intake_run_data = {
                 'timestamp': datetime.now().isoformat(),
                 'operation': 'intake_premieres',
                 'scan_window': {
@@ -614,26 +580,27 @@ class DataGenerator:
                     'bootstrap': bootstrap
                 },
                 'results': {
-                    'discovered': new_movies_added,
-                    'pages_fetched': self.discovery_stats['pages_fetched'],
-                    'total_results': self.discovery_stats['total_results'],
-                    'duplicates_skipped': self.discovery_stats['duplicates_skipped']
+                    'intaked': new_movies_added,  # Canonical field
+                    'discovered': new_movies_added,  # Legacy field for downstream compatibility
+                    'pages_fetched': self.intake_stats['pages_fetched'],
+                    'total_results': self.intake_stats['total_results'],
+                    'duplicates_skipped': self.intake_stats['duplicates_skipped']
                 }
             }
 
             with open('metrics/intake_run.json', 'w') as f:
-                json.dump(discovery_run_data, f, indent=2)
+                json.dump(intake_run_data, f, indent=2)
 
             print(f"📊 Intake metrics saved to metrics/intake_run.json: {start_date} to {end_date} ({mode} mode, {new_movies_added} found)")
-            self.logger.info(f"Intake metrics saved: {discovery_run_data}")
+            self.logger.info(f"Intake metrics saved: {intake_run_data}")
         except Exception as e:
-            self.logger.warning(f"Failed to save discovery metrics artifact: {e}")
+            self.logger.warning(f"Failed to save intake metrics artifact: {e}")
 
-        # Update discovery state after successful discovery
+        # Update intake state after successful intake
         # CRITICAL: Always update state so next run checks from today forward
         # Even if 0 movies found, we still successfully checked this date range
         # This prevents getting stuck in bootstrap mode checking same dates forever
-        self._update_discovery_state(state_file)
+        self._update_intake_state(state_file)
 
         return new_movies_added
 
@@ -1043,21 +1010,21 @@ class DataGenerator:
 
     # validate_data_json_schema moved to pipeline/validation.py (2025-11-10)
 
-    def _run_discovery_pass(self, pass_name, pass_type, start_date, end_date, max_pages, discovered_movies, existing_ids, debug):
-        """Run a single discovery pass (A or B)
+    def _run_intake_pass(self, pass_name, pass_type, start_date, end_date, max_pages, intaked_movies, existing_ids, debug):
+        """Run a single intake pass (A or B)
 
         Args:
             pass_name: 'A' or 'B' for logging
             pass_type: 'digital' or 'theatrical' to determine API parameters
-            start_date: Discovery start date
-            end_date: Discovery end date
+            start_date: Intake start date
+            end_date: Intake end date
             max_pages: Maximum pages to fetch
-            discovered_movies: Dict to accumulate discovered movies
+            intaked_movies: Dict to accumulate intaked movies
             existing_ids: Set of existing movie IDs to skip
             debug: Enable debug logging
 
         Returns:
-            Number of new movies discovered in this pass
+            Number of new movies intaked in this pass
         """
         pass_new_count = 0
 
@@ -1076,8 +1043,8 @@ class DataGenerator:
                         self.logger.warning(f"Pass {pass_name} - No results from page {page}, stopping pass")
                     break
 
-                self.discovery_stats['pages_fetched'] += 1
-                self.discovery_stats['total_results'] += len(page_results)
+                self.intake_stats['pages_fetched'] += 1
+                self.intake_stats['total_results'] += len(page_results)
 
                 # Process results from this page
                 page_new_count = 0
@@ -1092,27 +1059,27 @@ class DataGenerator:
                     if len(sample_titles) < 3:
                         sample_titles.append(f"{title} (ID: {movie_id})")
 
-                    # Skip if already in existing database or already discovered in this run
-                    if movie_id in existing_ids or movie_id in discovered_movies:
+                    # Skip if already in existing database or already intaked in this run
+                    if movie_id in existing_ids or movie_id in intaked_movies:
                         page_duplicate_count += 1
                         continue
 
                     # Add new movie with tracking status
                     # Note: digital_date is intentionally None here - monitoring will set it when providers are detected
-                    discovered_movies[movie_id] = {
+                    intaked_movies[movie_id] = {
                         'title': title,
                         'status': 'tracking',
                         'first_seen': datetime.now().strftime('%Y-%m-%d'),
                         'digital_date': None,
                         'providers': {},
-                        'discovery_pass': pass_name  # Track which pass found this movie
+                        'intake_pass': pass_name  # Track which pass found this movie
                     }
 
                     page_new_count += 1
                     pass_new_count += 1
 
-                self.discovery_stats['new_movies_added'] += page_new_count
-                self.discovery_stats['duplicates_skipped'] += page_duplicate_count
+                self.intake_stats['new_movies_added'] += page_new_count
+                self.intake_stats['duplicates_skipped'] += page_duplicate_count
 
                 # Log page summary
                 if debug:
@@ -1175,7 +1142,7 @@ class DataGenerator:
                 'page': page
             }
 
-        self.discovery_stats['api_calls'] += 1
+        self.intake_stats['api_calls'] += 1
 
         # Log exact TMDB params (excluding API key)
         if debug:
@@ -3257,17 +3224,17 @@ class DataGenerator:
                 print(f"  ⚠️  WARNING: High validation failure rate ({self.watchmode_stats['schema_validation_warnings']}/{total_validations}) - check for systematic schema issues")
 
         # Intake statistics (if intake was run - TMDB API premiere ingestion)
-        if self.discovery_stats['api_calls'] > 0:
+        if self.intake_stats['api_calls'] > 0:
             print(f"\n🔍 Intake Statistics (TMDB Premieres):")
-            print(f"  API calls: {self.discovery_stats['api_calls']}")
-            print(f"  Pages fetched: {self.discovery_stats['pages_fetched']}")
-            print(f"  Total results: {self.discovery_stats['total_results']}")
-            print(f"  New movies added: {self.discovery_stats['new_movies_added']}")
-            print(f"  Duplicates skipped: {self.discovery_stats['duplicates_skipped']}")
-            if self.discovery_stats['pages_fetched'] > 0:
-                avg_results_per_page = self.discovery_stats['total_results'] / self.discovery_stats['pages_fetched']
+            print(f"  API calls: {self.intake_stats['api_calls']}")
+            print(f"  Pages fetched: {self.intake_stats['pages_fetched']}")
+            print(f"  Total results: {self.intake_stats['total_results']}")
+            print(f"  New movies added: {self.intake_stats['new_movies_added']}")
+            print(f"  Duplicates skipped: {self.intake_stats['duplicates_skipped']}")
+            if self.intake_stats['pages_fetched'] > 0:
+                avg_results_per_page = self.intake_stats['total_results'] / self.intake_stats['pages_fetched']
                 print(f"  Average results per page: {avg_results_per_page:.1f}")
-            if self.discovery_stats['debug_enabled']:
+            if self.intake_stats['debug_enabled']:
                 print(f"  Debug mode was enabled for this run")
 
         # Clear ASIN cache at end of generation run to bound memory

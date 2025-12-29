@@ -62,15 +62,15 @@ def main():
     # Set debug mode globally (could be passed to DataGenerator if needed)
     if args.debug:
         os.environ['AGENT_SCRAPER_DEBUG'] = 'true'
-        print("🐛 Debug mode enabled for intake/discovery and agent scraper")
+        print("🐛 Debug mode enabled for intake/provider discovery and agent scraper")
 
-    # Set enrichment flag: false for intake/discovery, true for final generation
+    # Set enrichment flag: false for intake/provider discovery, true for final generation
     if args.intake or args.discover:
         enrichment_enabled = args.enrichment  # Only enable if explicitly requested
         if enrichment_enabled:
-            print("🎯 Enrichment enabled for intake/discovery mode")
+            print("🎯 Enrichment enabled for intake/provider discovery mode")
         else:
-            print("🚫 Enrichment disabled for intake/discovery mode")
+            print("🚫 Enrichment disabled for intake/provider discovery mode")
     else:
         enrichment_enabled = True  # Always enabled for final generation phase
         print("🎯 Enrichment enabled for final generation phase")
@@ -83,15 +83,15 @@ def main():
         generator.logger.debug("Debug mode enabled - verbose logging active")
 
     # Run discovery if requested
-    discovered_count = 0
+    intaked_count = 0
     if args.intake:
         print("🔍 Running intake for new premieres...")
-        discovered_count = generator.discover_new_premieres(
+        intaked_count = generator.discover_new_premieres(
             debug=args.debug,
             since_date=args.since,
             bootstrap=args.bootstrap
         )
-        print(f"✅ Intake complete: {discovered_count} new movies added")
+        print(f"✅ Intake complete: {intaked_count} new movies added")
 
     # Check tracking movies for digital availability if requested
     newly_digital_count = 0
@@ -101,12 +101,12 @@ def main():
 
     # CLI metrics handling removed - orchestrator now handles metrics consolidation from discovery_run.json
 
-    # Generate the final display data (only for final generation phase, not intake/discovery)
+    # Generate the final display data (only for final generation phase, not intake/provider discovery)
     if not args.intake and not args.discover:
         print("\n🎬 Generating final display data...")
         generator.generate_display_data(incremental=incremental, force_refresh=force_refresh)
     else:
-        print("📋 Intake/discovery phase complete")
+        print("📋 Intake/provider discovery phase complete")
 
 
 if __name__ == "__main__":

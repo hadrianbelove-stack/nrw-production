@@ -68,7 +68,7 @@ telemetry:
 # Controls: generate_data.py --intake (finding NEW movie premieres from TMDB)
 # NOT used by: generate_data.py --discover (provider-availability checks)
 # For provider-availability settings, see: orchestrator.health section below
-discovery:
+intake:
   days_back: 7  # Intake window for finding new premieres from TMDB (controls how far back intake looks)
   max_pages: 20  # Intake page limit - maximum TMDB pages to process during intake phase
   # CI optimizations - reduce load for automated runs
