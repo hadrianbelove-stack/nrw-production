@@ -34,14 +34,14 @@ The New Release Wall is a **Blockbuster wall for the streaming age**. It exists 
 - **Pipeline:** Daily automation via GitHub Actions at 1:00 AM PT
 - **Database:** `movie_tracking.json` tracks 330+ movies; enrichment-on-transition pattern prevents 2+ hour runtimes
 
-## File Loading Pattern
-**Three-file loading pattern for token-efficient session handoffs:**
-1. `DAILY_CONTEXT.md` (primary) — Current state, what we did, issues, priorities, files changed
-2. `PROJECT_CHARTER.md` (governance) — This charter with critical AI instructions and amendments
-3. `NRW_DATA_WORKFLOW_EXPLAINED.md` (technical) — Detailed data flow documentation
-**Session Start:** Read these three files → run `./launch_all.sh`
-**Session End:** Update `DAILY_CONTEXT.md` → run `./ops/archive_daily_context.sh` → commit changes
-Archive via `diary/YYYY-MM-DD.md` (immutable end-of-session snapshots)
+## Documentation Loading Pattern
+**Two-file loading pattern for AI assistant context:**
+1. `PROJECT_CHARTER.md` (governance) — This charter with critical AI instructions and core rules
+2. `NRW_DATA_WORKFLOW_EXPLAINED.md` (technical) — Detailed data flow and pipeline documentation
+
+**Session Start:** Read PROJECT_CHARTER.md → Read NRW_DATA_WORKFLOW_EXPLAINED.md → Begin work
+**Current Status:** Check recent git commits and metrics files for current system state
+**Session End:** Commit changes with clear commit messages
 
 # PART 2: ACTIVE GOVERNANCE
 
@@ -50,7 +50,6 @@ Archive via `diary/YYYY-MM-DD.md` (immutable end-of-session snapshots)
 | ID | Category | Summary | Impact | See Also |
 |--------|----------|---------|--------|----------|
 | 001-011 | Process | AI/ops discipline (numbering, assumptions, run semantics, scripts, safeguards, idle time, summary, mode awareness, operational safeguards, multiple solutions, roadmap discipline) | AI behavior & operator workflow | Ops: README.md §Daily Workflow |
-| 012-013 | Context | Rolling daily context & three-file loading pattern | Session management | DAILY_CONTEXT.md |
 | 014 | Governance | Documentation discipline & root cleanliness | Repo hygiene | Ops: README.md §Docs |
 | 015 | Process | Minimal implementation principle | Prevents scope creep | Applied to all changes |
 | 016 | Process | Source first discipline | Prevents assumption mistakes | Applied to all references |
@@ -163,19 +162,18 @@ Archive via `diary/YYYY-MM-DD.md` (immutable end-of-session snapshots)
 **Status:** ✅ Active - legacy tracker archived
 **Spec:** SYSTEM_ARCHITECTURE.md §Daily Pipeline
 
-### 012: Rolling Daily Context
-**Decision:** DAILY_CONTEXT.md = living document, always current, overwritten each session. diary/YYYY-MM-DD.md = end-of-session archives (immutable).
-**Scope:** Replaces stale complete_project_context.md. Format: Current State, What We Did, Known Issues, Next Priorities, Files Changed.
-**Status:** ✅ Active - start sessions by reading DAILY_CONTEXT.md; end by archiving to diary/
-**Spec:** DAILY_CONTEXT.md
+### 020: Append-Only data.json Architecture
+**Decision:** data.json is append-only. Movies are added during discovery and NEVER deleted.
+**Scope:**
+- Discovery phase immediately writes minimal movie entry to data.json
+- Enrichment phase overlays additional data onto existing entries
+- No "wipe and regenerate" behavior - data accumulates
+- Each movie gets ONE enrichment attempt on transition day (no retries)
+- Queue resets daily - no accumulation across days
+**Status:** ✅ Active - implemented 2025-12-29
+**Spec:** SYSTEM_ARCHITECTURE.md §1.1 Core Data Model
 
-### 013: Daily Context System (Three-File Loading Pattern)
-**Decision:** Three-file loading pattern for token-efficient session handoffs.
-**Scope:** DAILY_CONTEXT.md (primary), PROJECT_CHARTER.md (governance), NRW_DATA_WORKFLOW_EXPLAINED.md (technical). Archive via ops/archive_daily_context.sh.
-**Status:** ✅ Active - diary/ archives immutable, supersedes complete_project_context.md
-**Spec:** DAILY_CONTEXT.md
-
-### 014: Documentation Discipline & Root Cleanliness
+### 021: Documentation Discipline & Root Cleanliness
 **Decision:** Root cleanliness with seven-file whitelist and docs/ organization.
 **Scope:** Seven root .md files only, session findings → diary/, features → docs/features/, troubleshooting → docs/troubleshooting/, pre-commit hook enforcement.
 **Status:** ✅ Active - PROJECT_CHARTER.md under 1000 lines, never create root .md without approval
@@ -203,11 +201,15 @@ Archive via `diary/YYYY-MM-DD.md` (immutable end-of-session snapshots)
 
 ## Data Contracts (Essentials)
 
+### What NRW Does
+NRW tracks when theatrical movies become available for digital streaming/rental. Since no API provides "when" a movie became available (only "what" is currently available), we poll daily to detect transitions and record them.
+
 ### Core Data Invariants
-- **movie_tracking.json**: Master database (~330 records), status-driven enrichment
-- **data.json**: Frontend display subset (~30 records), filtered by status="available"
+- **movie_tracking.json**: Master tracking database (~6,700 records), status = "tracking" or "available"
+- **data.json**: Frontend display data (~230 records), **append-only** - movies added on discovery, never deleted
+- **metrics/newly_available.json**: Today's enrichment queue - contains IDs of movies that transitioned today
 - **Required fields**: tmdb_id, title, digital_date, poster, crew, synopsis, runtime, links
-- **Enrichment pattern**: Only process movies transitioning to "available" status
+- **Data flow**: Intake → Discovery (writes to data.json) → Enrichment (overlays data) → Display
 
 ### File Hierarchy
 

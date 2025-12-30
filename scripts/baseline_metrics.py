@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Compute 3-day baseline metrics for discovery and newly-digital counts
+Compute 3-day baseline metrics for intake and newly-digital counts
 """
 
 import json
@@ -45,18 +45,18 @@ def compute_baseline():
     if len(metrics) >= 3:
         last_3 = metrics[-3:]
 
-        discovery_avg = sum(m.get('discovered_today', 0) for m in last_3) / 3
+        intake_avg = sum(m.get('intaked_today', 0) for m in last_3) / 3
         newly_digital_avg = sum(m.get('transitions', 0) for m in last_3) / 3
 
         print(f"\n📈 3-Day Baseline (last 3 days):")
-        print(f"  Discovery average: {discovery_avg:.1f} movies/day")
+        print(f"  Intake average: {intake_avg:.1f} movies/day")
         print(f"  Newly digital average: {newly_digital_avg:.1f} movies/day")
         print(f"  Based on: {', '.join(m['date'] for m in last_3)}")
 
         # Show individual daily values
         print(f"\n📅 Daily Breakdown:")
         for metric in last_3:
-            print(f"  {metric['date']}: {metric.get('discovered_today', 0)} discovered, {metric.get('transitions', 0)} newly digital")
+            print(f"  {metric['date']}: {metric.get('intaked_today', 0)} intaked, {metric.get('transitions', 0)} newly digital")
     else:
         print(f"\n⚠️  Need at least 3 days of data for baseline")
         print(f"   Currently have {len(metrics)} day(s)")
@@ -66,12 +66,12 @@ def compute_baseline():
         recent = metrics[-min(7, len(metrics)):]
         print(f"\n📊 Recent Trends (last {len(recent)} days):")
 
-        total_discovered = sum(m.get('discovered_today', 0) for m in recent)
+        total_intaked = sum(m.get('intaked_today', 0) for m in recent)
         total_newly_digital = sum(m.get('transitions', 0) for m in recent)
 
-        print(f"  Total discovered: {total_discovered}")
+        print(f"  Total intaked: {total_intaked}")
         print(f"  Total newly digital: {total_newly_digital}")
-        print(f"  Discovery rate: {total_discovered/len(recent):.1f}/day")
+        print(f"  Intake rate: {total_intaked/len(recent):.1f}/day")
         print(f"  Digital rate: {total_newly_digital/len(recent):.1f}/day")
 
     # Show current tracking status (optional fields)

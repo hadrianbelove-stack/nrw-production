@@ -1,42 +1,42 @@
 {
-  "timestamp": "2025-12-29T10:57:59.546019",
+  "timestamp": "2025-12-29T16:11:41.145622",
   "scrapers": {
     "rt_scraper": {
-      "attempts": 28,
-      "successes": 7,
+      "attempts": 0,
+      "successes": 0,
       "cache_hits": 0,
-      "success_rate": 25.0,
-      "cache_hit_rate": 0.0
+      "success_rate": null,
+      "cache_hit_rate": null
     },
     "wikipedia_scraper": {
-      "wikidata_attempts": 14,
-      "wikidata_successes": 12,
-      "success_rate": 85.7
+      "wikidata_attempts": 0,
+      "wikidata_successes": 0,
+      "success_rate": null
     },
     "trailer_scraper": {
-      "attempts": 6,
-      "successes": 6,
+      "attempts": 0,
+      "successes": 0,
       "cache_hits": 0,
-      "success_rate": 100.0,
-      "cache_hit_rate": 0.0
+      "success_rate": null,
+      "cache_hit_rate": null
     },
     "streaming_scraper": {
-      "attempts": 4,
-      "successes": 0,
-      "failures": 4,
-      "cache_hits": 0,
-      "success_rate": 0.0
-    },
-    "vod_scraper": {
-      "attempts": 19,
+      "attempts": 0,
       "successes": 0,
       "failures": 0,
-      "success_rate": 0.0
+      "cache_hits": 0,
+      "success_rate": null
+    },
+    "vod_scraper": {
+      "attempts": 0,
+      "successes": 0,
+      "failures": 0,
+      "success_rate": null
     }
   },
   "validation": {
-    "passes": 14,
+    "passes": 0,
     "warnings": 0,
-    "pass_rate": 100.0
+    "pass_rate": null
   }
 }

@@ -1,19 +1,40 @@
 # **NRW Data Workflow - Complete Overview**
 
-## 🚨 **INCIDENT TIMEFRAME NOTICE - December 6, 2025**
-**HISTORICAL INCIDENT (Dec 6, 2025):** A significant pipeline dysfunction occurred with intake failure (Oct 23 - Dec 5) and discovery issues. The orchestrator has since been enhanced with best-effort reporting and comprehensive diagnostics.
-
-**CURRENT HEALTH MODEL:** The orchestrator now provides nuanced status reporting with three run status indicators:
-- 🟢 **GREEN:** All phases completed successfully with no failures
-- 🟡 **YELLOW:** Completed with warnings (non-critical issues detected)
-- 🔴 **RED:** Completed with failures (errors detected but pipeline continues)
-
-*Note: The orchestrator uses a best-effort policy - it reports all issues but does not fail CI unless there are hard crashes.*
+**Last Updated:** 2025-12-29
 
 ---
 
-## **🎯 End Goal: A Netflix-Style Movie Wall**
-We want a beautiful webpage that shows the latest movies available for streaming/rental, with working links to trailers, reviews, and Wikipedia pages. Think "Blockbuster wall for the streaming age."
+## **🎯 What This System Does**
+
+**The New Release Wall tracks when movies become available for digital streaming/rental.**
+
+### The Core Problem
+When a movie leaves theaters, there's no API that says "this movie became available on Netflix today." TMDB's provider API only shows what's *currently* available, not *when* it became available. We solve this by polling daily and detecting transitions ourselves.
+
+### Our Solution
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                        NRW DATA PIPELINE                            │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  1. INTAKE         2. DISCOVERY        3. ENRICHMENT    4. DISPLAY  │
+│  ─────────         ───────────         ────────────     ───────     │
+│  Ingest new        Poll for provider   Add RT scores,   Show wall   │
+│  theatrical        availability        Wikipedia,       to users    │
+│  releases          ↓                   trailers         ↓           │
+│  ↓                 When found:         ↓                index.html  │
+│  movie_tracking    • Write to data.json  Overlay onto               │
+│  .json             • Queue for enrich    existing entry             │
+│                                                                     │
+│  KEY PRINCIPLE: data.json is APPEND-ONLY                            │
+│  - Discovery ADDS movies                                            │
+│  - Enrichment OVERLAYS data                                         │
+│  - Nothing DELETES movies                                           │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+### The Result
+An ongoing, accumulating database of digital release dates that no one else tracks. A "Blockbuster wall for the streaming age."
 
 ---
 
@@ -38,14 +59,15 @@ We want a beautiful webpage that shows the latest movies available for streaming
 - **Example:** `{"1404864": {"title": "Inspector Zende", "status": "tracking", "digital_date": null}}`
 
 ### **Phase 2: Database Enrichment & Link Resolution**
-**What happens:** We take movies that JUST BECAME digitally available (from today's provider check) and fill out ALL their details - cast, director, synopsis, posters, trailers, Wikipedia pages, review links, watch links (streaming/vod).
+**What happens:** We take movies that JUST BECAME digitally available (from today's discovery) and add rich metadata - trailers, Wikipedia pages, RT scores, watch links.
 
-**🔧 `generate_data.py`** - *The Complete Data Enricher*
-- **Enrichment-on-transition:** Reads `metrics/newly_available.json` to find which movies were discovered as digitally available TODAY
-- **Smart filtering:** Only processes movies in the state file (1-10 per day) that haven't been enriched yet
-- **Performance:** 95%+ cost reduction by avoiding re-enrichment of already-processed movies
+**🔧 `generate_data.py`** - *The Enrichment Overlay*
+- **Reads today's queue:** `metrics/newly_available.json` contains movie IDs that transitioned TODAY
+- **ONE attempt per movie:** Each movie gets a single enrichment attempt on its transition day
+- **No retries:** Queue resets daily - movies not enriched today won't be re-queued tomorrow
+- **Overlay model:** Updates EXISTING entries in data.json (never creates new entries)
+- **Performance:** 95%+ cost reduction by only enriching new arrivals (1-10 per day)
 - **Link resolution:** Multi-tier waterfall (overrides → cache → API → scraper → null)
-- **TMDB API calls:** Fetches complete movie details including cast, crew, synopsis, posters
 
 **📂 Link Resolution System** - *Multi-Tier Intelligent Lookup*
 
@@ -87,20 +109,16 @@ Daily Intake & Discovery → movie_tracking.json → OPTIONAL REVIEW → data.js
 **Authentication:** No authentication required for local development
 
 ### **Phase 4: Display Generation**
-**What happens:** We incorporate admin curation decisions and create the final JSON file for the website.
+**What happens:** data.json accumulates discovered movies and gets enhanced with enrichment data.
 
-**🔧 `generate_data.py` with Admin Integration**
-- **Data enrichment:** Creates complete movie profiles with all metadata
-- **Admin corrections:** Reads `manual_*` flags from movie_tracking.json and preserves user edits
-- **Admin filtering:** Applies decisions from `admin/hidden_movies.json` (removes from display)
-- **Admin featuring:** Marks movies from `admin/featured_movies.json` with `"featured": true` flag
-
-**📄 `data.json`** - *The Website Menu* (Updated 2025-12-05)
-- **What it is:** Complete dataset of ALL available movies (minimal records + enriched data when available)
-- **Structure:** Movies include basic info (title, date, providers) plus enriched data when successful (poster, synopsis, director, cast, trailer, RT link, Wikipedia link, watch_links)
-- **Key change:** Enrichment failures no longer hide movies - minimal records remain visible
-- **Reliability:** All discovered movies appear; enrichment overlays when possible
-- **Data Consistency:** Uses eventual consistency model - `data.json` is only updated in Phase 3 (final generation) and may temporarily lag behind tracking state between discovery and enrichment phases
+**📄 `data.json`** - *The Website Database* (Updated 2025-12-29)
+- **Append-only:** Movies are ADDED during discovery, NEVER deleted
+- **Two write sources:**
+  1. **Discovery phase:** Writes minimal entry immediately when movie transitions to available
+  2. **Enrichment phase:** Overlays rich data onto existing entries
+- **Structure:** Movies include basic info (title, date, poster) plus enriched data when available (synopsis, director, cast, trailer, RT link, Wikipedia link, watch_links)
+- **Reliability:** All discovered movies appear; enrichment enhances but never gates visibility
+- **Admin integration:** Applies `admin/hidden_movies.json` (hides from display) and `admin/featured_movies.json` (marks as featured)
 
 ### **Phase 5: User Display**
 **What happens:** User visits the website and sees the beautiful movie wall.
@@ -114,15 +132,23 @@ Daily Intake & Discovery → movie_tracking.json → OPTIONAL REVIEW → data.js
 
 ## **🔄 Daily Automation Loop**
 
-**🔧 `daily_orchestrator.py`** - *The Modern Orchestra Conductor*
+**🔧 `daily_orchestrator.py`** - *The Daily Pipeline*
 ```bash
-1. python3 generate_data.py --intake       # Intake new premieres from TMDB into tracking database
-2. python3 generate_data.py --discover     # Discover provider availability for tracking movies
-                                           # → Writes metrics/newly_available.json with IDs
-3. python3 generate_data.py               # Enrich movies discovered as digitally available from step 2
-                                           # → Reads metrics/newly_available.json
+1. python3 generate_data.py --intake       # Intake: Add new theatrical releases to tracking database
+                                           # → Updates movie_tracking.json
+
+2. python3 generate_data.py --discover     # Discovery: Poll for provider availability
+                                           # → When found: write minimal entry to data.json (IMMEDIATE)
+                                           # → Writes metrics/newly_available.json with today's IDs
+
+3. python3 generate_data.py               # Enrichment: Add RT, Wikipedia, trailers, watch links
+                                           # → Reads metrics/newly_available.json (today's queue)
+                                           # → ONE attempt per movie, overlays onto existing entries
+
 4. git commit & push                       # Save changes (automated)
 ```
+
+**Key behavior:** Movies appear in data.json during step 2 (discovery), NOT step 3 (enrichment). Enrichment enhances existing entries but never gates visibility.
 
 **Automated via GitHub Actions:**
 - Runs daily at 9 AM UTC
@@ -167,13 +193,14 @@ The orchestrator records all failures and warnings in `metrics/run_diagnostics.j
 
 ## **🎯 Why This Architecture Works**
 
-1. **Speed:** Website loads fast (only reads 1 small JSON file)
-2. **Reliability:** Links are verified before going live (multi-tier fallbacks)
-3. **Maintainability:** Each script has one clear job
-4. **Scalability:** Can track 1000+ movies, but only show 30 newest
-5. **User Experience:** No broken links, no loading delays, three-button watch UI
-6. **Automation:** Runs itself daily, commits changes to git
-7. **Editorial Control:** Admin panel allows curation and manual fixes
-8. **Resilience:** Multiple fallback tiers for every link type (overrides → cache → API → scraper → null)
+1. **No Data Loss:** Append-only data.json means discovered movies are always visible
+2. **Immediate Visibility:** Movies appear the moment they're discovered, not after enrichment
+3. **Graceful Degradation:** Enrichment failures don't hide movies - they just have less metadata
+4. **Simple Mental Model:** Discovery adds, enrichment enhances, nothing deletes
+5. **Speed:** Website loads fast (only reads 1 JSON file)
+6. **Reliability:** Links verified via multi-tier fallbacks (overrides → cache → API → scraper → null)
+7. **Scalability:** Can track 6,700+ movies, display ~230 most recent
+8. **Automation:** Runs itself daily, commits changes to git
+9. **Editorial Control:** Admin panel allows curation and manual fixes
 
-**The Result:** A professional movie discovery website that updates itself and never shows broken links.
+**The Result:** An ongoing database of digital release dates that no one else tracks, displayed as a professional movie wall that updates itself daily.

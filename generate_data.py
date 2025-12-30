@@ -4,6 +4,12 @@ Generate display data from tracking database with enriched links.
 
 This is the main entry point for the NRW data generation pipeline.
 All business logic has been extracted to the pipeline/ module for maintainability.
+
+Clean 4-Phase Architecture:
+  Phase 1: INTAKE    - python3 generate_data.py --intake
+  Phase 2: DISCOVERY - python3 generate_data.py --discover
+  Phase 3: ENRICHMENT - python3 generate_data.py --enrich
+  Phase 4: DISPLAY   - python3 generate_data.py (reads data.json for final processing)
 """
 
 import os
@@ -50,9 +56,9 @@ def main():
         help='Bootstrap provider discovery state using full discovery.days_back window'
     )
     parser.add_argument(
-        '--enrichment',
+        '--enrich',
         action='store_true',
-        help='Enable enrichment (scrapers, link fetching) explicitly'
+        help='Enrichment: Add metadata to newly discovered movies in data.json'
     )
 
     args = parser.parse_args()
@@ -64,19 +70,11 @@ def main():
         os.environ['AGENT_SCRAPER_DEBUG'] = 'true'
         print("🐛 Debug mode enabled for intake/provider discovery and agent scraper")
 
-    # Set enrichment flag: false for intake/provider discovery, true for final generation
-    if args.intake or args.discover:
-        enrichment_enabled = args.enrichment  # Only enable if explicitly requested
-        if enrichment_enabled:
-            print("🎯 Enrichment enabled for intake/provider discovery mode")
-        else:
-            print("🚫 Enrichment disabled for intake/provider discovery mode")
-    else:
-        enrichment_enabled = True  # Always enabled for final generation phase
-        print("🎯 Enrichment enabled for final generation phase")
+    # Enrichment is now handled by --enrich flag and runs separately
 
     # Initialize data generator from pipeline module
-    generator = DataGenerator(enrichment_enabled=enrichment_enabled)
+    # Enrichment is now controlled by the --enrich flag and runs separately
+    generator = DataGenerator(enrichment_enabled=False)
 
     if args.debug:
         generator.logger.setLevel(logging.DEBUG)
@@ -101,12 +99,19 @@ def main():
 
     # CLI metrics handling removed - orchestrator now handles metrics consolidation from discovery_run.json
 
-    # Generate the final display data (only for final generation phase, not intake/provider discovery)
-    if not args.intake and not args.discover:
+    # Run enrichment if requested
+    enriched_count = 0
+    if args.enrich:
+        print("\n🎨 Running enrichment for newly available movies...")
+        enriched_count = generator.enrich_newly_available_movies()
+        print(f"✅ Enrichment complete: {enriched_count} movies enriched")
+
+    # Generate the final display data (only for final generation phase, not intake/discovery/enrich)
+    if not args.intake and not args.discover and not args.enrich:
         print("\n🎬 Generating final display data...")
         generator.generate_display_data(incremental=incremental, force_refresh=force_refresh)
     else:
-        print("📋 Intake/provider discovery phase complete")
+        print("📋 Phase complete")
 
 
 if __name__ == "__main__":

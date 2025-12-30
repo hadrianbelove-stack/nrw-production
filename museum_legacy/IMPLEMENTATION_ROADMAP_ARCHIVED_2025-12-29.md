@@ -3,9 +3,9 @@
 ⚠️ **HISTORICAL DOCUMENT** - Last updated November 8, 2025
 
 **Status:** This document reflects tactical planning from November 2025 and may be outdated. For current system status, see:
-- [DAILY_CONTEXT.md](DAILY_CONTEXT.md) - Current pipeline status (updated Dec 28, 2025)
 - [SYSTEM_ARCHITECTURE.md](SYSTEM_ARCHITECTURE.md) - Current architecture & known issues
 - [PROJECT_CHARTER.md](PROJECT_CHARTER.md) - Governance & constitutional rules
+- Recent git commits and metrics files for current system state
 
 **Purpose:** Canonical tactical planning document for tracking problems, solutions, and implementation status across AI sessions.
 
@@ -16,7 +16,7 @@
 
 ## How to Use This Document
 
-- **AI Assistants:** Read this at session start alongside `PROJECT_CHARTER.md` and `DAILY_CONTEXT.md`
+- **AI Assistants:** Read this at session start alongside `PROJECT_CHARTER.md` and `NRW_DATA_WORKFLOW_EXPLAINED.md`
 - **Update Protocol:** Update at end of each session with decisions made and status changes
 - **Relationship to Log:** `diary/` entries record what happened; this roadmap tracks what's planned
 
@@ -165,7 +165,7 @@ Replaces automated weekly full regeneration with intentional, admin-triggered ma
 
 **Impact:** May be missing new digital releases, defeating project purpose.
 
-**Evidence:** `DAILY_CONTEXT.md` lines 22-52 (Oct 22 test results)
+**Evidence:** Historical test results from Oct 22, 2025 (archived)
 
 **Note (2025-10-24):** Previous test attempt failed due to TMDB API key configuration error in the test environment, not discovery system issues. The discovery system was never actually tested because the script crashed during initialization (line 179 of generate_data.py). See CRITICAL-003 test invalidation notice (lines 114-127) for full details on the configuration error.
 
@@ -327,7 +327,6 @@ The original test invalidation notice from 2025-10-24 regarding TMDB API configu
 - [ ] Fill in Phase 1-5 test results with actual data
 - [ ] Update status to RESOLVED or PARTIAL based on final coverage
 - [ ] Update README.md watch links status tables
-- [ ] Update DAILY_CONTEXT.md with corrected test results
 
 **Success Criteria:**
 - Coverage is the number of movies where any watch_links category contains a non-null deep link (excluding search URLs)

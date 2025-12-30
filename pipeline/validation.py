@@ -250,6 +250,83 @@ class ValidationService:
             self.logger.error(f"Error validating {file_path} schema: {e}")
             return False
 
+    def fix_data_json_schema(self, file_path: str = 'data.json') -> bool:
+        """
+        Gracefully fix data.json schema - APPEND-ONLY, never wipes movies.
+
+        Only fixes missing root keys (generated_at, count). Never touches movies array.
+        If file can't be safely fixed, returns False to signal abort.
+
+        Args:
+            file_path: Path to data.json file (default: 'data.json')
+
+        Returns:
+            bool: True if schema is valid/fixed, False if file should not be modified
+        """
+        if not os.path.exists(file_path):
+            self.logger.info(f"{file_path} does not exist - will be created fresh")
+            return True
+
+        try:
+            with open(file_path, 'r') as f:
+                data = json.load(f)
+
+            # Type checking: if data is not a dict, ABORT - don't wipe
+            if not isinstance(data, dict):
+                self.logger.error(f"{file_path} root is not a dict (type: {type(data).__name__}) - aborting to preserve file")
+                return False
+
+            # Check movies array - if it's not a list, ABORT - don't wipe
+            if 'movies' in data and not isinstance(data['movies'], list):
+                self.logger.error(f"Movies field is not a list (type: {type(data['movies']).__name__}) - aborting to preserve data")
+                return False
+
+            # Fix missing required root keys (safe operations only)
+            fixed = False
+            if 'generated_at' not in data:
+                data['generated_at'] = datetime.now().isoformat()
+                self.logger.info(f"Added missing generated_at field to {file_path}")
+                fixed = True
+            elif not isinstance(data['generated_at'], str):
+                data['generated_at'] = datetime.now().isoformat()
+                self.logger.info(f"Fixed invalid generated_at type in {file_path}")
+                fixed = True
+
+            # Only add movies array if it doesn't exist (first run scenario)
+            if 'movies' not in data:
+                data['movies'] = []
+                self.logger.info(f"Added missing movies array to {file_path}")
+                fixed = True
+
+            if 'count' not in data:
+                movie_count = len(data.get('movies', []))
+                data['count'] = movie_count
+                self.logger.info(f"Added missing count field to {file_path} (count: {movie_count})")
+                fixed = True
+            elif not isinstance(data['count'], int):
+                movie_count = len(data.get('movies', []))
+                data['count'] = movie_count
+                self.logger.info(f"Fixed invalid count type in {file_path} (recalculated: {movie_count})")
+                fixed = True
+
+            # If we fixed anything, write back the file
+            if fixed:
+                with open(file_path, 'w') as f:
+                    json.dump(data, f, indent=2)
+                self.logger.info(f"Successfully fixed schema for {file_path}")
+
+            return True
+
+        except json.JSONDecodeError as e:
+            # File is not valid JSON - ABORT, do not create fresh file
+            self.logger.error(f"{file_path} contains invalid JSON: {e} - aborting to preserve file")
+            return False
+
+        except Exception as e:
+            # Unexpected error - ABORT, do not create fresh file
+            self.logger.error(f"Unexpected error reading {file_path}: {e} - aborting to preserve file")
+            return False
+
     def get_stats(self) -> Dict[str, int]:
         """
         Get validation statistics.

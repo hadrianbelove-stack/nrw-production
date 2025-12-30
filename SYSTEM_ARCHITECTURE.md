@@ -13,14 +13,101 @@ When analyzing this codebase, read in this order:
 3. **docs/TROUBLESHOOTING.md** - Workflow debugging and common failures
 4. PROJECT_CHARTER.md - Business requirements and amendments
 5. NRW_DATA_WORKFLOW_EXPLAINED.md - Detailed data flow
-6. DAILY_CONTEXT.md - Daily operational context
-7. Core scripts: daily_orchestrator.py, generate_data.py
+6. Core scripts: daily_orchestrator.py, generate_data.py
+7. Recent git commits and metrics files for current system state
 
 ## ⚠️ Critical Sections
 
+- **Section 1.1**: Core Data Model (append-only data.json)
 - **Section 2**: Branch strategy with single-branch daily workflow
 - **Section 5**: Enrichment-on-transition pattern (prevents 2+ hour runtimes)
 - **Section 8**: Common failure modes overview with links to detailed troubleshooting
+
+---
+
+## 🎯 Core Data Model: The New Release Wall
+
+### 1.1 What This System Does
+
+**The New Release Wall tracks when movies become available for digital streaming/rental.**
+
+The core problem: When a movie leaves theaters, there's no single source that tells you "this movie is now available on Netflix" or "you can now rent this on Amazon." TMDB's provider API tells you what's *currently* available, but not *when* it became available.
+
+**Our solution:**
+1. **Intake**: Continuously ingest new theatrical releases into a tracking database
+2. **Discovery**: Poll all tracked movies daily to detect when they appear on streaming platforms
+3. **Record**: When found, record the transition date and write to the display database
+4. **Enrich**: Add metadata (RT scores, trailers, watch links) to make the display useful
+5. **Display**: Show users a chronological wall of newly available movies
+
+**The result**: An ongoing, accumulating database of digital release dates that no one else tracks.
+
+### 1.2 The Append-Only Principle
+
+**data.json is append-only.** Movies are added when discovered and NEVER deleted.
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                     APPEND-ONLY DATA MODEL                          │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  DISCOVERY PHASE                        ENRICHMENT PHASE            │
+│  ───────────────                        ─────────────────           │
+│                                                                     │
+│  1. Find movie transitioning            4. Read enrichment queue    │
+│     to "available" status                  (newly_available.json)   │
+│                    │                                │               │
+│                    ▼                                ▼               │
+│  2. IMMEDIATELY write minimal    ──►   5. Fetch RT, Wikipedia,      │
+│     entry to data.json                    trailers, watch links     │
+│     (title, date, poster)                          │                │
+│                    │                                ▼               │
+│                    ▼                    6. OVERLAY enriched data    │
+│  3. Add movie ID to enrichment            onto EXISTING entry       │
+│     queue (newly_available.json)          in data.json              │
+│                                                                     │
+├─────────────────────────────────────────────────────────────────────┤
+│  KEY INVARIANTS:                                                    │
+│  • Movies are ADDED to data.json, never deleted                     │
+│  • Enrichment OVERLAYS data, never recreates entries                │
+│  • Each movie gets ONE enrichment attempt on transition day         │
+│  • Queue resets daily - no accumulation across days                 │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+### 1.2 Why Append-Only?
+
+1. **No Data Loss**: A discovered movie is always visible, even if enrichment fails
+2. **Predictable Behavior**: Users see movies immediately upon availability
+3. **Simple Mental Model**: Discovery adds, enrichment enhances - nothing deletes
+4. **No Cascade Failures**: Enrichment problems can't cause movies to disappear
+
+### 1.3 The Two Key Files
+
+| File | Role | When Written | Can Delete Movies? |
+|------|------|--------------|-------------------|
+| `data.json` | Display data for frontend | Discovery + Enrichment | **NO - append-only** |
+| `metrics/newly_available.json` | Today's enrichment queue | Discovery phase | N/A (just IDs) |
+
+### 1.4 Movie Lifecycle
+
+```
+INTAKE → TRACKING → DISCOVERY → data.json (minimal) → ENRICHMENT → data.json (full)
+                         │                                   │
+                         │                                   │
+                         └── Movie visible immediately ──────┘
+```
+
+**Stage 1: Intake** - New theatrical releases added to movie_tracking.json with `status: "tracking"`
+
+**Stage 2: Discovery** - When providers found, movie transitions to `status: "available"`:
+- Minimal entry written to data.json IMMEDIATELY
+- Movie ID added to enrichment queue
+
+**Stage 3: Enrichment** - ONE attempt to add RT scores, Wikipedia, trailers, watch links:
+- Reads queue, overlays data onto existing entries
+- Success or failure, movie remains in data.json
+- Queue resets next day (no retries)
 
 ---
 
@@ -68,9 +155,9 @@ git push origin main
 
 | File | Purpose | Records | Format |
 |------|---------|---------|---------|
-| `movie_tracking.json` | Master movie database | 6,735 (785 available, 5,950 tracking) | JSON object |
-| `data.json` | Display data (90-day window) | 609 | JSON object |
-| `enrichment_state.json` | Enrichment tracking (⚠️ currently empty/broken) | Should have ~384 | JSON object |
+| `movie_tracking.json` | Master movie database | ~6,700 (785 available, ~5,900 tracking) | JSON object |
+| `data.json` | Display data (append-only, 90-day window) | ~230 | JSON object |
+| `metrics/newly_available.json` | Today's enrichment queue | Variable (0-20/day) | JSON object |
 | `config.yaml` | System configuration | N/A | YAML |
 | `watchmode_quota.json` | API usage tracking | N/A | JSON |
 
@@ -387,7 +474,8 @@ Filtered, enriched subset for frontend display:
 - Discovers provider availability for all `status="tracking"` movies
 - Updates status from "tracking" to "available"
 - Records digital_date and platform details
-- **Writes state file:** `metrics/newly_available.json` with list of movie IDs that transitioned
+- **IMMEDIATE WRITE**: Adds minimal entry to data.json via `add_movie_to_site_immediately()`
+- **Writes enrichment queue:** `metrics/newly_available.json` with ONLY today's transition IDs
 - Expected: 2-5 movies/day transition
 
 **No API Dates; Full Change Detection Poll**
@@ -395,24 +483,21 @@ Filtered, enriched subset for frontend display:
 Always poll ALL tracking movies in `movie_tracking.json` (no time limits). Fetch TMDB providers; if appears (null → value), set `digital_date = today`, `status = available`. Our detection defines availability – no external dates. Once found, status change excludes from future tracking polls (status != "tracking" means no longer monitored). Priority ordering is allowed but not skipping. Link: [docs/troubleshooting/change_detection.md](docs/troubleshooting/change_detection.md)
 
 **Phase 3: Enrichment** (`generate_data.py` main)
-- **Reads state file:** `metrics/newly_available.json` to determine which movies transitioned TODAY
-- **Enrichment-on-transition:** Only processes movies from state file (strict filtering)
-- **Fallback:** If no state file, falls back to `enriched` flag check (legacy behavior)
-- Adds RT ratings, Wikipedia links, watch links
-- Sets `enriched: true` flag in `enrichment_state.json`
+- **Reads queue:** `metrics/newly_available.json` to determine which movies transitioned TODAY
+- **One attempt per movie:** Each movie gets ONE enrichment attempt on transition day
+- **No retries:** Queue resets daily - movies not enriched today won't be re-queued tomorrow
+- **Overlay model:** Updates EXISTING entries in data.json (never creates new entries)
+- Adds RT ratings, Wikipedia links, trailers, watch links
 - Expected: 1-10 movies/day processing (new arrivals only)
 
-**Phase 4: Display Generation** (Updated 2025-12-17)
-- **Immediate Writing Enhancement**: Uses atomic writes with backup (`storage.atomic_write_json(backup=True)`) to prevent data corruption
-- **TMDB Fallback Robustness**: Creates minimal movie entries when TMDB API fails instead of skipping movies entirely
-- Builds display movies from ALL eligible movies (status = 'available', within days_back)
-- Creates minimal stubs for movies not yet in data.json
-- Overlays enrichment data when available (non-blocking)
-- If enrichment fails, keeps minimal/existing data instead of dropping movie
-- **Metadata Handling**: Supports underscore-prefixed metadata fields (`_discovered_at`, `_enrichment_status`, etc.) that are ignored by frontend
+**Phase 4: Display Generation** (Updated 2025-12-29)
+- **Append-only data.json**: Movies are ADDED during discovery, NEVER deleted
+- **Enrichment overlays**: Enrichment enhances existing entries, doesn't recreate them
+- **Atomic writes**: Uses `storage.atomic_write_json(backup=True)` to prevent corruption
+- **TMDB Fallback**: Creates minimal entries when TMDB API fails (still visible)
+- **Metadata tracking**: Underscore-prefixed fields (`_discovered_at`, `_enrichment_status`) for diagnostics
 - Applies admin overrides (hidden/featured)
-- Generates public-facing display data
-- Expected: All available movies appear, 250-350 with enrichment
+- Expected: All available movies appear, ~230 total
 - **Failure Logging**: Immediate-write failures logged to `logs/immediate_write_failures.jsonl`
 
 ### Performance Expectations
@@ -424,27 +509,66 @@ Always poll ALL tracking movies in `movie_tracking.json` (no time limits). Fetch
 
 ## 🔄 Data Flow Overview
 
-### 4.1 The Five Phases
+### 4.1 The Data Flow (Updated 2025-12-29)
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                        DAILY PIPELINE FLOW                          │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  PHASE 1: INTAKE                                                    │
+│  ───────────────                                                    │
+│  generate_data.py --intake                                          │
+│  └─► Fetches new theatrical releases from TMDB                      │
+│  └─► Adds to movie_tracking.json with status="tracking"             │
+│  └─► 10-20 new movies/day                                           │
+│                                                                     │
+│  PHASE 2: DISCOVERY                                                 │
+│  ─────────────────                                                  │
+│  generate_data.py --discover                                        │
+│  └─► Polls ALL tracking movies for provider availability            │
+│  └─► When found: status="available", digital_date=today             │
+│  └─► IMMEDIATELY writes minimal entry to data.json ◄── KEY!        │
+│  └─► Adds movie ID to metrics/newly_available.json                  │
+│  └─► 2-5 transitions/day                                            │
+│                                                                     │
+│  PHASE 3: ENRICHMENT                                                │
+│  ───────────────────                                                │
+│  generate_data.py (main)                                            │
+│  └─► Reads TODAY's queue from newly_available.json                  │
+│  └─► ONE enrichment attempt per movie (no retries)                  │
+│  └─► OVERLAYS data onto existing data.json entries ◄── KEY!        │
+│  └─► Adds: RT scores, Wikipedia, trailers, watch links              │
+│  └─► 1-10 movies/day                                                │
+│                                                                     │
+│  PHASE 4: DISPLAY (Frontend)                                        │
+│  ─────────────────────────                                          │
+│  index.html → data.json → User sees movie wall                      │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+**Key Principle**: data.json is append-only. Discovery ADDS movies, enrichment ENHANCES them. Nothing deletes movies.
 
 ```
 Phase 1: Intake & Discovery
     ↓ generate_data.py --intake (new premieres from TMDB)
-    ↓ generate_data.py --discover (provider availability)
-    ↓ Updates: movie_tracking.json
-    ↓ Tracks: 330+ movies across platforms
+    ↓ generate_data.py --discover (provider availability + IMMEDIATE write to data.json)
+    ↓ Updates: movie_tracking.json + data.json (minimal) + newly_available.json
+    ↓ Tracks: ~6,700 movies across platforms
 
-Phase 2: Enrichment (ONLY newly available)
+Phase 2: Enrichment (ONLY today's transitions)
     ↓ generate_data.py (main process)
-    ↓ Enriches: 1-10 movies/day (transition only)
-    ↓ Caching: 99.4% efficiency (328/330 cached)
+    ↓ Reads: metrics/newly_available.json
+    ↓ Overlays: RT, Wikipedia, trailers, watch links onto existing entries
+    ↓ One attempt per movie - no retries
 
-Phase 3: Quality Assurance
+Phase 3: Quality Assurance (Optional)
     ↓ admin.py (manual QA interface - launch via ./launch_all.sh)
     ↓ Validates: Links, ratings, metadata
-    ↓ See ADMIN_WORKFLOW.md for the operational steps
 
-Phase 4: Display Generation (Updated 2025-12-17)
-    ↓ generate_data.py (final step)
+Phase 4: User Display
+    ↓ index.html + assets/app.js
     ↓ Enhanced immediate writing: atomic writes with TMDB fallback
     ↓ Creates: ALL available movies in data.json (minimal + enriched)
     ↓ Enrichment failures no longer hide movies
@@ -883,234 +1007,61 @@ for dm in data_movies:       # Iterated over keys, not movies
 
 ---
 
-## 🔍 Debugging Guide & Current Issues (Added 2025-12-28)
+## 🔍 Quick Debugging Reference
 
-### 9.1 Current Pipeline State
+### 9.1 File Read/Write Map
 
-**As of December 28, 2025**, the pipeline has the following known issues:
-
-#### Issue #1: Discovery Not Writing Queue File ❌
-
-**Location**: `pipeline/generator.py`, lines 938-980
-**Symptom**: `metrics/newly_available.json` frozen since Dec 25
-**Impact**: New transitions (Dec 26-28: 39 movies) not queued for enrichment
-
-**Expected Behavior**:
-```python
-# After discovery phase completes
-newly_available_ids = ['1074048', '1603898', '1317288']  # Today's transitions
-with open('metrics/newly_available.json', 'w') as f:
-    json.dump({'movie_ids': newly_available_ids, 'date': today}, f)
-```
-
-**Actual Behavior**:
-- File timestamp: Dec 25, 20:44 (3 days stale)
-- Contents: 11 old movie IDs
-- New transitions never written
-
-**Debug Steps**:
-1. Check if `newly_available_ids` list is empty at write time
-2. Add logging at lines 869-870 (list append) and 940 (file write)
-3. Verify write permissions on metrics/ directory
-
-#### Issue #2: Empty Enrichment State File ❌
-
-**Location**: `enrichment_state.json`
-**Symptom**: File contains `{}` instead of ~384 entries
-**Impact**: All enrichment logic broken - `is_enriched()` always returns `False`
-
-**When Emptied**: Dec 16, 2025
-**Backup Available**: `enrichment_state.json.backup_20251205_132723` (485 entries)
-
-**Effects**:
-- Already-enriched movies get re-queued during discovery
-- Circuit breaker disabled (no failure history)
-- All movies from stale queue pass through enrichment filter
-
-**Quick Fix**:
-```bash
-cp backups/enrichment_state.json.backup_20251205_132723 enrichment_state.json
-```
-
-#### Issue #3: Data Divergence Across 3 Files ⚠️
-
-**The Problem**: Enrichment status tracked in 3 places with no synchronization
-
-1. `movie_tracking.json` - Has `enriched: true/false` flag (384 enriched)
-2. `enrichment_state.json` - Tracks same thing (currently 0 entries)
-3. `metrics/newly_available.json` - Queue of movies needing enrichment (11 stale IDs)
-
-**Current State Divergence**:
-- movie_tracking.json: 384 movies with `enriched=true`
-- enrichment_state.json: 0 movies tracked
-- data.json: Only 6 of 609 movies have RT/Wikipedia links (1% vs expected 50%)
-- newly_available queue: 11 movies from Dec 25 (missing 39 from Dec 26-28)
-
-**Root Cause**: Architectural complexity without synchronization
-
-**Recommendation**: Eliminate redundancy, use single source of truth (movie_tracking.json only)
-
-### 9.2 Debugging Checklist
-
-When debugging enrichment issues, check these files in order:
-
-**1. Check Discovery Metrics**:
-```bash
-cat metrics/discovery_run.json | jq '{polled, transitions}'
-# Should show: {polled: 5953, transitions: 3}
-```
-
-**2. Check Queue File**:
-```bash
-cat metrics/newly_available.json | jq '{date, count, first_3: .movie_ids[0:3]}'
-# Should have today's date and recent transitions
-```
-
-**3. Check Enrichment State**:
-```bash
-jq 'keys | length' enrichment_state.json
-# Should have ~384 entries, NOT 0
-```
-
-**4. Check Tracking DB**:
-```bash
-jq '[.movies | to_entries[] | select(.value.enriched == true)] | length' movie_tracking.json
-# Should match enrichment_state.json count
-```
-
-**5. Check Display Data**:
-```bash
-jq '[.movies[] | select(.links.rt)] | length' data.json
-# Should be ~50-60, NOT 6
-```
-
-**If these numbers don't match**, you have data divergence.
-
-### 9.3 File Read/Write Map by Phase
-
-Understanding what each pipeline phase reads and writes:
-
-**PHASE 1: INTAKE**
+**PHASE 1: INTAKE** (`generate_data.py --intake`)
 ```
 READ:  movie_tracking.json (check for duplicates)
 WRITE: movie_tracking.json (append new movies)
        metrics/intake_run.json (metrics)
 ```
 
-**PHASE 2: DISCOVERY**
+**PHASE 2: DISCOVERY** (`generate_data.py --discover`)
 ```
 READ:  movie_tracking.json (status="tracking" movies)
        data.json (for immediate writing)
-       enrichment_state.json (check is_enriched())
 WRITE: movie_tracking.json (update status, dates)
-       data.json (immediate minimal entries)
+       data.json (immediate minimal entries) ◄── APPEND-ONLY
        metrics/discovery_run.json (metrics)
-       metrics/newly_available.json (queue) ❌ CURRENTLY BROKEN
+       metrics/newly_available.json (today's enrichment queue)
 ```
 
-**PHASE 3: ENRICHMENT**
+**PHASE 3: ENRICHMENT** (`generate_data.py`)
 ```
-READ:  movie_tracking.json (all movies)
-       data.json (existing display data)
-       enrichment_state.json (filter enriched) ❌ CURRENTLY EMPTY
-       metrics/newly_available.json (queue) ❌ CURRENTLY STALE
+READ:  metrics/newly_available.json (today's queue)
+       data.json (existing entries)
        cache/*.json (RT, Wikipedia, watch links)
-WRITE: data.json (final enriched)
-       enrichment_state.json (updated status)
+WRITE: data.json (overlay enriched data) ◄── OVERLAY ONLY
        metrics/enrichment_run.json (metrics)
        cache/*.json (updated caches)
 ```
 
-**ORCHESTRATOR**
-```
-READ:  metrics/*.json (all phase metrics)
-WRITE: metrics/daily.jsonl (historical log)
-       metrics/run_diagnostics.json (full report)
-```
+### 9.2 Common Debug Commands
 
-### 9.4 Movie Lifecycle Diagram
-
-```
-1. INTAKE (Discover new theatrical release)
-   TMDB API → movie_tracking.json
-   {status: "tracking", digital_date: null, enriched: null}
-
-2. DISCOVERY (Detect digital availability)
-   TMDB providers API → Providers found → movie_tracking.json
-   {status: "available", digital_date: "2025-12-28", enriched: false}
-   └─> IMMEDIATE WRITE: add_movie_to_site_immediately() → data.json
-       {minimal entry with _enrichment_status: "pending"}
-
-3. QUEUE (Discovery phase)
-   newly_available_ids.append(movie_id)
-   └─> SHOULD WRITE: metrics/newly_available.json
-       ❌ CURRENTLY NOT HAPPENING
-
-4. ENRICHMENT (Enrichment phase)
-   Read queue → Filter → Enrich → Update state
-   RT scraping + Wikipedia + YouTube + Watch links
-   └─> WRITE: data.json (full enriched entry)
-       enrichment_state.json {enriched: true}
-       movie_tracking.json {enriched: true}
-
-5. DISPLAY (Frontend)
-   data.json → index.html → User sees movie wall
-```
-
-### 9.5 Common Debug Commands
-
-**Check recent git commits**:
 ```bash
-git log --oneline --since="3 days ago"
-```
+# Check today's enrichment queue
+cat metrics/newly_available.json | jq '{date, count}'
 
-**Find movies by enrichment status**:
-```bash
-jq '[.movies | to_entries[] | select(.value.enriched == false and .value.status == "available")] | length' movie_tracking.json
-```
+# Count movies in data.json
+jq '.movies | length' data.json
 
-**Find recent transitions**:
-```bash
+# Find recent transitions
 jq '[.movies | to_entries[] | select(.value.digital_date >= "2025-12-25")] | length' movie_tracking.json
+
+# Check enrichment coverage
+jq '[.movies[] | select(.links.rt)] | length' data.json
 ```
 
-**Check cache hit rates**:
-```bash
-jq 'keys | length' cache/rt_cache.json
-jq 'keys | length' cache/wikipedia_cache.json
-```
+### 9.3 Performance Expectations
 
-**Verify enrichment consistency**:
-```bash
-# Count enriched in tracking DB
-jq '[.movies | to_entries[] | select(.value.enriched == true)] | length' movie_tracking.json
-
-# Count enriched in state file
-jq 'keys | length' enrichment_state.json
-
-# These should match!
-```
-
-### 9.6 Performance Monitoring
-
-**Normal Operation Indicators**:
-- Intake: 10-20 movies/day added to tracking
-- Discovery: 2-5 transitions/day (tracking → available)
-- Enrichment: 1-10 movies/day processed
-- Runtime: 30-60 seconds total
-- Cache hit rate: 98%+
-
-**Warning Signs**:
-- Processing 50+ movies (possible corruption)
-- Runtime > 5 minutes (performance issue)
-- Cache hit rate < 90% (cache problem)
-- 0 transitions for 3+ days (API issue)
-
-**Critical Alerts**:
-- Processing 100+ movies (definite corruption)
-- Runtime > 30 minutes (cascade failure)
-- Validation timeouts (data integrity issue)
-- Queue file unchanged for 7+ days (write failure)
+| Metric | Normal | Warning | Critical |
+|--------|--------|---------|----------|
+| Intake | 10-20/day | 50+/day | N/A |
+| Discovery transitions | 2-5/day | 0 for 3+ days | 0 for 7+ days |
+| Enrichment | 1-10/day | 50+/day | 100+/day |
+| Runtime | 30-60s | 5+ min | 30+ min |
 
 ---
 
@@ -1119,7 +1070,6 @@ jq 'keys | length' enrichment_state.json
 **Related Documentation**:
 - [PROJECT_CHARTER.md](./PROJECT_CHARTER.md) - Business requirements, amendments
 - [NRW_DATA_WORKFLOW_EXPLAINED.md](./NRW_DATA_WORKFLOW_EXPLAINED.md) - Detailed data flow
-- [DAILY_CONTEXT.md](./DAILY_CONTEXT.md) - Daily operational context
 - [README.md](./README.md) - Quick start guide
 - [docs/](./docs/) - Legacy documentation
 
@@ -1129,6 +1079,6 @@ jq 'keys | length' enrichment_state.json
 
 ---
 
-**Last Updated**: 2025-12-28
+**Last Updated**: 2025-12-29
 **Maintained By**: Development Team
-**Questions**: See DAILY_CONTEXT.md or create GitHub issue
+**Questions**: Create GitHub issue or check recent git commits/metrics for current state

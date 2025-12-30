@@ -42,4 +42,4 @@
 - Use --test mode where available
 - Capture logs and metrics for each test
 - Verify no regressions from golden state
-- Document any deviations in DAILY_CONTEXT.md
+- Document any deviations in diary/YYYY-MM-DD.md or create GitHub issue

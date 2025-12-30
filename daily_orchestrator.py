@@ -456,7 +456,7 @@ class NRWOrchestrator:
                 os.makedirs('metrics', exist_ok=True)
 
                 # Read metrics from separate intake and discovery files
-                discovered_today = 0
+                intaked_today = 0
                 polled = 0
                 transitions = 0
 
@@ -467,7 +467,7 @@ class NRWOrchestrator:
 
                     if intake_data.get('operation') == 'intake_premieres':
                         results = intake_data.get('results', {})
-                        discovered_today = results.get('discovered', results.get('intaked', 0))
+                        intaked_today = results.get('intaked', 0)
 
                 # Read discovery metrics for polled and transitions
                 if os.path.exists('metrics/discovery_run.json'):
@@ -486,8 +486,8 @@ class NRWOrchestrator:
                         if operation == 'intake_premieres':
                             # Minimal historical support: treat intake as discovery for legacy compatibility
                             results = discovery_data.get('results', {})
-                            discovered_today = results.get('discovered', results.get('intaked', 0))
-                            transitions = discovered_today
+                            intaked_today = results.get('intaked', 0)
+                            transitions = intaked_today
                             print(f"⚠️ DEPRECATED: Using legacy combined schema (intake in discovery_run.json)")
                         # Drop support for unknown operations - they should not exist in historical files
 
@@ -495,7 +495,7 @@ class NRWOrchestrator:
                 metrics_entry = {
                     'date': datetime.now().strftime('%Y-%m-%d'),
                     'timestamp': datetime.now().isoformat(),
-                    'discovered_today': discovered_today,
+                    'intaked_today': intaked_today,
                     'polled': polled,
                     'transitions': transitions
                 }
@@ -507,7 +507,7 @@ class NRWOrchestrator:
                     f.flush()  # Flush Python buffer to OS
                     os.fsync(f.fileno())  # Force OS to write to disk
 
-                print(f"✅ Daily metrics saved: {discovered_today} discovered, {polled} polled, {transitions} transitions")
+                print(f"✅ Daily metrics saved: {intaked_today} intaked, {polled} polled, {transitions} transitions")
                 return  # Success, exit retry loop
 
             except Exception as e:
@@ -839,7 +839,7 @@ class NRWOrchestrator:
                         {
                             'date': e.get('date'),
                             'transitions': e.get('transitions', 0),
-                            'discovered': e.get('discovered_today', 0),
+                            'discovered': e.get('intaked_today', 0),
                             'polled': e.get('polled', 0)
                         }
                         for e in last_3_entries
@@ -883,7 +883,7 @@ class NRWOrchestrator:
                     {
                         'date': entry.get('date'),
                         'transitions': entry.get('transitions', 0),
-                        'discovered_today': entry.get('discovered_today', 0),
+                        'discovered_today': entry.get('intaked_today', 0),
                         'polled': entry.get('polled', 0)
                     }
                     for entry in entries
@@ -1226,8 +1226,8 @@ class NRWOrchestrator:
             # discovery (Phase 2) and final generation (Phase 3)
             print(f"\n📊 Phase 3: Data Generation")
             success = self.run_command(
-                "python3 generate_data.py --enrichment",
-                "Generate data.json for website with enriched links (including enhanced RT scraper)",
+                "python3 generate_data.py --enrich",
+                "Enrich newly discovered movies with metadata",
                 True
             )
 

@@ -3,7 +3,9 @@
 ![Daily NRW Update](https://github.com/hadrianbelove-stack/nrw-production/actions/workflows/daily-check.yml/badge.svg)
 
 ## Overview
-Automated tracking of theatrical releases becoming available digitally, displayed in Netflix-style interface.
+**The New Release Wall tracks when movies become available for digital streaming/rental.**
+
+Since no API provides "when" a movie became available (only "what" is currently available), NRW polls daily to detect transitions and records them. The result: an ongoing, accumulating database of digital release dates that no one else tracks, displayed in a Netflix-style interface.
 
 ## Quick Start
 
@@ -24,7 +26,6 @@ For full menu details, see [docs/features/UNIFIED_LAUNCHER.md](docs/features/UNI
 
 - 📖 **[SYSTEM_ARCHITECTURE.md](SYSTEM_ARCHITECTURE.md)** - How everything works (read this first)
 - 📋 **[PROJECT_CHARTER.md](PROJECT_CHARTER.md)** - Governance & amendments
-- 📅 **[DAILY_CONTEXT.md](DAILY_CONTEXT.md)** - Rolling diary of recent work
 - 🔄 **[NRW_DATA_WORKFLOW_EXPLAINED.md](NRW_DATA_WORKFLOW_EXPLAINED.md)** - Data pipeline details
 
 **Additional guides:**
@@ -124,15 +125,15 @@ Trigger workflows manually in GitHub Actions tab → Select workflow → "Run wo
 **Note:** Admin artifacts (ordering preferences and curation overrides) are ephemeral and not versioned in git. Only the final `data.json` is committed to preserve clean version history.
 - Create YouTube playlists
 
-**For detailed workflow and best practices:** See [ADMIN_WORKFLOW.md](ADMIN_WORKFLOW.md)
+**For detailed workflow and best practices:** See [NRW_DATA_WORKFLOW_EXPLAINED.md](NRW_DATA_WORKFLOW_EXPLAINED.md)
 
 
 ## Daily Workflow
 
 ### Session Start
-1. **Load context**: Read DAILY_CONTEXT.md → PROJECT_CHARTER.md → NRW_DATA_WORKFLOW_EXPLAINED.md
+1. **Load context**: Read PROJECT_CHARTER.md → NRW_DATA_WORKFLOW_EXPLAINED.md
 2. **Start services**: Run `./launch_all.sh` (select option 3 for full stack)
-3. **Check status**: Review daily automation results and any issues in DAILY_CONTEXT.md
+3. **Check status**: Review daily automation results and metrics files for current system state
 
 ### Manual Pipeline Operations
 ```bash
@@ -149,9 +150,8 @@ python3 generate_data.py --full        # Full regeneration (manual, via admin pa
 ```
 
 ### Session End
-1. **Archive context**: Run `./ops/archive_daily_context.sh`
-2. **Update diary**: Creates immutable snapshot in `diary/YYYY-MM-DD.md`
-3. **Commit changes**: Git add/commit any modifications made during session
+1. **Commit changes**: Git add/commit any modifications made during session
+2. **Optional**: Document significant work in `diary/YYYY-MM-DD.md` for future reference
 
 ### Emergency Commands
 Quick reference for common issues. **For detailed troubleshooting:** See [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)
@@ -183,18 +183,17 @@ Quick reference for common issues. **For detailed troubleshooting:** See [docs/T
 
 **For comprehensive troubleshooting:** See [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)
 
-**Restoration planning:** Reference revert plan for outage recovery (IMPLEMENTATION_ROADMAP.md)
+**Restoration planning:** See SYSTEM_ARCHITECTURE.md for current architecture and troubleshooting
 
 ## Documentation Discipline (Charter-Aligned)
 
-**Root Markdown Limit (AMENDMENT-032):** Strictly 7 root MDs per PROJECT_CHARTER.md:
+**Root Markdown Limit:** Strictly 4 root MDs:
 - `PROJECT_CHARTER.md` - Governance & amendments
-- `IMPLEMENTATION_ROADMAP.md` - Tactical planning
-- `SYSTEM_ARCHITECTURE.md` - Technical pipeline
-- `ADMIN_WORKFLOW.md` - Admin panel procedures
-- `NRW_DATA_WORKFLOW_EXPLAINED.md` - Data mechanics
+- `SYSTEM_ARCHITECTURE.md` - Technical pipeline & core data model
+- `NRW_DATA_WORKFLOW_EXPLAINED.md` - Data mechanics & daily workflow
 - `README.md` - Project overview (this file)
-- `DAILY_CONTEXT.md` - Current session state
+
+*Historical: IMPLEMENTATION_ROADMAP.md archived to museum_legacy/ (2025-12-29)*
 
 **Restoration Principle:** Maintain charter discipline; no new root files
 - Restoration planning embedded in roadmap/context to maintain cleanliness

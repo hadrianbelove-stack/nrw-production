@@ -1,9 +1,9 @@
 # Bug Fix Verification - November 11, 2025
 
 ## Problem
-**Bug #2 from Nov 10, 2025:** `generate_display_data()` (Phase 3) was overwriting `movie_tracking.json`, deleting discoveries.
+**Bug #2 from Nov 10, 2025:** `generate_display_data()` (Phase 3) was overwriting `movie_tracking.json`, deleting intake results.
 
-**Evidence:** 330 movies discovered at 10:39:52, deleted by 10:52:47 (50 second window)
+**Evidence:** 330 movies intaked at 10:39:52, deleted by 10:52:47 (50 second window)
 
 ---
 
@@ -75,7 +75,7 @@ Phase 3 (Data Fill / `generate_display_data()`) is now READ-ONLY for `movie_trac
 
 | Aspect | Before | After |
 |--------|--------|-------|
-| **Ownership** | Unclear (both phases touch same file) | Clear (discovery owns tracking, display owns enrichment) |
+| **Ownership** | Unclear (both phases touch same file) | Clear (intake owns tracking, display owns enrichment) |
 | **Race Conditions** | Possible (concurrent writes) | Eliminated (separate files) |
 | **Data Loss Risk** | High (overwrites) | None (read-only) |
 | **Debugging** | Hard (mixed concerns) | Easy (separate state) |
