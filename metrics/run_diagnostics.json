@@ -1,42 +1,72 @@
 {
-  "timestamp": "2025-12-30T05:12:56.741466",
-  "duration_seconds": 1297.673006,
+  "timestamp": "2025-12-30T09:38:08.404967",
+  "duration_seconds": 891.736275,
   "overall_success": true,
   "failure_count": 0,
-  "warning_count": 0,
+  "warning_count": 1,
   "phases": [
     {
       "name": "Intake new premieres using production discovery",
       "success": true,
-      "duration_seconds": 2.209318,
+      "duration_seconds": 1.322332,
       "error": null,
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2025-12-28 to 2025-12-30 (incremental mode, 44 intaked)\n\u2705 Intake complete: 44 new movies added\n\ud83d\udccb Phase complete\n"
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2025-12-29 to 2025-12-30 (incremental mode, 1 intaked)\n\u2705 Intake complete: 1 new movies added\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 1294.633041,
+      "duration_seconds": 890.166338,
       "error": null,
-      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 6300 total movies\n\ud83d\udd0d Raw tracking filter: 6067 movies\n\ud83d\udd0d Assigned tracking_movies list: 6067\n\ud83d\udd0d Found 6067 movies in tracking status\n  Priority queue (last 180 days): 1452 movies\n  Older movies: 4615 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 6067 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/6067 (1.6%) | 0 found | 0m elapsed | ~20m remaining\n  \ud83d\udcbe Progress saved (batch 1)"
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 6301 total movies\n\ud83d\udd0d Raw tracking filter: 6064 movies\n\ud83d\udd0d Assigned tracking_movies list: 6064\n\ud83d\udd0d Found 6064 movies in tracking status\n  Priority queue (last 180 days): 1452 movies\n  Older movies: 4612 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 6064 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/6064 (1.6%) | 0 found | 0m elapsed | ~14m remaining\n  \ud83d\udcbe Progress saved (batch 1)"
     },
     {
       "name": "Enrich newly discovered movies with metadata",
       "success": true,
-      "duration_seconds": 0.797212,
+      "duration_seconds": 0.213261,
       "error": null,
-      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 4 movies to enrich\n  Platform scraper initialization failed, skipping Dropbear\n  Platform scraper initialization failed, skipping Dropbear\n  [DEBUG] Checking if 'Amazon Video' is in supported platforms: ['Netflix', 'Disney+', 'Disney Plus', 'HBO Max', 'Max', 'Hulu']\n  [DEBUG] 'Amazon Video' not supported by agent scraper, returning null\n  \u26a1 Dropbear (0.1s) - Wiki:\u25cb Trailer:\u2713 RT:\u2713 Links:\u2713 Date:\u25cb | 3 success"
+      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\u2705 No new movies to enrich\n\u2705 Enrichment complete: 0 movies enriched\n\ud83d\udccb Phase complete\n"
     }
   ],
   "health_issues": [],
   "stall_status": {
-    "stalled": false,
-    "days_without_transitions": 2
+    "stalled": true,
+    "days": 3,
+    "dates": [
+      "2025-12-28",
+      "2025-12-29",
+      "2025-12-30"
+    ],
+    "entries": [
+      {
+        "date": "2025-12-30",
+        "transitions": 0,
+        "discovered": 1,
+        "polled": 6064
+      },
+      {
+        "date": "2025-12-29",
+        "transitions": 0,
+        "discovered": 0,
+        "polled": 5981
+      },
+      {
+        "date": "2025-12-28",
+        "transitions": 0,
+        "discovered": 0,
+        "polled": 5958
+      }
+    ]
   },
   "failures": [],
-  "warnings": [],
+  "warnings": [
+    {
+      "phase": "Stall Detection",
+      "message": "3-day stall detected: no transitions since 2025-12-28"
+    }
+  ],
   "data_quality": {
-    "total": 6300,
-    "tracking": 6063,
+    "total": 6301,
+    "tracking": 6064,
     "available": 237,
     "data_movies": 237,
     "movies_with_links": 0,
