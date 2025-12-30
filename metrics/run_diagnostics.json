@@ -1,6 +1,6 @@
 {
-  "timestamp": "2025-12-29T10:57:59.780707",
-  "duration_seconds": 5387.23089,
+  "timestamp": "2025-12-30T05:12:56.741466",
+  "duration_seconds": 1297.673006,
   "overall_success": true,
   "failure_count": 0,
   "warning_count": 0,
@@ -8,23 +8,23 @@
     {
       "name": "Intake new premieres using production discovery",
       "success": true,
-      "duration_seconds": 1.768611,
+      "duration_seconds": 2.209318,
       "error": null,
-      "output_preview": "\ud83d\udeab Enrichment disabled for intake/provider discovery mode\n\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2025-12-27 to 2025-12-29 (incremental mode, 23 found)\n\u2705 Intake complete: 23 new movies added\n\ud83d\udccb Intake/provider discovery phase complete\n"
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2025-12-28 to 2025-12-30 (incremental mode, 44 intaked)\n\u2705 Intake complete: 44 new movies added\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 935.635091,
+      "duration_seconds": 1294.633041,
       "error": null,
-      "output_preview": "\ud83d\udeab Enrichment disabled for intake/provider discovery mode\n\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 6771 total movies\n\ud83d\udd0d Raw tracking filter: 5981 movies\n\ud83d\udd0d Assigned tracking_movies list: 5981\n\ud83d\udd0d Found 5981 movies in tracking status\n  Priority queue (last 180 days): 1452 movies\n  Older movies: 4529 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 5981 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/5981 (1.7%) | 0 found |"
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 6300 total movies\n\ud83d\udd0d Raw tracking filter: 6067 movies\n\ud83d\udd0d Assigned tracking_movies list: 6067\n\ud83d\udd0d Found 6067 movies in tracking status\n  Priority queue (last 180 days): 1452 movies\n  Older movies: 4615 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 6067 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/6067 (1.6%) | 0 found | 0m elapsed | ~20m remaining\n  \ud83d\udcbe Progress saved (batch 1)"
     },
     {
-      "name": "Generate data.json for website with enriched links (including enhanced RT scraper)",
+      "name": "Enrich newly discovered movies with metadata",
       "success": true,
-      "duration_seconds": 4449.78896,
+      "duration_seconds": 0.797212,
       "error": null,
-      "output_preview": "\ud83c\udfaf Enrichment enabled for final generation phase\n[AgentLinkScraper] Initialized with Playwright, cache_file=cache/agent_links_cache.json\n[AgentLinkScraper] Cache loaded: 0 entries\n[AgentLinkScraper] Screenshots: enabled\n[AgentLinkScraper] Supported platforms: ['Netflix', 'Disney+', 'Disney Plus', 'HBO Max', 'Max', 'Hulu']\n\n\ud83c\udfac Generating final display data...\n\ud83d\udcc2 Found 614 existing movies in data.json\n\ud83d\udd0d Pre-flight check: validating state file environment...\n\u2705 State file exists and is readable\n\n\ud83d\udccb Load"
+      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 4 movies to enrich\n  Platform scraper initialization failed, skipping Dropbear\n  Platform scraper initialization failed, skipping Dropbear\n  [DEBUG] Checking if 'Amazon Video' is in supported platforms: ['Netflix', 'Disney+', 'Disney Plus', 'HBO Max', 'Max', 'Hulu']\n  [DEBUG] 'Amazon Video' not supported by agent scraper, returning null\n  \u26a1 Dropbear (0.1s) - Wiki:\u25cb Trailer:\u2713 RT:\u2713 Links:\u2713 Date:\u25cb | 3 success"
     }
   ],
   "health_issues": [],
@@ -35,24 +35,24 @@
   "failures": [],
   "warnings": [],
   "data_quality": {
-    "total": 6771,
-    "tracking": 5981,
-    "available": 790,
-    "data_movies": 614,
+    "total": 6300,
+    "tracking": 6063,
+    "available": 237,
+    "data_movies": 237,
     "movies_with_links": 0,
-    "movies_with_rt": 13,
+    "movies_with_rt": 2,
     "movies_with_wikipedia": 0,
     "movies_with_trailers": 0
   },
   "enrichment_metrics": {
-    "timestamp": "2025-12-29T10:57:59.428214",
-    "batch_cap_triggered": true,
-    "loop_timeout_triggered": true,
-    "movies_requested": 608,
-    "movies_processed": 100,
-    "movies_enriched": 14,
-    "movies_deferred": 508,
-    "enrichment_duration_seconds": 4449.265535354614,
+    "timestamp": "2025-12-29T15:42:45.008551",
+    "batch_cap_triggered": false,
+    "loop_timeout_triggered": false,
+    "movies_requested": 11,
+    "movies_processed": 11,
+    "movies_enriched": 11,
+    "movies_deferred": 0,
+    "enrichment_duration_seconds": 1260.8056180477142,
     "max_batch_size": 100,
     "timeout_limit_minutes": 60
   }
