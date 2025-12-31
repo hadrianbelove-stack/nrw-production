@@ -133,7 +133,7 @@ generate_data.py (~2,017 lines)
 │   ├── Configuration methods (load_config, etc.)
 │   ├── Scraper initialization (_init_rt_scraper)
 │   ├── Metadata discovery (scrape_rt_score, find_wikipedia_url, etc.)
-│   ├── Discovery operations (discover_new_premieres, etc.)
+│   ├── Intake operations (intake_new_premieres, etc.)
 │   └── Generation operations (generate, etc.)
 └── Main entry point
 
@@ -300,7 +300,7 @@ Migration is successful when:
 │  ┌───────────────────────────────────────────────────────┐ │
 │  │              DataGenerator.__init__()                  │ │
 │  │  • Loads config                                        │ │
-│  │  • Initializes API clients (TMDB, Watchmode)         │ │
+│  │  • Initializes API clients (TMDB, JustWatch)         │ │
 │  │  • Creates service instances:                         │ │
 │  │    - self.storage = StorageService()                 │ │
 │  │    - self.validator = ValidationService()            │ │
@@ -309,7 +309,7 @@ Migration is successful when:
 │                                                             │
 │  ┌───────────────────────────────────────────────────────┐ │
 │  │           Core Orchestration Methods                   │ │
-│  │  • discover_new_premieres() - Find new movies         │ │
+│  │  • intake_new_premieres() - Find new movies           │ │
 │  │  • check_tracking_movies() - Update tracking          │ │
 │  │  • generate() - Create data.json                      │ │
 │  │                                                        │ │

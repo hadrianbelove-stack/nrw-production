@@ -41,12 +41,20 @@ def compute_baseline():
         last_date = metrics[-1]['date']
         print(f"Date range: {first_date} to {last_date}")
 
+    # Helper functions for legacy key compatibility
+    def get_intake_count(m):
+        """Handle legacy key names: intaked_today > discovered_today > discovered"""
+        return m.get('intaked_today') or m.get('discovered_today') or m.get('discovered') or 0
+    def get_transition_count(m):
+        """Handle legacy key names: transitions > newly_digital"""
+        return m.get('transitions') or m.get('newly_digital') or 0
+
     # Compute 3-day baseline if we have enough data
     if len(metrics) >= 3:
         last_3 = metrics[-3:]
 
-        intake_avg = sum(m.get('intaked_today', 0) for m in last_3) / 3
-        newly_digital_avg = sum(m.get('transitions', 0) for m in last_3) / 3
+        intake_avg = sum(get_intake_count(m) for m in last_3) / 3
+        newly_digital_avg = sum(get_transition_count(m) for m in last_3) / 3
 
         print(f"\n📈 3-Day Baseline (last 3 days):")
         print(f"  Intake average: {intake_avg:.1f} movies/day")
@@ -56,7 +64,7 @@ def compute_baseline():
         # Show individual daily values
         print(f"\n📅 Daily Breakdown:")
         for metric in last_3:
-            print(f"  {metric['date']}: {metric.get('intaked_today', 0)} intaked, {metric.get('transitions', 0)} newly digital")
+            print(f"  {metric['date']}: {get_intake_count(metric)} intaked, {get_transition_count(metric)} newly digital")
     else:
         print(f"\n⚠️  Need at least 3 days of data for baseline")
         print(f"   Currently have {len(metrics)} day(s)")
@@ -66,8 +74,8 @@ def compute_baseline():
         recent = metrics[-min(7, len(metrics)):]
         print(f"\n📊 Recent Trends (last {len(recent)} days):")
 
-        total_intaked = sum(m.get('intaked_today', 0) for m in recent)
-        total_newly_digital = sum(m.get('transitions', 0) for m in recent)
+        total_intaked = sum(get_intake_count(m) for m in recent)
+        total_newly_digital = sum(get_transition_count(m) for m in recent)
 
         print(f"  Total intaked: {total_intaked}")
         print(f"  Total newly digital: {total_newly_digital}")

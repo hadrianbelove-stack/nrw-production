@@ -1,8 +1,10 @@
-# 🐛 Discovery Bug Fix - November 10, 2025
+# 🐛 Intake Bug Fix - November 10, 2025
+
+> **Note (Dec 2024):** This document uses "discovery" to refer to what is now called "intake" (finding new movie premieres). The terminology has been updated: `discover_new_premieres()` → `intake_new_premieres()`, `discovery_state.json` → `intake_state.json`.
 
 ## Problem Summary
 
-Discovery has been stuck since Nov 7th, repeatedly checking Oct 27 - Nov 10 but missing movies released Nov 8-10.
+Intake has been stuck since Nov 7th, repeatedly checking Oct 27 - Nov 10 but missing movies released Nov 8-10.
 
 ---
 
@@ -14,23 +16,23 @@ Discovery has been stuck since Nov 7th, repeatedly checking Oct 27 - Nov 10 but 
 
 **Original Code:**
 ```python
-# Update discovery state after successful discovery that wrote movie_tracking.json
+# Update intake state after successful intake that wrote movie_tracking.json
 if new_movies_added > 0:  # Only update state if we wrote movie_tracking.json
-    self._update_discovery_state(state_file)
+    self._update_intake_state(state_file)
 ```
 
 **Problem:**
-- If discovery finds 0 movies, state doesn't update
+- If intake finds 0 movies, state doesn't update
 - Next run uses bootstrap mode (same 14-day window)
 - Gets stuck in infinite loop checking same dates
 
 **Fix Applied:**
 ```python
-# Update discovery state after successful discovery
+# Update intake state after successful intake
 # CRITICAL: Always update state so next run checks from today forward
 # Even if 0 movies found, we still successfully checked this date range
 # This prevents getting stuck in bootstrap mode checking same dates forever
-self._update_discovery_state(state_file)
+self._update_intake_state(state_file)
 ```
 
 ---

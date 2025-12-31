@@ -117,14 +117,14 @@ These methods remain in generate_data.py:
 - `perform_startup_consistency_check()`
 - `validate_enrichment_changes(new_db, filepath)`
 
-### Discovery Operations
-- `discover_new_premieres(...)`
+### Intake Operations
+- `intake_new_premieres(...)`  # Renamed from discover_new_premieres Dec 2024
 - `check_tracking_movies(...)`
 - `save_daily_metrics(...)`
 - `get_3_day_baseline()`
-- `_load_discovery_state(...)`
-- `_update_discovery_state(...)`
-- `_write_discovery_metrics(...)`
+- `_load_intake_state(...)`  # Renamed from _load_discovery_state Dec 2024
+- `_update_intake_state(...)`  # Renamed from _update_discovery_state Dec 2024
+- `_write_intake_metrics(...)`
 
 ### Generation Operations
 - `generate(...)`  # Main orchestration method

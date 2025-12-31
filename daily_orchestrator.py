@@ -271,7 +271,7 @@ class NRWOrchestrator:
             if len(recent_movies) == 0:
                 if fail_on_no_recent:
                     # Fail validation when flag is true
-                    raise Exception(f"No recent movies found in last {recent_days} days (since {cutoff_date}). This indicates discovery system failure or data quality issues.")
+                    raise Exception(f"No recent movies found in last {recent_days} days (since {cutoff_date}). This indicates pipeline failure or data quality issues.")
                 else:
                     # Warning instead of failure - allow pipeline to continue
                     print(f"⚠️ Warning: No recent movies found in last {recent_days} days (since {cutoff_date}). Continuing with validation.")
@@ -395,15 +395,14 @@ class NRWOrchestrator:
         return stats
 
     def get_link_source_mix(self):
-        """Analyze link sources in data.json (Watchmode vs platform scrapers vs none)"""
+        """Analyze link sources in data.json (real deep links vs search fallbacks vs none)"""
         try:
             with open('data.json', 'r') as f:
                 data = json.load(f)
 
             movies = data.get('movies', [])
             link_sources = {
-                'watchmode': 0,
-                'streaming_scrapers': 0,
+                'deep_links': 0,  # Real links from JustWatch API or scrapers
                 'search_urls': 0,
                 'no_links': 0
             }
@@ -434,8 +433,7 @@ class NRWOrchestrator:
                 if has_search_urls:
                     link_sources['search_urls'] += 1
                 elif has_any_links:
-                    # Assume Watchmode if we have real links (more detailed tracking would need to be added to link generation)
-                    link_sources['watchmode'] += 1
+                    link_sources['deep_links'] += 1
                 else:
                     link_sources['no_links'] += 1
 
@@ -479,17 +477,12 @@ class NRWOrchestrator:
                         polled = results.get('polled', 0)
                         transitions = results.get('transitions', 0)
                     else:
-                        # LEGACY SUPPORT (SCHEDULED FOR REMOVAL): Historical combined schema
-                        # TODO: Remove after 2025-12-31 when all historical backfill needs are complete
-                        # This branch handles pre-separation metrics where discovery_run.json contained intake operations
+                        # Legacy combined schema support (pre-separation metrics)
                         operation = discovery_data.get('operation')
                         if operation == 'intake_premieres':
-                            # Minimal historical support: treat intake as discovery for legacy compatibility
                             results = discovery_data.get('results', {})
                             intaked_today = results.get('intaked', 0)
                             transitions = intaked_today
-                            print(f"⚠️ DEPRECATED: Using legacy combined schema (intake in discovery_run.json)")
-                        # Drop support for unknown operations - they should not exist in historical files
 
                 # Create consolidated metrics entry
                 metrics_entry = {
@@ -646,8 +639,8 @@ class NRWOrchestrator:
             try:
                 with open('metrics/intake_run.json') as f:
                     intake = json.load(f)
-                discovered = intake.get('results', {}).get('discovered', 0)
-                print(f"   ✅ Intake: {discovered} new movies discovered")
+                intaked = intake.get('results', {}).get('intaked', 0)
+                print(f"   ✅ Intake: {intaked} new movies intaked")
             except Exception as e:
                 issues.append({
                     'check': 'intake_read',
@@ -839,7 +832,7 @@ class NRWOrchestrator:
                         {
                             'date': e.get('date'),
                             'transitions': e.get('transitions', 0),
-                            'discovered': e.get('intaked_today', 0),
+                            'intaked': e.get('intaked_today', 0),
                             'polled': e.get('polled', 0)
                         }
                         for e in last_3_entries
@@ -883,7 +876,7 @@ class NRWOrchestrator:
                     {
                         'date': entry.get('date'),
                         'transitions': entry.get('transitions', 0),
-                        'discovered_today': entry.get('intaked_today', 0),
+                        'intaked_today': entry.get('intaked_today', 0),
                         'polled': entry.get('polled', 0)
                     }
                     for entry in entries
@@ -1191,7 +1184,7 @@ class NRWOrchestrator:
             discovery_pipeline = [
                 # Phase 1: Intake new premieres from TMDB
                 ("python3 generate_data.py --intake",
-                 "Intake new premieres using production discovery", True, True),  # Last True indicates retry
+                 "Intake new premieres from TMDB", True, True),  # Last True indicates retry
 
                 # Phase 2: Discovery – check tracked movies for digital availability
                 ("python3 generate_data.py --discover",
@@ -1227,7 +1220,7 @@ class NRWOrchestrator:
             print(f"\n📊 Phase 3: Data Generation")
             success = self.run_command(
                 "python3 generate_data.py --enrich",
-                "Enrich newly discovered movies with metadata",
+                "Enrich newly available movies with metadata",
                 True
             )
 

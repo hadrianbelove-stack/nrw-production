@@ -84,7 +84,7 @@ def main():
     intaked_count = 0
     if args.intake:
         print("🔍 Running intake for new premieres...")
-        intaked_count = generator.discover_new_premieres(
+        intaked_count = generator.intake_new_premieres(
             debug=args.debug,
             since_date=args.since,
             bootstrap=args.bootstrap

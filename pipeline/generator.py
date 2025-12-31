@@ -281,8 +281,14 @@ class DataGenerator:
                 }
 
             last_3 = recent_metrics[-3:]
-            intake_avg = sum(m['discovered'] for m in last_3) / 3
-            newly_digital_avg = sum(m['newly_digital'] for m in last_3) / 3
+            # Handle legacy key names: intaked_today (current) > discovered_today > discovered
+            def get_intake_count(m):
+                return m.get('intaked_today') or m.get('discovered_today') or m.get('discovered') or 0
+            # Handle legacy key names: transitions (current) > newly_digital
+            def get_transition_count(m):
+                return m.get('transitions') or m.get('newly_digital') or 0
+            intake_avg = sum(get_intake_count(m) for m in last_3) / 3
+            newly_digital_avg = sum(get_transition_count(m) for m in last_3) / 3
 
             return {
                 'days_available': 3,
