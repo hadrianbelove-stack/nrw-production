@@ -159,7 +159,7 @@ git push origin main
 | `data.json` | Display data (append-only, 90-day window) | ~230 | JSON object |
 | `metrics/newly_available.json` | Today's enrichment queue | Variable (0-20/day) | JSON object |
 | `config.yaml` | System configuration | N/A | YAML |
-| `watchmode_quota.json` | API usage tracking | N/A | JSON |
+| `cache/watch_links_cache.json` | JustWatch API response cache | ~200 entries | JSON |
 
 ### 3.3 Core Scripts
 
@@ -232,8 +232,9 @@ All API keys follow the 12-factor app pattern:
 
 **Required for Production:**
 - `TMDB_API_KEY` - The Movie Database API key
-- `WATCHMODE_API_KEY` - Watchmode streaming links API key
 - `OMDB_API_KEY` - OMDb API key (used for IMDb ID fallback in Wikipedia lookup)
+
+> **Note (Dec 2024):** Watchmode API was deprecated. JustWatch GraphQL API is now the primary source for watch links.
 
 **Launch Method:**
 - `./launch_all.sh` - launches both admin panel (5556) and public site (3000)
@@ -314,17 +315,15 @@ rt_scraper:
 - **Usage:** Movie metadata, posters, cast/crew information
 - **Rate limit:** 40 requests per 10 seconds (handled automatically)
 
-### Watchmode API
-- **Sign up:** https://api.watchmode.com/
-- **Environment variable:** `WATCHMODE_API_KEY`
-- **Config fallback:** `api.watchmode_api_key` in config.yaml
-- **Free Tier:** 1,000 requests/month (no credit card required)
+### JustWatch API (Primary Watch Links Source)
+- **Type:** GraphQL API (unofficial, reverse-engineered)
+- **Implementation:** `justwatch_client.py`
 - **Usage:** Deep links to streaming platforms (Netflix, Amazon, HBO Max, etc.)
-- **Endpoints used:**
-  - Search: https://api.watchmode.com/v1/search/ (search by TMDB ID)
-  - Details: https://api.watchmode.com/v1/title/{watchmode_id}/details/ (get streaming sources)
-- **Authentication:** Pass `apiKey` as query parameter
-- **Coverage:** 200+ streaming services in 50+ countries (US data on free tier)
+- **Authentication:** None required
+- **Coverage:** 200+ streaming services, excellent for new releases
+- **Rate Limit:** 1 request per second (self-imposed)
+
+> **Note:** Watchmode API was deprecated in Dec 2024 due to quota/cost issues.
 
 ### OMDb API
 - **Sign up:** http://www.omdbapi.com/apikey.aspx
@@ -335,12 +334,12 @@ rt_scraper:
 - **Free Tier:** 1,000 requests/day
 
 ### Agent-Based Link Finding (No API Key Required)
-- **Purpose:** Scrape direct watch links from streaming platforms when Watchmode API has no data
+- **Purpose:** Scrape direct watch links from streaming platforms when JustWatch API has no data
 - **Platforms:** Netflix, Disney+, HBO Max, Hulu
 - **Technology:** Playwright with headless Chrome
 - **Rate Limiting:** 2-second minimum delay between scrapes
 - **Cache:** `cache/agent_links_cache.json`
-- **Usage:** Automatic fallback when Watchmode API returns no data
+- **Usage:** Automatic fallback when JustWatch API returns no data
 - **Optional:** Can be disabled by not initializing agent in `generate_data.py`
 - **Terms of Service:** Web scraping may violate platform ToS; use responsibly
 
@@ -381,10 +380,10 @@ The `watch_links` field in `data.json` uses a **two-category structure** represe
 ### Cache Strategy
 - **Location:** `cache/watch_links_cache.json`
 - **Key:** TMDB ID (string)
-- **Value:** `{links: {...}, cached_at: ISO-8601, source: 'watchmode_api'|'tmdb_providers'}`
+- **Value:** `{links: {...}, cached_at: ISO-8601, source: 'justwatch_api'|'tmdb_providers'}`
 - **Purpose:** Prevents redundant API calls (saves 13,380 calls/month)
 - **Effectiveness:** With cache, monthly usage is ~300 calls (new movies only); without cache, would be 13,680 calls (exceeds free tier)
-- **Migration support:** Automatically migrates legacy `free/paid` or `rent/buy` format to canonical `streaming/vod` schema
+- **Schema:** Uses canonical `streaming`/`vod` format (legacy `rent`/`buy` deprecated Dec 2024)
 
 ## 📊 Data Contracts
 
@@ -569,14 +568,8 @@ Phase 3: Quality Assurance (Optional)
 
 Phase 4: User Display
     ↓ index.html + assets/app.js
-    ↓ Enhanced immediate writing: atomic writes with TMDB fallback
-    ↓ Creates: ALL available movies in data.json (minimal + enriched)
-    ↓ Enrichment failures no longer hide movies
-    ↓ Metadata tracking: underscore-prefixed discovery fields
-
-Phase 5: User Display
-    ↓ index.html + assets/
-    ↓ Renders: Movie grid with filters
+    ↓ Renders movie grid from data.json
+    ↓ All discovered movies visible (enrichment enhances, doesn't gate)
 ```
 
 ### 4.2 Key Data Transformations
@@ -952,11 +945,13 @@ for dm in data_movies:       # Iterated over keys, not movies
 
 **Root Cause**: Processing too many movies (see 8.2)
 
-**Detection**: Check `watchmode_quota.json`
-**Fix**: Wait for quota reset, optimize requests
+**Detection**: Check enrichment logs for rate limit errors
+**Fix**: Wait for rate limit cooldown, optimize requests
 **Prevention**: Enrichment-on-transition pattern
 
-**Detailed troubleshooting:** [docs/TROUBLESHOOTING.md - Watchmode Quota](docs/TROUBLESHOOTING.md#4-watchmode-api-quota-exhausted)
+> **Note (Dec 2024):** Watchmode API was deprecated. JustWatch API is now used (no quota limits, self-imposed rate limiting).
+
+**Detailed troubleshooting:** [docs/TROUBLESHOOTING.md - Watch Links Issues](docs/TROUBLESHOOTING.md#4-watch-links-missing)
 
 ### 8.4 Scraper Failures
 

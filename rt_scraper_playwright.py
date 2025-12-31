@@ -555,9 +555,113 @@ class RTScraperPlaywright:
 
         return candidates
 
+    def _search_rt_directly(self, title, year):
+        """Search RT's own search page to find movie URL.
+
+        This is more reliable than Google search (which gets blocked) or
+        URL construction (which guesses wrong slugs like wicked_2024 vs wicked_for_good).
+
+        Args:
+            title: Movie title
+            year: Release year
+
+        Returns:
+            str: RT movie URL if found, None otherwise
+        """
+        try:
+            # Build RT search URL
+            search_url = f"https://www.rottentomatoes.com/search?search={quote(title)}"
+            self._log(f"RT search: {search_url}", level='debug')
+
+            # Navigate to RT search page
+            self.page.goto(search_url, wait_until='domcontentloaded', timeout=30000)
+            time.sleep(2)  # Wait for dynamic content to load
+
+            # Find all movie links in search results
+            movie_links = self.page.query_selector_all('a[href*="/m/"]')
+
+            if not movie_links:
+                self._log(f"No movie links found in RT search for {title}", level='debug')
+                return None
+
+            self._log(f"Found {len(movie_links)} movie links in RT search", level='debug')
+
+            # Extract hrefs and filter for valid movie pages
+            candidates = []
+
+            # Normalize title for URL matching
+            title_words = set(re.sub(r'[^a-z0-9\s]', '', title.lower()).split())
+            title_slug = re.sub(r'[^a-z0-9]', '', title.lower())
+
+            for link in movie_links:
+                href = link.get_attribute('href')
+                if href and '/m/' in href:
+                    # Normalize to full URL
+                    if href.startswith('/m/'):
+                        full_url = f"https://www.rottentomatoes.com{href}"
+                    else:
+                        full_url = href
+
+                    # Extract slug from URL (e.g., "/m/wicked_for_good" -> "wicked_for_good")
+                    slug = href.split('/m/')[-1].split('/')[0].split('?')[0]
+                    slug_normalized = re.sub(r'[^a-z0-9]', '', slug.lower())
+
+                    # Skip if already seen
+                    if full_url in [c[0] for c in candidates]:
+                        continue
+
+                    # Try to get context from surrounding text
+                    try:
+                        parent = link.evaluate('el => el.closest("search-page-media-row")?.textContent || ""')
+                    except:
+                        parent = ''
+
+                    # Calculate match score based on title words in URL
+                    slug_words = set(slug.lower().replace('_', ' ').split())
+                    word_matches = len(title_words & slug_words)
+
+                    candidates.append((full_url, parent, word_matches, slug_normalized))
+
+            if not candidates:
+                return None
+
+            # Sort by word matches (highest first)
+            candidates.sort(key=lambda x: x[2], reverse=True)
+
+            # Try to find best match by title and year
+            year_str = str(year)
+            for url, context, word_matches, slug_normalized in candidates:
+                # Check if title is in slug
+                if title_slug in slug_normalized or word_matches >= 2:
+                    if year_str in context or year_str in url:
+                        self._log(f"RT search found year+title match: {url}", level='debug')
+                        return url
+
+            # Try title match without year requirement
+            for url, context, word_matches, slug_normalized in candidates:
+                if title_slug in slug_normalized or word_matches >= 2:
+                    self._log(f"RT search found title match: {url}", level='debug')
+                    return url
+
+            # Fallback to first result with any word matches
+            if candidates[0][2] > 0:
+                first_url = candidates[0][0]
+                self._log(f"RT search using best word match: {first_url}", level='debug')
+                return first_url
+
+            self._log(f"RT search: no good matches found among {len(candidates)} links", level='debug')
+            return None
+
+        except Exception as e:
+            self._log(f"RT search error for {title}: {e}", level='error')
+            return None
+
     def _scrape_rt_page(self, title, year):
-        """Search Google for Rotten Tomatoes link and extract URL + score.
-        Falls back to direct URL construction if Google is blocked.
+        """Find RT page URL and extract score.
+
+        Strategy order:
+        1. RT search page (most reliable - uses RT's own search)
+        2. Direct URL construction (fallback for when RT search fails)
 
         Args:
             title: Movie title
@@ -575,115 +679,37 @@ class RTScraperPlaywright:
         # Increment attempts counter
         self.stats['attempts'] += 1
 
+        rt_link = None
+        rt_score = None
+
         try:
-            # Build Google search query: "TITLE" YEAR "Rotten Tomatoes"
-            search_query = f'"{title}" {year} "Rotten Tomatoes"'
-            google_search_url = f"https://www.google.com/search?q={quote(search_query)}"
+            # Primary method: Search RT directly (most reliable)
+            rt_link = self._search_rt_directly(title, year)
 
-            self._log(f"Google search: {search_query}", level='debug')
+            if rt_link:
+                self._log(f"RT search found: {rt_link}", level='debug')
+            else:
+                # Fallback: Try direct URL construction
+                self._log(f"RT search failed, trying URL construction for {title} ({year})", level='debug')
+                candidate_urls = self._construct_rt_url(title, year)
 
-            # Navigate to Google search
-            self.page.goto(google_search_url, wait_until='domcontentloaded')
-            time.sleep(1)  # Wait for results to load
+                for candidate_url in candidate_urls:
+                    self._log(f"Trying direct URL: {candidate_url}", level='debug')
 
-            # Extract RT link from Google search results
-            # Google search results use <a> tags with href containing the target URL
-            rt_link = None
-            rt_score = None
+                    self.page.goto(candidate_url, wait_until='domcontentloaded')
+                    time.sleep(1)
 
-            # Try to find RT link in search results
-            search_result_selectors = [
-                'a[href*="rottentomatoes.com/m/"]',  # Direct RT movie link
-                'a[href*="rottentomatoes.com"]',      # Any RT link
-            ]
-
-            for selector in search_result_selectors:
-                try:
-                    elements = self.page.query_selector_all(selector)
-                    if elements:
-                        self._log(f"Found {len(elements)} RT links with selector: {selector}", level='debug')
-
-                        for element in elements:
-                            href = element.get_attribute('href')
-                            if not href:
-                                continue
-
-                            # Extract actual URL from Google redirect
-                            # Google wraps URLs in /url?q=... format
-                            if '/url?q=' in href:
-                                # Extract URL from Google redirect
-                                url_start = href.find('/url?q=') + 7
-                                url_end = href.find('&', url_start)
-                                if url_end == -1:
-                                    url_end = len(href)
-                                rt_link = href[url_start:url_end]
-                            else:
-                                rt_link = href
-
-                            # Validate it's a real RT movie page
-                            if rt_link and '/m/' in rt_link and 'rottentomatoes.com' in rt_link:
-                                self._log(f"Found RT link: {rt_link}", level='debug')
-                                break
-
-                        if rt_link:
-                            break
-                except Exception as e:
-                    self._log(f"Error with selector {selector}: {e}", level='debug')
-                    continue
+                    # Check if page exists (not a 404 or error page)
+                    page_title = self.page.title().lower()
+                    if ('rotten tomatoes' in page_title and
+                        'not found' not in page_title and
+                        '404' not in page_title):
+                        rt_link = candidate_url
+                        break
 
             if not rt_link:
-                self._log(f"No RT link found in Google search for {title} ({year})", level='warning')
-
-                # Fallback: Try direct URL construction (bypass Google search failure)
-                self._log(f"Attempting direct RT URL construction for {title} ({year})", level='debug')
-
-                try:
-                    candidate_urls = self._construct_rt_url(title, year)
-
-                    for candidate_url in candidate_urls:
-                        self._log(f"Trying direct URL: {candidate_url}", level='debug')
-
-                        # Try to navigate directly to the RT page
-                        self.page.goto(candidate_url, wait_until='domcontentloaded')
-                        time.sleep(1)
-
-                        # Check if page exists (not a 404 or error page)
-                        page_title = self.page.title().lower()
-                        if ('rotten tomatoes' in page_title and
-                            'not found' not in page_title and
-                            '404' not in page_title):
-
-                            # Extract score from this page
-                            rt_score = self._extract_score_from_rt_page(candidate_url)
-
-                            if rt_score:  # Only consider success if we got a score
-                                result = {
-                                    'url': candidate_url,
-                                    'score': rt_score
-                                }
-
-                                self._log(f"Direct URL success: {candidate_url} (Score: {rt_score})", level='debug')
-
-                                # Cache the success
-                                cache_key = f"{title}_{year}"
-                                self.cache[cache_key] = {
-                                    'url': result['url'],
-                                    'score': result['score'],
-                                    'title': title,
-                                    'scraped_at': datetime.now().isoformat()
-                                }
-                                self._save_cache()
-                                self.stats['successes'] += 1
-
-                                return result
-
-                    # All direct URLs failed
-                    self._log(f"All direct URL attempts failed for {title} ({year})", level='debug')
-
-                except Exception as fallback_error:
-                    self._log(f"Direct URL fallback error for {title} ({year}): {fallback_error}", level='error')
-
-                # Cache the failure (both Google search and direct URL failed)
+                self._log(f"No RT link found for {title} ({year})", level='warning')
+                # Cache the failure
                 cache_key = f"{title}_{year}"
                 self.cache[cache_key] = {
                     'url': None,
@@ -695,16 +721,15 @@ class RTScraperPlaywright:
                 self.stats['failures'] += 1
                 return None
 
-            # Extract score from actual RT page (more reliable than Google snippets)
+            # Extract score from the RT page
             rt_score = self._extract_score_from_rt_page(rt_link)
 
-            # Create result
             result = {
                 'url': rt_link,
                 'score': rt_score
             }
 
-            self._log(f"Google search successful: {rt_link} (Score: {rt_score or 'N/A'})", level='debug')
+            self._log(f"Success: {rt_link} (Score: {rt_score or 'N/A'})", level='debug')
 
             # Cache the result
             cache_key = f"{title}_{year}"
@@ -720,58 +745,9 @@ class RTScraperPlaywright:
             return result
 
         except Exception as e:
-            self._log(f"Google search error for {title} ({year}): {e}", level='error')
+            self._log(f"RT scrape error for {title} ({year}): {e}", level='error')
 
-            # Fallback: Try direct URL construction (bypass Google blocking)
-            self._log(f"Attempting direct RT URL construction for {title} ({year})", level='debug')
-
-            try:
-                candidate_urls = self._construct_rt_url(title, year)
-
-                for candidate_url in candidate_urls:
-                    self._log(f"Trying direct URL: {candidate_url}", level='debug')
-
-                    # Try to navigate directly to the RT page
-                    self.page.goto(candidate_url, wait_until='domcontentloaded')
-                    time.sleep(1)
-
-                    # Check if page exists (not a 404 or error page)
-                    page_title = self.page.title().lower()
-                    if ('rotten tomatoes' in page_title and
-                        'not found' not in page_title and
-                        '404' not in page_title):
-
-                        # Extract score from this page
-                        rt_score = self._extract_score_from_rt_page(candidate_url)
-
-                        if rt_score:  # Only consider success if we got a score
-                            result = {
-                                'url': candidate_url,
-                                'score': rt_score
-                            }
-
-                            self._log(f"Direct URL success: {candidate_url} (Score: {rt_score})", level='debug')
-
-                            # Cache the success
-                            cache_key = f"{title}_{year}"
-                            self.cache[cache_key] = {
-                                'url': result['url'],
-                                'score': result['score'],
-                                'title': title,
-                                'scraped_at': datetime.now().isoformat()
-                            }
-                            self._save_cache()
-                            self.stats['successes'] += 1
-
-                            return result
-
-                # All direct URLs failed
-                self._log(f"All direct URL attempts failed for {title} ({year})", level='debug')
-
-            except Exception as fallback_error:
-                self._log(f"Direct URL fallback error for {title} ({year}): {fallback_error}", level='error')
-
-            # Cache the failure (both Google and direct URL failed)
+            # Cache the failure
             cache_key = f"{title}_{year}"
             self.cache[cache_key] = {
                 'url': None,

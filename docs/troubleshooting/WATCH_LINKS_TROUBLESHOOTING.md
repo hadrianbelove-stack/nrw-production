@@ -1,5 +1,24 @@
 # Watch Links Troubleshooting Guide
 
+> **Note (Dec 2024):** Watch links now use **JustWatch API** as the primary source.
+> Watchmode API was deprecated due to quota/cost issues. Most of this doc refers to
+> the legacy Watchmode system and is kept for historical reference.
+
+## Current Architecture (Dec 2024+)
+
+**Priority Waterfall:**
+1. Manual overrides (`overrides/watch_links_overrides.json`)
+2. Cache (`cache/watch_links_cache.json`)
+3. **JustWatch API** (primary - free, reliable)
+4. Agent scraper (Netflix, Disney+, HBO Max, Hulu fallback)
+5. TMDB provider names with null links
+
+**Key Files:**
+- `justwatch_client.py` - JustWatch GraphQL API client
+- `pipeline/enrichment.py` - Watch links waterfall logic
+
+---
+
 ## Problem: All Watch Links Are Google Search URLs
 
 ### Symptoms
@@ -7,8 +26,14 @@
 - No deep links to Amazon, Apple TV, or other platforms
 - Users have to search manually instead of going directly to movie page
 
-### Root Cause
-The Watchmode API key is invalid, expired, or returning no data. The system falls back to Google search URLs.
+### Root Cause (Legacy - Pre Dec 2024)
+Previously: Watchmode API quota exhausted. System fell back to Google search URLs.
+
+### Current Cause (Dec 2024+)
+JustWatch API couldn't find the movie. Check that:
+1. Movie title and year are correct in movie_tracking.json
+2. JustWatch API is accessible (test with `justwatch_client.py`)
+3. Cache isn't stale (delete entry in `cache/watch_links_cache.json` to force refresh)
 
 ---
 
@@ -202,12 +227,12 @@ python3 streaming_platform_scraper.py  # now uses Playwright
 For high-priority movies, add manual deep links:
 
 **Steps:**
-1. Edit `admin/watch_link_overrides.json`:
+1. Edit `overrides/watch_links_overrides.json`:
    ```json
    {
      "507244": {
-       "rent": {
-         "service": "Amazon",
+       "vod": {
+         "service": "Amazon Video",
          "link": "https://www.amazon.com/gp/video/detail/B0XXXXXX"
        }
      }

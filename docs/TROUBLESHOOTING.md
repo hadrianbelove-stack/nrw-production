@@ -16,7 +16,7 @@
 | `base64: invalid input` | YouTube token corruption | [YouTube Token Issues](#1-youtube-token-corruption) |
 | `Memo value not found at index X` | Pickle corruption | [YouTube Token Issues](#1-youtube-token-corruption) |
 | `No recent movies found` | Validation catch-22 or discovery failure | [Validation Failures](#2-validation-failures---no-recent-movies) |
-| `Provider coverage too low` | Watchmode API quota exhausted | [API Quota Exhaustion](#4-watchmode-api-quota-exhausted) |
+| `Provider coverage too low` | Watch links API issues | [Watch Links Missing](#4-watch-links-missing) |
 | Workflow runs 2+ hours | Branch divergence or enrichment bug | [Branch Divergence](#5-branch-divergence) |
 | OAuth completes but no token.pickle | File permissions or swallowed exception | [YouTube Token Issues](#1-youtube-token-corruption) |
 
@@ -372,64 +372,42 @@ The enrichment system tracks which movies have been processed with additional me
 
 ---
 
-### 4. Watchmode API Quota Exhausted
+### 4. Watch Links Missing (Low Provider Coverage)
+
+> **Note (Dec 2024):** Watchmode API was deprecated. System now uses **JustWatch API** as primary source.
 
 **Symptoms:**
 - Warning: `Provider coverage too low: X < 5`
-- Most movies have no watch links (streaming/rent/buy)
+- Most movies have no watch links (streaming/vod)
 - Only 1-5 movies out of 80+ have provider links
-- Validation fails on provider coverage check
 
-**Root Causes:**
-- Watchmode API free tier: 1000 calls/month
-- Quota typically exhausts around day 26-28 of month
-- Won't reset until 1st of next month
-- Without Watchmode, agent scraper only covers 4-5 platforms
+**Root Causes (Current - Dec 2024+):**
+- JustWatch API couldn't find movie (title/year mismatch)
+- Movie is very new or obscure (not yet in JustWatch database)
+- Cache is stale and needs refresh
 
 **Solutions:**
 
-#### Temporary fix (until quota resets):
-
 ```bash
-# Lower provider coverage threshold temporarily
-gh secret set MIN_PROVIDER_COVERAGE --body "1"
+# Test JustWatch API for a specific movie
+python3 -c "from justwatch_client import JustWatchClient; c=JustWatchClient(); print(c.get_watch_links('Conclave', 2024))"
 
-# Workflow will now succeed with minimal coverage
+# Force refresh by clearing cache entry
+python3 -c "import json; c=json.load(open('cache/watch_links_cache.json')); del c['MOVIE_ID']; json.dump(c, open('cache/watch_links_cache.json','w'))"
+
+# Re-run enrichment
+python3 generate_data.py --enrich
 ```
 
-#### After quota resets (1st of month):
-
-```bash
-# Restore normal threshold
-gh secret set MIN_PROVIDER_COVERAGE --body "10"
-
-# Or disable the check entirely
-gh secret set MIN_PROVIDER_COVERAGE --body "0"
+**Manual Override:**
+Add to `overrides/watch_links_overrides.json`:
+```json
+{
+  "MOVIE_ID": {
+    "vod": {"service": "Amazon Video", "link": "https://amazon.com/..."}
+  }
+}
 ```
-
-#### Check quota status:
-
-```bash
-# Look for Watchmode API usage in logs
-grep -i "watchmode" logs/*.log
-
-# Check watchmode_quota.json if it exists
-cat watchmode_quota.json
-```
-
-**Prevention:**
-- Monitor Watchmode API usage weekly
-- Consider upgrading to paid tier ($249/month) if needed
-- Implement additional fallback scrapers for popular platforms
-- Cache watch links for longer (currently 30 days)
-
-**Long-term Solutions:**
-- Reduce Watchmode API calls through better caching
-- Add more agent scrapers (currently: Netflix, Disney+, HBO Max, Hulu)
-- Consider alternative APIs or scraping strategies
-
-**See Also:**
-- [Post-mortem: Oct 28, 2025](../museum_legacy/troubleshooting/2025-10-28-workflow-failures.md#issue-2-daily-update-workflow-failure)
 
 ---
 
@@ -571,8 +549,8 @@ grep "Processing.*movies" logs/
 # Restore from data corruption
 cp movie_tracking.json.backup movie_tracking.json
 
-# API quota check (monitor monthly usage vs 1,000 limit)
-cat watchmode_quota.json
+# Check enrichment stats for watch link issues
+grep -i "justwatch\|watch_links" logs/admin.log | tail -20
 ```
 
 ### Performance Monitoring

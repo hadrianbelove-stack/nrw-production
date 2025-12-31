@@ -26,7 +26,7 @@ class EnrichmentService:
         - Apply rate limiting and caching strategies
         - Normalize and validate watch link URLs
         - Manage affiliate tag insertion
-        - Handle priority waterfall: manual > overrides > cache > Watchmode > scrapers
+        - Handle priority waterfall: manual > overrides > cache > JustWatch API > scrapers
 
     Design:
         - Integrates with StorageService for caching
@@ -87,14 +87,11 @@ class EnrichmentService:
                 'cache_hits': 0,
                 'override_hits': 0,
                 'manual_tracking_hits': 0,
-                'watchmode_successes': 0,
+                'justwatch_successes': 0,
                 'streaming_attempts': 0,
                 'streaming_successes': 0,
                 'streaming_failures': 0,
                 'streaming_cache_hits': 0,
-                'streaming_attempts': 0,
-                'streaming_successes': 0,
-                'streaming_failures': 0,
                 'search_calls': 0,
                 'source_calls': 0
             }
@@ -102,23 +99,17 @@ class EnrichmentService:
         # Cache references (will be injected)
         self.watch_links_cache = {}
         self.watch_links_overrides = {}
-        self.watch_link_overrides = {}
 
-        # Watchmode enabled flag
-        self.watchmode_enabled = self.config.get('watchmode', {}).get('enabled', False)
-
-    def set_cache_references(self, watch_links_cache, watch_links_overrides, watch_link_overrides):
+    def set_cache_references(self, watch_links_cache, watch_links_overrides):
         """
         Inject cache references from parent DataGenerator.
 
         Args:
             watch_links_cache: Reference to watch_links_cache dict
-            watch_links_overrides: Reference to watch_links_overrides dict
-            watch_link_overrides: Reference to watch_link_overrides dict (legacy)
+            watch_links_overrides: Reference to watch_links_overrides dict (overrides/watch_links_overrides.json)
         """
         self.watch_links_cache = watch_links_cache
         self.watch_links_overrides = watch_links_overrides
-        self.watch_link_overrides = watch_link_overrides
 
     def get_watch_links(self, movie_id, title, year, providers, force_refresh=False, tracking_data=None):
         """
@@ -126,11 +117,12 @@ class EnrichmentService:
 
         Priority waterfall:
         1. Manual watch links from movie_tracking.json - highest priority
-        2. Admin overrides (admin/watch_link_overrides.json) - backward compatibility
+        2. Overrides (overrides/watch_links_overrides.json)
         3. Cache (cache/watch_links_cache.json)
-        4. Watchmode API
-        5. Agent scraper (Netflix, Disney+, HBO Max, Hulu)
-        6. TMDB provider names with null links
+        4. JustWatch API (primary source - most reliable)
+        5. Agent scraper (Netflix, Disney+, HBO Max, Hulu) - fallback
+        6. VOD scraper (Amazon, Apple TV) - fallback
+        7. TMDB provider names with null links - last resort
 
         Args:
             movie_id: TMDB movie ID
@@ -143,8 +135,7 @@ class EnrichmentService:
         Returns:
             Dict: {
                 'streaming': {'service': 'Netflix', 'link': 'https://...'},
-                'rent': {'service': 'Amazon', 'link': 'https://...'},
-                'buy': {'service': 'Apple TV', 'link': 'https://...'}
+                'vod': {'service': 'Amazon Video', 'link': 'https://...'}
             }
         """
         # 1. Check manual watch links from tracking data FIRST (highest priority)
@@ -183,35 +174,10 @@ class EnrichmentService:
             except Exception as e:
                 print(f"  Warning: Invalid override in watch_links_overrides.json for {title}: {e}")
 
-        # 3. Check admin overrides (backward compatibility)
+        # Legacy admin overrides removed (Dec 2024) - empty dict for compatibility
         validated_overrides = {}
-        if cache_key in self.watch_link_overrides:
-            overrides = self.watch_link_overrides[cache_key]
-            # Validate overrides but continue with waterfall for non-overridden categories
-            for category in ['streaming', 'vod']:
-                if category in overrides:
-                    override_data = overrides[category]
-                    # Validate structure
-                    if isinstance(override_data, dict) and 'service' in override_data and 'link' in override_data:
-                        # Validate service name is non-empty string
-                        service = override_data['service']
-                        if not service or not isinstance(service, str) or not service.strip():
-                            print(f"  Warning: Invalid override service name for {title} {category}: {service}")
-                            continue
-                        # Validate URL if link is not None/empty
-                        link = override_data['link']
-                        if link and isinstance(link, str) and (link.startswith('http://') or link.startswith('https://')):
-                            validated_overrides[category] = override_data
-                        elif not link:  # Empty link means "no override for this category"
-                            continue
-                        else:
-                            print(f"  Warning: Invalid override link for {title} {category}: {link}")
 
-            if validated_overrides:
-                print(f"  Using admin overrides for {title}: {list(validated_overrides.keys())}")
-                self.stats['override_hits'] += 1
-
-        # 4. Check cache (unless force refresh)
+        # 3. Check cache (unless force refresh)
         if not force_refresh and cache_key in self.watch_links_cache:
             cached = self.watch_links_cache[cache_key]
             if cached.get('links'):
@@ -247,13 +213,60 @@ class EnrichmentService:
                             for link in migrated_links.values()
                             if isinstance(link, dict)
                         )
-                        source_type = 'watchmode_api' if has_links else 'tmdb_providers'
+                        source_type = 'justwatch_api' if has_links else 'tmdb_providers'
                         self.watch_links_cache[cache_key]['source'] = source_type
                         self.watch_links_cache[cache_key]['cached_at'] = datetime.now().isoformat()
 
                         self.storage.save_cache(self.watch_links_cache, 'cache/watch_links_cache.json')
                     return migrated_links
 
+        # 5. Try JustWatch API (most reliable source for watch links)
+        try:
+            from justwatch_client import JustWatchClient
+
+            # Get affiliate tag from config
+            affiliate_config = self.config.get('affiliate', {})
+            amazon_tag = None
+            if affiliate_config.get('enabled') and affiliate_config.get('amazon', {}).get('enabled'):
+                amazon_tag = affiliate_config.get('amazon', {}).get('tag')
+                if amazon_tag == 'REPLACE_WITH_YOUR_AMAZON_TAG':
+                    amazon_tag = None
+
+            # Initialize JustWatch client (lazy)
+            if not hasattr(self, '_justwatch_client'):
+                self._justwatch_client = JustWatchClient(logger=self.logger)
+
+            justwatch_links = self._justwatch_client.get_watch_links(title, year, affiliate_tag=amazon_tag)
+
+            if justwatch_links:
+                print(f"  ✓ JustWatch found links for {title}: {list(justwatch_links.keys())}")
+                self.stats['justwatch_successes'] = self.stats.get('justwatch_successes', 0) + 1
+
+                # Validate and cache
+                validated_links = self.validator.validate_watch_links_schema(justwatch_links, title)
+                if validated_links:
+                    # Overlay any admin overrides
+                    for category, override_data in validated_overrides.items():
+                        validated_links[category] = override_data
+
+                    # Cache the result
+                    self.watch_links_cache[cache_key] = {
+                        'links': validated_links,
+                        'cached_at': datetime.now().isoformat(),
+                        'source': 'justwatch_api'
+                    }
+                    self.storage.save_cache(self.watch_links_cache, 'cache/watch_links_cache.json')
+
+                    return validated_links
+            else:
+                print(f"  JustWatch: no results for {title}")
+
+        except ImportError:
+            self.logger.debug("JustWatch client not available")
+        except Exception as e:
+            self.logger.warning(f"JustWatch API error for {title}: {e}")
+
+        # 6. Fallback to scrapers (legacy approach)
         # Service priority hierarchies
         STREAMING_PRIORITY = ['Netflix', 'Disney+', 'Disney Plus', 'HBO Max', 'Max',
                               'Hulu', 'Amazon Prime Video', 'Prime Video', 'Apple TV+',
@@ -277,17 +290,17 @@ class EnrichmentService:
             # If no priority match, return first available (from filtered list)
             return filtered_services[0] if filtered_services else None
 
-        # Collect sources from Watchmode API (skip categories that already have overrides)
+        # Fallback: Collect provider names from TMDB (used when JustWatch has no data)
         tmdb_streaming = []
         tmdb_rent = []
         tmdb_buy = []
 
-        # Skip external API calls for categories that already have overrides
+        # Skip scraper calls for categories that already have overrides
         skip_streaming = 'streaming' in validated_overrides
         skip_rent = 'rent' in validated_overrides
         skip_buy = 'buy' in validated_overrides
 
-        # Agent search tier (optional): Try to find deep links for Amazon/Apple TV when needed
+        # Scraper fallback tier: Try to find deep links for Amazon/Apple TV when JustWatch fails
         # Capture lengths before platform scraper to detect if it added links
         streaming_len_before = len(tmdb_streaming)
         rent_len_before = len(tmdb_rent)
@@ -301,8 +314,8 @@ class EnrichmentService:
             return any('google.com/search' in item.get('link', '') for item in link_list)
 
         # Call platform scraper if:
-        # 1. No data from Watchmode (original logic), OR
-        # 2. Watchmode returned Google fallback URLs (needs real link)
+        # 1. No data from JustWatch API, OR
+        # 2. Previous source returned Google fallback URLs (needs real link)
         should_try_vod_scraper = (
             not tmdb_streaming or not tmdb_rent or not tmdb_buy or
             has_google_fallback(tmdb_streaming) or
@@ -330,10 +343,10 @@ class EnrichmentService:
         # Build final watch_links with canonical streaming/vod structure
         watch_links = {}
 
-        # STREAMING: Prefer Watchmode, fallback to TMDB providers with smart Amazon handling (skip if overridden)
+        # STREAMING: Use scraper data or fallback to TMDB providers (skip if overridden)
         if not skip_streaming:
             if tmdb_streaming:
-                # Use Watchmode streaming data
+                # Use scraper streaming data
                 best_service = select_best_service([s['service'] for s in tmdb_streaming], STREAMING_PRIORITY)
                 for source in tmdb_streaming:
                     if source['service'] == best_service:
@@ -343,7 +356,7 @@ class EnrichmentService:
                 # Fallback to TMDB provider data
                 service = select_best_service(providers['streaming'], STREAMING_PRIORITY)
 
-                # SMART FALLBACK: If TMDB says "Amazon Prime Video" but Watchmode didn't find subscription,
+                # SMART FALLBACK: If TMDB says "Amazon Prime Video" but scraper didn't find subscription,
                 # reuse any Amazon rent/buy link we have (it's the same detail page on Amazon)
                 if 'Amazon Prime Video' in service and (tmdb_rent or tmdb_buy):
                     # Find any Amazon link in rent or buy sources
@@ -370,7 +383,7 @@ class EnrichmentService:
                     watch_links['streaming'] = agent_result
 
         # VOD: Combine rent and buy into single VOD category
-        # Use Watchmode or fallback to platform links (skip if both rent and buy are overridden)
+        # Use scraper data or fallback to platform links (skip if both rent and buy are overridden)
         if not (skip_rent and skip_buy):
             # Combine rent and buy sources
             vod_sources = tmdb_rent + tmdb_buy
@@ -455,7 +468,7 @@ class EnrichmentService:
             if vod_scraper_used:
                 source_type = 'agent_search'
             elif has_links:
-                source_type = 'watchmode_api'
+                source_type = 'justwatch_api'
             else:
                 source_type = 'tmdb_providers'
 
@@ -567,7 +580,7 @@ class EnrichmentService:
 
     def try_vod_scraper(self, title, year, providers, tmdb_streaming, tmdb_rent, tmdb_buy, skip_streaming, skip_rent, skip_buy):
         """
-        Try platform scraper (Playwright) for Amazon/Apple TV when Watchmode API has no data.
+        Try platform scraper (Playwright) for Amazon/Apple TV when JustWatch API has no data.
 
         Args:
             title: Movie title
@@ -618,7 +631,7 @@ class EnrichmentService:
                 return False
             return any('google.com/search' in item.get('link', '') for item in link_list)
 
-        # Try streaming providers (if no Watchmode streaming data OR Google fallback, and not skipped)
+        # Try streaming providers (if no JustWatch streaming data OR Google fallback, and not skipped)
         if not skip_streaming and (not tmdb_streaming or has_google_fallback(tmdb_streaming)) and providers.get('streaming'):
             for provider in providers['streaming']:
                 # Filter platforms based on config and validate actual services
@@ -645,7 +658,7 @@ class EnrichmentService:
                 else:
                     print(f"  Platform {provider} disabled in config, skipping")
 
-        # Try rent providers (if no Watchmode rent data OR Google fallback, and not skipped)
+        # Try rent providers (if no JustWatch rent data OR Google fallback, and not skipped)
         if not skip_rent and (not tmdb_rent or has_google_fallback(tmdb_rent)) and providers.get('rent'):
             for provider in providers['rent']:
                 # Filter platforms based on config and validate actual services
@@ -672,7 +685,7 @@ class EnrichmentService:
                 else:
                     print(f"  Platform {provider} disabled in config, skipping")
 
-        # Try buy providers (if no Watchmode buy data OR Google fallback, and not skipped)
+        # Try buy providers (if no JustWatch buy data OR Google fallback, and not skipped)
         if not skip_buy and (not tmdb_buy or has_google_fallback(tmdb_buy)) and providers.get('buy'):
             for provider in providers['buy']:
                 # Filter platforms based on config and validate actual services
@@ -823,15 +836,6 @@ class EnrichmentService:
             migrated['streaming'] = migrated.pop('free')
         if 'paid' in migrated:
             migrated['vod'] = migrated.pop('paid')
-
-        # Convert old 'rent/buy' keys to single 'vod' (pick first non-null)
-        if 'rent' in migrated or 'buy' in migrated:
-            # Prefer rent over buy (arbitrary choice, both are VOD)
-            if 'rent' in migrated:
-                migrated['vod'] = migrated.pop('rent')
-                migrated.pop('buy', None)  # Remove buy if it exists
-            elif 'buy' in migrated:
-                migrated['vod'] = migrated.pop('buy')
 
         # Normalize all link objects to remove search URLs
         for category in ['streaming', 'vod']:

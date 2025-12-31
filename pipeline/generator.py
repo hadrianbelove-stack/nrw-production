@@ -3,7 +3,7 @@
 Data Generator - Core data generation pipeline for NRW.
 
 Extracted from monolithic generate_data.py (2025-11-10) for better maintainability.
-Handles movie discovery, tracking, enrichment, and display data generation.
+Handles movie intake, tracking, enrichment, and display data generation.
 """
 
 import json
@@ -258,7 +258,7 @@ class DataGenerator:
 
 
     def get_3_day_baseline(self):
-        """Compute 3-day average for discovery and newly-digital counts"""
+        """Compute 3-day average for intake and newly-digital counts"""
         try:
             metrics_file = 'metrics/daily.jsonl'
             if not os.path.exists(metrics_file):
@@ -275,18 +275,18 @@ class DataGenerator:
             if len(recent_metrics) < 3:
                 return {
                     'days_available': len(recent_metrics),
-                    'discovery_avg': None,
+                    'intake_avg': None,
                     'newly_digital_avg': None,
                     'note': f'Need at least 3 days of data, have {len(recent_metrics)}'
                 }
 
             last_3 = recent_metrics[-3:]
-            discovery_avg = sum(m['discovered'] for m in last_3) / 3
+            intake_avg = sum(m['discovered'] for m in last_3) / 3
             newly_digital_avg = sum(m['newly_digital'] for m in last_3) / 3
 
             return {
                 'days_available': 3,
-                'discovery_avg': round(discovery_avg, 1),
+                'intake_avg': round(intake_avg, 1),
                 'newly_digital_avg': round(newly_digital_avg, 1),
                 'dates': [m['date'] for m in last_3]
             }
@@ -470,10 +470,10 @@ class DataGenerator:
         if new_movies_added > 0:
             db['last_update'] = datetime.now().isoformat()
             if not self.storage.atomic_write_json(db, 'movie_tracking.json', backup=True):
-                self.logger.error("Failed to save movie_tracking.json after discovery")
-                raise IOError("Discovery database write failed")
+                self.logger.error("Failed to save movie_tracking.json after intake")
+                raise IOError("Intake database write failed")
 
-        # Log discovery summary
+        # Log intake summary
         self.logger.info(f"Intake complete: {new_movies_added} new movies added from {self.intake_stats['pages_fetched']} pages")
         if debug or new_movies_added == 0:
             self.logger.info(f"Intake stats: {self.intake_stats['total_results']} total results, {self.intake_stats['duplicates_skipped']} duplicates")
