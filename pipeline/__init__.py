@@ -9,6 +9,7 @@ from pipeline.validation import ValidationService
 from pipeline.enrichment import EnrichmentService
 from pipeline.generator import DataGenerator, setup_logger
 from pipeline.telemetry import TelemetryService, init_telemetry, get_telemetry
+from pipeline.justwatch import JustWatchClient
 
 __all__ = [
     'StorageService',
@@ -18,5 +19,6 @@ __all__ = [
     'setup_logger',
     'TelemetryService',
     'init_telemetry',
-    'get_telemetry'
+    'get_telemetry',
+    'JustWatchClient'
 ]

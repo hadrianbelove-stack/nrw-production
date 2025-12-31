@@ -222,7 +222,7 @@ class EnrichmentService:
 
         # 5. Try JustWatch API (most reliable source for watch links)
         try:
-            from justwatch_client import JustWatchClient
+            from pipeline.justwatch import JustWatchClient
 
             # Get affiliate tag from config
             affiliate_config = self.config.get('affiliate', {})
