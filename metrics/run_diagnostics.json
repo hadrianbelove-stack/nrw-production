@@ -1,44 +1,30 @@
 {
-  "timestamp": "2025-12-31T03:20:51.863403",
-  "duration_seconds": 1044.30855,
-  "overall_success": false,
-  "failure_count": 3,
+  "timestamp": "2025-12-31T04:02:44.881330",
+  "duration_seconds": 1225.750926,
+  "overall_success": true,
+  "failure_count": 0,
   "warning_count": 0,
   "phases": [
     {
-      "name": "Intake new premieres using production discovery",
-      "success": false,
-      "duration_seconds": 0.281156,
-      "error": "2025-12-31 03:03:27 [INFO] EnrichmentService initialized with enrichment_enabled=False\nTraceback (most recent call last):\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 118, in <module>\n    main()\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 87, in main\n    intaked_count = generator.discover_new_premieres(\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'DataGenerator' object has no attribute 'discover_new_premieres'. Did you mean: 'intake_new_premieres'?\n",
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n"
-    },
-    {
-      "name": "Intake new premieres using production discovery",
-      "success": false,
-      "duration_seconds": 0.201808,
-      "error": "2025-12-31 03:03:58 [INFO] EnrichmentService initialized with enrichment_enabled=False\nTraceback (most recent call last):\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 118, in <module>\n    main()\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 87, in main\n    intaked_count = generator.discover_new_premieres(\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'DataGenerator' object has no attribute 'discover_new_premieres'. Did you mean: 'intake_new_premieres'?\n",
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n"
-    },
-    {
-      "name": "Intake new premieres using production discovery",
-      "success": false,
-      "duration_seconds": 0.202851,
-      "error": "2025-12-31 03:04:43 [INFO] EnrichmentService initialized with enrichment_enabled=False\nTraceback (most recent call last):\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 118, in <module>\n    main()\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 87, in main\n    intaked_count = generator.discover_new_premieres(\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'DataGenerator' object has no attribute 'discover_new_premieres'. Did you mean: 'intake_new_premieres'?\n",
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n"
+      "name": "Intake new premieres from TMDB",
+      "success": true,
+      "duration_seconds": 3.088265,
+      "error": null,
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2025-12-29 to 2025-12-31 (incremental mode, 115 intaked)\n\u2705 Intake complete: 115 new movies added\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 968.048257,
+      "duration_seconds": 1222.065878,
       "error": null,
-      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 6301 total movies\n\ud83d\udd0d Raw tracking filter: 6064 movies\n\ud83d\udd0d Assigned tracking_movies list: 6064\n\ud83d\udd0d Found 6064 movies in tracking status\n  Priority queue (last 180 days): 1452 movies\n  Older movies: 4612 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 6064 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/6064 (1.6%) | 0 found | 0m elapsed | ~15m remaining\n  \ud83d\udcbe Progress saved (batch 1)"
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 6416 total movies\n\ud83d\udd0d Raw tracking filter: 6176 movies\n\ud83d\udd0d Assigned tracking_movies list: 6176\n\ud83d\udd0d Found 6176 movies in tracking status\n  Priority queue (last 180 days): 1452 movies\n  Older movies: 4724 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 6176 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/6176 (1.6%) | 0 found | 0m elapsed | ~19m remaining\n  \ud83d\udcbe Progress saved (batch 1)"
     },
     {
-      "name": "Enrich newly discovered movies with metadata",
+      "name": "Enrich newly available movies with metadata",
       "success": true,
-      "duration_seconds": 0.538438,
+      "duration_seconds": 0.562738,
       "error": null,
-      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 3 movies to enrich\n  Platform scraper initialization failed, skipping Ithiri Neram\n  [DEBUG] Checking if 'MovieSaints' is in supported platforms: ['Netflix', 'Disney+', 'Disney Plus', 'HBO Max', 'Max', 'Hulu']\n  [DEBUG] 'MovieSaints' not supported by agent scraper, returning null\n  \u26a1 Ithiri Neram (0.1s) - Wiki:\u25cb Trailer:\u25cb RT:\u2713 Links:\u2713 Date:\u25cb | 2 success, 0 errors\n  \u2713 Ithiri Neram - Links: 1\n  Platform scra"
+      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 2 movies to enrich\n  Platform scraper initialization failed, skipping Together\n  Platform scraper initialization failed, skipping Together\n  [DEBUG] Checking if 'Amazon Video' is in supported platforms: ['Netflix', 'Disney+', 'Disney Plus', 'HBO Max', 'Max', 'Hulu']\n  [DEBUG] 'Amazon Video' not supported by agent scraper, returning null\n  \u26a1 Together (0.1s) - Wiki:\u25cb Trailer:\u2713 RT:\u2713 Links:\u2713 Date:\u2713 | 4 success"
     }
   ],
   "health_issues": [],
@@ -46,35 +32,13 @@
     "stalled": false,
     "days_without_transitions": 2
   },
-  "failures": [
-    {
-      "phase": "Intake new premieres using production discovery",
-      "severity": "error",
-      "message": "Phase failed with exit code 1",
-      "context": "2025-12-31 03:03:27 [INFO] EnrichmentService initialized with enrichment_enabled=False\nTraceback (most recent call last):\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 118, in <module>\n    main()\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 87, in main\n    intaked_count = generator.discover_new_premieres(\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'DataGenerator' object has no attribute 'discover_new_p",
-      "stdout_preview": "\ud83d\udd0d Running intake for new premieres..."
-    },
-    {
-      "phase": "Intake new premieres using production discovery",
-      "severity": "error",
-      "message": "Phase failed with exit code 1",
-      "context": "2025-12-31 03:03:58 [INFO] EnrichmentService initialized with enrichment_enabled=False\nTraceback (most recent call last):\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 118, in <module>\n    main()\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 87, in main\n    intaked_count = generator.discover_new_premieres(\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'DataGenerator' object has no attribute 'discover_new_p",
-      "stdout_preview": "\ud83d\udd0d Running intake for new premieres..."
-    },
-    {
-      "phase": "Intake new premieres using production discovery",
-      "severity": "error",
-      "message": "Phase failed with exit code 1 (after 3 attempts)",
-      "context": "2025-12-31 03:04:43 [INFO] EnrichmentService initialized with enrichment_enabled=False\nTraceback (most recent call last):\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 118, in <module>\n    main()\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 87, in main\n    intaked_count = generator.discover_new_premieres(\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'DataGenerator' object has no attribute 'discover_new_p",
-      "stdout_preview": "\ud83d\udd0d Running intake for new premieres..."
-    }
-  ],
+  "failures": [],
   "warnings": [],
   "data_quality": {
-    "total": 6301,
-    "tracking": 6061,
-    "available": 240,
-    "data_movies": 240,
+    "total": 6416,
+    "tracking": 6174,
+    "available": 242,
+    "data_movies": 242,
     "movies_with_links": 0,
     "movies_with_rt": 97,
     "movies_with_wikipedia": 0,

@@ -1,7 +1,117 @@
 {
-  "generated_at": "2025-12-31T03:20:51.807166",
-  "count": 240,
+  "generated_at": "2025-12-31T04:02:44.827884",
+  "count": 242,
   "movies": [
+    {
+      "id": "1499538",
+      "title": "Filmmaker",
+      "digital_date": "2025-12-31",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Three years after graduating, George, a broke young filmmaker, struggles to fund his first feature film: an ambitious survival story set during the Vietnam War, to be shot in the jungle.",
+      "genres": [
+        "Adventure",
+        "Drama"
+      ],
+      "runtime": 98,
+      "year": 2025,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "Amazon Video",
+          "Apple TV",
+          "Google Play Movies",
+          "YouTube"
+        ],
+        "buy": [
+          "Amazon Video",
+          "Apple TV",
+          "Google Play Movies",
+          "YouTube"
+        ],
+        "streaming": []
+      },
+      "links": {
+        "rt": "https://www.rottentomatoes.com/search?search=Filmmaker%202025"
+      },
+      "watch_links": {
+        "vod": {
+          "service": "Amazon",
+          "link": null
+        }
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2025-12-31T04:02:34.164238",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/7CGekLiIUXob0tklSXRGyS9pKBS.jpg",
+      "studio": null,
+      "country": "France",
+      "crew": {
+        "director": "Maxime Sanchez",
+        "cast": [
+          "Gauthier Gervaise",
+          "Jonas Bachan"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection"
+    },
+    {
+      "id": "1242011",
+      "title": "Together",
+      "digital_date": "2025-08-26",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Years into their relationship, Tim and Millie find themselves at a crossroads as they move to the country, abandoning all that is familiar in their lives except each other. With tensions already flaring, a nightmarish encounter with a mysterious, unnatural force threatens to corrupt their lives, their love, and their flesh.",
+      "genres": [
+        "Horror",
+        "Romance"
+      ],
+      "runtime": 102,
+      "year": 2025,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "Amazon Video",
+          "Apple TV",
+          "Fandango At Home",
+          "Plex"
+        ],
+        "buy": [
+          "Amazon Video",
+          "Apple TV",
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
+      "links": {
+        "trailer": "https://www.youtube.com/watch?v=9bqIwMH3En8",
+        "rt": "https://www.rottentomatoes.com/search?search=Together%202025"
+      },
+      "watch_links": {
+        "vod": {
+          "service": "Amazon",
+          "link": null
+        }
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2025-12-31T04:02:23.441081",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/m52XidzKx94bKlToZfEXUnL3pdy.jpg",
+      "studio": "Picturestart",
+      "country": "Australia",
+      "crew": {
+        "director": "Michael Shanks",
+        "cast": [
+          "Dave Franco",
+          "Alison Brie"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "tmdb_type4"
+    },
     {
       "id": "1605290",
       "title": "Snoop's Holiday Halftime Party",
@@ -6563,8 +6673,8 @@
     }
   ],
   "_metadata": {
-    "last_discovery_write": "2025-12-31T03:20:38.243181",
-    "discovery_count": 7,
+    "last_discovery_write": "2025-12-31T04:02:34.164242",
+    "discovery_count": 9,
     "schema_version": "2.0"
   }
 }
