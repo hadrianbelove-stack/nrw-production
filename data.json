@@ -1,7 +1,148 @@
 {
-  "generated_at": "2025-12-30T05:12:56.690616",
-  "count": 237,
+  "generated_at": "2025-12-31T03:20:51.807166",
+  "count": 240,
   "movies": [
+    {
+      "id": "1605290",
+      "title": "Snoop's Holiday Halftime Party",
+      "digital_date": "2025-12-25",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Snoop Dogg and his merry friends sleigh through Minnesota on NFL Gameday to deliver a special holiday performance.",
+      "genres": [
+        "Music"
+      ],
+      "runtime": 12,
+      "year": 2025,
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Netflix"
+        ]
+      },
+      "links": {
+        "trailer": "https://www.youtube.com/watch?v=3ne8dx32l1M",
+        "rt": "https://www.rottentomatoes.com/search?search=Snoop%27s%20Holiday%20Halftime%20Party%202025"
+      },
+      "watch_links": {
+        "streaming": {
+          "service": "Netflix",
+          "link": null
+        }
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2025-12-31T03:20:38.243177",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/xIaurEQj8ACjqvX0paGlSfWV20c.jpg",
+      "studio": "Jesse Collins Entertainment",
+      "country": "United States of America",
+      "crew": {
+        "director": "Unknown",
+        "cast": [
+          "Snoop Dogg",
+          "EJAE"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "tmdb_type4"
+    },
+    {
+      "id": "1591193",
+      "title": "Meant For You",
+      "digital_date": "2025-12-31",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Lawyer Tu\u011f\u00e7e is unexpectedly left by her boyfriend Furkan. Struggling at work, she agrees to help her troubled client Erdem in exchange for rekindling her relationship with Furkan. Plans go awry, but as Tu\u011f\u00e7e and Erdem get to know each other, she discovers true love in Erdem's arms.",
+      "genres": [
+        "Comedy"
+      ],
+      "runtime": 0,
+      "year": 2025,
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Amazon Prime Video",
+          "Amazon Prime Video with Ads"
+        ]
+      },
+      "links": {
+        "rt": "https://www.rottentomatoes.com/search?search=Meant%20For%20You%202025"
+      },
+      "watch_links": {
+        "streaming": {
+          "service": "Amazon",
+          "link": null
+        }
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2025-12-31T03:15:20.732898",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/1VFJx2bAZGjW1ztdxg6fwrzZ2sU.jpg",
+      "studio": null,
+      "country": "Turkey",
+      "crew": {
+        "director": "Hasan Do\u011fan",
+        "cast": [
+          "Halil Ibrahim Kurum",
+          "Ahmet Kayakesen"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection"
+    },
+    {
+      "id": "1196956",
+      "title": "Ithiri Neram",
+      "digital_date": "2025-12-31",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "On his way to a long-overdue drinking party with two friends, Anish receives an unexpected call from Anjana, a past lover visiting the city. Their decision to meet sets the stage for an evening of easy banter, reopened wounds, and difficult choices.",
+      "genres": [
+        "Romance",
+        "Comedy"
+      ],
+      "runtime": 137,
+      "year": 2025,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "MovieSaints"
+        ],
+        "buy": [],
+        "streaming": []
+      },
+      "links": {
+        "rt": "https://www.rottentomatoes.com/search?search=Ithiri%20Neram%202025"
+      },
+      "watch_links": {
+        "vod": {
+          "service": "MovieSaints",
+          "link": null
+        }
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2025-12-31T03:12:01.131645",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/vpyf5DG2SE3kMeR9zexiMglZy2P.jpg",
+      "studio": "Mankind Cinemas",
+      "country": "India",
+      "crew": {
+        "director": "Prasanth Vijay",
+        "cast": [
+          "Roshan Mathew",
+          "Zarin Shihab"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection"
+    },
     {
       "id": "558534",
       "title": "Continuance",
@@ -6422,8 +6563,8 @@
     }
   ],
   "_metadata": {
-    "last_discovery_write": "2025-12-30T05:12:47.332110",
-    "discovery_count": 4,
+    "last_discovery_write": "2025-12-31T03:20:38.243181",
+    "discovery_count": 7,
     "schema_version": "2.0"
   }
 }
