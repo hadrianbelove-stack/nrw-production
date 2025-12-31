@@ -1,31 +1,31 @@
 {
-  "timestamp": "2025-12-30T09:38:08.169887",
+  "timestamp": "2025-12-31T09:45:59.802083",
   "stall_detected": true,
   "window_size": 3,
   "stall_dates": [
-    "2025-12-28",
     "2025-12-29",
-    "2025-12-30"
+    "2025-12-30",
+    "2025-12-31"
   ],
   "entries_checked": 3,
   "stall_details": [
     {
+      "date": "2025-12-31",
+      "transitions": 0,
+      "intaked_today": 6,
+      "polled": 6180
+    },
+    {
       "date": "2025-12-30",
       "transitions": 0,
-      "discovered_today": 1,
+      "intaked_today": 1,
       "polled": 6064
     },
     {
       "date": "2025-12-29",
       "transitions": 0,
-      "discovered_today": 0,
+      "intaked_today": 0,
       "polled": 5981
-    },
-    {
-      "date": "2025-12-28",
-      "transitions": 0,
-      "discovered_today": 0,
-      "polled": 5958
     }
   ]
 }
