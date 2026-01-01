@@ -1,7 +1,115 @@
 {
-  "generated_at": "2025-12-31T23:22:42.419965",
-  "count": 247,
+  "generated_at": "2026-01-01T09:39:30.717582",
+  "count": 249,
   "movies": [
+    {
+      "id": "1465317",
+      "title": "SHE.",
+      "digital_date": "2026-01-01",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "",
+      "genres": [
+        "Thriller",
+        "Romance",
+        "Drama"
+      ],
+      "runtime": 0,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "Amazon Video",
+          "Apple TV",
+          "Google Play Movies",
+          "YouTube",
+          "Fandango At Home"
+        ],
+        "buy": [
+          "Amazon Video",
+          "Apple TV",
+          "Google Play Movies",
+          "YouTube",
+          "Fandango At Home"
+        ],
+        "streaming": [
+          "Cultpix"
+        ]
+      },
+      "links": {
+        "rt": "https://www.rottentomatoes.com/search?search=SHE.%202026"
+      },
+      "watch_links": {
+        "streaming": {
+          "service": "fuboTV",
+          "link": "https://www.fubo.tv/welcome/program/MV026209540000?irmp=1206980&irad=599309"
+        },
+        "vod": {
+          "service": "Amazon",
+          "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.82e91f0f-f189-4ab8-bda7-ebc13fc79231"
+        }
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-01-01T09:39:07.860052",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/s1szQbOUgQ0teLkLC6YruMOrS8m.jpg",
+      "studio": "Maximus Perez Productions",
+      "country": null,
+      "crew": {
+        "director": "Unknown",
+        "cast": []
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "tmdb_type4"
+    },
+    {
+      "id": "1597608",
+      "title": "Ainsley McGregor Mysteries: A Case For the Watchmaker",
+      "digital_date": "2026-01-01",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Ainsley McGregor thought craft markets and book clubs, not corpses, would define her new life back home in Sweet River. That is until a beloved member of the book club raises a cold case involving her late husband who was found murdered over his rare antique watch. Ainsley springs into action to untangle a web of small town secrets before the killer winds the clock down on the next victim.",
+      "genres": [
+        "TV Movie",
+        "Mystery"
+      ],
+      "runtime": 84,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Pure Flix"
+        ]
+      },
+      "links": {
+        "rt": "https://www.rottentomatoes.com/search?search=Ainsley%20McGregor%20Mysteries%3A%20A%20Case%20For%20the%20Watchmaker%202026"
+      },
+      "watch_links": {
+        "streaming": {
+          "service": "Pure Flix",
+          "link": "https://app.pureflix.com/videos/544913446899/ainsley-mcgregor-mysteries-a-case-for-the-watchmaker"
+        }
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-01-01T09:39:06.644070",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": null,
+      "studio": "Candy Rock Entertainment",
+      "country": "United States of America",
+      "crew": {
+        "director": "Martin Wood",
+        "cast": [
+          "Candace Cameron Bure",
+          "Robin Dunne"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "tmdb_type4"
+    },
     {
       "id": "1591516",
       "title": "Evil Influencer: The Jodi Hildebrandt Story",
@@ -6909,8 +7017,8 @@
     }
   ],
   "_metadata": {
-    "last_discovery_write": "2025-12-31T23:22:00.769479",
-    "discovery_count": 14,
+    "last_discovery_write": "2026-01-01T09:39:07.860056",
+    "discovery_count": 16,
     "schema_version": "2.0"
   }
 }
