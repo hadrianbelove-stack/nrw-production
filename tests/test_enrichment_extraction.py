@@ -290,7 +290,7 @@ def test_backward_compatibility():
                 self.logger = logging.getLogger('mock')
                 self.logger.addHandler(logging.NullHandler())
                 self.config = {}
-                self.watchmode_stats = {
+                self.enrichment_stats = {
                     'cache_hits': 0,
                     'override_hits': 0,
                     'manual_tracking_hits': 0
@@ -302,19 +302,19 @@ def test_backward_compatibility():
                     logger=self.logger,
                     storage_service=self.storage,
                     config=self.config,
-                    stats_dict=self.watchmode_stats
+                    stats_dict=self.enrichment_stats
                 )
                 self.enrichment = EnrichmentService(
                     logger=self.logger,
                     config=self.config,
                     storage_service=self.storage,
                     validator_service=self.validator,
-                    stats_dict=self.watchmode_stats,
+                    stats_dict=self.enrichment_stats,
                     enrichment_enabled=True
                 )
 
                 # Inject cache references
-                self.enrichment.set_cache_references({}, {}, {})
+                self.enrichment.set_cache_references({}, {})
 
         mock_gen = MockDataGenerator()
 
@@ -336,7 +336,7 @@ def test_backward_compatibility():
         # Test stats sharing
         test_result(
             "Stats dict is shared",
-            mock_gen.enrichment.stats is mock_gen.watchmode_stats,
+            mock_gen.enrichment.stats is mock_gen.enrichment_stats,
             "EnrichmentService updates shared stats dict"
         )
 

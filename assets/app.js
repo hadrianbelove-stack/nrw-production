@@ -274,18 +274,14 @@ const NRW = {
                 let amazonLink = null;
                 let appleLink = null;
 
-                // Check for Amazon (rent OR buy)
-                if (watchLinks.rent?.service?.toLowerCase().includes('amazon') && watchLinks.rent?.link) {
-                    amazonLink = watchLinks.rent.link;
-                } else if (watchLinks.buy?.service?.toLowerCase().includes('amazon') && watchLinks.buy?.link) {
-                    amazonLink = watchLinks.buy.link;
+                // Check for Amazon in VOD
+                if (watchLinks.vod?.service?.toLowerCase().includes('amazon') && watchLinks.vod?.link) {
+                    amazonLink = watchLinks.vod.link;
                 }
 
-                // Check for Apple (rent OR buy)
-                if (watchLinks.rent?.service?.toLowerCase().includes('apple') && watchLinks.rent?.link) {
-                    appleLink = watchLinks.rent.link;
-                } else if (watchLinks.buy?.service?.toLowerCase().includes('apple') && watchLinks.buy?.link) {
-                    appleLink = watchLinks.buy.link;
+                // Check for Apple in VOD
+                if (watchLinks.vod?.service?.toLowerCase().includes('apple') && watchLinks.vod?.link) {
+                    appleLink = watchLinks.vod.link;
                 }
 
                 // Add purchase buttons directly (not in separate wrapper)
@@ -368,3 +364,45 @@ const NRW = {
 
 // Start on page load
 document.addEventListener('DOMContentLoaded', () => NRW.init());
+
+// Mobile swipe navigation
+(function() {
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchEndX = 0;
+    let touchEndY = 0;
+
+    const wall = document.getElementById('wall');
+    if (!wall) return;
+
+    wall.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
+
+    wall.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        touchEndY = e.changedTouches[0].screenY;
+        handleSwipe();
+    }, { passive: true });
+
+    function handleSwipe() {
+        const deltaX = touchEndX - touchStartX;
+        const deltaY = touchEndY - touchStartY;
+        const minSwipe = 80; // minimum swipe distance
+
+        // Only handle horizontal swipes (ignore vertical scrolling)
+        if (Math.abs(deltaX) < minSwipe || Math.abs(deltaY) > Math.abs(deltaX)) return;
+
+        // Swipe left = next page, swipe right = prev page
+        if (deltaX < 0 && NRW.currentPage < Math.ceil(NRW.filteredMovies.length / NRW.moviesPerPage)) {
+            NRW.currentPage++;
+            NRW.renderPaginatedWall();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else if (deltaX > 0 && NRW.currentPage > 1) {
+            NRW.currentPage--;
+            NRW.renderPaginatedWall();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }
+})();

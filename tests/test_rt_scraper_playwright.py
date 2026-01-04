@@ -92,9 +92,9 @@ def test_rt_scraper_playwright():
         failed_tests = total_tests - successful_tests
 
         # Calculate statistics from generator
-        cache_hits = generator.watchmode_stats['rt_cache_hits']
-        scraping_attempts = generator.watchmode_stats['rt_attempts']
-        scraping_successes = generator.watchmode_stats['rt_successes']
+        cache_hits = generator.enrichment_stats['rt_cache_hits']
+        scraping_attempts = generator.enrichment_stats['rt_attempts']
+        scraping_successes = generator.enrichment_stats['rt_successes']
 
         print(f"Total tests: {total_tests}")
         print(f"Cache hits: {cache_hits}")
@@ -124,9 +124,9 @@ def test_rt_scraper_playwright():
 
         # Statistics verification
         print(f"\nStatistics:")
-        print(f"  rt_attempts: {generator.watchmode_stats['rt_attempts']}")
-        print(f"  rt_successes: {generator.watchmode_stats['rt_successes']}")
-        print(f"  rt_cache_hits: {generator.watchmode_stats['rt_cache_hits']}")
+        print(f"  rt_attempts: {generator.enrichment_stats['rt_attempts']}")
+        print(f"  rt_successes: {generator.enrichment_stats['rt_successes']}")
+        print(f"  rt_cache_hits: {generator.enrichment_stats['rt_cache_hits']}")
 
         # Cleanup
         if hasattr(generator, 'rt_scraper'):

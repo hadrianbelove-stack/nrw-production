@@ -95,14 +95,14 @@ Extracted all data validation and consistency checking logic from `generate_data
 
 ### Methods Extracted
 
-1. **validate_watch_links_schema(watch_links, movie_title)** - Validates streaming/rent/buy schema
+1. **validate_watch_links_schema(watch_links, movie_title)** - Validates streaming/vod schema
 2. ~~**validate_enrichment_consistency()**~~ - DELETED 2025-12-05 (was causing loop bug)
 3. **validate_data_json_schema(file_path)** - Validates data.json structure before loading
 
 ### Validation Rules
 
 **Watch Links Schema:**
-- Categories: `streaming`, `rent`, `buy` only
+- Categories: `streaming`, `vod` only (legacy `rent`/`buy` deprecated)
 - Required fields per category: `service` (string), `link` (URL or None)
 - URL validation: Must be http:// or https://
 - Placeholder detection: Rejects known placeholder ASINs
@@ -122,14 +122,16 @@ Extracted all data validation and consistency checking logic from `generate_data
 ### Integration Points
 
 **generate_data.py modifications:**
-- Lines 162-169: Initialize `self.validator = ValidationService(logger, storage, config, watchmode_stats)`
+- Lines 162-169: Initialize `self.validator = ValidationService(logger, storage, config, enrichment_stats)`
 - 8 method calls replaced: `self.method()` → `self.validator.method()`
 - Lines 1221, 2160, 2168: Added migration comments
 - **Result:** 3,231 → 2,967 lines (-264 lines, -8.2%)
 
+> **Note (Dec 2024):** `watchmode_stats` was renamed to `enrichment_stats` after Watchmode API was deprecated in favor of JustWatch API.
+
 ### Key Design Decisions
 
-1. **Shared statistics dict** - Validator updates `self.watchmode_stats` directly for seamless integration
+1. **Shared statistics dict** - Validator updates `self.enrichment_stats` directly for seamless integration
 2. **Service injection** - Accepts StorageService, logger, and config for full functionality
 3. **Stateless methods** - Can be called independently without side effects
 4. **Returns cleaned data** - Watch links validation returns sanitized dict
@@ -144,7 +146,7 @@ Extracted all data validation and consistency checking logic from `generate_data
 4. ✅ Method Replacements (8 calls verified)
 5. ✅ Line Count Metrics (264 lines removed)
 6. ✅ Backward Compatibility
-7. ✅ Stats Integration (shared watchmode_stats dict)
+7. ✅ Stats Integration (shared enrichment_stats dict)
 
 **Result:** 7/7 tests passed (100%)
 
@@ -255,7 +257,7 @@ class DataGenerator:
             logger=self.logger,
             storage_service=self.storage,
             config=self.config,
-            stats_dict=self.watchmode_stats  # Shared stats
+            stats_dict=self.enrichment_stats  # Shared stats
         )
 ```
 
@@ -269,17 +271,17 @@ class DataGenerator:
 
 ```python
 # Validator updates shared dict directly
-self.watchmode_stats = {
+self.enrichment_stats = {
     'schema_validation_warnings': 0,
     'schema_validation_passes': 0,
     # ... other metrics
 }
 
-self.validator = ValidationService(stats_dict=self.watchmode_stats)
+self.validator = ValidationService(stats_dict=self.enrichment_stats)
 validated = self.validator.validate_watch_links_schema(links, title)
 
 # Stats automatically updated in shared dict
-assert self.watchmode_stats['schema_validation_passes'] > 0
+assert self.enrichment_stats['schema_validation_passes'] > 0
 ```
 
 **Benefits:**

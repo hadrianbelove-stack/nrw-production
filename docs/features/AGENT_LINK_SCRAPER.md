@@ -7,18 +7,20 @@
 
 ## Overview
 
-The Agent Link Scraper provides automated discovery of streaming platform watch links when the Watchmode API has gaps. It uses browser automation to search platforms directly and extract deep links to watch pages, serving as a fallback tier in the watch links system.
+The Agent Link Scraper provides automated discovery of streaming platform watch links when JustWatch API has gaps. It uses Playwright browser automation to search platforms directly and extract deep links to watch pages, serving as a fallback tier in the watch links system.
 
 ## Problem Statement
 
-Watchmode API provides excellent coverage for most streaming platforms, but has gaps for certain services (Netflix, Disney+, HBO Max, Hulu) where it returns no data. These platforms don't have predictable URL patterns that can be constructed programmatically. Users need direct links to these platforms, not search URLs or null links.
+JustWatch API provides excellent coverage for most streaming platforms, but occasionally has gaps for certain services (Netflix, Disney+, HBO Max, Hulu). These platforms don't have predictable URL patterns that can be constructed programmatically. Users need direct links to these platforms, not search URLs or null links.
 
 ## Solution Architecture
 
-The agent scraper implements a three-tier system:
-1. **Tier 1:** Watchmode API deep links (primary, fastest)
-2. **Tier 2:** Agent scraping for Netflix/Disney+/HBO Max/Hulu (fallback, slower)
-3. **Tier 3:** Return `null` if both fail (last resort)
+The agent scraper is part of a multi-tier system:
+1. **Tier 1:** Manual overrides + `overrides/watch_links_overrides.json`
+2. **Tier 2:** Cache (`cache/watch_links_cache.json`)
+3. **Tier 3:** JustWatch API (primary source - most reliable, Dec 2024+)
+4. **Tier 4:** Agent scraping for Netflix/Disney+/HBO Max/Hulu (fallback)
+5. **Tier 5:** TMDB provider names with null links (last resort)
 
 ## Technical Implementation
 
@@ -43,10 +45,10 @@ The agent scraper implements a three-tier system:
 - **HBO Max/Max** - `https://www.max.com/movies/{slug}/{id}`
 - **Hulu** - `https://www.hulu.com/movie/{slug}/{id}`
 
-**Not Supported (Watchmode has good coverage):**
-- Amazon Prime Video (predictable URLs)
-- Apple TV+ (predictable URLs)
-- Paramount+, Peacock, MUBI, etc. (Watchmode coverage sufficient)
+**Not Supported (JustWatch has good coverage):**
+- Amazon Prime Video (JustWatch API provides links)
+- Apple TV+ (JustWatch API provides links)
+- Paramount+, Peacock, MUBI, etc. (JustWatch coverage sufficient)
 
 ### Selector Fallback Strategy
 
@@ -57,11 +59,11 @@ Each platform has 4-6 selector fallbacks (ordered by reliability):
 
 ### Integration Point
 
-The scraper integrates into `generate_data.py` `get_watch_links()` method:
-- After Watchmode API fails for streaming category
+The scraper integrates into the enrichment pipeline `get_watch_links()` method:
+- After JustWatch API returns no streaming links
 - Before returning `{service: X, link: None}`
 - Only for supported platforms: Netflix, Disney+, HBO Max, Hulu
-- Does NOT scrape rent/buy categories (Watchmode has good coverage)
+- Does NOT scrape VOD categories (JustWatch API provides VOD coverage)
 
 ## Cache System
 
@@ -207,8 +209,8 @@ Users should be aware of potential ToS violations and use responsibly.
 ## Rollback Plan
 
 If agent scraping causes issues:
-1. Comment out agent initialization in `generate_data.py`
-2. System falls back to Watchmode-only behavior
+1. Disable in config.yaml: `streaming_scraper.enabled: false`
+2. System falls back to JustWatch API only
 3. No data loss (agent is additive)
 
 ## Implementation Status

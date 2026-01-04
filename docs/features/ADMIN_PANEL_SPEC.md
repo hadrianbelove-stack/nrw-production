@@ -44,7 +44,7 @@ All movie fields are directly editable in the UI:
 - **Country** (text input)
 - **Synopsis** (textarea)
 - **Poster URL** (URL with TMDB button 🎬)
-- **Watch links** - streaming/rent/buy (service + URL pairs)
+- **Watch links** - streaming/vod (service + URL pairs)
 
 ### Save Mechanism
 - Single "💾 Save All Changes" button per movie card

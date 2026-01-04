@@ -309,25 +309,44 @@ class YouTubePlaylistManager:
         if not url:
             return None
 
-        # Handle watch?v= format
-        match = re.search(r'watch\?v=([a-zA-Z0-9_-]+)', url)
+        # Handle watch?v= format (with query parameters)
+        match = re.search(r'watch\?v=([a-zA-Z0-9_-]{11})', url)
+        if match:
+            return match.group(1)
+
+        # Handle /watch/ format without query params (YouTube Movies)
+        match = re.search(r'/watch/([a-zA-Z0-9_-]{11})', url)
         if match:
             return match.group(1)
 
         # Handle youtu.be/ format
-        match = re.search(r'youtu\.be/([a-zA-Z0-9_-]+)', url)
+        match = re.search(r'youtu\.be/([a-zA-Z0-9_-]{11})', url)
         if match:
             return match.group(1)
 
         # Handle embed/ format
-        match = re.search(r'youtube\.com/embed/([a-zA-Z0-9_-]+)', url)
+        match = re.search(r'youtube\.com/embed/([a-zA-Z0-9_-]{11})', url)
         if match:
             return match.group(1)
 
         # Handle shorts/ format
-        match = re.search(r'youtube\.com/shorts/([a-zA-Z0-9_-]+)', url)
+        match = re.search(r'youtube\.com/shorts/([a-zA-Z0-9_-]{11})', url)
         if match:
             return match.group(1)
+
+        # Handle channel video URLs: /channel/{id}/videos/{video_id}
+        match = re.search(r'/channel/[^/]+/videos/([a-zA-Z0-9_-]{11})', url)
+        if match:
+            return match.group(1)
+
+        # Fallback: Extract any 11-character alphanumeric ID from YouTube URL only
+        if 'youtube.com' in url or 'youtu.be' in url:
+            match = re.search(r'([a-zA-Z0-9_-]{11})', url)
+            if match:
+                video_id = match.group(1)
+                # Ensure it looks like a valid YouTube video ID (not channel ID or other)
+                if not video_id.startswith('UC') and not video_id.startswith('PL'):
+                    return video_id
 
         return None
 

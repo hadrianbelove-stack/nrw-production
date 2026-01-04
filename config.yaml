@@ -134,6 +134,47 @@ rt_scraper:
     max_delay: 5.0  # Maximum retry delay (seconds)
     jitter_ratio: 0.2  # Randomness factor (±20%)
 
+# Vimeo On Demand scraper (Playwright): For discovering indie films
+# Uses Playwright to browse Vimeo On Demand pages and cross-reference with TMDB
+vimeo_scraper:
+  enabled: true  # Enable Vimeo On Demand film discovery
+  headless: true  # Run browser in headless mode
+  rate_limit: 2.0  # Minimum seconds between scrapes
+  timeout: 15  # Page load timeout in seconds
+  max_retries: 3  # Number of retries on failure
+  cache_ttl_days: 30  # Cache expiration for Vimeo metadata
+  screenshots_enabled: true  # Capture screenshots on failure for debugging
+  screenshot_retention_days: 7  # Auto-delete old screenshots
+  exponential_backoff:
+    base_delay: 0.5  # Initial retry delay (seconds)
+    max_delay: 5.0  # Maximum retry delay (seconds)
+    jitter_ratio: 0.2  # Randomness factor (±20%)
+  discovery:
+    max_pages: 5  # Browse pages to scrape per run
+    min_runtime: 70  # Feature films only (70+ minutes)
+    categories: ["drama", "documentary", "comedy", "thriller"]  # Categories to scrape
+
+# YouTube Paid Content scraper (Playwright): For discovering indie films on YouTube
+# Targets YouTube Movies category and indie film searches for rent/purchase/free films
+youtube_scraper:
+  enabled: true
+  headless: true
+  rate_limit: 2.0
+  timeout: 15
+  max_retries: 3
+  cache_ttl_days: 30
+  screenshots_enabled: true
+  screenshot_retention_days: 7
+  exponential_backoff:
+    base_delay: 0.5
+    max_delay: 5.0
+    jitter_ratio: 0.2
+  discovery:
+    max_pages: 5
+    min_runtime: 70
+    search_queries: ["indie film", "independent film", "feature film", "documentary film"]
+    include_free: true  # Include free filmmaker releases
+
 validation:
   recent_days: 7  # Strict recent movie validation window (days) - per PROJECT_CHARTER.md
   min_recall: 0.75  # Minimum intake recall - how well intake finds recent premieres from TMDB (75%)
@@ -153,16 +194,14 @@ orchestrator:
 # Affiliate Program Configuration
 # Sign up for affiliate programs to earn commissions on movie rentals/purchases
 # NOTE: Most affiliate programs require an existing website before approval
-# Set enabled=false for now, enable after getting approved and adding your IDs
 affiliate:
-  enabled: false  # Set to true after signing up for affiliate programs
+  enabled: true  # Affiliate tagging is active
 
   # Amazon Associates - https://affiliate-program.amazon.com/
   # Commission: 5% on digital video, 24-hour cookie (earns on ANY purchase within 24h)
-  # Application requirements: Active website with content, 10+ posts/pages, regular traffic
   amazon:
-    enabled: false  # Enable after getting your affiliate tag
-    tag: "REPLACE_WITH_YOUR_AMAZON_TAG"  # e.g., "yoursite-20"
+    enabled: true  # Amazon affiliate tagging enabled
+    tag: "nrw04-20"  # Your Amazon Associates tag
     # Get your tag from: https://affiliate-program.amazon.com/home/account/tag/manage
 
   # Apple Performance Partners - https://performance-partners.apple.com/

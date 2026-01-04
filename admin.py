@@ -75,7 +75,6 @@ def apply_security_headers(response):
 DATA_FILE = 'data.json'  # Root directory - production display data
 HIDDEN_FILE = 'admin/hidden_movies.json'  # Admin overrides
 FEATURED_FILE = 'admin/featured_movies.json'  # Admin overrides
-WATCH_LINK_OVERRIDES_FILE = 'admin/watch_link_overrides.json'
 PENDING_CHANGES_FLAG = 'admin/.pending_changes'  # Dirty flag for unsaved changes
 
 
@@ -238,16 +237,14 @@ def compute_delta_summary() -> dict:
         if not movie.get('links', {}).get('trailer'):
             issues['missing_trailer'] += 1
 
-        # Check for missing stream/rent/buy links
+        # Check for missing streaming/vod links
         watch_links = movie.get('watch_links', {})
         providers = movie.get('providers', {})
 
         if not (watch_links.get('streaming') or providers.get('streaming')):
             issues['missing_stream_link'] += 1
-        if not (watch_links.get('rent') or providers.get('rent')):
-            issues['missing_rent_link'] += 1
-        if not (watch_links.get('buy') or providers.get('buy')):
-            issues['missing_buy_link'] += 1
+        if not (watch_links.get('vod') or providers.get('rent') or providers.get('buy')):
+            issues['missing_vod_link'] += 1
 
     return {
         'new_films_released': new_films_released,
@@ -915,8 +912,7 @@ def update_movie_fields() -> dict:
             "synopsis": str,  # Optional, max 5000 chars
             "watch_links": {  # Optional
                 "streaming": {"service": str, "link": str},
-                "rent": {"service": str, "link": str},
-                "buy": {"service": str, "link": str}
+                "vod": {"service": str, "link": str}
             }
         }
 

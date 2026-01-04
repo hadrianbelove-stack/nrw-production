@@ -310,14 +310,14 @@ def test_backward_compatibility():
                 self.logger.addHandler(logging.NullHandler())
                 from pipeline import ValidationService
                 self.config = {}
-                self.watchmode_stats = {
+                self.enrichment_stats = {
                     'schema_validation_warnings': 0,
                     'schema_validation_passes': 0
                 }
                 self.validator = ValidationService(
                     logger=self.logger,
                     config=self.config,
-                    stats_dict=self.watchmode_stats
+                    stats_dict=self.enrichment_stats
                 )
 
         mock_gen = MockDataGenerator()
@@ -339,7 +339,7 @@ def test_backward_compatibility():
         # Test stats sharing
         test_result(
             "Stats dict is shared",
-            mock_gen.validator.stats is mock_gen.watchmode_stats,
+            mock_gen.validator.stats is mock_gen.enrichment_stats,
             "ValidationService updates shared stats dict"
         )
 
@@ -352,7 +352,7 @@ def test_backward_compatibility():
         return False
 
 def test_stats_integration():
-    """Test that validation stats integrate with watchmode_stats"""
+    """Test that validation stats integrate with enrichment_stats"""
     print("\n" + "="*60)
     print("TEST 7: Stats Integration")
     print("="*60)
@@ -364,7 +364,7 @@ def test_stats_integration():
         logger = logging.getLogger('test')
         logger.addHandler(logging.NullHandler())
 
-        # Create shared stats dict (simulating self.watchmode_stats)
+        # Create shared stats dict (simulating self.enrichment_stats)
         shared_stats = {
             'schema_validation_warnings': 0,
             'schema_validation_passes': 0,

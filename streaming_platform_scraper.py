@@ -2,11 +2,11 @@
 """
 Playwright-based streaming platform scraper for Amazon Prime Video and Apple TV deep links
 
-Purpose: Find direct deep links to movie pages when Watchmode API has no data
+Purpose: Find direct deep links to movie pages when JustWatch API has no data
 Supports: Amazon Prime Video, Apple TV (Netflix/Disney+ skipped due to anti-bot measures)
-Usage: Optional enhancement to watch links system
+Usage: Fallback enhancement to watch links system (JustWatch API is primary)
 
-Integration: Called from generate_data.py when Watchmode API returns no data
+Integration: Called from enrichment pipeline when JustWatch API returns no VOD data
 Returns: Deep link URL or None if not found
 
 Maintenance: Requires selector updates when platforms change UI (~1-2 hours/month)

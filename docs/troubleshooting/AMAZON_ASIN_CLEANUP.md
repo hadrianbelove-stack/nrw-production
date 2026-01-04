@@ -135,7 +135,7 @@ The second placeholder ASIN B0FNDR5BW5 was not in the original detection list, a
 **Tool:** `cleanup_placeholder_asins.py`
 - Updated script to detect both B0FMPYFP9W and B0FNDR5BW5
 - Scanned data.json for both placeholder ASINs
-- Found 41 affected movies across streaming/rent/buy categories
+- Found 41 affected movies across streaming/vod categories
 - Generated list of movie IDs needing cleanup
 
 ### Step 2: Reset Enriched Flags

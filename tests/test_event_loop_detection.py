@@ -47,10 +47,7 @@ print("\n6. Importing Platform scraper...")
 from streaming_platform_scraper import StreamingPlatformScraper
 check_event_loop("   After Platform import")
 
-# 7. After Watchmode API import
-print("\n7. Importing Watchmode API...")
-from watchmode_api import create_watchmode_client
-check_event_loop("   After Watchmode import")
+# 7. (Watchmode API deprecated - removed 2024-12)
 
 # 8. Creating YouTube scraper instance
 print("\n8. Creating YouTube scraper instance...")

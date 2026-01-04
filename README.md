@@ -159,8 +159,8 @@ Quick reference for common issues. **For detailed troubleshooting:** See [docs/T
 ## Configuration
 
 - **config.yaml** - API keys, scraper settings, display parameters
-  - **Required setup:** Replace placeholder values for `tmdb_api_key` and `watchmode_api_key` with real API keys
-  - Production: Use environment variables `TMDB_API_KEY` and `WATCHMODE_API_KEY` (see [SYSTEM_ARCHITECTURE.md §4](SYSTEM_ARCHITECTURE.md))
+  - **Required setup:** Replace placeholder value for `tmdb_api_key` with real API key
+  - Production: Use environment variable `TMDB_API_KEY` (see [SYSTEM_ARCHITECTURE.md §4](SYSTEM_ARCHITECTURE.md))
 - **requirements.txt** - Python dependencies (Playwright-based, Selenium removed)
 - **.gitignore** - Excludes cache/, config.yaml (API keys), various backup/temp files
 - **launch_all.sh** - Unified launcher for all NRW tools (menu-driven)
