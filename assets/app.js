@@ -262,9 +262,9 @@ const NRW = {
                     // All streaming services use the same style
                     // Use logo images for certain services, text for others
                     if (displayName === 'PRIME') {
-                        buttonsHtml += `<a href="${link}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-stream" aria-label="Watch on Prime Video"><img src="logos and images/amazon prime.png" alt="Prime Video" class="btn-logo"></a>`;
+                        buttonsHtml += `<a href="${link}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-stream" aria-label="Watch on Prime Video"><img src="logos%20and%20images/amazon%20prime.png" alt="Prime Video" class="btn-logo"></a>`;
                     } else if (displayName === 'NETFLIX') {
-                        buttonsHtml += `<a href="${link}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-stream" aria-label="Watch on Netflix"><img src="logos and images/netflix square logo.png" alt="Netflix" class="btn-logo"></a>`;
+                        buttonsHtml += `<a href="${link}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-stream" aria-label="Watch on Netflix"><img src="logos%20and%20images/netflix%20square%20logo.png" alt="Netflix" class="btn-logo"></a>`;
                     } else {
                         buttonsHtml += `<a href="${link}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-stream" aria-label="Watch on ${service}">${displayName}</a>`;
                     }
@@ -286,11 +286,11 @@ const NRW = {
 
                 // Add purchase buttons directly (not in separate wrapper)
                 if (amazonLink) {
-                    buttonsHtml += `<a href="${amazonLink}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-purchase" aria-label="Rent/Buy on Amazon"><img src="logos and images/pngimg.com - amazon_PNG17.png" alt="Amazon" class="btn-logo"></a>`;
+                    buttonsHtml += `<a href="${amazonLink}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-purchase" aria-label="Rent/Buy on Amazon"><img src="logos%20and%20images/pngimg.com%20-%20amazon_PNG17.png" alt="Amazon" class="btn-logo"></a>`;
                 }
 
                 if (appleLink) {
-                    buttonsHtml += `<a href="${appleLink}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-purchase" aria-label="Rent/Buy on Apple TV"><img src="logos and images/apple logo.png" alt="Apple" class="btn-logo"></a>`;
+                    buttonsHtml += `<a href="${appleLink}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-purchase" aria-label="Rent/Buy on Apple TV"><img src="logos%20and%20images/apple%20logo.png" alt="Apple" class="btn-logo"></a>`;
                 }
 
                 // If no valid links at all, show disabled placeholder
