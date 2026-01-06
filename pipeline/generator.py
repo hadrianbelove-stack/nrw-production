@@ -414,6 +414,7 @@ class DataGenerator:
         # Get hybrid intake flags
         enable_pass_a = intake_config.get('enable_pass_a', True)  # Digital releases (release_date + type=4)
         enable_pass_b = intake_config.get('enable_pass_b', True)  # Theatrical releases (primary_release_date)
+        min_runtime = intake_config.get('min_runtime', 60)  # Minimum runtime in minutes (features only)
 
         if debug:
             self.logger.info(f"Starting intake: days_back={days_back}, max_pages={max_pages}")
@@ -446,7 +447,7 @@ class DataGenerator:
 
             pass_a_count = self._run_intake_pass(
                 'A', 'digital', start_date, end_date, max_pages,
-                all_intaked_movies, existing_ids, debug
+                all_intaked_movies, existing_ids, debug, min_runtime
             )
 
             if debug:
@@ -459,11 +460,26 @@ class DataGenerator:
 
             pass_b_count = self._run_intake_pass(
                 'B', 'theatrical', start_date, end_date, max_pages,
-                all_intaked_movies, existing_ids, debug
+                all_intaked_movies, existing_ids, debug, min_runtime
             )
 
             if debug:
                 self.logger.info(f"Pass B completed: {pass_b_count} movies intaked")
+
+        # Pass C: Festival premieres (with_release_type=1 in festival regions)
+        enable_pass_c = intake_config.get('enable_pass_c', True)
+        if enable_pass_c:
+            if debug:
+                self.logger.info("Starting Pass C: Festival premieres")
+
+            # For ongoing intake, only check current/recent festivals
+            # For backfill, run_festival_backfill is called separately
+            pass_c_count = self._run_festival_intake_current(
+                all_intaked_movies, existing_ids, debug, min_runtime
+            )
+
+            if debug:
+                self.logger.info(f"Pass C completed: {pass_c_count} festival premieres intaked")
 
         # Merge all intaked movies into database
         for movie_id, movie_data in all_intaked_movies.items():
@@ -897,7 +913,7 @@ class DataGenerator:
 
     # validate_data_json_schema moved to pipeline/validation.py (2025-11-10)
 
-    def _run_intake_pass(self, pass_name, pass_type, start_date, end_date, max_pages, intaked_movies, existing_ids, debug):
+    def _run_intake_pass(self, pass_name, pass_type, start_date, end_date, max_pages, intaked_movies, existing_ids, debug, min_runtime=60):
         """Run a single intake pass (A or B)
 
         Args:
@@ -909,6 +925,7 @@ class DataGenerator:
             intaked_movies: Dict to accumulate intaked movies
             existing_ids: Set of existing movie IDs to skip
             debug: Enable debug logging
+            min_runtime: Minimum runtime in minutes (features only)
 
         Returns:
             Number of new movies intaked in this pass
@@ -922,7 +939,7 @@ class DataGenerator:
 
                 # Use bounded timeout and retry logic
                 page_results = self._fetch_tmdb_page_with_retry(
-                    page, start_date, end_date, debug, pass_type=pass_type
+                    page, start_date, end_date, debug, pass_type=pass_type, min_runtime=min_runtime
                 )
 
                 if not page_results:
@@ -988,7 +1005,7 @@ class DataGenerator:
 
         return pass_new_count
 
-    def _fetch_tmdb_page_with_retry(self, page, start_date, end_date, debug=False, pass_type='digital', max_retries=3):
+    def _fetch_tmdb_page_with_retry(self, page, start_date, end_date, debug=False, pass_type='digital', max_retries=3, min_runtime=60):
         """Fetch TMDB discover page with bounded timeout and retry logic"""
         import requests
         from requests.adapters import HTTPAdapter
@@ -1015,6 +1032,7 @@ class DataGenerator:
                 'release_date.gte': start_date.strftime('%Y-%m-%d'),
                 'release_date.lte': end_date.strftime('%Y-%m-%d'),
                 'with_release_type': '4',  # Digital only
+                'with_runtime.gte': min_runtime,  # Features only (60+ min default)
                 'region': 'US',
                 'language': 'en-US',
                 'include_adult': 'false',
@@ -1027,6 +1045,7 @@ class DataGenerator:
                 'api_key': self.tmdb_key,
                 'primary_release_date.gte': start_date.strftime('%Y-%m-%d'),
                 'primary_release_date.lte': end_date.strftime('%Y-%m-%d'),
+                'with_runtime.gte': min_runtime,  # Features only (60+ min default)
                 'region': 'US',
                 'language': 'en-US',
                 'include_adult': 'false',

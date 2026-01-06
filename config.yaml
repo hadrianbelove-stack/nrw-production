@@ -71,11 +71,135 @@ telemetry:
 intake:
   days_back: 7  # Intake window for finding new premieres from TMDB (controls how far back intake looks)
   max_pages: 20  # Intake page limit - maximum TMDB pages to process during intake phase
+  min_runtime: 60  # Minimum runtime in minutes - filters out shorts (features only)
   # CI optimizations - reduce load for automated runs
   ci_days_back: 7  # Reduced intake window for CI (set via CI_DISCOVERY_DAYS env var)
   ci_max_pages: 10  # Reduced intake page limit for CI (set via CI_DISCOVERY_PAGES env var)
   enable_pass_a: true  # Enable Pass A: Direct-to-digital releases (release_date + type=4)
   enable_pass_b: true  # Enable Pass B: Theatrical releases (primary_release_date)
+  enable_pass_c: true  # Enable Pass C: Festival premieres (with_release_type=1 in festival regions)
+  festival_max_pages: 50  # Higher page limit for festival intake (more obscure films)
+
+# Film Festival Configuration
+# Used by intake Pass C to discover films premiering at major festivals
+# Dates shift slightly each year - these are historical/confirmed dates with wiggle room
+# For future years, add new entries or run backfill with estimated dates
+festivals:
+  wiggle_days: 2  # Extra days before/after festival dates to catch edge cases
+
+  # 2024 Festivals (completed - for backfill)
+  editions_2024:
+    sundance:
+      name: "Sundance"
+      region: "US"
+      start: "2024-01-18"
+      end: "2024-01-28"
+    berlin:
+      name: "Berlin/Berlinale"
+      region: "DE"
+      start: "2024-02-15"
+      end: "2024-02-25"
+    sxsw:
+      name: "SXSW"
+      region: "US"
+      start: "2024-03-08"
+      end: "2024-03-16"
+    cannes:
+      name: "Cannes"
+      region: "FR"
+      start: "2024-05-14"
+      end: "2024-05-25"
+    tribeca:
+      name: "Tribeca"
+      region: "US"
+      start: "2024-06-05"
+      end: "2024-06-16"
+    venice:
+      name: "Venice"
+      region: "IT"
+      start: "2024-08-28"
+      end: "2024-09-07"
+    toronto:
+      name: "Toronto/TIFF"
+      region: "CA"
+      start: "2024-09-05"
+      end: "2024-09-15"
+
+  # 2025 Festivals (current year)
+  editions_2025:
+    sundance:
+      name: "Sundance"
+      region: "US"
+      start: "2025-01-23"
+      end: "2025-02-02"
+    berlin:
+      name: "Berlin/Berlinale"
+      region: "DE"
+      start: "2025-02-13"
+      end: "2025-02-23"
+    sxsw:
+      name: "SXSW"
+      region: "US"
+      start: "2025-03-07"
+      end: "2025-03-15"
+    cannes:
+      name: "Cannes"
+      region: "FR"
+      start: "2025-05-13"
+      end: "2025-05-24"
+    tribeca:
+      name: "Tribeca"
+      region: "US"
+      start: "2025-06-04"
+      end: "2025-06-15"
+    venice:
+      name: "Venice"
+      region: "IT"
+      start: "2025-08-27"
+      end: "2025-09-06"
+    toronto:
+      name: "Toronto/TIFF"
+      region: "CA"
+      start: "2025-09-04"
+      end: "2025-09-14"
+
+  # 2026 Festivals (future - scheduled dates)
+  editions_2026:
+    sundance:
+      name: "Sundance"
+      region: "US"
+      start: "2026-01-22"
+      end: "2026-02-01"
+    berlin:
+      name: "Berlin/Berlinale"
+      region: "DE"
+      start: "2026-02-12"
+      end: "2026-02-22"
+    sxsw:
+      name: "SXSW"
+      region: "US"
+      start: "2026-03-12"
+      end: "2026-03-18"
+    cannes:
+      name: "Cannes"
+      region: "FR"
+      start: "2026-05-12"
+      end: "2026-05-23"
+    tribeca:
+      name: "Tribeca"
+      region: "US"
+      start: "2026-06-03"
+      end: "2026-06-14"
+    venice:
+      name: "Venice"
+      region: "IT"
+      start: "2026-09-02"
+      end: "2026-09-12"
+    toronto:
+      name: "Toronto/TIFF"
+      region: "CA"
+      start: "2026-09-10"
+      end: "2026-09-20"
 
 api:
   # API keys: Environment variables take precedence, these are fallbacks for local development
