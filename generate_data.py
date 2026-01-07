@@ -60,6 +60,16 @@ def main():
         action='store_true',
         help='Enrichment: Add metadata to newly discovered movies in data.json'
     )
+    parser.add_argument(
+        '--festival-backfill',
+        action='store_true',
+        help='Backfill festival premieres to tracking database (2024, 2025, 2026)'
+    )
+    parser.add_argument(
+        '--festival-years',
+        type=str,
+        help='Comma-separated years for festival backfill (e.g., "2024,2025"). Defaults to all.'
+    )
 
     args = parser.parse_args()
     incremental = not args.full
@@ -91,6 +101,16 @@ def main():
         )
         print(f"✅ Intake complete: {intaked_count} new movies added")
 
+    # Run festival backfill if requested
+    festival_count = 0
+    if getattr(args, 'festival_backfill', False):
+        years = None
+        if args.festival_years:
+            years = [int(y.strip()) for y in args.festival_years.split(',')]
+        print(f"🎬 Running festival backfill{' for years: ' + str(years) if years else ' for all available years'}...")
+        festival_count = generator.run_festival_backfill(years=years, debug=args.debug)
+        print(f"✅ Festival backfill complete: {festival_count} new movies added")
+
     # Check tracking movies for digital availability if requested
     newly_digital_count = 0
     if args.discover:
@@ -106,8 +126,9 @@ def main():
         enriched_count = generator.enrich_newly_available_movies()
         print(f"✅ Enrichment complete: {enriched_count} movies enriched")
 
-    # Generate the final display data (only for final generation phase, not intake/discovery/enrich)
-    if not args.intake and not args.discover and not args.enrich:
+    # Generate the final display data (only for final generation phase, not intake/discovery/enrich/festival)
+    festival_backfill = getattr(args, 'festival_backfill', False)
+    if not args.intake and not args.discover and not args.enrich and not festival_backfill:
         print("\n🎬 Generating final display data...")
         generator.generate_display_data(incremental=incremental, force_refresh=force_refresh)
     else:

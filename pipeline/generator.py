@@ -1084,6 +1084,313 @@ class DataGenerator:
             return None
 
     # ============================================================================
+    # Festival intake methods (2026-01-06 - added for festival premiere discovery)
+    # ============================================================================
+
+    def _run_festival_intake_current(self, intaked_movies, existing_ids, debug, min_runtime=60):
+        """Run festival intake for current/recent festivals only.
+
+        For ongoing daily intake, only checks festivals happening now or recently.
+        For full backfill, use run_festival_backfill() separately.
+
+        Args:
+            intaked_movies: Dict to accumulate intaked movies
+            existing_ids: Set of existing movie IDs to skip
+            debug: Enable debug logging
+            min_runtime: Minimum runtime in minutes (features only)
+
+        Returns:
+            Number of new movies intaked from current festivals
+        """
+        festivals_config = self.config.get('festivals', {})
+        intake_config = self.config.get('intake', {})
+        max_pages = intake_config.get('festival_max_pages', 50)
+        wiggle_days = festivals_config.get('wiggle_days', 2)
+
+        # Determine which year's festivals to check based on current date
+        now = datetime.now()
+        current_year = now.year
+
+        total_new = 0
+
+        # Check current year's festivals
+        editions_key = f'editions_{current_year}'
+        editions = festivals_config.get(editions_key, {})
+
+        if not editions:
+            if debug:
+                self.logger.info(f"No festival editions found for {current_year}")
+            return 0
+
+        for fest_key, fest_data in editions.items():
+            try:
+                start_date = datetime.strptime(fest_data['start'], '%Y-%m-%d')
+                end_date = datetime.strptime(fest_data['end'], '%Y-%m-%d')
+
+                # Add wiggle room
+                start_with_wiggle = start_date - timedelta(days=wiggle_days)
+                end_with_wiggle = end_date + timedelta(days=wiggle_days)
+
+                # Only intake festivals that are in progress or recently ended (within 30 days)
+                # Skip future festivals and old festivals (for ongoing intake)
+                days_since_end = (now - end_with_wiggle).days
+                if days_since_end > 30:
+                    # Festival ended more than 30 days ago - skip for ongoing intake
+                    continue
+                if start_with_wiggle > now:
+                    # Festival hasn't started yet - skip
+                    continue
+
+                if debug:
+                    self.logger.info(f"Checking {fest_data['name']} ({fest_data['region']}): "
+                                   f"{fest_data['start']} to {fest_data['end']}")
+
+                fest_new = self._fetch_festival_premieres(
+                    fest_data['name'],
+                    fest_data['region'],
+                    start_with_wiggle,
+                    end_with_wiggle,
+                    max_pages,
+                    intaked_movies,
+                    existing_ids,
+                    debug,
+                    min_runtime
+                )
+                total_new += fest_new
+
+                if fest_new > 0:
+                    self.logger.info(f"Festival {fest_data['name']}: {fest_new} new movies intaked")
+
+            except Exception as e:
+                self.logger.error(f"Error processing festival {fest_key}: {e}")
+                continue
+
+        return total_new
+
+    def run_festival_backfill(self, years=None, debug=False):
+        """Backfill festival premieres for specified years.
+
+        This is meant to be called manually or via CLI for historical backfill.
+
+        Args:
+            years: List of years to backfill (e.g., [2024, 2025]). Defaults to all available.
+            debug: Enable debug logging
+
+        Returns:
+            Number of new movies added across all festivals
+        """
+        festivals_config = self.config.get('festivals', {})
+        intake_config = self.config.get('intake', {})
+        max_pages = intake_config.get('festival_max_pages', 50)
+        wiggle_days = festivals_config.get('wiggle_days', 2)
+        min_runtime = intake_config.get('min_runtime', 60)
+
+        # Load existing tracking database
+        if os.path.exists('movie_tracking.json'):
+            with open('movie_tracking.json', 'r') as f:
+                db = json.load(f)
+        else:
+            db = {'movies': {}, 'last_update': None}
+
+        existing_ids = set(db['movies'].keys())
+        all_intaked_movies = {}
+
+        # Determine which years to process
+        if years is None:
+            # Find all editions_YYYY keys
+            years = []
+            for key in festivals_config.keys():
+                if key.startswith('editions_'):
+                    try:
+                        year = int(key.replace('editions_', ''))
+                        years.append(year)
+                    except ValueError:
+                        continue
+            years.sort()
+
+        self.logger.info(f"Festival backfill starting for years: {years}")
+        total_new = 0
+
+        for year in years:
+            editions_key = f'editions_{year}'
+            editions = festivals_config.get(editions_key, {})
+
+            if not editions:
+                self.logger.warning(f"No festival editions found for {year}")
+                continue
+
+            self.logger.info(f"Processing {year} festivals ({len(editions)} festivals)")
+
+            for fest_key, fest_data in editions.items():
+                try:
+                    start_date = datetime.strptime(fest_data['start'], '%Y-%m-%d')
+                    end_date = datetime.strptime(fest_data['end'], '%Y-%m-%d')
+
+                    # Add wiggle room
+                    start_with_wiggle = start_date - timedelta(days=wiggle_days)
+                    end_with_wiggle = end_date + timedelta(days=wiggle_days)
+
+                    print(f"  📽️ {fest_data['name']} ({fest_data['region']}): "
+                          f"{fest_data['start']} to {fest_data['end']}", flush=True)
+
+                    fest_new = self._fetch_festival_premieres(
+                        fest_data['name'],
+                        fest_data['region'],
+                        start_with_wiggle,
+                        end_with_wiggle,
+                        max_pages,
+                        all_intaked_movies,
+                        existing_ids,
+                        debug,
+                        min_runtime
+                    )
+
+                    if fest_new > 0:
+                        print(f"    ✅ {fest_new} new movies", flush=True)
+                        total_new += fest_new
+                    else:
+                        print(f"    (no new movies)", flush=True)
+
+                    # Rate limiting between festivals
+                    time.sleep(0.5)
+
+                except Exception as e:
+                    self.logger.error(f"Error processing festival {fest_key}: {e}")
+                    print(f"    ❌ Error: {e}", flush=True)
+                    continue
+
+        # Merge all intaked movies into database
+        new_movies_added = 0
+        for movie_id, movie_data in all_intaked_movies.items():
+            if movie_id not in existing_ids:
+                db['movies'][movie_id] = movie_data
+                new_movies_added += 1
+                existing_ids.add(movie_id)
+
+        # Save updated database
+        if new_movies_added > 0:
+            db['last_update'] = datetime.now().isoformat()
+            if not self.storage.atomic_write_json(db, 'movie_tracking.json', backup=True):
+                self.logger.error("Failed to save movie_tracking.json after festival backfill")
+                raise IOError("Festival backfill database write failed")
+
+        self.logger.info(f"Festival backfill complete: {new_movies_added} new movies added")
+        print(f"\n🎬 Festival backfill complete: {new_movies_added} new movies added to tracking")
+
+        return new_movies_added
+
+    def _fetch_festival_premieres(self, fest_name, region, start_date, end_date, max_pages,
+                                   intaked_movies, existing_ids, debug, min_runtime=60):
+        """Fetch premieres from a specific festival via TMDB discover API.
+
+        Args:
+            fest_name: Festival name for logging
+            region: ISO country code (e.g., 'US', 'FR', 'IT')
+            start_date: Festival start date (datetime)
+            end_date: Festival end date (datetime)
+            max_pages: Maximum pages to fetch
+            intaked_movies: Dict to accumulate intaked movies
+            existing_ids: Set of existing movie IDs to skip
+            debug: Enable debug logging
+            min_runtime: Minimum runtime in minutes
+
+        Returns:
+            Number of new movies intaked from this festival
+        """
+        import requests
+        from requests.adapters import HTTPAdapter
+        from urllib3.util.retry import Retry
+
+        # Configure session with retry strategy
+        session = requests.Session()
+        retry_strategy = Retry(
+            total=3,
+            backoff_factor=1,
+            status_forcelist=[429, 500, 502, 503, 504],
+        )
+        adapter = HTTPAdapter(max_retries=retry_strategy)
+        session.mount("http://", adapter)
+        session.mount("https://", adapter)
+
+        url = "https://api.themoviedb.org/3/discover/movie"
+        fest_new_count = 0
+
+        for page in range(1, max_pages + 1):
+            params = {
+                'api_key': self.tmdb_key,
+                'region': region,
+                'with_release_type': '1',  # Premiere type
+                'release_date.gte': start_date.strftime('%Y-%m-%d'),
+                'release_date.lte': end_date.strftime('%Y-%m-%d'),
+                'with_runtime.gte': min_runtime,  # Features only
+                'language': 'en-US',
+                'include_adult': 'false',
+                'sort_by': 'release_date.asc',
+                'page': page
+            }
+
+            try:
+                self.intake_stats['api_calls'] += 1
+                response = session.get(url, params=params, timeout=(10, 30))
+                response.raise_for_status()
+
+                data = response.json()
+                results = data.get('results', [])
+                total_pages = data.get('total_pages', 1)
+
+                if not results:
+                    break
+
+                self.intake_stats['pages_fetched'] += 1
+                self.intake_stats['total_results'] += len(results)
+
+                page_new_count = 0
+                for movie in results:
+                    movie_id = str(movie['id'])
+
+                    # Skip if already exists
+                    if movie_id in existing_ids or movie_id in intaked_movies:
+                        self.intake_stats['duplicates_skipped'] += 1
+                        continue
+
+                    # Extract year from release_date
+                    release_date = movie.get('release_date', '')
+                    year = int(release_date[:4]) if release_date and len(release_date) >= 4 else None
+
+                    intaked_movies[movie_id] = {
+                        'title': movie.get('title', 'Unknown'),
+                        'year': year,
+                        'status': 'tracking',
+                        'first_seen': datetime.now().strftime('%Y-%m-%d'),
+                        'digital_date': None,
+                        'providers': {},
+                        'intake_pass': 'C',  # Festival pass
+                        'festival': fest_name  # Track which festival found this
+                    }
+
+                    page_new_count += 1
+                    fest_new_count += 1
+
+                self.intake_stats['new_movies_added'] += page_new_count
+
+                if debug:
+                    self.logger.info(f"{fest_name} page {page}/{total_pages}: "
+                                   f"{len(results)} results, {page_new_count} new")
+
+                # Stop if we've reached the last page
+                if page >= total_pages:
+                    break
+
+                # Rate limiting
+                time.sleep(self.config.get('api', {}).get('tmdb_rate_limit', 0.1))
+
+            except Exception as e:
+                self.logger.error(f"Error fetching {fest_name} page {page}: {e}")
+                break
+
+        return fest_new_count
+
+    # ============================================================================
     # Essential helper methods (2025-11-11 - added during enrichment state fix)
     # ============================================================================
 

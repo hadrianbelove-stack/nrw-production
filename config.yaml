@@ -89,6 +89,7 @@ festivals:
 
   # 2024 Festivals (completed - for backfill)
   editions_2024:
+    # Major Prestige Festivals
     sundance:
       name: "Sundance"
       region: "US"
@@ -114,6 +115,11 @@ festivals:
       region: "US"
       start: "2024-06-05"
       end: "2024-06-16"
+    locarno:
+      name: "Locarno"
+      region: "CH"
+      start: "2024-08-07"
+      end: "2024-08-17"
     venice:
       name: "Venice"
       region: "IT"
@@ -124,9 +130,78 @@ festivals:
       region: "CA"
       start: "2024-09-05"
       end: "2024-09-15"
+    san_sebastian:
+      name: "San Sebastian"
+      region: "ES"
+      start: "2024-09-20"
+      end: "2024-09-28"
+    nyff:
+      name: "NYFF"
+      region: "US"
+      start: "2024-09-27"
+      end: "2024-10-14"
+    busan:
+      name: "Busan"
+      region: "KR"
+      start: "2024-10-02"
+      end: "2024-10-11"
+    afi_fest:
+      name: "AFI Fest"
+      region: "US"
+      start: "2024-10-23"
+      end: "2024-10-27"
+    # Documentary Festivals
+    cph_dox:
+      name: "CPH:DOX"
+      region: "DK"
+      start: "2024-03-13"
+      end: "2024-03-24"
+    hot_docs:
+      name: "Hot Docs"
+      region: "CA"
+      start: "2024-04-25"
+      end: "2024-05-05"
+    sheffield_docfest:
+      name: "Sheffield DocFest"
+      region: "GB"
+      start: "2024-06-12"
+      end: "2024-06-17"
+    idfa:
+      name: "IDFA"
+      region: "NL"
+      start: "2024-11-14"
+      end: "2024-11-24"
+    # Animation Festival
+    annecy:
+      name: "Annecy"
+      region: "FR"
+      start: "2024-06-09"
+      end: "2024-06-15"
+    # Genre/Horror Festivals
+    fantasia:
+      name: "Fantasia"
+      region: "CA"
+      start: "2024-07-18"
+      end: "2024-08-04"
+    fantastic_fest:
+      name: "Fantastic Fest"
+      region: "US"
+      start: "2024-09-19"
+      end: "2024-09-26"
+    sitges:
+      name: "Sitges"
+      region: "ES"
+      start: "2024-10-03"
+      end: "2024-10-13"
+    sxsw_sydney:
+      name: "SXSW Sydney"
+      region: "AU"
+      start: "2024-10-14"
+      end: "2024-10-20"
 
   # 2025 Festivals (current year)
   editions_2025:
+    # Major Prestige Festivals
     sundance:
       name: "Sundance"
       region: "US"
@@ -152,6 +227,11 @@ festivals:
       region: "US"
       start: "2025-06-04"
       end: "2025-06-15"
+    locarno:
+      name: "Locarno"
+      region: "CH"
+      start: "2025-08-06"
+      end: "2025-08-16"
     venice:
       name: "Venice"
       region: "IT"
@@ -162,9 +242,78 @@ festivals:
       region: "CA"
       start: "2025-09-04"
       end: "2025-09-14"
+    busan:
+      name: "Busan"
+      region: "KR"
+      start: "2025-09-17"
+      end: "2025-09-26"
+    san_sebastian:
+      name: "San Sebastian"
+      region: "ES"
+      start: "2025-09-19"
+      end: "2025-09-27"
+    nyff:
+      name: "NYFF"
+      region: "US"
+      start: "2025-09-26"
+      end: "2025-10-13"
+    afi_fest:
+      name: "AFI Fest"
+      region: "US"
+      start: "2025-10-22"
+      end: "2025-10-26"
+    # Documentary Festivals
+    cph_dox:
+      name: "CPH:DOX"
+      region: "DK"
+      start: "2025-03-19"
+      end: "2025-03-30"
+    hot_docs:
+      name: "Hot Docs"
+      region: "CA"
+      start: "2025-04-24"
+      end: "2025-05-04"
+    sheffield_docfest:
+      name: "Sheffield DocFest"
+      region: "GB"
+      start: "2025-06-18"
+      end: "2025-06-23"
+    idfa:
+      name: "IDFA"
+      region: "NL"
+      start: "2025-11-13"
+      end: "2025-11-23"
+    # Animation Festival
+    annecy:
+      name: "Annecy"
+      region: "FR"
+      start: "2025-06-08"
+      end: "2025-06-14"
+    # Genre/Horror Festivals
+    fantasia:
+      name: "Fantasia"
+      region: "CA"
+      start: "2025-07-16"
+      end: "2025-08-03"
+    fantastic_fest:
+      name: "Fantastic Fest"
+      region: "US"
+      start: "2025-09-18"
+      end: "2025-09-25"
+    sitges:
+      name: "Sitges"
+      region: "ES"
+      start: "2025-10-09"
+      end: "2025-10-19"
+    sxsw_sydney:
+      name: "SXSW Sydney"
+      region: "AU"
+      start: "2025-10-13"
+      end: "2025-10-19"
 
-  # 2026 Festivals (future - scheduled dates)
+  # 2026 Festivals (future - scheduled/estimated dates)
   editions_2026:
+    # Major Prestige Festivals
     sundance:
       name: "Sundance"
       region: "US"
@@ -190,6 +339,11 @@ festivals:
       region: "US"
       start: "2026-06-03"
       end: "2026-06-14"
+    locarno:
+      name: "Locarno"
+      region: "CH"
+      start: "2026-08-05"
+      end: "2026-08-15"
     venice:
       name: "Venice"
       region: "IT"
@@ -200,6 +354,74 @@ festivals:
       region: "CA"
       start: "2026-09-10"
       end: "2026-09-20"
+    busan:
+      name: "Busan"
+      region: "KR"
+      start: "2026-09-16"
+      end: "2026-09-25"
+    san_sebastian:
+      name: "San Sebastian"
+      region: "ES"
+      start: "2026-09-18"
+      end: "2026-09-26"
+    nyff:
+      name: "NYFF"
+      region: "US"
+      start: "2026-09-25"
+      end: "2026-10-12"
+    afi_fest:
+      name: "AFI Fest"
+      region: "US"
+      start: "2026-10-21"
+      end: "2026-10-25"
+    # Documentary Festivals
+    cph_dox:
+      name: "CPH:DOX"
+      region: "DK"
+      start: "2026-03-11"
+      end: "2026-03-22"
+    hot_docs:
+      name: "Hot Docs"
+      region: "CA"
+      start: "2026-04-23"
+      end: "2026-05-03"
+    sheffield_docfest:
+      name: "Sheffield DocFest"
+      region: "GB"
+      start: "2026-06-10"
+      end: "2026-06-15"
+    idfa:
+      name: "IDFA"
+      region: "NL"
+      start: "2026-11-12"
+      end: "2026-11-22"
+    # Animation Festival
+    annecy:
+      name: "Annecy"
+      region: "FR"
+      start: "2026-06-21"
+      end: "2026-06-27"
+    # Genre/Horror Festivals
+    fantasia:
+      name: "Fantasia"
+      region: "CA"
+      start: "2026-07-16"
+      end: "2026-08-02"
+    fantastic_fest:
+      name: "Fantastic Fest"
+      region: "US"
+      start: "2026-09-17"
+      end: "2026-09-24"
+    sitges:
+      name: "Sitges"
+      region: "ES"
+      start: "2026-10-08"
+      end: "2026-10-18"
+    sxsw_sydney:
+      name: "SXSW Sydney"
+      region: "AU"
+      start: "2026-10-12"
+      end: "2026-10-18"
 
 api:
   # API keys: Environment variables take precedence, these are fallbacks for local development
