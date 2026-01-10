@@ -521,6 +521,26 @@ youtube_scraper:
     search_queries: ["indie film", "independent film", "feature film", "documentary film"]
     include_free: true  # Include free filmmaker releases
 
+# Letterboxd Video Store scraper (Playwright): For discovering exclusive rental films
+# Scrapes Letterboxd's curated Video Store sections for films not widely available elsewhere
+# Rent links point directly to Letterboxd Video Store
+letterboxd_scraper:
+  enabled: true
+  headless: true
+  rate_limit: 2.0
+  timeout: 15
+  max_retries: 3
+  cache_ttl_days: 7  # Shorter TTL - video store inventory changes frequently
+  screenshots_enabled: true
+  screenshot_retention_days: 7
+  exponential_backoff:
+    base_delay: 0.5
+    max_delay: 5.0
+    jitter_ratio: 0.2
+  discovery:
+    sections: ["unreleased-gems", "lost-and-found", "new-releases"]
+    min_runtime: 60  # Feature films
+
 validation:
   recent_days: 7  # Strict recent movie validation window (days) - per PROJECT_CHARTER.md
   min_recall: 0.75  # Minimum intake recall - how well intake finds recent premieres from TMDB (75%)

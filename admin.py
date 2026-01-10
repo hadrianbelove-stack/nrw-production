@@ -31,6 +31,43 @@ app = Flask(__name__,
 # Configure session security
 app.secret_key = os.environ.get('FLASK_SECRET_KEY', secrets.token_hex(32))
 
+# Country to 3-letter code mapping
+COUNTRY_CODES = {
+    'United States of America': 'USA', 'United States': 'USA', 'US': 'USA',
+    'United Kingdom': 'GBR', 'UK': 'GBR', 'Great Britain': 'GBR',
+    'France': 'FRA', 'Germany': 'DEU', 'Italy': 'ITA', 'Spain': 'ESP',
+    'Canada': 'CAN', 'Australia': 'AUS', 'Japan': 'JPN', 'China': 'CHN',
+    'South Korea': 'KOR', 'Korea': 'KOR', 'India': 'IND', 'Brazil': 'BRA',
+    'Mexico': 'MEX', 'Argentina': 'ARG', 'Russia': 'RUS', 'Poland': 'POL',
+    'Netherlands': 'NLD', 'Belgium': 'BEL', 'Sweden': 'SWE', 'Norway': 'NOR',
+    'Denmark': 'DNK', 'Finland': 'FIN', 'Ireland': 'IRL', 'Austria': 'AUT',
+    'Switzerland': 'CHE', 'Portugal': 'PRT', 'Greece': 'GRC', 'Turkey': 'TUR',
+    'Israel': 'ISR', 'South Africa': 'ZAF', 'New Zealand': 'NZL',
+    'Hong Kong': 'HKG', 'Taiwan': 'TWN', 'Singapore': 'SGP', 'Thailand': 'THA',
+    'Indonesia': 'IDN', 'Philippines': 'PHL', 'Malaysia': 'MYS', 'Vietnam': 'VNM',
+    'Czech Republic': 'CZE', 'Czechia': 'CZE', 'Hungary': 'HUN', 'Romania': 'ROU',
+    'Ukraine': 'UKR', 'Colombia': 'COL', 'Chile': 'CHL', 'Peru': 'PER',
+    'Egypt': 'EGY', 'Nigeria': 'NGA', 'Kenya': 'KEN', 'Morocco': 'MAR',
+    'Iran': 'IRN', 'Saudi Arabia': 'SAU', 'United Arab Emirates': 'ARE',
+    'Iceland': 'ISL', 'Luxembourg': 'LUX', 'Croatia': 'HRV', 'Serbia': 'SRB',
+    'Slovenia': 'SVN', 'Slovakia': 'SVK', 'Bulgaria': 'BGR', 'Estonia': 'EST',
+    'Latvia': 'LVA', 'Lithuania': 'LTU', 'Georgia': 'GEO', 'Armenia': 'ARM',
+    'Kazakhstan': 'KAZ', 'Pakistan': 'PAK', 'Bangladesh': 'BGD', 'Sri Lanka': 'LKA',
+}
+
+@app.template_filter('country_code')
+def country_code_filter(country):
+    """Convert country name to 3-letter code."""
+    if not country:
+        return ''
+    # Handle multiple countries separated by comma or slash
+    countries = [c.strip() for c in country.replace('/', ',').split(',')]
+    codes = []
+    for c in countries:
+        code = COUNTRY_CODES.get(c, c[:3].upper() if len(c) >= 3 else c.upper())
+        codes.append(code)
+    return '/'.join(codes)
+
 # Security headers and HTTPS enforcement
 @app.before_request
 def security_headers():

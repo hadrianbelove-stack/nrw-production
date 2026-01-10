@@ -1,17 +1,17 @@
 {
-  "timestamp": "2026-01-09T09:26:28.241255",
+  "timestamp": "2026-01-09T16:19:14.894819",
   "operation": "intake_premieres",
   "scan_window": {
-    "start_date": "2026-01-07",
+    "start_date": "2026-01-06",
     "end_date": "2026-01-09",
-    "days_back": 2,
+    "days_back": 3,
     "mode": "incremental",
     "bootstrap": false
   },
   "results": {
-    "intaked": 27,
-    "pages_fetched": 5,
-    "total_results": 88,
-    "duplicates_skipped": 61
+    "intaked": 66,
+    "pages_fetched": 7,
+    "total_results": 117,
+    "duplicates_skipped": 51
   }
 }

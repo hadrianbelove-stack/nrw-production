@@ -264,7 +264,7 @@
                 <!-- Editable Fields Section -->
                 <div class="edit-section">
                     <!-- Director, Country, Year, Runtime, Date, and RT Score Row -->
-                    <div style="display: grid; grid-template-columns: 1.2fr 0.8fr 0.8fr 0.6fr 0.7fr 0.6fr; gap: 0.5rem; margin-bottom: 0.5rem;">
+                    <div style="display: grid; grid-template-columns: 1.5fr 0.5fr 0.5fr 0.35fr 0.6fr 0.5fr; gap: 0.5rem; margin-bottom: 0.5rem;">
                         <div class="edit-field-group">
                             <label class="edit-label">
                                 Director:
@@ -281,8 +281,8 @@
                             </label>
                             <input type="text"
                                    id="country-{{ movie_id }}"
-                                   value="{{ movie.get('country', '') }}"
-                                   placeholder="Country"
+                                   value="{{ movie.get('country', '')|country_code }}"
+                                   placeholder=""
                                    class="edit-input {% if not movie.get('country') %}missing{% endif %}">
                         </div>
                         <div class="edit-field-group">
@@ -297,12 +297,12 @@
                         </div>
                         <div class="edit-field-group">
                             <label class="edit-label">
-                                Runtime:
+                                Min:
                             </label>
                             <input type="text"
                                    id="runtime-{{ movie_id }}"
                                    value="{{ movie.runtime or '' }}"
-                                   placeholder="min"
+                                   placeholder=""
                                    class="edit-input">
                         </div>
                         <div class="edit-field-group">
