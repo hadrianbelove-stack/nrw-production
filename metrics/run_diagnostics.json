@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-01-10T09:55:18.652427",
-  "duration_seconds": 2207.418656,
+  "timestamp": "2026-01-11T09:50:36.568408",
+  "duration_seconds": 1890.07082,
   "overall_success": true,
   "failure_count": 0,
   "warning_count": 0,
@@ -8,23 +8,23 @@
     {
       "name": "Intake new premieres from TMDB",
       "success": true,
-      "duration_seconds": 1.749248,
+      "duration_seconds": 1.655369,
       "error": null,
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-01-08 to 2026-01-10 (incremental mode, 12 intaked)\n\u2705 Intake complete: 12 new movies added\n\ud83d\udccb Phase complete\n"
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-01-09 to 2026-01-11 (incremental mode, 13 intaked)\n\u2705 Intake complete: 13 new movies added\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 1982.606157,
+      "duration_seconds": 1885.448027,
       "error": null,
-      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 12489 total movies\n\ud83d\udd0d Raw tracking filter: 12217 movies\n\ud83d\udd0d Assigned tracking_movies list: 12217\n\ud83d\udd0d Found 12217 movies in tracking status\n  Priority queue (last 180 days): 1809 movies\n  Older movies: 10408 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 12217 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/12217 (0.8%) | 0 found | 0m elapsed | ~30m remaining\n  \ud83d\udcbe Progress saved (b"
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 12502 total movies\n\ud83d\udd0d Raw tracking filter: 11454 movies\n\ud83d\udd0d Assigned tracking_movies list: 11454\n\ud83d\udd0d Found 11454 movies in tracking status\n  Priority queue (last 180 days): 1798 movies\n  Older movies: 9656 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 11454 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/11454 (0.9%) | 0 found | 0m elapsed | ~30m remaining\n  \ud83d\udcbe Progress saved (ba"
     },
     {
       "name": "Enrich newly available movies with metadata",
       "success": true,
-      "duration_seconds": 222.944249,
+      "duration_seconds": 2.848385,
       "error": null,
-      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 776 movies to enrich\n  \u2713 JustWatch found links for Dust Bunny: ['vod']\n  \u26a1 Dust Bunny (0.4s) - Wiki:\u25cb Trailer:\u2713 RT:\u2713 Links:\u2713 Date:\u2713 | 4 success, 0 errors\n  \u2713 Dust Bunny - Links: 1\n  \u2713 JustWatch found links for The Ballad of Suzanne C\u00e9saire: ['streaming', 'vod']\n  \u26a1 The Ballad of Suzanne C\u00e9saire (0.2s) - Wiki:\u25cb Trailer:\u2713 RT:\u2713 Links:\u2713 Date:\u25cb | 3 success, 0 errors\n  \u2713 The Ballad of Suzanne C\u00e9saire - Links: 2\n"
+      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 9 movies to enrich\n  \u2713 JustWatch found links for The Tale of Silyan: ['streaming']\n  \u26a1 The Tale of Silyan (0.3s) - Wiki:\u25cb Trailer:\u2713 RT:\u2713 Links:\u2713 Date:\u25cb | 3 success, 0 errors\n  \u2713 The Tale of Silyan - Links: 1\n  \u2713 JustWatch found links for Akhanda 2: Thaandavam: ['streaming']\n  \u26a1 Akhanda 2: Thaandavam (0.2s) - Wiki:\u25cb Trailer:\u2713 RT:\u2713 Links:\u2713 Date:\u25cb | 3 success, 0 errors\n  \u2713 Akhanda 2: Thaandavam - Links: 1\n  \u2713"
     }
   ],
   "health_issues": [],
@@ -35,11 +35,11 @@
   "failures": [],
   "warnings": [],
   "data_quality": {
-    "total": 12489,
-    "tracking": 11441,
-    "available": 1048,
-    "data_movies": 1058,
-    "movies_with_links": 126,
+    "total": 12502,
+    "tracking": 11445,
+    "available": 1057,
+    "data_movies": 1067,
+    "movies_with_links": 135,
     "movies_with_rt": 97,
     "movies_with_wikipedia": 0,
     "movies_with_trailers": 0
