@@ -1,0 +1,112 @@
+<!-- MOVIE START: {{ movie.title }} -->
+<!--
+Copy this entire block (from MOVIE START to MOVIE END) and paste into
+Featured Films or The Rest section above.
+-->
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" class="movie-card" style="background-color: #2a2a3e; border: 2px dashed #666666; border-radius: 10px; margin-bottom: 20px;">
+    <!-- Poster Row -->
+    {% if movie.poster %}
+    <tr>
+        <td align="center" style="padding: 15px 15px 0 15px;">
+            <img src="{{ movie.poster }}" alt="{{ movie.title }} poster" class="movie-poster" style="max-width: 200px; width: 100%; height: auto; border-radius: 8px; display: block;">
+        </td>
+    </tr>
+    {% endif %}
+
+    <!-- Title Row -->
+    <tr>
+        <td style="padding: 15px 15px 5px 15px;">
+            <h3 class="movie-title" style="margin: 0; color: #ffffff; font-size: 22px; font-weight: bold; font-family: Arial, Helvetica, sans-serif;">
+                {{ movie.title }}
+                {% if movie.year %}
+                <span style="color: #999999; font-size: 16px; font-weight: normal;">({{ movie.year }})</span>
+                {% endif %}
+            </h3>
+        </td>
+    </tr>
+
+    <!-- Metadata Row -->
+    <tr>
+        <td style="padding: 5px 15px;">
+            <p style="margin: 0; color: #00d4aa; font-size: 14px; font-family: Arial, Helvetica, sans-serif;">
+                {% if movie.director %}<strong>Director:</strong> {{ movie.director }}{% endif %}
+                {% if movie.runtime %} | <strong>Runtime:</strong> {{ movie.runtime }}min{% endif %}
+                {% if movie.country %} | <strong>Country:</strong> {{ movie.country }}{% endif %}
+            </p>
+        </td>
+    </tr>
+
+    <!-- RT Score Row -->
+    {% if movie.rt_score %}
+    <tr>
+        <td style="padding: 5px 15px;">
+            <p style="margin: 0; font-size: 14px; font-family: Arial, Helvetica, sans-serif;">
+                <span style="color: #ff6347;">&#127813;</span>
+                <span style="color: #ffffff; font-weight: bold;">{{ movie.rt_score }}%</span>
+                <span style="color: #999999;"> on Rotten Tomatoes</span>
+            </p>
+        </td>
+    </tr>
+    {% endif %}
+
+    <!-- Synopsis Row -->
+    {% if movie.synopsis %}
+    <tr>
+        <td style="padding: 10px 15px;">
+            <p style="margin: 0; color: #ffffff; font-size: 14px; line-height: 1.5; font-family: Arial, Helvetica, sans-serif;">
+                {{ movie.synopsis }}
+            </p>
+        </td>
+    </tr>
+    {% endif %}
+
+    <!-- Watch Links Row -->
+    {% if movie.streaming_services or movie.vod_services %}
+    <tr>
+        <td style="padding: 10px 15px;">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                    {% if movie.streaming_services %}
+                    {% for service in movie.streaming_services %}
+                    <td style="padding-right: 10px; padding-bottom: 8px;">
+                        <a href="{{ service.url }}" class="watch-button" style="background-color: #00d4aa; color: #000000; padding: 8px 16px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold; font-size: 12px; font-family: Arial, Helvetica, sans-serif;">
+                            {{ service.name }}
+                        </a>
+                    </td>
+                    {% endfor %}
+                    {% endif %}
+                    {% if movie.vod_services %}
+                    {% for service in movie.vod_services %}
+                    <td style="padding-right: 10px; padding-bottom: 8px;">
+                        <a href="{{ service.url }}" class="watch-button" style="background-color: #ff8c00; color: #000000; padding: 8px 16px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold; font-size: 12px; font-family: Arial, Helvetica, sans-serif;">
+                            {{ service.name }}
+                        </a>
+                    </td>
+                    {% endfor %}
+                    {% endif %}
+                </tr>
+            </table>
+        </td>
+    </tr>
+    {% endif %}
+
+    <!-- Info Links Row -->
+    <tr>
+        <td style="padding: 10px 15px 15px 15px;">
+            <p style="margin: 0; font-size: 12px; font-family: Arial, Helvetica, sans-serif;">
+                {% if movie.trailer_url %}
+                <a href="{{ movie.trailer_url }}" style="color: #00d4aa; text-decoration: none;">&#9658; Trailer</a>
+                {% endif %}
+                {% if movie.rt_url %}
+                {% if movie.trailer_url %} | {% endif %}
+                <a href="{{ movie.rt_url }}" style="color: #00d4aa; text-decoration: none;">RT Page</a>
+                {% endif %}
+                {% if movie.wikipedia_url %}
+                {% if movie.trailer_url or movie.rt_url %} | {% endif %}
+                <a href="{{ movie.wikipedia_url }}" style="color: #00d4aa; text-decoration: none;">Wikipedia</a>
+                {% endif %}
+            </p>
+        </td>
+    </tr>
+</table>
+<!-- MOVIE END -->

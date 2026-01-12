@@ -15,4 +15,5 @@ google-api-python-client
 google-auth-oauthlib
 google-auth-httplib2
 
-# Newsletter generation (no extra dependencies - uses stdlib)
+# Newsletter generation (requires Jinja2)
+jinja2

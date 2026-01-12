@@ -7,6 +7,9 @@
 set -e
 cd "$(dirname "$0")"
 
+# Sync with remote before launching
+git pull --ff-only origin main 2>/dev/null || true
+
 # Port configuration
 ADMIN_PORT=${ADMIN_PORT:-5556}
 SITE_PORT=${SITE_PORT:-3000}

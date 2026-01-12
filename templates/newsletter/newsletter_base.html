@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="x-apple-disable-message-reformatting">
+    <title>{{ newsletter_title | default('New Releases Worth Watching') }}</title>
+    <!--[if mso]>
+    <noscript>
+        <xml>
+            <o:OfficeDocumentSettings>
+                <o:PixelsPerInch>96</o:PixelsPerInch>
+            </o:OfficeDocumentSettings>
+        </xml>
+    </noscript>
+    <![endif]-->
+    <!--
+    Tested in: Gmail, Outlook, Apple Mail, Substack
+    Mobile-responsive: Yes
+    Max width: 600px for optimal email rendering
+
+    COLOR PALETTE:
+    - Primary Background: #1a1a2e
+    - Secondary Background: #16213e
+    - Card Background: #2a2a3e
+    - Accent: #00d4aa
+    - Text Primary: #ffffff
+    - Text Secondary: #999999
+    - Border: #333333
+
+    COMMON INLINE STYLE PATTERNS:
+    - Button style: style="background-color: #00d4aa; color: #000000; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;"
+    - Section container: style="background-color: #1a1a2e; padding: 20px; border-radius: 10px; margin-bottom: 20px;"
+    - Text heading: style="color: #00d4aa; font-size: 20px; font-weight: bold; margin-bottom: 10px;"
+    -->
+    <style>
+        /* Reset styles */
+        body, table, td, p, a, li, blockquote {
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+        }
+        table, td {
+            mso-table-lspace: 0pt;
+            mso-table-rspace: 0pt;
+        }
+        img {
+            -ms-interpolation-mode: bicubic;
+            border: 0;
+            height: auto;
+            line-height: 100%;
+            outline: none;
+            text-decoration: none;
+        }
+
+        /* Base styles */
+        body {
+            margin: 0 !important;
+            padding: 0 !important;
+            background-color: #0f0f1a;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        /* Mobile responsive */
+        @media only screen and (max-width: 600px) {
+            .movie-card { width: 100% !important; }
+            .movie-poster { max-width: 100% !important; width: 100% !important; }
+            .section-title { font-size: 18px !important; }
+            .content-cell { padding: 10px !important; }
+            .movie-title { font-size: 18px !important; }
+            .watch-button { display: block !important; margin-bottom: 8px !important; }
+        }
+    </style>
+</head>
+<body style="margin: 0; padding: 0; background-color: #0f0f1a; font-family: Arial, Helvetica, sans-serif;">
+    <!-- Wrapper Table -->
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color: #0f0f1a;">
+        <tr>
+            <td align="center" style="padding: 20px 10px;">
+                <!-- Main Content Table -->
+                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600" style="max-width: 600px; width: 100%;">
+
+                    <!-- ============================================
+                         HEADER SECTION
+                         ============================================ -->
+                    <tr>
+                        <td style="background-color: #1a1a2e; padding: 30px 20px; border-radius: 10px 10px 0 0; border-bottom: 3px solid #00d4aa;">
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                                <tr>
+                                    <td align="center">
+                                        <h1 style="margin: 0; color: #00d4aa; font-size: 28px; font-weight: bold; letter-spacing: 1px;">
+                                            {{ newsletter_title | default('NEW RELEASES WORTH WATCHING') }}
+                                        </h1>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center" style="padding-top: 15px;">
+                                        <p style="margin: 0; color: #999999; font-size: 14px;">
+                                            {{ date_range | default('Week of [DATE]') }} | {{ movie_count | default('X') }} Films
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- ============================================
+                         ESSAY SECTION
+                         ============================================ -->
+                    <tr>
+                        <td style="background-color: #1a1a2e; padding: 30px 20px;">
+                            <!-- ESSAY PLACEHOLDER -->
+                            <!--
+                            Instructions: Replace this entire comment block with your essay.
+                            Use <p> tags for paragraphs with this style:
+                            style="margin: 0 0 15px 0; color: #ffffff; font-size: 16px; line-height: 1.6;"
+                            -->
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                                <tr>
+                                    <td style="background-color: #16213e; padding: 20px; border-radius: 8px; border-left: 4px solid #00d4aa;">
+                                        <p style="margin: 0; color: #999999; font-size: 14px; font-style: italic;">
+                                            [ESSAY PLACEHOLDER - Write your introduction here. Delete this box when done.]
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                            <!-- END ESSAY PLACEHOLDER -->
+                        </td>
+                    </tr>
+
+                    <!-- ============================================
+                         FEATURED FILMS SECTION
+                         ============================================ -->
+                    <tr>
+                        <td style="background-color: #16213e; padding: 20px; border-top: 3px solid #00d4aa;">
+                            <h2 style="margin: 0 0 5px 0; color: #00d4aa; font-size: 24px; font-weight: bold; text-align: center;">
+                                Featured Films
+                            </h2>
+                            <p style="margin: 0; color: #999999; font-size: 14px; text-align: center;">
+                                This week's standout releases
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="background-color: #1a1a2e; padding: 20px;">
+                            <!-- FEATURED SECTION - Paste movie cards here -->
+                            <!--
+                            Instructions: Copy movie cards from the Movie Bank below and paste them here.
+                            Recommended: 2-3 featured films per newsletter.
+                            -->
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                                <tr>
+                                    <td style="background-color: #16213e; padding: 20px; border-radius: 8px; border: 2px dashed #333333;">
+                                        <p style="margin: 0; color: #666666; font-size: 14px; text-align: center;">
+                                            [FEATURED SECTION - Paste 2-3 movie cards from Movie Bank here]
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                            <!-- END FEATURED SECTION -->
+                        </td>
+                    </tr>
+
+                    <!-- ============================================
+                         THE REST SECTION
+                         ============================================ -->
+                    <tr>
+                        <td style="background-color: #16213e; padding: 20px; border-top: 3px solid #00d4aa;">
+                            <h2 style="margin: 0 0 5px 0; color: #00d4aa; font-size: 24px; font-weight: bold; text-align: center;">
+                                The Rest
+                            </h2>
+                            <p style="margin: 0; color: #999999; font-size: 14px; text-align: center;">
+                                More new releases worth your time
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="background-color: #1a1a2e; padding: 20px;">
+                            <!-- THE REST - Paste movie cards here -->
+                            <!--
+                            Instructions: Copy remaining movie cards from the Movie Bank below and paste them here.
+                            -->
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                                <tr>
+                                    <td style="background-color: #16213e; padding: 20px; border-radius: 8px; border: 2px dashed #333333;">
+                                        <p style="margin: 0; color: #666666; font-size: 14px; text-align: center;">
+                                            [THE REST - Paste remaining movie cards from Movie Bank here]
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                            <!-- END THE REST -->
+                        </td>
+                    </tr>
+
+                    <!-- ============================================
+                         MOVIE BANK SECTION
+                         ============================================ -->
+                    <tr>
+                        <td style="background-color: #2a2a3e; padding: 20px; border-top: 3px solid #666666;">
+                            <h2 style="margin: 0 0 5px 0; color: #999999; font-size: 20px; font-weight: bold; text-align: center;">
+                                Movie Bank
+                            </h2>
+                            <p style="margin: 0 0 20px 0; color: #666666; font-size: 12px; text-align: center;">
+                                Copy movie cards from here and paste into Featured or The Rest sections above
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="background-color: #2a2a3e; padding: 0 20px 20px 20px;">
+                            <!-- MOVIE BANK - All movies rendered below -->
+                            <!--
+                            Instructions:
+                            1. Each movie card is wrapped in HTML comments marking its start and end
+                            2. Copy the entire block (from MOVIE START to MOVIE END)
+                            3. Paste into either Featured or The Rest section above
+                            4. Delete movies from this bank after placing them (optional)
+                            -->
+
+                            {% for movie in movies %}
+                            {% include 'newsletter/components/movie_bank_item.html' %}
+                            {% endfor %}
+
+                            <!-- END MOVIE BANK -->
+                        </td>
+                    </tr>
+
+                    <!-- ============================================
+                         FOOTER SECTION
+                         ============================================ -->
+                    <tr>
+                        <td style="background-color: #0f0f1a; padding: 30px 20px; border-radius: 0 0 10px 10px;">
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                                <tr>
+                                    <td align="center">
+                                        <p style="margin: 0 0 10px 0; color: #00d4aa; font-size: 14px; font-weight: bold;">
+                                            New Releases Worth Watching
+                                        </p>
+                                        <p style="margin: 0; color: #666666; font-size: 12px;">
+                                            Curated new releases in theaters and on demand
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                </table>
+                <!-- End Main Content Table -->
+            </td>
+        </tr>
+    </table>
+    <!-- End Wrapper Table -->
+</body>
+</html>
