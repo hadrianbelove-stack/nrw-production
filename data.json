@@ -1,7 +1,111 @@
 {
-  "generated_at": "2026-01-11T09:50:36.403055",
-  "count": 1067,
+  "generated_at": "2026-01-12T10:13:39.940285",
+  "count": 1069,
   "movies": [
+    {
+      "id": "1611384",
+      "title": "The Pastor Who Preys",
+      "digital_date": "2026-01-12",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Budding fashion designer, Nicole, relocates to a small lake-side town for the summer to work on her first collection and spend time with her cousin, Amanda. When Amanda turns up dead in mysterious accident, Nicole begins to suspect that something is off.",
+      "genres": [
+        "Mystery",
+        "Thriller",
+        "TV Movie"
+      ],
+      "runtime": 90,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "Amazon Video",
+          "Plex"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
+      "links": {
+        "rt": "https://www.rottentomatoes.com/search?search=The%20Pastor%20Who%20Preys%202026"
+      },
+      "watch_links": {
+        "streaming": {
+          "service": "Philo",
+          "link": "https://www.philo.com/player/show/U2hvdzo2MDg1NDg4OTk2NDg1NDgwMDI"
+        },
+        "vod": {
+          "service": "Amazon",
+          "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.b77389f0-2846-41bd-bcbd-a50aaa8b5a97&tag=nrw04-20"
+        }
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-01-12T10:13:21.499925",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/nzQQsZBy0H86TTl6OMh9yJH9reL.jpg",
+      "studio": null,
+      "country": null,
+      "crew": {
+        "director": "Linden Ashby",
+        "cast": [
+          "Amanda Nicholas",
+          "Daniel Stine"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection"
+    },
+    {
+      "id": "1592043",
+      "title": "Mahasenha",
+      "digital_date": "2026-01-12",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Mahasenha is a mythological jungle thriller set in the mystichills of Kurangani, where an ancient Yaali sculpture, worshipped by the tribal villagers as a divine protector, becomes the center of a high-stakes conflict. The film delivers a powerful message : Faith is not just belief-its protection.",
+      "genres": [
+        "Adventure",
+        "Drama"
+      ],
+      "runtime": 133,
+      "year": 2025,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
+      "links": {
+        "rt": "https://www.rottentomatoes.com/search?search=Mahasenha%202025"
+      },
+      "watch_links": {
+        "vod": {
+          "service": "Amazon",
+          "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.3d5fd23f-a673-4d4f-ba61-457d70a125d8&tag=nrw04-20"
+        }
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-01-12T09:58:47.714565",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/kQeOxMQ1F8E5vixcLfju3vYRT0U.jpg",
+      "studio": null,
+      "country": "India",
+      "crew": {
+        "director": "Dinesh Kalaiselvan",
+        "cast": [
+          "Vimal",
+          "Srushti Dange"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection"
+    },
     {
       "id": "1606410",
       "title": "Accused: The Karen Read Story",
@@ -53922,8 +54026,8 @@
     }
   ],
   "_metadata": {
-    "last_discovery_write": "2026-01-11T09:50:29.945131",
-    "discovery_count": 834,
+    "last_discovery_write": "2026-01-12T10:13:21.499930",
+    "discovery_count": 836,
     "schema_version": "2.0"
   }
 }
