@@ -1,7 +1,65 @@
 {
-  "generated_at": "2026-01-13T10:10:40.401069",
-  "count": 1078,
+  "generated_at": "2026-01-14T09:58:46.389284",
+  "count": 1079,
   "movies": [
+    {
+      "id": "1199193",
+      "title": "Pose",
+      "digital_date": "2025-12-05",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Isolated in a grand country manor, a reclusive artist spends a passionate and paranoid weekend with his ex-lover, an obsessive fan, and a potential muse. Hoping to spark a new wave of artistic brilliance over the course of a few tumultuous days, filled with chaos and revelation not all of them will make it out alive.",
+      "genres": [
+        "Thriller"
+      ],
+      "runtime": 77,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "Amazon Video",
+          "Apple TV",
+          "Google Play Movies",
+          "YouTube",
+          "Fandango At Home",
+          "Plex"
+        ],
+        "buy": [
+          "Amazon Video",
+          "Apple TV",
+          "Google Play Movies",
+          "YouTube",
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
+      "links": {
+        "trailer": "https://www.youtube.com/watch?v=hIEdSvQ9_wA",
+        "rt": "https://www.rottentomatoes.com/search?search=Pose%202026"
+      },
+      "watch_links": {
+        "vod": {
+          "service": "Amazon",
+          "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.7f44db3c-0aad-49c4-8ca0-15e782c81622&tag=nrw04-20"
+        }
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-01-14T09:58:44.528097",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/qhyyyWrHUbl6QG4udAJj17CBa5.jpg",
+      "studio": "Good Pals",
+      "country": "United States of America",
+      "crew": {
+        "director": "Jamie Adams",
+        "cast": [
+          "James McAvoy",
+          "Lucas Bravo"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "tmdb_type4"
+    },
     {
       "id": "1612424",
       "title": "Repay It in Blood",
@@ -54456,8 +54514,8 @@
     }
   ],
   "_metadata": {
-    "last_discovery_write": "2026-01-13T10:10:31.410735",
-    "discovery_count": 845,
+    "last_discovery_write": "2026-01-14T09:58:44.528104",
+    "discovery_count": 846,
     "schema_version": "2.0"
   }
 }
