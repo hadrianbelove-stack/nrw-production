@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-01-14T09:58:46.516269",
-  "duration_seconds": 1893.807569,
+  "timestamp": "2026-01-15T09:54:46.047896",
+  "duration_seconds": 1681.166548,
   "overall_success": true,
   "failure_count": 0,
   "warning_count": 1,
@@ -8,23 +8,23 @@
     {
       "name": "Intake new premieres from TMDB",
       "success": true,
-      "duration_seconds": 1.633836,
+      "duration_seconds": 1.78871,
       "error": null,
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-01-12 to 2026-01-14 (incremental mode, 25 intaked)\n\u2705 Intake complete: 25 new movies added\n\ud83d\udccb Phase complete\n"
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-01-13 to 2026-01-15 (incremental mode, 39 intaked)\n\u2705 Intake complete: 39 new movies added\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 1891.311229,
+      "duration_seconds": 1675.757311,
       "error": null,
-      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 12556 total movies\n\ud83d\udd0d Raw tracking filter: 11488 movies\n\ud83d\udd0d Assigned tracking_movies list: 11488\n\ud83d\udd0d Found 11488 movies in tracking status\n  Priority queue (last 180 days): 1737 movies\n  Older movies: 9751 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 11488 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/11488 (0.9%) | 0 found | 0m elapsed | ~30m remaining\n  \ud83d\udcbe Progress saved (ba"
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 12595 total movies\n\ud83d\udd0d Raw tracking filter: 11526 movies\n\ud83d\udd0d Assigned tracking_movies list: 11526\n\ud83d\udd0d Found 11526 movies in tracking status\n  Priority queue (last 180 days): 1730 movies\n  Older movies: 9796 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 11526 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/11526 (0.9%) | 0 found | 0m elapsed | ~27m remaining\n  \ud83d\udcbe Progress saved (ba"
     },
     {
       "name": "Enrich newly available movies with metadata",
       "success": true,
-      "duration_seconds": 0.775965,
+      "duration_seconds": 3.534202,
       "error": null,
-      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 1 movies to enrich\n  \u2713 JustWatch found links for Pose: ['vod']\n  \u26a1 Pose (0.4s) - Wiki:\u25cb Trailer:\u2713 RT:\u2713 Links:\u2713 Date:\u2713 | 4 success, 0 errors\n  \u2713 Pose - Links: 1\n\u2705 Enriched 1/1 movies\n\u2705 Enrichment complete: 1 movies enriched\n\ud83d\udccb Phase complete\n"
+      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 13 movies to enrich\n  \u2713 JustWatch found links for Magik Rompak: ['streaming']\n  \u26a1 Magik Rompak (0.3s) - Wiki:\u25cb Trailer:\u2713 RT:\u2713 Links:\u2713 Date:\u25cb | 3 success, 0 errors\n  \u2713 Magik Rompak - Links: 1\n  \u2713 JustWatch found links for The Cure: The Show Of A Lost World (Troxy Live 2024): ['streaming']\n  \u26a1 The Cure: The Show Of A Lost World (Troxy Live 2024) (0.2s) - Wiki:\u25cb Trailer:\u25cb RT:\u2713 Links:\u2713 Date:\u25cb | 2 success, 0 er"
     }
   ],
   "health_issues": [],
@@ -40,11 +40,11 @@
     }
   ],
   "data_quality": {
-    "total": 12556,
-    "tracking": 11487,
-    "available": 1069,
-    "data_movies": 1079,
-    "movies_with_links": 147,
+    "total": 12595,
+    "tracking": 11513,
+    "available": 1082,
+    "data_movies": 1092,
+    "movies_with_links": 160,
     "movies_with_rt": 97,
     "movies_with_wikipedia": 0,
     "movies_with_trailers": 0
