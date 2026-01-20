@@ -134,6 +134,17 @@ def main():
         action='store_true',
         help='Show summary preview without rendering templates'
     )
+    parser.add_argument(
+        '--dated-only',
+        action='store_true',
+        default=True,
+        help='Only include movies with actual digital_date (exclude undated discoveries)'
+    )
+    parser.add_argument(
+        '--include-undated',
+        action='store_true',
+        help='Include movies without digital_date (uses discovery date as fallback)'
+    )
 
     args = parser.parse_args()
 
@@ -145,8 +156,10 @@ def main():
     query = NewsletterDataQuery(logger=logger, config={'days_back': args.days})
 
     # Fetch recent movies
-    print(f"📰 Fetching movies from the last {args.days} days...")
-    movies = query.get_recent_releases(days_back=args.days)
+    require_digital_date = not args.include_undated
+    date_filter_msg = "(dated releases only)" if require_digital_date else "(including undated)"
+    print(f"📰 Fetching movies from the last {args.days} days {date_filter_msg}...")
+    movies = query.get_recent_releases(days_back=args.days, require_digital_date=require_digital_date)
 
     if not movies:
         print("⚠️  No movies found for the specified date range.")

@@ -129,7 +129,8 @@ class NewsletterDataQuery:
     def filter_by_date(
         self,
         movies: List[Dict],
-        days_back: Optional[int] = None
+        days_back: Optional[int] = None,
+        require_digital_date: bool = False
     ) -> List[Dict]:
         """
         Filter movies by digital_date within last N days (with _discovered_at fallback).
@@ -137,6 +138,7 @@ class NewsletterDataQuery:
         Args:
             movies: List of movie dictionaries
             days_back: Number of days to look back (defaults to config value)
+            require_digital_date: If True, only include movies with actual digital_date (no fallback)
 
         Returns:
             List of movies within the date range
@@ -148,6 +150,9 @@ class NewsletterDataQuery:
         filtered = []
 
         for movie in movies:
+            # If require_digital_date, skip movies without a real digital_date
+            if require_digital_date and not movie.get('digital_date'):
+                continue
             effective_date = self._get_effective_date(movie)
             if effective_date and effective_date >= cutoff_date:
                 filtered.append(movie)
@@ -176,7 +181,7 @@ class NewsletterDataQuery:
             'title': movie.get('title'),
             'year': movie.get('year'),
             'synopsis': movie.get('synopsis'),
-            'rt_score': movie.get('rt_score'),
+            'rt_score': self._parse_rt_score(movie.get('rt_score')),
             'runtime': movie.get('runtime'),
             'poster': movie.get('poster'),
             'genres': movie.get('genres', []),
@@ -257,20 +262,29 @@ class NewsletterDataQuery:
 
     def _parse_rt_score(self, score: Any) -> Optional[int]:
         """
-        Safely parse RT score to integer.
+        Safely parse and normalize RT score to integer.
 
         Args:
-            score: RT score value (may be int, str like "89" or "89%", or None)
+            score: RT score value (may be int, float, str like "89" or "89%", or None)
 
         Returns:
-            Integer score or None if invalid/missing
+            Integer score clamped to 0-100, or None if invalid/missing
         """
         if score is None:
             return None
         try:
-            # Handle string values like "89%"
-            score_str = str(score).replace('%', '').strip()
-            return int(score_str)
+            # Handle string values like "89%" or " 85 % "
+            if isinstance(score, str):
+                score_str = score.replace('%', '').strip()
+                score_val = float(score_str)
+            elif isinstance(score, (int, float)):
+                score_val = float(score)
+            else:
+                return None
+
+            # Convert to int (floor) and clamp to 0-100
+            score_int = int(score_val)
+            return max(0, min(100, score_int))
         except (ValueError, TypeError):
             return None
 
@@ -416,7 +430,8 @@ class NewsletterDataQuery:
     def get_recent_releases(
         self,
         days_back: Optional[int] = None,
-        limit: Optional[int] = None
+        limit: Optional[int] = None,
+        require_digital_date: bool = False
     ) -> List[Dict]:
         """
         Convenience method to fetch recent releases sorted by date.
@@ -424,12 +439,13 @@ class NewsletterDataQuery:
         Args:
             days_back: Number of days to look back (defaults to config value)
             limit: Maximum number of movies to return (optional)
+            require_digital_date: If True, only include movies with actual digital_date (no fallback)
 
         Returns:
             List of recent movies with extracted metadata
         """
         movies = self.load_movies()
-        filtered = self.filter_by_date(movies, days_back)
+        filtered = self.filter_by_date(movies, days_back, require_digital_date=require_digital_date)
         sorted_movies = self.sort_by_date(filtered, descending=True)
 
         if limit:

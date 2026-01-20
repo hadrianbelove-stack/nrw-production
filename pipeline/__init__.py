@@ -10,6 +10,7 @@ from pipeline.enrichment import EnrichmentService
 from pipeline.generator import DataGenerator, setup_logger
 from pipeline.telemetry import TelemetryService, init_telemetry, get_telemetry
 from pipeline.justwatch import JustWatchClient
+from pipeline.newsletter import NewsletterDataQuery
 
 __all__ = [
     'StorageService',
@@ -20,5 +21,6 @@ __all__ = [
     'TelemetryService',
     'init_telemetry',
     'get_telemetry',
-    'JustWatchClient'
+    'JustWatchClient',
+    'NewsletterDataQuery'
 ]

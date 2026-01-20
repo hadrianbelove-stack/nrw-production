@@ -246,7 +246,7 @@
             {% endif %}
 
             <div class="movie-info">
-                <div class="movie-title">{{ movie.title }}</div>
+                <div class="movie-title">{{ movie.title }}{% if movie.digital_date %} <span style="font-weight: normal; font-size: 0.85em; color: #888;">({{ movie.digital_date[5:10].replace('-', '/') }})</span>{% endif %}</div>
 
                 <!-- Issue Badges -->
                 <div class="issue-badges">
@@ -263,8 +263,8 @@
 
                 <!-- Editable Fields Section -->
                 <div class="edit-section">
-                    <!-- Director, Country, Year, Runtime, Date, and RT Score Row -->
-                    <div style="display: grid; grid-template-columns: 1.5fr 0.5fr 0.5fr 0.35fr 0.6fr 0.5fr; gap: 0.5rem; margin-bottom: 0.5rem;">
+                    <!-- Director, Country, Runtime Row -->
+                    <div style="display: grid; grid-template-columns: 2.5fr 0.4fr 0.4fr; gap: 0.5rem; margin-bottom: 0.5rem;">
                         <div class="edit-field-group">
                             <label class="edit-label">
                                 Director:
@@ -287,16 +287,6 @@
                         </div>
                         <div class="edit-field-group">
                             <label class="edit-label">
-                                Year:
-                            </label>
-                            <input type="text"
-                                   id="year-{{ movie_id }}"
-                                   value="{{ movie.year or '' }}"
-                                   placeholder="Year"
-                                   class="edit-input">
-                        </div>
-                        <div class="edit-field-group">
-                            <label class="edit-label">
                                 Min:
                             </label>
                             <input type="text"
@@ -305,27 +295,11 @@
                                    placeholder=""
                                    class="edit-input">
                         </div>
-                        <div class="edit-field-group">
-                            <label class="edit-label">
-                                Date:
-                            </label>
-                            <input type="text"
-                                   id="digital-date-{{ movie_id }}"
-                                   value="{% if movie.digital_date %}{{ movie.digital_date[5:10].replace('-', '/') }}{% endif %}"
-                                   placeholder="MM/DD"
-                                   class="edit-input">
-                        </div>
-                        <div class="edit-field-group">
-                            <label class="edit-label">
-                                RT Score: <strong>{{ movie.rt_score or 'N/A' }}</strong>
-                            </label>
-                            <input type="number"
-                                   id="rt-score-{{ movie_id }}"
-                                   value="{{ movie.rt_score or '' }}"
-                                   class="edit-input"
-                                   style="display: none;">
-                        </div>
                     </div>
+                    <!-- Hidden fields for data preservation -->
+                    <input type="hidden" id="digital-date-{{ movie_id }}" value="{% if movie.digital_date %}{{ movie.digital_date }}{% endif %}">
+                    <input type="hidden" id="year-{{ movie_id }}" value="{{ movie.year or '' }}">
+                    <input type="hidden" id="rt-score-{{ movie_id }}" value="{{ movie.rt_score or '' }}">
 
                     <!-- Link Editing Interface -->
                     <div style="margin-bottom: 0.5rem;">
