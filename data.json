@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-01-20T10:14:49.832851",
+  "generated_at": "2026-01-20T12:12:43.811100",
   "count": 271,
   "movies": [
     {
@@ -111,7 +111,8 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_digital_date_source": "tmdb_type4"
+      "_digital_date_source": "tmdb_type4",
+      "featured": true
     },
     {
       "id": "1443940",
@@ -364,53 +365,6 @@
       },
       "_discovery_source": "provider_availability_check",
       "_digital_date_source": "detection"
-    },
-    {
-      "id": "896096",
-      "title": "The Mysterious Gaze of the Flamingo",
-      "digital_date": "2025-12-10",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "synopsis": "As an unknown and deadly disease begins to spread, legend has it that it is transmitted between two men, through a simple glance, when they fall in love. While people are accusing her family, Lidia must find out whether this myth is real or not.",
-      "genres": [
-        "Drama"
-      ],
-      "runtime": 108,
-      "year": 2025,
-      "rt_score": null,
-      "providers": {
-        "rent": [
-          "Amazon Video"
-        ],
-        "buy": [],
-        "streaming": []
-      },
-      "links": {
-        "trailer": "https://www.youtube.com/watch?v=UscRzx6i53M",
-        "rt": "https://www.rottentomatoes.com/search?search=The%20Mysterious%20Gaze%20of%20the%20Flamingo%202025"
-      },
-      "watch_links": {
-        "vod": {
-          "service": "Amazon",
-          "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.7902eeee-8150-48f9-9543-964a42433ccd&tag=nrw04-20"
-        }
-      },
-      "_enrichment_status": "completed",
-      "_discovered_at": "2026-01-20T09:58:45.371522",
-      "_tmdb_fetch_failed": false,
-      "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/xfPhni21LIEmuV8HiDfrLhcmTwr.jpg",
-      "studio": "Quijote Films",
-      "country": "Chile",
-      "crew": {
-        "director": "Diego C\u00e9spedes",
-        "cast": [
-          "Tamara Cort\u00e9s",
-          "Mat\u00edas Catal\u00e1n"
-        ]
-      },
-      "_discovery_source": "provider_availability_check",
-      "_digital_date_source": "tmdb_type4"
     },
     {
       "id": "1429011",
@@ -4212,6 +4166,53 @@
         "cast": [
           "Candace Cameron Bure",
           "Robin Dunne"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "tmdb_type4"
+    },
+    {
+      "id": "896096",
+      "title": "The Mysterious Gaze of the Flamingo",
+      "digital_date": "2025-12-10",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "As an unknown and deadly disease begins to spread, legend has it that it is transmitted between two men, through a simple glance, when they fall in love. While people are accusing her family, Lidia must find out whether this myth is real or not.",
+      "genres": [
+        "Drama"
+      ],
+      "runtime": 108,
+      "year": 2025,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
+      "links": {
+        "trailer": "https://www.youtube.com/watch?v=UscRzx6i53M",
+        "rt": "https://www.rottentomatoes.com/search?search=The%20Mysterious%20Gaze%20of%20the%20Flamingo%202025"
+      },
+      "watch_links": {
+        "vod": {
+          "service": "Amazon",
+          "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.7902eeee-8150-48f9-9543-964a42433ccd&tag=nrw04-20"
+        }
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-01-20T09:58:45.371522",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/xfPhni21LIEmuV8HiDfrLhcmTwr.jpg",
+      "studio": "Quijote Films",
+      "country": "Chile",
+      "crew": {
+        "director": "Diego C\u00e9spedes",
+        "cast": [
+          "Tamara Cort\u00e9s",
+          "Mat\u00edas Catal\u00e1n"
         ]
       },
       "_discovery_source": "provider_availability_check",
@@ -14376,9 +14377,11 @@
       "_digital_date_source": "detection"
     }
   ],
-  "_metadata": {
-    "last_discovery_write": "2026-01-20T10:14:45.449705",
-    "discovery_count": 270,
-    "schema_version": "2.0"
-  }
+  "hidden": [
+    "1534291"
+  ],
+  "featured": [
+    "1385773",
+    "1192906"
+  ]
 }
