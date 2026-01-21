@@ -90,6 +90,44 @@ function toggleFeatured(movieId, feature) {
     });
 }
 
+function removeMovie(movieId, title) {
+    if (!confirm(`Remove "${title}" from the New Arrivals Wall?\n\nThis will remove the movie from the site. It can be restored later by setting a new digital date.`)) {
+        return;
+    }
+
+    fetch('/remove-movie', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ movie_id: movieId })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Remove the card from the DOM
+            const card = document.querySelector(`[data-movie-id="${movieId}"]`);
+            if (card) {
+                card.style.transition = 'opacity 0.3s, transform 0.3s';
+                card.style.opacity = '0';
+                card.style.transform = 'scale(0.9)';
+                setTimeout(() => {
+                    card.remove();
+                    updateStats();
+                }, 300);
+            }
+
+            incrementPendingCount();
+            showSuccess(data.message || 'Movie removed');
+        } else {
+            alert(data.error || 'Failed to remove movie');
+        }
+    })
+    .catch(error => {
+        alert('Error: ' + error);
+    });
+}
+
 function updateStats() {
     // Recalculate stats from current DOM state
     const featuredCards = document.querySelectorAll('.movie-card.featured');

@@ -92,11 +92,6 @@ h1 {
     border-color: #4a4a6a;
 }
 
-.movie-card.hidden {
-    opacity: 0.5;
-    border-color: #ff4444;
-}
-
 .movie-card.featured {
     border-color: #ffd700;
     box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
@@ -201,16 +196,6 @@ h1 {
     text-decoration: none;
 }
 
-.btn-hide {
-    background: #dc3545;
-    color: white;
-}
-
-.btn-show {
-    background: #28a745;
-    color: white;
-}
-
 .btn-feature {
     background: #ffc107;
     color: black;
@@ -219,6 +204,17 @@ h1 {
 .btn-unfeature {
     background: #6c757d;
     color: white;
+}
+
+.btn-remove {
+    background: #dc3545;
+    color: white;
+    padding: 0.3rem 0.5rem !important;
+    font-size: 0.8rem !important;
+}
+
+.btn-remove:hover {
+    background: #c82333;
 }
 
 .btn-rt {

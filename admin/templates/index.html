@@ -508,6 +508,7 @@
                     {% else %}
                     <button class="action-btn btn-feature" onclick="toggleFeatured('{{ movie_id }}', true)">⭐ Feature</button>
                     {% endif %}
+                    <button class="action-btn btn-remove" onclick="removeMovie('{{ movie_id }}', '{{ movie.title | e }}')" title="Remove from wall">🗑️</button>
                 </div>
             </div>
         </div>
@@ -516,6 +517,6 @@
 
     <div class="success-msg" id="success-msg">Changes saved!</div>
 
-    <script src="{{ url_for('static', filename='js/admin.js') }}?v=4"></script>
+    <script src="{{ url_for('static', filename='js/admin.js') }}?v=5"></script>
 </body>
 </html>

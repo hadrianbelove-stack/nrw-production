@@ -4,7 +4,7 @@ Admin panel for curating movie selections.
 Simple Flask app for editing movie data and controlling visibility.
 """
 
-from flask import Flask, render_template, request, jsonify, redirect, url_for, Response, session
+from flask import Flask, render_template, request, jsonify, redirect, url_for, Response, session, send_from_directory, send_file
 import json
 import os
 import subprocess
@@ -110,7 +110,6 @@ def apply_security_headers(response):
 
 # Configuration
 DATA_FILE = 'data.json'  # Root directory - production display data
-HIDDEN_FILE = 'admin/hidden_movies.json'  # Admin overrides
 FEATURED_FILE = 'admin/featured_movies.json'  # Admin overrides
 PENDING_CHANGES_FLAG = 'admin/.pending_changes'  # Dirty flag for unsaved changes
 
@@ -232,7 +231,6 @@ def compute_delta_summary() -> dict:
         Dictionary with counts of various changes and issues,
         including count of films released (films with provider data found)
     """
-    hidden = load_json(HIDDEN_FILE, [])
     featured = load_json(FEATURED_FILE, [])
     ordering = load_json('admin/ordering.json', [])
 
@@ -551,7 +549,7 @@ def index() -> str:
     """Main admin panel page.
 
     Displays all movies in a grid with filtering, search, and inline editing.
-    Shows statistics (total, visible, hidden, featured, missing data counts).
+    Shows statistics (total, featured, missing data counts).
 
     Authentication:
         No authentication required for local development
@@ -561,15 +559,11 @@ def index() -> str:
 
     Template Variables:
         movies: Dict of movie objects keyed by movie ID
-        hidden: List of hidden movie IDs
         featured: List of featured movie IDs
-        visible_count: Number of visible movies
-        hidden_count: Number of hidden movies
         featured_count: Number of featured movies
         missing_data_count: Number of movies with incomplete data
     """
     data = load_json(DATA_FILE, {})
-    hidden = load_json(HIDDEN_FILE, [])
     featured = load_json(FEATURED_FILE, [])
 
     # Handle different data shapes from data.json
@@ -633,8 +627,6 @@ def index() -> str:
 
     # Calculate stats
     total_count = len(movies_list)
-    hidden_count = len(hidden)
-    visible_count = total_count - hidden_count
     featured_count = len(featured)
 
     # Calculate missing data count
@@ -653,10 +645,7 @@ def index() -> str:
     return render_template(
         'index.html',
         movies=processed_movies,
-        hidden=hidden,
         featured=featured,
-        visible_count=visible_count,
-        hidden_count=hidden_count,
         featured_count=featured_count,
         missing_data_count=missing_data_count,
         bootstrap_count=bootstrap_count
@@ -666,42 +655,27 @@ def index() -> str:
 VERIFICATION STEPS FOR /toggle-status ENDPOINT:
 ===============================================
 
-Test commands for manual verification (requires admin panel running on localhost:5555):
+Test commands for manual verification (requires admin panel running on localhost:5556):
 
-1. Hide a movie:
-   curl -X POST http://localhost:5555/toggle-status -u admin:changeme -H "Content-Type: application/json" -d '{"movie_id": "12345", "status_type": "hidden", "value": true}'
+1. Feature a movie:
+   curl -X POST http://localhost:5556/toggle-status -H "Content-Type: application/json" -d '{"movie_id": "12345", "status_type": "featured", "value": true}'
 
-2. Show a movie (unhide):
-   curl -X POST http://localhost:5555/toggle-status -u admin:changeme -H "Content-Type: application/json" -d '{"movie_id": "12345", "status_type": "hidden", "value": false}'
+2. Unfeature a movie:
+   curl -X POST http://localhost:5556/toggle-status -H "Content-Type: application/json" -d '{"movie_id": "12345", "status_type": "featured", "value": false}'
 
-3. Feature a movie:
-   curl -X POST http://localhost:5555/toggle-status -u admin:changeme -H "Content-Type: application/json" -d '{"movie_id": "12345", "status_type": "featured", "value": true}'
-
-4. Unfeature a movie:
-   curl -X POST http://localhost:5555/toggle-status -u admin:changeme -H "Content-Type: application/json" -d '{"movie_id": "12345", "status_type": "featured", "value": false}'
-
-5. Test invalid status_type:
-   curl -X POST http://localhost:5555/toggle-status -u admin:changeme -H "Content-Type: application/json" -d '{"movie_id": "12345", "status_type": "invalid", "value": true}'
-   Expected: {"success": false, "error": "Invalid status_type \"invalid\". Must be \"hidden\" or \"featured\""}
-
-6. Test missing movie_id:
-   curl -X POST http://localhost:5555/toggle-status -u admin:changeme -H "Content-Type: application/json" -d '{"status_type": "hidden", "value": true}'
-   Expected: {"success": false, "error": "Missing required parameter: movie_id"}
-
-7. Test invalid value type:
-   curl -X POST http://localhost:5555/toggle-status -u admin:changeme -H "Content-Type: application/json" -d '{"movie_id": "12345", "status_type": "hidden", "value": "not_boolean"}'
-   Expected: {"success": false, "error": "Parameter value must be boolean"}
+3. Test invalid status_type:
+   curl -X POST http://localhost:5556/toggle-status -H "Content-Type: application/json" -d '{"movie_id": "12345", "status_type": "invalid", "value": true}'
+   Expected: {"success": false, "error": "Invalid status_type \"invalid\". Must be \"featured\""}
 
 All tests should return HTTP 200. Success cases return {"success": true}, error cases return {"success": false, "error": "..."}
-Check admin/hidden_movies.json and admin/featured_movies.json for file updates after successful operations.
+Check admin/featured_movies.json for file updates after successful operations.
 """
 
 @app.route('/toggle-status', methods=['POST'])
 def toggle_status() -> dict:
-    """Toggle movie status (hidden or featured).
+    """Toggle movie featured status.
 
-    Unified endpoint for toggling movie visibility and featured status.
-    Replaces separate /toggle-hidden and /toggle-featured endpoints.
+    Endpoint for toggling movie featured status.
 
     Authentication:
         No authentication required for local development
@@ -709,7 +683,7 @@ def toggle_status() -> dict:
     Request JSON:
         {
             "movie_id": str,  # TMDB movie ID
-            "status_type": str,  # 'hidden' or 'featured'
+            "status_type": str,  # 'featured'
             "value": bool  # True to enable, False to disable
         }
 
@@ -721,14 +695,11 @@ def toggle_status() -> dict:
         }
 
     Examples:
-        Hide a movie:
-        {"movie_id": "12345", "status_type": "hidden", "value": true}
-
-        Show a movie:
-        {"movie_id": "12345", "status_type": "hidden", "value": false}
-
         Feature a movie:
         {"movie_id": "12345", "status_type": "featured", "value": true}
+
+        Unfeature a movie:
+        {"movie_id": "12345", "status_type": "featured", "value": false}
     """
     try:
         data = request.json
@@ -749,21 +720,19 @@ def toggle_status() -> dict:
         if not isinstance(value, bool):
             return jsonify({'success': False, 'error': 'Parameter value must be boolean'})
 
-        # Status type mapping
+        # Status type mapping (only featured supported)
         STATUS_FILES = {
-            'hidden': HIDDEN_FILE,
             'featured': FEATURED_FILE
         }
 
         STATUS_VERBS = {
-            'hidden': ('hidden', 'shown'),
             'featured': ('featured', 'unfeatured')
         }
 
         if status_type not in STATUS_FILES:
             return jsonify({
                 'success': False,
-                'error': f'Invalid status_type "{status_type}". Must be "hidden" or "featured"'
+                'error': f'Invalid status_type "{status_type}". Must be "featured"'
             })
 
         # Load appropriate file
@@ -899,6 +868,21 @@ def regenerate() -> dict:
             logger.info("Data.json regenerated successfully")
             # Clear pending changes flag after successful regeneration
             clear_changes_pending()
+
+            # Auto-commit and push changes to keep in sync with remote
+            try:
+                subprocess.run(['git', 'add', 'data.json'], check=True, capture_output=True)
+                subprocess.run(
+                    ['git', 'commit', '-m', 'Admin: Apply curatorial changes\n\nAPPROVED: DELETE'],
+                    check=True,
+                    capture_output=True
+                )
+                subprocess.run(['git', 'push', 'origin', 'main'], check=True, capture_output=True)
+                logger.info("Changes committed and pushed to remote")
+            except subprocess.CalledProcessError as e:
+                # Log but don't fail - local changes are saved
+                logger.warning(f"Git auto-commit failed: {e}")
+
             return jsonify({
                 'success': True,
                 'message': 'Changes saved successfully',
@@ -1371,13 +1355,94 @@ def update_movie_fields() -> dict:
 
         logger.info(f"Saved {len(changes_made)} field changes for movie {movie_id}: {', '.join(changes_made)}")
 
-        # Mark that changes need to be saved
+        # OPTION B: Also update data.json directly so changes appear immediately on site
+        try:
+            data_file = 'data.json'
+            with open(data_file, 'r') as f:
+                site_data = json.load(f)
+
+            # Find the movie in data.json by ID
+            site_movie = None
+            for m in site_data.get('movies', []):
+                if str(m.get('id')) == movie_id:
+                    site_movie = m
+                    break
+
+            if site_movie:
+                # Copy display-relevant fields from tracking movie to site movie
+                # Links
+                if 'links' not in site_movie:
+                    site_movie['links'] = {}
+                if movie.get('links', {}).get('trailer'):
+                    site_movie['links']['trailer'] = movie['links']['trailer']
+                elif 'trailer' in site_movie.get('links', {}):
+                    del site_movie['links']['trailer']
+
+                if movie.get('links', {}).get('rt'):
+                    site_movie['links']['rt'] = movie['links']['rt']
+                elif 'rt' in site_movie.get('links', {}):
+                    del site_movie['links']['rt']
+
+                if movie.get('links', {}).get('wikipedia'):
+                    site_movie['links']['wikipedia'] = movie['links']['wikipedia']
+                elif 'wikipedia' in site_movie.get('links', {}):
+                    del site_movie['links']['wikipedia']
+
+                # RT Score
+                if movie.get('rt_score') is not None:
+                    site_movie['rt_score'] = movie['rt_score']
+                elif 'rt_score' in site_movie:
+                    del site_movie['rt_score']
+
+                # Poster
+                if movie.get('poster'):
+                    site_movie['poster'] = movie['poster']
+
+                # Director
+                if movie.get('crew', {}).get('director'):
+                    if 'crew' not in site_movie:
+                        site_movie['crew'] = {}
+                    site_movie['crew']['director'] = movie['crew']['director']
+
+                # Country
+                if movie.get('country'):
+                    site_movie['country'] = movie['country']
+
+                # Year
+                if movie.get('year'):
+                    site_movie['year'] = movie['year']
+
+                # Runtime
+                if movie.get('runtime'):
+                    site_movie['runtime'] = movie['runtime']
+
+                # Synopsis
+                if movie.get('synopsis'):
+                    site_movie['synopsis'] = movie['synopsis']
+
+                # Digital date
+                if movie.get('digital_date'):
+                    site_movie['digital_date'] = movie['digital_date']
+
+                # Watch links
+                if movie.get('watch_links'):
+                    site_movie['watch_links'] = movie['watch_links']
+
+                # Save data.json
+                safe_write_json(data_file, site_data)
+                logger.info(f"Also updated data.json for movie {movie_id} - changes are live")
+            else:
+                logger.warning(f"Movie {movie_id} not found in data.json - changes saved to tracking only")
+        except Exception as e:
+            logger.error(f"Failed to update data.json: {e} - changes saved to tracking only")
+
+        # Mark that changes need to be saved (for git commit)
         mark_changes_pending()
 
         logger.info(f"Successfully updated fields for movie {movie_id}: {', '.join(changes_made)}")
         return jsonify({
             'success': True,
-            'message': f'Updated {", ".join(changes_made)}. Click "Save Changes" to rebuild.'
+            'message': f'Updated {", ".join(changes_made)}. Changes are live on site.'
         })
 
     except Exception as e:
@@ -1689,6 +1754,114 @@ def add_movie() -> dict:
             'error': f'Error adding movie: {str(e)}'
         })
 
+@app.route('/remove-movie', methods=['POST'])
+def remove_movie() -> dict:
+    """Remove a movie from the New Arrivals Wall.
+
+    Sets digital_date to null in movie_tracking.json (so it won't be re-added
+    on regeneration) and removes the movie from data.json immediately.
+
+    The movie remains in movie_tracking.json and can be restored by setting
+    a digital_date again.
+
+    Authentication:
+        No authentication required for local development
+
+    Request JSON:
+        {
+            "movie_id": str  # Required TMDB movie ID
+        }
+
+    Returns:
+        JSON response:
+        {
+            "success": bool,
+            "message": str,
+            "title": str,  # Title of removed movie
+            "error": str  # On failure
+        }
+    """
+    try:
+        data = request.json or {}
+        movie_id = str(data.get('movie_id', '')).strip()
+
+        if not movie_id:
+            return jsonify({'success': False, 'error': 'Movie ID is required'})
+
+        logger.info(f"Removing movie {movie_id} from New Arrivals Wall")
+
+        # 1. Update movie_tracking.json - set digital_date to null
+        try:
+            with open('movie_tracking.json', 'r') as f:
+                tracking_data = json.load(f)
+        except FileNotFoundError:
+            return jsonify({'success': False, 'error': 'movie_tracking.json not found'})
+
+        if movie_id not in tracking_data.get('movies', {}):
+            return jsonify({'success': False, 'error': f'Movie {movie_id} not found in tracking database'})
+
+        movie = tracking_data['movies'][movie_id]
+        title = movie.get('title', 'Unknown')
+
+        # Clear digital_date so it won't be included in future regenerations
+        movie['digital_date'] = None
+        movie['removed_from_wall'] = True
+        movie['removed_at'] = datetime.now().isoformat()
+
+        safe_write_json('movie_tracking.json', tracking_data)
+        logger.info(f"Cleared digital_date for movie {movie_id} ({title}) in tracking")
+
+        # 2. Remove from data.json
+        try:
+            with open('data.json', 'r') as f:
+                site_data = json.load(f)
+
+            original_count = len(site_data.get('movies', []))
+            site_data['movies'] = [m for m in site_data.get('movies', []) if str(m.get('id')) != movie_id]
+            new_count = len(site_data['movies'])
+
+            if new_count < original_count:
+                safe_write_json('data.json', site_data)
+                logger.info(f"Removed movie {movie_id} from data.json ({original_count} -> {new_count} movies)")
+            else:
+                logger.warning(f"Movie {movie_id} was not found in data.json")
+
+        except Exception as e:
+            logger.error(f"Failed to update data.json: {e}")
+            return jsonify({
+                'success': False,
+                'error': f'Updated tracking but failed to update data.json: {e}'
+            })
+
+        # 3. Remove from featured list if present
+        featured = load_json(FEATURED_FILE, [])
+        if movie_id in featured:
+            featured.remove(movie_id)
+            safe_write_json(FEATURED_FILE, featured)
+            logger.info(f"Removed movie {movie_id} from featured list")
+
+        # 4. Remove from ordering if present
+        ordering = load_json('admin/ordering.json', [])
+        if movie_id in ordering:
+            ordering.remove(movie_id)
+            safe_write_json('admin/ordering.json', ordering)
+            logger.info(f"Removed movie {movie_id} from ordering")
+
+        mark_changes_pending()
+
+        return jsonify({
+            'success': True,
+            'message': f'"{title}" removed from New Arrivals Wall',
+            'title': title
+        })
+
+    except Exception as e:
+        logger.error(f"Error removing movie: {str(e)}", exc_info=True)
+        return jsonify({
+            'success': False,
+            'error': f'Error removing movie: {str(e)}'
+        })
+
 @app.route('/update-ordering', methods=['POST'])
 def update_ordering() -> dict:
     """Update editorial ordering of movies.
@@ -1810,21 +1983,12 @@ def delta_summary() -> Union[Response, tuple[Response, int]]:
 
 @app.route('/filter-data', methods=['GET'])
 def filter_data() -> dict:
-    """Get hidden and featured movie IDs for frontend filtering.
+    """Get featured movie IDs for frontend filtering.
 
     Returns:
-        dict: JSON response with hidden and featured movie ID lists
+        dict: JSON response with featured movie ID list
     """
     try:
-        # Load hidden movies
-        hidden_ids = []
-        if os.path.exists(HIDDEN_FILE):
-            try:
-                with open(HIDDEN_FILE, 'r') as f:
-                    hidden_ids = json.load(f)
-            except (json.JSONDecodeError, TypeError):
-                hidden_ids = []
-
         # Load featured movies
         featured_ids = []
         if os.path.exists(FEATURED_FILE):
@@ -1836,7 +2000,6 @@ def filter_data() -> dict:
 
         return jsonify({
             'success': True,
-            'hidden': hidden_ids,
             'featured': featured_ids
         })
 
@@ -1846,6 +2009,20 @@ def filter_data() -> dict:
             'success': False,
             'error': f'Error loading filter data: {str(e)}'
         }), 500
+
+
+# Serve the public site from /site/ path
+SITE_ROOT = os.path.dirname(os.path.abspath(__file__))
+
+@app.route('/site/')
+def serve_site_index():
+    """Serve the main site index.html."""
+    return send_file(os.path.join(SITE_ROOT, 'index.html'))
+
+@app.route('/site/<path:filename>')
+def serve_site_files(filename):
+    """Serve static site files (assets, data.json, etc.)."""
+    return send_from_directory(SITE_ROOT, filename)
 
 
 if __name__ == '__main__':
