@@ -31,9 +31,10 @@ It exists to:
    - End each batch with **⚡ To keep moving** summary.
 
 ## Current Config
-- **Port**: 3001 locked  
-- **Mode**: offline  
-- **Cache**: `.cache/rt/`, `.cache/tmdb/`, `.cache/trailers/`  
+- **Port**: 3000 (site), 5556 (admin)
+- **Launch**: Always use `./launch_all.sh` to start servers
+- **Mode**: offline
+- **Cache**: `.cache/rt/`, `.cache/tmdb/`, `.cache/trailers/`
 - **Frontend**: renderer `render_approved.js`; single `#cards` template; VHS flip-cards
 
 ## AMENDMENTS
