@@ -347,15 +347,57 @@ class WikipediaScraperPlaywright:
             self._log(f"Failed to capture diagnostics: {e}", level='warning')
             return {'error': error_msg}
 
+    def _title_matches(self, title, result_text):
+        """Check if search result likely matches the film title.
+
+        Args:
+            title: Original movie title
+            result_text: Text from search result link
+
+        Returns:
+            bool: True if result appears to match the title
+        """
+        def normalize(s):
+            """Normalize string for comparison."""
+            s = s.lower()
+            s = s.replace('&', 'and').replace('&amp;', 'and')
+            for c in '.,!?:;\'"()-':
+                s = s.replace(c, '')
+            return ' '.join(s.split())
+
+        norm_title = normalize(title)
+        norm_result = normalize(result_text)
+
+        # Direct substring check (either direction)
+        if norm_title in norm_result or norm_result in norm_title:
+            return True
+
+        # Word-based: ALL significant title words must appear in result
+        title_words = set(norm_title.split())
+        result_words = set(norm_result.split())
+        stopwords = {'the', 'a', 'an', 'of', 'and', 'in', 'on', 'at', 'to', 'for', 'film', 'movie'}
+        title_words = title_words - stopwords
+
+        if not title_words:
+            return norm_title == norm_result
+
+        return title_words.issubset(result_words)
+
     def _scrape_wikipedia_page(self, title, year):
-        """Scrape Wikipedia search page to find movie URL using Playwright.
+        """Find Wikipedia article using Playwright browser.
+
+        Uses a click-through approach:
+        1. Navigate to Wikipedia search
+        2. If auto-redirected to article, use that
+        3. If on search results, click first matching result
+        4. Never return a search URL - either find article or return None
 
         Args:
             title: Movie title
             year: Release year
 
         Returns:
-            str: Wikipedia URL or None if not found
+            str: Wikipedia article URL or None if not found
         """
         # Initialize browser if needed
         self._init_browser()
@@ -371,130 +413,74 @@ class WikipediaScraperPlaywright:
             search_query = f"{title} ({year} film)"
             search_url = f"https://en.wikipedia.org/w/index.php?search={quote(search_query)}"
 
-            self._log(f"Searching Wikipedia: {title} ({year})", level='debug')
+            self._log(f"Playwright searching: {title} ({year})", level='debug')
 
             # Navigate to search page
             self.page.goto(search_url, wait_until='domcontentloaded')
             time.sleep(1)  # Wait for dynamic content
 
-            # Check if we landed directly on an article (exact match)
             current_url = self.page.url
-            if "/wiki/" in current_url and "Special:Search" not in current_url:
-                # Check for disambiguation page indicators
+
+            # Check if we landed directly on an article (Wikipedia auto-redirected)
+            if "/wiki/" in current_url and "Special:Search" not in current_url and "index.php" not in current_url:
+                # Check for disambiguation page
                 is_disambiguation = False
-                try:
-                    # Check for various disambiguation indicators
-                    disambig_selectors = [
-                        "#disambigbox",  # Disambiguation box
-                        ".hatnote a[href*='disambiguation']",  # Hatnote with disambiguation link
-                        "body.mw-disambig"  # Body class for disambiguation
-                    ]
+                for selector in ["#disambigbox", ".hatnote a[href*='disambiguation']", "body.mw-disambig"]:
+                    if self.page.query_selector(selector):
+                        is_disambiguation = True
+                        self._log(f"Disambiguation page detected: {current_url}", level='debug')
+                        break
 
-                    for selector in disambig_selectors:
-                        if self.page.query_selector(selector):
-                            is_disambiguation = True
-                            self._log(f"Disambiguation page detected: {current_url}", level='debug')
-                            break
-                except Exception:
-                    pass
-
-                # If not a disambiguation page, return the direct hit
                 if not is_disambiguation:
-                    self._log(f"Direct hit: {current_url}", level='debug')
+                    self._log(f"Auto-redirected to article: {current_url}", level='debug')
                     return current_url
-                else:
-                    # Try to find the film link on the disambiguation page
-                    self._log(f"Disambiguation page found, looking for film link...", level='debug')
 
-                    # Disambiguation pages have links in the main content area
-                    # Look for links containing "film" and optionally the year
-                    disambig_links = self.page.query_selector_all("#mw-content-text ul li a")
+                # Handle disambiguation page - look for film link
+                disambig_links = self.page.query_selector_all("#mw-content-text ul li a")
+                for link in disambig_links:
+                    try:
+                        href = link.get_attribute('href')
+                        link_text = link.text_content().lower()
 
-                    best_match = None
-                    for link in disambig_links:
-                        try:
-                            href = link.get_attribute('href')
-                            link_text = link.text_content().lower()
-
-                            # Skip non-article links
-                            if not href or not href.startswith('/wiki/') or ':' in href:
-                                continue
-
-                            # Look for film-related links
-                            if 'film' in link_text or 'movie' in link_text:
-                                # Prefer links with the year
-                                if str(year) in link_text or str(year) in href:
-                                    wiki_url = f"https://en.wikipedia.org{href}"
-                                    self._log(f"Disambiguation: Found film+year match: {wiki_url}", level='debug')
-                                    return wiki_url
-                                # Save as fallback if no year match yet
-                                if not best_match:
-                                    best_match = href
-                        except Exception:
+                        if not href or not href.startswith('/wiki/') or ':' in href:
                             continue
 
-                    # Use best match if found
-                    if best_match:
-                        wiki_url = f"https://en.wikipedia.org{best_match}"
-                        self._log(f"Disambiguation: Found film match: {wiki_url}", level='debug')
-                        return wiki_url
-
-                    self._log(f"Disambiguation: No film link found, falling back to search", level='debug')
-
-            # Look for search results
-            search_selectors = [
-                ".mw-search-result-heading a",  # Primary
-                ".mw-search-result a",  # Fallback 1
-                ".searchresult a",  # Fallback 2
-            ]
-
-            for selector in search_selectors:
-                try:
-                    results = self.page.query_selector_all(selector)
-                    if results:
-                        # Check first few results for film-specific match
-                        for result in results[:5]:
-                            href = result.get_attribute('href')
-                            result_text = result.text_content().lower()
-
-                            # Prefer results with year or "film" in title
-                            if title.lower() in result_text:
-                                if str(year) in result_text or 'film' in result_text:
-                                    # Make absolute URL
-                                    if href.startswith('/'):
-                                        wiki_url = f"https://en.wikipedia.org{href}"
-                                    else:
-                                        wiki_url = href
-                                    self._log(f"Found match with selector {selector}: {wiki_url}", level='debug')
-                                    return wiki_url
-
-                        # If no year/film match, take first result if title matches
-                        if results and title.lower() in results[0].text_content().lower():
-                            href = results[0].get_attribute('href')
-                            if href.startswith('/'):
+                        # Look for film-related links with year preference
+                        if 'film' in link_text or 'movie' in link_text:
+                            if str(year) in link_text or str(year) in href:
                                 wiki_url = f"https://en.wikipedia.org{href}"
-                            else:
-                                wiki_url = href
-                            self._log(f"Found title match: {wiki_url}", level='debug')
-                            return wiki_url
+                                self._log(f"Disambiguation: Found film+year: {wiki_url}", level='debug')
+                                return wiki_url
+                    except Exception:
+                        continue
 
-                except Exception as e:
-                    self._log(f"Selector {selector} failed: {e}", level='debug')
-                    continue
+            # We're on search results page - find and click first matching result
+            first_result = self.page.query_selector(".mw-search-result-heading a")
 
-            # No results found
-            self._log(f"No Wikipedia page found for {title} ({year})", level='warning')
+            if first_result:
+                result_text = first_result.text_content()
+
+                if self._title_matches(title, result_text):
+                    # Click through to the article
+                    self._log(f"Clicking search result: '{result_text}'", level='debug')
+                    first_result.click()
+                    self.page.wait_for_load_state('domcontentloaded')
+
+                    final_url = self.page.url
+                    self._log(f"Clicked through to: {final_url}", level='debug')
+                    return final_url
+                else:
+                    self._log(f"First result '{result_text}' doesn't match '{title}'", level='debug')
+
+            # No matching results found
+            self._log(f"No Wikipedia article found for {title} ({year})", level='warning')
             self.stats['failures'] += 1
-
-            # Capture diagnostics
-            self._capture_failure_diagnostics(title, year, "No Wikipedia page found")
+            self._capture_failure_diagnostics(title, year, "No matching Wikipedia article found")
             return None
 
         except Exception as e:
-            self._log(f"Wikipedia scraping error for {title} ({year}): {e}", level='error')
+            self._log(f"Playwright scraping error for {title} ({year}): {e}", level='error')
             self.stats['failures'] += 1
-
-            # Capture diagnostics
             self._capture_failure_diagnostics(title, year, str(e))
             return None
 
@@ -502,10 +488,12 @@ class WikipediaScraperPlaywright:
         """Find Wikipedia URL with waterfall approach.
 
         Priority waterfall:
-        1. Cache check
+        1. Cache check (valid article URLs only)
         2. Wikidata SPARQL (if IMDb ID available and enabled)
-        3. Wikipedia REST API (if enabled)
-        4. Playwright scraper (fallback)
+        3. Wikipedia REST API (if enabled) - now includes plain title fallback
+        4. Playwright scraper with click-through
+
+        IMPORTANT: Never returns a search URL. Returns None if no article found.
 
         Args:
             title: Movie title
@@ -515,44 +503,30 @@ class WikipediaScraperPlaywright:
             use_wikidata: Whether to use Wikidata SPARQL (default: True)
 
         Returns:
-            str: Wikipedia URL or None if not found
+            str: Wikipedia article URL or None if not found
         """
         cache_key = f"{title}_{year}"
 
-        # 1. Check cache
+        # 1. Check cache - only return valid article URLs
         if cache_key in self.cache:
             cached_data = self.cache[cache_key]
             if isinstance(cached_data, dict):
                 url = cached_data.get('url')
                 source = cached_data.get('source', '')
 
-                # Skip search fallback sources - they should be retried
+                # Skip old search fallback entries - always re-scrape these
                 if source == 'search_fallback' or cached_data.get('is_search_fallback'):
-                    # Check if fallback has expired (3-day TTL)
-                    cached_at_str = cached_data.get('cached_at', '')
-                    if cached_at_str:
-                        try:
-                            cached_at = datetime.fromisoformat(cached_at_str)
-                            fallback_ttl_days = 3
-                            if datetime.now() - cached_at < timedelta(days=fallback_ttl_days):
-                                # Fallback still valid, return it
-                                self.stats['cache_hits'] += 1
-                                self._log(f"Cache hit for search fallback (within {fallback_ttl_days}-day TTL): {title} ({year})", level='debug')
-                                return url
-                            else:
-                                self._log(f"Search fallback expired for {title}, will re-scrape", level='debug')
-                        except (ValueError, TypeError):
-                            pass
-                    # Expired or invalid fallback - skip and re-scrape
-                    self._log(f"Skipping expired search fallback for {title}, will re-scrape", level='debug')
-                # For non-fallback sources, check if URL is valid
-                elif url and 'index.php?search=' not in url:
+                    self._log(f"Skipping old search_fallback cache for {title}, will re-scrape", level='debug')
+                # Skip any URL that looks like a search page
+                elif url and 'index.php?search=' in url:
+                    self._log(f"Skipping search URL in cache for {title}, will re-scrape", level='debug')
+                # Valid article URL - return it
+                elif url and '/wiki/' in url:
                     self.stats['cache_hits'] += 1
-                    self._log(f"Cache hit for {title} ({year})", level='debug')
+                    self._log(f"Cache hit for {title} ({year}): {source}", level='debug')
                     return url
-                else:
-                    self._log(f"Cache contains invalid URL for {title}, will re-scrape", level='debug')
-            elif cached_data and 'index.php?search=' not in cached_data:
+            # Handle old string-only cache entries
+            elif cached_data and 'index.php?search=' not in cached_data and '/wiki/' in cached_data:
                 self.stats['cache_hits'] += 1
                 return cached_data
 
@@ -565,7 +539,7 @@ class WikipediaScraperPlaywright:
                 self.stats['successes'] += 1
                 return wiki_url
 
-        # 3. Try Wikipedia REST API
+        # 3. Try Wikipedia REST API (includes plain title fallback)
         if use_api:
             wiki_url = self._try_wikipedia_api(title, year)
             if wiki_url:
@@ -574,7 +548,7 @@ class WikipediaScraperPlaywright:
                 self.stats['successes'] += 1
                 return wiki_url
 
-        # 4. Fallback to Playwright scraper
+        # 4. Fallback to Playwright scraper with click-through
         wiki_url = self._retry_with_backoff(lambda: self._scrape_wikipedia_page(title, year))
         if wiki_url:
             self._cache_result(cache_key, wiki_url, title, 'playwright_scraper')
@@ -582,10 +556,10 @@ class WikipediaScraperPlaywright:
             self.stats['successes'] += 1
             return wiki_url
 
-        # Failed - cache the failure as search fallback
-        search_fallback_url = f"https://en.wikipedia.org/w/index.php?search={quote(title + ' (' + str(year) + ' film)')}"
-        self._cache_result(cache_key, search_fallback_url, title, 'search_fallback')
-        return search_fallback_url
+        # No article found - return None (never return a search URL)
+        self._log(f"No Wikipedia article found for {title} ({year})", level='warning')
+        self.stats['failures'] += 1
+        return None
 
     def _query_wikidata(self, imdb_id):
         """Query Wikidata SPARQL endpoint for Wikipedia URL."""
@@ -633,7 +607,13 @@ class WikipediaScraperPlaywright:
             return None
 
     def _try_wikipedia_api(self, title, year):
-        """Try Wikipedia REST API for finding article."""
+        """Try Wikipedia REST API for finding article.
+
+        Attempts three variations in order:
+        1. "Title (YEAR film)" - most specific
+        2. "Title (film)" - common disambiguation
+        3. "Title" - plain title for unique names
+        """
         import requests
 
         try:
@@ -649,9 +629,10 @@ class WikipediaScraperPlaywright:
                 data = response.json()
                 wiki_url = data.get('content_urls', {}).get('desktop', {}).get('page')
                 if wiki_url:
+                    self._log(f"REST API found: {title} ({year} film)", level='debug')
                     return wiki_url
 
-            # Try without year
+            # Try with (film) suffix only
             search_title = f"{title} (film)"
             url = f"https://en.wikipedia.org/api/rest_v1/page/summary/{quote(search_title)}"
             response = requests.get(url, headers=headers, timeout=5)
@@ -659,6 +640,20 @@ class WikipediaScraperPlaywright:
                 data = response.json()
                 wiki_url = data.get('content_urls', {}).get('desktop', {}).get('page')
                 if wiki_url:
+                    self._log(f"REST API found: {title} (film)", level='debug')
+                    return wiki_url
+
+            # Try plain title (no suffix) - for films with unique names
+            url = f"https://en.wikipedia.org/api/rest_v1/page/summary/{quote(title)}"
+            response = requests.get(url, headers=headers, timeout=5)
+            if response.status_code == 200:
+                data = response.json()
+                # Verify it's actually a film article by checking extract
+                extract = data.get('extract', '').lower()
+                wiki_url = data.get('content_urls', {}).get('desktop', {}).get('page')
+                # Only accept if it mentions film/movie in the extract
+                if wiki_url and ('film' in extract or 'movie' in extract):
+                    self._log(f"REST API found: {title} (plain title)", level='debug')
                     return wiki_url
 
         except Exception as e:
@@ -667,16 +662,21 @@ class WikipediaScraperPlaywright:
         return None
 
     def _cache_result(self, cache_key, url, title, source):
-        """Cache the Wikipedia URL result."""
-        # Mark search fallbacks explicitly
-        is_search_fallback = 'index.php?search=' in url
+        """Cache the Wikipedia article URL.
+
+        Only caches valid article URLs (containing /wiki/).
+        Never caches search URLs.
+        """
+        # Safety check - never cache search URLs
+        if 'index.php?search=' in url or '/wiki/' not in url:
+            self._log(f"Refusing to cache non-article URL: {url}", level='warning')
+            return
 
         self.cache[cache_key] = {
             'url': url,
             'title': title,
             'cached_at': datetime.now().isoformat(),
-            'source': source,
-            'is_search_fallback': is_search_fallback
+            'source': source
         }
         self._save_cache()
 
