@@ -80,11 +80,9 @@ def main():
         os.environ['AGENT_SCRAPER_DEBUG'] = 'true'
         print("🐛 Debug mode enabled for intake/provider discovery and agent scraper")
 
-    # Enrichment is now handled by --enrich flag and runs separately
-
     # Initialize data generator from pipeline module
-    # Enrichment is now controlled by the --enrich flag and runs separately
-    generator = DataGenerator(enrichment_enabled=False)
+    # Enrichment (YouTube scraper, etc.) enabled only when --enrich flag is passed
+    generator = DataGenerator(enrichment_enabled=args.enrich)
 
     if args.debug:
         generator.logger.setLevel(logging.DEBUG)
