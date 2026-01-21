@@ -1,30 +1,30 @@
 {
-  "timestamp": "2026-01-20T10:14:49.915021",
-  "duration_seconds": 2634.014752,
+  "timestamp": "2026-01-21T10:15:10.961328",
+  "duration_seconds": 2642.907603,
   "overall_success": true,
   "failure_count": 0,
-  "warning_count": 1,
+  "warning_count": 0,
   "phases": [
     {
       "name": "Intake new premieres from TMDB",
       "success": true,
-      "duration_seconds": 2.725548,
+      "duration_seconds": 2.80333,
       "error": null,
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-01-18 to 2026-01-20 (incremental mode, 118 intaked)\n\u2705 Intake complete: 118 new movies added\n\ud83d\udccb Phase complete\n"
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-01-19 to 2026-01-21 (incremental mode, 24 intaked)\n\u2705 Intake complete: 24 new movies added\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 2627.698585,
+      "duration_seconds": 2583.019212,
       "error": null,
-      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 12796 total movies\n\ud83d\udd0d Raw tracking filter: 11683 movies\n\ud83d\udd0d Assigned tracking_movies list: 11683\n\ud83d\udd0d Found 11683 movies in tracking status\n  Priority queue (last 180 days): 1671 movies\n  Older movies: 10012 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 11683 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/11683 (0.9%) | 0 found | 0m elapsed | ~42m remaining\n  \ud83d\udcbe Progress saved (b"
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 12820 total movies\n\ud83d\udd0d Raw tracking filter: 11698 movies\n\ud83d\udd0d Assigned tracking_movies list: 11698\n\ud83d\udd0d Found 11698 movies in tracking status\n  Priority queue (last 180 days): 1650 movies\n  Older movies: 10048 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 11698 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/11698 (0.9%) | 0 found | 0m elapsed | ~41m remaining\n  \ud83d\udcbe Progress saved (b"
     },
     {
       "name": "Enrich newly available movies with metadata",
       "success": true,
-      "duration_seconds": 3.516574,
+      "duration_seconds": 56.985717,
       "error": null,
-      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 9 movies to enrich\n  \u2713 JustWatch found links for Charles Grodin: Rebel With a Cause: ['vod']\n  \u26a1 Charles Grodin: Rebel With a Cause (0.4s) - Wiki:\u25cb Trailer:\u25cb RT:\u2713 Links:\u2713 Date:\u25cb | 2 success, 0 errors\n  \u2713 Charles Grodin: Rebel With a Cause - Links: 1\n  \u2713 JustWatch found links for The Mysterious Gaze of the Flamingo: ['vod']\n  \u26a1 The Mysterious Gaze of the Flamingo (0.3s) - Wiki:\u25cb Trailer:\u2713 RT:\u2713 Links:\u2713 Date:"
+      "output_preview": "[AgentLinkScraper] Initialized with Playwright, cache_file=cache/agent_links_cache.json\n[AgentLinkScraper] Cache loaded: 0 entries\n[AgentLinkScraper] Screenshots: enabled\n[AgentLinkScraper] Supported platforms: ['Netflix', 'Disney+', 'Disney Plus', 'HBO Max', 'Max', 'Hulu']\n\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 3 movies to enrich\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to"
     }
   ],
   "health_issues": [],
@@ -33,18 +33,13 @@
     "days_without_transitions": 0
   },
   "failures": [],
-  "warnings": [
-    {
-      "phase": "Data Quality",
-      "message": "Data quality validation failed: '>=' not supported between instances of 'NoneType' and 'str'"
-    }
-  ],
+  "warnings": [],
   "data_quality": {
-    "total": 12796,
-    "tracking": 11674,
-    "available": 1122,
-    "data_movies": 271,
-    "movies_with_links": 86,
+    "total": 12820,
+    "tracking": 11695,
+    "available": 1125,
+    "data_movies": 85,
+    "movies_with_links": 68,
     "movies_with_rt": 1,
     "movies_with_wikipedia": 0,
     "movies_with_trailers": 0
