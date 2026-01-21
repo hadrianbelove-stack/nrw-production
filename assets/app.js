@@ -1,9 +1,8 @@
 const NRW = {
     allMovies: [],
     filteredMovies: [],
-    hiddenMovies: [],
     featuredMovies: [],
-    currentFilter: 'visible',
+    currentFilter: 'all',
     currentPage: 1,
     moviesPerPage: 60,
     
@@ -22,12 +21,11 @@ const NRW = {
             // Parse URL parameters for pagination state
             this.parseUrlParams();
 
-            // Load movie data (includes hidden/featured arrays as of 2025-11-09)
+            // Load movie data
             const movieResponse = await fetch('data.json');
             const data = await movieResponse.json();
 
-            // Load filter data (hidden/featured lists) from data.json
-            this.hiddenMovies = data.hidden || [];
+            // Load filter data (featured list) from data.json
             this.featuredMovies = data.featured || [];
 
             if (data.movies && data.movies.length > 0) {
@@ -89,14 +87,9 @@ const NRW = {
 
         this.filteredMovies = this.allMovies.filter(movie => {
             const movieId = movie.id;
-            const isHidden = this.hiddenMovies.includes(movieId);
             const isFeatured = this.featuredMovies.includes(movieId);
 
             switch (filter) {
-                case 'visible':
-                    return !isHidden; // Show non-hidden movies
-                case 'hidden':
-                    return isHidden; // Show only hidden movies
                 case 'featured':
                     return isFeatured; // Show only featured movies
                 case 'all':
@@ -182,10 +175,20 @@ const NRW = {
 
     renderWall(movies) {
         const wall = document.getElementById('wall');
-        
-        // Sort by date descending
+
+        // Sort by date descending, then featured first within each date
         movies.sort((a, b) => {
-            return new Date(b.digital_date) - new Date(a.digital_date);
+            const dateA = new Date(a.digital_date);
+            const dateB = new Date(b.digital_date);
+            if (dateB.getTime() !== dateA.getTime()) {
+                return dateB - dateA;  // Newest first
+            }
+            // Same date: featured movies first
+            const aFeatured = this.featuredMovies.includes(a.id);
+            const bFeatured = this.featuredMovies.includes(b.id);
+            if (aFeatured && !bFeatured) return -1;
+            if (!aFeatured && bFeatured) return 1;
+            return 0;
         });
 
         let html = '';
@@ -321,12 +324,17 @@ const NRW = {
                 infoLinks.push(`<a href="${this.wikiUrlFor(movie)}" target="_blank" class="info-btn">Wiki</a>`);
             }
 
+            const isFeatured = this.featuredMovies.includes(movie.id);
+            const featuredClass = isFeatured ? ' featured-movie' : '';
+            const featuredBadge = isFeatured ? '<div class="featured-badge">FEATURED</div>' : '';
+
             html += `
-            <div class="movie-container">
+            <div class="movie-container${featuredClass}">
+                ${featuredBadge}
                 <div class="movie-card">
                     <div class="card-inner">
                         <div class="card-front">
-                            <img src="${movie.poster || 'assets/no-poster.jpg'}" 
+                            <img src="${movie.poster || 'assets/no-poster.jpg'}"
                                  onerror="this.src='assets/no-poster.jpg'; this.onerror=null;">
                         </div>
                         <div class="card-back">

@@ -3015,18 +3015,18 @@ class DataGenerator:
         print(f"🔧 Applying admin overrides to {len(all_movies)} movies...")
 
         # Sort by digital release date (newest first)
-        all_movies.sort(key=lambda x: x.get('digital_date', ''), reverse=True)
+        # Handle None values by treating them as empty strings
+        all_movies.sort(key=lambda x: x.get('digital_date') or '', reverse=True)
 
-        # Apply admin panel overrides (hide/feature movies)
-        display_movies, hidden_ids, featured_ids = self.apply_admin_overrides(all_movies)
+        # Apply admin panel overrides (feature movies, apply ordering)
+        display_movies, featured_ids = self.apply_admin_overrides(all_movies)
 
         # Save ALL movies back to data.json (APPEND-ONLY: never remove old movies)
         output_data = {
             'generated_at': datetime.now().isoformat(),
             'count': len(display_movies),
             'movies': display_movies,
-            'hidden': hidden_ids,  # For frontend filtering (as of 2025-11-09)
-            'featured': featured_ids  # For frontend filtering (as of 2025-11-09)
+            'featured': featured_ids  # For frontend filtering
         }
 
         with open('data.json', 'w') as f:
@@ -3328,13 +3328,8 @@ class DataGenerator:
         """Apply admin panel decisions to final output"""
 
         # Load admin decisions if they exist
-        hidden = []
         featured = []
         ordering = []
-
-        if os.path.exists('admin/hidden_movies.json'):
-            with open('admin/hidden_movies.json', 'r') as f:
-                hidden = json.load(f)
 
         if os.path.exists('admin/featured_movies.json'):
             with open('admin/featured_movies.json', 'r') as f:
@@ -3346,22 +3341,90 @@ class DataGenerator:
                 if isinstance(ordering_data, list):
                     ordering = ordering_data
 
-        # Filter out hidden movies
-        filtered_movies = [m for m in display_movies
-                          if str(m['id']) not in hidden]
+        # Load movie_tracking.json to apply manual field edits
+        tracking_data = {}
+        if os.path.exists('movie_tracking.json'):
+            try:
+                with open('movie_tracking.json', 'r') as f:
+                    tracking_data = json.load(f).get('movies', {})
+            except Exception as e:
+                print(f"⚠️  Could not load movie_tracking.json: {e}")
+
+        # Apply manual field edits from movie_tracking.json
+        fields_updated = 0
+        for movie in display_movies:
+            movie_id = str(movie.get('id'))
+            if movie_id in tracking_data:
+                tracking_movie = tracking_data[movie_id]
+
+                # Apply manual trailer link
+                if tracking_movie.get('manual_trailer') and tracking_movie.get('links', {}).get('trailer'):
+                    if 'links' not in movie:
+                        movie['links'] = {}
+                    movie['links']['trailer'] = tracking_movie['links']['trailer']
+                    fields_updated += 1
+
+                # Apply manual RT link
+                if tracking_movie.get('manual_rt_link') and tracking_movie.get('links', {}).get('rt'):
+                    if 'links' not in movie:
+                        movie['links'] = {}
+                    movie['links']['rt'] = tracking_movie['links']['rt']
+                    fields_updated += 1
+
+                # Apply manual Wikipedia link
+                if tracking_movie.get('manual_wikipedia') and tracking_movie.get('links', {}).get('wikipedia'):
+                    if 'links' not in movie:
+                        movie['links'] = {}
+                    movie['links']['wikipedia'] = tracking_movie['links']['wikipedia']
+                    fields_updated += 1
+
+                # Apply manual poster URL
+                if tracking_movie.get('manual_poster') and tracking_movie.get('poster_url'):
+                    movie['poster_url'] = tracking_movie['poster_url']
+                    movie['poster'] = tracking_movie['poster_url']  # Some code uses 'poster'
+                    fields_updated += 1
+
+                # Apply manual RT score
+                if tracking_movie.get('manual_rt_score') and tracking_movie.get('rt_score') is not None:
+                    movie['rt_score'] = tracking_movie['rt_score']
+                    fields_updated += 1
+
+                # Apply manual director
+                if tracking_movie.get('manual_director') and tracking_movie.get('crew', {}).get('director'):
+                    if 'crew' not in movie:
+                        movie['crew'] = {}
+                    movie['crew']['director'] = tracking_movie['crew']['director']
+                    fields_updated += 1
+
+                # Apply manual country
+                if tracking_movie.get('manual_country') and tracking_movie.get('country'):
+                    movie['country'] = tracking_movie['country']
+                    fields_updated += 1
+
+                # Apply manual synopsis
+                if tracking_movie.get('manual_synopsis') and tracking_movie.get('synopsis'):
+                    movie['synopsis'] = tracking_movie['synopsis']
+                    fields_updated += 1
+
+                # Apply manual watch links
+                if tracking_movie.get('watch_links'):
+                    movie['watch_links'] = tracking_movie['watch_links']
+                    fields_updated += 1
+
+        if fields_updated > 0:
+            print(f"📝 Applied {fields_updated} manual field edits from movie_tracking.json")
 
         # Mark featured movies
-        for movie in filtered_movies:
+        for movie in display_movies:
             if str(movie['id']) in featured:
                 movie['featured'] = True
 
         # Apply editorial ordering if specified
         if ordering:
             ordered_movies = []
-            remaining_movies = []
 
             # Create a map of movie ID to movie object for quick lookup
-            movie_map = {str(movie['id']): movie for movie in filtered_movies}
+            movie_map = {str(movie['id']): movie for movie in display_movies}
 
             # Add ordered movies first (in specified order)
             for movie_id in ordering:
@@ -3376,17 +3439,15 @@ class DataGenerator:
             remaining_movies.sort(key=lambda x: x['digital_date'], reverse=True)
 
             # Combine ordered + remaining
-            filtered_movies = ordered_movies + remaining_movies
+            display_movies = ordered_movies + remaining_movies
 
-        hidden_count = len(display_movies) - len(filtered_movies)
-        featured_count = len([m for m in filtered_movies if m.get('featured')])
+        featured_count = len([m for m in display_movies if m.get('featured')])
         ordered_count = len(ordering) if ordering else 0
 
         print(f"📝 Admin overrides applied:")
-        print(f"  Hidden movies: {hidden_count}")
         print(f"  Featured movies: {featured_count}")
         if ordered_count > 0:
             print(f"  Editorial ordering: {ordered_count} movies pinned to top")
 
-        return filtered_movies, hidden, featured
+        return display_movies, featured
 
