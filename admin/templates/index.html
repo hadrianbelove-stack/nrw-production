@@ -3,24 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>New Release Wall - Admin Panel</title>
+    <title>The New Release Wall - Admin Panel</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
 </head>
 <body>
     <div class="header">
-        <h1>🎬 New Release Wall - Admin Panel</h1>
+        <h1>🎬 The New Release Wall - Admin Panel</h1>
         <div class="stats">
             <div class="stat-item">
                 <span>Total Movies:</span>
                 <span class="stat-value">{{ movies|length }}</span>
-            </div>
-            <div class="stat-item">
-                <span>Visible:</span>
-                <span class="stat-value" id="visible-count">{{ visible_count }}</span>
-            </div>
-            <div class="stat-item">
-                <span>Hidden:</span>
-                <span class="stat-value" id="hidden-count">{{ hidden_count }}</span>
             </div>
             <div class="stat-item">
                 <span>Featured:</span>
@@ -204,27 +196,17 @@
             <span class="notification-badge" id="missing-data-count">{{ missing_data_count }}</span>
         </button>
         <button class="filter-btn active" onclick="filterMovies('all')">All Movies</button>
-        <button class="filter-btn" onclick="filterMovies('visible')">Visible</button>
-        <button class="filter-btn" onclick="filterMovies('hidden')">Hidden</button>
         <button class="filter-btn" onclick="filterMovies('featured')">Featured</button>
         <input type="text" id="search-box" class="search-box" placeholder="Search movies..." onkeyup="searchMovies()">
 
         <div class="ordering-controls">
-            <button class="action-btn btn-small" id="edit-order-btn" onclick="toggleOrderingMode()">
-                📐 Edit Order
-            </button>
-            <button class="action-btn btn-small success" id="save-order-btn" onclick="saveOrdering()" style="display: none;">
-                💾 Save Order
-            </button>
-            <button class="action-btn btn-small secondary" id="cancel-order-btn" onclick="cancelOrdering()" style="display: none;">
-                ❌ Cancel
-            </button>
+            <span style="color: #999; font-size: 0.85rem;">Drag movies to reorder</span>
         </div>
     </div>
 
     <div class="movie-grid" id="movie-grid">
         {% for movie_id, movie in movies.items() %}
-        <div class="movie-card {% if movie_id in hidden %}hidden{% endif %} {% if movie_id in featured %}featured{% endif %}"
+        <div class="movie-card {% if movie_id in featured %}featured{% endif %}"
              data-movie-id="{{ movie_id }}"
              data-title="{{ movie.title|lower }}"
              data-has-trailer="{{ 'yes' if movie.get('links', {}).get('trailer') else 'no' }}"
@@ -233,8 +215,8 @@
              data-has-country="{{ 'yes' if movie.get('country') else 'no' }}"
              data-has-watch-links="{{ 'yes' if movie.get('watch_links') and (movie.get('watch_links', {}).get('streaming') or movie.get('watch_links', {}).get('vod')) else 'no' }}"
              data-missing-any="{{ 'yes' if not movie.get('links', {}).get('trailer') or not (movie.poster_url or movie.get('poster')) or not movie.director or movie.director == 'Unknown' or not movie.get('country') else 'no' }}"
-             draggable="false">
-            <div class="drag-handle" style="display: none;">
+             draggable="true">
+            <div class="drag-handle">
                 <div class="drag-icon">⋮⋮</div>
             </div>
             {% if movie.poster_url %}
@@ -264,7 +246,7 @@
                 <!-- Editable Fields Section -->
                 <div class="edit-section">
                     <!-- Director, Country, Runtime Row -->
-                    <div style="display: grid; grid-template-columns: 2.5fr 0.4fr 0.4fr; gap: 0.5rem; margin-bottom: 0.5rem;">
+                    <div style="display: grid; grid-template-columns: 2.5fr 0.4fr 0.4fr auto; gap: 0.5rem; margin-bottom: 0.5rem; align-items: end;">
                         <div class="edit-field-group">
                             <label class="edit-label">
                                 Director:
@@ -295,6 +277,12 @@
                                    placeholder=""
                                    class="edit-input">
                         </div>
+                        <button type="button"
+                                id="save-metadata-{{ movie_id }}"
+                                onclick="saveMetadata('{{ movie_id }}')"
+                                style="padding: 0.3rem 0.5rem; background: #28a745; color: white; border: none; border-radius: 4px; font-size: 0.75rem; cursor: pointer; height: 28px;">
+                            💾
+                        </button>
                     </div>
                     <!-- Hidden fields for data preservation -->
                     <input type="hidden" id="digital-date-{{ movie_id }}" value="{% if movie.digital_date %}{{ movie.digital_date }}{% endif %}">
@@ -515,18 +503,11 @@
                 {% endif %}
 
                 <div class="movie-actions">
-                    {% if movie_id in hidden %}
-                    <button class="action-btn btn-show" onclick="toggleHidden('{{ movie_id }}', false)">👁️ Show</button>
-                    {% else %}
-                    <button class="action-btn btn-hide" onclick="toggleHidden('{{ movie_id }}', true)">🚫 Hide</button>
-                    {% endif %}
-
                     {% if movie_id in featured %}
                     <button class="action-btn btn-unfeature" onclick="toggleFeatured('{{ movie_id }}', false)">⭐ Unfeature</button>
                     {% else %}
                     <button class="action-btn btn-feature" onclick="toggleFeatured('{{ movie_id }}', true)">⭐ Feature</button>
                     {% endif %}
-
                 </div>
             </div>
         </div>
@@ -535,6 +516,6 @@
 
     <div class="success-msg" id="success-msg">Changes saved!</div>
 
-    <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/admin.js') }}?v=4"></script>
 </body>
 </html>

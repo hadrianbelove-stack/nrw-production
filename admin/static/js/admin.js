@@ -31,8 +31,8 @@ function updatePendingBadge() {
 }
 
 function viewSite() {
-    // Open the main site in a new tab
-    window.open('../index.html', '_blank');
+    // Open the main site in a new tab (served by admin server at /site/)
+    window.open('/site/', '_blank');
 }
 
 function showSuccess(message = 'Changes saved!') {
@@ -42,52 +42,6 @@ function showSuccess(message = 'Changes saved!') {
     setTimeout(() => {
         msg.style.display = 'none';
     }, 3000);
-}
-
-function toggleHidden(movieId, hide) {
-    fetch('/toggle-status', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({movie_id: movieId, status_type: 'hidden', value: hide})
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Update card styling without page reload
-            const card = document.querySelector(`[data-movie-id="${movieId}"]`);
-            if (hide) {
-                card.classList.add('hidden');
-            } else {
-                card.classList.remove('hidden');
-            }
-
-            // Update button
-            const actionsDiv = card.querySelector('.movie-actions');
-            const hideBtn = actionsDiv.querySelector('.btn-hide, .btn-show');
-            if (hide) {
-                hideBtn.className = 'action-btn btn-show';
-                hideBtn.innerHTML = '👁️ Show';
-                hideBtn.onclick = () => toggleHidden(movieId, false);
-            } else {
-                hideBtn.className = 'action-btn btn-hide';
-                hideBtn.innerHTML = '🚫 Hide';
-                hideBtn.onclick = () => toggleHidden(movieId, true);
-            }
-
-            // Update stats
-            updateStats();
-
-            // Increment pending changes counter
-            incrementPendingCount();
-
-            showSuccess(hide ? 'Movie hidden' : 'Movie shown');
-        }
-    })
-    .catch(error => {
-        alert('Error: ' + error);
-    });
 }
 
 function toggleFeatured(movieId, feature) {
@@ -138,18 +92,10 @@ function toggleFeatured(movieId, feature) {
 
 function updateStats() {
     // Recalculate stats from current DOM state
-    const allCards = document.querySelectorAll('.movie-card');
-    const hiddenCards = document.querySelectorAll('.movie-card.hidden');
     const featuredCards = document.querySelectorAll('.movie-card.featured');
-
-    const total = allCards.length;
-    const hidden = hiddenCards.length;
-    const visible = total - hidden;
     const featured = featuredCards.length;
 
     // Update stat displays
-    document.getElementById('visible-count').textContent = visible;
-    document.getElementById('hidden-count').textContent = hidden;
     document.getElementById('featured-count').textContent = featured;
 
     // Update issue counts
@@ -247,12 +193,6 @@ function filterMovies(filter) {
         switch(filter) {
             case 'all':
                 card.style.display = 'block';
-                break;
-            case 'visible':
-                card.style.display = card.classList.contains('hidden') ? 'none' : 'block';
-                break;
-            case 'hidden':
-                card.style.display = card.classList.contains('hidden') ? 'block' : 'none';
                 break;
             case 'featured':
                 card.style.display = card.classList.contains('featured') ? 'block' : 'none';
@@ -563,99 +503,11 @@ function createYouTubePlaylist() {
     });
 }
 
-// Editorial Ordering Functions
-let orderingMode = false;
-let originalOrder = [];
-
-function toggleOrderingMode() {
-    const grid = document.getElementById('movie-grid');
-    const editBtn = document.getElementById('edit-order-btn');
-    const saveBtn = document.getElementById('save-order-btn');
-    const cancelBtn = document.getElementById('cancel-order-btn');
-
-    orderingMode = !orderingMode;
-
-    if (orderingMode) {
-        // Enter ordering mode
-        grid.classList.add('ordering-mode');
-        editBtn.style.display = 'none';
-        saveBtn.style.display = 'inline-block';
-        cancelBtn.style.display = 'inline-block';
-
-        // Show drag handles
-        document.querySelectorAll('.drag-handle').forEach(handle => {
-            handle.style.display = 'block';
-        });
-
-        // Store original order
-        originalOrder = Array.from(grid.children).map(card => card.dataset.movieId);
-
-        // Enable drag and drop
-        enableDragAndDrop();
-
-        showSuccess('Drag and drop movies to reorder them. Click "Save Order" when done.');
-    } else {
-        // Exit ordering mode
-        exitOrderingMode();
-    }
-}
-
-function exitOrderingMode() {
-    const grid = document.getElementById('movie-grid');
-    const editBtn = document.getElementById('edit-order-btn');
-    const saveBtn = document.getElementById('save-order-btn');
-    const cancelBtn = document.getElementById('cancel-order-btn');
-
-    orderingMode = false;
-    grid.classList.remove('ordering-mode');
-    editBtn.style.display = 'inline-block';
-    saveBtn.style.display = 'none';
-    cancelBtn.style.display = 'none';
-
-    // Hide drag handles
-    document.querySelectorAll('.drag-handle').forEach(handle => {
-        handle.style.display = 'none';
-    });
-
-    // Disable drag and drop
-    disableDragAndDrop();
-
-    // Clear any drag-related classes
-    document.querySelectorAll('.movie-card').forEach(card => {
-        card.classList.remove('dragging', 'drag-over');
-        card.draggable = false;
-    });
-}
-
-function cancelOrdering() {
-    // Restore original order
-    const grid = document.getElementById('movie-grid');
-    const cards = Array.from(grid.children);
-
-    // Sort cards by original order
-    cards.sort((a, b) => {
-        const aIndex = originalOrder.indexOf(a.dataset.movieId);
-        const bIndex = originalOrder.indexOf(b.dataset.movieId);
-        return aIndex - bIndex;
-    });
-
-    // Re-append in original order
-    cards.forEach(card => grid.appendChild(card));
-
-    exitOrderingMode();
-    showSuccess('Ordering cancelled - original order restored');
-}
+// Editorial Ordering Functions - Always enabled, auto-saves on drop
 
 function saveOrdering() {
     const grid = document.getElementById('movie-grid');
     const orderedIds = Array.from(grid.children).map(card => card.dataset.movieId);
-
-    const saveBtn = document.getElementById('save-order-btn');
-    const originalText = saveBtn.textContent;
-
-    // Disable button
-    saveBtn.disabled = true;
-    saveBtn.textContent = '⏳ Saving...';
 
     fetch('/update-ordering', {
         method: 'POST',
@@ -675,26 +527,13 @@ function saveOrdering() {
             // Increment pending changes counter
             incrementPendingCount();
 
-            exitOrderingMode();
-            showSuccess(data.message || `Editorial ordering saved with ${data.ordered_count || orderedIds.length} movies`);
+            showSuccess('Order updated');
         } else {
-            saveBtn.textContent = '❌ Failed';
             alert('Failed to save ordering: ' + (data.error || 'Unknown error'));
-
-            setTimeout(() => {
-                saveBtn.textContent = originalText;
-                saveBtn.disabled = false;
-            }, 2000);
         }
     })
     .catch(error => {
-        saveBtn.textContent = '❌ Error';
         alert('Error saving ordering: ' + error);
-
-        setTimeout(() => {
-            saveBtn.textContent = originalText;
-            saveBtn.disabled = false;
-        }, 2000);
     });
 }
 
@@ -717,29 +556,12 @@ function enableDragAndDrop() {
     const cards = document.querySelectorAll('.movie-card');
 
     cards.forEach(card => {
-        card.draggable = true;
-
         card.addEventListener('dragstart', handleDragStart);
         card.addEventListener('dragend', handleDragEnd);
         card.addEventListener('dragover', handleDragOver);
         card.addEventListener('dragenter', handleDragEnter);
         card.addEventListener('dragleave', handleDragLeave);
         card.addEventListener('drop', handleDrop);
-    });
-}
-
-function disableDragAndDrop() {
-    const cards = document.querySelectorAll('.movie-card');
-
-    cards.forEach(card => {
-        card.draggable = false;
-
-        card.removeEventListener('dragstart', handleDragStart);
-        card.removeEventListener('dragend', handleDragEnd);
-        card.removeEventListener('dragover', handleDragOver);
-        card.removeEventListener('dragenter', handleDragEnter);
-        card.removeEventListener('dragleave', handleDragLeave);
-        card.removeEventListener('drop', handleDrop);
     });
 }
 
@@ -809,6 +631,9 @@ function handleDrop(e) {
                 grid.appendChild(draggedElement);
             }
         }
+
+        // Auto-save the new order
+        saveOrdering();
     }
 
     this.classList.remove('drag-over');
@@ -1045,7 +870,7 @@ function validateText(text, minLength, maxLength, fieldType) {
     return issues;
 }
 
-// Initialize character counters on page load
+// Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize pending changes count from server
     fetch('/pending-changes')
@@ -1064,6 +889,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize Save Changes button state
     updatePendingBadge();
 
+    // Enable drag and drop for ordering (always on)
+    enableDragAndDrop();
+
     // Initialize synopsis counters
     document.querySelectorAll('[id^="synopsis-"]').forEach(textarea => {
         if (textarea.tagName === 'TEXTAREA') {
@@ -1073,6 +901,74 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+// Metadata save function (director, country, runtime)
+function saveMetadata(movieId) {
+    const saveBtn = document.getElementById(`save-metadata-${movieId}`);
+    const director = document.getElementById(`director-${movieId}`).value.trim();
+    const country = document.getElementById(`country-${movieId}`).value.trim();
+    const runtime = document.getElementById(`runtime-${movieId}`).value.trim();
+
+    // Show saving state
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '⏳';
+
+    fetch('/update-movie-fields', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            movie_id: movieId,
+            director: director || null,
+            country: country || null,
+            runtime: runtime ? parseInt(runtime) : null
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update field backgrounds
+            const directorInput = document.getElementById(`director-${movieId}`);
+            const countryInput = document.getElementById(`country-${movieId}`);
+
+            if (director && director !== 'Unknown') {
+                directorInput.classList.remove('missing');
+                directorInput.style.background = '#2a2a2a';
+            }
+            if (country) {
+                countryInput.classList.remove('missing');
+                countryInput.style.background = '#2a2a2a';
+            }
+
+            // Update data attributes for filtering
+            const card = document.querySelector(`[data-movie-id="${movieId}"]`);
+            if (card) {
+                card.dataset.hasDirector = (director && director !== 'Unknown') ? 'yes' : 'no';
+                card.dataset.hasCountry = country ? 'yes' : 'no';
+                updateMissingAnyAttribute(card);
+            }
+
+            incrementPendingCount();
+            saveBtn.innerHTML = '✓';
+            showSuccess('Metadata saved');
+        } else {
+            saveBtn.innerHTML = '❌';
+            alert(data.error || 'Failed to save');
+        }
+
+        setTimeout(() => {
+            saveBtn.innerHTML = '💾';
+            saveBtn.disabled = false;
+        }, 1000);
+    })
+    .catch(error => {
+        saveBtn.innerHTML = '❌';
+        alert('Error: ' + error);
+        setTimeout(() => {
+            saveBtn.innerHTML = '💾';
+            saveBtn.disabled = false;
+        }, 1000);
+    });
+}
 
 // Link editing interface
 let currentLinkModes = {}; // Track which link type is active for each movie
@@ -1143,51 +1039,96 @@ function saveLinkField(movieId) {
     if (!linkType) return;
 
     const input = document.getElementById(`universal-link-${movieId}`);
-    const newValue = input.value;
+    const saveBtn = document.getElementById(`save-link-${movieId}`);
+    const newValue = input.value.trim();
 
-    // Update the appropriate hidden field based on current mode
-    let targetFieldId = '';
-    let targetField = null;
-
+    // Build the request body based on link type
+    const requestBody = { movie_id: movieId };
     switch(linkType) {
         case 'trailer':
-            targetFieldId = `trailer-link-${movieId}`;
+            requestBody.trailer_link = newValue || null;
             break;
         case 'rt':
-            targetFieldId = `rt-link-${movieId}`;
+            requestBody.rt_link = newValue || null;
             break;
         case 'poster':
-            targetFieldId = `poster-url-${movieId}`;
+            requestBody.poster_url = newValue || null;
             break;
         case 'wikipedia':
-            targetFieldId = `wikipedia-link-${movieId}`;
+            requestBody.wikipedia_link = newValue || null;
             break;
     }
 
-    // Try to find existing field or create data to save
-    targetField = document.getElementById(targetFieldId);
-    if (targetField) {
-        targetField.value = newValue;
-    }
+    // Show saving state
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '⏳';
 
-    // Update button color based on whether link exists
-    const button = document.querySelector(`[onclick*="setLinkMode('${movieId}', '${linkType}')"]`);
-    if (button) {
-        button.classList.remove('link-good', 'link-bad');
-        button.classList.add(newValue ? 'link-good' : 'link-bad');
-    }
+    // POST directly to server
+    fetch('/update-movie-fields', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestBody)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update button color based on whether link exists
+            const button = document.querySelector(`[onclick*="setLinkMode('${movieId}', '${linkType}')"]`);
+            if (button) {
+                button.classList.remove('link-good', 'link-bad');
+                button.classList.add(newValue ? 'link-good' : 'link-bad');
+            }
 
-    // Reset interface
+            // Update data attributes so Missing Data filter updates
+            const card = document.querySelector(`[data-movie-id="${movieId}"]`);
+            if (card) {
+                if (linkType === 'trailer') {
+                    card.dataset.hasTrailer = newValue ? 'yes' : 'no';
+                } else if (linkType === 'poster') {
+                    card.dataset.hasPoster = newValue ? 'yes' : 'no';
+                }
+                // Recalculate missing-any
+                updateMissingAnyAttribute(card);
+            }
+
+            // Increment pending changes counter
+            incrementPendingCount();
+
+            // Show success
+            saveBtn.innerHTML = '✓';
+            showSuccess(data.message || `${linkType} link saved`);
+        } else {
+            saveBtn.innerHTML = '❌';
+            alert(data.error || 'Failed to save');
+        }
+
+        // Reset interface after delay
+        setTimeout(() => {
+            resetLinkInterface(movieId, saveBtn);
+        }, 1000);
+    })
+    .catch(error => {
+        saveBtn.innerHTML = '❌';
+        alert('Error saving: ' + error);
+        setTimeout(() => {
+            resetLinkInterface(movieId, saveBtn);
+        }, 1000);
+    });
+}
+
+function resetLinkInterface(movieId, saveBtn) {
+    const input = document.getElementById(`universal-link-${movieId}`);
+    const indicator = document.getElementById(`link-mode-indicator-${movieId}`);
+
     input.readOnly = true;
     input.style.background = '#1a1a1a';
     input.value = '';
     input.placeholder = 'Select a button above to edit that link...';
 
-    const saveBtn = document.getElementById(`save-link-${movieId}`);
     saveBtn.disabled = true;
     saveBtn.style.opacity = '0.6';
+    saveBtn.innerHTML = '💾';
 
-    const indicator = document.getElementById(`link-mode-indicator-${movieId}`);
     indicator.textContent = 'Click a button above to edit that link';
 
     // Remove active state from buttons
@@ -1196,16 +1137,19 @@ function saveLinkField(movieId) {
 
     // Clear current mode
     delete currentLinkModes[movieId];
+}
 
-    // Increment pending changes
-    incrementPendingCount();
+function updateMissingAnyAttribute(card) {
+    const hasTrailer = card.dataset.hasTrailer === 'yes';
+    const hasPoster = card.dataset.hasPoster === 'yes';
+    const hasDirector = card.dataset.hasDirector === 'yes';
+    const hasCountry = card.dataset.hasCountry === 'yes';
 
-    // Show success feedback
-    const oldText = saveBtn.innerHTML;
-    saveBtn.innerHTML = '✓';
-    setTimeout(() => {
-        saveBtn.innerHTML = oldText;
-    }, 1000);
+    const missingAny = !hasTrailer || !hasPoster || !hasDirector || !hasCountry;
+    card.dataset.missingAny = missingAny ? 'yes' : 'no';
+
+    // Update issue counts
+    updateIssueCounts();
 }
 
 // Watch service editing interface
@@ -1259,39 +1203,86 @@ function saveWatchService(movieId) {
 
     const {type: serviceType, service: serviceName} = watchMode;
     const input = document.getElementById(`${serviceType}-link-${movieId}`);
-    const newValue = input.value;
+    const saveBtn = document.getElementById(`save-${serviceType}-${movieId}`);
+    const newValue = input.value.trim();
 
-    // Update appropriate hidden fields or prepare for save
-    if (serviceType === 'streaming') {
-        // Update streaming service data
-        const serviceField = document.getElementById(`streaming-service-${movieId}`);
-        if (serviceField) {
-            serviceField.value = serviceName === 'ADD' ? 'Custom' : serviceName;
+    // Build watch_links object for the request
+    const actualServiceName = serviceName === 'ADD' ? 'Custom' : serviceName;
+    const watchLinks = {};
+    watchLinks[serviceType] = {
+        service: actualServiceName,
+        link: newValue || null
+    };
+
+    const requestBody = {
+        movie_id: movieId,
+        watch_links: watchLinks
+    };
+
+    // Show saving state
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '⏳';
+
+    // POST directly to server
+    fetch('/update-movie-fields', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestBody)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update button color based on whether link exists
+            const button = document.querySelector(`[onclick*="setWatchService('${movieId}', '${serviceType}', '${serviceName}')"]`);
+            if (button && serviceName !== 'ADD') {
+                button.classList.remove('link-good', 'link-bad');
+                button.classList.add(newValue ? 'link-good' : 'link-bad');
+            }
+
+            // Update data attributes so Missing Data filter updates
+            const card = document.querySelector(`[data-movie-id="${movieId}"]`);
+            if (card) {
+                // Check if we now have watch links
+                const hasWatchLinks = newValue ? 'yes' : card.dataset.hasWatchLinks;
+                card.dataset.hasWatchLinks = hasWatchLinks;
+            }
+
+            // Increment pending changes counter
+            incrementPendingCount();
+
+            // Show success
+            saveBtn.innerHTML = '✓';
+            showSuccess(data.message || `${serviceType} link saved`);
+        } else {
+            saveBtn.innerHTML = '❌';
+            alert(data.error || 'Failed to save');
         }
-    } else if (serviceType === 'vod') {
-        // Update VOD service data
-        const serviceField = document.getElementById(`vod-service-${movieId}`);
-        if (serviceField) {
-            serviceField.value = serviceName === 'ADD' ? 'Custom' : serviceName;
-        }
-    }
 
-    // Update button color based on whether link exists
-    const button = document.querySelector(`[onclick*="setWatchService('${movieId}', '${serviceType}', '${serviceName}')"]`);
-    if (button && serviceName !== 'ADD') {
-        button.classList.remove('link-good', 'link-bad');
-        button.classList.add(newValue ? 'link-good' : 'link-bad');
-    }
+        // Reset interface after delay
+        setTimeout(() => {
+            resetWatchInterface(movieId, serviceType, saveBtn);
+        }, 1000);
+    })
+    .catch(error => {
+        saveBtn.innerHTML = '❌';
+        alert('Error saving: ' + error);
+        setTimeout(() => {
+            resetWatchInterface(movieId, serviceType, saveBtn);
+        }, 1000);
+    });
+}
 
-    // Reset interface
+function resetWatchInterface(movieId, serviceType, saveBtn) {
+    const input = document.getElementById(`${serviceType}-link-${movieId}`);
+
     input.readOnly = true;
     input.style.background = '#1a1a1a';
     input.value = '';
     input.placeholder = 'Select service above to add link...';
 
-    const saveBtn = document.getElementById(`save-${serviceType}-${movieId}`);
     saveBtn.disabled = true;
     saveBtn.style.opacity = '0.6';
+    saveBtn.innerHTML = '💾';
 
     // Remove active state from buttons
     const buttons = document.querySelectorAll(`[onclick*="setWatchService('${movieId}', '${serviceType}',"]`);
@@ -1299,14 +1290,4 @@ function saveWatchService(movieId) {
 
     // Clear current mode
     delete currentWatchModes[movieId];
-
-    // Increment pending changes
-    incrementPendingCount();
-
-    // Show success feedback
-    const oldText = saveBtn.innerHTML;
-    saveBtn.innerHTML = '✓';
-    setTimeout(() => {
-        saveBtn.innerHTML = oldText;
-    }, 1000);
 }
