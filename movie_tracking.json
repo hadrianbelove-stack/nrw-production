@@ -26147,13 +26147,23 @@
     },
     "1531058": {
       "title": "Others",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2025-11-07",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-01-22",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
       "discovery_pass": "B",
-      "has_providers": false,
-      "year": 2025
+      "has_providers": true,
+      "year": 2025,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1530523": {
       "title": "Unexpected Christmas",
@@ -71071,14 +71081,22 @@
     },
     "1327376": {
       "title": "Gary",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-04",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-01-22",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Peacock Premium Plus"
+        ]
+      },
       "intake_pass": "backfill",
-      "has_providers": false,
+      "has_providers": true,
       "year": 2024,
-      "premiere_date": "2024-08-28"
+      "premiere_date": "2024-08-28",
+      "enriched": false,
+      "enrichment_date": null
     },
     "1325494": {
       "title": "Punggi",
@@ -75223,14 +75241,22 @@
     },
     "1360170": {
       "title": "Maria, I'm Dying!",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-04",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-01-22",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "VIX "
+        ]
+      },
       "intake_pass": "backfill",
-      "has_providers": false,
+      "has_providers": true,
       "year": 2024,
-      "premiere_date": "2024-10-31"
+      "premiere_date": "2024-10-31",
+      "enriched": false,
+      "enrichment_date": null
     },
     "1354031": {
       "title": "Witchcast",
@@ -84713,14 +84739,24 @@
     },
     "1430971": {
       "title": "The Track",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-04",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-01-22",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
       "intake_pass": "backfill",
-      "has_providers": false,
+      "has_providers": true,
       "year": 2025,
-      "premiere_date": "2025-02-28"
+      "premiere_date": "2025-02-28",
+      "enriched": false,
+      "enrichment_date": null
     },
     "1428891": {
       "title": "Volver a casa tan tarde",
@@ -111669,13 +111705,25 @@
     "1174240": {
       "title": "Vampire Zombies...from Space!",
       "year": 2024,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-01-22",
+      "providers": {
+        "rent": [
+          "Amazon Video",
+          "YouTube"
+        ],
+        "buy": [
+          "Amazon Video",
+          "YouTube"
+        ],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "NYFF",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1014393": {
       "title": "Hunter Brothers",
@@ -123684,12 +123732,20 @@
     "840464": {
       "title": "Greenland 2: Migration",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-07",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-01-22",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1611432": {
       "title": "Trench",
@@ -147906,12 +147962,22 @@
     "1361436": {
       "title": "Opportunity",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-20",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-01-22",
+      "providers": {
+        "rent": [
+          "YouTube"
+        ],
+        "buy": [
+          "YouTube"
+        ],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1299049": {
       "title": "What should we dream of",
@@ -149243,7 +149309,370 @@
       "providers": {},
       "intake_pass": "B",
       "has_providers": false
+    },
+    "1575337": {
+      "title": "Cosmic Princess Kaguya!",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A",
+      "has_providers": false
+    },
+    "580489": {
+      "title": "Venom: Let There Be Carnage",
+      "year": 2021,
+      "status": "available",
+      "first_seen": "2026-01-22",
+      "digital_date": "2026-01-22",
+      "providers": {
+        "rent": [
+          "Amazon Video",
+          "Apple TV",
+          "Google Play Movies",
+          "YouTube",
+          "Fandango At Home"
+        ],
+        "buy": [
+          "Amazon Video",
+          "Apple TV",
+          "Google Play Movies",
+          "YouTube",
+          "Fandango At Home"
+        ],
+        "streaming": [
+          "Starz Apple TV Channel",
+          "Starz Roku Premium Channel",
+          "Starz",
+          "Starz Amazon Channel"
+        ]
+      },
+      "intake_pass": "A",
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
+    },
+    "1619484": {
+      "title": "Eine Krankheit wie ein Gedicht",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1618987": {
+      "title": "\u0412\u044b\u0441\u043e\u0446\u043a\u0438\u0439. \u041d\u0435\u0438\u0437\u0432\u0435\u0441\u0442\u043d\u044b\u0435 \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u044b\u2026",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1616518": {
+      "title": "L'Orgue de St-Maurice, le deuxi\u00e8me souffle",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1615882": {
+      "title": "Im Bann der Quarzkristalle",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1615878": {
+      "title": "The Making of a Farmer",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1607082": {
+      "title": "Mudlarking",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1601862": {
+      "title": "H\u00e4tten wir doch die Aida genommen",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1596092": {
+      "title": "Megadeth: Behind the Mask",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1593924": {
+      "title": "Pemuja",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1581153": {
+      "title": "A rebeli\u00e3o dos jangadeiros",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1576953": {
+      "title": "Sengkolo: Petaka Satu Suro",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1571393": {
+      "title": "Sebelum Dijemput Nenek",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1566001": {
+      "title": "VHS Summer Camp",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1565649": {
+      "title": "A Voyeurs Body",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1563032": {
+      "title": "Nothing Remains Nothing Disappears",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1551507": {
+      "title": "The Wedding",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1522383": {
+      "title": "The Huntresses",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1518998": {
+      "title": "Well, Mom!",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1507580": {
+      "title": "National Theatre Live: Hamlet",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1494498": {
+      "title": "A World Gone Mad - The War Diaries of Astrid Lindgren",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1482065": {
+      "title": "Das fast normale Leben",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1480774": {
+      "title": "We, the Wolfs",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1439594": {
+      "title": "Chatha Pacha: The Ring of Rowdies",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1423777": {
+      "title": "The Eternity Man",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1397055": {
+      "title": "Love In Separate Beds",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1353645": {
+      "title": "Linn Wyler",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1254594": {
+      "title": "Omukade",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1237418": {
+      "title": "Echoes from Borderland",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1219542": {
+      "title": "Die drei ??? \u2013 Toteninsel",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1620648": {
+      "title": "\u00c0 la hauteur",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1620573": {
+      "title": "Signal",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1475490": {
+      "title": "The Calling Witch",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
     }
   },
-  "last_update": "2026-01-21T09:31:10.735411"
+  "last_update": "2026-01-22T09:31:10.968158"
 }

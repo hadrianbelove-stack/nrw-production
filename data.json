@@ -1,7 +1,428 @@
 {
-  "generated_at": "2026-01-21T14:01:24.129979",
-  "count": 80,
+  "generated_at": "2026-01-22T10:17:17.273286",
+  "count": 88,
   "movies": [
+    {
+      "id": "580489",
+      "title": "Venom: Let There Be Carnage",
+      "digital_date": "2021-11-23",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "After finding a host body in investigative reporter Eddie Brock, the alien symbiote must face a new enemy, Carnage, the alter ego of serial killer Cletus Kasady.",
+      "genres": [
+        "Science Fiction",
+        "Action",
+        "Adventure"
+      ],
+      "runtime": 97,
+      "year": 2021,
+      "rt_score": "71%",
+      "providers": {
+        "rent": [
+          "Amazon Video",
+          "Apple TV",
+          "Google Play Movies",
+          "YouTube",
+          "Fandango At Home"
+        ],
+        "buy": [
+          "Amazon Video",
+          "Apple TV",
+          "Google Play Movies",
+          "YouTube",
+          "Fandango At Home"
+        ],
+        "streaming": [
+          "Starz Apple TV Channel",
+          "Starz Roku Premium Channel",
+          "Starz",
+          "Starz Amazon Channel"
+        ]
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Venom:_Let_There_Be_Carnage",
+        "trailer": "https://www.youtube.com/watch?v=GVwq2HlKYpE",
+        "rt": "https://www.rottentomatoes.com/m/venom_let_there_be_carnage"
+      },
+      "watch_links": {
+        "streaming": {
+          "service": "Apple TV",
+          "link": "https://tv.apple.com"
+        },
+        "vod": {
+          "service": "Amazon",
+          "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.367951ca-7f19-4a9d-a074-73fe97e61678&tag=nrw04-20"
+        }
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-01-22T10:15:40.485996",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/pzKsRuKLFmYrW5Q0q8E8G78Tcgo.jpg",
+      "studio": "Columbia Pictures",
+      "country": "United States of America",
+      "crew": {
+        "director": "Andy Serkis",
+        "cast": [
+          "Tom Hardy",
+          "Woody Harrelson"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "tmdb_type4"
+    },
+    {
+      "id": "1361436",
+      "title": "Opportunity",
+      "digital_date": "2026-01-22",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "A 30-something man living in his van, desperate to buy a home, gets pulled back into a life of crime by his best friend and must confront Mormon gangsters while struggling with the cost of pursuing the American dream.",
+      "genres": [
+        "Crime",
+        "Comedy",
+        "Drama"
+      ],
+      "runtime": 96,
+      "year": 2026,
+      "rt_score": "48%",
+      "providers": {
+        "rent": [
+          "YouTube"
+        ],
+        "buy": [
+          "YouTube"
+        ],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Opportunity_(film)",
+        "trailer": "https://www.youtube.com/watch?v=oaYYVo5Pf1s",
+        "rt": "https://www.rottentomatoes.com/m/opportunity_knocks"
+      },
+      "watch_links": {
+        "vod": {
+          "service": "YouTube",
+          "link": null
+        }
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-01-22T10:15:12.377389",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/t9vozY5ArPGBpTVOMq5LFFbxLRY.jpg",
+      "studio": "Morris Hill Productions",
+      "country": null,
+      "crew": {
+        "director": "Rusty Rehl",
+        "cast": [
+          "Jon Waters",
+          "Quinn Aikele"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection"
+    },
+    {
+      "id": "840464",
+      "title": "Greenland 2: Migration",
+      "digital_date": "2026-01-27",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Having found the safety of the Greenland bunker after the comet Clarke decimated the Earth, the Garrity family must now risk everything to embark on a perilous journey across the wasteland of Europe to find a new home.",
+      "genres": [
+        "Action",
+        "Adventure",
+        "Thriller",
+        "Science Fiction"
+      ],
+      "runtime": 98,
+      "year": 2026,
+      "rt_score": "61%",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Greenland_2:_Migration",
+        "trailer": "https://www.youtube.com/watch?v=hiD3zk0ZRFg",
+        "rt": "https://www.rottentomatoes.com/m/greenland_2_migration"
+      },
+      "watch_links": {
+        "vod": {
+          "service": "Amazon",
+          "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.56923a56-05a6-4ef9-a03d-d487b3daeee0&tag=nrw04-20"
+        }
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-01-22T10:14:14.248545",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/z2tqCJLsw6uEJ8nJV8BsQXGa3dr.jpg",
+      "studio": "Lionsgate",
+      "country": "United Kingdom",
+      "crew": {
+        "director": "Ric Roman Waugh",
+        "cast": [
+          "Gerard Butler",
+          "Morena Baccarin"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "tmdb_type4"
+    },
+    {
+      "id": "1174240",
+      "title": "Vampire Zombies...from Space!",
+      "digital_date": "2026-01-22",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "From the depths of space, Dracula has devised his most dastardly plan yet; turning the residents of the small town of Marlow into his personal army of vampire zombies! A motley crew consisting of a grizzled detective, a rookie cop, a chain-smoking greaser, and a determined young woman band together to save the world from \u2014 (see title).",
+      "genres": [
+        "Comedy",
+        "Horror",
+        "Science Fiction"
+      ],
+      "runtime": 98,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "Amazon Video",
+          "YouTube"
+        ],
+        "buy": [
+          "Amazon Video",
+          "YouTube"
+        ],
+        "streaming": []
+      },
+      "links": {
+        "trailer": "https://www.youtube.com/watch?v=GQGproMEVLo",
+        "rt": "https://www.rottentomatoes.com/m/vampire_zombies_from_space"
+      },
+      "watch_links": {
+        "vod": {
+          "service": "Amazon",
+          "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.35c3c3e0-c76a-4215-b0d3-1ed240cffb72&tag=nrw04-20"
+        }
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-01-22T10:10:07.702624",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/g7uQT3jpdCaxcK9jn3cJY1Tfryq.jpg",
+      "studio": "The Dot Film Company",
+      "country": "Canada",
+      "crew": {
+        "director": "Michael Stasko",
+        "cast": [
+          "Rashaun Baldeo",
+          "Jessica Antovski"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection"
+    },
+    {
+      "id": "1531058",
+      "title": "Others",
+      "digital_date": "2026-01-22",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "A detective investigates alarming health issues in IVF babies, revealing a dark plot involving illegal steroids, mystery donors, and corrupt fertility clinics - all orchestrated by someone exploiting people's desire for children.",
+      "genres": [
+        "Action",
+        "Thriller"
+      ],
+      "runtime": 132,
+      "year": 2025,
+      "rt_score": "96%",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Others_(film)",
+        "trailer": "https://www.youtube.com/watch?v=ikQWID749hI",
+        "rt": "https://www.rottentomatoes.com/m/the_lives_of_others"
+      },
+      "watch_links": {
+        "vod": {
+          "service": "Amazon",
+          "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.f541d652-f331-48da-aab7-ba7219b80646&tag=nrw04-20"
+        }
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-01-22T09:51:46.541754",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/2rdDxephzH5bpp3Z5aKf55evRbA.jpg",
+      "studio": null,
+      "country": "India",
+      "crew": {
+        "director": "Abin hariharan",
+        "cast": [
+          "Aditya madhavan",
+          "Gouri G Kishan"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection"
+    },
+    {
+      "id": "1327376",
+      "title": "Gary",
+      "digital_date": "2024-08-29",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Follow the extraordinary story of Gary Coleman's rise to international fame as the child star of Diff'rent Strokes; his struggles with fame; and the controversy surrounding his tragic death at the age of 42. For the first time, viewers will get insight into Coleman's private world through exclusive interviews with his fellow actors, industry insiders and his estranged ex-wife and parents.",
+      "genres": [
+        "Documentary"
+      ],
+      "runtime": 92,
+      "year": 2024,
+      "rt_score": "90%",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Peacock Premium Plus"
+        ]
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Gary_(film)",
+        "trailer": "https://www.youtube.com/watch?v=mjk3vaXbjAM",
+        "rt": "https://www.rottentomatoes.com/m/gary"
+      },
+      "watch_links": {
+        "streaming": {
+          "service": "Peacock",
+          "link": "https://www.peacocktv.com/watch/asset/tv/gary/d6e33a27-828c-3f1d-8507-3a9e918551f6"
+        }
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-01-22T09:46:42.680336",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/fETDit8YEvmNHmH8aIYDTQaS0E5.jpg",
+      "studio": "RAW",
+      "country": "United Kingdom",
+      "crew": {
+        "director": "Robin Dashwood",
+        "cast": [
+          "Gary Coleman",
+          "Todd Bridges"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "tmdb_type4"
+    },
+    {
+      "id": "1360170",
+      "title": "Maria, I'm Dying!",
+      "digital_date": "2026-01-22",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "\u201cMaria, I'm dying!\u201d is a comedy about a hypochondriac man, the only being in the world capable of even terminal colds, and his wife who has to put up with it until he decides to do something about it. The fear of death has never been so fun.",
+      "genres": [
+        "Comedy"
+      ],
+      "runtime": 96,
+      "year": 2024,
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "VIX "
+        ]
+      },
+      "links": {
+        "trailer": "https://www.youtube.com/watch?v=AVmY401XtDA",
+        "rt": "https://www.rottentomatoes.com/m/hold_my_hand_im_dying"
+      },
+      "watch_links": {
+        "streaming": {
+          "service": "VIX ",
+          "link": "https://vix.com/es-es/detail/video-4603912"
+        }
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-01-22T09:45:09.382613",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/u0rr4qLKx0WuKVOwV6mXBsi8l56.jpg",
+      "studio": "Videocine",
+      "country": "Mexico",
+      "crew": {
+        "director": "Gabriela Sobarzo",
+        "cast": [
+          "Natalia T\u00e9llez",
+          "Ricardo Fastlicht"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection"
+    },
+    {
+      "id": "1430971",
+      "title": "The Track",
+      "digital_date": "2026-01-22",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "In Sarajevo, three teenage boys train with their coach on a luge track left over from the 1984 Winter Games, now bullet-riddled, covered in graffiti, and swarmed by tourists. Three decades after the war in Bosnia and Herzegovina, Mirza, Zlatan, and Hamza are the next generation of athletes in a country facing an uncertain future. The tensions of the past still loom large in these young Muslims\u2019 lives, and their Olympic dreams are stunted by a lack of state support despite the efforts of their dedicated coach. Director Ryan Sidhoo takes a longitudinal approach in his directorial debut, intimately capturing the boys\u2019 journey as they reckon with growing up under the shadow of the past. A deeply affecting coming-of-age underdog story, The Track is an ode to the power of hope, friendship, and chasing your dreams against all odds.",
+      "genres": [
+        "Documentary"
+      ],
+      "runtime": 91,
+      "year": 2025,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/The_Track_(2025_film)",
+        "trailer": "https://www.youtube.com/watch?v=UXzYbumBu_U",
+        "rt": "https://www.rottentomatoes.com/m/the_track_2025"
+      },
+      "watch_links": {
+        "vod": {
+          "service": "Amazon",
+          "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.c0075187-1da5-4e76-898e-bc9730cf923f&tag=nrw04-20"
+        }
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-01-22T09:42:08.536679",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/lgMLhAYOuDqzw5xb5AbG3zgsWH5.jpg",
+      "studio": null,
+      "country": "Canada",
+      "crew": {
+        "director": "Ryan Sidhoo",
+        "cast": [
+          "Mirza Nikolajev",
+          "Zlatan Jaki\u0107"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection"
+    },
     {
       "id": "1443940",
       "title": "Truth & Treason",
@@ -3930,8 +4351,9 @@
       }
     }
   ],
-  "featured": [
-    "1385773",
-    "1192906"
-  ]
+  "_metadata": {
+    "last_discovery_write": "2026-01-22T10:15:40.486000",
+    "discovery_count": 86,
+    "schema_version": "2.0"
+  }
 }

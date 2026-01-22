@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-01-21T10:15:10.961328",
-  "duration_seconds": 2642.907603,
+  "timestamp": "2026-01-22T10:17:17.543945",
+  "duration_seconds": 2773.539574,
   "overall_success": true,
   "failure_count": 0,
   "warning_count": 0,
@@ -8,23 +8,23 @@
     {
       "name": "Intake new premieres from TMDB",
       "success": true,
-      "duration_seconds": 2.80333,
+      "duration_seconds": 7.0864,
       "error": null,
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-01-19 to 2026-01-21 (incremental mode, 24 intaked)\n\u2705 Intake complete: 24 new movies added\n\ud83d\udccb Phase complete\n"
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-01-20 to 2026-01-22 (incremental mode, 34 intaked)\n\u2705 Intake complete: 34 new movies added\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 2583.019212,
+      "duration_seconds": 2677.108182,
       "error": null,
-      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 12820 total movies\n\ud83d\udd0d Raw tracking filter: 11698 movies\n\ud83d\udd0d Assigned tracking_movies list: 11698\n\ud83d\udd0d Found 11698 movies in tracking status\n  Priority queue (last 180 days): 1650 movies\n  Older movies: 10048 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 11698 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/11698 (0.9%) | 0 found | 0m elapsed | ~41m remaining\n  \ud83d\udcbe Progress saved (b"
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 12854 total movies\n\ud83d\udd0d Raw tracking filter: 11729 movies\n\ud83d\udd0d Assigned tracking_movies list: 11729\n\ud83d\udd0d Found 11729 movies in tracking status\n  Priority queue (last 180 days): 1637 movies\n  Older movies: 10092 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 11729 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/11729 (0.9%) | 0 found | 0m elapsed | ~43m remaining\n  \ud83d\udcbe Progress saved (b"
     },
     {
       "name": "Enrich newly available movies with metadata",
       "success": true,
-      "duration_seconds": 56.985717,
+      "duration_seconds": 89.247679,
       "error": null,
-      "output_preview": "[AgentLinkScraper] Initialized with Playwright, cache_file=cache/agent_links_cache.json\n[AgentLinkScraper] Cache loaded: 0 entries\n[AgentLinkScraper] Screenshots: enabled\n[AgentLinkScraper] Supported platforms: ['Netflix', 'Disney+', 'Disney Plus', 'HBO Max', 'Max', 'Hulu']\n\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 3 movies to enrich\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to"
+      "output_preview": "[AgentLinkScraper] Initialized with Playwright, cache_file=cache/agent_links_cache.json\n[AgentLinkScraper] Cache loaded: 0 entries\n[AgentLinkScraper] Screenshots: enabled\n[AgentLinkScraper] Supported platforms: ['Netflix', 'Disney+', 'Disney Plus', 'HBO Max', 'Max', 'Hulu']\n\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 8 movies to enrich\n[YouTubeTrailerScraper] Initializing browser via shared manager...\n[PlaywrightManager] Initializing shared Playwrig"
     }
   ],
   "health_issues": [],
@@ -35,12 +35,12 @@
   "failures": [],
   "warnings": [],
   "data_quality": {
-    "total": 12820,
-    "tracking": 11695,
-    "available": 1125,
-    "data_movies": 85,
-    "movies_with_links": 68,
-    "movies_with_rt": 1,
+    "total": 12854,
+    "tracking": 11721,
+    "available": 1133,
+    "data_movies": 88,
+    "movies_with_links": 69,
+    "movies_with_rt": 6,
     "movies_with_wikipedia": 0,
     "movies_with_trailers": 0
   },
