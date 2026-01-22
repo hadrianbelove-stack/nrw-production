@@ -683,122 +683,255 @@ function showAddMovieModal() {
     const modal = document.getElementById('add-movie-modal');
     modal.style.display = 'flex';
 
-    // Clear form fields
-    document.getElementById('add-tmdb-id').value = '';
-    document.getElementById('add-title').value = '';
-    document.getElementById('add-digital-date').value = '';
-    document.getElementById('add-synopsis').value = '';
-    document.getElementById('add-poster-url').value = '';
-    document.getElementById('add-movie-status').textContent = '';
+    // Clear search field and results
+    document.getElementById('add-movie-search').value = '';
+    document.getElementById('tmdb-search-status').textContent = '';
+    document.getElementById('tmdb-search-results').innerHTML = '';
 
-    // Focus TMDB ID field
+    // Focus search field
     setTimeout(() => {
-        document.getElementById('add-tmdb-id').focus();
+        document.getElementById('add-movie-search').focus();
     }, 100);
 }
 
 function hideAddMovieModal() {
     const modal = document.getElementById('add-movie-modal');
     modal.style.display = 'none';
+
+    // Reset to step 1
+    document.getElementById('add-movie-step1').style.display = 'block';
+    document.getElementById('add-movie-step2').style.display = 'none';
+    selectedMovieData = null;
 }
 
-function addMovie() {
-    const tmdbId = document.getElementById('add-tmdb-id').value.trim();
-    const title = document.getElementById('add-title').value.trim();
-    const digitalDate = document.getElementById('add-digital-date').value.trim();
-    const synopsis = document.getElementById('add-synopsis').value.trim();
-    const posterUrl = document.getElementById('add-poster-url').value.trim();
+function searchTMDB() {
+    const query = document.getElementById('add-movie-search').value.trim();
+    const status = document.getElementById('tmdb-search-status');
+    const results = document.getElementById('tmdb-search-results');
+    const btn = document.getElementById('search-tmdb-btn');
 
-    const btn = document.getElementById('add-movie-btn');
-    const status = document.getElementById('add-movie-status');
-
-    // Validation
-    if (!tmdbId) {
-        status.textContent = 'TMDB ID is required';
+    if (!query) {
+        status.textContent = 'Enter a movie title to search';
         status.style.color = '#dc3545';
         return;
     }
 
-    if (!title) {
-        status.textContent = 'Movie title is required';
+    if (query.length < 2) {
+        status.textContent = 'Enter at least 2 characters';
         status.style.color = '#dc3545';
         return;
     }
 
-    // Validate TMDB ID is numeric
-    if (!/^\d+$/.test(tmdbId)) {
-        status.textContent = 'TMDB ID must be numeric';
-        status.style.color = '#dc3545';
-        return;
-    }
-
-    // Disable button
-    const originalText = btn.textContent;
+    // Show loading state
     btn.disabled = true;
-    btn.textContent = '⏳ Adding...';
-    status.textContent = 'Adding movie...';
+    btn.textContent = '⏳';
+    status.textContent = 'Searching...';
     status.style.color = '#ffc107';
+    results.innerHTML = '';
 
-    // Build request data
-    const requestData = {
-        tmdb_id: tmdbId,
-        title: title
-    };
+    fetch(`/search-tmdb?q=${encodeURIComponent(query)}`)
+        .then(response => response.json())
+        .then(data => {
+            btn.disabled = false;
+            btn.textContent = '🔍 Search';
 
-    if (digitalDate) {
-        requestData.digital_date = digitalDate;
+            if (data.success) {
+                if (data.results.length === 0) {
+                    status.textContent = 'No movies found. Try a different search.';
+                    status.style.color = '#ffc107';
+                    return;
+                }
+
+                status.textContent = `Found ${data.results.length} result${data.results.length > 1 ? 's' : ''} - click to add:`;
+                status.style.color = '#28a745';
+
+                // Render results
+                results.innerHTML = data.results.map(movie => `
+                    <div class="tmdb-result" onclick="addMovieFromSearch(${movie.id}, '${movie.title.replace(/'/g, "\\'")}', '${movie.year || ''}', '${movie.poster_url || ''}')">
+                        <div class="tmdb-result-poster">
+                            ${movie.poster_url
+                                ? `<img src="${movie.poster_url}" alt="${movie.title}">`
+                                : '<div class="no-poster-small">No Poster</div>'}
+                        </div>
+                        <div class="tmdb-result-info">
+                            <div class="tmdb-result-title">${movie.title}</div>
+                            <div class="tmdb-result-year">${movie.year || 'Year unknown'}</div>
+                            ${movie.overview ? `<div class="tmdb-result-overview">${movie.overview}</div>` : ''}
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                status.textContent = data.error || 'Search failed';
+                status.style.color = '#dc3545';
+            }
+        })
+        .catch(error => {
+            btn.disabled = false;
+            btn.textContent = '🔍 Search';
+            status.textContent = 'Error: ' + error;
+            status.style.color = '#dc3545';
+        });
+}
+
+// Store selected movie info for step 2
+let selectedMovieData = null;
+
+// Smart URL-to-service detection
+function detectServiceFromUrl() {
+    const url = document.getElementById('add-movie-watch-url').value.trim();
+    const detected = document.getElementById('detected-service');
+
+    if (!url) {
+        detected.textContent = '';
+        return null;
     }
 
-    if (synopsis) {
-        requestData.synopsis = synopsis;
+    // Map of URL patterns to service names
+    const servicePatterns = [
+        { pattern: /vimeo\.com/i, service: 'VIMEO', type: 'vod' },
+        { pattern: /amazon\.(com|co\.|ca|de|fr|it|es)/i, service: 'AMAZON', type: 'vod' },
+        { pattern: /itunes\.apple\.com|tv\.apple\.com/i, service: 'APPLE', type: 'vod' },
+        { pattern: /play\.google\.com|youtube\.com\/watch/i, service: 'GOOGLE', type: 'vod' },
+        { pattern: /vudu\.com/i, service: 'VUDU', type: 'vod' },
+        { pattern: /fandangonow\.com/i, service: 'FANDANGO', type: 'vod' },
+        { pattern: /microsoft\.com|xbox\.com/i, service: 'MICROSOFT', type: 'vod' },
+        { pattern: /netflix\.com/i, service: 'NETFLIX', type: 'streaming' },
+        { pattern: /hulu\.com/i, service: 'HULU', type: 'streaming' },
+        { pattern: /disneyplus\.com|disney\+/i, service: 'DISNEY+', type: 'streaming' },
+        { pattern: /max\.com|hbomax\.com/i, service: 'MAX', type: 'streaming' },
+        { pattern: /peacock/i, service: 'PEACOCK', type: 'streaming' },
+        { pattern: /paramountplus\.com/i, service: 'PARAMOUNT+', type: 'streaming' },
+        { pattern: /mubi\.com/i, service: 'MUBI', type: 'streaming' },
+        { pattern: /criterion/i, service: 'CRITERION', type: 'streaming' },
+        { pattern: /kanopy\.com/i, service: 'KANOPY', type: 'streaming' },
+        { pattern: /tubi/i, service: 'TUBI', type: 'streaming' },
+        { pattern: /pluto/i, service: 'PLUTO', type: 'streaming' },
+        { pattern: /shudder/i, service: 'SHUDDER', type: 'streaming' },
+    ];
+
+    for (const { pattern, service, type } of servicePatterns) {
+        if (pattern.test(url)) {
+            detected.innerHTML = `Detected: <strong>${service}</strong> (${type === 'streaming' ? 'Streaming' : 'Rent/Buy'})`;
+            detected.style.color = '#28a745';
+            return { service, type, url };
+        }
     }
 
+    // Unknown service - try to extract domain name
+    try {
+        const domain = new URL(url).hostname.replace('www.', '').split('.')[0].toUpperCase();
+        detected.innerHTML = `Service: <strong>${domain}</strong> (custom)`;
+        detected.style.color = '#ffc107';
+        return { service: domain, type: 'vod', url };
+    } catch {
+        detected.textContent = 'Enter a valid URL';
+        detected.style.color = '#dc3545';
+        return null;
+    }
+}
+
+function addMovieFromSearch(tmdbId, title, year, posterUrl) {
+    // Store selected movie data
+    selectedMovieData = { tmdbId, title, year, posterUrl };
+
+    // Hide step 1, show step 2
+    document.getElementById('add-movie-step1').style.display = 'none';
+    document.getElementById('add-movie-step2').style.display = 'block';
+
+    // Populate selected movie info
+    document.getElementById('selected-movie-title').textContent = title;
+    document.getElementById('selected-movie-year').textContent = year || 'Year unknown';
+    const posterImg = document.getElementById('selected-movie-poster');
     if (posterUrl) {
-        requestData.poster_url = posterUrl;
+        posterImg.src = posterUrl;
+        posterImg.style.display = 'block';
+    } else {
+        posterImg.style.display = 'none';
     }
 
-    // Send to server
+    // Set default date to today
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('add-movie-date').value = today;
+
+    // Clear watch link field
+    document.getElementById('add-movie-watch-url').value = '';
+    document.getElementById('detected-service').textContent = '';
+    document.getElementById('add-movie-status').textContent = '';
+}
+
+function goBackToSearch() {
+    document.getElementById('add-movie-step2').style.display = 'none';
+    document.getElementById('add-movie-step1').style.display = 'block';
+    selectedMovieData = null;
+}
+
+function confirmAddMovie() {
+    if (!selectedMovieData) return;
+
+    const { tmdbId, title } = selectedMovieData;
+    const status = document.getElementById('add-movie-status');
+    const btn = document.getElementById('confirm-add-btn');
+
+    // Get watch link info
+    const watchUrl = document.getElementById('add-movie-watch-url').value.trim();
+    const serviceInfo = watchUrl ? detectServiceFromUrl() : null;
+
+    // Show adding state
+    status.textContent = `Adding "${title}"...`;
+    status.style.color = '#ffc107';
+    btn.disabled = true;
+    btn.textContent = 'Adding...';
+
+    // Build request body
+    const requestBody = { tmdb_id: tmdbId };
+
+    // Add release date if specified
+    const releaseDate = document.getElementById('add-movie-date').value;
+    if (releaseDate) {
+        requestBody.digital_date = releaseDate;
+    }
+
+    if (serviceInfo) {
+        requestBody.watch_link = {
+            service: serviceInfo.service,
+            type: serviceInfo.type,
+            url: serviceInfo.url
+        };
+    }
+
     fetch('/add-movie', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(requestData)
+        body: JSON.stringify(requestBody)
     })
     .then(response => response.json())
     .then(data => {
+        btn.disabled = false;
+        btn.textContent = 'Add Movie';
+
         if (data.success) {
-            status.textContent = '✅ ' + (data.message || 'Movie added successfully!');
+            status.textContent = `"${title}" added!`;
             status.style.color = '#28a745';
 
-            // Increment pending changes counter
             incrementPendingCount();
-
-            // Show success and close modal after delay
-            showSuccess(data.message || 'Movie added successfully!');
+            showSuccess(`"${title}" added successfully!`);
 
             setTimeout(() => {
                 hideAddMovieModal();
-
-                // Reload page to show new movie
                 window.location.reload();
-            }, 2000);
+            }, 1500);
         } else {
-            status.textContent = '❌ ' + (data.error || 'Failed to add movie');
+            status.textContent = data.error || 'Failed to add movie';
             status.style.color = '#dc3545';
-
-            // Re-enable button
-            btn.disabled = false;
-            btn.textContent = originalText;
         }
     })
     .catch(error => {
-        status.textContent = '❌ Error: ' + error;
-        status.style.color = '#dc3545';
-
-        // Re-enable button
         btn.disabled = false;
-        btn.textContent = originalText;
+        btn.textContent = 'Add Movie';
+        status.textContent = 'Error: ' + error;
+        status.style.color = '#dc3545';
     });
 }
 

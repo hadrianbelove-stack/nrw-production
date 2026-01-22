@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The New Release Wall - Admin Panel</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}?v=8">
 </head>
 <body>
     <div class="header">
@@ -144,47 +144,74 @@
 
         <!-- Add Movie Modal -->
         <div id="add-movie-modal" class="modal" style="display: none;">
-            <div class="modal-content">
+            <div class="modal-content" style="max-width: 500px;">
                 <div class="modal-header">
-                    <h3>➕ Add New Movie</h3>
+                    <h3>➕ Add Movie</h3>
                     <button class="close-btn" onclick="hideAddMovieModal()">✕</button>
                 </div>
                 <div class="modal-body">
-                    <div class="form-field">
-                        <label class="form-label">TMDB ID (required):</label>
-                        <input type="text" id="add-tmdb-id" placeholder="e.g., 12345" class="form-input">
-                        <div class="field-hint">Find movies at <a href="https://www.themoviedb.org" target="_blank">themoviedb.org</a></div>
+                    <!-- Step 1: Search -->
+                    <div id="add-movie-step1">
+                        <div class="form-field">
+                            <label class="form-label">Search for a movie:</label>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <input type="text"
+                                       id="add-movie-search"
+                                       placeholder="Type movie title..."
+                                       class="form-input"
+                                       style="flex: 1;"
+                                       onkeypress="if(event.key==='Enter') searchTMDB()">
+                                <button class="action-btn info" onclick="searchTMDB()" id="search-tmdb-btn">
+                                    🔍 Search
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="tmdb-search-status" class="status-message" style="margin-bottom: 0.5rem;"></div>
+
+                        <div id="tmdb-search-results" style="max-height: 400px; overflow-y: auto;">
+                            <!-- Search results will appear here -->
+                        </div>
                     </div>
 
-                    <div class="form-field">
-                        <label class="form-label">Title (required):</label>
-                        <input type="text" id="add-title" placeholder="Movie title" class="form-input">
-                    </div>
+                    <!-- Step 2: Watch Link (shown after movie selected) -->
+                    <div id="add-movie-step2" style="display: none;">
+                        <div id="selected-movie-info" style="display: flex; gap: 1rem; margin-bottom: 1rem; padding: 0.75rem; background: var(--bg-color); border-radius: 8px;">
+                            <img id="selected-movie-poster" src="" alt="" style="width: 60px; border-radius: 4px;">
+                            <div>
+                                <div id="selected-movie-title" style="font-weight: 600;"></div>
+                                <div id="selected-movie-year" style="font-size: 0.85rem; color: var(--text-secondary);"></div>
+                            </div>
+                        </div>
 
-                    <div class="form-field">
-                        <label class="form-label">Digital Release Date (optional):</label>
-                        <input type="date" id="add-digital-date" class="form-input">
-                    </div>
+                        <div class="form-field">
+                            <label class="form-label">Release Date:</label>
+                            <input type="date"
+                                   id="add-movie-date"
+                                   class="form-input"
+                                   style="width: auto;">
+                            <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">Defaults to today if not set</div>
+                        </div>
 
-                    <div class="form-field">
-                        <label class="form-label">Synopsis (optional):</label>
-                        <textarea id="add-synopsis" placeholder="Movie description" rows="3" class="form-input"></textarea>
-                    </div>
+                        <div class="form-field">
+                            <label class="form-label">Watch Link (where can people rent/buy this?):</label>
+                            <input type="text"
+                                   id="add-movie-watch-url"
+                                   placeholder="https://vimeo.com/ondemand/..."
+                                   class="form-input"
+                                   oninput="detectServiceFromUrl()">
+                            <div id="detected-service" style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-secondary);"></div>
+                        </div>
 
-                    <div class="form-field">
-                        <label class="form-label">Poster URL (optional):</label>
-                        <input type="url" id="add-poster-url" placeholder="https://image.tmdb.org/t/p/w500/..." class="form-input">
-                    </div>
+                        <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                            <button class="action-btn" onclick="goBackToSearch()">← Back</button>
+                            <button class="action-btn success" onclick="confirmAddMovie()" id="confirm-add-btn" style="flex: 1;">
+                                Add Movie
+                            </button>
+                        </div>
 
-                    <div id="add-movie-status" class="status-message"></div>
-                </div>
-                <div class="modal-footer">
-                    <button class="action-btn success" onclick="addMovie()" id="add-movie-btn">
-                        ➕ Add Movie
-                    </button>
-                    <button class="action-btn secondary" onclick="hideAddMovieModal()">
-                        Cancel
-                    </button>
+                        <div id="add-movie-status" class="status-message" style="margin-top: 0.5rem;"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -517,6 +544,6 @@
 
     <div class="success-msg" id="success-msg">Changes saved!</div>
 
-    <script src="{{ url_for('static', filename='js/admin.js') }}?v=5"></script>
+    <script src="{{ url_for('static', filename='js/admin.js') }}?v=8"></script>
 </body>
 </html>
