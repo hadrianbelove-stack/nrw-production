@@ -201,15 +201,37 @@ class NewsletterDataQuery:
             self.stats['missing_fields'] += 1
 
         # Extract watch links
+        # NEW: Handle both array format (new) and single-object format (legacy)
         watch_links = movie.get('watch_links', {})
         if isinstance(watch_links, dict):
             streaming = watch_links.get('streaming', {})
             vod = watch_links.get('vod', {})
 
-            metadata['streaming_service'] = streaming.get('service') if isinstance(streaming, dict) else None
-            metadata['streaming_link'] = streaming.get('link') if isinstance(streaming, dict) else None
-            metadata['vod_service'] = vod.get('service') if isinstance(vod, dict) else None
-            metadata['vod_link'] = vod.get('link') if isinstance(vod, dict) else None
+            # Handle array format for streaming
+            if isinstance(streaming, list) and len(streaming) > 0:
+                first_streaming = streaming[0]
+                metadata['streaming_service'] = first_streaming.get('service') if isinstance(first_streaming, dict) else None
+                metadata['streaming_link'] = first_streaming.get('link') if isinstance(first_streaming, dict) else None
+            # Handle single dict format (backward compatibility)
+            elif isinstance(streaming, dict):
+                metadata['streaming_service'] = streaming.get('service')
+                metadata['streaming_link'] = streaming.get('link')
+            else:
+                metadata['streaming_service'] = None
+                metadata['streaming_link'] = None
+
+            # Handle array format for vod
+            if isinstance(vod, list) and len(vod) > 0:
+                first_vod = vod[0]
+                metadata['vod_service'] = first_vod.get('service') if isinstance(first_vod, dict) else None
+                metadata['vod_link'] = first_vod.get('link') if isinstance(first_vod, dict) else None
+            # Handle single dict format (backward compatibility)
+            elif isinstance(vod, dict):
+                metadata['vod_service'] = vod.get('service')
+                metadata['vod_link'] = vod.get('link')
+            else:
+                metadata['vod_service'] = None
+                metadata['vod_link'] = None
         else:
             metadata['streaming_service'] = None
             metadata['streaming_link'] = None
@@ -218,6 +240,7 @@ class NewsletterDataQuery:
 
         # Transform watch_links into template-compatible streaming_services and vod_services lists
         # Each list contains dicts with 'name' and 'url' keys
+        # NEW: Handle both array format (new) and single-object format (legacy)
         metadata['streaming_services'] = []
         metadata['vod_services'] = []
 
@@ -225,13 +248,31 @@ class NewsletterDataQuery:
             streaming = watch_links.get('streaming', {})
             vod = watch_links.get('vod', {})
 
-            if isinstance(streaming, dict) and streaming.get('service') and streaming.get('link'):
+            # Handle array format for streaming (NEW)
+            if isinstance(streaming, list):
+                for item in streaming:
+                    if isinstance(item, dict) and item.get('service') and item.get('link'):
+                        metadata['streaming_services'].append({
+                            'name': item['service'],
+                            'url': item['link']
+                        })
+            # Handle single dict format (backward compatibility)
+            elif isinstance(streaming, dict) and streaming.get('service') and streaming.get('link'):
                 metadata['streaming_services'].append({
                     'name': streaming['service'],
                     'url': streaming['link']
                 })
 
-            if isinstance(vod, dict) and vod.get('service') and vod.get('link'):
+            # Handle array format for vod (NEW)
+            if isinstance(vod, list):
+                for item in vod:
+                    if isinstance(item, dict) and item.get('service') and item.get('link'):
+                        metadata['vod_services'].append({
+                            'name': item['service'],
+                            'url': item['link']
+                        })
+            # Handle single dict format (backward compatibility)
+            elif isinstance(vod, dict) and vod.get('service') and vod.get('link'):
                 metadata['vod_services'].append({
                     'name': vod['service'],
                     'url': vod['link']
@@ -355,13 +396,32 @@ class NewsletterDataQuery:
         # Also group by specific service
         by_service: Dict[str, List[Dict]] = {}
 
+        def has_valid_links(category_data):
+            """Check if category data has any valid links (handles both array and dict formats)."""
+            if isinstance(category_data, list):
+                return any(item.get('link') for item in category_data if isinstance(item, dict))
+            elif isinstance(category_data, dict):
+                return bool(category_data.get('link'))
+            return False
+
+        def get_services(category_data):
+            """Get list of service names from category data (handles both array and dict formats)."""
+            services = []
+            if isinstance(category_data, list):
+                for item in category_data:
+                    if isinstance(item, dict) and item.get('link'):
+                        services.append(item.get('service', 'Unknown'))
+            elif isinstance(category_data, dict) and category_data.get('link'):
+                services.append(category_data.get('service', 'Unknown'))
+            return services
+
         for movie in movies:
             watch_links = movie.get('watch_links', {})
             streaming = watch_links.get('streaming', {}) if isinstance(watch_links, dict) else {}
             vod = watch_links.get('vod', {}) if isinstance(watch_links, dict) else {}
 
-            has_streaming = bool(streaming.get('link') if isinstance(streaming, dict) else False)
-            has_vod = bool(vod.get('link') if isinstance(vod, dict) else False)
+            has_streaming = has_valid_links(streaming)
+            has_vod = has_valid_links(vod)
 
             # Categorize by availability
             if has_streaming and has_vod:
@@ -374,14 +434,12 @@ class NewsletterDataQuery:
                 groups['none'].append(movie)
 
             # Group by specific service names
-            if has_streaming:
-                service = streaming.get('service', 'Unknown Streaming')
+            for service in get_services(streaming):
                 if service not in by_service:
                     by_service[service] = []
                 by_service[service].append(movie)
 
-            if has_vod:
-                service = vod.get('service', 'Unknown VOD')
+            for service in get_services(vod):
                 if service not in by_service:
                     by_service[service] = []
                 by_service[service].append(movie)

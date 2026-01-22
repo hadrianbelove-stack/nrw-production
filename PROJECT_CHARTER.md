@@ -225,6 +225,25 @@ NRW tracks when theatrical movies become available for digital streaming/rental.
 #### Archives
 - `diary/` - Session snapshots (immutable), `museum_legacy/` - Deprecated code
 
+#### Native Apps
+- `NRWApp/` - React Native apps (Apple TV, iOS, Android)
+- All platforms consume `data.json` via GitHub raw URL
+- Platform-specific docs in `NRWApp/README.md` and `docs/features/NATIVE_APPS.md`
+
+## Native App Architecture
+
+### Multi-Platform Strategy
+NRW supports multiple client applications consuming the same data pipeline:
+- **Web** (`index.html`) - Primary browser interface
+- **Apple TV** (`NRWApp/`) - React Native tvOS app (implemented)
+- **iOS/Android** (planned) - React Native mobile apps
+
+### Shared Data Contract
+All platforms consume `data.json` via the schema defined in Amendment 016.
+Native apps fetch from: `https://raw.githubusercontent.com/{repo}/main/data.json`
+
+Native app development follows the same governance (this charter) and Amendment 015 (Minimal Implementation).
+
 ## Configuration Sources
 
 **Configuration priorities**: Environment variables (production) → config.yaml (development) → fail fast

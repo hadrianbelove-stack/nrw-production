@@ -30,6 +30,7 @@ For full menu details, see [docs/features/UNIFIED_LAUNCHER.md](docs/features/UNI
 
 **Additional guides:**
 - [Full workflow overview (automated + manual)](docs/NRW_FULL_WORKFLOW.md) - Complete system overview
+- [Native apps architecture](docs/features/NATIVE_APPS.md) - Apple TV, iOS, Android apps
 - [docs/features/](docs/features/) - Feature setup guides (YouTube, Substack)
 - [docs/troubleshooting/](docs/troubleshooting/) - Troubleshooting guides
 - [docs/](docs/) - Technical documentation
@@ -108,7 +109,26 @@ Trigger workflows manually in GitHub Actions tab → Select workflow → "Run wo
 - Display: `index.html` → `assets/app.js` + `data.json`
 - Admin: `admin.py` (port 5556) → manual corrections → regenerate
 
+**Multi-platform clients:**
+- Web: `index.html` consumes `data.json` directly
+- Apple TV: `NRWApp/` fetches `data.json` via GitHub raw URL
+- iOS/Android: Planned (same `NRWApp/` codebase)
+
 **For detailed architecture:** See [SYSTEM_ARCHITECTURE.md](SYSTEM_ARCHITECTURE.md)
+
+## Native Apps (NRWApp/)
+
+The Apple TV app provides a Netflix-style browsing experience for NRW on tvOS.
+
+**Quick start:**
+```bash
+cd NRWApp
+npm install && cd tvos && pod install && cd ..
+npm start        # Terminal 1: Start Metro bundler
+npm run tvos     # Terminal 2: Run on Apple TV Simulator
+```
+
+**For details:** See [NRWApp/README.md](NRWApp/README.md) and [Native Apps Architecture](docs/features/NATIVE_APPS.md)
 
 
 ## Admin Panel

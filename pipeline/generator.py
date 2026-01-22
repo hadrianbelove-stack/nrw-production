@@ -2548,9 +2548,22 @@ class DataGenerator:
         try:
             watch_links_raw = self.enrichment.get_watch_links(movie_id, title, year, movie_data.get('providers', {}), force_refresh, tracking_data=movie_data)
 
-            # Simplify provider names in watch links
+            # Simplify provider names in watch links (handle both array and dict formats)
             for category, link_obj in watch_links_raw.items():
-                if isinstance(link_obj, dict) and 'service' in link_obj:
+                # Handle array format (new)
+                if isinstance(link_obj, list):
+                    simplified_array = []
+                    for item in link_obj:
+                        if isinstance(item, dict) and 'service' in item:
+                            simplified_array.append({
+                                'service': self.simplify_provider_name(item['service']),
+                                'link': item.get('link')
+                            })
+                        else:
+                            simplified_array.append(item)
+                    result['watch_links'][category] = simplified_array
+                # Handle dict format (legacy backward compatibility)
+                elif isinstance(link_obj, dict) and 'service' in link_obj:
                     simplified_service = self.simplify_provider_name(link_obj['service'])
                     result['watch_links'][category] = {
                         'service': simplified_service,
@@ -2779,10 +2792,23 @@ class DataGenerator:
         # Watch links (deep links to streaming platforms)
         watch_links_raw = self.enrichment.get_watch_links(movie_id, title, year, movie_data.get('providers', {}), force_refresh, tracking_data=movie_data)
 
-        # Simplify provider names in watch links
+        # Simplify provider names in watch links (handle both array and dict formats)
         watch_links = {}
         for category, link_obj in watch_links_raw.items():
-            if isinstance(link_obj, dict) and 'service' in link_obj:
+            # Handle array format (new)
+            if isinstance(link_obj, list):
+                simplified_array = []
+                for item in link_obj:
+                    if isinstance(item, dict) and 'service' in item:
+                        simplified_array.append({
+                            'service': self.simplify_provider_name(item['service']),
+                            'link': item.get('link')
+                        })
+                    else:
+                        simplified_array.append(item)
+                watch_links[category] = simplified_array
+            # Handle dict format (legacy backward compatibility)
+            elif isinstance(link_obj, dict) and 'service' in link_obj:
                 simplified_service = self.simplify_provider_name(link_obj['service'])
                 watch_links[category] = {
                     'service': simplified_service,

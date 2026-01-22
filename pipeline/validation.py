@@ -10,7 +10,7 @@ import os
 import json
 import re
 from datetime import datetime
-from typing import Dict, List, Optional, Union, Any, Tuple
+from typing import Dict, List, Optional, Union, Any, Tuple, Callable
 import logging
 from urllib.parse import urlparse
 
@@ -78,7 +78,13 @@ class ValidationService:
         Returns:
             Dict: Validated/cleaned watch_links with invalid entries removed
 
-        Schema:
+        Schema (NEW - array format):
+            {
+                'streaming': [{'service': str, 'link': str|None}, ...],
+                'vod': [{'service': str, 'link': str|None}, ...]
+            }
+
+        Also supports legacy single-object format for backward compatibility:
             {
                 'streaming': {'service': str, 'link': str|None},
                 'vod': {'service': str, 'link': str|None}
@@ -96,6 +102,69 @@ class ValidationService:
         had_warnings = False
         valid_categories = ['streaming', 'vod']
 
+        def validate_single_link(link_data: Dict, category: str, index: int = None) -> Optional[Dict]:
+            """Validate a single link object and return it if valid, None otherwise."""
+            nonlocal had_warnings
+            index_str = f" at index {index}" if index is not None else ""
+
+            # Structure validation: Verify it's a dict with 'service' and 'link' keys
+            if not isinstance(link_data, dict):
+                self.logger.warning(
+                    f"Invalid link data type{index_str} for '{category}' in {movie_title}, expected dict"
+                )
+                had_warnings = True
+                return None
+
+            if 'service' not in link_data or 'link' not in link_data:
+                self.logger.warning(
+                    f"Missing required keys (service/link){index_str} in '{category}' for {movie_title}"
+                )
+                had_warnings = True
+                return None
+
+            # Service validation: Verify service is non-empty string
+            if not isinstance(link_data['service'], str) or not link_data['service'].strip():
+                self.logger.warning(f"Invalid service{index_str} in '{category}' for {movie_title}")
+                had_warnings = True
+                return None
+
+            # Link validation: Verify link is either None or valid HTTP/HTTPS URL string
+            link = link_data['link']
+            if link is not None:
+                if not isinstance(link, str):
+                    self.logger.warning(
+                        f"Invalid link type{index_str} in '{category}' for {movie_title}, expected string or None"
+                    )
+                    had_warnings = True
+                    return None
+
+                # Basic URL validation
+                try:
+                    parsed = urlparse(link)
+                    if not parsed.scheme or parsed.scheme not in ['http', 'https']:
+                        self.logger.warning(f"Invalid URL scheme{index_str} in '{category}' for {movie_title}")
+                        had_warnings = True
+                        return None
+                    if not parsed.netloc:
+                        print(f"Warning: Invalid URL netloc{index_str} in '{category}' for {movie_title}")
+                        had_warnings = True
+                        return None
+                except Exception:
+                    print(f"Warning: Malformed URL{index_str} in '{category}' for {movie_title}")
+                    had_warnings = True
+                    return None
+
+                # Check for known placeholder ASINs
+                if any(asin in link for asin in PLACEHOLDER_ASINS):
+                    detected_asin = next(asin for asin in PLACEHOLDER_ASINS if asin in link)
+                    self.logger.warning(
+                        f"Detected placeholder ASIN {detected_asin}{index_str} in {category} link for {movie_title}, rejecting"
+                    )
+                    had_warnings = True
+                    return None
+
+            return link_data
+
         for category, category_data in watch_links.items():
             # Category validation: Check that all keys are in ['streaming', 'vod']
             if category not in valid_categories:
@@ -103,64 +172,27 @@ class ValidationService:
                 had_warnings = True
                 continue
 
-            # Structure validation: For each category, verify it's a dict with 'service' and 'link' keys
-            if not isinstance(category_data, dict):
+            # Handle array format (NEW)
+            if isinstance(category_data, list):
+                validated_array = []
+                for i, item in enumerate(category_data):
+                    validated_item = validate_single_link(item, category, i)
+                    if validated_item is not None:
+                        validated_array.append(validated_item)
+                if validated_array:
+                    validated_links[category] = validated_array
+
+            # Handle single dict format (legacy backward compatibility)
+            elif isinstance(category_data, dict):
+                validated_item = validate_single_link(category_data, category)
+                if validated_item is not None:
+                    validated_links[category] = validated_item
+
+            else:
                 self.logger.warning(
-                    f"Invalid category data type for '{category}' in {movie_title}, expected dict"
+                    f"Invalid category data type for '{category}' in {movie_title}, expected list or dict"
                 )
                 had_warnings = True
-                continue
-
-            if 'service' not in category_data or 'link' not in category_data:
-                self.logger.warning(
-                    f"Missing required keys (service/link) in '{category}' for {movie_title}"
-                )
-                had_warnings = True
-                continue
-
-            # Service validation: Verify service is non-empty string
-            if not isinstance(category_data['service'], str) or not category_data['service'].strip():
-                self.logger.warning(f"Invalid service in '{category}' for {movie_title}")
-                had_warnings = True
-                continue
-
-            # Link validation: Verify link is either None or valid HTTP/HTTPS URL string
-            link = category_data['link']
-            if link is not None:
-                if not isinstance(link, str):
-                    self.logger.warning(
-                        f"Invalid link type in '{category}' for {movie_title}, expected string or None"
-                    )
-                    had_warnings = True
-                    continue
-
-                # Basic URL validation
-                try:
-                    parsed = urlparse(link)
-                    if not parsed.scheme or parsed.scheme not in ['http', 'https']:
-                        self.logger.warning(f"Invalid URL scheme in '{category}' for {movie_title}")
-                        had_warnings = True
-                        continue
-                    if not parsed.netloc:
-                        print(f"Warning: Invalid URL netloc in '{category}' for {movie_title}")
-                        had_warnings = True
-                        continue
-                except Exception:
-                    print(f"Warning: Malformed URL in '{category}' for {movie_title}")
-                    had_warnings = True
-                    continue
-
-                # Check for known placeholder ASINs
-                if any(asin in link for asin in PLACEHOLDER_ASINS):
-                    detected_asin = next(asin for asin in PLACEHOLDER_ASINS if asin in link)
-                    self.logger.warning(
-                        f"Detected placeholder ASIN {detected_asin} in {category} link for {movie_title}, rejecting"
-                    )
-                    had_warnings = True
-                    continue
-
-            # If we reach here, the category data is valid
-            validated_links[category] = category_data
 
         # Update statistics
         if had_warnings:

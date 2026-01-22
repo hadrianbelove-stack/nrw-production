@@ -187,8 +187,22 @@ class EnrichmentService:
                 has_placeholder_asin = False
                 detected_asin = None
                 for category in ['streaming', 'vod']:
-                    category_data = cached['links'].get(category, {})
-                    if category_data and isinstance(category_data, dict):
+                    category_data = cached['links'].get(category)
+                    if not category_data:
+                        continue
+                    # Handle array format (new)
+                    if isinstance(category_data, list):
+                        for item in category_data:
+                            if isinstance(item, dict):
+                                link = item.get('link', '')
+                                if link and any(asin in link for asin in PLACEHOLDER_ASINS):
+                                    detected_asin = next(asin for asin in PLACEHOLDER_ASINS if asin in link)
+                                    has_placeholder_asin = True
+                                    break
+                        if has_placeholder_asin:
+                            break
+                    # Handle dict format (legacy)
+                    elif isinstance(category_data, dict):
                         link = category_data.get('link', '')
                         if link and any(asin in link for asin in PLACEHOLDER_ASINS):
                             detected_asin = next(asin for asin in PLACEHOLDER_ASINS if asin in link)
@@ -201,17 +215,23 @@ class EnrichmentService:
                     self.storage.save_cache(self.watch_links_cache, 'cache/watch_links_cache.json')
                     print(f"  Purged cache entry {cache_key} containing placeholder ASIN {detected_asin}")
                 else:
-                    # Migrate legacy cache format if needed
+                    # Migrate legacy cache format if needed (converts single-object to array format)
                     migrated_links = self.migrate_legacy_cache_format(cached['links'])
                     if migrated_links != cached['links']:
                         # Update cache with migrated format
                         self.watch_links_cache[cache_key]['links'] = migrated_links
 
                         # Recompute source metadata based on whether any category has a non-null link
+                        def check_has_links(category_data):
+                            if isinstance(category_data, list):
+                                return any(item.get('link') is not None for item in category_data if isinstance(item, dict))
+                            elif isinstance(category_data, dict):
+                                return category_data.get('link') is not None
+                            return False
+
                         has_links = any(
-                            link.get('link') is not None
-                            for link in migrated_links.values()
-                            if isinstance(link, dict)
+                            check_has_links(category_data)
+                            for category_data in migrated_links.values()
                         )
                         source_type = 'justwatch_api' if has_links else 'tmdb_providers'
                         self.watch_links_cache[cache_key]['source'] = source_type
@@ -341,85 +361,84 @@ class EnrichmentService:
         )
 
         # Build final watch_links with canonical streaming/vod structure
+        # NEW: Use arrays to store ALL available services instead of selecting "best" service
         watch_links = {}
 
-        # STREAMING: Use scraper data or fallback to TMDB providers (skip if overridden)
+        # STREAMING: Collect ALL streaming services (skip if overridden)
         if not skip_streaming:
+            streaming_services = []
+
             if tmdb_streaming:
-                # Use scraper streaming data
-                best_service = select_best_service([s['service'] for s in tmdb_streaming], STREAMING_PRIORITY)
+                # Collect ALL streaming services from scraper data
                 for source in tmdb_streaming:
-                    if source['service'] == best_service:
-                        watch_links['streaming'] = source
-                        break
-            elif providers.get('streaming'):
-                # Fallback to TMDB provider data
-                service = select_best_service(providers['streaming'], STREAMING_PRIORITY)
+                    if source.get('link') and not self.is_excluded_service(source.get('service')):
+                        streaming_services.append(source)
 
-                # SMART FALLBACK: If TMDB says "Amazon Prime Video" but scraper didn't find subscription,
-                # reuse any Amazon rent/buy link we have (it's the same detail page on Amazon)
-                if 'Amazon Prime Video' in service and (tmdb_rent or tmdb_buy):
-                    # Find any Amazon link in rent or buy sources
-                    amazon_link = None
-                    for source in tmdb_rent + tmdb_buy:
-                        if 'Amazon' in source['service'] and source.get('link'):
-                            amazon_link = source['link']
-                            break
+            if not streaming_services and providers.get('streaming'):
+                # Fallback to TMDB provider data - collect ALL providers
+                for provider in providers['streaming']:
+                    if self.is_excluded_service(provider):
+                        continue
 
-                    if amazon_link:
-                        watch_links['streaming'] = {
-                            'service': service,
-                            'link': amazon_link  # Same page shows both Prime (free) and rent/buy options
-                        }
+                    # SMART FALLBACK: If TMDB says "Amazon Prime Video" but scraper didn't find subscription,
+                    # reuse any Amazon rent/buy link we have (it's the same detail page on Amazon)
+                    if 'Amazon Prime Video' in provider and (tmdb_rent or tmdb_buy):
+                        amazon_link = None
+                        for source in tmdb_rent + tmdb_buy:
+                            if 'Amazon' in source['service'] and source.get('link'):
+                                amazon_link = source['link']
+                                break
+                        if amazon_link:
+                            streaming_services.append({'service': provider, 'link': amazon_link})
+                        else:
+                            streaming_services.append({'service': provider, 'link': None})
                     else:
-                        # No Amazon link available, leave as null (no Google fallback)
-                        watch_links['streaming'] = {
-                            'service': service,
-                            'link': None
-                        }
-                else:
-                    # Try agent scraper for supported platforms before returning null
-                    agent_result = self.try_streaming_scraper(movie_id, title, year, service, 'streaming')
-                    watch_links['streaming'] = agent_result
+                        # Try agent scraper for supported platforms
+                        agent_result = self.try_streaming_scraper(movie_id, title, year, provider, 'streaming')
+                        streaming_services.append(agent_result)
 
-        # VOD: Combine rent and buy into single VOD category
-        # Use scraper data or fallback to platform links (skip if both rent and buy are overridden)
+            # Filter out services with null links and store as array
+            watch_links['streaming'] = [s for s in streaming_services if s.get('link')]
+            # If no valid links, keep services with null links for display purposes
+            if not watch_links['streaming'] and streaming_services:
+                watch_links['streaming'] = streaming_services
+
+        # VOD: Combine rent and buy, filter to Amazon and Apple TV only
+        # (skip if both rent and buy are overridden)
         if not (skip_rent and skip_buy):
             # Combine rent and buy sources
             vod_sources = tmdb_rent + tmdb_buy
 
-            if vod_sources:
-                # Pick best service from combined rent+buy options
-                best_service = select_best_service([s['service'] for s in vod_sources], PAID_PRIORITY)
-                for source in vod_sources:
-                    if source['service'] == best_service:
-                        watch_links['vod'] = source
-                        break
-            else:
-                # Try rent providers first, then buy providers
+            # Filter to only Amazon and Apple TV services
+            filtered_vod = []
+            for source in vod_sources:
+                if source.get('link') and self.is_amazon_or_apple_service(source.get('service')):
+                    filtered_vod.append(source)
+
+            if not filtered_vod:
+                # Try rent providers first, then buy providers - only Amazon and Apple TV
                 vod_providers = providers.get('rent', []) + providers.get('buy', [])
-                if vod_providers:
-                    vod_service = select_best_service(vod_providers, PAID_PRIORITY)
-                    if vod_service:
-                        # Try platform scraper for Amazon/Apple TV before returning null
-                        if has_vod_scraper and (self.is_actual_amazon_service(vod_service) or self.is_actual_apple_service(vod_service)):
-                            self.try_vod_scraper(title, year, providers, [], tmdb_rent, tmdb_buy, True, False, False)
-                            # Check if platform scraper added vod links
-                            vod_sources = tmdb_rent + tmdb_buy
-                            if vod_sources:
-                                best_service = select_best_service([s['service'] for s in vod_sources], PAID_PRIORITY)
-                                for source in vod_sources:
-                                    if source['service'] == best_service:
-                                        watch_links['vod'] = source
-                                        break
-                            else:
-                                # Try agent scraper for supported services
-                                agent_result = self.try_streaming_scraper(movie_id, title, year, vod_service, 'vod')
-                                watch_links['vod'] = agent_result
-                        else:
-                            # Try agent scraper for supported services
-                            agent_result = self.try_streaming_scraper(movie_id, title, year, vod_service, 'vod')
-                            watch_links['vod'] = agent_result
+                amazon_apple_providers = [p for p in vod_providers if self.is_amazon_or_apple_service(p)]
+
+                for vod_service in amazon_apple_providers:
+                    # Try platform scraper for Amazon/Apple TV
+                    if has_vod_scraper:
+                        self.try_vod_scraper(title, year, providers, [], tmdb_rent, tmdb_buy, True, False, False)
+                        # Check if platform scraper added vod links
+                        vod_sources = tmdb_rent + tmdb_buy
+                        for source in vod_sources:
+                            if source.get('link') and self.is_amazon_or_apple_service(source.get('service')):
+                                if source not in filtered_vod:
+                                    filtered_vod.append(source)
+
+                    if not any(self.is_amazon_or_apple_service(s.get('service')) and s.get('service') == vod_service for s in filtered_vod):
+                        # Try agent scraper as last resort
+                        agent_result = self.try_streaming_scraper(movie_id, title, year, vod_service, 'vod')
+                        if agent_result.get('link'):
+                            filtered_vod.append(agent_result)
+
+            # Store as array
+            watch_links['vod'] = filtered_vod
 
         # Overlay admin overrides on top of auto-discovered links
         for category, override_data in validated_overrides.items():
@@ -432,36 +451,64 @@ class EnrichmentService:
         validated_links = self.validator.validate_watch_links_schema(watch_links, title)
 
         # Apply affiliate tags to all validated links (after validation, before caching)
+        # NEW: Handle arrays of services
         for category in ['streaming', 'vod']:
-            if category in validated_links and isinstance(validated_links[category], dict):
-                link_data = validated_links[category]
-                if link_data.get('link') and link_data.get('service'):
-                    # Append affiliate tag to the link
-                    original_link = link_data['link']
-                    tagged_link = self.append_affiliate_tag(original_link, link_data['service'])
-                    if tagged_link != original_link:
-                        validated_links[category]['link'] = tagged_link
-                        self.logger.debug(f"Added affiliate tag to {category} link for {title}: {link_data['service']}")
+            if category in validated_links:
+                category_data = validated_links[category]
+                # Handle array format (new)
+                if isinstance(category_data, list):
+                    for link_data in category_data:
+                        if isinstance(link_data, dict) and link_data.get('link') and link_data.get('service'):
+                            original_link = link_data['link']
+                            tagged_link = self.append_affiliate_tag(original_link, link_data['service'])
+                            if tagged_link != original_link:
+                                link_data['link'] = tagged_link
+                                self.logger.debug(f"Added affiliate tag to {category} link for {title}: {link_data['service']}")
+                # Handle single dict format (backward compatibility)
+                elif isinstance(category_data, dict):
+                    if category_data.get('link') and category_data.get('service'):
+                        original_link = category_data['link']
+                        tagged_link = self.append_affiliate_tag(original_link, category_data['service'])
+                        if tagged_link != original_link:
+                            validated_links[category]['link'] = tagged_link
+                            self.logger.debug(f"Added affiliate tag to {category} link for {title}: {category_data['service']}")
 
         # Validate service/link consistency and fix mismatches
+        # NEW: Handle arrays of services
         for category in ['streaming', 'vod']:
-            if category in validated_links and isinstance(validated_links[category], dict):
-                link_data = validated_links[category]
-                service = link_data.get('service')
-                link = link_data.get('link')
-
-                if service and link and not self.validate_service_link_consistency(service, link, title):
-                    # Mismatch detected, set to null (no Google fallback)
-                    self.logger.warning(f"Replacing mismatched {category} link for {title} with null (admin flag needed)")
-                    validated_links[category]['link'] = None
+            if category in validated_links:
+                category_data = validated_links[category]
+                # Handle array format (new)
+                if isinstance(category_data, list):
+                    for link_data in category_data:
+                        if isinstance(link_data, dict):
+                            service = link_data.get('service')
+                            link = link_data.get('link')
+                            if service and link and not self.validate_service_link_consistency(service, link, title):
+                                self.logger.warning(f"Replacing mismatched {category} link for {title} with null (admin flag needed)")
+                                link_data['link'] = None
+                # Handle single dict format (backward compatibility)
+                elif isinstance(category_data, dict):
+                    service = category_data.get('service')
+                    link = category_data.get('link')
+                    if service and link and not self.validate_service_link_consistency(service, link, title):
+                        self.logger.warning(f"Replacing mismatched {category} link for {title} with null (admin flag needed)")
+                        validated_links[category]['link'] = None
 
         # Cache result with canonical schema (use validated links)
         if validated_links:
             # Determine source type based on where links came from
+            # NEW: Handle both array format (new) and dict format (legacy)
+            def check_has_links(category_data):
+                if isinstance(category_data, list):
+                    return any(item.get('link') is not None for item in category_data if isinstance(item, dict))
+                elif isinstance(category_data, dict):
+                    return category_data.get('link') is not None
+                return False
+
             has_links = any(
-                link.get('link') is not None
-                for link in validated_links.values()
-                if isinstance(link, dict)
+                check_has_links(category_data)
+                for category_data in validated_links.values()
             )
 
             # Use vod_scraper_used to accurately determine if streamer scraper added links
@@ -759,7 +806,7 @@ class EnrichmentService:
         Normalize relative Amazon and Apple TV links to absolute URLs.
 
         Args:
-            watch_links: Dict with streaming/vod categories
+            watch_links: Dict with streaming/vod categories (supports both array and dict formats)
 
         Returns:
             Dict: watch_links with normalized URLs
@@ -769,24 +816,36 @@ class EnrichmentService:
 
         normalized = watch_links.copy()
 
+        def normalize_single_link(link_data):
+            """Normalize a single link dict in place."""
+            if not isinstance(link_data, dict) or not link_data.get('link'):
+                return
+            original_link = link_data['link']
+            service = link_data.get('service', '')
+
+            # Normalize Amazon links
+            if 'amazon' in service.lower() or 'amazon.com' in original_link.lower():
+                normalized_link = urljoin('https://www.amazon.com', original_link)
+                if normalized_link != original_link:
+                    link_data['link'] = normalized_link
+
+            # Normalize Apple TV links
+            elif 'apple' in service.lower() or 'tv.apple.com' in original_link.lower():
+                normalized_link = urljoin('https://tv.apple.com', original_link)
+                if normalized_link != original_link:
+                    link_data['link'] = normalized_link
+
         for category in ['streaming', 'vod']:
-            if category in normalized and isinstance(normalized[category], dict):
-                link_data = normalized[category]
-                if link_data.get('link'):
-                    original_link = link_data['link']
-                    service = link_data.get('service', '')
-
-                    # Normalize Amazon links
-                    if 'amazon' in service.lower() or 'amazon.com' in original_link.lower():
-                        normalized_link = urljoin('https://www.amazon.com', original_link)
-                        if normalized_link != original_link:
-                            link_data['link'] = normalized_link
-
-                    # Normalize Apple TV links
-                    elif 'apple' in service.lower() or 'tv.apple.com' in original_link.lower():
-                        normalized_link = urljoin('https://tv.apple.com', original_link)
-                        if normalized_link != original_link:
-                            link_data['link'] = normalized_link
+            if category not in normalized:
+                continue
+            category_data = normalized[category]
+            # Handle array format (new)
+            if isinstance(category_data, list):
+                for link_data in category_data:
+                    normalize_single_link(link_data)
+            # Handle dict format (legacy/backward compatibility)
+            elif isinstance(category_data, dict):
+                normalize_single_link(category_data)
 
         return normalized
 
@@ -837,10 +896,17 @@ class EnrichmentService:
         if 'paid' in migrated:
             migrated['vod'] = migrated.pop('paid')
 
-        # Normalize all link objects to remove search URLs
+        # Normalize all link objects to remove search URLs and convert to array format
         for category in ['streaming', 'vod']:
             if category in migrated:
-                migrated[category] = normalize_link(migrated[category])
+                category_data = migrated[category]
+                # Handle array format - normalize each item
+                if isinstance(category_data, list):
+                    migrated[category] = [normalize_link(item) for item in category_data]
+                # Handle single dict format - normalize and convert to array
+                elif isinstance(category_data, dict):
+                    normalized_item = normalize_link(category_data)
+                    migrated[category] = [normalized_item] if normalized_item.get('service') else []
 
         # Ensure we only return canonical categories
         final_migrated = {}
@@ -975,6 +1041,27 @@ class EnrichmentService:
         ]
 
         return provider in genuine_apple_services
+
+    def is_amazon_or_apple_service(self, service_name):
+        """
+        Check if service is Amazon or Apple TV for VOD filtering.
+
+        Used to filter VOD options to only show Amazon and Apple TV
+        (the two services we have affiliate relationships with).
+
+        Args:
+            service_name (str): Service name to check
+
+        Returns:
+            bool: True if service is Amazon or Apple TV variant
+        """
+        if not service_name:
+            return False
+
+        amazon_variants = ['Amazon', 'Amazon Video', 'Prime Video', 'Amazon Prime Video']
+        apple_variants = ['Apple TV', 'Apple TV+', 'Apple iTunes', 'iTunes']
+
+        return any(variant in service_name for variant in amazon_variants + apple_variants)
 
     def validate_service_link_consistency(self, service, link, title):
         """
