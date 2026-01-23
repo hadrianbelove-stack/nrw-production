@@ -8318,11 +8318,13 @@
     "1443762": {
       "title": "The Big Fake",
       "premiere_date": "2025-10-19",
-      "digital_date": null,
-      "has_providers": false,
-      "status": "tracking",
+      "digital_date": "2026-01-23",
+      "has_providers": true,
+      "status": "available",
       "added": "2025-10-20T23:50:20.397222",
-      "year": 2025
+      "year": 2025,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1564997": {
       "title": "The Kill Count (2017) KILL COUNT",
@@ -74037,14 +74039,28 @@
     },
     "1242744": {
       "title": "The Stickman's Hollow",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-04",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-01-22",
+      "providers": {
+        "rent": [
+          "Apple TV Store",
+          "Google Play Movies",
+          "YouTube"
+        ],
+        "buy": [
+          "Apple TV Store",
+          "Google Play Movies",
+          "YouTube"
+        ],
+        "streaming": []
+      },
       "intake_pass": "backfill",
-      "has_providers": false,
+      "has_providers": true,
       "year": 2024,
-      "premiere_date": "2024-09-27"
+      "premiere_date": "2024-09-27",
+      "enriched": false,
+      "enrichment_date": null
     },
     "1235922": {
       "title": "I Am Nevenka",
@@ -115538,13 +115554,21 @@
     "1287846": {
       "title": "Mash Ville",
       "year": 2024,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-01-22",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "Fantasia",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1142109": {
       "title": "Fly Me to the Saitama: From Biwa Lake with Love",
@@ -122128,13 +122152,15 @@
     "1481608": {
       "title": "Mother of Flies",
       "year": 2025,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
+      "digital_date": "2026-01-23",
       "providers": {},
       "intake_pass": "C",
       "festival": "Fantasia",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1139907": {
       "title": "Anna Kiri",
@@ -144655,12 +144681,20 @@
     "1599700": {
       "title": "Jack and Ava",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-09",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-01-22",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "A",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1559425": {
       "title": "The Conspiracists",
@@ -146927,12 +146961,14 @@
     "1252356": {
       "title": "Shaka: A Story of Aloha",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-16",
-      "digital_date": null,
+      "digital_date": "2026-01-16",
       "providers": {},
       "intake_pass": "A",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1617047": {
       "title": "Dernier vol",
@@ -147285,12 +147321,24 @@
     "1617433": {
       "title": "I Am Mary Jo Buttafuoco",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-17",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-01-22",
+      "providers": {
+        "rent": [
+          "Google Play Movies",
+          "YouTube"
+        ],
+        "buy": [
+          "Google Play Movies",
+          "YouTube"
+        ],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1616931": {
       "title": "TJPW The 6th \"Futari wa Princess\" Max Heart Tournament ~ Day 1",
@@ -147445,12 +147493,14 @@
     "1480025": {
       "title": "How to Lose a Popularity Contest",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-17",
-      "digital_date": null,
+      "digital_date": "2026-01-16",
       "providers": {},
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1618354": {
       "title": "\ub3c4\uc2dc\uc911\ub3c5\uc790\ub4e4",
@@ -149084,12 +149134,21 @@
     "1595481": {
       "title": "Kidnapped: Elizabeth Smart",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-21",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-01-22",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
+      },
       "intake_pass": "A",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1613535": {
       "title": "NJPW Road to The New Beginning 2026 - Day 2",
@@ -149324,12 +149383,14 @@
     "1575337": {
       "title": "Cosmic Princess Kaguya!",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-22",
-      "digital_date": null,
+      "digital_date": "2026-01-22",
       "providers": {},
       "intake_pass": "A",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "580489": {
       "title": "Venom: Let There Be Carnage",
@@ -149677,12 +149738,14 @@
     "1475490": {
       "title": "The Calling Witch",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-22",
-      "digital_date": null,
+      "digital_date": "2026-01-20",
       "providers": {},
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1358579": {
       "id": "1358579",
