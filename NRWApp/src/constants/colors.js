@@ -85,12 +85,12 @@ export const Spacing = {
 };
 
 export const Dimensions = {
-  // tvOS card dimensions
+  // tvOS card dimensions (20% smaller)
   tvos: {
-    cardWidth: 280,
-    cardHeight: 420,
-    featuredCardWidth: 420,
-    featuredCardHeight: 630,
+    cardWidth: 224,
+    cardHeight: 336,
+    featuredCardWidth: 224,
+    featuredCardHeight: 336,
     posterAspectRatio: 2 / 3,
   },
   // iOS card dimensions

@@ -48,14 +48,8 @@ const MovieShelf = ({
         useNativeDriver: true,
       }).start();
 
-      // Scroll to center the focused item
-      if (flatListRef.current && index !== null) {
-        flatListRef.current.scrollToIndex({
-          index,
-          animated: true,
-          viewPosition: 0.3, // Position item at 30% from left
-        });
-      }
+      // Let tvOS handle scrolling naturally - don't force scroll position
+      // This prevents jittering from constant scroll adjustments
 
       if (onMovieFocus) {
         onMovieFocus(movie, shelfIndex, index);
@@ -284,7 +278,7 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingHorizontal: Spacing.tvos.screenPadding,
-    paddingVertical: Spacing.tvos.sm,
+    paddingVertical: 30, // Extra padding for scale animation
   },
   emptyContainer: {
     height: Dimensions.tvos.cardHeight,
