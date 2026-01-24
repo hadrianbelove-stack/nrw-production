@@ -1,6 +1,6 @@
 /**
  * New Release Wall - tvOS Home Screen
- * Horizontal scrolling layout with inline date markers (mimics web layout)
+ * Vertical scrolling grid layout matching web design
  */
 
 import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
@@ -23,6 +23,12 @@ import {
   trackMovieSelect,
   trackFilterChange,
 } from '../services/analytics.tvos';
+
+// Grid configuration - 7 columns for 1920px width
+const NUM_COLUMNS = 7;
+const CARD_WIDTH = Dimensions.tvos.cardWidth;
+const CARD_HEIGHT = Dimensions.tvos.cardHeight;
+const CARD_GAP = 16;
 
 const HomeScreenTvOS = () => {
   const navigation = useNavigation();
@@ -49,6 +55,7 @@ const HomeScreenTvOS = () => {
   }, []);
 
   // Build flat list data with date markers interspersed
+  // Each date marker takes one grid cell (same size as movie card)
   const listData = useMemo(() => {
     if (!filteredMovies || filteredMovies.length === 0) return [];
 
@@ -77,7 +84,7 @@ const HomeScreenTvOS = () => {
 
       items.push({
         type: 'movie',
-        id: movie.id || `movie-${index}`,
+        id: movie.tmdb_id || movie.id || `movie-${index}`,
         movie: movie,
       });
     });
@@ -138,17 +145,20 @@ const HomeScreenTvOS = () => {
     setIsRefreshing(false);
   }, [refreshMovies]);
 
-  // Format date for display
-  const formatDate = useCallback((dateString) => {
+  // Format date for display (matches web date divider style)
+  const formatDateParts = useCallback((dateString) => {
     if (!dateString || dateString === 'Unknown') {
-      return 'Unknown';
+      return { day: '?', dayName: '', month: 'Unknown' };
     }
     try {
-      const date = new Date(dateString);
-      const options = { month: 'short', day: 'numeric' };
-      return date.toLocaleDateString('en-US', options);
+      const date = new Date(dateString + 'T12:00:00'); // Noon to avoid timezone issues
+      return {
+        dayName: date.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase(),
+        day: date.getDate().toString(),
+        month: date.toLocaleDateString('en-US', { month: 'short' }).toUpperCase(),
+      };
     } catch {
-      return dateString;
+      return { day: '?', dayName: '', month: dateString };
     }
   }, []);
 
@@ -156,9 +166,14 @@ const HomeScreenTvOS = () => {
   const renderItem = useCallback(
     ({ item, index }) => {
       if (item.type === 'date') {
+        const dateParts = formatDateParts(item.date);
         return (
-          <View style={styles.dateMarker}>
-            <Text style={styles.dateText}>{formatDate(item.date)}</Text>
+          <View style={styles.dateCard}>
+            <View style={styles.dateCardInner}>
+              <Text style={styles.dateDayName}>{dateParts.dayName}</Text>
+              <Text style={styles.dateNumber}>{dateParts.day}</Text>
+              <Text style={styles.dateMonth}>{dateParts.month}</Text>
+            </View>
           </View>
         );
       }
@@ -176,37 +191,27 @@ const HomeScreenTvOS = () => {
         </View>
       );
     },
-    [formatDate, handleMovieSelect, handleMovieFocus]
+    [formatDateParts, handleMovieSelect, handleMovieFocus]
   );
 
   // Key extractor
   const keyExtractor = useCallback((item) => item.id, []);
 
-  // Get item layout for optimized scrolling
+  // Get item layout for optimized scrolling (vertical grid)
   const getItemLayout = useCallback((data, index) => {
-    const item = data[index];
-    const movieWidth = Dimensions.tvos.cardWidth + Spacing.tvos.cardGap;
-    const dateWidth = 100 + Spacing.tvos.cardGap; // Date marker width
-
-    // Calculate offset by summing widths of all previous items
-    let offset = Spacing.tvos.screenPadding;
-    for (let i = 0; i < index; i++) {
-      offset += data[i].type === 'date' ? dateWidth : movieWidth;
-    }
-
-    const length = item.type === 'date' ? dateWidth : movieWidth;
-
-    return { length, offset, index };
+    const rowHeight = CARD_HEIGHT + CARD_GAP;
+    const rowIndex = Math.floor(index / NUM_COLUMNS);
+    return {
+      length: rowHeight,
+      offset: rowIndex * rowHeight,
+      index,
+    };
   }, []);
 
   // Render loading state
   if (isLoading && listData.length === 0) {
     return (
       <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.title}>The New Release Wall</Text>
-          <Text style={styles.subtitle}>Loading...</Text>
-        </View>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={Colors.primary} />
         </View>
@@ -218,9 +223,6 @@ const HomeScreenTvOS = () => {
   if (error && listData.length === 0) {
     return (
       <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.title}>The New Release Wall</Text>
-        </View>
         <View style={styles.errorContainer}>
           <Text style={styles.errorTitle}>Unable to Load Movies</Text>
           <Text style={styles.errorMessage}>{error}</Text>
@@ -236,10 +238,6 @@ const HomeScreenTvOS = () => {
   if (!isLoading && listData.length === 0) {
     return (
       <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.title}>The New Release Wall</Text>
-          <FilterIndicator filter={activeFilter} />
-        </View>
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyText}>
             {activeFilter !== 'all'
@@ -259,43 +257,29 @@ const HomeScreenTvOS = () => {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.title}>The New Release Wall</Text>
-        <View style={styles.headerRight}>
-          <Text style={styles.movieCount}>{filteredMovies.length} films</Text>
-          <FilterIndicator filter={activeFilter} />
-          {isRefreshing && (
-            <ActivityIndicator
-              color={Colors.primary}
-              style={styles.refreshIndicator}
-            />
-          )}
-        </View>
-      </View>
-
-      {/* Horizontal scrolling list with date markers and movies */}
+      {/* Vertical scrolling grid - the wall */}
       <FlatList
         ref={flatListRef}
         data={listData}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
-        horizontal={true}
-        showsHorizontalScrollIndicator={false}
+        numColumns={NUM_COLUMNS}
+        showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContent}
+        columnWrapperStyle={styles.row}
         removeClippedSubviews={true}
-        maxToRenderPerBatch={15}
-        windowSize={7}
-        initialNumToRender={10}
-        decelerationRate="fast"
+        maxToRenderPerBatch={21}
+        windowSize={5}
+        initialNumToRender={21}
+        getItemLayout={getItemLayout}
       />
 
-      {/* Footer hint */}
-      <View style={styles.footer}>
-        <Text style={styles.footerText}>
-          Press Menu to filter • Play/Pause to refresh
-        </Text>
-      </View>
+      {/* Refresh indicator overlay */}
+      {isRefreshing && (
+        <View style={styles.refreshOverlay}>
+          <ActivityIndicator color={Colors.primary} size="large" />
+        </View>
+      )}
 
       {/* Filter Sidebar */}
       <FilterSidebar
@@ -308,101 +292,62 @@ const HomeScreenTvOS = () => {
   );
 };
 
-// Filter indicator badge
-const FilterIndicator = ({ filter }) => {
-  if (filter === 'all') return null;
-
-  const filterLabels = {
-    featured: 'Featured',
-    hidden: 'Hidden',
-  };
-
-  return (
-    <View style={styles.filterBadge}>
-      <Text style={styles.filterBadgeText}>
-        {filterLabels[filter] || filter}
-      </Text>
-    </View>
-  );
-};
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background,
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: Spacing.tvos.screenPadding,
-    paddingTop: Spacing.tvos.xl,
-    paddingBottom: Spacing.tvos.md,
-  },
-  title: {
-    color: Colors.primary,
-    fontSize: Typography.tvos.title,
-    fontWeight: '800',
-    letterSpacing: 2,
-  },
-  subtitle: {
-    color: Colors.textMuted,
-    fontSize: Typography.tvos.body,
-    marginTop: Spacing.tvos.xs,
-  },
-  headerRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  movieCount: {
-    color: Colors.textMuted,
-    fontSize: Typography.tvos.caption,
-    marginRight: Spacing.tvos.md,
-  },
-  filterBadge: {
-    backgroundColor: Colors.primary,
-    paddingHorizontal: Spacing.tvos.md,
-    paddingVertical: Spacing.tvos.xs,
-    borderRadius: 8,
-  },
-  filterBadgeText: {
-    color: Colors.background,
-    fontSize: Typography.tvos.caption,
-    fontWeight: '700',
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-  },
-  refreshIndicator: {
-    marginLeft: Spacing.tvos.md,
-  },
   listContent: {
-    paddingHorizontal: Spacing.tvos.screenPadding,
-    paddingVertical: 40, // Room for scale animation
-    alignItems: 'center',
+    paddingHorizontal: 40,
+    paddingTop: 40,
+    paddingBottom: 60,
   },
-  dateMarker: {
+  row: {
+    justifyContent: 'flex-start',
+    marginBottom: CARD_GAP,
+  },
+  // Date card - same size as movie cards, styled like web
+  dateCard: {
+    width: CARD_WIDTH,
+    height: CARD_HEIGHT,
+    marginRight: CARD_GAP,
+    borderRadius: 12,
+    borderWidth: 3,
+    borderColor: Colors.primary,
+    backgroundColor: Colors.background,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: Spacing.tvos.md,
-    marginRight: Spacing.tvos.cardGap,
+    overflow: 'hidden',
   },
-  dateText: {
-    color: Colors.primary,
-    fontSize: Typography.tvos.subtitle,
-    fontWeight: '700',
-    textAlign: 'center',
-    writingDirection: 'ltr',
-  },
-  cardWrapper: {
-    marginRight: Spacing.tvos.cardGap,
-  },
-  footer: {
-    paddingVertical: Spacing.tvos.md,
+  dateCardInner: {
     alignItems: 'center',
   },
-  footerText: {
+  dateDayName: {
     color: Colors.textMuted,
-    fontSize: Typography.tvos.caption,
+    fontSize: 18,
+    letterSpacing: 3,
+    marginBottom: 8,
+  },
+  dateNumber: {
+    color: Colors.primary,
+    fontSize: 72,
+    fontWeight: 'bold',
+    lineHeight: 80,
+  },
+  dateMonth: {
+    color: Colors.primary,
+    fontSize: 28,
+    fontWeight: 'bold',
+    letterSpacing: 4,
+    marginTop: 8,
+  },
+  cardWrapper: {
+    marginRight: CARD_GAP,
+  },
+  refreshOverlay: {
+    position: 'absolute',
+    top: 40,
+    right: 40,
   },
   loadingContainer: {
     flex: 1,
@@ -413,7 +358,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: Spacing.tvos.screenPadding,
+    paddingHorizontal: 60,
   },
   errorTitle: {
     color: Colors.textPrimary,
@@ -435,7 +380,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: Spacing.tvos.screenPadding,
+    paddingHorizontal: 60,
   },
   emptyText: {
     color: Colors.textMuted,
