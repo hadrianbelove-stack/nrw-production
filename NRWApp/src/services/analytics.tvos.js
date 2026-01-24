@@ -13,9 +13,21 @@ let mixpanel = null;
  * Initialize analytics service
  */
 export async function initializeAnalytics() {
+  // Skip analytics if no token configured
+  if (!MIXPANEL_TOKEN || MIXPANEL_TOKEN === 'YOUR_MIXPANEL_TOKEN') {
+    console.log('[Analytics] Skipping - no token configured');
+    return;
+  }
+
   try {
-    // Only initialize if Mixpanel is available
-    const { Mixpanel } = require('mixpanel-react-native');
+    // Dynamically import to avoid bundler issues
+    const MixpanelModule = require('mixpanel-react-native');
+    if (!MixpanelModule || !MixpanelModule.Mixpanel) {
+      console.warn('[Analytics] Mixpanel module not available');
+      return;
+    }
+
+    const { Mixpanel } = MixpanelModule;
     mixpanel = new Mixpanel(MIXPANEL_TOKEN, true);
     await mixpanel.init();
 

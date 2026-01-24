@@ -41,12 +41,11 @@ const MovieCard = ({
   const handleFocus = useCallback(() => {
     setIsFocused(true);
 
-    // Animate scale and shadow
+    // Animate scale and shadow with smooth timing (no spring bounce)
     Animated.parallel([
-      Animated.spring(scaleAnim, {
+      Animated.timing(scaleAnim, {
         toValue: FOCUS_STYLES.movieCard.scale,
-        friction: 8,
-        tension: 100,
+        duration: 150,
         useNativeDriver: true,
       }),
       Animated.timing(shadowAnim, {
@@ -67,10 +66,9 @@ const MovieCard = ({
 
     // Animate scale and shadow back
     Animated.parallel([
-      Animated.spring(scaleAnim, {
+      Animated.timing(scaleAnim, {
         toValue: 1,
-        friction: 8,
-        tension: 100,
+        duration: 150,
         useNativeDriver: true,
       }),
       Animated.timing(shadowAnim, {
@@ -136,12 +134,11 @@ const MovieCard = ({
           ]}
         />
 
-        {/* Poster image with parallax */}
+        {/* Poster image */}
         <Image
           source={{ uri: posterUrl }}
           style={styles.poster}
           resizeMode="cover"
-          tvParallaxProperties={PARALLAX_PROPERTIES}
         />
 
         {/* Featured badge */}

@@ -13,7 +13,7 @@ import {
   RefreshControl,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { useHomeScreen } from './HomeScreen';
+import { useHomeScreen } from './useHomeScreen';
 import MovieShelf, { LoadingShelf, EmptyShelf } from '../components/MovieShelf.tvos';
 import FilterSidebar from '../components/FilterSidebar.tvos';
 import { Colors, Typography, Spacing } from '../constants/colors';

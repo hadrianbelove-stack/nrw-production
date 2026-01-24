@@ -6,7 +6,7 @@
 import { getCachedData, setCachedData, CACHE_KEYS } from '../utils/cache';
 
 // GitHub raw content URL for data.json
-const DATA_URL = 'https://raw.githubusercontent.com/YOUR_USERNAME/nrw-production/main/data.json';
+const DATA_URL = 'https://raw.githubusercontent.com/hadrianbelove-stack/nrw-production/main/data.json';
 
 // Cache duration: 24 hours in milliseconds
 const CACHE_DURATION = 24 * 60 * 60 * 1000;

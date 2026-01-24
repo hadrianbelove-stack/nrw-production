@@ -4,7 +4,7 @@
  */
 
 import React, { useEffect, useRef } from 'react';
-import { Platform, StatusBar, View, StyleSheet, AppState } from 'react-native';
+import { Platform, StatusBar, View, StyleSheet, AppState, LogBox } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -19,6 +19,9 @@ import { Colors } from './src/constants/colors';
 // Import services
 import { initializeAnalytics, trackSessionStart, trackSessionEnd } from './src/services/analytics.tvos';
 import { initializeSentry } from './src/services/sentry.tvos';
+
+// Suppress AsyncStorage warning on tvOS (storage works but may be cleared by system)
+LogBox.ignoreLogs(['Persistent storage is not supported on tvOS']);
 
 // Create navigation stack
 const Stack = createNativeStackNavigator();

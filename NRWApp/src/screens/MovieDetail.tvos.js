@@ -22,7 +22,7 @@ import {
   formatSynopsis,
   getMetadataString,
   getAccessibilityLabel,
-} from './MovieDetail';
+} from './useMovieDetail';
 import WatchButton, { InfoButton } from '../components/WatchButton.tvos';
 import { Colors, Typography, Spacing } from '../constants/colors';
 import { useTVEventHandler, TV_EVENTS } from '../utils/focusManager.tvos';

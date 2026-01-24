@@ -13,6 +13,12 @@ let Sentry = null;
  * Initialize Sentry crash reporting
  */
 export async function initializeSentry() {
+  // Skip Sentry if no DSN configured
+  if (!SENTRY_DSN || SENTRY_DSN === 'YOUR_SENTRY_DSN') {
+    console.log('[Sentry] Skipping - no DSN configured');
+    return;
+  }
+
   try {
     Sentry = require('@sentry/react-native');
 
