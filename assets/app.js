@@ -3,9 +3,9 @@ const NRW = {
     filteredMovies: [],
     featuredMovies: [],
     currentFilter: 'all',
-    currentPage: 1,
-    moviesPerPage: 60,
-    
+    displayedCount: 60,  // How many movies currently shown
+    loadIncrement: 60,   // How many to add when clicking "More"
+
     // Helper function for Wikipedia URLs with safe fallbacks
     wikiUrlFor(movie) {
         const title = movie.title || '';
@@ -15,12 +15,9 @@ const NRW = {
         const q = encodeURIComponent(`${title} ${year} film`.trim());
         return `https://en.wikipedia.org/w/index.php?search=${q}`;  // safe fallback, no broken guesses
     },
-    
+
     async init() {
         try {
-            // Parse URL parameters for pagination state
-            this.parseUrlParams();
-
             // Load movie data
             const movieResponse = await fetch('data.json');
             const data = await movieResponse.json();
@@ -37,7 +34,7 @@ const NRW = {
 
                 this.setupFilterEventListeners();
                 this.applyFilter();
-                this.renderPaginatedWall();
+                this.renderWallWithMore();
             } else {
                 document.getElementById('wall').innerHTML = '<p>No movies in database</p>';
             }
@@ -45,24 +42,6 @@ const NRW = {
             console.error('Load failed:', err);
             document.getElementById('wall').innerHTML = '<p>Failed to load movies</p>';
         }
-    },
-
-    parseUrlParams() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const page = parseInt(urlParams.get('page'));
-        if (page && page > 0) {
-            this.currentPage = page;
-        }
-    },
-
-    updateUrl() {
-        const url = new URL(window.location);
-        if (this.currentPage > 1) {
-            url.searchParams.set('page', this.currentPage);
-        } else {
-            url.searchParams.delete('page');
-        }
-        window.history.replaceState({}, '', url);
     },
 
     setupFilterEventListeners() {
@@ -75,9 +54,9 @@ const NRW = {
 
                 // Update filter and re-render
                 this.currentFilter = e.target.dataset.filter;
-                this.currentPage = 1; // Reset to page 1 when changing filters
+                this.displayedCount = this.loadIncrement; // Reset when changing filters
                 this.applyFilter();
-                this.renderPaginatedWall();
+                this.renderWallWithMore();
             });
         });
     },
@@ -99,77 +78,37 @@ const NRW = {
         });
     },
 
-    renderPaginatedWall() {
+    renderWallWithMore() {
         const sortedMovies = [...this.filteredMovies].sort((a, b) => {
             return new Date(b.digital_date) - new Date(a.digital_date);
         });
 
-        const totalPages = Math.ceil(sortedMovies.length / this.moviesPerPage);
-        const startIndex = (this.currentPage - 1) * this.moviesPerPage;
-        const endIndex = startIndex + this.moviesPerPage;
-        const currentPageMovies = sortedMovies.slice(startIndex, endIndex);
+        const moviesToShow = sortedMovies.slice(0, this.displayedCount);
+        const hasMore = this.displayedCount < sortedMovies.length;
 
-        this.renderWall(currentPageMovies);
-        this.renderPaginationControls(totalPages);
-        this.updateUrl();
+        this.renderWall(moviesToShow);
+        this.renderMoreButton(hasMore, sortedMovies.length);
     },
 
-    renderPaginationControls(totalPages) {
-        const paginationContainer = document.getElementById('pagination');
-        const paginationBottomContainer = document.getElementById('pagination-bottom');
+    renderMoreButton(hasMore, totalCount) {
+        const container = document.getElementById('load-more-container');
+        if (!container) return;
 
-        if (totalPages <= 1) {
-            if (paginationContainer) paginationContainer.innerHTML = '';
-            if (paginationBottomContainer) paginationBottomContainer.innerHTML = '';
-            return;
+        if (hasMore) {
+            const remaining = totalCount - this.displayedCount;
+            container.innerHTML = `
+                <button class="load-more-btn" onclick="NRW.loadMore()">
+                    MORE (${remaining} more)
+                </button>
+            `;
+        } else {
+            container.innerHTML = '';
         }
-
-        let html = `
-            <div class="pagination-info">
-                Showing ${(this.currentPage - 1) * this.moviesPerPage + 1}-${Math.min(this.currentPage * this.moviesPerPage, this.filteredMovies.length)} of ${this.filteredMovies.length} movies
-            </div>
-            <nav class="pagination-nav" aria-label="Movie pagination">
-        `;
-
-        // Previous button
-        if (this.currentPage > 1) {
-            html += `<button onclick="NRW.goToPage(${this.currentPage - 1})" aria-label="Previous page">&laquo; Previous</button>`;
-        }
-
-        // Page numbers (show current and 2 pages on each side)
-        const startPage = Math.max(1, this.currentPage - 2);
-        const endPage = Math.min(totalPages, this.currentPage + 2);
-
-        if (startPage > 1) {
-            html += `<button onclick="NRW.goToPage(1)">1</button>`;
-            if (startPage > 2) html += '<span class="pagination-ellipsis">...</span>';
-        }
-
-        for (let i = startPage; i <= endPage; i++) {
-            const isActive = i === this.currentPage ? ' active' : '';
-            html += `<button onclick="NRW.goToPage(${i})" class="pagination-btn${isActive}" ${isActive ? 'aria-current="page"' : ''}>${i}</button>`;
-        }
-
-        if (endPage < totalPages) {
-            if (endPage < totalPages - 1) html += '<span class="pagination-ellipsis">...</span>';
-            html += `<button onclick="NRW.goToPage(${totalPages})">${totalPages}</button>`;
-        }
-
-        // Next button
-        if (this.currentPage < totalPages) {
-            html += `<button onclick="NRW.goToPage(${this.currentPage + 1})" aria-label="Next page">Next &raquo;</button>`;
-        }
-
-        html += '</nav>';
-
-        if (paginationContainer) paginationContainer.innerHTML = html;
-        if (paginationBottomContainer) paginationBottomContainer.innerHTML = html;
     },
 
-    goToPage(page) {
-        this.currentPage = page;
-        this.renderPaginatedWall();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+    loadMore() {
+        this.displayedCount += this.loadIncrement;
+        this.renderWallWithMore();
     },
 
 
@@ -372,45 +311,3 @@ const NRW = {
 
 // Start on page load
 document.addEventListener('DOMContentLoaded', () => NRW.init());
-
-// Mobile swipe navigation
-(function() {
-    let touchStartX = 0;
-    let touchStartY = 0;
-    let touchEndX = 0;
-    let touchEndY = 0;
-
-    const wall = document.getElementById('wall');
-    if (!wall) return;
-
-    wall.addEventListener('touchstart', (e) => {
-        touchStartX = e.changedTouches[0].screenX;
-        touchStartY = e.changedTouches[0].screenY;
-    }, { passive: true });
-
-    wall.addEventListener('touchend', (e) => {
-        touchEndX = e.changedTouches[0].screenX;
-        touchEndY = e.changedTouches[0].screenY;
-        handleSwipe();
-    }, { passive: true });
-
-    function handleSwipe() {
-        const deltaX = touchEndX - touchStartX;
-        const deltaY = touchEndY - touchStartY;
-        const minSwipe = 80; // minimum swipe distance
-
-        // Only handle horizontal swipes (ignore vertical scrolling)
-        if (Math.abs(deltaX) < minSwipe || Math.abs(deltaY) > Math.abs(deltaX)) return;
-
-        // Swipe left = next page, swipe right = prev page
-        if (deltaX < 0 && NRW.currentPage < Math.ceil(NRW.filteredMovies.length / NRW.moviesPerPage)) {
-            NRW.currentPage++;
-            NRW.renderPaginatedWall();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        } else if (deltaX > 0 && NRW.currentPage > 1) {
-            NRW.currentPage--;
-            NRW.renderPaginatedWall();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-    }
-})();
