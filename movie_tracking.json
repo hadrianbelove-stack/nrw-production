@@ -67064,12 +67064,20 @@
     "1584780": {
       "title": "I\u2019m Chevy Chase and You\u2019re Not",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-01",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-01-24",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "YouTube TV"
+        ]
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1584371": {
       "title": "Open Acting Studio Days Part: 2",
@@ -114883,13 +114891,23 @@
     "1374315": {
       "title": "Writing Hawa",
       "year": 2024,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-01-24",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "IDFA",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1374312": {
       "title": "Light Memories",
@@ -149786,13 +149804,27 @@
     "1230368": {
       "title": "Springsteen: Deliver Me from Nowhere",
       "year": 2025,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-23",
-      "digital_date": null,
+      "digital_date": "2026-01-24",
       "intake_pass": "A",
-      "has_providers": false,
+      "has_providers": true,
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "providers": {
+        "rent": [
+          "Amazon Video",
+          "Fandango At Home"
+        ],
+        "buy": [
+          "Amazon Video",
+          "Apple TV Store",
+          "Google Play Movies",
+          "YouTube",
+          "Fandango At Home"
+        ],
+        "streaming": []
+      }
     },
     "1053592": {
       "title": "All the Names of God",
@@ -149835,22 +149867,39 @@
     "1608982": {
       "title": "From the Ashes: The Pit",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-23",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-01-24",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
+      },
       "intake_pass": "A",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1538718": {
       "title": "Disneyland Handcrafted",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-23",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-01-24",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Disney Plus"
+        ]
+      },
       "intake_pass": "A",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1435794": {
       "title": "Aspire",
@@ -149865,13 +149914,36 @@
     "1019939": {
       "title": "Hundreds of Beavers",
       "year": 2024,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-23",
-      "digital_date": null,
+      "digital_date": "2026-01-24",
       "intake_pass": "A",
-      "has_providers": false,
+      "has_providers": true,
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "providers": {
+        "rent": [
+          "Amazon Video",
+          "Apple TV Store",
+          "Fandango At Home",
+          "MovieMe"
+        ],
+        "buy": [
+          "Amazon Video",
+          "Apple TV Store",
+          "Fandango At Home"
+        ],
+        "streaming": [
+          "Amazon Prime Video",
+          "MUBI",
+          "MUBI Amazon Channel",
+          "Fandor Amazon Channel",
+          "ARROW",
+          "Midnight Pulp",
+          "Amazon Prime Video with Ads",
+          "Midnight Pulp Amazon Channel"
+        ]
+      }
     },
     "1621427": {
       "title": "Spectral",
@@ -150206,12 +150278,21 @@
     "1263037": {
       "title": "Cheekatilo",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-23",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-01-24",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Amazon Prime Video",
+          "Amazon Prime Video with Ads"
+        ]
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1235409": {
       "title": "Standout: The Ben Kjar Story",
@@ -150282,7 +150363,367 @@
       "providers": {},
       "intake_pass": "B",
       "has_providers": false
+    },
+    "1617870": {
+      "title": "Saturday Night's Main Event XLIII",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A",
+      "has_providers": false
+    },
+    "1621666": {
+      "title": "The Mail Lady 3",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A",
+      "has_providers": false
+    },
+    "1621612": {
+      "title": "Tears to a Glass Eye",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A",
+      "has_providers": false
+    },
+    "1621244": {
+      "title": "Marigold New Year Golden Garden 2026 ~Mayu Iwatani's 15th Anniversary~ ICON Forever",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1620711": {
+      "title": "Its Presence Between Us",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1619677": {
+      "title": "Bournemouth VS Liverpool PL 25/26",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1619676": {
+      "title": "Manchester City VS Wolverhampton Wanderers PL 25/26",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1619674": {
+      "title": "Fulham VS Brighton PL 25/26",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1619673": {
+      "title": "Burnley vs Tottenham Hotspur PL 25/26",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1619671": {
+      "title": "West Ham VS Sunderland PL 25/26",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1618594": {
+      "title": "Tout bascule",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1618516": {
+      "title": "Stardom 15th Anniversary Stardom Award 2025 in Takadanobaba ~ Day 1",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1617804": {
+      "title": "Estopim",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1617519": {
+      "title": "Toni Braxton\u2019s Breathe Again",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1616488": {
+      "title": "Memoirs of a Mountain Doctor",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1616485": {
+      "title": "Unisono",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1615884": {
+      "title": "Lydia \u2013 Aufzeichnungen aus dem Irrenhaus",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1613398": {
+      "title": "Running Man Vi\u1ec7t Nam M\u00f9a 3: Con R\u1ed1i T\u1ef1 Do",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1613167": {
+      "title": "The Silence of Snow",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1613165": {
+      "title": "Malandro Moon",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1604480": {
+      "title": "Barbara Buser \u2013 Swiss Pioneer of Sustainability",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1604469": {
+      "title": "Differently Different \u2013 What Connects Us",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1604459": {
+      "title": "Hirschfeld \u2013 The Unknown Known",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1604452": {
+      "title": "Freedom \u2013 Shewit's Destiny",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1604443": {
+      "title": "Social Landscapes",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1602722": {
+      "title": "\u8212\u514b\u8d1d\u5854\u4e4b\u5fae\u7f29\u4eba\u7c7b",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1595180": {
+      "title": "Met Opera: The Amazing Adventures of Kavalier & Clay",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1593221": {
+      "title": "\u5b87\u5b99\u62a4\u536b\u961f\uff1a\u767e\u53d8\u6d41\u661f",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1497873": {
+      "title": "As The Water Flows",
+      "year": 2026,
+      "status": "available",
+      "first_seen": "2026-01-24",
+      "digital_date": "2026-01-24",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
+      "intake_pass": "B",
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
+    },
+    "1282686": {
+      "title": "Whispered Voices",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1217924": {
+      "title": "Unstoppable",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1621902": {
+      "title": "Galicia! A Better World Is Possible",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1573024": {
+      "title": "Farwell Cuba",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1213898": {
+      "title": "Border 2",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1621707": {
+      "title": "Tatort: Das B\u00f6se in dir",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
     }
   },
-  "last_update": "2026-01-23T09:28:11.317943"
+  "last_update": "2026-01-24T09:19:09.166064"
 }
