@@ -35292,13 +35292,22 @@
     },
     "1142921": {
       "title": "Tere Ishk Mein",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2025-11-28",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-01-25",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
+      },
       "discovery_pass": "B",
-      "has_providers": false,
-      "year": 2025
+      "has_providers": true,
+      "year": 2025,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1119195": {
       "title": "The AlphabetMan",
@@ -112192,13 +112201,21 @@
     "1370424": {
       "title": "Black Spines",
       "year": 2024,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-01-25",
+      "providers": {
+        "rent": [
+          "Plex"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "NYFF",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1369824": {
       "title": "A Pathway Forward",
@@ -146197,12 +146214,24 @@
     "1615290": {
       "title": "The Nursing Home",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-14",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-01-25",
+      "providers": {
+        "rent": [
+          "Google Play Movies",
+          "YouTube"
+        ],
+        "buy": [
+          "Google Play Movies",
+          "YouTube"
+        ],
+        "streaming": []
+      },
       "intake_pass": "A",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1584215": {
       "title": "The Internship",
@@ -147491,12 +147520,22 @@
     "1617821": {
       "title": "Don't Trust the Quiet Ones",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-17",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-01-25",
+      "providers": {
+        "rent": [
+          "YouTube"
+        ],
+        "buy": [
+          "YouTube"
+        ],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1617536": {
       "title": "One Two Cha Cha Chaa",
@@ -147717,12 +147756,22 @@
     "1618161": {
       "title": "Body of Influence",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-18",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-01-25",
+      "providers": {
+        "rent": [
+          "Google Play Movies"
+        ],
+        "buy": [
+          "Google Play Movies"
+        ],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1610703": {
       "title": "Infirmary",
@@ -149804,9 +149853,9 @@
     "1230368": {
       "title": "Springsteen: Deliver Me from Nowhere",
       "year": 2025,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-23",
-      "digital_date": null,
+      "digital_date": "2026-01-25",
       "intake_pass": "A",
       "has_providers": true,
       "enriched": false,
@@ -149823,7 +149872,9 @@
           "YouTube",
           "Fandango At Home"
         ],
-        "streaming": []
+        "streaming": [
+          "Hulu"
+        ]
       }
     },
     "1053592": {
@@ -149914,9 +149965,9 @@
     "1019939": {
       "title": "Hundreds of Beavers",
       "year": 2024,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-23",
-      "digital_date": null,
+      "digital_date": "2026-01-25",
       "intake_pass": "A",
       "has_providers": true,
       "enriched": false,
@@ -150723,7 +150774,177 @@
       "providers": {},
       "intake_pass": "B",
       "has_providers": false
+    },
+    "1622367": {
+      "title": "Lewis and Clark in the Secret of the Bigfoot",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A",
+      "has_providers": false
+    },
+    "1599090": {
+      "title": "Skyscraper Live",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A",
+      "has_providers": false
+    },
+    "1622357": {
+      "title": "The Male Gaze: Wild Youth",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A",
+      "has_providers": false
+    },
+    "1229734": {
+      "title": "The Inn",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A",
+      "has_providers": false
+    },
+    "1620568": {
+      "title": "TJPW The 6th \"Futari wa Princess\" Max Heart Tournament ~ Day 2",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1619682": {
+      "title": "Arsenal VS Manchester United PL 25/26",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1619680": {
+      "title": "Newcastle VS Aston Villa PL 25/26",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1619679": {
+      "title": "Crystal Palace VS Chelsea PL 25/26",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1619678": {
+      "title": "Brentford VS Nottingham Forest PL 25/26",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1618524": {
+      "title": "DDT Mission in Battle ~new year splendor~",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1618518": {
+      "title": "Stardom 15th Anniversary Stardom Award 2025 in Takadanobaba ~ Day 2",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1261188": {
+      "title": "The Swedish Connection",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1622307": {
+      "title": "The Escape from Little St James",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1622284": {
+      "title": "Goodnight, College",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1622280": {
+      "title": "Oxmo Puccino \u00e0 l'Adidas Arena",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1621983": {
+      "title": "France, il \u00e9tait une fois demain",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1621770": {
+      "title": "Anna und ihr Untermieter - Volles Haus",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
     }
   },
-  "last_update": "2026-01-24T09:19:09.166064"
+  "last_update": "2026-01-25T09:19:45.675393"
 }
