@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-01-24T09:59:38.716267",
-  "count": 121,
+  "generated_at": "2026-01-24T16:50:54.385462",
+  "count": 119,
   "movies": [
     {
       "id": "1497873",
@@ -25,14 +25,16 @@
         "streaming": []
       },
       "links": {
-        "trailer": "https://www.youtube.com/watch?v=dSMKfCVXl-Y",
+        "trailer": "https://www.youtube.com/watch?v=0t-xZOwFHjE",
         "rt": "https://www.rottentomatoes.com/m/the_water_flows_to_the_sea"
       },
       "watch_links": {
-        "vod": {
-          "service": "Amazon",
-          "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.80ad2494-18b5-4d5b-b272-e8fd0dd53a21&tag=nrw04-20"
-        }
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.80ad2494-18b5-4d5b-b272-e8fd0dd53a21&tag=nrw04-20"
+          }
+        ]
       },
       "_enrichment_status": "completed",
       "_discovered_at": "2026-01-24T09:57:50.510181",
@@ -77,10 +79,12 @@
         "rt": "https://www.rottentomatoes.com/m/cheekatilo_2026"
       },
       "watch_links": {
-        "streaming": {
-          "service": "Amazon",
-          "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.1ee49ac8-0422-46d4-b924-7757b5ae73d7"
-        }
+        "streaming": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.1ee49ac8-0422-46d4-b924-7757b5ae73d7"
+          }
+        ]
       },
       "_enrichment_status": "completed",
       "_discovered_at": "2026-01-24T09:57:43.645156",
@@ -98,76 +102,6 @@
       },
       "_discovery_source": "provider_availability_check",
       "_digital_date_source": "detection"
-    },
-    {
-      "id": "1019939",
-      "title": "Hundreds of Beavers",
-      "digital_date": "2024-04-15",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "synopsis": "In the 19th century, a drunken applejack salesman must go from zero to hero and become North America's greatest fur trapper by defeating hundreds of beavers.",
-      "genres": [
-        "Comedy",
-        "Adventure",
-        "Action"
-      ],
-      "runtime": 108,
-      "year": 2024,
-      "rt_score": "82%",
-      "providers": {
-        "rent": [
-          "Amazon Video",
-          "Apple TV Store",
-          "Fandango At Home",
-          "MovieMe"
-        ],
-        "buy": [
-          "Amazon Video",
-          "Apple TV Store",
-          "Fandango At Home"
-        ],
-        "streaming": [
-          "Amazon Prime Video",
-          "MUBI",
-          "MUBI Amazon Channel",
-          "Fandor Amazon Channel",
-          "ARROW",
-          "Midnight Pulp",
-          "Amazon Prime Video with Ads",
-          "Midnight Pulp Amazon Channel"
-        ]
-      },
-      "links": {
-        "wikipedia": "https://en.wikipedia.org/wiki/Hundreds_of_Beavers",
-        "trailer": "https://www.youtube.com/watch?v=Dm5XHpQZvek",
-        "rt": "https://www.rottentomatoes.com/m/hundreds_of_beavers"
-      },
-      "watch_links": {
-        "streaming": {
-          "service": "Amazon",
-          "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.d69b33f5-d238-4a6d-86ba-7e49ff5c7e05"
-        },
-        "vod": {
-          "service": "Amazon",
-          "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.d69b33f5-d238-4a6d-86ba-7e49ff5c7e05&tag=nrw04-20"
-        }
-      },
-      "_enrichment_status": "completed",
-      "_discovered_at": "2026-01-24T09:57:37.148011",
-      "_tmdb_fetch_failed": false,
-      "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/qgXS9HrYaYDnILeXebatCbtX9IP.jpg",
-      "studio": "SRH",
-      "country": "United States of America",
-      "crew": {
-        "director": "Mike Cheslik",
-        "cast": [
-          "Ryland Brickson Cole Tews",
-          "Olivia Graves"
-        ]
-      },
-      "_discovery_source": "provider_availability_check",
-      "_digital_date_source": "tmdb_type4"
     },
     {
       "id": "1538718",
@@ -194,10 +128,12 @@
         "rt": "https://www.rottentomatoes.com/m/disneyland_handcrafted"
       },
       "watch_links": {
-        "streaming": {
-          "service": "Disney+",
-          "link": "https://disneyplus.bn5x.net/c/1206980/705874/9358?u=https%3A%2F%2Fwww.disneyplus.com%2Fbrowse%2Fentity-e23366be-f7a0-426e-9fbd-8911e7e528bb&subId3=justappsvod"
-        }
+        "streaming": [
+          {
+            "service": "Disney+",
+            "link": "https://disneyplus.bn5x.net/c/1206980/705874/9358?u=https%3A%2F%2Fwww.disneyplus.com%2Fbrowse%2Fentity-e23366be-f7a0-426e-9fbd-8911e7e528bb&subId3=justappsvod"
+          }
+        ]
       },
       "_enrichment_status": "completed",
       "_discovered_at": "2026-01-24T09:57:36.659248",
@@ -243,83 +179,25 @@
         "rt": "https://www.rottentomatoes.com/m/from_the_ashes_the_pit"
       },
       "watch_links": {
-        "streaming": {
-          "service": "Netflix",
-          "link": "https://www.netflix.com/title/81900394"
-        }
+        "streaming": [
+          {
+            "service": "Netflix",
+            "link": "https://www.netflix.com/title/81900394"
+          }
+        ]
       },
       "_enrichment_status": "completed",
       "_discovered_at": "2026-01-24T09:57:36.367000",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/9jpq7YSNIwY4Wua15QM0lmGp3zn.jpg",
+      "poster": "https://image.tmdb.org/t/p/w500/iwZIR8wp1lqj69zsbWmZKhXTTIU.jpg",
       "studio": "Ideation Studios",
       "country": "Saudi Arabia",
       "crew": {
         "director": "Abdullah Bamajbour",
         "cast": [
           "Adwaa Fahad",
-          "Darin AlBayed"
-        ]
-      },
-      "_discovery_source": "provider_availability_check",
-      "_digital_date_source": "tmdb_type4"
-    },
-    {
-      "id": "1230368",
-      "title": "Springsteen: Deliver Me from Nowhere",
-      "digital_date": "2025-12-23",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "synopsis": "Bruce Springsteen, a young musician on the cusp of global superstardom, struggles to reconcile the pressures of success with the ghosts of his past.",
-      "genres": [
-        "Drama",
-        "Music"
-      ],
-      "runtime": 120,
-      "year": 2025,
-      "rt_score": "77%",
-      "providers": {
-        "rent": [
-          "Amazon Video",
-          "Fandango At Home"
-        ],
-        "buy": [
-          "Amazon Video",
-          "Apple TV Store",
-          "Google Play Movies",
-          "YouTube",
-          "Fandango At Home"
-        ],
-        "streaming": []
-      },
-      "links": {
-        "wikipedia": "https://en.wikipedia.org/wiki/Springsteen:_Deliver_Me_from_Nowhere",
-        "trailer": "https://www.youtube.com/watch?v=dH9NgXGVgK4",
-        "rt": "https://www.rottentomatoes.com/m/springsteen_deliver_me_from_nowhere"
-      },
-      "watch_links": {
-        "streaming": {
-          "service": "Hulu",
-          "link": "https://www.hulu.com/watch/49e49225-e6d8-4cd2-880a-c8f89f9b611b"
-        },
-        "vod": {
-          "service": "Amazon",
-          "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.f0223137-bbdf-430b-be86-8577a1b858dd&tag=nrw04-20"
-        }
-      },
-      "_enrichment_status": "completed",
-      "_discovered_at": "2026-01-24T09:57:35.694721",
-      "_tmdb_fetch_failed": false,
-      "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/csBV3eq4RDjNg1acNQ8kwOZyPlZ.jpg",
-      "studio": "20th Century Studios",
-      "country": "United States of America",
-      "crew": {
-        "director": "Scott Cooper",
-        "cast": [
-          "Jeremy Allen White",
-          "Jeremy Strong"
+          "Aseel Morya"
         ]
       },
       "_discovery_source": "provider_availability_check",
@@ -352,10 +230,12 @@
         "rt": "https://www.rottentomatoes.com/m/writing_hawa"
       },
       "watch_links": {
-        "vod": {
-          "service": "Amazon",
-          "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.47341a52-6b29-4860-8d68-906434ca1110&tag=nrw04-20"
-        }
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.47341a52-6b29-4860-8d68-906434ca1110&tag=nrw04-20"
+          }
+        ]
       },
       "_enrichment_status": "completed",
       "_discovered_at": "2026-01-24T09:53:39.331862",
@@ -397,10 +277,12 @@
         "rt": "https://www.rottentomatoes.com/m/im_chevy_chase_and_youre_not"
       },
       "watch_links": {
-        "streaming": {
-          "service": "Amazon",
-          "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.597c0d62-df55-49e0-bc89-1c9a74e152fc"
-        }
+        "streaming": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.597c0d62-df55-49e0-bc89-1c9a74e152fc"
+          }
+        ]
       },
       "_enrichment_status": "completed",
       "_discovered_at": "2026-01-24T09:48:23.743440",
@@ -425,9 +307,38 @@
       "digital_date": "2026-01-23",
       "manually_added": true,
       "year": 2024,
-      "_enrichment_status": "pending",
+      "_enrichment_status": "completed",
       "_discovered_at": "2026-01-23T19:56:10.783685",
-      "_discovery_source": "manual_add"
+      "_discovery_source": "manual_add",
+      "poster": "https://image.tmdb.org/t/p/w500/vm4497JiQoQC45FVWNg25fqzeN7.jpg",
+      "synopsis": "In a small rural town, Joo Se-jong sells bootleg alcohol with his two younger brothers. Thing is, someone has died after drinking their liquor, so they must take back the hooch they\u2019ve brewed and sent to the town of Hwaseong, before another person perishes from it. While on a mission to retrieve their deadly booze, they come across two dangerous and homicidal cultists who are terrorizing the villagers. Now, they must also fight for their survival and go up against the murderous duo.",
+      "runtime": 126,
+      "rt_score": "40%",
+      "links": {
+        "trailer": "https://www.youtube.com/watch?v=zZhMjx2fcdU",
+        "rt": "https://www.rottentomatoes.com/m/mash_ville"
+      },
+      "watch_links": {
+        "vod": {
+          "service": "Amazon",
+          "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.cf9051ca-f504-455c-ad65-aacb37a530f0&tag=nrw04-20"
+        }
+      },
+      "crew": {
+        "director": "Hwang Wook",
+        "cast": [
+          "Chun Sin-hwan",
+          "Park Jong-hwan"
+        ]
+      },
+      "genres": [
+        "Action",
+        "Western",
+        "Comedy"
+      ],
+      "studio": null,
+      "country": "South Korea",
+      "_digital_date_source": "detection"
     },
     {
       "id": "manual_savage_flowers",
