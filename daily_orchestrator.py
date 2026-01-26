@@ -136,12 +136,17 @@ class NRWOrchestrator:
 
     def check_changes(self):
         """Check if there are git changes to commit (only data.json for CI workflow)"""
-        result = subprocess.run(
-            "git diff --quiet data.json",
-            shell=True
-        )
-        self.has_changes = result.returncode != 0
-        return self.has_changes
+        try:
+            result = subprocess.run(
+                ['git', 'diff', '--quiet', 'data.json'],
+                shell=False
+            )
+            self.has_changes = result.returncode != 0
+            return self.has_changes
+        except Exception as e:
+            print(f"⚠️ Error checking git changes: {e}")
+            self.has_changes = False
+            return False
 
 
 
@@ -1090,8 +1095,8 @@ class NRWOrchestrator:
                             print(f"⚠️  Date/timestamp mismatch (date={date}, timestamp date={timestamp_date})")
                         else:
                             print(f"✅ Date/timestamp consistent")
-                    except:
-                        print(f"⚠️  Could not verify timestamp consistency")
+                    except Exception as ts_err:
+                        print(f"⚠️  Could not verify timestamp consistency: {ts_err}")
 
                 # Show a few movie IDs for diagnostics
                 if movie_ids and len(movie_ids) > 0:
@@ -1260,9 +1265,9 @@ class NRWOrchestrator:
             try:
                 self.save_run_diagnostics()
                 self.print_summary()
-            except:
-                # If saving diagnostics fails, just print basic info
-                print(f"\n❌ Failed to save diagnostics after interruption")
+            except Exception as diag_err:
+                # If saving diagnostics fails, log WHY so we can debug later
+                print(f"\n❌ Failed to save diagnostics after interruption: {diag_err}")
             return 0  # Best-effort: don't fail CI on user interruption
         except Exception as e:
             print(f"\n❌ Unexpected orchestrator error: {e}")
@@ -1276,9 +1281,9 @@ class NRWOrchestrator:
             try:
                 self.save_run_diagnostics()
                 self.print_summary()
-            except:
-                # If saving diagnostics fails, just print basic info
-                print(f"\n❌ Failed to save diagnostics for orchestrator error: {e}")
+            except Exception as diag_err:
+                # If saving diagnostics fails, log WHY so we can debug later
+                print(f"\n❌ Failed to save diagnostics for orchestrator error: {diag_err}")
             return 0  # Best-effort: record failure but don't fail CI
         finally:
             # Always remove lock file
@@ -1286,8 +1291,8 @@ class NRWOrchestrator:
             if os.path.exists(lock_file):
                 try:
                     os.remove(lock_file)
-                except:
-                    pass
+                except Exception as lock_err:
+                    print(f"⚠️  Could not remove lock file: {lock_err}")
 
 def main():
     """Entry point - orchestrator handles all exceptions with best-effort policy"""

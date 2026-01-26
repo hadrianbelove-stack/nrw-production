@@ -233,10 +233,14 @@ class YouTubeTrailerScraper:
                     print(f"\nReached max searches limit ({max_searches})")
                     break
 
+                # Check if cached BEFORE calling find_trailer (which adds to cache)
+                cache_key = f"{title}_{year}"
+                was_cached = cache_key in self.cache
+
                 url = self.find_trailer(title, year)
                 results[(title, year)] = url
 
-                if url and url not in self.cache:  # Only count new searches
+                if url and not was_cached:  # Only count new searches, not cache hits
                     searches_done += 1
                     time.sleep(1)  # Rate limiting - be nice to YouTube
 

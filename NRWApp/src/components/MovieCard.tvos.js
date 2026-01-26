@@ -26,6 +26,7 @@ const MovieCard = ({
   testID,
 }) => {
   const [isFocused, setIsFocused] = useState(false);
+  const [imageError, setImageError] = useState(false);
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const shadowAnim = useRef(new Animated.Value(0)).current;
 
@@ -98,6 +99,7 @@ const MovieCard = ({
 
   // Get poster URL
   const posterUrl = movie.poster_url || movie.posterUrl || movie.poster;
+  const hasPoster = !!posterUrl;
 
   return (
     <TouchableOpacity
@@ -134,12 +136,21 @@ const MovieCard = ({
           ]}
         />
 
-        {/* Poster image */}
-        <Image
-          source={{ uri: posterUrl }}
-          style={styles.poster}
-          resizeMode="cover"
-        />
+        {/* Poster image or placeholder */}
+        {hasPoster && !imageError ? (
+          <Image
+            source={{ uri: posterUrl }}
+            style={styles.poster}
+            resizeMode="cover"
+            onError={() => setImageError(true)}
+          />
+        ) : (
+          <View style={styles.posterPlaceholder}>
+            <Text style={styles.placeholderText} numberOfLines={3}>
+              {movie.title}
+            </Text>
+          </View>
+        )}
 
         {/* Featured badge */}
         {movie.featured && (
@@ -194,6 +205,23 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     borderRadius: 12,
+  },
+  posterPlaceholder: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 12,
+    backgroundColor: Colors.backgroundSecondary,
+    borderWidth: 1,
+    borderColor: Colors.border || '#333',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: Spacing.tvos.md,
+  },
+  placeholderText: {
+    color: Colors.textMuted,
+    fontSize: Typography.tvos.body,
+    textAlign: 'center',
+    fontWeight: '500',
   },
   featuredBadge: {
     position: 'absolute',

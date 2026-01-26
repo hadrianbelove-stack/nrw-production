@@ -18,17 +18,16 @@ const CACHE_DURATION = 24 * 60 * 60 * 1000;
  */
 export async function fetchMovies() {
   try {
-    // Check for cached data first
-    const cached = await getCachedData(CACHE_KEYS.MOVIES);
+    // Always fetch fresh data to ensure posters are up to date
+    // TODO: Re-enable caching once data is stable
+    console.log('[API] Fetching fresh movie data from GitHub (cache bypassed)');
 
-    if (cached && !isCacheExpired(cached.timestamp)) {
-      console.log('[API] Returning cached movie data');
-      return extractMoviesData(cached.data);
-    }
+    // Add timeout to prevent indefinite hang on slow networks
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
 
-    // Fetch fresh data from GitHub
-    console.log('[API] Fetching fresh movie data from GitHub');
-    const response = await fetch(DATA_URL);
+    const response = await fetch(DATA_URL, { signal: controller.signal });
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);

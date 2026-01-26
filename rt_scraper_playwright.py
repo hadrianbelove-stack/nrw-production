@@ -42,7 +42,9 @@ class RTScraperPlaywright:
 
         # Rate limiting
         self.last_scrape_time = 0
-        self.rate_limit = self.scraper_config.get('rate_limit') or 1.5  # Default to 1.5s if not configured
+        # Fix: use 'is not None' to allow rate_limit of 0
+        rate_limit = self.scraper_config.get('rate_limit')
+        self.rate_limit = rate_limit if rate_limit is not None else 1.5
 
         # Cache
         self.cache = self._load_cache()

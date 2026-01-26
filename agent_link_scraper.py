@@ -198,12 +198,9 @@ class AgentLinkScraper:
                 pass
             self.context = None
 
-        if self.browser:
-            try:
-                self.browser.close()
-            except:
-                pass
-            self.browser = None
+        # Note: Don't close self.browser directly - it's managed by PlaywrightManager
+        # Closing it here would conflict with manager.release() below
+        self.browser = None
 
         # Cleanup Playwright via shared manager
         if self.playwright:
