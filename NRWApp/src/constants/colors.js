@@ -85,12 +85,12 @@ export const Spacing = {
 };
 
 export const Dimensions = {
-  // tvOS card dimensions (20% smaller)
+  // tvOS card dimensions - optimized for 7 columns x 3 rows on 1920x1080
   tvos: {
-    cardWidth: 224,
-    cardHeight: 336,
-    featuredCardWidth: 224,
-    featuredCardHeight: 336,
+    cardWidth: 210,
+    cardHeight: 315,
+    featuredCardWidth: 210,
+    featuredCardHeight: 315,
     posterAspectRatio: 2 / 3,
   },
   // iOS card dimensions

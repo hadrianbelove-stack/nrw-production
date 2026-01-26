@@ -27,6 +27,7 @@ export function useHomeScreen() {
   const [movies, setMovies] = useState([]);
   const [featuredMovies, setFeaturedMovies] = useState([]);
   const [featuredIds, setFeaturedIds] = useState([]);
+  const [latestPlaylistUrl, setLatestPlaylistUrl] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeFilter, setActiveFilter] = useState('all');
@@ -57,9 +58,10 @@ export function useHomeScreen() {
     setError(null);
 
     try {
-      const { movies: moviesArray, featured: featuredIdsList } = await fetchMovies();
+      const { movies: moviesArray, featured: featuredIdsList, latestPlaylistUrl: playlistUrl } = await fetchMovies();
       setMovies(moviesArray);
       setFeaturedIds(featuredIdsList);
+      setLatestPlaylistUrl(playlistUrl);
 
       // Build featured movies list using the root featured IDs or movie.featured flag
       let featured = [];
@@ -171,6 +173,7 @@ export function useHomeScreen() {
     activeFilter,
     searchQuery,
     lastFocusedPosition,
+    latestPlaylistUrl,
 
     // Actions
     refreshMovies,

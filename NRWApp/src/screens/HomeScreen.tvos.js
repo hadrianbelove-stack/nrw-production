@@ -10,6 +10,10 @@ import {
   FlatList,
   StyleSheet,
   ActivityIndicator,
+  TouchableOpacity,
+  Linking,
+  Animated,
+  Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useHomeScreen } from './useHomeScreen';
@@ -30,6 +34,82 @@ const CARD_WIDTH = Dimensions.tvos.cardWidth;
 const CARD_HEIGHT = Dimensions.tvos.cardHeight;
 const CARD_GAP = 16;
 
+// Trailers Card Component with focus animations
+const TrailersCard = ({ playlistUrl }) => {
+  const [isFocused, setIsFocused] = useState(false);
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+
+  const handleFocus = useCallback(() => {
+    setIsFocused(true);
+    Animated.timing(scaleAnim, {
+      toValue: 1.08,
+      duration: 150,
+      useNativeDriver: true,
+    }).start();
+  }, [scaleAnim]);
+
+  const handleBlur = useCallback(() => {
+    setIsFocused(false);
+    Animated.timing(scaleAnim, {
+      toValue: 1,
+      duration: 150,
+      useNativeDriver: true,
+    }).start();
+  }, [scaleAnim]);
+
+  const handlePress = useCallback(() => {
+    // Extract playlist ID from URL
+    let playlistId = null;
+    const url = playlistUrl || '';
+
+    const match = url.match(/[?&]list=([a-zA-Z0-9_-]+)/);
+    if (match) {
+      playlistId = match[1];
+    }
+
+    // Try different YouTube URL formats for tvOS
+    // Format 1: Simple playlist URL
+    const youtubeUrl = playlistId
+      ? `https://www.youtube.com/playlist?list=${playlistId}`
+      : 'https://www.youtube.com/@New-Release-Wall/playlists';
+
+    console.log('[Trailers] Opening YouTube playlist:', youtubeUrl);
+    console.log('[Trailers] Playlist ID:', playlistId);
+
+    // Use the https URL - tvOS should open it in YouTube app if installed
+    Linking.openURL(youtubeUrl).catch((err) => {
+      console.error('[Trailers] Error opening YouTube:', err);
+      Alert.alert(
+        'YouTube Not Available',
+        'Please install the YouTube app from the App Store to view trailers.'
+      );
+    });
+  }, [playlistUrl]);
+
+  return (
+    <TouchableOpacity
+      onPress={handlePress}
+      onFocus={handleFocus}
+      onBlur={handleBlur}
+      activeOpacity={1}
+      accessible={true}
+      accessibilityLabel="New Trailers - Opens YouTube playlist"
+      accessibilityRole="button"
+    >
+      <Animated.View
+        style={[
+          styles.trailersCard,
+          { transform: [{ scale: scaleAnim }] },
+        ]}
+      >
+        <Text style={styles.trailersText}>NEW</Text>
+        <Text style={styles.trailersText}>TRAILERS</Text>
+        {isFocused && <View style={styles.trailersFocusBorder} />}
+      </Animated.View>
+    </TouchableOpacity>
+  );
+};
+
 const HomeScreenTvOS = () => {
   const navigation = useNavigation();
   const flatListRef = useRef(null);
@@ -42,6 +122,7 @@ const HomeScreenTvOS = () => {
     activeFilter,
     refreshMovies,
     changeFilter,
+    latestPlaylistUrl,
   } = useHomeScreen();
 
   // Local state
@@ -68,6 +149,7 @@ const HomeScreenTvOS = () => {
 
     const items = [];
     let currentDate = null;
+    let isFirstDate = true;
 
     sorted.forEach((movie, index) => {
       const movieDate = movie.digital_date || 'Unknown';
@@ -75,6 +157,17 @@ const HomeScreenTvOS = () => {
       // Insert date marker when date changes
       if (movieDate !== currentDate) {
         currentDate = movieDate;
+
+        // Add NEW TRAILERS button before the first date
+        if (isFirstDate) {
+          items.push({
+            type: 'trailers',
+            id: 'new-trailers-button',
+            playlistUrl: latestPlaylistUrl,
+          });
+          isFirstDate = false;
+        }
+
         items.push({
           type: 'date',
           id: `date-${movieDate}-${index}`,
@@ -90,7 +183,7 @@ const HomeScreenTvOS = () => {
     });
 
     return items;
-  }, [filteredMovies]);
+  }, [filteredMovies, latestPlaylistUrl]);
 
   // Handle movie selection - navigate to detail with analytics
   const handleMovieSelect = useCallback(
@@ -145,6 +238,7 @@ const HomeScreenTvOS = () => {
     setIsRefreshing(false);
   }, [refreshMovies]);
 
+
   // Format date for display (matches web date divider style)
   const formatDateParts = useCallback((dateString) => {
     if (!dateString || dateString === 'Unknown') {
@@ -162,9 +256,19 @@ const HomeScreenTvOS = () => {
     }
   }, []);
 
-  // Render item (date marker or movie card)
+  // Render item (date marker, trailers button, or movie card)
   const renderItem = useCallback(
     ({ item, index }) => {
+      // NEW TRAILERS button
+      if (item.type === 'trailers') {
+        return (
+          <View style={styles.cardWrapper}>
+            <TrailersCard playlistUrl={item.playlistUrl} />
+          </View>
+        );
+      }
+
+      // Date marker
       if (item.type === 'date') {
         const dateParts = formatDateParts(item.date);
         return (
@@ -185,7 +289,7 @@ const HomeScreenTvOS = () => {
             movie={item.movie}
             onSelect={() => handleMovieSelect(item.movie)}
             onFocus={() => handleMovieFocus(item.movie, index)}
-            hasTVPreferredFocus={index === 1} // First movie after first date marker
+            hasTVPreferredFocus={index === 2} // First movie after trailers + first date marker
             testID={`movie-card-${index}`}
           />
         </View>
@@ -257,6 +361,11 @@ const HomeScreenTvOS = () => {
 
   return (
     <View style={styles.container}>
+      {/* Header with title */}
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>THE NEW RELEASE WALL</Text>
+      </View>
+
       {/* Vertical scrolling grid - the wall */}
       <FlatList
         ref={flatListRef}
@@ -297,14 +406,54 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.background,
   },
-  listContent: {
+  header: {
     paddingHorizontal: 40,
-    paddingTop: 40,
-    paddingBottom: 60,
+    paddingTop: 20,
+    paddingBottom: CARD_GAP,
+  },
+  headerTitle: {
+    color: Colors.textPrimary,
+    fontSize: 38,
+    fontWeight: '800',
+    letterSpacing: 4,
+    textAlign: 'center',
+  },
+  listContent: {
+    // Center the 7-column grid: (1920 - 7*(210+16)) / 2 = 169px
+    paddingHorizontal: 169,
+    paddingTop: 0,
+    paddingBottom: 20,
   },
   row: {
     justifyContent: 'flex-start',
     marginBottom: CARD_GAP,
+  },
+  // NEW TRAILERS button - same size as movie cards
+  trailersCard: {
+    width: CARD_WIDTH,
+    height: CARD_HEIGHT,
+    borderRadius: 12,
+    backgroundColor: '#E50914',
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
+  },
+  trailersText: {
+    color: '#FFFFFF',
+    fontSize: 28,
+    fontWeight: '900',
+    letterSpacing: 2,
+    textAlign: 'center',
+  },
+  trailersFocusBorder: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    borderRadius: 12,
+    borderWidth: 4,
+    borderColor: Colors.primary,
   },
   // Date card - same size as movie cards, styled like web
   dateCard: {
@@ -324,22 +473,22 @@ const styles = StyleSheet.create({
   },
   dateDayName: {
     color: Colors.textMuted,
-    fontSize: 18,
+    fontSize: 16,
     letterSpacing: 3,
-    marginBottom: 8,
+    marginBottom: 6,
   },
   dateNumber: {
     color: Colors.primary,
-    fontSize: 72,
+    fontSize: 64,
     fontWeight: 'bold',
-    lineHeight: 80,
+    lineHeight: 72,
   },
   dateMonth: {
     color: Colors.primary,
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: 'bold',
     letterSpacing: 4,
-    marginTop: 8,
+    marginTop: 6,
   },
   cardWrapper: {
     marginRight: CARD_GAP,

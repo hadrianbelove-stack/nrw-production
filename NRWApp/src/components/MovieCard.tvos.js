@@ -101,6 +101,34 @@ const MovieCard = ({
   const posterUrl = movie.poster_url || movie.posterUrl || movie.poster;
   const hasPoster = !!posterUrl;
 
+  // Get streaming service badge
+  const getStreamingBadge = () => {
+    const watchLinks = movie.watch_links || {};
+    const providers = movie.providers || {};
+
+    let service = watchLinks.streaming?.service;
+    if (!service && providers.streaming?.length > 0) {
+      service = providers.streaming.find(p => !p.includes('with Ads')) || providers.streaming[0];
+    }
+    if (!service) return null;
+
+    const s = service.toLowerCase();
+    if (s.includes('netflix')) return { name: 'NETFLIX', color: '#E50914' };
+    if (s.includes('disney')) return { name: 'DISNEY+', color: '#113CCF' };
+    if (s.includes('max') || s.includes('hbo')) return { name: 'MAX', color: '#002BE7' };
+    if (s.includes('amazon') || s.includes('prime')) return { name: 'PRIME', color: '#00A8E1' };
+    if (s.includes('hulu')) return { name: 'HULU', color: '#1CE783' };
+    if (s.includes('peacock')) return { name: 'PEACOCK', color: '#000000' };
+    if (s.includes('mubi')) return { name: 'MUBI', color: '#DA2128' };
+    if (s.includes('shudder')) return { name: 'SHUDDER', color: '#E31B23' };
+    if (s.includes('criterion')) return { name: 'CRITERION', color: '#000000' };
+    if (s.includes('paramount')) return { name: 'PARAMOUNT+', color: '#0064FF' };
+    if (s.includes('apple')) return { name: 'APPLE TV+', color: '#000000' };
+    return { name: service.toUpperCase().slice(0, 8), color: '#666666' };
+  };
+
+  const streamingBadge = getStreamingBadge();
+
   return (
     <TouchableOpacity
       onPress={handleSelect}
@@ -152,10 +180,20 @@ const MovieCard = ({
           </View>
         )}
 
-        {/* Featured badge */}
+        {/* Streaming service badge - upper right */}
+        {streamingBadge && (
+          <View style={[styles.streamingBadge, { backgroundColor: streamingBadge.color }]}>
+            <Text style={styles.streamingBadgeText}>{streamingBadge.name}</Text>
+          </View>
+        )}
+
+        {/* Featured border - red box around poster */}
+        {movie.featured && <View style={styles.featuredBorder} />}
+
+        {/* Featured strip - bottom red banner */}
         {movie.featured && (
-          <View style={styles.featuredBadge}>
-            <Text style={styles.featuredText}>FEATURED</Text>
+          <View style={styles.featuredStrip}>
+            <Text style={styles.featuredStripText}>FEATURED</Text>
           </View>
         )}
 
@@ -223,20 +261,42 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: '500',
   },
-  featuredBadge: {
+  streamingBadge: {
     position: 'absolute',
-    top: Spacing.tvos.sm,
-    right: Spacing.tvos.sm,
-    backgroundColor: Colors.featuredBadge,
-    paddingHorizontal: Spacing.tvos.sm,
-    paddingVertical: Spacing.tvos.xs,
-    borderRadius: 4,
+    top: Spacing.tvos.xs,
+    right: Spacing.tvos.xs,
+    paddingHorizontal: Spacing.tvos.xs + 2,
+    paddingVertical: Spacing.tvos.xs - 2,
+    borderRadius: 6,
   },
-  featuredText: {
-    color: Colors.featuredBadgeText,
-    fontSize: Typography.tvos.caption,
-    fontWeight: '700',
-    letterSpacing: 1,
+  streamingBadgeText: {
+    color: '#FFFFFF',
+    fontSize: Typography.tvos.caption - 4,
+    fontWeight: '800',
+    letterSpacing: 0.3,
+  },
+  featuredBorder: {
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: 12,
+    borderWidth: 3,
+    borderColor: '#E50914',
+  },
+  featuredStrip: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: '#E50914',
+    paddingVertical: Spacing.tvos.xs,
+    borderBottomLeftRadius: 12,
+    borderBottomRightRadius: 12,
+    alignItems: 'center',
+  },
+  featuredStripText: {
+    color: '#FFFFFF',
+    fontSize: Typography.tvos.caption - 2,
+    fontWeight: '800',
+    letterSpacing: 1.5,
   },
   focusBorder: {
     ...StyleSheet.absoluteFillObject,

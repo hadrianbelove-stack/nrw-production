@@ -154,6 +154,67 @@ header h1 {
     font-weight: bold;
 }
 
+/* NEW TRAILERS card - links to YouTube playlist */
+.trailers-card {
+    width: 237px;
+    height: 352px;
+    background: linear-gradient(135deg, #E50914 0%, #B20710 100%);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4),
+                0 0 40px rgba(229,9,20,0.3);
+    position: relative;
+    overflow: hidden;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.trailers-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 10px,
+        rgba(255,255,255,0.03) 10px,
+        rgba(255,255,255,0.03) 20px
+    );
+}
+
+.trailers-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.5),
+                0 0 60px rgba(229,9,20,0.4);
+}
+
+.trailers-content {
+    text-align: center;
+    z-index: 1;
+}
+
+.trailers-text {
+    font-size: 2rem;
+    font-weight: 900;
+    color: white;
+    letter-spacing: 0.15em;
+    line-height: 1.2;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+.trailers-icon {
+    font-size: 2.5rem;
+    color: white;
+    margin-top: 1rem;
+    opacity: 0.9;
+}
+
 .movie-card {
     width: 189px;
     height: 282px;
@@ -178,6 +239,10 @@ header h1 {
     transform: rotateY(180deg);
 }
 
+.movie-card.flipped .streaming-badge {
+    display: none;
+}
+
 .card-front, .card-back {
     position: absolute;
     width: 100%;
@@ -196,7 +261,6 @@ header h1 {
 
 .card-front {
     background: #1a1a2e;
-    position: relative;
 }
 
 .card-back {
@@ -225,6 +289,7 @@ header h1 {
     letter-spacing: 0.5px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.5);
     z-index: 5;
+    backface-visibility: hidden;
 }
 
 .badge-netflix { background: #E50914; color: white; }
@@ -350,6 +415,9 @@ header h1 {
     background: #00d4aa;
     color: #000;
     flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .actions .watch-btn-stream:hover {
@@ -382,6 +450,8 @@ header h1 {
 .watch-btn-stream .btn-logo {
     filter: none;
     max-height: 20px;
+    max-width: 60px;
+    object-fit: contain;
 }
 
 /* Purchase logos (Amazon/Apple) - make dark for contrast on orange */

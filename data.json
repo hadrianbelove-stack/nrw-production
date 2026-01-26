@@ -1,6 +1,7 @@
 {
   "generated_at": "2026-01-25T16:49:40.226650",
   "count": 128,
+  "latest_playlist_url": "https://www.youtube.com/playlist?list=PLFCewXXu8_tFoxlqpnQxuH1WltkT6Mm4g",
   "movies": [
     {
       "id": "1617519",
@@ -3439,7 +3440,17 @@
       "bootstrap_date": false,
       "manually_corrected": false,
       "rt_score": null,
-      "watch_links": {},
+      "watch_links": {
+        "streaming": {
+          "service": "Film Movement Plus",
+          "link": "https://www.filmmovementplus.com/tokyo-bordello"
+        },
+        "vod": {
+          "service": "Amazon Video",
+          "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.dd171ef9-93bf-44bd-8475-e9f05f5bb3b6",
+          "price": "$3.99"
+        }
+      },
       "_enrichment_status": "completed",
       "_discovered_at": "2026-01-07T22:25:33.508744",
       "_tmdb_fetch_failed": false,
@@ -4814,6 +4825,23 @@
       },
       "links": {
         "trailer": "https://www.youtube.com/watch?v=ZhbowAJxWfo"
+      },
+      "providers": {
+        "streaming": [
+          "AMC Plus Apple TV Channel ",
+          "AMC+ Amazon Channel",
+          "Shudder",
+          "Shudder Amazon Channel",
+          "Shudder Apple TV Channel"
+        ],
+        "rent": [],
+        "buy": []
+      },
+      "watch_links": {
+        "streaming": {
+          "service": "Shudder",
+          "link": "https://www.shudder.com/movies/watch/mother-of-flies/57688f452f45f22d"
+        }
       }
     },
     {
@@ -5875,6 +5903,99 @@
       },
       "_discovery_source": "provider_availability_check",
       "_digital_date_source": "tmdb_type4"
+    },
+    {
+      "id": "1276038",
+      "title": "A Desert",
+      "year": 2025,
+      "director": "Joshua Erkman",
+      "country": "USA",
+      "digital_date": "2026-01-01",
+      "poster": "https://image.tmdb.org/t/p/w500/vd194U3uHmxs5rZBV2QU7HNDdEf.jpg",
+      "synopsis": "A photographer’s road trip takes a dark turn when he befriends a reckless couple, plunging him into a nightmarish neo-noir spiral of unpredictable horror.",
+      "runtime": 103,
+      "providers": {
+        "streaming": [
+          "AMC Plus Apple TV Channel ",
+          "AMC+ Amazon Channel",
+          "Philo",
+          "Shudder",
+          "Shudder Amazon Channel",
+          "Shudder Apple TV Channel"
+        ],
+        "rent": [
+          "Amazon Video",
+          "Apple TV Store",
+          "Google Play Movies",
+          "YouTube",
+          "Fandango At Home"
+        ],
+        "buy": [
+          "Amazon Video",
+          "Apple TV Store",
+          "Google Play Movies",
+          "YouTube",
+          "Fandango At Home"
+        ]
+      },
+      "watch_links": {
+        "streaming": {
+          "service": "Shudder",
+          "link": "https://www.shudder.com/movies/watch/a-desert/ef3d1803ffd30dfa"
+        },
+        "vod": {
+          "service": "Amazon Video",
+          "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.b0c31908-21d2-444e-8e0e-f9615612b1ab",
+          "price": "$3.99"
+        }
+      },
+      "links": {}
+    },
+    {
+      "id": "1318933",
+      "title": "Chain Reactions",
+      "year": 2025,
+      "director": "Alexandre O. Philippe",
+      "country": "USA",
+      "digital_date": "2026-01-09",
+      "poster": "https://image.tmdb.org/t/p/w500/ifPpCzrcdxYgszMtvEvs627NBBt.jpg",
+      "synopsis": "An exploration of the legacy of Tobe Hooper's classic 'The Texas Chainsaw Massacre'.",
+      "runtime": 103,
+      "providers": {
+        "streaming": [
+          "AMC+ Amazon Channel",
+          "Philo",
+          "Shudder",
+          "Shudder Amazon Channel",
+          "Shudder Apple TV Channel"
+        ],
+        "rent": [
+          "Amazon Video",
+          "Apple TV Store",
+          "Google Play Movies",
+          "YouTube",
+          "Fandango At Home"
+        ],
+        "buy": [
+          "Amazon Video",
+          "Apple TV Store",
+          "Google Play Movies",
+          "YouTube",
+          "Fandango At Home"
+        ]
+      },
+      "watch_links": {
+        "streaming": {
+          "service": "Shudder",
+          "link": "https://www.shudder.com/movies/watch/chain-reactions/c89e09f62f53747f"
+        },
+        "vod": {
+          "service": "Amazon Video",
+          "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.c2aed6ba-db6f-405f-a4a7-ef97d7e38828",
+          "price": "$6.99"
+        }
+      },
+      "links": {}
     }
   ],
   "_metadata": {

@@ -61,11 +61,12 @@ export async function fetchMovies() {
  * Handles both root object format and legacy array format
  */
 function extractMoviesData(data) {
-  // Handle root object format: { movies: [...], featured: [...] }
+  // Handle root object format: { movies: [...], featured: [...], latest_playlist_url: "..." }
   if (data && typeof data === 'object' && !Array.isArray(data)) {
     return {
       movies: data.movies || [],
       featured: data.featured || [],
+      latestPlaylistUrl: data.latest_playlist_url || null,
     };
   }
 
@@ -74,10 +75,11 @@ function extractMoviesData(data) {
     return {
       movies: data,
       featured: [],
+      latestPlaylistUrl: null,
     };
   }
 
-  return { movies: [], featured: [] };
+  return { movies: [], featured: [], latestPlaylistUrl: null };
 }
 
 /**

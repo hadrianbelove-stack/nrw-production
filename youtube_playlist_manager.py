@@ -100,6 +100,38 @@ class YouTubePlaylistManager:
 
         self.youtube = None
 
+    def update_data_json_playlist_url(self, playlist_id, data_path=None):
+        """
+        Update data.json with the latest playlist URL
+
+        Args:
+            playlist_id: The YouTube playlist ID
+            data_path: Path to data.json (defaults to script directory)
+        """
+        if data_path:
+            data_file = Path(data_path)
+        else:
+            base_dir = Path(__file__).parent
+            data_file = base_dir / 'data.json'
+
+        if not data_file.exists():
+            self.logger.warning(f"⚠️  data.json not found at {data_file}, skipping URL update")
+            return
+
+        try:
+            with open(data_file, 'r') as f:
+                data = json.load(f)
+
+            playlist_url = f"https://www.youtube.com/playlist?list={playlist_id}"
+            data['latest_playlist_url'] = playlist_url
+
+            with open(data_file, 'w') as f:
+                json.dump(data, f, indent=2)
+
+            self.logger.info(f"✅ Updated data.json with latest playlist URL: {playlist_url}")
+        except Exception as e:
+            self.logger.warning(f"⚠️  Failed to update data.json: {e}")
+
     def _authenticate(self):
         """Authenticate with YouTube API using OAuth 2.0"""
         creds = None
@@ -522,6 +554,9 @@ Featured titles:
         video_ids = [t['video_id'] for t in trailers]
         self.add_videos_to_playlist(playlist_id, video_ids)
 
+        # Update data.json with the new playlist URL
+        self.update_data_json_playlist_url(playlist_id, data_path)
+
         return playlist_id
 
     def create_monthly_playlist(self, year=None, month=None, dry_run=False, data_path=None):
@@ -608,6 +643,9 @@ Top rated this month:
         video_ids = [t['video_id'] for t in trailers]
         self.add_videos_to_playlist(playlist_id, video_ids)
 
+        # Update data.json with the new playlist URL
+        self.update_data_json_playlist_url(playlist_id, data_path)
+
         return playlist_id
 
     def create_certified_fresh_playlist(self, rt_threshold=90, dry_run=False, data_path=None):
@@ -659,6 +697,9 @@ Top rated:
         # Add videos (already sorted by date)
         video_ids = [t['video_id'] for t in trailers]
         self.add_videos_to_playlist(playlist_id, video_ids)
+
+        # Update data.json with the new playlist URL
+        self.update_data_json_playlist_url(playlist_id, data_path)
 
         return playlist_id
 
@@ -750,6 +791,9 @@ Featured titles:
         # Add videos
         video_ids = [t['video_id'] for t in trailers]
         self.add_videos_to_playlist(playlist_id, video_ids)
+
+        # Update data.json with the new playlist URL
+        self.update_data_json_playlist_url(playlist_id, data_path)
 
         return playlist_id
 

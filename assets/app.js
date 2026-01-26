@@ -2,6 +2,7 @@ const NRW = {
     allMovies: [],
     filteredMovies: [],
     featuredMovies: [],
+    latestPlaylistUrl: null,  // YouTube trailers playlist URL
     currentFilter: 'all',
     displayedCount: 60,  // How many movies currently shown
     loadIncrement: 60,   // How many to add when clicking "More"
@@ -14,6 +15,9 @@ const NRW = {
 
             // Load filter data (featured list) from data.json
             this.featuredMovies = data.featured || [];
+
+            // Load YouTube trailers playlist URL
+            this.latestPlaylistUrl = data.latest_playlist_url || null;
 
             if (data.movies && data.movies.length > 0) {
                 const today = new Date();
@@ -122,12 +126,25 @@ const NRW = {
 
         let html = '';
         let lastDate = '';
-        
+        let isFirstDate = true;
+
         movies.forEach(movie => {
             const date = movie.digital_date.substring(0, 10);
-            
+
             // Add inline date divider card when date changes
             if (date !== lastDate) {
+                // Add NEW TRAILERS button before the first date marker
+                if (isFirstDate && this.latestPlaylistUrl) {
+                    html += `<a href="${this.latestPlaylistUrl}" target="_blank" rel="noopener noreferrer" class="trailers-card">
+                        <div class="trailers-content">
+                            <div class="trailers-text">NEW</div>
+                            <div class="trailers-text">TRAILERS</div>
+                            <div class="trailers-icon">▶</div>
+                        </div>
+                    </a>`;
+                    isFirstDate = false;
+                }
+
                 const d = new Date(date + 'T12:00:00');
 
                 // Check if this is a bootstrap date for visual indicator
