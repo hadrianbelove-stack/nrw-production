@@ -6,16 +6,6 @@ const NRW = {
     displayedCount: 60,  // How many movies currently shown
     loadIncrement: 60,   // How many to add when clicking "More"
 
-    // Helper function for Wikipedia URLs with safe fallbacks
-    wikiUrlFor(movie) {
-        const title = movie.title || '';
-        const year = movie.year || (movie.digital_date ? new Date(movie.digital_date).getFullYear() : '');
-        const stored = movie.links && typeof movie.links.wikipedia === 'string' && movie.links.wikipedia.trim();
-        if (stored) return stored;  // trust prebuilt link from generate_data.py
-        const q = encodeURIComponent(`${title} ${year} film`.trim());
-        return `https://en.wikipedia.org/w/index.php?search=${q}`;  // safe fallback, no broken guesses
-    },
-
     async init() {
         try {
             // Load movie data
@@ -259,8 +249,8 @@ const NRW = {
                 infoLinks.push(`<a href="${movie.links.rt}" target="_blank" class="${rtClass}">${rtText}</a>`);
             }
 
-            if (movie.links?.wikipedia !== null) {
-                infoLinks.push(`<a href="${this.wikiUrlFor(movie)}" target="_blank" class="info-btn">Wiki</a>`);
+            if (movie.links?.wikipedia) {
+                infoLinks.push(`<a href="${movie.links.wikipedia}" target="_blank" class="info-btn">Wiki</a>`);
             }
 
             const isFeatured = this.featuredMovies.includes(movie.id);
