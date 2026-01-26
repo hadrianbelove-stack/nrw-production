@@ -5379,11 +5379,24 @@
     "1528725": {
       "title": "In the Eye of the Storm Shark Storm",
       "premiere_date": "2025-07-21",
-      "digital_date": null,
-      "has_providers": false,
-      "status": "tracking",
+      "digital_date": "2026-01-25",
+      "has_providers": true,
+      "status": "available",
       "added": "2025-09-06T16:48:05.934363",
-      "year": 2025
+      "year": 2025,
+      "providers": {
+        "rent": [],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": [
+          "HBO Max Amazon Channel",
+          "Discovery+ Amazon Channel",
+          "Discovery +"
+        ]
+      },
+      "enriched": false,
+      "enrichment_date": null
     },
     "1524811": {
       "title": "The real beings",
@@ -72373,14 +72386,26 @@
     },
     "1300229": {
       "title": "Darbie's Scream House",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-04",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-01-25",
+      "providers": {
+        "rent": [
+          "Google Play Movies",
+          "YouTube"
+        ],
+        "buy": [
+          "Google Play Movies",
+          "YouTube"
+        ],
+        "streaming": []
+      },
       "intake_pass": "backfill",
-      "has_providers": false,
+      "has_providers": true,
       "year": 2024,
-      "premiere_date": "2024-10-01"
+      "premiere_date": "2024-10-01",
+      "enriched": false,
+      "enrichment_date": null
     },
     "1300043": {
       "title": "Untitled Footage",
@@ -149833,12 +149858,22 @@
     "1617852": {
       "title": "Speed Faster",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-23",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-01-25",
+      "providers": {
+        "rent": [
+          "Apple TV Store"
+        ],
+        "buy": [
+          "Apple TV Store"
+        ],
+        "streaming": []
+      },
       "intake_pass": "A",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1612434": {
       "title": "TWIN",
@@ -150550,12 +150585,20 @@
     "1617519": {
       "title": "Toni Braxton\u2019s Breathe Again",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-24",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-01-25",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1616488": {
       "title": "Memoirs of a Mountain Doctor",
