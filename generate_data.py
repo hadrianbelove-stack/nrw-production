@@ -90,6 +90,7 @@ def main():
 
     # Run discovery if requested
     intaked_count = 0
+    miniseries_count = 0
     if args.intake:
         print("🔍 Running intake for new premieres...")
         intaked_count = generator.intake_new_premieres(
@@ -97,7 +98,28 @@ def main():
             since_date=args.since,
             bootstrap=args.bootstrap
         )
-        print(f"✅ Intake complete: {intaked_count} new movies added")
+        print(f"✅ Movie intake complete: {intaked_count} new movies added")
+
+        # Also intake miniseries (limited series)
+        print("\n🔍 Running intake for new miniseries...")
+        miniseries_count = generator.intake_new_miniseries(debug=args.debug)
+        print(f"✅ Miniseries intake complete: {miniseries_count} new series added")
+
+        # Update intake metrics to include miniseries count
+        if miniseries_count > 0:
+            try:
+                import json
+                metrics_path = 'metrics/intake_run.json'
+                if os.path.exists(metrics_path):
+                    with open(metrics_path, 'r') as f:
+                        metrics = json.load(f)
+                    metrics['results']['miniseries_intaked'] = miniseries_count
+                    metrics['results']['total_intaked'] = metrics['results'].get('intaked', 0) + miniseries_count
+                    with open(metrics_path, 'w') as f:
+                        json.dump(metrics, f, indent=2)
+                    print(f"📊 Updated intake metrics with miniseries count")
+            except Exception as e:
+                print(f"⚠️  Could not update intake metrics: {e}")
 
     # Run festival backfill if requested
     festival_count = 0
