@@ -550,6 +550,154 @@ class DataGenerator:
 
         return new_movies_added
 
+    def intake_new_miniseries(self, debug=False, days_back=30):
+        """Intake new miniseries (limited series) from TMDB.
+
+        Queries TMDB's /discover/tv endpoint for shows with type=Miniseries
+        that premiered recently. Adds them to movie_tracking.json with
+        content_type='limited_series'.
+
+        Args:
+            debug: Enable detailed logging
+            days_back: How far back to look for premieres (default 30 days)
+
+        Returns:
+            int: Number of new miniseries added to tracking
+        """
+        import requests
+        from datetime import datetime, timedelta
+
+        print("\n" + "="*60)
+        print("MINISERIES INTAKE - Discovering new limited series")
+        print("="*60)
+
+        # Load existing tracking database
+        if not os.path.exists('movie_tracking.json'):
+            print("⚠️  No movie_tracking.json found - creating new one")
+            db = {'movies': {}}
+        else:
+            with open('movie_tracking.json', 'r') as f:
+                db = json.load(f)
+
+        existing_ids = set(db.get('movies', {}).keys())
+
+        # Calculate date range
+        end_date = datetime.now()
+        start_date = end_date - timedelta(days=days_back)
+
+        print(f"📅 Checking miniseries from {start_date.strftime('%Y-%m-%d')} to {end_date.strftime('%Y-%m-%d')}")
+
+        new_series_added = 0
+        page = 1
+        max_pages = 10
+
+        while page <= max_pages:
+            # TMDB /discover/tv with type=2 (Miniseries)
+            url = "https://api.themoviedb.org/3/discover/tv"
+            params = {
+                'api_key': self.tmdb_key,
+                'with_type': 2,  # Miniseries
+                'first_air_date.gte': start_date.strftime('%Y-%m-%d'),
+                'first_air_date.lte': end_date.strftime('%Y-%m-%d'),
+                'watch_region': 'US',
+                'with_watch_monetization_types': 'flatrate|rent|buy',
+                'sort_by': 'first_air_date.desc',
+                'page': page
+            }
+
+            try:
+                response = requests.get(url, params=params, timeout=15)
+                response.raise_for_status()
+                data = response.json()
+            except Exception as e:
+                self.logger.error(f"TMDB miniseries discover failed (page {page}): {e}")
+                break
+
+            results = data.get('results', [])
+            if not results:
+                break
+
+            for series in results:
+                tmdb_id = f"tv_{series['id']}"  # Prefix with tv_ to distinguish from movies
+
+                if tmdb_id in existing_ids:
+                    if debug:
+                        print(f"   ⏭️  Already tracking: {series.get('name')}")
+                    continue
+
+                # Get full series details
+                details_url = f"https://api.themoviedb.org/3/tv/{series['id']}"
+                try:
+                    details_resp = requests.get(details_url, params={'api_key': self.tmdb_key}, timeout=15)
+                    details = details_resp.json()
+                except Exception as e:
+                    self.logger.warning(f"Failed to get details for {series.get('name')}: {e}")
+                    continue
+
+                # Verify it's actually a miniseries
+                if details.get('type') != 'Miniseries':
+                    if debug:
+                        print(f"   ⏭️  Not a miniseries (type={details.get('type')}): {series.get('name')}")
+                    continue
+
+                # Get watch providers
+                providers_url = f"https://api.themoviedb.org/3/tv/{series['id']}/watch/providers"
+                try:
+                    prov_resp = requests.get(providers_url, params={'api_key': self.tmdb_key}, timeout=15)
+                    prov_data = prov_resp.json()
+                    us_providers = prov_data.get('results', {}).get('US', {})
+                except Exception as e:
+                    us_providers = {}
+
+                # Build tracking entry
+                first_air_date = series.get('first_air_date', '')
+                entry = {
+                    'title': series.get('name', 'Unknown'),
+                    'content_type': 'limited_series',
+                    'tmdb_id': series['id'],
+                    'status': 'available' if us_providers else 'tracking',
+                    'first_air_date': first_air_date,
+                    'digital_date': first_air_date,  # Use first_air_date as digital_date for sorting
+                    'episode_count': details.get('number_of_episodes'),
+                    'runtime': details.get('episode_run_time', [None])[0] if details.get('episode_run_time') else None,
+                    'poster': f"https://image.tmdb.org/t/p/w500{series.get('poster_path')}" if series.get('poster_path') else None,
+                    'synopsis': series.get('overview', ''),
+                    'genres': [g['name'] for g in details.get('genres', [])],
+                    'original_language': series.get('original_language'),
+                    'providers': {
+                        'streaming': [p['provider_name'] for p in us_providers.get('flatrate', [])],
+                        'rent': [p['provider_name'] for p in us_providers.get('rent', [])],
+                        'buy': [p['provider_name'] for p in us_providers.get('buy', [])]
+                    },
+                    'intaked_at': datetime.now().isoformat(),
+                    'networks': [n['name'] for n in details.get('networks', [])]
+                }
+
+                db['movies'][tmdb_id] = entry
+                existing_ids.add(tmdb_id)
+                new_series_added += 1
+
+                status_icon = "✅" if entry['status'] == 'available' else "📋"
+                streaming = entry['providers'].get('streaming', [])
+                streaming_info = f" on {streaming[0]}" if streaming else ""
+                print(f"   {status_icon} {entry['title']} ({entry['episode_count']} eps){streaming_info}")
+
+            # Check if more pages
+            total_pages = data.get('total_pages', 1)
+            if page >= total_pages:
+                break
+            page += 1
+            time.sleep(0.25)  # Rate limiting
+
+        # Save updated tracking database
+        with open('movie_tracking.json', 'w') as f:
+            json.dump(db, f, indent=2, ensure_ascii=False)
+
+        print(f"\n📊 Miniseries intake complete: {new_series_added} new series added")
+        self.logger.info(f"Miniseries intake: {new_series_added} new series added")
+
+        return new_series_added
+
     def check_tracking_movies(self, max_to_check=None, priority_days=180):
         """
         PHASE 2: Discovery - Check tracking movies for provider availability.
@@ -1630,6 +1778,7 @@ class DataGenerator:
             'runtime': None,      # Will be filled by enrichment
             'year': movie_data.get('year'),  # From movie_tracking.json (intake captures this)
             'country': 'Unknown', # Will be filled by enrichment
+            'original_language': None,  # Will be filled by enrichment (ISO 639-1 code)
             'rt_score': None,     # Will be filled by enrichment
             'providers': movie_data.get('providers', {'rent': [], 'buy': [], 'streaming': []}),
             'links': {'wikipedia': None, 'trailer': None, 'rt': None},
@@ -1685,6 +1834,9 @@ class DataGenerator:
             entry['country'] = production_countries[0].get('name', 'Unknown')
         else:
             entry['country'] = 'Unknown'
+
+        # Add original language (ISO 639-1 code: 'en', 'es', 'fr', etc.)
+        entry['original_language'] = movie_details.get('original_language')
 
         # Add cast/crew with error handling
         entry['crew'] = {'director': 'Unknown', 'cast': []}

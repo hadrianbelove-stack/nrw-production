@@ -65,6 +65,14 @@ const NRW = {
             switch (filter) {
                 case 'featured':
                     return isFeatured; // Show only featured movies
+                case 'foreign':
+                    // Foreign = non-English original language films
+                    const lang = movie.original_language;
+                    // Include if original_language exists and is not English
+                    return lang && lang !== 'en';
+                case 'series':
+                    // Limited series / miniseries only
+                    return movie.content_type === 'limited_series';
                 case 'all':
                 default:
                     return true; // Show all movies
@@ -175,7 +183,15 @@ const NRW = {
             if (movie.studio) {
                 bottomMetadata.push(movie.studio);
             }
-            if (movie.runtime) {
+            // For limited series: show episode count + runtime
+            // For movies: just show runtime
+            if (movie.content_type === 'limited_series' && movie.episode_count) {
+                let seriesInfo = `${movie.episode_count} eps`;
+                if (movie.runtime) {
+                    seriesInfo += ` • ${movie.runtime} min/ep`;
+                }
+                bottomMetadata.push(seriesInfo);
+            } else if (movie.runtime) {
                 bottomMetadata.push(`${movie.runtime} min`);
             }
             const bottomInfo = bottomMetadata.join(' | ');

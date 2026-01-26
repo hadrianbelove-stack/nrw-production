@@ -18,7 +18,6 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { useHomeScreen } from './useHomeScreen';
 import MovieCard from '../components/MovieCard.tvos';
-import FilterSidebar from '../components/FilterSidebar.tvos';
 import { Colors, Typography, Spacing, Dimensions } from '../constants/colors';
 import { useTVEventHandler, TV_EVENTS } from '../utils/focusManager.tvos';
 import {
@@ -27,6 +26,70 @@ import {
   trackMovieSelect,
   trackFilterChange,
 } from '../services/analytics.tvos';
+
+// Filter options
+const FILTERS = [
+  { id: 'all', label: 'All' },
+  { id: 'featured', label: 'Featured' },
+  { id: 'foreign', label: 'Foreign' },
+  { id: 'series', label: 'Mini-Series' },
+];
+
+// Filter Button Component
+const FilterButton = ({ filter, isActive, onPress, onFocus }) => {
+  const [isFocused, setIsFocused] = useState(false);
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+
+  const handleFocus = useCallback(() => {
+    setIsFocused(true);
+    onFocus?.();
+    Animated.timing(scaleAnim, {
+      toValue: 1.1,
+      duration: 150,
+      useNativeDriver: true,
+    }).start();
+  }, [scaleAnim, onFocus]);
+
+  const handleBlur = useCallback(() => {
+    setIsFocused(false);
+    Animated.timing(scaleAnim, {
+      toValue: 1,
+      duration: 150,
+      useNativeDriver: true,
+    }).start();
+  }, [scaleAnim]);
+
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      onFocus={handleFocus}
+      onBlur={handleBlur}
+      activeOpacity={1}
+      accessible={true}
+      accessibilityLabel={`Filter by ${filter.label}`}
+      accessibilityRole="button"
+      accessibilityState={{ selected: isActive }}
+    >
+      <Animated.View
+        style={[
+          styles.filterButton,
+          isActive && styles.filterButtonActive,
+          isFocused && styles.filterButtonFocused,
+          { transform: [{ scale: scaleAnim }] },
+        ]}
+      >
+        <Text
+          style={[
+            styles.filterButtonText,
+            isActive && styles.filterButtonTextActive,
+          ]}
+        >
+          {filter.label}
+        </Text>
+      </Animated.View>
+    </TouchableOpacity>
+  );
+};
 
 // Grid configuration - 7 columns for 1920px width
 const NUM_COLUMNS = 7;
@@ -67,23 +130,45 @@ const TrailersCard = ({ playlistUrl }) => {
       playlistId = match[1];
     }
 
-    // Try different YouTube URL formats for tvOS
-    // Format 1: Simple playlist URL
-    const youtubeUrl = playlistId
-      ? `https://www.youtube.com/playlist?list=${playlistId}`
-      : 'https://www.youtube.com/@New-Release-Wall/playlists';
-
-    console.log('[Trailers] Opening YouTube playlist:', youtubeUrl);
+    console.log('[Trailers] Playlist URL:', url);
     console.log('[Trailers] Playlist ID:', playlistId);
 
-    // Use the https URL - tvOS should open it in YouTube app if installed
-    Linking.openURL(youtubeUrl).catch((err) => {
-      console.error('[Trailers] Error opening YouTube:', err);
+    if (!playlistId) {
       Alert.alert(
-        'YouTube Not Available',
-        'Please install the YouTube app from the App Store to view trailers.'
+        'No Playlist Available',
+        'Please open YouTube and search for "New Release Wall" to find our trailers.'
       );
-    });
+      return;
+    }
+
+    // Try multiple URL formats for tvOS YouTube deep linking
+    // Format 1: youtube:// with full path (works on some tvOS versions)
+    const tryUrls = [
+      `youtube://www.youtube.com/playlist?list=${playlistId}`,
+      `youtube://playlist?list=${playlistId}`,
+      `vnd.youtube://www.youtube.com/playlist?list=${playlistId}`,
+    ];
+
+    const tryNextUrl = (index) => {
+      if (index >= tryUrls.length) {
+        // All formats failed - show manual instructions
+        Alert.alert(
+          'YouTube Playlist',
+          `Playlist ID: ${playlistId}\n\nThe YouTube app couldn't open the playlist directly. Please open YouTube and search for "New Release Wall".`
+        );
+        return;
+      }
+
+      const urlToTry = tryUrls[index];
+      console.log(`[Trailers] Trying format ${index + 1}:`, urlToTry);
+
+      Linking.openURL(urlToTry).catch((err) => {
+        console.error(`[Trailers] Format ${index + 1} failed:`, err);
+        tryNextUrl(index + 1);
+      });
+    };
+
+    tryNextUrl(0);
   }, [playlistUrl]);
 
   return (
@@ -120,13 +205,12 @@ const HomeScreenTvOS = () => {
     isLoading,
     error,
     activeFilter,
-    refreshMovies,
     changeFilter,
+    refreshMovies,
     latestPlaylistUrl,
   } = useHomeScreen();
 
   // Local state
-  const [isSidebarVisible, setIsSidebarVisible] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const previousFilterRef = useRef(activeFilter);
 
@@ -135,13 +219,40 @@ const HomeScreenTvOS = () => {
     trackScreenView('Home', { filter: activeFilter });
   }, []);
 
+  // Handle filter change
+  const handleFilterChange = useCallback((filterId) => {
+    trackFilterChange(filterId, previousFilterRef.current);
+    previousFilterRef.current = filterId;
+    changeFilter(filterId);
+  }, [changeFilter]);
+
+  // Get movies based on active filter
+  const displayMovies = useMemo(() => {
+    if (activeFilter === 'featured') {
+      return filteredMovies.filter(m => m.featured);
+    }
+    if (activeFilter === 'foreign') {
+      // Foreign = non-English original language films
+      return filteredMovies.filter(m => {
+        const lang = m.original_language;
+        // Include if original_language exists and is not English
+        return lang && lang !== 'en';
+      });
+    }
+    if (activeFilter === 'series') {
+      // Limited series / miniseries only
+      return filteredMovies.filter(m => m.content_type === 'limited_series');
+    }
+    return filteredMovies;
+  }, [filteredMovies, activeFilter]);
+
   // Build flat list data with date markers interspersed
   // Each date marker takes one grid cell (same size as movie card)
   const listData = useMemo(() => {
-    if (!filteredMovies || filteredMovies.length === 0) return [];
+    if (!displayMovies || displayMovies.length === 0) return [];
 
     // Sort movies by digital_date descending (newest first)
-    const sorted = [...filteredMovies].sort((a, b) => {
+    const sorted = [...displayMovies].sort((a, b) => {
       const dateA = a.digital_date || '0000-00-00';
       const dateB = b.digital_date || '0000-00-00';
       return dateB.localeCompare(dateA);
@@ -183,7 +294,7 @@ const HomeScreenTvOS = () => {
     });
 
     return items;
-  }, [filteredMovies, latestPlaylistUrl]);
+  }, [displayMovies, latestPlaylistUrl]);
 
   // Handle movie selection - navigate to detail with analytics
   const handleMovieSelect = useCallback(
@@ -201,35 +312,10 @@ const HomeScreenTvOS = () => {
 
   // Handle TV remote events
   useTVEventHandler({
-    [TV_EVENTS.MENU]: () => {
-      if (!isSidebarVisible) {
-        setIsSidebarVisible(true);
-      }
-    },
-    [TV_EVENTS.SWIPE_UP]: () => {
-      if (!isSidebarVisible) {
-        setIsSidebarVisible(true);
-      }
-    },
     [TV_EVENTS.PLAY_PAUSE]: () => {
       handleRefresh();
     },
   });
-
-  // Handle filter change with analytics
-  const handleFilterChange = useCallback(
-    (filter) => {
-      trackFilterChange(filter, previousFilterRef.current);
-      previousFilterRef.current = filter;
-      changeFilter(filter);
-    },
-    [changeFilter]
-  );
-
-  // Handle sidebar close
-  const handleSidebarClose = useCallback(() => {
-    setIsSidebarVisible(false);
-  }, []);
 
   // Handle refresh
   const handleRefresh = useCallback(async () => {
@@ -344,26 +430,28 @@ const HomeScreenTvOS = () => {
       <View style={styles.container}>
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyText}>
-            {activeFilter !== 'all'
-              ? `No ${activeFilter} movies. Press Menu to change filter.`
-              : 'No movies available. Press Play/Pause to refresh.'}
+            No movies available. Press Play/Pause to refresh.
           </Text>
         </View>
-        <FilterSidebar
-          isVisible={isSidebarVisible}
-          activeFilter={activeFilter}
-          onFilterChange={handleFilterChange}
-          onClose={handleSidebarClose}
-        />
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
-      {/* Header with title */}
+      {/* Header with title and filters */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>THE NEW RELEASE WALL</Text>
+        <View style={styles.filterRow}>
+          {FILTERS.map((filter) => (
+            <FilterButton
+              key={filter.id}
+              filter={filter}
+              isActive={activeFilter === filter.id}
+              onPress={() => handleFilterChange(filter.id)}
+            />
+          ))}
+        </View>
       </View>
 
       {/* Vertical scrolling grid - the wall */}
@@ -389,14 +477,6 @@ const HomeScreenTvOS = () => {
           <ActivityIndicator color={Colors.primary} size="large" />
         </View>
       )}
-
-      {/* Filter Sidebar */}
-      <FilterSidebar
-        isVisible={isSidebarVisible}
-        activeFilter={activeFilter}
-        onFilterChange={handleFilterChange}
-        onClose={handleSidebarClose}
-      />
     </View>
   );
 };
@@ -409,14 +489,46 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: 40,
     paddingTop: 20,
-    paddingBottom: CARD_GAP,
+    paddingBottom: 12,
+    alignItems: 'center',
   },
   headerTitle: {
-    color: Colors.textPrimary,
-    fontSize: 38,
-    fontWeight: '800',
-    letterSpacing: 4,
+    color: Colors.primary,
+    fontSize: 42,
+    fontWeight: '100',
+    letterSpacing: 12,
     textAlign: 'center',
+    marginBottom: 16,
+  },
+  filterRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 16,
+  },
+  filterButton: {
+    paddingHorizontal: 24,
+    paddingVertical: 10,
+    borderRadius: 25,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  filterButtonActive: {
+    backgroundColor: Colors.primary,
+    borderColor: Colors.primary,
+  },
+  filterButtonFocused: {
+    borderColor: Colors.primary,
+    borderWidth: 2,
+  },
+  filterButtonText: {
+    color: Colors.textPrimary,
+    fontSize: 20,
+    fontWeight: '500',
+  },
+  filterButtonTextActive: {
+    color: Colors.background,
+    fontWeight: '600',
   },
   listContent: {
     // Center the 7-column grid: (1920 - 7*(210+16)) / 2 = 169px
