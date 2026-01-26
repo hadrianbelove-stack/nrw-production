@@ -277,12 +277,57 @@ const NRW = {
             const featuredClass = isFeatured ? ' featured-movie' : '';
             const featuredBadge = isFeatured ? '<div class="featured-badge">FEATURED</div>' : '';
 
+            // Streaming service pill badge for card front
+            const getStreamingBadge = (movie) => {
+                const watchLinks = movie.watch_links || {};
+                const providers = movie.providers || {};
+
+                // Get streaming service name
+                let service = watchLinks.streaming?.service;
+                if (!service && providers.streaming?.length > 0) {
+                    service = providers.streaming.find(p => !p.includes('with Ads')) || providers.streaming[0];
+                }
+
+                if (!service) return '';
+
+                // Map service to display name and CSS class
+                const s = service.toLowerCase();
+                let displayName, badgeClass;
+
+                if (s.includes('netflix')) {
+                    displayName = 'NETFLIX'; badgeClass = 'badge-netflix';
+                } else if (s.includes('disney')) {
+                    displayName = 'DISNEY+'; badgeClass = 'badge-disney';
+                } else if (s.includes('hbo') || s.includes('max')) {
+                    displayName = 'MAX'; badgeClass = 'badge-max';
+                } else if (s.includes('amazon') || s.includes('prime')) {
+                    displayName = 'PRIME'; badgeClass = 'badge-prime';
+                } else if (s.includes('hulu')) {
+                    displayName = 'HULU'; badgeClass = 'badge-hulu';
+                } else if (s.includes('peacock')) {
+                    displayName = 'PEACOCK'; badgeClass = 'badge-peacock';
+                } else if (s.includes('mubi')) {
+                    displayName = 'MUBI'; badgeClass = 'badge-mubi';
+                } else if (s.includes('shudder')) {
+                    displayName = 'SHUDDER'; badgeClass = 'badge-shudder';
+                } else if (s.includes('criterion')) {
+                    displayName = 'CRITERION'; badgeClass = 'badge-criterion';
+                } else {
+                    displayName = service.toUpperCase().slice(0, 10); badgeClass = 'badge-other';
+                }
+
+                return `<div class="streaming-badge ${badgeClass}">${displayName}</div>`;
+            };
+
+            const streamingBadge = getStreamingBadge(movie);
+
             html += `
             <div class="movie-container${featuredClass}">
                 ${featuredBadge}
                 <div class="movie-card">
                     <div class="card-inner">
                         <div class="card-front">
+                            ${streamingBadge}
                             <img src="${movie.poster || 'assets/no-poster.jpg'}"
                                  onerror="this.src='assets/no-poster.jpg'; this.onerror=null;">
                         </div>

@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Streaming Badge Mockups</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+            color: #fff;
+            font-family: -apple-system, system-ui, sans-serif;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+        h1 { text-align: center; margin-bottom: 2rem; font-weight: 100; letter-spacing: 0.2em; }
+        h2 { margin: 2rem 0 1rem; font-weight: 300; border-bottom: 1px solid #333; padding-bottom: 0.5rem; }
+
+        .option-row {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 3rem;
+        }
+
+        .card {
+            width: 160px;
+            position: relative;
+        }
+
+        .poster {
+            width: 160px;
+            height: 240px;
+            background: #333;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .poster img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .card-title {
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        .service-label {
+            font-size: 0.7rem;
+            color: #888;
+            text-align: center;
+        }
+
+        /* ========== OPTION 1: Corner Logo Badge ========== */
+        .badge-corner {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+        }
+        .badge-corner.netflix { background: #E50914; color: white; }
+        .badge-corner.mubi { background: #000; color: white; font-size: 10px; }
+        .badge-corner.shudder { background: #8B0000; color: white; font-size: 9px; }
+        .badge-corner.disney { background: #113CCF; color: white; font-size: 8px; }
+        .badge-corner.hbo { background: #B537F2; color: white; font-size: 9px; }
+        .badge-corner.prime { background: #00A8E1; color: white; font-size: 8px; }
+
+        /* ========== OPTION 3: Text Pill Badge ========== */
+        .badge-pill {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+        }
+        .badge-pill.netflix { background: #E50914; color: white; }
+        .badge-pill.mubi { background: #000; color: white; }
+        .badge-pill.shudder { background: #8B0000; color: white; }
+        .badge-pill.disney { background: #113CCF; color: white; }
+        .badge-pill.hbo { background: #B537F2; color: white; }
+        .badge-pill.prime { background: #00A8E1; color: white; }
+
+        /* ========== OPTION 4: Bottom Strip ========== */
+        .badge-strip {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 6px 8px;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .badge-strip.netflix { background: #E50914; color: white; }
+        .badge-strip.mubi { background: #000; color: white; }
+        .badge-strip.shudder { background: #8B0000; color: white; }
+        .badge-strip.disney { background: #113CCF; color: white; }
+        .badge-strip.hbo { background: #B537F2; color: white; }
+        .badge-strip.prime { background: #00A8E1; color: white; }
+
+        .badge-strip .icon {
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        /* Sample posters */
+        .poster-1 { background: linear-gradient(180deg, #2a1a3a 0%, #1a0a2a 100%); }
+        .poster-2 { background: linear-gradient(180deg, #1a2a3a 0%, #0a1a2a 100%); }
+        .poster-3 { background: linear-gradient(180deg, #3a2a1a 0%, #2a1a0a 100%); }
+        .poster-4 { background: linear-gradient(180deg, #1a3a2a 0%, #0a2a1a 100%); }
+        .poster-5 { background: linear-gradient(180deg, #3a1a2a 0%, #2a0a1a 100%); }
+        .poster-6 { background: linear-gradient(180deg, #2a3a1a 0%, #1a2a0a 100%); }
+
+        .poster-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            opacity: 0.3;
+        }
+
+        .comparison {
+            display: flex;
+            gap: 3rem;
+            flex-wrap: wrap;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 2px solid #333;
+        }
+
+        .comparison-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .comparison-group h3 {
+            margin-bottom: 1rem;
+            font-weight: 400;
+            color: #00d4aa;
+        }
+    </style>
+</head>
+<body>
+    <h1>STREAMING BADGE MOCKUPS</h1>
+
+    <!-- OPTION 1: Corner Logo Badge -->
+    <h2>Option 1: Corner Logo Badge</h2>
+    <p style="color: #888; margin-bottom: 1rem;">Small branded square in upper right corner</p>
+    <div class="option-row">
+        <div class="card">
+            <div class="poster poster-1">
+                <div class="poster-placeholder">🎬</div>
+                <div class="badge-corner netflix">N</div>
+            </div>
+            <div class="card-title">Skyscraper Live</div>
+            <div class="service-label">Netflix</div>
+        </div>
+        <div class="card">
+            <div class="poster poster-2">
+                <div class="poster-placeholder">🎬</div>
+                <div class="badge-corner mubi">M</div>
+            </div>
+            <div class="card-title">Tokyo Bordello</div>
+            <div class="service-label">MUBI</div>
+        </div>
+        <div class="card">
+            <div class="poster poster-3">
+                <div class="poster-placeholder">🎬</div>
+                <div class="badge-corner shudder">S</div>
+            </div>
+            <div class="card-title">Savage Flowers</div>
+            <div class="service-label">Shudder</div>
+        </div>
+        <div class="card">
+            <div class="poster poster-4">
+                <div class="poster-placeholder">🎬</div>
+                <div class="badge-corner disney">D+</div>
+            </div>
+            <div class="card-title">Or Something</div>
+            <div class="service-label">Disney+</div>
+        </div>
+        <div class="card">
+            <div class="poster poster-5">
+                <div class="poster-placeholder">🎬</div>
+                <div class="badge-corner hbo">MAX</div>
+            </div>
+            <div class="card-title">Sample Film</div>
+            <div class="service-label">HBO Max</div>
+        </div>
+        <div class="card">
+            <div class="poster poster-6">
+                <div class="poster-placeholder">🎬</div>
+                <div class="badge-corner prime">P</div>
+            </div>
+            <div class="card-title">Sample Film</div>
+            <div class="service-label">Prime Video</div>
+        </div>
+    </div>
+
+    <!-- OPTION 3: Text Pill Badge -->
+    <h2>Option 3: Text Pill Badge</h2>
+    <p style="color: #888; margin-bottom: 1rem;">Rounded pill with full service name</p>
+    <div class="option-row">
+        <div class="card">
+            <div class="poster poster-1">
+                <div class="poster-placeholder">🎬</div>
+                <div class="badge-pill netflix">NETFLIX</div>
+            </div>
+            <div class="card-title">Skyscraper Live</div>
+            <div class="service-label">Netflix</div>
+        </div>
+        <div class="card">
+            <div class="poster poster-2">
+                <div class="poster-placeholder">🎬</div>
+                <div class="badge-pill mubi">MUBI</div>
+            </div>
+            <div class="card-title">Tokyo Bordello</div>
+            <div class="service-label">MUBI</div>
+        </div>
+        <div class="card">
+            <div class="poster poster-3">
+                <div class="poster-placeholder">🎬</div>
+                <div class="badge-pill shudder">SHUDDER</div>
+            </div>
+            <div class="card-title">Savage Flowers</div>
+            <div class="service-label">Shudder</div>
+        </div>
+        <div class="card">
+            <div class="poster poster-4">
+                <div class="poster-placeholder">🎬</div>
+                <div class="badge-pill disney">DISNEY+</div>
+            </div>
+            <div class="card-title">Or Something</div>
+            <div class="service-label">Disney+</div>
+        </div>
+        <div class="card">
+            <div class="poster poster-5">
+                <div class="poster-placeholder">🎬</div>
+                <div class="badge-pill hbo">MAX</div>
+            </div>
+            <div class="card-title">Sample Film</div>
+            <div class="service-label">HBO Max</div>
+        </div>
+        <div class="card">
+            <div class="poster poster-6">
+                <div class="poster-placeholder">🎬</div>
+                <div class="badge-pill prime">PRIME</div>
+            </div>
+            <div class="card-title">Sample Film</div>
+            <div class="service-label">Prime Video</div>
+        </div>
+    </div>
+
+    <!-- OPTION 4: Bottom Strip -->
+    <h2>Option 4: Bottom Service Strip</h2>
+    <p style="color: #888; margin-bottom: 1rem;">Colored bar at bottom of poster</p>
+    <div class="option-row">
+        <div class="card">
+            <div class="poster poster-1">
+                <div class="poster-placeholder">🎬</div>
+                <div class="badge-strip netflix"><span class="icon">N</span> NETFLIX</div>
+            </div>
+            <div class="card-title">Skyscraper Live</div>
+            <div class="service-label">Netflix</div>
+        </div>
+        <div class="card">
+            <div class="poster poster-2">
+                <div class="poster-placeholder">🎬</div>
+                <div class="badge-strip mubi"><span class="icon">M</span> MUBI</div>
+            </div>
+            <div class="card-title">Tokyo Bordello</div>
+            <div class="service-label">MUBI</div>
+        </div>
+        <div class="card">
+            <div class="poster poster-3">
+                <div class="poster-placeholder">🎬</div>
+                <div class="badge-strip shudder"><span class="icon">S</span> SHUDDER</div>
+            </div>
+            <div class="card-title">Savage Flowers</div>
+            <div class="service-label">Shudder</div>
+        </div>
+        <div class="card">
+            <div class="poster poster-4">
+                <div class="poster-placeholder">🎬</div>
+                <div class="badge-strip disney"><span class="icon">D+</span> DISNEY+</div>
+            </div>
+            <div class="card-title">Or Something</div>
+            <div class="service-label">Disney+</div>
+        </div>
+        <div class="card">
+            <div class="poster poster-5">
+                <div class="poster-placeholder">🎬</div>
+                <div class="badge-strip hbo"><span class="icon">M</span> MAX</div>
+            </div>
+            <div class="card-title">Sample Film</div>
+            <div class="service-label">HBO Max</div>
+        </div>
+        <div class="card">
+            <div class="poster poster-6">
+                <div class="poster-placeholder">🎬</div>
+                <div class="badge-strip prime"><span class="icon">P</span> PRIME</div>
+            </div>
+            <div class="card-title">Sample Film</div>
+            <div class="service-label">Prime Video</div>
+        </div>
+    </div>
+
+    <!-- Side by side comparison -->
+    <div class="comparison">
+        <div class="comparison-group">
+            <h3>Same Movie - All 3 Options</h3>
+            <div class="option-row">
+                <div class="card">
+                    <div class="poster poster-1">
+                        <div class="poster-placeholder">🎬</div>
+                        <div class="badge-corner netflix">N</div>
+                    </div>
+                    <div class="card-title">Option 1</div>
+                </div>
+                <div class="card">
+                    <div class="poster poster-1">
+                        <div class="poster-placeholder">🎬</div>
+                        <div class="badge-pill netflix">NETFLIX</div>
+                    </div>
+                    <div class="card-title">Option 3</div>
+                </div>
+                <div class="card">
+                    <div class="poster poster-1">
+                        <div class="poster-placeholder">🎬</div>
+                        <div class="badge-strip netflix"><span class="icon">N</span> NETFLIX</div>
+                    </div>
+                    <div class="card-title">Option 4</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="margin-top: 3rem; padding: 1rem; background: rgba(0,212,170,0.1); border-radius: 8px;">
+        <h3 style="color: #00d4aa; margin-bottom: 0.5rem;">Summary</h3>
+        <ul style="color: #ccc; line-height: 1.8; padding-left: 1.5rem;">
+            <li><strong>Option 1 (Corner Logo):</strong> Minimal, uses brand letter/icon. Clean but requires recognition.</li>
+            <li><strong>Option 3 (Text Pill):</strong> Most explicit - you immediately know the service. Variable width.</li>
+            <li><strong>Option 4 (Bottom Strip):</strong> Consistent width, doesn't cover poster art. More prominent.</li>
+        </ul>
+    </div>
+</body>
+</html>
