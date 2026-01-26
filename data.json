@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-01-25T15:48:13.055804",
+  "generated_at": "2026-01-25T16:49:40.226650",
   "count": 128,
   "movies": [
     {
@@ -25,32 +25,37 @@
         "streaming": []
       },
       "links": {
-        "wikipedia": null,
-        "trailer": null,
-        "rt": null
+        "wikipedia": "https://en.wikipedia.org/wiki/Breathe_Again?wprov=srpw1_0",
+        "trailer": "https://www.youtube.com/watch?v=dnWkFlLmiG0",
+        "rt": "https://www.rottentomatoes.com/m/toni_braxtons_breathe_again"
       },
-      "watch_links": {},
-      "_enrichment_status": "pending",
+      "watch_links": {
+        "vod": {
+          "service": "Amazon",
+          "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.b1a376ae-1f13-4529-b106-847a30d19ae1&tag=nrw04-20"
+        }
+      },
+      "_enrichment_status": "completed",
       "_discovered_at": "2026-01-25T15:48:13.055796",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
       "poster": "https://image.tmdb.org/t/p/w500/2Xim60gkFL3eAxqHBpnrjZZ0KKg.jpg",
-      "studio": "Unknown",
-      "country": "Unknown",
+      "studio": null,
+      "country": null,
       "crew": {
         "director": "Stanley M. Brooks",
         "cast": [
           "Toni Braxton",
-          "Essence Atkins",
-          "Cree Summer"
+          "Essence Atkins"
         ]
       },
-      "_discovery_source": "provider_availability_check"
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection"
     },
     {
       "id": "1617852",
       "title": "Speed Faster",
-      "digital_date": "2026-01-25",
+      "digital_date": "2026-01-23",
       "bootstrap_date": false,
       "manually_corrected": false,
       "synopsis": "Ace and his crew get pulled into a deadly high-stakes heist.",
@@ -71,28 +76,31 @@
         "streaming": []
       },
       "links": {
-        "wikipedia": null,
-        "trailer": null,
-        "rt": null
+        "trailer": "https://www.youtube.com/watch?v=3_iTX9mWMHQ",
+        "rt": "https://www.rottentomatoes.com/m/speed_faster"
       },
-      "watch_links": {},
-      "_enrichment_status": "pending",
+      "watch_links": {
+        "vod": {
+          "service": "Apple TV",
+          "link": "https://tv.apple.com/us/movie/speed-faster/umc.cmc.u0yv1sg8bjdrhumesk5jfkxx?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1862635259"
+        }
+      },
+      "_enrichment_status": "completed",
       "_discovered_at": "2026-01-25T15:47:54.567336",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
       "poster": "https://image.tmdb.org/t/p/w500/dKYp9uUlDufvL0gWHve8nuzePdk.jpg",
       "studio": "Quiver Entertainment",
-      "country": "Unknown",
+      "country": null,
       "crew": {
         "director": "Jason Park",
         "cast": [
           "Jason Park",
-          "Christopher Deon",
-          "Luke Dingess",
-          "Maria Mae Lopez"
+          "Christopher Deon"
         ]
       },
-      "_discovery_source": "provider_availability_check"
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "tmdb_type4"
     },
     {
       "id": "1300229",
@@ -119,12 +127,16 @@
         "streaming": []
       },
       "links": {
-        "wikipedia": null,
-        "trailer": null,
-        "rt": null
+        "trailer": "https://www.youtube.com/watch?v=a6gxDFGte5M",
+        "rt": "https://www.rottentomatoes.com/m/darbies_scream_house"
       },
-      "watch_links": {},
-      "_enrichment_status": "pending",
+      "watch_links": {
+        "vod": {
+          "service": "Google Play",
+          "link": "https://play.google.com/store/movies/details/Darbie_s_Scream_House?gl=US&hl=en&id=kbfoYIQsJZg.P"
+        }
+      },
+      "_enrichment_status": "completed",
       "_discovered_at": "2026-01-25T15:05:30.785334",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
@@ -135,13 +147,11 @@
         "director": "Donald Farmer",
         "cast": [
           "Jessa Jupiter Flux",
-          "Ashleigh Amberlynn",
-          "Angel Nichole Bradford",
-          "Joe Casterline",
-          "Claude D. Miles"
+          "Ashleigh Amberlynn"
         ]
       },
-      "_discovery_source": "provider_availability_check"
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection"
     },
     {
       "id": "1528725",
@@ -155,7 +165,7 @@
       ],
       "runtime": 0,
       "year": 2025,
-      "rt_score": null,
+      "rt_score": "46%",
       "providers": {
         "rent": [],
         "buy": [
@@ -168,23 +178,32 @@
         ]
       },
       "links": {
-        "wikipedia": null,
-        "trailer": null,
-        "rt": null
+        "trailer": "https://www.youtube.com/watch?v=BLYIvp4qw2s",
+        "rt": "https://www.rottentomatoes.com/m/the_eye_of_the_storm"
       },
-      "watch_links": {},
-      "_enrichment_status": "pending",
+      "watch_links": {
+        "streaming": {
+          "service": "FlixFling",
+          "link": "https://www.flixfling.com/justwatch/30337"
+        },
+        "vod": {
+          "service": "Amazon",
+          "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.1a6b2b8a-84e3-4a36-a450-94b42dec8f3b&tag=nrw04-20"
+        }
+      },
+      "_enrichment_status": "completed",
       "_discovered_at": "2026-01-25T14:54:10.813916",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
       "poster": "https://image.tmdb.org/t/p/w500/hVCPk2c8XPocGyh7mLJhPEevtMD.jpg",
-      "studio": "Unknown",
-      "country": "Unknown",
+      "studio": null,
+      "country": null,
       "crew": {
         "director": "Unknown",
         "cast": []
       },
-      "_discovery_source": "provider_availability_check"
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection"
     },
     {
       "id": "1618161",
@@ -214,17 +233,12 @@
         "trailer": "https://www.youtube.com/watch?v=JeQZW8E5TB8",
         "rt": "https://www.rottentomatoes.com/m/body_of_influence"
       },
-      "watch_links": {
-        "vod": {
-          "service": "Google Play",
-          "link": "https://play.google.com/store/movies/details/Don_t_Trust_the_Quiet_Ones?gl=US&hl=en&id=C9pku1BbQXg.P"
-        }
-      },
+      "watch_links": {},
       "_enrichment_status": "completed",
       "_discovered_at": "2026-01-25T09:49:46.217611",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
-      "poster": "https://images.justwatch.com/poster/340945521/s718/body-of-influence-2026.jpg",
+      "poster": null,
       "studio": "5 Bridges Entertainment",
       "country": "Canada",
       "crew": {
