@@ -599,8 +599,8 @@ class DataGenerator:
                 'with_type': 2,  # Miniseries
                 'first_air_date.gte': start_date.strftime('%Y-%m-%d'),
                 'first_air_date.lte': end_date.strftime('%Y-%m-%d'),
-                'watch_region': 'US',
-                'with_watch_monetization_types': 'flatrate|rent|buy',
+                # NOTE: Removed watch_region and with_watch_monetization_types filters
+                # TMDB provider data lags for new shows - we check providers separately
                 'sort_by': 'first_air_date.desc',
                 'page': page
             }
