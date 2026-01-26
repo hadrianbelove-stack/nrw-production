@@ -1462,3 +1462,34 @@ function resetWatchInterface(movieId, serviceType, saveBtn) {
     // Clear current mode
     delete currentWatchModes[movieId];
 }
+
+// Health banner - copy details and dismiss
+function copyAndDismissHealth() {
+    const detailsEl = document.getElementById('health-details');
+    const bannerEl = document.getElementById('health-banner');
+
+    if (detailsEl) {
+        // Copy to clipboard
+        detailsEl.select();
+        document.execCommand('copy');
+
+        // Also try modern clipboard API
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(detailsEl.value).catch(() => {});
+        }
+    }
+
+    // Hide banner
+    if (bannerEl) {
+        bannerEl.style.display = 'none';
+    }
+
+    // Set session flag via API
+    fetch('/dismiss-health', { method: 'POST' }).catch(() => {});
+
+    // Brief feedback
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '✓ Copied!';
+    setTimeout(() => { btn.innerHTML = originalText; }, 1500);
+}

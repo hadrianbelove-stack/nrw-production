@@ -926,3 +926,68 @@ h1 {
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
+
+/* Health Status Banner */
+.health-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1.5rem;
+    margin-bottom: 1rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.health-success {
+    background: linear-gradient(135deg, #1a3d1a 0%, #2d4a2d 100%);
+    border: 1px solid #28a745;
+}
+
+.health-warning {
+    background: linear-gradient(135deg, #3d3a1a 0%, #4a4528 100%);
+    border: 1px solid #ffc107;
+}
+
+.health-error {
+    background: linear-gradient(135deg, #3d1a1a 0%, #4a2828 100%);
+    border: 1px solid #dc3545;
+}
+
+.health-content {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.health-emoji {
+    font-size: 1.2rem;
+}
+
+.health-text {
+    color: #e0e0e0;
+}
+
+.health-text strong {
+    color: #fff;
+}
+
+.health-detail {
+    color: #999;
+    font-size: 0.85rem;
+    margin-left: 0.5rem;
+}
+
+.health-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.2s;
+}
+
+.health-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}

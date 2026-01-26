@@ -23,6 +23,102 @@ from typing import Dict, List, Optional, Union, Any, Tuple
 import requests
 from file_lock import safe_write_json, safe_write_json_atomic
 
+# Health metrics file
+HEALTH_METRICS_FILE = 'metrics/run_diagnostics.json'
+
+def load_health_status():
+    """Load last run health status for admin banner."""
+    try:
+        if os.path.exists(HEALTH_METRICS_FILE):
+            with open(HEALTH_METRICS_FILE, 'r') as f:
+                data = json.load(f)
+
+            # Parse timestamp
+            timestamp = data.get('timestamp', '')
+            try:
+                dt = datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
+                formatted_time = dt.strftime('%b %d, %I:%M %p')
+            except:
+                formatted_time = timestamp[:16] if timestamp else 'Unknown'
+
+            # Determine status
+            failures = data.get('failures', [])
+            warnings = data.get('warnings', [])
+            health_issues = data.get('health_issues', [])
+            overall_success = data.get('overall_success', True)
+
+            # Build status
+            if failures:
+                status = 'error'
+                status_text = f'Completed with {len(failures)} error(s)'
+                status_emoji = '🔴'
+            elif warnings or health_issues:
+                status = 'warning'
+                status_text = f'Completed with {len(warnings) + len(health_issues)} warning(s)'
+                status_emoji = '🟡'
+            elif overall_success:
+                status = 'success'
+                status_text = 'Completed successfully'
+                status_emoji = '🟢'
+            else:
+                status = 'error'
+                status_text = 'Failed'
+                status_emoji = '🔴'
+
+            # Build copyable details
+            details_lines = []
+            details_lines.append(f"NRW Health Report - {formatted_time}")
+            details_lines.append(f"Status: {status_text}")
+            details_lines.append("")
+
+            # Add phase info
+            phases = data.get('phases', [])
+            for phase in phases:
+                phase_status = '✅' if phase.get('success') else '❌'
+                details_lines.append(f"{phase_status} {phase.get('name', 'Unknown phase')}")
+
+            # Add failures
+            if failures:
+                details_lines.append("")
+                details_lines.append("FAILURES:")
+                for f in failures:
+                    details_lines.append(f"  - {f.get('phase', 'Unknown')}: {f.get('message', 'No details')}")
+
+            # Add warnings
+            if warnings:
+                details_lines.append("")
+                details_lines.append("WARNINGS:")
+                for w in warnings:
+                    details_lines.append(f"  - {w}")
+
+            # Add health issues
+            if health_issues:
+                details_lines.append("")
+                details_lines.append("HEALTH ISSUES:")
+                for h in health_issues:
+                    details_lines.append(f"  - {h}")
+
+            # Add data quality summary
+            dq = data.get('data_quality', {})
+            if dq:
+                details_lines.append("")
+                details_lines.append(f"Data: {dq.get('available', 0)} available, {dq.get('data_movies', 0)} on site")
+
+            return {
+                'status': status,
+                'status_emoji': status_emoji,
+                'status_text': status_text,
+                'timestamp': formatted_time,
+                'failure_count': len(failures),
+                'warning_count': len(warnings) + len(health_issues),
+                'details': '\n'.join(details_lines),
+                'has_issues': bool(failures or warnings or health_issues)
+            }
+    except Exception as e:
+        pass
+
+    return None
+
 app = Flask(__name__,
             template_folder='admin/templates',
             static_folder='admin/static',
@@ -642,14 +738,26 @@ def index() -> str:
     # Calculate bootstrap movies count
     bootstrap_count = sum(1 for movie in processed_movies.values() if movie.get('bootstrap_date'))
 
+    # Load health status for banner
+    health_status = load_health_status()
+
     return render_template(
         'index.html',
         movies=processed_movies,
         featured=featured,
         featured_count=featured_count,
         missing_data_count=missing_data_count,
-        bootstrap_count=bootstrap_count
+        bootstrap_count=bootstrap_count,
+        health_status=health_status
     )
+
+
+@app.route('/dismiss-health', methods=['POST'])
+def dismiss_health():
+    """Dismiss health banner for this session."""
+    session['health_dismissed'] = True
+    return jsonify({'success': True})
+
 
 """
 VERIFICATION STEPS FOR /toggle-status ENDPOINT:

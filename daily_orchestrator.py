@@ -297,9 +297,9 @@ class NRWOrchestrator:
 
             # 6. Check watch links coverage
             movies_with_links = [m for m in movies if has_real_watch_link(m)]
-            movies_with_rt = [m for m in movies if m.get('rt_score')]
-            movies_with_wikipedia = [m for m in movies if m.get('wikipedia_link')]
-            movies_with_trailers = [m for m in movies if m.get('trailer_link')]
+            movies_with_rt = [m for m in movies if m.get('links', {}).get('rt')]
+            movies_with_wikipedia = [m for m in movies if m.get('links', {}).get('wikipedia')]
+            movies_with_trailers = [m for m in movies if m.get('links', {}).get('trailer')]
 
             # 7. Provider coverage sanity check (only if we have recent movies)
             if not skip_provider_check:
@@ -390,9 +390,9 @@ class NRWOrchestrator:
             data_movies = data.get('movies', [])
             stats['data_movies'] = len(data_movies)
             stats['movies_with_links'] = len([m for m in data_movies if has_real_watch_link(m)])
-            stats['movies_with_rt'] = len([m for m in data_movies if m.get('rt_score')])
-            stats['movies_with_wikipedia'] = len([m for m in data_movies if m.get('wikipedia_link')])
-            stats['movies_with_trailers'] = len([m for m in data_movies if m.get('trailer_link')])
+            stats['movies_with_rt'] = len([m for m in data_movies if m.get('links', {}).get('rt')])
+            stats['movies_with_wikipedia'] = len([m for m in data_movies if m.get('links', {}).get('wikipedia')])
+            stats['movies_with_trailers'] = len([m for m in data_movies if m.get('links', {}).get('trailer')])
 
         except Exception as e:
             stats['data_error'] = str(e)

@@ -7,6 +7,25 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}?v=8">
 </head>
 <body>
+    <!-- Health Status Banner -->
+    {% if health_status and not session.get('health_dismissed') %}
+    <div id="health-banner" class="health-banner health-{{ health_status.status }}">
+        <div class="health-content">
+            <span class="health-emoji">{{ health_status.status_emoji }}</span>
+            <span class="health-text">
+                <strong>Last run:</strong> {{ health_status.timestamp }} — {{ health_status.status_text }}
+                {% if health_status.has_issues %}
+                <span class="health-detail">({{ health_status.failure_count }} errors, {{ health_status.warning_count }} warnings)</span>
+                {% endif %}
+            </span>
+        </div>
+        <button class="health-btn" onclick="copyAndDismissHealth()" title="Copy details to clipboard and dismiss">
+            📋 Copy & Dismiss
+        </button>
+        <textarea id="health-details" style="position:absolute;left:-9999px;">{{ health_status.details }}</textarea>
+    </div>
+    {% endif %}
+
     <div class="header">
         <h1>🎬 The New Release Wall - Admin Panel</h1>
         <div class="stats">
