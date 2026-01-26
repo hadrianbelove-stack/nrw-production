@@ -95,6 +95,14 @@ python3 youtube_playlist_manager.py --help  # YouTube CLI
 2. Pull latest changes: `git pull origin main`
 3. Review data quality in admin panel if needed
 
+### Local Auto-Sync (macOS)
+A LaunchAgent syncs the local repo with GitHub daily at 4:05 AM:
+- **File:** `~/Library/LaunchAgents/com.nrw.daily-pull.plist`
+- **Action:** `git pull --ff-only origin main`
+- **Note:** Uses Terminal.app (which has Full Disk Access) via osascript
+
+To check status: `launchctl list | grep nrw`
+
 ### Manual Testing
 Trigger workflows manually in GitHub Actions tab → Select workflow → "Run workflow" button
 
