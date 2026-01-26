@@ -363,8 +363,9 @@ header h1 {
     color: #999;
     cursor: default;
     pointer-events: none;
-    opacity: 0.5;
+    opacity: 0.4;
     border: 1px solid #444;
+    filter: grayscale(100%);
 }
 
 .actions .watch-btn-error {

@@ -166,40 +166,60 @@ const NRW = {
             // Build platform-based watch buttons (SVOD, Amazon, Apple)
             const buildPlatformButtons = (movie) => {
                 const watchLinks = movie.watch_links || {};
+                const providers = movie.providers || {};
                 let buttonsHtml = '';
 
-                // 1. SVOD Streaming Button (if available)
-                if (watchLinks.streaming?.service && watchLinks.streaming?.link) {
-                    const service = watchLinks.streaming.service;
-                    const link = watchLinks.streaming.link;
+                // Helper to get display name for a service
+                const getDisplayName = (service) => {
+                    const s = service.toLowerCase();
+                    if (s.includes('amazon') || s.includes('prime')) return 'PRIME';
+                    if (s.includes('disney')) return 'DISNEY+';
+                    if (s.includes('hbo') || s.includes('max')) return 'MAX';
+                    if (s.includes('netflix')) return 'NETFLIX';
+                    if (s.includes('hulu')) return 'HULU';
+                    if (s.includes('peacock')) return 'PEACOCK';
+                    return service.toUpperCase();
+                };
 
-                    // Shorten platform names for display
-                    let displayName = service;
-                    if (service.toLowerCase().includes('amazon') || service.toLowerCase().includes('prime')) {
-                        displayName = 'PRIME';
-                    } else if (service.toLowerCase().includes('disney')) {
-                        displayName = 'DISNEY+';
-                    } else if (service.toLowerCase().includes('hbo') || service.toLowerCase().includes('max')) {
-                        displayName = 'MAX';
-                    } else if (service.toLowerCase().includes('netflix')) {
-                        displayName = 'NETFLIX';
-                    } else if (service.toLowerCase().includes('hulu')) {
-                        displayName = 'HULU';
-                    } else if (service.toLowerCase().includes('peacock')) {
-                        displayName = 'PEACOCK';
+                // Helper to render streaming button (active or disabled)
+                const renderStreamButton = (service, link) => {
+                    const displayName = getDisplayName(service);
+                    if (link) {
+                        // Active button with link
+                        if (displayName === 'PRIME') {
+                            return `<a href="${link}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-stream" aria-label="Watch on Prime Video"><img src="logos%20and%20images/amazon%20prime.png" alt="Prime Video" class="btn-logo"></a>`;
+                        } else if (displayName === 'NETFLIX') {
+                            return `<a href="${link}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-stream" aria-label="Watch on Netflix"><img src="logos%20and%20images/netflix%20square%20logo.png" alt="Netflix" class="btn-logo"></a>`;
+                        } else {
+                            return `<a href="${link}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-stream" aria-label="Watch on ${service}">${displayName}</a>`;
+                        }
                     } else {
-                        displayName = service.toUpperCase();
+                        // Disabled button - service known but no link (needs admin correction)
+                        if (displayName === 'NETFLIX') {
+                            return `<span class="watch-btn watch-btn-stream watch-btn-disabled" aria-disabled="true" title="On Netflix - link pending"><img src="logos%20and%20images/netflix%20square%20logo.png" alt="Netflix" class="btn-logo"></span>`;
+                        } else if (displayName === 'PRIME') {
+                            return `<span class="watch-btn watch-btn-stream watch-btn-disabled" aria-disabled="true" title="On Prime - link pending"><img src="logos%20and%20images/amazon%20prime.png" alt="Prime Video" class="btn-logo"></span>`;
+                        } else {
+                            return `<span class="watch-btn watch-btn-stream watch-btn-disabled" aria-disabled="true" title="On ${service} - link pending">${displayName}</span>`;
+                        }
                     }
+                };
 
-                    // All streaming services use the same style
-                    // Use logo images for certain services, text for others
-                    if (displayName === 'PRIME') {
-                        buttonsHtml += `<a href="${link}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-stream" aria-label="Watch on Prime Video"><img src="logos%20and%20images/amazon%20prime.png" alt="Prime Video" class="btn-logo"></a>`;
-                    } else if (displayName === 'NETFLIX') {
-                        buttonsHtml += `<a href="${link}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-stream" aria-label="Watch on Netflix"><img src="logos%20and%20images/netflix%20square%20logo.png" alt="Netflix" class="btn-logo"></a>`;
-                    } else {
-                        buttonsHtml += `<a href="${link}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-stream" aria-label="Watch on ${service}">${displayName}</a>`;
-                    }
+                // 1. SVOD Streaming Button
+                // Check watch_links first, then fall back to providers
+                let streamingService = watchLinks.streaming?.service;
+                let streamingLink = watchLinks.streaming?.link;
+
+                // If no watch_links.streaming but providers.streaming exists, use first provider
+                if (!streamingService && providers.streaming?.length > 0) {
+                    // Filter out "with Ads" variants to get primary service
+                    const primaryProvider = providers.streaming.find(p => !p.includes('with Ads')) || providers.streaming[0];
+                    streamingService = primaryProvider;
+                    streamingLink = null; // No link available
+                }
+
+                if (streamingService) {
+                    buttonsHtml += renderStreamButton(streamingService, streamingLink);
                 }
 
                 // 2. Purchase Buttons (Amazon + Apple)
@@ -227,7 +247,7 @@ const NRW = {
 
                 // If no valid links at all, show disabled placeholder
                 if (!buttonsHtml) {
-                    buttonsHtml = '<a href="#" class="watch-btn watch-btn-disabled" aria-disabled="true" title="Link not available" tabindex="-1">NOT AVAILABLE</a>';
+                    buttonsHtml = '<span class="watch-btn watch-btn-disabled" aria-disabled="true" title="Link not available">NOT AVAILABLE</span>';
                 }
 
                 // Wrap all buttons in a single container
