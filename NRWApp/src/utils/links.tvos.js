@@ -24,6 +24,7 @@ const SERVICE_SCHEMES = {
   angel_studios: 'angel://',
   shudder: 'shudder://',
   fandango: 'fandangoathome://',
+  plex: 'plex://',
 };
 
 // Web fallback URLs
@@ -43,6 +44,7 @@ const SERVICE_WEB_URLS = {
   angel_studios: 'https://www.angel.com',
   shudder: 'https://www.shudder.com',
   fandango: 'https://www.fandangoathome.com',
+  plex: 'https://app.plex.tv',
 };
 
 /**
@@ -137,7 +139,7 @@ export async function openAppleTV(url, affiliateToken = null) {
 
 /**
  * Open trailer (usually YouTube)
- * Attempts app deep link if available, otherwise opens original HTTPS URL
+ * Uses multiple URL formats for tvOS compatibility
  * @param {string} url - Trailer URL
  */
 export async function openTrailer(url) {
@@ -149,31 +151,28 @@ export async function openTrailer(url) {
   const youtubeId = extractYouTubeId(url);
 
   if (youtubeId) {
-    // Build YouTube app deep link with video ID
-    const youtubeAppUrl = `youtube://watch?v=${youtubeId}`;
+    // Try multiple URL formats for tvOS YouTube deep linking
+    // Note: canOpenURL is unreliable on tvOS, so we try formats directly
+    const urlsToTry = [
+      `youtube://www.youtube.com/watch?v=${youtubeId}`,
+      `youtube://watch?v=${youtubeId}`,
+      `vnd.youtube://www.youtube.com/watch?v=${youtubeId}`,
+    ];
 
-    try {
-      // Only attempt app deep link if the YouTube app is installed
-      const canOpenApp = await Linking.canOpenURL(youtubeAppUrl);
-
-      if (canOpenApp) {
-        await Linking.openURL(youtubeAppUrl);
+    for (let i = 0; i < urlsToTry.length; i++) {
+      try {
+        console.log(`[Links] Trying YouTube format ${i + 1}: ${urlsToTry[i]}`);
+        await Linking.openURL(urlsToTry[i]);
         return { success: true };
+      } catch (error) {
+        console.log(`[Links] Format ${i + 1} failed:`, error.message);
+        // Continue to next format
       }
-
-      // YouTube app not installed - open original HTTPS URL directly
-      // This ensures the specific video opens in a browser rather than YouTube home page
-      const canOpenWeb = await Linking.canOpenURL(url);
-      if (canOpenWeb) {
-        await Linking.openURL(url);
-        return { success: true, fallback: true };
-      }
-
-      throw new Error('Unable to open trailer URL');
-    } catch (error) {
-      console.error('[Links] Error opening trailer:', error);
-      return { success: false, error: error.message };
     }
+
+    // All YouTube formats failed
+    console.error('[Links] All YouTube URL formats failed');
+    return { success: false, error: 'Unable to open YouTube' };
   }
 
   // For non-YouTube trailers, use openURL directly
@@ -215,6 +214,28 @@ export async function openRottenTomatoes(url) {
  */
 export async function openWikipedia(url) {
   return openURL(url);
+}
+
+/**
+ * Open Plex with deep link to specific content
+ * Uses plex:// scheme for tvOS app deep linking
+ * @param {string} deepLink - Plex deep link URL (plex://play/?metadataKey=...)
+ */
+export async function openPlex(deepLink) {
+  if (!deepLink) {
+    return { success: false, error: 'No Plex deep link provided' };
+  }
+
+  try {
+    // Try the deep link directly - it should open in Plex app
+    console.log('[Links] Opening Plex with deep link:', deepLink);
+    await Linking.openURL(deepLink);
+    return { success: true };
+  } catch (error) {
+    console.error('[Links] Error opening Plex:', error);
+    // Fall back to generic Plex app launch
+    return openURL(null, 'plex');
+  }
 }
 
 /**
@@ -314,6 +335,7 @@ export default {
   openTrailer,
   openRottenTomatoes,
   openWikipedia,
+  openPlex,
   isServiceAppInstalled,
   getInstalledServiceApps,
   setupUniversalLinkHandler,

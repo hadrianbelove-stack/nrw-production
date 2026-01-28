@@ -3,6 +3,7 @@ const NRW = {
     filteredMovies: [],
     featuredMovies: [],
     latestPlaylistUrl: null,  // YouTube trailers playlist URL
+    plexLibrary: {},  // TMDB ID -> Plex URLs mapping (personal, local only)
     currentFilter: 'all',
     displayedCount: 60,  // How many movies currently shown
     loadIncrement: 60,   // How many to add when clicking "More"
@@ -18,6 +19,18 @@ const NRW = {
 
             // Load YouTube trailers playlist URL
             this.latestPlaylistUrl = data.latest_playlist_url || null;
+
+            // Build Plex library from movies that have plex data embedded
+            if (data.movies) {
+                data.movies.forEach(movie => {
+                    if (movie.plex) {
+                        this.plexLibrary[String(movie.id)] = movie.plex;
+                    }
+                });
+                if (Object.keys(this.plexLibrary).length > 0) {
+                    console.log(`Plex library loaded: ${Object.keys(this.plexLibrary).length} movies`);
+                }
+            }
 
             if (data.movies && data.movies.length > 0) {
                 const today = new Date();
@@ -196,11 +209,17 @@ const NRW = {
             }
             const bottomInfo = bottomMetadata.join(' | ');
 
-            // Build platform-based watch buttons (SVOD, Amazon, Apple)
+            // Build platform-based watch buttons (SVOD, Amazon, Apple, Plex)
             const buildPlatformButtons = (movie) => {
                 const watchLinks = movie.watch_links || {};
                 const providers = movie.providers || {};
                 let buttonsHtml = '';
+
+                // Check for Plex availability (personal library)
+                const plexInfo = this.plexLibrary[String(movie.id)];
+                if (plexInfo && plexInfo.web_url) {
+                    buttonsHtml += `<a href="${plexInfo.web_url}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-plex" aria-label="Play on Plex" title="Play on your Plex server"><img src="logos%20and%20images/plex-logo.png" alt="Plex" class="btn-logo" onerror="this.parentElement.innerHTML='PLEX'"></a>`;
+                }
 
                 // Helper to get display name for a service
                 const getDisplayName = (service) => {
@@ -293,7 +312,7 @@ const NRW = {
             let infoLinks = [];
 
             if (movie.links?.trailer) {
-                infoLinks.push(`<a href="${movie.links.trailer}" target="_blank" class="info-btn">Trailer</a>`);
+                infoLinks.push(`<a href="#" onclick="NRW.showTrailer('${movie.links.trailer}'); return false;" class="info-btn">Trailer</a>`);
             }
 
             if (movie.links?.rt) {
@@ -394,6 +413,83 @@ const NRW = {
             const card = e.target.closest('.movie-card');
             if (card) card.classList.toggle('flipped');
         });
+    },
+
+    // Extract YouTube video ID from various URL formats
+    extractYouTubeId(url) {
+        if (!url) return null;
+
+        // Handle various YouTube URL formats
+        const patterns = [
+            /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\?\/]+)/,
+            /youtube\.com\/v\/([^&\?\/]+)/,
+            /youtube\.com\/shorts\/([^&\?\/]+)/
+        ];
+
+        for (const pattern of patterns) {
+            const match = url.match(pattern);
+            if (match) return match[1];
+        }
+        return null;
+    },
+
+    // Show trailer in embedded modal
+    showTrailer(url) {
+        const videoId = this.extractYouTubeId(url);
+
+        if (!videoId) {
+            // Not a YouTube URL, open in new tab as fallback
+            window.open(url, '_blank');
+            return;
+        }
+
+        // Create modal if it doesn't exist
+        let modal = document.getElementById('trailer-modal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'trailer-modal';
+            modal.className = 'trailer-modal';
+            modal.innerHTML = `
+                <div class="trailer-modal-backdrop" onclick="NRW.closeTrailer()"></div>
+                <div class="trailer-modal-content">
+                    <button class="trailer-close-btn" onclick="NRW.closeTrailer()" aria-label="Close trailer">&times;</button>
+                    <div class="trailer-video-container">
+                        <iframe id="trailer-iframe"
+                            src=""
+                            frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+
+            // Close on Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') this.closeTrailer();
+            });
+        }
+
+        // Set the iframe source with autoplay
+        const iframe = document.getElementById('trailer-iframe');
+        iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
+
+        // Show modal
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    },
+
+    // Close trailer modal
+    closeTrailer() {
+        const modal = document.getElementById('trailer-modal');
+        if (modal) {
+            modal.classList.remove('active');
+            // Stop the video by clearing the src
+            const iframe = document.getElementById('trailer-iframe');
+            if (iframe) iframe.src = '';
+            document.body.style.overflow = ''; // Restore scrolling
+        }
     }
 };
 

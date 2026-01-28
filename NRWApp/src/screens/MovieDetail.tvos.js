@@ -24,6 +24,7 @@ import {
   getAccessibilityLabel,
 } from './useMovieDetail';
 import WatchButton, { InfoButton } from '../components/WatchButton.tvos';
+import TrailerPlayer from '../components/TrailerPlayer.tvos';
 import { Colors, Typography, Spacing } from '../constants/colors';
 import { useTVEventHandler, TV_EVENTS } from '../utils/focusManager.tvos';
 import {
@@ -31,6 +32,7 @@ import {
   openAppleTV,
   openURL,
   openTrailer,
+  openPlex,
   showLinkError,
 } from '../utils/links.tvos';
 import { fetchMovies } from '../services/api';
@@ -101,6 +103,8 @@ const MovieDetailTvOS = () => {
 
   // Local state
   const [synopsisExpanded, setSynopsisExpanded] = useState(false);
+  const [trailerVisible, setTrailerVisible] = useState(false);
+  const [trailerUrl, setTrailerUrl] = useState(null);
 
   // Fade in on mount
   React.useEffect(() => {
@@ -114,7 +118,13 @@ const MovieDetailTvOS = () => {
   // Handle TV remote events
   useTVEventHandler({
     [TV_EVENTS.MENU]: () => {
-      navigation.goBack();
+      // Close trailer if playing, otherwise go back
+      if (trailerVisible) {
+        setTrailerVisible(false);
+        setTrailerUrl(null);
+      } else {
+        navigation.goBack();
+      }
     },
     [TV_EVENTS.PLAY_PAUSE]: () => {
       // Play trailer if available
@@ -135,7 +145,9 @@ const MovieDetailTvOS = () => {
     try {
       let result;
 
-      if (link.service === 'amazon') {
+      if (link.service === 'plex') {
+        result = await openPlex(link.url);
+      } else if (link.service === 'amazon') {
         result = await openAmazon(link.url);
       } else if (link.service === 'apple_tv') {
         result = await openAppleTV(link.url);
@@ -160,13 +172,14 @@ const MovieDetailTvOS = () => {
     }
 
     try {
-      let result;
-
+      // For trailers, show embedded player instead of opening YouTube app
       if (link.type === 'trailer') {
-        result = await openTrailer(link.url);
-      } else {
-        result = await openURL(link.url);
+        setTrailerUrl(link.url);
+        setTrailerVisible(true);
+        return;
       }
+
+      const result = await openURL(link.url);
 
       if (!result.success) {
         showLinkError(link.label);
@@ -176,6 +189,12 @@ const MovieDetailTvOS = () => {
       showLinkError(link.label);
     }
   }, [movie]);
+
+  // Close trailer handler
+  const handleCloseTrailer = useCallback(() => {
+    setTrailerVisible(false);
+    setTrailerUrl(null);
+  }, []);
 
   // Toggle synopsis expansion
   const toggleSynopsis = useCallback(() => {
@@ -396,6 +415,14 @@ const MovieDetailTvOS = () => {
           Menu to go back • Play/Pause for trailer
         </Text>
       </View>
+
+      {/* Embedded Trailer Player */}
+      <TrailerPlayer
+        visible={trailerVisible}
+        url={trailerUrl}
+        onClose={handleCloseTrailer}
+        movieTitle={movie?.title}
+      />
     </Animated.View>
   );
 };

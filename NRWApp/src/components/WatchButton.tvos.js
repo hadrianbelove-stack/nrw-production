@@ -53,6 +53,7 @@ const SERVICE_COLORS = {
   shudder: '#c91e1e',
   fandango: '#ff7300',
   strand_releasing: '#8b0000',
+  plex: '#E5A00D',
 };
 
 const WatchButton = ({
@@ -232,6 +233,7 @@ function getServiceInitial(service) {
     shudder: 'S',
     fandango: 'F',
     strand_releasing: 'SR',
+    plex: '▶',
   };
   return initials[service] || service?.charAt(0)?.toUpperCase() || '?';
 }
@@ -254,10 +256,12 @@ function getDefaultLabel(service, type) {
     shudder: 'Shudder',
     fandango: 'Fandango',
     strand_releasing: 'Strand Releasing',
+    plex: 'Plex',
   };
 
   const serviceName = serviceNames[service] || service;
-  const action = type === 'purchase' ? 'Rent on' : 'Watch on';
+  // Plex uses "Play on" instead of "Watch on" or "Rent on"
+  const action = type === 'plex' ? 'Play on' : (type === 'purchase' ? 'Rent on' : 'Watch on');
 
   return `${action} ${serviceName}`;
 }

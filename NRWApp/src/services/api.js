@@ -59,27 +59,30 @@ export async function fetchMovies() {
 /**
  * Extract movies array and featured list from data.json structure
  * Handles both root object format and legacy array format
+ * Note: Plex data is now embedded directly in movie objects in data.json
  */
 function extractMoviesData(data) {
   // Handle root object format: { movies: [...], featured: [...], latest_playlist_url: "..." }
   if (data && typeof data === 'object' && !Array.isArray(data)) {
+    const plexCount = (data.movies || []).filter(m => m.plex).length;
+    if (plexCount > 0) {
+      console.log(`[API] ${plexCount} movies have Plex links`);
+    }
     return {
       movies: data.movies || [],
       featured: data.featured || [],
       latestPlaylistUrl: data.latest_playlist_url || null,
     };
-  }
-
-  // Handle legacy array format (for backwards compatibility)
-  if (Array.isArray(data)) {
+  } else if (Array.isArray(data)) {
+    // Handle legacy array format (for backwards compatibility)
     return {
       movies: data,
       featured: [],
       latestPlaylistUrl: null,
     };
+  } else {
+    return { movies: [], featured: [], latestPlaylistUrl: null };
   }
-
-  return { movies: [], featured: [], latestPlaylistUrl: null };
 }
 
 /**
@@ -266,11 +269,24 @@ function normalizeWatchLinks(watchLinks) {
  * Reads from movie.watch_links structure:
  * NEW format: { streaming: [{service, link}, ...], vod: [{service, link}, ...] }
  * Legacy format: { streaming: {service, link}, vod: {service, link} }
+ * Also includes Plex link if movie.plex is present (from plex_library.json)
  */
 export function getWatchLinks(movie) {
   if (!movie) return [];
 
   const links = [];
+
+  // Add Plex link first if available (personal library takes priority)
+  if (movie.plex && movie.plex.deep_link) {
+    links.push({
+      service: 'plex',
+      label: 'Play on Plex',
+      url: movie.plex.deep_link,
+      type: 'plex',
+      icon: 'plex',
+    });
+  }
+
   const watchLinks = normalizeWatchLinks(movie.watch_links);
 
   // Handle VOD (purchase/rent) links - filter to Amazon and Apple TV only
