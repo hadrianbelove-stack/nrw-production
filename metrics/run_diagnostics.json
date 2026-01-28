@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-01-27T10:01:57.079558",
-  "duration_seconds": 1880.058677,
+  "timestamp": "2026-01-28T10:19:44.887791",
+  "duration_seconds": 2857.748534,
   "overall_success": true,
   "failure_count": 0,
   "warning_count": 0,
@@ -8,23 +8,23 @@
     {
       "name": "Intake new premieres from TMDB",
       "success": true,
-      "duration_seconds": 12.375467,
+      "duration_seconds": 6.209887,
       "error": null,
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-01-25 to 2026-01-27 (incremental mode, 110 intaked)\n\u2705 Movie intake complete: 110 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2025-12-28 to 2026-01-27\n   \ud83d\udccb Lo Psicologo (1 eps)\n   \ud83d\udccb Take That ("
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-01-26 to 2026-01-28 (incremental mode, 45 intaked)\n\u2705 Movie intake complete: 45 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2025-12-29 to 2026-01-28\n   \ud83d\udccb The Lives We Lease (12 eps)\n\n\ud83d\udcca Miniseri"
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 1764.009651,
+      "duration_seconds": 2708.674324,
       "error": null,
-      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 13154 total movies\n\ud83d\udd0d Raw tracking filter: 11978 movies\n\ud83d\udd0d Assigned tracking_movies list: 11978\n\ud83d\udd0d Found 11978 movies in tracking status\n  Priority queue (last 180 days): 1598 movies\n  Older movies: 10380 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 11978 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/11978 (0.8%) | 0 found | 0m elapsed | ~28m remaining\n  \ud83d\udcbe Progress saved (b"
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 13200 total movies\n\ud83d\udd0d Raw tracking filter: 12017 movies\n\ud83d\udd0d Assigned tracking_movies list: 12017\n\ud83d\udd0d Found 12017 movies in tracking status\n  Priority queue (last 180 days): 1532 movies\n  Older movies: 10485 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 12017 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/12017 (0.8%) | 0 found | 0m elapsed | ~43m remaining\n  \ud83d\udcbe Progress saved (b"
     },
     {
       "name": "Enrich newly available movies with metadata",
       "success": true,
-      "duration_seconds": 103.572108,
+      "duration_seconds": 142.75912,
       "error": null,
-      "output_preview": "[AgentLinkScraper] Initialized with Playwright, cache_file=cache/agent_links_cache.json\n[AgentLinkScraper] Cache loaded: 0 entries\n[AgentLinkScraper] Screenshots: enabled\n[AgentLinkScraper] Supported platforms: ['Netflix', 'Disney+', 'Disney Plus', 'HBO Max', 'Max', 'Hulu']\n\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 7 movies to enrich\n[YouTubeTrailerScraper] Initializing browser via shared manager...\n[PlaywrightManager] Initializing shared Playwrig"
+      "output_preview": "[AgentLinkScraper] Initialized with Playwright, cache_file=cache/agent_links_cache.json\n[AgentLinkScraper] Cache loaded: 0 entries\n[AgentLinkScraper] Screenshots: enabled\n[AgentLinkScraper] Supported platforms: ['Netflix', 'Disney+', 'Disney Plus', 'HBO Max', 'Max', 'Hulu']\n\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 9 movies to enrich\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to"
     }
   ],
   "health_issues": [],
@@ -35,14 +35,14 @@
   "failures": [],
   "warnings": [],
   "data_quality": {
-    "total": 13154,
-    "tracking": 11971,
-    "available": 1181,
-    "data_movies": 136,
-    "movies_with_links": 114,
-    "movies_with_rt": 96,
-    "movies_with_wikipedia": 63,
-    "movies_with_trailers": 134
+    "total": 13200,
+    "tracking": 12008,
+    "available": 1190,
+    "data_movies": 145,
+    "movies_with_links": 123,
+    "movies_with_rt": 105,
+    "movies_with_wikipedia": 66,
+    "movies_with_trailers": 143
   },
   "enrichment_metrics": {
     "timestamp": "2025-12-29T15:42:45.008551",
