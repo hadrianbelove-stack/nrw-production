@@ -54,6 +54,52 @@ header h1 {
     box-shadow: 0 5px 15px rgba(0,212,170,0.3);
 }
 
+/* Search input */
+.search-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+#search-input {
+    padding: 0.5rem 2rem 0.5rem 1rem;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+    border-radius: 25px;
+    font-size: 0.9rem;
+    width: 150px;
+    transition: all 0.3s ease;
+}
+
+#search-input:focus {
+    outline: none;
+    width: 200px;
+    background: rgba(255,255,255,0.15);
+    border-color: #00d4aa;
+    box-shadow: 0 0 10px rgba(0,212,170,0.3);
+}
+
+#search-input::placeholder {
+    color: rgba(255,255,255,0.5);
+}
+
+.search-clear {
+    position: absolute;
+    right: 8px;
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.6);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0 4px;
+    line-height: 1;
+}
+
+.search-clear:hover {
+    color: #fff;
+}
+
 #wall {
     padding: 1.5rem 2rem;
     display: grid;

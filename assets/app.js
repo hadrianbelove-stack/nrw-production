@@ -5,6 +5,7 @@ const NRW = {
     latestPlaylistUrl: null,  // YouTube trailers playlist URL
     plexLibrary: {},  // TMDB ID -> Plex URLs mapping (personal, local only)
     currentFilter: 'all',
+    searchQuery: '',     // Current search query
     displayedCount: 60,  // How many movies currently shown
     loadIncrement: 60,   // How many to add when clicking "More"
 
@@ -40,6 +41,7 @@ const NRW = {
                 });
 
                 this.setupFilterEventListeners();
+                this.setupSearchEventListeners();
                 this.setupCardFlipHandler();
                 this.applyFilter();
                 this.renderWallWithMore();
@@ -79,28 +81,103 @@ const NRW = {
         });
     },
 
+    setupSearchEventListeners() {
+        const searchInput = document.getElementById('search-input');
+        const clearBtn = document.getElementById('search-clear');
+
+        if (!searchInput) return;
+
+        // Debounce search for performance
+        let debounceTimer;
+        searchInput.addEventListener('input', (e) => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                this.searchQuery = e.target.value.trim().toLowerCase();
+                this.displayedCount = this.loadIncrement; // Reset pagination
+                this.applyFilter();
+                this.renderWallWithMore();
+
+                // Show/hide clear button
+                if (clearBtn) {
+                    clearBtn.style.display = this.searchQuery ? 'block' : 'none';
+                }
+            }, 200);
+        });
+
+        // Clear button
+        if (clearBtn) {
+            clearBtn.style.display = 'none';
+            clearBtn.addEventListener('click', () => {
+                searchInput.value = '';
+                this.searchQuery = '';
+                this.displayedCount = this.loadIncrement;
+                this.applyFilter();
+                this.renderWallWithMore();
+                clearBtn.style.display = 'none';
+                searchInput.focus();
+            });
+        }
+
+        // Allow Escape to clear search
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                searchInput.value = '';
+                this.searchQuery = '';
+                this.displayedCount = this.loadIncrement;
+                this.applyFilter();
+                this.renderWallWithMore();
+                if (clearBtn) clearBtn.style.display = 'none';
+                searchInput.blur();
+            }
+        });
+    },
+
     applyFilter() {
         const filter = this.currentFilter;
+        const query = this.searchQuery;
 
         this.filteredMovies = this.allMovies.filter(movie => {
+            // First apply category filter
             const movieId = movie.id;
             const isFeatured = this.featuredMovies.includes(movieId);
 
+            let passesFilter = true;
             switch (filter) {
                 case 'featured':
-                    return isFeatured; // Show only featured movies
+                    passesFilter = isFeatured;
+                    break;
                 case 'foreign':
-                    // Foreign = non-English original language films
                     const lang = movie.original_language;
-                    // Include if original_language exists and is not English
-                    return lang && lang !== 'en';
+                    passesFilter = lang && lang !== 'en';
+                    break;
                 case 'series':
-                    // Limited series / miniseries only
-                    return movie.content_type === 'limited_series';
+                    passesFilter = movie.content_type === 'limited_series';
+                    break;
                 case 'all':
                 default:
-                    return true; // Show all movies
+                    passesFilter = true;
             }
+
+            if (!passesFilter) return false;
+
+            // Then apply search filter if query exists
+            if (query) {
+                const title = (movie.title || '').toLowerCase();
+                const director = (movie.crew?.director || '').toLowerCase();
+                const synopsis = (movie.synopsis || '').toLowerCase();
+                const genres = (movie.genres || []).join(' ').toLowerCase();
+                const country = (movie.country || '').toLowerCase();
+                const year = String(movie.year || '');
+
+                return title.includes(query) ||
+                       director.includes(query) ||
+                       synopsis.includes(query) ||
+                       genres.includes(query) ||
+                       country.includes(query) ||
+                       year.includes(query);
+            }
+
+            return true;
         });
     },
 
