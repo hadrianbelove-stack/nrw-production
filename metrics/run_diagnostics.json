@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-01-28T10:19:44.887791",
-  "duration_seconds": 2857.748534,
+  "timestamp": "2026-01-29T10:15:12.892645",
+  "duration_seconds": 2121.129184,
   "overall_success": true,
   "failure_count": 0,
   "warning_count": 0,
@@ -8,21 +8,21 @@
     {
       "name": "Intake new premieres from TMDB",
       "success": true,
-      "duration_seconds": 6.209887,
+      "duration_seconds": 5.048298,
       "error": null,
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-01-26 to 2026-01-28 (incremental mode, 45 intaked)\n\u2705 Movie intake complete: 45 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2025-12-29 to 2026-01-28\n   \ud83d\udccb The Lives We Lease (12 eps)\n\n\ud83d\udcca Miniseri"
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-01-27 to 2026-01-29 (incremental mode, 34 intaked)\n\u2705 Movie intake complete: 34 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2025-12-30 to 2026-01-29\n   \ud83d\udccb Morbo K - Chi salva una vita salva il m"
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 2708.674324,
+      "duration_seconds": 1991.780247,
       "error": null,
-      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 13200 total movies\n\ud83d\udd0d Raw tracking filter: 12017 movies\n\ud83d\udd0d Assigned tracking_movies list: 12017\n\ud83d\udd0d Found 12017 movies in tracking status\n  Priority queue (last 180 days): 1532 movies\n  Older movies: 10485 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 12017 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/12017 (0.8%) | 0 found | 0m elapsed | ~43m remaining\n  \ud83d\udcbe Progress saved (b"
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 13235 total movies\n\ud83d\udd0d Raw tracking filter: 12043 movies\n\ud83d\udd0d Assigned tracking_movies list: 12043\n\ud83d\udd0d Found 12043 movies in tracking status\n  Priority queue (last 180 days): 1498 movies\n  Older movies: 10545 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 12043 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/12043 (0.8%) | 0 found | 0m elapsed | ~31m remaining\n  \ud83d\udcbe Progress saved (b"
     },
     {
       "name": "Enrich newly available movies with metadata",
       "success": true,
-      "duration_seconds": 142.75912,
+      "duration_seconds": 124.197916,
       "error": null,
       "output_preview": "[AgentLinkScraper] Initialized with Playwright, cache_file=cache/agent_links_cache.json\n[AgentLinkScraper] Cache loaded: 0 entries\n[AgentLinkScraper] Screenshots: enabled\n[AgentLinkScraper] Supported platforms: ['Netflix', 'Disney+', 'Disney Plus', 'HBO Max', 'Max', 'Hulu']\n\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 9 movies to enrich\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to"
     }
@@ -30,19 +30,19 @@
   "health_issues": [],
   "stall_status": {
     "stalled": false,
-    "days_without_transitions": 1
+    "days_without_transitions": 0
   },
   "failures": [],
   "warnings": [],
   "data_quality": {
-    "total": 13200,
-    "tracking": 12008,
-    "available": 1190,
-    "data_movies": 145,
-    "movies_with_links": 123,
-    "movies_with_rt": 105,
-    "movies_with_wikipedia": 66,
-    "movies_with_trailers": 143
+    "total": 13235,
+    "tracking": 12034,
+    "available": 1199,
+    "data_movies": 154,
+    "movies_with_links": 132,
+    "movies_with_rt": 114,
+    "movies_with_wikipedia": 70,
+    "movies_with_trailers": 152
   },
   "enrichment_metrics": {
     "timestamp": "2025-12-29T15:42:45.008551",

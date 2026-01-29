@@ -22702,13 +22702,23 @@
     },
     "1559739": {
       "title": "Don't Come Here",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2025-11-05",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-01-29",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
       "discovery_pass": "B",
-      "has_providers": false,
-      "year": 2025
+      "has_providers": true,
+      "year": 2025,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1555806": {
       "title": "Far in the Middle of the East",
@@ -52196,13 +52206,22 @@
     },
     "1206008": {
       "title": "Ella McCay",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2025-12-12",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-01-29",
+      "providers": {
+        "rent": [],
+        "buy": [
+          "Amazon Video",
+          "Apple TV Store"
+        ],
+        "streaming": []
+      },
       "discovery_pass": "B",
-      "has_providers": false,
-      "year": 2025
+      "has_providers": true,
+      "year": 2025,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1176573": {
       "title": "My Date with a Vampire",
@@ -66529,12 +66548,20 @@
     "1533420": {
       "title": "Joan of Arc",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-01",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-01-29",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Criterion Channel"
+        ]
+      },
       "intake_pass": "A",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1465317": {
       "title": "SHE.",
@@ -102118,13 +102145,27 @@
     "1257407": {
       "title": "When the Light Breaks",
       "year": 2024,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-01-29",
+      "providers": {
+        "rent": [
+          "Amazon Video",
+          "Google Play Movies",
+          "YouTube"
+        ],
+        "buy": [
+          "Amazon Video",
+          "Google Play Movies",
+          "YouTube"
+        ],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "Cannes",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1214995": {
       "title": "The Darwinners",
@@ -149747,12 +149788,22 @@
     "1566001": {
       "title": "VHS Summer Camp",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-22",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-01-29",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1565649": {
       "title": "A Voyeurs Body",
@@ -151223,22 +151274,41 @@
     "1623232": {
       "title": "A Secret Lie in Love",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-27",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-01-29",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
       "intake_pass": "A",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1599087": {
       "title": "Mike Epps: Delusional",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-27",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-01-29",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
+      },
       "intake_pass": "A",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1462871": {
       "title": "33 Photos from the Ghetto",
@@ -151361,12 +151431,20 @@
     "1623111": {
       "title": "Mouth of the Wolf: Amanda Knox Returns to Italy",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-27",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-01-29",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Hulu"
+        ]
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1621014": {
       "title": "Island Python",
@@ -154919,7 +154997,386 @@
       "networks": [
         "PTS Taigi"
       ]
+    },
+    "1602705": {
+      "title": "A Letter to My Youth",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-29",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A",
+      "has_providers": false
+    },
+    "1533549": {
+      "title": "Wicked of Oz",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-29",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A",
+      "has_providers": false
+    },
+    "1621394": {
+      "title": "Sirena",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-29",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1620370": {
+      "title": "Tired Light",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-29",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1618515": {
+      "title": "Tip of the Iceberg",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-29",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1615787": {
+      "title": "Wonder World",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-29",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1611903": {
+      "title": "Zejtune",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-29",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1609622": {
+      "title": "\u0556\u0578\u0582\u056c \u0570\u0561\u0578\u0582\u057d. \u054e\u0561\u0575\u0580\u0567\u057b\u0584",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-29",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1602409": {
+      "title": "\u00c9lever au grain",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-29",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1593352": {
+      "title": "Il Regalo: The Gift",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-29",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1589963": {
+      "title": "Ecos do Teatro Experimental do Negro",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-29",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1571242": {
+      "title": "Kingdom of Soap Bubbles",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-29",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1567711": {
+      "title": "Love in Cura\u00e7ao",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-29",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1563282": {
+      "title": "Land van Johan",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-29",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1559575": {
+      "title": "Kafir, Gerbang Sukma",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-29",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1547844": {
+      "title": "Tuhan, Benarkah Kau Mendengarku?",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-29",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1543151": {
+      "title": "King Keaw",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-29",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1524006": {
+      "title": "\u0410\u0444\u0451\u0440\u0430 \u043f\u043e-\u0440\u0443\u0441\u0441\u043a\u0438",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-29",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1473635": {
+      "title": "Things Unspoken",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-29",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1446171": {
+      "title": "Queens of Joy",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-29",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1411198": {
+      "title": "Scham",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-29",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1319125": {
+      "title": "Kuyank",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-29",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1299956": {
+      "title": "Where Olive Trees Weep",
+      "year": 2024,
+      "status": "available",
+      "first_seen": "2026-01-29",
+      "digital_date": "2026-01-29",
+      "providers": {
+        "rent": [
+          "Google Play Movies",
+          "YouTube"
+        ],
+        "buy": [
+          "Google Play Movies",
+          "YouTube"
+        ],
+        "streaming": []
+      },
+      "intake_pass": "B",
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
+    },
+    "1292592": {
+      "title": "Dowa Juseyo",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-29",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1278853": {
+      "title": "Woodwalkers 2",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-29",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1271511": {
+      "title": "Happy Heroes: Multiverse Rescue",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-29",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1218067": {
+      "title": "When Mumbo Jumbo Grew Giant",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-29",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1116201": {
+      "title": "Iron Lung",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-29",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "696393": {
+      "title": "Cold Storage",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-29",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1624917": {
+      "title": "Die Liebe st\u00f6rt der kalte Tod",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-29",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1624744": {
+      "title": "Memory of Light",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-29",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1624325": {
+      "title": "Q d'Or 2026",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-29",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1614268": {
+      "title": "Echo",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-29",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Sundance",
+      "has_providers": false
+    },
+    "1316092": {
+      "title": "\"Wuthering Heights\"",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-29",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Sundance",
+      "has_providers": false
+    },
+    "tv_312602": {
+      "title": "Morbo K - Chi salva una vita salva il mondo intero",
+      "content_type": "limited_series",
+      "tmdb_id": 312602,
+      "status": "tracking",
+      "first_air_date": "2026-01-27",
+      "digital_date": "2026-01-27",
+      "episode_count": 4,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/5bV0NFTvO76qkyWkY12iYfumCHy.jpg",
+      "synopsis": "",
+      "genres": [
+        "Drama"
+      ],
+      "original_language": "it",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-01-29T09:39:55.714446",
+      "networks": [
+        "Rai 1"
+      ]
     }
   },
-  "last_update": "2026-01-28T09:32:11.400642"
+  "last_update": "2026-01-29T09:39:55.304021"
 }
