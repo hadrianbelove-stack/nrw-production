@@ -13,7 +13,7 @@ import {
   TouchableOpacity,
   Linking,
   Animated,
-  Alert,
+  findNodeHandle,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useHomeScreen } from './useHomeScreen';
@@ -32,7 +32,8 @@ const FILTERS = [
   { id: 'all', label: 'All' },
   { id: 'featured', label: 'Featured' },
   { id: 'foreign', label: 'Foreign' },
-  { id: 'series', label: 'Mini-Series' },
+  { id: 'series', label: 'Limited Series' },
+  { id: 'plex', label: 'Plex' },
 ];
 
 // Filter Button Component
@@ -91,14 +92,39 @@ const FilterButton = ({ filter, isActive, onPress, onFocus }) => {
   );
 };
 
-// Grid configuration - 7 columns for 1920px width
-const NUM_COLUMNS = 7;
+// Date Card Component - focusable to allow navigation through grid
+const DateCard = ({ dateParts, nextFocusUp }) => {
+  const [isFocused, setIsFocused] = useState(false);
+
+  return (
+    <TouchableOpacity
+      onFocus={() => setIsFocused(true)}
+      onBlur={() => setIsFocused(false)}
+      activeOpacity={1}
+      accessible={true}
+      accessibilityLabel={`${dateParts.dayName} ${dateParts.month} ${dateParts.day}`}
+      accessibilityRole="text"
+      nextFocusUp={nextFocusUp}
+    >
+      <View style={[styles.dateCard, isFocused && styles.dateCardFocused]}>
+        <View style={styles.dateCardInner}>
+          <Text style={styles.dateDayName}>{dateParts.dayName}</Text>
+          <Text style={styles.dateNumber}>{dateParts.day}</Text>
+          <Text style={styles.dateMonth}>{dateParts.month}</Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+};
+
+// Grid configuration - 8 columns for 1920px width
+const NUM_COLUMNS = 8;
 const CARD_WIDTH = Dimensions.tvos.cardWidth;
 const CARD_HEIGHT = Dimensions.tvos.cardHeight;
 const CARD_GAP = 16;
 
 // Trailers Card Component with focus animations
-const TrailersCard = ({ playlistUrl }) => {
+const TrailersCard = ({ playlistUrl, nextFocusUp }) => {
   const [isFocused, setIsFocused] = useState(false);
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
@@ -178,17 +204,26 @@ const TrailersCard = ({ playlistUrl }) => {
       onBlur={handleBlur}
       activeOpacity={1}
       accessible={true}
-      accessibilityLabel="New Trailers - Opens YouTube playlist"
+      accessibilityLabel="This Week's Trailers - Opens YouTube playlist"
       accessibilityRole="button"
+      nextFocusUp={nextFocusUp}
     >
       <Animated.View
         style={[
           styles.trailersCard,
-          { transform: [{ scale: scaleAnim }] },
+          {
+            transform: [{ scale: scaleAnim }],
+            zIndex: isFocused ? 1000 : 1,
+            elevation: isFocused ? 10 : 0,
+          },
         ]}
       >
-        <Text style={styles.trailersText}>NEW</Text>
-        <Text style={styles.trailersText}>TRAILERS</Text>
+        <Text style={styles.trailersTextSmall}>THIS WEEK'S</Text>
+        <Text style={styles.trailersTextLarge}>TRAILERS</Text>
+        {/* YouTube-style play button */}
+        <View style={styles.youtubeButton}>
+          <Text style={styles.youtubePlayIcon}>▶</Text>
+        </View>
         {isFocused && <View style={styles.trailersFocusBorder} />}
       </Animated.View>
     </TouchableOpacity>
@@ -198,6 +233,8 @@ const TrailersCard = ({ playlistUrl }) => {
 const HomeScreenTvOS = () => {
   const navigation = useNavigation();
   const flatListRef = useRef(null);
+  const filterRowRef = useRef(null);
+  const [headerNodeHandle, setHeaderNodeHandle] = useState(null);
 
   // Get shared state and actions
   const {
@@ -214,6 +251,14 @@ const HomeScreenTvOS = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const previousFilterRef = useRef(activeFilter);
 
+  // Get node handle for header navigation
+  useEffect(() => {
+    if (filterRowRef.current) {
+      const handle = findNodeHandle(filterRowRef.current);
+      setHeaderNodeHandle(handle);
+    }
+  }, []);
+
   // Track screen view on mount
   useEffect(() => {
     trackScreenView('Home', { filter: activeFilter });
@@ -228,22 +273,26 @@ const HomeScreenTvOS = () => {
 
   // Get movies based on active filter
   const displayMovies = useMemo(() => {
+    let movies = filteredMovies;
+
+    // Apply category filter
     if (activeFilter === 'featured') {
-      return filteredMovies.filter(m => m.featured);
-    }
-    if (activeFilter === 'foreign') {
+      movies = movies.filter(m => m.featured);
+    } else if (activeFilter === 'foreign') {
       // Foreign = non-English original language films
-      return filteredMovies.filter(m => {
+      movies = movies.filter(m => {
         const lang = m.original_language;
-        // Include if original_language exists and is not English
         return lang && lang !== 'en';
       });
-    }
-    if (activeFilter === 'series') {
+    } else if (activeFilter === 'series') {
       // Limited series / miniseries only
-      return filteredMovies.filter(m => m.content_type === 'limited_series');
+      movies = movies.filter(m => m.content_type === 'limited_series');
+    } else if (activeFilter === 'plex') {
+      // Movies available in personal Plex library
+      movies = movies.filter(m => m.plex && m.plex.deep_link);
     }
-    return filteredMovies;
+
+    return movies;
   }, [filteredMovies, activeFilter]);
 
   // Build flat list data with date markers interspersed
@@ -345,11 +394,15 @@ const HomeScreenTvOS = () => {
   // Render item (date marker, trailers button, or movie card)
   const renderItem = useCallback(
     ({ item, index }) => {
+      // Items in first row should navigate up to header buttons
+      const isFirstRow = index < NUM_COLUMNS;
+      const focusUpTarget = isFirstRow ? headerNodeHandle : undefined;
+
       // NEW TRAILERS button
       if (item.type === 'trailers') {
         return (
           <View style={styles.cardWrapper}>
-            <TrailersCard playlistUrl={item.playlistUrl} />
+            <TrailersCard playlistUrl={item.playlistUrl} nextFocusUp={focusUpTarget} />
           </View>
         );
       }
@@ -358,12 +411,8 @@ const HomeScreenTvOS = () => {
       if (item.type === 'date') {
         const dateParts = formatDateParts(item.date);
         return (
-          <View style={styles.dateCard}>
-            <View style={styles.dateCardInner}>
-              <Text style={styles.dateDayName}>{dateParts.dayName}</Text>
-              <Text style={styles.dateNumber}>{dateParts.day}</Text>
-              <Text style={styles.dateMonth}>{dateParts.month}</Text>
-            </View>
+          <View style={styles.cardWrapper}>
+            <DateCard dateParts={dateParts} nextFocusUp={focusUpTarget} />
           </View>
         );
       }
@@ -377,11 +426,12 @@ const HomeScreenTvOS = () => {
             onFocus={() => handleMovieFocus(item.movie, index)}
             hasTVPreferredFocus={index === 2} // First movie after trailers + first date marker
             testID={`movie-card-${index}`}
+            nextFocusUp={focusUpTarget}
           />
         </View>
       );
     },
-    [formatDateParts, handleMovieSelect, handleMovieFocus]
+    [formatDateParts, handleMovieSelect, handleMovieFocus, headerNodeHandle]
   );
 
   // Key extractor
@@ -439,19 +489,19 @@ const HomeScreenTvOS = () => {
 
   return (
     <View style={styles.container}>
-      {/* Header with title and filters */}
+      {/* Header with title on left, filters and search on right */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>THE NEW RELEASE WALL</Text>
-        <View style={styles.filterRow}>
-          {FILTERS.map((filter) => (
-            <FilterButton
-              key={filter.id}
-              filter={filter}
-              isActive={activeFilter === filter.id}
-              onPress={() => handleFilterChange(filter.id)}
-            />
-          ))}
-        </View>
+        <View ref={filterRowRef} style={styles.filterRow}>
+            {FILTERS.map((filter) => (
+              <FilterButton
+                key={filter.id}
+                filter={filter}
+                isActive={activeFilter === filter.id}
+                onPress={() => handleFilterChange(filter.id)}
+              />
+            ))}
+          </View>
       </View>
 
       {/* Vertical scrolling grid - the wall */}
@@ -487,28 +537,31 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
   },
   header: {
-    paddingHorizontal: 40,
-    paddingTop: 20,
-    paddingBottom: 12,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
+    paddingHorizontal: 64,
+    paddingTop: 28,
+    paddingBottom: 16,
   },
   headerTitle: {
     color: Colors.primary,
-    fontSize: 42,
-    fontWeight: '100',
-    letterSpacing: 12,
-    textAlign: 'center',
-    marginBottom: 16,
+    fontSize: 44,
+    fontWeight: '600',
+    letterSpacing: 8,
   },
   filterRow: {
     flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 16,
+    gap: 12,
+  },
+  searchIcon: {
+    color: 'rgba(255, 255, 255, 0.6)',
+    fontSize: 24,
   },
   filterButton: {
-    paddingHorizontal: 24,
-    paddingVertical: 10,
-    borderRadius: 25,
+    paddingHorizontal: 16,
+    paddingVertical: 6,
+    borderRadius: 20,
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.2)',
@@ -523,7 +576,7 @@ const styles = StyleSheet.create({
   },
   filterButtonText: {
     color: Colors.textPrimary,
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: '500',
   },
   filterButtonTextActive: {
@@ -531,31 +584,58 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   listContent: {
-    // Center the 7-column grid: (1920 - 7*(210+16)) / 2 = 169px
-    paddingHorizontal: 169,
-    paddingTop: 0,
+    // Center the 8-column grid: (1920 - 8*210 - 7*16) / 2 = 64px
+    paddingHorizontal: 64,
+    paddingTop: 30,
     paddingBottom: 20,
+    overflow: 'visible',
   },
   row: {
     justifyContent: 'flex-start',
     marginBottom: CARD_GAP,
+    overflow: 'visible',
+    zIndex: 1,
   },
-  // NEW TRAILERS button - same size as movie cards
+  // THIS WEEK'S TRAILERS button - same size as movie cards
   trailersCard: {
     width: CARD_WIDTH,
     height: CARD_HEIGHT,
     borderRadius: 12,
-    backgroundColor: '#E50914',
+    backgroundColor: Colors.background,
+    borderWidth: 3,
+    borderColor: Colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'hidden',
   },
-  trailersText: {
-    color: '#FFFFFF',
+  trailersTextSmall: {
+    color: '#ffffff',
+    fontSize: 20,
+    fontWeight: '600',
+    letterSpacing: 1,
+    textAlign: 'center',
+  },
+  trailersTextLarge: {
+    color: '#ffffff',
     fontSize: 28,
-    fontWeight: '900',
+    fontWeight: '800',
     letterSpacing: 2,
     textAlign: 'center',
+    marginTop: 4,
+  },
+  youtubeButton: {
+    width: 70,
+    height: 50,
+    backgroundColor: '#FF0000',
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 16,
+  },
+  youtubePlayIcon: {
+    color: '#ffffff',
+    fontSize: 24,
+    marginLeft: 4,
   },
   trailersFocusBorder: {
     position: 'absolute',
@@ -565,13 +645,12 @@ const styles = StyleSheet.create({
     bottom: 0,
     borderRadius: 12,
     borderWidth: 4,
-    borderColor: Colors.primary,
+    borderColor: '#00ffcc',
   },
-  // Date card - same size as movie cards, styled like web
+  // Date card - same size as movie cards
   dateCard: {
     width: CARD_WIDTH,
     height: CARD_HEIGHT,
-    marginRight: CARD_GAP,
     borderRadius: 12,
     borderWidth: 3,
     borderColor: Colors.primary,
@@ -580,14 +659,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     overflow: 'hidden',
   },
+  dateCardFocused: {
+    borderColor: '#00ffcc',
+    borderWidth: 4,
+    backgroundColor: 'rgba(0, 212, 170, 0.1)',
+  },
   dateCardInner: {
     alignItems: 'center',
   },
   dateDayName: {
-    color: Colors.textMuted,
-    fontSize: 16,
-    letterSpacing: 3,
-    marginBottom: 6,
+    color: '#999999',
+    fontSize: 14,
+    letterSpacing: 2,
+    marginBottom: 4,
   },
   dateNumber: {
     color: Colors.primary,
@@ -604,6 +688,8 @@ const styles = StyleSheet.create({
   },
   cardWrapper: {
     marginRight: CARD_GAP,
+    overflow: 'visible',
+    zIndex: 1,
   },
   refreshOverlay: {
     position: 'absolute',

@@ -16,6 +16,8 @@ import {
   getLastFocusedIndex,
   saveUserPreferences,
   getUserPreferences,
+  removeCachedData,
+  CACHE_KEYS,
 } from '../utils/cache';
 
 /**
@@ -58,6 +60,9 @@ export function useHomeScreen() {
     setError(null);
 
     try {
+      // Clear movies cache to ensure fresh data with latest Plex links
+      await removeCachedData(CACHE_KEYS.MOVIES);
+
       const { movies: moviesArray, featured: featuredIdsList, latestPlaylistUrl: playlistUrl } = await fetchMovies();
       setMovies(moviesArray);
       setFeaturedIds(featuredIdsList);

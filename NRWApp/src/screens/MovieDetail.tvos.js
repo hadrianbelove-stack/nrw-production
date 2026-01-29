@@ -24,7 +24,6 @@ import {
   getAccessibilityLabel,
 } from './useMovieDetail';
 import WatchButton, { InfoButton } from '../components/WatchButton.tvos';
-import TrailerPlayer from '../components/TrailerPlayer.tvos';
 import { Colors, Typography, Spacing } from '../constants/colors';
 import { useTVEventHandler, TV_EVENTS } from '../utils/focusManager.tvos';
 import {
@@ -91,6 +90,7 @@ const MovieDetailTvOS = () => {
   const {
     watchLinks,
     infoLinks,
+    plexLinks,
     purchaseLinks,
     streamingLinks,
     formattedRuntime,
@@ -103,8 +103,6 @@ const MovieDetailTvOS = () => {
 
   // Local state
   const [synopsisExpanded, setSynopsisExpanded] = useState(false);
-  const [trailerVisible, setTrailerVisible] = useState(false);
-  const [trailerUrl, setTrailerUrl] = useState(null);
 
   // Fade in on mount
   React.useEffect(() => {
@@ -118,13 +116,7 @@ const MovieDetailTvOS = () => {
   // Handle TV remote events
   useTVEventHandler({
     [TV_EVENTS.MENU]: () => {
-      // Close trailer if playing, otherwise go back
-      if (trailerVisible) {
-        setTrailerVisible(false);
-        setTrailerUrl(null);
-      } else {
-        navigation.goBack();
-      }
+      navigation.goBack();
     },
     [TV_EVENTS.PLAY_PAUSE]: () => {
       // Play trailer if available
@@ -172,10 +164,12 @@ const MovieDetailTvOS = () => {
     }
 
     try {
-      // For trailers, show embedded player instead of opening YouTube app
+      // For trailers, use the trailer-specific opener (YouTube deep linking)
       if (link.type === 'trailer') {
-        setTrailerUrl(link.url);
-        setTrailerVisible(true);
+        const result = await openTrailer(link.url);
+        if (!result.success) {
+          showLinkError(link.label);
+        }
         return;
       }
 
@@ -189,12 +183,6 @@ const MovieDetailTvOS = () => {
       showLinkError(link.label);
     }
   }, [movie]);
-
-  // Close trailer handler
-  const handleCloseTrailer = useCallback(() => {
-    setTrailerVisible(false);
-    setTrailerUrl(null);
-  }, []);
 
   // Toggle synopsis expansion
   const toggleSynopsis = useCallback(() => {
@@ -353,6 +341,24 @@ const MovieDetailTvOS = () => {
               <View style={styles.section}>
                 <Text style={styles.sectionTitle}>Where to Watch</Text>
 
+                {/* Plex - Personal Library (show first!) - icon only like Amazon */}
+                {plexLinks.length > 0 && (
+                  <View style={styles.buttonRow}>
+                    {plexLinks.map((link, index) => (
+                      <WatchButton
+                        key={link.service}
+                        service={link.service}
+                        label={link.label}
+                        type="plex"
+                        onPress={() => handleWatchPress(link)}
+                        hasTVPreferredFocus={true}
+                        iconOnly={true}
+                        testID={`watch-btn-${link.service}`}
+                      />
+                    ))}
+                  </View>
+                )}
+
                 {/* Purchase/Rent options */}
                 {purchaseLinks.length > 0 && (
                   <View style={styles.buttonRow}>
@@ -363,7 +369,7 @@ const MovieDetailTvOS = () => {
                         label={link.label}
                         type="purchase"
                         onPress={() => handleWatchPress(link)}
-                        hasTVPreferredFocus={index === 0}
+                        hasTVPreferredFocus={plexLinks.length === 0 && index === 0}
                         testID={`watch-btn-${link.service}`}
                       />
                     ))}
@@ -415,14 +421,6 @@ const MovieDetailTvOS = () => {
           Menu to go back • Play/Pause for trailer
         </Text>
       </View>
-
-      {/* Embedded Trailer Player */}
-      <TrailerPlayer
-        visible={trailerVisible}
-        url={trailerUrl}
-        onClose={handleCloseTrailer}
-        movieTitle={movie?.title}
-      />
     </Animated.View>
   );
 };

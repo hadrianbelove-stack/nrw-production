@@ -416,6 +416,7 @@ Filtered, enriched subset for frontend display:
   "imdb_id": "tt1234567",
   "title": "Movie Title",
   "original_title": "Original Title",
+  "original_language": "en",
   "digital_date": "2025-10-15",
   "poster": "https://image.tmdb.org/...",
   "crew": {
@@ -447,6 +448,7 @@ Filtered, enriched subset for frontend display:
 
 ### Required Fields Per Movie
 - `tmdb_id`, `imdb_id`, `title`, `original_title`
+- `original_language` (ISO 639-1 code, e.g., "en", "es", "fr")
 - `digital_date` (ISO‑8601 format)
 - `poster`, `crew.director`, `crew.cast[]`, `synopsis`
 - `metadata.runtime`

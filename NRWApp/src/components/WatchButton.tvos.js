@@ -63,6 +63,7 @@ const WatchButton = ({
   onPress,
   hasTVPreferredFocus = false,
   disabled = false,
+  iconOnly = false, // Show just the icon (no label) - compact square button
   testID,
 }) => {
   const [isFocused, setIsFocused] = useState(false);
@@ -136,7 +137,7 @@ const WatchButton = ({
     >
       <Animated.View
         style={[
-          styles.container,
+          iconOnly ? styles.iconOnlyContainer : styles.container,
           {
             backgroundColor: isFocused ? buttonColor : Colors.backgroundTertiary,
             transform: [{ scale: scaleAnim }],
@@ -156,29 +157,31 @@ const WatchButton = ({
         />
 
         {/* Service logo or icon */}
-        <View style={styles.iconContainer}>
-          <ServiceIcon service={service} isFocused={isFocused} />
+        <View style={iconOnly ? styles.iconOnlyIconContainer : styles.iconContainer}>
+          <ServiceIcon service={service} isFocused={isFocused} iconOnly={iconOnly} />
         </View>
 
-        {/* Button label */}
-        <Text
-          style={[
-            styles.label,
-            {
-              color: isFocused ? Colors.background : Colors.textPrimary,
-            },
-          ]}
-          numberOfLines={1}
-        >
-          {displayLabel}
-        </Text>
+        {/* Button label (hidden for iconOnly mode) */}
+        {!iconOnly && (
+          <Text
+            style={[
+              styles.label,
+              {
+                color: isFocused ? Colors.background : Colors.textPrimary,
+              },
+            ]}
+            numberOfLines={1}
+          >
+            {displayLabel}
+          </Text>
+        )}
       </Animated.View>
     </TouchableOpacity>
   );
 };
 
 // Service icon component (shows logo or fallback text)
-const ServiceIcon = ({ service, isFocused }) => {
+const ServiceIcon = ({ service, isFocused, iconOnly = false }) => {
   // Try to use logo image, fallback to text
   const hasLogo = SERVICE_LOGOS[service];
   const serviceColor = SERVICE_COLORS[service] || Colors.textPrimary;
@@ -189,7 +192,7 @@ const ServiceIcon = ({ service, isFocused }) => {
         <Image
           source={SERVICE_LOGOS[service]}
           style={[
-            styles.logo,
+            iconOnly ? styles.iconOnlyLogo : styles.logo,
             { tintColor: isFocused ? Colors.background : undefined },
           ]}
           resizeMode="contain"
@@ -204,7 +207,7 @@ const ServiceIcon = ({ service, isFocused }) => {
   return (
     <Text
       style={[
-        styles.iconText,
+        iconOnly ? styles.iconOnlyText : styles.iconText,
         {
           color: isFocused ? Colors.background : serviceColor,
         },
@@ -372,6 +375,17 @@ const styles = StyleSheet.create({
     marginRight: Spacing.tvos.md,
     marginBottom: Spacing.tvos.sm,
   },
+  // Icon-only mode: compact square button
+  iconOnlyContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 72,
+    height: 72,
+    borderRadius: 12,
+    marginRight: Spacing.tvos.md,
+    marginBottom: Spacing.tvos.sm,
+  },
   glowLayer: {
     ...StyleSheet.absoluteFillObject,
     borderRadius: 12,
@@ -386,12 +400,29 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: Spacing.tvos.md,
   },
+  // Icon-only mode: centered icon container (no margin)
+  iconOnlyIconContainer: {
+    width: 48,
+    height: 48,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   logo: {
     width: 32,
     height: 32,
   },
+  // Icon-only mode: larger logo
+  iconOnlyLogo: {
+    width: 40,
+    height: 40,
+  },
   iconText: {
     fontSize: Typography.tvos.body,
+    fontWeight: '700',
+  },
+  // Icon-only mode: larger text icon
+  iconOnlyText: {
+    fontSize: 36,
     fontWeight: '700',
   },
   label: {

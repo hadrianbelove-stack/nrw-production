@@ -214,6 +214,7 @@ const SERVICE_NAME_MAP = {
   'vix': 'vix',
   'shudder': 'shudder',
   'strand releasing amazon channel': 'strand_releasing',
+  'eventive': 'eventive',
 };
 
 /**
@@ -226,12 +227,19 @@ function normalizeServiceId(serviceName) {
 }
 
 /**
- * Check if a service is Amazon or Apple TV (for VOD filtering)
+ * Check if a service should be shown for VOD (purchase/rent)
+ * Includes major VOD platforms that work on Apple TV
  */
-function isAmazonOrAppleService(serviceName) {
+function isValidVodService(serviceName) {
   if (!serviceName) return false;
   const lower = serviceName.toLowerCase();
-  return lower.includes('amazon') || lower.includes('apple') || lower.includes('itunes');
+  // Include Amazon, Apple, Fandango, and specialty platforms like Eventive
+  return lower.includes('amazon') ||
+         lower.includes('apple') ||
+         lower.includes('itunes') ||
+         lower.includes('fandango') ||
+         lower.includes('vudu') ||
+         lower.includes('eventive');
 }
 
 /**
@@ -289,9 +297,9 @@ export function getWatchLinks(movie) {
 
   const watchLinks = normalizeWatchLinks(movie.watch_links);
 
-  // Handle VOD (purchase/rent) links - filter to Amazon and Apple TV only
+  // Handle VOD (purchase/rent) links - filter to supported platforms
   for (const vodItem of watchLinks.vod) {
-    if (vodItem && vodItem.link && isAmazonOrAppleService(vodItem.service)) {
+    if (vodItem && vodItem.link && isValidVodService(vodItem.service)) {
       const serviceId = normalizeServiceId(vodItem.service);
       links.push({
         service: serviceId || 'vod',
@@ -350,14 +358,7 @@ export function getInfoLinks(movie) {
     });
   }
 
-  if (movieLinks.wikipedia) {
-    links.push({
-      type: 'wikipedia',
-      label: 'Wikipedia',
-      url: movieLinks.wikipedia,
-      icon: 'wiki',
-    });
-  }
+  // Wikipedia removed - not useful for tvOS viewing experience
 
   return links;
 }

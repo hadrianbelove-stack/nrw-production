@@ -100,12 +100,14 @@ class YouTubePlaylistManager:
 
         self.youtube = None
 
-    def update_data_json_playlist_url(self, playlist_id, data_path=None):
+    def update_data_json_playlist_url(self, playlist_id, first_video_id=None, data_path=None):
         """
-        Update data.json with the latest playlist URL
+        Update data.json with the latest playlist URL and first video ID
+        (needed for tvOS deep linking which requires video URL format)
 
         Args:
             playlist_id: The YouTube playlist ID
+            first_video_id: The first video's ID (for tvOS deep linking)
             data_path: Path to data.json (defaults to script directory)
         """
         if data_path:
@@ -125,10 +127,17 @@ class YouTubePlaylistManager:
             playlist_url = f"https://www.youtube.com/playlist?list={playlist_id}"
             data['latest_playlist_url'] = playlist_url
 
+            # Store first video ID for tvOS deep linking
+            # tvOS YouTube app only supports video URLs, not playlist URLs directly
+            if first_video_id:
+                data['latest_playlist_first_video'] = first_video_id
+
             with open(data_file, 'w') as f:
                 json.dump(data, f, indent=2)
 
             self.logger.info(f"✅ Updated data.json with latest playlist URL: {playlist_url}")
+            if first_video_id:
+                self.logger.info(f"✅ First video ID for tvOS: {first_video_id}")
         except Exception as e:
             self.logger.warning(f"⚠️  Failed to update data.json: {e}")
 

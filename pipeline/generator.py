@@ -3165,6 +3165,7 @@ class DataGenerator:
 
         # APPEND-ONLY: Load ALL movies from data.json - never filter out old movies
         all_movies = []
+        existing_display_data = None  # Initialize for later use preserving fields like latest_playlist_url
         cutoff_date = datetime.now() - timedelta(days=days_back)
 
         try:
@@ -3200,11 +3201,15 @@ class DataGenerator:
         display_movies, featured_ids = self.apply_admin_overrides(all_movies)
 
         # Save ALL movies back to data.json (APPEND-ONLY: never remove old movies)
+        # Preserve latest_playlist_url if it exists from YouTube playlist manager
+        existing_playlist_url = existing_display_data.get('latest_playlist_url') if existing_display_data else None
+
         output_data = {
             'generated_at': datetime.now().isoformat(),
             'count': len(display_movies),
             'movies': display_movies,
-            'featured': featured_ids  # For frontend filtering
+            'featured': featured_ids,  # For frontend filtering
+            'latest_playlist_url': existing_playlist_url or 'NOT SET'
         }
 
         with open('data.json', 'w') as f:

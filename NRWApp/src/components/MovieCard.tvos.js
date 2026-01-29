@@ -24,6 +24,7 @@ const MovieCard = ({
   isFeatured = false,
   hasTVPreferredFocus = false,
   testID,
+  nextFocusUp,
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const [imageError, setImageError] = useState(false);
@@ -129,6 +130,38 @@ const MovieCard = ({
 
   const streamingBadge = getStreamingBadge();
 
+  // Get director - can be in crew.director or movie.director
+  const director = movie.crew?.director || movie.director;
+
+  // Get country - can be country (string) or countries (array)
+  // Use common abbreviations for long country names
+  const formatCountry = (country) => {
+    const abbreviations = {
+      'United States of America': 'USA',
+      'United Kingdom': 'UK',
+      'United Arab Emirates': 'UAE',
+      'South Korea': 'S. Korea',
+      'North Korea': 'N. Korea',
+      'New Zealand': 'NZ',
+      'Czech Republic': 'Czechia',
+      'Democratic Republic of the Congo': 'DR Congo',
+      'Republic of the Congo': 'Congo',
+    };
+    return abbreviations[country] || country;
+  };
+
+  const getCountryText = () => {
+    if (movie.country) {
+      return formatCountry(movie.country);
+    }
+    if (movie.countries && movie.countries.length > 0) {
+      return movie.countries.map(formatCountry).join(', ');
+    }
+    return null;
+  };
+
+  const countryText = getCountryText();
+
   return (
     <TouchableOpacity
       onPress={handleSelect}
@@ -137,96 +170,96 @@ const MovieCard = ({
       hasTVPreferredFocus={hasTVPreferredFocus}
       activeOpacity={1}
       accessible={true}
-      accessibilityLabel={`${movie.title}, ${movie.year || ''}, directed by ${movie.director || 'Unknown'}`}
+      accessibilityLabel={`${movie.title}, ${movie.year || ''}, directed by ${director || 'Unknown'}`}
       accessibilityRole="button"
       accessibilityHint="Press to view movie details"
       testID={testID}
+      style={styles.touchable}
+      nextFocusUp={nextFocusUp}
     >
-      <Animated.View
-        style={[
-          styles.container,
-          {
-            width: cardWidth,
-            height: cardHeight,
-            transform: [{ scale: scaleAnim }],
-          },
-        ]}
-      >
-        {/* Shadow layer (only visible when focused) */}
+      <View style={[styles.cardContainer, { width: cardWidth }]}>
         <Animated.View
           style={[
-            styles.shadowLayer,
+            styles.posterContainer,
             {
-              opacity: shadowOpacity,
-              shadowColor: FOCUS_STYLES.movieCard.shadowColor,
-              shadowRadius: FOCUS_STYLES.movieCard.shadowRadius,
+              width: cardWidth,
+              height: cardHeight,
+              transform: [{ scale: scaleAnim }],
+              zIndex: isFocused ? 1000 : 1,
+              elevation: isFocused ? 10 : 0,
             },
           ]}
-        />
-
-        {/* Poster image or placeholder */}
-        {hasPoster && !imageError ? (
-          <Image
-            source={{ uri: posterUrl }}
-            style={styles.poster}
-            resizeMode="cover"
-            onError={() => setImageError(true)}
+        >
+          {/* Shadow layer (only visible when focused) */}
+          <Animated.View
+            style={[
+              styles.shadowLayer,
+              {
+                opacity: shadowOpacity,
+                shadowColor: FOCUS_STYLES.movieCard.shadowColor,
+                shadowRadius: FOCUS_STYLES.movieCard.shadowRadius,
+              },
+            ]}
           />
-        ) : (
-          <View style={styles.posterPlaceholder}>
-            <Text style={styles.placeholderText} numberOfLines={3}>
-              {movie.title}
-            </Text>
-          </View>
-        )}
 
-        {/* Streaming service badge - upper right */}
-        {streamingBadge && (
-          <View style={[styles.streamingBadge, { backgroundColor: streamingBadge.color }]}>
-            <Text style={styles.streamingBadgeText}>{streamingBadge.name}</Text>
-          </View>
-        )}
-
-        {/* Featured border - red box around poster */}
-        {movie.featured && <View style={styles.featuredBorder} />}
-
-        {/* Featured strip - bottom red banner */}
-        {movie.featured && (
-          <View style={styles.featuredStrip}>
-            <Text style={styles.featuredStripText}>FEATURED</Text>
-          </View>
-        )}
-
-        {/* Focus border */}
-        {isFocused && <View style={styles.focusBorder} />}
-
-        {/* Metadata overlay (visible when focused) */}
-        {isFocused && (
-          <View style={styles.metadataOverlay}>
-            <View style={styles.gradientOverlay} />
-            <View style={styles.metadataContent}>
-              <Text style={styles.title} numberOfLines={2}>
+          {/* Poster image or placeholder */}
+          {hasPoster && !imageError ? (
+            <Image
+              source={{ uri: posterUrl }}
+              style={styles.poster}
+              resizeMode="cover"
+              onError={() => setImageError(true)}
+            />
+          ) : (
+            <View style={styles.posterPlaceholder}>
+              <Text style={styles.placeholderText} numberOfLines={3}>
                 {movie.title}
               </Text>
-              <Text style={styles.subtitle} numberOfLines={1}>
-                {movie.director && `Dir. ${movie.director}`}
-                {movie.year && ` • ${movie.year}`}
-              </Text>
-              {movie.countries && movie.countries.length > 0 && (
-                <Text style={styles.country} numberOfLines={1}>
-                  {movie.countries.join(', ')}
-                </Text>
-              )}
             </View>
-          </View>
-        )}
-      </Animated.View>
+          )}
+
+          {/* Streaming service badge - upper right */}
+          {streamingBadge && (
+            <View style={[styles.streamingBadge, { backgroundColor: streamingBadge.color }]}>
+              <Text style={styles.streamingBadgeText}>{streamingBadge.name}</Text>
+            </View>
+          )}
+
+          {/* Featured border - red box around poster */}
+          {movie.featured && <View style={styles.featuredBorder} />}
+
+          {/* Featured strip - bottom red banner */}
+          {movie.featured && (
+            <View style={styles.featuredStrip}>
+              <Text style={styles.featuredStripText}>FEATURED</Text>
+            </View>
+          )}
+
+          {/* Focus border */}
+          {isFocused && <View style={styles.focusBorder} />}
+        </Animated.View>
+
+        {/* Info below poster - always visible */}
+        <View style={styles.infoContainer}>
+          {(director || countryText) && (
+            <Text style={styles.infoText} numberOfLines={1}>
+              {director}{director && countryText ? ' • ' : ''}{countryText}
+            </Text>
+          )}
+        </View>
+      </View>
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  touchable: {
+    overflow: 'visible',
+  },
+  cardContainer: {
+    overflow: 'visible',
+  },
+  posterContainer: {
     borderRadius: 12,
     overflow: 'hidden',
     backgroundColor: Colors.backgroundSecondary,
@@ -304,38 +337,15 @@ const styles = StyleSheet.create({
     borderWidth: FOCUS_STYLES.movieCard.borderWidth,
     borderColor: FOCUS_STYLES.movieCard.borderColor,
   },
-  metadataOverlay: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: '40%',
+  // Info section below poster
+  infoContainer: {
+    paddingTop: 6,
+    paddingHorizontal: 2,
   },
-  gradientOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-    borderBottomLeftRadius: 12,
-    borderBottomRightRadius: 12,
-  },
-  metadataContent: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    padding: Spacing.tvos.md,
-  },
-  title: {
-    color: Colors.textPrimary,
-    fontSize: Typography.tvos.body,
-    fontWeight: '600',
-    marginBottom: Spacing.tvos.xs,
-  },
-  subtitle: {
-    color: Colors.textSecondary,
-    fontSize: Typography.tvos.caption,
-  },
-  country: {
-    color: Colors.textMuted,
-    fontSize: Typography.tvos.caption - 2,
-    marginTop: Spacing.tvos.xs / 2,
+  infoText: {
+    color: Colors.primary,
+    fontSize: 20,
+    textAlign: 'center',
   },
 });
 

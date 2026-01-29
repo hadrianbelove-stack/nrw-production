@@ -27,6 +27,11 @@ export function useMovieDetail(movie) {
     return getInfoLinks(movie);
   }, [movie]);
 
+  // Plex links (personal library - show first!)
+  const plexLinks = useMemo(() => {
+    return watchLinks.filter((link) => link.type === 'plex');
+  }, [watchLinks]);
+
   // Purchase links (rent/buy)
   const purchaseLinks = useMemo(() => {
     return watchLinks.filter((link) => link.type === 'purchase');
@@ -105,6 +110,7 @@ export function useMovieDetail(movie) {
     // Computed values
     watchLinks,
     infoLinks,
+    plexLinks,
     purchaseLinks,
     streamingLinks,
     formattedRuntime,

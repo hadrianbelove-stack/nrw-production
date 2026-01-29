@@ -12,6 +12,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 // Import screens (React Native automatically picks .tvos.js on tvOS)
 import HomeScreen from './src/screens/HomeScreen.tvos';
 import MovieDetail from './src/screens/MovieDetail.tvos';
+import SearchScreen from './src/screens/SearchScreen.tvos';
 
 // Import constants
 import { Colors } from './src/constants/colors';
@@ -131,6 +132,13 @@ const App = () => {
               options={({ route }) => ({
                 title: route.params?.movie?.title || 'Movie Details',
               })}
+            />
+            <Stack.Screen
+              name="Search"
+              component={SearchScreen}
+              options={{
+                title: 'Search',
+              }}
             />
           </Stack.Navigator>
         </NavigationContainer>
