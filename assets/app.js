@@ -40,6 +40,7 @@ const NRW = {
                 });
 
                 this.setupFilterEventListeners();
+                this.setupCardFlipHandler();
                 this.applyFilter();
                 this.renderWallWithMore();
             } else {
@@ -49,6 +50,16 @@ const NRW = {
             console.error('Load failed:', err);
             document.getElementById('wall').innerHTML = '<p>Failed to load movies</p>';
         }
+    },
+
+    setupCardFlipHandler() {
+        // Add click handler once for card flipping (uses event delegation)
+        document.getElementById('wall').addEventListener('click', (e) => {
+            if (e.target.tagName === 'A') return;
+            if (e.target.closest('.movie-info')) return;
+            const card = e.target.closest('.movie-card');
+            if (card) card.classList.toggle('flipped');
+        });
     },
 
     setupFilterEventListeners() {
@@ -158,7 +169,7 @@ const NRW = {
                 if (isFirstDate && this.latestPlaylistUrl) {
                     html += `<a href="${this.latestPlaylistUrl}" target="_blank" rel="noopener noreferrer" class="trailers-card">
                         <div class="trailers-content">
-                            <div class="trailers-text">NEW</div>
+                            <div class="trailers-text">THIS WEEK'S</div>
                             <div class="trailers-text">TRAILERS</div>
                             <div class="trailers-icon">▶</div>
                         </div>
@@ -380,8 +391,10 @@ const NRW = {
                     <div class="card-inner">
                         <div class="card-front">
                             ${streamingBadge}
-                            <img src="${movie.poster || 'assets/no-poster.jpg'}"
-                                 onerror="this.src='assets/no-poster.jpg'; this.onerror=null;">
+                            <div class="poster-fallback"><span class="poster-fallback-title">${title}</span></div>
+                            <img src="${movie.poster || ''}"
+                                 onerror="this.style.display='none';"
+                                 ${movie.poster ? '' : 'style="display:none"'}>
                         </div>
                         <div class="card-back">
                             <div class="synopsis">${movie.synopsis || 'Synopsis coming soon'}</div>
@@ -403,16 +416,6 @@ const NRW = {
         });
         
         wall.innerHTML = html;
-        
-        // Click handler for flipping
-        const newWall = document.getElementById('wall');
-        newWall.addEventListener('click', (e) => {
-            if (e.target.tagName === 'A') return;
-            // Only flip if clicking on the actual card, not the info below
-            if (e.target.closest('.movie-info')) return;
-            const card = e.target.closest('.movie-card');
-            if (card) card.classList.toggle('flipped');
-        });
     },
 
     // Extract YouTube video ID from various URL formats
