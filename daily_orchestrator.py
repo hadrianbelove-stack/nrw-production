@@ -1229,6 +1229,16 @@ class NRWOrchestrator:
                 True
             )
 
+            # Phase 3.5: Plex enrichment (optional - only if plex_config.json exists)
+            if os.path.exists('plex_config.json'):
+                self.run_command(
+                    "python3 plex_enricher.py",
+                    "Add Plex links for personal library",
+                    critical=False  # Don't fail pipeline if Plex is unavailable
+                )
+            else:
+                print("📝 Skipping Plex enrichment (no plex_config.json)")
+
             # Log data quality info (report-only, no enforcement)
             if success:
                 print("\n🔍 Validating RT data...")
