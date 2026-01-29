@@ -2,13 +2,15 @@
 
 body {
     background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+    background-attachment: fixed;
     color: #fff;
     font-family: -apple-system, system-ui, sans-serif;
     line-height: 1.6;
+    min-height: 100vh;
 }
 
 header {
-    padding: 3rem 1rem 2rem;
+    padding: 1.5rem 1rem 1rem;
     text-align: center;
     border-bottom: 1px solid #333;
     background: rgba(0,0,0,0.5);
@@ -23,15 +25,15 @@ header h1 {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
 }
 
 .filters {
     display: flex;
     justify-content: center;
-    gap: 1rem;
+    gap: 0.75rem;
     flex-wrap: wrap;
-    margin-top: 1rem;
+    margin-top: 0.5rem;
 }
 
 .filter-btn {
@@ -53,13 +55,14 @@ header h1 {
 }
 
 #wall {
-    padding: 2rem;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1.5rem;
-    justify-content: center;
-    max-width: 1400px;
-    margin: 0 auto;
+    padding: 1.5rem 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(189px, 1fr));
+    gap: 2rem 1rem;
+}
+
+#wall > * {
+    justify-self: center;
 }
 
 .movie-container {
@@ -94,18 +97,18 @@ header h1 {
     box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
-/* Inline date divider cards */
+/* Inline date divider cards - same size as movie cards */
 .date-divider-card {
-    width: 237px;  /* Same width as movie cards (189px + some margin) */
-    height: 352px; /* Same height as movie cards (282px + some margin) */
+    width: 189px;
+    height: 282px;
     background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
-    border: 3px solid #00d4aa;
+    border: 2px solid #00d4aa;
     border-radius: 15px;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.3), 
-                0 0 40px rgba(0,212,170,0.2);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3),
+                0 0 30px rgba(0,212,170,0.15);
     position: relative;
     overflow: hidden;
 }
@@ -132,14 +135,14 @@ header h1 {
 }
 
 .date-day {
-    font-size: 1.2rem;
+    font-size: 0.9rem;
     color: #888;
-    letter-spacing: 0.2em;
-    margin-bottom: 0.5rem;
+    letter-spacing: 0.15em;
+    margin-bottom: 0.3rem;
 }
 
 .date-number {
-    font-size: 4rem;
+    font-size: 3rem;
     font-weight: bold;
     color: #00d4aa;
     line-height: 1;
@@ -147,24 +150,25 @@ header h1 {
 }
 
 .date-month {
-    font-size: 1.5rem;
+    font-size: 1.1rem;
     color: #00d4aa;
-    letter-spacing: 0.3em;
-    margin-top: 0.5rem;
+    letter-spacing: 0.2em;
+    margin-top: 0.3rem;
     font-weight: bold;
 }
 
-/* NEW TRAILERS card - links to YouTube playlist */
+/* THIS WEEK'S TRAILERS card - same size as movie cards */
 .trailers-card {
-    width: 237px;
-    height: 352px;
-    background: linear-gradient(135deg, #E50914 0%, #B20710 100%);
+    width: 189px;
+    height: 282px;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+    border: 2px solid #00d4aa;
     border-radius: 15px;
     display: flex;
     align-items: center;
     justify-content: center;
     box-shadow: 0 8px 32px rgba(0,0,0,0.4),
-                0 0 40px rgba(229,9,20,0.3);
+                0 0 30px rgba(0,212,170,0.2);
     position: relative;
     overflow: hidden;
     text-decoration: none;
@@ -183,15 +187,15 @@ header h1 {
         45deg,
         transparent,
         transparent 10px,
-        rgba(255,255,255,0.03) 10px,
-        rgba(255,255,255,0.03) 20px
+        rgba(0,212,170,0.05) 10px,
+        rgba(0,212,170,0.05) 20px
     );
 }
 
 .trailers-card:hover {
     transform: scale(1.05);
     box-shadow: 0 12px 40px rgba(0,0,0,0.5),
-                0 0 60px rgba(229,9,20,0.4);
+                0 0 60px rgba(0,212,170,0.4);
 }
 
 .trailers-content {
@@ -200,19 +204,20 @@ header h1 {
 }
 
 .trailers-text {
-    font-size: 2rem;
+    font-size: 1.1rem;
     font-weight: 900;
-    color: white;
-    letter-spacing: 0.15em;
-    line-height: 1.2;
-    text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    color: #00d4aa;
+    letter-spacing: 0.1em;
+    line-height: 1.3;
+    text-shadow: 0 0 20px rgba(0,212,170,0.5);
 }
 
 .trailers-icon {
-    font-size: 2.5rem;
-    color: white;
-    margin-top: 1rem;
+    font-size: 2rem;
+    color: #00d4aa;
+    margin-top: 0.75rem;
     opacity: 0.9;
+    text-shadow: 0 0 20px rgba(0,212,170,0.5);
 }
 
 .movie-card {
@@ -306,12 +311,10 @@ header h1 {
 .movie-info {
     margin-top: 0.4rem;
     text-align: center;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: #bbb;
     line-height: 1.2;
-    max-width: 207px;
-    margin-left: auto;
-    margin-right: auto;
+    max-width: 189px;
 }
 
 .movie-info .movie-title {
@@ -456,8 +459,10 @@ header h1 {
 }
 
 .watch-btn-plex .btn-logo {
-    filter: brightness(0);
-    max-height: 28px;
+    filter: none;
+    max-height: 24px;
+    max-width: 32px;
+    object-fit: contain;
 }
 
 .btn-logo {
@@ -566,16 +571,7 @@ header h1 {
 
     #wall {
         padding: 1rem;
-        gap: 1rem;
-    }
-
-    .movie-card {
-        width: 300px;
-        height: 450px;
-    }
-
-    .card-front img {
-        height: 350px;
+        gap: 1.5rem 0.75rem;
     }
 
     .filters {
@@ -593,13 +589,37 @@ header h1 {
 }
 
 @media (max-width: 480px) {
-    .movie-card {
-        width: 280px;
-        height: 420px;
+    #wall {
+        grid-template-columns: repeat(auto-fill, 160px);
+        gap: 0.75rem;
     }
 
-    .card-front img {
-        height: 320px;
+    .movie-card,
+    .date-divider-card,
+    .trailers-card {
+        width: 160px;
+        height: 240px;
+    }
+
+    .movie-info {
+        max-width: 160px;
+        font-size: 0.75rem;
+    }
+
+    .date-number {
+        font-size: 2.5rem;
+    }
+
+    .date-day, .date-month {
+        font-size: 0.8rem;
+    }
+
+    .trailers-text {
+        font-size: 0.9rem;
+    }
+
+    .trailers-icon {
+        font-size: 1.5rem;
     }
 
     .info-links {
