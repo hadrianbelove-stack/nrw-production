@@ -47038,13 +47038,21 @@
     },
     "1576570": {
       "title": "This Ordinary Thing",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2025-12-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-01-31",
+      "providers": {
+        "rent": [
+          "Eventive"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "discovery_pass": "B",
-      "has_providers": false,
-      "year": 2025
+      "has_providers": true,
+      "year": 2025,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1569728": {
       "title": "K-15: On the Other Side",
@@ -61902,13 +61910,21 @@
     },
     "1448170": {
       "title": "Champion",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2025-12-26",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-01-31",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Netflix"
+        ]
+      },
       "discovery_pass": "B",
-      "has_providers": false,
-      "year": 2025
+      "has_providers": true,
+      "year": 2025,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1419584": {
       "title": "Sunscream",
@@ -90855,14 +90871,22 @@
     },
     "1483986": {
       "title": "The Last Twins",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-04",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-01-31",
+      "providers": {
+        "rent": [
+          "Eventive"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "backfill",
-      "has_providers": false,
+      "has_providers": true,
       "year": 2025,
-      "premiere_date": "2025-06-06"
+      "premiere_date": "2025-06-06",
+      "enriched": false,
+      "enrichment_date": null
     },
     "1483654": {
       "title": "Song Three",
@@ -96792,14 +96816,24 @@
     },
     "1523326": {
       "title": "Kothalavadi",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-04",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-01-31",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
       "intake_pass": "backfill",
-      "has_providers": false,
+      "has_providers": true,
       "year": 2025,
-      "premiere_date": "2025-08-01"
+      "premiere_date": "2025-08-01",
+      "enriched": false,
+      "enrichment_date": null
     },
     "1522391": {
       "title": "Sama",
@@ -101028,13 +101062,23 @@
     "990169": {
       "title": "Sleeping with a Tiger",
       "year": 2024,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-01-31",
+      "providers": {
+        "rent": [
+          "DocAlliance Films"
+        ],
+        "buy": [],
+        "streaming": [
+          "DocAlliance Films"
+        ]
+      },
       "intake_pass": "C",
       "festival": "Berlin/Berlinale",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "945170": {
       "title": "Above the Dust",
@@ -152274,12 +152318,21 @@
     "1602705": {
       "title": "A Letter to My Youth",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-30",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-01-31",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
+      },
       "intake_pass": "A",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1533549": {
       "title": "Wicked of Oz",
@@ -152294,12 +152347,21 @@
     "1623070": {
       "title": "Deaw\u200b Still\u200b Alive\u200b",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-30",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-01-31",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
+      },
       "intake_pass": "A",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1622972": {
       "title": "Geomancer",
@@ -155389,7 +155451,275 @@
       },
       "intaked_at": "2026-01-30T09:36:33.602275",
       "networks": []
+    },
+    "1613335": {
+      "title": "Miracle: The Boys of '80",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-31",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A",
+      "has_providers": false
+    },
+    "1620813": {
+      "title": "Kael Ryven: The Giant\u2019s Wake",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-31",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A",
+      "has_providers": false
+    },
+    "1625079": {
+      "title": "TJPW The 6th \"Futari wa Princess\" Max Heart Tournament ~ Day 3",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-31",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1623907": {
+      "title": "Encore une chanson",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-31",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1623641": {
+      "title": "Triloka",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-31",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1623153": {
+      "title": "Abed's Journey: A Tale of Gebyar Pandu",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-31",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1621159": {
+      "title": "Nuclear Boy",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-31",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1619322": {
+      "title": "Terry McMillan Presents: Tempted 2 Love",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-31",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1616164": {
+      "title": "Ladeiras da Mem\u00f3ria \u2013 Paisagens do Clube da Esquina",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-31",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1612248": {
+      "title": "Stardom 15th Anniversary Series ~ New Year Stars 2026 in Korakuen ~ Day 4",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-31",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1612069": {
+      "title": "Taistelu Lapinlahdesta",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-31",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1611270": {
+      "title": "The Sugar creek beast",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-31",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1602457": {
+      "title": "Please Try Again Later",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-31",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1600149": {
+      "title": "Drax",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-31",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1595834": {
+      "title": "Stolen Ties (2026)",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-31",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1572735": {
+      "title": "Wish You Well",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-31",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1514238": {
+      "title": "The Next Time You Feel Important",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-31",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "876907": {
+      "title": "No Problem",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-31",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1626063": {
+      "title": "Haunted",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-31",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1625594": {
+      "title": "Concert du Nouvel An 2026",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-31",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1568964": {
+      "title": "Human Cocaine",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-31",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1566906": {
+      "title": "Six String Sky",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-31",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1622502": {
+      "title": "8118",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-31",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1626064": {
+      "title": "Wright of Passage",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-01-31",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Sundance",
+      "has_providers": false
+    },
+    "tv_284828": {
+      "title": "Duang With You",
+      "content_type": "limited_series",
+      "tmdb_id": 284828,
+      "status": "tracking",
+      "first_air_date": "2026-01-31",
+      "digital_date": "2026-01-31",
+      "episode_count": 12,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/auYs0dImHpN2KtuBlu6eFNOsdnn.jpg",
+      "synopsis": "After a festival confession, art student Duang sets out to win over a guarded music major, slowly turning first love into a safe haven for them both.",
+      "genres": [
+        "Drama",
+        "Comedy"
+      ],
+      "original_language": "th",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-01-31T09:25:46.216848",
+      "networks": [
+        "ONE 31",
+        "iQIYI International"
+      ]
     }
   },
-  "last_update": "2026-01-30T09:36:20.884364"
+  "last_update": "2026-01-31T09:25:45.784346"
 }
