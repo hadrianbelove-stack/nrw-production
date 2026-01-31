@@ -300,6 +300,7 @@ header h1 {
 }
 
 .movie-card.flipped .card-inner {
+    -webkit-transform: rotateY(180deg);
     transform: rotateY(180deg);
 }
 
@@ -329,6 +330,8 @@ header h1 {
     display: flex;
     align-items: center;
     justify-content: center;
+    -webkit-transform: rotateY(0deg);
+    transform: rotateY(0deg);
 }
 
 /* Fallback title shown when poster is missing */
@@ -361,6 +364,7 @@ header h1 {
 
 .card-back {
     background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    -webkit-transform: rotateY(180deg);
     transform: rotateY(180deg);
     padding: 0.8rem;
     box-sizing: border-box;
