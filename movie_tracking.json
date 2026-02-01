@@ -47610,13 +47610,22 @@
     },
     "1291608": {
       "title": "Dhurandhar",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2025-12-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-02-01",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
+      },
       "discovery_pass": "B",
-      "has_providers": false,
-      "year": 2025
+      "has_providers": true,
+      "year": 2025,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1254590": {
       "title": "Kalamkaval",
@@ -83617,14 +83626,27 @@
     },
     "1268422": {
       "title": "Peaches Goes Bananas",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-04",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-02-01",
+      "providers": {
+        "rent": [
+          "Google Play Movies",
+          "YouTube",
+          "Plex"
+        ],
+        "buy": [
+          "Google Play Movies",
+          "YouTube"
+        ],
+        "streaming": []
+      },
       "intake_pass": "backfill",
-      "has_providers": false,
+      "has_providers": true,
       "year": 2025,
-      "premiere_date": "2025-03-05"
+      "premiere_date": "2025-03-05",
+      "enriched": false,
+      "enrichment_date": null
     },
     "1217483": {
       "title": "Treasure Hunters: On the Tracks of Khufu",
@@ -86782,14 +86804,22 @@
     },
     "1433105": {
       "title": "Oishikute Naku Toki",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-04",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-02-01",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Rakuten Viki"
+        ]
+      },
       "intake_pass": "backfill",
-      "has_providers": false,
+      "has_providers": true,
       "year": 2025,
-      "premiere_date": "2025-04-04"
+      "premiere_date": "2025-04-04",
+      "enriched": false,
+      "enrichment_date": null
     },
     "1431186": {
       "title": "Cursed Psychic Video XXX ZERO 3",
@@ -98487,14 +98517,23 @@
     },
     "1271895": {
       "title": "96 Minutes",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-04",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-02-01",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
+      },
       "intake_pass": "backfill",
-      "has_providers": false,
+      "has_providers": true,
       "year": 2025,
-      "premiere_date": "2025-09-05"
+      "premiere_date": "2025-09-05",
+      "enriched": false,
+      "enrichment_date": null
     },
     "1232076": {
       "title": "Modern Whore",
@@ -122990,13 +123029,23 @@
     "1532406": {
       "title": "Dinner to Die For",
       "year": 2025,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-02-01",
+      "providers": {
+        "rent": [
+          "Apple TV Store"
+        ],
+        "buy": [
+          "Apple TV Store"
+        ],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "Fantastic Fest",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1530148": {
       "title": "Penance",
@@ -149077,13 +149126,21 @@
     "1482938": {
       "title": "Union County",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-20",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-02-01",
+      "providers": {
+        "rent": [
+          "Eventive"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "Sundance",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1476682": {
       "title": "Gail Daughtry and the Celebrity Sex Pass",
@@ -155455,12 +155512,21 @@
     "1613335": {
       "title": "Miracle: The Boys of '80",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-31",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-02-01",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
+      },
       "intake_pass": "A",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1620813": {
       "title": "Kael Ryven: The Giant\u2019s Wake",
@@ -155719,7 +155785,326 @@
         "ONE 31",
         "iQIYI International"
       ]
+    },
+    "1626428": {
+      "title": "Dominik Ha\u0161ek: Always the Goalie",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A",
+      "has_providers": false
+    },
+    "1608195": {
+      "title": "Misery Signals: The Final Performance",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A",
+      "has_providers": false
+    },
+    "1626620": {
+      "title": "Countdown to Royal Rumble 2026",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A",
+      "has_providers": false
+    },
+    "1622706": {
+      "title": "Royal Rumble 2026",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A",
+      "has_providers": false
+    },
+    "1625551": {
+      "title": "Pari's daughter",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1625043": {
+      "title": "Escort",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1624457": {
+      "title": "Dream",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1624434": {
+      "title": "\u0632\u0646\u062f\u0647\u200c\u0634\u0648\u0631",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1624429": {
+      "title": "\u0642\u0627\u06cc\u0642\u200c\u0633\u0648\u0627\u0631\u06cc \u062f\u0631 \u062a\u0647\u0631\u0627\u0646",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1624424": {
+      "title": "\u0646\u06cc\u0645\u200c\u0634\u0628",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1624096": {
+      "title": "Our Dead Husband",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1623350": {
+      "title": "Crocodile Dose",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1530539": {
+      "title": "The Pool",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1626770": {
+      "title": "The YeahImConnor Olympics",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1626751": {
+      "title": "What is This ?",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1626632": {
+      "title": "Chams Alik: The whole Story",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1626658": {
+      "title": "The Cinema of Francis Lai",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1626530": {
+      "title": "Devagudi",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1626503": {
+      "title": "Raavana Rajyadalli Navadampathigalu",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "tv_308682": {
+      "title": "The Boy Next World: My Destiny",
+      "content_type": "limited_series",
+      "tmdb_id": 308682,
+      "status": "tracking",
+      "first_air_date": "2026-02-01",
+      "digital_date": "2026-02-01",
+      "episode_count": 8,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/nohWGK7vL3COZZbp0a2DCJCWqAj.jpg",
+      "synopsis": "A college student\u2019s ordinary life turns upside down when a mysterious senior claims they\u2019re lovers from a parallel world.",
+      "genres": [
+        "Drama",
+        "Sci-Fi & Fantasy"
+      ],
+      "original_language": "ja",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-02-01T09:28:23.789196",
+      "networks": [
+        "Fuji TV",
+        "FOD"
+      ]
+    },
+    "tv_304645": {
+      "title": "Agui\u2019s Village Gala",
+      "content_type": "limited_series",
+      "tmdb_id": 304645,
+      "status": "tracking",
+      "first_air_date": "2026-02-01",
+      "digital_date": "2026-02-01",
+      "episode_count": 10,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/cde1Ny1nrIRLsPynFw67K3DRvYT.jpg",
+      "synopsis": "When a disheartened villager, A Gui, sets out to fulfill Yunxiang A Niang\u2019s dream of living to a hundred, he organizes an evening gala to bring the community back together. Despite ridicule and setbacks, his determination and sincerity inspire the villagers, culminating in a heartwarming celebration that rekindles a sense of home, belonging, and renewal in rural China.",
+      "genres": [
+        "Drama"
+      ],
+      "original_language": "zh",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-02-01T09:28:23.913917",
+      "networks": [
+        "Mango TV"
+      ]
+    },
+    "tv_288595": {
+      "title": "Rise of the 49ers",
+      "content_type": "limited_series",
+      "tmdb_id": 288595,
+      "status": "tracking",
+      "first_air_date": "2026-02-01",
+      "digital_date": "2026-02-01",
+      "episode_count": 4,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/AbmLvVh9S8YzPWT7Rxw1W1wiK6D.jpg",
+      "synopsis": "Using rare and never-before-seen footage, as well as one-on-one interviews, discover how the San Francisco 49ers rose from an also-ran into pro football's most glamorous franchise during the '80s and early '90s.",
+      "genres": [
+        "Documentary"
+      ],
+      "original_language": "en",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-02-01T09:28:24.018083",
+      "networks": [
+        "AMC"
+      ]
+    },
+    "tv_278157": {
+      "title": "My Romance Scammer",
+      "content_type": "limited_series",
+      "tmdb_id": 278157,
+      "status": "tracking",
+      "first_air_date": "2026-02-01",
+      "digital_date": "2026-02-01",
+      "episode_count": 12,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/uzyPSFbii41d3AyNlHV10xYAhg.jpg",
+      "synopsis": "After marrying a con artist for love, a billionaire heir must navigate a messy prenuptial trap while his cousin falls for another scammer.",
+      "genres": [
+        "Drama"
+      ],
+      "original_language": "th",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-02-01T09:28:24.142157",
+      "networks": [
+        "GMM 25",
+        "WeTV"
+      ]
+    },
+    "tv_312054": {
+      "title": "2i.37",
+      "content_type": "limited_series",
+      "tmdb_id": 312054,
+      "status": "tracking",
+      "first_air_date": "2026-01-03",
+      "digital_date": "2026-01-03",
+      "episode_count": 4,
+      "runtime": 5,
+      "poster": null,
+      "synopsis": "",
+      "genres": [
+        "Comedy",
+        "News"
+      ],
+      "original_language": "pl",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-02-01T09:28:25.216742",
+      "networks": [
+        "YouTube"
+      ]
     }
   },
-  "last_update": "2026-01-31T09:25:45.784346"
+  "last_update": "2026-02-01T09:28:23.460913"
 }
