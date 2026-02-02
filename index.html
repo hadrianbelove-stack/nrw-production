@@ -4,24 +4,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The New Release Wall</title>
-    <link rel="stylesheet" href="assets/styles.css?v=20">
+    <link rel="stylesheet" href="assets/styles.css?v=28">
 </head>
 <body>
     <header>
         <h1>THE NEW RELEASE WALL</h1>
         <div class="filters">
             <button class="filter-btn active" data-filter="all">All</button>
-            <button class="filter-btn" data-filter="featured">Featured</button>
+            <button class="filter-btn" data-filter="big-time">Big Time Stuff</button>
+            <button class="filter-btn" data-filter="niche">Niche Notables</button>
+            <button class="filter-btn" data-filter="staff-picks">Staff Picks</button>
             <button class="filter-btn" data-filter="foreign">Foreign</button>
             <button class="filter-btn" data-filter="series">Limited Series</button>
             <div class="search-container">
-                <input type="text" id="search-input" placeholder="Search..." autocomplete="off">
+                <input type="text" id="search-input" placeholder="Search title, director, genre..." autocomplete="off">
                 <button id="search-clear" class="search-clear" aria-label="Clear search">&times;</button>
             </div>
         </div>
     </header>
     <main id="wall"></main>
     <div id="load-more-container"></div>
-    <script src="assets/app.js?v=19"></script>
+
+    <!-- Fullscreen Poster Lightbox -->
+    <div class="poster-lightbox" id="poster-lightbox">
+        <button class="lightbox-nav prev" onclick="NRW.lightboxNav(-1)" aria-label="Previous">&larr;</button>
+        <button class="lightbox-nav next" onclick="NRW.lightboxNav(1)" aria-label="Next">&rarr;</button>
+        <div class="lightbox-content">
+            <div class="lightbox-poster-wrap">
+                <img class="lightbox-poster" id="lightbox-poster" src="" alt="Movie poster">
+            </div>
+            <div class="lightbox-info">
+                <h2 class="lightbox-title" id="lightbox-title"></h2>
+                <div class="lightbox-meta" id="lightbox-meta"></div>
+                <p class="lightbox-synopsis" id="lightbox-synopsis"></p>
+                <div class="lightbox-buttons" id="lightbox-buttons"></div>
+            </div>
+        </div>
+        <button class="lightbox-shrink" onclick="NRW.closeLightbox()" aria-label="Exit fullscreen">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28">
+                <path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/>
+            </svg>
+        </button>
+        <div class="lightbox-counter" id="lightbox-counter"></div>
+        <div class="lightbox-hint">Arrow keys to navigate &bull; ESC to close</div>
+    </div>
+
+    <script src="assets/app.js?v=23"></script>
 </body>
 </html>

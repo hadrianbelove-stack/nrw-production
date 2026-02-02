@@ -1,13 +1,17 @@
 const NRW = {
     allMovies: [],
     filteredMovies: [],
-    featuredMovies: [],
+    staffPicks: [],  // Renamed from featuredMovies
     latestPlaylistUrl: null,  // YouTube trailers playlist URL
     plexLibrary: {},  // TMDB ID -> Plex URLs mapping (personal, local only)
-    currentFilter: 'all',
+    activeFilters: new Set(),  // Multi-select: Set of active filter IDs
     searchQuery: '',     // Current search query
     displayedCount: 60,  // How many movies currently shown
     loadIncrement: 60,   // How many to add when clicking "More"
+
+    // Lightbox state
+    lightboxMovies: [],  // Movies currently in the lightbox (filtered/displayed)
+    lightboxIndex: 0,    // Current index in lightbox
 
     async init() {
         try {
@@ -15,8 +19,8 @@ const NRW = {
             const movieResponse = await fetch('data.json');
             const data = await movieResponse.json();
 
-            // Load filter data (featured list) from data.json
-            this.featuredMovies = data.featured || [];
+            // Load staff picks (supports both new and legacy field names)
+            this.staffPicks = data.staff_picks || data.featured || [];
 
             // Load YouTube trailers playlist URL
             this.latestPlaylistUrl = data.latest_playlist_url || null;
@@ -43,6 +47,7 @@ const NRW = {
                 this.setupFilterEventListeners();
                 this.setupSearchEventListeners();
                 this.setupCardFlipHandler();
+                this.setupLightboxKeyboardHandler();
                 this.applyFilter();
                 this.renderWallWithMore();
             } else {
@@ -55,12 +60,23 @@ const NRW = {
     },
 
     setupCardFlipHandler() {
-        // Add click handler once for card flipping (uses event delegation)
+        // Add click handler to open lightbox directly (experimental UIX)
         document.getElementById('wall').addEventListener('click', (e) => {
             if (e.target.tagName === 'A') return;
             if (e.target.closest('.movie-info')) return;
-            const card = e.target.closest('.movie-card');
-            if (card) card.classList.toggle('flipped');
+            if (e.target.closest('.expand-btn')) return; // Let expand btn handle itself
+            const container = e.target.closest('.movie-container');
+            if (container) {
+                // Find movie ID from the expand button in this container
+                const expandBtn = container.querySelector('.expand-btn');
+                if (expandBtn) {
+                    const onclickAttr = expandBtn.getAttribute('onclick');
+                    const match = onclickAttr.match(/openLightbox\('([^']+)'\)/);
+                    if (match) {
+                        this.openLightbox(match[1]);
+                    }
+                }
+            }
         });
     },
 
@@ -68,12 +84,33 @@ const NRW = {
         const filterButtons = document.querySelectorAll('.filter-btn');
         filterButtons.forEach(btn => {
             btn.addEventListener('click', (e) => {
-                // Update active button
-                filterButtons.forEach(b => b.classList.remove('active'));
-                e.target.classList.add('active');
+                const filter = e.target.dataset.filter;
 
-                // Update filter and re-render
-                this.currentFilter = e.target.dataset.filter;
+                if (filter === 'all') {
+                    // "All" clears all other filters
+                    this.activeFilters.clear();
+                    filterButtons.forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+                } else {
+                    // Toggle this filter on/off (multi-select)
+                    if (this.activeFilters.has(filter)) {
+                        this.activeFilters.delete(filter);
+                        e.target.classList.remove('active');
+                    } else {
+                        this.activeFilters.add(filter);
+                        e.target.classList.add('active');
+                    }
+
+                    // Remove "All" active state when other filters are selected
+                    const allBtn = document.querySelector('.filter-btn[data-filter="all"]');
+                    if (this.activeFilters.size > 0) {
+                        allBtn.classList.remove('active');
+                    } else {
+                        // No filters selected = "All" is active
+                        allBtn.classList.add('active');
+                    }
+                }
+
                 this.displayedCount = this.loadIncrement; // Reset when changing filters
                 this.applyFilter();
                 this.renderWallWithMore();
@@ -133,32 +170,38 @@ const NRW = {
     },
 
     applyFilter() {
-        const filter = this.currentFilter;
+        const filters = this.activeFilters;
         const query = this.searchQuery;
 
         this.filteredMovies = this.allMovies.filter(movie => {
-            // First apply category filter
-            const movieId = movie.id;
-            const isFeatured = this.featuredMovies.includes(movieId);
-
-            let passesFilter = true;
-            switch (filter) {
-                case 'featured':
-                    passesFilter = isFeatured;
-                    break;
-                case 'foreign':
-                    const lang = movie.original_language;
-                    passesFilter = lang && lang !== 'en';
-                    break;
-                case 'series':
-                    passesFilter = movie.content_type === 'limited_series';
-                    break;
-                case 'all':
-                default:
-                    passesFilter = true;
+            // If no filters selected, show all (except hidden)
+            if (filters.size === 0) {
+                // No category filter - show all
+            } else {
+                // Must pass ALL selected filters (AND logic)
+                for (const filter of filters) {
+                    switch (filter) {
+                        case 'big-time':
+                            if (movie.categories?.tier !== 'big_time') return false;
+                            break;
+                        case 'niche':
+                            if (movie.categories?.tier !== 'niche') return false;
+                            break;
+                        case 'staff-picks':
+                            if (!movie.categories?.is_staff_pick) return false;
+                            break;
+                        case 'foreign':
+                            // Support both new categories object and legacy original_language
+                            const isForeign = movie.categories?.is_foreign ??
+                                (movie.original_language && movie.original_language !== 'en');
+                            if (!isForeign) return false;
+                            break;
+                        case 'series':
+                            if (movie.content_type !== 'limited_series') return false;
+                            break;
+                    }
+                }
             }
-
-            if (!passesFilter) return false;
 
             // Then apply search filter if query exists
             if (query) {
@@ -218,18 +261,18 @@ const NRW = {
     renderWall(movies) {
         const wall = document.getElementById('wall');
 
-        // Sort by date descending, then featured first within each date
+        // Sort by date descending, then staff picks first within each date
         movies.sort((a, b) => {
             const dateA = new Date(a.digital_date);
             const dateB = new Date(b.digital_date);
             if (dateB.getTime() !== dateA.getTime()) {
                 return dateB - dateA;  // Newest first
             }
-            // Same date: featured movies first
-            const aFeatured = this.featuredMovies.includes(a.id);
-            const bFeatured = this.featuredMovies.includes(b.id);
-            if (aFeatured && !bFeatured) return -1;
-            if (!aFeatured && bFeatured) return 1;
+            // Same date: staff picks first
+            const aStaffPick = a.categories?.is_staff_pick || this.staffPicks.includes(a.id);
+            const bStaffPick = b.categories?.is_staff_pick || this.staffPicks.includes(b.id);
+            if (aStaffPick && !bStaffPick) return -1;
+            if (!aStaffPick && bStaffPick) return 1;
             return 0;
         });
 
@@ -406,16 +449,16 @@ const NRW = {
             if (movie.links?.rt) {
                 const rtText = movie.rt_score ? `RT ${movie.rt_score}` : 'RT';
                 const rtClass = movie.rt_score ? 'info-btn' : 'info-btn info-btn-neutral';
-                infoLinks.push(`<a href="${movie.links.rt}" target="_blank" class="${rtClass}">${rtText}</a>`);
+                infoLinks.push(`<a href="${movie.links.rt}" target="_blank" rel="noopener noreferrer" class="${rtClass}">${rtText}</a>`);
             }
 
             if (movie.links?.wikipedia) {
-                infoLinks.push(`<a href="${movie.links.wikipedia}" target="_blank" class="info-btn">Wiki</a>`);
+                infoLinks.push(`<a href="${movie.links.wikipedia}" target="_blank" rel="noopener noreferrer" class="info-btn">Wiki</a>`);
             }
 
-            const isFeatured = this.featuredMovies.includes(movie.id);
-            const featuredClass = isFeatured ? ' featured-movie' : '';
-            const featuredBadge = isFeatured ? '<div class="featured-badge">FEATURED</div>' : '';
+            const isStaffPick = movie.categories?.is_staff_pick || this.staffPicks.includes(movie.id);
+            const staffPickClass = isStaffPick ? ' staff-pick-movie' : '';
+            const staffPickBadge = isStaffPick ? '<div class="staff-pick-badge">STAFF PICK</div>' : '';
 
             // Streaming service pill badge for card front
             const getStreamingBadge = (movie) => {
@@ -462,8 +505,8 @@ const NRW = {
             const streamingBadge = getStreamingBadge(movie);
 
             html += `
-            <div class="movie-container${featuredClass}">
-                ${featuredBadge}
+            <div class="movie-container${staffPickClass}">
+                ${staffPickBadge}
                 <div class="movie-card">
                     <div class="card-inner">
                         <div class="card-front">
@@ -472,6 +515,7 @@ const NRW = {
                             <img src="${movie.poster || ''}"
                                  onerror="this.style.display='none';"
                                  ${movie.poster ? '' : 'style="display:none"'}>
+                            <button class="expand-btn" onclick="event.stopPropagation(); NRW.openLightbox('${movie.id}')" aria-label="View fullscreen">&#x26F6;</button>
                         </div>
                         <div class="card-back">
                             <div class="synopsis">${movie.synopsis || 'Synopsis coming soon'}</div>
@@ -570,6 +614,133 @@ const NRW = {
             if (iframe) iframe.src = '';
             document.body.style.overflow = ''; // Restore scrolling
         }
+    },
+
+    // ========================================
+    // Fullscreen Poster Lightbox
+    // ========================================
+
+    // Open lightbox with a specific movie
+    openLightbox(movieId) {
+        // Build list of currently displayed movies (in order)
+        this.lightboxMovies = this.filteredMovies
+            .slice(0, this.displayedCount)
+            .filter(m => m.poster); // Only movies with posters
+
+        // Find the index of the selected movie
+        const index = this.lightboxMovies.findIndex(m => String(m.id) === String(movieId));
+        if (index === -1) return;
+
+        this.lightboxIndex = index;
+        this.updateLightbox();
+
+        // Show lightbox
+        const lightbox = document.getElementById('poster-lightbox');
+        lightbox.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    },
+
+    // Close lightbox
+    closeLightbox() {
+        const lightbox = document.getElementById('poster-lightbox');
+        lightbox.classList.remove('active');
+        document.body.style.overflow = '';
+    },
+
+    // Navigate in lightbox
+    lightboxNav(direction) {
+        const count = this.lightboxMovies.length;
+        this.lightboxIndex = (this.lightboxIndex + direction + count) % count;
+        this.updateLightbox();
+    },
+
+    // Update lightbox content
+    updateLightbox() {
+        const movie = this.lightboxMovies[this.lightboxIndex];
+        if (!movie) return;
+
+        // Update poster
+        document.getElementById('lightbox-poster').src = movie.poster || '';
+
+        // Update title
+        document.getElementById('lightbox-title').textContent = movie.title;
+
+        // Build meta info (now includes studio)
+        const metaParts = [];
+        if (movie.year) metaParts.push(movie.year);
+        if (movie.genres?.length) metaParts.push(movie.genres.slice(0, 2).join(', '));
+        if (movie.runtime) metaParts.push(`${movie.runtime} min`);
+        if (movie.crew?.director) metaParts.push(`Dir: ${movie.crew.director}`);
+        if (movie.studio) metaParts.push(movie.studio);
+        document.getElementById('lightbox-meta').textContent = metaParts.join(' • ');
+
+        // Update synopsis
+        document.getElementById('lightbox-synopsis').textContent = movie.synopsis || 'Synopsis coming soon.';
+
+        // Build buttons - now includes all card-back actions
+        let buttonsHtml = '';
+        const watchLinks = movie.watch_links || {};
+        const providers = movie.providers || {};
+
+        // Streaming button
+        if (watchLinks.streaming?.link) {
+            buttonsHtml += `<a href="${watchLinks.streaming.link}" target="_blank" rel="noopener noreferrer" class="lightbox-btn lightbox-btn-primary">Watch on ${watchLinks.streaming.service || 'Streaming'}</a>`;
+        } else if (providers.streaming?.length) {
+            buttonsHtml += `<span class="lightbox-btn lightbox-btn-primary" style="opacity:0.6;cursor:default">On ${providers.streaming[0]}</span>`;
+        }
+
+        // Plex button
+        const plexInfo = this.plexLibrary[String(movie.id)];
+        if (plexInfo?.web_url) {
+            buttonsHtml += `<a href="${plexInfo.web_url}" target="_blank" rel="noopener noreferrer" class="lightbox-btn lightbox-btn-secondary">Play on Plex</a>`;
+        }
+
+        // Amazon purchase button
+        if (watchLinks.vod?.service?.toLowerCase().includes('amazon') && watchLinks.vod?.link) {
+            buttonsHtml += `<a href="${watchLinks.vod.link}" target="_blank" rel="noopener noreferrer" class="lightbox-btn lightbox-btn-secondary">Rent/Buy on Amazon</a>`;
+        }
+
+        // Apple purchase button
+        if (watchLinks.vod?.service?.toLowerCase().includes('apple') && watchLinks.vod?.link) {
+            buttonsHtml += `<a href="${watchLinks.vod.link}" target="_blank" rel="noopener noreferrer" class="lightbox-btn lightbox-btn-secondary">Rent/Buy on Apple TV</a>`;
+        }
+
+        // Trailer button
+        if (movie.links?.trailer) {
+            buttonsHtml += `<button class="lightbox-btn lightbox-btn-secondary" onclick="NRW.closeLightbox(); NRW.showTrailer('${movie.links.trailer}')">Watch Trailer</button>`;
+        }
+
+        // Rotten Tomatoes
+        if (movie.links?.rt) {
+            const rtScore = movie.rt_score ? ` (${movie.rt_score})` : '';
+            buttonsHtml += `<a href="${movie.links.rt}" target="_blank" rel="noopener noreferrer" class="lightbox-btn lightbox-btn-secondary">Rotten Tomatoes${rtScore}</a>`;
+        }
+
+        // Wikipedia
+        if (movie.links?.wikipedia) {
+            buttonsHtml += `<a href="${movie.links.wikipedia}" target="_blank" rel="noopener noreferrer" class="lightbox-btn lightbox-btn-secondary">Wikipedia</a>`;
+        }
+
+        document.getElementById('lightbox-buttons').innerHTML = buttonsHtml;
+
+        // Update counter
+        document.getElementById('lightbox-counter').textContent = `${this.lightboxIndex + 1} / ${this.lightboxMovies.length}`;
+    },
+
+    // Setup lightbox keyboard navigation
+    setupLightboxKeyboardHandler() {
+        document.addEventListener('keydown', (e) => {
+            const lightbox = document.getElementById('poster-lightbox');
+            if (!lightbox.classList.contains('active')) return;
+
+            if (e.key === 'Escape') {
+                this.closeLightbox();
+            } else if (e.key === 'ArrowLeft') {
+                this.lightboxNav(-1);
+            } else if (e.key === 'ArrowRight') {
+                this.lightboxNav(1);
+            }
+        });
     }
 };
 
