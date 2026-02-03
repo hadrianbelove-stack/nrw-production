@@ -726,9 +726,6 @@ const NRW = {
         }
 
         document.getElementById('lightbox-buttons').innerHTML = buttonsHtml;
-
-        // Update counter
-        document.getElementById('lightbox-counter').textContent = `${this.lightboxIndex + 1} / ${this.lightboxMovies.length}`;
     },
 
     // Setup lightbox keyboard navigation

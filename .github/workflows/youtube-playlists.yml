@@ -1,20 +1,13 @@
-name: Update YouTube Playlists
+name: Update YouTube Playlists (Manual)
 
-# RESTORED: Google account recovered Dec 4, 2025
-# See YOUTUBE_WORKFLOW_DISABLED.md for recovery details
+# NOTE: Daily playlist generation now handled by daily-check.yml
+# This workflow kept for manual triggers only
 
 on:
-  schedule:
-    # Monday at 10:00 UTC (3 AM PDT / 2 AM PST) - rebuild weekly playlist
-    - cron: '0 10 * * 1'
-
-    # 1st of month at 10:00 UTC (3 AM PDT / 2 AM PST) - create monthly playlist
-    - cron: '0 10 1 * *'
-
-  workflow_dispatch:  # Allow manual trigger
+  workflow_dispatch:  # Manual trigger only
     inputs:
       playlist_type:
-        description: 'Type of playlist to update'
+        description: 'Type of playlist to create'
         required: false
         default: 'weekly'
         type: choice
@@ -59,14 +52,5 @@ jobs:
           fi
           echo "Credentials validated successfully."
 
-      - name: Update weekly playlist
-        if: github.event.schedule == '0 10 * * 1'
-        run: python3 youtube_playlist_manager.py weekly
-
-      - name: Update monthly playlist
-        if: github.event.schedule == '0 10 1 * *'
-        run: python3 youtube_playlist_manager.py monthly
-
-      - name: Manual trigger
-        if: github.event_name == 'workflow_dispatch'
+      - name: Create playlist
         run: python3 youtube_playlist_manager.py ${{ github.event.inputs.playlist_type || 'weekly' }}

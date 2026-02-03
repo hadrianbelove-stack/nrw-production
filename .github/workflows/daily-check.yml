@@ -74,6 +74,31 @@ jobs:
       - name: Run daily pipeline
         run: python3 daily_orchestrator.py | tee .local_run.log
 
+      - name: Restore YouTube credentials
+        env:
+          YOUTUBE_TOKEN: ${{ secrets.YOUTUBE_TOKEN }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+        run: |
+          mkdir -p youtube_credentials
+          if [ -n "$YOUTUBE_CLIENT_SECRET" ] && [ -n "$YOUTUBE_TOKEN" ]; then
+            echo "$YOUTUBE_CLIENT_SECRET" | base64 -d > youtube_credentials/client_secret.json
+            echo "$YOUTUBE_TOKEN" | base64 -d > youtube_credentials/token.pickle
+            echo "YouTube credentials restored"
+          else
+            echo "YouTube credentials not configured, skipping playlist generation"
+          fi
+
+      - name: Update weekly trailers playlist
+        if: always()
+        run: |
+          if [ -f youtube_credentials/token.pickle ]; then
+            pip install google-api-python-client google-auth-oauthlib google-auth-httplib2
+            python3 youtube_playlist_manager.py weekly || echo "YouTube playlist update failed, continuing..."
+          else
+            echo "Skipping YouTube playlist - no credentials"
+          fi
+        continue-on-error: true
+
       - name: Extract discovery metrics
         if: always()
         run: |

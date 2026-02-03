@@ -1704,7 +1704,9 @@ class DataGenerator:
             data_movies.insert(0, basic_entry)
 
             # Save with atomic write and backup
-            updated_data = {
+            # IMPORTANT: Preserve existing fields (latest_playlist_url, staff_picks, featured, etc.)
+            updated_data = existing_data.copy() if 'existing_data' in locals() and existing_data else {}
+            updated_data.update({
                 'generated_at': datetime.now().isoformat(),
                 'count': len(data_movies),
                 'movies': data_movies,
@@ -1713,7 +1715,7 @@ class DataGenerator:
                     'discovery_count': sum(1 for m in data_movies if m.get('_discovery_source')),
                     'schema_version': '2.0'
                 }
-            }
+            })
 
             # Use atomic write to prevent corruption
             if not self.storage.atomic_write_json(updated_data, 'data.json', backup=True):

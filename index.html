@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The New Release Wall</title>
-    <link rel="stylesheet" href="assets/styles.css?v=28">
+    <link rel="stylesheet" href="assets/styles.css?v=29">
 </head>
 <body>
     <header>
@@ -28,9 +28,9 @@
 
     <!-- Fullscreen Poster Lightbox -->
     <div class="poster-lightbox" id="poster-lightbox">
-        <button class="lightbox-nav prev" onclick="NRW.lightboxNav(-1)" aria-label="Previous">&larr;</button>
-        <button class="lightbox-nav next" onclick="NRW.lightboxNav(1)" aria-label="Next">&rarr;</button>
+        <button class="lightbox-close" onclick="NRW.closeLightbox()" aria-label="Close">&times;</button>
         <div class="lightbox-content">
+            <button class="lightbox-nav prev" onclick="NRW.lightboxNav(-1)" aria-label="Previous">&larr;</button>
             <div class="lightbox-poster-wrap">
                 <img class="lightbox-poster" id="lightbox-poster" src="" alt="Movie poster">
             </div>
@@ -40,16 +40,11 @@
                 <p class="lightbox-synopsis" id="lightbox-synopsis"></p>
                 <div class="lightbox-buttons" id="lightbox-buttons"></div>
             </div>
+            <button class="lightbox-nav next" onclick="NRW.lightboxNav(1)" aria-label="Next">&rarr;</button>
         </div>
-        <button class="lightbox-shrink" onclick="NRW.closeLightbox()" aria-label="Exit fullscreen">
-            <svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28">
-                <path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/>
-            </svg>
-        </button>
-        <div class="lightbox-counter" id="lightbox-counter"></div>
         <div class="lightbox-hint">Arrow keys to navigate &bull; ESC to close</div>
     </div>
 
-    <script src="assets/app.js?v=23"></script>
+    <script src="assets/app.js?v=24"></script>
 </body>
 </html>

@@ -927,11 +927,12 @@ header h1 {
     display: flex;
 }
 
-/* Lightbox content - side by side layout */
+/* Lightbox content - side by side layout with nav arrows */
 .lightbox-content {
     display: flex;
-    gap: 2rem;
-    max-width: 1200px;
+    align-items: center;
+    gap: 1rem;
+    max-width: 1400px;
     max-height: 90vh;
     animation: lightboxFadeIn 0.3s ease;
 }
@@ -1023,11 +1024,9 @@ header h1 {
     color: white;
 }
 
-/* Navigation arrows */
+/* Navigation arrows - inline with content */
 .lightbox-nav {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
+    flex-shrink: 0;
     width: 50px;
     height: 50px;
     background: rgba(255, 255, 255, 0.1);
@@ -1043,12 +1042,26 @@ header h1 {
     background: rgba(255, 255, 255, 0.2);
 }
 
-.lightbox-nav.prev {
-    left: calc(50% - 620px);
+/* X close button - upper right */
+.lightbox-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    font-size: 2rem;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.3s;
+    z-index: 10001;
+    line-height: 1;
 }
 
-.lightbox-nav.next {
-    right: calc(50% - 620px);
+.lightbox-close:hover {
+    background: rgba(255, 255, 255, 0.2);
 }
 
 /* Shrink button - aligned with nav arrows, at bottom */
@@ -1118,16 +1131,8 @@ header h1 {
         max-height: 35vh;
     }
 
-    .lightbox-nav.prev {
-        left: 1rem;
-    }
-
-    .lightbox-nav.next {
-        right: 1rem;
-    }
-
-    .lightbox-shrink {
-        right: 1rem;
-        bottom: 1rem;
+    /* Hide nav arrows on mobile - use swipe or keyboard */
+    .lightbox-nav {
+        display: none;
     }
 }
