@@ -1,0 +1,193 @@
+package com.nrw.app.data
+
+import android.content.Context
+import android.util.Log
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.longPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
+import com.google.gson.Gson
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withContext
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.GET
+
+private const val TAG = "MovieRepository"
+private const val DATA_URL = "https://raw.githubusercontent.com/hadrianbelove-stack/nrw-production/main/"
+private const val CACHE_DURATION_MS = 24 * 60 * 60 * 1000L // 24 hours
+
+// DataStore for caching
+private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "nrw_cache")
+
+private val CACHE_KEY_DATA = stringPreferencesKey("movies_data")
+private val CACHE_KEY_TIMESTAMP = longPreferencesKey("movies_timestamp")
+
+/**
+ * Retrofit API service for fetching movie data
+ */
+interface NRWApiService {
+    @GET("data.json")
+    suspend fun getMovies(): MoviesResponse
+}
+
+/**
+ * Repository for fetching and caching movie data
+ */
+class MovieRepository(private val context: Context) {
+
+    private val gson = Gson()
+
+    private val api: NRWApiService by lazy {
+        Retrofit.Builder()
+            .baseUrl(DATA_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(NRWApiService::class.java)
+    }
+
+    /**
+     * Fetch movies from network or cache
+     */
+    suspend fun getMovies(forceRefresh: Boolean = false): Result<List<Movie>> {
+        return withContext(Dispatchers.IO) {
+            try {
+                // Check cache first (unless force refresh)
+                if (!forceRefresh) {
+                    val cached = getCachedMovies()
+                    if (cached != null) {
+                        Log.d(TAG, "Returning ${cached.size} movies from cache")
+                        return@withContext Result.success(cached)
+                    }
+                }
+
+                // Fetch from network
+                Log.d(TAG, "Fetching movies from network")
+                val response = api.getMovies()
+                val movies = response.movies
+
+                // Cache the response
+                cacheMovies(movies)
+
+                Log.d(TAG, "Fetched ${movies.size} movies from network")
+                Result.success(movies)
+
+            } catch (e: Exception) {
+                Log.e(TAG, "Error fetching movies", e)
+
+                // Try to return stale cache on error
+                val staleCache = getCachedMovies(ignoreExpiry = true)
+                if (staleCache != null) {
+                    Log.d(TAG, "Returning stale cache due to network error")
+                    return@withContext Result.success(staleCache)
+                }
+
+                Result.failure(e)
+            }
+        }
+    }
+
+    private suspend fun getCachedMovies(ignoreExpiry: Boolean = false): List<Movie>? {
+        return try {
+            val prefs = context.dataStore.data.first()
+            val timestamp = prefs[CACHE_KEY_TIMESTAMP] ?: 0L
+            val dataJson = prefs[CACHE_KEY_DATA] ?: return null
+
+            // Check if cache is expired
+            if (!ignoreExpiry && System.currentTimeMillis() - timestamp > CACHE_DURATION_MS) {
+                Log.d(TAG, "Cache expired")
+                return null
+            }
+
+            val response = gson.fromJson(dataJson, MoviesResponse::class.java)
+            response.movies
+        } catch (e: Exception) {
+            Log.e(TAG, "Error reading cache", e)
+            null
+        }
+    }
+
+    private suspend fun cacheMovies(movies: List<Movie>) {
+        try {
+            val response = MoviesResponse(movies = movies)
+            val json = gson.toJson(response)
+
+            context.dataStore.edit { prefs ->
+                prefs[CACHE_KEY_DATA] = json
+                prefs[CACHE_KEY_TIMESTAMP] = System.currentTimeMillis()
+            }
+            Log.d(TAG, "Cached ${movies.size} movies")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error caching movies", e)
+        }
+    }
+
+    /**
+     * Filter movies by category
+     */
+    fun filterMovies(movies: List<Movie>, filter: FilterCategory): List<Movie> {
+        return when (filter) {
+            FilterCategory.ALL -> movies.filter { it.hidden != true }
+            FilterCategory.BIG_TIME -> movies.filter {
+                it.hidden != true && it.categories?.tier == "big_time"
+            }
+            FilterCategory.NICHE -> movies.filter {
+                it.hidden != true && it.categories?.tier == "niche"
+            }
+            FilterCategory.STAFF_PICKS -> movies.filter {
+                it.hidden != true && it.isStaffPick()
+            }
+            FilterCategory.FOREIGN -> movies.filter {
+                it.hidden != true && it.isForeign()
+            }
+            FilterCategory.SERIES -> movies.filter {
+                it.hidden != true && it.contentType == "limited_series"
+            }
+            FilterCategory.PLEX -> movies.filter {
+                it.hidden != true && it.plex?.deepLink != null
+            }
+        }
+    }
+
+    /**
+     * Search movies by title, director, or genre
+     */
+    fun searchMovies(movies: List<Movie>, query: String): List<Movie> {
+        if (query.isBlank()) return movies
+
+        val lowerQuery = query.lowercase().trim()
+        return movies.filter { movie ->
+            val title = movie.title.lowercase()
+            val director = movie.getDirector()?.lowercase() ?: ""
+            val genres = movie.genres?.map { it.lowercase() } ?: emptyList()
+
+            title.contains(lowerQuery) ||
+                    director.contains(lowerQuery) ||
+                    genres.any { it.contains(lowerQuery) }
+        }
+    }
+
+    /**
+     * Group movies by release date
+     */
+    fun groupMoviesByDate(movies: List<Movie>): Map<String, List<Movie>> {
+        val grouped = movies.groupBy { it.getDisplayDate() ?: "Unknown" }
+
+        // Sort by date descending
+        return grouped.toSortedMap(compareByDescending { dateStr ->
+            if (dateStr == "Unknown") {
+                Long.MIN_VALUE
+            } else {
+                try {
+                    java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US)
+                        .parse(dateStr)?.time ?: Long.MIN_VALUE
+                } catch (e: Exception) {
+                    Long.MIN_VALUE
+                }
+            }
+        })
+    }
+}

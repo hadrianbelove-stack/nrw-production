@@ -174,8 +174,8 @@ The New Release Wall is a **Blockbuster wall for the streaming age**. It exists 
 **Spec:** SYSTEM_ARCHITECTURE.md §1.1 Core Data Model
 
 ### 021: Documentation Discipline & Root Cleanliness
-**Decision:** Root cleanliness with seven-file whitelist and docs/ organization.
-**Scope:** Seven root .md files only, session findings → diary/, features → docs/features/, troubleshooting → docs/troubleshooting/, pre-commit hook enforcement.
+**Decision:** Root cleanliness with five-file whitelist and docs/ organization.
+**Scope:** Five root .md files only (CLAUDE.md, PROJECT_CHARTER.md, README.md, SYSTEM_ARCHITECTURE.md, NRW_DATA_WORKFLOW_EXPLAINED.md), session findings → diary/, features → docs/features/, troubleshooting → docs/troubleshooting/, pre-commit hook enforcement.
 **Status:** ✅ Active - PROJECT_CHARTER.md under 1000 lines, never create root .md without approval
 **Spec:** README.md §Docs
 
@@ -226,17 +226,19 @@ NRW tracks when theatrical movies become available for digital streaming/rental.
 - `diary/` - Session snapshots (immutable), `museum_legacy/` - Deprecated code
 
 #### Native Apps
-- `NRWApp/` - React Native apps (Apple TV, iOS, Android)
+- `NRWApp-tvOS/` - Apple TV app (React Native tvOS, implemented)
+- `NRWApp-Android/` - Android TV app (placeholder, planned)
 - All platforms consume `data.json` via GitHub raw URL
-- Platform-specific docs in `NRWApp/README.md` and `docs/features/NATIVE_APPS.md`
+- Platform-specific docs in `docs/features/NATIVE_APPS.md`
 
 ## Native App Architecture
 
 ### Multi-Platform Strategy
 NRW supports multiple client applications consuming the same data pipeline:
 - **Web** (`index.html`) - Primary browser interface
-- **Apple TV** (`NRWApp/`) - React Native tvOS app (implemented)
-- **iOS/Android** (planned) - React Native mobile apps
+- **Apple TV** (`NRWApp-tvOS/`) - React Native tvOS app (implemented)
+- **Android TV** (`NRWApp-Android/`) - Planned
+- **iOS/Android mobile** - Planned
 
 ### Shared Data Contract
 All platforms consume `data.json` via the schema defined in Amendment 016.

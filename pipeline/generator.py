@@ -1828,6 +1828,9 @@ class DataGenerator:
         else:
             entry['studio'] = 'Unknown'
 
+        # Add budget from TMDB (used for auto-categorization)
+        entry['budget'] = movie_details.get('budget', 0)
+
         # Add country with error handling
         production_countries = movie_details.get('production_countries', [])
         if production_countries and len(production_countries) > 0:
@@ -3197,8 +3200,8 @@ class DataGenerator:
         # Handle None values by treating them as empty strings
         all_movies.sort(key=lambda x: x.get('digital_date') or '', reverse=True)
 
-        # Apply admin panel overrides (feature movies, apply ordering)
-        display_movies, featured_ids = self.apply_admin_overrides(all_movies)
+        # Apply admin panel overrides (categorize movies, apply staff picks, ordering)
+        display_movies, staff_pick_ids = self.apply_admin_overrides(all_movies)
 
         # Save ALL movies back to data.json (APPEND-ONLY: never remove old movies)
         # Preserve latest_playlist_url if it exists from YouTube playlist manager
@@ -3208,7 +3211,8 @@ class DataGenerator:
             'generated_at': datetime.now().isoformat(),
             'count': len(display_movies),
             'movies': display_movies,
-            'featured': featured_ids,  # For frontend filtering
+            'staff_picks': staff_pick_ids,  # New: curated recommendations
+            'featured': staff_pick_ids,  # Backwards compatibility (same as staff_picks)
             'latest_playlist_url': existing_playlist_url or 'NOT SET'
         }
 
@@ -3507,16 +3511,76 @@ class DataGenerator:
             self.logger.error(f"Failed to save scraper health metrics: {e}")
             print(f"  ⚠️  Failed to save health metrics: {e}")
 
+    def categorize_movie(self, movie, category_config):
+        """
+        Categorize a movie as 'big_time' or 'niche' based on studio and budget.
+
+        Logic:
+        1. Check manual override first (admin can force tier)
+        2. Match studio against big_time_studios list
+        3. Fallback to budget threshold ($10M default)
+        4. Default to 'niche' if no match
+
+        Returns:
+            dict: Categories object with tier, is_foreign, is_staff_pick, auto_categorized, manual_override
+        """
+        big_time_studios = category_config.get('big_time_studios', [])
+        budget_threshold = category_config.get('budget_threshold', 10000000)
+
+        # Get movie properties
+        studio = movie.get('studio', '')
+        budget = movie.get('budget', 0) or 0  # Handle None
+        original_language = movie.get('original_language', 'en')
+
+        # Check for existing manual override from movie_tracking.json
+        manual_override = movie.get('categories', {}).get('manual_override')
+
+        # Determine tier
+        if manual_override:
+            tier = manual_override
+            auto_categorized = False
+        elif studio and any(bs.lower() in studio.lower() for bs in big_time_studios):
+            tier = 'big_time'
+            auto_categorized = True
+        elif budget >= budget_threshold:
+            tier = 'big_time'
+            auto_categorized = True
+        else:
+            tier = 'niche'
+            auto_categorized = True
+
+        # Determine foreign status
+        is_foreign = original_language and original_language != 'en'
+
+        return {
+            'tier': tier,
+            'is_foreign': is_foreign,
+            'is_staff_pick': False,  # Set later from staff_picks.json
+            'auto_categorized': auto_categorized,
+            'manual_override': manual_override
+        }
+
     def apply_admin_overrides(self, display_movies):
-        """Apply admin panel decisions to final output"""
+        """Apply admin panel decisions to final output including categorization"""
 
         # Load admin decisions if they exist
-        featured = []
+        staff_picks = []
         ordering = []
 
-        if os.path.exists('admin/featured_movies.json'):
+        # Load staff picks (renamed from featured_movies.json)
+        if os.path.exists('admin/staff_picks.json'):
+            with open('admin/staff_picks.json', 'r') as f:
+                staff_picks = json.load(f)
+        elif os.path.exists('admin/featured_movies.json'):
+            # Fallback to old file for backwards compatibility
             with open('admin/featured_movies.json', 'r') as f:
-                featured = json.load(f)
+                staff_picks = json.load(f)
+
+        # Load category config
+        category_config = {}
+        if os.path.exists('admin/category_config.json'):
+            with open('admin/category_config.json', 'r') as f:
+                category_config = json.load(f)
 
         if os.path.exists('admin/ordering.json'):
             with open('admin/ordering.json', 'r') as f:
@@ -3597,10 +3661,41 @@ class DataGenerator:
         if fields_updated > 0:
             print(f"📝 Applied {fields_updated} manual field edits from movie_tracking.json")
 
-        # Mark featured movies
+        # Apply categorization to all movies
+        big_time_count = 0
+        niche_count = 0
+        foreign_count = 0
         for movie in display_movies:
-            if str(movie['id']) in featured:
-                movie['featured'] = True
+            movie_id = str(movie.get('id'))
+
+            # First, auto-categorize the movie
+            categories = self.categorize_movie(movie, category_config)
+
+            # Check for manual category override from tracking data
+            if movie_id in tracking_data and tracking_data[movie_id].get('categories'):
+                manual_categories = tracking_data[movie_id]['categories']
+                # Apply manual override - preserve tier and other manual settings
+                if manual_categories.get('manual_override'):
+                    categories['tier'] = manual_categories.get('tier', categories['tier'])
+                    categories['manual_override'] = manual_categories['manual_override']
+                    categories['auto_categorized'] = False
+
+            # Mark staff picks
+            if movie_id in staff_picks:
+                categories['is_staff_pick'] = True
+
+            movie['categories'] = categories
+
+            # Set 'featured' field for backwards compatibility (true or false)
+            movie['featured'] = categories['is_staff_pick']
+
+            # Count for stats
+            if categories['tier'] == 'big_time':
+                big_time_count += 1
+            else:
+                niche_count += 1
+            if categories['is_foreign']:
+                foreign_count += 1
 
         # Apply editorial ordering if specified
         if ordering:
@@ -3624,13 +3719,14 @@ class DataGenerator:
             # Combine ordered + remaining
             display_movies = ordered_movies + remaining_movies
 
-        featured_count = len([m for m in display_movies if m.get('featured')])
+        staff_pick_count = len([m for m in display_movies if m.get('categories', {}).get('is_staff_pick')])
         ordered_count = len(ordering) if ordering else 0
 
         print(f"📝 Admin overrides applied:")
-        print(f"  Featured movies: {featured_count}")
+        print(f"  Categories: {big_time_count} Big Time, {niche_count} Niche, {foreign_count} Foreign")
+        print(f"  Staff Picks: {staff_pick_count}")
         if ordered_count > 0:
             print(f"  Editorial ordering: {ordered_count} movies pinned to top")
 
-        return display_movies, featured
+        return display_movies, staff_picks
 

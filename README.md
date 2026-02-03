@@ -119,24 +119,27 @@ Trigger workflows manually in GitHub Actions tab → Select workflow → "Run wo
 
 **Multi-platform clients:**
 - Web: `index.html` consumes `data.json` directly
-- Apple TV: `NRWApp/` fetches `data.json` via GitHub raw URL
-- iOS/Android: Planned (same `NRWApp/` codebase)
+- Apple TV: `NRWApp-tvOS/` fetches `data.json` via GitHub raw URL
+- Android TV: `NRWApp-Android/` (planned)
 
 **For detailed architecture:** See [SYSTEM_ARCHITECTURE.md](SYSTEM_ARCHITECTURE.md)
 
-## Native Apps (NRWApp/)
+## Native Apps
 
-The Apple TV app provides a Netflix-style browsing experience for NRW on tvOS.
+| Platform | Folder | Status |
+|----------|--------|--------|
+| Apple TV | `NRWApp-tvOS/` | Implemented |
+| Android TV | `NRWApp-Android/` | Planned |
 
-**Quick start:**
+**Apple TV Quick start:**
 ```bash
-cd NRWApp
-npm install && cd tvos && pod install && cd ..
+cd NRWApp-tvOS
+npm install && cd ios && pod install && cd ..
 npm start        # Terminal 1: Start Metro bundler
 npm run tvos     # Terminal 2: Run on Apple TV Simulator
 ```
 
-**For details:** See [NRWApp/README.md](NRWApp/README.md) and [Native Apps Architecture](docs/features/NATIVE_APPS.md)
+**For details:** See [Native Apps Architecture](docs/features/NATIVE_APPS.md)
 
 
 ## Admin Panel
@@ -215,13 +218,12 @@ Quick reference for common issues. **For detailed troubleshooting:** See [docs/T
 
 ## Documentation Discipline (Charter-Aligned)
 
-**Root Markdown Limit:** Strictly 4 root MDs:
+**Root Markdown Limit:** Strictly 5 root MDs:
+- `CLAUDE.md` - Claude Code auto-loaded instructions
 - `PROJECT_CHARTER.md` - Governance & amendments
 - `SYSTEM_ARCHITECTURE.md` - Technical pipeline & core data model
 - `NRW_DATA_WORKFLOW_EXPLAINED.md` - Data mechanics & daily workflow
 - `README.md` - Project overview (this file)
-
-*Historical: IMPLEMENTATION_ROADMAP.md archived to museum_legacy/ (2025-12-29)*
 
 **Restoration Principle:** Maintain charter discipline; no new root files
 - Restoration planning embedded in roadmap/context to maintain cleanliness

@@ -12,15 +12,13 @@ if git diff --cached | grep -qE '^(<<<<<<<|=======|>>>>>>>)'; then
   exit 1
 fi
 
-# AMENDMENT-032: Root Markdown Whitelist
+# AMENDMENT-032: Root Markdown Whitelist (Updated 2026-02-02)
 ALLOWED_ROOT_MD_FILES=(
+    "CLAUDE.md"
     "PROJECT_CHARTER.md"
-    "IMPLEMENTATION_ROADMAP.md"
-    "DAILY_CONTEXT.md"
     "README.md"
     "SYSTEM_ARCHITECTURE.md"
     "NRW_DATA_WORKFLOW_EXPLAINED.md"
-    "ADMIN_WORKFLOW.md"
 )
 
 # Get list of staged .md files in repository root

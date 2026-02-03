@@ -118,7 +118,32 @@ header h1 {
     position: relative;
 }
 
-/* Featured movie styling */
+/* Staff Pick movie styling (renamed from featured) */
+.movie-container.staff-pick-movie {
+    border: 3px solid #dc143c;
+    border-radius: 15px;
+    padding: 8px;
+    background: rgba(220, 20, 60, 0.05);
+    box-shadow: 0 0 20px rgba(220, 20, 60, 0.3);
+}
+
+.staff-pick-badge {
+    position: absolute;
+    top: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #dc143c;
+    color: white;
+    padding: 4px 16px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    letter-spacing: 0.1em;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+/* Backwards compatibility - keep featured classes working during transition */
 .movie-container.featured-movie {
     border: 3px solid #dc143c;
     border-radius: 15px;
@@ -851,4 +876,258 @@ header h1 {
     left: 0;
     width: 100%;
     height: 100%;
+}
+
+/* ============================================
+   Fullscreen Poster Lightbox
+   ============================================ */
+
+/* Expand button on card front */
+.expand-btn {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    width: 32px;
+    height: 32px;
+    background: rgba(0, 0, 0, 0.7);
+    border: none;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s, background 0.2s;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-front:hover .expand-btn {
+    opacity: 1;
+}
+
+.expand-btn:hover {
+    background: #00d4aa;
+}
+
+/* Lightbox container */
+.poster-lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.poster-lightbox.active {
+    display: flex;
+}
+
+/* Lightbox content - side by side layout */
+.lightbox-content {
+    display: flex;
+    gap: 2rem;
+    max-width: 1200px;
+    max-height: 90vh;
+    animation: lightboxFadeIn 0.3s ease;
+}
+
+@keyframes lightboxFadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* Poster wrapper for positioning shrink button */
+.lightbox-poster-wrap {
+    position: relative;
+}
+
+/* Large poster */
+.lightbox-poster {
+    height: 80vh;
+    max-height: 700px;
+    width: auto;
+    border-radius: 12px;
+    object-fit: cover;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    display: block;
+}
+
+/* Info panel */
+.lightbox-info {
+    width: 350px;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.lightbox-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #fff;
+}
+
+.lightbox-meta {
+    color: #888;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+.lightbox-synopsis {
+    color: #ccc;
+    line-height: 1.6;
+    flex: 1;
+    margin-bottom: 1rem;
+    overflow-y: auto;
+}
+
+.lightbox-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: auto;
+}
+
+.lightbox-btn {
+    padding: 0.75rem;
+    border-radius: 6px;
+    text-align: center;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    border: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.lightbox-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.lightbox-btn-primary {
+    background: #e50914;
+    color: white;
+}
+
+.lightbox-btn-secondary {
+    background: #333;
+    color: white;
+}
+
+/* Navigation arrows */
+.lightbox-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.lightbox-nav:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.lightbox-nav.prev {
+    left: calc(50% - 620px);
+}
+
+.lightbox-nav.next {
+    right: calc(50% - 620px);
+}
+
+/* Shrink button - aligned with nav arrows, at bottom */
+.lightbox-shrink {
+    position: absolute;
+    bottom: 5%;
+    right: calc(50% - 620px);
+    width: 64px;
+    height: 64px;
+    background: rgba(40, 40, 40, 0.9);
+    border: none;
+    color: #fff;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+    z-index: 10001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.lightbox-shrink svg {
+    width: 32px;
+    height: 32px;
+}
+
+.lightbox-shrink:hover {
+    background: #00d4aa;
+    transform: scale(1.1);
+}
+
+/* Counter */
+.lightbox-counter {
+    position: absolute;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #888;
+    font-size: 0.9rem;
+}
+
+/* Keyboard hint */
+.lightbox-hint {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    color: #555;
+    font-size: 0.8rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+    .lightbox-content {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .lightbox-poster {
+        height: 50vh;
+        max-height: 400px;
+    }
+
+    .lightbox-info {
+        width: 100%;
+        max-width: 400px;
+        max-height: 35vh;
+    }
+
+    .lightbox-nav.prev {
+        left: 1rem;
+    }
+
+    .lightbox-nav.next {
+        right: 1rem;
+    }
+
+    .lightbox-shrink {
+        right: 1rem;
+        bottom: 1rem;
+    }
 }

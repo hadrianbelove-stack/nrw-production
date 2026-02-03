@@ -1,0 +1,20 @@
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Android Studio
+*.iml
+.idea/
+local.properties
+
+# APK files
+*.apk
+*.aab
+
+# Log files
+*.log
+
+# Generated
+.cxx/
+captures/

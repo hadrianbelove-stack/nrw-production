@@ -19,6 +19,7 @@ import { PARALLAX_PROPERTIES, FOCUS_STYLES } from '../utils/focusManager.tvos';
 const MovieCard = ({
   movie,
   onSelect,
+  onLongPress,
   onFocus,
   onBlur,
   isFeatured = false,
@@ -91,6 +92,13 @@ const MovieCard = ({
       onSelect(movie);
     }
   }, [movie, onSelect]);
+
+  // Handle long press (opens fullscreen view)
+  const handleLongPress = useCallback(() => {
+    if (onLongPress) {
+      onLongPress(movie);
+    }
+  }, [movie, onLongPress]);
 
   // Interpolate shadow opacity
   const shadowOpacity = shadowAnim.interpolate({
@@ -165,6 +173,8 @@ const MovieCard = ({
   return (
     <TouchableOpacity
       onPress={handleSelect}
+      onLongPress={handleLongPress}
+      delayLongPress={500}
       onFocus={handleFocus}
       onBlur={handleBlur}
       hasTVPreferredFocus={hasTVPreferredFocus}
@@ -172,7 +182,7 @@ const MovieCard = ({
       accessible={true}
       accessibilityLabel={`${movie.title}, ${movie.year || ''}, directed by ${director || 'Unknown'}`}
       accessibilityRole="button"
-      accessibilityHint="Press to view movie details"
+      accessibilityHint="Press to view details, long press for fullscreen"
       testID={testID}
       style={styles.touchable}
       nextFocusUp={nextFocusUp}

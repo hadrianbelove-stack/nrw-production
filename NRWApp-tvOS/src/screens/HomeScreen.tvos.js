@@ -18,6 +18,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { useHomeScreen } from './useHomeScreen';
 import MovieCard from '../components/MovieCard.tvos';
+import FullscreenPosterModal from '../components/FullscreenPosterModal.tvos';
 import { Colors, Typography, Spacing, Dimensions } from '../constants/colors';
 import { useTVEventHandler, TV_EVENTS } from '../utils/focusManager.tvos';
 import {
@@ -27,10 +28,12 @@ import {
   trackFilterChange,
 } from '../services/analytics.tvos';
 
-// Filter options
+// Filter options - matches web categories
 const FILTERS = [
   { id: 'all', label: 'All' },
-  { id: 'featured', label: 'Featured' },
+  { id: 'big-time', label: 'Big Time Stuff' },
+  { id: 'niche', label: 'Niche Notables' },
+  { id: 'staff-picks', label: 'Staff Picks' },
   { id: 'foreign', label: 'Foreign' },
   { id: 'series', label: 'Limited Series' },
   { id: 'plex', label: 'Plex' },
@@ -241,15 +244,17 @@ const HomeScreenTvOS = () => {
     filteredMovies,
     isLoading,
     error,
-    activeFilter,
-    changeFilter,
     refreshMovies,
     latestPlaylistUrl,
   } = useHomeScreen();
 
-  // Local state
+  // Local state - multi-select filters (Set of active filter IDs)
+  const [activeFilters, setActiveFilters] = useState(new Set());
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const previousFilterRef = useRef(activeFilter);
+
+  // Fullscreen poster modal state
+  const [fullscreenVisible, setFullscreenVisible] = useState(false);
+  const [fullscreenIndex, setFullscreenIndex] = useState(0);
 
   // Get node handle for header navigation
   useEffect(() => {
@@ -261,39 +266,71 @@ const HomeScreenTvOS = () => {
 
   // Track screen view on mount
   useEffect(() => {
-    trackScreenView('Home', { filter: activeFilter });
+    trackScreenView('Home', { filters: Array.from(activeFilters) });
   }, []);
 
-  // Handle filter change
+  // Handle filter change - multi-select toggle behavior
   const handleFilterChange = useCallback((filterId) => {
-    trackFilterChange(filterId, previousFilterRef.current);
-    previousFilterRef.current = filterId;
-    changeFilter(filterId);
-  }, [changeFilter]);
+    setActiveFilters(prev => {
+      const newFilters = new Set(prev);
 
-  // Get movies based on active filter
+      if (filterId === 'all') {
+        // "All" clears all other filters
+        newFilters.clear();
+      } else {
+        // Toggle this filter on/off
+        if (newFilters.has(filterId)) {
+          newFilters.delete(filterId);
+        } else {
+          newFilters.add(filterId);
+        }
+      }
+
+      trackFilterChange(filterId, Array.from(prev).join(','));
+      return newFilters;
+    });
+  }, []);
+
+  // Get movies based on active filters (multi-select with AND logic)
   const displayMovies = useMemo(() => {
-    let movies = filteredMovies;
-
-    // Apply category filter
-    if (activeFilter === 'featured') {
-      movies = movies.filter(m => m.featured);
-    } else if (activeFilter === 'foreign') {
-      // Foreign = non-English original language films
-      movies = movies.filter(m => {
-        const lang = m.original_language;
-        return lang && lang !== 'en';
-      });
-    } else if (activeFilter === 'series') {
-      // Limited series / miniseries only
-      movies = movies.filter(m => m.content_type === 'limited_series');
-    } else if (activeFilter === 'plex') {
-      // Movies available in personal Plex library
-      movies = movies.filter(m => m.plex && m.plex.deep_link);
+    // If no filters selected, show all
+    if (activeFilters.size === 0) {
+      return filteredMovies;
     }
 
-    return movies;
-  }, [filteredMovies, activeFilter]);
+    // Filter movies - must pass ALL selected filters (AND logic)
+    return filteredMovies.filter(movie => {
+      for (const filter of activeFilters) {
+        switch (filter) {
+          case 'big-time':
+            if (movie.categories?.tier !== 'big_time') return false;
+            break;
+          case 'niche':
+            if (movie.categories?.tier !== 'niche') return false;
+            break;
+          case 'staff-picks':
+            // Support both new categories object and legacy featured field
+            if (!movie.categories?.is_staff_pick && !movie.featured) return false;
+            break;
+          case 'foreign':
+            // Support both new categories object and legacy original_language
+            const isForeign = movie.categories?.is_foreign ??
+              (movie.original_language && movie.original_language !== 'en');
+            if (!isForeign) return false;
+            break;
+          case 'series':
+            // Limited series / miniseries only
+            if (movie.content_type !== 'limited_series') return false;
+            break;
+          case 'plex':
+            // Movies available in personal Plex library
+            if (!movie.plex || !movie.plex.deep_link) return false;
+            break;
+        }
+      }
+      return true;
+    });
+  }, [filteredMovies, activeFilters]);
 
   // Build flat list data with date markers interspersed
   // Each date marker takes one grid cell (same size as movie card)
@@ -353,6 +390,18 @@ const HomeScreenTvOS = () => {
     },
     [navigation]
   );
+
+  // Handle opening fullscreen poster view
+  const handleOpenFullscreen = useCallback((movie) => {
+    // Find index of this movie in displayMovies
+    const index = displayMovies.findIndex(m =>
+      (m.id || m.tmdb_id) === (movie.id || movie.tmdb_id)
+    );
+    if (index !== -1) {
+      setFullscreenIndex(index);
+      setFullscreenVisible(true);
+    }
+  }, [displayMovies]);
 
   // Handle movie focus
   const handleMovieFocus = useCallback((movie, index) => {
@@ -423,6 +472,7 @@ const HomeScreenTvOS = () => {
           <MovieCard
             movie={item.movie}
             onSelect={() => handleMovieSelect(item.movie)}
+            onLongPress={() => handleOpenFullscreen(item.movie)}
             onFocus={() => handleMovieFocus(item.movie, index)}
             hasTVPreferredFocus={index === 2} // First movie after trailers + first date marker
             testID={`movie-card-${index}`}
@@ -431,7 +481,7 @@ const HomeScreenTvOS = () => {
         </View>
       );
     },
-    [formatDateParts, handleMovieSelect, handleMovieFocus, headerNodeHandle]
+    [formatDateParts, handleMovieSelect, handleMovieFocus, handleOpenFullscreen, headerNodeHandle]
   );
 
   // Key extractor
@@ -497,7 +547,7 @@ const HomeScreenTvOS = () => {
               <FilterButton
                 key={filter.id}
                 filter={filter}
-                isActive={activeFilter === filter.id}
+                isActive={filter.id === 'all' ? activeFilters.size === 0 : activeFilters.has(filter.id)}
                 onPress={() => handleFilterChange(filter.id)}
               />
             ))}
@@ -527,6 +577,15 @@ const HomeScreenTvOS = () => {
           <ActivityIndicator color={Colors.primary} size="large" />
         </View>
       )}
+
+      {/* Fullscreen poster modal */}
+      <FullscreenPosterModal
+        visible={fullscreenVisible}
+        movies={displayMovies}
+        initialIndex={fullscreenIndex}
+        onClose={() => setFullscreenVisible(false)}
+        plexLibrary={{}}
+      />
     </View>
   );
 };

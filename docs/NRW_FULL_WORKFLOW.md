@@ -39,7 +39,7 @@ This document provides a high-level overview of the complete NRW workflow, combi
 
 **Key Admin Artifacts**:
 - `admin/hidden_movies.json` - Movies excluded from public display
-- `admin/featured_movies.json` - Movies highlighted with special styling
+- `admin/staff_picks.json` - Staff picks highlighted with special styling
 - `admin/watch_link_overrides.json` - Manual watch link corrections
 - `manual_*` flags in `movie_tracking.json` - Field-specific corrections
 

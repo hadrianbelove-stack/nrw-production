@@ -308,40 +308,14 @@ rt_scraper:
 
 ## 🌐 External APIs & Rate Limits
 
-### TMDB (The Movie Database)
-- **Sign up:** https://www.themoviedb.org/settings/api
-- **Environment variable:** `TMDB_API_KEY`
-- **Config fallback:** `api.tmdb_api_key` in config.yaml
-- **Usage:** Movie metadata, posters, cast/crew information
-- **Rate limit:** 40 requests per 10 seconds (handled automatically)
+**Full API documentation:** [docs/features/API_REFERENCE.md](docs/features/API_REFERENCE.md)
 
-### JustWatch API (Primary Watch Links Source)
-- **Type:** GraphQL API (unofficial, reverse-engineered)
-- **Implementation:** `justwatch_client.py`
-- **Usage:** Deep links to streaming platforms (Netflix, Amazon, HBO Max, etc.)
-- **Authentication:** None required
-- **Coverage:** 200+ streaming services, excellent for new releases
-- **Rate Limit:** 1 request per second (self-imposed)
-
-> **Note:** Watchmode API was deprecated in Dec 2024 due to quota/cost issues.
-
-### OMDb API
-- **Sign up:** http://www.omdbapi.com/apikey.aspx
-- **Environment variable:** `OMDB_API_KEY`
-- **Config fallback:** `api.omdb_api_key` in config.yaml
-- **Usage:** IMDb ID fallback for Wikipedia/Wikidata lookup when TMDB doesn't have IMDb ID
-- **Implementation:** `get_imdb_from_omdb()` method in `pipeline/generator.py`
-- **Free Tier:** 1,000 requests/day
-
-### Agent-Based Link Finding (No API Key Required)
-- **Purpose:** Scrape direct watch links from streaming platforms when JustWatch API has no data
-- **Platforms:** Netflix, Disney+, HBO Max, Hulu
-- **Technology:** Playwright with headless Chrome
-- **Rate Limiting:** 2-second minimum delay between scrapes
-- **Cache:** `cache/agent_links_cache.json`
-- **Usage:** Automatic fallback when JustWatch API returns no data
-- **Optional:** Can be disabled by not initializing agent in `generate_data.py`
-- **Terms of Service:** Web scraping may violate platform ToS; use responsibly
+| API | Key Required | Rate Limit | Usage |
+|-----|--------------|------------|-------|
+| TMDB | Yes (`TMDB_API_KEY`) | 40/10s | Movie metadata |
+| JustWatch | No | 1/s self-imposed | Watch links |
+| OMDb | Yes (`OMDB_API_KEY`) | 1000/day | IMDb ID fallback |
+| Agent Scraping | No | 2s delay | Platform deep links |
 
 ## 🔗 Watch Links Schema & Cache
 
@@ -510,104 +484,14 @@ Always poll ALL tracking movies in `movie_tracking.json` (no time limits). Fetch
 
 ## 🔄 Data Flow Overview
 
-### 4.1 The Data Flow (Updated 2025-12-29)
+**Detailed data flow documentation:** [NRW_DATA_WORKFLOW_EXPLAINED.md](./NRW_DATA_WORKFLOW_EXPLAINED.md)
 
+**Quick Summary:**
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│                        DAILY PIPELINE FLOW                          │
-├─────────────────────────────────────────────────────────────────────┤
-│                                                                     │
-│  PHASE 1: INTAKE                                                    │
-│  ───────────────                                                    │
-│  generate_data.py --intake                                          │
-│  └─► Fetches new theatrical releases from TMDB                      │
-│  └─► Adds to movie_tracking.json with status="tracking"             │
-│  └─► 10-20 new movies/day                                           │
-│                                                                     │
-│  PHASE 2: DISCOVERY                                                 │
-│  ─────────────────                                                  │
-│  generate_data.py --discover                                        │
-│  └─► Polls ALL tracking movies for provider availability            │
-│  └─► When found: status="available", digital_date=today             │
-│  └─► IMMEDIATELY writes minimal entry to data.json ◄── KEY!        │
-│  └─► Adds movie ID to metrics/newly_available.json                  │
-│  └─► 2-5 transitions/day                                            │
-│                                                                     │
-│  PHASE 3: ENRICHMENT                                                │
-│  ───────────────────                                                │
-│  generate_data.py (main)                                            │
-│  └─► Reads TODAY's queue from newly_available.json                  │
-│  └─► ONE enrichment attempt per movie (no retries)                  │
-│  └─► OVERLAYS data onto existing data.json entries ◄── KEY!        │
-│  └─► Adds: RT scores, Wikipedia, trailers, watch links              │
-│  └─► 1-10 movies/day                                                │
-│                                                                     │
-│  PHASE 4: DISPLAY (Frontend)                                        │
-│  ─────────────────────────                                          │
-│  index.html → data.json → User sees movie wall                      │
-│                                                                     │
-└─────────────────────────────────────────────────────────────────────┘
+Intake → Discovery → data.json (minimal) → Enrichment → data.json (full) → Display
 ```
 
 **Key Principle**: data.json is append-only. Discovery ADDS movies, enrichment ENHANCES them. Nothing deletes movies.
-
-```
-Phase 1: Intake & Discovery
-    ↓ generate_data.py --intake (new premieres from TMDB)
-    ↓ generate_data.py --discover (provider availability + IMMEDIATE write to data.json)
-    ↓ Updates: movie_tracking.json + data.json (minimal) + newly_available.json
-    ↓ Tracks: ~6,700 movies across platforms
-
-Phase 2: Enrichment (ONLY today's transitions)
-    ↓ generate_data.py (main process)
-    ↓ Reads: metrics/newly_available.json
-    ↓ Overlays: RT, Wikipedia, trailers, watch links onto existing entries
-    ↓ One attempt per movie - no retries
-
-Phase 3: Quality Assurance (Optional)
-    ↓ admin.py (manual QA interface - launch via ./launch_all.sh)
-    ↓ Validates: Links, ratings, metadata
-
-Phase 4: User Display
-    ↓ index.html + assets/app.js
-    ↓ Renders movie grid from data.json
-    ↓ All discovered movies visible (enrichment enhances, doesn't gate)
-```
-
-### 4.2 Key Data Transformations
-
-**movie_tracking.json structure**:
-```json
-{
-  "title": "Movie Name",
-  "tmdb_id": 12345,
-  "status": "available|tracking|removed",
-  "enriched": true,
-  "enrichment_date": "2025-11-05T10:30:00Z",
-  "rt_url": "https://...",
-  "platforms": ["netflix", "hulu"]
-}
-```
-
-**data.json structure**: Filtered, enriched subset for frontend display
-
-**Filtering Rules**:
-- Include: `status == "available"`
-- Exclude: Missing critical data (RT rating, watch links)
-- Sort: By release date, rating
-
-### 4.3 Link Resolution
-
-**5-Tier Fallback Waterfall**:
-1. Direct platform links (Netflix, Hulu, etc.)
-2. JustWatch aggregator
-3. Streaming platform search
-4. TMDB recommendations
-5. Manual override files
-
-**Null-Link Policy**: When no real deep link is available, the backend returns `link: null` (no search fallbacks); the UI renders a disabled NOT AVAILABLE button.
-
-See [NRW_DATA_WORKFLOW_EXPLAINED.md](./NRW_DATA_WORKFLOW_EXPLAINED.md) for detailed data flow documentation.
 
 ---
 
@@ -895,170 +779,34 @@ The Wikipedia scraper uses a 4-tier waterfall approach for reliable Wikipedia li
 
 ---
 
-## ⚠️ Common Failure Modes
+## ⚠️ Common Failure Modes & Debugging
 
-**For detailed troubleshooting guides with step-by-step solutions, see [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md).**
+**Full troubleshooting guide:** [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)
 
-This section provides a quick overview of failure patterns. Each subsection below links to the corresponding detailed troubleshooting guide with commands, examples, and historical post-mortems.
+| Symptom | Likely Cause | See Section |
+|---------|--------------|-------------|
+| 2+ hour runtimes | Enriched flags corrupted | Workflow Timeout |
+| "No recent movies" | Validation catch-22 | Validation Failures |
+| Missing watch links | JustWatch API issues | Watch Links Missing |
+| 0 transitions found | API key or TMDB issues | Change Detection |
 
-### 8.1 Branch Divergence
-
-**Symptoms**:
-- Validation errors about "old code"
-- 2+ hour runtimes
-- Processing 100+ movies
-
-**Historical Root Cause**: Two-branch system had synchronization issues
-
-**Current Solution**: Single-branch workflow eliminates this issue entirely
-- No branch synchronization needed
-- Direct commits to main prevent divergence
-
-**Detailed troubleshooting:** [docs/TROUBLESHOOTING.md - Branch Divergence](docs/TROUBLESHOOTING.md#5-branch-divergence)
-
-### 8.2 Data Corruption Cascade
-
-**Symptoms**:
-- "Processing 300+ movies" in logs
-- Runtime over 1 hour
-- Validation timeouts
-
-**Root Cause**: `enriched` flags corrupted (all set to `false`)
-
-**Example**: Line 1848 bug (Oct 25-Nov 5)
-```python
-# BROKEN CODE that caused corruption
-data_movies = json.load(df)  # Wrong object loaded
-for dm in data_movies:       # Iterated over keys, not movies
-```
-
-**Detection**: Check log for processing count
-**Fix**: Restore enriched flags from backup
-**Prevention**: Schema validation, consistency checks
-
-**Detailed troubleshooting:** [docs/TROUBLESHOOTING.md - Workflow Timeout](docs/TROUBLESHOOTING.md#3-workflow-timeout--2-hour-runtimes)
-
-### 8.3 API Quota Exhaustion
-
-**Symptoms**:
-- HTTP 429 errors
-- Missing ratings/data
-- Quota warnings
-
-**Root Cause**: Processing too many movies (see 8.2)
-
-**Detection**: Check enrichment logs for rate limit errors
-**Fix**: Wait for rate limit cooldown, optimize requests
-**Prevention**: Enrichment-on-transition pattern
-
-> **Note (Dec 2024):** Watchmode API was deprecated. JustWatch API is now used (no quota limits, self-imposed rate limiting).
-
-**Detailed troubleshooting:** [docs/TROUBLESHOOTING.md - Watch Links Issues](docs/TROUBLESHOOTING.md#4-watch-links-missing)
-
-### 8.4 Scraper Failures
-
-**Symptoms**:
-- Missing RT ratings
-- Empty watch links
-- Cache miss spikes
-
-**Root Cause**: Website changes, anti-bot measures
-
-**Detection**: Low success rates in logs
-**Fix**: Update scraper logic, add retries
-**Prevention**: Playwright migration, fallback scrapers
-
-**Detailed troubleshooting:** See docs/TROUBLESHOOTING.md for scraper-specific debugging (future enhancement)
-
-### 8.5 Change Detection finds 0 transitions
-
-**Symptoms**:
-- Provider checks find no transitions despite known releases
-- Movies stuck in "tracking" status
-- 0 "✓ now on [service]" messages
-
-**Root Cause**: API key issues, TMDB provider API failures, cache problems
-
-**Detection**: Monitor logs for transition counts
-**Fix**: Validate API keys, test TMDB provider endpoint
-**Prevention**: Regular API validation, proper error handling
-
-**Detailed troubleshooting:** [docs/troubleshooting/change_detection.md](docs/troubleshooting/change_detection.md)
-
-### 8.6 Validation Errors
-
-**Symptoms**:
-- "No recent movies found"
-- Workflow failures
-- Empty data.json
-
-**Common Errors**:
-- Data corruption (see 8.2)
-- Network timeouts
-- Invalid JSON structure
-
-**Fix**: Check data integrity, re-run generation
-**Recent Improvements**: Better error handling, validation gates
-
-**Detailed troubleshooting:** [docs/TROUBLESHOOTING.md - Validation Failures](docs/TROUBLESHOOTING.md#2-validation-failures---no-recent-movies)
+**Performance thresholds:**
+- Normal: 1-10 movies/day, 30s runtime
+- Warning: 50+ movies
+- Critical: 100+ movies (definite corruption)
 
 ---
 
 ## 🔍 Quick Debugging Reference
 
-### 9.1 File Read/Write Map
-
-**PHASE 1: INTAKE** (`generate_data.py --intake`)
-```
-READ:  movie_tracking.json (check for duplicates)
-WRITE: movie_tracking.json (append new movies)
-       metrics/intake_run.json (metrics)
-```
-
-**PHASE 2: DISCOVERY** (`generate_data.py --discover`)
-```
-READ:  movie_tracking.json (status="tracking" movies)
-       data.json (for immediate writing)
-WRITE: movie_tracking.json (update status, dates)
-       data.json (immediate minimal entries) ◄── APPEND-ONLY
-       metrics/discovery_run.json (metrics)
-       metrics/newly_available.json (today's enrichment queue)
-```
-
-**PHASE 3: ENRICHMENT** (`generate_data.py`)
-```
-READ:  metrics/newly_available.json (today's queue)
-       data.json (existing entries)
-       cache/*.json (RT, Wikipedia, watch links)
-WRITE: data.json (overlay enriched data) ◄── OVERLAY ONLY
-       metrics/enrichment_run.json (metrics)
-       cache/*.json (updated caches)
-```
-
-### 9.2 Common Debug Commands
+**Full debugging commands & file maps:** [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md#quick-debug-commands)
 
 ```bash
-# Check today's enrichment queue
-cat metrics/newly_available.json | jq '{date, count}'
-
-# Count movies in data.json
-jq '.movies | length' data.json
-
-# Find recent transitions
-jq '[.movies | to_entries[] | select(.value.digital_date >= "2025-12-25")] | length' movie_tracking.json
-
-# Check enrichment coverage
-jq '[.movies[] | select(.links.rt)] | length' data.json
+# Essential commands
+cat metrics/newly_available.json | jq 'length'  # Today's queue
+jq '.movies | length' data.json                  # Movie count
+python3 ops/health_check.py                      # System health
 ```
-
-### 9.3 Performance Expectations
-
-| Metric | Normal | Warning | Critical |
-|--------|--------|---------|----------|
-| Intake | 10-20/day | 50+/day | N/A |
-| Discovery transitions | 2-5/day | 0 for 3+ days | 0 for 7+ days |
-| Enrichment | 1-10/day | 50+/day | 100+/day |
-| Runtime | 30-60s | 5+ min | 30+ min |
 
 ---
 

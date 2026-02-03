@@ -7,9 +7,30 @@ NRW supports multiple client applications that all consume the same `data.json` 
 | Platform | Folder | Status | Technology |
 |----------|--------|--------|------------|
 | Web | `index.html`, `assets/` | Production | Vanilla JS |
-| Apple TV | `NRWApp/` | Development | React Native (tvOS) |
-| iOS | `NRWApp/` | Planned | React Native |
-| Android | TBD | Planned | React Native |
+| Apple TV | `NRWApp-tvOS/` | Development | React Native (tvOS) |
+| Android TV | `NRWApp-Android/` | Planned | TBD |
+| iOS | TBD | Planned | React Native |
+
+## Folder Structure
+
+```
+nrw-production/
+├── index.html              # Web app entry point
+├── assets/                 # Web app JS/CSS
+│   ├── app.js
+│   └── styles.css
+├── NRWApp-tvOS/            # Apple TV native app (React Native)
+│   ├── src/
+│   │   ├── screens/        # HomeScreen, MovieDetail, SearchScreen
+│   │   ├── components/     # MovieCard, FullscreenPosterModal, etc.
+│   │   ├── services/       # api, analytics, sentry
+│   │   ├── utils/          # focusManager, cache
+│   │   └── constants/      # colors, typography
+│   ├── ios/                # Xcode project (tvOS)
+│   └── tvos/               # Top Shelf extension (Swift)
+└── NRWApp-Android/         # Android TV app (placeholder)
+    └── README.md           # Status and plans
+```
 
 ## Architecture Overview
 
@@ -27,10 +48,10 @@ NRW supports multiple client applications that all consume the same `data.json` 
                             │
          ┌──────────────────┼──────────────────┐
          ▼                  ▼                  ▼
-   ┌──────────┐      ┌──────────┐       ┌──────────┐
-   │   Web    │      │ Apple TV │       │  Mobile  │
-   │ index.html│      │  NRWApp  │       │ (future) │
-   └──────────┘      └──────────┘       └──────────┘
+   ┌──────────┐      ┌─────────────┐    ┌─────────────┐
+   │   Web    │      │  Apple TV   │    │ Android TV  │
+   │index.html│      │NRWApp-tvOS  │    │NRWApp-Android│
+   └──────────┘      └─────────────┘    └─────────────┘
 ```
 
 ## Shared Data Contract
@@ -48,7 +69,7 @@ All platforms consume the same `data.json` schema (Amendment 016):
 https://raw.githubusercontent.com/{owner}/{repo}/main/data.json
 ```
 
-## Apple TV App (NRWApp/)
+## Apple TV App (NRWApp-tvOS/)
 
 ### Technology Stack
 - React Native (react-native-tvos v0.73)
@@ -56,44 +77,63 @@ https://raw.githubusercontent.com/{owner}/{repo}/main/data.json
 - Platform: tvOS 4th generation+
 
 ### Key Features
-- Netflix-style horizontal shelf browsing
+- Vertical scrolling grid layout (8 columns)
 - Siri Remote navigation (d-pad, select, menu, play/pause)
-- Parallax effects on movie posters
-- Top Shelf extension (featured movies on home screen)
+- Focus animations and parallax effects
+- Fullscreen poster view (long-press on card)
 - Deep linking (`nrw://movie/{id}`)
-- Affiliate integration (Amazon, Apple TV)
+- Streaming service integration (Netflix, Prime, etc.)
+- Plex library integration
 
 ### Development Commands
 ```bash
-cd NRWApp
+cd NRWApp-tvOS
 npm install              # Install dependencies
-cd tvos && pod install   # Install native pods (first time)
+cd ios && pod install    # Install native pods (first time)
 npm start                # Start Metro bundler
 npm run tvos             # Run on Apple TV Simulator
+npm run tvos-4k          # Run on Apple TV 4K Simulator
 ```
 
 ### Project Structure
 ```
-NRWApp/
+NRWApp-tvOS/
+├── App.js                  # Main app component, navigation setup
 ├── src/
-│   ├── screens/         # HomeScreen, MovieDetail
-│   ├── components/      # MovieCard, WatchButton, MovieShelf
-│   ├── services/        # api.js, analytics, crash reporting
-│   ├── utils/           # cache, focus management, links
-│   └── constants/       # colors, typography
-├── tvos/                # Native tvOS + Top Shelf (Swift)
-└── README.md            # App-specific documentation
+│   ├── screens/
+│   │   ├── HomeScreen.tvos.js      # Main grid view
+│   │   ├── MovieDetail.tvos.js     # Movie details screen
+│   │   └── SearchScreen.tvos.js    # Search functionality
+│   ├── components/
+│   │   ├── MovieCard.tvos.js       # Focusable movie poster card
+│   │   └── FullscreenPosterModal.tvos.js  # Fullscreen poster view
+│   ├── services/
+│   │   ├── api.tvos.js             # Data fetching
+│   │   ├── analytics.tvos.js       # Usage tracking
+│   │   └── sentry.tvos.js          # Crash reporting
+│   ├── utils/
+│   │   └── focusManager.tvos.js    # TV remote handling
+│   └── constants/
+│       └── colors.js               # Theme colors, typography
+├── ios/                    # Xcode project files
+└── tvos/                   # Top Shelf extension
 ```
 
-### Configuration
-Update the data URL in `src/services/api.js`:
-```javascript
-const DATA_URL = 'https://raw.githubusercontent.com/{owner}/nrw-production/main/data.json';
-```
+## Android TV App (NRWApp-Android/)
 
-## iOS/Android (Planned)
+### Status
+Not yet implemented - placeholder folder for future development.
 
-The same `NRWApp/` codebase will support iOS and Android via React Native's cross-platform capabilities. Platform-specific UI components use the `.ios.js` and `.android.js` extension pattern.
+### Planned Features
+- Same functionality as tvOS app
+- D-pad/remote navigation
+- Leanback UI framework or Jetpack Compose for TV
+- Streaming deep links
+
+### Technology Options
+- React Native (code sharing with tvOS)
+- Kotlin + Jetpack Compose for TV
+- Flutter
 
 ## Governance
 
@@ -104,6 +144,7 @@ Native apps follow the same PROJECT_CHARTER.md governance:
 
 ## Related Documentation
 
-- [NRWApp/README.md](../../NRWApp/README.md) - Apple TV app setup
+- [NRWApp-tvOS/README.md](../../NRWApp-tvOS/README.md) - Apple TV app setup
+- [NRWApp-Android/README.md](../../NRWApp-Android/README.md) - Android TV plans
 - [PROJECT_CHARTER.md](../../PROJECT_CHARTER.md) - Governance
 - [SYSTEM_ARCHITECTURE.md](../../SYSTEM_ARCHITECTURE.md) - Data pipeline details

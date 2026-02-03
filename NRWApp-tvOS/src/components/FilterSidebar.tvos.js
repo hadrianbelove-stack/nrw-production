@@ -19,9 +19,13 @@ const SCREEN_WIDTH = Dimensions.get('window').width;
 const SIDEBAR_WIDTH = 320;
 
 const FILTER_OPTIONS = [
-  { id: 'all', label: 'All Movies', icon: '🎬' },
-  { id: 'featured', label: 'Featured', icon: '⭐' },
-  { id: 'hidden', label: 'Hidden', icon: '👁' },
+  { id: 'all', label: 'All', icon: '🎬' },
+  { id: 'big-time', label: 'Big Time Stuff', icon: '🎯' },
+  { id: 'niche', label: 'Niche Notables', icon: '💎' },
+  { id: 'staff-picks', label: 'Staff Picks', icon: '⭐' },
+  { id: 'foreign', label: 'Foreign', icon: '🌍' },
+  { id: 'series', label: 'Limited Series', icon: '📺' },
+  { id: 'plex', label: 'Plex', icon: '🟧' },
 ];
 
 const FilterSidebar = ({

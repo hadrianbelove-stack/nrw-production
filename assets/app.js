@@ -199,6 +199,10 @@ const NRW = {
                         case 'series':
                             if (movie.content_type !== 'limited_series') return false;
                             break;
+                        case 'plex':
+                            // Movies available in personal Plex library
+                            if (!movie.plex || !movie.plex.deep_link) return false;
+                            break;
                     }
                 }
             }

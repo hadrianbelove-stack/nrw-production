@@ -206,7 +206,8 @@ def apply_security_headers(response):
 
 # Configuration
 DATA_FILE = 'data.json'  # Root directory - production display data
-FEATURED_FILE = 'admin/featured_movies.json'  # Admin overrides
+STAFF_PICKS_FILE = 'admin/staff_picks.json'  # Staff picks (formerly featured_movies.json)
+FEATURED_FILE = STAFF_PICKS_FILE  # Backwards compatibility alias
 PENDING_CHANGES_FLAG = 'admin/.pending_changes'  # Dirty flag for unsaved changes
 
 
@@ -776,7 +777,7 @@ Test commands for manual verification (requires admin panel running on localhost
    Expected: {"success": false, "error": "Invalid status_type \"invalid\". Must be \"featured\""}
 
 All tests should return HTTP 200. Success cases return {"success": true}, error cases return {"success": false, "error": "..."}
-Check admin/featured_movies.json for file updates after successful operations.
+Check admin/staff_picks.json for file updates after successful operations.
 """
 
 @app.route('/toggle-status', methods=['POST'])
@@ -2029,6 +2030,11 @@ def add_movie() -> dict:
                     site_movie['runtime'] = tmdb_data['runtime']
                 if tmdb_data.get('production_countries') and len(tmdb_data['production_countries']) > 0:
                     site_movie['country'] = tmdb_data['production_countries'][0].get('name', '')
+                # Add studio and budget for categorization
+                if tmdb_data.get('production_companies') and len(tmdb_data['production_companies']) > 0:
+                    site_movie['studio'] = tmdb_data['production_companies'][0].get('name', '')
+                if tmdb_data.get('budget'):
+                    site_movie['budget'] = tmdb_data['budget']
 
             # Add director
             if director:

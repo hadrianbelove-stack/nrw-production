@@ -562,6 +562,68 @@ See sections above for detailed troubleshooting when performance thresholds are 
 
 ---
 
+## File Read/Write Map
+
+Understanding which files are read/written in each phase helps with debugging.
+
+**PHASE 1: INTAKE** (`generate_data.py --intake`)
+```
+READ:  movie_tracking.json (check for duplicates)
+WRITE: movie_tracking.json (append new movies)
+       metrics/intake_run.json (metrics)
+```
+
+**PHASE 2: DISCOVERY** (`generate_data.py --discover`)
+```
+READ:  movie_tracking.json (status="tracking" movies)
+       data.json (for immediate writing)
+WRITE: movie_tracking.json (update status, dates)
+       data.json (immediate minimal entries) ◄── APPEND-ONLY
+       metrics/discovery_run.json (metrics)
+       metrics/newly_available.json (today's enrichment queue)
+```
+
+**PHASE 3: ENRICHMENT** (`generate_data.py`)
+```
+READ:  metrics/newly_available.json (today's queue)
+       data.json (existing entries)
+       cache/*.json (RT, Wikipedia, watch links)
+WRITE: data.json (overlay enriched data) ◄── OVERLAY ONLY
+       metrics/enrichment_run.json (metrics)
+       cache/*.json (updated caches)
+```
+
+---
+
+## Quick Debug Commands
+
+```bash
+# Check today's enrichment queue
+cat metrics/newly_available.json | jq '{date, count}'
+
+# Count movies in data.json
+jq '.movies | length' data.json
+
+# Find recent transitions
+jq '[.movies | to_entries[] | select(.value.digital_date >= "2025-12-25")] | length' movie_tracking.json
+
+# Check enrichment coverage
+jq '[.movies[] | select(.links.rt)] | length' data.json
+```
+
+---
+
+## Performance Expectations
+
+| Metric | Normal | Warning | Critical |
+|--------|--------|---------|----------|
+| Intake | 10-20/day | 50+/day | N/A |
+| Discovery transitions | 2-5/day | 0 for 3+ days | 0 for 7+ days |
+| Enrichment | 1-10/day | 50+/day | 100+/day |
+| Runtime | 30-60s | 5+ min | 30+ min |
+
+---
+
 ## Historical Post-Mortems
 
 Detailed debugging sessions with timestamps:

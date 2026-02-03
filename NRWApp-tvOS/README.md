@@ -1,14 +1,17 @@
-# New Release Wall - tvOS App
+# New Release Wall - tvOS App (NRWApp-tvOS)
 
 React Native app for Apple TV (tvOS) featuring curated indie films.
 
+> **Folder**: This is the Apple TV version. See `NRWApp-Android/` for Android TV (planned).
+
 ## Features
 
-- **Horizontal Shelf Layout**: Netflix-style browsing optimized for 10-foot viewing
+- **Vertical Grid Layout**: 8-column grid optimized for 10-foot viewing
 - **Focus-Based Navigation**: Full support for Siri Remote (d-pad and gestures)
+- **Fullscreen Poster View**: Long-press any card for side-by-side poster + info
 - **Parallax Effects**: Native tvOS visual effects on movie posters
 - **Top Shelf Extension**: Featured movies displayed on Apple TV home screen
-- **Affiliate Integration**: Amazon (tag=nrw04-20) and Apple TV affiliate links
+- **Streaming Integration**: Deep links to Netflix, Prime, Disney+, Plex, etc.
 
 ## Requirements
 
@@ -45,45 +48,41 @@ npm run tvos-4k
 ## Project Structure
 
 ```
-NRWApp/
+NRWApp-tvOS/
+├── App.js                         # Main app, navigation setup
 ├── src/
 │   ├── screens/
-│   │   ├── HomeScreen.js          # Shared logic
-│   │   ├── HomeScreen.tvos.js     # tvOS UI (horizontal shelves)
-│   │   ├── MovieDetail.js         # Shared logic
-│   │   └── MovieDetail.tvos.js    # tvOS UI (full-screen layout)
+│   │   ├── HomeScreen.tvos.js     # Main grid view (8 columns)
+│   │   ├── MovieDetail.tvos.js    # Movie details screen
+│   │   ├── SearchScreen.tvos.js   # Search functionality
+│   │   └── useHomeScreen.js       # Shared state/logic
 │   ├── components/
-│   │   ├── MovieCard.tvos.js      # Focusable card with parallax
-│   │   ├── WatchButton.tvos.js    # Focusable button with glow
-│   │   ├── FilterSidebar.tvos.js  # Left sidebar for filters
-│   │   └── MovieShelf.tvos.js     # Horizontal scrolling row
+│   │   ├── MovieCard.tvos.js      # Focusable poster card
+│   │   └── FullscreenPosterModal.tvos.js  # Fullscreen side-by-side view
 │   ├── services/
-│   │   ├── api.js                 # Shared data fetching
-│   │   ├── analytics.tvos.js      # tvOS analytics
+│   │   ├── api.tvos.js            # Data fetching
+│   │   ├── analytics.tvos.js      # Usage tracking
 │   │   └── sentry.tvos.js         # Crash reporting
 │   ├── utils/
-│   │   ├── focusManager.tvos.js   # Focus engine utilities
-│   │   ├── links.tvos.js          # Universal Links handler
-│   │   └── cache.js               # AsyncStorage caching
+│   │   └── focusManager.tvos.js   # TV remote event handling
 │   └── constants/
-│       └── colors.js              # Brand colors
+│       └── colors.js              # Colors, typography, dimensions
+├── ios/                           # Xcode project files
 ├── tvos/
-│   └── NRWApp-tvOS/
-│       ├── Info.plist
-│       └── TopShelfExtension/     # Top Shelf widget
-└── assets/
-    └── logos/                     # Service logos
+│   └── TopShelfExtension/         # Top Shelf widget (Swift)
+└── assets/                        # App assets
 ```
 
 ## Remote Control
 
 | Button | Action |
 |--------|--------|
-| D-pad | Navigate between movies and shelves |
+| D-pad | Navigate between movies |
 | Select (click) | Open movie details |
-| Play/Pause | Play trailer or refresh |
-| Menu | Go back or open filter sidebar |
-| Swipe up | Open filter sidebar |
+| Select (long press) | Open fullscreen poster view |
+| Play/Pause | Refresh movie list |
+| Menu | Go back / close modal |
+| Left/Right (in fullscreen) | Cycle through movies |
 
 ## Configuration
 
