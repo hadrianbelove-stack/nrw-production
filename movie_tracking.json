@@ -33707,13 +33707,32 @@
     },
     "1426083": {
       "title": "Escobank",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2025-11-28",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-02-03",
+      "providers": {
+        "rent": [
+          "Amazon Video",
+          "Apple TV Store",
+          "Google Play Movies",
+          "YouTube",
+          "Fandango At Home",
+          "Plex"
+        ],
+        "buy": [
+          "Amazon Video",
+          "Apple TV Store",
+          "Google Play Movies",
+          "YouTube",
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
       "discovery_pass": "A",
-      "has_providers": false,
-      "year": 2025
+      "has_providers": true,
+      "year": 2025,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1353154": {
       "title": "Not Another Christmas Movie",
@@ -62564,13 +62583,21 @@
     },
     "1558468": {
       "title": "Shambhala",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2025-12-26",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-02-03",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "aha"
+        ]
+      },
       "discovery_pass": "B",
-      "has_providers": false,
-      "year": 2025
+      "has_providers": true,
+      "year": 2025,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1549037": {
       "title": "Hocus-pocus",
@@ -68567,12 +68594,20 @@
     "1180417": {
       "title": "The Dutchman",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-02",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-02-03",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1107009": {
       "title": "Nilakanta",
@@ -103497,13 +103532,21 @@
     "1278719": {
       "title": "Desire: The Carl Craig Story",
       "year": 2024,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-02-03",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "BFI Player Amazon Channel"
+        ]
+      },
       "intake_pass": "C",
       "festival": "Tribeca",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1543023": {
       "title": "The VirginCord Documentary",
@@ -105465,13 +105508,21 @@
     "1403903": {
       "title": "Night Stage",
       "year": 2025,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-02-03",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "Berlin/Berlinale",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1399400": {
       "title": "The Moelln Letters",
@@ -156840,7 +156891,88 @@
       "networks": [
         "ViX"
       ]
+    },
+    "1628468": {
+      "title": "Unintended Consequences",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-03",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A",
+      "has_providers": false
+    },
+    "1520453": {
+      "title": "New Jersey Devil",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-03",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A",
+      "has_providers": false
+    },
+    "1628443": {
+      "title": "Laurent Paquin - Crocodile Distrait",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-03",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1628379": {
+      "title": "Incendie de Crans-Montana : r\u00e9v\u00e9lations sur une trag\u00e9die",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-03",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1624348": {
+      "title": "A m\u00faltad a j\u00f6v\u0151d",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-03",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1595128": {
+      "title": "Lure",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-03",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "tv_313117": {
+      "title": "\u7834\u4ea7\u59d0\u59b9",
+      "content_type": "limited_series",
+      "tmdb_id": 313117,
+      "status": "tracking",
+      "first_air_date": "2026-01-09",
+      "digital_date": "2026-01-09",
+      "episode_count": 2,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/wMH20wQmNGxBFYa2CYYca651dev.jpg",
+      "synopsis": "",
+      "genres": [],
+      "original_language": "zh",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-02-03T21:58:33.724713",
+      "networks": []
     }
   },
-  "last_update": "2026-02-03T09:38:34.333690"
+  "last_update": "2026-02-03T21:58:32.437592"
 }
