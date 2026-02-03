@@ -35,11 +35,22 @@ interface NRWApiService {
 }
 
 /**
+ * Data class for repository response with movies and metadata
+ */
+data class MovieData(
+    val movies: List<Movie>,
+    val playlistUrl: String? = null
+)
+
+/**
  * Repository for fetching and caching movie data
  */
 class MovieRepository(private val context: Context) {
 
     private val gson = Gson()
+
+    // Cache the playlist URL
+    private var cachedPlaylistUrl: String? = null
 
     private val api: NRWApiService by lazy {
         Retrofit.Builder()
@@ -68,9 +79,10 @@ class MovieRepository(private val context: Context) {
                 Log.d(TAG, "Fetching movies from network")
                 val response = api.getMovies()
                 val movies = response.movies
+                cachedPlaylistUrl = response.latestPlaylistUrl
 
                 // Cache the response
-                cacheMovies(movies)
+                cacheMovies(response)
 
                 Log.d(TAG, "Fetched ${movies.size} movies from network")
                 Result.success(movies)
@@ -90,6 +102,11 @@ class MovieRepository(private val context: Context) {
         }
     }
 
+    /**
+     * Get the YouTube playlist URL for trailers
+     */
+    fun getPlaylistUrl(): String? = cachedPlaylistUrl
+
     private suspend fun getCachedMovies(ignoreExpiry: Boolean = false): List<Movie>? {
         return try {
             val prefs = context.dataStore.data.first()
@@ -103,6 +120,7 @@ class MovieRepository(private val context: Context) {
             }
 
             val response = gson.fromJson(dataJson, MoviesResponse::class.java)
+            cachedPlaylistUrl = response.latestPlaylistUrl
             response.movies
         } catch (e: Exception) {
             Log.e(TAG, "Error reading cache", e)
@@ -110,16 +128,15 @@ class MovieRepository(private val context: Context) {
         }
     }
 
-    private suspend fun cacheMovies(movies: List<Movie>) {
+    private suspend fun cacheMovies(response: MoviesResponse) {
         try {
-            val response = MoviesResponse(movies = movies)
             val json = gson.toJson(response)
 
             context.dataStore.edit { prefs ->
                 prefs[CACHE_KEY_DATA] = json
                 prefs[CACHE_KEY_TIMESTAMP] = System.currentTimeMillis()
             }
-            Log.d(TAG, "Cached ${movies.size} movies")
+            Log.d(TAG, "Cached ${response.movies.size} movies")
         } catch (e: Exception) {
             Log.e(TAG, "Error caching movies", e)
         }

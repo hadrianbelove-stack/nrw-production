@@ -2,16 +2,18 @@ package com.nrw.app.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// NRW Brand Colors - matching tvOS app
+// NRW Brand Colors - matching website design
 val Background = Color(0xFF0A0A0A)
-val BackgroundSecondary = Color(0xFF1A1A1A)
-val Primary = Color(0xFFD4AF37)  // Gold
+val BackgroundSecondary = Color(0xFF1A1A2E)  // Dark blue-purple from website
+val BackgroundGradientEnd = Color(0xFF1A1A2E)
+val Primary = Color(0xFF00D4AA)  // Teal accent from website
+val StaffPickRed = Color(0xFFDC143C)  // Crimson for staff picks
 val TextPrimary = Color(0xFFFFFFFF)
-val TextSecondary = Color(0xFFB3B3B3)
-val TextMuted = Color(0xFF666666)
+val TextSecondary = Color(0xFFBBBBBB)
+val TextMuted = Color(0xFF888888)
 val Green = Color(0xFF2ECC71)
 val Red = Color(0xFFE74C3C)
-val FocusRing = Color(0xFFD4AF37)
+val FocusRing = Color(0xFF00D4AA)
 
 // Service colors for watch buttons
 val AmazonOrange = Color(0xFFFF9900)

@@ -38,7 +38,7 @@ class DetailViewModel(application: Application) : AndroidViewModel(application) 
     /**
      * Load movie by ID
      */
-    fun loadMovie(movieId: Int) {
+    fun loadMovie(movieId: String) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, error = null)
 

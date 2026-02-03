@@ -1,6 +1,9 @@
 package com.nrw.app.ui.home
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +16,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -21,9 +26,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -36,18 +49,29 @@ import androidx.tv.material3.Button
 import androidx.tv.material3.ButtonDefaults
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import com.nrw.app.data.Movie
+import com.nrw.app.data.getDisplayDate
+import com.nrw.app.ui.components.CARD_WIDTH
+import com.nrw.app.ui.components.DateDividerCard
 import com.nrw.app.ui.components.FilterChips
 import com.nrw.app.ui.components.MovieCard
+import com.nrw.app.ui.components.TrailersCard
 import com.nrw.app.ui.theme.Background
-import com.nrw.app.ui.theme.BackgroundSecondary
+import com.nrw.app.ui.theme.BackgroundGradientEnd
 import com.nrw.app.ui.theme.Primary
 import com.nrw.app.ui.theme.TextMuted
 import com.nrw.app.ui.theme.TextPrimary
 import com.nrw.app.ui.theme.TextSecondary
 
+// Grid item can be either a movie, date divider, or trailers card
+sealed class GridItem {
+    data class MovieItem(val movie: Movie) : GridItem()
+    data class DateItem(val date: String) : GridItem()
+    data object TrailersItem : GridItem()
+}
+
 /**
  * Home Screen for NRW Android TV
- * Displays movie grid with filters
+ * Matches website/tvOS design with search, trailers, date dividers
  */
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
@@ -56,11 +80,23 @@ fun HomeScreen(
     viewModel: HomeViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
+
+    // Create grid items with trailers card and date dividers
+    val gridItems = remember(uiState.filteredMovies, uiState.playlistUrl) {
+        createGridItems(uiState.filteredMovies, uiState.playlistUrl)
+    }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Background)
+            .background(
+                Brush.linearGradient(
+                    colors = listOf(Background, BackgroundGradientEnd),
+                    start = androidx.compose.ui.geometry.Offset(0f, 0f),
+                    end = androidx.compose.ui.geometry.Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
+                )
+            )
     ) {
         when {
             uiState.isLoading -> {
@@ -74,10 +110,11 @@ fun HomeScreen(
             }
             else -> {
                 Column(modifier = Modifier.fillMaxSize()) {
-                    // Header
-                    Header()
-
-                    Spacer(modifier = Modifier.height(16.dp))
+                    // Header with title and search
+                    Header(
+                        searchQuery = uiState.searchQuery,
+                        onSearchChange = { viewModel.setSearchQuery(it) }
+                    )
 
                     // Filter chips
                     FilterChips(
@@ -85,7 +122,7 @@ fun HomeScreen(
                         onFilterSelected = { viewModel.setFilter(it) }
                     )
 
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
                     // Movie count
                     Text(
@@ -95,15 +132,22 @@ fun HomeScreen(
                         modifier = Modifier.padding(horizontal = 48.dp)
                     )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
-                    // Movie grid
+                    // Movie grid with date dividers
                     if (uiState.filteredMovies.isEmpty()) {
                         EmptyState()
                     } else {
-                        MovieGrid(
-                            movies = uiState.filteredMovies,
-                            onMovieClick = onMovieClick
+                        MovieGridWithDates(
+                            gridItems = gridItems,
+                            playlistUrl = uiState.playlistUrl,
+                            onMovieClick = onMovieClick,
+                            onTrailersClick = {
+                                uiState.playlistUrl?.let { url ->
+                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                                    context.startActivity(intent)
+                                }
+                            }
                         )
                     }
                 }
@@ -112,52 +156,164 @@ fun HomeScreen(
     }
 }
 
+/**
+ * Create grid items with trailers card and date dividers inserted
+ */
+private fun createGridItems(movies: List<Movie>, playlistUrl: String?): List<GridItem> {
+    val items = mutableListOf<GridItem>()
+    var currentDate: String? = null
+    var addedTrailers = false
+
+    // Sort movies by date (newest first)
+    val sortedMovies = movies.sortedByDescending { it.getDisplayDate() ?: "0000-00-00" }
+
+    for (movie in sortedMovies) {
+        val movieDate = movie.getDisplayDate()
+        if (movieDate != null && movieDate != currentDate) {
+            // Add trailers card before first date (if available)
+            if (!addedTrailers && playlistUrl != null) {
+                items.add(GridItem.TrailersItem)
+                addedTrailers = true
+            }
+            // Add date divider for new date
+            items.add(GridItem.DateItem(movieDate))
+            currentDate = movieDate
+        }
+        items.add(GridItem.MovieItem(movie))
+    }
+
+    return items
+}
+
 @Composable
-private fun Header() {
+private fun Header(
+    searchQuery: String,
+    onSearchChange: (String) -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 48.dp, vertical = 24.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .padding(horizontal = 48.dp, vertical = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
+        // Title
         Text(
             text = "THE NEW RELEASE WALL",
             color = Primary,
-            fontSize = 32.sp,
-            fontWeight = FontWeight.Bold,
-            letterSpacing = 2.sp
+            fontSize = 28.sp,
+            fontWeight = FontWeight.Light,
+            letterSpacing = 6.sp
+        )
+
+        // Search bar
+        SearchBar(
+            query = searchQuery,
+            onQueryChange = onSearchChange,
+            modifier = Modifier.width(200.dp)
+        )
+    }
+}
+
+@Composable
+private fun SearchBar(
+    query: String,
+    onQueryChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var isFocused by remember { mutableStateOf(false) }
+
+    val backgroundColor = if (isFocused) {
+        Color.White.copy(alpha = 0.15f)
+    } else {
+        Color.White.copy(alpha = 0.1f)
+    }
+
+    val borderColor = if (isFocused) Primary else Color.White.copy(alpha = 0.2f)
+
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(20.dp))
+            .background(backgroundColor)
+            .border(1.dp, borderColor, RoundedCornerShape(20.dp))
+            .padding(horizontal = 16.dp, vertical = 10.dp)
+    ) {
+        BasicTextField(
+            value = query,
+            onValueChange = onQueryChange,
+            modifier = Modifier
+                .fillMaxWidth()
+                .onFocusChanged { isFocused = it.isFocused },
+            textStyle = TextStyle(
+                color = TextPrimary,
+                fontSize = 14.sp
+            ),
+            singleLine = true,
+            cursorBrush = SolidColor(Primary),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+            decorationBox = { innerTextField ->
+                Box {
+                    if (query.isEmpty()) {
+                        Text(
+                            text = "Search...",
+                            color = Color.White.copy(alpha = 0.5f),
+                            fontSize = 14.sp
+                        )
+                    }
+                    innerTextField()
+                }
+            }
         )
     }
 }
 
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
-private fun MovieGrid(
-    movies: List<Movie>,
-    onMovieClick: (Movie) -> Unit
+private fun MovieGridWithDates(
+    gridItems: List<GridItem>,
+    playlistUrl: String?,
+    onMovieClick: (Movie) -> Unit,
+    onTrailersClick: () -> Unit
 ) {
     val focusRequester = remember { FocusRequester() }
 
     TvLazyVerticalGrid(
-        columns = TvGridCells.Adaptive(minSize = 180.dp),
+        columns = TvGridCells.Adaptive(minSize = CARD_WIDTH + 16.dp),
         contentPadding = PaddingValues(horizontal = 48.dp, vertical = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp),
         modifier = Modifier.fillMaxSize()
     ) {
         items(
-            items = movies,
-            key = { it.id }
-        ) { movie ->
-            MovieCard(
-                movie = movie,
-                onClick = { onMovieClick(movie) },
-                modifier = if (movies.indexOf(movie) == 0) {
-                    Modifier.focusRequester(focusRequester)
-                } else {
-                    Modifier
+            items = gridItems,
+            key = { item ->
+                when (item) {
+                    is GridItem.MovieItem -> "movie_${item.movie.id}"
+                    is GridItem.DateItem -> "date_${item.date}"
+                    is GridItem.TrailersItem -> "trailers"
                 }
-            )
+            }
+        ) { item ->
+            when (item) {
+                is GridItem.TrailersItem -> {
+                    TrailersCard(onClick = onTrailersClick)
+                }
+                is GridItem.DateItem -> {
+                    DateDividerCard(dateString = item.date)
+                }
+                is GridItem.MovieItem -> {
+                    val isFirst = gridItems.filterIsInstance<GridItem.MovieItem>().firstOrNull()?.movie?.id == item.movie.id
+                    MovieCard(
+                        movie = item.movie,
+                        onClick = { onMovieClick(item.movie) },
+                        modifier = if (isFirst) {
+                            Modifier.focusRequester(focusRequester)
+                        } else {
+                            Modifier
+                        }
+                    )
+                }
+            }
         }
     }
 }
@@ -244,7 +400,7 @@ private fun EmptyState() {
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Try a different filter",
+                text = "Try a different filter or search term",
                 color = TextSecondary,
                 fontSize = 16.sp
             )

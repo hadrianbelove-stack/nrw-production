@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NRW tvOS Asset Mockups</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1a1a1a;
+            color: #fff;
+            padding: 40px;
+            line-height: 1.6;
+        }
+        h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        h2 {
+            font-size: 24px;
+            margin: 40px 0 20px;
+            color: #888;
+            font-weight: 500;
+        }
+        h3 {
+            font-size: 18px;
+            margin: 30px 0 15px;
+            color: #aaa;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 40px;
+        }
+        .section {
+            margin-bottom: 60px;
+        }
+        .options {
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+        .option {
+            background: #2a2a2a;
+            border-radius: 16px;
+            padding: 24px;
+            flex: 1;
+            min-width: 300px;
+        }
+        .option-label {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .icon-preview {
+            display: flex;
+            gap: 20px;
+            align-items: flex-end;
+            margin-bottom: 20px;
+        }
+        .icon-size-label {
+            font-size: 11px;
+            color: #666;
+            text-align: center;
+            margin-top: 8px;
+        }
+        .top-shelf-preview {
+            width: 100%;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .context-mock {
+            background: #000;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+        .context-label {
+            font-size: 11px;
+            color: #555;
+            margin-bottom: 10px;
+        }
+        .tv-home-mock {
+            background: linear-gradient(180deg, #1a1a2e 0%, #0a0a15 100%);
+            border-radius: 8px;
+            padding: 20px;
+            position: relative;
+        }
+        .tv-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        .tv-app {
+            width: 80px;
+            height: 48px;
+            background: #333;
+            border-radius: 8px;
+        }
+        .tv-app.active {
+            box-shadow: 0 0 0 3px #fff;
+        }
+        .notes {
+            background: #222;
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 16px;
+            font-size: 14px;
+            color: #aaa;
+        }
+        svg {
+            display: block;
+        }
+        .download-note {
+            background: #1e3a5f;
+            border: 1px solid #2d5a8a;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <h1>New Release Wall - tvOS Assets</h1>
+    <p class="subtitle">Preview mockups for App Icon and Top Shelf Image</p>
+
+    <!-- APP ICON SECTION -->
+    <div class="section">
+        <h2>App Icon Options</h2>
+        <p style="color: #666; margin-bottom: 30px;">tvOS icons are 400x240 (displayed) and 1280x768 (large). Shown at display size.</p>
+
+        <div class="options">
+            <!-- Option A: Minimal -->
+            <div class="option">
+                <div class="option-label">Option A - Minimal</div>
+                <div class="icon-preview">
+                    <div>
+                        <svg width="200" height="120" viewBox="0 0 400 240" style="border-radius: 12px;">
+                            <defs>
+                                <linearGradient id="bgA" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#1a1a2e"/>
+                                    <stop offset="100%" style="stop-color:#0f0f1a"/>
+                                </linearGradient>
+                            </defs>
+                            <rect width="400" height="240" fill="url(#bgA)"/>
+                            <text x="200" y="115" text-anchor="middle" font-family="-apple-system, SF Pro Display, sans-serif" font-size="72" font-weight="700" fill="#fff">NRW</text>
+                            <text x="200" y="155" text-anchor="middle" font-family="-apple-system, SF Pro Display, sans-serif" font-size="18" font-weight="400" fill="#666">NEW RELEASE WALL</text>
+                        </svg>
+                        <div class="icon-size-label">Display Size</div>
+                    </div>
+                </div>
+                <div class="notes">
+                    Clean, text-focused. Professional look. Easy to read on Apple TV home screen.
+                </div>
+            </div>
+
+            <!-- Option B: Film Reel -->
+            <div class="option">
+                <div class="option-label">Option B - Cinema</div>
+                <div class="icon-preview">
+                    <div>
+                        <svg width="200" height="120" viewBox="0 0 400 240" style="border-radius: 12px;">
+                            <defs>
+                                <linearGradient id="bgB" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#2d1f3d"/>
+                                    <stop offset="100%" style="stop-color:#1a1225"/>
+                                </linearGradient>
+                            </defs>
+                            <rect width="400" height="240" fill="url(#bgB)"/>
+                            <!-- Film strip holes left -->
+                            <rect x="20" y="30" width="16" height="12" rx="2" fill="#ffffff20"/>
+                            <rect x="20" y="55" width="16" height="12" rx="2" fill="#ffffff20"/>
+                            <rect x="20" y="80" width="16" height="12" rx="2" fill="#ffffff20"/>
+                            <rect x="20" y="148" width="16" height="12" rx="2" fill="#ffffff20"/>
+                            <rect x="20" y="173" width="16" height="12" rx="2" fill="#ffffff20"/>
+                            <rect x="20" y="198" width="16" height="12" rx="2" fill="#ffffff20"/>
+                            <!-- Film strip holes right -->
+                            <rect x="364" y="30" width="16" height="12" rx="2" fill="#ffffff20"/>
+                            <rect x="364" y="55" width="16" height="12" rx="2" fill="#ffffff20"/>
+                            <rect x="364" y="80" width="16" height="12" rx="2" fill="#ffffff20"/>
+                            <rect x="364" y="148" width="16" height="12" rx="2" fill="#ffffff20"/>
+                            <rect x="364" y="173" width="16" height="12" rx="2" fill="#ffffff20"/>
+                            <rect x="364" y="198" width="16" height="12" rx="2" fill="#ffffff20"/>
+                            <text x="200" y="115" text-anchor="middle" font-family="-apple-system, SF Pro Display, sans-serif" font-size="68" font-weight="700" fill="#fff">NRW</text>
+                            <text x="200" y="155" text-anchor="middle" font-family="-apple-system, SF Pro Display, sans-serif" font-size="16" font-weight="500" fill="#a78bfa">NEW RELEASE WALL</text>
+                        </svg>
+                        <div class="icon-size-label">Display Size</div>
+                    </div>
+                </div>
+                <div class="notes">
+                    Film strip motif. Purple/cinema vibes. More playful and thematic.
+                </div>
+            </div>
+
+            <!-- Option C: Bold Gradient -->
+            <div class="option">
+                <div class="option-label">Option C - Bold</div>
+                <div class="icon-preview">
+                    <div>
+                        <svg width="200" height="120" viewBox="0 0 400 240" style="border-radius: 12px;">
+                            <defs>
+                                <linearGradient id="bgC" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#dc2626"/>
+                                    <stop offset="100%" style="stop-color:#7c1d1d"/>
+                                </linearGradient>
+                            </defs>
+                            <rect width="400" height="240" fill="url(#bgC)"/>
+                            <text x="200" y="125" text-anchor="middle" font-family="-apple-system, SF Pro Display, sans-serif" font-size="80" font-weight="800" fill="#fff">NRW</text>
+                            <rect x="100" y="155" width="200" height="3" fill="#ffffff50"/>
+                        </svg>
+                        <div class="icon-size-label">Display Size</div>
+                    </div>
+                </div>
+                <div class="notes">
+                    Bold red gradient. High contrast. Stands out on dark Apple TV interface.
+                </div>
+            </div>
+        </div>
+
+        <!-- Option D: Poster Grid -->
+        <div class="options" style="margin-top: 30px;">
+            <div class="option">
+                <div class="option-label">Option D - Grid</div>
+                <div class="icon-preview">
+                    <div>
+                        <svg width="200" height="120" viewBox="0 0 400 240" style="border-radius: 12px;">
+                            <defs>
+                                <linearGradient id="bgD" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#0c1929"/>
+                                    <stop offset="100%" style="stop-color:#0a0f18"/>
+                                </linearGradient>
+                            </defs>
+                            <rect width="400" height="240" fill="url(#bgD)"/>
+                            <!-- Mini poster grid -->
+                            <rect x="30" y="50" width="45" height="65" rx="4" fill="#3b82f6" opacity="0.7"/>
+                            <rect x="85" y="50" width="45" height="65" rx="4" fill="#8b5cf6" opacity="0.7"/>
+                            <rect x="30" y="125" width="45" height="65" rx="4" fill="#ec4899" opacity="0.7"/>
+                            <rect x="85" y="125" width="45" height="65" rx="4" fill="#f59e0b" opacity="0.7"/>
+                            <!-- Text -->
+                            <text x="260" y="110" text-anchor="middle" font-family="-apple-system, SF Pro Display, sans-serif" font-size="56" font-weight="700" fill="#fff">NRW</text>
+                            <text x="260" y="145" text-anchor="middle" font-family="-apple-system, SF Pro Display, sans-serif" font-size="14" font-weight="400" fill="#64748b">NEW RELEASE WALL</text>
+                        </svg>
+                        <div class="icon-size-label">Display Size</div>
+                    </div>
+                </div>
+                <div class="notes">
+                    Shows the concept - a wall of movie posters. Colorful and descriptive.
+                </div>
+            </div>
+
+            <div class="option">
+                <div class="option-label">Option E - Spotlight</div>
+                <div class="icon-preview">
+                    <div>
+                        <svg width="200" height="120" viewBox="0 0 400 240" style="border-radius: 12px;">
+                            <defs>
+                                <radialGradient id="bgE" cx="50%" cy="50%" r="70%">
+                                    <stop offset="0%" style="stop-color:#1e293b"/>
+                                    <stop offset="100%" style="stop-color:#0f172a"/>
+                                </radialGradient>
+                                <radialGradient id="spotlight" cx="50%" cy="30%" r="50%">
+                                    <stop offset="0%" style="stop-color:#fbbf24;stop-opacity:0.3"/>
+                                    <stop offset="100%" style="stop-color:#fbbf24;stop-opacity:0"/>
+                                </radialGradient>
+                            </defs>
+                            <rect width="400" height="240" fill="url(#bgE)"/>
+                            <ellipse cx="200" cy="80" rx="150" ry="80" fill="url(#spotlight)"/>
+                            <text x="200" y="115" text-anchor="middle" font-family="-apple-system, SF Pro Display, sans-serif" font-size="72" font-weight="700" fill="#fff">NRW</text>
+                            <text x="200" y="155" text-anchor="middle" font-family="-apple-system, SF Pro Display, sans-serif" font-size="16" font-weight="500" fill="#fbbf24">NEW RELEASE WALL</text>
+                        </svg>
+                        <div class="icon-size-label">Display Size</div>
+                    </div>
+                </div>
+                <div class="notes">
+                    Cinema spotlight effect. Golden accent. Premium feel.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOP SHELF SECTION -->
+    <div class="section">
+        <h2>Top Shelf Image Options</h2>
+        <p style="color: #666; margin-bottom: 30px;">Shown when your app is in the top row. Size: 2320x720 (shown scaled)</p>
+
+        <!-- Top Shelf Option A -->
+        <h3>Option A - Minimal Banner</h3>
+        <div class="top-shelf-preview">
+            <svg width="100%" viewBox="0 0 2320 720" style="border-radius: 8px;">
+                <defs>
+                    <linearGradient id="tsBgA" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#1a1a2e"/>
+                        <stop offset="50%" style="stop-color:#16213e"/>
+                        <stop offset="100%" style="stop-color:#1a1a2e"/>
+                    </linearGradient>
+                </defs>
+                <rect width="2320" height="720" fill="url(#tsBgA)"/>
+                <text x="1160" y="340" text-anchor="middle" font-family="-apple-system, SF Pro Display, sans-serif" font-size="160" font-weight="700" fill="#fff">NEW RELEASE WALL</text>
+                <text x="1160" y="440" text-anchor="middle" font-family="-apple-system, SF Pro Display, sans-serif" font-size="48" font-weight="400" fill="#666">Track movies from theater to streaming</text>
+            </svg>
+        </div>
+        <div class="notes" style="max-width: 800px;">Clean and simple. Focus on branding. Works well with any content below.</div>
+
+        <!-- Top Shelf Option B -->
+        <h3>Option B - Poster Showcase</h3>
+        <div class="top-shelf-preview">
+            <svg width="100%" viewBox="0 0 2320 720" style="border-radius: 8px;">
+                <defs>
+                    <linearGradient id="tsBgB" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#0f0f1a"/>
+                        <stop offset="100%" style="stop-color:#1a1025"/>
+                    </linearGradient>
+                    <linearGradient id="fadeLeft" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#0f0f1a"/>
+                        <stop offset="100%" style="stop-color:#0f0f1a;stop-opacity:0"/>
+                    </linearGradient>
+                    <linearGradient id="fadeRight" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#0f0f1a;stop-opacity:0"/>
+                        <stop offset="100%" style="stop-color:#0f0f1a"/>
+                    </linearGradient>
+                </defs>
+                <rect width="2320" height="720" fill="url(#tsBgB)"/>
+                <!-- Poster placeholders -->
+                <rect x="100" y="150" width="280" height="420" rx="12" fill="#3b82f6" opacity="0.6"/>
+                <rect x="420" y="150" width="280" height="420" rx="12" fill="#8b5cf6" opacity="0.6"/>
+                <rect x="740" y="150" width="280" height="420" rx="12" fill="#ec4899" opacity="0.6"/>
+                <rect x="1300" y="150" width="280" height="420" rx="12" fill="#f59e0b" opacity="0.6"/>
+                <rect x="1620" y="150" width="280" height="420" rx="12" fill="#10b981" opacity="0.6"/>
+                <rect x="1940" y="150" width="280" height="420" rx="12" fill="#ef4444" opacity="0.6"/>
+                <!-- Center text overlay -->
+                <rect x="950" y="200" width="420" height="320" rx="16" fill="#000000cc"/>
+                <text x="1160" y="340" text-anchor="middle" font-family="-apple-system, SF Pro Display, sans-serif" font-size="72" font-weight="700" fill="#fff">NRW</text>
+                <text x="1160" y="410" text-anchor="middle" font-family="-apple-system, SF Pro Display, sans-serif" font-size="28" font-weight="400" fill="#aaa">NEW RELEASE WALL</text>
+                <text x="1160" y="470" text-anchor="middle" font-family="-apple-system, SF Pro Display, sans-serif" font-size="22" font-weight="400" fill="#666">Now Streaming</text>
+                <!-- Edge fades -->
+                <rect x="0" y="0" width="150" height="720" fill="url(#fadeLeft)"/>
+                <rect x="2170" y="0" width="150" height="720" fill="url(#fadeRight)"/>
+            </svg>
+        </div>
+        <div class="notes" style="max-width: 800px;">Shows movie posters in background. Dynamic feel. Could use real poster images.</div>
+
+        <!-- Top Shelf Option C -->
+        <h3>Option C - Spotlight Premiere</h3>
+        <div class="top-shelf-preview">
+            <svg width="100%" viewBox="0 0 2320 720" style="border-radius: 8px;">
+                <defs>
+                    <radialGradient id="tsBgC" cx="50%" cy="100%" r="80%">
+                        <stop offset="0%" style="stop-color:#dc2626;stop-opacity:0.3"/>
+                        <stop offset="100%" style="stop-color:#000;stop-opacity:0"/>
+                    </radialGradient>
+                    <linearGradient id="tsBgC2" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#0a0a0a"/>
+                        <stop offset="100%" style="stop-color:#1a0a0a"/>
+                    </linearGradient>
+                </defs>
+                <rect width="2320" height="720" fill="url(#tsBgC2)"/>
+                <rect width="2320" height="720" fill="url(#tsBgC)"/>
+                <!-- Red carpet lines -->
+                <line x1="0" y1="720" x2="1160" y2="400" stroke="#dc2626" stroke-width="3" opacity="0.3"/>
+                <line x1="2320" y1="720" x2="1160" y2="400" stroke="#dc2626" stroke-width="3" opacity="0.3"/>
+                <text x="1160" y="320" text-anchor="middle" font-family="-apple-system, SF Pro Display, sans-serif" font-size="140" font-weight="800" fill="#fff">NRW</text>
+                <text x="1160" y="420" text-anchor="middle" font-family="-apple-system, SF Pro Display, sans-serif" font-size="40" font-weight="300" fill="#dc2626">NEW RELEASE WALL</text>
+                <text x="1160" y="520" text-anchor="middle" font-family="-apple-system, SF Pro Display, sans-serif" font-size="32" font-weight="300" fill="#888">From Theater to Your Screen</text>
+            </svg>
+        </div>
+        <div class="notes" style="max-width: 800px;">Red carpet / premiere vibe. Bold and cinematic. High impact.</div>
+
+        <!-- Top Shelf Option D -->
+        <h3>Option D - Golden Cinema</h3>
+        <div class="top-shelf-preview">
+            <svg width="100%" viewBox="0 0 2320 720" style="border-radius: 8px;">
+                <defs>
+                    <linearGradient id="tsBgD" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#1a1510"/>
+                        <stop offset="100%" style="stop-color:#0a0805"/>
+                    </linearGradient>
+                    <linearGradient id="goldText" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#fbbf24"/>
+                        <stop offset="50%" style="stop-color:#f59e0b"/>
+                        <stop offset="100%" style="stop-color:#d97706"/>
+                    </linearGradient>
+                </defs>
+                <rect width="2320" height="720" fill="url(#tsBgD)"/>
+                <!-- Decorative film frames -->
+                <rect x="150" y="200" width="200" height="320" rx="8" fill="none" stroke="#fbbf2430" stroke-width="4"/>
+                <rect x="400" y="200" width="200" height="320" rx="8" fill="none" stroke="#fbbf2420" stroke-width="4"/>
+                <rect x="1720" y="200" width="200" height="320" rx="8" fill="none" stroke="#fbbf2420" stroke-width="4"/>
+                <rect x="1970" y="200" width="200" height="320" rx="8" fill="none" stroke="#fbbf2430" stroke-width="4"/>
+                <!-- Center content -->
+                <text x="1160" y="300" text-anchor="middle" font-family="-apple-system, SF Pro Display, sans-serif" font-size="120" font-weight="700" fill="url(#goldText)">NEW RELEASE</text>
+                <text x="1160" y="420" text-anchor="middle" font-family="-apple-system, SF Pro Display, sans-serif" font-size="120" font-weight="700" fill="url(#goldText)">WALL</text>
+                <line x1="800" y1="480" x2="1520" y2="480" stroke="#fbbf24" stroke-width="2" opacity="0.5"/>
+                <text x="1160" y="550" text-anchor="middle" font-family="-apple-system, SF Pro Display, sans-serif" font-size="28" font-weight="400" fill="#a8a29e">DISCOVER WHAT'S STREAMING</text>
+            </svg>
+        </div>
+        <div class="notes" style="max-width: 800px;">Classic Hollywood gold aesthetic. Elegant and premium. Timeless feel.</div>
+    </div>
+
+    <div class="download-note">
+        <strong>Next Steps:</strong> Tell me which options you like (e.g., "Icon B and Top Shelf C") and I'll generate the actual PNG files at the correct sizes for tvOS.
+    </div>
+
+</body>
+</html>

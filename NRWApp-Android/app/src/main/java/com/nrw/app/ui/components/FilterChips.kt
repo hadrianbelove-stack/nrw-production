@@ -1,31 +1,46 @@
 package com.nrw.app.ui.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.tv.foundation.lazy.list.TvLazyRow
 import androidx.tv.foundation.lazy.list.items
 import androidx.compose.material3.Text
-import androidx.tv.material3.Border
+import androidx.tv.material3.ClickableSurfaceDefaults
 import androidx.tv.material3.ExperimentalTvMaterial3Api
-import androidx.tv.material3.FilterChip
-import androidx.tv.material3.FilterChipDefaults
+import androidx.tv.material3.Surface
 import com.nrw.app.data.FilterCategory
 import com.nrw.app.ui.theme.Background
-import com.nrw.app.ui.theme.BackgroundSecondary
 import com.nrw.app.ui.theme.Primary
-import com.nrw.app.ui.theme.TextMuted
 import com.nrw.app.ui.theme.TextPrimary
-import com.nrw.app.ui.theme.TextSecondary
+
+// Website-matching colors
+private val ChipBackgroundDefault = Color.White.copy(alpha = 0.1f)
+private val ChipBorderDefault = Color.White.copy(alpha = 0.2f)
+private val FocusCyan = Color(0xFF00FFCC)
 
 /**
  * Horizontal row of filter chips for category selection
+ * Matches website pill button design exactly
  */
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
@@ -37,44 +52,80 @@ fun FilterChips(
     TvLazyRow(
         modifier = modifier.fillMaxWidth(),
         contentPadding = PaddingValues(horizontal = 48.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(FilterCategory.entries) { category ->
             val isSelected = category == selectedFilter
 
-            FilterChip(
-                selected = isSelected,
-                onClick = { onFilterSelected(category) },
-                shape = FilterChipDefaults.shape(RoundedCornerShape(20.dp)),
-                colors = FilterChipDefaults.colors(
-                    containerColor = BackgroundSecondary,
-                    contentColor = TextSecondary,
-                    focusedContainerColor = BackgroundSecondary,
-                    focusedContentColor = TextPrimary,
-                    selectedContainerColor = Primary,
-                    selectedContentColor = Background,
-                    focusedSelectedContainerColor = Primary,
-                    focusedSelectedContentColor = Background
-                ),
-                border = FilterChipDefaults.border(
-                    focusedBorder = Border(
-                        border = BorderStroke(2.dp, Primary),
-                        shape = RoundedCornerShape(20.dp)
-                    ),
-                    focusedSelectedBorder = Border(
-                        border = BorderStroke(2.dp, Primary),
-                        shape = RoundedCornerShape(20.dp)
-                    )
-                ),
-                scale = FilterChipDefaults.scale(
-                    focusedScale = 1.1f
-                )
-            ) {
-                Text(
-                    text = category.displayName,
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-                )
-            }
+            FilterPill(
+                text = category.displayName,
+                isSelected = isSelected,
+                onClick = { onFilterSelected(category) }
+            )
         }
+    }
+}
+
+@OptIn(ExperimentalTvMaterial3Api::class)
+@Composable
+private fun FilterPill(
+    text: String,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    var isFocused by remember { mutableStateOf(false) }
+
+    val backgroundColor = when {
+        isSelected -> Primary
+        else -> ChipBackgroundDefault
+    }
+
+    val borderColor = when {
+        isFocused -> FocusCyan
+        isSelected -> Primary
+        else -> ChipBorderDefault
+    }
+
+    val textColor = when {
+        isSelected -> Background
+        else -> TextPrimary
+    }
+
+    val scale = if (isFocused) 1.1f else 1f
+
+    Surface(
+        onClick = onClick,
+        modifier = Modifier
+            .onFocusChanged { isFocused = it.isFocused },
+        shape = ClickableSurfaceDefaults.shape(RoundedCornerShape(20.dp)),
+        colors = ClickableSurfaceDefaults.colors(
+            containerColor = backgroundColor,
+            focusedContainerColor = backgroundColor,
+            pressedContainerColor = backgroundColor
+        ),
+        border = ClickableSurfaceDefaults.border(
+            border = BorderStroke(1.dp, borderColor),
+            focusedBorder = BorderStroke(2.dp, FocusCyan),
+            pressedBorder = BorderStroke(2.dp, Primary)
+        ),
+        scale = ClickableSurfaceDefaults.scale(
+            scale = scale,
+            focusedScale = 1.1f,
+            pressedScale = 0.95f
+        ),
+        glow = ClickableSurfaceDefaults.glow(
+            focusedGlow = androidx.tv.material3.Glow(
+                elevationColor = Primary.copy(alpha = 0.3f),
+                elevation = 8.dp
+            )
+        )
+    ) {
+        Text(
+            text = text,
+            color = textColor,
+            fontSize = 14.sp,
+            fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Medium,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+        )
     }
 }

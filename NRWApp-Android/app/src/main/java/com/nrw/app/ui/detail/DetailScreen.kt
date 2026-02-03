@@ -64,7 +64,7 @@ import com.nrw.app.util.DeepLinkHelper
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun DetailScreen(
-    movieId: Int,
+    movieId: String,
     onBackPress: () -> Unit,
     viewModel: DetailViewModel = viewModel()
 ) {

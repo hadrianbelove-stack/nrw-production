@@ -21,7 +21,8 @@ data class HomeUiState(
     val filteredMovies: List<Movie> = emptyList(),
     val groupedMovies: Map<String, List<Movie>> = emptyMap(),
     val selectedFilter: FilterCategory = FilterCategory.ALL,
-    val searchQuery: String = ""
+    val searchQuery: String = "",
+    val playlistUrl: String? = null
 )
 
 /**
@@ -49,7 +50,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                 onSuccess = { movies ->
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
-                        movies = movies
+                        movies = movies,
+                        playlistUrl = repository.getPlaylistUrl()
                     )
                     applyFilters()
                 },

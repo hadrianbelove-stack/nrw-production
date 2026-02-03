@@ -45,7 +45,7 @@ class MainActivity : ComponentActivity() {
                         }
 
                         composable("detail/{movieId}") { backStackEntry ->
-                            val movieId = backStackEntry.arguments?.getString("movieId")?.toIntOrNull()
+                            val movieId = backStackEntry.arguments?.getString("movieId")
                             if (movieId != null) {
                                 DetailScreen(
                                     movieId = movieId,
