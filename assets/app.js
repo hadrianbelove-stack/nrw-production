@@ -593,9 +593,12 @@ const NRW = {
             `;
             document.body.appendChild(modal);
 
-            // Close on Escape key
+            // Close on Escape key (only if trailer is showing, stop propagation so lightbox doesn't also close)
             document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') this.closeTrailer();
+                if (e.key === 'Escape' && modal.classList.contains('active')) {
+                    e.stopPropagation();
+                    this.closeTrailer();
+                }
             });
         }
 
@@ -711,7 +714,7 @@ const NRW = {
 
         // Trailer button
         if (movie.links?.trailer) {
-            buttonsHtml += `<button class="lightbox-btn lightbox-btn-secondary" onclick="NRW.closeLightbox(); NRW.showTrailer('${movie.links.trailer}')">Watch Trailer</button>`;
+            buttonsHtml += `<button class="lightbox-btn lightbox-btn-secondary" onclick="NRW.showTrailer('${movie.links.trailer}')">Watch Trailer</button>`;
         }
 
         // Rotten Tomatoes
