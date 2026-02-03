@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-02-02T10:18:15.322689",
-  "duration_seconds": 2003.700808,
+  "timestamp": "2026-02-03T10:29:40.053011",
+  "duration_seconds": 3070.346344,
   "overall_success": true,
   "failure_count": 0,
   "warning_count": 0,
@@ -8,23 +8,23 @@
     {
       "name": "Intake new premieres from TMDB",
       "success": true,
-      "duration_seconds": 5.283943,
+      "duration_seconds": 7.596829,
       "error": null,
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-01-31 to 2026-02-02 (incremental mode, 26 intaked)\n\u2705 Movie intake complete: 26 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-01-03 to 2026-02-02\n   \ud83d\udccb Platoon 24/7: Preparing for War (3 eps)"
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-02-01 to 2026-02-03 (incremental mode, 14 intaked)\n\u2705 Movie intake complete: 14 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-01-04 to 2026-02-03\n   \ud83d\udccb Sin City: The Real Las Vegas (2 eps)\n  "
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 1921.017253,
+      "duration_seconds": 3007.677281,
       "error": null,
-      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 13311 total movies\n\ud83d\udd0d Raw tracking filter: 12088 movies\n\ud83d\udd0d Assigned tracking_movies list: 12088\n\ud83d\udd0d Found 12088 movies in tracking status\n  Priority queue (last 180 days): 1428 movies\n  Older movies: 10660 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 12088 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/12088 (0.8%) | 0 found | 0m elapsed | ~30m remaining\n  \ud83d\udcbe Progress saved (b"
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 13330 total movies\n\ud83d\udd0d Raw tracking filter: 12101 movies\n\ud83d\udd0d Assigned tracking_movies list: 12101\n\ud83d\udd0d Found 12101 movies in tracking status\n  Priority queue (last 180 days): 1386 movies\n  Older movies: 10715 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 12101 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/12101 (0.8%) | 0 found | 0m elapsed | ~47m remaining\n  \ud83d\udcbe Progress saved (b"
     },
     {
       "name": "Enrich newly available movies with metadata",
       "success": true,
-      "duration_seconds": 77.296921,
+      "duration_seconds": 54.968717,
       "error": null,
-      "output_preview": "[AgentLinkScraper] Initialized with Playwright, cache_file=cache/agent_links_cache.json\n[AgentLinkScraper] Cache loaded: 0 entries\n[AgentLinkScraper] Screenshots: enabled\n[AgentLinkScraper] Supported platforms: ['Netflix', 'Disney+', 'Disney Plus', 'HBO Max', 'Max', 'Hulu']\n\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 5 movies to enrich\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to"
+      "output_preview": "[AgentLinkScraper] Initialized with Playwright, cache_file=cache/agent_links_cache.json\n[AgentLinkScraper] Cache loaded: 0 entries\n[AgentLinkScraper] Screenshots: enabled\n[AgentLinkScraper] Supported platforms: ['Netflix', 'Disney+', 'Disney Plus', 'HBO Max', 'Max', 'Hulu']\n\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 6 movies to enrich\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to"
     }
   ],
   "health_issues": [],
@@ -35,14 +35,14 @@
   "failures": [],
   "warnings": [],
   "data_quality": {
-    "total": 13311,
-    "tracking": 12083,
-    "available": 1226,
-    "data_movies": 185,
-    "movies_with_links": 162,
-    "movies_with_rt": 145,
-    "movies_with_wikipedia": 85,
-    "movies_with_trailers": 183
+    "total": 13330,
+    "tracking": 12095,
+    "available": 1233,
+    "data_movies": 191,
+    "movies_with_links": 168,
+    "movies_with_rt": 151,
+    "movies_with_wikipedia": 90,
+    "movies_with_trailers": 189
   },
   "enrichment_metrics": {
     "timestamp": "2025-12-29T15:42:45.008551",
