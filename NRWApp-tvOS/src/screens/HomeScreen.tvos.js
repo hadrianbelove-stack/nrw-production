@@ -3,7 +3,7 @@
  * Vertical scrolling grid layout matching web design
  */
 
-import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useCallback, useRef, useEffect, useMemo, forwardRef } from 'react';
 import {
   View,
   Text,
@@ -39,8 +39,8 @@ const FILTERS = [
   { id: 'plex', label: 'Plex' },
 ];
 
-// Filter Button Component
-const FilterButton = ({ filter, isActive, onPress, onFocus }) => {
+// Filter Button Component - forwardRef to allow focus navigation from grid
+const FilterButton = forwardRef(({ filter, isActive, onPress, onFocus }, ref) => {
   const [isFocused, setIsFocused] = useState(false);
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
@@ -65,6 +65,7 @@ const FilterButton = ({ filter, isActive, onPress, onFocus }) => {
 
   return (
     <TouchableOpacity
+      ref={ref}
       onPress={onPress}
       onFocus={handleFocus}
       onBlur={handleBlur}
@@ -93,30 +94,24 @@ const FilterButton = ({ filter, isActive, onPress, onFocus }) => {
       </Animated.View>
     </TouchableOpacity>
   );
-};
+});
 
-// Date Card Component - focusable to allow navigation through grid
-const DateCard = ({ dateParts, nextFocusUp }) => {
-  const [isFocused, setIsFocused] = useState(false);
-
+// Date Card Component - non-focusable visual divider
+const DateCard = ({ dateParts }) => {
   return (
-    <TouchableOpacity
-      onFocus={() => setIsFocused(true)}
-      onBlur={() => setIsFocused(false)}
-      activeOpacity={1}
+    <View
       accessible={true}
       accessibilityLabel={`${dateParts.dayName} ${dateParts.month} ${dateParts.day}`}
       accessibilityRole="text"
-      nextFocusUp={nextFocusUp}
     >
-      <View style={[styles.dateCard, isFocused && styles.dateCardFocused]}>
+      <View style={styles.dateCard}>
         <View style={styles.dateCardInner}>
           <Text style={styles.dateDayName}>{dateParts.dayName}</Text>
           <Text style={styles.dateNumber}>{dateParts.day}</Text>
           <Text style={styles.dateMonth}>{dateParts.month}</Text>
         </View>
       </View>
-    </TouchableOpacity>
+    </View>
   );
 };
 
@@ -236,7 +231,7 @@ const TrailersCard = ({ playlistUrl, nextFocusUp }) => {
 const HomeScreenTvOS = () => {
   const navigation = useNavigation();
   const flatListRef = useRef(null);
-  const filterRowRef = useRef(null);
+  const allFilterRef = useRef(null);  // Ref for "All" filter button - used for grid UP navigation
   const [headerNodeHandle, setHeaderNodeHandle] = useState(null);
 
   // Get shared state and actions
@@ -256,10 +251,10 @@ const HomeScreenTvOS = () => {
   const [fullscreenVisible, setFullscreenVisible] = useState(false);
   const [fullscreenIndex, setFullscreenIndex] = useState(0);
 
-  // Get node handle for header navigation
+  // Get node handle for header navigation - use "All" button as target
   useEffect(() => {
-    if (filterRowRef.current) {
-      const handle = findNodeHandle(filterRowRef.current);
+    if (allFilterRef.current) {
+      const handle = findNodeHandle(allFilterRef.current);
       setHeaderNodeHandle(handle);
     }
   }, []);
@@ -461,7 +456,7 @@ const HomeScreenTvOS = () => {
         const dateParts = formatDateParts(item.date);
         return (
           <View style={styles.cardWrapper}>
-            <DateCard dateParts={dateParts} nextFocusUp={focusUpTarget} />
+            <DateCard dateParts={dateParts} />
           </View>
         );
       }
@@ -542,10 +537,11 @@ const HomeScreenTvOS = () => {
       {/* Header with title on left, filters and search on right */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>THE NEW RELEASE WALL</Text>
-        <View ref={filterRowRef} style={styles.filterRow}>
-            {FILTERS.map((filter) => (
+        <View style={styles.filterRow}>
+            {FILTERS.map((filter, index) => (
               <FilterButton
                 key={filter.id}
+                ref={index === 0 ? allFilterRef : undefined}  // First button ("All") gets the ref
                 filter={filter}
                 isActive={filter.id === 'all' ? activeFilters.size === 0 : activeFilters.has(filter.id)}
                 onPress={() => handleFilterChange(filter.id)}

@@ -3,12 +3,16 @@ Letterboxd Video Store scraper - simple HTTP-based scraper.
 """
 
 import json
+import logging
 import time
 import re
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Tuple
 import requests
 from bs4 import BeautifulSoup
+
+# Module-level logger
+logger = logging.getLogger(__name__)
 
 
 class LetterboxdScraper:
@@ -29,7 +33,7 @@ class LetterboxdScraper:
         self.cache_file = cache_file
         self.cache = self._load_cache()
         self.tmdb_api_key = self._get_tmdb_api_key()
-        self.rate_limit = 1.0
+        self.rate_limit_delay = 1.0
         self.last_request = 0
 
     def _get_tmdb_api_key(self) -> str:
@@ -49,22 +53,22 @@ class LetterboxdScraper:
         with open(self.cache_file, 'w') as f:
             json.dump(self.cache, f, indent=2)
 
-    def _rate_limit(self):
+    def _enforce_rate_limit(self):
         elapsed = time.time() - self.last_request
-        if elapsed < self.rate_limit:
-            time.sleep(self.rate_limit - elapsed)
+        if elapsed < self.rate_limit_delay:
+            time.sleep(self.rate_limit_delay - elapsed)
         self.last_request = time.time()
 
     def _scrape_section(self, section_name: str, url: str) -> List[Dict]:
         """Scrape a Letterboxd Video Store section."""
-        print(f"Fetching {section_name}: {url}")
-        self._rate_limit()
+        logger.info(f"Fetching {section_name}: {url}")
+        self._enforce_rate_limit()
 
         try:
             resp = requests.get(url, headers=self.HEADERS, timeout=15)
             resp.raise_for_status()
         except Exception as e:
-            print(f"Error fetching {url}: {e}")
+            logger.error(f"Error fetching {url}: {e}")
             return []
 
         soup = BeautifulSoup(resp.text, 'html.parser')
@@ -107,7 +111,7 @@ class LetterboxdScraper:
                             'discovery_date': datetime.now().strftime('%Y-%m-%d')
                         })
 
-        print(f"Found {len(films)} films in {section_name}")
+        logger.info(f"Found {len(films)} films in {section_name}")
         return films
 
     def _get_film_details(self, slug: str) -> Optional[Dict]:
@@ -116,14 +120,14 @@ class LetterboxdScraper:
         if cache_key in self.cache:
             return self.cache[cache_key]
 
-        self._rate_limit()
+        self._enforce_rate_limit()
         url = f"https://letterboxd.com/film/{slug}/"
 
         try:
             resp = requests.get(url, headers=self.HEADERS, timeout=15)
             resp.raise_for_status()
         except Exception as e:
-            print(f"Error fetching {url}: {e}")
+            logger.error(f"Error fetching {url}: {e}")
             return None
 
         soup = BeautifulSoup(resp.text, 'html.parser')
@@ -193,7 +197,7 @@ class LetterboxdScraper:
             return best, confidence
 
         except Exception as e:
-            print(f"TMDB error for '{title}': {e}")
+            logger.error(f"TMDB error for '{title}': {e}")
             return None, 'none'
 
     def discover_films(self, sections: List[str] = None) -> List[Dict]:
@@ -201,15 +205,15 @@ class LetterboxdScraper:
         if sections is None:
             sections = list(self.SECTIONS.keys())
 
-        print(f"Letterboxd Video Store Discovery")
-        print(f"Sections: {sections}")
+        logger.info(f"Letterboxd Video Store Discovery")
+        logger.info(f"Sections: {sections}")
 
         all_films = []
         seen_slugs = set()
 
         for section in sections:
             if section not in self.SECTIONS:
-                print(f"Unknown section: {section}")
+                logger.warning(f"Unknown section: {section}")
                 continue
 
             films = self._scrape_section(section, self.SECTIONS[section])
@@ -219,12 +223,12 @@ class LetterboxdScraper:
                     seen_slugs.add(slug)
                     all_films.append(film)
 
-        print(f"\nTotal unique films: {len(all_films)}")
-        print("Matching with TMDB...")
+        logger.info(f"Total unique films: {len(all_films)}")
+        logger.info("Matching with TMDB...")
 
         # Enrich with TMDB
         for i, film in enumerate(all_films, 1):
-            print(f"  [{i}/{len(all_films)}] {film['title']}")
+            logger.info(f"  [{i}/{len(all_films)}] {film['title']}")
 
             # Get more details from Letterboxd page
             details = self._get_film_details(film['letterboxd_slug'])
@@ -245,3 +249,28 @@ class LetterboxdScraper:
                 film['tmdb_poster'] = tmdb_data.get('poster_path')
 
         return all_films
+
+
+# CLI wrapper for standalone use
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Discover indie films on Letterboxd Video Store")
+    parser.add_argument("--sections", nargs='+', default=None, help="Sections to scrape")
+    parser.add_argument("--output", type=str, default="letterboxd_discoveries.json", help="Output file")
+
+    args = parser.parse_args()
+
+    # Configure logging
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
+
+    scraper = LetterboxdScraper()
+    films = scraper.discover_films(sections=args.sections)
+
+    with open(args.output, 'w', encoding='utf-8') as f:
+        json.dump(films, f, indent=2, ensure_ascii=False)
+
+    logger.info(f"Saved {len(films)} films to {args.output}")

@@ -235,13 +235,13 @@ const MovieCard = ({
             </View>
           )}
 
-          {/* Featured border - red box around poster */}
+          {/* Staff Pick border - red box around poster */}
           {movie.featured && <View style={styles.featuredBorder} />}
 
-          {/* Featured strip - bottom red banner */}
+          {/* Staff Pick strip - bottom red banner */}
           {movie.featured && (
             <View style={styles.featuredStrip}>
-              <Text style={styles.featuredStripText}>FEATURED</Text>
+              <Text style={styles.featuredStripText}>STAFF PICK</Text>
             </View>
           )}
 

@@ -291,10 +291,17 @@ const NRW = {
             if (date !== lastDate) {
                 // Add NEW TRAILERS button before the first date marker
                 if (isFirstDate && this.latestPlaylistUrl) {
+                    const now = new Date();
+                    const weekStart = new Date(now);
+                    weekStart.setDate(now.getDate() - now.getDay());
+                    const weekEnd = new Date(weekStart);
+                    weekEnd.setDate(weekStart.getDate() + 6);
+                    const dateRange = weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' - ' + weekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
                     html += `<a href="${this.latestPlaylistUrl}" target="_blank" rel="noopener noreferrer" class="trailers-card">
                         <div class="trailers-content">
-                            <div class="trailers-text">THIS WEEK'S</div>
+                            <div class="trailers-text">NEW</div>
                             <div class="trailers-text">TRAILERS</div>
+                            <div class="trailers-date">${dateRange}</div>
                             <div class="trailers-icon">▶</div>
                         </div>
                     </a>`;

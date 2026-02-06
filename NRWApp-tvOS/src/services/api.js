@@ -374,8 +374,7 @@ export function getWatchLinks(movie) {
 }
 
 /**
- * Get info links for a movie (trailer, RT, Wikipedia)
- * Reads from movie.links structure: { trailer, rt, wikipedia }
+ * Get info links for a movie (trailer only - RT not useful on tvOS)
  */
 export function getInfoLinks(movie) {
   if (!movie || !movie.links) return [];
@@ -386,24 +385,11 @@ export function getInfoLinks(movie) {
   if (movieLinks.trailer) {
     links.push({
       type: 'trailer',
-      label: 'Watch Trailer',
+      label: 'TRAILER',
       url: movieLinks.trailer,
       icon: 'play',
     });
   }
-
-  // Handle both 'rt' and 'rotten_tomatoes' field names
-  const rtUrl = movieLinks.rt || movieLinks.rotten_tomatoes;
-  if (rtUrl) {
-    links.push({
-      type: 'rotten_tomatoes',
-      label: 'Rotten Tomatoes',
-      url: rtUrl,
-      icon: 'tomato',
-    });
-  }
-
-  // Wikipedia removed - not useful for tvOS viewing experience
 
   return links;
 }

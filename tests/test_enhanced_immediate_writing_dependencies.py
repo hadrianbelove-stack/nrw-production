@@ -25,12 +25,15 @@ import time
 from datetime import datetime
 from pathlib import Path
 
+# Project root directory (this file is in tests/, so go up one level)
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
 # Add pipeline directory to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'pipeline'))
 
 def backup_current_state():
     """Create a timestamped backup of the real data.json before running tests."""
-    data_json_path = "/Users/hadrianbelove/Downloads/nrw-production/data.json"
+    data_json_path = str(PROJECT_ROOT / "data.json")
 
     if not os.path.exists(data_json_path):
         print(f"  ⚠️ No data.json found at {data_json_path} - skipping backup")
@@ -53,7 +56,7 @@ def restore_state_on_failure(backup_path):
         print(f"  ⚠️ No valid backup to restore from: {backup_path}")
         return False
 
-    data_json_path = "/Users/hadrianbelove/Downloads/nrw-production/data.json"
+    data_json_path = str(PROJECT_ROOT / "data.json")
 
     try:
         shutil.copy2(backup_path, data_json_path)
@@ -75,8 +78,8 @@ def cleanup_backup_on_success(backup_path):
 
 def find_test_movie():
     """Find a suitable test movie from movie_tracking.json for dynamic testing."""
-    tracking_path = "/Users/hadrianbelove/Downloads/nrw-production/movie_tracking.json"
-    data_path = "/Users/hadrianbelove/Downloads/nrw-production/data.json"
+    tracking_path = str(PROJECT_ROOT / "movie_tracking.json")
+    data_path = str(PROJECT_ROOT / "data.json")
 
     if not os.path.exists(tracking_path):
         print(f"  ⚠️ movie_tracking.json not found at {tracking_path}")

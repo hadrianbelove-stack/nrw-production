@@ -1,5 +1,11 @@
 package com.nrw.app.ui.components
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -23,8 +29,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import kotlin.math.cos
+import kotlin.math.sin
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -49,8 +58,8 @@ import com.nrw.app.ui.theme.StaffPickRed
 import com.nrw.app.ui.theme.TextPrimary
 import com.nrw.app.ui.theme.TextSecondary
 
-// Card dimensions matching tvOS app (scaled for Android TV)
-val CARD_WIDTH = 160.dp
+// Card dimensions - sized to fit 8 cards per row like tvOS
+val CARD_WIDTH = 100.dp
 private val POSTER_ASPECT_RATIO = 2f / 3f  // Standard movie poster ratio
 private val FocusCyan = Color(0xFF00FFCC)
 
@@ -85,6 +94,38 @@ fun MovieCard(
     var isFocused by remember { mutableStateOf(false) }
     val isStaffPick = movie.featured == true || movie.categories?.isStaffPick == true
 
+    // Animated gradient for focus state (Option E - rotating gradient border)
+    val infiniteTransition = rememberInfiniteTransition(label = "gradientRotation")
+    val gradientAngle by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 2500, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "gradientAngle"
+    )
+
+    // Create rotating gradient brush for focus border
+    val angleRad = Math.toRadians(gradientAngle.toDouble())
+    val radius = 200f
+    val focusGradientBrush = Brush.linearGradient(
+        colors = listOf(
+            Primary,           // Teal #00D4AA
+            FocusCyan,         // Cyan #00FFCC
+            Color.White,       // White
+            Primary            // Back to teal
+        ),
+        start = Offset(
+            (radius + radius * cos(angleRad)).toFloat(),
+            (radius + radius * sin(angleRad)).toFloat()
+        ),
+        end = Offset(
+            (radius + radius * cos(angleRad + Math.PI)).toFloat(),
+            (radius + radius * sin(angleRad + Math.PI)).toFloat()
+        )
+    )
+
     Column(
         modifier = modifier.width(CARD_WIDTH),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -96,7 +137,7 @@ fun MovieCard(
                 .fillMaxWidth()
                 .aspectRatio(POSTER_ASPECT_RATIO)
                 .onFocusChanged { isFocused = it.isFocused },
-            shape = CardDefaults.shape(RoundedCornerShape(12.dp)),
+            shape = CardDefaults.shape(RoundedCornerShape(8.dp)),
             colors = CardDefaults.colors(
                 containerColor = BackgroundSecondary,
                 focusedContainerColor = BackgroundSecondary
@@ -104,15 +145,15 @@ fun MovieCard(
             border = CardDefaults.border(
                 border = if (isStaffPick) {
                     Border(
-                        border = BorderStroke(3.dp, StaffPickRed),
-                        shape = RoundedCornerShape(12.dp)
+                        border = BorderStroke(2.dp, StaffPickRed),
+                        shape = RoundedCornerShape(8.dp)
                     )
                 } else {
                     Border.None
                 },
                 focusedBorder = Border(
-                    border = BorderStroke(4.dp, FocusCyan),
-                    shape = RoundedCornerShape(12.dp)
+                    border = BorderStroke(4.dp, focusGradientBrush),
+                    shape = RoundedCornerShape(8.dp)
                 )
             ),
             scale = CardDefaults.scale(
@@ -120,8 +161,8 @@ fun MovieCard(
             ),
             glow = CardDefaults.glow(
                 focusedGlow = androidx.tv.material3.Glow(
-                    elevationColor = Primary.copy(alpha = 0.5f),
-                    elevation = 20.dp
+                    elevationColor = Primary.copy(alpha = 0.6f),
+                    elevation = 24.dp
                 )
             )
         ) {
@@ -132,7 +173,7 @@ fun MovieCard(
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .fillMaxSize()
-                        .clip(RoundedCornerShape(12.dp))
+                        .clip(RoundedCornerShape(8.dp))
                 )
 
                 // Streaming service badge (top right)
@@ -142,7 +183,7 @@ fun MovieCard(
                             serviceName = serviceName,
                             modifier = Modifier
                                 .align(Alignment.TopEnd)
-                                .padding(8.dp)
+                                .padding(4.dp)
                         )
                     }
                 }
@@ -154,15 +195,15 @@ fun MovieCard(
                             .align(Alignment.BottomCenter)
                             .fillMaxWidth()
                             .background(StaffPickRed)
-                            .padding(vertical = 4.dp),
+                            .padding(vertical = 2.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = "STAFF PICK",
                             color = TextPrimary,
-                            fontSize = 10.sp,
+                            fontSize = 7.sp,
                             fontWeight = FontWeight.ExtraBold,
-                            letterSpacing = 1.sp
+                            letterSpacing = 0.5.sp
                         )
                     }
                 }
@@ -176,8 +217,8 @@ fun MovieCard(
                             modifier = Modifier
                                 .align(Alignment.BottomEnd)
                                 .padding(
-                                    end = 8.dp,
-                                    bottom = if (isStaffPick) 28.dp else 8.dp
+                                    end = 4.dp,
+                                    bottom = if (isStaffPick) 22.dp else 4.dp
                                 )
                         )
                     }
@@ -186,28 +227,14 @@ fun MovieCard(
         }
 
         // Movie info below card (matching website)
-        Spacer(modifier = Modifier.height(6.dp))
+        Spacer(modifier = Modifier.height(4.dp))
 
-        // Title
-        Text(
-            text = movie.title,
-            color = TextPrimary,
-            fontSize = 13.sp,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-            lineHeight = 16.sp,
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        // Director (in accent color like website)
+        // Director below card (like tvOS - simple, just director + country)
         movie.getDirector()?.let { director ->
-            Spacer(modifier = Modifier.height(2.dp))
             Text(
                 text = director,
                 color = Primary,
-                fontSize = 11.sp,
+                fontSize = 9.sp,
                 fontWeight = FontWeight.Medium,
                 textAlign = TextAlign.Center,
                 maxLines = 1,
@@ -241,16 +268,16 @@ private fun StreamingBadge(
 
     Box(
         modifier = modifier
-            .clip(RoundedCornerShape(8.dp))
+            .clip(RoundedCornerShape(4.dp))
             .background(backgroundColor)
-            .padding(horizontal = 6.dp, vertical = 3.dp)
+            .padding(horizontal = 4.dp, vertical = 2.dp)
     ) {
         Text(
             text = displayName,
             color = TextPrimary,
-            fontSize = 9.sp,
+            fontSize = 7.sp,
             fontWeight = FontWeight.Bold,
-            letterSpacing = 0.5.sp
+            letterSpacing = 0.3.sp
         )
     }
 }
@@ -265,14 +292,14 @@ private fun RtBadge(
 
     Box(
         modifier = modifier
-            .clip(RoundedCornerShape(4.dp))
+            .clip(RoundedCornerShape(3.dp))
             .background(backgroundColor)
-            .padding(horizontal = 6.dp, vertical = 3.dp)
+            .padding(horizontal = 4.dp, vertical = 2.dp)
     ) {
         Text(
             text = "$score%",
             color = TextPrimary,
-            fontSize = 11.sp,
+            fontSize = 8.sp,
             fontWeight = FontWeight.Bold
         )
     }
@@ -295,13 +322,13 @@ fun DateDividerCard(
         modifier = modifier
             .width(CARD_WIDTH)
             .aspectRatio(POSTER_ASPECT_RATIO)
-            .clip(RoundedCornerShape(12.dp))
+            .clip(RoundedCornerShape(8.dp))
             .background(
                 Brush.linearGradient(
                     colors = listOf(Background, BackgroundSecondary)
                 )
             )
-            .border(2.dp, Primary, RoundedCornerShape(12.dp)),
+            .border(2.dp, Primary, RoundedCornerShape(8.dp)),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -312,26 +339,26 @@ fun DateDividerCard(
             Text(
                 text = dayOfWeek.take(3),
                 color = TextSecondary,
-                fontSize = 12.sp,
-                letterSpacing = 2.sp
+                fontSize = 10.sp,
+                letterSpacing = 1.sp
             )
 
             // Day number (large)
             Text(
                 text = day.trimStart('0'),
                 color = Primary,
-                fontSize = 48.sp,
+                fontSize = 36.sp,
                 fontWeight = FontWeight.Bold,
-                lineHeight = 52.sp
+                lineHeight = 40.sp
             )
 
             // Month
             Text(
                 text = month,
                 color = Primary,
-                fontSize = 18.sp,
+                fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
-                letterSpacing = 3.sp
+                letterSpacing = 2.sp
             )
         }
     }
@@ -348,28 +375,66 @@ fun TrailersCard(
 ) {
     var isFocused by remember { mutableStateOf(false) }
 
+    // Animated gradient for focus state (same as MovieCard)
+    val infiniteTransition = rememberInfiniteTransition(label = "trailersGradientRotation")
+    val gradientAngle by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 2500, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "trailersGradientAngle"
+    )
+
+    // Create rotating gradient brush for focus border
+    val angleRad = Math.toRadians(gradientAngle.toDouble())
+    val radius = 200f
+    val focusGradientBrush = Brush.linearGradient(
+        colors = listOf(
+            Primary,           // Teal #00D4AA
+            FocusCyan,         // Cyan #00FFCC
+            Color.White,       // White
+            Primary            // Back to teal
+        ),
+        start = Offset(
+            (radius + radius * cos(angleRad)).toFloat(),
+            (radius + radius * sin(angleRad)).toFloat()
+        ),
+        end = Offset(
+            (radius + radius * cos(angleRad + Math.PI)).toFloat(),
+            (radius + radius * sin(angleRad + Math.PI)).toFloat()
+        )
+    )
+
     Surface(
         onClick = onClick,
         modifier = modifier
             .width(CARD_WIDTH)
             .aspectRatio(POSTER_ASPECT_RATIO)
             .onFocusChanged { isFocused = it.isFocused },
-        shape = ClickableSurfaceDefaults.shape(RoundedCornerShape(12.dp)),
+        shape = ClickableSurfaceDefaults.shape(RoundedCornerShape(8.dp)),
         colors = ClickableSurfaceDefaults.colors(
             containerColor = BackgroundSecondary,
             focusedContainerColor = BackgroundSecondary
         ),
         border = ClickableSurfaceDefaults.border(
-            border = BorderStroke(2.dp, Primary),
-            focusedBorder = BorderStroke(4.dp, FocusCyan)
+            border = Border(
+                border = BorderStroke(2.dp, Primary),
+                shape = RoundedCornerShape(8.dp)
+            ),
+            focusedBorder = Border(
+                border = BorderStroke(4.dp, focusGradientBrush),
+                shape = RoundedCornerShape(8.dp)
+            )
         ),
         scale = ClickableSurfaceDefaults.scale(
             focusedScale = 1.08f
         ),
         glow = ClickableSurfaceDefaults.glow(
             focusedGlow = androidx.tv.material3.Glow(
-                elevationColor = Primary.copy(alpha = 0.4f),
-                elevation = 20.dp
+                elevationColor = Primary.copy(alpha = 0.6f),
+                elevation = 24.dp
             )
         )
     ) {
@@ -391,32 +456,32 @@ fun TrailersCard(
                 Text(
                     text = "THIS WEEK'S",
                     color = TextPrimary,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = 1.sp
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    letterSpacing = 0.5.sp
                 )
                 Text(
                     text = "TRAILERS",
                     color = TextPrimary,
-                    fontSize = 20.sp,
+                    fontSize = 16.sp,
                     fontWeight = FontWeight.ExtraBold,
-                    letterSpacing = 2.sp
+                    letterSpacing = 1.sp
                 )
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
                 // YouTube play button
                 Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(10.dp))
+                        .clip(RoundedCornerShape(8.dp))
                         .background(Color(0xFFFF0000))
-                        .padding(horizontal = 20.dp, vertical = 10.dp),
+                        .padding(horizontal = 14.dp, vertical = 8.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = "▶",
                         color = TextPrimary,
-                        fontSize = 18.sp
+                        fontSize = 14.sp
                     )
                 }
             }

@@ -11,11 +11,12 @@ val StaffPickRed = Color(0xFFDC143C)  // Crimson for staff picks
 val TextPrimary = Color(0xFFFFFFFF)
 val TextSecondary = Color(0xFFBBBBBB)
 val TextMuted = Color(0xFF888888)
-val Green = Color(0xFF2ECC71)
-val Red = Color(0xFFE74C3C)
+val Green = Color(0xFF34C759)  // Apple system green (RT Fresh)
+val Red = Color(0xFFFF3B30)    // Apple system red (RT Rotten)
 val FocusRing = Color(0xFF00D4AA)
 
 // Service colors for watch buttons
+val TrailerRed = Color(0xFFE50914)   // YouTube/Trailer button
 val AmazonOrange = Color(0xFFFF9900)
 val AppleGray = Color(0xFF333333)
 val NetflixRed = Color(0xFFE50914)

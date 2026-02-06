@@ -167,7 +167,7 @@ const MovieShelf = ({
           </Text>
           {isFeatured && (
             <View style={styles.featuredBadge}>
-              <Text style={styles.featuredBadgeText}>FEATURED</Text>
+              <Text style={styles.featuredBadgeText}>STAFF PICKS</Text>
             </View>
           )}
           <Text style={styles.count}>{movies.length} films</Text>

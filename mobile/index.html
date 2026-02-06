@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0a0a0a">
+    <title>NRW - New Release Wall</title>
+    <link rel="stylesheet" href="mobile.css">
+    <link rel="icon" type="image/png" href="../favicon.png">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="../favicon.png">
+</head>
+<body>
+    <header class="nrw-header">
+        <h1 class="nrw-title">THE NEW RELEASE WALL</h1>
+        <div class="filter-row" id="filters">
+            <button class="filter-pill active" data-filter="all">All</button>
+            <button class="filter-pill" data-filter="big-time">Big Time</button>
+            <button class="filter-pill" data-filter="niche">Niche</button>
+            <button class="filter-pill" data-filter="staff-picks">Staff Picks</button>
+            <button class="filter-pill" data-filter="foreign">Foreign</button>
+            <button class="filter-pill" data-filter="plex">Plex</button>
+        </div>
+    </header>
+
+    <main id="movie-feed">
+        <div class="loading">
+            <div class="loading-spinner"></div>
+            <p>Loading movies...</p>
+        </div>
+    </main>
+
+    <div id="load-trigger"></div>
+
+    <script src="mobile.js"></script>
+</body>
+</html>

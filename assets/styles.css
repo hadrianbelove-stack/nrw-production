@@ -228,11 +228,11 @@ header h1 {
     font-weight: bold;
 }
 
-/* THIS WEEK'S TRAILERS card - same size as movie cards */
+/* NEW TRAILERS card - same size as movie cards */
 .trailers-card {
     width: 189px;
     height: 282px;
-    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+    background: linear-gradient(180deg, #0a0a0a 0%, #1a1a2e 100%);
     border: 2px solid #00d4aa;
     border-radius: 15px;
     display: flex;
@@ -247,7 +247,9 @@ header h1 {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
+/* Removed diagonal stripes - clean design */
 .trailers-card::before {
+    display: none;
     content: '';
     position: absolute;
     top: 0;
@@ -270,37 +272,42 @@ header h1 {
 }
 
 .trailers-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
     z-index: 1;
 }
 
 .trailers-text {
-    font-size: 1rem;
-    font-weight: 700;
+    font-size: 1.8rem;
+    font-weight: 100;
     color: #ffffff;
-    letter-spacing: 0.08em;
-    line-height: 1.4;
+    letter-spacing: 0.12em;
+    line-height: 1.1;
 }
 
-.trailers-text:last-of-type {
-    font-size: 1.2rem;
-    font-weight: 900;
-    letter-spacing: 0.1em;
-    margin-top: 0.1rem;
+.trailers-date {
+    font-size: 0.6rem;
+    font-weight: 400;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: #ffffff;
+    margin-top: 0.5rem;
+    margin-bottom: 0.8rem;
 }
 
 .trailers-icon {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 60px;
-    height: 42px;
-    background: #FF0000;
-    border-radius: 10px;
-    margin-top: 0.8rem;
-    font-size: 1.3rem;
+    width: 50px;
+    height: 50px;
+    background: #E50914;
+    border-radius: 50%;
+    font-size: 1.2rem;
     color: #ffffff;
-    padding-left: 3px;
+    padding-left: 4px;
 }
 
 .movie-card {
@@ -732,11 +739,17 @@ header h1 {
     }
 
     .trailers-text {
-        font-size: 0.9rem;
+        font-size: 1.5rem;
+    }
+
+    .trailers-date {
+        font-size: 0.5rem;
     }
 
     .trailers-icon {
-        font-size: 1.5rem;
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
     }
 
     .info-links {

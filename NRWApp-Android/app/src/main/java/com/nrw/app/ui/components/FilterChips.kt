@@ -51,10 +51,10 @@ fun FilterChips(
 ) {
     TvLazyRow(
         modifier = modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(horizontal = 48.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        contentPadding = PaddingValues(horizontal = 32.dp),
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        items(FilterCategory.entries) { category ->
+        items(FilterCategory.values().toList()) { category ->
             val isSelected = category == selectedFilter
 
             FilterPill(
@@ -97,16 +97,25 @@ private fun FilterPill(
         onClick = onClick,
         modifier = Modifier
             .onFocusChanged { isFocused = it.isFocused },
-        shape = ClickableSurfaceDefaults.shape(RoundedCornerShape(20.dp)),
+        shape = ClickableSurfaceDefaults.shape(RoundedCornerShape(14.dp)),
         colors = ClickableSurfaceDefaults.colors(
             containerColor = backgroundColor,
             focusedContainerColor = backgroundColor,
             pressedContainerColor = backgroundColor
         ),
         border = ClickableSurfaceDefaults.border(
-            border = BorderStroke(1.dp, borderColor),
-            focusedBorder = BorderStroke(2.dp, FocusCyan),
-            pressedBorder = BorderStroke(2.dp, Primary)
+            border = androidx.tv.material3.Border(
+                border = BorderStroke(1.dp, borderColor),
+                shape = RoundedCornerShape(14.dp)
+            ),
+            focusedBorder = androidx.tv.material3.Border(
+                border = BorderStroke(2.dp, FocusCyan),
+                shape = RoundedCornerShape(14.dp)
+            ),
+            pressedBorder = androidx.tv.material3.Border(
+                border = BorderStroke(2.dp, Primary),
+                shape = RoundedCornerShape(14.dp)
+            )
         ),
         scale = ClickableSurfaceDefaults.scale(
             scale = scale,
@@ -123,9 +132,9 @@ private fun FilterPill(
         Text(
             text = text,
             color = textColor,
-            fontSize = 14.sp,
+            fontSize = 10.sp,
             fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Medium,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp)
         )
     }
 }

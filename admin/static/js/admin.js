@@ -232,7 +232,7 @@ function filterMovies(filter) {
             case 'all':
                 card.style.display = 'block';
                 break;
-            case 'featured':
+            case 'staff-picks':
                 card.style.display = card.classList.contains('featured') ? 'block' : 'none';
                 break;
             case 'no-trailer':
@@ -249,6 +249,16 @@ function filterMovies(filter) {
                 break;
         }
     });
+
+    // Sort all filters by date (most recent first)
+    const grid = document.getElementById('movie-grid');
+    const visibleCards = Array.from(cards).filter(card => card.style.display !== 'none');
+    visibleCards.sort((a, b) => {
+        const dateA = a.dataset.digitalDate || '0000-00-00';
+        const dateB = b.dataset.digitalDate || '0000-00-00';
+        return dateB.localeCompare(dateA); // Reverse order (most recent first)
+    });
+    visibleCards.forEach(card => grid.appendChild(card));
 }
 
 function searchMovies() {

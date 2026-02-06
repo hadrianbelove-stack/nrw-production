@@ -50,6 +50,27 @@ class NRWOrchestrator:
         self.health_issues = []  # Health check results
         self.stall_status = {'stalled': False}  # Stall detection results
         
+    def _track_error(self, phase, message, context=None, severity='error'):
+        """Track an error or warning for end-of-run reporting.
+
+        Args:
+            phase: Which phase/method the error occurred in
+            message: Human-readable error message
+            context: Optional additional context (exception type, etc.)
+            severity: 'error' for failures, 'warning' for non-critical issues
+        """
+        entry = {
+            'phase': phase,
+            'message': message,
+            'context': context
+        }
+
+        if severity == 'error':
+            entry['severity'] = 'error'
+            self.failures.append(entry)
+        else:
+            self.warnings.append(entry)
+
     def run_command(self, cmd, description, critical=True):
         """Execute command with error handling"""
         phase_start = datetime.now()
@@ -145,6 +166,7 @@ class NRWOrchestrator:
             return self.has_changes
         except Exception as e:
             print(f"⚠️ Error checking git changes: {e}")
+            self._track_error('Git Check', f'Error checking git changes: {e}', severity='warning')
             self.has_changes = False
             return False
 
@@ -381,6 +403,7 @@ class NRWOrchestrator:
 
         except Exception as e:
             stats['tracking_error'] = str(e)
+            self._track_error('Statistics', f'Error reading movie_tracking.json: {e}', severity='warning')
 
         try:
             # Get data.json stats
@@ -396,6 +419,7 @@ class NRWOrchestrator:
 
         except Exception as e:
             stats['data_error'] = str(e)
+            self._track_error('Statistics', f'Error reading data.json: {e}', severity='warning')
 
         return stats
 
@@ -445,6 +469,7 @@ class NRWOrchestrator:
             return link_sources
 
         except Exception as e:
+            self._track_error('Link Analysis', f'Error analyzing link sources: {e}', severity='warning')
             return {'error': str(e)}
 
 
@@ -515,6 +540,7 @@ class NRWOrchestrator:
                     retry_delay *= 2  # Exponential backoff
                 else:
                     print(f"❌ All {max_retries} attempts to save metrics failed")
+                    self._track_error('Metrics', f'Failed to save daily metrics after {max_retries} attempts: {e}', severity='warning')
 
     def _get_metrics_age_hours(self, timestamp_str):
         """Calculate age of metrics timestamp in hours"""
@@ -895,6 +921,7 @@ class NRWOrchestrator:
 
         except Exception as e:
             print(f"   ⚠️ Failed to persist stall state: {e}")
+            self._track_error('Stall Detection', f'Failed to persist stall state: {e}', severity='warning')
 
     def save_run_diagnostics(self):
         """Save comprehensive diagnostics to metrics/run_diagnostics.json"""
@@ -944,6 +971,7 @@ class NRWOrchestrator:
 
         except Exception as e:
             print(f"⚠️ Failed to save diagnostics: {e}")
+            self._track_error('Diagnostics', f'Failed to save run diagnostics: {e}', severity='warning')
 
     def _get_enrichment_metrics(self):
         """Read enrichment safety metrics from enrichment_run.json"""
@@ -953,6 +981,7 @@ class NRWOrchestrator:
                     return json.load(f)
         except Exception as e:
             print(f"⚠️ Failed to read enrichment metrics: {e}")
+            self._track_error('Enrichment Metrics', f'Failed to read enrichment metrics: {e}', severity='warning')
 
         # Return default metrics if file doesn't exist or can't be read
         return {
@@ -1097,6 +1126,7 @@ class NRWOrchestrator:
                             print(f"✅ Date/timestamp consistent")
                     except Exception as ts_err:
                         print(f"⚠️  Could not verify timestamp consistency: {ts_err}")
+                        self._track_error('State File', f'Timestamp verification failed: {ts_err}', severity='warning')
 
                 # Show a few movie IDs for diagnostics
                 if movie_ids and len(movie_ids) > 0:
@@ -1111,8 +1141,10 @@ class NRWOrchestrator:
 
         except json.JSONDecodeError as e:
             print(f"\n📋 State File: Invalid JSON - {e}")
+            self._track_error('State File', f'Invalid JSON in state file: {e}', severity='warning')
         except Exception as e:
             print(f"\n📋 State File: Error reading - {e}")
+            self._track_error('State File', f'Error reading state file: {e}', severity='warning')
 
     def run(self):
         """Execute the complete daily pipeline with best-effort exception handling"""

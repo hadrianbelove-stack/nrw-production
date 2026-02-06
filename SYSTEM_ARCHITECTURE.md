@@ -179,11 +179,11 @@ git push origin main
 
 **Modularization Progress:** Extracted 1,952 lines (22 methods) from generate_data.py monolith
 - **Before:** 3,350 lines in single file
-- **After:** 3,378 lines (integration) + 3 focused modules
+- **After:** 3,339 lines (integration) + 3 focused modules
 - **Services:** Storage, Validation, Enrichment fully integrated
 - **Method Calls:** 65 call sites updated (23 storage + 8 validation + 34 enrichment)
 - **Testing:** 22/22 extraction tests + 20/20 error handling tests (100%)
-- **Note:** Old method definitions kept in generate_data.py for safety (future cleanup)
+- **Cleanup:** Dead method stubs removed (383 lines), Feb 2026
 
 **See:** [docs/pipeline_extraction_2025-11-10/](docs/pipeline_extraction_2025-11-10/) for detailed documentation
 

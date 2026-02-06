@@ -13,6 +13,7 @@ import {
   Dimensions,
   Animated,
   ActivityIndicator,
+  TouchableOpacity,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import {
@@ -41,6 +42,94 @@ const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const POSTER_WIDTH = SCREEN_WIDTH * 0.35;
 const CONTENT_WIDTH = SCREEN_WIDTH * 0.55;
 
+// Service colors for streaming buttons
+const getServiceColor = (service) => {
+  const colors = {
+    netflix: '#E50914',
+    'disney+': '#113CCF',
+    disneyplus: '#113CCF',
+    max: '#B537F2',
+    hbo: '#B537F2',
+    prime: '#00A8E1',
+    amazon: '#00A8E1',
+    hulu: '#1CE783',
+    peacock: '#000000',
+    appletv: '#000000',
+    paramount: '#0064FF',
+    plex: '#E5A00D',
+  };
+  const key = service.toLowerCase().replace(/[^a-z0-9]/g, '');
+  return colors[key] || '#00d4aa';
+};
+
+// Simple action button with equal sizing
+const ActionButton = ({ label, color, onPress, hasTVPreferredFocus = false, testID }) => {
+  const [isFocused, setIsFocused] = useState(false);
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+
+  const handleFocus = useCallback(() => {
+    setIsFocused(true);
+    Animated.spring(scaleAnim, {
+      toValue: 1.1,
+      useNativeDriver: true,
+    }).start();
+  }, [scaleAnim]);
+
+  const handleBlur = useCallback(() => {
+    setIsFocused(false);
+    Animated.spring(scaleAnim, {
+      toValue: 1,
+      useNativeDriver: true,
+    }).start();
+  }, [scaleAnim]);
+
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      onFocus={handleFocus}
+      onBlur={handleBlur}
+      hasTVPreferredFocus={hasTVPreferredFocus}
+      activeOpacity={0.9}
+      accessible={true}
+      accessibilityLabel={label}
+      accessibilityRole="button"
+      testID={testID}
+    >
+      <Animated.View
+        style={[
+          actionButtonStyles.button,
+          { backgroundColor: color },
+          isFocused && actionButtonStyles.buttonFocused,
+          { transform: [{ scale: scaleAnim }] },
+        ]}
+      >
+        <Text style={actionButtonStyles.label}>{label}</Text>
+      </Animated.View>
+    </TouchableOpacity>
+  );
+};
+
+const actionButtonStyles = StyleSheet.create({
+  button: {
+    width: 200,
+    height: 60,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 20,
+  },
+  buttonFocused: {
+    borderWidth: 4,
+    borderColor: '#ffffff',
+  },
+  label: {
+    color: '#ffffff',
+    fontSize: 20,
+    fontWeight: '700',
+    letterSpacing: 1,
+  },
+});
+
 const MovieDetailTvOS = () => {
   const navigation = useNavigation();
   const route = useRoute();
@@ -53,25 +142,35 @@ const MovieDetailTvOS = () => {
   const [isLoadingMovie, setIsLoadingMovie] = useState(!passedMovie && !!movieId);
   const [loadError, setLoadError] = useState(null);
 
+  // Movie list for left/right navigation
+  const [movieList, setMovieList] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+
   // Load movie from id if not passed directly (deep link case)
   useEffect(() => {
-    if (passedMovie) {
-      setMovie(passedMovie);
-      return;
-    }
-
-    if (!movieId) return;
-
-    const loadMovie = async () => {
-      setIsLoadingMovie(true);
-      setLoadError(null);
-
+    const loadMovies = async () => {
       try {
         const { movies } = await fetchMovies();
-        const foundMovie = movies.find(m => String(m.id) === String(movieId));
+        setMovieList(movies);
 
-        if (foundMovie) {
-          setMovie(foundMovie);
+        // Find the current movie in the list
+        const targetId = passedMovie?.id || movieId;
+        const index = movies.findIndex(m => String(m.id) === String(targetId));
+
+        if (passedMovie) {
+          setMovie(passedMovie);
+          setCurrentIndex(index >= 0 ? index : 0);
+          return;
+        }
+
+        if (!movieId) return;
+
+        setIsLoadingMovie(true);
+        setLoadError(null);
+
+        if (index >= 0) {
+          setMovie(movies[index]);
+          setCurrentIndex(index);
         } else {
           setLoadError('Movie not found');
         }
@@ -83,8 +182,24 @@ const MovieDetailTvOS = () => {
       }
     };
 
-    loadMovie();
+    loadMovies();
   }, [passedMovie, movieId]);
+
+  // Navigate to next movie (cycles to first if at end)
+  const navigateNext = useCallback(() => {
+    if (movieList.length === 0) return;
+    const nextIndex = (currentIndex + 1) % movieList.length;
+    setCurrentIndex(nextIndex);
+    setMovie(movieList[nextIndex]);
+  }, [movieList, currentIndex]);
+
+  // Navigate to previous movie (cycles to last if at start)
+  const navigatePrevious = useCallback(() => {
+    if (movieList.length === 0) return;
+    const prevIndex = currentIndex === 0 ? movieList.length - 1 : currentIndex - 1;
+    setCurrentIndex(prevIndex);
+    setMovie(movieList[prevIndex]);
+  }, [movieList, currentIndex]);
 
   // Get shared state
   const {
@@ -124,6 +239,12 @@ const MovieDetailTvOS = () => {
       if (trailerLink) {
         handleLinkPress(trailerLink);
       }
+    },
+    [TV_EVENTS.LEFT]: () => {
+      navigatePrevious();
+    },
+    [TV_EVENTS.RIGHT]: () => {
+      navigateNext();
     },
   });
 
@@ -243,10 +364,10 @@ const MovieDetailTvOS = () => {
             accessibilityLabel={`Movie poster for ${movie.title}`}
           />
 
-          {/* Featured badge */}
+          {/* Staff Pick badge */}
           {movie.featured && (
             <View style={styles.featuredBadge}>
-              <Text style={styles.featuredText}>FEATURED</Text>
+              <Text style={styles.featuredText}>STAFF PICK</Text>
             </View>
           )}
 
@@ -326,89 +447,60 @@ const MovieDetailTvOS = () => {
               </View>
             )}
 
-            {/* Synopsis */}
+            {/* Action buttons - single row, equal sizing (above synopsis) */}
+            {(hasWatchOptions || hasInfoLinks) && (
+              <View style={styles.actionButtonRow}>
+                {/* TRAILER button */}
+                {infoLinks.find(l => l.type === 'trailer') && (
+                  <ActionButton
+                    label="TRAILER"
+                    color="#E50914"
+                    onPress={() => handleLinkPress(infoLinks.find(l => l.type === 'trailer'))}
+                    hasTVPreferredFocus={true}
+                    testID="action-btn-trailer"
+                  />
+                )}
+
+                {/* RENT/BUY button - first purchase option */}
+                {purchaseLinks.length > 0 && (
+                  <ActionButton
+                    label="RENT / BUY"
+                    color="#ff9500"
+                    onPress={() => handleWatchPress(purchaseLinks[0])}
+                    hasTVPreferredFocus={!infoLinks.find(l => l.type === 'trailer')}
+                    testID="action-btn-purchase"
+                  />
+                )}
+
+                {/* STREAM button - first streaming option, shows service name */}
+                {streamingLinks.length > 0 && (
+                  <ActionButton
+                    label={streamingLinks[0].service.toUpperCase()}
+                    color={getServiceColor(streamingLinks[0].service)}
+                    onPress={() => handleWatchPress(streamingLinks[0])}
+                    hasTVPreferredFocus={!infoLinks.find(l => l.type === 'trailer') && purchaseLinks.length === 0}
+                    testID="action-btn-stream"
+                  />
+                )}
+
+                {/* PLEX button if available */}
+                {plexLinks.length > 0 && (
+                  <ActionButton
+                    label="PLEX"
+                    color="#E5A00D"
+                    onPress={() => handleWatchPress(plexLinks[0])}
+                    testID="action-btn-plex"
+                  />
+                )}
+              </View>
+            )}
+
+            {/* Synopsis (no header) */}
             {movie.synopsis && (
               <View style={styles.synopsisContainer}>
-                <Text style={styles.sectionTitle}>Synopsis</Text>
                 <Text style={styles.synopsis} numberOfLines={synopsisExpanded ? undefined : 6}>
                   {movie.synopsis}
                 </Text>
-              </View>
-            )}
-
-            {/* Watch buttons */}
-            {hasWatchOptions && (
-              <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Where to Watch</Text>
-
-                {/* Plex - Personal Library (show first!) - icon only like Amazon */}
-                {plexLinks.length > 0 && (
-                  <View style={styles.buttonRow}>
-                    {plexLinks.map((link, index) => (
-                      <WatchButton
-                        key={link.service}
-                        service={link.service}
-                        label={link.label}
-                        type="plex"
-                        onPress={() => handleWatchPress(link)}
-                        hasTVPreferredFocus={true}
-                        iconOnly={true}
-                        testID={`watch-btn-${link.service}`}
-                      />
-                    ))}
-                  </View>
-                )}
-
-                {/* Purchase/Rent options */}
-                {purchaseLinks.length > 0 && (
-                  <View style={styles.buttonRow}>
-                    {purchaseLinks.map((link, index) => (
-                      <WatchButton
-                        key={link.service}
-                        service={link.service}
-                        label={link.label}
-                        type="purchase"
-                        onPress={() => handleWatchPress(link)}
-                        hasTVPreferredFocus={plexLinks.length === 0 && index === 0}
-                        testID={`watch-btn-${link.service}`}
-                      />
-                    ))}
-                  </View>
-                )}
-
-                {/* Streaming options */}
-                {streamingLinks.length > 0 && (
-                  <View style={styles.buttonRow}>
-                    {streamingLinks.map((link) => (
-                      <WatchButton
-                        key={link.service}
-                        service={link.service}
-                        label={link.label}
-                        type="streaming"
-                        onPress={() => handleWatchPress(link)}
-                        testID={`watch-btn-${link.service}`}
-                      />
-                    ))}
-                  </View>
-                )}
-              </View>
-            )}
-
-            {/* Info buttons */}
-            {hasInfoLinks && (
-              <View style={styles.section}>
-                <Text style={styles.sectionTitle}>More Info</Text>
-                <View style={styles.buttonRow}>
-                  {infoLinks.map((link) => (
-                    <InfoButton
-                      key={link.type}
-                      type={link.type}
-                      label={link.label}
-                      onPress={() => handleLinkPress(link)}
-                      testID={`info-btn-${link.type}`}
-                    />
-                  ))}
-                </View>
               </View>
             )}
           </ScrollView>
@@ -418,7 +510,7 @@ const MovieDetailTvOS = () => {
       {/* Footer hint */}
       <View style={styles.footer}>
         <Text style={styles.footerText}>
-          Menu to go back • Play/Pause for trailer
+          ← → Navigate movies  •  Menu to go back
         </Text>
       </View>
     </Animated.View>
@@ -574,6 +666,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     marginTop: Spacing.tvos.sm,
+  },
+  actionButtonRow: {
+    flexDirection: 'row',
+    marginTop: Spacing.tvos.lg,
+    alignItems: 'center',
   },
   footer: {
     position: 'absolute',

@@ -34,7 +34,7 @@
                 <span class="stat-value">{{ movies|length }}</span>
             </div>
             <div class="stat-item">
-                <span>Featured:</span>
+                <span>Staff Picks:</span>
                 <span class="stat-value" id="featured-count">{{ featured_count }}</span>
             </div>
         </div>
@@ -242,7 +242,7 @@
             <span class="notification-badge" id="missing-data-count">{{ missing_data_count }}</span>
         </button>
         <button class="filter-btn active" onclick="filterMovies('all')">All Movies</button>
-        <button class="filter-btn" onclick="filterMovies('featured')">Featured</button>
+        <button class="filter-btn" onclick="filterMovies('staff-picks')">Staff Picks</button>
         <input type="text" id="search-box" class="search-box" placeholder="Search movies..." onkeyup="searchMovies()">
 
         <div class="ordering-controls">
@@ -261,6 +261,7 @@
              data-has-country="{{ 'yes' if movie.get('country') else 'no' }}"
              data-has-watch-links="{{ 'yes' if movie.get('watch_links') and (movie.get('watch_links', {}).get('streaming') or movie.get('watch_links', {}).get('vod')) else 'no' }}"
              data-missing-any="{{ 'yes' if not movie.get('links', {}).get('trailer') or not (movie.poster_url or movie.get('poster')) or not movie.director or movie.director == 'Unknown' or not movie.get('country') else 'no' }}"
+             data-digital-date="{{ movie.digital_date or '' }}"
              draggable="true">
             <div class="drag-handle">
                 <div class="drag-icon">⋮⋮</div>
@@ -550,9 +551,9 @@
 
                 <div class="movie-actions">
                     {% if movie_id in featured %}
-                    <button class="action-btn btn-unfeature" onclick="toggleFeatured('{{ movie_id }}', false)">⭐ Unfeature</button>
+                    <button class="action-btn btn-unfeature" onclick="toggleFeatured('{{ movie_id }}', false)">⭐ Remove Pick</button>
                     {% else %}
-                    <button class="action-btn btn-feature" onclick="toggleFeatured('{{ movie_id }}', true)">⭐ Feature</button>
+                    <button class="action-btn btn-feature" onclick="toggleFeatured('{{ movie_id }}', true)">⭐ Staff Pick</button>
                     {% endif %}
                     <button class="action-btn btn-remove" onclick="removeMovie('{{ movie_id }}', '{{ movie.title | e }}')" title="Remove from wall">🗑️</button>
                 </div>

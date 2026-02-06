@@ -19,7 +19,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>2</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
@@ -58,5 +58,17 @@
 		<string>nflx</string>
 		<string>videos</string>
 	</array>
+	<key>CFBundleIcons</key>
+	<dict>
+		<key>CFBundlePrimaryIcon</key>
+		<string>Brand Assets</string>
+	</dict>
+	<key>TVTopShelfImage</key>
+	<dict>
+		<key>TVTopShelfPrimaryImage</key>
+		<string>Brand Assets</string>
+		<key>TVTopShelfPrimaryImageWide</key>
+		<string>Brand Assets</string>
+	</dict>
 </dict>
 </plist>

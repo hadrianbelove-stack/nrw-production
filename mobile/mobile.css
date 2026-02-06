@@ -1,0 +1,378 @@
+/* NRW Mobile - Option F Flip Cards */
+/* Based on mockups/iphone-layouts.html Option F */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(180deg, #0a0a0a 0%, #1a1a2e 100%);
+    background-attachment: fixed;
+    color: #fff;
+    min-height: 100vh;
+    padding-bottom: env(safe-area-inset-bottom, 20px);
+    -webkit-font-smoothing: antialiased;
+}
+
+/* === HEADER === */
+.nrw-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: linear-gradient(180deg, #0a0a0a 0%, rgba(10,10,10,0.98) 100%);
+    padding: 15px 15px 0;
+    padding-top: calc(env(safe-area-inset-top, 0px) + 15px);
+}
+
+.nrw-title {
+    font-weight: 100;
+    font-size: 18px;
+    letter-spacing: 0.25em;
+    text-align: center;
+    background: linear-gradient(90deg, #fff, #00d4aa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 15px;
+}
+
+/* === FILTER PILLS === */
+.filter-row {
+    display: flex;
+    gap: 8px;
+    padding-bottom: 12px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+
+.filter-row::-webkit-scrollbar {
+    display: none;
+}
+
+.filter-pill {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: all 0.2s;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.filter-pill:active {
+    transform: scale(0.95);
+}
+
+.filter-pill.active {
+    background: #00d4aa;
+    border-color: #00d4aa;
+    color: #000;
+    font-weight: 600;
+}
+
+/* === MAIN CONTENT === */
+#movie-feed {
+    padding: 15px;
+}
+
+/* === DATE DIVIDERS === */
+.date-header {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0 15px;
+}
+
+.date-header:first-child {
+    margin-top: 0;
+}
+
+.date-badge {
+    background: rgba(0,212,170,0.15);
+    border: 1px solid rgba(0,212,170,0.4);
+    padding: 8px 18px;
+    border-radius: 20px;
+}
+
+.date-badge-text {
+    color: #00d4aa;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+}
+
+/* === FLIP CARDS === */
+.flip-card {
+    margin-bottom: 20px;
+    perspective: 1000px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.flip-card.staff-pick .flip-inner {
+    border: 3px solid #dc143c;
+    box-shadow: 0 0 20px rgba(220, 20, 60, 0.3);
+}
+
+.flip-inner {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 2/3;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+
+.flip-card.flipped .flip-inner {
+    transform: rotateY(180deg);
+}
+
+.flip-front,
+.flip-back {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.flip-front {
+    background: #1a1a2e;
+}
+
+.flip-back {
+    transform: rotateY(180deg);
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* === FRONT OF CARD === */
+.poster-wrap {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.poster {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Streaming badge ON poster */
+.poster-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 5px 10px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    text-transform: uppercase;
+}
+
+/* Service badge colors */
+.badge-netflix { background: #E50914; color: #fff; }
+.badge-disney { background: #113CCF; color: #fff; }
+.badge-max { background: #B537F2; color: #fff; }
+.badge-prime { background: #00A8E1; color: #fff; }
+.badge-hulu { background: #1CE783; color: #000; }
+.badge-peacock { background: #000; color: #fff; border: 1px solid #fff; }
+.badge-plex { background: #E5A00D; color: #000; }
+.badge-vod { background: #ff9500; color: #000; }
+
+/* Staff Pick badge */
+.staff-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: #dc143c;
+    color: #fff;
+    padding: 5px 12px;
+    border-radius: 10px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+
+/* Tap hint */
+.tap-hint {
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.8);
+    color: #aaa;
+    padding: 6px 16px;
+    border-radius: 15px;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+}
+
+/* === BACK OF CARD === */
+.back-title {
+    color: #00d4aa;
+    font-size: 22px;
+    font-weight: 700;
+    text-align: center;
+    padding-bottom: 12px;
+    border-bottom: 2px solid rgba(0,212,170,0.4);
+    margin-bottom: 12px;
+    line-height: 1.2;
+}
+
+.back-synopsis {
+    font-size: 14px;
+    color: #f0f0f0;
+    line-height: 1.6;
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 12px;
+}
+
+.back-meta {
+    font-size: 13px;
+    color: #bbb;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.back-meta strong {
+    color: #00d4aa;
+}
+
+/* === BUTTON ROWS === */
+.buttons-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.buttons-row:last-child {
+    margin-bottom: 0;
+}
+
+.btn-equal {
+    flex: 1;
+    padding: 14px 8px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-align: center;
+    letter-spacing: 0.5px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.1s;
+}
+
+.btn-equal:active {
+    transform: scale(0.95);
+}
+
+.btn-trailer {
+    background: #E50914;
+    color: #fff;
+}
+
+.btn-watch {
+    background: #00d4aa;
+    color: #000;
+}
+
+.btn-rt {
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.3);
+}
+
+.btn-wiki {
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.3);
+}
+
+/* === LOADING STATE === */
+.loading {
+    text-align: center;
+    padding: 40px 20px;
+    color: #888;
+}
+
+.loading-spinner {
+    width: 30px;
+    height: 30px;
+    border: 3px solid rgba(0,212,170,0.3);
+    border-top-color: #00d4aa;
+    border-radius: 50%;
+    margin: 0 auto 15px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* === INFINITE SCROLL TRIGGER === */
+#load-trigger {
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* === EMPTY STATE === */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #888;
+}
+
+.empty-state h3 {
+    color: #00d4aa;
+    margin-bottom: 10px;
+}
+
+/* === ERROR STATE === */
+.error-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #E50914;
+}
+
+/* === RESPONSIVE ADJUSTMENTS === */
+/* Cap width on larger screens to keep phone-like appearance */
+@media (min-width: 500px) {
+    #movie-feed {
+        max-width: 400px;
+        margin: 0 auto;
+    }
+}

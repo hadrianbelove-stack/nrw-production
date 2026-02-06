@@ -2,10 +2,12 @@
 """Generate tvOS assets for NRW app - Teal/Cyan color scheme"""
 
 from PIL import Image, ImageDraw, ImageFont
+from pathlib import Path
 import os
 
-# Create output directory
-output_dir = "/Users/hadrianbelove/Downloads/nrw-production/NRWApp-tvOS/tvos-assets"
+# Create output directory (relative to this script's location)
+SCRIPT_DIR = Path(__file__).resolve().parent
+output_dir = str(SCRIPT_DIR / "tvos-assets")
 os.makedirs(output_dir, exist_ok=True)
 
 # NRW Brand Colors
@@ -69,6 +71,9 @@ icon_sizes = {
     '2x': (800, 480),
 }
 
+# App Store icon is larger
+appstore_icon_size = (1280, 768)
+
 for scale, size in icon_sizes.items():
     w, h = size
 
@@ -87,10 +92,10 @@ for scale, size in icon_sizes.items():
     main_font = get_font(main_font_size)
     sub_font = get_font(sub_font_size)
 
-    # NRW in white
-    draw_text_centered(draw, "NRW", int(h * 0.35), main_font, WHITE + (255,), w)
-    # Subtitle in teal
-    draw_text_centered(draw, "NEW RELEASE WALL", int(h * 0.60), sub_font, TEAL + (255,), w)
+    # NRW in teal (brand color)
+    draw_text_centered(draw, "NRW", int(h * 0.35), main_font, TEAL + (255,), w)
+    # Subtitle in white
+    draw_text_centered(draw, "NEW RELEASE WALL", int(h * 0.60), sub_font, WHITE + (255,), w)
 
     front.save(f"{output_dir}/AppIcon-Front-{scale}.png")
     print(f"  Created AppIcon-Front-{scale}.png ({w}x{h})")
@@ -111,11 +116,29 @@ for scale, size in icon_sizes.items():
     main_font = get_font(main_font_size)
     sub_font = get_font(sub_font_size)
 
-    draw_text_centered(draw, "NRW", int(h * 0.35), main_font, WHITE, w)
-    draw_text_centered(draw, "NEW RELEASE WALL", int(h * 0.60), sub_font, TEAL, w)
+    draw_text_centered(draw, "NRW", int(h * 0.35), main_font, TEAL, w)
+    draw_text_centered(draw, "NEW RELEASE WALL", int(h * 0.60), sub_font, WHITE, w)
 
     combined.save(f"{output_dir}/AppIcon-All-{scale}.png")
     print(f"  Created AppIcon-All-{scale}.png ({w}x{h})")
+
+# App Store icon (1280x768 for App Icon - App Store)
+w, h = appstore_icon_size
+
+# Back layer for App Store
+back = create_gradient((w, h), DARK_BG, DARK_BLUE, 'diagonal')
+back.save(f"{output_dir}/AppIcon-AppStore-Back.png")
+print(f"  Created AppIcon-AppStore-Back.png ({w}x{h})")
+
+# Front layer for App Store
+front = Image.new('RGBA', (w, h), (0, 0, 0, 0))
+draw = ImageDraw.Draw(front)
+main_font = get_font(int(72 * w / 400))
+sub_font = get_font(int(18 * w / 400))
+draw_text_centered(draw, "NRW", int(h * 0.35), main_font, TEAL + (255,), w)
+draw_text_centered(draw, "NEW RELEASE WALL", int(h * 0.60), sub_font, WHITE + (255,), w)
+front.save(f"{output_dir}/AppIcon-AppStore-Front.png")
+print(f"  Created AppIcon-AppStore-Front.png ({w}x{h})")
 
 
 # ============================================
@@ -123,8 +146,8 @@ for scale, size in icon_sizes.items():
 # ============================================
 
 shelf_sizes = {
-    '1x': (1920, 720),
-    '2x': (3840, 1440),
+    '1x': (2320, 720),
+    '2x': (4640, 1440),
 }
 
 for scale, size in shelf_sizes.items():
@@ -158,10 +181,10 @@ for scale, size in shelf_sizes.items():
     title_font = get_font(title_size)
     subtitle_font = get_font(subtitle_size)
 
-    # Main title in white
-    draw_text_centered(draw, "NEW RELEASE WALL", int(h * 0.40), title_font, WHITE, w)
-    # Subtitle in teal
-    draw_text_centered(draw, "Track movies from theater to streaming", int(h * 0.58), subtitle_font, TEAL, w)
+    # Main title in teal (brand color)
+    draw_text_centered(draw, "NEW RELEASE WALL", int(h * 0.40), title_font, TEAL, w)
+    # Subtitle in white
+    draw_text_centered(draw, "Track movies from theater to streaming", int(h * 0.58), subtitle_font, WHITE, w)
 
     img.save(f"{output_dir}/TopShelf-Wide-{scale}.png")
     print(f"  Created TopShelf-Wide-{scale}.png ({w}x{h})")
@@ -179,7 +202,7 @@ for scale, size in shelf_sizes.items():
     title_size = int(120 * w / 1920)
     title_font = get_font(title_size)
 
-    draw_text_centered(draw, "NEW RELEASE WALL", int(h * 0.45), title_font, WHITE, w)
+    draw_text_centered(draw, "NEW RELEASE WALL", int(h * 0.45), title_font, TEAL, w)
 
     img.save(f"{output_dir}/TopShelf-{scale}.png")
     print(f"  Created TopShelf-{scale}.png ({w}x{h})")

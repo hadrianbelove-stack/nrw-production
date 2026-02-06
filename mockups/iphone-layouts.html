@@ -1,0 +1,1880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NRW iPhone Mockups</title>
+    <style>
+        /* === BASE STYLES === */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1a1a2e;
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* === PAGE HEADER === */
+        .page-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .page-header h1 {
+            font-weight: 100;
+            letter-spacing: 0.2em;
+            color: #00d4aa;
+            margin-bottom: 10px;
+        }
+
+        .page-header p {
+            color: #888;
+            font-size: 14px;
+        }
+
+        /* === TAB NAVIGATION === */
+        .tab-nav {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .tab-btn:hover {
+            background: rgba(0,212,170,0.2);
+            border-color: #00d4aa;
+        }
+
+        .tab-btn.active {
+            background: #00d4aa;
+            border-color: #00d4aa;
+            color: #000;
+            font-weight: bold;
+        }
+
+        /* === PHONE FRAME === */
+        .phone-container {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        .phone-frame {
+            width: 375px;
+            height: 812px;
+            background: #0a0a0a;
+            border-radius: 50px;
+            border: 12px solid #333;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .phone-notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 30px;
+            background: #333;
+            border-radius: 0 0 20px 20px;
+            z-index: 100;
+        }
+
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-top: 50px;
+            padding-bottom: 34px;
+            background: linear-gradient(180deg, #0a0a0a 0%, #1a1a2e 100%);
+        }
+
+        .phone-screen::-webkit-scrollbar {
+            width: 0;
+        }
+
+        .phone-home-indicator {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 134px;
+            height: 5px;
+            background: #fff;
+            border-radius: 3px;
+            z-index: 100;
+        }
+
+        .mockup-panel {
+            display: none;
+        }
+
+        .mockup-panel.active {
+            display: block;
+        }
+
+        /* === NRW HEADER (shared) === */
+        .nrw-header {
+            text-align: center;
+            padding: 15px 20px;
+            position: sticky;
+            top: 0;
+            background: linear-gradient(180deg, #0a0a0a 0%, rgba(10,10,10,0.95) 100%);
+            z-index: 50;
+        }
+
+        .nrw-title {
+            font-weight: 100;
+            font-size: 16px;
+            letter-spacing: 0.25em;
+            background: linear-gradient(90deg, #fff, #00d4aa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        /* === FILTER PILLS (shared) === */
+        .filter-row {
+            display: flex;
+            gap: 8px;
+            padding: 0 15px 15px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .filter-row::-webkit-scrollbar {
+            display: none;
+        }
+
+        .filter-pill {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .filter-pill.active {
+            background: #00d4aa;
+            border-color: #00d4aa;
+            color: #000;
+            font-weight: 600;
+        }
+
+        /* === SERVICE BADGES === */
+        .badge {
+            font-size: 9px;
+            font-weight: 700;
+            padding: 3px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-netflix { background: #E50914; color: #fff; }
+        .badge-disney { background: #113CCF; color: #fff; }
+        .badge-max { background: #B537F2; color: #fff; }
+        .badge-prime { background: #00A8E1; color: #fff; }
+        .badge-hulu { background: #1CE783; color: #000; }
+        .badge-plex { background: #E5A00D; color: #000; }
+        .badge-vod { background: #ff9500; color: #000; }
+
+        /* === STAFF PICK INDICATOR === */
+        .staff-pick-tag {
+            background: #dc143c;
+            color: #fff;
+            font-size: 8px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 3px;
+            letter-spacing: 0.5px;
+        }
+
+        /* === DATE DIVIDERS === */
+        .date-divider {
+            padding: 12px 15px 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .date-divider-line {
+            flex: 1;
+            height: 1px;
+            background: rgba(0,212,170,0.3);
+        }
+
+        .date-divider-text {
+            color: #00d4aa;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            white-space: nowrap;
+        }
+
+        /* Date card for grid layouts */
+        .date-card {
+            aspect-ratio: 2/3;
+            background: linear-gradient(135deg, rgba(0,212,170,0.1) 0%, rgba(0,212,170,0.05) 100%);
+            border: 2px solid rgba(0,212,170,0.4);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .date-card-weekday {
+            font-size: 10px;
+            color: #00d4aa;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 2px;
+        }
+
+        .date-card-day {
+            font-size: 32px;
+            font-weight: 100;
+            color: #fff;
+            line-height: 1;
+        }
+
+        .date-card-month {
+            font-size: 11px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Mini date card for 3-col grid */
+        .mini-date-card {
+            aspect-ratio: 2/3;
+            background: linear-gradient(135deg, rgba(0,212,170,0.15) 0%, rgba(0,212,170,0.05) 100%);
+            border: 1px solid rgba(0,212,170,0.4);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mini-date-card .date-card-day {
+            font-size: 24px;
+        }
+
+        .mini-date-card .date-card-month {
+            font-size: 9px;
+        }
+
+        /* ========================================
+           OPTION F: FULL-SIZE FEED (Instagram-style)
+           ======================================== */
+        .feed-item {
+            margin-bottom: 20px;
+        }
+
+        .feed-date-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 15px;
+        }
+
+        .feed-date-badge {
+            background: rgba(0,212,170,0.15);
+            border: 1px solid rgba(0,212,170,0.4);
+            padding: 6px 12px;
+            border-radius: 20px;
+        }
+
+        .feed-date-badge-text {
+            color: #00d4aa;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+        }
+
+        .feed-date-line {
+            flex: 1;
+            height: 1px;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .feed-card {
+            margin: 0 15px;
+            background: #1a1a2e;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        /* Staff Pick card styling */
+        .feed-card.staff-pick {
+            border: 3px solid #dc143c;
+            box-shadow: 0 0 20px rgba(220, 20, 60, 0.3),
+                        0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        .feed-poster-wrap {
+            position: relative;
+        }
+
+        .feed-poster {
+            width: 100%;
+            aspect-ratio: 2/3;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* Streaming badge ON the poster */
+        .feed-poster-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+        }
+
+        /* Staff Pick badge on poster */
+        .feed-staff-badge {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: #dc143c;
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-size: 8px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+        }
+
+        .feed-info {
+            padding: 15px;
+        }
+
+        .feed-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 6px;
+        }
+
+        .feed-title {
+            font-size: 20px;
+            font-weight: 700;
+            flex: 1;
+        }
+
+        .feed-meta {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 10px;
+        }
+
+        .feed-meta strong {
+            color: #00d4aa;
+        }
+
+        .feed-synopsis {
+            font-size: 14px;
+            color: #bbb;
+            line-height: 1.5;
+            margin-top: 10px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* Feed card flip styles */
+        .feed-card-flip {
+            margin: 0 15px 20px;
+            perspective: 1000px;
+        }
+
+        .feed-card-flip.staff-pick .feed-flip-inner {
+            border: 3px solid #dc143c;
+            box-shadow: 0 0 20px rgba(220, 20, 60, 0.3);
+        }
+
+        .feed-flip-inner {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 2/3;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        .feed-card-flip.flipped .feed-flip-inner {
+            transform: rotateY(180deg);
+        }
+
+        .feed-flip-front,
+        .feed-flip-back {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .feed-flip-front {
+            background: #1a1a2e;
+        }
+
+        .feed-flip-back {
+            transform: rotateY(180deg);
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .feed-back-title {
+            color: #00d4aa;
+            font-size: 22px;
+            font-weight: 700;
+            text-align: center;
+            padding-bottom: 12px;
+            border-bottom: 2px solid rgba(0,212,170,0.4);
+            margin-bottom: 15px;
+        }
+
+        .feed-back-synopsis {
+            font-size: 15px;
+            color: #f0f0f0;
+            line-height: 1.6;
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+
+        .feed-back-meta {
+            font-size: 13px;
+            color: #bbb;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .feed-back-buttons {
+            margin-top: auto;
+        }
+
+        /* Equal-sized buttons row */
+        .feed-buttons-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .feed-btn-equal {
+            flex: 1;
+            padding: 14px 8px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 700;
+            font-size: 12px;
+            text-transform: uppercase;
+            cursor: pointer;
+            text-align: center;
+            letter-spacing: 0.5px;
+        }
+
+        .feed-btn-watch {
+            background: #00d4aa;
+            color: #000;
+        }
+
+        .feed-btn-trailer {
+            background: #E50914;
+            color: #fff;
+        }
+
+        .feed-btn-rt {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .feed-btn-wiki {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        /* Tap hint on front */
+        .feed-tap-hint {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: #aaa;
+            padding: 6px 16px;
+            border-radius: 15px;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+        }
+
+        .feed-loading {
+            text-align: center;
+            padding: 30px;
+            color: #888;
+            font-size: 13px;
+        }
+
+        .feed-loading-spinner {
+            width: 24px;
+            height: 24px;
+            border: 2px solid rgba(0,212,170,0.3);
+            border-top-color: #00d4aa;
+            border-radius: 50%;
+            margin: 0 auto 10px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* === RT SCORE === */
+        .rt-score {
+            font-size: 11px;
+            color: #00d4aa;
+            font-weight: 600;
+        }
+
+        /* ========================================
+           OPTION A: VERTICAL LIST (Netflix Style)
+           ======================================== */
+        .list-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .list-item:active {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .list-poster {
+            width: 80px;
+            height: 120px;
+            border-radius: 8px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .list-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .list-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #fff;
+            line-height: 1.3;
+        }
+
+        .list-meta {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .list-meta strong {
+            color: #00d4aa;
+        }
+
+        .list-badges {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            margin-top: 4px;
+        }
+
+        .list-synopsis {
+            font-size: 12px;
+            color: #bbb;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+
+        /* ========================================
+           OPTION B: TWO-COLUMN GRID (Letterboxd)
+           ======================================== */
+        .grid-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            padding: 0 15px 20px;
+        }
+
+        .grid-card {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            aspect-ratio: 2/3;
+        }
+
+        .grid-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .grid-card .badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+        }
+
+        .grid-card .staff-pick-tag {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+        }
+
+        .grid-card-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 30px 8px 8px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.9));
+        }
+
+        .grid-card-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #fff;
+            line-height: 1.2;
+        }
+
+        /* Bottom Sheet (for grid views) */
+        .bottom-sheet {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #1a1a2e;
+            border-radius: 20px 20px 0 0;
+            padding: 20px;
+            transform: translateY(100%);
+            transition: transform 0.3s;
+            max-height: 70%;
+            overflow-y: auto;
+            z-index: 60;
+        }
+
+        .bottom-sheet.show {
+            transform: translateY(0);
+        }
+
+        .sheet-handle {
+            width: 40px;
+            height: 4px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 2px;
+            margin: 0 auto 15px;
+        }
+
+        .sheet-poster-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .sheet-poster {
+            width: 100px;
+            height: 150px;
+            border-radius: 10px;
+            object-fit: cover;
+        }
+
+        .sheet-main-info {
+            flex: 1;
+        }
+
+        .sheet-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .sheet-meta {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 8px;
+        }
+
+        .sheet-synopsis {
+            font-size: 14px;
+            color: #bbb;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .sheet-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .sheet-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 700;
+            font-size: 13px;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+
+        .sheet-btn-primary {
+            background: #00d4aa;
+            color: #000;
+        }
+
+        .sheet-btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+
+        /* ========================================
+           OPTION C: SWIPEABLE CARDS (Tinder)
+           ======================================== */
+        .swipe-container {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 600px;
+        }
+
+        .swipe-card {
+            width: 100%;
+            max-width: 300px;
+            background: #1a1a2e;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            position: relative;
+        }
+
+        .swipe-poster {
+            width: 100%;
+            aspect-ratio: 2/3;
+            object-fit: cover;
+        }
+
+        .swipe-info {
+            padding: 15px;
+        }
+
+        .swipe-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .swipe-meta {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 8px;
+        }
+
+        .swipe-badges {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .swipe-actions {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 25px;
+        }
+
+        .swipe-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 2px solid;
+            background: transparent;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .swipe-btn-skip {
+            border-color: #888;
+            color: #888;
+        }
+
+        .swipe-btn-save {
+            border-color: #00d4aa;
+            color: #00d4aa;
+        }
+
+        .swipe-btn-info {
+            border-color: #00A8E1;
+            color: #00A8E1;
+        }
+
+        .swipe-hint {
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+            margin-top: 15px;
+        }
+
+        /* ========================================
+           OPTION D: HORIZONTAL CAROUSELS (Apple TV+)
+           ======================================== */
+        .carousel-section {
+            margin-bottom: 25px;
+        }
+
+        .carousel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+            margin-bottom: 12px;
+        }
+
+        .carousel-title {
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            color: #fff;
+        }
+
+        .carousel-see-all {
+            font-size: 12px;
+            color: #00d4aa;
+        }
+
+        .carousel-row {
+            display: flex;
+            gap: 10px;
+            padding: 0 15px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .carousel-row::-webkit-scrollbar {
+            display: none;
+        }
+
+        .carousel-card {
+            width: 110px;
+            flex-shrink: 0;
+        }
+
+        .carousel-poster {
+            width: 110px;
+            height: 165px;
+            border-radius: 8px;
+            object-fit: cover;
+            margin-bottom: 6px;
+        }
+
+        .carousel-card-title {
+            font-size: 11px;
+            color: #fff;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* Hero section for carousel layout */
+        .hero-banner {
+            margin: 0 15px 20px;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+            height: 200px;
+        }
+
+        .hero-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 50px 15px 15px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.95));
+        }
+
+        .hero-tag {
+            font-size: 10px;
+            color: #dc143c;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            margin-bottom: 4px;
+        }
+
+        .hero-title {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .hero-meta {
+            font-size: 12px;
+            color: #bbb;
+            margin-top: 4px;
+        }
+
+        /* ========================================
+           OPTION E: THREE-COLUMN GRID (Instagram)
+           ======================================== */
+        .grid-3col {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 2px;
+            padding: 0 2px;
+        }
+
+        .mini-card {
+            aspect-ratio: 2/3;
+            position: relative;
+        }
+
+        .mini-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .mini-card .badge {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            font-size: 7px;
+            padding: 2px 4px;
+        }
+
+        .mini-card .staff-pick-indicator {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #dc143c;
+        }
+
+        /* Compact header for 3-col view */
+        .compact-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            background: #0a0a0a;
+        }
+
+        .compact-title {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            color: #00d4aa;
+        }
+
+        .compact-icons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .compact-icon {
+            font-size: 18px;
+            color: #fff;
+        }
+
+        /* Compact filter row */
+        .compact-filters {
+            display: flex;
+            gap: 6px;
+            padding: 8px 10px;
+            overflow-x: auto;
+            background: rgba(0,0,0,0.5);
+        }
+
+        .compact-pill {
+            font-size: 10px;
+            padding: 5px 10px;
+            border-radius: 15px;
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            white-space: nowrap;
+        }
+
+        .compact-pill.active {
+            background: #00d4aa;
+            color: #000;
+            font-weight: 600;
+        }
+
+        /* === LABEL OVERLAY === */
+        .option-label {
+            position: absolute;
+            top: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,212,170,0.9);
+            color: #000;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 11px;
+            font-weight: 700;
+            z-index: 80;
+            white-space: nowrap;
+        }
+
+        /* === DESCRIPTION PANEL === */
+        .description-panel {
+            max-width: 400px;
+            padding: 20px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+
+        .description-panel h3 {
+            color: #00d4aa;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .description-panel p {
+            color: #bbb;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .description-panel .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .description-panel .pros h4,
+        .description-panel .cons h4 {
+            font-size: 12px;
+            margin-bottom: 6px;
+        }
+
+        .description-panel .pros h4 { color: #1CE783; }
+        .description-panel .cons h4 { color: #E50914; }
+
+        .description-panel ul {
+            font-size: 12px;
+            color: #888;
+            padding-left: 15px;
+        }
+
+        .description-panel li {
+            margin-bottom: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-header">
+        <h1>NRW iPHONE MOCKUPS</h1>
+        <p>Tap each option to see how the New Release Wall could look on iPhone</p>
+    </div>
+
+    <nav class="tab-nav">
+        <button class="tab-btn active" onclick="showMockup('a')">A: Vertical List</button>
+        <button class="tab-btn" onclick="showMockup('b')">B: 2-Column Grid</button>
+        <button class="tab-btn" onclick="showMockup('c')">C: Swipe Cards</button>
+        <button class="tab-btn" onclick="showMockup('d')">D: Carousels</button>
+        <button class="tab-btn" onclick="showMockup('e')">E: 3-Column Grid</button>
+        <button class="tab-btn" onclick="showMockup('f')">F: Full-Size Feed</button>
+    </nav>
+
+    <div class="phone-container">
+        <!-- ========== OPTION A: VERTICAL LIST ========== -->
+        <div class="mockup-panel active" id="mockup-a">
+            <div class="phone-frame">
+                <div class="phone-notch"></div>
+                <div class="option-label">A: VERTICAL LIST</div>
+                <div class="phone-screen">
+                    <div class="nrw-header">
+                        <div class="nrw-title">THE NEW RELEASE WALL</div>
+                    </div>
+                    <div class="filter-row">
+                        <span class="filter-pill active">All</span>
+                        <span class="filter-pill">Big Time</span>
+                        <span class="filter-pill">Niche</span>
+                        <span class="filter-pill">Staff Picks</span>
+                        <span class="filter-pill">Foreign</span>
+                    </div>
+
+                    <!-- Feb 4, 2026 -->
+                    <div class="date-divider">
+                        <div class="date-divider-line"></div>
+                        <span class="date-divider-text">TUE, FEB 4</span>
+                        <div class="date-divider-line"></div>
+                    </div>
+
+                    <div class="list-item">
+                        <img class="list-poster" src="https://image.tmdb.org/t/p/w200/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg" alt="Nosferatu">
+                        <div class="list-info">
+                            <div class="list-title">Nosferatu</div>
+                            <div class="list-meta"><strong>Dir:</strong> Robert Eggers &bull; 132 min</div>
+                            <div class="list-badges">
+                                <span class="badge badge-max">Max</span>
+                                <span class="rt-score">85%</span>
+                            </div>
+                            <div class="list-synopsis">A gothic tale of obsession between a haunted young woman and the terrifying vampire...</div>
+                        </div>
+                    </div>
+
+                    <div class="list-item">
+                        <img class="list-poster" src="https://image.tmdb.org/t/p/w200/jbwYaoYWUwcBvBJrDJHsNWg7U9s.jpg" alt="Conclave">
+                        <div class="list-info">
+                            <div class="list-title">Conclave</div>
+                            <div class="list-meta"><strong>Dir:</strong> Edward Berger &bull; 120 min</div>
+                            <div class="list-badges">
+                                <span class="badge badge-netflix">Netflix</span>
+                                <span class="rt-score">93%</span>
+                            </div>
+                            <div class="list-synopsis">Following the unexpected death of the Pope, Cardinal Lawrence finds himself...</div>
+                        </div>
+                    </div>
+
+                    <!-- Jan 28, 2026 -->
+                    <div class="date-divider">
+                        <div class="date-divider-line"></div>
+                        <span class="date-divider-text">TUE, JAN 28</span>
+                        <div class="date-divider-line"></div>
+                    </div>
+
+                    <div class="list-item">
+                        <img class="list-poster" src="https://image.tmdb.org/t/p/w200/pnXLFioDeftqjlCVlRmXvIdMsdP.jpg" alt="Wicked">
+                        <div class="list-info">
+                            <div class="list-title">Wicked</div>
+                            <div class="list-meta"><strong>Dir:</strong> Jon M. Chu &bull; 160 min</div>
+                            <div class="list-badges">
+                                <span class="badge badge-disney">Disney+</span>
+                                <span class="rt-score">89%</span>
+                            </div>
+                            <div class="list-synopsis">Elphaba, a young woman misunderstood because of her unusual green skin...</div>
+                        </div>
+                    </div>
+
+                    <!-- Jan 20, 2026 -->
+                    <div class="date-divider">
+                        <div class="date-divider-line"></div>
+                        <span class="date-divider-text">MON, JAN 20</span>
+                        <div class="date-divider-line"></div>
+                    </div>
+
+                    <div class="list-item">
+                        <img class="list-poster" src="https://image.tmdb.org/t/p/w200/1a12JCE2tHL9Bxyul5XczGShjpx.jpg" alt="The Eye">
+                        <div class="list-info">
+                            <div class="list-title">The Eye</div>
+                            <div class="list-meta"><strong>Dir:</strong> Daphne Schmon &bull; 93 min</div>
+                            <div class="list-badges">
+                                <span class="badge badge-vod">Rent</span>
+                                <span class="staff-pick-tag">STAFF PICK</span>
+                                <span class="rt-score">92%</span>
+                            </div>
+                            <div class="list-synopsis">After the sudden death of her husband, Diana returns to a remote Greek island...</div>
+                        </div>
+                    </div>
+
+                    <div class="list-item">
+                        <img class="list-poster" src="https://image.tmdb.org/t/p/w200/ArDLn658OjT3dMThIi4GDQJRuY3.jpg" alt="Truth & Treason">
+                        <div class="list-info">
+                            <div class="list-title">Truth & Treason</div>
+                            <div class="list-meta"><strong>Dir:</strong> Matt Whitaker &bull; 121 min</div>
+                            <div class="list-badges">
+                                <span class="badge badge-prime">Prime</span>
+                            </div>
+                            <div class="list-synopsis">When loyalty to country becomes loyalty to a lie, one teen risks everything...</div>
+                        </div>
+                    </div>
+
+                    <div class="list-item">
+                        <img class="list-poster" src="https://image.tmdb.org/t/p/w200/wgSwDqhl6Rt3cuSCwt5sNpPna3x.jpg" alt="Mysterious Skin">
+                        <div class="list-info">
+                            <div class="list-title">Mysterious Skin</div>
+                            <div class="list-meta"><strong>Dir:</strong> Gregg Araki &bull; 105 min</div>
+                            <div class="list-badges">
+                                <span class="badge badge-plex">Plex</span>
+                            </div>
+                            <div class="list-synopsis">A teenage hustler and a young man obsessed with alien abductions cross paths...</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="phone-home-indicator"></div>
+            </div>
+
+            <div class="description-panel">
+                <h3>Option A: Vertical List</h3>
+                <p>Netflix/Hulu-style list view with poster thumbnails and key info visible at a glance.</p>
+                <div class="pros-cons">
+                    <div class="pros">
+                        <h4>PROS</h4>
+                        <ul>
+                            <li>Most info without tapping</li>
+                            <li>Synopses visible</li>
+                            <li>One-handed friendly</li>
+                            <li>Familiar pattern</li>
+                        </ul>
+                    </div>
+                    <div class="cons">
+                        <h4>CONS</h4>
+                        <ul>
+                            <li>~4 movies per screen</li>
+                            <li>Smaller posters</li>
+                            <li>Less visual impact</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== OPTION B: TWO-COLUMN GRID ========== -->
+        <div class="mockup-panel" id="mockup-b">
+            <div class="phone-frame">
+                <div class="phone-notch"></div>
+                <div class="option-label">B: 2-COLUMN GRID</div>
+                <div class="phone-screen">
+                    <div class="nrw-header">
+                        <div class="nrw-title">THE NEW RELEASE WALL</div>
+                    </div>
+                    <div class="filter-row">
+                        <span class="filter-pill active">All</span>
+                        <span class="filter-pill">Big Time</span>
+                        <span class="filter-pill">Niche</span>
+                        <span class="filter-pill">Staff Picks</span>
+                        <span class="filter-pill">Foreign</span>
+                    </div>
+
+                    <div class="grid-2col">
+                        <!-- Feb 4 date card -->
+                        <div class="date-card">
+                            <div class="date-card-weekday">Tuesday</div>
+                            <div class="date-card-day">4</div>
+                            <div class="date-card-month">February</div>
+                        </div>
+                        <div class="grid-card">
+                            <img src="https://image.tmdb.org/t/p/w300/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg" alt="Nosferatu">
+                            <span class="badge badge-max">Max</span>
+                        </div>
+                        <div class="grid-card">
+                            <img src="https://image.tmdb.org/t/p/w300/jbwYaoYWUwcBvBJrDJHsNWg7U9s.jpg" alt="Conclave">
+                            <span class="badge badge-netflix">Netflix</span>
+                        </div>
+                        <!-- Jan 28 date card -->
+                        <div class="date-card">
+                            <div class="date-card-weekday">Tuesday</div>
+                            <div class="date-card-day">28</div>
+                            <div class="date-card-month">January</div>
+                        </div>
+                        <div class="grid-card">
+                            <img src="https://image.tmdb.org/t/p/w300/pnXLFioDeftqjlCVlRmXvIdMsdP.jpg" alt="Wicked">
+                            <span class="badge badge-disney">Disney+</span>
+                        </div>
+                        <!-- Jan 20 date card -->
+                        <div class="date-card">
+                            <div class="date-card-weekday">Monday</div>
+                            <div class="date-card-day">20</div>
+                            <div class="date-card-month">January</div>
+                        </div>
+                        <div class="grid-card" onclick="toggleSheet('b')">
+                            <img src="https://image.tmdb.org/t/p/w300/1a12JCE2tHL9Bxyul5XczGShjpx.jpg" alt="The Eye">
+                            <span class="staff-pick-tag">STAFF PICK</span>
+                            <span class="badge badge-vod">Rent</span>
+                        </div>
+                        <div class="grid-card">
+                            <img src="https://image.tmdb.org/t/p/w300/ArDLn658OjT3dMThIi4GDQJRuY3.jpg" alt="Truth & Treason">
+                            <span class="badge badge-prime">Prime</span>
+                        </div>
+                        <div class="grid-card">
+                            <img src="https://image.tmdb.org/t/p/w300/wgSwDqhl6Rt3cuSCwt5sNpPna3x.jpg" alt="Mysterious Skin">
+                            <span class="badge badge-plex">Plex</span>
+                        </div>
+                        <div class="grid-card">
+                            <img src="https://image.tmdb.org/t/p/w300/bz8toDcg1qrbeoFLwScC7ydR3Ts.jpg" alt="Crime Inc.">
+                            <span class="staff-pick-tag">STAFF PICK</span>
+                            <span class="badge badge-vod">Rent</span>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Sheet -->
+                    <div class="bottom-sheet" id="sheet-b">
+                        <div class="sheet-handle"></div>
+                        <div class="sheet-poster-row">
+                            <img class="sheet-poster" src="https://image.tmdb.org/t/p/w300/1a12JCE2tHL9Bxyul5XczGShjpx.jpg" alt="The Eye">
+                            <div class="sheet-main-info">
+                                <div class="sheet-title">The Eye</div>
+                                <div class="sheet-meta">2023 &bull; Horror, Thriller &bull; 93 min</div>
+                                <div class="list-badges" style="margin-top: 8px;">
+                                    <span class="staff-pick-tag">STAFF PICK</span>
+                                    <span class="rt-score">92%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="sheet-synopsis">After the sudden death of her husband, Diana returns to a remote Greek island only to find herself entangled in whispers of an ancient curse.</div>
+                        <div class="sheet-buttons">
+                            <button class="sheet-btn sheet-btn-primary">Watch</button>
+                            <button class="sheet-btn sheet-btn-secondary">Trailer</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="phone-home-indicator"></div>
+            </div>
+
+            <div class="description-panel">
+                <h3>Option B: Two-Column Grid</h3>
+                <p>Letterboxd-style poster grid. Tap any poster for a bottom sheet with full details.</p>
+                <div class="pros-cons">
+                    <div class="pros">
+                        <h4>PROS</h4>
+                        <ul>
+                            <li>~6-8 movies visible</li>
+                            <li>Visual browsing</li>
+                            <li>Familiar pattern</li>
+                            <li>Good poster size</li>
+                        </ul>
+                    </div>
+                    <div class="cons">
+                        <h4>CONS</h4>
+                        <ul>
+                            <li>Tap needed for details</li>
+                            <li>No synopsis visible</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== OPTION C: SWIPEABLE CARDS ========== -->
+        <div class="mockup-panel" id="mockup-c">
+            <div class="phone-frame">
+                <div class="phone-notch"></div>
+                <div class="option-label">C: SWIPE CARDS</div>
+                <div class="phone-screen">
+                    <div class="compact-header">
+                        <span style="color: #888; font-size: 24px;">✕</span>
+                        <span class="compact-title">NRW</span>
+                        <span style="color: #fff; font-size: 20px;">☰</span>
+                    </div>
+
+                    <div class="swipe-container">
+                        <div class="swipe-card">
+                            <div style="position: absolute; top: 12px; left: 12px; background: rgba(0,0,0,0.7); padding: 6px 10px; border-radius: 8px; z-index: 5;">
+                                <div style="font-size: 10px; color: #00d4aa; text-transform: uppercase; letter-spacing: 0.1em;">Released</div>
+                                <div style="font-size: 14px; font-weight: 600; color: #fff;">Feb 4, 2026</div>
+                            </div>
+                            <img class="swipe-poster" src="https://image.tmdb.org/t/p/w400/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg" alt="Nosferatu">
+                            <div class="swipe-info">
+                                <div class="swipe-title">Nosferatu</div>
+                                <div class="swipe-meta">Horror &bull; 2024 &bull; 132 min</div>
+                                <div class="swipe-badges">
+                                    <span class="badge badge-max">Max</span>
+                                    <span class="rt-score">85%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="swipe-actions">
+                            <button class="swipe-btn swipe-btn-skip">✕</button>
+                            <button class="swipe-btn swipe-btn-info">i</button>
+                            <button class="swipe-btn swipe-btn-save">★</button>
+                        </div>
+
+                        <div class="swipe-hint">Newest releases first &bull; Swipe to browse</div>
+                    </div>
+                </div>
+                <div class="phone-home-indicator"></div>
+            </div>
+
+            <div class="description-panel">
+                <h3>Option C: Swipeable Cards</h3>
+                <p>Tinder-style one-at-a-time discovery. Swipe to save favorites or skip.</p>
+                <div class="pros-cons">
+                    <div class="pros">
+                        <h4>PROS</h4>
+                        <ul>
+                            <li>Highly engaging</li>
+                            <li>Beautiful posters</li>
+                            <li>Builds a watchlist</li>
+                            <li>Focused experience</li>
+                        </ul>
+                    </div>
+                    <div class="cons">
+                        <h4>CONS</h4>
+                        <ul>
+                            <li>1 movie at a time</li>
+                            <li>Can't scan quickly</li>
+                            <li>Novel pattern</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== OPTION D: HORIZONTAL CAROUSELS ========== -->
+        <div class="mockup-panel" id="mockup-d">
+            <div class="phone-frame">
+                <div class="phone-notch"></div>
+                <div class="option-label">D: CAROUSELS</div>
+                <div class="phone-screen">
+                    <div class="nrw-header">
+                        <div class="nrw-title">THE NEW RELEASE WALL</div>
+                    </div>
+
+                    <!-- Hero Banner - Latest Release -->
+                    <div class="hero-banner">
+                        <img src="https://image.tmdb.org/t/p/w500/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg" alt="Featured">
+                        <div class="hero-overlay">
+                            <div class="hero-tag">JUST RELEASED &bull; FEB 4</div>
+                            <div class="hero-title">Nosferatu</div>
+                            <div class="hero-meta">Robert Eggers &bull; Horror</div>
+                        </div>
+                    </div>
+
+                    <!-- This Week (Feb 3-9) -->
+                    <div class="carousel-section">
+                        <div class="carousel-header">
+                            <span class="carousel-title">THIS WEEK <span style="color: #888; font-weight: 400;">Feb 3-9</span></span>
+                            <span class="carousel-see-all">See All &rsaquo;</span>
+                        </div>
+                        <div class="carousel-row">
+                            <div class="carousel-card">
+                                <img class="carousel-poster" src="https://image.tmdb.org/t/p/w200/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg" alt="Nosferatu">
+                                <div class="carousel-card-title">Nosferatu</div>
+                            </div>
+                            <div class="carousel-card">
+                                <img class="carousel-poster" src="https://image.tmdb.org/t/p/w200/jbwYaoYWUwcBvBJrDJHsNWg7U9s.jpg" alt="Conclave">
+                                <div class="carousel-card-title">Conclave</div>
+                            </div>
+                            <div class="carousel-card">
+                                <img class="carousel-poster" src="https://image.tmdb.org/t/p/w200/bz8toDcg1qrbeoFLwScC7ydR3Ts.jpg" alt="Crime Inc.">
+                                <div class="carousel-card-title">Crime Inc.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Last Week (Jan 27 - Feb 2) -->
+                    <div class="carousel-section">
+                        <div class="carousel-header">
+                            <span class="carousel-title">LAST WEEK <span style="color: #888; font-weight: 400;">Jan 27 - Feb 2</span></span>
+                            <span class="carousel-see-all">See All &rsaquo;</span>
+                        </div>
+                        <div class="carousel-row">
+                            <div class="carousel-card">
+                                <img class="carousel-poster" src="https://image.tmdb.org/t/p/w200/pnXLFioDeftqjlCVlRmXvIdMsdP.jpg" alt="Wicked">
+                                <div class="carousel-card-title">Wicked</div>
+                            </div>
+                            <div class="carousel-card">
+                                <img class="carousel-poster" src="https://image.tmdb.org/t/p/w200/ArDLn658OjT3dMThIi4GDQJRuY3.jpg" alt="Truth & Treason">
+                                <div class="carousel-card-title">Truth & Treason</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2 Weeks Ago (Jan 20-26) -->
+                    <div class="carousel-section">
+                        <div class="carousel-header">
+                            <span class="carousel-title">2 WEEKS AGO <span style="color: #888; font-weight: 400;">Jan 20-26</span></span>
+                            <span class="carousel-see-all">See All &rsaquo;</span>
+                        </div>
+                        <div class="carousel-row">
+                            <div class="carousel-card">
+                                <img class="carousel-poster" src="https://image.tmdb.org/t/p/w200/1a12JCE2tHL9Bxyul5XczGShjpx.jpg" alt="The Eye">
+                                <div class="carousel-card-title">The Eye</div>
+                            </div>
+                            <div class="carousel-card">
+                                <img class="carousel-poster" src="https://image.tmdb.org/t/p/w200/wgSwDqhl6Rt3cuSCwt5sNpPna3x.jpg" alt="Mysterious Skin">
+                                <div class="carousel-card-title">Mysterious Skin</div>
+                            </div>
+                            <div class="carousel-card">
+                                <img class="carousel-poster" src="https://image.tmdb.org/t/p/w200/bz8toDcg1qrbeoFLwScC7ydR3Ts.jpg" alt="Another Film">
+                                <div class="carousel-card-title">Crime Inc.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="phone-home-indicator"></div>
+            </div>
+
+            <div class="description-panel">
+                <h3>Option D: Horizontal Carousels</h3>
+                <p>Apple TV+ style with hero banner and weekly rows. Shows "This Week", "Last Week" etc.</p>
+                <div class="pros-cons">
+                    <div class="pros">
+                        <h4>PROS</h4>
+                        <ul>
+                            <li>Clear weekly grouping</li>
+                            <li>Hero for newest release</li>
+                            <li>Familiar streaming pattern</li>
+                            <li>Easy "catch up" browsing</li>
+                        </ul>
+                    </div>
+                    <div class="cons">
+                        <h4>CONS</h4>
+                        <ul>
+                            <li>Less precise dates</li>
+                            <li>Horizontal scroll needed</li>
+                            <li>More navigation taps</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== OPTION E: THREE-COLUMN GRID ========== -->
+        <div class="mockup-panel" id="mockup-e">
+            <div class="phone-frame">
+                <div class="phone-notch"></div>
+                <div class="option-label">E: 3-COLUMN GRID</div>
+                <div class="phone-screen" style="padding-top: 35px;">
+                    <div class="compact-header">
+                        <span class="compact-title">NRW</span>
+                        <div class="compact-icons">
+                            <span class="compact-icon">🔍</span>
+                            <span class="compact-icon">☰</span>
+                        </div>
+                    </div>
+
+                    <div class="compact-filters">
+                        <span class="compact-pill active">All</span>
+                        <span class="compact-pill">Big Time</span>
+                        <span class="compact-pill">Niche</span>
+                        <span class="compact-pill">Staff</span>
+                        <span class="compact-pill">Foreign</span>
+                    </div>
+
+                    <div class="grid-3col">
+                        <!-- Feb 4 -->
+                        <div class="mini-date-card">
+                            <div class="date-card-day">4</div>
+                            <div class="date-card-month">FEB</div>
+                        </div>
+                        <div class="mini-card">
+                            <img src="https://image.tmdb.org/t/p/w200/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg" alt="Nosferatu">
+                            <span class="badge badge-max">M</span>
+                        </div>
+                        <div class="mini-card">
+                            <img src="https://image.tmdb.org/t/p/w200/jbwYaoYWUwcBvBJrDJHsNWg7U9s.jpg" alt="Conclave">
+                            <span class="badge badge-netflix">N</span>
+                        </div>
+                        <!-- Jan 28 -->
+                        <div class="mini-date-card">
+                            <div class="date-card-day">28</div>
+                            <div class="date-card-month">JAN</div>
+                        </div>
+                        <div class="mini-card">
+                            <img src="https://image.tmdb.org/t/p/w200/pnXLFioDeftqjlCVlRmXvIdMsdP.jpg" alt="Wicked">
+                            <span class="badge badge-disney">D+</span>
+                        </div>
+                        <div class="mini-card">
+                            <img src="https://image.tmdb.org/t/p/w200/bz8toDcg1qrbeoFLwScC7ydR3Ts.jpg" alt="Crime Inc.">
+                            <span class="badge badge-vod">$</span>
+                            <div class="staff-pick-indicator"></div>
+                        </div>
+                        <!-- Jan 20 -->
+                        <div class="mini-date-card">
+                            <div class="date-card-day">20</div>
+                            <div class="date-card-month">JAN</div>
+                        </div>
+                        <div class="mini-card">
+                            <img src="https://image.tmdb.org/t/p/w200/1a12JCE2tHL9Bxyul5XczGShjpx.jpg" alt="The Eye">
+                            <span class="badge badge-vod">$</span>
+                            <div class="staff-pick-indicator"></div>
+                        </div>
+                        <div class="mini-card">
+                            <img src="https://image.tmdb.org/t/p/w200/ArDLn658OjT3dMThIi4GDQJRuY3.jpg" alt="Truth & Treason">
+                            <span class="badge badge-prime">P</span>
+                        </div>
+                        <div class="mini-card">
+                            <img src="https://image.tmdb.org/t/p/w200/wgSwDqhl6Rt3cuSCwt5sNpPna3x.jpg" alt="Mysterious Skin">
+                            <span class="badge badge-plex">PX</span>
+                        </div>
+                        <div class="mini-card">
+                            <img src="https://image.tmdb.org/t/p/w200/lCqwAXf3xigUH3tpS9z9OMobgOa.jpg" alt="Movie">
+                            <span class="badge badge-hulu">H</span>
+                        </div>
+                        <!-- Jan 14 -->
+                        <div class="mini-date-card">
+                            <div class="date-card-day">14</div>
+                            <div class="date-card-month">JAN</div>
+                        </div>
+                        <div class="mini-card">
+                            <img src="https://image.tmdb.org/t/p/w200/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg" alt="Movie">
+                            <span class="badge badge-max">M</span>
+                        </div>
+                        <div class="mini-card">
+                            <img src="https://image.tmdb.org/t/p/w200/jbwYaoYWUwcBvBJrDJHsNWg7U9s.jpg" alt="Movie">
+                            <span class="badge badge-netflix">N</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="phone-home-indicator"></div>
+            </div>
+
+            <div class="description-panel">
+                <h3>Option E: Three-Column Grid</h3>
+                <p>Instagram-style dense grid. Maximum movies visible, tap for full detail screen.</p>
+                <div class="pros-cons">
+                    <div class="pros">
+                        <h4>PROS</h4>
+                        <ul>
+                            <li>12+ movies per screen</li>
+                            <li>Fast visual scanning</li>
+                            <li>Minimal, clean</li>
+                            <li>"Know it when I see it"</li>
+                        </ul>
+                    </div>
+                    <div class="cons">
+                        <h4>CONS</h4>
+                        <ul>
+                            <li>Very small posters</li>
+                            <li>Zero info visible</li>
+                            <li>May feel sparse</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== OPTION F: FULL-SIZE FEED (FLIP CARDS) ========== -->
+        <div class="mockup-panel" id="mockup-f">
+            <div class="phone-frame">
+                <div class="phone-notch"></div>
+                <div class="option-label">F: FULL-SIZE FEED</div>
+                <div class="phone-screen">
+                    <div class="nrw-header">
+                        <div class="nrw-title">THE NEW RELEASE WALL</div>
+                    </div>
+                    <div class="filter-row">
+                        <span class="filter-pill active">All</span>
+                        <span class="filter-pill">Big Time</span>
+                        <span class="filter-pill">Niche</span>
+                        <span class="filter-pill">Staff Picks</span>
+                        <span class="filter-pill">Foreign</span>
+                    </div>
+
+                    <!-- Feb 4, 2026 -->
+                    <div class="feed-date-header">
+                        <div class="feed-date-badge">
+                            <span class="feed-date-badge-text">TUE, FEB 4</span>
+                        </div>
+                        <div class="feed-date-line"></div>
+                    </div>
+
+                    <!-- Nosferatu - Flip Card -->
+                    <div class="feed-card-flip" onclick="this.classList.toggle('flipped')">
+                        <div class="feed-flip-inner">
+                            <div class="feed-flip-front">
+                                <div class="feed-poster-wrap">
+                                    <img class="feed-poster" src="https://image.tmdb.org/t/p/w500/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg" alt="Nosferatu">
+                                    <span class="feed-poster-badge badge-max">MAX</span>
+                                    <span class="feed-tap-hint">Tap for details</span>
+                                </div>
+                            </div>
+                            <div class="feed-flip-back">
+                                <div class="feed-back-title">Nosferatu</div>
+                                <div class="feed-back-synopsis">A gothic tale of obsession between a haunted young woman and the terrifying vampire infatuated with her, bringing untold horror with him.</div>
+                                <div class="feed-back-meta"><strong style="color:#00d4aa">Dir:</strong> Robert Eggers &bull; Horror &bull; 132 min</div>
+                                <div class="feed-buttons-row">
+                                    <button class="feed-btn-equal feed-btn-trailer">Trailer</button>
+                                    <button class="feed-btn-equal feed-btn-watch">Max</button>
+                                </div>
+                                <div class="feed-buttons-row" style="margin-top: 8px;">
+                                    <button class="feed-btn-equal feed-btn-rt">RT 85%</button>
+                                    <button class="feed-btn-equal feed-btn-wiki">Wiki</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Conclave - Staff Pick Flip Card -->
+                    <div class="feed-card-flip staff-pick" onclick="this.classList.toggle('flipped')">
+                        <div class="feed-flip-inner">
+                            <div class="feed-flip-front">
+                                <div class="feed-poster-wrap">
+                                    <img class="feed-poster" src="https://image.tmdb.org/t/p/w500/jbwYaoYWUwcBvBJrDJHsNWg7U9s.jpg" alt="Conclave">
+                                    <span class="feed-staff-badge">STAFF PICK</span>
+                                    <span class="feed-poster-badge badge-netflix">NETFLIX</span>
+                                    <span class="feed-tap-hint">Tap for details</span>
+                                </div>
+                            </div>
+                            <div class="feed-flip-back">
+                                <div class="feed-back-title">Conclave</div>
+                                <div class="feed-back-synopsis">Following the unexpected death of the Pope, Cardinal Lawrence finds himself tasked with managing the papal conclave to elect a new leader of the Catholic Church.</div>
+                                <div class="feed-back-meta"><strong style="color:#00d4aa">Dir:</strong> Edward Berger &bull; Drama, Thriller &bull; 120 min</div>
+                                <div class="feed-buttons-row">
+                                    <button class="feed-btn-equal feed-btn-trailer">Trailer</button>
+                                    <button class="feed-btn-equal feed-btn-watch" style="background:#E50914;color:#fff">Netflix</button>
+                                </div>
+                                <div class="feed-buttons-row" style="margin-top: 8px;">
+                                    <button class="feed-btn-equal feed-btn-rt">RT 93%</button>
+                                    <button class="feed-btn-equal feed-btn-wiki">Wiki</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Jan 28, 2026 -->
+                    <div class="feed-date-header">
+                        <div class="feed-date-badge">
+                            <span class="feed-date-badge-text">TUE, JAN 28</span>
+                        </div>
+                        <div class="feed-date-line"></div>
+                    </div>
+
+                    <!-- Wicked - Flip Card with 3 watch options -->
+                    <div class="feed-card-flip" onclick="this.classList.toggle('flipped')">
+                        <div class="feed-flip-inner">
+                            <div class="feed-flip-front">
+                                <div class="feed-poster-wrap">
+                                    <img class="feed-poster" src="https://image.tmdb.org/t/p/w500/pnXLFioDeftqjlCVlRmXvIdMsdP.jpg" alt="Wicked">
+                                    <span class="feed-poster-badge badge-disney">DISNEY+</span>
+                                    <span class="feed-tap-hint">Tap for details</span>
+                                </div>
+                            </div>
+                            <div class="feed-flip-back">
+                                <div class="feed-back-title">Wicked</div>
+                                <div class="feed-back-synopsis">Elphaba, a young woman misunderstood because of her unusual green skin, and Glinda, a popular young woman, become unlikely friends.</div>
+                                <div class="feed-back-meta"><strong style="color:#00d4aa">Dir:</strong> Jon M. Chu &bull; Musical &bull; 160 min</div>
+                                <div class="feed-buttons-row">
+                                    <button class="feed-btn-equal feed-btn-trailer">Trailer</button>
+                                    <button class="feed-btn-equal feed-btn-watch" style="background:#113CCF;color:#fff">Disney+</button>
+                                    <button class="feed-btn-equal" style="background:#E5A00D;color:#000">Plex</button>
+                                </div>
+                                <div class="feed-buttons-row" style="margin-top: 8px;">
+                                    <button class="feed-btn-equal feed-btn-rt">RT 89%</button>
+                                    <button class="feed-btn-equal feed-btn-wiki">Wiki</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Loading indicator -->
+                    <div class="feed-loading">
+                        <div class="feed-loading-spinner"></div>
+                        Loading more releases...
+                    </div>
+                </div>
+                <div class="phone-home-indicator"></div>
+            </div>
+
+            <div class="description-panel">
+                <h3>Option F: Full-Size Flip Cards</h3>
+                <p>Large poster cards that flip to reveal details. Front shows poster + service badge. Back shows title, synopsis, and equal-sized action buttons. Tap to flip.</p>
+                <div class="pros-cons">
+                    <div class="pros">
+                        <h4>PROS</h4>
+                        <ul>
+                            <li>Beautiful big posters</li>
+                            <li>Clean front (poster only)</li>
+                            <li>Familiar flip interaction</li>
+                            <li>Equal-sized buttons</li>
+                            <li>Clear date grouping</li>
+                        </ul>
+                    </div>
+                    <div class="cons">
+                        <h4>CONS</h4>
+                        <ul>
+                            <li>~1 movie per screen</li>
+                            <li>Tap needed to see details</li>
+                            <li>Lots of scrolling</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showMockup(id) {
+            // Hide all panels
+            document.querySelectorAll('.mockup-panel').forEach(p => p.classList.remove('active'));
+            // Remove active from all buttons
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
+            // Show selected panel
+            document.getElementById('mockup-' + id).classList.add('active');
+            // Activate button
+            event.target.classList.add('active');
+        }
+
+        function toggleSheet(id) {
+            const sheet = document.getElementById('sheet-' + id);
+            sheet.classList.toggle('show');
+        }
+
+        // Close bottom sheet when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.grid-card') && !e.target.closest('.bottom-sheet')) {
+                document.querySelectorAll('.bottom-sheet').forEach(s => s.classList.remove('show'));
+            }
+        });
+    </script>
+</body>
+</html>

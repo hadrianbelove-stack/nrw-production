@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -66,7 +67,7 @@ import com.nrw.app.ui.theme.TextSecondary
 sealed class GridItem {
     data class MovieItem(val movie: Movie) : GridItem()
     data class DateItem(val date: String) : GridItem()
-    data object TrailersItem : GridItem()
+    object TrailersItem : GridItem()
 }
 
 /**
@@ -122,17 +123,7 @@ fun HomeScreen(
                         onFilterSelected = { viewModel.setFilter(it) }
                     )
 
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    // Movie count
-                    Text(
-                        text = "${uiState.filteredMovies.size} movies",
-                        color = TextMuted,
-                        fontSize = 14.sp,
-                        modifier = Modifier.padding(horizontal = 48.dp)
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(6.dp))
 
                     // Movie grid with date dividers
                     if (uiState.filteredMovies.isEmpty()) {
@@ -144,8 +135,12 @@ fun HomeScreen(
                             onMovieClick = onMovieClick,
                             onTrailersClick = {
                                 uiState.playlistUrl?.let { url ->
-                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                                    context.startActivity(intent)
+                                    try {
+                                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                                        context.startActivity(intent)
+                                    } catch (e: Exception) {
+                                        // Handle if no app can handle the URL
+                                    }
                                 }
                             }
                         )
@@ -170,8 +165,8 @@ private fun createGridItems(movies: List<Movie>, playlistUrl: String?): List<Gri
     for (movie in sortedMovies) {
         val movieDate = movie.getDisplayDate()
         if (movieDate != null && movieDate != currentDate) {
-            // Add trailers card before first date (if available)
-            if (!addedTrailers && playlistUrl != null) {
+            // Add trailers card before first date divider
+            if (!addedTrailers) {
                 items.add(GridItem.TrailersItem)
                 addedTrailers = true
             }
@@ -193,24 +188,24 @@ private fun Header(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 48.dp, vertical = 16.dp),
+            .padding(horizontal = 32.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        // Title
+        // Title (smaller to match tvOS proportions)
         Text(
             text = "THE NEW RELEASE WALL",
             color = Primary,
-            fontSize = 28.sp,
-            fontWeight = FontWeight.Light,
-            letterSpacing = 6.sp
+            fontSize = 20.sp,
+            fontWeight = FontWeight.SemiBold,
+            letterSpacing = 3.sp
         )
 
         // Search bar
         SearchBar(
             query = searchQuery,
             onQueryChange = onSearchChange,
-            modifier = Modifier.width(200.dp)
+            modifier = Modifier.width(140.dp)
         )
     }
 }
@@ -275,13 +270,24 @@ private fun MovieGridWithDates(
     onMovieClick: (Movie) -> Unit,
     onTrailersClick: () -> Unit
 ) {
-    val focusRequester = remember { FocusRequester() }
+    val trailersFocusRequester = remember { FocusRequester() }
+
+    // Request focus on trailers card when grid first loads
+    LaunchedEffect(gridItems) {
+        if (gridItems.any { it is GridItem.TrailersItem }) {
+            try {
+                trailersFocusRequester.requestFocus()
+            } catch (e: Exception) {
+                // Focus requester not yet attached, ignore
+            }
+        }
+    }
 
     TvLazyVerticalGrid(
-        columns = TvGridCells.Adaptive(minSize = CARD_WIDTH + 16.dp),
-        contentPadding = PaddingValues(horizontal = 48.dp, vertical = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
-        verticalArrangement = Arrangement.spacedBy(24.dp),
+        columns = TvGridCells.Adaptive(minSize = CARD_WIDTH + 6.dp),
+        contentPadding = PaddingValues(horizontal = 32.dp, vertical = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
         modifier = Modifier.fillMaxSize()
     ) {
         items(
@@ -296,21 +302,18 @@ private fun MovieGridWithDates(
         ) { item ->
             when (item) {
                 is GridItem.TrailersItem -> {
-                    TrailersCard(onClick = onTrailersClick)
+                    TrailersCard(
+                        onClick = onTrailersClick,
+                        modifier = Modifier.focusRequester(trailersFocusRequester)
+                    )
                 }
                 is GridItem.DateItem -> {
                     DateDividerCard(dateString = item.date)
                 }
                 is GridItem.MovieItem -> {
-                    val isFirst = gridItems.filterIsInstance<GridItem.MovieItem>().firstOrNull()?.movie?.id == item.movie.id
                     MovieCard(
                         movie = item.movie,
-                        onClick = { onMovieClick(item.movie) },
-                        modifier = if (isFirst) {
-                            Modifier.focusRequester(focusRequester)
-                        } else {
-                            Modifier
-                        }
+                        onClick = { onMovieClick(item.movie) }
                     )
                 }
             }

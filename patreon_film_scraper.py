@@ -1,18 +1,23 @@
 """
 Patreon Film scraper for discovering indie films and cross-referencing with TMDB.
+
+v2: Migrated to use PlaywrightScraperBase for shared functionality.
 """
 
 import json
 import time
 import re
+import logging
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Tuple
-import unicodedata
+from typing import Dict, List, Optional
 import requests
 from functools import wraps
 
-from playwright_manager import get_playwright_manager
+from scraper_base import PlaywrightScraperBase
 from constants import get_scraper_config
+
+# Module-level logger
+logger = logging.getLogger(__name__)
 
 
 def retry_with_exponential_backoff(max_retries: int = 3, base_delay: float = 0.5, max_delay: float = 5.0, jitter_ratio: float = 0.2):
@@ -31,7 +36,7 @@ def retry_with_exponential_backoff(max_retries: int = 3, base_delay: float = 0.5
                     jitter = delay * jitter_ratio * (0.5 - time.time() % 1)  # Random jitter
                     actual_delay = delay + jitter
 
-                    print(f"Attempt {attempt + 1} failed: {str(e)[:100]}... Retrying in {actual_delay:.1f}s")
+                    logger.warning(f"Attempt {attempt + 1} failed: {str(e)[:100]}... Retrying in {actual_delay:.1f}s")
                     time.sleep(actual_delay)
 
             return None
@@ -39,50 +44,48 @@ def retry_with_exponential_backoff(max_retries: int = 3, base_delay: float = 0.5
     return decorator
 
 
-class PatreonFilmScraper:
-    """Scrapes Patreon for indie films and cross-references with TMDB."""
+class PatreonFilmScraper(PlaywrightScraperBase):
+    """Scrapes Patreon for indie films and cross-references with TMDB.
+
+    v2: Now inherits from PlaywrightScraperBase for shared functionality.
+    """
 
     def __init__(self, cache_file: str = "cache/patreon_cache.json", config: dict = None, headless: bool = True):
         """Initialize the Patreon scraper."""
-        self.cache_file = cache_file
-
-        if config:
-            self.config = config
-        else:
-            # Load config from config.yaml
+        # Build config if not provided
+        if config is None:
             try:
                 import yaml
                 with open('config.yaml', 'r') as f:
                     full_config = yaml.safe_load(f)
-                self.config = get_scraper_config(full_config, "patreon_scraper")
+                config = full_config
             except Exception:
-                # Fallback to defaults
-                from constants import SCRAPER_DEFAULTS
-                self.config = SCRAPER_DEFAULTS.copy()
-                self.config['discovery'] = {
-                    'max_creators': 50,
-                    'min_runtime': 10,  # Patreon content can be shorter
-                    'categories': ["film", "movie", "documentary", "filmmaker", "indie"],
-                    'search_terms': ["film", "movie", "documentary", "short film", "indie film", "filmmaker"]
-                }
+                config = {}
 
-        self.headless = headless
-        self.cache = self._load_cache()
-        self.tmdb_api_key = self.config.get("tmdb_api_key") or self._get_tmdb_api_key()
+        # Store headless preference in config for base class
+        config['headless'] = headless
 
-        # Rate limiting
-        self.last_request_time = 0
-        self.rate_limit = self.config.get("rate_limit", 3.0)  # Slower for Patreon
+        # Initialize base class
+        super().__init__(
+            cache_file=cache_file,
+            config=config,
+            logger=logger,
+            config_key='patreon_scraper',
+            log_prefix='PatreonFilmScraper',
+            screenshot_subdir='patreon'
+        )
 
-        # Retry configuration
-        self.max_retries = self.config.get("max_retries", 3)
-        self.exponential_backoff = self.config.get("exponential_backoff", {})
+        # Override rate limit for Patreon (slower)
+        self.rate_limit = self.scraper_config.get('rate_limit', 3.0)
+
+        # TMDB API key
+        self.tmdb_api_key = self.config.get('api', {}).get('tmdb_api_key') or self._get_tmdb_api_key()
 
         # Discovery configuration
-        self.discovery_config = self.config.get("discovery", {})
-        self.max_creators = self.discovery_config.get("max_creators", 50)
-        self.min_runtime = self.discovery_config.get("min_runtime", 10)
-        self.search_terms = self.discovery_config.get("search_terms", ["film", "movie", "documentary"])
+        self.discovery_config = self.scraper_config.get('discovery', {})
+        self.max_creators = self.discovery_config.get('max_creators', 50)
+        self.min_runtime = self.discovery_config.get('min_runtime', 10)
+        self.search_terms = self.discovery_config.get('search_terms', ["film", "movie", "documentary"])
 
         # Known film creators from research
         self.known_film_creators = [
@@ -104,76 +107,39 @@ class PatreonFilmScraper:
         }
 
     def _get_tmdb_api_key(self) -> str:
-        """Get TMDB API key from config or environment."""
+        """Get TMDB API key from environment."""
         import os
         return os.getenv("TMDB_API_KEY", "")
-
-    def _load_cache(self) -> dict:
-        """Load cache from file."""
-        try:
-            with open(self.cache_file, 'r', encoding='utf-8') as f:
-                cache = json.load(f)
-
-            # Clean expired cache entries
-            ttl_days = self.config.get("cache_ttl_days", 30)
-            cutoff_date = datetime.now() - timedelta(days=ttl_days)
-
-            cleaned_cache = {}
-            for key, value in cache.items():
-                if 'timestamp' in value:
-                    cache_date = datetime.fromisoformat(value['timestamp'])
-                    if cache_date > cutoff_date:
-                        cleaned_cache[key] = value
-                else:
-                    cleaned_cache[key] = value
-
-            return cleaned_cache
-        except (FileNotFoundError, json.JSONDecodeError):
-            return {}
-
-    def _save_cache(self):
-        """Save cache to file."""
-        import os
-        os.makedirs(os.path.dirname(self.cache_file), exist_ok=True)
-        with open(self.cache_file, 'w', encoding='utf-8') as f:
-            json.dump(self.cache, f, indent=2, ensure_ascii=False)
-
-    def _rate_limit(self):
-        """Apply rate limiting."""
-        elapsed = time.time() - self.last_request_time
-        if elapsed < self.rate_limit:
-            time.sleep(self.rate_limit - elapsed)
-        self.last_request_time = time.time()
 
     @retry_with_exponential_backoff()
     def _scrape_creator_page(self, username: str) -> List[Dict]:
         """Scrape a Patreon creator page for film content."""
         cache_key = f"creator_{username}"
         if cache_key in self.cache:
-            print(f"Using cached data for creator {username}")
+            self._log(f"Using cached data for creator {username}")
             return self.cache[cache_key]['data']
 
-        self._rate_limit()
+        self._enforce_rate_limit()
 
         creator_url = f"https://www.patreon.com/{username}"
-        print(f"Scraping Patreon creator: {creator_url}")
+        self._log(f"Scraping Patreon creator: {creator_url}")
 
-        playwright_manager = get_playwright_manager()
-        page = playwright_manager.get_page(headless=self.headless)
+        # Initialize browser if needed
+        self._init_browser()
 
         films = []
         try:
             # Navigate to creator page
-            page.goto(creator_url, wait_until='networkidle', timeout=30000)
+            self.page.goto(creator_url, wait_until='networkidle', timeout=30000)
 
             # Wait for page to load
             time.sleep(2)
 
             # Extract creator info
-            creator_info = self._extract_creator_info(page)
+            creator_info = self._extract_creator_info()
 
             # Extract posts that might be films
-            posts = self._extract_creator_posts(page)
+            posts = self._extract_creator_posts()
 
             # Filter posts for film content
             for post in posts:
@@ -183,10 +149,8 @@ class PatreonFilmScraper:
                         films.append(film_data)
 
         except Exception as e:
-            print(f"Error scraping {username}: {str(e)}")
+            self._log(f"Error scraping {username}: {str(e)}", level='error')
             raise e
-        finally:
-            playwright_manager.close_page(page)
 
         # Cache the results
         self.cache[cache_key] = {
@@ -195,20 +159,20 @@ class PatreonFilmScraper:
         }
         self._save_cache()
 
-        print(f"Found {len(films)} films from {username}")
+        self._log(f"Found {len(films)} films from {username}")
         return films
 
-    def _extract_creator_info(self, page) -> Dict:
+    def _extract_creator_info(self) -> Dict:
         """Extract basic creator information."""
         creator_info = {}
         try:
             # Extract creator name
             name_selector = 'h1[data-tag="creator-page-title"]'
-            creator_info['name'] = page.locator(name_selector).text_content() if page.locator(name_selector).count() > 0 else ""
+            creator_info['name'] = self.page.locator(name_selector).text_content() if self.page.locator(name_selector).count() > 0 else ""
 
             # Extract description
             desc_selector = '[data-tag="creator-page-description"]'
-            creator_info['description'] = page.locator(desc_selector).text_content() if page.locator(desc_selector).count() > 0 else ""
+            creator_info['description'] = self.page.locator(desc_selector).text_content() if self.page.locator(desc_selector).count() > 0 else ""
 
             # Extract category/genre info from description
             description = creator_info['description'].lower()
@@ -220,19 +184,19 @@ class PatreonFilmScraper:
                 creator_info['is_film_creator'] = False
 
         except Exception as e:
-            print(f"Error extracting creator info: {e}")
+            self._log(f"Error extracting creator info: {e}", level='warning')
 
         return creator_info
 
-    def _extract_creator_posts(self, page) -> List[Dict]:
+    def _extract_creator_posts(self) -> List[Dict]:
         """Extract posts from creator page."""
         posts = []
         try:
             # Wait for posts to load
-            page.wait_for_selector('[data-tag="post-card"]', timeout=10000)
+            self.page.wait_for_selector('[data-tag="post-card"]', timeout=10000)
 
             # Extract post cards
-            post_cards = page.locator('[data-tag="post-card"]').all()
+            post_cards = self.page.locator('[data-tag="post-card"]').all()
 
             for card in post_cards[:20]:  # Limit to first 20 posts
                 try:
@@ -263,11 +227,11 @@ class PatreonFilmScraper:
                     posts.append(post_data)
 
                 except Exception as e:
-                    print(f"Error extracting post: {e}")
+                    self._log(f"Error extracting post: {e}", level='debug')
                     continue
 
         except Exception as e:
-            print(f"Error extracting posts: {e}")
+            self._log(f"Error extracting posts: {e}", level='warning')
 
         return posts
 
@@ -322,7 +286,7 @@ class PatreonFilmScraper:
             return film_data
 
         except Exception as e:
-            print(f"Error parsing film post: {e}")
+            self._log(f"Error parsing film post: {e}", level='warning')
             return None
 
     def _extract_runtime_from_text(self, text: str) -> Optional[int]:
@@ -379,21 +343,21 @@ class PatreonFilmScraper:
 
         found_creators = set(self.known_film_creators)  # Start with known creators
 
-        playwright_manager = get_playwright_manager()
-        page = playwright_manager.get_page(headless=self.headless)
+        # Initialize browser if needed
+        self._init_browser()
 
         try:
             for term in search_terms:
-                self._rate_limit()
+                self._enforce_rate_limit()
 
                 search_url = f"https://www.patreon.com/search?q={term}"
-                print(f"Searching Patreon for: {term}")
+                self._log(f"Searching Patreon for: {term}")
 
-                page.goto(search_url, wait_until='networkidle', timeout=30000)
+                self.page.goto(search_url, wait_until='networkidle', timeout=30000)
                 time.sleep(2)
 
                 # Extract creator usernames from search results
-                creator_links = page.locator('a[href*="/user?u="], a[href^="/"]').all()
+                creator_links = self.page.locator('a[href*="/user?u="], a[href^="/"]').all()
 
                 for link in creator_links[:10]:  # Limit results per search
                     try:
@@ -406,9 +370,7 @@ class PatreonFilmScraper:
                         continue
 
         except Exception as e:
-            print(f"Error during search: {e}")
-        finally:
-            playwright_manager.close_page(page)
+            self._log(f"Error during search: {e}", level='error')
 
         return list(found_creators)
 
@@ -436,18 +398,18 @@ class PatreonFilmScraper:
         if max_creators is None:
             max_creators = self.max_creators
 
-        print(f"🎬 Starting Patreon film discovery...")
+        self._log(f"Starting Patreon film discovery...")
 
         # Search for film creators
         creators = self.search_film_creators()
-        print(f"Found {len(creators)} potential film creators")
+        self._log(f"Found {len(creators)} potential film creators")
 
         all_films = []
         processed_creators = 0
 
         for creator in creators[:max_creators]:
             try:
-                print(f"\nProcessing creator {processed_creators + 1}/{min(len(creators), max_creators)}: {creator}")
+                self._log(f"Processing creator {processed_creators + 1}/{min(len(creators), max_creators)}: {creator}")
 
                 films = self._scrape_creator_page(creator)
 
@@ -458,26 +420,26 @@ class PatreonFilmScraper:
                 all_films.extend(filtered_films)
                 processed_creators += 1
 
-                print(f"Added {len(filtered_films)} films from {creator}")
+                self._log(f"Added {len(filtered_films)} films from {creator}")
 
             except Exception as e:
-                print(f"Error processing creator {creator}: {e}")
+                self._log(f"Error processing creator {creator}: {e}", level='warning')
                 continue
 
-        print(f"\n✅ Discovery complete: Found {len(all_films)} films from {processed_creators} creators")
+        self._log(f"Discovery complete: Found {len(all_films)} films from {processed_creators} creators")
         return all_films
 
     def cross_reference_tmdb(self, films: List[Dict]) -> List[Dict]:
         """Cross-reference discovered films with TMDB database."""
         if not self.tmdb_api_key:
-            print("⚠️  No TMDB API key provided, skipping cross-reference")
+            self._log("No TMDB API key provided, skipping cross-reference", level='warning')
             return films
 
-        print(f"🔍 Cross-referencing {len(films)} films with TMDB...")
+        self._log(f"Cross-referencing {len(films)} films with TMDB...")
 
         for i, film in enumerate(films):
             try:
-                print(f"Processing {i+1}/{len(films)}: {film['title'][:50]}...")
+                self._log(f"Processing {i+1}/{len(films)}: {film['title'][:50]}...", level='debug')
 
                 tmdb_data = self._search_tmdb(film['title'])
                 if tmdb_data:
@@ -496,7 +458,7 @@ class PatreonFilmScraper:
                 time.sleep(0.1)  # Rate limit TMDB requests
 
             except Exception as e:
-                print(f"Error cross-referencing {film['title']}: {e}")
+                self._log(f"Error cross-referencing {film['title']}: {e}", level='warning')
                 film['tmdb_match_confidence'] = 'error'
 
         return films
@@ -525,7 +487,7 @@ class PatreonFilmScraper:
                 return results[0]
 
         except Exception as e:
-            print(f"TMDB search error for '{title}': {e}")
+            self._log(f"TMDB search error for '{title}': {e}", level='warning')
 
         return None
 
@@ -570,3 +532,8 @@ class PatreonFilmScraper:
         union = words1.union(words2)
 
         return len(intersection) / len(union) if union else 0.0
+
+    def close(self):
+        """Clean up resources."""
+        self._cleanup_browser()
+        self._save_cache()

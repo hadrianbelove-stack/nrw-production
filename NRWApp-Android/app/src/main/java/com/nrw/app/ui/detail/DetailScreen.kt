@@ -24,8 +24,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.focusable
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -43,16 +52,17 @@ import com.nrw.app.data.Movie
 import com.nrw.app.data.WatchType
 import com.nrw.app.data.getBackdropUrl
 import com.nrw.app.data.getFormattedCountries
-import com.nrw.app.data.getFormattedGenres
 import com.nrw.app.data.getFormattedRuntime
 import com.nrw.app.data.getPosterUrl
 import com.nrw.app.data.getRtInfo
-import com.nrw.app.ui.components.InfoButton
+import com.nrw.app.data.isStaffPick
+import com.nrw.app.ui.components.TrailerButton
 import com.nrw.app.ui.components.WatchButton
 import com.nrw.app.ui.theme.Background
 import com.nrw.app.ui.theme.Green
 import com.nrw.app.ui.theme.Primary
 import com.nrw.app.ui.theme.Red
+import com.nrw.app.ui.theme.StaffPickRed
 import com.nrw.app.ui.theme.TextMuted
 import com.nrw.app.ui.theme.TextPrimary
 import com.nrw.app.ui.theme.TextSecondary
@@ -60,6 +70,7 @@ import com.nrw.app.util.DeepLinkHelper
 
 /**
  * Movie Detail Screen for Android TV
+ * Matches tvOS layout: 35% poster, 60dp padding, buttons above synopsis
  */
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
@@ -70,10 +81,16 @@ fun DetailScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
+    val focusRequester = remember { FocusRequester() }
 
     // Load movie when screen opens
     LaunchedEffect(movieId) {
         viewModel.loadMovie(movieId)
+    }
+
+    // Request focus for key event handling
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
     }
 
     // Handle back button
@@ -85,6 +102,23 @@ fun DetailScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(Background)
+            .focusRequester(focusRequester)
+            .focusable()
+            .onKeyEvent { event ->
+                if (event.type == KeyEventType.KeyDown) {
+                    when (event.key) {
+                        Key.DirectionLeft -> {
+                            viewModel.navigatePrevious()
+                            true
+                        }
+                        Key.DirectionRight -> {
+                            viewModel.navigateNext()
+                            true
+                        }
+                        else -> false
+                    }
+                } else false
+            }
     ) {
         when {
             uiState.isLoading -> {
@@ -101,12 +135,8 @@ fun DetailScreen(
                     onWatchClick = { option ->
                         DeepLinkHelper.openUrl(context, option.url, option.service)
                     },
-                    onInfoClick = { option ->
-                        when (option.type) {
-                            "trailer" -> DeepLinkHelper.openTrailer(context, option.url)
-                            "rotten_tomatoes" -> DeepLinkHelper.openRottenTomatoes(context, option.url)
-                            else -> DeepLinkHelper.openUrl(context, option.url)
-                        }
+                    onTrailerClick = { url ->
+                        DeepLinkHelper.openTrailer(context, url)
                     }
                 )
             }
@@ -121,8 +151,12 @@ private fun MovieDetail(
     watchOptions: List<com.nrw.app.data.WatchOption>,
     infoOptions: List<com.nrw.app.data.InfoOption>,
     onWatchClick: (com.nrw.app.data.WatchOption) -> Unit,
-    onInfoClick: (com.nrw.app.data.InfoOption) -> Unit
+    onTrailerClick: (String) -> Unit
 ) {
+    // Find trailer URL (only info option we use on TV)
+    val trailerOption = infoOptions.find { it.type == "trailer" }
+    val rtInfo = movie.getRtInfo()
+
     Box(modifier = Modifier.fillMaxSize()) {
         // Backdrop image with gradient overlay
         movie.getBackdropUrl()?.let { backdropUrl ->
@@ -139,239 +173,155 @@ private fun MovieDetail(
                         Brush.horizontalGradient(
                             colors = listOf(
                                 Background.copy(alpha = 0.95f),
-                                Background.copy(alpha = 0.7f),
-                                Background.copy(alpha = 0.5f)
+                                Background.copy(alpha = 0.8f),
+                                Background.copy(alpha = 0.6f)
                             )
                         )
                     )
             )
         }
 
-        // Content
+        // Content - Option E layout: larger poster, compact text
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(48.dp)
+                .padding(horizontal = 40.dp, vertical = 24.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            // Left side - Poster
-            Box(
+            // Left side - Large Poster (Option E: biggest poster)
+            AsyncImage(
+                model = movie.getPosterUrl("w780"),
+                contentDescription = movie.title,
+                contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .fillMaxHeight()
-                    .width(300.dp)
-            ) {
-                AsyncImage(
-                    model = movie.getPosterUrl("w780"),
-                    contentDescription = movie.title,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .fillMaxHeight(0.85f)
-                        .aspectRatio(2f / 3f)
-                        .clip(RoundedCornerShape(16.dp))
-                )
+                    .fillMaxHeight(0.92f)
+                    .aspectRatio(2f / 3f)
+                    .clip(RoundedCornerShape(12.dp))
+            )
 
-                // RT Score badge
-                movie.getRtInfo()?.let { (score, isFresh) ->
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.BottomStart)
-                            .padding(start = 8.dp, bottom = 80.dp)
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(if (isFresh) Green else Red)
-                            .padding(horizontal = 12.dp, vertical = 8.dp)
-                    ) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(
-                                text = "$score%",
-                                color = TextPrimary,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 18.sp
-                            )
-                            Text(
-                                text = if (isFresh) "Fresh" else "Rotten",
-                                color = TextPrimary,
-                                fontSize = 12.sp
-                            )
-                        }
-                    }
-                }
-            }
+            Spacer(modifier = Modifier.width(40.dp))
 
-            Spacer(modifier = Modifier.width(48.dp))
-
-            // Right side - Details
+            // Right side - Compact Details
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .fillMaxHeight()
-                    .verticalScroll(rememberScrollState())
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.Center
             ) {
-                // Title
-                Text(
-                    text = movie.title,
-                    color = TextPrimary,
-                    fontSize = 36.sp,
-                    fontWeight = FontWeight.Bold,
-                    lineHeight = 42.sp
-                )
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                // Metadata row
+                // Title row with Staff Pick badge inline
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    movie.year?.let {
-                        Text(text = it.toString(), color = TextSecondary, fontSize = 18.sp)
-                    }
-                    movie.getFormattedRuntime()?.let {
-                        Text(text = "•", color = TextMuted, fontSize = 18.sp)
-                        Text(text = it, color = TextSecondary, fontSize = 18.sp)
-                    }
-                    movie.rating?.let {
-                        Text(text = "•", color = TextMuted, fontSize = 18.sp)
+                    Text(
+                        text = movie.title,
+                        color = TextPrimary,
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.Bold,
+                        lineHeight = 32.sp
+                    )
+                    if (movie.isStaffPick()) {
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(4.dp))
-                                .background(TextMuted.copy(alpha = 0.3f))
-                                .padding(horizontal = 8.dp, vertical = 2.dp)
+                                .background(StaffPickRed)
+                                .padding(horizontal = 8.dp, vertical = 4.dp)
                         ) {
-                            Text(text = it, color = TextSecondary, fontSize = 14.sp)
-                        }
-                    }
-                }
-
-                // Genres
-                movie.getFormattedGenres()?.let { genres ->
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = genres,
-                        color = Primary,
-                        fontSize = 16.sp
-                    )
-                }
-
-                // Director
-                movie.director?.let { director ->
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Row {
-                        Text(text = "Directed by ", color = TextMuted, fontSize = 16.sp)
-                        Text(text = director, color = TextPrimary, fontSize = 16.sp, fontWeight = FontWeight.Medium)
-                    }
-                }
-
-                // Countries
-                movie.getFormattedCountries()?.let { countries ->
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Row {
-                        Text(text = "Country ", color = TextMuted, fontSize = 16.sp)
-                        Text(text = countries, color = TextPrimary, fontSize = 16.sp)
-                    }
-                }
-
-                // Synopsis
-                movie.synopsis?.let { synopsis ->
-                    Spacer(modifier = Modifier.height(24.dp))
-                    Text(
-                        text = "Synopsis",
-                        color = TextPrimary,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = synopsis,
-                        color = TextSecondary,
-                        fontSize = 16.sp,
-                        lineHeight = 24.sp
-                    )
-                }
-
-                // Watch buttons
-                if (watchOptions.isNotEmpty()) {
-                    Spacer(modifier = Modifier.height(32.dp))
-                    Text(
-                        text = "Where to Watch",
-                        color = TextPrimary,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    // Plex buttons (personal library first)
-                    val plexOptions = watchOptions.filter { it.type == WatchType.PLEX }
-                    val purchaseOptions = watchOptions.filter { it.type == WatchType.PURCHASE }
-                    val streamingOptions = watchOptions.filter { it.type == WatchType.STREAMING }
-
-                    if (plexOptions.isNotEmpty()) {
-                        FlowRow(
-                            horizontalArrangement = Arrangement.spacedBy(12.dp),
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            plexOptions.forEach { option ->
-                                WatchButton(
-                                    option = option,
-                                    onClick = { onWatchClick(option) }
-                                )
-                            }
-                        }
-                        Spacer(modifier = Modifier.height(12.dp))
-                    }
-
-                    if (purchaseOptions.isNotEmpty()) {
-                        FlowRow(
-                            horizontalArrangement = Arrangement.spacedBy(12.dp),
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            purchaseOptions.forEach { option ->
-                                WatchButton(
-                                    option = option,
-                                    onClick = { onWatchClick(option) }
-                                )
-                            }
-                        }
-                        Spacer(modifier = Modifier.height(12.dp))
-                    }
-
-                    if (streamingOptions.isNotEmpty()) {
-                        FlowRow(
-                            horizontalArrangement = Arrangement.spacedBy(12.dp),
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            streamingOptions.forEach { option ->
-                                WatchButton(
-                                    option = option,
-                                    onClick = { onWatchClick(option) }
-                                )
-                            }
-                        }
-                    }
-                }
-
-                // Info buttons
-                if (infoOptions.isNotEmpty()) {
-                    Spacer(modifier = Modifier.height(32.dp))
-                    Text(
-                        text = "More Info",
-                        color = TextPrimary,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    Spacer(modifier = Modifier.height(12.dp))
-                    FlowRow(
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        infoOptions.forEach { option ->
-                            InfoButton(
-                                label = option.label,
-                                onClick = { onInfoClick(option) }
+                            Text(
+                                text = "STAFF PICK",
+                                color = TextPrimary,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 10.sp,
+                                letterSpacing = 0.5.sp
                             )
                         }
                     }
                 }
 
-                Spacer(modifier = Modifier.height(48.dp))
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Meta row: Director • Country • Year • Runtime • RT Score
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    movie.director?.let { director ->
+                        Text(
+                            text = director,
+                            color = Primary,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+                        Text(text = "•", color = TextMuted, fontSize = 12.sp)
+                    }
+                    movie.getFormattedCountries()?.let { country ->
+                        Text(text = country, color = Primary, fontSize = 12.sp)
+                        Text(text = "•", color = TextMuted, fontSize = 12.sp)
+                    }
+                    movie.year?.let { year ->
+                        Text(text = year.toString(), color = TextSecondary, fontSize = 12.sp)
+                        Text(text = "•", color = TextMuted, fontSize = 12.sp)
+                    }
+                    movie.getFormattedRuntime()?.let { runtime ->
+                        Text(text = runtime, color = TextSecondary, fontSize = 12.sp)
+                    }
+                    // RT Score badge inline
+                    rtInfo?.let { (score, isFresh) ->
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(4.dp))
+                                .background(if (isFresh) Green else Red)
+                                .padding(horizontal = 6.dp, vertical = 2.dp)
+                        ) {
+                            Text(
+                                text = "🍅 $score%",
+                                color = TextPrimary,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 11.sp
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // Synopsis - compact
+                movie.synopsis?.let { synopsis ->
+                    Text(
+                        text = synopsis,
+                        color = TextSecondary,
+                        fontSize = 14.sp,
+                        lineHeight = 20.sp
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Action buttons - compact row
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    // Trailer button first (if available)
+                    trailerOption?.let { option ->
+                        TrailerButton(
+                            onClick = { onTrailerClick(option.url) },
+                            compact = true
+                        )
+                    }
+
+                    // Watch buttons - all in one row
+                    watchOptions.forEach { option ->
+                        WatchButton(
+                            option = option,
+                            onClick = { onWatchClick(option) },
+                            compact = true
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
             }
         }
 
@@ -385,9 +335,9 @@ private fun MovieDetail(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "Press Back to return",
+                text = "← → Navigate movies  •  Back to return",
                 color = TextMuted,
-                fontSize = 14.sp
+                fontSize = 12.sp
             )
         }
     }
@@ -407,7 +357,7 @@ private fun LoadingState() {
             Text(
                 text = "Loading movie...",
                 color = TextSecondary,
-                fontSize = 18.sp
+                fontSize = 24.sp
             )
         }
     }
@@ -425,20 +375,20 @@ private fun ErrorState(error: String) {
             Text(
                 text = "Movie not found",
                 color = TextPrimary,
-                fontSize = 24.sp,
+                fontSize = 32.sp,
                 fontWeight = FontWeight.Bold
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
             Text(
                 text = error,
                 color = TextSecondary,
-                fontSize = 16.sp
+                fontSize = 24.sp
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(20.dp))
             Text(
                 text = "Press Back to go back",
                 color = TextMuted,
-                fontSize = 14.sp
+                fontSize = 18.sp
             )
         }
     }
