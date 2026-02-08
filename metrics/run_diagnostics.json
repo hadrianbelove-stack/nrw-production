@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-02-07T09:29:54.421505",
-  "duration_seconds": 75.936797,
+  "timestamp": "2026-02-08T09:29:30.072301",
+  "duration_seconds": 76.054205,
   "overall_success": false,
   "failure_count": 6,
   "warning_count": 0,
@@ -8,35 +8,35 @@
     {
       "name": "Intake new premieres from TMDB",
       "success": false,
-      "duration_seconds": 0.2268,
+      "duration_seconds": 0.333218,
       "error": "Traceback (most recent call last):\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 20, in <module>\n    from pipeline import DataGenerator\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/__init__.py\", line 10, in <module>\n    from pipeline.generator import DataGenerator, setup_logger\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/generator.py\", line 19, in <module>\n    from agent_link_scraper import AgentLinkScraper\n  File \"/home/runner/work/nrw-production/nrw-production/agent_link_scraper.py\", line 32, in <module>\n    from scraper_base import PlaywrightScraperBase\nModuleNotFoundError: No module named 'scraper_base'\n",
       "output_preview": null
     },
     {
       "name": "Intake new premieres from TMDB",
       "success": false,
-      "duration_seconds": 0.174114,
+      "duration_seconds": 0.170045,
       "error": "Traceback (most recent call last):\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 20, in <module>\n    from pipeline import DataGenerator\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/__init__.py\", line 10, in <module>\n    from pipeline.generator import DataGenerator, setup_logger\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/generator.py\", line 19, in <module>\n    from agent_link_scraper import AgentLinkScraper\n  File \"/home/runner/work/nrw-production/nrw-production/agent_link_scraper.py\", line 32, in <module>\n    from scraper_base import PlaywrightScraperBase\nModuleNotFoundError: No module named 'scraper_base'\n",
       "output_preview": null
     },
     {
       "name": "Intake new premieres from TMDB",
       "success": false,
-      "duration_seconds": 0.16829,
+      "duration_seconds": 0.172291,
       "error": "Traceback (most recent call last):\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 20, in <module>\n    from pipeline import DataGenerator\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/__init__.py\", line 10, in <module>\n    from pipeline.generator import DataGenerator, setup_logger\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/generator.py\", line 19, in <module>\n    from agent_link_scraper import AgentLinkScraper\n  File \"/home/runner/work/nrw-production/nrw-production/agent_link_scraper.py\", line 32, in <module>\n    from scraper_base import PlaywrightScraperBase\nModuleNotFoundError: No module named 'scraper_base'\n",
       "output_preview": null
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": false,
-      "duration_seconds": 0.164663,
+      "duration_seconds": 0.169514,
       "error": "Traceback (most recent call last):\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 20, in <module>\n    from pipeline import DataGenerator\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/__init__.py\", line 10, in <module>\n    from pipeline.generator import DataGenerator, setup_logger\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/generator.py\", line 19, in <module>\n    from agent_link_scraper import AgentLinkScraper\n  File \"/home/runner/work/nrw-production/nrw-production/agent_link_scraper.py\", line 32, in <module>\n    from scraper_base import PlaywrightScraperBase\nModuleNotFoundError: No module named 'scraper_base'\n",
       "output_preview": null
     },
     {
       "name": "Enrich newly available movies with metadata",
       "success": false,
-      "duration_seconds": 0.167597,
+      "duration_seconds": 0.173317,
       "error": "Traceback (most recent call last):\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 20, in <module>\n    from pipeline import DataGenerator\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/__init__.py\", line 10, in <module>\n    from pipeline.generator import DataGenerator, setup_logger\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/generator.py\", line 19, in <module>\n    from agent_link_scraper import AgentLinkScraper\n  File \"/home/runner/work/nrw-production/nrw-production/agent_link_scraper.py\", line 32, in <module>\n    from scraper_base import PlaywrightScraperBase\nModuleNotFoundError: No module named 'scraper_base'\n",
       "output_preview": null
     }
