@@ -16,10 +16,9 @@ import re
 from urllib.parse import quote
 import logging
 from logging.handlers import RotatingFileHandler
-from agent_link_scraper import AgentLinkScraper
+# NOTE: Scraper imports are LAZY (inside methods) to protect intake/discovery phases
+# If a scraper import fails, only enrichment breaks - not the whole pipeline
 from scripts.youtube_trailer_scraper import YouTubeTrailerScraper
-from rt_scraper_playwright import RTScraperPlaywright
-from wikipedia_scraper_playwright import WikipediaScraperPlaywright
 from constants import PLACEHOLDER_ASINS, get_scraper_config, MAX_ENRICHMENT_BATCH, ENRICHMENT_LOOP_TIMEOUT_MINUTES
 try:
     from streaming_platform_scraper import StreamingPlatformScraper
@@ -1928,6 +1927,7 @@ class DataGenerator:
                 self.logger.debug("Wikipedia scraper disabled - enrichment not enabled")
                 return None
 
+            from wikipedia_scraper_playwright import WikipediaScraperPlaywright
             self.wikipedia_scraper = WikipediaScraperPlaywright(
                 cache_file='cache/wikipedia_cache.json',
                 config=self.config,
@@ -2092,6 +2092,7 @@ class DataGenerator:
                 cache_file = 'cache/agent_links_cache.json'  # Could be configurable
 
                 self.logger.debug("Initializing agent scraper with Playwright...")
+                from agent_link_scraper import AgentLinkScraper
                 self.streaming_scraper = AgentLinkScraper(
                     cache_file=cache_file,
                     config=streaming_config  # Pass entire config dict
@@ -2114,6 +2115,7 @@ class DataGenerator:
             return False
 
         try:
+            from rt_scraper_playwright import RTScraperPlaywright
             self.rt_scraper = RTScraperPlaywright(
                 cache_file='cache/rt_cache.json',
                 config=self.config,
