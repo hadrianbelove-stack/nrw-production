@@ -1,0 +1,70 @@
+{
+  "_comment": "Single source of truth for streaming service colors. When adding or changing colors, update this file first, then sync to: assets/styles.css (badge classes), NRWApp-Android Color.kt and MovieCard.kt",
+  "services": {
+    "netflix": {
+      "background": "#E50914",
+      "text": "#FFFFFF",
+      "name": "Netflix"
+    },
+    "disney_plus": {
+      "background": "#113CCF",
+      "text": "#FFFFFF",
+      "name": "Disney+"
+    },
+    "max": {
+      "background": "#B537F2",
+      "text": "#FFFFFF",
+      "name": "Max"
+    },
+    "prime": {
+      "background": "#00A8E1",
+      "text": "#FFFFFF",
+      "name": "Prime Video"
+    },
+    "hulu": {
+      "background": "#1CE783",
+      "text": "#000000",
+      "name": "Hulu"
+    },
+    "peacock": {
+      "background": "#000000",
+      "text": "#FFFFFF",
+      "name": "Peacock"
+    },
+    "paramount_plus": {
+      "background": "#0064FF",
+      "text": "#FFFFFF",
+      "name": "Paramount+"
+    },
+    "apple_tv": {
+      "background": "#000000",
+      "text": "#FFFFFF",
+      "name": "Apple TV"
+    },
+    "amazon": {
+      "background": "#FF9900",
+      "text": "#000000",
+      "name": "Amazon"
+    },
+    "plex": {
+      "background": "#E5A00D",
+      "text": "#000000",
+      "name": "Plex"
+    },
+    "mubi": {
+      "background": "#DA2128",
+      "text": "#FFFFFF",
+      "name": "MUBI"
+    },
+    "shudder": {
+      "background": "#8B0000",
+      "text": "#FFFFFF",
+      "name": "Shudder"
+    },
+    "criterion": {
+      "background": "#000000",
+      "text": "#FFFFFF",
+      "name": "Criterion"
+    }
+  }
+}

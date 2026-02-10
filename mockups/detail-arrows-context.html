@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NRW Detail - Arrow Options in Context</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #0a0a0a;
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        h1 {
+            color: #00D4AA;
+            padding: 30px 40px 20px;
+            font-size: 20px;
+        }
+
+        .option-label {
+            color: #00D4AA;
+            font-size: 14px;
+            padding: 20px 40px 10px;
+            border-top: 1px solid #222;
+        }
+
+        /* ========== DETAIL SCREEN LAYOUT ========== */
+        .detail-screen {
+            width: 100%;
+            max-width: 1200px;
+            height: 500px;
+            margin: 0 auto 40px;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+            border-radius: 12px;
+            position: relative;
+            display: flex;
+            padding: 40px;
+            overflow: hidden;
+        }
+
+        .poster {
+            width: 240px;
+            height: 360px;
+            background: linear-gradient(135deg, #2a2a4a 0%, #1a1a2e 100%);
+            border-radius: 12px;
+            border: 2px solid #00D4AA;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00D4AA;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .details {
+            flex: 1;
+            padding-left: 40px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .staff-pick {
+            background: #00D4AA;
+            color: #0a0a0a;
+            font-size: 10px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        /* Meta line - Option B style */
+        .meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .meta-teal { color: #00D4AA; font-size: 13px; }
+        .meta-text { color: #bbb; font-size: 13px; }
+        .meta-dot { color: #555; font-size: 13px; }
+
+        .rt-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            background: #34c759;
+            color: #fff;
+        }
+
+        .synopsis {
+            color: #888;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            max-width: 500px;
+        }
+
+        /* Buttons row */
+        .buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: 700;
+            border: none;
+            gap: 6px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Trailer - Option A style */
+        .btn-trailer {
+            padding: 8px 14px;
+            border-radius: 6px;
+            background: #E53935;
+            color: #fff;
+        }
+
+        /* Services - Option B outline style */
+        .btn-outline {
+            padding: 8px 16px;
+            border-radius: 6px;
+            background: transparent;
+            border: 1.5px solid;
+        }
+        .btn-amazon { border-color: #FF9900; color: #FF9900; }
+        .btn-apple { border-color: #aaa; color: #aaa; }
+        .btn-plex { border-color: #E5A00D; color: #E5A00D; }
+
+        /* ========== ARROW STYLES ========== */
+
+        /* Option A: Minimal Teal */
+        .arrows-a .arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #00D4AA;
+            font-size: 32px;
+            opacity: 0.6;
+        }
+        .arrows-a .arrow-left { left: 15px; }
+        .arrows-a .arrow-right { right: 15px; }
+
+        /* Option B: Boxed Keys */
+        .arrows-b .arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            border: 1px solid #444;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #888;
+            font-size: 18px;
+            background: rgba(0,0,0,0.3);
+        }
+        .arrows-b .arrow-left { left: 15px; }
+        .arrows-b .arrow-right { right: 15px; }
+
+        /* Option C: Side Gradients */
+        .arrows-c .arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00D4AA;
+            font-size: 28px;
+        }
+        .arrows-c .arrow-left {
+            left: 0;
+            background: linear-gradient(90deg, rgba(0,212,170,0.12) 0%, transparent 100%);
+            border-radius: 0 8px 8px 0;
+            padding-left: 8px;
+        }
+        .arrows-c .arrow-right {
+            right: 0;
+            background: linear-gradient(-90deg, rgba(0,212,170,0.12) 0%, transparent 100%);
+            border-radius: 8px 0 0 8px;
+            padding-right: 8px;
+        }
+
+        /* Option D: Large Faint Chevrons */
+        .arrows-d .arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #333;
+            font-size: 60px;
+            font-weight: 200;
+        }
+        .arrows-d .arrow-left { left: 10px; }
+        .arrows-d .arrow-right { right: 10px; }
+
+        /* Option E: Floating Circles */
+        .arrows-e .arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(0,212,170,0.15);
+            border: 1px solid rgba(0,212,170,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00D4AA;
+            font-size: 20px;
+        }
+        .arrows-e .arrow-left { left: 20px; }
+        .arrows-e .arrow-right { right: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Navigation Arrows in Context</h1>
+
+    <!-- Option A -->
+    <div class="option-label">Option A: Minimal Teal Arrows</div>
+    <div class="detail-screen arrows-a">
+        <span class="arrow arrow-left">‹</span>
+        <span class="arrow arrow-right">›</span>
+
+        <div class="poster">Poster</div>
+        <div class="details">
+            <div class="title">
+                The Brutalist
+                <span class="staff-pick">STAFF PICK</span>
+            </div>
+            <div class="meta">
+                <span class="meta-teal">Brady Corbet</span>
+                <span class="meta-dot">•</span>
+                <span class="meta-teal">USA / HU</span>
+                <span class="meta-dot">•</span>
+                <span class="meta-text">2024</span>
+                <span class="meta-dot">•</span>
+                <span class="meta-text">3h 35m</span>
+                <span class="meta-dot">•</span>
+                <span class="rt-badge">🍅 90%</span>
+            </div>
+            <div class="synopsis">
+                A visionary architect, László Toth, arrives in America to rebuild his life after the war. When a wealthy industrialist recognizes his talent, an epic journey begins.
+            </div>
+            <div class="buttons">
+                <button class="btn btn-trailer">▶ Trailer</button>
+                <button class="btn btn-outline btn-amazon">Amazon</button>
+                <button class="btn btn-outline btn-apple">Apple TV</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Option B -->
+    <div class="option-label">Option B: Boxed Keys</div>
+    <div class="detail-screen arrows-b">
+        <span class="arrow arrow-left">←</span>
+        <span class="arrow arrow-right">→</span>
+
+        <div class="poster">Poster</div>
+        <div class="details">
+            <div class="title">
+                The Brutalist
+                <span class="staff-pick">STAFF PICK</span>
+            </div>
+            <div class="meta">
+                <span class="meta-teal">Brady Corbet</span>
+                <span class="meta-dot">•</span>
+                <span class="meta-teal">USA / HU</span>
+                <span class="meta-dot">•</span>
+                <span class="meta-text">2024</span>
+                <span class="meta-dot">•</span>
+                <span class="meta-text">3h 35m</span>
+                <span class="meta-dot">•</span>
+                <span class="rt-badge">🍅 90%</span>
+            </div>
+            <div class="synopsis">
+                A visionary architect, László Toth, arrives in America to rebuild his life after the war. When a wealthy industrialist recognizes his talent, an epic journey begins.
+            </div>
+            <div class="buttons">
+                <button class="btn btn-trailer">▶ Trailer</button>
+                <button class="btn btn-outline btn-amazon">Amazon</button>
+                <button class="btn btn-outline btn-apple">Apple TV</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Option C -->
+    <div class="option-label">Option C: Side Gradients (tvOS-inspired)</div>
+    <div class="detail-screen arrows-c">
+        <span class="arrow arrow-left">‹</span>
+        <span class="arrow arrow-right">›</span>
+
+        <div class="poster">Poster</div>
+        <div class="details">
+            <div class="title">
+                The Brutalist
+                <span class="staff-pick">STAFF PICK</span>
+            </div>
+            <div class="meta">
+                <span class="meta-teal">Brady Corbet</span>
+                <span class="meta-dot">•</span>
+                <span class="meta-teal">USA / HU</span>
+                <span class="meta-dot">•</span>
+                <span class="meta-text">2024</span>
+                <span class="meta-dot">•</span>
+                <span class="meta-text">3h 35m</span>
+                <span class="meta-dot">•</span>
+                <span class="rt-badge">🍅 90%</span>
+            </div>
+            <div class="synopsis">
+                A visionary architect, László Toth, arrives in America to rebuild his life after the war. When a wealthy industrialist recognizes his talent, an epic journey begins.
+            </div>
+            <div class="buttons">
+                <button class="btn btn-trailer">▶ Trailer</button>
+                <button class="btn btn-outline btn-amazon">Amazon</button>
+                <button class="btn btn-outline btn-apple">Apple TV</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Option D -->
+    <div class="option-label">Option D: Large Faint Chevrons</div>
+    <div class="detail-screen arrows-d">
+        <span class="arrow arrow-left">‹</span>
+        <span class="arrow arrow-right">›</span>
+
+        <div class="poster">Poster</div>
+        <div class="details">
+            <div class="title">
+                The Brutalist
+                <span class="staff-pick">STAFF PICK</span>
+            </div>
+            <div class="meta">
+                <span class="meta-teal">Brady Corbet</span>
+                <span class="meta-dot">•</span>
+                <span class="meta-teal">USA / HU</span>
+                <span class="meta-dot">•</span>
+                <span class="meta-text">2024</span>
+                <span class="meta-dot">•</span>
+                <span class="meta-text">3h 35m</span>
+                <span class="meta-dot">•</span>
+                <span class="rt-badge">🍅 90%</span>
+            </div>
+            <div class="synopsis">
+                A visionary architect, László Toth, arrives in America to rebuild his life after the war. When a wealthy industrialist recognizes his talent, an epic journey begins.
+            </div>
+            <div class="buttons">
+                <button class="btn btn-trailer">▶ Trailer</button>
+                <button class="btn btn-outline btn-amazon">Amazon</button>
+                <button class="btn btn-outline btn-apple">Apple TV</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Option E -->
+    <div class="option-label">Option E: Floating Circles</div>
+    <div class="detail-screen arrows-e">
+        <span class="arrow arrow-left">‹</span>
+        <span class="arrow arrow-right">›</span>
+
+        <div class="poster">Poster</div>
+        <div class="details">
+            <div class="title">
+                The Brutalist
+                <span class="staff-pick">STAFF PICK</span>
+            </div>
+            <div class="meta">
+                <span class="meta-teal">Brady Corbet</span>
+                <span class="meta-dot">•</span>
+                <span class="meta-teal">USA / HU</span>
+                <span class="meta-dot">•</span>
+                <span class="meta-text">2024</span>
+                <span class="meta-dot">•</span>
+                <span class="meta-text">3h 35m</span>
+                <span class="meta-dot">•</span>
+                <span class="rt-badge">🍅 90%</span>
+            </div>
+            <div class="synopsis">
+                A visionary architect, László Toth, arrives in America to rebuild his life after the war. When a wealthy industrialist recognizes his talent, an epic journey begins.
+            </div>
+            <div class="buttons">
+                <button class="btn btn-trailer">▶ Trailer</button>
+                <button class="btn btn-outline btn-amazon">Amazon</button>
+                <button class="btn btn-outline btn-apple">Apple TV</button>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

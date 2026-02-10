@@ -1,3 +1,15 @@
+/* CSS Custom Properties - Single source of truth for colors */
+:root {
+    --accent-primary: #00d4aa;
+    --accent-hover: #00ffbb;
+    --accent-glow: rgba(0, 212, 170, 0.3);
+    --bg-dark: #1a1a2e;
+    --bg-darker: #0a0a0a;
+    --border-subtle: #333;
+    --text-muted: #888;
+    --text-white: #fff;
+}
+
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
@@ -21,7 +33,7 @@ header h1 {
     font-weight: 100;
     letter-spacing: 0.3em;
     font-size: 2.5rem;
-    background: linear-gradient(45deg, #fff, #00d4aa);
+    background: linear-gradient(45deg, #fff, var(--accent-primary));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -48,10 +60,10 @@ header h1 {
 }
 
 .filter-btn:hover, .filter-btn.active {
-    background: #00d4aa;
-    border-color: #00d4aa;
+    background: var(--accent-primary);
+    border-color: var(--accent-primary);
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0,212,170,0.3);
+    box-shadow: 0 5px 15px var(--accent-glow);
 }
 
 /* Search input */
@@ -76,8 +88,8 @@ header h1 {
     outline: none;
     width: 200px;
     background: rgba(255,255,255,0.15);
-    border-color: #00d4aa;
-    box-shadow: 0 0 10px rgba(0,212,170,0.3);
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 10px var(--accent-glow);
 }
 
 #search-input::placeholder {
@@ -173,7 +185,7 @@ header h1 {
     width: 189px;
     height: 282px;
     background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
-    border: 2px solid #00d4aa;
+    border: 2px solid var(--accent-primary);
     border-radius: 15px;
     display: flex;
     align-items: center;
@@ -215,14 +227,14 @@ header h1 {
 .date-number {
     font-size: 3rem;
     font-weight: bold;
-    color: #00d4aa;
+    color: var(--accent-primary);
     line-height: 1;
     text-shadow: 0 0 20px rgba(0,212,170,0.5);
 }
 
 .date-month {
     font-size: 1.1rem;
-    color: #00d4aa;
+    color: var(--accent-primary);
     letter-spacing: 0.2em;
     margin-top: 0.3rem;
     font-weight: bold;
@@ -233,7 +245,7 @@ header h1 {
     width: 189px;
     height: 282px;
     background: linear-gradient(180deg, #0a0a0a 0%, #1a1a2e 100%);
-    border: 2px solid #00d4aa;
+    border: 2px solid var(--accent-primary);
     border-radius: 15px;
     display: flex;
     align-items: center;
@@ -421,6 +433,7 @@ header h1 {
     backface-visibility: hidden;
 }
 
+/* Service badge colors - source of truth: assets/service-colors.json */
 .badge-netflix { background: #E50914; color: white; }
 .badge-disney { background: #113CCF; color: white; }
 .badge-max { background: #B537F2; color: white; }
@@ -450,32 +463,32 @@ header h1 {
 }
 
 .movie-info .director {
-    color: #00d4aa;
+    color: var(--accent-primary);
     font-weight: bold;
 }
 
 .movie-info .country {
-    color: #00d4aa;
+    color: var(--accent-primary);
 }
 
 .card-back h3 {
-    color: #00d4aa;
+    color: var(--accent-primary);
     margin-bottom: 0.8rem;
     font-size: 0.95rem;
     text-align: center;
-    border-bottom: 1px solid #00d4aa;
+    border-bottom: 1px solid var(--accent-primary);
     padding-bottom: 0.3rem;
 }
 
 .card-back h3 .title-link {
-    color: #00d4aa;
+    color: var(--accent-primary);
     text-decoration: none;
     font-size: 0.95rem;
     transition: color 0.3s ease;
 }
 
 .card-back h3 .title-link:hover {
-    color: #00ffbb;
+    color: var(--accent-hover);
     text-decoration: underline;
 }
 
@@ -499,7 +512,7 @@ header h1 {
 }
 
 .metadata strong {
-    color: #00d4aa;
+    color: var(--accent-primary);
 }
 
 .actions {
@@ -517,7 +530,7 @@ header h1 {
 
 .actions .watch-btn {
     padding: 0.5rem;
-    background: #00d4aa;
+    background: var(--accent-primary);
     color: #000;
     text-decoration: none;
     border-radius: 8px;
@@ -534,12 +547,12 @@ header h1 {
 
 
 .actions .watch-btn:focus {
-    outline: 2px solid #00d4aa;
+    outline: 2px solid var(--accent-primary);
     outline-offset: 2px;
 }
 
 .actions .watch-btn-stream {
-    background: #00d4aa;
+    background: var(--accent-primary);
     color: #000;
     flex: 1;
     display: flex;
@@ -548,7 +561,7 @@ header h1 {
 }
 
 .actions .watch-btn-stream:hover {
-    background: #00ffbb;
+    background: var(--accent-hover);
     transform: translateY(-2px);
     box-shadow: 0 5px 20px rgba(0,212,170,0.5);
 }
@@ -648,9 +661,9 @@ header h1 {
 }
 
 .info-links .info-btn:hover {
-    background: rgba(0,212,170,0.3);
-    border-color: #00d4aa;
-    color: #00d4aa;
+    background: var(--accent-glow);
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
 }
 
 .info-links .info-btn-neutral {
@@ -799,8 +812,8 @@ header h1 {
 }
 
 .load-more-btn:hover {
-    background: #00d4aa;
-    border-color: #00d4aa;
+    background: var(--accent-primary);
+    border-color: var(--accent-primary);
     transform: translateY(-2px);
     box-shadow: 0 5px 20px rgba(0, 212, 170, 0.4);
 }
@@ -921,7 +934,7 @@ header h1 {
 }
 
 .expand-btn:hover {
-    background: #00d4aa;
+    background: var(--accent-primary);
 }
 
 /* Lightbox container */
@@ -1103,7 +1116,7 @@ header h1 {
 }
 
 .lightbox-shrink:hover {
-    background: #00d4aa;
+    background: var(--accent-primary);
     transform: scale(1.1);
 }
 

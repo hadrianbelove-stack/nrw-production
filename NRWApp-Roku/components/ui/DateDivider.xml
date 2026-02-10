@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  NRW Date Divider Component
+  Displays date header between movie groups
+-->
+<component name="DateDivider" extends="Group">
+  <interface>
+    <field id="dateString" type="string" onChange="onDateChanged" />
+  </interface>
+
+  <script type="text/brightscript" uri="DateDivider.brs" />
+  <script type="text/brightscript" uri="pkg:/source/utils/MovieUtils.brs" />
+
+  <children>
+    <!-- Date divider container -->
+    <LayoutGroup id="dividerContainer"
+      layoutDirection="horiz"
+      vertAlignment="center"
+      itemSpacings="[16]">
+
+      <!-- Left line -->
+      <Rectangle id="leftLine"
+        width="40"
+        height="2"
+        color="0x00D4AA80" />
+
+      <!-- Date label -->
+      <Label id="dateLabel"
+        font="font:MediumBoldSystemFont"
+        color="0x00D4AAFF"
+        horizAlign="center" />
+
+      <!-- Right line -->
+      <Rectangle id="rightLine"
+        width="40"
+        height="2"
+        color="0x00D4AA80" />
+    </LayoutGroup>
+  </children>
+</component>

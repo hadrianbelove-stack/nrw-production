@@ -39,6 +39,33 @@ This is the authoritative style guide for all NRW visual design. All UI work (ne
 | Peacock | `#000000` |
 | Purchase/Rent | `#ff9500` |
 | Plex | `#E5A00D` |
+| Apple TV | `#aaaaaa` |
+
+### Gray Guidelines
+When using grays for secondary UI elements:
+- **Prefer lighter grays** - dark grays disappear into dark backgrounds
+- Outline buttons: use `#888` to `#aaa` for borders, not `#555` or darker
+- Muted text: `#888` minimum, `#666` is too dark
+- Apple TV / generic service buttons: `#aaaaaa` (not dark gray)
+
+### Country Abbreviations
+Always abbreviate country names in metadata lines:
+
+| Country | Abbrev | | Country | Abbrev |
+|---------|--------|---|---------|--------|
+| United States | USA | | Japan | JP |
+| United Kingdom | UK | | South Korea | KR |
+| France | FR | | China | CN |
+| Germany | DE | | Canada | CA |
+| Italy | IT | | Australia | AU |
+| Spain | ES | | India | IN |
+| Hungary | HU | | Brazil | BR |
+| Poland | PL | | Mexico | MX |
+| Sweden | SE | | Argentina | AR |
+| Denmark | DK | | Netherlands | NL |
+| Norway | NO | | New Zealand | NZ |
+
+For multiple countries, use slashes: `USA / UK / FR`
 
 ---
 

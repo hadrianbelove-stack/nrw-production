@@ -416,6 +416,10 @@ class PlaywrightScraperBase:
         """
         return self.stats.copy()
 
+    def cleanup(self):
+        """Public method to clean up browser resources."""
+        self._cleanup_browser()
+
     def __enter__(self):
         """Context manager entry - initialize browser."""
         self._init_browser()

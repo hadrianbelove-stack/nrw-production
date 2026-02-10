@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NRW Detail Screen - Buttons & Navigation</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #0a0a0a;
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #00D4AA;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        h2 {
+            color: #00D4AA;
+            margin-bottom: 10px;
+            font-size: 16px;
+            margin-top: 40px;
+        }
+
+        .section {
+            margin-bottom: 50px;
+        }
+
+        /* ========== NAVIGATION OPTIONS ========== */
+        .nav-options {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .nav-option {
+            background: #1a1a2e;
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .nav-option h3 {
+            color: #00D4AA;
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+
+        .nav-option p {
+            color: #666;
+            font-size: 11px;
+            margin-bottom: 15px;
+        }
+
+        .nav-preview {
+            background: #0a0a0a;
+            padding: 12px 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            border-radius: 8px;
+        }
+
+        /* Nav Option A: Minimal Arrows */
+        .nav-a .arrow {
+            color: #00D4AA;
+            font-size: 20px;
+            opacity: 0.7;
+        }
+
+        /* Nav Option B: Boxed Arrows */
+        .nav-b .arrow {
+            width: 36px;
+            height: 36px;
+            border: 1px solid #333;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #888;
+            font-size: 16px;
+        }
+
+        /* Nav Option C: Pills with arrows */
+        .nav-c .nav-pill {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            border: 1px solid #333;
+        }
+        .nav-c .arrow { color: #00D4AA; font-size: 14px; }
+        .nav-c .label { color: #666; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* Nav Option D: Just chevrons, very minimal */
+        .nav-d .arrow {
+            color: #444;
+            font-size: 28px;
+            font-weight: 200;
+        }
+
+        /* Nav Option E: Floating side arrows (tvOS style) */
+        .nav-e {
+            position: relative;
+        }
+        .nav-e .nav-preview {
+            min-height: 60px;
+        }
+        .nav-e .arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(90deg, rgba(0,212,170,0.15) 0%, transparent 100%);
+            color: #00D4AA;
+            font-size: 24px;
+        }
+        .nav-e .arrow-left { left: 0; border-radius: 0 8px 8px 0; }
+        .nav-e .arrow-right { right: 0; border-radius: 8px 0 0 8px; background: linear-gradient(-90deg, rgba(0,212,170,0.15) 0%, transparent 100%); }
+
+        /* ========== BUTTON OPTIONS ========== */
+        .button-options {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .btn-option {
+            background: #1a1a2e;
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .btn-option h3 {
+            color: #00D4AA;
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+
+        .btn-option p {
+            color: #666;
+            font-size: 11px;
+            margin-bottom: 15px;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: 700;
+            border: none;
+            gap: 6px;
+        }
+
+        /* Button Option A: Compact Chips */
+        .btns-a .btn {
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .btns-a .btn-trailer { background: #E53935; color: #fff; }
+        .btns-a .btn-amazon { background: #232F3E; }
+        .btns-a .btn-apple { background: #000; border: 1px solid #333; }
+        .btns-a .btn-plex { background: #1F1F1F; }
+        .btns-a .btn img { height: 14px; }
+
+        /* Button Option B: Outline Style */
+        .btns-b .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 11px;
+            background: transparent;
+            border: 1.5px solid;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .btns-b .btn-trailer { border-color: #E53935; color: #E53935; }
+        .btns-b .btn-amazon { border-color: #FF9900; color: #FF9900; }
+        .btns-b .btn-apple { border-color: #888; color: #888; }
+        .btns-b .btn-plex { border-color: #E5A00D; color: #E5A00D; }
+
+        /* Button Option C: Icon Squares */
+        .btns-c .btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            padding: 0;
+        }
+        .btns-c .btn-trailer { background: #E53935; color: #fff; font-size: 18px; }
+        .btns-c .btn-amazon { background: #232F3E; }
+        .btns-c .btn-apple { background: #000; border: 1px solid #333; }
+        .btns-c .btn-plex { background: #1F1F1F; }
+        .btns-c .btn img { height: 20px; }
+
+        /* Button Option D: Modern Glass */
+        .btns-d .btn {
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-size: 11px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .btns-d .btn-trailer {
+            background: linear-gradient(135deg, rgba(229,57,53,0.3), rgba(229,57,53,0.1));
+            border-color: rgba(229,57,53,0.5);
+        }
+        .btns-d .btn-amazon {
+            background: linear-gradient(135deg, rgba(255,153,0,0.2), rgba(255,153,0,0.05));
+            border-color: rgba(255,153,0,0.4);
+        }
+        .btns-d .btn img { height: 16px; }
+
+        /* Button Option E: Unified Row (tvOS style) */
+        .btns-e .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            min-width: 100px;
+        }
+        .btns-e .btn-trailer { background: #E53935; color: #fff; }
+        .btns-e .btn-amazon { background: #FF9900; color: #000; }
+        .btns-e .btn-apple { background: #555; color: #fff; }
+        .btns-e .btn-plex { background: #E5A00D; color: #000; }
+
+        /* ========== META LINE OPTIONS ========== */
+        .meta-options {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .meta-option {
+            background: #1a1a2e;
+            padding: 15px 20px;
+            border-radius: 8px;
+        }
+
+        .meta-option h3 {
+            color: #00D4AA;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+
+        .meta-line {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .meta-text { color: #bbb; font-size: 13px; }
+        .meta-teal { color: #00D4AA; font-size: 13px; }
+        .meta-dot { color: #555; font-size: 13px; }
+
+        .rt-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #fff;
+        }
+        .rt-fresh { background: #34c759; }
+        .rt-rotten { background: #ff3b30; }
+
+        .note {
+            background: #0a0a0a;
+            border: 1px solid #333;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 30px;
+        }
+        .note h4 { color: #00D4AA; font-size: 12px; margin-bottom: 8px; }
+        .note p { color: #666; font-size: 11px; line-height: 1.6; }
+    </style>
+</head>
+<body>
+    <h1>Detail Screen - V2 Options</h1>
+
+    <!-- NAVIGATION OPTIONS -->
+    <div class="section">
+        <h2>Navigation Arrow Options</h2>
+        <div class="nav-options">
+
+            <div class="nav-option">
+                <h3>Option A: Minimal Teal Arrows</h3>
+                <p>Just arrows, no text. Clean and unobtrusive.</p>
+                <div class="nav-preview nav-a">
+                    <span class="arrow">‹</span>
+                    <span class="arrow">›</span>
+                </div>
+            </div>
+
+            <div class="nav-option">
+                <h3>Option B: Boxed Keys</h3>
+                <p>Keyboard-style boxes. Suggests remote buttons.</p>
+                <div class="nav-preview nav-b">
+                    <span class="arrow">←</span>
+                    <span class="arrow">→</span>
+                </div>
+            </div>
+
+            <div class="nav-option">
+                <h3>Option C: Labeled Pills</h3>
+                <p>Arrows with "PREV" / "NEXT" labels. More explicit.</p>
+                <div class="nav-preview nav-c">
+                    <div class="nav-pill">
+                        <span class="arrow">‹</span>
+                        <span class="label">Prev</span>
+                    </div>
+                    <div class="nav-pill">
+                        <span class="label">Next</span>
+                        <span class="arrow">›</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="nav-option">
+                <h3>Option D: Subtle Chevrons</h3>
+                <p>Large but faint. Almost invisible until you notice them.</p>
+                <div class="nav-preview nav-d">
+                    <span class="arrow">‹</span>
+                    <span class="arrow">›</span>
+                </div>
+            </div>
+
+            <div class="nav-option nav-e">
+                <h3>Option E: Side Gradients (tvOS-inspired)</h3>
+                <p>Arrows at screen edges with gradient fade. Premium feel.</p>
+                <div class="nav-preview">
+                    <span class="arrow arrow-left">‹</span>
+                    <span class="arrow arrow-right">›</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- BUTTON OPTIONS -->
+    <div class="section">
+        <h2>Button Style Options</h2>
+        <div class="button-options">
+
+            <div class="btn-option btns-a">
+                <h3>Option A: Compact Chips with Logos</h3>
+                <p>Small, logo-forward. Dark backgrounds.</p>
+                <div class="btn-row">
+                    <button class="btn btn-trailer">▶ Trailer</button>
+                    <button class="btn btn-amazon"><img src="../assets/amazon-logo.png" alt="Amazon"></button>
+                    <button class="btn btn-apple"><img src="../logos and images/apple logo.png" alt="Apple"></button>
+                    <button class="btn btn-plex"><img src="../assets/plex-logo.png" alt="Plex"></button>
+                </div>
+            </div>
+
+            <div class="btn-option btns-b">
+                <h3>Option B: Outline Buttons</h3>
+                <p>Transparent with colored borders. Minimal visual weight.</p>
+                <div class="btn-row">
+                    <button class="btn btn-trailer">▶ Trailer</button>
+                    <button class="btn btn-amazon">Amazon</button>
+                    <button class="btn btn-apple">Apple TV</button>
+                    <button class="btn btn-plex">Plex</button>
+                </div>
+            </div>
+
+            <div class="btn-option btns-c">
+                <h3>Option C: Icon Squares</h3>
+                <p>Logo-only squares. Very compact, relies on recognition.</p>
+                <div class="btn-row">
+                    <button class="btn btn-trailer">▶</button>
+                    <button class="btn btn-amazon"><img src="../assets/amazon-logo.png" alt="Amazon"></button>
+                    <button class="btn btn-apple"><img src="../logos and images/apple logo.png" alt="Apple"></button>
+                    <button class="btn btn-plex"><img src="../assets/plex-logo.png" alt="Plex"></button>
+                </div>
+            </div>
+
+            <div class="btn-option btns-d">
+                <h3>Option D: Glass/Frosted</h3>
+                <p>Subtle tinted backgrounds with soft borders. Premium feel.</p>
+                <div class="btn-row">
+                    <button class="btn btn-trailer">▶ Trailer</button>
+                    <button class="btn btn-amazon"><img src="../assets/amazon-logo.png" alt=""> Rent</button>
+                    <button class="btn btn-apple"> Apple</button>
+                    <button class="btn btn-plex">Plex</button>
+                </div>
+            </div>
+
+            <div class="btn-option btns-e">
+                <h3>Option E: Solid Unified (tvOS current)</h3>
+                <p>Equal-sized solid buttons. Consistent visual weight.</p>
+                <div class="btn-row">
+                    <button class="btn btn-trailer">Trailer</button>
+                    <button class="btn btn-amazon">Amazon</button>
+                    <button class="btn btn-apple">Apple TV</button>
+                    <button class="btn btn-plex">Plex</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- META LINE OPTIONS -->
+    <div class="section">
+        <h2>Meta Line Format</h2>
+        <p style="color: #666; font-size: 11px; margin-bottom: 15px;">Director + Country (abbreviated) + Year + Runtime + RT Score</p>
+
+        <div class="meta-options">
+            <div class="meta-option">
+                <h3>Format A: Director in Teal, RT Badge</h3>
+                <div class="meta-line">
+                    <span class="meta-teal">Brady Corbet</span>
+                    <span class="meta-dot">•</span>
+                    <span class="meta-text">USA</span>
+                    <span class="meta-dot">•</span>
+                    <span class="meta-text">2024</span>
+                    <span class="meta-dot">•</span>
+                    <span class="meta-text">3h 35m</span>
+                    <span class="rt-badge rt-fresh">🍅 90%</span>
+                </div>
+            </div>
+
+            <div class="meta-option">
+                <h3>Format B: All Teal, Inline RT</h3>
+                <div class="meta-line">
+                    <span class="meta-teal">Brady Corbet</span>
+                    <span class="meta-dot">•</span>
+                    <span class="meta-teal">USA / HU</span>
+                    <span class="meta-dot">•</span>
+                    <span class="meta-text">2024</span>
+                    <span class="meta-dot">•</span>
+                    <span class="meta-text">3h 35m</span>
+                    <span class="meta-dot">•</span>
+                    <span class="meta-text" style="color: #34c759;">🍅 90%</span>
+                </div>
+            </div>
+
+            <div class="meta-option">
+                <h3>Format C: Compact with Slashes</h3>
+                <div class="meta-line">
+                    <span class="meta-teal">Brady Corbet</span>
+                    <span class="meta-text" style="margin: 0 4px;">/</span>
+                    <span class="meta-text">USA/HU</span>
+                    <span class="meta-text" style="margin: 0 4px;">/</span>
+                    <span class="meta-text">2024</span>
+                    <span class="meta-text" style="margin: 0 4px;">/</span>
+                    <span class="meta-text">215 min</span>
+                    <span class="rt-badge rt-fresh" style="margin-left: 8px;">90%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="note">
+        <h4>Country Abbreviations (add to Style Guide)</h4>
+        <p>
+            United States → USA &nbsp;|&nbsp;
+            United Kingdom → UK &nbsp;|&nbsp;
+            France → FR &nbsp;|&nbsp;
+            Germany → DE &nbsp;|&nbsp;
+            Italy → IT &nbsp;|&nbsp;
+            Spain → ES &nbsp;|&nbsp;
+            Japan → JP &nbsp;|&nbsp;
+            South Korea → KR &nbsp;|&nbsp;
+            China → CN &nbsp;|&nbsp;
+            Hungary → HU &nbsp;|&nbsp;
+            Canada → CA &nbsp;|&nbsp;
+            Australia → AU &nbsp;|&nbsp;
+            India → IN &nbsp;|&nbsp;
+            Brazil → BR &nbsp;|&nbsp;
+            Mexico → MX &nbsp;|&nbsp;
+            Argentina → AR
+        </p>
+    </div>
+
+</body>
+</html>

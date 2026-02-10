@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NRW Detail Screen - Final</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #0a0a0a;
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+        }
+
+        h1 {
+            color: #00D4AA;
+            padding: 20px 40px;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        /* ========== DETAIL SCREEN LAYOUT ========== */
+        .detail-screen {
+            width: 100%;
+            height: 720px;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Centered content container */
+        .content {
+            display: flex;
+            align-items: flex-start;
+            gap: 40px;
+            max-width: 1000px;
+        }
+
+        .poster {
+            width: 420px;
+            height: 630px;
+            background: linear-gradient(135deg, #2a2a4a 0%, #1a1a2e 100%);
+            border-radius: 12px;
+            border: 2px solid #00D4AA;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00D4AA;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .details {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding-top: 20px;
+        }
+
+        .title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .staff-pick {
+            background: #00D4AA;
+            color: #0a0a0a;
+            font-size: 10px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        /* Meta line - Option B style */
+        .meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .meta-teal { color: #00D4AA; font-size: 13px; }
+        .meta-text { color: #bbb; font-size: 13px; }
+        .meta-dot { color: #555; font-size: 13px; }
+
+        .rt-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            background: #34c759;
+            color: #fff;
+        }
+
+        .synopsis {
+            color: #888;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 24px;
+            max-width: 480px;
+        }
+
+        /* Buttons row */
+        .buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: 700;
+            border: none;
+            gap: 6px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Trailer - Option A compact chip */
+        .btn-trailer {
+            padding: 8px 14px;
+            border-radius: 6px;
+            background: #E53935;
+            color: #fff;
+        }
+
+        /* Services - Option B outline style */
+        .btn-outline {
+            padding: 8px 16px;
+            border-radius: 6px;
+            background: transparent;
+            border: 1.5px solid;
+        }
+        .btn-amazon { border-color: #FF9900; color: #FF9900; }
+        .btn-apple { border-color: #aaa; color: #aaa; }
+        .btn-plex { border-color: #E5A00D; color: #E5A00D; }
+
+        /* ========== ARROWS - Option D Teal Chevrons ========== */
+        .arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #00D4AA;
+            font-size: 56px;
+            font-weight: 200;
+            opacity: 0.5;
+            transition: opacity 0.2s;
+        }
+        .arrow:hover {
+            opacity: 0.9;
+        }
+        .arrow-left { left: 8px; }
+        .arrow-right { right: 8px; }
+    </style>
+</head>
+<body>
+    <h1>Final Layout - Centered Content, Teal Chevrons</h1>
+
+    <div class="detail-screen">
+        <span class="arrow arrow-left">‹</span>
+        <span class="arrow arrow-right">›</span>
+
+        <div class="content">
+            <div class="poster">Poster</div>
+            <div class="details">
+                <div class="title">
+                    The Brutalist
+                    <span class="staff-pick">STAFF PICK</span>
+                </div>
+                <div class="meta">
+                    <span class="meta-teal">Brady Corbet</span>
+                    <span class="meta-dot">•</span>
+                    <span class="meta-teal">USA / HU</span>
+                    <span class="meta-dot">•</span>
+                    <span class="meta-text">2024</span>
+                    <span class="meta-dot">•</span>
+                    <span class="meta-text">3h 35m</span>
+                    <span class="meta-dot">•</span>
+                    <span class="rt-badge">🍅 90%</span>
+                </div>
+                <div class="synopsis">
+                    A visionary architect, László Toth, arrives in America to rebuild his life after the war. When a wealthy industrialist recognizes his talent, an epic journey begins spanning three decades.
+                </div>
+                <div class="buttons">
+                    <button class="btn btn-trailer">▶ Trailer</button>
+                    <button class="btn btn-outline btn-amazon">Amazon</button>
+                    <button class="btn btn-outline btn-apple">Apple TV</button>
+                    <button class="btn btn-outline btn-plex">Plex</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

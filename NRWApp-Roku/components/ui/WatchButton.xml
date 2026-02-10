@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  NRW Watch Button Component
+  Service-colored outline button for streaming services
+  Matches Android WatchButton.kt styling
+-->
+<component name="WatchButton" extends="Group">
+  <interface>
+    <!-- Button configuration -->
+    <field id="service" type="string" onChange="onServiceChanged" />
+    <field id="label" type="string" onChange="onLabelChanged" />
+    <field id="url" type="string" />
+    <field id="buttonType" type="string" value="outline" /> <!-- "outline" or "filled" -->
+
+    <!-- Focus state -->
+    <field id="focusPercent" type="float" value="0.0" onChange="onFocusChanged" />
+
+    <!-- Output -->
+    <field id="selected" type="boolean" value="false" alwaysNotify="true" />
+  </interface>
+
+  <script type="text/brightscript" uri="WatchButton.brs" />
+  <script type="text/brightscript" uri="pkg:/source/constants/Colors.brs" />
+  <script type="text/brightscript" uri="pkg:/source/utils/MovieUtils.brs" />
+
+  <children>
+    <!-- Button container -->
+    <Group id="buttonContainer">
+      <!-- Button background (for filled style) -->
+      <Rectangle id="buttonBg"
+        width="140"
+        height="44"
+        color="0x00000000" />
+
+      <!-- Button border -->
+      <Rectangle id="buttonBorder"
+        width="140"
+        height="44"
+        color="0x00000000">
+        <!-- Inner cutout to create border effect -->
+        <Rectangle id="buttonInner"
+          width="136"
+          height="40"
+          translation="[2, 2]"
+          color="0x0A0A0AFF" />
+      </Rectangle>
+
+      <!-- Service icon (optional) -->
+      <Poster id="serviceIcon"
+        width="24"
+        height="24"
+        translation="[12, 10]"
+        visible="false" />
+
+      <!-- Button label -->
+      <Label id="buttonLabel"
+        width="140"
+        height="44"
+        horizAlign="center"
+        vertAlign="center"
+        font="font:SmallBoldSystemFont"
+        color="0xFFFFFFFF" />
+    </Group>
+  </children>
+</component>

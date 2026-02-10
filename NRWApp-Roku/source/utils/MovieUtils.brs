@@ -1,0 +1,380 @@
+' ============================================================================
+' NRW Movie Utilities
+' Ported from Android MovieRepository.kt and tvOS api.js
+' ============================================================================
+
+' ============================================================================
+' Filter Categories (matches Android FilterCategory enum)
+' ============================================================================
+Function GetFilterCategories() as Object
+    return {
+        ALL: "all"
+        BIG_TIME: "big_time"
+        NICHE: "niche"
+        STAFF_PICKS: "staff_picks"
+        FOREIGN: "foreign"
+        SERIES: "series"
+        PLEX: "plex"
+    }
+End Function
+
+' Filter display names for UI
+Function GetFilterDisplayName(filter as String) as String
+    names = {
+        all: "All"
+        big_time: "Big Time Stuff"
+        niche: "Niche Notables"
+        staff_picks: "Staff Picks"
+        foreign: "Foreign"
+        series: "Limited Series"
+        plex: "Plex"
+    }
+
+    if names.DoesExist(filter)
+        return names[filter]
+    end if
+
+    return "All"
+End Function
+
+' ============================================================================
+' Filter Movies by Category
+' Ported from MovieRepository.filterMovies()
+' ============================================================================
+Function FilterMovies(movies as Object, filter as String) as Object
+    result = []
+    categories = GetFilterCategories()
+
+    for each movie in movies
+        ' Skip hidden movies
+        if movie.hidden = true
+            continue for
+        end if
+
+        include = false
+
+        if filter = categories.ALL
+            include = true
+
+        else if filter = categories.BIG_TIME
+            if movie.categories <> invalid AND movie.categories.tier = "big_time"
+                include = true
+            end if
+
+        else if filter = categories.NICHE
+            if movie.categories <> invalid AND movie.categories.tier = "niche"
+                include = true
+            end if
+
+        else if filter = categories.STAFF_PICKS
+            include = IsStaffPick(movie)
+
+        else if filter = categories.FOREIGN
+            include = IsForeign(movie)
+
+        else if filter = categories.SERIES
+            if movie.content_type = "limited_series"
+                include = true
+            end if
+
+        else if filter = categories.PLEX
+            if movie.plex <> invalid AND movie.plex.deep_link <> invalid
+                include = true
+            end if
+        end if
+
+        if include
+            result.Push(movie)
+        end if
+    end for
+
+    return result
+End Function
+
+' ============================================================================
+' Search Movies
+' Ported from MovieRepository.searchMovies()
+' ============================================================================
+Function SearchMovies(movies as Object, query as String) as Object
+    if query = "" OR query = invalid
+        return movies
+    end if
+
+    lowerQuery = LCase(query)
+    result = []
+
+    for each movie in movies
+        ' Search in title
+        title = LCase(movie.title)
+        if InStr(1, title, lowerQuery) > 0
+            result.Push(movie)
+            continue for
+        end if
+
+        ' Search in director
+        director = GetDirector(movie)
+        if director <> ""
+            if InStr(1, LCase(director), lowerQuery) > 0
+                result.Push(movie)
+                continue for
+            end if
+        end if
+
+        ' Search in genres
+        if movie.genres <> invalid
+            found = false
+            for each genre in movie.genres
+                if InStr(1, LCase(genre), lowerQuery) > 0
+                    found = true
+                    exit for
+                end if
+            end for
+            if found
+                result.Push(movie)
+                continue for
+            end if
+        end if
+    end for
+
+    return result
+End Function
+
+' ============================================================================
+' Group Movies by Date
+' Ported from MovieRepository.groupMoviesByDate()
+' ============================================================================
+Function GroupMoviesByDate(movies as Object) as Object
+    groups = CreateObject("roAssociativeArray")
+
+    for each movie in movies
+        dateStr = GetDisplayDate(movie)
+        if dateStr = invalid OR dateStr = ""
+            dateStr = "Unknown"
+        end if
+
+        if NOT groups.DoesExist(dateStr)
+            groups[dateStr] = []
+        end if
+
+        groups[dateStr].Push(movie)
+    end for
+
+    ' Get sorted date keys (descending)
+    sortedDates = SortDatesDescending(groups.Keys())
+
+    return {
+        dates: sortedDates
+        groups: groups
+    }
+End Function
+
+' Sort dates in descending order
+Function SortDatesDescending(dates as Object) as Object
+    ' Convert to array with sortable values
+    dateArray = []
+    for each dateStr in dates
+        if dateStr = "Unknown"
+            dateArray.Push({ date: dateStr, sortKey: "0000-00-00" })
+        else
+            dateArray.Push({ date: dateStr, sortKey: dateStr })
+        end if
+    end for
+
+    ' Simple bubble sort (descending)
+    n = dateArray.Count()
+    for i = 0 to n - 2
+        for j = 0 to n - i - 2
+            if dateArray[j].sortKey < dateArray[j + 1].sortKey
+                temp = dateArray[j]
+                dateArray[j] = dateArray[j + 1]
+                dateArray[j + 1] = temp
+            end if
+        end for
+    end for
+
+    ' Extract just the date strings
+    result = []
+    for each item in dateArray
+        result.Push(item.date)
+    end for
+
+    return result
+End Function
+
+' ============================================================================
+' Movie Helper Functions
+' ============================================================================
+
+' Get display date (digital_date > premiere_date > release_date)
+Function GetDisplayDate(movie as Object) as String
+    if movie.digital_date <> invalid AND movie.digital_date <> ""
+        return movie.digital_date
+    else if movie.premiere_date <> invalid AND movie.premiere_date <> ""
+        return movie.premiere_date
+    else if movie.release_date <> invalid AND movie.release_date <> ""
+        return movie.release_date
+    end if
+    return ""
+End Function
+
+' Get director from crew object
+Function GetDirector(movie as Object) as String
+    if movie.crew <> invalid AND movie.crew.director <> invalid
+        return movie.crew.director
+    end if
+    return ""
+End Function
+
+' Get cast array
+Function GetCast(movie as Object) as Object
+    if movie.crew <> invalid AND movie.crew.cast <> invalid
+        return movie.crew.cast
+    end if
+    return []
+End Function
+
+' Check if movie is a staff pick
+Function IsStaffPick(movie as Object) as Boolean
+    if movie.featured = true
+        return true
+    end if
+    if movie.categories <> invalid AND movie.categories.is_staff_pick = true
+        return true
+    end if
+    return false
+End Function
+
+' Check if movie is foreign (non-English)
+Function IsForeign(movie as Object) as Boolean
+    if movie.categories <> invalid AND movie.categories.is_foreign = true
+        return true
+    end if
+    if movie.original_language <> invalid AND movie.original_language <> "en"
+        return true
+    end if
+    return false
+End Function
+
+' Format runtime (e.g., "2h 15m")
+Function FormatRuntime(minutes as Dynamic) as String
+    if minutes = invalid OR Type(minutes) <> "Integer" AND Type(minutes) <> "roInt"
+        return ""
+    end if
+
+    hours = Int(minutes / 60)
+    mins = minutes MOD 60
+
+    if hours > 0 AND mins > 0
+        return hours.ToStr() + "h " + mins.ToStr() + "m"
+    else if hours > 0
+        return hours.ToStr() + "h"
+    else
+        return mins.ToStr() + "m"
+    end if
+End Function
+
+' Format date for display (e.g., "Jan 15, 2026")
+Function FormatDateForDisplay(dateStr as String) as String
+    if dateStr = "" OR dateStr = invalid
+        return ""
+    end if
+
+    months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+
+    ' Parse YYYY-MM-DD
+    parts = dateStr.Split("-")
+    if parts.Count() < 3
+        return dateStr
+    end if
+
+    year = parts[0]
+    monthNum = parts[1].ToInt()
+    day = parts[2].ToInt()
+
+    if monthNum < 1 OR monthNum > 12
+        return dateStr
+    end if
+
+    monthName = months[monthNum - 1]
+    return monthName + " " + day.ToStr() + ", " + year
+End Function
+
+' ============================================================================
+' Watch Links Helpers
+' ============================================================================
+
+' Get streaming service info
+Function GetStreamingService(movie as Object) as Object
+    if movie.watch_links <> invalid AND movie.watch_links.streaming <> invalid
+        return movie.watch_links.streaming
+    end if
+    return invalid
+End Function
+
+' Get VOD service info
+Function GetVodService(movie as Object) as Object
+    if movie.watch_links <> invalid AND movie.watch_links.vod <> invalid
+        return movie.watch_links.vod
+    end if
+    return invalid
+End Function
+
+' Get trailer URL
+Function GetTrailerUrl(movie as Object) as String
+    if movie.links <> invalid AND movie.links.trailer <> invalid
+        return movie.links.trailer
+    end if
+    return ""
+End Function
+
+' Get Plex deep link
+Function GetPlexDeepLink(movie as Object) as String
+    if movie.plex <> invalid AND movie.plex.deep_link <> invalid
+        return movie.plex.deep_link
+    end if
+    return ""
+End Function
+
+' Normalize service name for color lookup
+Function NormalizeServiceName(service as String) as String
+    normalized = LCase(service)
+    normalized = normalized.Replace(" ", "_")
+    normalized = normalized.Replace("+", "_plus")
+
+    ' Map variations
+    if normalized = "amazon_video" OR normalized = "prime_video"
+        return "amazon"
+    else if normalized = "hbo_max"
+        return "max"
+    else if normalized = "itunes" OR normalized = "apple"
+        return "apple_tv"
+    else if normalized = "disney"
+        return "disney_plus"
+    end if
+
+    return normalized
+End Function
+
+' Get short service name for badge display
+Function GetServiceBadgeText(service as String) as String
+    badges = {
+        netflix: "N"
+        amazon: "P"
+        prime: "P"
+        disney_plus: "D+"
+        max: "MAX"
+        hulu: "H"
+        peacock: "PK"
+        paramount_plus: "P+"
+        apple_tv: "TV+"
+        plex: "PLEX"
+    }
+
+    normalized = NormalizeServiceName(service)
+    if badges.DoesExist(normalized)
+        return badges[normalized]
+    end if
+
+    ' Return first letter as fallback
+    return UCase(Left(service, 1))
+End Function

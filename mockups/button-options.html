@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NRW Button Style Options</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0a0a;
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #00D4AA;
+            margin-bottom: 40px;
+            font-size: 24px;
+        }
+
+        .option {
+            margin-bottom: 60px;
+            padding: 30px;
+            background: #1a1a2e;
+            border-radius: 16px;
+        }
+
+        .option h2 {
+            color: #00D4AA;
+            margin-bottom: 8px;
+            font-size: 18px;
+        }
+
+        .option p {
+            color: #888;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .button-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        /* Common button base */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Logo images */
+        .btn img {
+            height: 20px;
+            width: auto;
+        }
+
+        /* ==================== OPTION A: Pill Buttons (Current-ish) ==================== */
+        .option-a .btn {
+            padding: 12px 28px;
+            border-radius: 8px;
+            font-size: 13px;
+        }
+
+        .option-a .btn-trailer {
+            background: #E53935;
+            color: #fff;
+        }
+
+        .option-a .btn-amazon {
+            background: #FF9900;
+            color: #000;
+        }
+
+        .option-a .btn-apple {
+            background: #555;
+            color: #fff;
+        }
+
+        .option-a .btn-plex {
+            background: #E5A00D;
+            color: #000;
+        }
+
+        /* ==================== OPTION B: Minimal Outline ==================== */
+        .option-b .btn {
+            padding: 10px 24px;
+            border-radius: 6px;
+            font-size: 12px;
+            background: transparent;
+            border: 2px solid;
+        }
+
+        .option-b .btn-trailer {
+            border-color: #E53935;
+            color: #E53935;
+        }
+
+        .option-b .btn-amazon {
+            border-color: #FF9900;
+            color: #FF9900;
+        }
+
+        .option-b .btn-apple {
+            border-color: #888;
+            color: #888;
+        }
+
+        .option-b .btn-plex {
+            border-color: #E5A00D;
+            color: #E5A00D;
+        }
+
+        /* ==================== OPTION C: Icon-Forward (Logo prominent) ==================== */
+        .option-c .btn {
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 11px;
+            gap: 8px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff;
+        }
+
+        .option-c .btn img {
+            height: 22px;
+        }
+
+        .option-c .btn-trailer {
+            background: rgba(229, 57, 53, 0.2);
+            border-color: #E53935;
+        }
+
+        .option-c .btn-amazon {
+            background: rgba(255, 153, 0, 0.15);
+            border-color: rgba(255, 153, 0, 0.5);
+        }
+
+        .option-c .btn-apple {
+            background: rgba(255,255,255,0.08);
+            border-color: rgba(255,255,255,0.3);
+        }
+
+        /* ==================== OPTION D: Compact Chips ==================== */
+        .option-d .btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 11px;
+            gap: 6px;
+        }
+
+        .option-d .btn img {
+            height: 16px;
+        }
+
+        .option-d .btn-trailer {
+            background: #E53935;
+            color: #fff;
+        }
+
+        .option-d .btn-amazon {
+            background: #232F3E;
+            color: #FF9900;
+            border: 1px solid #FF9900;
+        }
+
+        .option-d .btn-apple {
+            background: #000;
+            color: #fff;
+            border: 1px solid #555;
+        }
+
+        .option-d .btn-plex {
+            background: #1F1F1F;
+            color: #E5A00D;
+            border: 1px solid #E5A00D;
+        }
+
+        /* ==================== OPTION E: Logo-Only Squares ==================== */
+        .option-e .btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            padding: 0;
+        }
+
+        .option-e .btn img {
+            height: 28px;
+        }
+
+        .option-e .btn-trailer {
+            background: #E53935;
+            color: #fff;
+            font-size: 24px;
+        }
+
+        .option-e .btn-amazon {
+            background: #232F3E;
+        }
+
+        .option-e .btn-apple {
+            background: #000;
+            border: 1px solid #333;
+        }
+
+        .option-e .btn-plex {
+            background: #1F1F1F;
+        }
+
+        /* ==================== OPTION F: Gradient/Glass ==================== */
+        .option-f .btn {
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 12px;
+            gap: 8px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: #fff;
+            backdrop-filter: blur(10px);
+        }
+
+        .option-f .btn img {
+            height: 20px;
+        }
+
+        .option-f .btn-trailer {
+            background: linear-gradient(135deg, #E53935 0%, #B71C1C 100%);
+            border: none;
+        }
+
+        .option-f .btn-amazon {
+            background: linear-gradient(135deg, #FF9900 0%, #E68A00 100%);
+            color: #000;
+            border: none;
+        }
+
+        .option-f .btn-apple {
+            background: linear-gradient(135deg, #333 0%, #111 100%);
+            border: 1px solid #444;
+        }
+
+        /* Amazon logo SVG inline */
+        .amazon-logo {
+            width: auto;
+            height: 20px;
+        }
+
+        /* Apple logo (SF Symbol style) */
+        .apple-logo {
+            font-size: 20px;
+        }
+
+        /* Play icon */
+        .play-icon {
+            font-size: 14px;
+        }
+
+        .context-note {
+            background: #0a0a0a;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border: 1px solid #333;
+        }
+
+        .context-note h3 {
+            color: #00D4AA;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .context-note p {
+            color: #888;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <h1>Button Style Options for Detail Screen</h1>
+
+    <!-- Option A -->
+    <div class="option option-a">
+        <h2>Option A: Solid Filled (Current Style)</h2>
+        <p>Simple solid colors. Text labels. What we have now but refined.</p>
+        <div class="button-row">
+            <button class="btn btn-trailer">▶ Trailer</button>
+            <button class="btn btn-amazon">Amazon</button>
+            <button class="btn btn-apple">Apple TV</button>
+            <button class="btn btn-plex">Plex</button>
+        </div>
+    </div>
+
+    <!-- Option B -->
+    <div class="option option-b">
+        <h2>Option B: Minimal Outline</h2>
+        <p>Transparent background with colored borders. Clean, doesn't compete with poster.</p>
+        <div class="button-row">
+            <button class="btn btn-trailer">▶ Trailer</button>
+            <button class="btn btn-amazon">Amazon</button>
+            <button class="btn btn-apple">Apple TV</button>
+            <button class="btn btn-plex">Plex</button>
+        </div>
+    </div>
+
+    <!-- Option C -->
+    <div class="option option-c">
+        <h2>Option C: Logo + Label (Subtle Background)</h2>
+        <p>Logo images with text labels. Semi-transparent tinted backgrounds.</p>
+        <div class="button-row">
+            <button class="btn btn-trailer"><span class="play-icon">▶</span> Trailer</button>
+            <button class="btn btn-amazon">
+                <img src="../assets/amazon-logo.png" alt="Amazon">
+                <span>Rent</span>
+            </button>
+            <button class="btn btn-apple">
+                <span class="apple-logo"></span>
+                <span>Apple TV</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Option D -->
+    <div class="option option-d">
+        <h2>Option D: Compact Chips</h2>
+        <p>Small pill-shaped chips. Dark backgrounds with brand-colored accents.</p>
+        <div class="button-row">
+            <button class="btn btn-trailer">▶ Trailer</button>
+            <button class="btn btn-amazon">
+                <img src="../assets/amazon-logo.png" alt="Amazon">
+            </button>
+            <button class="btn btn-apple">
+                <span class="apple-logo"></span> Apple
+            </button>
+            <button class="btn btn-plex">Plex</button>
+        </div>
+    </div>
+
+    <!-- Option E -->
+    <div class="option option-e">
+        <h2>Option E: Logo-Only Squares</h2>
+        <p>Icon/logo only. No text. Compact and clean. Relies on recognizable brand logos.</p>
+        <div class="button-row">
+            <button class="btn btn-trailer">▶</button>
+            <button class="btn btn-amazon">
+                <img src="../assets/amazon-logo.png" alt="Amazon">
+            </button>
+            <button class="btn btn-apple">
+                <span class="apple-logo" style="font-size: 28px;"></span>
+            </button>
+            <button class="btn btn-plex">
+                <span style="font-size: 20px; color: #E5A00D;">▶</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Option F -->
+    <div class="option option-f">
+        <h2>Option F: Gradient Glass</h2>
+        <p>Subtle gradients with glass effect. More premium/modern feel.</p>
+        <div class="button-row">
+            <button class="btn btn-trailer">▶ Trailer</button>
+            <button class="btn btn-amazon">
+                <img src="../assets/amazon-logo.png" alt="Amazon">
+                Rent
+            </button>
+            <button class="btn btn-apple">
+                <span class="apple-logo"></span>
+                Apple TV
+            </button>
+        </div>
+    </div>
+
+    <div class="context-note">
+        <h3>Notes</h3>
+        <p>
+            • The Amazon logo should show the smile/arrow mark, not text<br>
+            • Apple uses the  logo (we have logo_apple.png)<br>
+            • Trailer is always first in the row<br>
+            • On TV, focused button will have white border + scale up 1.1x<br>
+            • Current issue: Logo images aren't rendering - showing fallback text instead
+        </p>
+    </div>
+</body>
+</html>

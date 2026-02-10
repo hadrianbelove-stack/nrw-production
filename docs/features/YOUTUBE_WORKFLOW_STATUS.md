@@ -84,7 +84,7 @@ If appeal fails or you want to start fresh:
    cp ~/Downloads/client_secret.json youtube_credentials/client_secret.json
 
    # Generate token
-   python3 scripts/manual_token_generator.py
+   python3 scripts/manual_youtube_auth.py
    ```
 
 5. **Update GitHub Secrets:**
@@ -132,7 +132,7 @@ gh run list --workflow=youtube-playlists.yml --limit=1
 
 - [.github/workflows/youtube-playlists.yml](.github/workflows/youtube-playlists.yml) - Workflow configuration (currently disabled)
 - [youtube_playlist_manager.py](youtube_playlist_manager.py) - Playlist manager script
-- [scripts/manual_token_generator.py](scripts/manual_token_generator.py) - Token generation tool
+- [scripts/manual_youtube_auth.py](scripts/manual_youtube_auth.py) - Token generation tool
 - [CURRENT_WORKFLOW_STATUS.md](CURRENT_WORKFLOW_STATUS.md) - Overall workflow status
 
 ## Notes

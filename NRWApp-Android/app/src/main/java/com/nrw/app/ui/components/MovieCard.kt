@@ -63,7 +63,7 @@ val CARD_WIDTH = 100.dp
 private val POSTER_ASPECT_RATIO = 2f / 3f  // Standard movie poster ratio
 private val FocusCyan = Color(0xFF00FFCC)
 
-// Streaming service colors
+// Streaming service colors - source of truth: assets/service-colors.json
 private val StreamingColors = mapOf(
     "netflix" to Color(0xFFE50914),
     "disney_plus" to Color(0xFF113CCF),
@@ -76,7 +76,7 @@ private val StreamingColors = mapOf(
     "paramount_plus" to Color(0xFF0064FF),
     "apple_tv" to Color(0xFF000000),
     "mubi" to Color(0xFFDA2128),
-    "shudder" to Color(0xFFE31B23),
+    "shudder" to Color(0xFF8B0000),  // Synced with CSS
     "criterion" to Color(0xFF000000)
 )
 

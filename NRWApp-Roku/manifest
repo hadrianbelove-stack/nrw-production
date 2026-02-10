@@ -1,0 +1,30 @@
+# NRW - New Release Wall
+# Roku Channel Manifest
+
+title=New Release Wall
+subtitle=Your guide to new digital releases
+major_version=1
+minor_version=0
+build_version=00001
+
+# Channel icons
+mm_icon_focus_hd=pkg:/images/logo/icon_focus_hd.png
+mm_icon_focus_fhd=pkg:/images/logo/icon_focus_fhd.png
+mm_icon_side_hd=pkg:/images/logo/icon_side_hd.png
+mm_icon_side_fhd=pkg:/images/logo/icon_side_fhd.png
+
+# Splash screens
+splash_screen_hd=pkg:/images/logo/splash_hd.png
+splash_screen_fhd=pkg:/images/logo/splash_fhd.png
+splash_color=#0a0a0a
+splash_min_time=1500
+
+# Resolution support
+ui_resolutions=hd,fhd
+
+# SceneGraph required
+bs_libs_required=roku_ads_lib
+
+# Supported features
+supports_input_launch=1
+confirm_partner_button=1

@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  NRW Detail Screen
+  Full-screen movie details with poster and metadata
+  Matches tvOS MovieDetail.tvos.js and Android DetailScreen.kt
+-->
+<component name="DetailScreen" extends="Group">
+  <interface>
+    <!-- Input -->
+    <field id="movies" type="array" onChange="onMoviesChanged" />
+    <field id="currentIndex" type="integer" value="0" onChange="onIndexChanged" />
+
+    <!-- Output -->
+    <field id="closed" type="boolean" value="false" alwaysNotify="true" />
+  </interface>
+
+  <script type="text/brightscript" uri="DetailScreen.brs" />
+  <script type="text/brightscript" uri="pkg:/source/constants/Colors.brs" />
+  <script type="text/brightscript" uri="pkg:/source/utils/MovieUtils.brs" />
+  <script type="text/brightscript" uri="pkg:/source/utils/DeepLinkUtils.brs" />
+
+  <children>
+    <!-- Full screen background -->
+    <Rectangle id="background"
+      width="1920"
+      height="1080"
+      color="0x0A0A0AFF" />
+
+    <!-- Backdrop image (if available) -->
+    <Poster id="backdrop"
+      width="1920"
+      height="1080"
+      loadDisplayMode="scaleToZoom"
+      opacity="0.3"
+      visible="false" />
+
+    <!-- Gradient overlay -->
+    <Rectangle id="gradientOverlay"
+      width="1920"
+      height="1080"
+      color="0x0A0A0A00" />
+
+    <!-- Content container -->
+    <LayoutGroup id="contentLayout"
+      layoutDirection="horiz"
+      translation="[80, 60]"
+      itemSpacings="[60]">
+
+      <!-- Left: Large poster -->
+      <Group id="posterContainer">
+        <Rectangle id="posterBorder"
+          width="606"
+          height="916"
+          color="0x00D4AA40" />
+        <Poster id="moviePoster"
+          width="600"
+          height="900"
+          translation="[3, 3]"
+          loadDisplayMode="scaleToZoom" />
+
+        <!-- Staff Pick badge -->
+        <Rectangle id="staffPickBadge"
+          width="600"
+          height="40"
+          translation="[3, 866]"
+          color="0xDC143CFF"
+          visible="false" />
+        <Label id="staffPickLabel"
+          text="STAFF PICK"
+          width="600"
+          height="40"
+          translation="[3, 866]"
+          horizAlign="center"
+          vertAlign="center"
+          font="font:SmallBoldSystemFont"
+          color="0xFFFFFFFF"
+          visible="false" />
+      </Group>
+
+      <!-- Right: Details panel -->
+      <LayoutGroup id="detailsPanel"
+        layoutDirection="vert"
+        itemSpacings="[16]"
+        translation="[0, 40]">
+
+        <!-- Title -->
+        <Label id="titleLabel"
+          width="1100"
+          font="font:LargeBoldSystemFont"
+          color="0xFFFFFFFF"
+          wrap="true"
+          maxLines="2" />
+
+        <!-- Metadata line: Director • Country • Year • Runtime • RT -->
+        <Label id="metadataLabel"
+          width="1100"
+          font="font:MediumSystemFont"
+          color="0xBBBBBBFF" />
+
+        <!-- Genres -->
+        <Label id="genresLabel"
+          width="1100"
+          font="font:SmallSystemFont"
+          color="0x888888FF" />
+
+        <!-- Synopsis -->
+        <Label id="synopsisLabel"
+          width="1100"
+          height="300"
+          font="font:MediumSystemFont"
+          color="0xBBBBBBFF"
+          wrap="true"
+          maxLines="8"
+          ellipsisText="..." />
+
+        <!-- Buttons row -->
+        <LayoutGroup id="buttonsRow"
+          layoutDirection="horiz"
+          itemSpacings="[16]"
+          translation="[0, 20]">
+
+          <!-- Trailer button -->
+          <WatchButton id="trailerButton"
+            service="youtube"
+            label="Trailer"
+            buttonType="filled" />
+
+          <!-- Watch/Stream button -->
+          <WatchButton id="streamButton"
+            visible="false" />
+
+          <!-- VOD button -->
+          <WatchButton id="vodButton"
+            visible="false" />
+
+          <!-- Plex button -->
+          <WatchButton id="plexButton"
+            service="plex"
+            label="Plex"
+            visible="false" />
+        </LayoutGroup>
+      </LayoutGroup>
+    </LayoutGroup>
+
+    <!-- Navigation chevrons -->
+    <Label id="leftChevron"
+      text="‹"
+      translation="[20, 500]"
+      font="font:LargeBoldSystemFont"
+      color="0x00D4AA80" />
+    <Label id="rightChevron"
+      text="›"
+      translation="[1880, 500]"
+      font="font:LargeBoldSystemFont"
+      color="0x00D4AA80" />
+
+    <!-- Movie counter -->
+    <Label id="counterLabel"
+      translation="[1800, 40]"
+      font="font:SmallSystemFont"
+      color="0x888888FF"
+      horizAlign="right" />
+  </children>
+</component>

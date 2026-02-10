@@ -181,12 +181,35 @@ private fun MovieDetail(
             )
         }
 
-        // Content - Option E layout: larger poster, compact text
+        // Teal chevron - Left
+        Text(
+            text = "‹",
+            color = Primary.copy(alpha = 0.5f),
+            fontSize = 56.sp,
+            fontWeight = FontWeight.Thin,
+            modifier = Modifier
+                .align(Alignment.CenterStart)
+                .padding(start = 8.dp)
+        )
+
+        // Teal chevron - Right
+        Text(
+            text = "›",
+            color = Primary.copy(alpha = 0.5f),
+            fontSize = 56.sp,
+            fontWeight = FontWeight.Thin,
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .padding(end = 8.dp)
+        )
+
+        // Content - Centered layout with large poster
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 40.dp, vertical = 24.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .padding(horizontal = 80.dp, vertical = 24.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
         ) {
             // Left side - Large Poster (Option E: biggest poster)
             AsyncImage(
@@ -325,21 +348,6 @@ private fun MovieDetail(
             }
         }
 
-        // Footer hint
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .background(Background.copy(alpha = 0.8f))
-                .padding(vertical = 8.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = "← → Navigate movies  •  Back to return",
-                color = TextMuted,
-                fontSize = 12.sp
-            )
-        }
     }
 }
 

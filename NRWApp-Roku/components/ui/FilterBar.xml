@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  NRW Filter Bar Component
+  Horizontal row of filter chips
+  Matches tvOS FilterSidebar and Android FilterChips
+-->
+<component name="FilterBar" extends="Group">
+  <interface>
+    <!-- Current filter selection -->
+    <field id="selectedFilter" type="string" value="all" onChange="onFilterChanged" alwaysNotify="true" />
+
+    <!-- Focus -->
+    <field id="hasFocus" type="boolean" value="false" onChange="onFocusChanged" />
+    <field id="focusedIndex" type="integer" value="0" />
+  </interface>
+
+  <script type="text/brightscript" uri="FilterBar.brs" />
+  <script type="text/brightscript" uri="pkg:/source/constants/Colors.brs" />
+  <script type="text/brightscript" uri="pkg:/source/utils/MovieUtils.brs" />
+
+  <children>
+    <!-- Filter chips row -->
+    <LayoutGroup id="filterRow"
+      layoutDirection="horiz"
+      itemSpacings="[12]"
+      translation="[60, 0]">
+
+      <!-- All -->
+      <Group id="chip_all">
+        <Rectangle id="chipBg_all" width="60" height="36" color="0x00D4AAFF" />
+        <Label id="chipLabel_all" text="All" width="60" height="36"
+          horizAlign="center" vertAlign="center"
+          font="font:SmallBoldSystemFont" color="0x000000FF" />
+      </Group>
+
+      <!-- Big Time Stuff -->
+      <Group id="chip_big_time">
+        <Rectangle id="chipBg_big_time" width="140" height="36" color="0x333333FF" />
+        <Label id="chipLabel_big_time" text="Big Time Stuff" width="140" height="36"
+          horizAlign="center" vertAlign="center"
+          font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
+      </Group>
+
+      <!-- Niche Notables -->
+      <Group id="chip_niche">
+        <Rectangle id="chipBg_niche" width="140" height="36" color="0x333333FF" />
+        <Label id="chipLabel_niche" text="Niche Notables" width="140" height="36"
+          horizAlign="center" vertAlign="center"
+          font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
+      </Group>
+
+      <!-- Staff Picks -->
+      <Group id="chip_staff_picks">
+        <Rectangle id="chipBg_staff_picks" width="110" height="36" color="0x333333FF" />
+        <Label id="chipLabel_staff_picks" text="Staff Picks" width="110" height="36"
+          horizAlign="center" vertAlign="center"
+          font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
+      </Group>
+
+      <!-- Foreign -->
+      <Group id="chip_foreign">
+        <Rectangle id="chipBg_foreign" width="80" height="36" color="0x333333FF" />
+        <Label id="chipLabel_foreign" text="Foreign" width="80" height="36"
+          horizAlign="center" vertAlign="center"
+          font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
+      </Group>
+
+      <!-- Limited Series -->
+      <Group id="chip_series">
+        <Rectangle id="chipBg_series" width="130" height="36" color="0x333333FF" />
+        <Label id="chipLabel_series" text="Limited Series" width="130" height="36"
+          horizAlign="center" vertAlign="center"
+          font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
+      </Group>
+
+      <!-- Plex -->
+      <Group id="chip_plex">
+        <Rectangle id="chipBg_plex" width="60" height="36" color="0x333333FF" />
+        <Label id="chipLabel_plex" text="Plex" width="60" height="36"
+          horizAlign="center" vertAlign="center"
+          font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
+      </Group>
+    </LayoutGroup>
+
+    <!-- Focus indicator -->
+    <Rectangle id="focusIndicator"
+      height="3"
+      color="0x00D4AAFF"
+      translation="[60, 38]"
+      visible="false" />
+  </children>
+</component>

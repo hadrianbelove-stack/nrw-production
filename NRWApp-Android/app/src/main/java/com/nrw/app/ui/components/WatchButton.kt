@@ -1,21 +1,16 @@
 package com.nrw.app.ui.components
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.material3.Text
-import com.nrw.app.R
 import androidx.tv.material3.Border
 import androidx.tv.material3.Button
 import androidx.tv.material3.ButtonDefaults
@@ -86,8 +81,8 @@ fun ActionButton(
 }
 
 /**
- * Watch button - wraps ActionButton with service-specific color
- * Uses logo images for Amazon/Apple, text for others
+ * Watch button - outline style with service-colored border
+ * Transparent background, text/border in service color
  */
 @Composable
 fun WatchButton(
@@ -96,85 +91,64 @@ fun WatchButton(
     modifier: Modifier = Modifier,
     compact: Boolean = false
 ) {
-    val logoResId = getServiceLogoResId(option.service)
-
-    if (logoResId != null) {
-        // Logo-based button for Amazon/Apple
-        LogoButton(
-            logoResId = logoResId,
-            color = getServiceColor(option.service),
-            onClick = onClick,
-            modifier = modifier,
-            compact = compact
-        )
-    } else {
-        // Text-based button for other services
-        ActionButton(
-            label = getSimplifiedLabel(option.service),
-            color = getServiceColor(option.service),
-            onClick = onClick,
-            modifier = modifier,
-            compact = compact
-        )
-    }
+    OutlineButton(
+        label = getSimplifiedLabel(option.service),
+        borderColor = getServiceColor(option.service),
+        onClick = onClick,
+        modifier = modifier,
+        compact = compact
+    )
 }
 
 /**
- * Logo-based action button for services with brand logos
+ * Outline button - transparent background with colored border
  */
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
-fun LogoButton(
-    logoResId: Int,
-    color: Color,
+fun OutlineButton(
+    label: String,
+    borderColor: Color,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     compact: Boolean = false
 ) {
-    val minWidth = if (compact) 100.dp else 200.dp
-    val minHeight = if (compact) 36.dp else 60.dp
-    val horizontalPadding = if (compact) 16.dp else 40.dp
-    val verticalPadding = if (compact) 10.dp else 24.dp
-    val cornerRadius = if (compact) 8.dp else 12.dp
-    val borderWidth = if (compact) 3.dp else 4.dp
-    val logoHeight = if (compact) 16.dp else 28.dp
+    val minWidth = if (compact) 80.dp else 160.dp
+    val minHeight = if (compact) 32.dp else 52.dp
+    val horizontalPadding = if (compact) 14.dp else 28.dp
+    val verticalPadding = if (compact) 8.dp else 16.dp
+    val fontSize = if (compact) 11.sp else 18.sp
+    val cornerRadius = if (compact) 6.dp else 10.dp
+    val borderWidth = if (compact) 1.5.dp else 2.dp
 
     Button(
         onClick = onClick,
         modifier = modifier.defaultMinSize(minWidth = minWidth, minHeight = minHeight),
         colors = ButtonDefaults.colors(
-            containerColor = color,
-            contentColor = TextPrimary,
-            focusedContainerColor = color,
-            focusedContentColor = TextPrimary
+            containerColor = Color.Transparent,
+            contentColor = borderColor,
+            focusedContainerColor = borderColor.copy(alpha = 0.15f),
+            focusedContentColor = borderColor
         ),
         shape = ButtonDefaults.shape(RoundedCornerShape(cornerRadius)),
         border = ButtonDefaults.border(
+            border = Border(
+                border = BorderStroke(borderWidth, borderColor),
+                shape = RoundedCornerShape(cornerRadius)
+            ),
             focusedBorder = Border(
-                border = BorderStroke(borderWidth, TextPrimary),
+                border = BorderStroke(borderWidth * 2, borderColor),
                 shape = RoundedCornerShape(cornerRadius)
             )
         ),
-        scale = ButtonDefaults.scale(focusedScale = 1.1f),
+        scale = ButtonDefaults.scale(focusedScale = 1.08f),
         contentPadding = PaddingValues(horizontal = horizontalPadding, vertical = verticalPadding)
     ) {
-        Image(
-            painter = painterResource(id = logoResId),
-            contentDescription = "Service logo",
-            modifier = Modifier.height(logoHeight),
-            contentScale = ContentScale.FillHeight
+        Text(
+            text = label.uppercase(),
+            fontWeight = FontWeight.Bold,
+            fontSize = fontSize,
+            letterSpacing = 0.5.sp
         )
-    }
-}
-
-/**
- * Get drawable resource ID for service logo, or null if no logo
- */
-private fun getServiceLogoResId(service: String): Int? {
-    return when (service.lowercase()) {
-        "amazon", "amazon_video", "prime_video" -> R.drawable.logo_amazon
-        "apple_tv", "itunes" -> R.drawable.logo_apple
-        else -> null
     }
 }
 

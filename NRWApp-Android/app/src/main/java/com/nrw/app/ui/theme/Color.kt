@@ -16,13 +16,14 @@ val Red = Color(0xFFFF3B30)    // Apple system red (RT Rotten)
 val FocusRing = Color(0xFF00D4AA)
 
 // Service colors for watch buttons
+// Source of truth: assets/service-colors.json
 val TrailerRed = Color(0xFFE50914)   // YouTube/Trailer button
 val AmazonOrange = Color(0xFFFF9900)
-val AppleGray = Color(0xFF333333)
+val AppleGray = Color(0xFFAAAAAA)  // Lighter gray per style guide
 val NetflixRed = Color(0xFFE50914)
 val PlexYellow = Color(0xFFE5A00D)
 val HuluGreen = Color(0xFF1CE783)
-val MaxPurple = Color(0xFF741DDA)
+val MaxPurple = Color(0xFFB537F2)  // Fixed: was 0xFF741DDA, synced with CSS
 val DisneyBlue = Color(0xFF113CCF)
 val PeacockBlue = Color(0xFF000000)
 val ParamountBlue = Color(0xFF0064FF)

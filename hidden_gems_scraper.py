@@ -94,6 +94,121 @@ except ImportError:
     LETTERBOXD_AVAILABLE = False
 
 
+# ===== DATE UTILITY FUNCTIONS =====
+
+def parse_relative_date(text: str) -> Optional[str]:
+    """Parse relative date strings like '2 days ago', '1 week ago' into YYYY-MM-DD format."""
+    if not text:
+        return None
+
+    text = text.lower().strip()
+    today = datetime.now()
+
+    # Try to parse as ISO date first
+    iso_patterns = [
+        r'(\d{4})-(\d{2})-(\d{2})',  # 2025-01-15
+        r'(\d{2})/(\d{2})/(\d{4})',  # 01/15/2025
+    ]
+    for pattern in iso_patterns:
+        match = re.search(pattern, text)
+        if match:
+            try:
+                if '/' in text:
+                    return f"{match.group(3)}-{match.group(1)}-{match.group(2)}"
+                return f"{match.group(1)}-{match.group(2)}-{match.group(3)}"
+            except:
+                pass
+
+    # Parse relative dates
+    relative_patterns = [
+        (r'(\d+)\s*(?:second|sec)s?\s*ago', lambda m: timedelta(seconds=int(m.group(1)))),
+        (r'(\d+)\s*(?:minute|min)s?\s*ago', lambda m: timedelta(minutes=int(m.group(1)))),
+        (r'(\d+)\s*(?:hour|hr)s?\s*ago', lambda m: timedelta(hours=int(m.group(1)))),
+        (r'(\d+)\s*(?:day)s?\s*ago', lambda m: timedelta(days=int(m.group(1)))),
+        (r'(\d+)\s*(?:week)s?\s*ago', lambda m: timedelta(weeks=int(m.group(1)))),
+        (r'(\d+)\s*(?:month)s?\s*ago', lambda m: timedelta(days=int(m.group(1)) * 30)),
+        (r'(\d+)\s*(?:year)s?\s*ago', lambda m: timedelta(days=int(m.group(1)) * 365)),
+        (r'yesterday', lambda m: timedelta(days=1)),
+        (r'today', lambda m: timedelta(days=0)),
+    ]
+
+    for pattern, delta_fn in relative_patterns:
+        match = re.search(pattern, text)
+        if match:
+            try:
+                delta = delta_fn(match)
+                result_date = today - delta
+                return result_date.strftime('%Y-%m-%d')
+            except:
+                pass
+
+    return None
+
+
+def is_within_date_range(date_str: str, start_date: str, end_date: str) -> bool:
+    """Check if a date string falls within the specified range."""
+    if not date_str:
+        return False
+    try:
+        date = datetime.strptime(date_str, '%Y-%m-%d')
+        start = datetime.strptime(start_date, '%Y-%m-%d')
+        end = datetime.strptime(end_date, '%Y-%m-%d')
+        return start <= date <= end
+    except:
+        return False
+
+
+def get_dated_output_prefix() -> str:
+    """Generate dated, numbered output path in hidden_gems_output/ folder.
+
+    Returns path like: hidden_gems_output/2026-02-09_001_hidden_gems
+    """
+    output_dir = 'hidden_gems_output'
+    os.makedirs(output_dir, exist_ok=True)
+
+    today = datetime.now().strftime('%Y-%m-%d')
+
+    # Find existing files for today to determine next number
+    existing_nums = []
+    for filename in os.listdir(output_dir):
+        if filename.startswith(today) and '_hidden_gems' in filename:
+            # Extract number from pattern like 2026-02-09_001_hidden_gems.xlsx
+            parts = filename.split('_')
+            if len(parts) >= 2:
+                try:
+                    num = int(parts[1])
+                    existing_nums.append(num)
+                except ValueError:
+                    pass
+
+    next_num = max(existing_nums, default=0) + 1
+
+    return os.path.join(output_dir, f"{today}_{next_num:03d}_hidden_gems")
+
+
+def calculate_date_range(month: Optional[str] = None, days: Optional[int] = None) -> Tuple[str, str]:
+    """Calculate start and end dates for filtering."""
+    if month:
+        # e.g., "2025-12" -> 2025-12-01 to 2025-12-31
+        year, mon = month.split('-')
+        start_date = f"{month}-01"
+        if int(mon) == 12:
+            end_date = f"{int(year)+1}-01-01"
+        else:
+            end_date = f"{year}-{int(mon)+1:02d}-01"
+        # Adjust end_date to last day of month
+        end_date = (datetime.strptime(end_date, '%Y-%m-%d') - timedelta(days=1)).strftime('%Y-%m-%d')
+    elif days:
+        end_date = datetime.now().strftime('%Y-%m-%d')
+        start_date = (datetime.now() - timedelta(days=days)).strftime('%Y-%m-%d')
+    else:
+        # Default: last 30 days
+        end_date = datetime.now().strftime('%Y-%m-%d')
+        start_date = (datetime.now() - timedelta(days=30)).strftime('%Y-%m-%d')
+
+    return start_date, end_date
+
+
 # ===== TMDB DISCOVERY FUNCTIONS =====
 
 def discover_movies_from_tmdb(month: Optional[str] = None, days: Optional[int] = None) -> list:
@@ -181,14 +296,14 @@ def get_watch_providers(tmdb_id: str) -> dict:
 
 
 def get_movie_details(tmdb_id: str) -> dict:
-    """Get movie details including credits."""
+    """Get movie details including credits and videos."""
     if not TMDB_API_KEY:
         return {}
     try:
         url = f"{TMDB_BASE}/movie/{tmdb_id}"
         resp = requests.get(url, params={
             'api_key': TMDB_API_KEY,
-            'append_to_response': 'credits'
+            'append_to_response': 'credits,videos'
         }, timeout=10)
         if resp.status_code == 200:
             return resp.json()
@@ -226,6 +341,21 @@ def get_director(details: dict) -> str:
     for person in crew:
         if person.get('job') == 'Director':
             return person.get('name', '')
+    return ''
+
+
+def get_trailer_url(details: dict) -> str:
+    """Extract YouTube trailer URL from videos."""
+    videos = details.get('videos', {}).get('results', [])
+    # Prefer official trailers, then teasers, then any video
+    for video_type in ['Trailer', 'Teaser', 'Clip']:
+        for video in videos:
+            if video.get('type') == video_type and video.get('site') == 'YouTube':
+                return f"https://www.youtube.com/watch?v={video.get('key')}"
+    # Fallback to any YouTube video
+    for video in videos:
+        if video.get('site') == 'YouTube':
+            return f"https://www.youtube.com/watch?v={video.get('key')}"
     return ''
 
 
@@ -365,6 +495,7 @@ def find_hidden_gems(movies: list, verbose: bool = True) -> list:
             'homepage': details.get('homepage', ''),
             'genres': genre_names,
             'director': get_director(details),
+            'trailer_url': get_trailer_url(details),
             'imdb': details.get('imdb_id')
         }
 
@@ -393,7 +524,8 @@ def find_hidden_gems(movies: list, verbose: bool = True) -> list:
 
 # ===== UNIFIED SCRAPING FUNCTIONS (using standalone scrapers) =====
 
-def discover_from_patreon(max_creators: int = 20, min_runtime: int = 10, headless: bool = True) -> List[Dict]:
+def discover_from_patreon(max_creators: int = 20, min_runtime: int = 10, headless: bool = True,
+                         start_date: str = None, end_date: str = None) -> List[Dict]:
     """Discover films from Patreon creators using standalone scraper."""
     if not PATREON_AVAILABLE:
         logger.warning("Patreon scraper not available, skipping")
@@ -409,6 +541,14 @@ def discover_from_patreon(max_creators: int = 20, min_runtime: int = 10, headles
         # Convert to gems format
         gems = []
         for film in films:
+            # Extract post date if available
+            post_date = film.get('post_date') or film.get('discovery_date')
+
+            # Apply date filtering if specified
+            if start_date and end_date and post_date:
+                if not is_within_date_range(post_date, start_date, end_date):
+                    continue
+
             gems.append({
                 'id': film.get('id'),
                 'title': film.get('title', ''),
@@ -423,7 +563,9 @@ def discover_from_patreon(max_creators: int = 20, min_runtime: int = 10, headles
                 'drc_platform': 'patreon',
                 'category': categorize_movie(film),
                 'patreon_url': film.get('post_url', ''),
+                'creator_name': film.get('creator_name', ''),
                 'creator_username': film.get('creator_username', ''),
+                'post_date': post_date,
                 'tmdb_match_confidence': film.get('tmdb_match_confidence', 'none'),
                 'add_to_nrw': False
             })
@@ -436,7 +578,8 @@ def discover_from_patreon(max_creators: int = 20, min_runtime: int = 10, headles
         return []
 
 
-def discover_from_vimeo(max_pages: int = 5, min_runtime: int = 70, headless: bool = True) -> List[Dict]:
+def discover_from_vimeo(max_pages: int = 5, min_runtime: int = 70, headless: bool = True,
+                       start_date: str = None, end_date: str = None) -> List[Dict]:
     """Discover films from Vimeo On Demand using standalone scraper."""
     if not VIMEO_AVAILABLE:
         logger.warning("Vimeo scraper not available, skipping")
@@ -455,6 +598,14 @@ def discover_from_vimeo(max_pages: int = 5, min_runtime: int = 70, headless: boo
             if film.get('runtime', 0) < min_runtime:
                 continue
 
+            # Extract upload date if available
+            upload_date = film.get('upload_date') or film.get('discovery_date')
+
+            # Apply date filtering if specified
+            if start_date and end_date and upload_date:
+                if not is_within_date_range(upload_date, start_date, end_date):
+                    continue
+
             gems.append({
                 'id': film.get('id'),
                 'title': film.get('title', ''),
@@ -471,6 +622,7 @@ def discover_from_vimeo(max_pages: int = 5, min_runtime: int = 70, headless: boo
                 'vimeo_url': film.get('vimeo_url', ''),
                 'price_rent': film.get('price_rent'),
                 'price_buy': film.get('price_buy'),
+                'upload_date': upload_date,
                 'tmdb_match_confidence': film.get('tmdb_match_confidence', 'none'),
                 'add_to_nrw': False
             })
@@ -483,7 +635,8 @@ def discover_from_vimeo(max_pages: int = 5, min_runtime: int = 70, headless: boo
         return []
 
 
-def discover_from_youtube(max_pages: int = 5, min_runtime: int = 70, headless: bool = True) -> List[Dict]:
+def discover_from_youtube(max_pages: int = 5, max_searches: int = None, min_runtime: int = 70, headless: bool = True,
+                         start_date: str = None, end_date: str = None) -> List[Dict]:
     """Discover films from YouTube using standalone scraper."""
     if not YOUTUBE_AVAILABLE:
         logger.warning("YouTube scraper not available, skipping")
@@ -491,9 +644,12 @@ def discover_from_youtube(max_pages: int = 5, min_runtime: int = 70, headless: b
 
     logger.info("Discovering films from YouTube...")
 
+    # Use max_searches if provided, otherwise max_pages
+    pages = max_searches if max_searches is not None else max_pages
+
     try:
         scraper = YouTubePaidScraper(headless=headless)
-        films = scraper.discover_films(max_pages=max_pages)
+        films = scraper.discover_films(max_pages=pages)
         scraper.cleanup()
 
         # Convert to gems format
@@ -501,6 +657,14 @@ def discover_from_youtube(max_pages: int = 5, min_runtime: int = 70, headless: b
         for film in films:
             if film.get('runtime', 0) < min_runtime:
                 continue
+
+            # Extract upload date if available
+            upload_date = film.get('upload_date') or film.get('discovery_date')
+
+            # Apply date filtering if specified
+            if start_date and end_date and upload_date:
+                if not is_within_date_range(upload_date, start_date, end_date):
+                    continue
 
             gems.append({
                 'id': film.get('id'),
@@ -520,6 +684,7 @@ def discover_from_youtube(max_pages: int = 5, min_runtime: int = 70, headless: b
                 'is_free': film.get('is_free', False),
                 'price_rent': film.get('price_rent'),
                 'price_buy': film.get('price_buy'),
+                'upload_date': upload_date,
                 'tmdb_match_confidence': film.get('tmdb_match_confidence', 'none'),
                 'add_to_nrw': False
             })
@@ -619,7 +784,8 @@ def save_csv(gems: list, output_path: str):
     logger.info(f"Saved {len(gems)} hidden gems to {output_path}")
 
 
-def save_excel_with_tabs(results_by_source: Dict[str, List[Dict]], output_path: str):
+def save_excel_with_tabs(results_by_source: Dict[str, List[Dict]], output_path: str,
+                        start_date: str = None, end_date: str = None):
     """Save results to Excel with separate tabs per source and a metrics summary."""
     if not EXCEL_AVAILABLE:
         print("⚠️  openpyxl not available, skipping Excel export")
@@ -630,15 +796,25 @@ def save_excel_with_tabs(results_by_source: Dict[str, List[Dict]], output_path: 
     # Header styles
     header_font = Font(bold=True, color="FFFFFF")
     header_fill = PatternFill(start_color="4472C4", end_color="4472C4", fill_type="solid")
+    title_font = Font(bold=True, size=14)
 
     # Create Metrics sheet first
     ws_metrics = wb.active
     ws_metrics.title = "Metrics"
 
-    # Metrics header
+    # Add title and date range at top
+    ws_metrics.append(["Hidden Gems Scraper Results"])
+    ws_metrics.cell(row=1, column=1).font = title_font
+    if start_date and end_date:
+        ws_metrics.append([f"Date Range: {start_date} to {end_date}"])
+    else:
+        ws_metrics.append([f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M')}"])
+    ws_metrics.append([])  # Blank row
+
+    # Metrics header (now starting at row 4)
     ws_metrics.append(["Source", "Films Found", "With Runtime", "With Date", "Avg Runtime"])
     for col in range(1, 6):
-        cell = ws_metrics.cell(row=1, column=col)
+        cell = ws_metrics.cell(row=4, column=col)
         cell.font = header_font
         cell.fill = header_fill
 
@@ -677,7 +853,7 @@ def save_excel_with_tabs(results_by_source: Dict[str, List[Dict]], output_path: 
 
         # Determine columns based on source
         if source == "TMDB":
-            headers = ["Title", "Runtime", "Director", "Genres", "Homepage", "TMDB ID", "IMDB", "Overview"]
+            headers = ["Title", "Runtime", "Director", "Genres", "Homepage", "Trailer", "TMDB ID", "IMDB", "Overview"]
         elif source == "Vimeo":
             headers = ["Title", "Runtime", "Upload Date", "Vimeo URL", "Description", "Price"]
         elif source == "YouTube":
@@ -703,6 +879,7 @@ def save_excel_with_tabs(results_by_source: Dict[str, List[Dict]], output_path: 
                     gem.get('director', ''),
                     ', '.join(gem.get('genres', [])) if gem.get('genres') else '',
                     gem.get('homepage', ''),
+                    gem.get('trailer_url', ''),
                     gem.get('id', ''),
                     gem.get('imdb', ''),
                     (gem.get('overview', '') or '')[:200]
@@ -743,12 +920,50 @@ def save_excel_with_tabs(results_by_source: Dict[str, List[Dict]], output_path: 
                 ]
             ws.append(row)
 
-        # Adjust column widths
-        ws.column_dimensions['A'].width = 40  # Title
-        ws.column_dimensions['B'].width = 10  # Runtime
-        for col_letter in ['C', 'D', 'E', 'F', 'G', 'H']:
-            if col_letter in ws.column_dimensions:
-                ws.column_dimensions[col_letter].width = 25
+            # Make URLs clickable hyperlinks
+            row_num = ws.max_row
+            if source == "TMDB":
+                # Homepage link (column E)
+                homepage = gem.get('homepage', '')
+                if homepage:
+                    ws.cell(row=row_num, column=5).hyperlink = homepage
+                    ws.cell(row=row_num, column=5).style = "Hyperlink"
+                # Trailer link (column F)
+                trailer = gem.get('trailer_url', '')
+                if trailer:
+                    ws.cell(row=row_num, column=6).hyperlink = trailer
+                    ws.cell(row=row_num, column=6).style = "Hyperlink"
+                # IMDB link (column H)
+                imdb = gem.get('imdb', '')
+                if imdb:
+                    imdb_url = f"https://www.imdb.com/title/{imdb}/"
+                    ws.cell(row=row_num, column=8).hyperlink = imdb_url
+                    ws.cell(row=row_num, column=8).style = "Hyperlink"
+            elif source in ["Vimeo", "YouTube", "Patreon"]:
+                # URL column (column D for Vimeo/YouTube, column E for Patreon)
+                url_col = 5 if source == "Patreon" else 4
+                url = row[url_col - 1] if len(row) >= url_col else ''
+                if url:
+                    ws.cell(row=row_num, column=url_col).hyperlink = url
+                    ws.cell(row=row_num, column=url_col).style = "Hyperlink"
+
+        # Adjust column widths based on source
+        if source == "TMDB":
+            ws.column_dimensions['A'].width = 40  # Title
+            ws.column_dimensions['B'].width = 8   # Runtime
+            ws.column_dimensions['C'].width = 25  # Director
+            ws.column_dimensions['D'].width = 20  # Genres
+            ws.column_dimensions['E'].width = 45  # Homepage
+            ws.column_dimensions['F'].width = 45  # Trailer
+            ws.column_dimensions['G'].width = 12  # TMDB ID
+            ws.column_dimensions['H'].width = 14  # IMDB
+            ws.column_dimensions['I'].width = 60  # Overview
+        else:
+            ws.column_dimensions['A'].width = 40  # Title
+            ws.column_dimensions['B'].width = 8   # Runtime
+            for col_letter in ['C', 'D', 'E', 'F', 'G', 'H']:
+                if col_letter in ws.column_dimensions:
+                    ws.column_dimensions[col_letter].width = 25
 
     wb.save(output_path)
     print(f"📊 Excel saved: {output_path}")
@@ -1028,6 +1243,10 @@ def main():
         print("❌ TMDB_API_KEY environment variable not set")
         return 1
 
+    # Generate dated, numbered output path
+    output_prefix = get_dated_output_prefix()
+    print(f"📁 Output: {output_prefix}.*")
+
     print("🎬 Hidden Gems Scraper")
     print("=" * 40)
 
@@ -1040,6 +1259,9 @@ def main():
         movies = discover_movies_from_tmdb(days=args.days)
 
     print(f"   Found {len(movies)} movies to check")
+
+    # Calculate date range (used for filtering and Excel header)
+    start_date, end_date = calculate_date_range(month=args.month, days=args.days)
 
     # Track results by source for Excel export
     results_by_source = {}
@@ -1060,9 +1282,6 @@ def main():
     if scrape_vimeo or scrape_youtube or scrape_patreon or scrape_letterboxd:
         print(f"\n🚀 LIVE SCRAPING MODE")
         print("=" * 40)
-
-        # Calculate date range for filtering
-        start_date, end_date = calculate_date_range(month=args.month, days=args.days)
         print(f"   Date range: {start_date} to {end_date}")
 
         if scrape_vimeo:
@@ -1121,17 +1340,17 @@ def main():
     # Save outputs
     print()
     if args.export_for_curation:
-        save_curation_csv(gems, f"{args.output}_curation.csv")
-        save_curation_json(gems, f"{args.output}_curation.json")
+        save_curation_csv(gems, f"{output_prefix}_curation.csv")
+        save_curation_json(gems, f"{output_prefix}_curation.json")
         print("\n📋 Curation exports generated!")
     else:
-        save_csv(gems, f"{args.output}.csv")
-        save_markdown(gems, f"{args.output}.md")
-        save_json(gems, f"{args.output}.json")
+        save_csv(gems, f"{output_prefix}.csv")
+        save_markdown(gems, f"{output_prefix}.md")
+        save_json(gems, f"{output_prefix}.json")
 
     # Always save Excel with tabs (for test visibility)
     if results_by_source:
-        save_excel_with_tabs(results_by_source, f"{args.output}.xlsx")
+        save_excel_with_tabs(results_by_source, f"{output_prefix}.xlsx", start_date, end_date)
 
     print_summary(gems, curation_mode=args.export_for_curation)
 

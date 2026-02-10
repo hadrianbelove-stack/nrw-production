@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  NRW Home Screen
+  Main screen with 8-column grid of movie posters
+  Matches tvOS HomeScreen.tvos.js and Android HomeScreen.kt
+-->
+<component name="HomeScreen" extends="Scene">
+  <interface>
+    <!-- Deep link support -->
+    <field id="deepLinkMovieId" type="string" onChange="onDeepLink" />
+
+    <!-- Current state -->
+    <field id="currentFilter" type="string" value="all" />
+    <field id="searchQuery" type="string" value="" />
+  </interface>
+
+  <script type="text/brightscript" uri="HomeScreen.brs" />
+  <script type="text/brightscript" uri="pkg:/source/constants/Colors.brs" />
+  <script type="text/brightscript" uri="pkg:/source/api/NRWApi.brs" />
+  <script type="text/brightscript" uri="pkg:/source/api/CacheManager.brs" />
+  <script type="text/brightscript" uri="pkg:/source/utils/MovieUtils.brs" />
+  <script type="text/brightscript" uri="pkg:/source/utils/DeepLinkUtils.brs" />
+
+  <children>
+    <!-- Background -->
+    <Rectangle id="background"
+      width="1920"
+      height="1080"
+      color="0x0A0A0AFF" />
+
+    <!-- Header -->
+    <LayoutGroup id="header"
+      layoutDirection="horiz"
+      translation="[60, 30]"
+      itemSpacings="[0]">
+
+      <!-- Title -->
+      <Label id="titleLabel"
+        text="THE NEW RELEASE WALL"
+        font="font:LargeBoldSystemFont"
+        color="0xFFFFFFFF" />
+
+      <!-- Spacer -->
+      <Rectangle width="800" height="1" color="0x00000000" />
+
+      <!-- Search button (placeholder) -->
+      <Group id="searchButton">
+        <Rectangle width="200" height="40" color="0x333333FF" />
+        <Label text="Search..."
+          width="200"
+          height="40"
+          horizAlign="center"
+          vertAlign="center"
+          font="font:SmallSystemFont"
+          color="0x888888FF" />
+      </Group>
+    </LayoutGroup>
+
+    <!-- Filter bar -->
+    <FilterBar id="filterBar"
+      translation="[0, 90]" />
+
+    <!-- Loading indicator -->
+    <LayoutGroup id="loadingGroup"
+      layoutDirection="vert"
+      horizAlignment="center"
+      translation="[960, 500]"
+      visible="true">
+      <BusySpinner id="loadingSpinner" visible="true" />
+      <Label id="loadingLabel"
+        text="Loading movies..."
+        font="font:MediumSystemFont"
+        color="0xBBBBBBFF"
+        translation="[0, 20]" />
+    </LayoutGroup>
+
+    <!-- Error message -->
+    <LayoutGroup id="errorGroup"
+      layoutDirection="vert"
+      horizAlignment="center"
+      translation="[960, 500]"
+      visible="false">
+      <Label id="errorLabel"
+        text="Failed to load movies"
+        font="font:MediumBoldSystemFont"
+        color="0xFF3B30FF" />
+      <Label id="errorRetry"
+        text="Press OK to retry"
+        font="font:SmallSystemFont"
+        color="0xBBBBBBFF"
+        translation="[0, 10]" />
+    </LayoutGroup>
+
+    <!-- Movie grid -->
+    <MarkupGrid id="movieGrid"
+      translation="[60, 150]"
+      visible="false"
+      itemComponentName="MovieCard"
+      numColumns="8"
+      itemSize="[220, 360]"
+      itemSpacing="[20, 20]"
+      drawFocusFeedback="false"
+      vertFocusAnimationStyle="floatingFocus"
+      wrap="false" />
+
+    <!-- Trailers button (first item in grid area) -->
+    <Group id="trailersButton"
+      translation="[60, 150]"
+      visible="false">
+      <Rectangle width="200" height="300" color="0x1A1A2EFF" />
+      <Rectangle width="196" height="296" translation="[2, 2]" color="0x0A0A0AFF" />
+      <Label text="TRAILERS"
+        width="200"
+        height="300"
+        horizAlign="center"
+        vertAlign="center"
+        font="font:MediumBoldSystemFont"
+        color="0x00D4AAFF" />
+    </Group>
+
+    <!-- Detail screen (overlay) -->
+    <DetailScreen id="detailScreen"
+      visible="false" />
+  </children>
+</component>
