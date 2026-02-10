@@ -1,110 +1,48 @@
 {
-  "timestamp": "2026-02-09T10:01:49.091222",
-  "duration_seconds": 75.944098,
-  "overall_success": false,
-  "failure_count": 6,
+  "timestamp": "2026-02-10T01:33:55.577884",
+  "duration_seconds": 2190.17547,
+  "overall_success": true,
+  "failure_count": 0,
   "warning_count": 0,
   "phases": [
     {
       "name": "Intake new premieres from TMDB",
-      "success": false,
-      "duration_seconds": 0.222212,
-      "error": "Traceback (most recent call last):\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 20, in <module>\n    from pipeline import DataGenerator\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/__init__.py\", line 10, in <module>\n    from pipeline.generator import DataGenerator, setup_logger\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/generator.py\", line 19, in <module>\n    from agent_link_scraper import AgentLinkScraper\n  File \"/home/runner/work/nrw-production/nrw-production/agent_link_scraper.py\", line 32, in <module>\n    from scraper_base import PlaywrightScraperBase\nModuleNotFoundError: No module named 'scraper_base'\n",
-      "output_preview": null
-    },
-    {
-      "name": "Intake new premieres from TMDB",
-      "success": false,
-      "duration_seconds": 0.173069,
-      "error": "Traceback (most recent call last):\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 20, in <module>\n    from pipeline import DataGenerator\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/__init__.py\", line 10, in <module>\n    from pipeline.generator import DataGenerator, setup_logger\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/generator.py\", line 19, in <module>\n    from agent_link_scraper import AgentLinkScraper\n  File \"/home/runner/work/nrw-production/nrw-production/agent_link_scraper.py\", line 32, in <module>\n    from scraper_base import PlaywrightScraperBase\nModuleNotFoundError: No module named 'scraper_base'\n",
-      "output_preview": null
-    },
-    {
-      "name": "Intake new premieres from TMDB",
-      "success": false,
-      "duration_seconds": 0.170512,
-      "error": "Traceback (most recent call last):\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 20, in <module>\n    from pipeline import DataGenerator\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/__init__.py\", line 10, in <module>\n    from pipeline.generator import DataGenerator, setup_logger\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/generator.py\", line 19, in <module>\n    from agent_link_scraper import AgentLinkScraper\n  File \"/home/runner/work/nrw-production/nrw-production/agent_link_scraper.py\", line 32, in <module>\n    from scraper_base import PlaywrightScraperBase\nModuleNotFoundError: No module named 'scraper_base'\n",
-      "output_preview": null
+      "success": true,
+      "duration_seconds": 13.682954,
+      "error": null,
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-02-05 to 2026-02-10 (incremental mode, 187 intaked)\n\u2705 Movie intake complete: 187 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-01-11 to 2026-02-10\n   \ud83d\udccb China: The Making of a Nation (2 eps)"
     },
     {
       "name": "Discover provider availability for tracking movies",
-      "success": false,
-      "duration_seconds": 0.172469,
-      "error": "Traceback (most recent call last):\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 20, in <module>\n    from pipeline import DataGenerator\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/__init__.py\", line 10, in <module>\n    from pipeline.generator import DataGenerator, setup_logger\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/generator.py\", line 19, in <module>\n    from agent_link_scraper import AgentLinkScraper\n  File \"/home/runner/work/nrw-production/nrw-production/agent_link_scraper.py\", line 32, in <module>\n    from scraper_base import PlaywrightScraperBase\nModuleNotFoundError: No module named 'scraper_base'\n",
-      "output_preview": null
+      "success": true,
+      "duration_seconds": 1840.13948,
+      "error": null,
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 13672 total movies\n\ud83d\udd0d Raw tracking filter: 12410 movies\n\ud83d\udd0d Assigned tracking_movies list: 12410\n\ud83d\udd0d Found 12410 movies in tracking status\n  Priority queue (last 180 days): 1324 movies\n  Older movies: 11086 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 12410 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/12410 (0.8%) | 0 found | 0m elapsed | ~29m remaining\n  \ud83d\udcbe Progress saved (b"
     },
     {
       "name": "Enrich newly available movies with metadata",
-      "success": false,
-      "duration_seconds": 0.169588,
-      "error": "Traceback (most recent call last):\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 20, in <module>\n    from pipeline import DataGenerator\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/__init__.py\", line 10, in <module>\n    from pipeline.generator import DataGenerator, setup_logger\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/generator.py\", line 19, in <module>\n    from agent_link_scraper import AgentLinkScraper\n  File \"/home/runner/work/nrw-production/nrw-production/agent_link_scraper.py\", line 32, in <module>\n    from scraper_base import PlaywrightScraperBase\nModuleNotFoundError: No module named 'scraper_base'\n",
-      "output_preview": null
+      "success": true,
+      "duration_seconds": 336.246518,
+      "error": null,
+      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 29 movies to enrich\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n[YouTubeTrailerScraper] Initializing browser via shared manager...\n  \u2192 Searching YouTube: The Last Spy (2025)\n  \u2713 "
     }
   ],
-  "health_issues": [
-    {
-      "check": "metrics_not_updated_for_current_run",
-      "severity": "error",
-      "message": "Current run did not produce fresh discovery metrics (metrics from 10:25, run started 10:00)"
-    }
-  ],
+  "health_issues": [],
   "stall_status": {
     "stalled": false,
     "days_without_transitions": 0
   },
-  "failures": [
-    {
-      "phase": "Intake new premieres from TMDB",
-      "severity": "error",
-      "message": "Phase failed with exit code 1",
-      "context": "Traceback (most recent call last):\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 20, in <module>\n    from pipeline import DataGenerator\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/__init__.py\", line 10, in <module>\n    from pipeline.generator import DataGenerator, setup_logger\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/generator.py\", line 19, in <module>\n    from agent_link_scraper import AgentLinkScraper\n  File \"/home/",
-      "stdout_preview": null
-    },
-    {
-      "phase": "Intake new premieres from TMDB",
-      "severity": "error",
-      "message": "Phase failed with exit code 1",
-      "context": "Traceback (most recent call last):\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 20, in <module>\n    from pipeline import DataGenerator\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/__init__.py\", line 10, in <module>\n    from pipeline.generator import DataGenerator, setup_logger\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/generator.py\", line 19, in <module>\n    from agent_link_scraper import AgentLinkScraper\n  File \"/home/",
-      "stdout_preview": null
-    },
-    {
-      "phase": "Intake new premieres from TMDB",
-      "severity": "error",
-      "message": "Phase failed with exit code 1 (after 3 attempts)",
-      "context": "Traceback (most recent call last):\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 20, in <module>\n    from pipeline import DataGenerator\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/__init__.py\", line 10, in <module>\n    from pipeline.generator import DataGenerator, setup_logger\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/generator.py\", line 19, in <module>\n    from agent_link_scraper import AgentLinkScraper\n  File \"/home/",
-      "stdout_preview": null
-    },
-    {
-      "phase": "Discover provider availability for tracking movies",
-      "severity": "error",
-      "message": "Phase failed with exit code 1",
-      "context": "Traceback (most recent call last):\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 20, in <module>\n    from pipeline import DataGenerator\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/__init__.py\", line 10, in <module>\n    from pipeline.generator import DataGenerator, setup_logger\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/generator.py\", line 19, in <module>\n    from agent_link_scraper import AgentLinkScraper\n  File \"/home/",
-      "stdout_preview": null
-    },
-    {
-      "phase": "Health Check",
-      "severity": "error",
-      "message": "Current run did not produce fresh discovery metrics (metrics from 10:25, run started 10:00)",
-      "context": "metrics_not_updated_for_current_run"
-    },
-    {
-      "phase": "Enrich newly available movies with metadata",
-      "severity": "error",
-      "message": "Phase failed with exit code 1",
-      "context": "Traceback (most recent call last):\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 20, in <module>\n    from pipeline import DataGenerator\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/__init__.py\", line 10, in <module>\n    from pipeline.generator import DataGenerator, setup_logger\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/generator.py\", line 19, in <module>\n    from agent_link_scraper import AgentLinkScraper\n  File \"/home/",
-      "stdout_preview": null
-    }
-  ],
+  "failures": [],
   "warnings": [],
   "data_quality": {
-    "total": 13457,
-    "tracking": 12195,
-    "available": 1260,
-    "data_movies": 209,
-    "movies_with_links": 185,
-    "movies_with_rt": 167,
-    "movies_with_wikipedia": 98,
-    "movies_with_trailers": 205
+    "total": 13672,
+    "tracking": 12381,
+    "available": 1289,
+    "data_movies": 238,
+    "movies_with_links": 214,
+    "movies_with_rt": 196,
+    "movies_with_wikipedia": 116,
+    "movies_with_trailers": 234
   },
   "enrichment_metrics": {
     "timestamp": "2025-12-29T15:42:45.008551",
