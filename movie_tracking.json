@@ -449,11 +449,20 @@
     "1303357": {
       "title": "Silent Rebellion",
       "premiere_date": "2025-09-01",
-      "digital_date": null,
-      "has_providers": false,
-      "status": "tracking",
+      "digital_date": "2026-02-11",
+      "has_providers": true,
+      "status": "available",
       "added": "2025-09-06T16:47:36.406165",
-      "year": 2026
+      "year": 2026,
+      "providers": {
+        "rent": [
+          "Eventive"
+        ],
+        "buy": [],
+        "streaming": []
+      },
+      "enriched": false,
+      "enrichment_date": null
     },
     "1539438": {
       "title": "Endometriose - Hoffnung auf neue Therapien",
@@ -21324,13 +21333,21 @@
     },
     "1351772": {
       "title": "Bight",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2025-11-05",
-      "digital_date": "2025-10-24",
-      "providers": {},
+      "digital_date": "2026-02-11",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "discovery_pass": "A",
-      "has_providers": false,
-      "year": 2025
+      "has_providers": true,
+      "year": 2025,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1569787": {
       "title": "Wheat and Chaff",
@@ -97746,14 +97763,22 @@
     },
     "1306816": {
       "title": "My Daughter is a Zombie",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-04",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-02-11",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Rakuten Viki"
+        ]
+      },
       "intake_pass": "backfill",
-      "has_providers": false,
+      "has_providers": true,
       "year": 2025,
-      "premiere_date": "2025-07-30"
+      "premiere_date": "2025-07-30",
+      "enriched": false,
+      "enrichment_date": null
     },
     "1268811": {
       "title": "Between the Two of Us",
@@ -158534,12 +158559,20 @@
     "1288246": {
       "title": "The Huntsman",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-02-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-02-11",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1272405": {
       "title": "Kung Fu",
@@ -158913,12 +158946,20 @@
     "1127065": {
       "title": "This Time",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-02-09",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-02-11",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "A",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1000520": {
       "title": "Midnight Sun",
@@ -161610,7 +161651,336 @@
       "networks": [
         "Prime Video"
       ]
+    },
+    "1426964": {
+      "title": "State of Fear",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A",
+      "has_providers": false
+    },
+    "1579658": {
+      "title": "Last Words",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A",
+      "has_providers": false
+    },
+    "1631363": {
+      "title": "Ilyes Djadel : Vrai",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1631346": {
+      "title": "Roman Frayssinet : \u00d4 del\u00e0",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1629500": {
+      "title": "Ellie de olifant - De grote reis",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1628696": {
+      "title": "The Gades",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1625927": {
+      "title": "Son-in-Law VS Father-in-Law",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1615605": {
+      "title": "Be My Valentine",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1601289": {
+      "title": "Eric Church: Evangeline vs. The Machine Comes Alive",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1533029": {
+      "title": "The Loved One",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1477170": {
+      "title": "LOL 2.0: Anne\u2019s Golden Hour",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1470694": {
+      "title": "Sunday Ninth",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1420742": {
+      "title": "L'infiltr\u00e9e",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1411577": {
+      "title": "Number One",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1391847": {
+      "title": "Gale: Yellow Brick Road",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1309400": {
+      "title": "The Children of the Resistance",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1268127": {
+      "title": "HUMINT",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1632920": {
+      "title": "Huy\u1ec1n T\u00ecnh D\u1ea1 Tr\u1ea1ch",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "tv_312728": {
+      "title": "Origin: The Story of the Basketball Africa League",
+      "content_type": "limited_series",
+      "tmdb_id": 312728,
+      "status": "tracking",
+      "first_air_date": "2026-02-11",
+      "digital_date": "2026-02-11",
+      "episode_count": 4,
+      "runtime": null,
+      "poster": null,
+      "synopsis": "Documents the creation and launch of the NBA's first collaboration to operate a league outside North America, a pan-African professional basketball league in partnership with FIBA featuring 12 top club teams from across Africa's 54 countries competing in a caravan format.",
+      "genres": [],
+      "original_language": "en",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-02-11T09:51:44.677520",
+      "networks": [
+        "ESPN DTC"
+      ]
+    },
+    "tv_312725": {
+      "title": "\u4e5d\u53f7\u79d8\u4e8b\u4e4b\u9ed1\u5e37\u80cc\u540e",
+      "content_type": "limited_series",
+      "tmdb_id": 312725,
+      "status": "tracking",
+      "first_air_date": "2026-02-11",
+      "digital_date": "2026-02-11",
+      "episode_count": 6,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/9fw7aE5iRvsFCVFO5WgaHWLrK0H.jpg",
+      "synopsis": "An anthology series set in the \u201cNo. 9 Universe,\u201d where each episode explores the hidden secrets of ordinary people. Within a compact runtime, viewers are drawn into darkly humorous, twist-filled stories that reveal the subtle sparks of human nature.",
+      "genres": [
+        "Comedy",
+        "Mystery"
+      ],
+      "original_language": "zh",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-02-11T09:51:44.822297",
+      "networks": [
+        "bilibili"
+      ]
+    },
+    "tv_312506": {
+      "title": "The Scream Murder: A True Teen Horror Story",
+      "content_type": "limited_series",
+      "tmdb_id": 312506,
+      "status": "tracking",
+      "first_air_date": "2026-02-11",
+      "digital_date": "2026-02-11",
+      "episode_count": 3,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/o03hfvBxzzE6WSFLQExx4RVpVlI.jpg",
+      "synopsis": "When high school student Cassie Stoddart is found stabbed to death in a house on the outskirts of Pocatello, Idaho, the community is gripped by fear that a random killer is on the loose. Police retrace Cassie's final hours and focus on three classmates that were the last people to see her alive. As the investigation narrows, detectives uncover a shocking buried video tape that reframes the case, raising the unthinkable question of whether 16-year-olds could have committed such a brutal crime.",
+      "genres": [
+        "Documentary"
+      ],
+      "original_language": "en",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-02-11T09:51:44.923383",
+      "networks": [
+        "Hulu"
+      ]
+    },
+    "tv_302681": {
+      "title": "A Good Yesterday",
+      "content_type": "limited_series",
+      "tmdb_id": 302681,
+      "status": "tracking",
+      "first_air_date": "2026-02-11",
+      "digital_date": "2026-02-11",
+      "episode_count": 1,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/ax1ejv4rv1L2hni66vuUryTRCZQ.jpg",
+      "synopsis": "A YouTuber travels to Kaen Makrut to film a travel show and unexpectedly falls for Asi, a young man from an ethnic minority. As hidden relationships and secrets emerge, his investigation into the disappearance of LGBTQ couples leads to a life-changing discovery",
+      "genres": [
+        "Drama"
+      ],
+      "original_language": "th",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-02-11T09:51:45.047877",
+      "networks": [
+        "YouTube"
+      ]
+    },
+    "tv_270444": {
+      "title": "Lead Children",
+      "content_type": "limited_series",
+      "tmdb_id": 270444,
+      "status": "tracking",
+      "first_air_date": "2026-02-11",
+      "digital_date": "2026-02-11",
+      "episode_count": 6,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/45vQ0CmDhAeSKhiVMlWjHUmD9Zr.jpg",
+      "synopsis": "When a young doctor discovers that children living near a smelting plant suffer from lead poisoning, she risks her career and safety to save them.",
+      "genres": [
+        "Drama"
+      ],
+      "original_language": "pl",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-02-11T09:51:45.155865",
+      "networks": [
+        "Netflix"
+      ]
+    },
+    "tv_313665": {
+      "title": "Max Verstappen - New Ground",
+      "content_type": "limited_series",
+      "tmdb_id": 313665,
+      "status": "tracking",
+      "first_air_date": "2026-02-10",
+      "digital_date": "2026-02-10",
+      "episode_count": 3,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/waZCdF7Dh56GNJLEfIwrRNMmpYD.jpg",
+      "synopsis": "",
+      "genres": [
+        "Documentary"
+      ],
+      "original_language": "nl",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-02-11T09:51:45.349631",
+      "networks": [
+        "Viaplay"
+      ]
     }
   },
-  "last_update": "2026-02-10T09:58:54.461242"
+  "last_update": "2026-02-11T09:51:44.317457"
 }
