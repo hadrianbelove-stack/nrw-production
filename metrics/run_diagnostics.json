@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-02-12T10:22:30.454602",
-  "duration_seconds": 2189.563941,
+  "timestamp": "2026-02-13T10:20:15.932198",
+  "duration_seconds": 2338.118289,
   "overall_success": true,
   "failure_count": 0,
   "warning_count": 0,
@@ -8,23 +8,23 @@
     {
       "name": "Intake new premieres from TMDB",
       "success": true,
-      "duration_seconds": 7.122113,
+      "duration_seconds": 7.854869,
       "error": null,
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-02-10 to 2026-02-12 (incremental mode, 34 intaked)\n\u2705 Movie intake complete: 34 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-01-13 to 2026-02-12\n   \ud83d\udccb Soul Power: The Legend of the American "
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-02-11 to 2026-02-13 (incremental mode, 53 intaked)\n\u2705 Movie intake complete: 53 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-01-14 to 2026-02-13\n   \ud83d\udccb Museum of Innocence (1 eps)\n   \ud83d\udccb The Ar"
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 2067.532771,
+      "duration_seconds": 2227.896091,
       "error": null,
-      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 13736 total movies\n\ud83d\udd0d Raw tracking filter: 12438 movies\n\ud83d\udd0d Assigned tracking_movies list: 12438\n\ud83d\udd0d Found 12438 movies in tracking status\n  Priority queue (last 180 days): 1286 movies\n  Older movies: 11152 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 12438 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/12438 (0.8%) | 0 found | 0m elapsed | ~33m remaining\n  \ud83d\udcbe Progress saved (b"
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 13797 total movies\n\ud83d\udd0d Raw tracking filter: 12490 movies\n\ud83d\udd0d Assigned tracking_movies list: 12490\n\ud83d\udd0d Found 12490 movies in tracking status\n  Priority queue (last 180 days): 1284 movies\n  Older movies: 11206 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 12490 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/12490 (0.8%) | 0 found | 0m elapsed | ~32m remaining\n  \ud83d\udcbe Progress saved (b"
     },
     {
       "name": "Enrich newly available movies with metadata",
       "success": true,
-      "duration_seconds": 114.800537,
+      "duration_seconds": 102.26301,
       "error": null,
-      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 9 movies to enrich\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n  \u26a1 Lesvia (17.5s) - Wiki:\u25cb Trailer:\u2713 RT:\u2713 Links:\u2713 Date:\u25cb | 3 success, 0 errors\n  \u2713 Lesvia - Links: 2\n  \u26a1 The Chora"
+      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 9 movies to enrich\n[YouTubeTrailerScraper] Initializing browser via shared manager...\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n  \u2192 Searching YouTube: Ponman (2025)\n  \u2713 Found: "
     }
   ],
   "health_issues": [],
@@ -35,14 +35,14 @@
   "failures": [],
   "warnings": [],
   "data_quality": {
-    "total": 13736,
-    "tracking": 12429,
-    "available": 1305,
-    "data_movies": 254,
-    "movies_with_links": 230,
-    "movies_with_rt": 212,
-    "movies_with_wikipedia": 124,
-    "movies_with_trailers": 250
+    "total": 13797,
+    "tracking": 12481,
+    "available": 1314,
+    "data_movies": 263,
+    "movies_with_links": 239,
+    "movies_with_rt": 221,
+    "movies_with_wikipedia": 130,
+    "movies_with_trailers": 259
   },
   "enrichment_metrics": {
     "timestamp": "2025-12-29T15:42:45.008551",
