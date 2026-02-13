@@ -2,6 +2,14 @@
 """
 Playwright Scraper Base Class - Common functionality for all Playwright-based scrapers.
 
+Configuration Defaults:
+    These values can be overridden via config.yaml under the scraper's config_key:
+    - rate_limit: 2.0 seconds between requests
+    - timeout: 15 seconds for page loads
+    - screenshots_enabled: True
+    - screenshot_retention_days: 7 days
+    - viewport: 1920x1080 pixels
+
 Created 2026-02-04 as part of technical debt cleanup.
 Extracts ~450 lines of duplicated code from:
 - rt_scraper_playwright.py

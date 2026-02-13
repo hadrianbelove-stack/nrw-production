@@ -12,6 +12,10 @@ import time
 from datetime import datetime, timedelta
 from pathlib import Path
 
+# Configuration constants - change these to adjust behavior
+RT_VALIDATION_SAMPLE_SIZE = 5     # How many movies to sample when validating RT data
+MAX_ERRORS_BEFORE_EXIT = 50       # Stop processing after this many errors (fail-fast)
+
 
 def has_real_watch_link(movie):
     """Check if movie has at least one non-search deep link"""
@@ -184,7 +188,7 @@ class NRWOrchestrator:
                 return
 
             # Check a sample of movies for RT data
-            sample_size = min(5, len(movies))
+            sample_size = min(RT_VALIDATION_SAMPLE_SIZE, len(movies))
             movies_with_rt = 0
 
             for movie in movies[:sample_size]:
@@ -248,7 +252,7 @@ class NRWOrchestrator:
             # Check all movies for basic structural checks with early exit on errors
             movies = data['movies']
             error_count = 0
-            max_errors = 50  # Early exit after first 50 errors
+            max_errors = MAX_ERRORS_BEFORE_EXIT
 
             for i, movie in enumerate(movies):
                 if not isinstance(movie, dict):

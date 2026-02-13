@@ -1,3 +1,9 @@
+// Configuration - change these values to adjust behavior
+const CONFIG = {
+    moviesPerPage: 60,       // How many movies to show initially and add on "More"
+    searchDebounceMs: 200    // Milliseconds to wait before searching after typing
+};
+
 const NRW = {
     allMovies: [],
     filteredMovies: [],
@@ -6,8 +12,8 @@ const NRW = {
     plexLibrary: {},  // TMDB ID -> Plex URLs mapping (personal, local only)
     activeFilters: new Set(),  // Multi-select: Set of active filter IDs
     searchQuery: '',     // Current search query
-    displayedCount: 60,  // How many movies currently shown
-    loadIncrement: 60,   // How many to add when clicking "More"
+    displayedCount: CONFIG.moviesPerPage,  // How many movies currently shown
+    loadIncrement: CONFIG.moviesPerPage,   // How many to add when clicking "More"
 
     // Lightbox state
     lightboxMovies: [],  // Movies currently in the lightbox (filtered/displayed)
@@ -48,6 +54,7 @@ const NRW = {
                 this.setupSearchEventListeners();
                 this.setupCardFlipHandler();
                 this.setupLightboxKeyboardHandler();
+                this.setupDelegatedClickHandlers();
                 this.applyFilter();
                 this.renderWallWithMore();
             } else {
@@ -67,14 +74,10 @@ const NRW = {
             if (e.target.closest('.expand-btn')) return; // Let expand btn handle itself
             const container = e.target.closest('.movie-container');
             if (container) {
-                // Find movie ID from the expand button in this container
-                const expandBtn = container.querySelector('.expand-btn');
+                // Find movie ID from the expand button's data attribute
+                const expandBtn = container.querySelector('.expand-btn[data-movie-id]');
                 if (expandBtn) {
-                    const onclickAttr = expandBtn.getAttribute('onclick');
-                    const match = onclickAttr.match(/openLightbox\('([^']+)'\)/);
-                    if (match) {
-                        this.openLightbox(match[1]);
-                    }
+                    this.openLightbox(expandBtn.dataset.movieId);
                 }
             }
         });
@@ -138,7 +141,7 @@ const NRW = {
                 if (clearBtn) {
                     clearBtn.style.display = this.searchQuery ? 'block' : 'none';
                 }
-            }, 200);
+            }, CONFIG.searchDebounceMs);
         });
 
         // Clear button
@@ -247,7 +250,7 @@ const NRW = {
         if (hasMore) {
             const remaining = totalCount - this.displayedCount;
             container.innerHTML = `
-                <button class="load-more-btn" onclick="NRW.loadMore()">
+                <button class="load-more-btn">
                     MORE (${remaining} more)
                 </button>
             `;
@@ -454,7 +457,7 @@ const NRW = {
             let infoLinks = [];
 
             if (movie.links?.trailer) {
-                infoLinks.push(`<a href="#" onclick="NRW.showTrailer('${movie.links.trailer}'); return false;" class="info-btn">Trailer</a>`);
+                infoLinks.push(`<a href="#" data-trailer="${movie.links.trailer}" class="info-btn">Trailer</a>`);
             }
 
             if (movie.links?.rt) {
@@ -526,7 +529,7 @@ const NRW = {
                             <img src="${movie.poster || ''}"
                                  onerror="this.style.display='none';"
                                  ${movie.poster ? '' : 'style="display:none"'}>
-                            <button class="expand-btn" onclick="event.stopPropagation(); NRW.openLightbox('${movie.id}')" aria-label="View fullscreen">&#x26F6;</button>
+                            <button class="expand-btn" data-movie-id="${movie.id}" aria-label="View fullscreen">&#x26F6;</button>
                         </div>
                         <div class="card-back">
                             <div class="synopsis">${movie.synopsis || 'Synopsis coming soon'}</div>
@@ -585,9 +588,9 @@ const NRW = {
             modal.id = 'trailer-modal';
             modal.className = 'trailer-modal';
             modal.innerHTML = `
-                <div class="trailer-modal-backdrop" onclick="NRW.closeTrailer()"></div>
+                <div class="trailer-modal-backdrop"></div>
                 <div class="trailer-modal-content">
-                    <button class="trailer-close-btn" onclick="NRW.closeTrailer()" aria-label="Close trailer">&times;</button>
+                    <button class="trailer-close-btn" aria-label="Close trailer">&times;</button>
                     <div class="trailer-video-container">
                         <iframe id="trailer-iframe"
                             src=""
@@ -721,7 +724,7 @@ const NRW = {
 
         // Trailer button
         if (movie.links?.trailer) {
-            buttonsHtml += `<button class="lightbox-btn lightbox-btn-secondary" onclick="NRW.showTrailer('${movie.links.trailer}')">Watch Trailer</button>`;
+            buttonsHtml += `<button class="lightbox-btn lightbox-btn-secondary" data-trailer="${movie.links.trailer}">Watch Trailer</button>`;
         }
 
         // Rotten Tomatoes
@@ -750,6 +753,50 @@ const NRW = {
                 this.lightboxNav(-1);
             } else if (e.key === 'ArrowRight') {
                 this.lightboxNav(1);
+            }
+        });
+    },
+
+    // Delegated click handlers - one listener catches clicks on dynamically created elements
+    setupDelegatedClickHandlers() {
+        // Handle clicks on #wall (movie cards, expand buttons, trailer links, load more)
+        document.getElementById('wall').addEventListener('click', (e) => {
+            // Expand button -> open lightbox
+            const expandBtn = e.target.closest('[data-movie-id]');
+            if (expandBtn) {
+                e.stopPropagation();
+                this.openLightbox(expandBtn.dataset.movieId);
+                return;
+            }
+
+            // Trailer link -> show trailer
+            const trailerLink = e.target.closest('[data-trailer]');
+            if (trailerLink) {
+                e.preventDefault();
+                this.showTrailer(trailerLink.dataset.trailer);
+                return;
+            }
+        });
+
+        // Handle clicks on load-more container
+        document.getElementById('load-more-container').addEventListener('click', (e) => {
+            if (e.target.closest('.load-more-btn')) {
+                this.loadMore();
+            }
+        });
+
+        // Handle clicks on document body for lightbox buttons
+        document.body.addEventListener('click', (e) => {
+            // Lightbox trailer button
+            const lightboxTrailer = e.target.closest('#lightbox-buttons [data-trailer]');
+            if (lightboxTrailer) {
+                this.showTrailer(lightboxTrailer.dataset.trailer);
+                return;
+            }
+
+            // Trailer modal backdrop or close button
+            if (e.target.closest('.trailer-modal-backdrop') || e.target.closest('.trailer-close-btn')) {
+                this.closeTrailer();
             }
         });
     }
