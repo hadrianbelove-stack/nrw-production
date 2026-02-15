@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-02-14T09:59:28.178760",
-  "duration_seconds": 1889.161785,
+  "timestamp": "2026-02-15T10:11:19.441005",
+  "duration_seconds": 2548.04647,
   "overall_success": true,
   "failure_count": 0,
   "warning_count": 0,
@@ -8,23 +8,23 @@
     {
       "name": "Intake new premieres from TMDB",
       "success": true,
-      "duration_seconds": 7.132697,
+      "duration_seconds": 8.985217,
       "error": null,
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-02-12 to 2026-02-14 (incremental mode, 24 intaked)\n\u2705 Movie intake complete: 24 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-01-15 to 2026-02-14\n   \ud83d\udccb Oh Thai Girl! Pull at the General's Hea"
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-02-13 to 2026-02-15 (incremental mode, 19 intaked)\n\u2705 Movie intake complete: 19 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-01-16 to 2026-02-15\n   \ud83d\udccb Dolph and the Lundgrens (8 eps)\n   \ud83d\udccb No"
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 1832.183368,
+      "duration_seconds": 2420.623459,
       "error": null,
-      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 13827 total movies\n\ud83d\udd0d Raw tracking filter: 12511 movies\n\ud83d\udd0d Assigned tracking_movies list: 12511\n\ud83d\udd0d Found 12511 movies in tracking status\n  Priority queue (last 180 days): 1282 movies\n  Older movies: 11229 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 12511 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/12511 (0.8%) | 0 found | 0m elapsed | ~29m remaining\n  \ud83d\udcbe Progress saved (b"
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 13852 total movies\n\ud83d\udd0d Raw tracking filter: 12532 movies\n\ud83d\udd0d Assigned tracking_movies list: 12532\n\ud83d\udd0d Found 12532 movies in tracking status\n  Priority queue (last 180 days): 1280 movies\n  Older movies: 11252 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 12532 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/12532 (0.8%) | 0 found | 0m elapsed | ~39m remaining\n  \ud83d\udcbe Progress saved (b"
     },
     {
       "name": "Enrich newly available movies with metadata",
       "success": true,
-      "duration_seconds": 49.739336,
+      "duration_seconds": 118.32754,
       "error": null,
-      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 4 movies to enrich\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n  \u26a1 \"I Will Revenge This World With Love\" - S. Paradjanov (17.6s) - Wiki:\u25cb Trailer:\u2713 RT:\u2713 Links:\u2713 Date:\u25cb | 3 succes"
+      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 10 movies to enrich\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n  \u26a1 Wed or Wait (18.8s) - Wiki:\u25cb Trailer:\u2713 RT:\u2713 Links:\u2713 Date:\u25cb | 3 success, 0 errors\n  \u2713 Wed or Wait - Links: 2\n[Y"
     }
   ],
   "health_issues": [],
@@ -35,14 +35,14 @@
   "failures": [],
   "warnings": [],
   "data_quality": {
-    "total": 13827,
-    "tracking": 12507,
-    "available": 1318,
-    "data_movies": 267,
-    "movies_with_links": 243,
-    "movies_with_rt": 225,
-    "movies_with_wikipedia": 132,
-    "movies_with_trailers": 263
+    "total": 13852,
+    "tracking": 12522,
+    "available": 1328,
+    "data_movies": 277,
+    "movies_with_links": 253,
+    "movies_with_rt": 235,
+    "movies_with_wikipedia": 138,
+    "movies_with_trailers": 273
   },
   "enrichment_metrics": {
     "timestamp": "2025-12-29T15:42:45.008551",
