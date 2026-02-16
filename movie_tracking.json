@@ -88109,14 +88109,22 @@
     },
     "1266781": {
       "title": "Natacha (Almost) Air Hostess",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-04",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-02-16",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "France Channel Amazon Channel"
+        ]
+      },
       "intake_pass": "backfill",
-      "has_providers": false,
+      "has_providers": true,
       "year": 2025,
-      "premiere_date": "2025-04-02"
+      "premiere_date": "2025-04-02",
+      "enriched": false,
+      "enrichment_date": null
     },
     "1218333": {
       "title": "Sometimes I Suddenly Think of You",
@@ -164158,7 +164166,103 @@
       },
       "intaked_at": "2026-02-15T09:28:58.819557",
       "networks": []
+    },
+    "1633099": {
+      "title": "2026\u5e74\u4e2d\u592e\u5e7f\u64ad\u7535\u89c6\u603b\u53f0\u6625\u8282\u8054\u6b22\u665a\u4f1a",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-16",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1636241": {
+      "title": "F\u00e1tima - A Filipe La F\u00e9ria Opera Rock",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-16",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1635989": {
+      "title": "V\u00edtor S\u00e1: Arraial",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-16",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1635912": {
+      "title": "Lully :  LE CARNAVAL, MASCARADE ROYALE",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-16",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1608616": {
+      "title": "Because of Cupid",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-16",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "tv_313903": {
+      "title": "Smola",
+      "content_type": "limited_series",
+      "tmdb_id": 313903,
+      "status": "tracking",
+      "first_air_date": "2026-02-13",
+      "digital_date": "2026-02-13",
+      "episode_count": 5,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/kmtyKYBBbSSqwBvRABJ9E0z4bwF.jpg",
+      "synopsis": "",
+      "genres": [
+        "Drama"
+      ],
+      "original_language": "hr",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-02-16T09:52:04.121580",
+      "networks": [
+        "Voyo"
+      ]
+    },
+    "tv_312786": {
+      "title": "\u5357\u57ce\u5f85\u6708\u5f52",
+      "content_type": "limited_series",
+      "tmdb_id": 312786,
+      "status": "tracking",
+      "first_air_date": "2026-01-29",
+      "digital_date": "2026-01-29",
+      "episode_count": 1,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/sSj1m5sglaxmfZSRU4dUMJmNWka.jpg",
+      "synopsis": "",
+      "genres": [],
+      "original_language": "zh",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-02-16T09:52:05.654665",
+      "networks": []
     }
   },
-  "last_update": "2026-02-15T09:28:57.126466"
+  "last_update": "2026-02-16T09:52:03.505660"
 }
