@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-02-17T10:25:49.886613",
-  "duration_seconds": 2475.010764,
+  "timestamp": "2026-02-18T10:25:02.299724",
+  "duration_seconds": 2459.361684,
   "overall_success": true,
   "failure_count": 0,
   "warning_count": 0,
@@ -8,23 +8,23 @@
     {
       "name": "Intake new premieres from TMDB",
       "success": true,
-      "duration_seconds": 8.341244,
+      "duration_seconds": 11.821171,
       "error": null,
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-02-15 to 2026-02-17 (incremental mode, 26 intaked)\n\u2705 Movie intake complete: 26 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-01-18 to 2026-02-17\n   \ud83d\udccb The Tony Blair Story (3 eps)\n   \ud83d\udccb Fukus"
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-02-16 to 2026-02-18 (incremental mode, 16 intaked)\n\u2705 Movie intake complete: 16 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-01-19 to 2026-02-18\n   \ud83d\udccb Black Lipstick (1 eps)\n   \ud83d\udccb The Weaver "
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 2456.381897,
+      "duration_seconds": 2439.542799,
       "error": null,
-      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 13891 total movies\n\ud83d\udd0d Raw tracking filter: 12559 movies\n\ud83d\udd0d Assigned tracking_movies list: 12559\n\ud83d\udd0d Found 12559 movies in tracking status\n  Priority queue (last 180 days): 1258 movies\n  Older movies: 11301 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 12559 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/12559 (0.8%) | 0 found | 0m elapsed | ~39m remaining\n  \ud83d\udcbe Progress saved (b"
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 13932 total movies\n\ud83d\udd0d Raw tracking filter: 12599 movies\n\ud83d\udd0d Assigned tracking_movies list: 12599\n\ud83d\udd0d Found 12599 movies in tracking status\n  Priority queue (last 180 days): 1267 movies\n  Older movies: 11332 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 12599 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/12599 (0.8%) | 0 found | 0m elapsed | ~39m remaining\n  \ud83d\udcbe Progress saved (b"
     },
     {
       "name": "Enrich newly available movies with metadata",
       "success": true,
-      "duration_seconds": 10.182368,
+      "duration_seconds": 7.891366,
       "error": null,
-      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 1 movies to enrich\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n  \u26a1 Urchin (9.6s) - Wiki:\u2713 Trailer:\u2713 RT:\u2713 Links:\u2713 Date:\u2713 | 5 success, 0 errors\n  \u2713 Urchin - Links: 1\n\u2705 Enriched 1/1"
+      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 1 movies to enrich\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n  \u26a1 Sheepdog (7.4s) - Wiki:\u2713 Trailer:\u2713 RT:\u2713 Links:\u2713 Date:\u25cb | 4 success, 0 errors\n  \u2713 Sheepdog - Links: 1\n\u2705 Enriched"
     }
   ],
   "health_issues": [],
@@ -35,14 +35,14 @@
   "failures": [],
   "warnings": [],
   "data_quality": {
-    "total": 13891,
-    "tracking": 12558,
-    "available": 1331,
-    "data_movies": 279,
-    "movies_with_links": 255,
-    "movies_with_rt": 237,
-    "movies_with_wikipedia": 139,
-    "movies_with_trailers": 275
+    "total": 13932,
+    "tracking": 12598,
+    "available": 1332,
+    "data_movies": 280,
+    "movies_with_links": 256,
+    "movies_with_rt": 238,
+    "movies_with_wikipedia": 140,
+    "movies_with_trailers": 276
   },
   "enrichment_metrics": {
     "timestamp": "2025-12-29T15:42:45.008551",
