@@ -1050,11 +1050,22 @@
     "1364904": {
       "title": "A Useful Ghost",
       "premiere_date": "2025-08-27",
-      "digital_date": null,
-      "has_providers": false,
-      "status": "tracking",
+      "digital_date": "2026-02-19",
+      "has_providers": true,
+      "status": "available",
       "added": "2025-09-06T16:47:39.333391",
-      "year": 2025
+      "year": 2025,
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
+      "enriched": false,
+      "enrichment_date": null
     },
     "1339666": {
       "title": "The Kidnapping of Arabella",
@@ -2504,11 +2515,20 @@
     "1450257": {
       "title": "Clika",
       "premiere_date": "2025-08-15",
-      "digital_date": null,
-      "has_providers": false,
-      "status": "tracking",
+      "digital_date": "2026-02-19",
+      "has_providers": true,
+      "status": "available",
       "added": "2025-09-06T16:47:46.986250",
-      "year": 2026
+      "year": 2026,
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
+      "enriched": false,
+      "enrichment_date": null
     },
     "1428741": {
       "title": "Wakashu",
@@ -93145,14 +93165,24 @@
     },
     "1492332": {
       "title": "The Wilde Girls",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-04",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-02-19",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
       "intake_pass": "backfill",
-      "has_providers": false,
+      "has_providers": true,
       "year": 2025,
-      "premiere_date": "2025-05-30"
+      "premiere_date": "2025-05-30",
+      "enriched": false,
+      "enrichment_date": null
     },
     "1491514": {
       "title": "Torsha Ekti Nodir Naam",
@@ -105630,13 +105660,23 @@
     "1288748": {
       "title": "Cactus Pears",
       "year": 2025,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-02-19",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "Sundance",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1211442": {
       "title": "Rebuilding",
@@ -110164,13 +110204,24 @@
     "639988": {
       "title": "No Other Choice",
       "year": 2025,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-02-19",
+      "providers": {
+        "rent": [
+          "Amazon Video",
+          "Plex"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "Venice",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1457188": {
       "title": "Below the Clouds",
@@ -110560,13 +110611,21 @@
     "1526217": {
       "title": "True North",
       "year": 2025,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-02-19",
+      "providers": {
+        "rent": [
+          "Eventive"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "Toronto/TIFF",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1526214": {
       "title": "Canceled: The Paula Deen Story",
@@ -111195,13 +111254,21 @@
     "1526219": {
       "title": "Ni-Naadamaadiz: Red Power Rising",
       "year": 2025,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-02-19",
+      "providers": {
+        "rent": [
+          "Eventive"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "Toronto/TIFF",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1418736": {
       "title": "Karmadonna",
@@ -112358,13 +112425,24 @@
     "1355281": {
       "title": "The Last Sacrifice",
       "year": 2024,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-02-19",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "AMC+ Amazon Channel",
+          "Shudder",
+          "Shudder Amazon Channel",
+          "Shudder Apple TV Channel"
+        ]
+      },
       "intake_pass": "C",
       "festival": "NYFF",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1358407": {
       "title": "Sam and Colby: The Legends of the Paranormal",
@@ -115379,13 +115457,21 @@
     "1300359": {
       "title": "Relentless Memory",
       "year": 2024,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-02-19",
+      "providers": {
+        "rent": [
+          "Eventive"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "Sheffield DocFest",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1300298": {
       "title": "Googoosh: Made of Fire",
@@ -119726,13 +119812,23 @@
     "1592572": {
       "title": "Cult Leader",
       "year": 2025,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-02-19",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "NYFF",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1553362": {
       "title": "This is Pike County",
@@ -148837,12 +148933,22 @@
     "1619765": {
       "title": "House Sitter",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-20",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-02-19",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
       "intake_pass": "A",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1613175": {
       "title": "He Killed My Sister",
@@ -149109,12 +149215,23 @@
     "1236153": {
       "title": "Mercy",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-20",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-02-19",
+      "providers": {
+        "rent": [
+          "Amazon Video",
+          "Plex"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1619469": {
       "title": "Wrong",
@@ -154073,12 +154190,20 @@
     "1290821": {
       "title": "Shelter",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-30",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-02-19",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1259983": {
       "title": "Guru",
@@ -163914,12 +164039,20 @@
     "1633388": {
       "title": "Big Sky Falling",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-02-15",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-02-19",
+      "providers": {
+        "rent": [
+          "Eventive"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1632402": {
       "title": "TJPW club eX: Chapter Pause",
@@ -164218,12 +164351,22 @@
     "1608616": {
       "title": "Because of Cupid",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-02-16",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-02-19",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Hallmark+ Amazon Channel",
+          "Hallmark+ Apple TV Channel",
+          "Hallmark TV Amazon Channel"
+        ]
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "tv_313903": {
       "title": "Smola",
@@ -164284,12 +164427,22 @@
     "1450730": {
       "title": "Blood Barn",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-02-17",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-02-19",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
       "intake_pass": "A",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1283320": {
       "title": "Urchin",
@@ -164323,22 +164476,43 @@
     "1088434": {
       "title": "Hellfire",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-02-17",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-02-19",
+      "providers": {
+        "rent": [
+          "Google Play Movies",
+          "YouTube"
+        ],
+        "buy": [
+          "Amazon Video",
+          "Google Play Movies",
+          "YouTube"
+        ],
+        "streaming": []
+      },
       "intake_pass": "A",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "414419": {
       "title": "Kill Bill: The Whole Bloody Affair",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-02-17",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-02-19",
+      "providers": {
+        "rent": [],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
       "intake_pass": "A",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1636285": {
       "title": "Muamma: The Djinn\u2019s Fetus",
@@ -165497,7 +165671,656 @@
         "MBC Shahid",
         "MBC MASR Drama"
       ]
+    },
+    "669356": {
+      "title": "You Can't Win",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A",
+      "has_providers": false
+    },
+    "1634754": {
+      "title": "Romain Gary. No Better Way to Say It",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1632407": {
+      "title": "Cecil",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1631485": {
+      "title": "Strangers in the Park",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1628653": {
+      "title": "6+6=2",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1625031": {
+      "title": "Boomers",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1625022": {
+      "title": "Bad Slippers",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1624343": {
+      "title": "Invisible Paths. Redemption",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1612517": {
+      "title": "Detective Conan Episode \"ZERO\" The Shinichi Kudo Aquarium Case",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1612260": {
+      "title": "Antara Mama, Cinta dan Surga: Bahasa Cinta Nommensen",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1604825": {
+      "title": "Pocong Merah",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1604671": {
+      "title": "Taneuh Kalaknat",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1602460": {
+      "title": "Asrama Putri",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1601278": {
+      "title": "The Making of De Jeugd van Tegenwoordig",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1598142": {
+      "title": "The Projectionist",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1587994": {
+      "title": "Christiania",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1550740": {
+      "title": "Domani interrogo",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1545251": {
+      "title": "It Will Find You",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1531852": {
+      "title": "Hey Balwanth",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1525599": {
+      "title": "Meer dan babi pangang",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1497823": {
+      "title": "You Believe in Angels, Mr. Drowak?",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1428977": {
+      "title": "Survive or Die ?",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1413683": {
+      "title": "Red Flag",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1378900": {
+      "title": "Kurt\u00e1g Fragments",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1368576": {
+      "title": "Trago Seu Amor",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1180894": {
+      "title": "Under Your Feet",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "938606": {
+      "title": "Mato ou Morro",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1638173": {
+      "title": "On Silver Heels",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1637818": {
+      "title": "G\u00e9n\u00e9ration Bi\u00e9try",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1620814": {
+      "title": "The Darkest Web",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1638027": {
+      "title": "Alterity",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Rotterdam/IFFR",
+      "has_providers": false
+    },
+    "1638036": {
+      "title": "Krakatoa",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Rotterdam/IFFR",
+      "has_providers": false
+    },
+    "tv_312530": {
+      "title": "Murder in Glitterball City",
+      "content_type": "limited_series",
+      "tmdb_id": 312530,
+      "status": "tracking",
+      "first_air_date": "2026-02-19",
+      "digital_date": "2026-02-19",
+      "episode_count": 2,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/mKqnoejnxO2lzxKdKP6QjJKOy5a.jpg",
+      "synopsis": "The city of Louisville, Kentucky, known for its historic Victorian architecture and birthplace of the mirrored glitterball, proves to be an unlikely backdrop for a dark tale of murder. This documentary explores the shifting landscape of a mysterious killing, a toxic relationship, a vulnerable victim and the unreliable accounts of two ex-lovers on trial for their lives.",
+      "genres": [
+        "Documentary"
+      ],
+      "original_language": "en",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-02-19T09:42:30.047478",
+      "networks": [
+        "HBO"
+      ]
+    },
+    "tv_312508": {
+      "title": "Girl on the Run: The Hunt for America's Most Wanted Woman",
+      "content_type": "limited_series",
+      "tmdb_id": 312508,
+      "status": "tracking",
+      "first_air_date": "2026-02-19",
+      "digital_date": "2026-02-19",
+      "episode_count": 3,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/iabZMekAqMqiDbHdIiz7i9Zhjs3.jpg",
+      "synopsis": "When convicted double murderer Sarah Pender escapes from a maximum-security prison in Indiana, a nationwide manhunt is immediately launched. Charged alongside her former boyfriend, who pled guilty, for the murder of a young couple, Pender has vanished, igniting fear, fascination, and a relentless pursuit that stretches across state lines.",
+      "genres": [
+        "Documentary"
+      ],
+      "original_language": "en",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-02-19T09:42:30.286926",
+      "networks": [
+        "Hulu"
+      ]
+    },
+    "tv_303983": {
+      "title": "Dad And Mom Are Neighbors",
+      "content_type": "limited_series",
+      "tmdb_id": 303983,
+      "status": "tracking",
+      "first_air_date": "2026-02-19",
+      "digital_date": "2026-02-19",
+      "episode_count": 1,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/qziRT4dCTJiusxrWYUI8lBJdF5i.jpg",
+      "synopsis": "After Hisham, a traditional pharmacist, and Noura, an aspiring singer, get divorced, fate makes them neighbours. On the frontline of the chaos stand their mums, wielding their fiercest weapons: social media channels.",
+      "genres": [
+        "Comedy",
+        "Drama"
+      ],
+      "original_language": "ar",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-02-19T09:42:30.522740",
+      "networks": [
+        "MBC MASR",
+        "MBC Shahid"
+      ]
+    },
+    "tv_303323": {
+      "title": "The Tiny One",
+      "content_type": "limited_series",
+      "tmdb_id": 303323,
+      "status": "tracking",
+      "first_air_date": "2026-02-19",
+      "digital_date": "2026-02-19",
+      "episode_count": 1,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/ch52J9rakazMKzB1PBNnXRbYDvH.jpg",
+      "synopsis": "A crime and mystery series in which a young man\u2019s life is transformed and his life\u2019s course changes after a shocking incident that alters all his expectations, drawing his character into a web of complex circumstances, investigations, and relationships.",
+      "genres": [
+        "Comedy",
+        "Drama"
+      ],
+      "original_language": "ar",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-02-19T09:42:30.762673",
+      "networks": []
+    },
+    "tv_302770": {
+      "title": "Manna'a",
+      "content_type": "limited_series",
+      "tmdb_id": 302770,
+      "status": "tracking",
+      "first_air_date": "2026-02-19",
+      "digital_date": "2026-02-19",
+      "episode_count": 1,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/wVt5yIYmvqpk8wqTXGsou7LB4OE.jpg",
+      "synopsis": "The story of a group of people in the working-class neighborhood of Al-Batiniya in Egypt, each living through their own struggles, ambitions, and crises in complex circumstances that threaten their stability. The story of Manaa occupies a central position as she faces social and psychological challenges.",
+      "genres": [
+        "Drama",
+        "Crime"
+      ],
+      "original_language": "ar",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-02-19T09:42:31.003105",
+      "networks": [
+        "WATCH iT!",
+        "Yango Play"
+      ]
+    },
+    "tv_302546": {
+      "title": "Is it chemistry?",
+      "content_type": "limited_series",
+      "tmdb_id": 302546,
+      "status": "tracking",
+      "first_air_date": "2026-02-19",
+      "digital_date": "2026-02-19",
+      "episode_count": 1,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/r8xoRlko0glhOY7HgkMlfSQt9aP.jpg",
+      "synopsis": "One anomalous equation detonates Sultan\u2019s stable life: a brother appears at their dad\u2019s funeral, then evaporates\u2014setting off a volatile chain reaction with no safe outcome.",
+      "genres": [
+        "Comedy"
+      ],
+      "original_language": "ar",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-02-19T09:42:31.244531",
+      "networks": [
+        "MBC MASR",
+        "MBC Shahid"
+      ]
+    },
+    "tv_301339": {
+      "title": "Bebo",
+      "content_type": "limited_series",
+      "tmdb_id": 301339,
+      "status": "tracking",
+      "first_air_date": "2026-02-19",
+      "digital_date": "2026-02-19",
+      "episode_count": 1,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/bGrpVTRQgPYc56m7cTGHikNBSnp.jpg",
+      "synopsis": "The series revolves around Bahgat (Bebo), a simple yet ambitious young man in his mid-twenties. Bebo lives with his mother in a working-class neighborhood and has one goal in mind: to travel abroad to escape poverty and build a life worthy of his dreams.",
+      "genres": [
+        "Drama"
+      ],
+      "original_language": "ar",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-02-19T09:42:31.495994",
+      "networks": [
+        "WATCH iT!"
+      ]
+    },
+    "tv_283439": {
+      "title": "House of Yang",
+      "content_type": "limited_series",
+      "tmdb_id": 283439,
+      "status": "tracking",
+      "first_air_date": "2026-02-19",
+      "digital_date": "2026-02-19",
+      "episode_count": 6,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/y5UhuyXxaFNgE01TGW3qwyjeSWE.jpg",
+      "synopsis": "In 1949, a girl disappears from an isolated house in the Black Forest. Fifty years later, another girl disappears. Now, in the present, the ghosts of the past step out of the shadows once more.",
+      "genres": [
+        "Mystery",
+        "Family",
+        "Drama"
+      ],
+      "original_language": "de",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-02-19T09:42:31.734531",
+      "networks": []
+    },
+    "tv_246788": {
+      "title": "Proof of lineage",
+      "content_type": "limited_series",
+      "tmdb_id": 246788,
+      "status": "tracking",
+      "first_air_date": "2026-02-19",
+      "digital_date": "2026-02-19",
+      "episode_count": 1,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/7B0SF9spe8rjUIG6Nns4j2Kdp0F.jpg",
+      "synopsis": "When her only child becomes a hostage in a dirty power war fueled by wealth and greed, a simple woman is caught in a web of plots. As the pressures grow, her resistance transforms from instinctive protection to a dive into doubt, questioning her sanity and memory, leaving her and her oppressors with one lingering question: is what she sees reality or madness?",
+      "genres": [
+        "Drama"
+      ],
+      "original_language": "ar",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-02-19T09:42:31.970960",
+      "networks": [
+        "Al-Nahar One"
+      ]
+    },
+    "tv_305177": {
+      "title": "Before and After",
+      "content_type": "limited_series",
+      "tmdb_id": 305177,
+      "status": "tracking",
+      "first_air_date": "2026-02-18",
+      "digital_date": "2026-02-18",
+      "episode_count": 1,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/juBRzq1CpZNcBfJGHts5ITADANk.jpg",
+      "synopsis": "The series explores the world of beauty and fame through the story of four partners in a beauty clinic, including a fashion enthusiast who became a makeup artist and uses her social media fame to promote her cosmetics. The series showcases the impact The show focuses on the fame of private youth projects and their challenges with the world of communication, and reviews the differing opinions of partners about inner and outer beauty, in a comedic format.",
+      "genres": [
+        "Drama"
+      ],
+      "original_language": "ar",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-02-19T09:42:32.214055",
+      "networks": []
+    },
+    "tv_302982": {
+      "title": "Mrs. Mona Lisa",
+      "content_type": "limited_series",
+      "tmdb_id": 302982,
+      "status": "tracking",
+      "first_air_date": "2026-02-18",
+      "digital_date": "2026-02-18",
+      "episode_count": 15,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/3jlWlBsqgf5tqwvmoatzBA9fFIS.jpg",
+      "synopsis": "When Monalisa says \u201cI do,\u201d she bets on forever. But in Cairo, the honeymoon fades fast: a self-serving husband, a family eyeing her dowry, and love traded for gains. This marriage comes with strings attached.",
+      "genres": [
+        "Drama"
+      ],
+      "original_language": "ar",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-02-19T09:42:32.454783",
+      "networks": [
+        "MBC MASR",
+        "MBC Shahid"
+      ]
+    },
+    "tv_312423": {
+      "title": "Reality Check: Inside America's Next Top Model",
+      "content_type": "limited_series",
+      "tmdb_id": 312423,
+      "status": "available",
+      "first_air_date": "2026-02-16",
+      "digital_date": "2026-02-16",
+      "episode_count": 3,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/lxlsvsgvEYlf2wrSV9qUipHRAuk.jpg",
+      "synopsis": "The definitive documentary about ANTM. What started as a glamorous launchpad for aspiring models became a pop-culture juggernaut defined by explosive drama, public meltdowns, and controversies that still fuel viral moments today.",
+      "genres": [
+        "Documentary"
+      ],
+      "original_language": "en",
+      "providers": {
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-02-19T09:42:33.082994",
+      "networks": [
+        "Netflix"
+      ]
+    },
+    "tv_314314": {
+      "title": "\u89c9\u9192\u540e\uff0c\u6211\u6559\u4ed6\u5206\u6e05\u754c\u9650",
+      "content_type": "limited_series",
+      "tmdb_id": 314314,
+      "status": "tracking",
+      "first_air_date": "2026-01-23",
+      "digital_date": "2026-01-23",
+      "episode_count": 1,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/u0MjMdsOflzOX8OxXSJc34jTVxc.jpg",
+      "synopsis": "",
+      "genres": [],
+      "original_language": "zh",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-02-19T09:42:35.654081",
+      "networks": []
     }
   },
-  "last_update": "2026-02-18T09:44:07.792045"
+  "last_update": "2026-02-19T09:42:29.467055"
 }
