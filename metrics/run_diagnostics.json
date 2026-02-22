@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-02-21T10:03:25.521275",
-  "duration_seconds": 2141.991952,
+  "timestamp": "2026-02-22T10:09:29.143514",
+  "duration_seconds": 2478.533695,
   "overall_success": true,
   "failure_count": 0,
   "warning_count": 0,
@@ -8,23 +8,23 @@
     {
       "name": "Intake new premieres from TMDB",
       "success": true,
-      "duration_seconds": 7.284029,
+      "duration_seconds": 6.911875,
       "error": null,
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-02-19 to 2026-02-21 (incremental mode, 20 intaked)\n\u2705 Movie intake complete: 20 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-01-22 to 2026-02-21\n   \ud83d\udccb Savage Mother (1 eps)\n   \ud83d\udccb \uac00\ub2a5\uc131 \uc81c\ub85c \ub85c\ub9e8\uc2a4 ("
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-02-20 to 2026-02-22 (incremental mode, 17 intaked)\n\u2705 Movie intake complete: 17 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-01-23 to 2026-02-22\n   \ud83d\udccb The Lady (4 eps)\n   \ud83d\udccb Mawlana (30 eps)\n"
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 2091.257136,
+      "duration_seconds": 1982.140725,
       "error": null,
-      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 14053 total movies\n\ud83d\udd0d Raw tracking filter: 12692 movies\n\ud83d\udd0d Assigned tracking_movies list: 12692\n\ud83d\udd0d Found 12692 movies in tracking status\n  Priority queue (last 180 days): 1264 movies\n  Older movies: 11428 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 12692 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/12692 (0.8%) | 0 found | 0m elapsed | ~33m remaining\n  \ud83d\udcbe Progress saved (b"
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 14074 total movies\n\ud83d\udd0d Raw tracking filter: 12710 movies\n\ud83d\udd0d Assigned tracking_movies list: 12710\n\ud83d\udd0d Found 12710 movies in tracking status\n  Priority queue (last 180 days): 1264 movies\n  Older movies: 11446 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 12710 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/12710 (0.8%) | 0 found | 0m elapsed | ~31m remaining\n  \ud83d\udcbe Progress saved (b"
     },
     {
       "name": "Enrich newly available movies with metadata",
       "success": true,
-      "duration_seconds": 43.344848,
+      "duration_seconds": 489.370481,
       "error": null,
-      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 3 movies to enrich\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n  \u26a1 The Swedish Connection (9.0s) - Wiki:\u2713 Trailer:\u2713 RT:\u2713 Links:\u2713 Date:\u2713 | 5 success, 0 errors\n  \u2713 The Swedish Conn"
+      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 23 movies to enrich\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n  \u26a1 The Orphans (27.9s) - Wiki:\u25cb Trailer:\u2713 RT:\u2713 Links:\u2713 Date:\u25cb | 3 success, 0 errors\n  \u2713 The Orphans - Links: 1\n  "
     }
   ],
   "health_issues": [],
@@ -35,14 +35,14 @@
   "failures": [],
   "warnings": [],
   "data_quality": {
-    "total": 14053,
-    "tracking": 12689,
-    "available": 1362,
-    "data_movies": 309,
-    "movies_with_links": 284,
-    "movies_with_rt": 267,
-    "movies_with_wikipedia": 154,
-    "movies_with_trailers": 305
+    "total": 14074,
+    "tracking": 12687,
+    "available": 1385,
+    "data_movies": 331,
+    "movies_with_links": 307,
+    "movies_with_rt": 290,
+    "movies_with_wikipedia": 169,
+    "movies_with_trailers": 327
   },
   "enrichment_metrics": {
     "timestamp": "2025-12-29T15:42:45.008551",
