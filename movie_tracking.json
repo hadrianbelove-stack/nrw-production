@@ -61836,13 +61836,22 @@
     },
     "1586841": {
       "title": "The Trip 8",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2025-12-26",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-02-23",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
+      },
       "discovery_pass": "B",
-      "has_providers": false,
-      "year": 2025
+      "has_providers": true,
+      "year": 2025,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1577375": {
       "title": "\u041c\u0435\u0447\u0442\u044b \u0441\u0431\u044b\u0432\u0430\u044e\u0442\u0441\u044f",
@@ -92544,14 +92553,32 @@
     },
     "1602579": {
       "title": "Moment of Contact: New Revelations of Alien Encounters",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-04",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-02-23",
+      "providers": {
+        "rent": [
+          "Amazon Video",
+          "Apple TV Store",
+          "Google Play Movies",
+          "YouTube",
+          "Fandango At Home"
+        ],
+        "buy": [
+          "Amazon Video",
+          "Apple TV Store",
+          "Google Play Movies",
+          "YouTube",
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
       "intake_pass": "backfill",
-      "has_providers": false,
+      "has_providers": true,
       "year": 2025,
-      "premiere_date": "2025-06-01"
+      "premiere_date": "2025-06-01",
+      "enriched": false,
+      "enrichment_date": null
     },
     "1593943": {
       "title": "Dark Secrets",
@@ -92951,14 +92978,22 @@
     },
     "1491621": {
       "title": "Bare Skin",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-04",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-02-23",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "backfill",
-      "has_providers": false,
+      "has_providers": true,
       "year": 2025,
-      "premiere_date": "2025-05-31"
+      "premiere_date": "2025-05-31",
+      "enriched": false,
+      "enrichment_date": null
     },
     "1491587": {
       "title": "From Mud to University: The History of Higher Education in Maring\u00e1",
@@ -108983,13 +109018,21 @@
     "1242015": {
       "title": "Young Mothers",
       "year": 2025,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-02-23",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "Cannes",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1585836": {
       "title": "Karine Dubernet : Perlimpinpin",
@@ -159479,12 +159522,20 @@
     "1592358": {
       "title": "Peaky Blinders: The Real Story",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-02-09",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-02-23",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "A",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1613548": {
       "title": "NJPW Road to The New Beginning 2026 - Day 10",
@@ -166635,12 +166686,22 @@
     "1327688": {
       "title": "One Mile: Chapter One",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-02-20",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-02-23",
+      "providers": {
+        "rent": [
+          "Google Play Movies"
+        ],
+        "buy": [
+          "Google Play Movies"
+        ],
+        "streaming": []
+      },
       "intake_pass": "A",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1268609": {
       "title": "Pavane",
@@ -167860,7 +167921,274 @@
       },
       "intaked_at": "2026-02-22T09:28:17.380305",
       "networks": []
+    },
+    "1637964": {
+      "title": "Threshold",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-23",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A",
+      "has_providers": false
+    },
+    "1638873": {
+      "title": "Rosso volante",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-23",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1637589": {
+      "title": "Angelus Tenebrarum",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-23",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1637515": {
+      "title": "Building history, Cannabis Women from the South",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-23",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1629964": {
+      "title": "Syd",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-23",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1618199": {
+      "title": "Zumeca",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-23",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1618198": {
+      "title": "A Story About You",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-23",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1618196": {
+      "title": "The Bulldogs",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-23",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1618195": {
+      "title": "HOUSE 4",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-23",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1458298": {
+      "title": "Tony Odyssey",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-23",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1640480": {
+      "title": "Petits meurtres en Corr\u00e8ze",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-23",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1637389": {
+      "title": "Milano Cortina 2026 Olympic Closing Ceremony: Beauty in Action",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-23",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1522065": {
+      "title": "The Plan",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-23",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1640444": {
+      "title": "Milano Cortina Figure Skating Exhibition Gala",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-23",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1608619": {
+      "title": "The Stars Between Us",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-23",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "tv_314522": {
+      "title": "Hitman Goodman",
+      "content_type": "limited_series",
+      "tmdb_id": 314522,
+      "status": "tracking",
+      "first_air_date": "2026-02-23",
+      "digital_date": "2026-02-23",
+      "episode_count": 1,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/1X8pFlxzpxYDqERX3L3m2jaQUcM.jpg",
+      "synopsis": "A powerful secret agent from a futuristic video game unexpectedly crosses into the real world, where he becomes entangled with a withdrawn teenage girl from a single-parent family. As a mysterious mission binds them together, the boundary between game and reality begins to dissolve, leading to a journey of warmth, growth, and adventure.",
+      "genres": [
+        "Action & Adventure",
+        "Sci-Fi & Fantasy"
+      ],
+      "original_language": "zh",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-02-23T09:53:08.849243",
+      "networks": [
+        "bilibili"
+      ]
+    },
+    "tv_58969": {
+      "title": "Dirty Business",
+      "content_type": "limited_series",
+      "tmdb_id": 58969,
+      "status": "available",
+      "first_air_date": "2026-02-23",
+      "digital_date": "2026-02-23",
+      "episode_count": 3,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/fZmwNjzVgSKXX9nfjI1sZBgxXLy.jpg",
+      "synopsis": "",
+      "genres": [],
+      "original_language": "en",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-02-23T09:53:09.160166",
+      "networks": [
+        "Channel 4"
+      ]
+    },
+    "tv_314745": {
+      "title": "\u7231\u6211\u4e07\u5c81",
+      "content_type": "limited_series",
+      "tmdb_id": 314745,
+      "status": "tracking",
+      "first_air_date": "2026-02-22",
+      "digital_date": "2026-02-22",
+      "episode_count": 1,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/jEzH2qVjBASAAioI2AnUqQ5YHhI.jpg",
+      "synopsis": "",
+      "genres": [],
+      "original_language": "zh",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-02-23T09:53:09.450838",
+      "networks": []
+    },
+    "tv_296563": {
+      "title": "B\u00f6lm\u0259",
+      "content_type": "limited_series",
+      "tmdb_id": 296563,
+      "status": "tracking",
+      "first_air_date": "2026-02-14",
+      "digital_date": "2026-02-14",
+      "episode_count": 2,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/sGt9FQH4ohFU0Oe1WalskEmabA3.jpg",
+      "synopsis": "TV series by Emil Guliev.",
+      "genres": [
+        "Crime",
+        "Drama"
+      ],
+      "original_language": "az",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-02-23T09:53:10.600148",
+      "networks": [
+        "\u0130ctimai TV"
+      ]
+    },
+    "tv_314743": {
+      "title": "\u4e16\u5b50\u5983\u5ac1\u5230\uff0c\u592b\u541b\u65e5\u65e5\u6c42\u8d34\u8d34",
+      "content_type": "limited_series",
+      "tmdb_id": 314743,
+      "status": "tracking",
+      "first_air_date": "2026-01-28",
+      "digital_date": "2026-01-28",
+      "episode_count": 1,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/iDkO6w7jrU48KHNPk15TCw4kznq.jpg",
+      "synopsis": "",
+      "genres": [],
+      "original_language": "zh",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-02-23T09:53:12.154471",
+      "networks": []
     }
   },
-  "last_update": "2026-02-22T09:28:14.702204"
+  "last_update": "2026-02-23T09:53:08.152833"
 }
