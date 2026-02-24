@@ -8,8 +8,9 @@ NRW supports multiple client applications that all consume the same `data.json` 
 |----------|--------|--------|------------|
 | Web | `index.html`, `assets/` | Production | Vanilla JS |
 | Apple TV | `NRWApp-tvOS/` | Development | React Native (tvOS) |
-| Android TV | `NRWApp-Android/` | Planned | TBD |
-| iOS | TBD | Planned | React Native |
+| Android TV | `NRWApp-Android/` | Development | Kotlin + Jetpack Compose |
+| iOS (iPhone/iPad) | `NRWApp-iOS/` | Development | React Native |
+| Roku | `NRWApp-Roku/` | Development | BrightScript (SceneGraph) |
 
 ## Folder Structure
 
@@ -19,7 +20,7 @@ nrw-production/
 ├── assets/                 # Web app JS/CSS
 │   ├── app.js
 │   └── styles.css
-├── NRWApp-tvOS/            # Apple TV native app (React Native)
+├── NRWApp-tvOS/            # Apple TV (React Native tvOS)
 │   ├── src/
 │   │   ├── screens/        # HomeScreen, MovieDetail, SearchScreen
 │   │   ├── components/     # MovieCard, FullscreenPosterModal, etc.
@@ -28,8 +29,28 @@ nrw-production/
 │   │   └── constants/      # colors, typography
 │   ├── ios/                # Xcode project (tvOS)
 │   └── tvos/               # Top Shelf extension (Swift)
-└── NRWApp-Android/         # Android TV app (placeholder)
-    └── README.md           # Status and plans
+├── NRWApp-iOS/             # iPhone/iPad (React Native)
+│   ├── src/
+│   │   ├── screens/        # HomeScreen, MovieDetail
+│   │   ├── components/     # MovieCard, WatchButton, FilterBar
+│   │   ├── services/       # api, analytics, sentry
+│   │   ├── utils/          # links, cache
+│   │   └── constants/      # colors
+│   └── ios/                # Xcode project (iOS)
+├── NRWApp-Android/         # Android TV (Kotlin Compose)
+│   └── app/src/main/java/com/nrw/app/
+│       ├── data/           # Movie models, repository
+│       ├── ui/             # Screens, components, theme
+│       └── util/           # Deep linking helpers
+└── NRWApp-Roku/            # Roku (BrightScript)
+    ├── source/             # BrightScript logic
+    │   ├── api/            # NRWApi, CacheManager
+    │   ├── utils/          # MovieUtils, DeepLinkUtils
+    │   └── constants/      # Colors
+    ├── components/         # SceneGraph XML/BRS
+    │   ├── screens/        # HomeScreen, DetailScreen
+    │   └── ui/             # MovieCard, FilterBar, WatchButton
+    └── images/             # App icons, service logos
 ```
 
 ## Architecture Overview
@@ -46,12 +67,13 @@ nrw-production/
               │   (Single Source)       │
               └─────────────────────────┘
                             │
-         ┌──────────────────┼──────────────────┐
-         ▼                  ▼                  ▼
-   ┌──────────┐      ┌─────────────┐    ┌─────────────┐
-   │   Web    │      │  Apple TV   │    │ Android TV  │
-   │index.html│      │NRWApp-tvOS  │    │NRWApp-Android│
-   └──────────┘      └─────────────┘    └─────────────┘
+       ┌────────────────────┼────────────────────┐
+       │          │         │         │          │
+       ▼          ▼         ▼         ▼          ▼
+ ┌──────────┐ ┌────────┐ ┌────────┐ ┌────────┐ ┌──────┐
+ │   Web    │ │Apple TV│ │  iOS   │ │Android │ │ Roku │
+ │index.html│ │-tvOS   │ │-iOS    │ │-Android│ │-Roku │
+ └──────────┘ └────────┘ └────────┘ └────────┘ └──────┘
 ```
 
 ## Shared Data Contract
@@ -69,71 +91,109 @@ All platforms consume the same `data.json` schema (Amendment 016):
 https://raw.githubusercontent.com/{owner}/{repo}/main/data.json
 ```
 
-## Apple TV App (NRWApp-tvOS/)
+## Platform Details
 
-### Technology Stack
-- React Native (react-native-tvos v0.73)
-- JavaScript + Swift (Top Shelf extension)
-- Platform: tvOS 4th generation+
+### Apple TV (NRWApp-tvOS/)
 
-### Key Features
-- Vertical scrolling grid layout (8 columns)
+**Technology:** React Native (react-native-tvos v0.73)
+
+**Key Features:**
+- 8-column vertical scrolling grid
 - Siri Remote navigation (d-pad, select, menu, play/pause)
 - Focus animations and parallax effects
-- Fullscreen poster view (long-press on card)
-- Deep linking (`nrw://movie/{id}`)
-- Streaming service integration (Netflix, Prime, etc.)
-- Plex library integration
+- Fullscreen poster view (long-press)
+- Top Shelf extension (featured movies on home screen)
+- Deep linking to streaming apps
 
-### Development Commands
+**Commands:**
 ```bash
 cd NRWApp-tvOS
-npm install              # Install dependencies
-cd ios && pod install    # Install native pods (first time)
-npm start                # Start Metro bundler
+npm install && cd ios && pod install && cd ..
+npm start                # Start Metro
 npm run tvos             # Run on Apple TV Simulator
-npm run tvos-4k          # Run on Apple TV 4K Simulator
 ```
 
-### Project Structure
-```
-NRWApp-tvOS/
-├── App.js                  # Main app component, navigation setup
-├── src/
-│   ├── screens/
-│   │   ├── HomeScreen.tvos.js      # Main grid view
-│   │   ├── MovieDetail.tvos.js     # Movie details screen
-│   │   └── SearchScreen.tvos.js    # Search functionality
-│   ├── components/
-│   │   ├── MovieCard.tvos.js       # Focusable movie poster card
-│   │   └── FullscreenPosterModal.tvos.js  # Fullscreen poster view
-│   ├── services/
-│   │   ├── api.tvos.js             # Data fetching
-│   │   ├── analytics.tvos.js       # Usage tracking
-│   │   └── sentry.tvos.js          # Crash reporting
-│   ├── utils/
-│   │   └── focusManager.tvos.js    # TV remote handling
-│   └── constants/
-│       └── colors.js               # Theme colors, typography
-├── ios/                    # Xcode project files
-└── tvos/                   # Top Shelf extension
+### iOS (NRWApp-iOS/)
+
+**Technology:** React Native 0.73
+
+**Key Features:**
+- 2-column grid optimized for mobile
+- Pull-to-refresh
+- "New This Week" featured section
+- Universal Links (opens native apps when installed)
+- Affiliate link integration (Amazon, Apple TV)
+- Search and filtering
+
+**Commands:**
+```bash
+cd NRWApp-iOS
+npm install && cd ios && pod install && cd ..
+npm start                # Start Metro
+npm run ios              # Run on iOS Simulator
 ```
 
-## Android TV App (NRWApp-Android/)
+### Android TV (NRWApp-Android/)
 
-### Status
-Not yet implemented - placeholder folder for future development.
+**Technology:** Kotlin + Jetpack Compose for TV
 
-### Planned Features
-- Same functionality as tvOS app
-- D-pad/remote navigation
-- Leanback UI framework or Jetpack Compose for TV
-- Streaming deep links
+**Key Features:**
+- D-pad navigation
+- Category filters
+- Deep linking to streaming apps
+- 24-hour caching with offline support
+- Material Design 3 theming
 
-### Technology Options
-- React Native (code sharing with tvOS)
-- Kotlin + Jetpack Compose for TV
-- Flutter
+**Commands:**
+```bash
+# Open in Android Studio
+# Build > Make Project
+# Run on Android TV emulator or device
+```
+
+### Roku (NRWApp-Roku/)
+
+**Technology:** BrightScript (SceneGraph framework)
+
+**Key Features:**
+- 8-column grid matching TV apps
+- Roku remote navigation
+- Deep linking via channel IDs
+- 24-hour caching
+- No external dependencies
+
+**Commands:**
+```bash
+# Enable Developer Mode on Roku
+zip -r nrw.zip . -x "*.git*"
+# Upload via Roku Developer Application Installer
+```
+
+## Shared Design System
+
+All platforms use the same brand colors (from `docs/STYLE_GUIDE.md`):
+
+| Color | Hex | Usage |
+|-------|-----|-------|
+| Background | `#0A0A0A` | Main background |
+| Background Secondary | `#1A1A2E` | Cards, elevated surfaces |
+| Primary (Teal) | `#00D4AA` | Accent, streaming buttons |
+| Staff Pick (Red) | `#DC143C` | Featured badges |
+| Text Primary | `#FFFFFF` | Headings |
+| Text Secondary | `#BBBBBB` | Body text |
+| Text Muted | `#888888` | Captions |
+
+## Streaming Service Integration
+
+All apps support deep linking to:
+- Netflix, Amazon Prime Video, Apple TV+
+- Disney+, Hulu, Max (HBO), Peacock, Paramount+
+- Plex, YouTube (trailers)
+
+Each platform handles deep links differently:
+- **tvOS/iOS**: Universal Links (`https://` URLs)
+- **Android**: Intent URIs with fallback to Play Store
+- **Roku**: Channel IDs with `launch` command
 
 ## Governance
 
@@ -144,7 +204,10 @@ Native apps follow the same PROJECT_CHARTER.md governance:
 
 ## Related Documentation
 
-- [NRWApp-tvOS/README.md](../../NRWApp-tvOS/README.md) - Apple TV app setup
-- [NRWApp-Android/README.md](../../NRWApp-Android/README.md) - Android TV plans
+- [NRWApp-tvOS/README.md](../../NRWApp-tvOS/README.md) - Apple TV setup
+- [NRWApp-iOS/README.md](../../NRWApp-iOS/README.md) - iOS setup
+- [NRWApp-Android/README.md](../../NRWApp-Android/README.md) - Android TV setup
+- [NRWApp-Roku/README.md](../../NRWApp-Roku/README.md) - Roku setup
 - [PROJECT_CHARTER.md](../../PROJECT_CHARTER.md) - Governance
+- [STYLE_GUIDE.md](../STYLE_GUIDE.md) - Design system
 - [SYSTEM_ARCHITECTURE.md](../../SYSTEM_ARCHITECTURE.md) - Data pipeline details

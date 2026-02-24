@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NRW Roku Icon Options</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #1a1a2e;
+      color: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      padding: 40px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+      color: #00d4aa;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #888;
+      margin-bottom: 40px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 40px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .option {
+      background: #0a0a0a;
+      border-radius: 16px;
+      padding: 24px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .option:hover {
+      border-color: #00d4aa;
+    }
+
+    .option-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .option-number {
+      background: #00d4aa;
+      color: #000;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+
+    .option-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    .previews {
+      display: flex;
+      gap: 20px;
+      align-items: flex-end;
+    }
+
+    .preview {
+      text-align: center;
+    }
+
+    .preview-label {
+      font-size: 0.7rem;
+      color: #666;
+      margin-top: 8px;
+    }
+
+    /* Icon container - simulates Roku home screen */
+    .icon-container {
+      background: #2a2a3e;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .icon-focus {
+      width: 290px;
+      height: 218px;
+    }
+
+    .icon-side {
+      width: 108px;
+      height: 108px;
+    }
+
+    /* ============================================ */
+    /* OPTION 1: Text Logo */
+    /* ============================================ */
+    .opt1 {
+      background: #0a0a0a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .opt1 .logo-text {
+      font-size: 64px;
+      font-weight: 100;
+      letter-spacing: 0.3em;
+      color: #fff;
+    }
+
+    .opt1 .logo-subtitle {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      color: #00d4aa;
+      margin-top: 4px;
+      text-transform: uppercase;
+    }
+
+    .opt1 .logo-underline {
+      width: 180px;
+      height: 3px;
+      background: #00d4aa;
+      margin-top: 10px;
+    }
+
+    .opt1.small .logo-text {
+      font-size: 28px;
+    }
+
+    .opt1.small .logo-subtitle {
+      font-size: 7px;
+      margin-top: 2px;
+    }
+
+    .opt1.small .logo-underline {
+      width: 70px;
+      height: 2px;
+      margin-top: 6px;
+    }
+
+    /* ============================================ */
+    /* OPTION 2: Film Strip */
+    /* ============================================ */
+    .opt2 {
+      background: #0a0a0a;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .opt2 .film-strip {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-10deg);
+      width: 320px;
+      height: 120px;
+      background: linear-gradient(to bottom,
+        #1a1a1a 0%, #1a1a1a 15%,
+        #0a0a0a 15%, #0a0a0a 85%,
+        #1a1a1a 85%, #1a1a1a 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 30px;
+    }
+
+    .opt2 .film-strip::before,
+    .opt2 .film-strip::after {
+      content: '';
+      position: absolute;
+      top: 8px;
+      bottom: 8px;
+      width: 20px;
+      background: repeating-linear-gradient(
+        to bottom,
+        #00d4aa 0px, #00d4aa 8px,
+        transparent 8px, transparent 16px
+      );
+    }
+
+    .opt2 .film-strip::before { left: 4px; }
+    .opt2 .film-strip::after { right: 4px; }
+
+    .opt2 .frame {
+      width: 60px;
+      height: 80px;
+      border: 2px solid #00d4aa;
+      background: #0a0a0a;
+    }
+
+    .opt2 .logo-group {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+
+    .opt2 .logo-text {
+      font-size: 42px;
+      font-weight: 700;
+      color: #fff;
+      text-shadow: 0 0 20px rgba(0,0,0,0.8);
+    }
+
+    .opt2 .logo-subtitle {
+      font-size: 10px;
+      font-weight: 600;
+      color: #00d4aa;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      text-shadow: 0 0 10px rgba(0,0,0,0.8);
+    }
+
+    .opt2.small .film-strip {
+      width: 140px;
+      height: 60px;
+    }
+
+    .opt2.small .frame {
+      width: 25px;
+      height: 35px;
+    }
+
+    .opt2.small .logo-text {
+      font-size: 20px;
+    }
+
+    .opt2.small .logo-subtitle {
+      font-size: 5px;
+    }
+
+    /* ============================================ */
+    /* OPTION 3: Brick Wall */
+    /* ============================================ */
+    .opt3 {
+      background:
+        linear-gradient(to bottom, rgba(0,0,0,0.7), rgba(0,0,0,0.5)),
+        repeating-linear-gradient(
+          0deg,
+          transparent 0px,
+          transparent 30px,
+          #00d4aa40 30px,
+          #00d4aa40 32px
+        ),
+        repeating-linear-gradient(
+          90deg,
+          #1a1a1a 0px,
+          #1a1a1a 60px,
+          #00d4aa40 60px,
+          #00d4aa40 62px
+        );
+      background-color: #0f0f0f;
+    }
+
+    .opt3 .logo-group {
+      text-align: center;
+    }
+
+    .opt3 .logo-text {
+      font-size: 56px;
+      font-weight: 900;
+      color: #00d4aa;
+      text-shadow:
+        3px 3px 0 #000,
+        -1px -1px 0 #000,
+        1px -1px 0 #000,
+        -1px 1px 0 #000;
+      font-style: italic;
+    }
+
+    .opt3 .logo-subtitle {
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      text-shadow: 2px 2px 0 #000;
+    }
+
+    .opt3.small .logo-text {
+      font-size: 26px;
+    }
+
+    .opt3.small .logo-subtitle {
+      font-size: 6px;
+    }
+
+    /* ============================================ */
+    /* OPTION 4: Grid Pattern */
+    /* ============================================ */
+    .opt4 {
+      background: #0a0a0a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .opt4 .grid-row {
+      display: flex;
+      gap: 6px;
+    }
+
+    .opt4 .grid-cell {
+      width: 28px;
+      height: 42px;
+      background: #1a1a2e;
+      border-radius: 3px;
+    }
+
+    .opt4 .grid-cell.highlight {
+      background: #00d4aa;
+      box-shadow: 0 0 15px #00d4aa60;
+    }
+
+    .opt4 .logo-text {
+      font-size: 26px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.2em;
+    }
+
+    .opt4 .logo-subtitle {
+      font-size: 10px;
+      color: #00d4aa;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-top: 2px;
+    }
+
+    .opt4.small .grid-cell {
+      width: 14px;
+      height: 21px;
+    }
+
+    .opt4.small .logo-text {
+      font-size: 14px;
+    }
+
+    .opt4.small .logo-subtitle {
+      font-size: 5px;
+    }
+
+    /* ============================================ */
+    /* OPTION 5: Play Button */
+    /* ============================================ */
+    .opt5 {
+      background: #0a0a0a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+    }
+
+    .opt5 .play-btn {
+      width: 80px;
+      height: 80px;
+      border: 4px solid #00d4aa;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .opt5 .play-triangle {
+      width: 0;
+      height: 0;
+      border-left: 30px solid #00d4aa;
+      border-top: 18px solid transparent;
+      border-bottom: 18px solid transparent;
+      margin-left: 8px;
+    }
+
+    .opt5 .logo-text {
+      font-size: 28px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.2em;
+    }
+
+    .opt5 .logo-subtitle {
+      font-size: 10px;
+      color: #00d4aa;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .opt5.small .play-btn {
+      width: 40px;
+      height: 40px;
+      border-width: 3px;
+    }
+
+    .opt5.small .play-triangle {
+      border-left-width: 14px;
+      border-top-width: 9px;
+      border-bottom-width: 9px;
+      margin-left: 4px;
+    }
+
+    .opt5.small .logo-text {
+      font-size: 14px;
+    }
+
+    .opt5.small .logo-subtitle {
+      font-size: 5px;
+    }
+
+    /* ============================================ */
+    /* OPTION 6: Popcorn */
+    /* ============================================ */
+    .opt6 {
+      background: #0a0a0a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .opt6 .popcorn {
+      position: relative;
+      width: 70px;
+      height: 90px;
+    }
+
+    .opt6 .bucket {
+      position: absolute;
+      bottom: 0;
+      width: 70px;
+      height: 55px;
+      background: linear-gradient(135deg, #00d4aa 0%, #00a888 100%);
+      clip-path: polygon(10% 0%, 90% 0%, 100% 100%, 0% 100%);
+    }
+
+    .opt6 .bucket::before {
+      content: '';
+      position: absolute;
+      top: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 50px;
+      height: 3px;
+      background: #fff;
+    }
+
+    .opt6 .kernel {
+      position: absolute;
+      background: #fff;
+      border-radius: 50%;
+    }
+
+    .opt6 .kernel:nth-child(1) { width: 18px; height: 18px; top: 10px; left: 26px; }
+    .opt6 .kernel:nth-child(2) { width: 16px; height: 16px; top: 5px; left: 12px; }
+    .opt6 .kernel:nth-child(3) { width: 14px; height: 14px; top: 8px; left: 42px; }
+    .opt6 .kernel:nth-child(4) { width: 12px; height: 12px; top: 20px; left: 18px; }
+    .opt6 .kernel:nth-child(5) { width: 12px; height: 12px; top: 22px; left: 38px; }
+
+    .opt6 .logo-text {
+      font-size: 24px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.2em;
+    }
+
+    .opt6 .logo-subtitle {
+      font-size: 9px;
+      color: #00d4aa;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .opt6.small .popcorn {
+      width: 35px;
+      height: 45px;
+    }
+
+    .opt6.small .bucket {
+      width: 35px;
+      height: 28px;
+    }
+
+    .opt6.small .kernel:nth-child(1) { width: 9px; height: 9px; top: 5px; left: 13px; }
+    .opt6.small .kernel:nth-child(2) { width: 8px; height: 8px; top: 2px; left: 6px; }
+    .opt6.small .kernel:nth-child(3) { width: 7px; height: 7px; top: 4px; left: 21px; }
+    .opt6.small .kernel:nth-child(4) { width: 6px; height: 6px; top: 10px; left: 9px; }
+    .opt6.small .kernel:nth-child(5) { width: 6px; height: 6px; top: 11px; left: 19px; }
+
+    .opt6.small .logo-text {
+      font-size: 12px;
+    }
+
+    .opt6.small .logo-subtitle {
+      font-size: 5px;
+    }
+
+    /* ============================================ */
+    /* OPTION 7: Calendar + Film */
+    /* ============================================ */
+    .opt7 {
+      background: #0a0a0a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .opt7 .icon-combo {
+      position: relative;
+      width: 100px;
+      height: 90px;
+    }
+
+    .opt7 .calendar {
+      position: absolute;
+      left: 0;
+      width: 60px;
+      height: 70px;
+      background: #1a1a2e;
+      border-radius: 6px;
+      border: 2px solid #00d4aa;
+    }
+
+    .opt7 .calendar::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 18px;
+      background: #00d4aa;
+      border-radius: 4px 4px 0 0;
+    }
+
+    .opt7 .calendar::after {
+      content: 'NEW';
+      position: absolute;
+      top: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 14px;
+      font-weight: 700;
+      color: #00d4aa;
+    }
+
+    .opt7 .reel {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      width: 50px;
+      height: 50px;
+      border: 3px solid #fff;
+      border-radius: 50%;
+      background: #0a0a0a;
+    }
+
+    .opt7 .reel::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 14px;
+      height: 14px;
+      background: #fff;
+      border-radius: 50%;
+    }
+
+    .opt7 .logo-text {
+      font-size: 24px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.2em;
+    }
+
+    .opt7 .logo-subtitle {
+      font-size: 9px;
+      color: #00d4aa;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .opt7.small .icon-combo {
+      width: 55px;
+      height: 50px;
+    }
+
+    .opt7.small .calendar {
+      width: 33px;
+      height: 38px;
+    }
+
+    .opt7.small .calendar::before {
+      height: 10px;
+    }
+
+    .opt7.small .calendar::after {
+      font-size: 7px;
+      top: 16px;
+    }
+
+    .opt7.small .reel {
+      width: 26px;
+      height: 26px;
+      border-width: 2px;
+    }
+
+    .opt7.small .reel::before {
+      width: 7px;
+      height: 7px;
+    }
+
+    .opt7.small .logo-text {
+      font-size: 12px;
+    }
+
+    .opt7.small .logo-subtitle {
+      font-size: 5px;
+    }
+
+    /* ============================================ */
+    /* OPTION 8: Gradient Wave */
+    /* ============================================ */
+    .opt8 {
+      background: linear-gradient(180deg, #0a0a0a 0%, #0a0a0a 40%, #00d4aa20 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .opt8 .wave {
+      position: absolute;
+      bottom: 0;
+      left: -20%;
+      width: 140%;
+      height: 80px;
+      background: linear-gradient(180deg, #00d4aa40 0%, #00d4aa10 100%);
+      border-radius: 100% 100% 0 0;
+    }
+
+    .opt8 .wave:nth-child(2) {
+      height: 60px;
+      background: linear-gradient(180deg, #00d4aa30 0%, #00d4aa05 100%);
+      bottom: 10px;
+    }
+
+    .opt8 .logo-group {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+    }
+
+    .opt8 .logo-text {
+      font-size: 48px;
+      font-weight: 100;
+      letter-spacing: 0.3em;
+      color: #fff;
+    }
+
+    .opt8 .logo-subtitle {
+      font-size: 11px;
+      color: #00d4aa;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+    }
+
+    .opt8.small .wave {
+      height: 40px;
+    }
+
+    .opt8.small .wave:nth-child(2) {
+      height: 30px;
+      bottom: 5px;
+    }
+
+    .opt8.small .logo-text {
+      font-size: 22px;
+    }
+
+    .opt8.small .logo-subtitle {
+      font-size: 5px;
+    }
+
+    /* ============================================ */
+    /* OPTION 9: Spotlight */
+    /* ============================================ */
+    .opt9 {
+      background: #0a0a0a;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .opt9 .spotlight {
+      position: absolute;
+      top: -50px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 150px;
+      height: 250px;
+      background: linear-gradient(
+        180deg,
+        #00d4aa60 0%,
+        #00d4aa20 40%,
+        transparent 100%
+      );
+      clip-path: polygon(40% 0%, 60% 0%, 100% 100%, 0% 100%);
+    }
+
+    .opt9 .logo-group {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+    }
+
+    .opt9 .logo-text {
+      font-size: 48px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.15em;
+      text-shadow: 0 0 30px #00d4aa60;
+    }
+
+    .opt9 .logo-subtitle {
+      font-size: 11px;
+      color: #00d4aa;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      text-shadow: 0 0 20px #00d4aa40;
+    }
+
+    .opt9.small .spotlight {
+      width: 80px;
+      height: 130px;
+      top: -25px;
+    }
+
+    .opt9.small .logo-text {
+      font-size: 22px;
+    }
+
+    .opt9.small .logo-subtitle {
+      font-size: 5px;
+    }
+
+    /* ============================================ */
+    /* OPTION 10: Ticket Stub */
+    /* ============================================ */
+    .opt10 {
+      background: #0a0a0a;
+    }
+
+    .opt10 .ticket {
+      position: relative;
+      width: 200px;
+      height: 100px;
+      background: linear-gradient(135deg, #00d4aa 0%, #00a888 100%);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .opt10 .ticket::before,
+    .opt10 .ticket::after {
+      content: '';
+      position: absolute;
+      left: 50px;
+      width: 20px;
+      height: 20px;
+      background: #0a0a0a;
+      border-radius: 50%;
+    }
+
+    .opt10 .ticket::before { top: -10px; }
+    .opt10 .ticket::after { bottom: -10px; }
+
+    .opt10 .ticket-line {
+      position: absolute;
+      left: 60px;
+      top: 12px;
+      bottom: 12px;
+      width: 0;
+      border-left: 2px dashed rgba(0,0,0,0.3);
+    }
+
+    .opt10 .logo-group {
+      text-align: center;
+      margin-left: 25px;
+    }
+
+    .opt10 .logo-text {
+      font-size: 36px;
+      font-weight: 900;
+      color: #000;
+    }
+
+    .opt10 .logo-subtitle {
+      font-size: 8px;
+      color: #000;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      opacity: 0.7;
+    }
+
+    .opt10.small .ticket {
+      width: 90px;
+      height: 50px;
+    }
+
+    .opt10.small .ticket::before,
+    .opt10.small .ticket::after {
+      left: 22px;
+      width: 12px;
+      height: 12px;
+    }
+
+    .opt10.small .ticket::before { top: -6px; }
+    .opt10.small .ticket::after { bottom: -6px; }
+
+    .opt10.small .ticket-line {
+      left: 28px;
+      top: 8px;
+      bottom: 8px;
+    }
+
+    .opt10.small .logo-group {
+      margin-left: 12px;
+    }
+
+    .opt10.small .logo-text {
+      font-size: 16px;
+    }
+
+    .opt10.small .logo-subtitle {
+      font-size: 4px;
+    }
+
+    /* Recommendation badge */
+    .recommended {
+      position: relative;
+    }
+
+    .recommended::after {
+      content: 'RECOMMENDED';
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: #00d4aa;
+      color: #000;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h1>NRW Roku App Icon Options</h1>
+  <p class="subtitle">Click to enlarge • Showing focus icon (290×218) and side icon (108×108)</p>
+
+  <div class="grid">
+
+    <!-- Option 1: Text Logo -->
+    <div class="option recommended">
+      <div class="option-header">
+        <span class="option-number">1</span>
+        <span class="option-title">Text Logo</span>
+      </div>
+      <div class="previews">
+        <div class="preview">
+          <div class="icon-container icon-focus opt1">
+            <div class="logo-text">NRW</div>
+            <div class="logo-subtitle">New Release Wall</div>
+            <div class="logo-underline"></div>
+          </div>
+          <div class="preview-label">Focus Icon (290×218)</div>
+        </div>
+        <div class="preview">
+          <div class="icon-container icon-side opt1 small">
+            <div class="logo-text">NRW</div>
+            <div class="logo-subtitle">New Release Wall</div>
+            <div class="logo-underline"></div>
+          </div>
+          <div class="preview-label">Side Icon (108×108)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Option 2: Film Strip -->
+    <div class="option">
+      <div class="option-header">
+        <span class="option-number">2</span>
+        <span class="option-title">Film Strip</span>
+      </div>
+      <div class="previews">
+        <div class="preview">
+          <div class="icon-container icon-focus opt2">
+            <div class="film-strip">
+              <div class="frame"></div>
+              <div class="frame"></div>
+              <div class="frame"></div>
+            </div>
+            <div class="logo-group">
+              <div class="logo-text">NRW</div>
+              <div class="logo-subtitle">New Release Wall</div>
+            </div>
+          </div>
+          <div class="preview-label">Focus Icon (290×218)</div>
+        </div>
+        <div class="preview">
+          <div class="icon-container icon-side opt2 small">
+            <div class="film-strip">
+              <div class="frame"></div>
+              <div class="frame"></div>
+            </div>
+            <div class="logo-group">
+              <div class="logo-text">NRW</div>
+              <div class="logo-subtitle">New Release Wall</div>
+            </div>
+          </div>
+          <div class="preview-label">Side Icon (108×108)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Option 3: Brick Wall -->
+    <div class="option">
+      <div class="option-header">
+        <span class="option-number">3</span>
+        <span class="option-title">Brick Wall</span>
+      </div>
+      <div class="previews">
+        <div class="preview">
+          <div class="icon-container icon-focus opt3">
+            <div class="logo-group">
+              <div class="logo-text">NRW</div>
+              <div class="logo-subtitle">New Release Wall</div>
+            </div>
+          </div>
+          <div class="preview-label">Focus Icon (290×218)</div>
+        </div>
+        <div class="preview">
+          <div class="icon-container icon-side opt3 small">
+            <div class="logo-group">
+              <div class="logo-text">NRW</div>
+              <div class="logo-subtitle">New Release Wall</div>
+            </div>
+          </div>
+          <div class="preview-label">Side Icon (108×108)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Option 4: Grid Pattern -->
+    <div class="option recommended">
+      <div class="option-header">
+        <span class="option-number">4</span>
+        <span class="option-title">Grid Pattern</span>
+      </div>
+      <div class="previews">
+        <div class="preview">
+          <div class="icon-container icon-focus opt4">
+            <div>
+              <div class="grid-row">
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell highlight"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+              </div>
+              <div class="grid-row" style="margin-top: 6px;">
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+              </div>
+              <div class="logo-text" style="margin-top: 12px;">NRW</div>
+              <div class="logo-subtitle">New Release Wall</div>
+            </div>
+          </div>
+          <div class="preview-label">Focus Icon (290×218)</div>
+        </div>
+        <div class="preview">
+          <div class="icon-container icon-side opt4 small">
+            <div>
+              <div class="grid-row">
+                <div class="grid-cell"></div>
+                <div class="grid-cell highlight"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+              </div>
+              <div class="grid-row" style="margin-top: 4px;">
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+              </div>
+              <div class="logo-text" style="margin-top: 6px;">NRW</div>
+              <div class="logo-subtitle">New Release Wall</div>
+            </div>
+          </div>
+          <div class="preview-label">Side Icon (108×108)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Option 5: Play Button -->
+    <div class="option">
+      <div class="option-header">
+        <span class="option-number">5</span>
+        <span class="option-title">Play Button</span>
+      </div>
+      <div class="previews">
+        <div class="preview">
+          <div class="icon-container icon-focus opt5">
+            <div>
+              <div class="play-btn">
+                <div class="play-triangle"></div>
+              </div>
+              <div class="logo-text">NRW</div>
+              <div class="logo-subtitle">New Release Wall</div>
+            </div>
+          </div>
+          <div class="preview-label">Focus Icon (290×218)</div>
+        </div>
+        <div class="preview">
+          <div class="icon-container icon-side opt5 small">
+            <div>
+              <div class="play-btn">
+                <div class="play-triangle"></div>
+              </div>
+              <div class="logo-text">NRW</div>
+              <div class="logo-subtitle">New Release Wall</div>
+            </div>
+          </div>
+          <div class="preview-label">Side Icon (108×108)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Option 6: Popcorn -->
+    <div class="option">
+      <div class="option-header">
+        <span class="option-number">6</span>
+        <span class="option-title">Popcorn</span>
+      </div>
+      <div class="previews">
+        <div class="preview">
+          <div class="icon-container icon-focus opt6">
+            <div>
+              <div class="popcorn">
+                <div class="kernel"></div>
+                <div class="kernel"></div>
+                <div class="kernel"></div>
+                <div class="kernel"></div>
+                <div class="kernel"></div>
+                <div class="bucket"></div>
+              </div>
+              <div class="logo-text">NRW</div>
+              <div class="logo-subtitle">New Release Wall</div>
+            </div>
+          </div>
+          <div class="preview-label">Focus Icon (290×218)</div>
+        </div>
+        <div class="preview">
+          <div class="icon-container icon-side opt6 small">
+            <div>
+              <div class="popcorn">
+                <div class="kernel"></div>
+                <div class="kernel"></div>
+                <div class="kernel"></div>
+                <div class="kernel"></div>
+                <div class="kernel"></div>
+                <div class="bucket"></div>
+              </div>
+              <div class="logo-text">NRW</div>
+              <div class="logo-subtitle">New Release Wall</div>
+            </div>
+          </div>
+          <div class="preview-label">Side Icon (108×108)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Option 7: Calendar + Film -->
+    <div class="option">
+      <div class="option-header">
+        <span class="option-number">7</span>
+        <span class="option-title">Calendar + Film</span>
+      </div>
+      <div class="previews">
+        <div class="preview">
+          <div class="icon-container icon-focus opt7">
+            <div>
+              <div class="icon-combo">
+                <div class="calendar"></div>
+                <div class="reel"></div>
+              </div>
+              <div class="logo-text">NRW</div>
+              <div class="logo-subtitle">New Release Wall</div>
+            </div>
+          </div>
+          <div class="preview-label">Focus Icon (290×218)</div>
+        </div>
+        <div class="preview">
+          <div class="icon-container icon-side opt7 small">
+            <div>
+              <div class="icon-combo">
+                <div class="calendar"></div>
+                <div class="reel"></div>
+              </div>
+              <div class="logo-text">NRW</div>
+              <div class="logo-subtitle">New Release Wall</div>
+            </div>
+          </div>
+          <div class="preview-label">Side Icon (108×108)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Option 8: Gradient Wave -->
+    <div class="option">
+      <div class="option-header">
+        <span class="option-number">8</span>
+        <span class="option-title">Gradient Wave</span>
+      </div>
+      <div class="previews">
+        <div class="preview">
+          <div class="icon-container icon-focus opt8">
+            <div class="wave"></div>
+            <div class="wave"></div>
+            <div class="logo-group">
+              <div class="logo-text">NRW</div>
+              <div class="logo-subtitle">New Release Wall</div>
+            </div>
+          </div>
+          <div class="preview-label">Focus Icon (290×218)</div>
+        </div>
+        <div class="preview">
+          <div class="icon-container icon-side opt8 small">
+            <div class="wave"></div>
+            <div class="wave"></div>
+            <div class="logo-group">
+              <div class="logo-text">NRW</div>
+              <div class="logo-subtitle">New Release Wall</div>
+            </div>
+          </div>
+          <div class="preview-label">Side Icon (108×108)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Option 9: Spotlight -->
+    <div class="option">
+      <div class="option-header">
+        <span class="option-number">9</span>
+        <span class="option-title">Spotlight</span>
+      </div>
+      <div class="previews">
+        <div class="preview">
+          <div class="icon-container icon-focus opt9">
+            <div class="spotlight"></div>
+            <div class="logo-group">
+              <div class="logo-text">NRW</div>
+              <div class="logo-subtitle">New Release Wall</div>
+            </div>
+          </div>
+          <div class="preview-label">Focus Icon (290×218)</div>
+        </div>
+        <div class="preview">
+          <div class="icon-container icon-side opt9 small">
+            <div class="spotlight"></div>
+            <div class="logo-group">
+              <div class="logo-text">NRW</div>
+              <div class="logo-subtitle">New Release Wall</div>
+            </div>
+          </div>
+          <div class="preview-label">Side Icon (108×108)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Option 10: Ticket Stub -->
+    <div class="option">
+      <div class="option-header">
+        <span class="option-number">10</span>
+        <span class="option-title">Ticket Stub</span>
+      </div>
+      <div class="previews">
+        <div class="preview">
+          <div class="icon-container icon-focus opt10">
+            <div class="ticket">
+              <div class="ticket-line"></div>
+              <div class="logo-group">
+                <div class="logo-text">NRW</div>
+                <div class="logo-subtitle">New Release Wall</div>
+              </div>
+            </div>
+          </div>
+          <div class="preview-label">Focus Icon (290×218)</div>
+        </div>
+        <div class="preview">
+          <div class="icon-container icon-side opt10 small">
+            <div class="ticket">
+              <div class="ticket-line"></div>
+              <div class="logo-group">
+                <div class="logo-text">NRW</div>
+                <div class="logo-subtitle">New Release Wall</div>
+              </div>
+            </div>
+          </div>
+          <div class="preview-label">Side Icon (108×108)</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="text-align: center; margin-top: 60px; color: #666;">
+    <p>All icons use NRW brand colors: Primary #00D4AA (teal), Background #0A0A0A (dark)</p>
+    <p style="margin-top: 8px;">Open this file in browser: <code>mockups/roku-icons.html</code></p>
+  </div>
+</body>
+</html>

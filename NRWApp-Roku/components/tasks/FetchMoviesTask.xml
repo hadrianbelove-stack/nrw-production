@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  NRW Fetch Movies Task
+  Async task for loading movie data from API
+-->
+<component name="FetchMoviesTask" extends="Task">
+  <interface>
+    <field id="forceRefresh" type="boolean" value="false" />
+    <field id="result" type="assocarray" />
+  </interface>
+
+  <script type="text/brightscript" uri="FetchMoviesTask.brs" />
+  <script type="text/brightscript" uri="pkg:/source/api/NRWApi.brs" />
+  <script type="text/brightscript" uri="pkg:/source/api/CacheManager.brs" />
+</component>

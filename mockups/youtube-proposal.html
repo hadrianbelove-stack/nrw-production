@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Discovery Proposal - NRW</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+            color: #bbb;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #ffffff;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            border-bottom: 3px solid #00d4aa;
+            padding-bottom: 15px;
+        }
+
+        .subtitle {
+            color: #888;
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+        }
+
+        h2 {
+            color: #00d4aa;
+            font-size: 1.5rem;
+            margin: 40px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+        h3 {
+            color: #ffffff;
+            font-size: 1.2rem;
+            margin: 25px 0 15px 0;
+        }
+
+        p {
+            margin-bottom: 15px;
+        }
+
+        .options-grid {
+            display: grid;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .option-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            padding: 25px;
+            transition: border-color 0.3s;
+        }
+
+        .option-card:hover {
+            border-color: #00d4aa;
+        }
+
+        .option-card.recommended {
+            border-color: #00d4aa;
+            background: rgba(0,212,170,0.1);
+        }
+
+        .option-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .option-title {
+            color: #ffffff;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .badge {
+            background: #00d4aa;
+            color: #0a0a0a;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .stars {
+            color: #00d4aa;
+            font-size: 1.1rem;
+        }
+
+        .option-meta {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .meta-label {
+            color: #888;
+        }
+
+        .meta-value {
+            color: #ffffff;
+        }
+
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .pros, .cons {
+            font-size: 0.9rem;
+        }
+
+        .pros li::before {
+            content: "✓ ";
+            color: #00d4aa;
+        }
+
+        .cons li::before {
+            content: "✗ ";
+            color: #ff6b6b;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.95rem;
+        }
+
+        th {
+            background: rgba(0,212,170,0.2);
+            color: #ffffff;
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 2px solid #00d4aa;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        tr:hover td {
+            background: rgba(255,255,255,0.03);
+        }
+
+        code {
+            background: rgba(0,212,170,0.15);
+            color: #00ffbb;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 0.9em;
+        }
+
+        pre {
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 20px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: #bbb;
+        }
+
+        .pipeline-box {
+            background: rgba(0,0,0,0.3);
+            border: 2px solid #00d4aa;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 25px 0;
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 0.9rem;
+            line-height: 1.8;
+        }
+
+        .pipeline-title {
+            color: #00d4aa;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .pipeline-step {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+
+        .pipeline-step strong {
+            color: #ffffff;
+        }
+
+        .pipeline-sub {
+            color: #888;
+            padding-left: 40px;
+        }
+
+        .comparison-table td:first-child {
+            color: #ffffff;
+            font-weight: 500;
+        }
+
+        .highlight-green {
+            color: #00d4aa;
+        }
+
+        .highlight-red {
+            color: #ff6b6b;
+        }
+
+        .section-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(0,212,170,0.5), transparent);
+            margin: 50px 0;
+        }
+
+        .phase-list {
+            margin: 20px 0;
+        }
+
+        .phase-item {
+            background: rgba(255,255,255,0.03);
+            border-left: 3px solid #00d4aa;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+        }
+
+        .phase-title {
+            color: #ffffff;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .query-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .query-tag {
+            background: rgba(0,212,170,0.15);
+            border: 1px solid rgba(0,212,170,0.3);
+            color: #00d4aa;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .footer {
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+            color: #888;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>YouTube Discovery Proposal</h1>
+        <p class="subtitle">Finding new feature films on YouTube daily (paid and free)</p>
+
+        <h2>Options at a Glance</h2>
+
+        <div class="options-grid">
+            <div class="option-card">
+                <div class="option-header">
+                    <span class="option-title">A. YouTube Data API v3</span>
+                    <span class="stars">★★★★★</span>
+                </div>
+                <div class="option-meta">
+                    <div class="meta-item">
+                        <span class="meta-label">Cost:</span>
+                        <span class="meta-value">Free (10K quota/day)</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Effort:</span>
+                        <span class="meta-value">Medium</span>
+                    </div>
+                </div>
+                <p>Official Google API. Search by keywords, filter by duration (>20 min), category, and date.</p>
+                <div class="pros-cons">
+                    <ul class="pros">
+                        <li>Most reliable - won't break</li>
+                        <li>Generous daily quota</li>
+                        <li>Structured data</li>
+                    </ul>
+                    <ul class="cons">
+                        <li>Can't detect paid vs free</li>
+                        <li>No exact runtime filter</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="option-card">
+                <div class="option-header">
+                    <span class="option-title">B. Curated Channel RSS</span>
+                    <span class="stars">★★★★☆</span>
+                </div>
+                <div class="option-meta">
+                    <div class="meta-item">
+                        <span class="meta-label">Cost:</span>
+                        <span class="meta-value">Free</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Effort:</span>
+                        <span class="meta-value">Low</span>
+                    </div>
+                </div>
+                <p>Monitor specific YouTube channels via RSS feeds. No authentication needed.</p>
+                <div class="pros-cons">
+                    <ul class="pros">
+                        <li>Zero API cost</li>
+                        <li>Simple to implement</li>
+                    </ul>
+                    <ul class="cons">
+                        <li>Only last 10 uploads</li>
+                        <li>Must curate channel list</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="option-card">
+                <div class="option-header">
+                    <span class="option-title">C. Playwright Scraping</span>
+                    <span class="stars">★★☆☆☆</span>
+                </div>
+                <div class="option-meta">
+                    <div class="meta-item">
+                        <span class="meta-label">Cost:</span>
+                        <span class="meta-value">Free</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Effort:</span>
+                        <span class="meta-value">High</span>
+                    </div>
+                </div>
+                <p>Current method. Automates browser to scrape YouTube search results.</p>
+                <div class="pros-cons">
+                    <ul class="pros">
+                        <li>Can detect paid vs free</li>
+                        <li>Sees what users see</li>
+                    </ul>
+                    <ul class="cons">
+                        <li>Brittle - breaks often</li>
+                        <li>Account suspension risk</li>
+                        <li>Found 0 films last run</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="option-card">
+                <div class="option-header">
+                    <span class="option-title">D. Third-Party APIs</span>
+                    <span class="stars">★★★★☆</span>
+                </div>
+                <div class="option-meta">
+                    <div class="meta-item">
+                        <span class="meta-label">Cost:</span>
+                        <span class="meta-value">$50-200/month</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Effort:</span>
+                        <span class="meta-value">Low</span>
+                    </div>
+                </div>
+                <p>SerpApi, Apify, Zyla Hub. Managed scraping services.</p>
+                <div class="pros-cons">
+                    <ul class="pros">
+                        <li>Enterprise-grade</li>
+                        <li>Handles anti-bot</li>
+                    </ul>
+                    <ul class="cons">
+                        <li>Monthly cost</li>
+                        <li>Overkill for indie films</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="option-card recommended">
+                <div class="option-header">
+                    <span class="option-title">E. Hybrid Approach</span>
+                    <span class="badge">RECOMMENDED</span>
+                </div>
+                <div class="option-meta">
+                    <div class="meta-item">
+                        <span class="meta-label">Cost:</span>
+                        <span class="meta-value">Free</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Effort:</span>
+                        <span class="meta-value">Medium</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Reliability:</span>
+                        <span class="meta-value">★★★★★</span>
+                    </div>
+                </div>
+                <p>Combine API + RSS + TMDB for best coverage. If one method fails, others continue.</p>
+            </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <h2>Recommended: Hybrid Pipeline</h2>
+
+        <div class="pipeline-box">
+            <div class="pipeline-title">DAILY PIPELINE</div>
+
+            <div class="pipeline-step">
+                <strong>1. RSS FEEDS</strong> (Zero cost)
+            </div>
+            <div class="pipeline-sub">→ Monitor 10-20 curated channels</div>
+            <div class="pipeline-sub">→ Get new uploads instantly</div>
+
+            <div class="pipeline-step">
+                <strong>2. YOUTUBE DATA API</strong> (Weekly)
+            </div>
+            <div class="pipeline-sub">→ Search: "indie film", "full movie free", etc.</div>
+            <div class="pipeline-sub">→ Filter: duration >70 min, published this week</div>
+            <div class="pipeline-sub">→ Cost: ~200 quota units per run</div>
+
+            <div class="pipeline-step">
+                <strong>3. TMDB CROSS-REFERENCE</strong>
+            </div>
+            <div class="pipeline-sub">→ Match YouTube finds to TMDB entries</div>
+            <div class="pipeline-sub">→ Get metadata: director, genres, ratings</div>
+            <div class="pipeline-sub">→ Validate it's a real film (not compilation)</div>
+
+            <div class="pipeline-step">
+                <strong>4. PLAYWRIGHT</strong> (Monthly, optional)
+            </div>
+            <div class="pipeline-sub">→ Only for price detection when needed</div>
+            <div class="pipeline-sub">→ Reduces account suspension risk</div>
+        </div>
+
+        <h2>Search Queries to Use</h2>
+
+        <h3>Broad Discovery</h3>
+        <div class="query-grid">
+            <div class="query-tag">indie film full movie</div>
+            <div class="query-tag">independent film full movie</div>
+            <div class="query-tag">feature film full movie</div>
+            <div class="query-tag">documentary full movie</div>
+            <div class="query-tag">free movie</div>
+            <div class="query-tag">full length movie</div>
+        </div>
+
+        <h3>Genre-Specific</h3>
+        <div class="query-grid">
+            <div class="query-tag">indie horror full movie</div>
+            <div class="query-tag">indie drama full movie</div>
+            <div class="query-tag">indie comedy full movie</div>
+            <div class="query-tag">indie thriller full movie</div>
+            <div class="query-tag">micro budget film</div>
+            <div class="query-tag">film festival winner full</div>
+        </div>
+
+        <h2>Channels to Monitor</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Channel</th>
+                    <th>Type</th>
+                    <th>Content</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>YouTube Movies</td>
+                    <td>Official</td>
+                    <td>Paid/Free films</td>
+                </tr>
+                <tr>
+                    <td>Indie Rights Movies</td>
+                    <td>Distributor</td>
+                    <td>Free indie films</td>
+                </tr>
+                <tr>
+                    <td>Maverick Movies</td>
+                    <td>Distributor</td>
+                    <td>Free B-movies</td>
+                </tr>
+                <tr>
+                    <td>Popcornflix</td>
+                    <td>Platform</td>
+                    <td>Free movies</td>
+                </tr>
+                <tr>
+                    <td>EncourageTV</td>
+                    <td>Platform</td>
+                    <td>Family films</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>Current vs Proposed</h2>
+
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th>Aspect</th>
+                    <th>Current (Playwright only)</th>
+                    <th>Proposed (Hybrid)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Reliability</td>
+                    <td class="highlight-red">Low (selectors break)</td>
+                    <td class="highlight-green">High (API-based)</td>
+                </tr>
+                <tr>
+                    <td>Coverage</td>
+                    <td>4 search terms</td>
+                    <td class="highlight-green">15+ search terms</td>
+                </tr>
+                <tr>
+                    <td>Paid Detection</td>
+                    <td>Yes (fragile)</td>
+                    <td>Partial (Playwright backup)</td>
+                </tr>
+                <tr>
+                    <td>Daily Cost</td>
+                    <td>$0</td>
+                    <td>$0</td>
+                </tr>
+                <tr>
+                    <td>Maintenance</td>
+                    <td class="highlight-red">High</td>
+                    <td class="highlight-green">Low</td>
+                </tr>
+                <tr>
+                    <td>Risk</td>
+                    <td class="highlight-red">Account suspension</td>
+                    <td class="highlight-green">Minimal</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="section-divider"></div>
+
+        <h2>Implementation Phases</h2>
+
+        <div class="phase-list">
+            <div class="phase-item">
+                <div class="phase-title">Phase 1: YouTube Data API Integration</div>
+                <ul>
+                    <li>Create <code>youtube_api_discovery.py</code> using official API</li>
+                    <li>Search with expanded queries</li>
+                    <li>Filter by duration >70 min</li>
+                    <li>Cross-reference TMDB</li>
+                    <li>Output to hidden_gems.xlsx</li>
+                </ul>
+            </div>
+
+            <div class="phase-item">
+                <div class="phase-title">Phase 2: RSS Channel Monitoring</div>
+                <ul>
+                    <li>Create <code>youtube_channel_monitor.py</code></li>
+                    <li>Monitor 10-20 curated channels</li>
+                    <li>Run daily with zero API cost</li>
+                    <li>Alert on new feature-length uploads</li>
+                </ul>
+            </div>
+
+            <div class="phase-item">
+                <div class="phase-title">Phase 3: Deprecate Pure Scraping</div>
+                <ul>
+                    <li>Keep Playwright only for price detection</li>
+                    <li>Run monthly, not daily</li>
+                    <li>Reduce account suspension risk</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>NRW YouTube Discovery Proposal &bull; February 2026</p>
+        </div>
+    </div>
+</body>
+</html>
