@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-02-23T10:49:32.517147",
-  "duration_seconds": 3390.65616,
+  "timestamp": "2026-02-24T10:38:41.586388",
+  "duration_seconds": 2867.22243,
   "overall_success": true,
   "failure_count": 0,
   "warning_count": 0,
@@ -8,23 +8,23 @@
     {
       "name": "Intake new premieres from TMDB",
       "success": true,
-      "duration_seconds": 10.843374,
+      "duration_seconds": 9.096109,
       "error": null,
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-02-21 to 2026-02-23 (incremental mode, 15 intaked)\n\u2705 Movie intake complete: 15 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-01-24 to 2026-02-23\n   \ud83d\udccb Hitman Goodman (1 eps)\n   \u2705 Dirty Busin"
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-02-22 to 2026-02-24 (incremental mode, 16 intaked)\n\u2705 Movie intake complete: 16 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-01-25 to 2026-02-24\n   \u2705 Strip Law (10 eps) on Netflix\n   \ud83d\udccb Once"
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 3169.671542,
+      "duration_seconds": 2768.674111,
       "error": null,
-      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 14094 total movies\n\ud83d\udd0d Raw tracking filter: 12706 movies\n\ud83d\udd0d Assigned tracking_movies list: 12706\n\ud83d\udd0d Found 12706 movies in tracking status\n  Priority queue (last 180 days): 1253 movies\n  Older movies: 11453 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 12706 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/12706 (0.8%) | 0 found | 0m elapsed | ~52m remaining\n  \ud83d\udcbe Progress saved (b"
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 14114 total movies\n\ud83d\udd0d Raw tracking filter: 12719 movies\n\ud83d\udd0d Assigned tracking_movies list: 12719\n\ud83d\udd0d Found 12719 movies in tracking status\n  Priority queue (last 180 days): 1237 movies\n  Older movies: 11482 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 12719 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/12719 (0.8%) | 0 found | 0m elapsed | ~45m remaining\n  \ud83d\udcbe Progress saved (b"
     },
     {
       "name": "Enrich newly available movies with metadata",
       "success": true,
-      "duration_seconds": 210.033194,
+      "duration_seconds": 89.345124,
       "error": null,
-      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 6 movies to enrich\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n  \u26a1 Moment of Contact: New Revelations of Alien Encounters (29.2s) - Wiki:\u25cb Trailer:\u2713 RT:\u2713 Links:\u2713 Date:\u2713 | 4 succe"
+      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 9 movies to enrich\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n  \u26a1 Arco (8.1s) - Wiki:\u2713 Trailer:\u2713 RT:\u2713 Links:\u2713 Date:\u25cb | 4 success, 0 errors\n  \u2713 Arco - Links: 1\n  \u26a1 The Voice of H"
     }
   ],
   "health_issues": [],
@@ -35,14 +35,14 @@
   "failures": [],
   "warnings": [],
   "data_quality": {
-    "total": 14094,
-    "tracking": 12700,
-    "available": 1392,
-    "data_movies": 337,
-    "movies_with_links": 312,
-    "movies_with_rt": 296,
-    "movies_with_wikipedia": 171,
-    "movies_with_trailers": 333
+    "total": 14114,
+    "tracking": 12710,
+    "available": 1402,
+    "data_movies": 346,
+    "movies_with_links": 321,
+    "movies_with_rt": 305,
+    "movies_with_wikipedia": 177,
+    "movies_with_trailers": 342
   },
   "enrichment_metrics": {
     "timestamp": "2025-12-29T15:42:45.008551",
