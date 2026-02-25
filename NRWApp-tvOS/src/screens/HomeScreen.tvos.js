@@ -14,6 +14,7 @@ import {
   Linking,
   Animated,
   findNodeHandle,
+  InteractionManager,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useHomeScreen } from './useHomeScreen';
@@ -231,8 +232,15 @@ const TrailersCard = ({ playlistUrl, nextFocusUp }) => {
 const HomeScreenTvOS = () => {
   const navigation = useNavigation();
   const flatListRef = useRef(null);
-  const allFilterRef = useRef(null);  // Ref for "All" filter button - used for grid UP navigation
   const [headerNodeHandle, setHeaderNodeHandle] = useState(null);
+
+  // Callback ref for "All" filter button - sets node handle immediately when ref is populated
+  const setAllFilterRef = useCallback((ref) => {
+    if (ref) {
+      const handle = findNodeHandle(ref);
+      setHeaderNodeHandle(handle);
+    }
+  }, []);
 
   // Get shared state and actions
   const {
@@ -251,13 +259,33 @@ const HomeScreenTvOS = () => {
   const [fullscreenVisible, setFullscreenVisible] = useState(false);
   const [fullscreenIndex, setFullscreenIndex] = useState(0);
 
-  // Get node handle for header navigation - use "All" button as target
-  useEffect(() => {
-    if (allFilterRef.current) {
-      const handle = findNodeHandle(allFilterRef.current);
-      setHeaderNodeHandle(handle);
+  // Grid item refs for wrap-around navigation
+  const itemRefsMap = useRef(new Map());  // Map of index -> ref
+  const [itemNodeHandles, setItemNodeHandles] = useState(new Map());  // Map of index -> node handle
+
+  // Register item ref for wrap-around navigation
+  const registerItemRef = useCallback((index, ref) => {
+    if (ref) {
+      itemRefsMap.current.set(index, ref);
+    } else {
+      itemRefsMap.current.delete(index);
     }
   }, []);
+
+  // Update node handles after layout is complete using InteractionManager
+  useEffect(() => {
+    const handle = InteractionManager.runAfterInteractions(() => {
+      const newHandles = new Map();
+      itemRefsMap.current.forEach((ref, index) => {
+        const nodeHandle = findNodeHandle(ref);
+        if (nodeHandle) {
+          newHandles.set(index, nodeHandle);
+        }
+      });
+      setItemNodeHandles(newHandles);
+    });
+    return () => handle.cancel();
+  }, [filteredMovies]);
 
   // Track screen view on mount
   useEffect(() => {
@@ -461,10 +489,22 @@ const HomeScreenTvOS = () => {
         );
       }
 
+      // Calculate wrap-around navigation for grid
+      // At row end (rightmost column), RIGHT should go to next row's first item
+      // At row start (leftmost column), LEFT should go to previous row's last item
+      const columnIndex = index % NUM_COLUMNS;
+      const isRowEnd = columnIndex === NUM_COLUMNS - 1;
+      const isRowStart = columnIndex === 0;
+
+      // Get node handles for wrap-around targets
+      const nextFocusRight = isRowEnd ? itemNodeHandles.get(index + 1) : undefined;
+      const nextFocusLeft = isRowStart && index > 0 ? itemNodeHandles.get(index - 1) : undefined;
+
       // Movie card
       return (
         <View style={styles.cardWrapper}>
           <MovieCard
+            ref={(ref) => registerItemRef(index, ref)}
             movie={item.movie}
             onSelect={() => handleMovieSelect(item.movie)}
             onLongPress={() => handleOpenFullscreen(item.movie)}
@@ -472,11 +512,13 @@ const HomeScreenTvOS = () => {
             hasTVPreferredFocus={index === 2} // First movie after trailers + first date marker
             testID={`movie-card-${index}`}
             nextFocusUp={focusUpTarget}
+            nextFocusLeft={nextFocusLeft}
+            nextFocusRight={nextFocusRight}
           />
         </View>
       );
     },
-    [formatDateParts, handleMovieSelect, handleMovieFocus, handleOpenFullscreen, headerNodeHandle]
+    [formatDateParts, handleMovieSelect, handleMovieFocus, handleOpenFullscreen, headerNodeHandle, itemNodeHandles, registerItemRef]
   );
 
   // Key extractor
@@ -541,7 +583,7 @@ const HomeScreenTvOS = () => {
             {FILTERS.map((filter, index) => (
               <FilterButton
                 key={filter.id}
-                ref={index === 0 ? allFilterRef : undefined}  // First button ("All") gets the ref
+                ref={index === 0 ? setAllFilterRef : undefined}  // First button ("All") gets callback ref
                 filter={filter}
                 isActive={filter.id === 'all' ? activeFilters.size === 0 : activeFilters.has(filter.id)}
                 onPress={() => handleFilterChange(filter.id)}

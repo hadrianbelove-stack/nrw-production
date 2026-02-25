@@ -32,6 +32,14 @@ from urllib.parse import quote
 
 from scraper_base import PlaywrightScraperBase
 
+# Import Gemini finder with graceful fallback
+try:
+    from gemini_scraper import GeminiWikipediaFinder
+    GEMINI_WIKIPEDIA_AVAILABLE = True
+except ImportError as e:
+    GeminiWikipediaFinder = None
+    GEMINI_WIKIPEDIA_AVAILABLE = False
+
 
 class WikipediaScraperPlaywright(PlaywrightScraperBase):
     """Wikipedia scraper using Playwright for finding movie pages.
@@ -60,11 +68,40 @@ class WikipediaScraperPlaywright(PlaywrightScraperBase):
         self.stats.update({
             'wikidata_attempts': 0,
             'wikidata_successes': 0,
+            'gemini_attempts': 0,
+            'gemini_successes': 0,
             'api_successes': 0,
             'scraper_successes': 0
         })
 
+        # Gemini finder (lazy loaded)
+        self._gemini_finder = None
+        self._gemini_enabled = self._check_gemini_enabled()
+
         self._log(f"Wikipedia Scraper initialized with cache_file={cache_file}")
+
+    def _check_gemini_enabled(self) -> bool:
+        """Check if Gemini Wikipedia is enabled via config."""
+        if not GEMINI_WIKIPEDIA_AVAILABLE:
+            return False
+        if self.config:
+            gemini_config = self.config.get('gemini_scraper', {})
+            if not gemini_config.get('enabled', True):
+                return False
+            if not gemini_config.get('wikipedia_enabled', True):
+                return False
+        return True
+
+    def _get_gemini_finder(self):
+        """Lazy load Gemini Wikipedia finder."""
+        if self._gemini_finder is None and self._gemini_enabled:
+            try:
+                self._gemini_finder = GeminiWikipediaFinder(cache_file=self.cache_file)
+                self._log("Gemini Wikipedia finder initialized", level='debug')
+            except Exception as e:
+                self._log(f"Failed to initialize Gemini finder: {e}", level='warning')
+                self._gemini_enabled = False
+        return self._gemini_finder
 
     def _cleanup_browser(self):
         """Clean up browser resources - Wikipedia-specific override.
@@ -367,6 +404,19 @@ class WikipediaScraperPlaywright(PlaywrightScraperBase):
             if wiki_url:
                 self._cache_result(cache_key, wiki_url, title, 'wikidata')
                 self.stats['wikidata_successes'] += 1
+                self.stats['successes'] += 1
+                return wiki_url
+
+        # 2.5. Try Gemini with Google Search grounding (faster than REST API)
+        gemini_finder = self._get_gemini_finder()
+        if gemini_finder:
+            wiki_url = gemini_finder.find_wikipedia_url(title, year)
+            # Sync stats from child finder (single source of truth)
+            gemini_stats = gemini_finder.get_stats()
+            self.stats['gemini_attempts'] = gemini_stats.get('gemini_attempts', 0)
+            self.stats['gemini_successes'] = gemini_stats.get('gemini_successes', 0)
+            if wiki_url:
+                self._cache_result(cache_key, wiki_url, title, 'gemini')
                 self.stats['successes'] += 1
                 return wiki_url
 

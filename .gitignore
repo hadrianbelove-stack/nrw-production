@@ -3,6 +3,7 @@
 __pycache__/
 .DS_Store
 config.yaml  # Keep API keys local only
+.env  # Alternative secrets storage
 cache/
 !cache/.gitkeep
 !cache/screenshots/.gitkeep

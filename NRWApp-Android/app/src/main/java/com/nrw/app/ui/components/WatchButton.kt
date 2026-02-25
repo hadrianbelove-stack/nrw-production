@@ -125,9 +125,9 @@ fun OutlineButton(
         modifier = modifier.defaultMinSize(minWidth = minWidth, minHeight = minHeight),
         colors = ButtonDefaults.colors(
             containerColor = Color.Transparent,
-            contentColor = borderColor,
+            contentColor = TextPrimary,
             focusedContainerColor = borderColor.copy(alpha = 0.15f),
-            focusedContentColor = borderColor
+            focusedContentColor = TextPrimary
         ),
         shape = ButtonDefaults.shape(RoundedCornerShape(cornerRadius)),
         border = ButtonDefaults.border(

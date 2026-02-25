@@ -2,7 +2,7 @@
 
 This is the authoritative style guide for all NRW visual design. All UI work (newsletters, mockups, apps, web pages) MUST follow these specifications.
 
-**Last Updated:** 2026-02-03
+**Last Updated:** 2026-02-24
 
 ---
 
@@ -160,6 +160,42 @@ border-color: #00d4aa;
 - Shadow on hover
 - Scale up slightly on hover (`transform: scale(1.05)`)
 
+### Navigation Arrows (Movie Detail)
+For navigating between movies on detail screens across all platforms:
+
+| Property | Value | Notes |
+|----------|-------|-------|
+| Character | `‹` / `›` | Unicode chevrons (U+2039, U+203A) |
+| Color | `#00d4aa` | Primary accent (teal) |
+| Base Opacity | 60% | Visible but not distracting |
+| Flash Opacity | 100% | Visual feedback when navigating |
+| Position | Vertically centered on left/right edges | |
+
+**Platform-specific sizes:**
+| Platform | Size | Notes |
+|----------|------|-------|
+| tvOS | 80px | 10-foot viewing distance |
+| Android TV | 56sp | Material Design scaling |
+| Roku | Large system font | ~100px at 1080p |
+| iOS Mobile | 40px | Touch device, swipe primary |
+| Desktop Web | 1.5rem | Button with background |
+
+**Platform-specific values:**
+```css
+/* Web (CSS) */
+color: #00d4aa;
+background: rgba(0, 212, 170, 0.1);
+
+/* React Native (tvOS/iOS) */
+color: 'rgba(0, 212, 170, 0.6)'
+
+/* Android (Kotlin/Compose) */
+color = Primary.copy(alpha = 0.6f)
+
+/* Roku (BrightScript - RRGGBBAA format) */
+color="0x00D4AA99"
+```
+
 ---
 
 ## Dark vs Light Theme
@@ -216,6 +252,11 @@ Use **light theme** for better email compatibility:
 ---
 
 ## Changelog
+
+### 2026-02-24 - Navigation Arrows Standard
+- Added Navigation Arrows section for movie detail screens
+- Standardized teal color (#00d4aa) at 60% opacity across all platforms
+- Documented platform-specific sizes and code values
 
 ### 2026-02-03 - Initial Version
 - Extracted from main site styles.css

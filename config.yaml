@@ -442,9 +442,23 @@ api:
   # API keys: Environment variables take precedence, these are fallbacks for local development
   tmdb_api_key: "99b122ce7fa3e9065d7b7dc6e660772d"  # TMDB API key for movie data
   omdb_api_key: "539723d9"  # OMDB API key for additional movie data
+  gemini_api_key: "AIzaSyAQaLRHq4A0cd7T8Sx_sUy5JHvCnu0P2YY"  # Gemini API for YouTube trailers, RT scores, Wikipedia
   tmdb_rate_limit: 0.1  # Seconds between API calls
   max_retries: 3
   max_pages_bootstrap: 49  # Maximum pages to fetch for bootstrap operation
+
+# Gemini-based scraper for YouTube trailers, RT scores, Wikipedia (primary), with Playwright fallback
+# Uses Google Search grounding for accurate movie data finding
+gemini_scraper:
+  enabled: true                    # Master kill switch - set false to use Playwright-only for all
+  youtube_enabled: true            # YouTube-specific toggle - set false for Playwright-only trailers
+  rt_enabled: true                 # RT-specific toggle - set false for Playwright-only RT
+  wikipedia_enabled: true          # Wikipedia-specific toggle - set false for Playwright-only Wikipedia
+  use_playwright_fallback: true    # Try Playwright if Gemini fails
+  timeout_seconds: 30              # Prevent hanging API calls
+  rate_limit: 1.0                  # Seconds between API calls
+  cache_ttl_days: 90               # How long to cache results
+  max_retries: 3                   # Retry attempts with exponential backoff
 
 # Streaming scraper (Playwright): For Netflix/Disney+/HBO Max/Hulu - DISABLED due to authentication barriers
 # Uses playwright for stealth browsing but blocked by login requirements

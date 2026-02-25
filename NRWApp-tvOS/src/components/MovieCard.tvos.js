@@ -3,7 +3,7 @@
  * Focusable card with parallax effects and focus animations
  */
 
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, forwardRef } from 'react';
 import {
   View,
   Text,
@@ -16,7 +16,7 @@ import {
 import { Colors, Typography, Spacing, Dimensions } from '../constants/colors';
 import { PARALLAX_PROPERTIES, FOCUS_STYLES } from '../utils/focusManager.tvos';
 
-const MovieCard = ({
+const MovieCard = forwardRef(({
   movie,
   onSelect,
   onLongPress,
@@ -26,7 +26,9 @@ const MovieCard = ({
   hasTVPreferredFocus = false,
   testID,
   nextFocusUp,
-}) => {
+  nextFocusLeft,
+  nextFocusRight,
+}, ref) => {
   const [isFocused, setIsFocused] = useState(false);
   const [imageError, setImageError] = useState(false);
   const scaleAnim = useRef(new Animated.Value(1)).current;
@@ -172,6 +174,7 @@ const MovieCard = ({
 
   return (
     <TouchableOpacity
+      ref={ref}
       onPress={handleSelect}
       onLongPress={handleLongPress}
       delayLongPress={500}
@@ -186,6 +189,8 @@ const MovieCard = ({
       testID={testID}
       style={styles.touchable}
       nextFocusUp={nextFocusUp}
+      nextFocusLeft={nextFocusLeft}
+      nextFocusRight={nextFocusRight}
     >
       <View style={[styles.cardContainer, { width: cardWidth }]}>
         <Animated.View
@@ -260,7 +265,7 @@ const MovieCard = ({
       </View>
     </TouchableOpacity>
   );
-};
+});
 
 const styles = StyleSheet.create({
   touchable: {

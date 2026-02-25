@@ -15,6 +15,22 @@ const NRW = {
     displayedCount: CONFIG.moviesPerPage,  // How many movies currently shown
     loadIncrement: CONFIG.moviesPerPage,   // How many to add when clicking "More"
 
+    // Country abbreviation map per STYLE_GUIDE.md
+    countryAbbrev: {
+        'United States of America': 'USA', 'United States': 'USA',
+        'United Kingdom': 'UK', 'Great Britain': 'UK',
+        'France': 'FR', 'Germany': 'DE', 'Italy': 'IT', 'Spain': 'ES',
+        'Japan': 'JP', 'South Korea': 'KR', 'China': 'CN', 'Canada': 'CA',
+        'Australia': 'AU', 'India': 'IN', 'Brazil': 'BR', 'Mexico': 'MX',
+        'Hungary': 'HU', 'Poland': 'PL', 'Sweden': 'SE', 'Denmark': 'DK',
+        'Norway': 'NO', 'Argentina': 'AR', 'Netherlands': 'NL', 'New Zealand': 'NZ'
+    },
+
+    abbreviateCountry(country) {
+        if (!country) return null;
+        return this.countryAbbrev[country] || country;
+    },
+
     // Lightbox state
     lightboxMovies: [],  // Movies currently in the lightbox (filtered/displayed)
     lightboxIndex: 0,    // Current index in lightbox
@@ -684,7 +700,7 @@ const NRW = {
 
         // Update Staff Pick badge
         const staffPickBadge = document.getElementById('lightbox-staff-pick');
-        if (movie.categories?.is_staff_pick) {
+        if (movie.featured || movie.categories?.is_staff_pick) {
             staffPickBadge.style.display = 'inline-block';
         } else {
             staffPickBadge.style.display = 'none';

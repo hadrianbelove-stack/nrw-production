@@ -104,9 +104,15 @@ export default function HomeScreen({navigation}) {
 
   const handleMoviePress = useCallback(
     movie => {
-      navigation.navigate('MovieDetail', {movie});
+      // Find movie index in displayed list for navigation support
+      const currentIndex = displayedMovies.findIndex(m => m.id === movie.id);
+      navigation.navigate('MovieDetail', {
+        movie,
+        movieList: displayedMovies,
+        currentIndex: currentIndex >= 0 ? currentIndex : 0,
+      });
     },
-    [navigation],
+    [navigation, displayedMovies],
   );
 
   const renderMovieCard = ({item}) => (

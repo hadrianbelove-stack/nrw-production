@@ -18,7 +18,25 @@ import logging
 from logging.handlers import RotatingFileHandler
 # NOTE: Scraper imports are LAZY (inside methods) to protect intake/discovery phases
 # If a scraper import fails, only enrichment breaks - not the whole pipeline
-from scripts.youtube_trailer_scraper import YouTubeTrailerScraper
+# YouTube trailer finder: Try Gemini-based hybrid first, fall back to Playwright-only
+try:
+    from gemini_scraper import HybridYouTubeFinder
+    GEMINI_AVAILABLE = True
+except ImportError as e:
+    # Fallback: If Gemini module fails, use Playwright-only scraper
+    from scripts.youtube_trailer_scraper import YouTubeTrailerScraper as HybridYouTubeFinder
+    GEMINI_AVAILABLE = False
+    # Logger not available yet at import time, will log during initialization
+
+# RT finder: Try Gemini-based hybrid first, fall back to Playwright-only
+try:
+    from gemini_scraper import HybridRTFinder
+    GEMINI_RT_AVAILABLE = True
+except ImportError as e:
+    # Fallback: If Gemini module fails, use Playwright-only scraper
+    from rt_scraper_playwright import RTScraperPlaywright as HybridRTFinder
+    GEMINI_RT_AVAILABLE = False
+
 from constants import PLACEHOLDER_ASINS, get_scraper_config, MAX_ENRICHMENT_BATCH, ENRICHMENT_LOOP_TIMEOUT_MINUTES
 try:
     from streaming_platform_scraper import StreamingPlatformScraper
@@ -162,7 +180,7 @@ class DataGenerator:
         self.streaming_scraper = None  # Initialize attribute first
         self.vod_scraper = None  # Initialize attribute first
         self._init_streaming_scraper()  # Initialize streaming scraper
-        self.trailer_scraper = None  # Lazy initialization for trailer scraping
+        self.trailer_finder = None  # Lazy initialization (HybridYouTubeFinder: Gemini + Playwright fallback)
         self.youtube_trailer_cache = self.storage.load_cache('cache/youtube_trailer_cache.json')
         self.rt_scraper = None  # Lazy initialization for RT scraping with Playwright
         self.wikipedia_scraper = None  # Lazy initialization for Wikipedia scraping with Playwright
@@ -1989,28 +2007,51 @@ class DataGenerator:
             if cached_url:  # Don't return None from cache, keep trying
                 return cached_url
 
-        # 5. Try scraping YouTube for the trailer
-        if self.trailer_scraper is None:
+        # 5. Try scraping YouTube for the trailer (Gemini-first with Playwright fallback)
+        if self.trailer_finder is None:
             # Check enrichment flag first
             if not self.enrichment_enabled:
-                self.logger.debug("YouTube trailer scraper disabled - enrichment not enabled")
+                self.logger.debug("YouTube trailer finder disabled - enrichment not enabled")
                 return None
 
-            self.trailer_scraper = YouTubeTrailerScraper(
-                cache_file='cache/youtube_trailer_cache.json',
-                headless=True
-            )
+            # Check config kill switch for YouTube Gemini
+            gemini_config = self.config.get('gemini_scraper', {})
+            youtube_gemini_disabled = not gemini_config.get('enabled', True) or not gemini_config.get('youtube_enabled', True)
+
+            if GEMINI_AVAILABLE and not youtube_gemini_disabled:
+                self.trailer_finder = HybridYouTubeFinder(
+                    cache_file='cache/youtube_trailer_cache.json'
+                )
+                self.logger.info("YouTube trailer finder initialized (Gemini + Playwright fallback)")
+            else:
+                from scripts.youtube_trailer_scraper import YouTubeTrailerScraper
+                self.trailer_finder = YouTubeTrailerScraper(
+                    cache_file='cache/youtube_trailer_cache.json',
+                    headless=True
+                )
+                reason = "config disabled" if youtube_gemini_disabled else "Gemini unavailable"
+                self.logger.warning(f"YouTube trailer finder initialized (Playwright-only, {reason})")
 
         # Check if this is a cache hit first
         cache_key = f"{title}_{year}"
-        is_cache_hit = cache_key in self.trailer_scraper.cache
+        is_cache_hit = cache_key in self.trailer_finder.cache if hasattr(self.trailer_finder, 'cache') else False
 
         # Track trailer scraper usage
         self.enrichment_stats['trailer_attempts'] += 1
         if is_cache_hit:
             self.enrichment_stats['trailer_cache_hits'] += 1
 
-        scraped_url = self.trailer_scraper.find_trailer(title, year)
+        # Pass director/cast context for better Gemini accuracy
+        director = movie_details.get('crew', {}).get('director') if movie_details else None
+        cast_list = movie_details.get('crew', {}).get('cast', []) if movie_details else []
+        cast = cast_list[:3] if cast_list else None
+
+        # Call with context if Gemini available and method supports it
+        if GEMINI_AVAILABLE:
+            scraped_url = self.trailer_finder.find_trailer(title, year, director=director, cast=cast)
+        else:
+            scraped_url = self.trailer_finder.find_trailer(title, year)
+
         if scraped_url:
             self.enrichment_stats['trailer_successes'] += 1
             return scraped_url
@@ -2104,7 +2145,7 @@ class DataGenerator:
 
 
     def _init_rt_scraper(self):
-        """Initialize RT scraper with Playwright (lazy initialization)"""
+        """Initialize RT scraper (Gemini hybrid or Playwright-only, lazy initialization)"""
         if self.rt_scraper is not None:
             return self.rt_scraper is not False
 
@@ -2114,14 +2155,30 @@ class DataGenerator:
             self.rt_scraper = False
             return False
 
+        # Check config kill switch for Gemini RT
+        rt_enabled = self.config.get('gemini_scraper', {}).get('rt_enabled', True)
+
         try:
-            from rt_scraper_playwright import RTScraperPlaywright
-            self.rt_scraper = RTScraperPlaywright(
-                cache_file='cache/rt_cache.json',
-                config=self.config,
-                logger=self.logger
-            )
-            self.logger.debug("RT scraper initialized successfully")
+            if GEMINI_RT_AVAILABLE and rt_enabled:
+                # Use hybrid finder (Gemini first, Playwright fallback)
+                self.rt_scraper = HybridRTFinder(
+                    cache_file='cache/rt_cache.json',
+                    config=self.config,
+                    logger_instance=self.logger
+                )
+                self.logger.info("RT scraper initialized (Gemini + Playwright fallback)")
+            else:
+                # Use Playwright-only scraper
+                from rt_scraper_playwright import RTScraperPlaywright
+                self.rt_scraper = RTScraperPlaywright(
+                    cache_file='cache/rt_cache.json',
+                    config=self.config,
+                    logger=self.logger
+                )
+                if not GEMINI_RT_AVAILABLE:
+                    self.logger.warning("RT scraper initialized (Playwright-only, Gemini unavailable)")
+                else:
+                    self.logger.info("RT scraper initialized (Playwright-only, Gemini disabled via config)")
             return True
         except Exception as e:
             self.logger.error(f"Failed to initialize RT scraper: {e}")
@@ -2849,6 +2906,14 @@ class DataGenerator:
                 self.logger.debug("RT scraper closed")
             except Exception as e:
                 self.logger.warning(f"Failed to close RT scraper: {e}")
+
+        # Cleanup trailer finder if initialized (Gemini + Playwright fallback)
+        if self.trailer_finder:
+            try:
+                self.trailer_finder.cleanup()
+                self.logger.debug("Trailer finder closed")
+            except Exception as e:
+                self.logger.warning(f"Failed to cleanup trailer finder: {e}")
 
         # Save caches (RT cache is managed by rt_scraper)
         self.storage.save_cache(self.wikipedia_cache, 'cache/wikipedia_cache.json')
