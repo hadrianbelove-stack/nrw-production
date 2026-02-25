@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-02-24T10:38:41.586388",
-  "duration_seconds": 2867.22243,
+  "timestamp": "2026-02-25T10:40:39.104248",
+  "duration_seconds": 2609.428237,
   "overall_success": true,
   "failure_count": 0,
   "warning_count": 0,
@@ -8,23 +8,23 @@
     {
       "name": "Intake new premieres from TMDB",
       "success": true,
-      "duration_seconds": 9.096109,
+      "duration_seconds": 7.811605,
       "error": null,
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-02-22 to 2026-02-24 (incremental mode, 16 intaked)\n\u2705 Movie intake complete: 16 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-01-25 to 2026-02-24\n   \u2705 Strip Law (10 eps) on Netflix\n   \ud83d\udccb Once"
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-02-23 to 2026-02-25 (incremental mode, 21 intaked)\n\u2705 Movie intake complete: 21 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-01-26 to 2026-02-25\n   \ud83d\udccb Putins Agenten (3 eps)\n   \ud83d\udccb \u041d\u0438 \u0441\u0432\u0430\u0442, \u043d\u0438"
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 2768.674111,
+      "duration_seconds": 2435.948183,
       "error": null,
-      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 14114 total movies\n\ud83d\udd0d Raw tracking filter: 12719 movies\n\ud83d\udd0d Assigned tracking_movies list: 12719\n\ud83d\udd0d Found 12719 movies in tracking status\n  Priority queue (last 180 days): 1237 movies\n  Older movies: 11482 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 12719 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/12719 (0.8%) | 0 found | 0m elapsed | ~45m remaining\n  \ud83d\udcbe Progress saved (b"
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 14138 total movies\n\ud83d\udd0d Raw tracking filter: 12734 movies\n\ud83d\udd0d Assigned tracking_movies list: 12734\n\ud83d\udd0d Found 12734 movies in tracking status\n  Priority queue (last 180 days): 1223 movies\n  Older movies: 11511 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 12734 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/12734 (0.8%) | 0 found | 0m elapsed | ~39m remaining\n  \ud83d\udcbe Progress saved (b"
     },
     {
       "name": "Enrich newly available movies with metadata",
       "success": true,
-      "duration_seconds": 89.345124,
+      "duration_seconds": 165.548982,
       "error": null,
-      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 9 movies to enrich\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n  \u26a1 Arco (8.1s) - Wiki:\u2713 Trailer:\u2713 RT:\u2713 Links:\u2713 Date:\u25cb | 4 success, 0 errors\n  \u2713 Arco - Links: 1\n  \u26a1 The Voice of H"
+      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 8 movies to enrich\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n  \u26a1 Nate and Moriah in Venice (18.7s) - Wiki:\u25cb Trailer:\u2713 RT:\u2713 Links:\u2713 Date:\u25cb | 3 success, 0 errors\n  \u2713 Nate and Mor"
     }
   ],
   "health_issues": [],
@@ -35,14 +35,14 @@
   "failures": [],
   "warnings": [],
   "data_quality": {
-    "total": 14114,
-    "tracking": 12710,
-    "available": 1402,
-    "data_movies": 346,
-    "movies_with_links": 321,
-    "movies_with_rt": 305,
-    "movies_with_wikipedia": 177,
-    "movies_with_trailers": 342
+    "total": 14138,
+    "tracking": 12726,
+    "available": 1410,
+    "data_movies": 354,
+    "movies_with_links": 329,
+    "movies_with_rt": 313,
+    "movies_with_wikipedia": 179,
+    "movies_with_trailers": 350
   },
   "enrichment_metrics": {
     "timestamp": "2025-12-29T15:42:45.008551",

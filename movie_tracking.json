@@ -96523,14 +96523,24 @@
     },
     "1404538": {
       "title": "Nate and Moriah in Venice",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-04",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-02-25",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
       "intake_pass": "backfill",
-      "has_providers": false,
+      "has_providers": true,
       "year": 2025,
-      "premiere_date": "2025-08-06"
+      "premiere_date": "2025-08-06",
+      "enriched": false,
+      "enrichment_date": null
     },
     "1401057": {
       "title": "The Invisibles",
@@ -109529,13 +109539,21 @@
     "1465778": {
       "title": "The Inquisitor",
       "year": 2025,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-02-25",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "Tribeca",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1465557": {
       "title": "Our Hero, Balthazar",
@@ -116599,13 +116617,21 @@
     "1383984": {
       "title": "Wild Days",
       "year": 2024,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-02-25",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "Annecy",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1095848": {
       "title": "4PM",
@@ -120664,13 +120690,21 @@
     "1563396": {
       "title": "Flood",
       "year": 2025,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-02-25",
+      "providers": {
+        "rent": [
+          "Eventive"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "AFI Fest",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1555571": {
       "title": "Signing Tony Raymond",
@@ -121775,13 +121809,21 @@
     "1454393": {
       "title": "Siksikakowan: The Blackfoot Man",
       "year": 2025,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-02-25",
+      "providers": {
+        "rent": [
+          "Eventive"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "Hot Docs",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1454103": {
       "title": "Widow Champion",
@@ -150179,13 +150221,21 @@
     "1596336": {
       "title": "Aanikoobijigan [ancestor/great-grandparent/great-grandchild]",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-20",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-02-25",
+      "providers": {
+        "rent": [
+          "Eventive"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "Sundance",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1596315": {
       "title": "Ghost in the Machine",
@@ -167710,12 +167760,22 @@
     "1538122": {
       "title": "Artfully United",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-02-22",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-02-25",
+      "providers": {
+        "rent": [
+          "Google Play Movies"
+        ],
+        "buy": [
+          "Google Play Movies"
+        ],
+        "streaming": []
+      },
       "intake_pass": "A",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1639503": {
       "title": "tzw. BERLIN",
@@ -168125,12 +168185,22 @@
     "1608619": {
       "title": "The Stars Between Us",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-02-23",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-02-25",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Hallmark+ Amazon Channel",
+          "Hallmark+ Apple TV Channel",
+          "Hallmark TV Amazon Channel"
+        ]
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "tv_314522": {
       "title": "Hitman Goodman",
@@ -168526,7 +168596,291 @@
       },
       "intaked_at": "2026-02-24T09:51:02.577407",
       "networks": []
+    },
+    "1642290": {
+      "title": "bodystigmata",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A",
+      "has_providers": false
+    },
+    "1564476": {
+      "title": "Mark Vigeant: The Best Man Show",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A",
+      "has_providers": false
+    },
+    "799882": {
+      "title": "The Bluff",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A",
+      "has_providers": false
+    },
+    "1617908": {
+      "title": "Taylor Tomlinson: Prodigal Daughter",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A",
+      "has_providers": false
+    },
+    "1642125": {
+      "title": "Pete Holmes: Silly Silly Fun Boy",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A",
+      "has_providers": false
+    },
+    "1637024": {
+      "title": "Bruce Willis : les secrets d'une ic\u00f4ne",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1623583": {
+      "title": "I BURNT MY BRAIN FOR YOU",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1618192": {
+      "title": "The Old Man and the Parrot",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1612251": {
+      "title": "Until She Remembers",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1612063": {
+      "title": "Twenty One Pilots: More Than We Ever Imagined",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1568542": {
+      "title": "Un \u00e9t\u00e9 \u00e0 la ferme - L'\u00e2ge d'or",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1555923": {
+      "title": "Rei's Winter Break",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1493194": {
+      "title": "Welcome to Europe",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1449558": {
+      "title": "Unlikely Allies",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1368830": {
+      "title": "Chers parents",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1159559": {
+      "title": "Scream 7",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1000132": {
+      "title": "Quartier libre",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1641851": {
+      "title": "\u4e00\u4e2a\u62f3\u624b",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1641897": {
+      "title": "Grosso modo",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1641789": {
+      "title": "Raio-X Banco Master",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1637210": {
+      "title": "Marigold New Years Golden Garden 2026 ~ Day 12",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-02-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "tv_314974": {
+      "title": "Putins Agenten",
+      "content_type": "limited_series",
+      "tmdb_id": 314974,
+      "status": "tracking",
+      "first_air_date": "2026-02-22",
+      "digital_date": "2026-02-22",
+      "episode_count": 3,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/5QeDHx5txFXPxGPcvoadmFF91kO.jpg",
+      "synopsis": "This three-part investigative documentary follows former members of Russian intelligence who reveal how the Kremlin\u2019s spy networks operate. Through insider testimony and expert analysis, it examines recruitment methods, covert missions, cyber operations, and the mechanisms used to silence opposition and project influence abroad under Vladimir Putin\u2019s rule.",
+      "genres": [
+        "Documentary",
+        "Crime",
+        "War & Politics",
+        "News"
+      ],
+      "original_language": "de",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-02-25T09:57:14.890993",
+      "networks": [
+        "ZDF"
+      ]
+    },
+    "tv_314892": {
+      "title": "\u041d\u0438 \u0441\u0432\u0430\u0442, \u043d\u0438 \u0431\u0440\u0430\u0442",
+      "content_type": "limited_series",
+      "tmdb_id": 314892,
+      "status": "tracking",
+      "first_air_date": "2026-02-21",
+      "digital_date": "2026-02-21",
+      "episode_count": 4,
+      "runtime": 45,
+      "poster": "https://image.tmdb.org/t/p/w500/l3JrHQc3X2XS49OpHq8ZW9i2JOm.jpg",
+      "synopsis": "",
+      "genres": [
+        "Drama"
+      ],
+      "original_language": "ru",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-02-25T09:57:15.064431",
+      "networks": []
+    },
+    "tv_314539": {
+      "title": "\u0421\u0447\u0430\u0441\u0442\u044c\u0435 \u0441 \u0434\u043e\u0441\u0442\u0430\u0432\u043a\u043e\u0439",
+      "content_type": "limited_series",
+      "tmdb_id": 314539,
+      "status": "tracking",
+      "first_air_date": "2026-02-14",
+      "digital_date": "2026-02-14",
+      "episode_count": 4,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/8cU8t0K7NOCCH0xJ3cRPjgDZYRs.jpg",
+      "synopsis": "",
+      "genres": [
+        "Drama"
+      ],
+      "original_language": "ru",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-02-25T09:57:15.936374",
+      "networks": []
     }
   },
-  "last_update": "2026-02-24T09:50:59.857348"
+  "last_update": "2026-02-25T09:57:14.456704"
 }
