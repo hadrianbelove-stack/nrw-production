@@ -700,7 +700,7 @@ const NRW = {
 
         // Update Staff Pick badge
         const staffPickBadge = document.getElementById('lightbox-staff-pick');
-        if (movie.featured || movie.categories?.is_staff_pick) {
+        if (movie.categories?.is_staff_pick) {
             staffPickBadge.style.display = 'inline-block';
         } else {
             staffPickBadge.style.display = 'none';
