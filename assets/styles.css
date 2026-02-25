@@ -995,11 +995,30 @@ header h1 {
     overflow-y: auto;
 }
 
+.lightbox-title-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+}
+
 .lightbox-title {
     font-size: 1.5rem;
     font-weight: 600;
-    margin-bottom: 0.5rem;
     color: #fff;
+    margin: 0;
+}
+
+.staff-pick-badge {
+    background: #dc143c;
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    text-transform: uppercase;
 }
 
 .lightbox-meta {
@@ -1055,17 +1074,18 @@ header h1 {
     flex-shrink: 0;
     width: 50px;
     height: 50px;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(0, 212, 170, 0.1);
     border: none;
-    color: white;
+    color: #00d4aa;
     font-size: 1.5rem;
     border-radius: 50%;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: background 0.3s, color 0.3s;
 }
 
 .lightbox-nav:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(0, 212, 170, 0.3);
+    color: #00ffbb;
 }
 
 /* X close button - upper right */

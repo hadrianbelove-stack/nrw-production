@@ -184,7 +184,7 @@ private fun MovieDetail(
         // Teal chevron - Left
         Text(
             text = "‹",
-            color = Primary.copy(alpha = 0.5f),
+            color = Primary.copy(alpha = 0.6f),
             fontSize = 56.sp,
             fontWeight = FontWeight.Thin,
             modifier = Modifier
@@ -195,7 +195,7 @@ private fun MovieDetail(
         // Teal chevron - Right
         Text(
             text = "›",
-            color = Primary.copy(alpha = 0.5f),
+            color = Primary.copy(alpha = 0.6f),
             fontSize = 56.sp,
             fontWeight = FontWeight.Thin,
             modifier = Modifier
@@ -305,6 +305,50 @@ private fun MovieDetail(
                             )
                         }
                     }
+                }
+
+                // Genres as chips
+                movie.genres?.takeIf { it.isNotEmpty() }?.let { genres ->
+                    Spacer(modifier = Modifier.height(10.dp))
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        genres.take(3).forEach { genre ->
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(Color.White.copy(alpha = 0.1f))
+                                    .padding(horizontal = 10.dp, vertical = 4.dp)
+                            ) {
+                                Text(
+                                    text = genre,
+                                    color = TextSecondary,
+                                    fontSize = 11.sp
+                                )
+                            }
+                        }
+                    }
+                }
+
+                // Cast - "Starring X, Y"
+                movie.crew?.cast?.takeIf { it.isNotEmpty() }?.let { cast ->
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Starring: ${cast.take(2).joinToString(", ")}",
+                        color = TextMuted,
+                        fontSize = 12.sp
+                    )
+                }
+
+                // Language (only if not English)
+                movie.original_language?.takeIf { it != "en" }?.let { lang ->
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Language: ${lang.uppercase()}",
+                        color = TextMuted,
+                        fontSize = 11.sp
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))

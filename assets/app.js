@@ -682,6 +682,14 @@ const NRW = {
         // Update title
         document.getElementById('lightbox-title').textContent = movie.title;
 
+        // Update Staff Pick badge
+        const staffPickBadge = document.getElementById('lightbox-staff-pick');
+        if (movie.categories?.is_staff_pick) {
+            staffPickBadge.style.display = 'inline-block';
+        } else {
+            staffPickBadge.style.display = 'none';
+        }
+
         // Build meta info (now includes studio)
         const metaParts = [];
         if (movie.year) metaParts.push(movie.year);

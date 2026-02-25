@@ -103,6 +103,19 @@
           font="font:SmallSystemFont"
           color="0x888888FF" />
 
+        <!-- Cast -->
+        <Label id="castLabel"
+          width="1100"
+          font="font:SmallSystemFont"
+          color="0x888888FF" />
+
+        <!-- Language (if not English) -->
+        <Label id="languageLabel"
+          width="1100"
+          font="font:SmallSystemFont"
+          color="0x666666FF"
+          visible="false" />
+
         <!-- Synopsis -->
         <Label id="synopsisLabel"
           width="1100"
@@ -147,12 +160,12 @@
       text="‹"
       translation="[20, 500]"
       font="font:LargeBoldSystemFont"
-      color="0x00D4AA80" />
+      color="0x00D4AA99" />
     <Label id="rightChevron"
       text="›"
       translation="[1880, 500]"
       font="font:LargeBoldSystemFont"
-      color="0x00D4AA80" />
+      color="0x00D4AA99" />
 
     <!-- Movie counter -->
     <Label id="counterLabel"

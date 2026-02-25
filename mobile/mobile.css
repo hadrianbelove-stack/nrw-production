@@ -233,15 +233,40 @@ body {
 }
 
 /* === BACK OF CARD === */
-.back-title {
-    color: #00d4aa;
-    font-size: 22px;
-    font-weight: 700;
-    text-align: center;
+.back-title-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: baseline;
+    gap: 6px;
     padding-bottom: 12px;
     border-bottom: 2px solid rgba(0,212,170,0.4);
     margin-bottom: 12px;
+}
+
+.back-title {
+    color: #00d4aa;
+    font-size: 20px;
+    font-weight: 700;
+    text-align: center;
     line-height: 1.2;
+    margin: 0;
+}
+
+.back-year {
+    color: #888;
+    font-size: 16px;
+    font-weight: 400;
+}
+
+.back-staff-badge {
+    background: #dc143c;
+    color: #fff;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 3px 6px;
+    border-radius: 3px;
 }
 
 .back-synopsis {
@@ -257,11 +282,18 @@ body {
     font-size: 13px;
     color: #bbb;
     text-align: center;
-    margin-bottom: 15px;
+    margin-bottom: 6px;
 }
 
 .back-meta strong {
     color: #00d4aa;
+}
+
+.back-meta-secondary {
+    font-size: 12px;
+    color: #888;
+    text-align: center;
+    margin-bottom: 12px;
 }
 
 /* === BUTTON ROWS === */

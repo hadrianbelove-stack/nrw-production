@@ -137,6 +137,26 @@ const MovieDetailTvOS = () => {
   const scrollViewRef = useRef(null);
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
+  // Arrow animation refs for navigation feedback
+  const leftArrowOpacity = useRef(new Animated.Value(0.6)).current;
+  const rightArrowOpacity = useRef(new Animated.Value(0.6)).current;
+
+  // Flash arrow when navigating
+  const flashArrow = useCallback((arrowAnim) => {
+    Animated.sequence([
+      Animated.timing(arrowAnim, {
+        toValue: 1,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(arrowAnim, {
+        toValue: 0.6,
+        duration: 200,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, []);
+
   // Local state for loading movie from id
   const [movie, setMovie] = useState(passedMovie || null);
   const [isLoadingMovie, setIsLoadingMovie] = useState(!passedMovie && !!movieId);
@@ -188,18 +208,20 @@ const MovieDetailTvOS = () => {
   // Navigate to next movie (cycles to first if at end)
   const navigateNext = useCallback(() => {
     if (movieList.length === 0) return;
+    flashArrow(rightArrowOpacity);
     const nextIndex = (currentIndex + 1) % movieList.length;
     setCurrentIndex(nextIndex);
     setMovie(movieList[nextIndex]);
-  }, [movieList, currentIndex]);
+  }, [movieList, currentIndex, flashArrow, rightArrowOpacity]);
 
   // Navigate to previous movie (cycles to last if at start)
   const navigatePrevious = useCallback(() => {
     if (movieList.length === 0) return;
+    flashArrow(leftArrowOpacity);
     const prevIndex = currentIndex === 0 ? movieList.length - 1 : currentIndex - 1;
     setCurrentIndex(prevIndex);
     setMovie(movieList[prevIndex]);
-  }, [movieList, currentIndex]);
+  }, [movieList, currentIndex, flashArrow, leftArrowOpacity]);
 
   // Get shared state
   const {
@@ -365,9 +387,9 @@ const MovieDetailTvOS = () => {
           />
 
           {/* Staff Pick badge */}
-          {movie.featured && (
-            <View style={styles.featuredBadge}>
-              <Text style={styles.featuredText}>STAFF PICK</Text>
+          {(movie.featured || movie.categories?.is_staff_pick) && (
+            <View style={styles.staffPickBadge}>
+              <Text style={styles.staffPickText}>STAFF PICK</Text>
             </View>
           )}
 
@@ -447,6 +469,22 @@ const MovieDetailTvOS = () => {
               </View>
             )}
 
+            {/* Cast */}
+            {movie.crew?.cast?.length > 0 && (
+              <View style={styles.creditRow}>
+                <Text style={styles.creditLabel}>Starring</Text>
+                <Text style={styles.creditValue}>{movie.crew.cast.slice(0, 2).join(', ')}</Text>
+              </View>
+            )}
+
+            {/* Language (only if not English) */}
+            {movie.original_language && movie.original_language !== 'en' && (
+              <View style={styles.creditRow}>
+                <Text style={styles.creditLabel}>Language</Text>
+                <Text style={styles.creditValue}>{movie.original_language.toUpperCase()}</Text>
+              </View>
+            )}
+
             {/* Action buttons - single row, equal sizing (above synopsis) */}
             {(hasWatchOptions || hasInfoLinks) && (
               <View style={styles.actionButtonRow}>
@@ -507,12 +545,14 @@ const MovieDetailTvOS = () => {
         </View>
       </View>
 
-      {/* Footer hint */}
-      <View style={styles.footer}>
-        <Text style={styles.footerText}>
-          ← → Navigate movies  •  Menu to go back
-        </Text>
+      {/* Navigation arrow indicators */}
+      <View style={styles.navArrowLeft}>
+        <Animated.Text style={[styles.navArrowText, { opacity: leftArrowOpacity }]}>‹</Animated.Text>
       </View>
+      <View style={styles.navArrowRight}>
+        <Animated.Text style={[styles.navArrowText, { opacity: rightArrowOpacity }]}>›</Animated.Text>
+      </View>
+
     </Animated.View>
   );
 };
@@ -548,17 +588,17 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     backgroundColor: Colors.backgroundSecondary,
   },
-  featuredBadge: {
+  staffPickBadge: {
     position: 'absolute',
     top: Spacing.tvos.md,
     left: Spacing.tvos.md,
-    backgroundColor: Colors.primary,
+    backgroundColor: '#dc143c',
     paddingHorizontal: Spacing.tvos.md,
     paddingVertical: Spacing.tvos.xs,
     borderRadius: 6,
   },
-  featuredText: {
-    color: Colors.background,
+  staffPickText: {
+    color: '#fff',
     fontSize: Typography.tvos.caption,
     fontWeight: '700',
     letterSpacing: 1,
@@ -671,19 +711,28 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginTop: Spacing.tvos.lg,
     alignItems: 'center',
+    paddingLeft: Spacing.tvos.md,  // Add clearance from poster edge
   },
-  footer: {
+  navArrowLeft: {
     position: 'absolute',
+    left: 20,
+    top: 0,
     bottom: 0,
-    left: 0,
-    right: 0,
-    paddingVertical: Spacing.tvos.md,
-    alignItems: 'center',
-    backgroundColor: 'rgba(10, 10, 10, 0.8)',
+    justifyContent: 'center',
+    zIndex: 10,
   },
-  footerText: {
-    color: Colors.textMuted,
-    fontSize: Typography.tvos.caption,
+  navArrowRight: {
+    position: 'absolute',
+    right: 20,
+    top: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    zIndex: 10,
+  },
+  navArrowText: {
+    color: 'rgba(0, 212, 170, 0.6)',  // Teal at 60%
+    fontSize: 80,
+    fontWeight: '300',
   },
   errorContainer: {
     flex: 1,

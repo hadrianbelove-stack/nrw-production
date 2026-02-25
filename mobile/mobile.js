@@ -12,6 +12,22 @@ const NRWMobile = {
     loadIncrement: 15,
     isLoading: false,
 
+    // Country abbreviation map per STYLE_GUIDE.md
+    countryAbbrev: {
+        'United States of America': 'USA', 'United States': 'USA',
+        'United Kingdom': 'UK', 'Great Britain': 'UK',
+        'France': 'FR', 'Germany': 'DE', 'Italy': 'IT', 'Spain': 'ES',
+        'Japan': 'JP', 'South Korea': 'KR', 'China': 'CN', 'Canada': 'CA',
+        'Australia': 'AU', 'India': 'IN', 'Brazil': 'BR', 'Mexico': 'MX',
+        'Hungary': 'HU', 'Poland': 'PL', 'Sweden': 'SE', 'Denmark': 'DK',
+        'Norway': 'NO', 'Argentina': 'AR', 'Netherlands': 'NL', 'New Zealand': 'NZ'
+    },
+
+    abbreviateCountry(country) {
+        if (!country) return null;
+        return this.countryAbbrev[country] || country;
+    },
+
     async init() {
         try {
             // Fetch data from parent directory
@@ -218,12 +234,21 @@ const NRWMobile = {
                     </div>
                 </div>
                 <div class="flip-back">
-                    <h2 class="back-title">${movie.title || 'Untitled'}</h2>
+                    <div class="back-title-row">
+                        <h2 class="back-title">${movie.title || 'Untitled'}</h2>
+                        ${movie.year ? `<span class="back-year">(${movie.year})</span>` : ''}
+                        ${isStaffPick ? '<span class="back-staff-badge">STAFF PICK</span>' : ''}
+                    </div>
                     <p class="back-synopsis">${movie.synopsis || 'No synopsis available.'}</p>
                     <p class="back-meta">
-                        <strong>Dir:</strong> ${movie.crew?.director || 'Unknown'} &bull;
-                        ${movie.genres?.[0] || ''} &bull;
-                        ${movie.runtime ? movie.runtime + ' min' : ''}
+                        <strong>Dir:</strong> ${movie.crew?.director || 'Unknown'}
+                        ${this.abbreviateCountry(movie.country) ? ` &bull; ${this.abbreviateCountry(movie.country)}` : ''}
+                        ${movie.runtime ? ` &bull; ${movie.runtime} min` : ''}
+                    </p>
+                    <p class="back-meta-secondary">
+                        ${movie.genres?.slice(0, 3).join(', ') || ''}
+                        ${movie.crew?.cast?.length ? ` &bull; Starring: ${movie.crew.cast.slice(0, 2).join(', ')}` : ''}
+                        ${movie.original_language && movie.original_language !== 'en' ? ` &bull; Lang: ${movie.original_language.toUpperCase()}` : ''}
                     </p>
                     <div class="buttons-row">
                         ${this.getTrailerButton(movie)}

@@ -13,6 +13,8 @@ Sub Init()
     m.titleLabel = m.top.FindNode("titleLabel")
     m.metadataLabel = m.top.FindNode("metadataLabel")
     m.genresLabel = m.top.FindNode("genresLabel")
+    m.castLabel = m.top.FindNode("castLabel")
+    m.languageLabel = m.top.FindNode("languageLabel")
     m.synopsisLabel = m.top.FindNode("synopsisLabel")
 
     m.staffPickBadge = m.top.FindNode("staffPickBadge")
@@ -119,6 +121,30 @@ Sub LoadMovie(index as Integer)
         m.genresLabel.visible = true
     else
         m.genresLabel.visible = false
+    end if
+
+    ' Set cast
+    castArray = GetCast(movie)
+    if castArray <> invalid AND castArray.Count() > 0
+        ' Take first 2 cast members
+        castNames = []
+        for i = 0 to 1
+            if i < castArray.Count()
+                castNames.Push(castArray[i])
+            end if
+        end for
+        m.castLabel.text = "Starring: " + castNames.Join(", ")
+        m.castLabel.visible = true
+    else
+        m.castLabel.visible = false
+    end if
+
+    ' Set language (only if not English)
+    if movie.original_language <> invalid AND movie.original_language <> "en" AND movie.original_language <> ""
+        m.languageLabel.text = "Language: " + UCase(movie.original_language)
+        m.languageLabel.visible = true
+    else
+        m.languageLabel.visible = false
     end if
 
     ' Set synopsis

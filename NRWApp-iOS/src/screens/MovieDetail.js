@@ -1,9 +1,10 @@
 /**
  * New Release Wall - Movie Detail Screen
  * Full movie info with watch buttons
+ * Supports swipe left/right to navigate between movies
  */
 
-import React, {useCallback} from 'react';
+import React, {useCallback, useState, useRef, useEffect} from 'react';
 import {
   View,
   Text,
@@ -12,6 +13,8 @@ import {
   Image,
   Dimensions as RNDimensions,
   TouchableOpacity,
+  Animated,
+  PanResponder,
 } from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
@@ -24,13 +27,75 @@ import {trackMovieView, trackWatchButtonTap} from '../services/analytics';
 const screenWidth = RNDimensions.get('window').width;
 const posterWidth = screenWidth * 0.45;
 const posterHeight = posterWidth * 1.5;
+const SWIPE_THRESHOLD = 50; // Minimum swipe distance to trigger navigation
 
 export default function MovieDetail({route}) {
   const insets = useSafeAreaInsets();
-  const {movie} = route.params;
+  const {movie: initialMovie, movieList = [], currentIndex: initialIndex = 0} = route.params;
 
-  // Track view
-  React.useEffect(() => {
+  // State for current movie (enables navigation without going back)
+  const [movie, setMovie] = useState(initialMovie);
+  const [currentIndex, setCurrentIndex] = useState(initialIndex);
+
+  // Arrow animation refs
+  const leftArrowOpacity = useRef(new Animated.Value(0.6)).current;
+  const rightArrowOpacity = useRef(new Animated.Value(0.6)).current;
+
+  // Flash arrow when navigating
+  const flashArrow = useCallback((arrowAnim) => {
+    Animated.sequence([
+      Animated.timing(arrowAnim, {
+        toValue: 1,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(arrowAnim, {
+        toValue: 0.6,
+        duration: 200,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, []);
+
+  // Navigate to next movie
+  const navigateNext = useCallback(() => {
+    if (movieList.length === 0) return;
+    flashArrow(rightArrowOpacity);
+    const nextIndex = (currentIndex + 1) % movieList.length;
+    setCurrentIndex(nextIndex);
+    setMovie(movieList[nextIndex]);
+  }, [movieList, currentIndex, flashArrow, rightArrowOpacity]);
+
+  // Navigate to previous movie
+  const navigatePrevious = useCallback(() => {
+    if (movieList.length === 0) return;
+    flashArrow(leftArrowOpacity);
+    const prevIndex = currentIndex === 0 ? movieList.length - 1 : currentIndex - 1;
+    setCurrentIndex(prevIndex);
+    setMovie(movieList[prevIndex]);
+  }, [movieList, currentIndex, flashArrow, leftArrowOpacity]);
+
+  // Pan responder for swipe gestures
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => false,
+      onMoveShouldSetPanResponder: (_, gestureState) => {
+        // Only capture horizontal swipes
+        return Math.abs(gestureState.dx) > Math.abs(gestureState.dy) &&
+               Math.abs(gestureState.dx) > 10;
+      },
+      onPanResponderRelease: (_, gestureState) => {
+        if (gestureState.dx > SWIPE_THRESHOLD) {
+          navigatePrevious(); // Swipe right = previous
+        } else if (gestureState.dx < -SWIPE_THRESHOLD) {
+          navigateNext(); // Swipe left = next
+        }
+      },
+    })
+  ).current;
+
+  // Track view when movie changes
+  useEffect(() => {
     trackMovieView(movie);
   }, [movie]);
 
@@ -71,12 +136,31 @@ export default function MovieDetail({route}) {
     return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
   };
 
+  const hasNavigation = movieList.length > 1;
+
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={{paddingBottom: insets.bottom + Spacing.xl}}>
-      {/* Hero section with poster and basic info */}
-      <View style={styles.heroSection}>
+    <View style={styles.container} {...panResponder.panHandlers}>
+      {/* Navigation arrow indicators */}
+      {hasNavigation && (
+        <>
+          <View style={styles.navArrowLeft}>
+            <Animated.Text style={[styles.navArrowText, {opacity: leftArrowOpacity}]}>
+              ‹
+            </Animated.Text>
+          </View>
+          <View style={styles.navArrowRight}>
+            <Animated.Text style={[styles.navArrowText, {opacity: rightArrowOpacity}]}>
+              ›
+            </Animated.Text>
+          </View>
+        </>
+      )}
+
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={{paddingBottom: insets.bottom + Spacing.xl}}>
+        {/* Hero section with poster and basic info */}
+        <View style={styles.heroSection}>
         <View style={styles.posterContainer}>
           {posterUrl ? (
             <Image
@@ -87,6 +171,12 @@ export default function MovieDetail({route}) {
           ) : (
             <View style={styles.posterPlaceholder}>
               <Text style={styles.placeholderText}>No Poster</Text>
+            </View>
+          )}
+          {/* Staff Pick badge */}
+          {(movie.featured || movie.categories?.is_staff_pick) && (
+            <View style={styles.staffPickBadge}>
+              <Text style={styles.staffPickText}>STAFF PICK</Text>
             </View>
           )}
         </View>
@@ -204,6 +294,7 @@ export default function MovieDetail({route}) {
         )}
       </View>
     </ScrollView>
+    </View>
   );
 }
 
@@ -211,6 +302,30 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  navArrowLeft: {
+    position: 'absolute',
+    left: 8,
+    top: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    zIndex: 10,
+  },
+  navArrowRight: {
+    position: 'absolute',
+    right: 8,
+    top: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    zIndex: 10,
+  },
+  navArrowText: {
+    color: 'rgba(0, 212, 170, 0.6)',  // Teal at 60%
+    fontSize: 40,
+    fontWeight: '300',
   },
   heroSection: {
     flexDirection: 'row',
@@ -227,6 +342,21 @@ const styles = StyleSheet.create({
   poster: {
     width: '100%',
     height: '100%',
+  },
+  staffPickBadge: {
+    position: 'absolute',
+    top: Spacing.sm,
+    left: Spacing.sm,
+    backgroundColor: '#dc143c',
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 4,
+    borderRadius: 4,
+  },
+  staffPickText: {
+    color: '#fff',
+    fontSize: 9,
+    fontWeight: '700',
+    letterSpacing: 0.5,
   },
   posterPlaceholder: {
     width: '100%',
