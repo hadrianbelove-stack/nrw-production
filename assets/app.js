@@ -15,20 +15,27 @@ const NRW = {
     displayedCount: CONFIG.moviesPerPage,  // How many movies currently shown
     loadIncrement: CONFIG.moviesPerPage,   // How many to add when clicking "More"
 
-    // Country abbreviation map per STYLE_GUIDE.md
+    // Country display names per STYLE_GUIDE.md
+    // Only shorten long/formal names; keep short names as-is
     countryAbbrev: {
-        'United States of America': 'USA', 'United States': 'USA',
-        'United Kingdom': 'UK', 'Great Britain': 'UK',
-        'France': 'FR', 'Germany': 'DE', 'Italy': 'IT', 'Spain': 'ES',
-        'Japan': 'JP', 'South Korea': 'KR', 'China': 'CN', 'Canada': 'CA',
-        'Australia': 'AU', 'India': 'IN', 'Brazil': 'BR', 'Mexico': 'MX',
-        'Hungary': 'HU', 'Poland': 'PL', 'Sweden': 'SE', 'Denmark': 'DK',
-        'Norway': 'NO', 'Argentina': 'AR', 'Netherlands': 'NL', 'New Zealand': 'NZ'
+        'united states of america': 'USA', 'united states': 'USA', 'usa': 'USA',
+        'united kingdom': 'UK', 'great britain': 'UK',
+        'south korea': 'S. Korea',
+        'south africa': 'S. Africa',
+        'new zealand': 'N. Zealand',
+        'bosnia and herzegovina': 'Bosnia',
+        'saudi arabia': 'S. Arabia'
     },
 
     abbreviateCountry(country) {
         if (!country) return null;
-        return this.countryAbbrev[country] || country;
+        const shortened = this.countryAbbrev[country.toLowerCase()];
+        if (shortened) return shortened;
+        // Fix all-caps or all-lowercase entries (e.g. "SWEDEN" → "Sweden")
+        if (country !== country[0].toUpperCase() + country.slice(1).toLowerCase()) {
+            return country[0].toUpperCase() + country.slice(1).toLowerCase();
+        }
+        return country;
     },
 
     // Lightbox state
@@ -221,6 +228,9 @@ const NRW = {
                         case 'plex':
                             // Movies available in personal Plex library
                             if (!movie.plex || !movie.plex.deep_link) return false;
+                            break;
+                        case 'restorations':
+                            if (!movie.categories?.is_restoration) return false;
                             break;
                     }
                 }
@@ -533,6 +543,8 @@ const NRW = {
             };
 
             const streamingBadge = getStreamingBadge(movie);
+            const restorationBadge = movie.categories?.is_restoration
+                ? '<div class="restoration-badge">RESTORED</div>' : '';
 
             html += `
             <div class="movie-container${staffPickClass}">
@@ -541,6 +553,7 @@ const NRW = {
                     <div class="card-inner">
                         <div class="card-front">
                             ${streamingBadge}
+                            ${restorationBadge}
                             <div class="poster-fallback"><span class="poster-fallback-title">${title}</span></div>
                             <img src="${movie.poster || ''}"
                                  onerror="this.style.display='none';"
@@ -561,7 +574,7 @@ const NRW = {
                 </div>
                 <div class="movie-info">
                     <div class="movie-title">${movie.title}</div>
-                    <span class="director">${movie.crew?.director || 'Unknown Director'}</span> • <span class="country">${(movie.country === 'United States of America' ? 'USA' : movie.country) || 'Unknown Country'}</span>
+                    <span class="director">${movie.crew?.director || 'Unknown Director'}</span> • <span class="country">${NRW.abbreviateCountry(movie.country) || 'Unknown Country'}</span>
                 </div>
             </div>`;
         });
@@ -698,6 +711,16 @@ const NRW = {
         // Update title
         document.getElementById('lightbox-title').textContent = movie.title;
 
+        // Update release date
+        const dateEl = document.getElementById('lightbox-date');
+        if (movie.digital_date) {
+            const [y, m, d] = movie.digital_date.split('-');
+            const dt = new Date(y, m - 1, d);
+            dateEl.textContent = dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        } else {
+            dateEl.textContent = '';
+        }
+
         // Update Staff Pick badge
         const staffPickBadge = document.getElementById('lightbox-staff-pick');
         if (movie.categories?.is_staff_pick) {
@@ -712,6 +735,7 @@ const NRW = {
         if (movie.genres?.length) metaParts.push(movie.genres.slice(0, 2).join(', '));
         if (movie.runtime) metaParts.push(`${movie.runtime} min`);
         if (movie.crew?.director) metaParts.push(`Dir: ${movie.crew.director}`);
+        if (movie.country) metaParts.push(this.abbreviateCountry(movie.country));
         if (movie.studio) metaParts.push(movie.studio);
         document.getElementById('lightbox-meta').textContent = metaParts.join(' • ');
 

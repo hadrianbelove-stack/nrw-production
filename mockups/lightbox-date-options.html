@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Lightbox Release Date - Mockup Options</title>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        background: #0a0a0a;
+        color: #fff;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        padding: 2rem 3rem;
+    }
+    h1 {
+        font-weight: 100;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: #888;
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+    .option {
+        max-width: 500px;
+        margin: 0 auto 3rem;
+    }
+    .option-label {
+        color: #00d4aa;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        margin-bottom: 1rem;
+    }
+    .lightbox-info {
+        width: 100%;
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        border-radius: 12px;
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        min-height: 420px;
+    }
+    .lightbox-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #fff;
+        margin: 0;
+        line-height: 1;
+    }
+    .staff-pick-badge {
+        background: #dc143c;
+        color: #fff;
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        text-transform: uppercase;
+        transform: translateY(2px);
+    }
+    .lightbox-meta {
+        color: #888;
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+    }
+    .lightbox-synopsis {
+        color: #ccc;
+        line-height: 1.6;
+        flex: 1;
+        margin-bottom: 1rem;
+        font-size: 0.95rem;
+    }
+    .lightbox-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    .lightbox-btn {
+        display: block;
+        text-align: center;
+        padding: 0.6rem 1rem;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        text-decoration: none;
+        cursor: pointer;
+        border: none;
+    }
+    .lightbox-btn-primary {
+        background: #00d4aa;
+        color: #000;
+    }
+    .lightbox-btn-secondary {
+        background: rgba(255,255,255,0.1);
+        color: #fff;
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    /* Title row: title left, date right, underline across */
+    .title-date-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 2px solid rgba(0, 212, 170, 0.4);
+        padding-bottom: 0.6rem;
+        margin-bottom: 0.75rem;
+        gap: 0.75rem;
+    }
+    .title-date-row .title-side {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        line-height: 1;
+    }
+    .title-date-row .date-text {
+        color: #00d4aa;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+</style>
+</head>
+<body>
+
+<h1>Lightbox Release Date &mdash; Title Row with Underline</h1>
+
+<!-- Same size as title -->
+<div class="option">
+    <div class="option-label">Date matches title size (1.5rem)</div>
+    <div class="lightbox-info">
+        <div class="title-date-row">
+            <div class="title-side">
+                <h2 class="lightbox-title">Nosferatu</h2>
+                <span class="staff-pick-badge">STAFF PICK</span>
+            </div>
+            <span class="date-text" style="font-size: 1.5rem;">Feb 24</span>
+        </div>
+        <div class="lightbox-meta">2024 &bull; Horror, Drama &bull; 132 min &bull; Dir: Robert Eggers &bull; USA</div>
+        <p class="lightbox-synopsis">A gothic tale of obsession between a haunted young woman and the terrifying vampire infatuated with her, causing untold horror in its wake.</p>
+        <div class="lightbox-buttons">
+            <a class="lightbox-btn lightbox-btn-primary">Watch on Max</a>
+            <a class="lightbox-btn lightbox-btn-secondary">Watch Trailer</a>
+            <a class="lightbox-btn lightbox-btn-secondary">Rotten Tomatoes (84%)</a>
+        </div>
+    </div>
+</div>
+
+<!-- Slightly smaller than title -->
+<div class="option">
+    <div class="option-label">Date slightly smaller (1.2rem)</div>
+    <div class="lightbox-info">
+        <div class="title-date-row">
+            <div class="title-side">
+                <h2 class="lightbox-title">Nosferatu</h2>
+                <span class="staff-pick-badge">STAFF PICK</span>
+            </div>
+            <span class="date-text" style="font-size: 1.2rem;">Feb 24</span>
+        </div>
+        <div class="lightbox-meta">2024 &bull; Horror, Drama &bull; 132 min &bull; Dir: Robert Eggers &bull; USA</div>
+        <p class="lightbox-synopsis">A gothic tale of obsession between a haunted young woman and the terrifying vampire infatuated with her, causing untold horror in its wake.</p>
+        <div class="lightbox-buttons">
+            <a class="lightbox-btn lightbox-btn-primary">Watch on Max</a>
+            <a class="lightbox-btn lightbox-btn-secondary">Watch Trailer</a>
+            <a class="lightbox-btn lightbox-btn-secondary">Rotten Tomatoes (84%)</a>
+        </div>
+    </div>
+</div>
+
+<!-- Stress test: long title -->
+<div class="option">
+    <div class="option-label">Long title stress test (1.2rem date)</div>
+    <div class="lightbox-info">
+        <div class="title-date-row">
+            <div class="title-side">
+                <h2 class="lightbox-title">The Brutalist</h2>
+            </div>
+            <span class="date-text" style="font-size: 1.2rem;">Feb 24</span>
+        </div>
+        <div class="lightbox-meta">2024 &bull; Drama &bull; 215 min &bull; Dir: Brady Corbet &bull; USA / UK / Hungary</div>
+        <p class="lightbox-synopsis">A visionary architect who escapes postwar Europe for America, where his talent is recognized by a wealthy client, leading to an epic story of ambition, art, and the American dream.</p>
+        <div class="lightbox-buttons">
+            <a class="lightbox-btn lightbox-btn-primary">Watch on Peacock</a>
+            <a class="lightbox-btn lightbox-btn-secondary">Watch Trailer</a>
+            <a class="lightbox-btn lightbox-btn-secondary">Rotten Tomatoes (91%)</a>
+        </div>
+    </div>
+</div>
+
+<div style="text-align:center; margin-top:2rem; color:#555; font-size:0.8rem;">
+    Title left, teal date right, underline spans full width.<br>
+    The actual lightbox has a poster to the left of this panel.
+</div>
+
+</body>
+</html>

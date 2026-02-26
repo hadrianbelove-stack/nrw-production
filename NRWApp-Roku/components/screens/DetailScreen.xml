@@ -83,13 +83,29 @@
         itemSpacings="[16]"
         translation="[0, 40]">
 
-        <!-- Title -->
-        <Label id="titleLabel"
+        <!-- Title row: title left, date right -->
+        <LayoutGroup id="titleRow"
+          layoutDirection="horiz"
+          horizAlignment="left"
+          itemSpacings="[16]">
+          <Label id="titleLabel"
+            width="900"
+            font="font:LargeBoldSystemFont"
+            color="0xFFFFFFFF"
+            wrap="true"
+            maxLines="2" />
+          <Label id="dateLabel"
+            width="200"
+            font="font:LargeBoldSystemFont"
+            color="0x00D4AAFF"
+            horizAlign="right" />
+        </LayoutGroup>
+
+        <!-- Title underline -->
+        <Rectangle id="titleUnderline"
           width="1100"
-          font="font:LargeBoldSystemFont"
-          color="0xFFFFFFFF"
-          wrap="true"
-          maxLines="2" />
+          height="2"
+          color="0x00D4AA66" />
 
         <!-- Metadata line: Director • Country • Year • Runtime • RT -->
         <Label id="metadataLabel"

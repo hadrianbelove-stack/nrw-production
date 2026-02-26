@@ -24,6 +24,30 @@ import {getWatchLinks} from '../services/api';
 import {openWatchLink, openTrailer, openRottenTomatoes} from '../utils/links';
 import {trackMovieView, trackWatchButtonTap} from '../services/analytics';
 
+const COUNTRY_SHORT_NAMES = {
+  'united states of america': 'USA', 'united states': 'USA', 'usa': 'USA',
+  'united kingdom': 'UK', 'great britain': 'UK',
+  'south korea': 'S. Korea', 'south africa': 'S. Africa',
+  'new zealand': 'N. Zealand', 'bosnia and herzegovina': 'Bosnia',
+  'saudi arabia': 'S. Arabia',
+};
+
+const formatCountry = (country) => {
+  if (!country) return null;
+  const shortened = COUNTRY_SHORT_NAMES[country.toLowerCase()];
+  if (shortened) return shortened;
+  if (country !== country[0].toUpperCase() + country.slice(1).toLowerCase()) {
+    return country[0].toUpperCase() + country.slice(1).toLowerCase();
+  }
+  return country;
+};
+
+const formatShortDate = (dateStr) => {
+  const [y, m, d] = dateStr.split('-');
+  const dt = new Date(y, m - 1, d);
+  return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+};
+
 const screenWidth = RNDimensions.get('window').width;
 const posterWidth = screenWidth * 0.45;
 const posterHeight = posterWidth * 1.5;
@@ -182,7 +206,12 @@ export default function MovieDetail({route}) {
         </View>
 
         <View style={styles.heroInfo}>
-          <Text style={styles.title}>{movie.title}</Text>
+          <View style={styles.titleRow}>
+            <Text style={styles.title}>{movie.title}</Text>
+            {movie.digital_date && (
+              <Text style={styles.titleDate}>{formatShortDate(movie.digital_date)}</Text>
+            )}
+          </View>
 
           {/* Metadata row */}
           <View style={styles.metaRow}>
@@ -275,7 +304,7 @@ export default function MovieDetail({route}) {
         {movie.country && (
           <View style={styles.detailRow}>
             <Text style={styles.detailLabel}>Country</Text>
-            <Text style={styles.detailValue}>{movie.country}</Text>
+            <Text style={styles.detailValue}>{formatCountry(movie.country)}</Text>
           </View>
         )}
         {movie.original_language && (
@@ -347,13 +376,13 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: Spacing.sm,
     left: Spacing.sm,
-    backgroundColor: '#dc143c',
+    backgroundColor: Colors.staffPick,
     paddingHorizontal: Spacing.sm,
     paddingVertical: 4,
     borderRadius: 4,
   },
   staffPickText: {
-    color: '#fff',
+    color: Colors.staffPickText,
     fontSize: 9,
     fontWeight: '700',
     letterSpacing: 0.5,
@@ -374,11 +403,27 @@ const styles = StyleSheet.create({
     marginLeft: Spacing.md,
     justifyContent: 'flex-start',
   },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderBottomWidth: 2,
+    borderBottomColor: 'rgba(0, 212, 170, 0.4)',
+    paddingBottom: 8,
+    marginBottom: 8,
+  },
   title: {
     color: Colors.textPrimary,
     fontSize: Typography.subtitle,
     fontWeight: '700',
     lineHeight: 26,
+    flex: 1,
+  },
+  titleDate: {
+    color: Colors.primary,
+    fontSize: Typography.subtitle - 2,
+    fontWeight: '700',
+    marginLeft: 8,
   },
   metaRow: {
     flexDirection: 'row',

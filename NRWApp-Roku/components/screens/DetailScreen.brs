@@ -11,6 +11,7 @@ Sub Init()
     m.posterBorder = m.top.FindNode("posterBorder")
 
     m.titleLabel = m.top.FindNode("titleLabel")
+    m.dateLabel = m.top.FindNode("dateLabel")
     m.metadataLabel = m.top.FindNode("metadataLabel")
     m.genresLabel = m.top.FindNode("genresLabel")
     m.castLabel = m.top.FindNode("castLabel")
@@ -92,6 +93,13 @@ Sub LoadMovie(index as Integer)
         m.titleLabel.text = movie.title + " (" + movie.year.ToStr() + ")"
     end if
 
+    ' Set release date
+    if movie.digital_date <> invalid AND movie.digital_date <> ""
+        m.dateLabel.text = FormatShortDate(movie.digital_date)
+    else
+        m.dateLabel.text = ""
+    end if
+
     ' Build metadata line
     metaParts = []
 
@@ -101,7 +109,7 @@ Sub LoadMovie(index as Integer)
     end if
 
     if movie.country <> invalid AND movie.country <> ""
-        metaParts.Push(movie.country)
+        metaParts.Push(FormatCountry(movie.country))
     end if
 
     if movie.runtime <> invalid

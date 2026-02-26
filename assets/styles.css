@@ -8,6 +8,9 @@
     --border-subtle: #333;
     --text-muted: #888;
     --text-white: #fff;
+    --staff-pick: #dc143c;
+    --staff-pick-glow: rgba(220, 20, 60, 0.3);
+    --staff-pick-subtle: rgba(220, 20, 60, 0.05);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -132,11 +135,11 @@ header h1 {
 
 /* Staff Pick movie styling (renamed from featured) */
 .movie-container.staff-pick-movie {
-    border: 3px solid #dc143c;
+    border: 3px solid var(--staff-pick);
     border-radius: 15px;
     padding: 8px;
-    background: rgba(220, 20, 60, 0.05);
-    box-shadow: 0 0 20px rgba(220, 20, 60, 0.3);
+    background: var(--staff-pick-subtle);
+    box-shadow: 0 0 20px var(--staff-pick-glow);
 }
 
 .staff-pick-badge {
@@ -144,7 +147,7 @@ header h1 {
     top: -5px;
     left: 50%;
     transform: translateX(-50%);
-    background: #dc143c;
+    background: var(--staff-pick);
     color: white;
     padding: 4px 16px;
     border-radius: 12px;
@@ -157,11 +160,11 @@ header h1 {
 
 /* Backwards compatibility - keep featured classes working during transition */
 .movie-container.featured-movie {
-    border: 3px solid #dc143c;
+    border: 3px solid var(--staff-pick);
     border-radius: 15px;
     padding: 8px;
-    background: rgba(220, 20, 60, 0.05);
-    box-shadow: 0 0 20px rgba(220, 20, 60, 0.3);
+    background: var(--staff-pick-subtle);
+    box-shadow: 0 0 20px var(--staff-pick-glow);
 }
 
 .featured-badge {
@@ -169,7 +172,7 @@ header h1 {
     top: -5px;
     left: 50%;
     transform: translateX(-50%);
-    background: #dc143c;
+    background: var(--staff-pick);
     color: white;
     padding: 4px 16px;
     border-radius: 12px;
@@ -349,7 +352,8 @@ header h1 {
     transform: rotateY(180deg);
 }
 
-.movie-card.flipped .streaming-badge {
+.movie-card.flipped .streaming-badge,
+.movie-card.flipped .restoration-badge {
     display: none;
 }
 
@@ -444,6 +448,23 @@ header h1 {
 .badge-shudder { background: #8B0000; color: white; }
 .badge-criterion { background: #000; color: white; }
 .badge-other { background: #444; color: white; }
+
+/* Restoration/reissue badge on poster (top-left, opposite streaming badge) */
+.restoration-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    padding: 4px 8px;
+    border-radius: 10px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    z-index: 5;
+    backface-visibility: hidden;
+    background: #C8A951;
+    color: #000;
+}
 
 .movie-info {
     margin-top: 0.4rem;
@@ -998,9 +1019,19 @@ header h1 {
 .lightbox-title-row {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 0.75rem;
-    margin-bottom: 0.5rem;
+    border-bottom: 2px solid rgba(0, 212, 170, 0.4);
+    padding-bottom: 0.6rem;
+    margin-bottom: 0.75rem;
+}
+
+.lightbox-title-side {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
     flex-wrap: wrap;
+    line-height: 1;
 }
 
 .lightbox-title {
@@ -1008,10 +1039,18 @@ header h1 {
     font-weight: 600;
     color: #fff;
     margin: 0;
+    line-height: 1;
+}
+
+.lightbox-date {
+    color: #00d4aa;
+    font-size: 1.2rem;
+    font-weight: 700;
+    white-space: nowrap;
 }
 
 .staff-pick-badge {
-    background: #dc143c;
+    background: var(--staff-pick);
     color: #fff;
     font-size: 0.65rem;
     font-weight: 700;
@@ -1019,6 +1058,7 @@ header h1 {
     padding: 0.25rem 0.5rem;
     border-radius: 4px;
     text-transform: uppercase;
+    transform: translateY(2px);
 }
 
 .lightbox-meta {

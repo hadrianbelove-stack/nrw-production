@@ -255,6 +255,39 @@ Function IsForeign(movie as Object) as Boolean
     return false
 End Function
 
+' Format country display name per STYLE_GUIDE.md
+Function FormatCountry(country as String) as String
+    if country = "" OR country = invalid
+        return ""
+    end if
+
+    shortNames = {
+        "united states of america": "USA"
+        "united states": "USA"
+        "usa": "USA"
+        "united kingdom": "UK"
+        "great britain": "UK"
+        "south korea": "S. Korea"
+        "south africa": "S. Africa"
+        "new zealand": "N. Zealand"
+        "bosnia and herzegovina": "Bosnia"
+        "saudi arabia": "S. Arabia"
+    }
+
+    lowerCountry = LCase(country)
+    if shortNames.DoesExist(lowerCountry)
+        return shortNames[lowerCountry]
+    end if
+
+    ' Fix all-caps or all-lowercase (e.g. "SWEDEN" → "Sweden")
+    titleCase = UCase(Left(country, 1)) + LCase(Mid(country, 2))
+    if country <> titleCase
+        return titleCase
+    end if
+
+    return country
+End Function
+
 ' Format runtime (e.g., "2h 15m")
 Function FormatRuntime(minutes as Dynamic) as String
     if minutes = invalid OR Type(minutes) <> "Integer" AND Type(minutes) <> "roInt"
@@ -297,6 +330,30 @@ Function FormatDateForDisplay(dateStr as String) as String
 
     monthName = months[monthNum - 1]
     return monthName + " " + day.ToStr() + ", " + year
+End Function
+
+' Format date as "Feb 24" (no year) for title row display
+Function FormatShortDate(dateStr as String) as String
+    if dateStr = "" OR dateStr = invalid
+        return ""
+    end if
+
+    months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+
+    parts = dateStr.Split("-")
+    if parts.Count() < 3
+        return dateStr
+    end if
+
+    monthNum = parts[1].ToInt()
+    day = parts[2].ToInt()
+
+    if monthNum < 1 OR monthNum > 12
+        return dateStr
+    end if
+
+    monthName = months[monthNum - 1]
+    return monthName + " " + day.ToStr()
 End Function
 
 ' ============================================================================

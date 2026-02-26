@@ -12,20 +12,32 @@ const NRWMobile = {
     loadIncrement: 15,
     isLoading: false,
 
-    // Country abbreviation map per STYLE_GUIDE.md
+    // Country display names per STYLE_GUIDE.md
+    // Only shorten long/formal names; keep short names as-is
     countryAbbrev: {
-        'United States of America': 'USA', 'United States': 'USA',
-        'United Kingdom': 'UK', 'Great Britain': 'UK',
-        'France': 'FR', 'Germany': 'DE', 'Italy': 'IT', 'Spain': 'ES',
-        'Japan': 'JP', 'South Korea': 'KR', 'China': 'CN', 'Canada': 'CA',
-        'Australia': 'AU', 'India': 'IN', 'Brazil': 'BR', 'Mexico': 'MX',
-        'Hungary': 'HU', 'Poland': 'PL', 'Sweden': 'SE', 'Denmark': 'DK',
-        'Norway': 'NO', 'Argentina': 'AR', 'Netherlands': 'NL', 'New Zealand': 'NZ'
+        'united states of america': 'USA', 'united states': 'USA', 'usa': 'USA',
+        'united kingdom': 'UK', 'great britain': 'UK',
+        'south korea': 'S. Korea',
+        'south africa': 'S. Africa',
+        'new zealand': 'N. Zealand',
+        'bosnia and herzegovina': 'Bosnia',
+        'saudi arabia': 'S. Arabia'
+    },
+
+    formatShortDate(dateStr) {
+        const [y, m, d] = dateStr.split('-');
+        const dt = new Date(y, m - 1, d);
+        return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     },
 
     abbreviateCountry(country) {
         if (!country) return null;
-        return this.countryAbbrev[country] || country;
+        const shortened = this.countryAbbrev[country.toLowerCase()];
+        if (shortened) return shortened;
+        if (country !== country[0].toUpperCase() + country.slice(1).toLowerCase()) {
+            return country[0].toUpperCase() + country.slice(1).toLowerCase();
+        }
+        return country;
     },
 
     async init() {
@@ -132,6 +144,8 @@ const NRWMobile = {
                            (movie.original_language && movie.original_language !== 'en');
                 case 'plex':
                     return movie.plex && movie.plex.deep_link;
+                case 'restorations':
+                    return movie.categories?.is_restoration === true;
                 default:
                     return true;
             }
@@ -230,6 +244,7 @@ const NRWMobile = {
                              alt="${movie.title}"
                              loading="lazy">
                         ${streamingBadge}
+                        ${movie.categories?.is_restoration ? '<span class="poster-badge badge-restoration">RESTORED</span>' : ''}
                         ${isStaffPick ? '<span class="staff-badge">STAFF PICK</span>' : ''}
                     </div>
                 </div>
@@ -238,6 +253,7 @@ const NRWMobile = {
                         <h2 class="back-title">${movie.title || 'Untitled'}</h2>
                         ${movie.year ? `<span class="back-year">(${movie.year})</span>` : ''}
                         ${isStaffPick ? '<span class="back-staff-badge">STAFF PICK</span>' : ''}
+                        ${movie.digital_date ? `<span class="back-date">${this.formatShortDate(movie.digital_date)}</span>` : ''}
                     </div>
                     <p class="back-synopsis">${movie.synopsis || 'No synopsis available.'}</p>
                     <p class="back-meta">

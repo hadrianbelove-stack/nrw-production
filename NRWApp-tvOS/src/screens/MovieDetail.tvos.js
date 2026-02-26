@@ -42,6 +42,12 @@ const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const POSTER_WIDTH = SCREEN_WIDTH * 0.35;
 const CONTENT_WIDTH = SCREEN_WIDTH * 0.55;
 
+const formatShortDate = (dateStr) => {
+  const [y, m, d] = dateStr.split('-');
+  const dt = new Date(y, m - 1, d);
+  return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+};
+
 // Service colors for streaming buttons
 const getServiceColor = (service) => {
   const colors = {
@@ -417,15 +423,20 @@ const MovieDetailTvOS = () => {
             showsVerticalScrollIndicator={true}
             contentContainerStyle={styles.detailsScrollContent}
           >
-            {/* Title */}
-            <Text
-              style={styles.title}
-              accessible={true}
-              accessibilityLabel={accessibilityLabel}
-              accessibilityRole="header"
-            >
-              {movie.title}
-            </Text>
+            {/* Title row with date */}
+            <View style={styles.titleRow}>
+              <Text
+                style={styles.title}
+                accessible={true}
+                accessibilityLabel={accessibilityLabel}
+                accessibilityRole="header"
+              >
+                {movie.title}
+              </Text>
+              {movie.digital_date && (
+                <Text style={styles.titleDate}>{formatShortDate(movie.digital_date)}</Text>
+              )}
+            </View>
 
             {/* Metadata row */}
             <View style={styles.metadataRow}>
@@ -592,13 +603,13 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: Spacing.tvos.md,
     left: Spacing.tvos.md,
-    backgroundColor: '#dc143c',
+    backgroundColor: Colors.staffPick,
     paddingHorizontal: Spacing.tvos.md,
     paddingVertical: Spacing.tvos.xs,
     borderRadius: 6,
   },
   staffPickText: {
-    color: '#fff',
+    color: Colors.staffPickText,
     fontSize: Typography.tvos.caption,
     fontWeight: '700',
     letterSpacing: 1,
@@ -633,12 +644,27 @@ const styles = StyleSheet.create({
   detailsScrollContent: {
     paddingBottom: Spacing.tvos.xl,
   },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderBottomWidth: 2,
+    borderBottomColor: 'rgba(0, 212, 170, 0.4)',
+    paddingBottom: Spacing.tvos.sm,
+    marginBottom: Spacing.tvos.md,
+  },
   title: {
     color: Colors.textPrimary,
     fontSize: Typography.tvos.title,
     fontWeight: '700',
-    marginBottom: Spacing.tvos.md,
     lineHeight: Typography.tvos.title * 1.2,
+    flex: 1,
+  },
+  titleDate: {
+    color: Colors.primary,
+    fontSize: Typography.tvos.title - 8,
+    fontWeight: '700',
+    marginLeft: Spacing.tvos.md,
   },
   metadataRow: {
     flexDirection: 'row',

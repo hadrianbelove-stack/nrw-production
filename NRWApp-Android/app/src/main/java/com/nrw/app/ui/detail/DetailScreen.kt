@@ -68,6 +68,19 @@ import com.nrw.app.ui.theme.TextPrimary
 import com.nrw.app.ui.theme.TextSecondary
 import com.nrw.app.util.DeepLinkHelper
 
+private fun formatShortDate(dateStr: String): String {
+    val parts = dateStr.split("-")
+    if (parts.size < 3) return dateStr
+    val month = when (parts[1]) {
+        "01" -> "Jan"; "02" -> "Feb"; "03" -> "Mar"; "04" -> "Apr"
+        "05" -> "May"; "06" -> "Jun"; "07" -> "Jul"; "08" -> "Aug"
+        "09" -> "Sep"; "10" -> "Oct"; "11" -> "Nov"; "12" -> "Dec"
+        else -> parts[1]
+    }
+    val day = parts[2].trimStart('0')
+    return "$month $day"
+}
+
 /**
  * Movie Detail Screen for Android TV
  * Matches tvOS layout: 35% poster, 60dp padding, buttons above synopsis
@@ -231,34 +244,57 @@ private fun MovieDetail(
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.Center
             ) {
-                // Title row with Staff Pick badge inline
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    Text(
-                        text = movie.title,
-                        color = TextPrimary,
-                        fontSize = 28.sp,
-                        fontWeight = FontWeight.Bold,
-                        lineHeight = 32.sp
-                    )
-                    if (movie.isStaffPick()) {
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(4.dp))
-                                .background(StaffPickRed)
-                                .padding(horizontal = 8.dp, vertical = 4.dp)
+                // Title row with Staff Pick badge and date
+                Column {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            modifier = Modifier.weight(1f)
                         ) {
                             Text(
-                                text = "STAFF PICK",
+                                text = movie.title,
                                 color = TextPrimary,
+                                fontSize = 28.sp,
                                 fontWeight = FontWeight.Bold,
-                                fontSize = 10.sp,
-                                letterSpacing = 0.5.sp
+                                lineHeight = 32.sp
+                            )
+                            if (movie.isStaffPick()) {
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(4.dp))
+                                        .background(StaffPickRed)
+                                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                                ) {
+                                    Text(
+                                        text = "STAFF PICK",
+                                        color = TextPrimary,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 10.sp,
+                                        letterSpacing = 0.5.sp
+                                    )
+                                }
+                            }
+                        }
+                        movie.digitalDate?.let { date ->
+                            Text(
+                                text = formatShortDate(date),
+                                color = Primary,
+                                fontSize = 22.sp,
+                                fontWeight = FontWeight.Bold
                             )
                         }
                     }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(2.dp)
+                            .background(Primary.copy(alpha = 0.4f))
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))

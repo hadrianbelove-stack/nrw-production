@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The New Release Wall</title>
-    <link rel="stylesheet" href="assets/styles.css?v=31">
+    <link rel="stylesheet" href="assets/styles.css?v=32">
 </head>
 <body>
     <header>
@@ -17,6 +17,7 @@
             <button class="filter-btn" data-filter="foreign">Foreign</button>
             <button class="filter-btn" data-filter="series">Limited Series</button>
             <button class="filter-btn" data-filter="plex">Plex</button>
+            <button class="filter-btn" data-filter="restorations">Restorations & Reissues</button>
             <div class="search-container">
                 <input type="text" id="search-input" placeholder="Search title, director, genre..." autocomplete="off">
                 <button id="search-clear" class="search-clear" aria-label="Clear search">&times;</button>
@@ -36,8 +37,11 @@
             </div>
             <div class="lightbox-info">
                 <div class="lightbox-title-row">
-                    <h2 class="lightbox-title" id="lightbox-title"></h2>
-                    <span class="staff-pick-badge" id="lightbox-staff-pick" style="display:none;">STAFF PICK</span>
+                    <div class="lightbox-title-side">
+                        <h2 class="lightbox-title" id="lightbox-title"></h2>
+                        <span class="staff-pick-badge" id="lightbox-staff-pick" style="display:none;">STAFF PICK</span>
+                    </div>
+                    <span class="lightbox-date" id="lightbox-date"></span>
                 </div>
                 <div class="lightbox-meta" id="lightbox-meta"></div>
                 <p class="lightbox-synopsis" id="lightbox-synopsis"></p>
@@ -48,6 +52,6 @@
         <div class="lightbox-hint">Arrow keys to navigate &bull; ESC to close</div>
     </div>
 
-    <script src="assets/app.js?v=25"></script>
+    <script src="assets/app.js?v=26"></script>
 </body>
 </html>
