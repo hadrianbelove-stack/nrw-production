@@ -48,6 +48,8 @@ const NRW = {
         if (s.includes('amazon') || s.includes('prime')) return 'prime';
         if (s.includes('mubi')) return 'mubi';
         if (s.includes('peacock')) return 'peacock';
+        if (s.includes('shudder')) return 'shudder';
+        if (s.includes('criterion')) return 'criterion';
         return '';
     },
 
@@ -60,6 +62,8 @@ const NRW = {
         if (s.includes('hulu')) return 'HULU';
         if (s.includes('peacock')) return 'PEACOCK';
         if (s.includes('mubi')) return 'MUBI';
+        if (s.includes('shudder')) return 'SHUDDER';
+        if (s.includes('criterion')) return 'CRITERION';
         return service.toUpperCase();
     },
 
