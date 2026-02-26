@@ -151,6 +151,10 @@ export function filterMovies(movies, filter = 'all') {
           (movie.categories?.is_foreign ||
             (movie.original_language && movie.original_language !== 'en')),
       );
+    case 'restorations':
+      return movies.filter(
+        movie => !movie.hidden && movie.categories?.is_restoration === true,
+      );
     case 'hidden':
       return movies.filter(movie => movie.hidden === true);
     default:

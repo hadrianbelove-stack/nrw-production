@@ -80,7 +80,10 @@ data class Categories(
     val isStaffPick: Boolean? = null,
 
     @SerializedName("is_foreign")
-    val isForeign: Boolean? = null
+    val isForeign: Boolean? = null,
+
+    @SerializedName("is_restoration")
+    val isRestoration: Boolean? = null
 )
 
 data class MovieLinks(
@@ -160,7 +163,8 @@ enum class FilterCategory(val id: String, val displayName: String) {
     STAFF_PICKS("staff-picks", "Staff Picks"),
     FOREIGN("foreign", "Foreign"),
     SERIES("series", "Limited Series"),
-    PLEX("plex", "Plex")
+    PLEX("plex", "Plex"),
+    RESTORATIONS("restorations", "Restorations & Reissues")
 }
 
 /**
@@ -191,9 +195,23 @@ fun Movie.getFormattedGenres(): String? {
     return genres?.joinToString(" / ")
 }
 
+private val COUNTRY_SHORT_NAMES = mapOf(
+    "united states of america" to "USA", "united states" to "USA", "usa" to "USA",
+    "united kingdom" to "UK", "great britain" to "UK",
+    "south korea" to "S. Korea", "south africa" to "S. Africa",
+    "new zealand" to "N. Zealand", "bosnia and herzegovina" to "Bosnia",
+    "saudi arabia" to "S. Arabia"
+)
+
+private fun formatCountry(country: String): String {
+    COUNTRY_SHORT_NAMES[country.lowercase()]?.let { return it }
+    val titleCase = country.substring(0, 1).uppercase() + country.substring(1).lowercase()
+    return if (country != titleCase) titleCase else country
+}
+
 fun Movie.getFormattedCountries(): String? {
-    // Return simple country string if available, otherwise use production_countries
-    return country ?: productionCountries?.mapNotNull { it.name }?.joinToString(", ")
+    val raw = country ?: productionCountries?.mapNotNull { it.name }?.joinToString(", ")
+    return raw?.let { formatCountry(it) }
 }
 
 fun Movie.getRtInfo(): Pair<Int, Boolean>? {

@@ -13,6 +13,7 @@ const FILTERS = [
   {id: 'big-time', label: 'Big Time'},
   {id: 'niche', label: 'Niche'},
   {id: 'foreign', label: 'Foreign'},
+  {id: 'restorations', label: 'Restorations & Reissues'},
 ];
 
 export default function FilterBar({selectedFilter, onFilterChange}) {

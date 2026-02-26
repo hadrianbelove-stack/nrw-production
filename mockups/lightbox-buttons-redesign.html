@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Lightbox Button Redesign — Current vs Proposed</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #111; color: #fff; font-family: -apple-system, system-ui, sans-serif; padding: 2rem; }
+
+h1 { text-align: center; margin-bottom: 0.5rem; color: #888; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 2px; }
+.subtitle { text-align: center; color: #555; font-size: 0.8rem; margin-bottom: 2rem; }
+
+.comparison { display: flex; gap: 3rem; justify-content: center; flex-wrap: wrap; margin-bottom: 3rem; }
+
+.version { flex: 0 0 420px; }
+.version h2 { text-align: center; margin-bottom: 1rem; font-size: 1rem; }
+.version h2.old { color: #e50914; }
+.version h2.new { color: #00d4aa; }
+
+/* ===== Shared lightbox panel styling ===== */
+.lb-panel {
+    width: 350px;
+    margin: 0 auto;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.lb-title-row {
+    display: flex;
+    align-items: baseline; /* FIXED: baseline alignment so title and date sit on same line */
+    justify-content: space-between;
+    gap: 0.75rem;
+    border-bottom: 2px solid rgba(0, 212, 170, 0.4);
+    padding-bottom: 0.6rem;
+    margin-bottom: 0.75rem;
+}
+.lb-title-side { display: flex; align-items: baseline; gap: 0.75rem; flex-wrap: wrap; }
+.lb-title { font-size: 1.5rem; font-weight: 600; color: #fff; margin: 0; line-height: 1; }
+.lb-date { color: #00d4aa; font-size: 1.2rem; font-weight: 700; white-space: nowrap; line-height: 1; }
+.lb-meta { color: #888; margin-bottom: 0.75rem; font-size: 0.9rem; }
+.lb-synopsis { color: #ccc; line-height: 1.6; margin-bottom: 1rem; font-size: 0.9rem; }
+
+/* ========================================
+   CURRENT DESIGN — Vertical grey blocks
+   ======================================== */
+.lb-buttons-old { display: flex; flex-direction: column; gap: 0.5rem; margin-top: auto; }
+
+.lb-btn-old {
+    padding: 0.75rem;
+    border-radius: 6px;
+    text-align: center;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    border: none;
+    display: block;
+    color: white;
+}
+.lb-btn-old-primary { background: #e50914; }
+.lb-btn-old-secondary { background: #333; }
+
+/* ========================================
+   PROPOSED DESIGN — Matching mobile/tvOS
+   ======================================== */
+
+/* Watch buttons — each on its own full-width line, stacked */
+.lb-watch-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.lb-watch-btn {
+    padding: 0.6rem 0.8rem;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    white-space: nowrap;
+    letter-spacing: 0.5px;
+    gap: 0.4rem;
+    width: 100%;
+}
+
+/* Stream button: service-specific color, full width */
+.lb-watch-stream { background: #00d4aa; color: #000; }
+
+/* Service-specific stream colors */
+.lb-watch-netflix { background: #E50914; color: #fff; }
+.lb-watch-max { background: #B537F2; color: #fff; }
+.lb-watch-disney { background: #113CCF; color: #fff; }
+.lb-watch-hulu { background: #1CE783; color: #000; }
+.lb-watch-prime-stream { background: #00A8E1; color: #fff; }
+.lb-watch-mubi { background: #000; color: #fff; border: 1px solid #444; }
+
+/* Purchase button: orange, full width */
+.lb-watch-purchase { background: #ff9500; color: #000; }
+
+/* Plex button: yellow, full width */
+.lb-watch-plex { background: #E5A00D; color: #000; }
+
+/* Logo placeholder text styling (real version uses <img> tags) */
+.lb-logo-text {
+    font-weight: 900;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+}
+
+/* Tier 2: Info row — matching mobile two-row pattern */
+.lb-info-row {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.lb-info-btn {
+    flex: 1;
+    padding: 0.5rem;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+}
+
+/* Trailer = RED (matching mobile .btn-trailer and tvOS) */
+.lb-info-trailer {
+    background: #E50914;
+    color: #fff;
+}
+
+/* RT & Wiki = glass (matching mobile .btn-rt / .btn-wiki) */
+.lb-info-glass {
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.3);
+}
+
+.lb-info-btn-disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+/* Annotations */
+.annotation {
+    background: rgba(255, 200, 0, 0.15);
+    border-left: 3px solid #ffc800;
+    padding: 0.3rem 0.5rem;
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    color: #ffc800;
+}
+
+.section-label {
+    text-align: center;
+    color: #555;
+    font-size: 0.8rem;
+    margin: 2rem 0 1.5rem;
+    padding: 0.5rem;
+    border-top: 1px solid #333;
+    border-bottom: 1px solid #333;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.note {
+    text-align: center;
+    color: #666;
+    font-size: 0.8rem;
+    margin-top: 2rem;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+}
+.note strong { color: #ffc800; }
+
+.diff-highlight {
+    outline: 2px dashed #ffc800;
+    outline-offset: 3px;
+    position: relative;
+}
+.diff-label {
+    position: absolute;
+    top: -18px;
+    right: 0;
+    background: #ffc800;
+    color: #000;
+    font-size: 0.6rem;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 3px;
+    text-transform: uppercase;
+}
+</style>
+</head>
+<body>
+
+<h1>Lightbox Button Redesign v2</h1>
+<p class="subtitle">Mobile-style colored buttons • Title + date on same baseline • Service branding</p>
+
+<!-- =============================================
+     SCENARIO 1: Netflix streaming + Amazon rent/buy
+     (most common combo — streaming + purchase)
+     ============================================= -->
+<div class="section-label">Scenario 1: Netflix streaming + Amazon rent/buy</div>
+
+<div class="comparison">
+
+    <!-- CURRENT -->
+    <div class="version">
+        <h2 class="old">Current</h2>
+        <div class="lb-panel">
+            <div class="lb-title-row">
+                <div class="lb-title-side"><h2 class="lb-title">Emilia Pérez</h2></div>
+                <span class="lb-date">Jan 15</span>
+            </div>
+            <div class="lb-meta">2024 • Drama, Musical • 132 min • Dir: Jacques Audiard • France</div>
+            <p class="lb-synopsis">A Mexican lawyer helps a cartel boss fake his death so he can transition and live as a woman.</p>
+            <div class="lb-buttons-old">
+                <a class="lb-btn-old lb-btn-old-primary">Watch on Netflix</a>
+                <a class="lb-btn-old lb-btn-old-secondary">Rent/Buy on Amazon</a>
+                <button class="lb-btn-old lb-btn-old-secondary">Watch Trailer</button>
+                <a class="lb-btn-old lb-btn-old-secondary">Rotten Tomatoes (65%)</a>
+                <a class="lb-btn-old lb-btn-old-secondary">Wikipedia</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROPOSED -->
+    <div class="version">
+        <h2 class="new">Proposed</h2>
+        <div class="lb-panel">
+            <div class="lb-title-row">
+                <div class="lb-title-side"><h2 class="lb-title">Emilia Pérez</h2></div>
+                <span class="lb-date">Jan 15</span>
+            </div>
+            <div class="lb-meta">2024 • Drama, Musical • 132 min • Dir: Jacques Audiard • France</div>
+            <p class="lb-synopsis">A Mexican lawyer helps a cartel boss fake his death so he can transition and live as a woman.</p>
+
+            <div class="diff-highlight" style="position:relative;">
+                <div class="diff-label">REDESIGNED</div>
+                <!-- Watch buttons: each on its own line -->
+                <div class="lb-watch-stack">
+                    <a class="lb-watch-btn lb-watch-stream lb-watch-netflix">NETFLIX</a>
+                    <a class="lb-watch-btn lb-watch-purchase">RENT/BUY ON AMAZON</a>
+                </div>
+                <!-- Info row: Trailer (red) + RT (glass) + Wiki (glass) -->
+                <div class="lb-info-row">
+                    <a class="lb-info-btn lb-info-trailer">Trailer</a>
+                    <a class="lb-info-btn lb-info-glass">RT 65%</a>
+                    <a class="lb-info-btn lb-info-glass">Wiki</a>
+                </div>
+            </div>
+        </div>
+        <div class="annotation">Netflix (red, full width) → Amazon (orange, full width) → Info row (Trailer/RT/Wiki compact).</div>
+    </div>
+
+</div>
+
+<!-- =============================================
+     SCENARIO 2: Amazon only (no streaming)
+     ============================================= -->
+<div class="section-label">Scenario 2: Amazon rent/buy only (no streaming)</div>
+
+<div class="comparison">
+
+    <!-- CURRENT -->
+    <div class="version">
+        <h2 class="old">Current</h2>
+        <div class="lb-panel">
+            <div class="lb-title-row">
+                <div class="lb-title-side"><h2 class="lb-title">Nadie va a escuchar tu grito</h2></div>
+                <span class="lb-date">Feb 26</span>
+            </div>
+            <div class="lb-meta">2025 • Horror, Thriller • 80 min • Dir: Marcos Marazzi • Argentina</div>
+            <p class="lb-synopsis">While an entire country is focused on the 1990 World Cup in Italy, someone takes advantage of Argentina's matches.</p>
+            <div class="lb-buttons-old">
+                <a class="lb-btn-old lb-btn-old-secondary">Rent/Buy on Amazon</a>
+                <button class="lb-btn-old lb-btn-old-secondary">Watch Trailer</button>
+                <a class="lb-btn-old lb-btn-old-secondary">Rotten Tomatoes (85%)</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROPOSED -->
+    <div class="version">
+        <h2 class="new">Proposed</h2>
+        <div class="lb-panel">
+            <div class="lb-title-row">
+                <div class="lb-title-side"><h2 class="lb-title">Nadie va a escuchar tu grito</h2></div>
+                <span class="lb-date">Feb 26</span>
+            </div>
+            <div class="lb-meta">2025 • Horror, Thriller • 80 min • Dir: Marcos Marazzi • Argentina</div>
+            <p class="lb-synopsis">While an entire country is focused on the 1990 World Cup in Italy, someone takes advantage of Argentina's matches.</p>
+            <div class="diff-highlight" style="position:relative;">
+                <div class="diff-label">REDESIGNED</div>
+                <!-- Single watch button -->
+                <div class="lb-watch-stack">
+                    <a class="lb-watch-btn lb-watch-purchase">RENT/BUY ON AMAZON</a>
+                </div>
+                <!-- Info row: Trailer (red) + RT (glass) -->
+                <div class="lb-info-row">
+                    <a class="lb-info-btn lb-info-trailer">Trailer</a>
+                    <a class="lb-info-btn lb-info-glass">RT 85%</a>
+                </div>
+            </div>
+        </div>
+        <div class="annotation">Amazon (orange, full width) → Info row (Trailer/RT compact).</div>
+    </div>
+
+</div>
+
+<!-- =============================================
+     SCENARIO 3: Apple TV purchase + Max streaming
+     ============================================= -->
+<div class="section-label">Scenario 3: Max streaming + Apple TV rent/buy</div>
+
+<div class="comparison">
+
+    <!-- CURRENT -->
+    <div class="version">
+        <h2 class="old">Current</h2>
+        <div class="lb-panel">
+            <div class="lb-title-row">
+                <div class="lb-title-side"><h2 class="lb-title">The Brutalist</h2></div>
+                <span class="lb-date">Jan 31</span>
+            </div>
+            <div class="lb-meta">2024 • Drama • 215 min • Dir: Brady Corbet • UK/Hungary</div>
+            <p class="lb-synopsis">A visionary architect flees post-war Europe for America, where a wealthy patron offers to help him build his masterwork.</p>
+            <div class="lb-buttons-old">
+                <a class="lb-btn-old lb-btn-old-primary">Watch on Max</a>
+                <a class="lb-btn-old lb-btn-old-secondary">Rent/Buy on Apple TV</a>
+                <button class="lb-btn-old lb-btn-old-secondary">Watch Trailer</button>
+                <a class="lb-btn-old lb-btn-old-secondary">Rotten Tomatoes (89%)</a>
+                <a class="lb-btn-old lb-btn-old-secondary">Wikipedia</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROPOSED -->
+    <div class="version">
+        <h2 class="new">Proposed</h2>
+        <div class="lb-panel">
+            <div class="lb-title-row">
+                <div class="lb-title-side"><h2 class="lb-title">The Brutalist</h2></div>
+                <span class="lb-date">Jan 31</span>
+            </div>
+            <div class="lb-meta">2024 • Drama • 215 min • Dir: Brady Corbet • UK/Hungary</div>
+            <p class="lb-synopsis">A visionary architect flees post-war Europe for America, where a wealthy patron offers to help him build his masterwork.</p>
+            <div class="diff-highlight" style="position:relative;">
+                <div class="diff-label">REDESIGNED</div>
+                <!-- Watch buttons: each on its own line -->
+                <div class="lb-watch-stack">
+                    <a class="lb-watch-btn lb-watch-stream lb-watch-max">MAX</a>
+                    <a class="lb-watch-btn lb-watch-purchase">RENT/BUY ON APPLE TV</a>
+                </div>
+                <!-- Info row -->
+                <div class="lb-info-row">
+                    <a class="lb-info-btn lb-info-trailer">Trailer</a>
+                    <a class="lb-info-btn lb-info-glass">RT 89%</a>
+                    <a class="lb-info-btn lb-info-glass">Wiki</a>
+                </div>
+            </div>
+        </div>
+        <div class="annotation">Max (purple, full width) → Apple (orange, full width) → Info row compact.</div>
+    </div>
+
+</div>
+
+<!-- =============================================
+     SCENARIO 4: Streaming + Purchase + Plex (all three)
+     ============================================= -->
+<div class="section-label">Scenario 4: Disney+ streaming + Amazon rent/buy + Plex (max buttons)</div>
+
+<div class="comparison">
+
+    <!-- CURRENT -->
+    <div class="version">
+        <h2 class="old">Current</h2>
+        <div class="lb-panel" style="min-height: auto;">
+            <div class="lb-title-row">
+                <div class="lb-title-side"><h2 class="lb-title">Example Movie</h2></div>
+                <span class="lb-date">Feb 10</span>
+            </div>
+            <div class="lb-meta">2025 • Action • 120 min • Dir: Director Name</div>
+            <p class="lb-synopsis">Synopsis placeholder for a movie with all available links.</p>
+            <div class="lb-buttons-old">
+                <a class="lb-btn-old lb-btn-old-primary">Watch on Disney+</a>
+                <a class="lb-btn-old lb-btn-old-secondary">Play on Plex</a>
+                <a class="lb-btn-old lb-btn-old-secondary">Rent/Buy on Amazon</a>
+                <button class="lb-btn-old lb-btn-old-secondary">Watch Trailer</button>
+                <a class="lb-btn-old lb-btn-old-secondary">Rotten Tomatoes (75%)</a>
+                <a class="lb-btn-old lb-btn-old-secondary">Wikipedia</a>
+            </div>
+        </div>
+        <div class="annotation">6 full-width blocks stacked. Huge vertical footprint.</div>
+    </div>
+
+    <!-- PROPOSED -->
+    <div class="version">
+        <h2 class="new">Proposed</h2>
+        <div class="lb-panel" style="min-height: auto;">
+            <div class="lb-title-row">
+                <div class="lb-title-side"><h2 class="lb-title">Example Movie</h2></div>
+                <span class="lb-date">Feb 10</span>
+            </div>
+            <div class="lb-meta">2025 • Action • 120 min • Dir: Director Name</div>
+            <p class="lb-synopsis">Synopsis placeholder for a movie with all available links.</p>
+            <div class="diff-highlight" style="position:relative;">
+                <div class="diff-label">REDESIGNED</div>
+                <!-- Watch buttons: each on its own line -->
+                <div class="lb-watch-stack">
+                    <a class="lb-watch-btn lb-watch-stream lb-watch-disney">DISNEY+</a>
+                    <a class="lb-watch-btn lb-watch-purchase">RENT/BUY ON AMAZON</a>
+                    <a class="lb-watch-btn lb-watch-plex">PLEX</a>
+                </div>
+                <!-- Info row -->
+                <div class="lb-info-row">
+                    <a class="lb-info-btn lb-info-trailer">Trailer</a>
+                    <a class="lb-info-btn lb-info-glass">RT 75%</a>
+                    <a class="lb-info-btn lb-info-glass">Wiki</a>
+                </div>
+            </div>
+        </div>
+        <div class="annotation">3 colored watch buttons stacked + info row = 4 rows (was 6 grey blocks). Each watch action is distinct.</div>
+    </div>
+
+</div>
+
+<!-- =============================================
+     SCENARIO 5: No streaming, no purchase — info only
+     ============================================= -->
+<div class="section-label">Scenario 5: Info links only (no streaming, no purchase)</div>
+
+<div class="comparison">
+
+    <!-- CURRENT -->
+    <div class="version">
+        <h2 class="old">Current</h2>
+        <div class="lb-panel">
+            <div class="lb-title-row">
+                <div class="lb-title-side"><h2 class="lb-title">A Private Life</h2></div>
+                <span class="lb-date">Feb 26</span>
+            </div>
+            <div class="lb-meta">2025 • Drama, Crime • 107 min • Dir: Bille August • Denmark</div>
+            <p class="lb-synopsis">Following the death of Paula, one of her long-time patients, psychiatrist Lilian Steiner becomes convinced that her supposed death by suicide is actually an unsolved murder.</p>
+            <div class="lb-buttons-old">
+                <button class="lb-btn-old lb-btn-old-secondary">Watch Trailer</button>
+                <a class="lb-btn-old lb-btn-old-secondary">Rotten Tomatoes (61%)</a>
+                <a class="lb-btn-old lb-btn-old-secondary">Wikipedia</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROPOSED -->
+    <div class="version">
+        <h2 class="new">Proposed</h2>
+        <div class="lb-panel">
+            <div class="lb-title-row">
+                <div class="lb-title-side"><h2 class="lb-title">A Private Life</h2></div>
+                <span class="lb-date">Feb 26</span>
+            </div>
+            <div class="lb-meta">2025 • Drama, Crime • 107 min • Dir: Bille August • Denmark</div>
+            <p class="lb-synopsis">Following the death of Paula, one of her long-time patients, psychiatrist Lilian Steiner becomes convinced that her supposed death by suicide is actually an unsolved murder.</p>
+            <div class="diff-highlight" style="position:relative;">
+                <div class="diff-label">REDESIGNED</div>
+                <!-- No watch row — just info row -->
+                <div class="lb-info-row">
+                    <a class="lb-info-btn lb-info-trailer">Trailer</a>
+                    <a class="lb-info-btn lb-info-glass">RT 61%</a>
+                    <a class="lb-info-btn lb-info-glass">Wiki</a>
+                </div>
+            </div>
+        </div>
+        <div class="annotation">Just a compact info row. 3 grey blocks → one clean row.</div>
+    </div>
+
+</div>
+
+<p class="note">
+    <strong>Layout:</strong> Watch buttons stacked (each on its own line, full width, colored) → Info row (Trailer + RT + Wiki in compact grid).<br>
+    Streaming and rent/buy are always on separate lines for clarity.<br><br>
+    <strong>Color scheme (matching mobile/tvOS):</strong><br>
+    Trailer = red (#E50914) • Stream = service color (Netflix red, Max purple, Disney blue, etc.) • Purchase = orange (#ff9500) • Plex = yellow (#E5A00D) • RT/Wiki = glass with border<br><br>
+    <strong>Title + date:</strong> Aligned on the same baseline.<br><br>
+    <strong>Logos:</strong> In the mockup, service names are shown as text. In the real implementation, Amazon and Apple buttons will show their actual logo PNGs (same images already used on the card back).
+</p>
+
+</body>
+</html>

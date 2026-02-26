@@ -69,11 +69,20 @@ const FullscreenPosterModal = ({
 
   // Format country
   const formatCountry = (country) => {
-    const abbrev = {
-      'United States of America': 'USA',
-      'United Kingdom': 'UK',
+    if (!country) return null;
+    const shortNames = {
+      'united states of america': 'USA', 'united states': 'USA', 'usa': 'USA',
+      'united kingdom': 'UK', 'great britain': 'UK',
+      'south korea': 'S. Korea', 'south africa': 'S. Africa',
+      'new zealand': 'N. Zealand', 'bosnia and herzegovina': 'Bosnia',
+      'saudi arabia': 'S. Arabia',
     };
-    return abbrev[country] || country;
+    const shortened = shortNames[country.toLowerCase()];
+    if (shortened) return shortened;
+    if (country !== country[0].toUpperCase() + country.slice(1).toLowerCase()) {
+      return country[0].toUpperCase() + country.slice(1).toLowerCase();
+    }
+    return country;
   };
 
   // Build meta text

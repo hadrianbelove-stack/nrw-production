@@ -203,6 +203,12 @@ export default function MovieDetail({route}) {
               <Text style={styles.staffPickText}>STAFF PICK</Text>
             </View>
           )}
+          {/* Restoration badge */}
+          {movie.categories?.is_restoration && (
+            <View style={styles.restorationBadge}>
+              <Text style={styles.restorationBadgeText}>RESTORED</Text>
+            </View>
+          )}
         </View>
 
         <View style={styles.heroInfo}>
@@ -235,10 +241,10 @@ export default function MovieDetail({route}) {
                   styles.rtBadge,
                   {
                     backgroundColor:
-                      movie.rt_score >= 60 ? Colors.green : Colors.red,
+                      parseInt(movie.rt_score, 10) >= 60 ? Colors.green : Colors.red,
                   },
                 ]}>
-                <Text style={styles.rtScore}>{movie.rt_score}%</Text>
+                <Text style={styles.rtScore}>{movie.rt_score}</Text>
               </View>
               <Text style={styles.rtLabel}>Rotten Tomatoes</Text>
             </TouchableOpacity>
@@ -383,6 +389,21 @@ const styles = StyleSheet.create({
   },
   staffPickText: {
     color: Colors.staffPickText,
+    fontSize: 9,
+    fontWeight: '700',
+    letterSpacing: 0.5,
+  },
+  restorationBadge: {
+    position: 'absolute',
+    bottom: Spacing.sm,
+    left: Spacing.sm,
+    backgroundColor: Colors.restoration,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 4,
+    borderRadius: 4,
+  },
+  restorationBadgeText: {
+    color: Colors.restorationText,
     fontSize: 9,
     fontWeight: '700',
     letterSpacing: 0.5,

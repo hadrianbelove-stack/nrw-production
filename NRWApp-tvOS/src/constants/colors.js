@@ -36,9 +36,13 @@ export const Colors = {
   gradientStart: 'rgba(0, 0, 0, 0)',
   gradientEnd: 'rgba(0, 0, 0, 0.9)',
 
-  // Featured badge
-  featuredBadge: '#00d4aa',
-  featuredBadgeText: '#000000',
+  // Staff Pick badge
+  staffPick: '#dc143c',
+  staffPickText: '#ffffff',
+
+  // Restoration badge
+  restoration: '#C8A951',
+  restorationText: '#000000',
 };
 
 export const Typography = {

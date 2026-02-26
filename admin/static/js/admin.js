@@ -44,6 +44,26 @@ function showSuccess(message = 'Changes saved!') {
     }, 3000);
 }
 
+function toggleRestoration(movieId, value) {
+    fetch('/toggle-status', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({movie_id: movieId, status_type: 'restoration', value: value})
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Reload page to reflect changes
+            location.reload();
+        }
+    })
+    .catch(error => {
+        alert('Error: ' + error);
+    });
+}
+
 function toggleFeatured(movieId, feature) {
     fetch('/toggle-status', {
         method: 'POST',

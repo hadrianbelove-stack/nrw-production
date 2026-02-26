@@ -439,10 +439,11 @@ festivals:
       end: "2026-10-18"
 
 api:
-  # API keys: Environment variables take precedence, these are fallbacks for local development
-  tmdb_api_key: "99b122ce7fa3e9065d7b7dc6e660772d"  # TMDB API key for movie data
-  omdb_api_key: "539723d9"  # OMDB API key for additional movie data
-  gemini_api_key: "AIzaSyAQaLRHq4A0cd7T8Sx_sUy5JHvCnu0P2YY"  # Gemini API for YouTube trailers, RT scores, Wikipedia
+  # API keys now loaded from .env file (see load_env.py)
+  # Environment variables: TMDB_API_KEY, OMDB_API_KEY, GEMINI_API_KEY
+  tmdb_api_key: ""
+  omdb_api_key: ""
+  gemini_api_key: ""
   tmdb_rate_limit: 0.1  # Seconds between API calls
   max_retries: 3
   max_pages_bootstrap: 49  # Maximum pages to fetch for bootstrap operation

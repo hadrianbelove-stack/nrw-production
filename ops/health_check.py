@@ -84,6 +84,55 @@ def validate_watch_links_data(data_file='data.json'):
         'failure_rate': failure_rate
     }
 
+def detect_provider_link_gaps(data_file='data.json'):
+    """Detect movies with Amazon/Apple rent/buy providers but no watch links.
+
+    These are movies where the UI would show a rent/buy button if it had a link,
+    but the enrichment pipeline failed to resolve one.
+
+    Returns:
+        dict: {'total_gaps': int, 'movies_with_gaps': [{'id': str, 'title': str, 'providers': list}]}
+    """
+    if not os.path.exists(data_file):
+        return {'total_gaps': 0, 'movies_with_gaps': []}
+
+    with open(data_file, 'r') as f:
+        data = json.load(f)
+
+    movies = data.get('movies', [])
+    amazon_apple_variants = [
+        'amazon', 'prime video', 'apple tv', 'apple itunes', 'itunes'
+    ]
+    gaps = []
+
+    for movie in movies:
+        providers = movie.get('providers', {})
+        watch_links = movie.get('watch_links', {})
+
+        # Collect Amazon/Apple providers from rent and buy lists
+        rent_buy = providers.get('rent', []) + providers.get('buy', [])
+        relevant_providers = [
+            p for p in rent_buy
+            if any(variant in p.lower() for variant in amazon_apple_variants)
+        ]
+
+        if not relevant_providers:
+            continue
+
+        # Check if watch_links has a vod entry with an actual link
+        vod = watch_links.get('vod', {})
+        has_vod_link = isinstance(vod, dict) and vod.get('link')
+
+        if not has_vod_link:
+            gaps.append({
+                'id': str(movie.get('id', '')),
+                'title': movie.get('title', 'Unknown'),
+                'providers': relevant_providers
+            })
+
+    return {'total_gaps': len(gaps), 'movies_with_gaps': gaps}
+
+
 def check_system_health():
     issues = []
     
@@ -121,6 +170,15 @@ def check_system_health():
         elif validation_stats['validation_warnings'] > 0:
             issues.append(f"⚠️ Validation warnings: {validation_stats['failure_rate']:.1f}% "
                          f"({validation_stats['validation_warnings']}/{validation_stats['total_movies']} movies)")
+
+    # Check for provider/watch-link gaps (providers listed but no clickable link)
+    gap_stats = detect_provider_link_gaps()
+    if gap_stats['total_gaps'] > 0:
+        titles = [m['title'] for m in gap_stats['movies_with_gaps'][:5]]
+        title_list = ', '.join(titles)
+        if gap_stats['total_gaps'] > 5:
+            title_list += f" (+{gap_stats['total_gaps'] - 5} more)"
+        issues.append(f"⚠️ {gap_stats['total_gaps']} movies have Amazon/Apple providers but no watch links: {title_list}")
 
     # Determine if we should fail CI
     critical_failure = any("❌" in issue for issue in issues)

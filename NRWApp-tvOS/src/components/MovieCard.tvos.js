@@ -146,18 +146,20 @@ const MovieCard = forwardRef(({
   // Get country - can be country (string) or countries (array)
   // Use common abbreviations for long country names
   const formatCountry = (country) => {
-    const abbreviations = {
-      'United States of America': 'USA',
-      'United Kingdom': 'UK',
-      'United Arab Emirates': 'UAE',
-      'South Korea': 'S. Korea',
-      'North Korea': 'N. Korea',
-      'New Zealand': 'NZ',
-      'Czech Republic': 'Czechia',
-      'Democratic Republic of the Congo': 'DR Congo',
-      'Republic of the Congo': 'Congo',
+    if (!country) return null;
+    const shortNames = {
+      'united states of america': 'USA', 'united states': 'USA', 'usa': 'USA',
+      'united kingdom': 'UK', 'great britain': 'UK',
+      'south korea': 'S. Korea', 'south africa': 'S. Africa',
+      'new zealand': 'N. Zealand', 'bosnia and herzegovina': 'Bosnia',
+      'saudi arabia': 'S. Arabia',
     };
-    return abbreviations[country] || country;
+    const shortened = shortNames[country.toLowerCase()];
+    if (shortened) return shortened;
+    if (country !== country[0].toUpperCase() + country.slice(1).toLowerCase()) {
+      return country[0].toUpperCase() + country.slice(1).toLowerCase();
+    }
+    return country;
   };
 
   const getCountryText = () => {

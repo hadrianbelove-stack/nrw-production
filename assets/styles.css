@@ -1018,7 +1018,7 @@ header h1 {
 
 .lightbox-title-row {
     display: flex;
-    align-items: center;
+    align-items: baseline;
     justify-content: space-between;
     gap: 0.75rem;
     border-bottom: 2px solid rgba(0, 212, 170, 0.4);
@@ -1028,7 +1028,7 @@ header h1 {
 
 .lightbox-title-side {
     display: flex;
-    align-items: center;
+    align-items: baseline;
     gap: 0.75rem;
     flex-wrap: wrap;
     line-height: 1;
@@ -1075,39 +1075,78 @@ header h1 {
     overflow-y: auto;
 }
 
+/* Lightbox buttons container */
 .lightbox-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
     margin-top: auto;
 }
 
-.lightbox-btn {
-    padding: 0.75rem;
-    border-radius: 6px;
-    text-align: center;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 0.9rem;
-    cursor: pointer;
-    border: none;
-    transition: transform 0.2s, box-shadow 0.2s;
+/* Watch stack: full-width colored buttons, one per line */
+.lightbox-buttons .watch-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
 }
 
-.lightbox-btn:hover {
+.lightbox-buttons .watch-btn-lb {
+    padding: 0.6rem 0.8rem;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    letter-spacing: 0.5px;
+    gap: 0.4rem;
+    width: 100%;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.lightbox-buttons .watch-btn-lb:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-.lightbox-btn-primary {
-    background: #e50914;
-    color: white;
+/* Service colors */
+.watch-btn-lb.stream { background: #00d4aa; color: #000; }
+.watch-btn-lb.netflix { background: #E50914; color: #fff; }
+.watch-btn-lb.max { background: #B537F2; color: #fff; }
+.watch-btn-lb.disney { background: #113CCF; color: #fff; }
+.watch-btn-lb.hulu { background: #1CE783; color: #000; }
+.watch-btn-lb.prime { background: #00A8E1; color: #fff; }
+.watch-btn-lb.mubi { background: #000; color: #fff; border: 1px solid #444; }
+.watch-btn-lb.peacock { background: #000; color: #fff; }
+.watch-btn-lb.purchase { background: #ff9500; color: #000; }
+.watch-btn-lb.plex { background: #E5A00D; color: #000; }
+
+/* Info row: horizontal, equal-width */
+.lightbox-buttons .info-row {
+    display: flex;
+    gap: 0.5rem;
 }
 
-.lightbox-btn-secondary {
-    background: #333;
-    color: white;
+.lightbox-buttons .info-btn-lb {
+    flex: 1;
+    padding: 0.5rem;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
 }
+.lightbox-buttons .info-btn-lb:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+.info-btn-lb.trailer { background: #E50914; color: #fff; }
+.info-btn-lb.glass { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.3); }
 
 /* Navigation arrows - inline with content */
 .lightbox-nav {

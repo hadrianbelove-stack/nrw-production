@@ -28,9 +28,13 @@ export const Colors = {
   appleTVBlack: '#000000',
   netflixRed: '#e50914',
 
-  // Featured badge
-  featuredBadge: '#00d4aa',
-  featuredBadgeText: '#000000',
+  // Staff Pick badge
+  staffPick: '#dc143c',
+  staffPickText: '#ffffff',
+
+  // Restoration badge
+  restoration: '#C8A951',
+  restorationText: '#000000',
 };
 
 export const Typography = {

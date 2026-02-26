@@ -113,13 +113,23 @@ End Sub
 ' Setup RT Score Badge
 ' ============================================================================
 Sub SetupRtBadge(score as Dynamic)
-    if Type(score) <> "Integer" AND Type(score) <> "roInt" AND Type(score) <> "Float" AND Type(score) <> "roFloat"
+    scoreInt = 0
+    if Type(score) = "Integer" OR Type(score) = "roInt" OR Type(score) = "Float" OR Type(score) = "roFloat"
+        scoreInt = Int(score)
+    else if Type(score) = "String" OR Type(score) = "roString"
+        cleaned = score.Replace("%", "")
+        scoreInt = Int(Val(cleaned))
+    else
         m.rtBadge.visible = false
         m.rtBadgeBg.visible = false
         return
     end if
 
-    scoreInt = Int(score)
+    if scoreInt = 0
+        m.rtBadge.visible = false
+        m.rtBadgeBg.visible = false
+        return
+    end if
 
     ' Set badge text
     m.rtBadge.text = scoreInt.ToStr() + "%"

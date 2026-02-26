@@ -555,6 +555,11 @@
                     {% else %}
                     <button class="action-btn btn-feature" onclick="toggleFeatured('{{ movie_id }}', true)">⭐ Staff Pick</button>
                     {% endif %}
+                    {% if movie_id in restorations %}
+                    <button class="action-btn btn-unfeature" onclick="toggleRestoration('{{ movie_id }}', false)" style="border-color: #C8A951; color: #C8A951;">Unmark Restoration</button>
+                    {% else %}
+                    <button class="action-btn btn-feature" onclick="toggleRestoration('{{ movie_id }}', true)" style="border-color: #C8A951; color: #C8A951;">Mark Restoration</button>
+                    {% endif %}
                     <button class="action-btn btn-remove" onclick="removeMovie('{{ movie_id }}', '{{ movie.title | e }}')" title="Remove from wall">🗑️</button>
                 </div>
             </div>

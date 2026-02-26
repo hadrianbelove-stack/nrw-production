@@ -399,6 +399,13 @@ const MovieDetailTvOS = () => {
             </View>
           )}
 
+          {/* Restoration badge */}
+          {movie.categories?.is_restoration && (
+            <View style={styles.restorationBadge}>
+              <Text style={styles.restorationBadgeText}>RESTORED</Text>
+            </View>
+          )}
+
           {/* RT Score badge */}
           {rtScore && (
             <View
@@ -610,6 +617,21 @@ const styles = StyleSheet.create({
   },
   staffPickText: {
     color: Colors.staffPickText,
+    fontSize: Typography.tvos.caption,
+    fontWeight: '700',
+    letterSpacing: 1,
+  },
+  restorationBadge: {
+    position: 'absolute',
+    top: Spacing.tvos.md,
+    right: Spacing.tvos.md,
+    backgroundColor: Colors.restoration,
+    paddingHorizontal: Spacing.tvos.md,
+    paddingVertical: Spacing.tvos.xs,
+    borderRadius: 6,
+  },
+  restorationBadgeText: {
+    color: Colors.restorationText,
     fontSize: Typography.tvos.caption,
     fontWeight: '700',
     letterSpacing: 1,

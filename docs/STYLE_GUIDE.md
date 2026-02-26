@@ -27,6 +27,7 @@ This is the authoritative style guide for all NRW visual design. All UI work (ne
 | **Big Time Stuff** | `#ffffff` | White - default styling |
 | **Niche Notables** | `#00d4aa` | Teal - matches primary accent |
 | **The Slop Pile** | `#888888` | Gray - muted, de-emphasized |
+| **Restorations** | `#C8A951` | Antique gold - badge pill on poster |
 
 ### Service Colors
 | Service | Hex |
@@ -48,24 +49,22 @@ When using grays for secondary UI elements:
 - Muted text: `#888` minimum, `#666` is too dark
 - Apple TV / generic service buttons: `#aaaaaa` (not dark gray)
 
-### Country Abbreviations
-Always abbreviate country names in metadata lines:
+### Country Display Names
+Use shortened forms only for long country names. Keep short names as-is:
 
-| Country | Abbrev | | Country | Abbrev |
-|---------|--------|---|---------|--------|
-| United States | USA | | Japan | JP |
-| United Kingdom | UK | | South Korea | KR |
-| France | FR | | China | CN |
-| Germany | DE | | Canada | CA |
-| Italy | IT | | Australia | AU |
-| Spain | ES | | India | IN |
-| Hungary | HU | | Brazil | BR |
-| Poland | PL | | Mexico | MX |
-| Sweden | SE | | Argentina | AR |
-| Denmark | DK | | Netherlands | NL |
-| Norway | NO | | New Zealand | NZ |
+| Data Value                  | Displays As |
+|-----------------------------|-------------|
+| United States of America    | USA         |
+| United Kingdom              | UK          |
+| South Korea                 | S. Korea    |
+| South Africa                | S. Africa   |
+| New Zealand                 | N. Zealand  |
+| Bosnia and Herzegovina      | Bosnia      |
+| Saudi Arabia                | S. Arabia   |
 
-For multiple countries, use slashes: `USA / UK / FR`
+All other countries display as their full name (France, Japan, Canada, etc.)
+Case mismatches (e.g. "usa", "SWEDEN") are handled automatically.
+For multiple countries, use slashes: `USA / France / Japan`
 
 ---
 

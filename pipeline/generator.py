@@ -6,12 +6,14 @@ Extracted from monolithic generate_data.py (2025-11-10) for better maintainabili
 Handles movie intake, tracking, enrichment, and display data generation.
 """
 
+import sys, os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import load_env  # Load .env into os.environ
 import json
 import requests
 import yaml
 from datetime import datetime, timedelta, timezone
 import time
-import os
 import re
 from urllib.parse import quote
 import logging
@@ -1881,7 +1883,7 @@ class DataGenerator:
         Returns:
             str: IMDb ID (e.g., 'tt12345678') or None if not found
         """
-        omdb_key = self.config.get('api', {}).get('omdb_api_key')
+        omdb_key = os.environ.get('OMDB_API_KEY') or self.config.get('api', {}).get('omdb_api_key')
         if not omdb_key:
             self.logger.debug("OMDb API key not configured, skipping IMDb fallback")
             return None
@@ -2061,7 +2063,7 @@ class DataGenerator:
         return f"https://www.youtube.com/results?search_query={search_query}"
     
 
-    def find_rt_url(self, title, year, imdb_id):
+    def find_rt_url(self, title, year, imdb_id, director=None):
         """Find Rotten Tomatoes URL and score"""
         # 1. Check overrides first
         if imdb_id and imdb_id in self.rt_overrides:
@@ -2074,17 +2076,15 @@ class DataGenerator:
         enabled = self.config.get('rt_scraper', {}).get('enabled', True)
         if not enabled:
             print("  RT scraping disabled via config")
-            search_query = quote(f"{title} {year}")
-            return {'url': f"https://www.rottentomatoes.com/search?search={search_query}", 'score': None}
+            return None
 
         # 3. Use RT scraper (handles caching internally)
-        result = self.scrape_rt_score(title, year)
+        result = self.scrape_rt_score(title, year, director=director)
         if result:
             return result
 
-        # 4. Fall back to search
-        search_query = quote(f"{title} {year}")
-        return {'url': f"https://www.rottentomatoes.com/search?search={search_query}", 'score': None}
+        # 4. No result — return None (deep links or nothing)
+        return None
 
 
 
@@ -2186,12 +2186,13 @@ class DataGenerator:
             return False
 
 
-    def scrape_rt_score(self, title, year):
+    def scrape_rt_score(self, title, year, director=None):
         """Public wrapper function to scrape RT score for external consumers
 
         Args:
             title: Movie title
             year: Release year
+            director: Optional director name for disambiguation
 
         Returns:
             dict: {'url': ..., 'score': ...} or None if not found
@@ -2206,7 +2207,7 @@ class DataGenerator:
 
         # Use the new Playwright scraper
         try:
-            result = self.rt_scraper.scrape_rt_score(title, year)
+            result = self.rt_scraper.scrape_rt_score(title, year, director=director)
 
             # Update stats from scraper
             scraper_stats = self.rt_scraper.get_stats()
@@ -2348,7 +2349,8 @@ class DataGenerator:
 
         # RT score and link (isolated failure handling)
         try:
-            rt_data = self.find_rt_url(title, year, imdb_id)
+            rt_director = movie_details.get('crew', {}).get('director') if movie_details else None
+            rt_data = self.find_rt_url(title, year, imdb_id, director=rt_director)
             if rt_data:
                 if isinstance(rt_data, dict):
                     if rt_data.get('url'):
@@ -2593,7 +2595,7 @@ class DataGenerator:
 
         # RT link and score (isolated failure handling)
         try:
-            rt_data = self.find_rt_url(title, year, imdb_id)
+            rt_data = self.find_rt_url(title, year, imdb_id, director=director)
             if rt_data:
                 if isinstance(rt_data, dict):
                     if rt_data.get('url'):
@@ -2781,7 +2783,26 @@ class DataGenerator:
                     existing_movies[movie_index].update(enrichment_fields)
                     # Mark enrichment status as completed
                     existing_movies[movie_index]['_enrichment_status'] = 'completed'
-                    print(f"  ✓ {movie_data.get('title')} - Links: {len(enrichment_fields.get('watch_links', {}))}")
+
+                    # Track enrichment gaps (fields that enrichment couldn't resolve)
+                    gaps = []
+                    if not enrichment_fields.get('watch_links'):
+                        gaps.append('watch_links')
+                    if enrichment_fields.get('links', {}).get('rt') is None and enrichment_fields.get('rt_score') is None:
+                        gaps.append('rt_score')
+                    if gaps:
+                        existing_movies[movie_index]['_enrichment_gaps'] = gaps
+                    elif '_enrichment_gaps' in existing_movies[movie_index]:
+                        del existing_movies[movie_index]['_enrichment_gaps']
+
+                    # Log with warning when providers exist but no watch links found
+                    watch_links_count = len(enrichment_fields.get('watch_links', {}))
+                    providers_rent_buy = len(movie_data.get('providers', {}).get('rent', [])) + \
+                                         len(movie_data.get('providers', {}).get('buy', []))
+                    if providers_rent_buy > 0 and watch_links_count == 0:
+                        print(f"  ⚠ {movie_data.get('title')} - WARNING: {providers_rent_buy} providers but 0 watch links")
+                    else:
+                        print(f"  ✓ {movie_data.get('title')} - Links: {watch_links_count}")
                     enriched_count += 1
                 else:
                     # Mark enrichment status as failed but keep movie in data.json
@@ -2815,6 +2836,108 @@ class DataGenerator:
             return 0
 
         return enriched_count
+
+    def reenrich_watch_link_gaps(self):
+        """
+        Re-enrich movies that have Amazon/Apple providers but empty watch_links.
+        Uses force_refresh=True to bypass cache and retry JustWatch.
+
+        Returns:
+            int: Number of movies successfully re-enriched with watch links
+        """
+        if not os.path.exists('data.json'):
+            print("❌ No data.json found")
+            return 0
+
+        with open('data.json', 'r') as f:
+            display_data = json.load(f)
+
+        existing_movies = display_data.get('movies', [])
+
+        # Find movies with Amazon/Apple providers but no watch_links.vod
+        amazon_apple_variants = ['amazon', 'prime video', 'apple tv', 'apple itunes', 'itunes']
+        gap_movies = []
+
+        for i, movie in enumerate(existing_movies):
+            providers = movie.get('providers', {})
+            watch_links = movie.get('watch_links', {})
+            rent_buy = providers.get('rent', []) + providers.get('buy', [])
+            relevant = [p for p in rent_buy if any(v in p.lower() for v in amazon_apple_variants)]
+
+            if relevant and not (isinstance(watch_links.get('vod'), dict) and watch_links['vod'].get('link')):
+                gap_movies.append((i, movie))
+
+        if not gap_movies:
+            print("✅ No watch link gaps found — all Amazon/Apple providers have links")
+            return 0
+
+        print(f"🔍 Found {len(gap_movies)} movies with watch link gaps:")
+        for _, movie in gap_movies:
+            providers = movie.get('providers', {})
+            rent_buy = providers.get('rent', []) + providers.get('buy', [])
+            print(f"  • {movie.get('title')} ({', '.join(rent_buy)})")
+
+        # Load tracking database for enrichment
+        tracking_data = self.storage.load_all_movies()
+        if not tracking_data:
+            print("❌ Could not load movie tracking database")
+            return 0
+
+        fixed_count = 0
+        for movie_index, movie in gap_movies:
+            movie_id = str(movie.get('id', ''))
+            title = movie.get('title', 'Unknown')
+
+            try:
+                movie_details = self.get_movie_details(movie_id)
+                if not movie_details:
+                    print(f"  ✗ Could not fetch TMDB details for {title}")
+                    continue
+
+                # Get tracking data for this movie (needed for manual_watch_links check)
+                tracking_movie = tracking_data.get('movies', {}).get(movie_id, movie)
+
+                enrichment_fields = self.get_enrichment_only_fields(
+                    movie_id, tracking_movie, movie_details, force_refresh=True
+                )
+
+                if enrichment_fields and enrichment_fields.get('watch_links'):
+                    existing_movies[movie_index].update(enrichment_fields)
+                    existing_movies[movie_index]['_enrichment_status'] = 'completed'
+                    # Clear gap tracking if watch_links resolved
+                    existing_gaps = existing_movies[movie_index].get('_enrichment_gaps', [])
+                    if 'watch_links' in existing_gaps:
+                        existing_gaps.remove('watch_links')
+                        if existing_gaps:
+                            existing_movies[movie_index]['_enrichment_gaps'] = existing_gaps
+                        else:
+                            existing_movies[movie_index].pop('_enrichment_gaps', None)
+                    print(f"  ✓ {title} — watch links resolved")
+                    fixed_count += 1
+                else:
+                    print(f"  ○ {title} — still no links (may need manual override)")
+            except Exception as e:
+                print(f"  ✗ Error re-enriching {title}: {e}")
+                continue
+
+        # Save if anything changed
+        if fixed_count > 0:
+            display_data['movies'] = existing_movies
+            display_data['generated_at'] = datetime.now().isoformat()
+
+            try:
+                import shutil
+                backup_path = f"data.json.backup.{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+                if os.path.exists('data.json'):
+                    shutil.copy2('data.json', backup_path)
+                with open('data.json', 'w') as f:
+                    json.dump(display_data, f, indent=2)
+                print(f"✅ Re-enriched {fixed_count}/{len(gap_movies)} movies with watch links")
+            except Exception as e:
+                print(f"❌ Error saving data.json: {e}")
+                return 0
+
+        return fixed_count
 
     def generate_display_data(self, days_back=90, incremental=True, force_refresh=False):
         """
@@ -3230,6 +3353,7 @@ class DataGenerator:
             'tier': tier,
             'is_foreign': is_foreign,
             'is_staff_pick': False,  # Set later from staff_picks.json
+            'is_restoration': False,  # Set later from restoration detection
             'auto_categorized': auto_categorized,
             'manual_override': manual_override
         }
@@ -3255,6 +3379,18 @@ class DataGenerator:
         if os.path.exists('admin/category_config.json'):
             with open('admin/category_config.json', 'r') as f:
                 category_config = json.load(f)
+
+        # Load restoration config
+        restoration_config = {}
+        if os.path.exists('admin/restoration_config.json'):
+            with open('admin/restoration_config.json', 'r') as f:
+                restoration_config = json.load(f)
+
+        # Load manual restorations list
+        manual_restorations = []
+        if os.path.exists('admin/restorations.json'):
+            with open('admin/restorations.json', 'r') as f:
+                manual_restorations = json.load(f)
 
         if os.path.exists('admin/ordering.json'):
             with open('admin/ordering.json', 'r') as f:
@@ -3339,6 +3475,7 @@ class DataGenerator:
         big_time_count = 0
         niche_count = 0
         foreign_count = 0
+        restoration_count = 0
         for movie in display_movies:
             movie_id = str(movie.get('id'))
 
@@ -3358,6 +3495,28 @@ class DataGenerator:
             if movie_id in staff_picks:
                 categories['is_staff_pick'] = True
 
+            # Mark restorations & reissues
+            is_restoration = False
+            movie_year = movie.get('year', 0) or 0
+            digital_date_str = movie.get('digital_date', '')
+            if digital_date_str and movie_year:
+                digital_year = int(digital_date_str[:4])
+                year_gap = digital_year - movie_year
+
+                year_threshold = restoration_config.get('year_gap_threshold', 10)
+                if year_gap >= year_threshold:
+                    is_restoration = True
+
+                restoration_distributors = restoration_config.get('restoration_distributors', [])
+                studio = movie.get('studio', '') or ''
+                if studio and year_gap >= 5 and any(rd.lower() in studio.lower() for rd in restoration_distributors):
+                    is_restoration = True
+
+            if str(movie_id) in [str(r) for r in manual_restorations]:
+                is_restoration = True
+
+            categories['is_restoration'] = is_restoration
+
             movie['categories'] = categories
 
             # Set 'featured' field for backwards compatibility (true or false)
@@ -3370,6 +3529,8 @@ class DataGenerator:
                 niche_count += 1
             if categories['is_foreign']:
                 foreign_count += 1
+            if categories['is_restoration']:
+                restoration_count += 1
 
         # Apply editorial ordering if specified
         if ordering:
@@ -3397,7 +3558,7 @@ class DataGenerator:
         ordered_count = len(ordering) if ordering else 0
 
         print(f"📝 Admin overrides applied:")
-        print(f"  Categories: {big_time_count} Big Time, {niche_count} Niche, {foreign_count} Foreign")
+        print(f"  Categories: {big_time_count} Big Time, {niche_count} Niche, {foreign_count} Foreign, {restoration_count} Restorations")
         print(f"  Staff Picks: {staff_pick_count}")
         if ordered_count > 0:
             print(f"  Editorial ordering: {ordered_count} movies pinned to top")

@@ -15,6 +15,7 @@ Function GetFilterCategories() as Object
         FOREIGN: "foreign"
         SERIES: "series"
         PLEX: "plex"
+        RESTORATIONS: "restorations"
     }
 End Function
 
@@ -28,6 +29,7 @@ Function GetFilterDisplayName(filter as String) as String
         foreign: "Foreign"
         series: "Limited Series"
         plex: "Plex"
+        restorations: "Restorations"
     }
 
     if names.DoesExist(filter)
@@ -79,6 +81,11 @@ Function FilterMovies(movies as Object, filter as String) as Object
 
         else if filter = categories.PLEX
             if movie.plex <> invalid AND movie.plex.deep_link <> invalid
+                include = true
+            end if
+
+        else if filter = categories.RESTORATIONS
+            if movie.categories <> invalid AND movie.categories.is_restoration = true
                 include = true
             end if
         end if

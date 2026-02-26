@@ -80,6 +80,14 @@
           horizAlign="center" vertAlign="center"
           font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
       </Group>
+
+      <!-- Restorations -->
+      <Group id="chip_restorations">
+        <Rectangle id="chipBg_restorations" width="130" height="36" color="0x333333FF" />
+        <Label id="chipLabel_restorations" text="Restorations" width="130" height="36"
+          horizAlign="center" vertAlign="center"
+          font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
+      </Group>
     </LayoutGroup>
 
     <!-- Focus indicator -->

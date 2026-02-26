@@ -166,6 +166,9 @@ class MovieRepository(private val context: Context) {
             FilterCategory.PLEX -> movies.filter {
                 it.hidden != true && it.plex?.deepLink != null
             }
+            FilterCategory.RESTORATIONS -> movies.filter {
+                it.hidden != true && it.categories?.isRestoration == true
+            }
         }
     }
 

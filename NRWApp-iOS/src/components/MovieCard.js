@@ -13,6 +13,24 @@ import {
 } from 'react-native';
 import {Colors, Typography, Spacing, Dimensions} from '../constants/colors';
 
+const COUNTRY_SHORT_NAMES = {
+  'united states of america': 'USA', 'united states': 'USA', 'usa': 'USA',
+  'united kingdom': 'UK', 'great britain': 'UK',
+  'south korea': 'S. Korea', 'south africa': 'S. Africa',
+  'new zealand': 'N. Zealand', 'bosnia and herzegovina': 'Bosnia',
+  'saudi arabia': 'S. Arabia',
+};
+
+const formatCountry = (country) => {
+  if (!country) return null;
+  const shortened = COUNTRY_SHORT_NAMES[country.toLowerCase()];
+  if (shortened) return shortened;
+  if (country !== country[0].toUpperCase() + country.slice(1).toLowerCase()) {
+    return country[0].toUpperCase() + country.slice(1).toLowerCase();
+  }
+  return country;
+};
+
 export default function MovieCard({movie, onPress, isFeatured = false}) {
   if (!movie) return null;
 
@@ -44,6 +62,13 @@ export default function MovieCard({movie, onPress, isFeatured = false}) {
           </View>
         )}
 
+        {/* Restoration badge */}
+        {movie.categories?.is_restoration && (
+          <View style={styles.restorationBadge}>
+            <Text style={styles.restorationText}>RESTORED</Text>
+          </View>
+        )}
+
         {/* RT Score badge */}
         {movie.rt_score && (
           <View
@@ -51,10 +76,10 @@ export default function MovieCard({movie, onPress, isFeatured = false}) {
               styles.rtBadge,
               {
                 backgroundColor:
-                  movie.rt_score >= 60 ? Colors.green : Colors.red,
+                  parseInt(movie.rt_score, 10) >= 60 ? Colors.green : Colors.red,
               },
             ]}>
-            <Text style={styles.rtText}>{movie.rt_score}%</Text>
+            <Text style={styles.rtText}>{movie.rt_score}</Text>
           </View>
         )}
       </View>
@@ -70,7 +95,7 @@ export default function MovieCard({movie, onPress, isFeatured = false}) {
         )}
         {movie.country && (
           <Text style={styles.country} numberOfLines={1}>
-            {movie.country}
+            {formatCountry(movie.country)}
           </Text>
         )}
       </View>
@@ -118,6 +143,21 @@ const styles = StyleSheet.create({
     color: Colors.featuredBadgeText,
     fontSize: 10,
     fontWeight: '700',
+  },
+  restorationBadge: {
+    position: 'absolute',
+    bottom: 8,
+    left: 8,
+    backgroundColor: Colors.restoration,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  restorationText: {
+    color: Colors.restorationText,
+    fontSize: 9,
+    fontWeight: '700',
+    letterSpacing: 0.5,
   },
   rtBadge: {
     position: 'absolute',

@@ -193,6 +193,9 @@ export function filterMovies(movies, filters = 'all') {
           // Movies available in personal Plex library
           if (!movie.plex || !movie.plex.deep_link) return false;
           break;
+        case 'restorations':
+          if (!movie.categories?.is_restoration) return false;
+          break;
         case 'featured':
           // Legacy support - maps to staff-picks
           const isFeatured = movie.categories?.is_staff_pick || movie.featured === true;

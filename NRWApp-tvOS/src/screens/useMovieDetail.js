@@ -210,7 +210,7 @@ export function getAccessibilityLabel(movie) {
 
   if (movie.year) parts.push(`from ${movie.year}`);
   if (movie.director) parts.push(`directed by ${movie.director}`);
-  if (movie.rt_score) parts.push(`${movie.rt_score}% on Rotten Tomatoes`);
+  if (movie.rt_score) parts.push(`${movie.rt_score} on Rotten Tomatoes`);
 
   return parts.join(', ');
 }

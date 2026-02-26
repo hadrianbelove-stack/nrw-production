@@ -7,6 +7,9 @@
 set -e
 cd "$(dirname "$0")"
 
+# Load environment variables
+source .env 2>/dev/null || true
+
 # Sync with remote before launching
 git pull --ff-only origin main 2>/dev/null || true
 

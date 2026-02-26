@@ -62,6 +62,7 @@ import com.nrw.app.ui.theme.Background
 import com.nrw.app.ui.theme.Green
 import com.nrw.app.ui.theme.Primary
 import com.nrw.app.ui.theme.Red
+import com.nrw.app.ui.theme.RestorationGold
 import com.nrw.app.ui.theme.StaffPickRed
 import com.nrw.app.ui.theme.TextMuted
 import com.nrw.app.ui.theme.TextPrimary
@@ -272,6 +273,22 @@ private fun MovieDetail(
                                     Text(
                                         text = "STAFF PICK",
                                         color = TextPrimary,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 10.sp,
+                                        letterSpacing = 0.5.sp
+                                    )
+                                }
+                            }
+                            if (movie.categories?.isRestoration == true) {
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(4.dp))
+                                        .background(RestorationGold)
+                                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                                ) {
+                                    Text(
+                                        text = "RESTORED",
+                                        color = Color.Black,
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 10.sp,
                                         letterSpacing = 0.5.sp

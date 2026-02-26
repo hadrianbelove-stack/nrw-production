@@ -70,6 +70,11 @@ def main():
         type=str,
         help='Comma-separated years for festival backfill (e.g., "2024,2025"). Defaults to all.'
     )
+    parser.add_argument(
+        '--reenrich-gaps',
+        action='store_true',
+        help='Re-enrich movies that have Amazon/Apple providers but no watch links'
+    )
 
     args = parser.parse_args()
     incremental = not args.full
@@ -146,9 +151,15 @@ def main():
         enriched_count = generator.enrich_newly_available_movies()
         print(f"✅ Enrichment complete: {enriched_count} movies enriched")
 
+    # Re-enrich watch link gaps if requested
+    if args.reenrich_gaps:
+        print("\n🔗 Re-enriching movies with watch link gaps...")
+        gap_count = generator.reenrich_watch_link_gaps()
+        print(f"✅ Re-enrichment complete: {gap_count} movies updated")
+
     # Generate the final display data (only for final generation phase, not intake/discovery/enrich/festival)
     festival_backfill = getattr(args, 'festival_backfill', False)
-    if not args.intake and not args.discover and not args.enrich and not festival_backfill:
+    if not args.intake and not args.discover and not args.enrich and not festival_backfill and not args.reenrich_gaps:
         print("\n🎬 Generating final display data...")
         generator.generate_display_data(incremental=incremental, force_refresh=force_refresh)
     else:

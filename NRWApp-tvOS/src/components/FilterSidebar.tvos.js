@@ -26,6 +26,7 @@ const FILTER_OPTIONS = [
   { id: 'foreign', label: 'Foreign', icon: '🌍' },
   { id: 'series', label: 'Limited Series', icon: '📺' },
   { id: 'plex', label: 'Plex', icon: '🟧' },
+  { id: 'restorations', label: 'Restorations & Reissues', icon: '🎞' },
 ];
 
 const FilterSidebar = ({

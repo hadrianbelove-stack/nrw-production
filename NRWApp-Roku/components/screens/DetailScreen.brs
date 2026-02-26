@@ -20,6 +20,8 @@ Sub Init()
 
     m.staffPickBadge = m.top.FindNode("staffPickBadge")
     m.staffPickLabel = m.top.FindNode("staffPickLabel")
+    m.restorationBadge = m.top.FindNode("restorationBadge")
+    m.restorationLabel = m.top.FindNode("restorationLabel")
 
     m.buttonsRow = m.top.FindNode("buttonsRow")
     m.trailerButton = m.top.FindNode("trailerButton")
@@ -117,8 +119,12 @@ Sub LoadMovie(index as Integer)
     end if
 
     if movie.rt_score <> invalid
-        scoreStr = Int(movie.rt_score).ToStr() + "% RT"
-        metaParts.Push(scoreStr)
+        scoreStr = movie.rt_score.ToStr()
+        scoreStr = scoreStr.Replace("%", "")
+        scoreNum = Val(scoreStr)
+        if scoreNum > 0
+            metaParts.Push(Int(scoreNum).ToStr() + "% RT")
+        end if
     end if
 
     m.metadataLabel.text = metaParts.Join(" • ")
@@ -171,6 +177,15 @@ Sub LoadMovie(index as Integer)
         m.staffPickBadge.visible = false
         m.staffPickLabel.visible = false
         m.posterBorder.color = "0x00D4AA40"  ' Teal border
+    end if
+
+    ' Restoration badge
+    if movie.categories <> invalid AND movie.categories.is_restoration = true
+        m.restorationBadge.visible = true
+        m.restorationLabel.visible = true
+    else
+        m.restorationBadge.visible = false
+        m.restorationLabel.visible = false
     end if
 
     ' Setup watch buttons

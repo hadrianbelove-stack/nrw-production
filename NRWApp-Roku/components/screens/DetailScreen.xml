@@ -75,6 +75,24 @@
           font="font:SmallBoldSystemFont"
           color="0xFFFFFFFF"
           visible="false" />
+
+        <!-- Restoration badge -->
+        <Rectangle id="restorationBadge"
+          width="600"
+          height="40"
+          translation="[3, 826]"
+          color="0xC8A951FF"
+          visible="false" />
+        <Label id="restorationLabel"
+          text="RESTORED"
+          width="600"
+          height="40"
+          translation="[3, 826]"
+          horizAlign="center"
+          vertAlign="center"
+          font="font:SmallBoldSystemFont"
+          color="0x000000FF"
+          visible="false" />
       </Group>
 
       <!-- Right: Details panel -->

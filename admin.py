@@ -4,6 +4,7 @@ Admin panel for curating movie selections.
 Simple Flask app for editing movie data and controlling visibility.
 """
 
+import load_env  # Load .env into os.environ
 from flask import Flask, render_template, request, jsonify, redirect, url_for, Response, session, send_from_directory, send_file
 import json
 import os
@@ -208,6 +209,7 @@ def apply_security_headers(response):
 DATA_FILE = 'data.json'  # Root directory - production display data
 STAFF_PICKS_FILE = 'admin/staff_picks.json'  # Staff picks (formerly featured_movies.json)
 FEATURED_FILE = STAFF_PICKS_FILE  # Backwards compatibility alias
+RESTORATIONS_FILE = 'admin/restorations.json'  # Manual restoration/reissue flags
 PENDING_CHANGES_FLAG = 'admin/.pending_changes'  # Dirty flag for unsaved changes
 
 
@@ -662,6 +664,7 @@ def index() -> str:
     """
     data = load_json(DATA_FILE, {})
     featured = load_json(FEATURED_FILE, [])
+    restorations = load_json(RESTORATIONS_FILE, [])
 
     # Handle different data shapes from data.json
     if data and isinstance(data, dict) and 'movies' in data and isinstance(data['movies'], list):
@@ -746,6 +749,7 @@ def index() -> str:
         'index.html',
         movies=processed_movies,
         featured=featured,
+        restorations=restorations,
         featured_count=featured_count,
         missing_data_count=missing_data_count,
         bootstrap_count=bootstrap_count,
@@ -829,19 +833,21 @@ def toggle_status() -> dict:
         if not isinstance(value, bool):
             return jsonify({'success': False, 'error': 'Parameter value must be boolean'})
 
-        # Status type mapping (only featured supported)
+        # Status type mapping
         STATUS_FILES = {
-            'featured': FEATURED_FILE
+            'featured': FEATURED_FILE,
+            'restoration': RESTORATIONS_FILE
         }
 
         STATUS_VERBS = {
-            'featured': ('featured', 'unfeatured')
+            'featured': ('featured', 'unfeatured'),
+            'restoration': ('marked as restoration', 'unmarked as restoration')
         }
 
         if status_type not in STATUS_FILES:
             return jsonify({
                 'success': False,
-                'error': f'Invalid status_type "{status_type}". Must be "featured"'
+                'error': f'Invalid status_type "{status_type}". Must be one of: {", ".join(STATUS_FILES.keys())}'
             })
 
         # Load appropriate file

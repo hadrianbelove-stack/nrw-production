@@ -38,6 +38,38 @@ const NRW = {
         return country;
     },
 
+    // Lightbox button helpers
+    getLbServiceClass(service) {
+        const s = service.toLowerCase();
+        if (s.includes('netflix')) return 'netflix';
+        if (s.includes('max') || s.includes('hbo')) return 'max';
+        if (s.includes('disney')) return 'disney';
+        if (s.includes('hulu')) return 'hulu';
+        if (s.includes('amazon') || s.includes('prime')) return 'prime';
+        if (s.includes('mubi')) return 'mubi';
+        if (s.includes('peacock')) return 'peacock';
+        return '';
+    },
+
+    getLbDisplayName(service) {
+        const s = service.toLowerCase();
+        if (s.includes('netflix')) return 'NETFLIX';
+        if (s.includes('disney')) return 'DISNEY+';
+        if (s.includes('max') || s.includes('hbo')) return 'MAX';
+        if (s.includes('amazon') || s.includes('prime')) return 'PRIME VIDEO';
+        if (s.includes('hulu')) return 'HULU';
+        if (s.includes('peacock')) return 'PEACOCK';
+        if (s.includes('mubi')) return 'MUBI';
+        return service.toUpperCase();
+    },
+
+    getLbPurchaseLabel(service) {
+        const s = service.toLowerCase();
+        if (s.includes('amazon') || s.includes('prime')) return 'RENT/BUY ON AMAZON';
+        if (s.includes('apple')) return 'RENT/BUY ON APPLE TV';
+        return `RENT/BUY ON ${service.toUpperCase()}`;
+    },
+
     // Lightbox state
     lightboxMovies: [],  // Movies currently in the lightbox (filtered/displayed)
     lightboxIndex: 0,    // Current index in lightbox
@@ -445,27 +477,19 @@ const NRW = {
                     buttonsHtml += renderStreamButton(streamingService, streamingLink);
                 }
 
-                // 2. Purchase Buttons (Amazon + Apple)
-                let amazonLink = null;
-                let appleLink = null;
+                // 2. Purchase Buttons (VOD: Amazon, Apple, and all other services)
+                const vodService = watchLinks.vod?.service;
+                const vodLink = watchLinks.vod?.link || watchLinks.vod?.url; // Handle url/link key inconsistency
 
-                // Check for Amazon in VOD
-                if (watchLinks.vod?.service?.toLowerCase().includes('amazon') && watchLinks.vod?.link) {
-                    amazonLink = watchLinks.vod.link;
-                }
-
-                // Check for Apple in VOD
-                if (watchLinks.vod?.service?.toLowerCase().includes('apple') && watchLinks.vod?.link) {
-                    appleLink = watchLinks.vod.link;
-                }
-
-                // Add purchase buttons directly (not in separate wrapper)
-                if (amazonLink) {
-                    buttonsHtml += `<a href="${amazonLink}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-purchase" aria-label="Rent/Buy on Amazon"><img src="logos%20and%20images/pngimg.com%20-%20amazon_PNG17.png" alt="Amazon" class="btn-logo"></a>`;
-                }
-
-                if (appleLink) {
-                    buttonsHtml += `<a href="${appleLink}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-purchase" aria-label="Rent/Buy on Apple TV"><img src="logos%20and%20images/apple%20logo.png" alt="Apple" class="btn-logo"></a>`;
+                if (vodService && vodLink) {
+                    const svc = vodService.toLowerCase();
+                    if (svc.includes('amazon') || svc.includes('prime')) {
+                        buttonsHtml += `<a href="${vodLink}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-purchase" aria-label="Rent/Buy on Amazon"><img src="logos%20and%20images/pngimg.com%20-%20amazon_PNG17.png" alt="Amazon" class="btn-logo"></a>`;
+                    } else if (svc.includes('apple')) {
+                        buttonsHtml += `<a href="${vodLink}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-purchase" aria-label="Rent/Buy on Apple TV"><img src="logos%20and%20images/apple%20logo.png" alt="Apple" class="btn-logo"></a>`;
+                    } else {
+                        buttonsHtml += `<a href="${vodLink}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-purchase" aria-label="Rent/Buy on ${vodService}">${vodService.toUpperCase()}</a>`;
+                    }
                 }
 
                 // If no valid links at all, show disabled placeholder
@@ -658,7 +682,11 @@ const NRW = {
             // Stop the video by clearing the src
             const iframe = document.getElementById('trailer-iframe');
             if (iframe) iframe.src = '';
-            document.body.style.overflow = ''; // Restore scrolling
+            // Only restore scrolling if lightbox isn't still open
+            const lightbox = document.getElementById('poster-lightbox');
+            if (!lightbox || !lightbox.classList.contains('active')) {
+                document.body.style.overflow = '';
+            }
         }
     },
 
@@ -668,8 +696,9 @@ const NRW = {
 
     // Open lightbox with a specific movie
     openLightbox(movieId) {
-        // Build list of currently displayed movies (in order)
-        this.lightboxMovies = this.filteredMovies
+        // Build list of currently displayed movies (sorted by date, matching page render order)
+        this.lightboxMovies = [...this.filteredMovies]
+            .sort((a, b) => new Date(b.digital_date) - new Date(a.digital_date))
             .slice(0, this.displayedCount)
             .filter(m => m.poster); // Only movies with posters
 
@@ -713,20 +742,24 @@ const NRW = {
 
         // Update release date
         const dateEl = document.getElementById('lightbox-date');
-        if (movie.digital_date) {
-            const [y, m, d] = movie.digital_date.split('-');
-            const dt = new Date(y, m - 1, d);
-            dateEl.textContent = dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-        } else {
-            dateEl.textContent = '';
+        if (dateEl) {
+            if (movie.digital_date) {
+                const [y, m, d] = movie.digital_date.split('-');
+                const dt = new Date(y, m - 1, d);
+                dateEl.textContent = dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            } else {
+                dateEl.textContent = '';
+            }
         }
 
         // Update Staff Pick badge
         const staffPickBadge = document.getElementById('lightbox-staff-pick');
-        if (movie.categories?.is_staff_pick) {
-            staffPickBadge.style.display = 'inline-block';
-        } else {
-            staffPickBadge.style.display = 'none';
+        if (staffPickBadge) {
+            if (movie.categories?.is_staff_pick) {
+                staffPickBadge.style.display = 'inline-block';
+            } else {
+                staffPickBadge.style.display = 'none';
+            }
         }
 
         // Build meta info (now includes studio)
@@ -742,49 +775,57 @@ const NRW = {
         // Update synopsis
         document.getElementById('lightbox-synopsis').textContent = movie.synopsis || 'Synopsis coming soon.';
 
-        // Build buttons - now includes all card-back actions
-        let buttonsHtml = '';
+        // === Watch stack (full-width, stacked, service-colored) ===
+        let watchHtml = '';
         const watchLinks = movie.watch_links || {};
         const providers = movie.providers || {};
 
         // Streaming button
-        if (watchLinks.streaming?.link) {
-            buttonsHtml += `<a href="${watchLinks.streaming.link}" target="_blank" rel="noopener noreferrer" class="lightbox-btn lightbox-btn-primary">Watch on ${watchLinks.streaming.service || 'Streaming'}</a>`;
-        } else if (providers.streaming?.length) {
-            buttonsHtml += `<span class="lightbox-btn lightbox-btn-primary" style="opacity:0.6;cursor:default">On ${providers.streaming[0]}</span>`;
+        let streamSvc = watchLinks.streaming?.service;
+        let streamLink = watchLinks.streaming?.link;
+        if (!streamSvc && providers.streaming?.length) {
+            streamSvc = providers.streaming.find(p => !p.includes('with Ads')) || providers.streaming[0];
+        }
+        if (streamSvc) {
+            const cls = this.getLbServiceClass(streamSvc);
+            const name = this.getLbDisplayName(streamSvc);
+            if (streamLink) {
+                watchHtml += `<a href="${streamLink}" target="_blank" rel="noopener noreferrer" class="watch-btn-lb stream ${cls}">${name}</a>`;
+            } else {
+                watchHtml += `<span class="watch-btn-lb stream ${cls}" style="opacity:0.6;cursor:default">${name}</span>`;
+            }
+        }
+
+        // Purchase (VOD) button
+        const vodSvc = watchLinks.vod?.service;
+        const vodLink = watchLinks.vod?.link || watchLinks.vod?.url;
+        if (vodSvc && vodLink) {
+            const label = this.getLbPurchaseLabel(vodSvc);
+            watchHtml += `<a href="${vodLink}" target="_blank" rel="noopener noreferrer" class="watch-btn-lb purchase">${label}</a>`;
         }
 
         // Plex button
         const plexInfo = this.plexLibrary[String(movie.id)];
         if (plexInfo?.web_url) {
-            buttonsHtml += `<a href="${plexInfo.web_url}" target="_blank" rel="noopener noreferrer" class="lightbox-btn lightbox-btn-secondary">Play on Plex</a>`;
+            watchHtml += `<a href="${plexInfo.web_url}" target="_blank" rel="noopener noreferrer" class="watch-btn-lb plex">PLEX</a>`;
         }
 
-        // Amazon purchase button
-        if (watchLinks.vod?.service?.toLowerCase().includes('amazon') && watchLinks.vod?.link) {
-            buttonsHtml += `<a href="${watchLinks.vod.link}" target="_blank" rel="noopener noreferrer" class="lightbox-btn lightbox-btn-secondary">Rent/Buy on Amazon</a>`;
-        }
+        let buttonsHtml = '';
+        if (watchHtml) buttonsHtml += `<div class="watch-stack">${watchHtml}</div>`;
 
-        // Apple purchase button
-        if (watchLinks.vod?.service?.toLowerCase().includes('apple') && watchLinks.vod?.link) {
-            buttonsHtml += `<a href="${watchLinks.vod.link}" target="_blank" rel="noopener noreferrer" class="lightbox-btn lightbox-btn-secondary">Rent/Buy on Apple TV</a>`;
-        }
-
-        // Trailer button
+        // === Info row (horizontal: Trailer, RT, Wiki) ===
+        let infoHtml = '';
         if (movie.links?.trailer) {
-            buttonsHtml += `<button class="lightbox-btn lightbox-btn-secondary" data-trailer="${movie.links.trailer}">Watch Trailer</button>`;
+            infoHtml += `<button class="info-btn-lb trailer" data-trailer="${movie.links.trailer}">Trailer</button>`;
         }
-
-        // Rotten Tomatoes
         if (movie.links?.rt) {
-            const rtScore = movie.rt_score ? ` (${movie.rt_score})` : '';
-            buttonsHtml += `<a href="${movie.links.rt}" target="_blank" rel="noopener noreferrer" class="lightbox-btn lightbox-btn-secondary">Rotten Tomatoes${rtScore}</a>`;
+            const score = movie.rt_score ? ` ${movie.rt_score}` : '';
+            infoHtml += `<a href="${movie.links.rt}" target="_blank" rel="noopener noreferrer" class="info-btn-lb glass">RT${score}</a>`;
         }
-
-        // Wikipedia
         if (movie.links?.wikipedia) {
-            buttonsHtml += `<a href="${movie.links.wikipedia}" target="_blank" rel="noopener noreferrer" class="lightbox-btn lightbox-btn-secondary">Wikipedia</a>`;
+            infoHtml += `<a href="${movie.links.wikipedia}" target="_blank" rel="noopener noreferrer" class="info-btn-lb glass">Wiki</a>`;
         }
+        if (infoHtml) buttonsHtml += `<div class="info-row">${infoHtml}</div>`;
 
         document.getElementById('lightbox-buttons').innerHTML = buttonsHtml;
     },
@@ -792,6 +833,10 @@ const NRW = {
     // Setup lightbox keyboard navigation
     setupLightboxKeyboardHandler() {
         document.addEventListener('keydown', (e) => {
+            // Don't handle keys if trailer modal is showing
+            const trailerModal = document.getElementById('trailer-modal');
+            if (trailerModal && trailerModal.classList.contains('active')) return;
+
             const lightbox = document.getElementById('poster-lightbox');
             if (!lightbox.classList.contains('active')) return;
 

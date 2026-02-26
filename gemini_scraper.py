@@ -8,6 +8,7 @@ movie-related content. Replaces Playwright-based scrapers for these use cases.
 Created: 2026-02-23
 """
 
+import load_env  # Load .env into os.environ
 import json
 import os
 import re
@@ -521,6 +522,78 @@ class GeminiRTFinder(GeminiFinderBase):
         pattern = r'^https?://(www\.)?rottentomatoes\.com/m/[a-zA-Z0-9_-]+'
         return bool(re.match(pattern, url))
 
+    def _validate_rt_url_matches_title(self, url: str, title: str, year: Any = None) -> bool:
+        """Validate that an RT URL slug reasonably matches the movie title.
+
+        Catches obvious Gemini hallucinations where the URL is for a completely
+        different movie (e.g., 'hachi_a_dogs_tale' for 'Muerta en Vida').
+
+        Args:
+            url: The Rotten Tomatoes URL
+            title: The expected movie title
+            year: The expected movie year (int or str)
+
+        Returns:
+            True if the URL plausibly matches the title
+        """
+        if not url or not title:
+            return False
+
+        # Extract slug from URL (e.g., "hachi_a_dogs_tale" from ".../m/hachi_a_dogs_tale")
+        slug = url.rstrip('/').split('/m/')[-1].split('?')[0]
+
+        # Year validation: if slug contains a year, it must match the requested year
+        slug_year_match = re.search(r'_(\d{4})$', slug)
+        if slug_year_match and year:
+            slug_year = int(slug_year_match.group(1))
+            requested_year = int(year)
+            if abs(slug_year - requested_year) > 1:  # Allow ±1 year for release date differences
+                logger.warning(f"RT URL year mismatch: slug has {slug_year}, "
+                               f"expected ~{requested_year} for '{title}'")
+                return False
+
+        # Strip year suffixes from slug (e.g., "movie_name_2025" → "movie_name")
+        slug_no_year = re.sub(r'_\d{4}$', '', slug)
+
+        # Normalize title: lowercase, remove articles and punctuation, split to words
+        title_normalized = title.lower()
+        title_normalized = re.sub(r'^(the|a|an)\s+', '', title_normalized)
+        title_normalized = re.sub(r'[^a-z0-9\s]', '', title_normalized)
+        title_words = set(title_normalized.split())
+
+        # Normalize slug to words
+        slug_words = set(slug_no_year.lower().replace('-', '_').split('_'))
+
+        # Remove common stop words from both
+        stop_words = {'the', 'a', 'an', 'of', 'in', 'on', 'at', 'to', 'and', 'or', 'is', 'it'}
+        title_words -= stop_words
+        slug_words -= stop_words
+
+        # Filter to significant words (>2 chars)
+        title_significant = {w for w in title_words if len(w) > 2}
+        slug_significant = {w for w in slug_words if len(w) > 2}
+
+        if not title_significant:
+            # Very short title, can't validate meaningfully
+            return True
+
+        # Check for word overlap
+        overlap = title_significant & slug_significant
+        if overlap:
+            return True
+
+        # Also check if title words appear as substrings in the slug
+        slug_flat = slug_no_year.lower().replace('_', '').replace('-', '')
+        title_flat = re.sub(r'[^a-z0-9]', '', title.lower())
+
+        # Check if the title (without spaces) appears in the slug
+        if title_flat in slug_flat or slug_flat in title_flat:
+            return True
+
+        logger.warning(f"RT URL mismatch: slug '{slug}' doesn't match title '{title}' "
+                       f"(title_words={title_significant}, slug_words={slug_significant})")
+        return False
+
     def _extract_rt_data(self, text: str) -> Optional[Dict[str, str]]:
         """Extract RT URL and score from Gemini response text."""
         if not text:
@@ -579,10 +652,13 @@ class GeminiRTFinder(GeminiFinderBase):
         if cache_key in self.cache:
             cached_data = self.cache[cache_key]
             # Handle both old format (just url/score) and new format (with metadata)
-            if isinstance(cached_data, dict) and cached_data.get('url'):
+            if isinstance(cached_data, dict) and cached_data.get('url') and cached_data.get('score'):
                 self.stats['cache_hits'] += 1
                 logger.debug(f"RT cache hit for {title} ({year})")
                 return {'url': cached_data.get('url'), 'score': cached_data.get('score')}
+            # If URL exists but no score, fall through to re-query Gemini
+            if isinstance(cached_data, dict) and cached_data.get('url') and not cached_data.get('score'):
+                logger.debug(f"RT cache partial hit for {title} ({year}): URL exists but no score, re-querying")
 
         # Initialize Gemini if needed
         if not self._init_gemini():
@@ -600,11 +676,12 @@ class GeminiRTFinder(GeminiFinderBase):
         prompt = f"""Find the Rotten Tomatoes page and Tomatometer critic score for the movie {movie_context}.
 
 Requirements:
+- The movie MUST be from {year}. Do not return a different movie with a similar title from a different year.
 - Return the RT URL in format: https://www.rottentomatoes.com/m/movie_name
 - Return the Tomatometer critic score as a percentage
 - Format your response as: URL: [url] SCORE: [XX]%
-- If no RT page exists, respond with exactly: NO_RT_PAGE
-- If you cannot find it, respond with exactly: NOT_FOUND
+- If no RT page exists for this specific movie, respond with exactly: NO_RT_PAGE
+- If you are not confident you found the exact right movie, respond with exactly: NOT_FOUND
 
 Response:"""
 
@@ -645,6 +722,13 @@ Response:"""
             data = self._extract_rt_data(result_text)
 
             if data and self._validate_rt_url(data.get('url', '')):
+                # Validate that the URL actually matches the requested movie
+                if not self._validate_rt_url_matches_title(data['url'], title, year=year):
+                    logger.warning(f"RT URL rejected (wrong movie): {data['url']} for '{title}' ({year})")
+                    self.stats['invalid_responses'] += 1
+                    self.stats['gemini_failures'] += 1
+                    return None
+
                 logger.info(f"Found RT for {title} ({year}): {data['url']} ({data.get('score', 'N/A')})")
                 self.cache[cache_key] = {
                     'url': data['url'],
@@ -711,6 +795,147 @@ class HybridRTFinder:
         """Expose cache for compatibility with generator.py."""
         return self.gemini_finder.cache
 
+    def _validate_with_playwright(self, gemini_result: Dict, title: str, year: int) -> Optional[Dict[str, str]]:
+        """Visit a Gemini-returned RT URL with Playwright to verify it's the right movie.
+
+        Navigates to the RT page, extracts the actual movie title, and compares
+        it against the expected title. Also extracts the real score from the page.
+
+        Args:
+            gemini_result: Dict with 'url' and 'score' from Gemini
+            title: The movie title we searched for
+            year: The movie release year
+
+        Returns:
+            Validated dict with 'url' and 'score', or None if wrong movie
+        """
+        url = gemini_result.get('url')
+        if not url:
+            return None
+
+        playwright = self._get_playwright_scraper()
+        if not playwright:
+            logger.info("Playwright not available for validation, trusting Gemini result")
+            return gemini_result
+
+        try:
+            # Initialize browser if needed
+            playwright._init_browser()
+            playwright._enforce_rate_limit()
+
+            logger.info(f"Playwright validating Gemini URL: {url}")
+            playwright.page.goto(url, wait_until='domcontentloaded')
+            time.sleep(2)
+
+            # Extract page title — RT format: "Movie Name (Year) | Rotten Tomatoes"
+            page_title = playwright.page.title() or ""
+
+            # Check for 404 / not found
+            if 'page not found' in page_title.lower() or '404' in page_title:
+                logger.warning(f"RT page not found: {url}")
+                return None
+
+            # Extract movie title from page title
+            movie_part = page_title.split('|')[0].strip() if '|' in page_title else page_title.strip()
+            page_movie_title = re.sub(r'\s*\(\d{4}\)\s*$', '', movie_part).strip()
+
+            # Compare titles
+            if not self._page_title_matches(page_movie_title, title):
+                logger.warning(
+                    f"Playwright validation FAILED: page shows '{page_movie_title}', "
+                    f"expected '{title}'"
+                )
+                return None
+
+            # Title matched — extract actual score from the loaded page
+            actual_score = self._extract_score_from_loaded_page(playwright)
+
+            logger.info(f"Playwright validated: '{page_movie_title}' matches '{title}', score={actual_score}")
+
+            return {
+                'url': url,
+                'score': actual_score or gemini_result.get('score')
+            }
+
+        except Exception as e:
+            logger.warning(f"Playwright validation error for {url}: {e}")
+            # On error, trust Gemini result rather than rejecting good data
+            return gemini_result
+
+    def _page_title_matches(self, page_title: str, expected_title: str) -> bool:
+        """Check if an RT page title matches the expected movie title.
+
+        Uses word overlap comparison, similar to URL slug validation.
+        """
+        if not page_title or not expected_title:
+            return False
+
+        def normalize(s):
+            s = s.lower()
+            s = re.sub(r'^(the|a|an)\s+', '', s)
+            s = re.sub(r'[^a-z0-9\s]', '', s)
+            words = set(s.split())
+            words -= {'the', 'a', 'an', 'of', 'in', 'on', 'at', 'to', 'and', 'or', 'is', 'it'}
+            return {w for w in words if len(w) > 2}
+
+        page_words = normalize(page_title)
+        expected_words = normalize(expected_title)
+
+        if not expected_words:
+            return True
+
+        overlap = page_words & expected_words
+        # Need at least one significant word overlap
+        if overlap:
+            return True
+
+        # Also check substring match for single-word or transliterated titles
+        page_flat = re.sub(r'[^a-z0-9]', '', page_title.lower())
+        expected_flat = re.sub(r'[^a-z0-9]', '', expected_title.lower())
+        if page_flat in expected_flat or expected_flat in page_flat:
+            return True
+
+        return False
+
+    def _extract_score_from_loaded_page(self, playwright_scraper) -> Optional[str]:
+        """Extract RT critic score from an already-loaded Playwright page."""
+        page = playwright_scraper.page
+
+        score_selectors = [
+            '[data-testid="critic-score"] .percentage',
+            '[data-testid="critics-score"] .percentage',
+            '.scoreboard__critic .percentage',
+            '.mop-ratings-wrap__percentage',
+            '.meter-value',
+            '.critic-score .percentage',
+            '[class*="percentage"]',
+        ]
+
+        for selector in score_selectors:
+            try:
+                elements = page.query_selector_all(selector)
+                for element in elements:
+                    text = (element.text_content() or "").strip()
+                    score_match = re.search(r'(\d+)%?', text)
+                    if score_match:
+                        return f"{score_match.group(1)}%"
+            except Exception:
+                continue
+
+        # Try extracting from page text as fallback
+        try:
+            body = page.query_selector('body')
+            if body:
+                page_text = body.text_content() or ""
+                for pattern in [r'(\d+)%\s*(?:Critics|Critic)', r'Tomatometer.*?(\d+)%']:
+                    match = re.search(pattern, page_text, re.IGNORECASE)
+                    if match:
+                        return f"{match.group(1)}%"
+        except Exception:
+            pass
+
+        return None
+
     def find_rt_score(
         self,
         title: str,
@@ -719,7 +944,13 @@ class HybridRTFinder:
         use_fallback: bool = True
     ) -> Optional[Dict[str, str]]:
         """
-        Find RT score using Gemini, with optional Playwright fallback.
+        Find RT score using Gemini, validated by Playwright, with Playwright fallback.
+
+        Flow:
+        1. Gemini finds URL + score
+        2. Playwright visits the URL to verify it's the right movie
+        3. If validation passes, return result (with Playwright's score if available)
+        4. If validation fails or Gemini fails, fall back to Playwright search
 
         Args:
             title: Movie title
@@ -731,23 +962,45 @@ class HybridRTFinder:
             Dict with 'url' and 'score', or None
         """
         self.stats['total_requests'] += 1
+        cache_key = f"{title}_{year}"
 
         # Try Gemini first
         result = self.gemini_finder.find_rt_score(title, year, director)
 
         if result is not None:
-            self.stats['gemini_resolved'] += 1
-            return result
+            # Check if already Playwright-validated (cached validation)
+            cached = self.gemini_finder.cache.get(cache_key, {})
+            if isinstance(cached, dict) and cached.get('_playwright_validated'):
+                self.stats['gemini_resolved'] += 1
+                return result
+
+            # Validate with Playwright
+            validated = self._validate_with_playwright(result, title, year)
+            if validated:
+                # Mark as validated in cache
+                if cache_key in self.gemini_finder.cache:
+                    self.gemini_finder.cache[cache_key]['_playwright_validated'] = True
+                    # Update score if Playwright found one
+                    if validated.get('score'):
+                        self.gemini_finder.cache[cache_key]['score'] = validated['score']
+                    self.gemini_finder._save_cache()
+                self.stats['gemini_resolved'] += 1
+                return validated
+            else:
+                # Validation failed — clear bad entry from cache
+                logger.warning(f"Clearing bad Gemini cache entry for '{title}' ({year})")
+                if cache_key in self.gemini_finder.cache:
+                    del self.gemini_finder.cache[cache_key]
+                    self.gemini_finder._save_cache()
+                # Fall through to Playwright fallback
 
         # Check if this was a cache hit that returned None (no RT page exists)
-        cache_key = f"{title}_{year}"
         if cache_key in self.gemini_finder.cache:
             cached = self.gemini_finder.cache[cache_key]
             if isinstance(cached, dict) and cached.get('url') is None:
-                # Cached as None = confirmed no RT page
                 return None
 
-        # Gemini failed - try Playwright fallback if enabled
+        # Gemini failed or was rejected — try Playwright fallback if enabled
         if use_fallback:
             self.stats['fallback_attempts'] += 1
             logger.info(f"Falling back to Playwright RT for {title} ({year})")
@@ -766,9 +1019,9 @@ class HybridRTFinder:
         return None
 
     # Compatibility methods to match RTScraperPlaywright interface
-    def scrape_rt_score(self, title: str, year: int) -> Optional[Dict[str, str]]:
+    def scrape_rt_score(self, title: str, year: int, director: str = None) -> Optional[Dict[str, str]]:
         """Compatibility wrapper matching RTScraperPlaywright interface."""
-        return self.find_rt_score(title, year)
+        return self.find_rt_score(title, year, director=director)
 
     def get_stats(self) -> Dict[str, Any]:
         """Return combined statistics with compatibility aliases for generator.py."""
