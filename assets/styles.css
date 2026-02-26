@@ -447,6 +447,8 @@ header h1 {
 .badge-mubi { background: #000; color: white; }
 .badge-shudder { background: #8B0000; color: white; }
 .badge-criterion { background: #000; color: white; }
+.badge-tubi { background: #FA382F; color: white; }
+.badge-plex { background: #E5A00D; color: black; }
 .badge-other { background: #444; color: white; }
 
 /* Restoration/reissue badge on poster (top-left, opposite streaming badge) */
@@ -1123,6 +1125,7 @@ header h1 {
 .watch-btn-lb.shudder { background: #8B0000; color: #fff; }
 .watch-btn-lb.criterion { background: #000; color: #fff; border: 1px solid #444; }
 .watch-btn-lb.purchase { background: #ff9500; color: #000; }
+.watch-btn-lb.tubi { background: #FA382F; color: #fff; }
 .watch-btn-lb.plex { background: #E5A00D; color: #000; }
 
 /* Info row: horizontal, equal-width */

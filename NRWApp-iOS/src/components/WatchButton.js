@@ -60,6 +60,16 @@ const SERVICE_CONFIG = {
     color: '#000000',
     textColor: '#ffffff',
   },
+  tubi: {
+    name: 'Tubi',
+    color: '#FA382F',
+    textColor: '#ffffff',
+  },
+  plex: {
+    name: 'Plex',
+    color: '#E5A00D',
+    textColor: '#000000',
+  },
   fandango: {
     name: 'Fandango',
     color: '#ff6600',

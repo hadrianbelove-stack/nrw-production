@@ -26,6 +26,7 @@ import com.nrw.app.ui.theme.NetflixRed
 import com.nrw.app.ui.theme.ParamountBlue
 import com.nrw.app.ui.theme.PeacockBlue
 import com.nrw.app.ui.theme.PlexYellow
+import com.nrw.app.ui.theme.TubiOrangeRed
 import com.nrw.app.ui.theme.Primary
 import com.nrw.app.ui.theme.TextPrimary
 import com.nrw.app.ui.theme.TrailerRed
@@ -184,6 +185,7 @@ private fun getSimplifiedLabel(service: String): String {
         "disney_plus" -> "Disney+"
         "peacock" -> "Peacock"
         "paramount_plus" -> "Paramount+"
+        "tubi" -> "Tubi"
         else -> service.replaceFirstChar { it.uppercase() }
     }
 }
@@ -202,6 +204,7 @@ private fun getServiceColor(service: String): Color {
         "disney_plus" -> DisneyBlue
         "peacock" -> PeacockBlue
         "paramount_plus" -> ParamountBlue
+        "tubi" -> TubiOrangeRed
         else -> BackgroundSecondary
     }
 }

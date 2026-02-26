@@ -71,6 +71,7 @@ Function GetServiceColors() as Object
         peacock: "0x000000FF"
         paramount_plus: "0x0064FFFF"
         apple_tv: "0xAAAAAAFF"
+        tubi: "0xFA382FFF"
         plex: "0xE5A00DFF"
         youtube: "0xFF0000FF"
         vudu: "0x3399FFFF"

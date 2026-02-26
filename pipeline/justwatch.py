@@ -36,9 +36,16 @@ class JustWatchClient:
 
     # Service priority for selecting best option per category
     STREAMING_PRIORITY = [
+        # Tier 1: Major paid subscriptions
         'Netflix', 'Amazon Prime Video', 'Disney Plus', 'HBO Max', 'Max',
-        'Hulu', 'Apple TV Plus', 'Paramount Plus', 'Peacock', 'MUBI',
-        'Criterion Channel', 'Shudder', 'AMC Plus'
+        'Hulu', 'Apple TV Plus', 'Paramount Plus', 'Peacock',
+        # Tier 2: Free ad-supported services
+        'Tubi', 'Tubi TV', 'Pluto TV', 'Plex', 'The Roku Channel',
+        'Crackle', 'Vudu Free',
+        # Tier 3: Library-based free services
+        'Kanopy', 'Hoopla',
+        # Tier 4: Niche paid subscriptions
+        'MUBI', 'Criterion Channel', 'Shudder', 'AMC Plus'
     ]
 
     VOD_PRIORITY = [
@@ -206,7 +213,8 @@ class JustWatchClient:
         self,
         title: str,
         year: Optional[int] = None,
-        affiliate_tag: Optional[str] = None
+        affiliate_tag: Optional[str] = None,
+        excluded_services: Optional[List[str]] = None
     ) -> Dict[str, Any]:
         """
         Get watch links in canonical NRW schema.
@@ -215,6 +223,7 @@ class JustWatchClient:
             title: Movie title
             year: Release year
             affiliate_tag: Optional Amazon affiliate tag to append
+            excluded_services: Optional list of service names to exclude (e.g. ['Philo', 'fuboTV'])
 
         Returns:
             Dict with 'streaming' and 'vod' categories:
@@ -234,6 +243,9 @@ class JustWatchClient:
             self.logger.debug(f"No offers for '{title}'")
             return {}
 
+        # Build lowercase exclusion set for fast matching
+        excluded_lower = [s.lower() for s in (excluded_services or [])]
+
         result = {}
 
         # Group offers by monetization type
@@ -248,6 +260,11 @@ class JustWatchClient:
             price = offer.get('retailPrice')
 
             if not url or not service:
+                continue
+
+            # Skip excluded services (e.g. Philo, fuboTV)
+            if any(excluded in service.lower() for excluded in excluded_lower):
+                self.logger.debug(f"Skipping excluded service '{service}' for '{title}'")
                 continue
 
             # Skip YouTube search results (not real links)

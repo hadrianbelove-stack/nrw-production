@@ -77,7 +77,9 @@ private val StreamingColors = mapOf(
     "apple_tv" to Color(0xFF000000),
     "mubi" to Color(0xFFDA2128),
     "shudder" to Color(0xFF8B0000),  // Synced with CSS
-    "criterion" to Color(0xFF000000)
+    "criterion" to Color(0xFF000000),
+    "tubi" to Color(0xFFFA382F),
+    "plex" to Color(0xFFE5A00D)
 )
 
 /**
@@ -263,6 +265,8 @@ private fun StreamingBadge(
         "mubi" -> "MUBI"
         "shudder" -> "SHUDDER"
         "criterion" -> "CRITERION"
+        "tubi" -> "TUBI"
+        "plex" -> "PLEX"
         else -> serviceName.uppercase().take(6)
     }
 

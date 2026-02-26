@@ -261,6 +261,11 @@ class RTScraperPlaywright(PlaywrightScraperBase):
     def _extract_score_from_rt_page(self, rt_url):
         """Navigate to RT page and extract the actual score.
 
+        Extraction waterfall:
+        1. JSON-LD structured data (most reliable — deterministic)
+        2. CSS selectors (deterministic)
+        3. Text regex patterns (deterministic fallback)
+
         Args:
             rt_url: The Rotten Tomatoes URL to scrape
 
@@ -272,20 +277,32 @@ class RTScraperPlaywright(PlaywrightScraperBase):
             self.page.goto(rt_url, wait_until='domcontentloaded')
             time.sleep(2)  # Wait for dynamic content to load
 
-            # RT score selectors (Rotten Tomatoes uses various formats)
+            # 1. JSON-LD structured data (most reliable)
+            try:
+                json_ld_scripts = self.page.query_selector_all('script[type="application/ld+json"]')
+                for script in json_ld_scripts:
+                    try:
+                        data = json.loads(script.text_content() or '{}')
+                        if 'aggregateRating' in data:
+                            rating = data['aggregateRating'].get('ratingValue')
+                            if rating:
+                                score = str(int(float(rating)))
+                                self._log(f"Found score via JSON-LD: {score}% on {rt_url}", level='debug')
+                                return f"{score}%"
+                    except (json.JSONDecodeError, ValueError):
+                        continue
+            except Exception as e:
+                self._log(f"JSON-LD extraction error: {e}", level='debug')
+
+            # 2. CSS selectors
             score_selectors = [
-                # Modern RT pages - critic score
                 '[data-testid="critic-score"] .percentage',
                 '[data-testid="critics-score"] .percentage',
-                # Alternative modern selectors
+                '[class*="criticsScore"]',
                 '.scoreboard__critic .percentage',
-                '.scoreboard__critic score-icon-critic-fresh .percentage',
-                '.scoreboard__critic score-icon-critic-rotten .percentage',
-                # Legacy selectors
                 '.mop-ratings-wrap__percentage',
                 '.meter-value',
                 '.critic-score .percentage',
-                # General percentage patterns
                 '[class*="percentage"]',
                 '[class*="score"] [class*="percentage"]'
             ]
@@ -297,7 +314,6 @@ class RTScraperPlaywright(PlaywrightScraperBase):
                         text = element.text_content() or ""
                         text = text.strip()
 
-                        # Look for percentage pattern
                         score_match = re.search(r'(\d+)%?', text)
                         if score_match:
                             score = score_match.group(1)
@@ -308,7 +324,7 @@ class RTScraperPlaywright(PlaywrightScraperBase):
                     self._log(f"Error with selector {selector}: {e}", level='debug')
                     continue
 
-            # If no score found with selectors, try extracting from page text
+            # 3. Text regex patterns (fallback)
             try:
                 body_element = self.page.query_selector('body')
                 if body_element:

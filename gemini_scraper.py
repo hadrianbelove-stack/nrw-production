@@ -751,6 +751,59 @@ Response:"""
             return None
 
 
+    def find_score_for_url(self, url: str, title: str = None, year: int = None) -> Optional[str]:
+        """Ask Gemini for the score on a SPECIFIC RT URL (no searching).
+
+        This is fundamentally safer than find_rt_score() because Gemini reads
+        a known page rather than searching for a movie (where hallucinations happen).
+
+        Args:
+            url: The known-correct Rotten Tomatoes URL
+            title: Movie title (for logging only)
+            year: Movie year (for logging only)
+
+        Returns:
+            Score string (e.g., "85%") or None
+        """
+        if not self._init_gemini():
+            return None
+
+        label = f"{title} ({year})" if title else url
+
+        prompt = (
+            f"What is the Tomatometer critic score percentage shown on this exact "
+            f"Rotten Tomatoes page: {url}\n\n"
+            f"Return ONLY the percentage number (e.g., 85%) or NO_SCORE if no "
+            f"Tomatometer score is displayed on the page."
+        )
+
+        try:
+            result = self._call_gemini_with_retry(prompt)
+            if not result:
+                return None
+
+            result_text = result.text.strip() if result.text else ""
+
+            if 'NO_SCORE' in result_text.upper():
+                logger.info(f"No score on RT page for {label}: {url}")
+                return None
+
+            # Extract percentage
+            score_match = re.search(r'(\d{1,3})%', result_text)
+            if score_match:
+                score = int(score_match.group(1))
+                if 0 <= score <= 100:
+                    logger.info(f"Gemini URL-specific score for {label}: {score}%")
+                    return f"{score}%"
+
+            logger.warning(f"Could not parse Gemini URL-specific response for {label}: {result_text}")
+            return None
+
+        except Exception as e:
+            logger.error(f"Gemini URL-specific query error for {label}: {e}")
+            return None
+
+
 class HybridRTFinder:
     """
     Hybrid RT finder that tries Gemini first, falls back to Playwright.
@@ -850,6 +903,11 @@ class HybridRTFinder:
             # Title matched — extract actual score from the loaded page
             actual_score = self._extract_score_from_loaded_page(playwright)
 
+            # If Playwright couldn't extract score, try Gemini URL-specific query
+            if not actual_score:
+                logger.info(f"Playwright couldn't extract score, trying Gemini URL-specific for {url}")
+                actual_score = self.gemini_finder.find_score_for_url(url, title, year)
+
             logger.info(f"Playwright validated: '{page_movie_title}' matches '{title}', score={actual_score}")
 
             return {
@@ -898,12 +956,34 @@ class HybridRTFinder:
         return False
 
     def _extract_score_from_loaded_page(self, playwright_scraper) -> Optional[str]:
-        """Extract RT critic score from an already-loaded Playwright page."""
+        """Extract RT critic score from an already-loaded Playwright page.
+
+        Waterfall: JSON-LD → CSS selectors → text regex.
+        """
         page = playwright_scraper.page
 
+        # 1. JSON-LD structured data (most reliable)
+        try:
+            json_ld_scripts = page.query_selector_all('script[type="application/ld+json"]')
+            for script in json_ld_scripts:
+                try:
+                    data = json.loads(script.text_content() or '{}')
+                    if 'aggregateRating' in data:
+                        rating = data['aggregateRating'].get('ratingValue')
+                        if rating:
+                            score = str(int(float(rating)))
+                            logger.debug(f"Found score via JSON-LD: {score}%")
+                            return f"{score}%"
+                except (json.JSONDecodeError, ValueError):
+                    continue
+        except Exception:
+            pass
+
+        # 2. CSS selectors
         score_selectors = [
             '[data-testid="critic-score"] .percentage',
             '[data-testid="critics-score"] .percentage',
+            '[class*="criticsScore"]',
             '.scoreboard__critic .percentage',
             '.mop-ratings-wrap__percentage',
             '.meter-value',
@@ -922,7 +1002,7 @@ class HybridRTFinder:
             except Exception:
                 continue
 
-        # Try extracting from page text as fallback
+        # 3. Text regex patterns (fallback)
         try:
             body = page.query_selector('body')
             if body:

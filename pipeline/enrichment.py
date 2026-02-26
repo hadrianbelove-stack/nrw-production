@@ -348,11 +348,16 @@ class EnrichmentService:
             # Get affiliate tag from config
             amazon_tag = self._get_amazon_affiliate_tag()
 
+            # Get excluded services from config (e.g. Philo, fuboTV)
+            excluded_services = self.config.get('tracking', {}).get('excluded_services', ['fuboTV', 'Philo'])
+
             # Initialize JustWatch client (lazy)
             if not hasattr(self, '_justwatch_client'):
                 self._justwatch_client = JustWatchClient(logger=self.logger)
 
-            justwatch_links = self._justwatch_client.get_watch_links(title, year, affiliate_tag=amazon_tag)
+            justwatch_links = self._justwatch_client.get_watch_links(
+                title, year, affiliate_tag=amazon_tag, excluded_services=excluded_services
+            )
 
             if justwatch_links:
                 self.logger.info(f"JustWatch found links for {title}: {list(justwatch_links.keys())}")

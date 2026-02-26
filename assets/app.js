@@ -48,6 +48,8 @@ const NRW = {
         if (s.includes('amazon') || s.includes('prime')) return 'prime';
         if (s.includes('mubi')) return 'mubi';
         if (s.includes('peacock')) return 'peacock';
+        if (s.includes('tubi')) return 'tubi';
+        if (s.includes('plex')) return 'plex';
         if (s.includes('shudder')) return 'shudder';
         if (s.includes('criterion')) return 'criterion';
         return '';
@@ -61,6 +63,8 @@ const NRW = {
         if (s.includes('amazon') || s.includes('prime')) return 'PRIME VIDEO';
         if (s.includes('hulu')) return 'HULU';
         if (s.includes('peacock')) return 'PEACOCK';
+        if (s.includes('tubi')) return 'TUBI';
+        if (s.includes('plex')) return 'PLEX';
         if (s.includes('mubi')) return 'MUBI';
         if (s.includes('shudder')) return 'SHUDDER';
         if (s.includes('criterion')) return 'CRITERION';
@@ -557,6 +561,10 @@ const NRW = {
                     displayName = 'HULU'; badgeClass = 'badge-hulu';
                 } else if (s.includes('peacock')) {
                     displayName = 'PEACOCK'; badgeClass = 'badge-peacock';
+                } else if (s.includes('tubi')) {
+                    displayName = 'TUBI'; badgeClass = 'badge-tubi';
+                } else if (s.includes('plex')) {
+                    displayName = 'PLEX'; badgeClass = 'badge-plex';
                 } else if (s.includes('mubi')) {
                     displayName = 'MUBI'; badgeClass = 'badge-mubi';
                 } else if (s.includes('shudder')) {

@@ -322,6 +322,10 @@ const NRWMobile = {
             displayName = 'HULU'; badgeClass = 'badge-hulu';
         } else if (s.includes('peacock')) {
             displayName = 'PEACOCK'; badgeClass = 'badge-peacock';
+        } else if (s.includes('tubi')) {
+            displayName = 'TUBI'; badgeClass = 'badge-tubi';
+        } else if (s.includes('plex')) {
+            displayName = 'PLEX'; badgeClass = 'badge-plex';
         } else {
             displayName = service.toUpperCase().substring(0, 10);
             badgeClass = 'badge-vod';
@@ -357,6 +361,10 @@ const NRWMobile = {
                 displayName = 'Prime'; style = 'background:#00A8E1;color:#fff';
             } else if (s.includes('hulu')) {
                 displayName = 'Hulu'; style = 'background:#1CE783;color:#000';
+            } else if (s.includes('tubi')) {
+                displayName = 'Tubi'; style = 'background:#FA382F;color:#fff';
+            } else if (s.includes('plex')) {
+                displayName = 'Plex'; style = 'background:#E5A00D;color:#000';
             }
 
             return `<a href="${link}" target="_blank" rel="noopener" class="btn-equal btn-watch" style="${style}">${displayName}</a>`;

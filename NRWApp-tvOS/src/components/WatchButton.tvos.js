@@ -53,6 +53,7 @@ const SERVICE_COLORS = {
   shudder: '#c91e1e',
   fandango: '#ff7300',
   strand_releasing: '#8b0000',
+  tubi: '#FA382F',
   plex: '#E5A00D',
 };
 
@@ -236,6 +237,7 @@ function getServiceInitial(service) {
     shudder: 'S',
     fandango: 'F',
     strand_releasing: 'SR',
+    tubi: 'T',
     plex: '▶',
   };
   return initials[service] || service?.charAt(0)?.toUpperCase() || '?';
@@ -259,6 +261,7 @@ function getDefaultLabel(service, type) {
     shudder: 'Shudder',
     fandango: 'Fandango',
     strand_releasing: 'Strand Releasing',
+    tubi: 'Tubi',
     plex: 'Plex',
   };
 
