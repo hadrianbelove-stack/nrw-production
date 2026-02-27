@@ -32,7 +32,7 @@ const SERVICE_CONFIG = {
   },
   max: {
     name: 'Max',
-    color: '#002be7',
+    color: '#B537F2',
     textColor: '#ffffff',
   },
   disney_plus: {
@@ -44,6 +44,7 @@ const SERVICE_CONFIG = {
     name: 'Peacock',
     color: '#000000',
     textColor: '#ffffff',
+    borderColor: '#444444',
   },
   paramount_plus: {
     name: 'Paramount+',
@@ -52,13 +53,14 @@ const SERVICE_CONFIG = {
   },
   mubi: {
     name: 'MUBI',
-    color: '#000000',
+    color: '#DA2128',
     textColor: '#ffffff',
   },
   criterion: {
     name: 'Criterion',
     color: '#000000',
     textColor: '#ffffff',
+    borderColor: '#444444',
   },
   tubi: {
     name: 'Tubi',

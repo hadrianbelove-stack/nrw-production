@@ -12,6 +12,31 @@ const NRWMobile = {
     loadIncrement: 15,
     isLoading: false,
 
+    // Service config — single source of truth for mobile web
+    // Sync with: assets/service-colors.json, mobile/mobile.css
+    SERVICE_MAP: {
+        netflix:   { class: 'netflix',   name: 'NETFLIX',   btnName: 'Netflix',   bg: '#E50914', text: '#fff',  matches: ['netflix'] },
+        max:       { class: 'max',       name: 'MAX',       btnName: 'Max',       bg: '#B537F2', text: '#fff',  matches: ['max', 'hbo'] },
+        disney:    { class: 'disney',    name: 'DISNEY+',   btnName: 'Disney+',   bg: '#113CCF', text: '#fff',  matches: ['disney'] },
+        prime:     { class: 'prime',     name: 'PRIME',     btnName: 'Prime',     bg: '#00A8E1', text: '#fff',  matches: ['amazon', 'prime'] },
+        hulu:      { class: 'hulu',      name: 'HULU',      btnName: 'Hulu',      bg: '#1CE783', text: '#000',  matches: ['hulu'] },
+        peacock:   { class: 'peacock',   name: 'PEACOCK',   btnName: 'Peacock',   bg: '#000',    text: '#fff',  matches: ['peacock'] },
+        mubi:      { class: 'mubi',      name: 'MUBI',      btnName: 'MUBI',      bg: '#DA2128', text: '#fff',  matches: ['mubi'] },
+        shudder:   { class: 'shudder',   name: 'SHUDDER',   btnName: 'Shudder',   bg: '#8B0000', text: '#fff',  matches: ['shudder'] },
+        criterion: { class: 'criterion', name: 'CRITERION', btnName: 'Criterion', bg: '#000',    text: '#fff',  matches: ['criterion'] },
+        tubi:      { class: 'tubi',      name: 'TUBI',      btnName: 'Tubi',      bg: '#FA382F', text: '#fff',  matches: ['tubi'] },
+        plex:      { class: 'plex',      name: 'PLEX',      btnName: 'Plex',      bg: '#E5A00D', text: '#000',  matches: ['plex'] },
+    },
+
+    resolveService(rawName) {
+        if (!rawName) return null;
+        const s = rawName.toLowerCase();
+        for (const entry of Object.values(this.SERVICE_MAP)) {
+            if (entry.matches.some(m => s.includes(m))) return entry;
+        }
+        return null;
+    },
+
     // Country display names per STYLE_GUIDE.md
     // Only shorten long/formal names; keep short names as-is
     countryAbbrev: {
@@ -307,25 +332,11 @@ const NRWMobile = {
         }
 
         // Map service to badge class
-        const s = service.toLowerCase();
+        const resolved = this.resolveService(service);
         let displayName, badgeClass;
-
-        if (s.includes('netflix')) {
-            displayName = 'NETFLIX'; badgeClass = 'badge-netflix';
-        } else if (s.includes('disney')) {
-            displayName = 'DISNEY+'; badgeClass = 'badge-disney';
-        } else if (s.includes('hbo') || s.includes('max')) {
-            displayName = 'MAX'; badgeClass = 'badge-max';
-        } else if (s.includes('amazon') || s.includes('prime')) {
-            displayName = 'PRIME'; badgeClass = 'badge-prime';
-        } else if (s.includes('hulu')) {
-            displayName = 'HULU'; badgeClass = 'badge-hulu';
-        } else if (s.includes('peacock')) {
-            displayName = 'PEACOCK'; badgeClass = 'badge-peacock';
-        } else if (s.includes('tubi')) {
-            displayName = 'TUBI'; badgeClass = 'badge-tubi';
-        } else if (s.includes('plex')) {
-            displayName = 'PLEX'; badgeClass = 'badge-plex';
+        if (resolved) {
+            displayName = resolved.name;
+            badgeClass = 'badge-' + resolved.class;
         } else {
             displayName = service.toUpperCase().substring(0, 10);
             badgeClass = 'badge-vod';
@@ -347,25 +358,9 @@ const NRWMobile = {
         }
 
         if (service && link) {
-            const s = service.toLowerCase();
-            let displayName = service.toUpperCase();
-            let style = 'background:#00d4aa;color:#000';
-
-            if (s.includes('netflix')) {
-                displayName = 'Netflix'; style = 'background:#E50914;color:#fff';
-            } else if (s.includes('disney')) {
-                displayName = 'Disney+'; style = 'background:#113CCF;color:#fff';
-            } else if (s.includes('hbo') || s.includes('max')) {
-                displayName = 'Max'; style = 'background:#B537F2;color:#fff';
-            } else if (s.includes('amazon') || s.includes('prime')) {
-                displayName = 'Prime'; style = 'background:#00A8E1;color:#fff';
-            } else if (s.includes('hulu')) {
-                displayName = 'Hulu'; style = 'background:#1CE783;color:#000';
-            } else if (s.includes('tubi')) {
-                displayName = 'Tubi'; style = 'background:#FA382F;color:#fff';
-            } else if (s.includes('plex')) {
-                displayName = 'Plex'; style = 'background:#E5A00D;color:#000';
-            }
+            const resolved = this.resolveService(service);
+            const displayName = resolved?.btnName || service;
+            const style = resolved ? `background:${resolved.bg};color:${resolved.text}` : 'background:#00d4aa;color:#000';
 
             return `<a href="${link}" target="_blank" rel="noopener" class="btn-equal btn-watch" style="${style}">${displayName}</a>`;
         }

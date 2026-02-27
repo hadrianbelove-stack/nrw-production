@@ -444,9 +444,9 @@ header h1 {
 .badge-prime { background: #00A8E1; color: white; }
 .badge-hulu { background: #1CE783; color: black; }
 .badge-peacock { background: #000; color: white; }
-.badge-mubi { background: #000; color: white; }
+.badge-mubi { background: #DA2128; color: white; }
 .badge-shudder { background: #8B0000; color: white; }
-.badge-criterion { background: #000; color: white; }
+.badge-criterion { background: #000; color: white; border: 1px solid #444; }
 .badge-tubi { background: #FA382F; color: white; }
 .badge-plex { background: #E5A00D; color: black; }
 .badge-other { background: #444; color: white; }
@@ -1120,8 +1120,8 @@ header h1 {
 .watch-btn-lb.disney { background: #113CCF; color: #fff; }
 .watch-btn-lb.hulu { background: #1CE783; color: #000; }
 .watch-btn-lb.prime { background: #00A8E1; color: #fff; }
-.watch-btn-lb.mubi { background: #000; color: #fff; border: 1px solid #444; }
-.watch-btn-lb.peacock { background: #000; color: #fff; }
+.watch-btn-lb.mubi { background: #DA2128; color: #fff; }
+.watch-btn-lb.peacock { background: #000; color: #fff; border: 1px solid #444; }
 .watch-btn-lb.shudder { background: #8B0000; color: #fff; }
 .watch-btn-lb.criterion { background: #000; color: #fff; border: 1px solid #444; }
 .watch-btn-lb.purchase { background: #ff9500; color: #000; }

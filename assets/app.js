@@ -38,37 +38,30 @@ const NRW = {
         return country;
     },
 
-    // Lightbox button helpers
-    getLbServiceClass(service) {
-        const s = service.toLowerCase();
-        if (s.includes('netflix')) return 'netflix';
-        if (s.includes('max') || s.includes('hbo')) return 'max';
-        if (s.includes('disney')) return 'disney';
-        if (s.includes('hulu')) return 'hulu';
-        if (s.includes('amazon') || s.includes('prime')) return 'prime';
-        if (s.includes('mubi')) return 'mubi';
-        if (s.includes('peacock')) return 'peacock';
-        if (s.includes('tubi')) return 'tubi';
-        if (s.includes('plex')) return 'plex';
-        if (s.includes('shudder')) return 'shudder';
-        if (s.includes('criterion')) return 'criterion';
-        return '';
+    // Service config — single source of truth for web
+    // Sync with: assets/service-colors.json, assets/styles.css
+    SERVICE_MAP: {
+        netflix:   { class: 'netflix',   name: 'NETFLIX',      badgeName: 'NETFLIX',   matches: ['netflix'] },
+        max:       { class: 'max',       name: 'MAX',          badgeName: 'MAX',       matches: ['max', 'hbo'] },
+        disney:    { class: 'disney',    name: 'DISNEY+',      badgeName: 'DISNEY+',   matches: ['disney'] },
+        prime:     { class: 'prime',     name: 'PRIME VIDEO',  badgeName: 'PRIME',     matches: ['amazon', 'prime'] },
+        hulu:      { class: 'hulu',      name: 'HULU',         badgeName: 'HULU',      matches: ['hulu'] },
+        peacock:   { class: 'peacock',   name: 'PEACOCK',      badgeName: 'PEACOCK',   matches: ['peacock'] },
+        mubi:      { class: 'mubi',      name: 'MUBI',         badgeName: 'MUBI',      matches: ['mubi'] },
+        shudder:   { class: 'shudder',   name: 'SHUDDER',      badgeName: 'SHUDDER',   matches: ['shudder'] },
+        criterion: { class: 'criterion', name: 'CRITERION',    badgeName: 'CRITERION', matches: ['criterion'] },
+        tubi:      { class: 'tubi',      name: 'TUBI',         badgeName: 'TUBI',      matches: ['tubi'] },
+        plex:      { class: 'plex',      name: 'PLEX',         badgeName: 'PLEX',      matches: ['plex'] },
     },
 
-    getLbDisplayName(service) {
-        const s = service.toLowerCase();
-        if (s.includes('netflix')) return 'NETFLIX';
-        if (s.includes('disney')) return 'DISNEY+';
-        if (s.includes('max') || s.includes('hbo')) return 'MAX';
-        if (s.includes('amazon') || s.includes('prime')) return 'PRIME VIDEO';
-        if (s.includes('hulu')) return 'HULU';
-        if (s.includes('peacock')) return 'PEACOCK';
-        if (s.includes('tubi')) return 'TUBI';
-        if (s.includes('plex')) return 'PLEX';
-        if (s.includes('mubi')) return 'MUBI';
-        if (s.includes('shudder')) return 'SHUDDER';
-        if (s.includes('criterion')) return 'CRITERION';
-        return service.toUpperCase();
+    // Resolve a raw service string (e.g. "Netflix basic with Ads") to its config entry
+    resolveService(rawName) {
+        if (!rawName) return null;
+        const s = rawName.toLowerCase();
+        for (const entry of Object.values(this.SERVICE_MAP)) {
+            if (entry.matches.some(m => s.includes(m))) return entry;
+        }
+        return null;
     },
 
     getLbPurchaseLabel(service) {
@@ -546,33 +539,14 @@ const NRW = {
                 if (!service) return '';
 
                 // Map service to display name and CSS class
-                const s = service.toLowerCase();
+                const resolved = NRW.resolveService(service);
                 let displayName, badgeClass;
-
-                if (s.includes('netflix')) {
-                    displayName = 'NETFLIX'; badgeClass = 'badge-netflix';
-                } else if (s.includes('disney')) {
-                    displayName = 'DISNEY+'; badgeClass = 'badge-disney';
-                } else if (s.includes('hbo') || s.includes('max')) {
-                    displayName = 'MAX'; badgeClass = 'badge-max';
-                } else if (s.includes('amazon') || s.includes('prime')) {
-                    displayName = 'PRIME'; badgeClass = 'badge-prime';
-                } else if (s.includes('hulu')) {
-                    displayName = 'HULU'; badgeClass = 'badge-hulu';
-                } else if (s.includes('peacock')) {
-                    displayName = 'PEACOCK'; badgeClass = 'badge-peacock';
-                } else if (s.includes('tubi')) {
-                    displayName = 'TUBI'; badgeClass = 'badge-tubi';
-                } else if (s.includes('plex')) {
-                    displayName = 'PLEX'; badgeClass = 'badge-plex';
-                } else if (s.includes('mubi')) {
-                    displayName = 'MUBI'; badgeClass = 'badge-mubi';
-                } else if (s.includes('shudder')) {
-                    displayName = 'SHUDDER'; badgeClass = 'badge-shudder';
-                } else if (s.includes('criterion')) {
-                    displayName = 'CRITERION'; badgeClass = 'badge-criterion';
+                if (resolved) {
+                    displayName = resolved.badgeName;
+                    badgeClass = 'badge-' + resolved.class;
                 } else {
-                    displayName = service.toUpperCase().slice(0, 10); badgeClass = 'badge-other';
+                    displayName = service.toUpperCase().slice(0, 10);
+                    badgeClass = 'badge-other';
                 }
 
                 return `<div class="streaming-badge ${badgeClass}">${displayName}</div>`;
@@ -799,8 +773,9 @@ const NRW = {
             streamSvc = providers.streaming.find(p => !p.includes('with Ads')) || providers.streaming[0];
         }
         if (streamSvc) {
-            const cls = this.getLbServiceClass(streamSvc);
-            const name = this.getLbDisplayName(streamSvc);
+            const resolved = this.resolveService(streamSvc);
+            const cls = resolved?.class || '';
+            const name = resolved?.name || streamSvc.toUpperCase();
             if (streamLink) {
                 watchHtml += `<a href="${streamLink}" target="_blank" rel="noopener noreferrer" class="watch-btn-lb stream ${cls}">${name}</a>`;
             } else {
