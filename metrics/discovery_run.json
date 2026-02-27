@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-02-26T10:19:59.368291",
+  "timestamp": "2026-02-27T10:26:08.393874",
   "operation": "discover_availability",
   "scan_context": {
     "poll_all_tracking": true,
@@ -8,9 +8,10 @@
     "full_scan": true
   },
   "results": {
-    "polled": 12770,
-    "transitions": 5,
+    "polled": 12820,
+    "transitions": 10,
     "failed": 0,
+    "presale_skipped": 0,
     "scan_tag": "(full scan, no limits)"
   }
 }
