@@ -64,7 +64,7 @@ const NRW = {
         return null;
     },
 
-    getLbPurchaseLabel(service) {
+    getPurchaseLabel(service) {
         const s = service.toLowerCase();
         if (s.includes('amazon') || s.includes('prime')) return 'RENT/BUY ON AMAZON';
         if (s.includes('apple')) return 'RENT/BUY ON APPLE TV';
@@ -102,6 +102,7 @@ const NRW = {
             if (data.movies && data.movies.length > 0) {
                 const today = new Date();
                 this.allMovies = data.movies.filter(m => {
+                    if (m.hidden) return false;
                     if (!m.digital_date) return false;
                     return new Date(m.digital_date) <= today;
                 });
@@ -478,20 +479,23 @@ const NRW = {
                     buttonsHtml += renderStreamButton(streamingService, streamingLink);
                 }
 
-                // 2. Purchase Buttons (VOD: Amazon, Apple, and all other services)
-                const vodService = watchLinks.vod?.service;
-                const vodLink = watchLinks.vod?.link || watchLinks.vod?.url; // Handle url/link key inconsistency
+                // 2. Purchase Buttons (VOD: separate Amazon + Apple TV buttons)
+                const vodEntries = Array.isArray(watchLinks.vod) ? watchLinks.vod
+                    : (watchLinks.vod?.service ? [watchLinks.vod] : []);
 
-                if (vodService && vodLink) {
-                    const svc = vodService.toLowerCase();
-                    if (svc.includes('amazon') || svc.includes('prime')) {
-                        buttonsHtml += `<a href="${vodLink}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-purchase" aria-label="Rent/Buy on Amazon"><img src="logos%20and%20images/pngimg.com%20-%20amazon_PNG17.png" alt="Amazon" class="btn-logo"></a>`;
-                    } else if (svc.includes('apple')) {
-                        buttonsHtml += `<a href="${vodLink}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-purchase" aria-label="Rent/Buy on Apple TV"><img src="logos%20and%20images/apple%20logo.png" alt="Apple" class="btn-logo"></a>`;
-                    } else {
-                        buttonsHtml += `<a href="${vodLink}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-purchase" aria-label="Rent/Buy on ${vodService}">${vodService.toUpperCase()}</a>`;
+                vodEntries.forEach(vod => {
+                    const vodLink = vod.link || vod.url;
+                    if (vod.service && vodLink) {
+                        const svc = vod.service.toLowerCase();
+                        if (svc.includes('amazon') || svc.includes('prime')) {
+                            buttonsHtml += `<a href="${vodLink}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-amazon" aria-label="Rent/Buy on Amazon"><img src="logos%20and%20images/pngimg.com%20-%20amazon_PNG17.png" alt="Amazon" class="btn-logo"></a>`;
+                        } else if (svc.includes('apple') || svc.includes('itunes')) {
+                            buttonsHtml += `<a href="${vodLink}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-apple" aria-label="Rent/Buy on Apple TV"><img src="logos%20and%20images/apple%20logo.png" alt="Apple TV" class="btn-logo"></a>`;
+                        } else {
+                            buttonsHtml += `<a href="${vodLink}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-purchase" aria-label="Rent/Buy on ${vod.service}">${vod.service.toUpperCase()}</a>`;
+                        }
                     }
-                }
+                });
 
                 // If no valid links at all, show disabled placeholder
                 if (!buttonsHtml) {
@@ -783,13 +787,21 @@ const NRW = {
             }
         }
 
-        // Purchase (VOD) button
-        const vodSvc = watchLinks.vod?.service;
-        const vodLink = watchLinks.vod?.link || watchLinks.vod?.url;
-        if (vodSvc && vodLink) {
-            const label = this.getLbPurchaseLabel(vodSvc);
-            watchHtml += `<a href="${vodLink}" target="_blank" rel="noopener noreferrer" class="watch-btn-lb purchase">${label}</a>`;
-        }
+        // Purchase (VOD) buttons — separate Amazon + Apple TV
+        const lbVodEntries = Array.isArray(watchLinks.vod) ? watchLinks.vod
+            : (watchLinks.vod?.service ? [watchLinks.vod] : []);
+
+        lbVodEntries.forEach(vod => {
+            const vodLink = vod.link || vod.url;
+            if (vod.service && vodLink) {
+                const svc = vod.service.toLowerCase();
+                let btnClass = 'purchase';
+                if (svc.includes('amazon') || svc.includes('prime')) btnClass = 'amazon';
+                else if (svc.includes('apple') || svc.includes('itunes')) btnClass = 'apple';
+                const label = this.getPurchaseLabel(vod.service);
+                watchHtml += `<a href="${vodLink}" target="_blank" rel="noopener noreferrer" class="watch-btn-lb ${btnClass}">${label}</a>`;
+            }
+        });
 
         // Plex button
         const plexInfo = this.plexLibrary[String(movie.id)];
