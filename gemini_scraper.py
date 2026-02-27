@@ -778,11 +778,24 @@ Response:"""
         )
 
         try:
-            result = self._call_gemini_with_retry(prompt)
-            if not result:
-                return None
+            from google.genai import types
+            api_config = types.GenerateContentConfig(
+                tools=[self.grounding_tool],
+                temperature=0.0,
+            )
 
-            result_text = result.text.strip() if result.text else ""
+            def _make_request():
+                response = self.client.models.generate_content(
+                    model=self.model_name,
+                    contents=prompt,
+                    config=api_config
+                )
+                return response.text.strip()
+
+            self._enforce_rate_limit()
+            result_text = self._retry_with_backoff(_make_request)
+            if not result_text:
+                return None
 
             if 'NO_SCORE' in result_text.upper():
                 logger.info(f"No score on RT page for {label}: {url}")

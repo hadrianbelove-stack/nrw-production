@@ -176,8 +176,10 @@
           <WatchButton id="streamButton"
             visible="false" />
 
-          <!-- VOD button -->
-          <WatchButton id="vodButton"
+          <!-- VOD buttons (Amazon + Apple TV) -->
+          <WatchButton id="vodButton1"
+            visible="false" />
+          <WatchButton id="vodButton2"
             visible="false" />
 
           <!-- Plex button -->

@@ -805,6 +805,7 @@ class DataGenerator:
             print(f"  Limiting check to first {len(tracking_movies)} movies")
 
         newly_digital = 0
+        presale_skipped = 0
         checked = 0
         failed = 0
         total_to_check = len(tracking_movies)
@@ -879,6 +880,43 @@ class DataGenerator:
                     # Always update has_providers flag based on current provider availability
                     movie['has_providers'] = has_providers
 
+                    # Pre-sale detection: buy-only + single provider = suspected pre-order
+                    is_buy_only = bool(buy_names) and not rent_names and not stream_names
+                    if is_buy_only and len(buy_names) == 1 and has_providers and movie['status'] == 'tracking':
+                        # Single-provider buy-only: check TMDB Type 4 date to confirm availability
+                        type4_date = self.fetch_tmdb_type4_date(movie_id)
+
+                        if type4_date:
+                            try:
+                                type4_dt = datetime.strptime(type4_date, '%Y-%m-%d')
+                                today_dt = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+
+                                if type4_dt <= today_dt:
+                                    # Type 4 date is today or past: genuine release, allow discovery
+                                    print(f"  ~ {movie['title']} buy-only ({buy_names[0]}) but Type 4 date {type4_date} confirms release")
+                                    self.logger.info(f"Pre-sale check passed: {movie['title']} ({movie_id}) - Type 4 date {type4_date} is past")
+                                else:
+                                    # Type 4 date is in the future: confirmed pre-sale
+                                    print(f"  ⏳ {movie['title']} skipped: buy-only pre-sale (Type 4 date {type4_date} is future)")
+                                    self.logger.info(f"Pre-sale BLOCKED: {movie['title']} ({movie_id}) - buy-only on {buy_names[0]}, Type 4 date {type4_date} is future")
+                                    has_providers = False
+                                    presale_skipped += 1
+                            except ValueError:
+                                # Malformed date, treat as suspicious
+                                print(f"  ⏳ {movie['title']} skipped: buy-only, malformed Type 4 date '{type4_date}'")
+                                self.logger.warning(f"Pre-sale check: malformed Type 4 date '{type4_date}' for {movie['title']} ({movie_id})")
+                                has_providers = False
+                                presale_skipped += 1
+                        else:
+                            # No Type 4 date in TMDB: assume pre-sale, safer to wait
+                            print(f"  ⏳ {movie['title']} skipped: buy-only on {buy_names[0]}, no Type 4 date (suspected pre-sale)")
+                            self.logger.info(f"Pre-sale DEFERRED: {movie['title']} ({movie_id}) - buy-only on {buy_names[0]}, no Type 4 date")
+                            has_providers = False
+                            presale_skipped += 1
+
+                        # Rate limit the extra API call
+                        time.sleep(self.config.get('api', {}).get('tmdb_rate_limit', 0.25))
+
                     # Check if this movie needs enrichment
                     needs_enrichment = False
 
@@ -941,7 +979,8 @@ class DataGenerator:
         else:
             scan_tag = ""
 
-        completion_msg = f"Polled {checked} tracking movies, found {newly_digital} changes{scan_tag}. {failed} failed."
+        presale_note = f" {presale_skipped} pre-sale skipped." if presale_skipped else ""
+        completion_msg = f"Polled {checked} tracking movies, found {newly_digital} changes{scan_tag}. {failed} failed.{presale_note}"
         print(f"\n✅ {completion_msg}")
         self.logger.info(completion_msg)
 
@@ -965,6 +1004,7 @@ class DataGenerator:
                     'polled': checked,
                     'transitions': newly_digital,
                     'failed': failed,
+                    'presale_skipped': presale_skipped,
                     'scan_tag': scan_tag.strip() if scan_tag else None
                 }
             }
@@ -1681,6 +1721,28 @@ class DataGenerator:
 
             if existing_index is not None:
                 title = movie_data.get('title', f'Movie {movie_id}')
+                existing_entry = data_movies[existing_index]
+
+                # Re-discovery of a previously hidden movie (e.g., pre-sale that has now genuinely released)
+                if existing_entry.get('hidden'):
+                    existing_entry.pop('hidden', None)
+                    existing_entry['digital_date'] = movie_data.get('digital_date', datetime.now().strftime('%Y-%m-%d'))
+                    existing_entry['providers'] = movie_data.get('providers', {})
+                    existing_entry['_enrichment_status'] = 'pending'
+                    existing_entry['_discovered_at'] = datetime.now().isoformat()
+
+                    updated_data = existing_data.copy() if 'existing_data' in locals() and existing_data else {}
+                    updated_data['movies'] = data_movies
+                    updated_data['generated_at'] = datetime.now().isoformat()
+
+                    if self.storage.atomic_write_json(updated_data, 'data.json', backup=True):
+                        self.logger.info(f"Re-discovered hidden movie: {title} ({movie_id}) - unhidden in data.json")
+                        print(f"   🔄 {title} re-discovered and unhidden in data.json")
+                    else:
+                        self.logger.error(f"Failed to unhide {title} ({movie_id}) in data.json")
+                        print(f"   ❌ Failed to unhide {title} in data.json")
+                    return True
+
                 self.logger.info(f"Movie {title} ({movie_id}) already in data.json - skipping")
                 print(f"   📝 Movie {title} already in data.json - skipping immediate add")
                 return True
@@ -2270,6 +2332,36 @@ class DataGenerator:
     # were removed 2026-02-04 as dead code. All watch link logic now lives in pipeline/enrichment.py
     # and is accessed via self.enrichment.get_watch_links()
 
+    def host_trailer_for_movie(self, movie_id, title, year, youtube_url):
+        """Download, upload, and return hosted trailer URL. None on failure.
+
+        Runs as a post-enrichment step — never blocks the main enrichment pipeline.
+        Lazy-initializes B2 connection on first call.
+        """
+        trailer_config = self.config.get('trailer_hosting', {})
+        if not trailer_config.get('enabled', False) or not trailer_config.get('pipeline_integration', False):
+            self.logger.debug("Trailer hosting: disabled (config)")
+            return None
+
+        try:
+            from scripts.trailer_pipeline import download_and_upload_trailer, get_b2_connection
+
+            if not hasattr(self, '_b2_connection'):
+                self.logger.info("Trailer hosting: connecting to B2...")
+                self._b2_connection = get_b2_connection()
+
+            api, bucket, bucket_url = self._b2_connection
+            # Prefer config bucket_url over B2 native URL
+            config_url = trailer_config.get('bucket_url', '') or bucket_url
+
+            hosted_url = download_and_upload_trailer(movie_id, title, year, youtube_url, bucket, config_url)
+            if hosted_url:
+                self.logger.info(f"Trailer hosted: {title} ({year}) -> {hosted_url}")
+            return hosted_url
+        except Exception as e:
+            self.logger.warning(f"Trailer hosting failed for {title}: {type(e).__name__}: {str(e)[:100]}")
+            return None
+
     def get_enrichment_only_fields(self, movie_id, movie_data, movie_details, force_refresh=False):
         """Extract enrichment-only fields with graceful partial failure handling
 
@@ -2816,6 +2908,35 @@ class DataGenerator:
                 print(f"  ✗ Error enriching {movie_data.get('title', movie_id)}: {e}")
                 continue
 
+        # Post-enrichment: Host trailers for newly enriched movies
+        trailer_config = self.config.get('trailer_hosting', {})
+        if trailer_config.get('enabled', False) and trailer_config.get('pipeline_integration', False):
+            print("🎬 Hosting trailers for newly enriched movies...")
+            hosted_count = 0
+            for movie_id in movie_ids_to_enrich:
+                movie_id = str(movie_id)
+                if movie_id not in movie_lookup:
+                    continue
+                movie_index = movie_lookup[movie_id]
+                movie = existing_movies[movie_index]
+                trailer_url = movie.get('links', {}).get('trailer')
+                if trailer_url and not movie.get('links', {}).get('trailer_hosted'):
+                    hosted_url = self.host_trailer_for_movie(
+                        movie_id,
+                        movie.get('title', ''),
+                        str(movie.get('year', '')),
+                        trailer_url
+                    )
+                    if hosted_url:
+                        existing_movies[movie_index]['links']['trailer_hosted'] = hosted_url
+                        hosted_count += 1
+            if hosted_count > 0:
+                print(f"  ✓ Hosted {hosted_count} trailer(s)")
+            else:
+                print("  No new trailers to host")
+        else:
+            print("🎬 Trailer hosting: disabled (config)")
+
         # Save updated data.json atomically with backup
         display_data['movies'] = existing_movies
         display_data['generated_at'] = datetime.now().isoformat()
@@ -2864,7 +2985,10 @@ class DataGenerator:
             rent_buy = providers.get('rent', []) + providers.get('buy', [])
             relevant = [p for p in rent_buy if any(v in p.lower() for v in amazon_apple_variants)]
 
-            if relevant and not (isinstance(watch_links.get('vod'), dict) and watch_links['vod'].get('link')):
+            vod = watch_links.get('vod')
+            has_vod = (isinstance(vod, list) and any(isinstance(v, dict) and v.get('link') for v in vod)) or \
+                      (isinstance(vod, dict) and bool(vod.get('link')))
+            if relevant and not has_vod:
                 gap_movies.append((i, movie))
 
         if not gap_movies:

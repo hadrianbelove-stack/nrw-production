@@ -1,0 +1,266 @@
+#!/usr/bin/env python3
+"""
+Trailer Downloader — Phase 1 of In-App Trailer Playback
+Downloads movie trailers from YouTube as 1080p MP4 files using yt-dlp.
+
+Usage:
+    python3.11 scripts/trailer_downloader.py                      # Download all trailers
+    python3.11 scripts/trailer_downloader.py --limit 10           # Download first 10 only
+    python3.11 scripts/trailer_downloader.py --dry-run             # Test without downloading
+    python3.11 scripts/trailer_downloader.py --cookies safari      # Use browser cookies (for age-restricted)
+    python3.11 scripts/trailer_downloader.py --retry-failed        # Re-attempt only previously failed/skipped
+
+Requires Python 3.10+ (yt-dlp dropped 3.9 support).
+"""
+
+import argparse
+import json
+import os
+import re
+import sys
+import time
+
+import yt_dlp
+
+# Paths
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
+DATA_JSON = os.path.join(PROJECT_ROOT, 'data.json')
+OUTPUT_DIR = os.path.join(PROJECT_ROOT, 'media', 'trailers')
+
+# Download settings
+MAX_DURATION_SECONDS = 300  # 5 minutes — skip anything longer
+RATE_LIMIT_SECONDS = 2     # Pause between downloads
+DOWNLOAD_TIMEOUT = 60       # Seconds before giving up on a single download
+
+
+def extract_youtube_id(url):
+    """Extract YouTube video ID from various URL formats."""
+    if not url:
+        return None
+    patterns = [
+        r'(?:youtube\.com/watch\?v=|youtu\.be/|youtube\.com/embed/)([a-zA-Z0-9_-]{11})',
+        r'^([a-zA-Z0-9_-]{11})$',
+    ]
+    for pattern in patterns:
+        match = re.search(pattern, url)
+        if match:
+            return match.group(1)
+    return None
+
+
+def load_movies():
+    """Load movies from data.json that have trailer URLs."""
+    with open(DATA_JSON, 'r') as f:
+        data = json.load(f)
+
+    movies = []
+    for movie in data.get('movies', []):
+        trailer_url = movie.get('links', {}).get('trailer', '')
+        tmdb_id = movie.get('id', '')
+
+        # Skip movies without trailers or IDs
+        if not trailer_url or not tmdb_id:
+            continue
+
+        # Skip YouTube search URLs (not actual trailers)
+        if 'search_query=' in trailer_url:
+            continue
+
+        # Must have a valid YouTube video ID
+        video_id = extract_youtube_id(trailer_url)
+        if not video_id:
+            continue
+
+        movies.append({
+            'id': str(tmdb_id),
+            'title': movie.get('title', 'Unknown'),
+            'year': movie.get('year', ''),
+            'trailer_url': trailer_url,
+            'video_id': video_id,
+        })
+
+    return movies
+
+
+def download_trailer(movie, dry_run=False, cookies_browser=None):
+    """
+    Download a single trailer. Returns a result dict with status and details.
+
+    Statuses: 'downloaded', 'skipped_exists', 'skipped_too_long',
+              'skipped_unavailable', 'skipped_age_restricted', 'failed'
+    """
+    tmdb_id = movie['id']
+    title = movie['title']
+    output_path = os.path.join(OUTPUT_DIR, f'{tmdb_id}.mp4')
+
+    # Skip if already downloaded
+    if os.path.exists(output_path):
+        size_mb = os.path.getsize(output_path) / (1024 * 1024)
+        return {'status': 'skipped_exists', 'detail': f'{size_mb:.1f}MB on disk'}
+
+    if dry_run:
+        return {'status': 'dry_run', 'detail': f'Would download {movie["trailer_url"]}'}
+
+    ydl_opts = {
+        'format': 'bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]/best[height<=1080][ext=mp4]/best[height<=1080]',
+        'merge_output_format': 'mp4',
+        'outtmpl': output_path,
+        'quiet': True,
+        'no_warnings': True,
+        'noprogress': True,
+        'socket_timeout': DOWNLOAD_TIMEOUT,
+        'retries': 2,
+        'fragment_retries': 2,
+        # Don't download if longer than 5 minutes
+        'match_filter': yt_dlp.utils.match_filter_func(f'duration < {MAX_DURATION_SECONDS}'),
+    }
+
+    # Use browser cookies for age-restricted content
+    if cookies_browser:
+        ydl_opts['cookiesfrombrowser'] = (cookies_browser,)
+
+    try:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            info = ydl.extract_info(movie['trailer_url'], download=True)
+
+            if info is None:
+                return {'status': 'skipped_too_long', 'detail': 'Exceeded 5 min duration cap'}
+
+            # Verify the file was created
+            if os.path.exists(output_path):
+                size_mb = os.path.getsize(output_path) / (1024 * 1024)
+                duration = info.get('duration', 0)
+                return {
+                    'status': 'downloaded',
+                    'detail': f'{size_mb:.1f}MB, {duration}s',
+                }
+            else:
+                return {'status': 'failed', 'detail': 'File not created after download'}
+
+    except yt_dlp.utils.DownloadError as e:
+        error_msg = str(e).lower()
+        if 'sign in' in error_msg or 'age' in error_msg:
+            return {'status': 'skipped_age_restricted', 'detail': str(e)[:100]}
+        elif 'unavailable' in error_msg or 'removed' in error_msg or 'private' in error_msg:
+            return {'status': 'skipped_unavailable', 'detail': str(e)[:100]}
+        elif 'geo' in error_msg or 'country' in error_msg:
+            return {'status': 'skipped_region_locked', 'detail': str(e)[:100]}
+        elif 'filtered' in error_msg:
+            return {'status': 'skipped_too_long', 'detail': 'Exceeded 5 min duration cap'}
+        else:
+            return {'status': 'failed', 'detail': str(e)[:150]}
+    except Exception as e:
+        return {'status': 'failed', 'detail': str(e)[:150]}
+
+
+def main():
+    parser = argparse.ArgumentParser(description='Download movie trailers from YouTube')
+    parser.add_argument('--limit', type=int, default=0, help='Max number of trailers to process (0 = all)')
+    parser.add_argument('--dry-run', action='store_true', help='Show what would be downloaded without downloading')
+    parser.add_argument('--cookies', type=str, default=None, metavar='BROWSER',
+                        help='Use cookies from browser for age-restricted content (safari, chrome, firefox)')
+    parser.add_argument('--retry-failed', action='store_true',
+                        help='Only attempt movies that do NOT already have a downloaded file')
+    args = parser.parse_args()
+
+    if args.cookies:
+        print(f'Using cookies from {args.cookies} (unlocks age-restricted content)')
+
+    # Load movies
+    print(f'Loading movies from {DATA_JSON}...')
+    movies = load_movies()
+    print(f'Found {len(movies)} movies with valid YouTube trailer URLs')
+
+    if args.retry_failed:
+        # Filter to only movies without a downloaded file
+        before = len(movies)
+        movies = [m for m in movies if not os.path.exists(os.path.join(OUTPUT_DIR, f'{m["id"]}.mp4'))]
+        print(f'Retry mode: {before - len(movies)} already downloaded, {len(movies)} remaining')
+
+    if args.limit > 0:
+        movies = movies[:args.limit]
+        print(f'Limiting to first {args.limit}')
+
+    # Ensure output directory exists
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+    # Track results
+    results = {
+        'downloaded': [],
+        'skipped_exists': [],
+        'skipped_too_long': [],
+        'skipped_unavailable': [],
+        'skipped_age_restricted': [],
+        'skipped_region_locked': [],
+        'dry_run': [],
+        'failed': [],
+    }
+
+    # Download loop
+    total = len(movies)
+    for i, movie in enumerate(movies, 1):
+        label = f'[{i}/{total}] {movie["title"]} ({movie["year"]})'
+        print(f'{label}...', end=' ', flush=True)
+
+        result = download_trailer(movie, dry_run=args.dry_run, cookies_browser=args.cookies)
+        status = result['status']
+        detail = result['detail']
+
+        # Collect result
+        if status not in results:
+            results[status] = []
+        results[status].append({'movie': label, 'detail': detail})
+
+        # Print status
+        status_labels = {
+            'downloaded': '✓ Downloaded',
+            'skipped_exists': '→ Already exists',
+            'skipped_too_long': '→ Too long (>5min)',
+            'skipped_unavailable': '→ Unavailable',
+            'skipped_age_restricted': '→ Age-restricted',
+            'skipped_region_locked': '→ Region-locked',
+            'dry_run': '~ Dry run',
+            'failed': '✗ Failed',
+        }
+        print(f'{status_labels.get(status, status)} ({detail})')
+
+        # Rate limit between actual downloads
+        if status == 'downloaded' and i < total:
+            time.sleep(RATE_LIMIT_SECONDS)
+
+    # Summary report
+    print('\n' + '=' * 60)
+    print('TRAILER DOWNLOAD REPORT')
+    print('=' * 60)
+    print(f'  Downloaded:       {len(results["downloaded"])}')
+    print(f'  Already existed:  {len(results["skipped_exists"])}')
+    print(f'  Too long (>5min): {len(results["skipped_too_long"])}')
+    print(f'  Unavailable:      {len(results["skipped_unavailable"])}')
+    print(f'  Age-restricted:   {len(results["skipped_age_restricted"])}')
+    print(f'  Region-locked:    {len(results["skipped_region_locked"])}')
+    if results['dry_run']:
+        print(f'  Dry run:          {len(results["dry_run"])}')
+    print(f'  Failed:           {len(results["failed"])}')
+    print('=' * 60)
+
+    # Show failures in detail
+    if results['failed']:
+        print('\nFailed downloads:')
+        for item in results['failed']:
+            print(f'  - {item["movie"]}: {item["detail"]}')
+
+    # Total disk usage
+    if os.path.exists(OUTPUT_DIR):
+        total_size = sum(
+            os.path.getsize(os.path.join(OUTPUT_DIR, f))
+            for f in os.listdir(OUTPUT_DIR)
+            if f.endswith('.mp4')
+        )
+        total_gb = total_size / (1024 ** 3)
+        file_count = len([f for f in os.listdir(OUTPUT_DIR) if f.endswith('.mp4')])
+        print(f'\nDisk usage: {file_count} files, {total_gb:.2f} GB total')
+
+
+if __name__ == '__main__':
+    main()

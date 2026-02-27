@@ -293,25 +293,48 @@ class JustWatchClient:
                     'link': best_streaming['link']
                 }
 
-        # Select best VOD option (prefer rent, fall back to buy)
+        # Select VOD options — return both Amazon and Apple TV when available
         vod_offers = rent_offers + buy_offers
         if vod_offers:
-            best_vod = self._select_best_offer(vod_offers, self.VOD_PRIORITY)
-            if best_vod:
-                link = best_vod['link']
+            vod_entries = self._select_vod_offers(vod_offers, affiliate_tag)
+            if vod_entries:
+                result['vod'] = vod_entries
 
+        return result
+
+    def _select_vod_offers(
+        self,
+        offers: List[Dict],
+        affiliate_tag: Optional[str] = None
+    ) -> List[Dict]:
+        """
+        Select up to one Amazon and one Apple TV offer from VOD offers.
+        Returns an array of offer dicts (1 or 2 entries).
+        """
+        amazon_offer = None
+        apple_offer = None
+
+        # Find best Amazon and best Apple TV offer (prefer rent over buy)
+        for offer in offers:
+            svc = offer['service'].lower()
+            if not amazon_offer and ('amazon' in svc or 'prime' in svc):
+                amazon_offer = offer
+            elif not apple_offer and ('apple' in svc or 'itunes' in svc):
+                apple_offer = offer
+
+        result = []
+        for offer in [amazon_offer, apple_offer]:
+            if offer:
+                link = offer['link']
                 # Add affiliate tag to Amazon links
                 if affiliate_tag and 'amazon' in link.lower():
                     separator = '&' if '?' in link else '?'
                     if 'tag=' not in link:
                         link = f"{link}{separator}tag={affiliate_tag}"
-
-                result['vod'] = {
-                    'service': best_vod['service'],
-                    'link': link
-                }
-                if best_vod.get('price'):
-                    result['vod']['price'] = best_vod['price']
+                entry = {'service': offer['service'], 'link': link}
+                if offer.get('price'):
+                    entry['price'] = offer['price']
+                result.append(entry)
 
         return result
 

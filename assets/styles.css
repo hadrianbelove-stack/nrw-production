@@ -603,6 +603,40 @@ header h1 {
     box-shadow: 0 5px 20px rgba(255,149,0,0.5);
 }
 
+/* Amazon VOD button */
+.actions .watch-btn-amazon {
+    background: #ff9900;
+    color: #000;
+    flex: 0 0 auto;
+    width: 44px;
+    padding: 0.4rem;
+}
+
+.actions .watch-btn-amazon:hover {
+    background: #ffad33;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(255,153,0,0.5);
+}
+
+/* Apple TV VOD button */
+.actions .watch-btn-apple {
+    background: #000;
+    color: #fff;
+    flex: 0 0 auto;
+    width: 44px;
+    padding: 0.4rem;
+}
+
+.actions .watch-btn-apple:hover {
+    background: #333;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+}
+
+.actions .watch-btn-apple .btn-logo {
+    filter: brightness(0) invert(1);
+}
+
 /* Plex button - personal library */
 .actions .watch-btn-plex {
     background: #E5A00D;
@@ -1125,6 +1159,8 @@ header h1 {
 .watch-btn-lb.shudder { background: #8B0000; color: #fff; }
 .watch-btn-lb.criterion { background: #000; color: #fff; border: 1px solid #444; }
 .watch-btn-lb.purchase { background: #ff9500; color: #000; }
+.watch-btn-lb.amazon { background: #ff9900; color: #000; }
+.watch-btn-lb.apple { background: #000; color: #fff; border: 1px solid #444; }
 .watch-btn-lb.tubi { background: #FA382F; color: #fff; }
 .watch-btn-lb.plex { background: #E5A00D; color: #000; }
 

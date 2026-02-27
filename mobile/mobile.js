@@ -77,6 +77,7 @@ const NRWMobile = {
             // Filter to only show movies with digital_date in the past
             const today = new Date();
             this.allMovies = (data.movies || []).filter(m => {
+                if (m.hidden) return false;
                 if (!m.digital_date) return false;
                 return new Date(m.digital_date) <= today;
             });
@@ -324,8 +325,10 @@ const NRWMobile = {
         }
 
         if (!service) {
-            // Check for VOD
-            if (watchLinks.vod?.service || providers.rental?.length > 0) {
+            // Check for VOD (array or single dict)
+            const vodArr = Array.isArray(watchLinks.vod) ? watchLinks.vod
+                : (watchLinks.vod?.service ? [watchLinks.vod] : []);
+            if (vodArr.some(v => v.service) || providers.rental?.length > 0) {
                 return '<span class="poster-badge badge-vod">RENT</span>';
             }
             return '';
@@ -365,9 +368,26 @@ const NRWMobile = {
             return `<a href="${link}" target="_blank" rel="noopener" class="btn-equal btn-watch" style="${style}">${displayName}</a>`;
         }
 
-        // Fall back to VOD
-        if (watchLinks.vod?.link) {
-            return `<a href="${watchLinks.vod.link}" target="_blank" rel="noopener" class="btn-equal btn-watch" style="background:#ff9500;color:#000">Rent/Buy</a>`;
+        // Fall back to VOD — separate Amazon + Apple TV buttons
+        const vodEntries = Array.isArray(watchLinks.vod) ? watchLinks.vod
+            : (watchLinks.vod?.service ? [watchLinks.vod] : []);
+        const vodWithLinks = vodEntries.filter(v => v.link);
+        if (vodWithLinks.length > 0) {
+            return vodWithLinks.map(vod => {
+                const svc = vod.service.toLowerCase();
+                let label, style;
+                if (svc.includes('amazon') || svc.includes('prime')) {
+                    label = 'Amazon';
+                    style = 'background:#ff9900;color:#000';
+                } else if (svc.includes('apple') || svc.includes('itunes')) {
+                    label = 'Apple TV';
+                    style = 'background:#000;color:#fff';
+                } else {
+                    label = vod.service;
+                    style = 'background:#ff9500;color:#000';
+                }
+                return `<a href="${vod.link}" target="_blank" rel="noopener" class="btn-equal btn-watch" style="${style}">${label}</a>`;
+            }).join('');
         }
 
         // Check for Plex

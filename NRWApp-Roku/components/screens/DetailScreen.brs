@@ -26,7 +26,8 @@ Sub Init()
     m.buttonsRow = m.top.FindNode("buttonsRow")
     m.trailerButton = m.top.FindNode("trailerButton")
     m.streamButton = m.top.FindNode("streamButton")
-    m.vodButton = m.top.FindNode("vodButton")
+    m.vodButton1 = m.top.FindNode("vodButton1")
+    m.vodButton2 = m.top.FindNode("vodButton2")
     m.plexButton = m.top.FindNode("plexButton")
 
     m.leftChevron = m.top.FindNode("leftChevron")
@@ -42,7 +43,8 @@ Sub Init()
     ' Set up button observers
     m.trailerButton.ObserveField("selected", "onTrailerSelected")
     m.streamButton.ObserveField("selected", "onStreamSelected")
-    m.vodButton.ObserveField("selected", "onVodSelected")
+    m.vodButton1.ObserveField("selected", "onVod1Selected")
+    m.vodButton2.ObserveField("selected", "onVod2Selected")
     m.plexButton.ObserveField("selected", "onPlexSelected")
 End Sub
 
@@ -220,17 +222,20 @@ Sub SetupWatchButtons(movie as Object)
         m.streamButton.visible = false
     end if
 
-    ' VOD button
-    vod = GetVodService(movie)
-    if vod <> invalid AND vod.service <> invalid
-        m.vodButton.service = vod.service
-        m.vodButton.label = "Rent on " + GetServiceDisplayName(vod.service)
-        m.vodButton.url = vod.link
-        m.vodButton.visible = true
-        m.buttons.Push(m.vodButton)
-    else
-        m.vodButton.visible = false
-    end if
+    ' VOD buttons (up to 2: Amazon + Apple TV)
+    vodServices = GetVodServices(movie)
+    vodButtons = [m.vodButton1, m.vodButton2]
+    for i = 0 to 1
+        if i < vodServices.Count() AND vodServices[i].service <> invalid
+            vodButtons[i].service = vodServices[i].service
+            vodButtons[i].label = "Rent on " + GetServiceDisplayName(vodServices[i].service)
+            vodButtons[i].url = vodServices[i].link
+            vodButtons[i].visible = true
+            m.buttons.Push(vodButtons[i])
+        else
+            vodButtons[i].visible = false
+        end if
+    end for
 
     ' Plex button
     plexLink = GetPlexDeepLink(movie)
@@ -279,9 +284,17 @@ Sub onStreamSelected()
     end if
 End Sub
 
-Sub onVodSelected()
-    service = m.vodButton.service
-    url = m.vodButton.url
+Sub onVod1Selected()
+    service = m.vodButton1.service
+    url = m.vodButton1.url
+    if service <> "" AND url <> ""
+        LaunchStreamingService(service, url)
+    end if
+End Sub
+
+Sub onVod2Selected()
+    service = m.vodButton2.service
+    url = m.vodButton2.url
     if service <> "" AND url <> ""
         LaunchStreamingService(service, url)
     end if

@@ -242,6 +242,9 @@ class EnrichmentService:
 
         override_data = self.watch_links_overrides[cache_key]
         try:
+            # Normalize single-dict vod to array format
+            if isinstance(override_data.get('vod'), dict):
+                override_data['vod'] = [override_data['vod']]
             validated_override = self.validator.validate_watch_links_schema(override_data, title)
             if validated_override:
                 self.logger.info(f"Using override from watch_links_overrides.json for {title}: {list(validated_override.keys())}")

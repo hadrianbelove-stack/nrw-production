@@ -375,12 +375,21 @@ Function GetStreamingService(movie as Object) as Object
     return invalid
 End Function
 
-' Get VOD service info
-Function GetVodService(movie as Object) as Object
-    if movie.watch_links <> invalid AND movie.watch_links.vod <> invalid
-        return movie.watch_links.vod
+' Get VOD services as array (handles both array and single object formats)
+Function GetVodServices(movie as Object) as Object
+    if movie.watch_links = invalid OR movie.watch_links.vod = invalid
+        return []
     end if
-    return invalid
+    vod = movie.watch_links.vod
+    ' If it's already an array (roArray), return as-is
+    if Type(vod) = "roArray"
+        return vod
+    end if
+    ' Single object: wrap in array
+    if Type(vod) = "roAssociativeArray"
+        return [vod]
+    end if
+    return []
 End Function
 
 ' Get trailer URL

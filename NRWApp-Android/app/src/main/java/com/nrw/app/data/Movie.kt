@@ -98,8 +98,43 @@ data class MovieLinks(
 
 data class WatchLinks(
     val streaming: ServiceLink? = null,  // Single object, not array
-    val vod: ServiceLink? = null  // Single object, not array
+    @com.google.gson.annotations.JsonAdapter(VodLinksAdapter::class)
+    val vod: List<ServiceLink>? = null  // Array of VOD services (Amazon, Apple TV)
 )
+
+/**
+ * Gson adapter that handles vod as either a single object or an array
+ */
+class VodLinksAdapter : com.google.gson.TypeAdapter<List<ServiceLink>?>() {
+    private val gson = com.google.gson.Gson()
+
+    override fun write(out: com.google.gson.stream.JsonWriter, value: List<ServiceLink>?) {
+        if (value == null) { out.nullValue(); return }
+        out.beginArray()
+        value.forEach { gson.toJson(it, ServiceLink::class.java, out) }
+        out.endArray()
+    }
+
+    override fun read(`in`: com.google.gson.stream.JsonReader): List<ServiceLink>? {
+        return when (`in`.peek()) {
+            com.google.gson.stream.JsonToken.NULL -> { `in`.nextNull(); null }
+            com.google.gson.stream.JsonToken.BEGIN_ARRAY -> {
+                val list = mutableListOf<ServiceLink>()
+                `in`.beginArray()
+                while (`in`.hasNext()) {
+                    list.add(gson.fromJson(`in`, ServiceLink::class.java))
+                }
+                `in`.endArray()
+                list
+            }
+            com.google.gson.stream.JsonToken.BEGIN_OBJECT -> {
+                // Legacy single-object format: wrap in a list
+                listOf(gson.fromJson(`in`, ServiceLink::class.java))
+            }
+            else -> { `in`.skipValue(); null }
+        }
+    }
+}
 
 data class ServiceLink(
     val service: String? = null,
@@ -253,8 +288,8 @@ fun Movie.getWatchOptions(): List<WatchOption> {
         ))
     }
 
-    // Add VOD option (purchase/rent) - single object
-    watchLinks?.vod?.let { link ->
+    // Add VOD options (purchase/rent) — Amazon + Apple TV
+    watchLinks?.vod?.forEach { link ->
         if (link.link != null && isValidVodService(link.service)) {
             options.add(WatchOption(
                 service = normalizeServiceId(link.service) ?: "vod",

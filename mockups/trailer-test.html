@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NRW Trailer Player Test</title>
+    <style>
+        /* === NRW Dark Theme === */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(180deg, #0a0a0a 0%, #1a1a2e 100%);
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        /* === Header === */
+        .test-header {
+            text-align: center;
+            padding: 40px 20px 20px;
+        }
+        .test-header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #00d4aa;
+            margin-bottom: 8px;
+        }
+        .test-header p {
+            color: #888;
+            font-size: 0.9rem;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+
+        /* === Filter tabs === */
+        .filter-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            padding: 20px;
+        }
+        .filter-tab {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: #ccc;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+        .filter-tab:hover { background: rgba(255,255,255,0.12); }
+        .filter-tab.active {
+            background: #00d4aa;
+            color: #0a0a0a;
+            border-color: #00d4aa;
+            font-weight: 600;
+        }
+
+        /* === Movie Grid === */
+        .movie-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 24px;
+            padding: 20px 40px 60px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* === Movie Card === */
+        .movie-card {
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .movie-card:hover { transform: translateY(-4px); }
+
+        .poster-wrap {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            aspect-ratio: 2/3;
+            background: #1a1a2e;
+        }
+        .poster-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* Player type badge */
+        .player-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            z-index: 2;
+        }
+        .player-badge.hosted {
+            background: #00d4aa;
+            color: #0a0a0a;
+        }
+        .player-badge.youtube {
+            background: #ff0000;
+            color: #fff;
+        }
+        .player-badge.none {
+            background: #555;
+            color: #ccc;
+        }
+
+        /* Play button overlay */
+        .play-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.3);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .movie-card:hover .play-overlay { opacity: 1; }
+        .play-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(0,0,0,0.7);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid rgba(255,255,255,0.8);
+        }
+        .play-icon::after {
+            content: '';
+            display: block;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 12px 0 12px 22px;
+            border-color: transparent transparent transparent #fff;
+            margin-left: 4px;
+        }
+
+        .movie-info {
+            padding: 10px 2px 0;
+        }
+        .movie-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .movie-meta {
+            color: #888;
+            font-size: 0.75rem;
+            margin-top: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* === Trailer Modal (exact copy from production) === */
+        .trailer-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10000;
+        }
+        .trailer-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .trailer-modal-backdrop {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            cursor: pointer;
+        }
+        .trailer-modal-content {
+            position: relative;
+            width: 90%;
+            max-width: 1200px;
+            z-index: 1;
+            animation: trailerFadeIn 0.3s ease;
+        }
+        @keyframes trailerFadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .trailer-close-btn {
+            position: absolute;
+            top: -50px;
+            right: 0;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 3rem;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.2s, transform 0.2s;
+            line-height: 1;
+            padding: 0;
+            width: 50px;
+            height: 50px;
+        }
+        .trailer-close-btn:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+        .trailer-video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* 16:9 */
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.8);
+        }
+        .trailer-video-container iframe,
+        .trailer-video-container video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Movie title below video */
+        .trailer-movie-title {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #ccc;
+        }
+        .trailer-player-label {
+            text-align: center;
+            margin-top: 6px;
+            font-size: 0.75rem;
+            color: #888;
+            letter-spacing: 0.5px;
+        }
+
+        /* === Stats bar === */
+        .stats-bar {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            padding: 16px;
+            color: #888;
+            font-size: 0.8rem;
+        }
+        .stats-bar span { color: #00d4aa; font-weight: 600; }
+
+        /* Loading state */
+        .loading {
+            text-align: center;
+            padding: 80px 20px;
+            color: #888;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="test-header">
+    <h1>Trailer Player Test</h1>
+    <p>This page loads real movie data and lets you test the new self-hosted video player vs YouTube embed. Click any poster to play its trailer.</p>
+</div>
+
+<div class="stats-bar" id="stats-bar"></div>
+
+<div class="filter-tabs">
+    <div class="filter-tab active" data-filter="all">All</div>
+    <div class="filter-tab" data-filter="hosted">Hosted Only</div>
+    <div class="filter-tab" data-filter="youtube">YouTube Only</div>
+</div>
+
+<div class="movie-grid" id="movie-grid">
+    <div class="loading">Loading movies from data.json...</div>
+</div>
+
+<!-- Trailer Modal -->
+<div class="trailer-modal" id="trailer-modal">
+    <div class="trailer-modal-backdrop"></div>
+    <div class="trailer-modal-content">
+        <button class="trailer-close-btn" aria-label="Close trailer">&times;</button>
+        <div class="trailer-video-container" id="trailer-video-container"></div>
+        <div class="trailer-movie-title" id="trailer-movie-title"></div>
+        <div class="trailer-player-label" id="trailer-player-label"></div>
+    </div>
+</div>
+
+<script>
+    // State
+    let allMovies = [];
+    let currentFilter = 'all';
+
+    // Load data.json
+    async function loadMovies() {
+        try {
+            const resp = await fetch('../data.json');
+            const data = await resp.json();
+            allMovies = data.movies || [];
+            updateStats();
+            renderGrid();
+        } catch (e) {
+            document.getElementById('movie-grid').innerHTML =
+                '<div class="loading">Failed to load data.json. Make sure to serve this via ./launch_all.sh or a local server.</div>';
+        }
+    }
+
+    function updateStats() {
+        const hosted = allMovies.filter(m => m.links?.trailer_hosted).length;
+        const youtube = allMovies.filter(m => m.links?.trailer && !m.links?.trailer_hosted).length;
+        const none = allMovies.filter(m => !m.links?.trailer && !m.links?.trailer_hosted).length;
+        document.getElementById('stats-bar').innerHTML =
+            `<div><span>${hosted}</span> hosted</div>` +
+            `<div><span>${youtube}</span> YouTube only</div>` +
+            `<div><span>${none}</span> no trailer</div>` +
+            `<div><span>${allMovies.length}</span> total</div>`;
+    }
+
+    function renderGrid() {
+        const grid = document.getElementById('movie-grid');
+        let movies = allMovies.filter(m => m.links?.trailer || m.links?.trailer_hosted);
+
+        if (currentFilter === 'hosted') {
+            movies = movies.filter(m => m.links?.trailer_hosted);
+        } else if (currentFilter === 'youtube') {
+            movies = movies.filter(m => m.links?.trailer && !m.links?.trailer_hosted);
+        }
+
+        // Show up to 60 for performance
+        movies = movies.slice(0, 60);
+
+        grid.innerHTML = movies.map(m => {
+            const hasHosted = !!m.links?.trailer_hosted;
+            const hasTrailer = !!m.links?.trailer;
+            let badgeClass = 'none', badgeText = 'NO TRAILER';
+            if (hasHosted) { badgeClass = 'hosted'; badgeText = 'HOSTED'; }
+            else if (hasTrailer) { badgeClass = 'youtube'; badgeText = 'YOUTUBE'; }
+
+            const trailerUrl = m.links?.trailer_hosted || m.links?.trailer || '';
+            const year = m.year || '';
+            const director = m.crew?.director || '';
+            const meta = [year, director].filter(Boolean).join(' \u00B7 ');
+
+            return `
+                <div class="movie-card" data-trailer-url="${trailerUrl}" data-title="${(m.title||'').replace(/"/g,'&quot;')}" data-hosted="${hasHosted}">
+                    <div class="poster-wrap">
+                        <div class="player-badge ${badgeClass}">${badgeText}</div>
+                        <img src="${m.poster || ''}" alt="${m.title || ''}" loading="lazy"
+                             onerror="this.style.display='none'">
+                        <div class="play-overlay"><div class="play-icon"></div></div>
+                    </div>
+                    <div class="movie-info">
+                        <div class="movie-title">${m.title || 'Unknown'}</div>
+                        <div class="movie-meta">${meta}</div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // === Trailer Modal ===
+    function extractYouTubeId(url) {
+        if (!url) return null;
+        const patterns = [
+            /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\?\/]+)/,
+            /youtube\.com\/v\/([^&\?\/]+)/,
+            /youtube\.com\/shorts\/([^&\?\/]+)/
+        ];
+        for (const p of patterns) {
+            const m = url.match(p);
+            if (m) return m[1];
+        }
+        return null;
+    }
+
+    function showTrailer(url, title, isHosted) {
+        const modal = document.getElementById('trailer-modal');
+        const container = document.getElementById('trailer-video-container');
+        const titleEl = document.getElementById('trailer-movie-title');
+        const labelEl = document.getElementById('trailer-player-label');
+
+        titleEl.textContent = title || '';
+
+        if (isHosted === 'true' || (url && url.endsWith('.mp4'))) {
+            // Self-hosted MP4 -> HTML5 video player
+            container.innerHTML = `
+                <video id="trailer-video"
+                    src="${url}"
+                    controls
+                    autoplay
+                    preload="auto"
+                    style="background: #000;">
+                    Your browser does not support video playback.
+                </video>
+            `;
+            labelEl.textContent = 'SELF-HOSTED MP4 \u2014 Native HTML5 Player';
+            labelEl.style.color = '#00d4aa';
+        } else {
+            // YouTube URL -> iframe embed
+            const videoId = extractYouTubeId(url);
+            if (videoId) {
+                container.innerHTML = `
+                    <iframe id="trailer-iframe"
+                        src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0"
+                        frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowfullscreen>
+                    </iframe>
+                `;
+                labelEl.textContent = 'YOUTUBE EMBED \u2014 iframe Player';
+                labelEl.style.color = '#ff4444';
+            } else {
+                container.innerHTML = '<div style="color:#888;text-align:center;padding:40px;">Could not load trailer</div>';
+                labelEl.textContent = '';
+            }
+        }
+
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeTrailer() {
+        const modal = document.getElementById('trailer-modal');
+        const container = document.getElementById('trailer-video-container');
+
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+
+        // Stop playback
+        const video = container.querySelector('video');
+        if (video) { video.pause(); video.src = ''; }
+        const iframe = container.querySelector('iframe');
+        if (iframe) { iframe.src = ''; }
+    }
+
+    // === Event Listeners ===
+
+    // Movie card clicks
+    document.getElementById('movie-grid').addEventListener('click', (e) => {
+        const card = e.target.closest('.movie-card');
+        if (card) {
+            showTrailer(card.dataset.trailerUrl, card.dataset.title, card.dataset.hosted);
+        }
+    });
+
+    // Modal close: backdrop, X button
+    document.getElementById('trailer-modal').addEventListener('click', (e) => {
+        if (e.target.closest('.trailer-modal-backdrop') || e.target.closest('.trailer-close-btn')) {
+            closeTrailer();
+        }
+    });
+
+    // Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeTrailer();
+    });
+
+    // Filter tabs
+    document.querySelector('.filter-tabs').addEventListener('click', (e) => {
+        const tab = e.target.closest('.filter-tab');
+        if (tab) {
+            document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            currentFilter = tab.dataset.filter;
+            renderGrid();
+        }
+    });
+
+    // Init
+    loadMovies();
+</script>
+
+</body>
+</html>

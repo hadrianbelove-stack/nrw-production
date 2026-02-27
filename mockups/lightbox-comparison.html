@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Lightbox Design Comparison</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #111; color: #fff; font-family: -apple-system, system-ui, sans-serif; padding: 2rem; }
+
+h1 { text-align: center; margin-bottom: 2rem; color: #888; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 2px; }
+
+.comparison { display: flex; gap: 3rem; justify-content: center; flex-wrap: wrap; }
+
+.version { flex: 0 0 420px; }
+.version h2 { text-align: center; margin-bottom: 1rem; font-size: 1rem; }
+.version h2.old { color: #e50914; }
+.version h2.new { color: #00d4aa; }
+
+/* ===== Shared lightbox panel styling ===== */
+.lb-panel {
+    width: 350px;
+    margin: 0 auto;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    min-height: 500px;
+}
+
+.lb-title { font-size: 1.5rem; font-weight: 600; color: #fff; margin-bottom: 0.5rem; }
+.lb-meta { color: #888; margin-bottom: 1rem; font-size: 0.9rem; }
+.lb-synopsis { color: #ccc; line-height: 1.6; flex: 1; margin-bottom: 1rem; font-size: 0.9rem; }
+
+.lb-buttons { display: flex; flex-direction: column; gap: 0.5rem; margin-top: auto; }
+
+.lb-btn {
+    padding: 0.75rem;
+    border-radius: 6px;
+    text-align: center;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    border: none;
+    display: block;
+}
+
+.lb-btn-primary { background: #e50914; color: white; }
+.lb-btn-secondary { background: #333; color: white; }
+
+/* ===== NEW version extras ===== */
+.lb-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    border-bottom: 2px solid rgba(0, 212, 170, 0.4);
+    padding-bottom: 0.6rem;
+    margin-bottom: 0.75rem;
+}
+
+.lb-title-side {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    line-height: 1;
+}
+
+.lb-title-row .lb-title { margin-bottom: 0; line-height: 1; }
+
+.lb-date {
+    color: #00d4aa;
+    font-size: 1.2rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.lb-staff-pick {
+    background: #dc143c;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+/* Annotations */
+.annotation {
+    background: rgba(255, 200, 0, 0.15);
+    border-left: 3px solid #ffc800;
+    padding: 0.3rem 0.5rem;
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    color: #ffc800;
+}
+
+.diff-highlight {
+    outline: 2px dashed #ffc800;
+    outline-offset: 3px;
+    position: relative;
+}
+
+.diff-label {
+    position: absolute;
+    top: -18px;
+    right: 0;
+    background: #ffc800;
+    color: #000;
+    font-size: 0.6rem;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 3px;
+    text-transform: uppercase;
+}
+
+.note {
+    text-align: center;
+    color: #666;
+    font-size: 0.8rem;
+    margin-top: 2rem;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+}
+
+.note strong { color: #ffc800; }
+</style>
+</head>
+<body>
+
+<h1>Lightbox Info Panel: Feb 20 vs Today</h1>
+
+<div class="comparison">
+
+    <!-- ===== OLD (Feb 20, c1845e8) ===== -->
+    <div class="version">
+        <h2 class="old">Feb 20 (Working Version)</h2>
+        <div class="lb-panel">
+
+            <!-- Simple title, no date, no badge -->
+            <h2 class="lb-title">A Private Life</h2>
+            <div class="lb-meta">2025 &bull; Drama, Crime &bull; 107 min &bull; Dir: Bille August &bull; TrustNordisk</div>
+
+            <p class="lb-synopsis">Following the death of Paula, one of her long-time patients, psychiatrist Lilian Steiner becomes convinced that her supposed death by suicide is actually an unsolved murder.</p>
+
+            <div class="lb-buttons">
+                <!-- No streaming, no Amazon for this movie -->
+                <button class="lb-btn lb-btn-secondary">Watch Trailer</button>
+                <a class="lb-btn lb-btn-secondary">Rotten Tomatoes (61%)</a>
+                <a class="lb-btn lb-btn-secondary">Wikipedia</a>
+            </div>
+
+        </div>
+        <div class="annotation">Buttons: same grey #333, same size. No streaming/Amazon for this movie.</div>
+    </div>
+
+    <!-- ===== NEW (Current) ===== -->
+    <div class="version">
+        <h2 class="new">Current (Today)</h2>
+        <div class="lb-panel">
+
+            <!-- New title row with date + staff pick -->
+            <div class="lb-title-row diff-highlight" style="position:relative;">
+                <div class="diff-label">NEW</div>
+                <div class="lb-title-side">
+                    <h2 class="lb-title">A Private Life</h2>
+                </div>
+                <span class="lb-date">Feb 26</span>
+            </div>
+
+            <div class="lb-meta">2025 &bull; Drama, Crime &bull; 107 min &bull; Dir: Bille August &bull; Denmark &bull; TrustNordisk</div>
+
+            <p class="lb-synopsis">Following the death of Paula, one of her long-time patients, psychiatrist Lilian Steiner becomes convinced that her supposed death by suicide is actually an unsolved murder.</p>
+
+            <div class="lb-buttons">
+                <!-- Still no streaming/Amazon for this movie -->
+                <button class="lb-btn lb-btn-secondary">Watch Trailer</button>
+                <a class="lb-btn lb-btn-secondary">Rotten Tomatoes (61%)</a>
+                <a class="lb-btn lb-btn-secondary">Wikipedia</a>
+            </div>
+
+        </div>
+        <div class="annotation">Buttons: identical styling. Only change is title row (date, border, country in meta).</div>
+    </div>
+
+</div>
+
+<br><br>
+
+<h1>What it looks like WITH a rent/buy link (Amazon movie)</h1>
+
+<div class="comparison">
+
+    <!-- OLD - Amazon movie -->
+    <div class="version">
+        <h2 class="old">Feb 20 - Amazon Movie</h2>
+        <div class="lb-panel">
+            <h2 class="lb-title">Nadie va a escuchar tu grito</h2>
+            <div class="lb-meta">2025 &bull; Horror, Thriller &bull; 80 min &bull; Dir: Marcos Marazzi</div>
+
+            <p class="lb-synopsis">While an entire country is focused on the 1990 World Cup in Italy, someone takes advantage of Argentina's matches to commit brutal murders.</p>
+
+            <div class="lb-buttons">
+                <a class="lb-btn lb-btn-secondary">Rent/Buy on Amazon</a>
+                <button class="lb-btn lb-btn-secondary">Watch Trailer</button>
+                <a class="lb-btn lb-btn-secondary">Rotten Tomatoes (85%)</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- NEW - Amazon movie -->
+    <div class="version">
+        <h2 class="new">Current - Amazon Movie</h2>
+        <div class="lb-panel">
+            <div class="lb-title-row">
+                <div class="lb-title-side">
+                    <h2 class="lb-title">Nadie va a escuchar tu grito</h2>
+                </div>
+                <span class="lb-date">Feb 26</span>
+            </div>
+            <div class="lb-meta">2025 &bull; Horror, Thriller &bull; 80 min &bull; Dir: Marcos Marazzi &bull; Argentina</div>
+
+            <p class="lb-synopsis">While an entire country is focused on the 1990 World Cup in Italy, someone takes advantage of Argentina's matches to commit brutal murders.</p>
+
+            <div class="lb-buttons">
+                <a class="lb-btn lb-btn-secondary">Rent/Buy on Amazon</a>
+                <button class="lb-btn lb-btn-secondary">Watch Trailer</button>
+                <a class="lb-btn lb-btn-secondary">Rotten Tomatoes (85%)</a>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<p class="note">
+    <strong>Bottom line:</strong> The button styling (grey #333, full-width, 0.75rem padding) has not changed since Feb 20.
+    The visual differences are in the <strong>title row</strong> (added date badge + teal border) and <strong>meta line</strong> (added country).
+    <br><br>
+    If you want smaller, more compact buttons or different colors for Trailer/RT/Wiki, that would be a new design change.
+</p>
+
+</body>
+</html>

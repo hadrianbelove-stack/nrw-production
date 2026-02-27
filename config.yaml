@@ -612,3 +612,15 @@ affiliate:
   # vudu:
   #   enabled: false
   #   affiliate_id: ""
+
+
+# Trailer Hosting (Backblaze B2)
+# Self-hosted trailer MP4s for in-app playback — avoids YouTube dependency
+# Apps check trailer_hosted first, fall back to YouTube trailer URL
+# Credentials: B2_KEY_ID, B2_APPLICATION_KEY, B2_BUCKET_NAME in .env
+# Note: toggling enabled to false stops NEW hosting but existing trailer_hosted URLs in data.json remain valid
+trailer_hosting:
+  enabled: true                      # Master toggle for trailer hosting pipeline
+  bucket_url: "https://f004.backblazeb2.com/file/NRW-TRAILERS"  # Public URL base (change when CloudFlare is set up)
+  max_hosted: 200                    # Rotation cap — delete oldest trailers when over this count
+  pipeline_integration: true         # Auto-host trailers for new movies during daily enrichment
