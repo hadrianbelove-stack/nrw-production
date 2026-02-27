@@ -385,11 +385,12 @@ export function getInfoLinks(movie) {
   const links = [];
   const movieLinks = movie.links;
 
-  if (movieLinks.trailer) {
+  const trailerUrl = movieLinks.trailer_hosted || movieLinks.trailer;
+  if (trailerUrl) {
     links.push({
       type: 'trailer',
       label: 'TRAILER',
-      url: movieLinks.trailer,
+      url: trailerUrl,
       icon: 'play',
     });
   }

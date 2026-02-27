@@ -88,6 +88,10 @@ data class Categories(
 
 data class MovieLinks(
     val trailer: String? = null,
+
+    @SerializedName("trailer_hosted")
+    val trailerHosted: String? = null,
+
     val rt: String? = null,
 
     @SerializedName("rotten_tomatoes")
@@ -323,7 +327,8 @@ fun Movie.getWatchOptions(): List<WatchOption> {
 fun Movie.getInfoOptions(): List<InfoOption> {
     val options = mutableListOf<InfoOption>()
 
-    links?.trailer?.let { url ->
+    val trailerUrl = links?.trailerHosted ?: links?.trailer
+    trailerUrl?.let { url ->
         options.add(InfoOption(
             type = "trailer",
             label = "Watch Trailer",

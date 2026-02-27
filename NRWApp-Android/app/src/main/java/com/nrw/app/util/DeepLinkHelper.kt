@@ -313,6 +313,19 @@ object DeepLinkHelper {
      * Open a trailer (YouTube or other)
      */
     fun openTrailer(context: Context, url: String): Boolean {
+        // Self-hosted MP4 — open with native video player
+        if (url.endsWith(".mp4")) {
+            return try {
+                val intent = Intent(Intent.ACTION_VIEW)
+                intent.setDataAndType(Uri.parse(url), "video/mp4")
+                context.startActivity(intent)
+                true
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to open MP4 trailer: ${e.message}")
+                openUrl(context, url)
+            }
+        }
+
         // Check if it's a YouTube URL
         if (url.contains("youtube") || url.contains("youtu.be")) {
             return openYouTube(context, url)

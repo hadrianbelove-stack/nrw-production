@@ -134,8 +134,9 @@ export default function MovieDetail({route}) {
   );
 
   const handleTrailerPress = useCallback(() => {
-    if (movie.links?.trailer) {
-      openTrailer(movie.links.trailer);
+    const url = movie.links?.trailer_hosted || movie.links?.trailer;
+    if (url) {
+      openTrailer(url);
     }
   }, [movie]);
 
@@ -270,7 +271,7 @@ export default function MovieDetail({route}) {
       </View>
 
       {/* Info buttons */}
-      {movie.links?.trailer && (
+      {(movie.links?.trailer_hosted || movie.links?.trailer) && (
         <View style={styles.section}>
           <TouchableOpacity style={styles.infoButton} onPress={handleTrailerPress}>
             <Text style={styles.infoButtonText}>▶ Watch Trailer</Text>

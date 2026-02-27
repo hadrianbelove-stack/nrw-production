@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  NRW Trailer Player
+  Fullscreen video player for self-hosted MP4 trailers
+  Back button closes and returns to DetailScreen
+-->
+<component name="TrailerPlayer" extends="Group">
+  <interface>
+    <field id="videoUrl" type="string" onChange="onVideoUrlChanged" />
+    <field id="closed" type="boolean" value="false" alwaysNotify="true" />
+  </interface>
+
+  <script type="text/brightscript" uri="TrailerPlayer.brs" />
+
+  <children>
+    <!-- Black background -->
+    <Rectangle id="background"
+      width="1920"
+      height="1080"
+      color="0x000000FF" />
+
+    <!-- Video node -->
+    <Video id="videoPlayer"
+      width="1920"
+      height="1080"
+      translation="[0, 0]" />
+  </children>
+</component>

@@ -1275,6 +1275,18 @@ class NRWOrchestrator:
             else:
                 print("📝 Skipping Plex enrichment (no plex_config.json)")
 
+            # Phase 3.6: Trailer hosting (download + upload + stamp for new movies)
+            trailer_config = config.get('trailer_hosting', {})
+            if trailer_config.get('enabled', False):
+                print("\n🎬 Phase 3.6: Trailer Hosting")
+                self.run_command(
+                    "python3.11 scripts/trailer_pipeline.py full",
+                    "Host trailers for newly enriched movies",
+                    critical=False  # Don't fail pipeline if trailer hosting fails
+                )
+            else:
+                print("📝 Skipping trailer hosting (disabled in config)")
+
             # Log data quality info (report-only, no enforcement)
             if success:
                 print("\n🔍 Validating RT data...")

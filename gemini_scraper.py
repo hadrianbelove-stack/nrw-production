@@ -633,7 +633,8 @@ class GeminiRTFinder(GeminiFinderBase):
         self,
         title: str,
         year: int,
-        director: str = None
+        director: str = None,
+        original_language: str = None
     ) -> Optional[Dict[str, str]]:
         """
         Find Rotten Tomatoes URL and score for a movie using Gemini.
@@ -642,6 +643,7 @@ class GeminiRTFinder(GeminiFinderBase):
             title: Movie title
             year: Release year
             director: Optional director name for disambiguation
+            original_language: ISO 639-1 language code (e.g. 'es', 'fr')
 
         Returns:
             Dict with 'url' and 'score' keys, or None if not found
@@ -670,6 +672,17 @@ class GeminiRTFinder(GeminiFinderBase):
         context_parts = [f'"{title}" ({year})']
         if director:
             context_parts.append(f"directed by {director}")
+        if original_language and original_language != 'en':
+            lang_names = {
+                'es': 'Spanish', 'fr': 'French', 'ja': 'Japanese',
+                'ko': 'Korean', 'he': 'Hebrew', 'ta': 'Tamil',
+                'pt': 'Portuguese', 'sv': 'Swedish', 'ml': 'Malayalam',
+                'ro': 'Romanian', 'tl': 'Tagalog', 'id': 'Indonesian',
+                'th': 'Thai', 'hi': 'Hindi', 'zh': 'Chinese',
+                'de': 'German', 'it': 'Italian', 'ar': 'Arabic',
+            }
+            lang_name = lang_names.get(original_language, original_language)
+            context_parts.append(f"(original language: {lang_name})")
         movie_context = " ".join(context_parts)
 
         # Construct prompt
@@ -890,13 +903,18 @@ class HybridRTFinder:
             playwright._enforce_rate_limit()
 
             logger.info(f"Playwright validating Gemini URL: {url}")
-            playwright.page.goto(url, wait_until='domcontentloaded')
+            response = playwright.page.goto(url, wait_until='domcontentloaded')
             time.sleep(2)
+
+            # Check HTTP status code
+            if response and response.status >= 400:
+                logger.warning(f"RT page returned HTTP {response.status}: {url}")
+                return None
 
             # Extract page title — RT format: "Movie Name (Year) | Rotten Tomatoes"
             page_title = playwright.page.title() or ""
 
-            # Check for 404 / not found
+            # Check for 404 / not found (belt and suspenders with status check above)
             if 'page not found' in page_title.lower() or '404' in page_title:
                 logger.warning(f"RT page not found: {url}")
                 return None
@@ -930,8 +948,8 @@ class HybridRTFinder:
 
         except Exception as e:
             logger.warning(f"Playwright validation error for {url}: {e}")
-            # On error, trust Gemini result rather than rejecting good data
-            return gemini_result
+            # Don't trust unvalidated results — better no link than a wrong link
+            return None
 
     def _page_title_matches(self, page_title: str, expected_title: str) -> bool:
         """Check if an RT page title matches the expected movie title.
@@ -1034,7 +1052,8 @@ class HybridRTFinder:
         title: str,
         year: int,
         director: str = None,
-        use_fallback: bool = True
+        use_fallback: bool = True,
+        original_language: str = None
     ) -> Optional[Dict[str, str]]:
         """
         Find RT score using Gemini, validated by Playwright, with Playwright fallback.
@@ -1050,6 +1069,7 @@ class HybridRTFinder:
             year: Release year
             director: Optional director for disambiguation
             use_fallback: Whether to try Playwright if Gemini fails
+            original_language: ISO 639-1 language code (e.g. 'es', 'fr')
 
         Returns:
             Dict with 'url' and 'score', or None
@@ -1058,7 +1078,7 @@ class HybridRTFinder:
         cache_key = f"{title}_{year}"
 
         # Try Gemini first
-        result = self.gemini_finder.find_rt_score(title, year, director)
+        result = self.gemini_finder.find_rt_score(title, year, director, original_language=original_language)
 
         if result is not None:
             # Check if already Playwright-validated (cached validation)

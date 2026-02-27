@@ -272,7 +272,28 @@ End Sub
 Sub onTrailerSelected()
     trailerUrl = m.trailerButton.url
     if trailerUrl <> ""
-        OpenTrailer(trailerUrl)
+        result = OpenTrailer(trailerUrl)
+        if result.type <> invalid AND result.type = "video"
+            ShowTrailerPlayer(result.url)
+        end if
+    end if
+End Sub
+
+' Play self-hosted MP4 trailer with native Video node
+Sub ShowTrailerPlayer(url as String)
+    m.trailerPlayer = m.top.FindNode("trailerPlayer")
+    if m.trailerPlayer <> invalid
+        m.trailerPlayer.videoUrl = url
+        m.trailerPlayer.visible = true
+        m.trailerPlayer.SetFocus(true)
+        m.trailerPlayer.ObserveField("closed", "onTrailerPlayerClosed")
+    end if
+End Sub
+
+Sub onTrailerPlayerClosed()
+    if m.trailerPlayer <> invalid
+        m.trailerPlayer.visible = false
+        m.top.SetFocus(true)
     end if
 End Sub
 
@@ -364,7 +385,10 @@ Function OnKeyEvent(key as String, press as Boolean) as Boolean
         ' Play trailer if available
         trailerUrl = m.trailerButton.url
         if trailerUrl <> ""
-            OpenTrailer(trailerUrl)
+            result = OpenTrailer(trailerUrl)
+            if result.type <> invalid AND result.type = "video"
+                ShowTrailerPlayer(result.url)
+            end if
             return true
         end if
 

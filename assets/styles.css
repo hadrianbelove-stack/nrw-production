@@ -953,7 +953,8 @@ header h1 {
     box-shadow: 0 25px 80px rgba(0, 0, 0, 0.8);
 }
 
-.trailer-video-container iframe {
+.trailer-video-container iframe,
+.trailer-video-container video {
     position: absolute;
     top: 0;
     left: 0;

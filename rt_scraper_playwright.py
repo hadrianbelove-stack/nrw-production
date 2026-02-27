@@ -453,22 +453,28 @@ class RTScraperPlaywright(PlaywrightScraperBase):
 
             candidates.sort(key=lambda x: x[2], reverse=True)
 
+            # For short titles (1-2 words), require full slug substring match
+            # to avoid "Boss" matching "Boss Baby" or "Others" matching "Lives of Others"
+            title_word_count = len(title_words)
+
+            def is_good_match(word_matches, slug_normalized):
+                if title_slug in slug_normalized:
+                    return True  # Full title is substring of slug — always good
+                if title_word_count <= 2:
+                    return False  # Short titles need exact substring match
+                return word_matches >= 2  # Longer titles: 2+ word overlap OK
+
             year_str = str(year)
             for url, context, word_matches, slug_normalized in candidates:
-                if title_slug in slug_normalized or word_matches >= 2:
+                if is_good_match(word_matches, slug_normalized):
                     if year_str in context or year_str in url:
                         self._log(f"RT search found year+title match: {url}", level='debug')
                         return url
 
             for url, context, word_matches, slug_normalized in candidates:
-                if title_slug in slug_normalized or word_matches >= 2:
+                if is_good_match(word_matches, slug_normalized):
                     self._log(f"RT search found title match: {url}", level='debug')
                     return url
-
-            if candidates[0][2] > 0:
-                first_url = candidates[0][0]
-                self._log(f"RT search using best word match: {first_url}", level='debug')
-                return first_url
 
             self._log(f"RT search: no good matches found among {len(candidates)} links", level='debug')
             return None
@@ -512,8 +518,12 @@ class RTScraperPlaywright(PlaywrightScraperBase):
                 for candidate_url in candidate_urls:
                     self._log(f"Trying direct URL: {candidate_url}", level='debug')
 
-                    self.page.goto(candidate_url, wait_until='domcontentloaded')
+                    response = self.page.goto(candidate_url, wait_until='domcontentloaded')
                     time.sleep(1)
+
+                    # Check HTTP status code first
+                    if response and response.status >= 400:
+                        continue
 
                     page_title = self.page.title().lower()
                     if ('rotten tomatoes' in page_title and

@@ -511,8 +511,9 @@ const NRW = {
             // Info links - Only Trailer, RT, Wiki
             let infoLinks = [];
 
-            if (movie.links?.trailer) {
-                infoLinks.push(`<a href="#" data-trailer="${movie.links.trailer}" class="info-btn">Trailer</a>`);
+            const cardTrailerUrl = movie.links?.trailer_hosted || movie.links?.trailer;
+            if (cardTrailerUrl) {
+                infoLinks.push(`<a href="#" data-trailer="${cardTrailerUrl}" class="info-btn">Trailer</a>`);
             }
 
             if (movie.links?.rt) {
@@ -614,15 +615,9 @@ const NRW = {
         return null;
     },
 
-    // Show trailer in embedded modal
+    // Show trailer in embedded modal (supports self-hosted MP4 and YouTube)
     showTrailer(url) {
-        const videoId = this.extractYouTubeId(url);
-
-        if (!videoId) {
-            // Not a YouTube URL, open in new tab as fallback
-            window.open(url, '_blank');
-            return;
-        }
+        const isHosted = url && (url.endsWith('.mp4') || url.includes('/file/NRW-TRAILERS/'));
 
         // Create modal if it doesn't exist
         let modal = document.getElementById('trailer-modal');
@@ -634,17 +629,14 @@ const NRW = {
                 <div class="trailer-modal-backdrop"></div>
                 <div class="trailer-modal-content">
                     <button class="trailer-close-btn" aria-label="Close trailer">&times;</button>
-                    <div class="trailer-video-container">
-                        <iframe id="trailer-iframe"
-                            src=""
-                            frameborder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                            allowfullscreen>
-                        </iframe>
-                    </div>
+                    <div class="trailer-video-container" id="trailer-video-container"></div>
                 </div>
             `;
             document.body.appendChild(modal);
+
+            // Close on backdrop click
+            modal.querySelector('.trailer-modal-backdrop').addEventListener('click', () => this.closeTrailer());
+            modal.querySelector('.trailer-close-btn').addEventListener('click', () => this.closeTrailer());
 
             // Close on Escape key (only if trailer is showing, stop propagation so lightbox doesn't also close)
             document.addEventListener('keydown', (e) => {
@@ -655,13 +647,40 @@ const NRW = {
             });
         }
 
-        // Set the iframe source with autoplay
-        const iframe = document.getElementById('trailer-iframe');
-        iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
+        const container = document.getElementById('trailer-video-container');
+
+        if (isHosted) {
+            // Self-hosted MP4 — HTML5 video player
+            container.innerHTML = `
+                <video id="trailer-video"
+                    src="${url}"
+                    controls
+                    autoplay
+                    preload="auto"
+                    style="background: #000;">
+                    Your browser does not support video playback.
+                </video>
+            `;
+        } else {
+            // YouTube URL — iframe embed
+            const videoId = this.extractYouTubeId(url);
+            if (!videoId) {
+                window.open(url, '_blank');
+                return;
+            }
+            container.innerHTML = `
+                <iframe id="trailer-iframe"
+                    src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowfullscreen>
+                </iframe>
+            `;
+        }
 
         // Show modal
         modal.classList.add('active');
-        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        document.body.style.overflow = 'hidden';
     },
 
     // Close trailer modal
@@ -669,9 +688,14 @@ const NRW = {
         const modal = document.getElementById('trailer-modal');
         if (modal) {
             modal.classList.remove('active');
-            // Stop the video by clearing the src
-            const iframe = document.getElementById('trailer-iframe');
-            if (iframe) iframe.src = '';
+            const container = document.getElementById('trailer-video-container');
+            if (container) {
+                // Stop video/iframe playback
+                const video = container.querySelector('video');
+                if (video) { video.pause(); video.src = ''; }
+                const iframe = container.querySelector('iframe');
+                if (iframe) { iframe.src = ''; }
+            }
             // Only restore scrolling if lightbox isn't still open
             const lightbox = document.getElementById('poster-lightbox');
             if (!lightbox || !lightbox.classList.contains('active')) {
@@ -814,8 +838,9 @@ const NRW = {
 
         // === Info row (horizontal: Trailer, RT, Wiki) ===
         let infoHtml = '';
-        if (movie.links?.trailer) {
-            infoHtml += `<button class="info-btn-lb trailer" data-trailer="${movie.links.trailer}">Trailer</button>`;
+        const lbTrailerUrl = movie.links?.trailer_hosted || movie.links?.trailer;
+        if (lbTrailerUrl) {
+            infoHtml += `<button class="info-btn-lb trailer" data-trailer="${lbTrailerUrl}">Trailer</button>`;
         }
         if (movie.links?.rt) {
             const score = movie.rt_score ? ` ${movie.rt_score}` : '';

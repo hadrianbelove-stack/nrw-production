@@ -289,13 +289,21 @@ Function OpenTrailer(trailerUrl as String) as Object
         }
     end if
 
+    ' Self-hosted MP4 — play with native Roku Video node
+    if InStr(1, trailerUrl, ".mp4") > 0
+        return {
+            success: true
+            type: "video"
+            url: trailerUrl
+        }
+    end if
+
     ' Check if it's a YouTube URL
     if InStr(1, trailerUrl, "youtube.com") > 0 OR InStr(1, trailerUrl, "youtu.be") > 0
         return LaunchStreamingService("youtube", trailerUrl)
     end if
 
-    ' For other video URLs, try to open in Roku video player
-    ' (This would require implementing a video player screen)
+    ' Unsupported format
     return {
         success: false
         error: "Unsupported trailer URL format"

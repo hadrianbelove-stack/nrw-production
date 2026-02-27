@@ -399,8 +399,9 @@ const NRWMobile = {
     },
 
     getTrailerButton(movie) {
-        if (movie.links?.trailer) {
-            return `<a href="${movie.links.trailer}" target="_blank" rel="noopener" class="btn-equal btn-trailer">Trailer</a>`;
+        const trailerUrl = movie.links?.trailer_hosted || movie.links?.trailer;
+        if (trailerUrl) {
+            return `<a href="${trailerUrl}" target="_blank" rel="noopener" class="btn-equal btn-trailer">Trailer</a>`;
         }
         return '<span class="btn-equal btn-trailer" style="opacity:0.5">Trailer</span>';
     },

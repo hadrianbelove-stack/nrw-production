@@ -2125,7 +2125,7 @@ class DataGenerator:
         return f"https://www.youtube.com/results?search_query={search_query}"
     
 
-    def find_rt_url(self, title, year, imdb_id, director=None):
+    def find_rt_url(self, title, year, imdb_id, director=None, original_language=None):
         """Find Rotten Tomatoes URL and score"""
         # 1. Check overrides first
         if imdb_id and imdb_id in self.rt_overrides:
@@ -2141,7 +2141,7 @@ class DataGenerator:
             return None
 
         # 3. Use RT scraper (handles caching internally)
-        result = self.scrape_rt_score(title, year, director=director)
+        result = self.scrape_rt_score(title, year, director=director, original_language=original_language)
         if result:
             return result
 
@@ -2248,13 +2248,14 @@ class DataGenerator:
             return False
 
 
-    def scrape_rt_score(self, title, year, director=None):
+    def scrape_rt_score(self, title, year, director=None, original_language=None):
         """Public wrapper function to scrape RT score for external consumers
 
         Args:
             title: Movie title
             year: Release year
             director: Optional director name for disambiguation
+            original_language: ISO 639-1 language code
 
         Returns:
             dict: {'url': ..., 'score': ...} or None if not found
@@ -2269,7 +2270,11 @@ class DataGenerator:
 
         # Use the new Playwright scraper
         try:
-            result = self.rt_scraper.scrape_rt_score(title, year, director=director)
+            # Pass original_language if the scraper supports it (HybridRTFinder)
+            if hasattr(self.rt_scraper, 'find_rt_score'):
+                result = self.rt_scraper.find_rt_score(title, year, director=director, original_language=original_language)
+            else:
+                result = self.rt_scraper.scrape_rt_score(title, year, director=director)
 
             # Update stats from scraper
             scraper_stats = self.rt_scraper.get_stats()
@@ -2442,7 +2447,8 @@ class DataGenerator:
         # RT score and link (isolated failure handling)
         try:
             rt_director = movie_details.get('crew', {}).get('director') if movie_details else None
-            rt_data = self.find_rt_url(title, year, imdb_id, director=rt_director)
+            rt_lang = movie_details.get('original_language') if movie_details else None
+            rt_data = self.find_rt_url(title, year, imdb_id, director=rt_director, original_language=rt_lang)
             if rt_data:
                 if isinstance(rt_data, dict):
                     if rt_data.get('url'):
@@ -2687,7 +2693,8 @@ class DataGenerator:
 
         # RT link and score (isolated failure handling)
         try:
-            rt_data = self.find_rt_url(title, year, imdb_id, director=director)
+            orig_lang = movie_data.get('original_language')
+            rt_data = self.find_rt_url(title, year, imdb_id, director=director, original_language=orig_lang)
             if rt_data:
                 if isinstance(rt_data, dict):
                     if rt_data.get('url'):

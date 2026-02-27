@@ -119,9 +119,13 @@ def detect_provider_link_gaps(data_file='data.json'):
         if not relevant_providers:
             continue
 
-        # Check if watch_links has a vod entry with an actual link
-        vod = watch_links.get('vod', {})
-        has_vod_link = isinstance(vod, dict) and vod.get('link')
+        # Check if watch_links has a vod entry with an actual link (array or dict)
+        vod = watch_links.get('vod')
+        has_vod_link = False
+        if isinstance(vod, list):
+            has_vod_link = any(isinstance(v, dict) and v.get('link') for v in vod)
+        elif isinstance(vod, dict):
+            has_vod_link = bool(vod.get('link'))
 
         if not has_vod_link:
             gaps.append({

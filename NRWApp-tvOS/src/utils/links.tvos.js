@@ -147,6 +147,11 @@ export async function openTrailer(url) {
     return { success: false, error: 'No trailer URL provided' };
   }
 
+  // Self-hosted MP4 — open directly (tvOS plays MP4 natively via AVPlayer)
+  if (url.endsWith('.mp4')) {
+    return openURL(url);
+  }
+
   // Extract YouTube video ID if it's a YouTube URL
   const youtubeId = extractYouTubeId(url);
 

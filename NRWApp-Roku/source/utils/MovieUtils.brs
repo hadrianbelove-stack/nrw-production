@@ -392,8 +392,11 @@ Function GetVodServices(movie as Object) as Object
     return []
 End Function
 
-' Get trailer URL
+' Get trailer URL (prefer self-hosted MP4, fall back to YouTube)
 Function GetTrailerUrl(movie as Object) as String
+    if movie.links <> invalid AND movie.links.trailer_hosted <> invalid
+        return movie.links.trailer_hosted
+    end if
     if movie.links <> invalid AND movie.links.trailer <> invalid
         return movie.links.trailer
     end if

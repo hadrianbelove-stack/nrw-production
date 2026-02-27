@@ -55,13 +55,14 @@ def main():
         title = movie.get('title', 'Unknown')
         year = movie.get('year', '')
         director = movie.get('crew', {}).get('director')
+        original_language = movie.get('original_language')
 
         # Set 90-second timeout per movie
         signal.signal(signal.SIGALRM, timeout_handler)
         signal.alarm(90)
 
         try:
-            result = finder.find_rt_score(title, year, director=director)
+            result = finder.find_rt_score(title, year, director=director, original_language=original_language)
 
             if result:
                 url = result.get('url')
