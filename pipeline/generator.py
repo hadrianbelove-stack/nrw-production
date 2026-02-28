@@ -2493,7 +2493,9 @@ class DataGenerator:
             if hosted_url:
                 self.logger.info(f"Trailer hosted: {title} ({year}) -> {hosted_url}")
             return hosted_url
-        except Exception as e:
+        except BaseException as e:
+            # BaseException catches SystemExit from trailer_uploader's sys.exit(1)
+            # which would otherwise kill the entire enrichment process
             self.logger.warning(f"Trailer hosting failed for {title}: {type(e).__name__}: {str(e)[:100]}")
             return None
 
@@ -3047,6 +3049,25 @@ class DataGenerator:
                 print(f"  ✗ Error enriching {movie_data.get('title', movie_id)}: {e}")
                 continue
 
+        # Save enrichment results to data.json BEFORE trailer hosting
+        # (trailer hosting can crash and must not prevent saving enrichment data)
+        display_data['movies'] = existing_movies
+        display_data['generated_at'] = datetime.now().isoformat()
+        display_data['count'] = len(existing_movies)
+
+        try:
+            backup_path = f"data.json.backup.{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+            import shutil
+            if os.path.exists('data.json'):
+                shutil.copy2('data.json', backup_path)
+
+            with open('data.json', 'w') as f:
+                json.dump(display_data, f, indent=2)
+            print(f"✅ Enriched {enriched_count}/{len(movie_ids_to_enrich)} movies")
+        except Exception as e:
+            print(f"❌ Error saving enriched data.json: {e}")
+            return 0
+
         # Post-enrichment: Host trailers for newly enriched movies
         trailer_config = self.config.get('trailer_hosting', {})
         if trailer_config.get('enabled', False) and trailer_config.get('pipeline_integration', False):
@@ -3070,30 +3091,14 @@ class DataGenerator:
                         existing_movies[movie_index]['links']['trailer_hosted'] = hosted_url
                         hosted_count += 1
             if hosted_count > 0:
+                # Re-save with trailer_hosted URLs added
+                with open('data.json', 'w') as f:
+                    json.dump(display_data, f, indent=2)
                 print(f"  ✓ Hosted {hosted_count} trailer(s)")
             else:
                 print("  No new trailers to host")
         else:
             print("🎬 Trailer hosting: disabled (config)")
-
-        # Save updated data.json atomically with backup
-        display_data['movies'] = existing_movies
-        display_data['generated_at'] = datetime.now().isoformat()
-        display_data['count'] = len(existing_movies)
-
-        try:
-            # Atomic write with backup
-            backup_path = f"data.json.backup.{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-            import shutil
-            if os.path.exists('data.json'):
-                shutil.copy2('data.json', backup_path)
-
-            with open('data.json', 'w') as f:
-                json.dump(display_data, f, indent=2)
-            print(f"✅ Enriched {enriched_count}/{len(movie_ids_to_enrich)} movies")
-        except Exception as e:
-            print(f"❌ Error saving enriched data.json: {e}")
-            return 0
 
         return enriched_count
 
@@ -3911,23 +3916,10 @@ class DataGenerator:
 
             # Mark festival screenings (Eventive and similar platforms)
             is_festival = False
-            festival_services = ['eventive']
-            festival_url_patterns = ['eventive.org', 'festivalplayer.sundance.org', 'shift72.com', 'xerb.tv', 'festivalscope.com']
             watch_links = movie.get('watch_links', {})
             vod = watch_links.get('vod')
             festival_link = None
             festival_service = None
-
-            def _check_festival_vod(entry):
-                """Check if a single vod entry is from a festival platform."""
-                svc = entry.get('service', '').lower()
-                link = entry.get('link', '') or ''
-                if svc in festival_services:
-                    return True
-                for pattern in festival_url_patterns:
-                    if pattern in link.lower():
-                        return True
-                return False
 
             if isinstance(vod, list):
                 for v in vod:
@@ -3968,7 +3960,6 @@ class DataGenerator:
                     festival_name = festival_slug.replace('_', ' ').replace('-', ' ').title()
                     print(f"  ⚠️  Unknown festival slug '{festival_slug}' for {movie.get('title', 'Unknown')} — add to config.yaml festival_names")
 
-                from datetime import datetime
                 today_str = datetime.now().strftime('%Y-%m-%d')
                 movie['festival_info'] = {
                     'platform': festival_service or 'Unknown',

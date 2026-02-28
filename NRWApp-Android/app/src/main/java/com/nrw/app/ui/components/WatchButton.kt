@@ -92,9 +92,10 @@ fun WatchButton(
     modifier: Modifier = Modifier,
     compact: Boolean = false
 ) {
+    val isFestival = option.label.lowercase().contains("buy ticket")
     OutlineButton(
-        label = getSimplifiedLabel(option.service),
-        borderColor = getServiceColor(option.service),
+        label = if (isFestival) "Buy Ticket" else getSimplifiedLabel(option.service),
+        borderColor = if (isFestival) Color(0xFFFFD700) else getServiceColor(option.service),
         onClick = onClick,
         modifier = modifier,
         compact = compact

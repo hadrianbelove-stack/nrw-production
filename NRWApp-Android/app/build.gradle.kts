@@ -99,6 +99,10 @@ dependencies {
     // Leanback (for TV-specific features)
     implementation("androidx.leanback:leanback:1.0.0")
 
+    // Media3 ExoPlayer (for in-app trailer playback)
+    implementation("androidx.media3:media3-exoplayer:1.2.0")
+    implementation("androidx.media3:media3-ui:1.2.0")
+
     // Debug
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")

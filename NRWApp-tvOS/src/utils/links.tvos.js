@@ -194,7 +194,7 @@ export async function openTrailer(url) {
 /**
  * Extract YouTube video ID from various URL formats
  */
-function extractYouTubeId(url) {
+export function extractYouTubeId(url) {
   if (!url) return null;
 
   const patterns = [

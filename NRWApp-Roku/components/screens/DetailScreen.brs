@@ -22,6 +22,7 @@ Sub Init()
     m.staffPickLabel = m.top.FindNode("staffPickLabel")
     m.restorationBadge = m.top.FindNode("restorationBadge")
     m.restorationLabel = m.top.FindNode("restorationLabel")
+    m.festivalBadge = m.top.FindNode("festivalBadge")
     m.festivalLabel = m.top.FindNode("festivalLabel")
 
     m.buttonsRow = m.top.FindNode("buttonsRow")
@@ -191,11 +192,13 @@ Sub LoadMovie(index as Integer)
         m.restorationLabel.visible = false
     end if
 
-    ' Festival name
+    ' Festival name banner
     if movie.festival_info <> invalid AND movie.festival_info.festival_name <> invalid AND movie.festival_info.festival_name <> ""
         m.festivalLabel.text = movie.festival_info.festival_name
+        m.festivalBadge.visible = true
         m.festivalLabel.visible = true
     else
+        m.festivalBadge.visible = false
         m.festivalLabel.visible = false
     end if
 
@@ -301,12 +304,73 @@ Sub ShowTrailerPlayer(url as String)
         m.trailerPlayer.visible = true
         m.trailerPlayer.SetFocus(true)
         m.trailerPlayer.ObserveField("closed", "onTrailerPlayerClosed")
+        m.trailerPlayer.ObserveField("navigateDirection", "onTrailerNavigate")
     end if
 End Sub
 
 Sub onTrailerPlayerClosed()
     if m.trailerPlayer <> invalid
         m.trailerPlayer.visible = false
+        m.trailerPlayer.navigateDirection = 0
+        m.top.SetFocus(true)
+    end if
+End Sub
+
+' ============================================================================
+' Find Next Movie with Self-Hosted MP4 Trailer
+' direction: 1 (forward) or -1 (backward), wraps around
+' Returns index or -1 if none found
+' ============================================================================
+Function FindNextTrailerIndex(fromIndex as Integer, direction as Integer) as Integer
+    count = m.movies.Count()
+    if count = 0
+        return -1
+    end if
+
+    idx = fromIndex
+    for i = 1 to count - 1
+        idx = idx + direction
+        if idx >= count
+            idx = 0
+        else if idx < 0
+            idx = count - 1
+        end if
+
+        movie = m.movies[idx]
+        trailerUrl = GetTrailerUrl(movie)
+        ' Only self-hosted MP4 trailers work in the in-app player
+        if trailerUrl <> "" AND InStr(1, trailerUrl, ".mp4") > 0
+            return idx
+        end if
+    end for
+
+    return -1
+End Function
+
+' ============================================================================
+' Trailer Navigation (from TrailerPlayer fastforward/rewind)
+' ============================================================================
+Sub onTrailerNavigate()
+    direction = m.trailerPlayer.navigateDirection
+    if direction = 0
+        return
+    end if
+
+    nextIdx = FindNextTrailerIndex(m.currentIndex, direction)
+
+    if nextIdx >= 0
+        ' Navigate to the new movie and play its trailer
+        m.currentIndex = nextIdx
+        m.top.currentIndex = m.currentIndex
+        LoadMovie(m.currentIndex)
+
+        movie = m.movies[nextIdx]
+        trailerUrl = GetTrailerUrl(movie)
+        m.trailerPlayer.videoUrl = trailerUrl
+    else
+        ' No more trailers — close the player
+        m.trailerPlayer.visible = false
+        m.trailerPlayer.navigateDirection = 0
         m.top.SetFocus(true)
     end if
 End Sub

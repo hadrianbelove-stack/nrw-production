@@ -303,7 +303,7 @@ const NRWMobile = {
                              loading="lazy">
                         ${streamingBadge}
                         ${movie.categories?.is_restoration ? '<span class="poster-badge badge-restoration">RESTORED</span>' : ''}
-                        ${movie.categories?.is_festival && movie.festival_info?.festival_name ? `<div class="festival-ribbon">${movie.festival_info.festival_name.toUpperCase()}</div>` : ''}
+                        ${movie.categories?.is_festival ? '<div class="festival-ribbon">FESTIVAL SCREENING</div>' : ''}
                         ${isStaffPick ? '<span class="staff-badge">STAFF PICK</span>' : ''}
                     </div>
                 </div>
@@ -425,7 +425,7 @@ const NRWMobile = {
                     style = 'background:#000;color:#fff';
                 } else if (svc.includes('eventive') || (vod.link && (vod.link.includes('eventive.org') || vod.link.includes('festivalplayer') || vod.link.includes('shift72.com')))) {
                     label = 'Buy Ticket';
-                    style = 'background:#FFD700;color:#000';
+                    style = 'background:transparent;color:#FFD700;border:2px solid #FFD700';
                 } else {
                     label = vod.service;
                     style = 'background:#ff9500;color:#000';

@@ -95,19 +95,23 @@ export default function WatchButton({link, onPress, size = 'medium'}) {
   const config = SERVICE_CONFIG[link.service] || SERVICE_CONFIG.vod;
   const isStreaming = link.type === 'streaming';
 
+  const isFestivalButton = link.labelOverride === 'Buy Ticket';
+
   const buttonStyle = [
     styles.button,
     size === 'small' && styles.buttonSmall,
     size === 'large' && styles.buttonLarge,
-    {backgroundColor: config.color},
-    config.borderColor && {borderWidth: 1, borderColor: config.borderColor},
+    isFestivalButton
+      ? {backgroundColor: 'transparent', borderWidth: 2, borderColor: '#FFD700'}
+      : {backgroundColor: config.color},
+    !isFestivalButton && config.borderColor && {borderWidth: 1, borderColor: config.borderColor},
   ];
 
   const textStyle = [
     styles.buttonText,
     size === 'small' && styles.buttonTextSmall,
     size === 'large' && styles.buttonTextLarge,
-    {color: config.textColor},
+    {color: isFestivalButton ? '#FFD700' : config.textColor},
   ];
 
   // Determine label

@@ -94,15 +94,21 @@
           color="0x000000FF"
           visible="false" />
 
-        <!-- Festival name label -->
+        <!-- Festival name banner (gold bar) -->
+        <Rectangle id="festivalBadge"
+          width="600"
+          height="36"
+          translation="[3, 786]"
+          color="0xFFD700FF"
+          visible="false" />
         <Label id="festivalLabel"
           width="600"
-          height="30"
+          height="36"
           translation="[3, 786]"
           horizAlign="center"
           vertAlign="center"
           font="font:SmallBoldSystemFont"
-          color="0xFFD700FF"
+          color="0x000000FF"
           visible="false" />
       </Group>
 

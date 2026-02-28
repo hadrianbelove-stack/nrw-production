@@ -37,6 +37,7 @@ import {
 } from '../utils/links.tvos';
 import { fetchMovies } from '../services/api';
 import { trackWatchButtonTap, trackInfoButtonTap } from '../services/analytics.tvos';
+import TrailerPlayer from '../components/TrailerPlayer.tvos';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const POSTER_WIDTH = SCREEN_WIDTH * 0.35;
@@ -69,7 +70,7 @@ const getServiceColor = (service) => {
 };
 
 // Simple action button with equal sizing
-const ActionButton = ({ label, color, onPress, hasTVPreferredFocus = false, testID }) => {
+const ActionButton = ({ label, color, onPress, hasTVPreferredFocus = false, testID, borderColor, textColor }) => {
   const [isFocused, setIsFocused] = useState(false);
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
@@ -105,11 +106,12 @@ const ActionButton = ({ label, color, onPress, hasTVPreferredFocus = false, test
         style={[
           actionButtonStyles.button,
           { backgroundColor: color },
+          borderColor && { borderWidth: 2, borderColor },
           isFocused && actionButtonStyles.buttonFocused,
           { transform: [{ scale: scaleAnim }] },
         ]}
       >
-        <Text style={actionButtonStyles.label}>{label}</Text>
+        <Text style={[actionButtonStyles.label, textColor && { color: textColor }]}>{label}</Text>
       </Animated.View>
     </TouchableOpacity>
   );
@@ -244,6 +246,9 @@ const MovieDetailTvOS = () => {
     hasInfoLinks,
   } = useMovieDetail(movie);
 
+  // Trailer player state
+  const [trailerVisible, setTrailerVisible] = useState(false);
+
   // Local state
   const [synopsisExpanded, setSynopsisExpanded] = useState(false);
 
@@ -256,8 +261,8 @@ const MovieDetailTvOS = () => {
     }).start();
   }, [fadeAnim]);
 
-  // Handle TV remote events
-  useTVEventHandler({
+  // Handle TV remote events (disabled while trailer player is active)
+  useTVEventHandler(trailerVisible ? {} : {
     [TV_EVENTS.MENU]: () => {
       navigation.goBack();
     },
@@ -265,7 +270,7 @@ const MovieDetailTvOS = () => {
       // Play trailer if available
       const trailerLink = infoLinks.find((l) => l.type === 'trailer');
       if (trailerLink) {
-        handleLinkPress(trailerLink);
+        setTrailerVisible(true);
       }
     },
     [TV_EVENTS.LEFT]: () => {
@@ -518,7 +523,7 @@ const MovieDetailTvOS = () => {
                   <ActionButton
                     label="TRAILER"
                     color="#E50914"
-                    onPress={() => handleLinkPress(infoLinks.find(l => l.type === 'trailer'))}
+                    onPress={() => setTrailerVisible(true)}
                     hasTVPreferredFocus={true}
                     testID="action-btn-trailer"
                   />
@@ -536,7 +541,9 @@ const MovieDetailTvOS = () => {
                   return (
                     <ActionButton
                       label={isFestivalPlatform ? 'BUY TICKET' : 'RENT / BUY'}
-                      color={isFestivalPlatform ? '#FFD700' : '#ff9500'}
+                      color={isFestivalPlatform ? 'transparent' : '#ff9500'}
+                      borderColor={isFestivalPlatform ? '#FFD700' : undefined}
+                      textColor={isFestivalPlatform ? '#FFD700' : undefined}
                       onPress={() => handleWatchPress(purchaseLinks[0])}
                       hasTVPreferredFocus={!infoLinks.find(l => l.type === 'trailer')}
                       testID="action-btn-purchase"
@@ -587,6 +594,20 @@ const MovieDetailTvOS = () => {
         <Animated.Text style={[styles.navArrowText, { opacity: rightArrowOpacity }]}>›</Animated.Text>
       </View>
 
+      {/* Trailer player overlay */}
+      {trailerVisible && movieList.length > 0 && (
+        <TrailerPlayer
+          movieList={movieList}
+          initialIndex={currentIndex}
+          onClose={(lastIndex) => {
+            setTrailerVisible(false);
+            if (lastIndex !== currentIndex && lastIndex >= 0 && lastIndex < movieList.length) {
+              setCurrentIndex(lastIndex);
+              setMovie(movieList[lastIndex]);
+            }
+          }}
+        />
+      )}
     </Animated.View>
   );
 };
@@ -705,11 +726,16 @@ const styles = StyleSheet.create({
     marginLeft: Spacing.tvos.md,
   },
   festivalName: {
-    color: '#FFD700',
-    fontSize: Typography.tvos.body,
-    fontWeight: '700',
-    letterSpacing: 0.5,
+    backgroundColor: '#FFD700',
+    color: '#000',
+    fontSize: Typography.tvos.body - 2,
+    fontWeight: '800',
+    letterSpacing: 1.5,
+    textAlign: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
     marginBottom: Spacing.tvos.sm,
+    overflow: 'hidden',
   },
   metadataRow: {
     flexDirection: 'row',

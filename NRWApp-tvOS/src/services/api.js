@@ -147,10 +147,10 @@ export function getMoviesByReleaseDate(movies) {
 }
 
 /**
- * Filter movies by category filters (multi-select with AND logic)
+ * Filter movies by category filters (OR logic - cumulative)
  * @param {Array} movies - Array of movie objects
  * @param {Array|string} filters - Array of filter IDs or single filter string (for backwards compatibility)
- * @returns {Array} Filtered movies that match ALL selected filters
+ * @returns {Array} Filtered movies that match ANY selected filter
  */
 export function filterMovies(movies, filters = 'all') {
   if (!movies || !Array.isArray(movies)) return [];
@@ -166,51 +166,49 @@ export function filterMovies(movies, filters = 'all') {
   return movies.filter(movie => {
     if (movie.hidden) return false;
 
-    // Must pass ALL selected filters (AND logic)
+    // Must pass ANY selected filter (OR logic - cumulative)
     for (const filter of filterArray) {
       switch (filter) {
         case 'big-time':
-          if (movie.categories?.tier !== 'big_time') return false;
+          if (movie.categories?.tier === 'big_time') return true;
           break;
         case 'niche':
-          if (movie.categories?.tier !== 'niche') return false;
+          if (movie.categories?.tier === 'niche') return true;
           break;
-        case 'staff-picks':
-          // Support both new categories object and legacy featured field
+        case 'staff-picks': {
           const isStaffPick = movie.categories?.is_staff_pick || movie.featured === true;
-          if (!isStaffPick) return false;
+          if (isStaffPick) return true;
           break;
-        case 'foreign':
-          // Support both new categories object and legacy original_language
+        }
+        case 'foreign': {
           const isForeign = movie.categories?.is_foreign ??
             (movie.original_language && movie.original_language !== 'en');
-          if (!isForeign) return false;
+          if (isForeign) return true;
           break;
+        }
         case 'series':
-          if (movie.content_type !== 'limited_series') return false;
+          if (movie.content_type === 'limited_series') return true;
           break;
         case 'plex':
-          // Movies available in personal Plex library
-          if (!movie.plex || !movie.plex.deep_link) return false;
+          if (movie.plex && movie.plex.deep_link) return true;
           break;
         case 'restorations':
-          if (!movie.categories?.is_restoration) return false;
+          if (movie.categories?.is_restoration) return true;
           break;
         case 'festivals':
-          if (!movie.categories?.is_festival) return false;
+          if (movie.categories?.is_festival) return true;
           break;
-        case 'featured':
-          // Legacy support - maps to staff-picks
+        case 'featured': {
           const isFeatured = movie.categories?.is_staff_pick || movie.featured === true;
-          if (!isFeatured) return false;
+          if (isFeatured) return true;
           break;
+        }
         case 'hidden':
-          // Legacy support
-          if (movie.hidden !== true) return false;
+          if (movie.hidden === true) return true;
           break;
       }
     }
-    return true;
+    return false;
   });
 }
 

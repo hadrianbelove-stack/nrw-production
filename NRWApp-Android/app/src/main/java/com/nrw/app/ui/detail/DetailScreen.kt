@@ -24,7 +24,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.focusable
@@ -96,6 +98,7 @@ fun DetailScreen(
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
     val focusRequester = remember { FocusRequester() }
+    var trailerVisible by remember { mutableStateOf(false) }
 
     // Load movie when screen opens
     LaunchedEffect(movieId) {
@@ -149,8 +152,25 @@ fun DetailScreen(
                     onWatchClick = { option ->
                         DeepLinkHelper.openUrl(context, option.url, option.service)
                     },
-                    onTrailerClick = { url ->
-                        DeepLinkHelper.openTrailer(context, url)
+                    onTrailerClick = { _ ->
+                        trailerVisible = true
+                    }
+                )
+            }
+        }
+
+        // Trailer player overlay
+        if (trailerVisible) {
+            val movieList = viewModel.getMovieList()
+            if (movieList.isNotEmpty()) {
+                TrailerPlayerOverlay(
+                    movieList = movieList,
+                    initialIndex = uiState.currentIndex,
+                    onClose = { lastIndex ->
+                        trailerVisible = false
+                        if (lastIndex != uiState.currentIndex) {
+                            viewModel.navigateToIndex(lastIndex)
+                        }
                     }
                 )
             }
@@ -298,9 +318,15 @@ private fun MovieDetail(
                             movie.festivalInfo?.festivalName?.let { festivalName ->
                                 Text(
                                     text = festivalName,
-                                    color = Color(0xFFFFD700),
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.Medium
+                                    color = Color.Black,
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    letterSpacing = 1.5.sp,
+                                    textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .background(Color(0xFFFFD700))
+                                        .padding(vertical = 8.dp, horizontal = 12.dp)
                                 )
                             }
                         }

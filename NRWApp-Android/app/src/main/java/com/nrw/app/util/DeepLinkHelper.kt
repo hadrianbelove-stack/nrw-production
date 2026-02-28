@@ -286,7 +286,7 @@ object DeepLinkHelper {
     /**
      * Extract YouTube video ID from URL
      */
-    private fun extractYouTubeId(url: String): String? {
+    fun extractYouTubeId(url: String): String? {
         val patterns = listOf(
             Regex("(?:youtube\\.com/watch\\?v=|youtu\\.be/|youtube\\.com/embed/)([^&\\n?#]+)"),
             Regex("^([a-zA-Z0-9_-]{11})$")

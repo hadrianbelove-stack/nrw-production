@@ -21,8 +21,9 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {WatchButtonGroup} from '../components/WatchButton';
 import {Colors, Typography, Spacing} from '../constants/colors';
 import {getWatchLinks} from '../services/api';
-import {openWatchLink, openTrailer, openRottenTomatoes} from '../utils/links';
+import {openWatchLink, openRottenTomatoes} from '../utils/links';
 import {trackMovieView, trackWatchButtonTap} from '../services/analytics';
+import TrailerPlayer from '../components/TrailerPlayer';
 
 const COUNTRY_SHORT_NAMES = {
   'united states of america': 'USA', 'united states': 'USA', 'usa': 'USA',
@@ -148,12 +149,12 @@ export default function MovieDetail({route}) {
     [movie],
   );
 
+  // Trailer player state
+  const [trailerVisible, setTrailerVisible] = useState(false);
+
   const handleTrailerPress = useCallback(() => {
-    const url = movie.links?.trailer_hosted || movie.links?.trailer;
-    if (url) {
-      openTrailer(url);
-    }
-  }, [movie]);
+    setTrailerVisible(true);
+  }, []);
 
   const handleRTPress = useCallback(() => {
     if (movie.links?.rotten_tomatoes) {
@@ -352,6 +353,21 @@ export default function MovieDetail({route}) {
         )}
       </View>
     </ScrollView>
+
+      {/* Trailer player overlay */}
+      {trailerVisible && movieList.length > 0 && (
+        <TrailerPlayer
+          movieList={movieList}
+          initialIndex={currentIndex}
+          onClose={(lastIndex) => {
+            setTrailerVisible(false);
+            if (lastIndex !== currentIndex && lastIndex >= 0 && lastIndex < movieList.length) {
+              setCurrentIndex(lastIndex);
+              setMovie(movieList[lastIndex]);
+            }
+          }}
+        />
+      )}
     </View>
   );
 }
@@ -470,11 +486,15 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   festivalName: {
-    color: '#FFD700',
-    fontSize: Typography.caption + 1,
-    fontWeight: '700',
-    letterSpacing: 0.5,
-    marginTop: Spacing.xs,
+    backgroundColor: '#FFD700',
+    color: '#000',
+    fontSize: Typography.caption,
+    fontWeight: '800',
+    letterSpacing: 1.5,
+    textAlign: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    marginBottom: Spacing.sm,
   },
   metaRow: {
     flexDirection: 'row',

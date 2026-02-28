@@ -69,6 +69,16 @@ Function OnKeyEvent(key as String, press as Boolean) as Boolean
             m.videoPlayer.control = "pause"
         end if
         return true
+    else if key = "fastforward"
+        ' Navigate to next trailer
+        m.videoPlayer.control = "stop"
+        m.top.navigateDirection = 1
+        return true
+    else if key = "rewind"
+        ' Navigate to previous trailer
+        m.videoPlayer.control = "stop"
+        m.top.navigateDirection = -1
+        return true
     end if
 
     return false

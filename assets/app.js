@@ -250,13 +250,14 @@ const NRW = {
                             if (movie.categories?.tier === 'niche') matchesAny = true;
                             break;
                         case 'staff-picks':
-                            if (movie.categories?.is_staff_pick) matchesAny = true;
+                            if (movie.categories?.is_staff_pick || movie.featured) matchesAny = true;
                             break;
-                        case 'foreign':
+                        case 'foreign': {
                             const isForeign = movie.categories?.is_foreign ??
                                 (movie.original_language && movie.original_language !== 'en');
                             if (isForeign) matchesAny = true;
                             break;
+                        }
                         case 'series':
                             if (movie.content_type === 'limited_series') matchesAny = true;
                             break;
@@ -567,8 +568,8 @@ const NRW = {
             const streamingBadge = getStreamingBadge(movie);
             const restorationBadge = movie.categories?.is_restoration
                 ? '<div class="restoration-badge">RESTORED</div>' : '';
-            const festivalRibbon = movie.categories?.is_festival && movie.festival_info?.festival_name
-                ? `<div class="festival-ribbon">${movie.festival_info.festival_name.toUpperCase()}</div>` : '';
+            const festivalRibbon = movie.categories?.is_festival
+                ? '<div class="festival-ribbon">FESTIVAL SCREENING</div>' : '';
 
             html += `
             <div class="movie-container${staffPickClass}">
@@ -636,42 +637,34 @@ const NRW = {
         }
     },
 
-    // Show trailer in embedded modal (supports self-hosted MP4 and YouTube)
-    showTrailer(url) {
-        const isHosted = this.isHostedTrailer(url);
-
-        // Create modal if it doesn't exist
-        let modal = document.getElementById('trailer-modal');
-        if (!modal) {
-            modal = document.createElement('div');
-            modal.id = 'trailer-modal';
-            modal.className = 'trailer-modal';
-            modal.innerHTML = `
-                <div class="trailer-modal-backdrop"></div>
-                <div class="trailer-modal-content">
-                    <button class="trailer-close-btn" aria-label="Close trailer">&times;</button>
-                    <div class="trailer-video-container" id="trailer-video-container"></div>
-                </div>
-            `;
-            document.body.appendChild(modal);
-
-            // Close on backdrop click
-            modal.querySelector('.trailer-modal-backdrop').addEventListener('click', () => this.closeTrailer());
-            modal.querySelector('.trailer-close-btn').addEventListener('click', () => this.closeTrailer());
-
-            // Close on Escape key (only if trailer is showing, stop propagation so lightbox doesn't also close)
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && modal.classList.contains('active')) {
-                    e.stopPropagation();
-                    this.closeTrailer();
-                }
-            });
+    // Find next/prev movie index in lightboxMovies that has a trailer
+    // direction: +1 (forward) or -1 (backward), wraps around
+    // Returns -1 if no other movie with a trailer exists
+    findNextTrailerIndex(fromIndex, direction) {
+        const count = this.lightboxMovies.length;
+        if (count === 0) return -1;
+        let idx = fromIndex;
+        for (let i = 0; i < count - 1; i++) {
+            idx = (idx + direction + count) % count;
+            const movie = this.lightboxMovies[idx];
+            const trailerUrl = movie.links?.trailer_hosted || movie.links?.trailer;
+            if (trailerUrl) return idx;
         }
+        return -1;
+    },
 
+    // Load a trailer video into the existing trailer modal container
+    loadTrailerVideo(url) {
         const container = document.getElementById('trailer-video-container');
+        if (!container) return;
 
-        if (isHosted) {
-            // Self-hosted MP4 — HTML5 video player with loading/error states
+        // Stop any existing video/iframe first
+        const existingVideo = container.querySelector('video');
+        if (existingVideo) { existingVideo.pause(); existingVideo.src = ''; }
+        const existingIframe = container.querySelector('iframe');
+        if (existingIframe) { existingIframe.src = ''; }
+
+        if (this.isHostedTrailer(url)) {
             container.innerHTML = `
                 <div class="trailer-loading" id="trailer-loading">
                     <div class="trailer-spinner"></div>
@@ -695,7 +688,6 @@ const NRW = {
             video.addEventListener('canplay', () => { loading.style.display = 'none'; }, { once: true });
             video.addEventListener('error', () => { loading.style.display = 'none'; error.style.display = ''; }, { once: true });
         } else {
-            // YouTube URL — iframe embed
             const videoId = this.extractYouTubeId(url);
             if (!videoId) {
                 window.open(url, '_blank');
@@ -710,6 +702,99 @@ const NRW = {
                 </iframe>
             `;
         }
+    },
+
+    // Navigate to next/prev trailer within the lightbox movie list
+    trailerNav(direction) {
+        if (this.trailerLightboxIndex < 0) return;
+        const nextIdx = this.findNextTrailerIndex(this.trailerLightboxIndex, direction);
+        if (nextIdx < 0) return;
+
+        this.trailerLightboxIndex = nextIdx;
+        const movie = this.lightboxMovies[nextIdx];
+        const trailerUrl = movie.links?.trailer_hosted || movie.links?.trailer;
+
+        const titleEl = document.getElementById('trailer-movie-title');
+        if (titleEl) titleEl.textContent = movie.title;
+
+        this.updateTrailerNavVisibility();
+        this.loadTrailerVideo(trailerUrl);
+    },
+
+    // Show/hide trailer nav arrows based on whether neighbors have trailers
+    updateTrailerNavVisibility() {
+        const prevBtn = document.getElementById('trailer-nav-prev');
+        const nextBtn = document.getElementById('trailer-nav-next');
+        if (!prevBtn || !nextBtn) return;
+
+        if (this.trailerLightboxIndex < 0 || this.lightboxMovies.length === 0) {
+            prevBtn.style.display = 'none';
+            nextBtn.style.display = 'none';
+            return;
+        }
+
+        prevBtn.style.display = this.findNextTrailerIndex(this.trailerLightboxIndex, -1) >= 0 ? '' : 'none';
+        nextBtn.style.display = this.findNextTrailerIndex(this.trailerLightboxIndex, 1) >= 0 ? '' : 'none';
+    },
+
+    // Show trailer in embedded modal (supports self-hosted MP4 and YouTube)
+    showTrailer(url) {
+        // Create modal if it doesn't exist
+        let modal = document.getElementById('trailer-modal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'trailer-modal';
+            modal.className = 'trailer-modal';
+            modal.innerHTML = `
+                <div class="trailer-modal-backdrop"></div>
+                <div class="trailer-modal-content">
+                    <div class="trailer-header">
+                        <span class="trailer-movie-title" id="trailer-movie-title"></span>
+                        <button class="trailer-close-btn" aria-label="Close trailer">&times;</button>
+                    </div>
+                    <div class="trailer-nav-wrapper">
+                        <button class="trailer-nav prev" id="trailer-nav-prev" aria-label="Previous trailer">&larr;</button>
+                        <div class="trailer-video-container" id="trailer-video-container"></div>
+                        <button class="trailer-nav next" id="trailer-nav-next" aria-label="Next trailer">&rarr;</button>
+                    </div>
+                    <div class="trailer-hint">Arrow keys to navigate trailers &bull; ESC to return</div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+
+            // Close on backdrop click
+            modal.querySelector('.trailer-modal-backdrop').addEventListener('click', () => this.closeTrailer());
+            modal.querySelector('.trailer-close-btn').addEventListener('click', () => this.closeTrailer());
+
+            // Nav arrow clicks
+            modal.querySelector('#trailer-nav-prev').addEventListener('click', () => this.trailerNav(-1));
+            modal.querySelector('#trailer-nav-next').addEventListener('click', () => this.trailerNav(1));
+
+            // Close on Escape key (stop propagation so lightbox doesn't also close)
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && modal.classList.contains('active')) {
+                    e.stopPropagation();
+                    this.closeTrailer();
+                }
+            });
+        }
+
+        // Determine which movie this trailer belongs to
+        this.trailerLightboxIndex = this.lightboxMovies.findIndex(m => {
+            const mUrl = m.links?.trailer_hosted || m.links?.trailer;
+            return mUrl === url;
+        });
+
+        // Set movie title
+        const titleEl = document.getElementById('trailer-movie-title');
+        if (titleEl && this.trailerLightboxIndex >= 0) {
+            titleEl.textContent = this.lightboxMovies[this.trailerLightboxIndex].title;
+        } else if (titleEl) {
+            titleEl.textContent = '';
+        }
+
+        this.updateTrailerNavVisibility();
+        this.loadTrailerVideo(url);
 
         // Show modal
         modal.classList.add('active');
@@ -723,12 +808,19 @@ const NRW = {
             modal.classList.remove('active');
             const container = document.getElementById('trailer-video-container');
             if (container) {
-                // Stop video/iframe playback
                 const video = container.querySelector('video');
                 if (video) { video.pause(); video.src = ''; }
                 const iframe = container.querySelector('iframe');
                 if (iframe) { iframe.src = ''; }
             }
+
+            // Sync lightbox to the movie whose trailer was playing
+            if (this.trailerLightboxIndex >= 0) {
+                this.lightboxIndex = this.trailerLightboxIndex;
+                this.updateLightbox();
+            }
+            this.trailerLightboxIndex = -1;
+
             // Only restore scrolling if lightbox isn't still open
             const lightbox = document.getElementById('poster-lightbox');
             if (!lightbox || !lightbox.classList.contains('active')) {
@@ -911,9 +1003,17 @@ const NRW = {
     // Setup lightbox keyboard navigation
     setupLightboxKeyboardHandler() {
         document.addEventListener('keydown', (e) => {
-            // Don't handle keys if trailer modal is showing
+            // Handle trailer navigation when trailer modal is active
             const trailerModal = document.getElementById('trailer-modal');
-            if (trailerModal && trailerModal.classList.contains('active')) return;
+            if (trailerModal && trailerModal.classList.contains('active')) {
+                if (e.key === 'ArrowLeft') {
+                    this.trailerNav(-1);
+                } else if (e.key === 'ArrowRight') {
+                    this.trailerNav(1);
+                }
+                // Escape is handled by showTrailer's own keydown listener
+                return;
+            }
 
             const lightbox = document.getElementById('poster-lightbox');
             if (!lightbox.classList.contains('active')) return;

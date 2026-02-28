@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-02-28T05:26:34.983409",
+  "generated_at": "2026-02-27T22:22:27.565839",
   "count": 372,
   "movies": [
     {
       "id": "1531626",
       "title": "Descendants/ZOMBIES Worlds Collide - Concert Special",
-      "digital_date": "2026-02-28",
+      "digital_date": "2026-02-20",
       "bootstrap_date": false,
       "manually_corrected": false,
       "synopsis": "Celebrating the high-energy music from the iconic Descendants and ZOMBIES franchises, the Descendants/ZOMBIES Worlds Collide Tour thrilled sold-out crowds in over 40 arenas across North America last summer. Now, families and fans of all ages can relive the excitement - singing and dancing along with their favorite stars from the comfort of home.",
@@ -23,13 +23,16 @@
         ]
       },
       "links": {
-        "wikipedia": null,
-        "trailer": null,
-        "rt": null
+        "trailer": "https://www.youtube.com/watch?v=25Wm4uKYX68"
       },
-      "watch_links": {},
-      "_enrichment_status": "pending",
-      "_discovered_at": "2026-02-28T05:26:34.983402",
+      "watch_links": {
+        "streaming": {
+          "service": "Disney+",
+          "link": "https://disneyplus.bn5x.net/c/1206980/705874/9358?u=https%3A%2F%2Fwww.disneyplus.com%2Fbrowse%2Fentity-0eb798f3-9d9d-4ca5-8c91-6747764bf014&subId3=justappsvod"
+        }
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-02-27T21:25:04.409619",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
       "poster": "https://image.tmdb.org/t/p/w500/ogWhinTSMe8UhlIPhrztPVxpOsl.jpg",
@@ -42,18 +45,19 @@
         "director": "Paul Dugdale",
         "cast": [
           "Kylie Cantrall",
-          "Freya Skye",
-          "Malia Baker",
-          "Malachi Barton",
-          "Dara Rene\u00e9"
+          "Freya Skye"
         ]
       },
-      "_discovery_source": "provider_availability_check"
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "tmdb_type4",
+      "_enrichment_gaps": [
+        "rt_score"
+      ]
     },
     {
       "id": "1446171",
       "title": "Queens of Joy",
-      "digital_date": "2026-02-28",
+      "digital_date": "2026-02-27",
       "bootstrap_date": false,
       "manually_corrected": false,
       "synopsis": "Monroe, Aura, Marlene: Three drag queens from the Ukrainian LGBTQ+ community raise funds for the frontlines, re-defining resilience and hope between glamorous shows and wartime life.",
@@ -71,13 +75,26 @@
         "streaming": []
       },
       "links": {
-        "wikipedia": null,
-        "trailer": null,
-        "rt": null
+        "trailer": "https://www.youtube.com/watch?v=f3Owp3m9ZFA"
       },
-      "watch_links": {},
-      "_enrichment_status": "pending",
-      "_discovered_at": "2026-02-28T05:24:44.013157",
+      "watch_links": {
+        "streaming": {
+          "service": "Shudder",
+          "link": "https://www.shudder.com/movies/watch/queens-of-the-dead/be673f05b3b495d9"
+        },
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.1c0b18f5-da61-4e7d-ba24-10e5d2c1e52e&tag=nrw04-20"
+          },
+          {
+            "service": "Apple TV",
+            "link": "https://tv.apple.com/us/movie/queens-of-the-dead/umc.cmc.2uayup7k1ev9kolvhtsd3jtmz?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1846429724"
+          }
+        ]
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-02-27T21:19:17.118638",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
       "poster": "https://image.tmdb.org/t/p/w500/6rQXCW5NK91sVnQbQFxIW16lyL4.jpg",
@@ -90,12 +107,16 @@
         "director": "Olga Gibelinda",
         "cast": []
       },
-      "_discovery_source": "provider_availability_check"
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection",
+      "_enrichment_gaps": [
+        "rt_score"
+      ]
     },
     {
       "id": "1370600",
       "title": "Front Row",
-      "digital_date": "2026-02-28",
+      "digital_date": "2025-12-08",
       "bootstrap_date": false,
       "manually_corrected": false,
       "synopsis": "Bertolt Brecht asked whether there would be singing in the dark times. In the throes of war, the United Ukrainian Ballet Company defiantly insists there will be dancing, too. Far from the land they call home, young dancers take quiet comfort from art. For a while, their work feels like the old days, except there is a new troupe member: a soldier learning to dance with prosthetic legs.",
@@ -113,13 +134,17 @@
         ]
       },
       "links": {
-        "wikipedia": null,
-        "trailer": null,
-        "rt": null
+        "trailer": "https://www.youtube.com/watch?v=TNsDG1NdTuA",
+        "rt": "https://www.rottentomatoes.com/m/front_row_2024"
       },
-      "watch_links": {},
-      "_enrichment_status": "pending",
-      "_discovered_at": "2026-02-28T05:11:51.746980",
+      "watch_links": {
+        "streaming": {
+          "service": "Amazon",
+          "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.a93be79e-297e-42d0-839d-92be37864889"
+        }
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-02-27T20:55:10.107090",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
       "poster": "https://image.tmdb.org/t/p/w500/sQlXxYciGbWecNRwansdMD2Urjo.jpg",
@@ -132,508 +157,8 @@
         "director": "Miriam Guttmann",
         "cast": []
       },
-      "_discovery_source": "provider_availability_check"
-    },
-    {
-      "id": "1384751",
-      "title": "Noseeums",
-      "digital_date": "2026-02-27",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "synopsis": "Fresh from her toxic relationship, a curious college student, Ember reluctantly agrees to a weekend trip with her roommate and wealthy white \"friends\" to a secluded lake house in the Florida backwoods. Once she arrives at this unsettling land, it becomes familiar as she unearths troubled spirits that owned it and seeks to reclaim it",
-      "genres": [
-        "Horror"
-      ],
-      "runtime": 85,
-      "year": 2025,
-      "rt_score": null,
-      "providers": {
-        "rent": [
-          "Amazon Video"
-        ],
-        "buy": [],
-        "streaming": []
-      },
-      "links": {
-        "trailer": "https://www.youtube.com/watch?v=QOrbb7XB_ec"
-      },
-      "watch_links": {
-        "vod": [
-          {
-            "service": "Amazon",
-            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.ce46db03-2e90-4cf2-942e-734894ce4b36&tag=nrw04-20"
-          }
-        ]
-      },
-      "_enrichment_status": "completed",
-      "_discovered_at": "2026-02-27T10:25:59.259469",
-      "_tmdb_fetch_failed": false,
-      "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/tTk9ZAmgPzuWPs3x0y5fm45N1Ew.jpg",
-      "studio": "Torchlight Studios",
-      "budget": 0,
-      "country": "United States of America",
-      "original_language": "en",
-      "crew": {
-        "director": "Raven Deshay Carter",
-        "cast": [
-          "Aleigha Burt",
-          "Jasmine Gia Nguyen"
-        ]
-      },
-      "_discovery_source": "provider_availability_check",
-      "_digital_date_source": "tmdb_type4",
-      "_enrichment_gaps": [
-        "rt_score"
-      ]
-    },
-    {
-      "id": "1405748",
-      "title": "The Big Johnson",
-      "digital_date": "2026-02-27",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "synopsis": "Dean Johnson, drag queen, rock star, LGBTQI activist, junkie, genius, escort then John Doe. How does someone so famous in New York die as an unknown in DC? This documentary explores the incredible highs and the crushing lows of Dean Johnson\u2019s life and untimely death. Was it murder? Was it an accident? We may never know, but what is certain is that Dean and \u201cthe Big Johnson\u201d changed New York City and all who knew him forever.",
-      "genres": [
-        "Documentary"
-      ],
-      "runtime": 95,
-      "year": 2025,
-      "rt_score": null,
-      "providers": {
-        "rent": [
-          "Amazon Video"
-        ],
-        "buy": [],
-        "streaming": []
-      },
-      "links": {
-        "trailer": "https://www.youtube.com/watch?v=bwa1ttQbXJ8"
-      },
-      "watch_links": {
-        "vod": [
-          {
-            "service": "Amazon",
-            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.ee26e17e-0fc4-49bc-84b8-f56dfa6fa6f5&tag=nrw04-20"
-          }
-        ]
-      },
-      "_enrichment_status": "completed",
-      "_discovered_at": "2026-02-27T10:25:58.385750",
-      "_tmdb_fetch_failed": false,
-      "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/b2N7arsRkNbleaXgZ6MnzE8mNff.jpg",
-      "studio": "Funtown Pictures",
-      "budget": 0,
-      "country": "United States of America",
-      "original_language": "en",
-      "crew": {
-        "director": "Lola Rock'N'Rolla",
-        "cast": [
-          "Lady Bunny",
-          "Taylor Mac"
-        ]
-      },
-      "_discovery_source": "provider_availability_check",
-      "_digital_date_source": "tmdb_type4",
-      "_enrichment_gaps": [
-        "rt_score"
-      ]
-    },
-    {
-      "id": "799882",
-      "title": "The Bluff",
-      "digital_date": "2026-02-25",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "synopsis": "When her tranquil life on a remote island is shattered by the return of her vengeful former captain, a skilled ex-pirate must confront her bloody past and unleash her deadly talents to save her family from a ruthless siege.",
-      "genres": [
-        "Action",
-        "Thriller"
-      ],
-      "runtime": 102,
-      "year": 2026,
-      "rt_score": "70%",
-      "providers": {
-        "rent": [],
-        "buy": [],
-        "streaming": [
-          "Amazon Prime Video",
-          "Amazon Prime Video with Ads"
-        ]
-      },
-      "links": {
-        "wikipedia": "https://en.wikipedia.org/wiki/The_Bluff_(2026_film)",
-        "trailer": "https://www.youtube.com/watch?v=uUYMqRjNxhM",
-        "rt": "https://www.rottentomatoes.com/m/the_bluff_2026"
-      },
-      "watch_links": {
-        "streaming": {
-          "service": "Amazon",
-          "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.a2ae5f76-c2c2-4715-9e7c-928dace7b349"
-        }
-      },
-      "_enrichment_status": "completed",
-      "_discovered_at": "2026-02-27T10:25:45.275632",
-      "_tmdb_fetch_failed": false,
-      "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/sojEzvfxR2DBcDSJyAisX8TWjov.jpg",
-      "studio": "AGBO",
-      "budget": 0,
-      "country": "United States of America",
-      "original_language": "en",
-      "crew": {
-        "director": "Frank E. Flowers",
-        "cast": [
-          "Priyanka Chopra Jonas",
-          "Karl Urban"
-        ]
-      },
       "_discovery_source": "provider_availability_check",
       "_digital_date_source": "tmdb_type4"
-    },
-    {
-      "id": "1622706",
-      "title": "Royal Rumble 2026",
-      "digital_date": "2026-02-27",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "synopsis": "The Road to WrestleMania begins at Royal Rumble, and the top Superstars in WWE are set to compete for a championship bout at WrestleMania. The matches will begin with two superstars in the ring. At equally timed intervals, a new superstar enters the fray. Elimination only occurs when a superstar has gone over the top rope and both feet have touched the floor. This continues until there is just one superstar left standing as the winner of the Royal Rumble Match. Also, AJ Styles will put his incredible career on the line against Gunther and Drew McIntyre will defend his WWE championship against Sami Zayn.",
-      "genres": [
-        "Comedy"
-      ],
-      "runtime": 219,
-      "year": 2026,
-      "rt_score": "81%",
-      "providers": {
-        "rent": [],
-        "buy": [],
-        "streaming": [
-          "Disney Plus"
-        ]
-      },
-      "links": {
-        "wikipedia": "https://en.wikipedia.org/wiki/Royal_Rumble_(2026)",
-        "trailer": "https://www.youtube.com/watch?v=K22wL3h7_F0",
-        "rt": "https://www.rottentomatoes.com/m/wwe_royal_rumble_2026"
-      },
-      "watch_links": {
-        "streaming": {
-          "service": "Disney+",
-          "link": "https://disneyplus.bn5x.net/c/1206980/705874/9358?u=https%3A%2F%2Fwww.disneyplus.com%2Fbrowse%2Fentity-f6727c71-8ad2-48a1-aed3-33e7772dfca6&subId3=justappsvod"
-        }
-      },
-      "_enrichment_status": "completed",
-      "_discovered_at": "2026-02-27T10:23:25.554458",
-      "_tmdb_fetch_failed": false,
-      "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/f9NOLejYqlbiAUFs6gvEads79OK.jpg",
-      "studio": "World Wrestling Entertainment (WWE)",
-      "budget": 0,
-      "country": "United States of America",
-      "original_language": "en",
-      "crew": {
-        "director": "Unknown",
-        "cast": [
-          "Andrew Galloway",
-          "Rami Sebei"
-        ]
-      },
-      "_discovery_source": "provider_availability_check",
-      "_digital_date_source": "detection"
-    },
-    {
-      "id": "1422627",
-      "title": "Snow Leopard Sisters",
-      "digital_date": "2026-02-27",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "synopsis": "In Nepal\u2019s remote Dolpo region, two Indigenous women form an unlikely friendship to save one of the planet\u2019s most mysterious and vulnerable wild cats: the snow leopard.",
-      "genres": [
-        "Documentary"
-      ],
-      "runtime": 93,
-      "year": 2025,
-      "rt_score": null,
-      "providers": {
-        "rent": [
-          "Eventive"
-        ],
-        "buy": [],
-        "streaming": []
-      },
-      "links": {
-        "trailer": "https://www.youtube.com/watch?v=AE_l098CFIc",
-        "rt": "https://www.rottentomatoes.com/m/snow_leopard_sisters"
-      },
-      "watch_links": {},
-      "_enrichment_status": "completed",
-      "_discovered_at": "2026-02-27T10:15:19.613342",
-      "_tmdb_fetch_failed": false,
-      "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/3eT4xMPqHrLjqO5vOnfhHS8D6ml.jpg",
-      "studio": null,
-      "budget": 0,
-      "country": "United Kingdom",
-      "original_language": "en",
-      "crew": {
-        "director": "Andrew Lynch",
-        "cast": []
-      },
-      "_discovery_source": "provider_availability_check",
-      "_digital_date_source": "detection",
-      "_enrichment_gaps": [
-        "watch_links"
-      ]
-    },
-    {
-      "id": "1196946",
-      "title": "Ikkis",
-      "digital_date": "2026-02-25",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "synopsis": "Second Lieutenant and India's youngest Param Vir Chakra recipient, Arun Khetarpal, gave his life fighting for his battalion and the country during the 1971 Battle of Basantar. Ikkis also takes a reflective look at the futility of war through the eyes of Khetarpal's father, who visits his ancestral home in Sargodha and Alma Mater for reunion, which now happens to be in post-partition Pakistan, 30 years later.",
-      "genres": [
-        "History",
-        "War",
-        "Drama"
-      ],
-      "runtime": 148,
-      "year": 2026,
-      "rt_score": "100%",
-      "providers": {
-        "rent": [],
-        "buy": [],
-        "streaming": [
-          "Amazon Prime Video",
-          "Amazon Prime Video with Ads"
-        ]
-      },
-      "links": {
-        "wikipedia": "https://en.wikipedia.org/wiki/Ikkis",
-        "trailer": "https://www.youtube.com/watch?v=QfnyH8odcus",
-        "rt": "https://www.rottentomatoes.com/m/ikkis"
-      },
-      "watch_links": {
-        "streaming": {
-          "service": "Amazon",
-          "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.a2889ba2-92ff-4733-ad35-c9e513dff0f7"
-        }
-      },
-      "_enrichment_status": "completed",
-      "_discovered_at": "2026-02-27T10:12:43.195988",
-      "_tmdb_fetch_failed": false,
-      "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/8PWu0V10nMqG5SrA13wLRXTD2fH.jpg",
-      "studio": "Maddock Films",
-      "budget": 0,
-      "country": "India",
-      "original_language": "hi",
-      "crew": {
-        "director": "Sriram Raghavan",
-        "cast": [
-          "Dharmendra",
-          "Jaideep Ahlawat"
-        ]
-      },
-      "_discovery_source": "provider_availability_check",
-      "_digital_date_source": "tmdb_type4"
-    },
-    {
-      "id": "1239288",
-      "title": "Atropia",
-      "digital_date": "2026-02-27",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "synopsis": "When an aspiring actress in a military role-playing facility falls in love with a soldier cast as an insurgent, their unsimulated emotions threaten to derail the performance.",
-      "genres": [
-        "Comedy",
-        "Drama"
-      ],
-      "runtime": 104,
-      "year": 2025,
-      "rt_score": "41%",
-      "providers": {
-        "rent": [
-          "Amazon Video"
-        ],
-        "buy": [],
-        "streaming": []
-      },
-      "links": {
-        "wikipedia": "https://en.wikipedia.org/wiki/Atropia_(film)",
-        "trailer": "https://www.youtube.com/watch?v=ikcywFRq0nk",
-        "rt": "https://www.rottentomatoes.com/m/atropia"
-      },
-      "watch_links": {
-        "vod": [
-          {
-            "service": "Amazon",
-            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.4f8772fc-8272-42c5-9146-6aacff7f0568&tag=nrw04-20"
-          }
-        ]
-      },
-      "_enrichment_status": "completed",
-      "_discovered_at": "2026-02-27T10:07:22.034828",
-      "_tmdb_fetch_failed": false,
-      "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/qurd8tG5E2T20QihO0ysaJCzAjL.jpg",
-      "studio": "Ways & Means",
-      "budget": 0,
-      "country": "United States of America",
-      "original_language": "en",
-      "crew": {
-        "director": "Hailey Benton Gates",
-        "cast": [
-          "Alia Shawkat",
-          "Zahra Alzubaidi"
-        ]
-      },
-      "_discovery_source": "provider_availability_check",
-      "_digital_date_source": "detection"
-    },
-    {
-      "id": "1517594",
-      "title": "Off School Property: Solving the Separation of Church and State",
-      "digital_date": "2026-02-27",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "synopsis": "Off School Property: Solving the Separation of Church and State explores the historic shift that removed the Bible from public education\u2014and the lasting impact on students, schools and society. Featuring insight from cultural researcher George Barna and other respected voices, this thought-provoking documentary examines how we got here, what\u2019s been lost and how a constitutionally sound solution is already bringing hope to communities across the country.",
-      "genres": [
-        "Documentary"
-      ],
-      "runtime": 60,
-      "year": 2025,
-      "rt_score": "65%",
-      "providers": {
-        "rent": [],
-        "buy": [],
-        "streaming": [
-          "Angel Studios"
-        ]
-      },
-      "links": {
-        "trailer": "https://www.youtube.com/watch?v=aUdV_NS5GkM",
-        "rt": "https://www.rottentomatoes.com/m/middle_school_the_worst_years_of_my_life"
-      },
-      "watch_links": {
-        "streaming": {
-          "service": "Angel Studios",
-          "link": "https://www.angel.com/title/movie/99114ebb-2c28-4c29-aa77-f78006d1110f?utm_source=catalog_feed"
-        }
-      },
-      "_enrichment_status": "completed",
-      "_discovered_at": "2026-02-27T09:56:44.535251",
-      "_tmdb_fetch_failed": false,
-      "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/w4aA1tq3aYBr0o3yCVDMp1UboC9.jpg",
-      "studio": "LifeWise",
-      "budget": 0,
-      "country": "United States of America",
-      "original_language": "en",
-      "crew": {
-        "director": "Nate Lundquist",
-        "cast": []
-      },
-      "_discovery_source": "provider_availability_check",
-      "_digital_date_source": "detection"
-    },
-    {
-      "id": "1262426",
-      "title": "Tin\u0101",
-      "digital_date": "2026-02-27",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "synopsis": "A woman grieving her daughter's death in the Christchurch earthquakes, becomes a substitute teacher at an elite private school. Unexpectedly, she discovers students lacking guidance and care, prompting her to provide inspiration and support.",
-      "genres": [
-        "Drama",
-        "Comedy"
-      ],
-      "runtime": 125,
-      "year": 2025,
-      "rt_score": "95%",
-      "providers": {
-        "rent": [],
-        "buy": [],
-        "streaming": [
-          "Angel Studios"
-        ]
-      },
-      "links": {
-        "wikipedia": "https://en.wikipedia.org/wiki/Tin\u0101",
-        "trailer": "https://www.youtube.com/watch?v=p39afPLXALw",
-        "rt": "https://www.rottentomatoes.com/m/tina_2024"
-      },
-      "watch_links": {
-        "streaming": {
-          "service": "Angel Studios",
-          "link": "https://www.angel.com/title/movie/cb7fc978-58c6-4cba-a1fd-5aaf7ce6283c?utm_source=catalog_feed"
-        }
-      },
-      "_enrichment_status": "completed",
-      "_discovered_at": "2026-02-27T09:50:22.467992",
-      "_tmdb_fetch_failed": false,
-      "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/nx9DPAzainWTqPKuirLIXasbU3z.jpg",
-      "studio": "The Brown Factory",
-      "budget": 0,
-      "country": "New Zealand",
-      "original_language": "en",
-      "crew": {
-        "director": "Miki Magasiva",
-        "cast": [
-          "Anapela Polataivao",
-          "Antonia Robinson"
-        ]
-      },
-      "_discovery_source": "provider_availability_check",
-      "_digital_date_source": "detection"
-    },
-    {
-      "id": "1548594",
-      "title": "The Nutcracker at the Jacobs School of Music",
-      "digital_date": "2025-07-27",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "synopsis": "An imaginative retelling of the classic ballet, featuring a full orchestral performance and stunning choreography. A colorful blend of live theater with cinematic artistry. Breathtaking scenic design combines with elaborate costumes and elegant dance. Captured live at the Musical Arts Center at Indiana University, this presentation creates a new holiday tradition for audiences of all ages.",
-      "genres": [],
-      "runtime": 117,
-      "year": 2025,
-      "rt_score": null,
-      "providers": {
-        "rent": [],
-        "buy": [],
-        "streaming": [
-          "PBS"
-        ]
-      },
-      "links": {
-        "trailer": "https://www.youtube.com/watch?v=k_XoE3j3t_A"
-      },
-      "watch_links": {
-        "streaming": {
-          "service": "PBS",
-          "link": "https://www.pbs.org/show/the-nutcracker-at-the-jacobs-school-of-music"
-        }
-      },
-      "_enrichment_status": "completed",
-      "_discovered_at": "2026-02-27T09:45:33.764715",
-      "_tmdb_fetch_failed": false,
-      "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/5TTGu1SdVwDv0n5hy2tsPsHTaXl.jpg",
-      "studio": "PBS",
-      "budget": 0,
-      "country": "United States of America",
-      "original_language": "en",
-      "crew": {
-        "director": "Unknown",
-        "cast": []
-      },
-      "_discovery_source": "provider_availability_check",
-      "_digital_date_source": "tmdb_type4",
-      "_enrichment_gaps": [
-        "rt_score"
-      ]
     },
     {
       "id": "1443940",
@@ -703,6 +228,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -781,6 +307,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": true,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -844,6 +371,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       }
@@ -901,10 +429,19 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": true,
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "festival_info": {
+        "platform": "Eventive",
+        "festival_slug": "mjff2026",
+        "festival_name": "Miami Jewish Film Festival",
+        "discovered": "2026-02-27",
+        "last_checked": "2026-02-27",
+        "status": "active"
+      }
     },
     {
       "id": "256379",
@@ -962,6 +499,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": true,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -1022,6 +560,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -1082,6 +621,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -1138,10 +678,19 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": true,
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "festival_info": {
+        "platform": "Eventive",
+        "festival_slug": "mjff2026",
+        "festival_name": "Miami Jewish Film Festival",
+        "discovered": "2026-02-27",
+        "last_checked": "2026-02-27",
+        "status": "active"
+      }
     },
     {
       "id": "1421184",
@@ -1198,6 +747,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -1256,10 +806,19 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": true,
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "festival_info": {
+        "platform": "Eventive",
+        "festival_slug": "mjff2026",
+        "festival_name": "Miami Jewish Film Festival",
+        "discovered": "2026-02-27",
+        "last_checked": "2026-02-27",
+        "status": "active"
+      }
     },
     {
       "id": "1385773",
@@ -1313,8 +872,17 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": true,
         "auto_categorized": true,
         "manual_override": null
+      },
+      "festival_info": {
+        "platform": "Eventive",
+        "festival_slug": "tucsonfilm2026",
+        "festival_name": "Tucson Film Festival",
+        "discovered": "2026-02-27",
+        "last_checked": "2026-02-27",
+        "status": "active"
       }
     },
     {
@@ -1372,10 +940,19 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": true,
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "festival_info": {
+        "platform": "Eventive",
+        "festival_slug": "tucsonfilm2026",
+        "festival_name": "Tucson Film Festival",
+        "discovered": "2026-02-27",
+        "last_checked": "2026-02-27",
+        "status": "active"
+      }
     },
     {
       "id": "1591654",
@@ -1431,6 +1008,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -1484,6 +1062,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -1541,11 +1120,20 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": true,
         "auto_categorized": true,
         "manual_override": null
       },
       "featured": false,
-      "rt_score": null
+      "rt_score": null,
+      "festival_info": {
+        "platform": "Eventive",
+        "festival_slug": "mjff2026",
+        "festival_name": "Miami Jewish Film Festival",
+        "discovered": "2026-02-27",
+        "last_checked": "2026-02-27",
+        "status": "active"
+      }
     },
     {
       "id": "1311415",
@@ -1603,10 +1191,19 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": true,
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "festival_info": {
+        "platform": "Eventive",
+        "festival_slug": "tucsonfilm2026",
+        "festival_name": "Tucson Film Festival",
+        "discovered": "2026-02-27",
+        "last_checked": "2026-02-27",
+        "status": "active"
+      }
     },
     {
       "id": "1300041",
@@ -1662,10 +1259,19 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": true,
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "festival_info": {
+        "platform": "Eventive",
+        "festival_slug": "mjff2026",
+        "festival_name": "Miami Jewish Film Festival",
+        "discovered": "2026-02-27",
+        "last_checked": "2026-02-27",
+        "status": "active"
+      }
     },
     {
       "id": "1610042",
@@ -1722,6 +1328,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -1781,6 +1388,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -1842,10 +1450,19 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": true,
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "festival_info": {
+        "platform": "Eventive",
+        "festival_slug": "focusonfrenchcinema",
+        "festival_name": "Focus on French Cinema",
+        "discovered": "2026-02-27",
+        "last_checked": "2026-02-27",
+        "status": "active"
+      }
     },
     {
       "id": "959596",
@@ -1907,6 +1524,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -1963,6 +1581,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -2021,6 +1640,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -2083,6 +1703,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -2142,6 +1763,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -2204,6 +1826,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -2267,6 +1890,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -2336,6 +1960,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -2397,6 +2022,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -2463,6 +2089,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -2525,6 +2152,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -2590,6 +2218,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -2651,6 +2280,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -2717,6 +2347,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -2776,6 +2407,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -2838,6 +2470,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -2899,6 +2532,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -2962,6 +2596,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -3021,6 +2656,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -3078,6 +2714,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -3139,6 +2776,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -3202,6 +2840,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -3259,6 +2898,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -3319,6 +2959,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -3383,6 +3024,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -3445,6 +3087,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -3504,6 +3147,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -3566,6 +3210,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -3625,6 +3270,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -3682,6 +3328,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -3742,6 +3389,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -3804,6 +3452,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -3864,6 +3513,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -3921,6 +3571,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -3977,6 +3628,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -4031,6 +3683,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -4087,6 +3740,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -4142,6 +3796,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -4200,6 +3855,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -4256,6 +3912,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": true,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -4324,6 +3981,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": true,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -4384,6 +4042,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -4444,6 +4103,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -4505,6 +4165,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -4569,6 +4230,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -4629,6 +4291,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -4693,6 +4356,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -4756,6 +4420,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -4816,6 +4481,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -4878,6 +4544,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -4936,6 +4603,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -4997,6 +4665,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -5059,6 +4728,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -5124,6 +4794,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -5184,6 +4855,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -5244,6 +4916,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -5311,6 +4984,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -5384,6 +5058,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -5443,6 +5118,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -5501,6 +5177,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -5561,6 +5238,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -5623,6 +5301,427 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
+    {
+      "id": "1384751",
+      "title": "Noseeums",
+      "digital_date": "2026-02-27",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Fresh from her toxic relationship, a curious college student, Ember reluctantly agrees to a weekend trip with her roommate and wealthy white \"friends\" to a secluded lake house in the Florida backwoods. Once she arrives at this unsettling land, it becomes familiar as she unearths troubled spirits that owned it and seeks to reclaim it",
+      "genres": [
+        "Horror"
+      ],
+      "runtime": 85,
+      "year": 2025,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
+      "links": {
+        "trailer": "https://www.youtube.com/watch?v=QOrbb7XB_ec"
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.ce46db03-2e90-4cf2-942e-734894ce4b36&tag=nrw04-20"
+          }
+        ]
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-02-27T10:25:59.259469",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/tTk9ZAmgPzuWPs3x0y5fm45N1Ew.jpg",
+      "studio": "Torchlight Studios",
+      "budget": 0,
+      "country": "United States of America",
+      "original_language": "en",
+      "crew": {
+        "director": "Raven Deshay Carter",
+        "cast": [
+          "Aleigha Burt",
+          "Jasmine Gia Nguyen"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "tmdb_type4",
+      "_enrichment_gaps": [
+        "rt_score"
+      ],
+      "categories": {
+        "tier": "niche",
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_festival": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
+    {
+      "id": "1405748",
+      "title": "The Big Johnson",
+      "digital_date": "2026-02-27",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Dean Johnson, drag queen, rock star, LGBTQI activist, junkie, genius, escort then John Doe. How does someone so famous in New York die as an unknown in DC? This documentary explores the incredible highs and the crushing lows of Dean Johnson\u2019s life and untimely death. Was it murder? Was it an accident? We may never know, but what is certain is that Dean and \u201cthe Big Johnson\u201d changed New York City and all who knew him forever.",
+      "genres": [
+        "Documentary"
+      ],
+      "runtime": 95,
+      "year": 2025,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
+      "links": {
+        "trailer": "https://www.youtube.com/watch?v=bwa1ttQbXJ8"
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.ee26e17e-0fc4-49bc-84b8-f56dfa6fa6f5&tag=nrw04-20"
+          }
+        ]
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-02-27T10:25:58.385750",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/b2N7arsRkNbleaXgZ6MnzE8mNff.jpg",
+      "studio": "Funtown Pictures",
+      "budget": 0,
+      "country": "United States of America",
+      "original_language": "en",
+      "crew": {
+        "director": "Lola Rock'N'Rolla",
+        "cast": [
+          "Lady Bunny",
+          "Taylor Mac"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "tmdb_type4",
+      "_enrichment_gaps": [
+        "rt_score"
+      ],
+      "categories": {
+        "tier": "niche",
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_festival": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
+    {
+      "id": "1622706",
+      "title": "Royal Rumble 2026",
+      "digital_date": "2026-02-27",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "The Road to WrestleMania begins at Royal Rumble, and the top Superstars in WWE are set to compete for a championship bout at WrestleMania. The matches will begin with two superstars in the ring. At equally timed intervals, a new superstar enters the fray. Elimination only occurs when a superstar has gone over the top rope and both feet have touched the floor. This continues until there is just one superstar left standing as the winner of the Royal Rumble Match. Also, AJ Styles will put his incredible career on the line against Gunther and Drew McIntyre will defend his WWE championship against Sami Zayn.",
+      "genres": [
+        "Comedy"
+      ],
+      "runtime": 219,
+      "year": 2026,
+      "rt_score": "81%",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Disney Plus"
+        ]
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Royal_Rumble_(2026)",
+        "trailer": "https://www.youtube.com/watch?v=K22wL3h7_F0",
+        "rt": "https://www.rottentomatoes.com/m/wwe_royal_rumble_2026"
+      },
+      "watch_links": {
+        "streaming": {
+          "service": "Disney+",
+          "link": "https://disneyplus.bn5x.net/c/1206980/705874/9358?u=https%3A%2F%2Fwww.disneyplus.com%2Fbrowse%2Fentity-f6727c71-8ad2-48a1-aed3-33e7772dfca6&subId3=justappsvod"
+        }
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-02-27T10:23:25.554458",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/f9NOLejYqlbiAUFs6gvEads79OK.jpg",
+      "studio": "World Wrestling Entertainment (WWE)",
+      "budget": 0,
+      "country": "United States of America",
+      "original_language": "en",
+      "crew": {
+        "director": "Unknown",
+        "cast": [
+          "Andrew Galloway",
+          "Rami Sebei"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection",
+      "categories": {
+        "tier": "niche",
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_festival": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
+    {
+      "id": "1422627",
+      "title": "Snow Leopard Sisters",
+      "digital_date": "2026-02-27",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "In Nepal\u2019s remote Dolpo region, two Indigenous women form an unlikely friendship to save one of the planet\u2019s most mysterious and vulnerable wild cats: the snow leopard.",
+      "genres": [
+        "Documentary"
+      ],
+      "runtime": 93,
+      "year": 2025,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "Eventive"
+        ],
+        "buy": [],
+        "streaming": []
+      },
+      "links": {
+        "trailer": "https://www.youtube.com/watch?v=AE_l098CFIc",
+        "rt": "https://www.rottentomatoes.com/m/snow_leopard_sisters"
+      },
+      "watch_links": {},
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-02-27T10:15:19.613342",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/3eT4xMPqHrLjqO5vOnfhHS8D6ml.jpg",
+      "studio": null,
+      "budget": 0,
+      "country": "United Kingdom",
+      "original_language": "en",
+      "crew": {
+        "director": "Andrew Lynch",
+        "cast": []
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection",
+      "_enrichment_gaps": [
+        "watch_links"
+      ],
+      "categories": {
+        "tier": "niche",
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_festival": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
+    {
+      "id": "1239288",
+      "title": "Atropia",
+      "digital_date": "2026-02-27",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "When an aspiring actress in a military role-playing facility falls in love with a soldier cast as an insurgent, their unsimulated emotions threaten to derail the performance.",
+      "genres": [
+        "Comedy",
+        "Drama"
+      ],
+      "runtime": 104,
+      "year": 2025,
+      "rt_score": "41%",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Atropia_(film)",
+        "trailer": "https://www.youtube.com/watch?v=ikcywFRq0nk",
+        "rt": "https://www.rottentomatoes.com/m/atropia"
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.4f8772fc-8272-42c5-9146-6aacff7f0568&tag=nrw04-20"
+          }
+        ]
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-02-27T10:07:22.034828",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/qurd8tG5E2T20QihO0ysaJCzAjL.jpg",
+      "studio": "Ways & Means",
+      "budget": 0,
+      "country": "United States of America",
+      "original_language": "en",
+      "crew": {
+        "director": "Hailey Benton Gates",
+        "cast": [
+          "Alia Shawkat",
+          "Zahra Alzubaidi"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection",
+      "categories": {
+        "tier": "niche",
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_festival": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
+    {
+      "id": "1517594",
+      "title": "Off School Property: Solving the Separation of Church and State",
+      "digital_date": "2026-02-27",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Off School Property: Solving the Separation of Church and State explores the historic shift that removed the Bible from public education\u2014and the lasting impact on students, schools and society. Featuring insight from cultural researcher George Barna and other respected voices, this thought-provoking documentary examines how we got here, what\u2019s been lost and how a constitutionally sound solution is already bringing hope to communities across the country.",
+      "genres": [
+        "Documentary"
+      ],
+      "runtime": 60,
+      "year": 2025,
+      "rt_score": "65%",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Angel Studios"
+        ]
+      },
+      "links": {
+        "trailer": "https://www.youtube.com/watch?v=aUdV_NS5GkM",
+        "rt": "https://www.rottentomatoes.com/m/middle_school_the_worst_years_of_my_life"
+      },
+      "watch_links": {
+        "streaming": {
+          "service": "Angel Studios",
+          "link": "https://www.angel.com/title/movie/99114ebb-2c28-4c29-aa77-f78006d1110f?utm_source=catalog_feed"
+        }
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-02-27T09:56:44.535251",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/w4aA1tq3aYBr0o3yCVDMp1UboC9.jpg",
+      "studio": "LifeWise",
+      "budget": 0,
+      "country": "United States of America",
+      "original_language": "en",
+      "crew": {
+        "director": "Nate Lundquist",
+        "cast": []
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection",
+      "categories": {
+        "tier": "niche",
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_festival": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
+    {
+      "id": "1262426",
+      "title": "Tin\u0101",
+      "digital_date": "2026-02-27",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "A woman grieving her daughter's death in the Christchurch earthquakes, becomes a substitute teacher at an elite private school. Unexpectedly, she discovers students lacking guidance and care, prompting her to provide inspiration and support.",
+      "genres": [
+        "Drama",
+        "Comedy"
+      ],
+      "runtime": 125,
+      "year": 2025,
+      "rt_score": "95%",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Angel Studios"
+        ]
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Tin\u0101",
+        "trailer": "https://www.youtube.com/watch?v=p39afPLXALw",
+        "rt": "https://www.rottentomatoes.com/m/tina_2024"
+      },
+      "watch_links": {
+        "streaming": {
+          "service": "Angel Studios",
+          "link": "https://www.angel.com/title/movie/cb7fc978-58c6-4cba-a1fd-5aaf7ce6283c?utm_source=catalog_feed"
+        }
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-02-27T09:50:22.467992",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/nx9DPAzainWTqPKuirLIXasbU3z.jpg",
+      "studio": "The Brown Factory",
+      "budget": 0,
+      "country": "New Zealand",
+      "original_language": "en",
+      "crew": {
+        "director": "Miki Magasiva",
+        "cast": [
+          "Anapela Polataivao",
+          "Antonia Robinson"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection",
+      "categories": {
+        "tier": "niche",
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -5684,6 +5783,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -5742,10 +5842,19 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": true,
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "festival_info": {
+        "platform": "Eventive",
+        "festival_slug": "pjff2026",
+        "festival_name": "Portland Jewish Film Festival",
+        "discovered": "2026-02-27",
+        "last_checked": "2026-02-27",
+        "status": "active"
+      }
     },
     {
       "id": "1290432",
@@ -5799,6 +5908,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -5859,6 +5969,132 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
+    {
+      "id": "799882",
+      "title": "The Bluff",
+      "digital_date": "2026-02-25",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "When her tranquil life on a remote island is shattered by the return of her vengeful former captain, a skilled ex-pirate must confront her bloody past and unleash her deadly talents to save her family from a ruthless siege.",
+      "genres": [
+        "Action",
+        "Thriller"
+      ],
+      "runtime": 102,
+      "year": 2026,
+      "rt_score": "70%",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Amazon Prime Video",
+          "Amazon Prime Video with Ads"
+        ]
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/The_Bluff_(2026_film)",
+        "trailer": "https://www.youtube.com/watch?v=uUYMqRjNxhM",
+        "rt": "https://www.rottentomatoes.com/m/the_bluff_2026"
+      },
+      "watch_links": {
+        "streaming": {
+          "service": "Amazon",
+          "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.a2ae5f76-c2c2-4715-9e7c-928dace7b349"
+        }
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-02-27T10:25:45.275632",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/sojEzvfxR2DBcDSJyAisX8TWjov.jpg",
+      "studio": "AGBO",
+      "budget": 0,
+      "country": "United States of America",
+      "original_language": "en",
+      "crew": {
+        "director": "Frank E. Flowers",
+        "cast": [
+          "Priyanka Chopra Jonas",
+          "Karl Urban"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "tmdb_type4",
+      "categories": {
+        "tier": "niche",
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_festival": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
+    {
+      "id": "1196946",
+      "title": "Ikkis",
+      "digital_date": "2026-02-25",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Second Lieutenant and India's youngest Param Vir Chakra recipient, Arun Khetarpal, gave his life fighting for his battalion and the country during the 1971 Battle of Basantar. Ikkis also takes a reflective look at the futility of war through the eyes of Khetarpal's father, who visits his ancestral home in Sargodha and Alma Mater for reunion, which now happens to be in post-partition Pakistan, 30 years later.",
+      "genres": [
+        "History",
+        "War",
+        "Drama"
+      ],
+      "runtime": 148,
+      "year": 2026,
+      "rt_score": "100%",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Amazon Prime Video",
+          "Amazon Prime Video with Ads"
+        ]
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Ikkis",
+        "trailer": "https://www.youtube.com/watch?v=QfnyH8odcus",
+        "rt": "https://www.rottentomatoes.com/m/ikkis"
+      },
+      "watch_links": {
+        "streaming": {
+          "service": "Amazon",
+          "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.a2889ba2-92ff-4733-ad35-c9e513dff0f7"
+        }
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-02-27T10:12:43.195988",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/8PWu0V10nMqG5SrA13wLRXTD2fH.jpg",
+      "studio": "Maddock Films",
+      "budget": 0,
+      "country": "India",
+      "original_language": "hi",
+      "crew": {
+        "director": "Sriram Raghavan",
+        "cast": [
+          "Dharmendra",
+          "Jaideep Ahlawat"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "tmdb_type4",
+      "categories": {
+        "tier": "niche",
+        "is_foreign": true,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -5919,6 +6155,7 @@
         "is_foreign": false,
         "is_staff_pick": true,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -5975,10 +6212,19 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": true,
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "festival_info": {
+        "platform": "Eventive",
+        "festival_slug": "bsdff",
+        "festival_name": "Big Sky Documentary Film Festival",
+        "discovered": "2026-02-27",
+        "last_checked": "2026-02-27",
+        "status": "active"
+      }
     },
     {
       "id": "1454393",
@@ -6032,10 +6278,19 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": true,
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "festival_info": {
+        "platform": "Eventive",
+        "festival_slug": "bsdff",
+        "festival_name": "Big Sky Documentary Film Festival",
+        "discovered": "2026-02-27",
+        "last_checked": "2026-02-27",
+        "status": "active"
+      }
     },
     {
       "id": "1563396",
@@ -6091,10 +6346,19 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": true,
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "festival_info": {
+        "platform": "Eventive",
+        "festival_slug": "bsdff",
+        "festival_name": "Big Sky Documentary Film Festival",
+        "discovered": "2026-02-27",
+        "last_checked": "2026-02-27",
+        "status": "active"
+      }
     },
     {
       "id": "1383984",
@@ -6150,6 +6414,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -6212,6 +6477,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -6271,6 +6537,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -6331,6 +6598,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -6393,6 +6661,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -6452,6 +6721,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -6511,6 +6781,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -6572,6 +6843,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -6633,6 +6905,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -6695,6 +6968,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -6756,6 +7030,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -6820,6 +7095,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -6879,6 +7155,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -6939,6 +7216,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -6999,6 +7277,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -7058,6 +7337,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -7122,6 +7402,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -7185,6 +7466,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -7247,6 +7529,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -7255,7 +7538,7 @@
     {
       "id": "1428990",
       "title": "This Is Not a Test",
-      "digital_date": "2026-02-28",
+      "digital_date": "2026-02-27",
       "bootstrap_date": false,
       "manually_corrected": false,
       "synopsis": "Sloane and four classmates take cover in Cortege High to escape a world plagued by the infected. As danger relentlessly pounds on the doors, Sloane begins to see the world through the eyes of those who actually want to live and takes matters into her own hands.",
@@ -7265,7 +7548,7 @@
       ],
       "runtime": 102,
       "year": 2026,
-      "rt_score": "39%",
+      "rt_score": "44%",
       "providers": {
         "rent": [],
         "buy": [],
@@ -7274,19 +7557,20 @@
         ]
       },
       "links": {
-        "wikipedia": "https://en.wikipedia.org/wiki/This_Is_Not_a_Test",
+        "wikipedia": "https://en.wikipedia.org/wiki/This_Is_Not_a_Test_(2025_film)",
         "trailer": "https://www.youtube.com/watch?v=DXAjPhglafE",
-        "rt": "https://www.rottentomatoes.com/m/this_is_not_a_test_2025",
-        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1428990.mp4"
+        "rt": "https://www.rottentomatoes.com/m/this_is_not_a_test_2025"
       },
       "watch_links": {
-        "vod": {
-          "service": "Fandango",
-          "link": "https://athome.fandango.com/content/browse/details/This-Is-Not-a-Test/4880644"
-        }
+        "streaming": [
+          {
+            "service": "Bloodstream",
+            "link": null
+          }
+        ]
       },
-      "_enrichment_status": "pending",
-      "_discovered_at": "2026-02-28T05:26:32.904869",
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-02-27T21:24:59.176152",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
       "poster": "https://image.tmdb.org/t/p/w500/pLYiyfCYmuLDYf36AbQApadFUhN.jpg",
@@ -7308,6 +7592,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -7371,6 +7656,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -7432,6 +7718,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -7494,6 +7781,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -7557,6 +7845,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -7619,6 +7908,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -7678,6 +7968,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -7743,6 +8034,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -7799,10 +8091,19 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": true,
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "festival_info": {
+        "platform": "Eventive",
+        "festival_slug": "bsdff",
+        "festival_name": "Big Sky Documentary Film Festival",
+        "discovered": "2026-02-27",
+        "last_checked": "2026-02-27",
+        "status": "active"
+      }
     },
     {
       "id": "1400379",
@@ -7859,6 +8160,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -7921,6 +8223,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -7982,6 +8285,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -8042,6 +8346,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -8102,6 +8407,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -8160,6 +8466,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -8223,6 +8530,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -8287,6 +8595,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -8349,6 +8658,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -8410,6 +8720,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -8470,6 +8781,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -8531,6 +8843,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -8592,6 +8905,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -8653,6 +8967,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -8713,6 +9028,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -8772,6 +9088,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -8834,6 +9151,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -8897,6 +9215,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -8958,6 +9277,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -9013,10 +9333,19 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": true,
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "festival_info": {
+        "platform": "Eventive",
+        "festival_slug": "bsdff",
+        "festival_name": "Big Sky Documentary Film Festival",
+        "discovered": "2026-02-27",
+        "last_checked": "2026-02-27",
+        "status": "active"
+      }
     },
     {
       "id": "1290821",
@@ -9075,6 +9404,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -9137,6 +9467,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -9188,6 +9519,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -9245,10 +9577,19 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": true,
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "festival_info": {
+        "platform": "Eventive",
+        "festival_slug": "bsdff",
+        "festival_name": "Big Sky Documentary Film Festival",
+        "discovered": "2026-02-27",
+        "last_checked": "2026-02-27",
+        "status": "active"
+      }
     },
     {
       "id": "1526217",
@@ -9302,10 +9643,19 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": true,
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "festival_info": {
+        "platform": "Eventive",
+        "festival_slug": "bsdff",
+        "festival_name": "Big Sky Documentary Film Festival",
+        "discovered": "2026-02-27",
+        "last_checked": "2026-02-27",
+        "status": "active"
+      }
     },
     {
       "id": "1288748",
@@ -9365,6 +9715,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -9426,6 +9777,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -9487,6 +9839,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -9551,6 +9904,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -9611,6 +9965,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -9669,6 +10024,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -9730,6 +10086,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": true,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -9796,6 +10153,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -9859,6 +10217,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -9924,6 +10283,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -9989,6 +10349,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -10051,6 +10412,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -10111,6 +10473,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -10173,6 +10536,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -10233,6 +10597,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -10295,6 +10660,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -10354,6 +10720,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -10416,6 +10783,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -10476,6 +10844,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -10542,6 +10911,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -10601,6 +10971,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -10660,6 +11031,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -10721,6 +11093,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -10787,6 +11160,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -10849,6 +11223,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -10913,6 +11288,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -10973,6 +11349,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -11035,6 +11412,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -11097,6 +11475,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -11158,6 +11537,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -11220,6 +11600,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -11282,6 +11663,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -11344,6 +11726,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -11419,6 +11802,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": true,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -11481,6 +11865,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -11545,6 +11930,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -11609,6 +11995,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -11670,6 +12057,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -11730,10 +12118,19 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": true,
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "festival_info": {
+        "platform": "Eventive",
+        "festival_slug": "focusonfrenchcinema",
+        "festival_name": "Focus on French Cinema",
+        "discovered": "2026-02-27",
+        "last_checked": "2026-02-27",
+        "status": "active"
+      }
     },
     {
       "id": "1000520",
@@ -11793,6 +12190,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -11854,6 +12252,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -11916,6 +12315,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -11976,6 +12376,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -12037,6 +12438,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -12098,6 +12500,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -12158,6 +12561,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -12219,6 +12623,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -12295,6 +12700,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -12355,6 +12761,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -12416,10 +12823,19 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": true,
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "festival_info": {
+        "platform": "Eventive",
+        "festival_slug": "36thsdijffmid",
+        "festival_name": "San Diego Intl. Jewish Film Festival",
+        "discovered": "2026-02-27",
+        "last_checked": "2026-02-27",
+        "status": "active"
+      }
     },
     {
       "id": "763348",
@@ -12476,10 +12892,19 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": true,
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "festival_info": {
+        "platform": "Eventive",
+        "festival_slug": "36thsdijffmid",
+        "festival_name": "San Diego Intl. Jewish Film Festival",
+        "discovered": "2026-02-27",
+        "last_checked": "2026-02-27",
+        "status": "active"
+      }
     },
     {
       "id": "1323625",
@@ -12537,6 +12962,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -12596,6 +13022,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -12658,6 +13085,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -12718,10 +13146,19 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": true,
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "festival_info": {
+        "platform": "Eventive",
+        "festival_slug": "36thsdijffmid",
+        "festival_name": "San Diego Intl. Jewish Film Festival",
+        "discovered": "2026-02-27",
+        "last_checked": "2026-02-27",
+        "status": "active"
+      }
     },
     {
       "id": "842859",
@@ -12780,10 +13217,19 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": true,
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "festival_info": {
+        "platform": "Eventive",
+        "festival_slug": "36thsdijffmid",
+        "festival_name": "San Diego Intl. Jewish Film Festival",
+        "discovered": "2026-02-27",
+        "last_checked": "2026-02-27",
+        "status": "active"
+      }
     },
     {
       "id": "1193128",
@@ -12841,6 +13287,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -12901,6 +13348,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -12961,6 +13409,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -13023,6 +13472,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -13091,6 +13541,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -13152,10 +13603,19 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": true,
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "festival_info": {
+        "platform": "Eventive",
+        "festival_slug": "36thsdijffmid",
+        "festival_name": "San Diego Intl. Jewish Film Festival",
+        "discovered": "2026-02-27",
+        "last_checked": "2026-02-27",
+        "status": "active"
+      }
     },
     {
       "id": "1467784",
@@ -13214,6 +13674,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -13273,10 +13734,19 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": true,
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "festival_info": {
+        "platform": "Eventive",
+        "festival_slug": "36thsdijffmid",
+        "festival_name": "San Diego Intl. Jewish Film Festival",
+        "discovered": "2026-02-27",
+        "last_checked": "2026-02-27",
+        "status": "active"
+      }
     },
     {
       "id": "1315303",
@@ -13333,6 +13803,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -13399,6 +13870,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -13467,6 +13939,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -13534,6 +14007,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -13596,6 +14070,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -13659,6 +14134,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -13720,6 +14196,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -13781,6 +14258,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -13842,6 +14320,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -13903,6 +14382,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -13961,6 +14441,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -14019,6 +14500,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -14075,6 +14557,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -14138,6 +14621,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -14197,6 +14681,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -14259,6 +14744,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -14318,6 +14804,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -14378,6 +14865,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -14433,6 +14921,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -14497,6 +14986,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -14559,6 +15049,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -14620,6 +15111,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -14684,6 +15176,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -14746,6 +15239,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -14807,6 +15301,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -14868,6 +15363,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -14930,6 +15426,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -14990,6 +15487,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -15053,6 +15551,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -15116,6 +15615,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -15177,6 +15677,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -15239,6 +15740,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -15301,6 +15803,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -15383,6 +15886,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -15442,6 +15946,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -15502,6 +16007,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -15565,6 +16071,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -15624,10 +16131,19 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": true,
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "festival_info": {
+        "platform": "Eventive",
+        "festival_slug": "sundance",
+        "festival_name": "Sundance Film Festival",
+        "discovered": "2026-02-27",
+        "last_checked": "2026-02-27",
+        "status": "active"
+      }
     },
     {
       "id": "1268422",
@@ -15688,6 +16204,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -15747,6 +16264,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -15809,6 +16327,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -15874,6 +16393,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -15934,6 +16454,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -15993,10 +16514,19 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": true,
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "festival_info": {
+        "platform": "Eventive",
+        "festival_slug": "mjff2026",
+        "festival_name": "Miami Jewish Film Festival",
+        "discovered": "2026-02-27",
+        "last_checked": "2026-02-27",
+        "status": "active"
+      }
     },
     {
       "id": "1483986",
@@ -16052,10 +16582,19 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": true,
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "festival_info": {
+        "platform": "Eventive",
+        "festival_slug": "mjff2026",
+        "festival_name": "Miami Jewish Film Festival",
+        "discovered": "2026-02-27",
+        "last_checked": "2026-02-27",
+        "status": "active"
+      }
     },
     {
       "id": "1523326",
@@ -16113,6 +16652,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -16177,6 +16717,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -16234,6 +16775,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -16296,6 +16838,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -16355,6 +16898,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -16415,6 +16959,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -16475,6 +17020,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -16536,6 +17082,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -16595,6 +17142,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -16657,6 +17205,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -16720,6 +17269,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -16782,6 +17332,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -16841,6 +17392,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -16902,6 +17454,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -16961,6 +17514,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -17017,6 +17571,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -17078,6 +17633,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -17143,6 +17699,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -17206,6 +17763,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -17263,6 +17821,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -17326,6 +17885,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -17385,6 +17945,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -17441,10 +18002,19 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": true,
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "festival_info": {
+        "platform": "Eventive",
+        "festival_slug": "menafilmfestival",
+        "festival_name": "MENA Film Festival",
+        "discovered": "2026-02-27",
+        "last_checked": "2026-02-27",
+        "status": "active"
+      }
     },
     {
       "id": "1383289",
@@ -17501,6 +18071,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -17561,10 +18132,19 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": true,
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "festival_info": {
+        "platform": "Eventive",
+        "festival_slug": "36thsdijffmid",
+        "festival_name": "San Diego Intl. Jewish Film Festival",
+        "discovered": "2026-02-27",
+        "last_checked": "2026-02-27",
+        "status": "active"
+      }
     },
     {
       "id": "1599087",
@@ -17619,6 +18199,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -17680,6 +18261,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -17741,6 +18323,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -17801,6 +18384,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -17871,6 +18455,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -17933,6 +18518,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -17991,6 +18577,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -18053,6 +18640,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -18120,6 +18708,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -18181,6 +18770,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -18243,6 +18833,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -18306,6 +18897,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -18363,6 +18955,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -18418,6 +19011,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -18476,6 +19070,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -18538,6 +19133,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -18598,6 +19194,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -18657,6 +19254,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -18714,6 +19312,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -18773,6 +19372,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -18831,6 +19431,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -18892,6 +19493,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -18954,6 +19556,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -19015,6 +19618,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -19065,6 +19669,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -19106,6 +19711,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -19176,6 +19782,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -19226,6 +19833,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -19278,6 +19886,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -19338,6 +19947,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -19402,6 +20012,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -19466,6 +20077,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       }
@@ -19525,6 +20137,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -19576,6 +20189,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -19625,6 +20239,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -19668,6 +20283,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -19726,6 +20342,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -19790,6 +20407,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -19852,6 +20470,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -19910,6 +20529,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -19971,6 +20591,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -20006,6 +20627,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -20057,6 +20679,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -20118,6 +20741,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -20180,6 +20804,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -20238,6 +20863,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -20289,6 +20915,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -20331,6 +20958,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -20374,6 +21002,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -20417,6 +21046,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -20454,6 +21084,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -20497,6 +21128,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -20533,6 +21165,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -20570,6 +21203,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -20633,6 +21267,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -20681,6 +21316,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -20724,6 +21360,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -20762,6 +21399,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -20800,6 +21438,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -20839,6 +21478,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -20901,6 +21541,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -20961,6 +21602,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -20998,6 +21640,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -21058,6 +21701,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -21106,6 +21750,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -21175,6 +21820,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -21230,6 +21876,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -21301,6 +21948,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -21374,6 +22022,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -21449,6 +22098,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -21520,6 +22170,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -21581,6 +22232,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -21640,6 +22292,7 @@
         "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -21702,6 +22355,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -21759,6 +22413,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -21829,6 +22484,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -21897,6 +22553,63 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
+    {
+      "id": "1548594",
+      "title": "The Nutcracker at the Jacobs School of Music",
+      "digital_date": "2025-07-27",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "An imaginative retelling of the classic ballet, featuring a full orchestral performance and stunning choreography. A colorful blend of live theater with cinematic artistry. Breathtaking scenic design combines with elaborate costumes and elegant dance. Captured live at the Musical Arts Center at Indiana University, this presentation creates a new holiday tradition for audiences of all ages.",
+      "genres": [],
+      "runtime": 117,
+      "year": 2025,
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "PBS"
+        ]
+      },
+      "links": {
+        "trailer": "https://www.youtube.com/watch?v=k_XoE3j3t_A"
+      },
+      "watch_links": {
+        "streaming": {
+          "service": "PBS",
+          "link": "https://www.pbs.org/show/the-nutcracker-at-the-jacobs-school-of-music"
+        }
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-02-27T09:45:33.764715",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/5TTGu1SdVwDv0n5hy2tsPsHTaXl.jpg",
+      "studio": "PBS",
+      "budget": 0,
+      "country": "United States of America",
+      "original_language": "en",
+      "crew": {
+        "director": "Unknown",
+        "cast": []
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "tmdb_type4",
+      "_enrichment_gaps": [
+        "rt_score"
+      ],
+      "categories": {
+        "tier": "niche",
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -21959,6 +22672,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -22028,6 +22742,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -22087,6 +22802,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -22149,6 +22865,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -22234,6 +22951,7 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
+        "is_festival": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -22246,9 +22964,9 @@
   "featured": [
     "1608619"
   ],
-  "latest_playlist_url": "https://www.youtube.com/playlist?list=PLFCewXXu8_tGv9XkQa4W2VE17Z_L8T3wC",
+  "latest_playlist_url": "https://www.youtube.com/playlist?list=PLFCewXXu8_tEjbmizI6mMS5jfut7uOMIX",
   "_metadata": {
-    "last_discovery_write": "2026-02-28T05:26:34.983411",
+    "last_discovery_write": "2026-02-27T21:25:04.409625",
     "discovery_count": 360,
     "schema_version": "2.0"
   }

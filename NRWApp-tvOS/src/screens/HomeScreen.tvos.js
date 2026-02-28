@@ -334,11 +334,12 @@ const HomeScreenTvOS = () => {
           case 'staff-picks':
             if (movie.categories?.is_staff_pick || movie.featured) return true;
             break;
-          case 'foreign':
+          case 'foreign': {
             const isForeign = movie.categories?.is_foreign ??
               (movie.original_language && movie.original_language !== 'en');
             if (isForeign) return true;
             break;
+          }
           case 'series':
             if (movie.content_type === 'limited_series') return true;
             break;

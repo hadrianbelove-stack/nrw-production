@@ -8,6 +8,7 @@
   <interface>
     <field id="videoUrl" type="string" onChange="onVideoUrlChanged" />
     <field id="closed" type="boolean" value="false" alwaysNotify="true" />
+    <field id="navigateDirection" type="integer" value="0" alwaysNotify="true" />
   </interface>
 
   <script type="text/brightscript" uri="TrailerPlayer.brs" />

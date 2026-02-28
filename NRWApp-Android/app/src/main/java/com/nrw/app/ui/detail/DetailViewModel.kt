@@ -104,6 +104,18 @@ class DetailViewModel(application: Application) : AndroidViewModel(application) 
         loadMovieAtIndex(prevIndex)
     }
 
+    /**
+     * Navigate to a specific index (used by trailer player on close)
+     */
+    fun navigateToIndex(index: Int) {
+        loadMovieAtIndex(index)
+    }
+
+    /**
+     * Get the full movie list (used by trailer player for navigation)
+     */
+    fun getMovieList(): List<Movie> = movieList
+
     private fun loadMovieAtIndex(index: Int) {
         val movie = movieList.getOrNull(index) ?: return
         _uiState.value = _uiState.value.copy(
