@@ -410,6 +410,16 @@
 
 
                     <!-- Watch Links -->
+                    {# Precompute streaming service name (handles both dict and list formats) #}
+                    {% set _streaming_raw = movie.get('watch_links', {}).get('streaming') %}
+                    {% if _streaming_raw is mapping %}
+                        {% set linked_streaming = _streaming_raw.get('service', '') %}
+                    {% elif _streaming_raw is iterable and _streaming_raw is not string and _streaming_raw | length > 0 %}
+                        {% set linked_streaming = _streaming_raw[0].get('service', '') %}
+                    {% else %}
+                        {% set linked_streaming = '' %}
+                    {% endif %}
+
                     <div style="margin-bottom: 0.5rem;">
                         <label style="display: block; font-size: 0.75rem; color: #999; margin-bottom: 0.3rem;">
                             Streaming:
@@ -419,7 +429,7 @@
                             {% set has_netflix = 'Netflix' in streaming_providers or 'Netflix Standard with Ads' in streaming_providers %}
                             {% if has_netflix %}
                             <button type="button"
-                                    class="service-btn {% if movie.get('watch_links', {}).get('streaming', {}).get('service') == 'Netflix' %}link-good{% else %}link-bad{% endif %}"
+                                    class="service-btn {% if linked_streaming == 'Netflix' %}link-good{% else %}link-bad{% endif %}"
                                     onclick="setWatchService('{{ movie_id }}', 'streaming', 'Netflix')"
                                     style="padding: 0.4rem 0.6rem; border: none; border-radius: 4px; font-size: 0.7rem; cursor: pointer; color: white; font-weight: bold;">
                                 NETFLIX
@@ -429,7 +439,7 @@
                             {% set has_disney = 'Disney Plus' in streaming_providers or 'Disney+' in streaming_providers %}
                             {% if has_disney %}
                             <button type="button"
-                                    class="service-btn {% if movie.get('watch_links', {}).get('streaming', {}).get('service') == 'Disney+' %}link-good{% else %}link-bad{% endif %}"
+                                    class="service-btn {% if linked_streaming == 'Disney+' %}link-good{% else %}link-bad{% endif %}"
                                     onclick="setWatchService('{{ movie_id }}', 'streaming', 'Disney+')"
                                     style="padding: 0.4rem 0.6rem; border: none; border-radius: 4px; font-size: 0.7rem; cursor: pointer; color: white; font-weight: bold;">
                                 DISNEY+
@@ -439,7 +449,7 @@
                             {% set has_mubi = 'Mubi' in streaming_providers %}
                             {% if has_mubi %}
                             <button type="button"
-                                    class="service-btn {% if movie.get('watch_links', {}).get('streaming', {}).get('service') == 'Mubi' %}link-good{% else %}link-bad{% endif %}"
+                                    class="service-btn {% if linked_streaming == 'Mubi' %}link-good{% else %}link-bad{% endif %}"
                                     onclick="setWatchService('{{ movie_id }}', 'streaming', 'Mubi')"
                                     style="padding: 0.4rem 0.6rem; border: none; border-radius: 4px; font-size: 0.7rem; cursor: pointer; color: white; font-weight: bold;">
                                 MUBI
@@ -449,7 +459,7 @@
                             {% set has_hbo = 'HBO Max' in streaming_providers or 'Max' in streaming_providers %}
                             {% if has_hbo %}
                             <button type="button"
-                                    class="service-btn {% if movie.get('watch_links', {}).get('streaming', {}).get('service') in ['HBO Max', 'Max'] %}link-good{% else %}link-bad{% endif %}"
+                                    class="service-btn {% if linked_streaming in ['HBO Max', 'Max'] %}link-good{% else %}link-bad{% endif %}"
                                     onclick="setWatchService('{{ movie_id }}', 'streaming', 'HBO Max')"
                                     style="padding: 0.4rem 0.6rem; border: none; border-radius: 4px; font-size: 0.7rem; cursor: pointer; color: white; font-weight: bold;">
                                 MAX
@@ -457,7 +467,7 @@
                             {% endif %}
 
                             <button type="button"
-                                    class="service-btn {% if movie.get('watch_links', {}).get('streaming') and movie.get('watch_links', {}).get('streaming', {}).get('service') not in ['Netflix', 'Disney+', 'Mubi', 'HBO Max', 'Max'] %}link-good{% else %}link-bad{% endif %}"
+                                    class="service-btn {% if linked_streaming and linked_streaming not in ['Netflix', 'Disney+', 'Mubi', 'HBO Max', 'Max'] %}link-good{% else %}link-bad{% endif %}"
                                     onclick="setWatchService('{{ movie_id }}', 'streaming', 'ADD')"
                                     style="padding: 0.4rem 0.6rem; border: none; border-radius: 4px; font-size: 0.7rem; cursor: pointer; color: white; font-weight: bold;">
                                 ADD
@@ -487,8 +497,16 @@
 
                             {% set has_amazon = 'Amazon Prime Video' in vod_providers or 'Amazon Video' in vod_providers %}
                             {% if has_amazon %}
+                            {% set vod_data = movie.get('watch_links', {}).get('vod', []) %}
+                            {% if vod_data is mapping %}
+                                {% set amazon_linked = vod_data.get('service') == 'Amazon' %}
+                            {% elif vod_data is iterable and vod_data is not string %}
+                                {% set amazon_linked = vod_data | selectattr('service', 'equalto', 'Amazon') | list | length > 0 %}
+                            {% else %}
+                                {% set amazon_linked = false %}
+                            {% endif %}
                             <button type="button"
-                                    class="service-btn {% if movie.get('watch_links', {}).get('vod', {}).get('service') == 'Amazon' %}link-good{% else %}link-bad{% endif %}"
+                                    class="service-btn {% if amazon_linked %}link-good{% else %}link-bad{% endif %}"
                                     onclick="setWatchService('{{ movie_id }}', 'vod', 'Amazon')"
                                     style="padding: 0.4rem 0.6rem; border: none; border-radius: 4px; font-size: 0.7rem; cursor: pointer; color: white; font-weight: bold;">
                                 AMAZON
@@ -497,8 +515,16 @@
 
                             {% set has_apple = 'Apple TV' in vod_providers or 'Apple iTunes' in vod_providers %}
                             {% if has_apple %}
+                            {% set vod_data2 = movie.get('watch_links', {}).get('vod', []) %}
+                            {% if vod_data2 is mapping %}
+                                {% set apple_linked = vod_data2.get('service') == 'Apple TV' %}
+                            {% elif vod_data2 is iterable and vod_data2 is not string %}
+                                {% set apple_linked = vod_data2 | selectattr('service', 'equalto', 'Apple TV') | list | length > 0 %}
+                            {% else %}
+                                {% set apple_linked = false %}
+                            {% endif %}
                             <button type="button"
-                                    class="service-btn {% if movie.get('watch_links', {}).get('vod', {}).get('service') == 'Apple TV' %}link-good{% else %}link-bad{% endif %}"
+                                    class="service-btn {% if apple_linked %}link-good{% else %}link-bad{% endif %}"
                                     onclick="setWatchService('{{ movie_id }}', 'vod', 'Apple TV')"
                                     style="padding: 0.4rem 0.6rem; border: none; border-radius: 4px; font-size: 0.7rem; cursor: pointer; color: white; font-weight: bold;">
                                 ITUNES
@@ -507,16 +533,33 @@
 
                             {% set has_vudu = 'Vudu' in vod_providers %}
                             {% if has_vudu %}
+                            {% set vod_data3 = movie.get('watch_links', {}).get('vod', []) %}
+                            {% if vod_data3 is mapping %}
+                                {% set vudu_linked = vod_data3.get('service') == 'Vudu' %}
+                            {% elif vod_data3 is iterable and vod_data3 is not string %}
+                                {% set vudu_linked = vod_data3 | selectattr('service', 'equalto', 'Vudu') | list | length > 0 %}
+                            {% else %}
+                                {% set vudu_linked = false %}
+                            {% endif %}
                             <button type="button"
-                                    class="service-btn {% if movie.get('watch_links', {}).get('vod', {}).get('service') == 'Vudu' %}link-good{% else %}link-bad{% endif %}"
+                                    class="service-btn {% if vudu_linked %}link-good{% else %}link-bad{% endif %}"
                                     onclick="setWatchService('{{ movie_id }}', 'vod', 'Vudu')"
                                     style="padding: 0.4rem 0.6rem; border: none; border-radius: 4px; font-size: 0.7rem; cursor: pointer; color: white; font-weight: bold;">
                                 VUDU
                             </button>
                             {% endif %}
 
+                            {% set vod_data4 = movie.get('watch_links', {}).get('vod', []) %}
+                            {% if vod_data4 is mapping %}
+                                {% set other_linked = vod_data4.get('service', '') != '' and vod_data4.get('service', '') not in ['Amazon', 'Apple TV', 'Vudu'] %}
+                            {% elif vod_data4 is iterable and vod_data4 is not string %}
+                                {% set all_services = vod_data4 | map(attribute='service') | list %}
+                                {% set other_linked = all_services | reject('in', ['Amazon', 'Apple TV', 'Vudu']) | list | length > 0 %}
+                            {% else %}
+                                {% set other_linked = false %}
+                            {% endif %}
                             <button type="button"
-                                    class="service-btn {% if movie.get('watch_links', {}).get('vod') and movie.get('watch_links', {}).get('vod', {}).get('service', '') not in ['Amazon', 'Apple TV', 'Vudu'] %}link-good{% else %}link-bad{% endif %}"
+                                    class="service-btn {% if other_linked %}link-good{% else %}link-bad{% endif %}"
                                     onclick="setWatchService('{{ movie_id }}', 'vod', 'ADD')"
                                     style="padding: 0.4rem 0.6rem; border: none; border-radius: 4px; font-size: 0.7rem; cursor: pointer; color: white; font-weight: bold;">
                                 ADD
@@ -538,8 +581,15 @@
                         </div>
 
                         <!-- Hidden fields for compatibility with existing save function -->
-                        <input type="hidden" id="streaming-service-{{ movie_id }}" value="{% if movie.get('watch_links', {}).get('streaming') %}{{ movie['watch_links']['streaming']['service'] }}{% endif %}">
-                        <input type="hidden" id="vod-service-{{ movie_id }}" value="{% if movie.get('watch_links', {}).get('vod') %}{{ movie['watch_links']['vod']['service'] }}{% endif %}">
+                        <input type="hidden" id="streaming-service-{{ movie_id }}" value="{{ linked_streaming }}">
+                        {% set vod_hidden = movie.get('watch_links', {}).get('vod', []) %}
+                        {% if vod_hidden is mapping %}
+                        <input type="hidden" id="vod-service-{{ movie_id }}" value="{{ vod_hidden.get('service', '') }}">
+                        {% elif vod_hidden is iterable and vod_hidden is not string and vod_hidden | length > 0 %}
+                        <input type="hidden" id="vod-service-{{ movie_id }}" value="{{ vod_hidden[0].get('service', '') }}">
+                        {% else %}
+                        <input type="hidden" id="vod-service-{{ movie_id }}" value="">
+                        {% endif %}
                     </div>
 
                 </div>

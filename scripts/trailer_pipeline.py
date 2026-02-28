@@ -92,8 +92,13 @@ def stamp_trailer_hosted_urls(dry_run=False):
 
     # Connect to B2 and get hosted IDs
     print('Connecting to B2...')
-    api, bucket, _ = get_b2_connection()
-    hosted_ids = get_hosted_trailer_ids(bucket)
+    try:
+        api, bucket, _ = get_b2_connection()
+        hosted_ids = get_hosted_trailer_ids(bucket)
+    except Exception as e:
+        print(f'WARNING: B2 connection failed ({type(e).__name__}: {str(e)[:100]})')
+        print('Skipping stamp — YouTube trailer URLs remain as fallback.')
+        return {'stamped': 0, 'already_had': 0, 'no_trailer_in_b2': 0}
     print(f'Found {len(hosted_ids)} trailers in B2 bucket')
 
     # Load data.json
@@ -236,7 +241,12 @@ def host_new_trailers(movie_ids=None, limit=0, dry_run=False):
 
     # Connect to B2
     print('Connecting to B2...')
-    api, bucket, b2_bucket_url = get_b2_connection()
+    try:
+        api, bucket, b2_bucket_url = get_b2_connection()
+    except Exception as e:
+        print(f'WARNING: B2 connection failed ({type(e).__name__}: {str(e)[:100]})')
+        print('Skipping hosting — YouTube trailer URLs remain as fallback.')
+        return {'hosted': 0, 'failed': 0, 'skipped': len(to_host)}
     # Use config bucket_url if available, else B2 native URL
     url_base = bucket_url or b2_bucket_url
 
@@ -287,7 +297,12 @@ def rotate_trailers(dry_run=False):
 
     # Connect to B2
     print('Connecting to B2...')
-    api, bucket, bucket_url = get_b2_connection()
+    try:
+        api, bucket, bucket_url = get_b2_connection()
+    except Exception as e:
+        print(f'WARNING: B2 connection failed ({type(e).__name__}: {str(e)[:100]})')
+        print('Skipping rotation — cannot reach B2.')
+        return {'deleted': 0, 'current_count': 0, 'max_hosted': max_hosted}
 
     # Get all files in bucket (with file version info for deletion)
     remote_files = {}

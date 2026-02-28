@@ -328,7 +328,7 @@ const NRWMobile = {
             // Check for VOD (array or single dict)
             const vodArr = Array.isArray(watchLinks.vod) ? watchLinks.vod
                 : (watchLinks.vod?.service ? [watchLinks.vod] : []);
-            if (vodArr.some(v => v.service) || providers.rental?.length > 0) {
+            if (vodArr.some(v => v.service && v.link) || providers.rental?.length > 0) {
                 return '<span class="poster-badge badge-vod">RENT</span>';
             }
             return '';

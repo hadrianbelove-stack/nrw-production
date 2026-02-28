@@ -805,7 +805,7 @@ class DataGenerator:
             print(f"  Limiting check to first {len(tracking_movies)} movies")
 
         newly_digital = 0
-        presale_skipped = 0
+        preorder_detected = 0
         checked = 0
         failed = 0
         total_to_check = len(tracking_movies)
@@ -880,42 +880,38 @@ class DataGenerator:
                     # Always update has_providers flag based on current provider availability
                     movie['has_providers'] = has_providers
 
-                    # Pre-sale detection: buy-only + single provider = suspected pre-order
+                    # Pre-order detection: buy-only + single provider = check Amazon
                     is_buy_only = bool(buy_names) and not rent_names and not stream_names
                     if is_buy_only and len(buy_names) == 1 and has_providers and movie['status'] == 'tracking':
-                        # Single-provider buy-only: check TMDB Type 4 date to confirm availability
-                        type4_date = self.fetch_tmdb_type4_date(movie_id)
+                        # Check Amazon product page for "Pre-order" vs "Buy" button
+                        amazon_status = None
+                        try:
+                            if not hasattr(self, '_amazon_detector'):
+                                from amazon_preorder_detector import AmazonPreorderDetector
+                                self._amazon_detector = AmazonPreorderDetector()
+                            amazon_status = self._amazon_detector.check_preorder(movie['title'], movie.get('year'))
+                        except Exception as e:
+                            self.logger.warning(f"Amazon pre-order check failed for {movie['title']}: {e}")
 
-                        if type4_date:
-                            try:
-                                type4_dt = datetime.strptime(type4_date, '%Y-%m-%d')
-                                today_dt = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-
-                                if type4_dt <= today_dt:
-                                    # Type 4 date is today or past: genuine release, allow discovery
-                                    print(f"  ~ {movie['title']} buy-only ({buy_names[0]}) but Type 4 date {type4_date} confirms release")
-                                    self.logger.info(f"Pre-sale check passed: {movie['title']} ({movie_id}) - Type 4 date {type4_date} is past")
-                                else:
-                                    # Type 4 date is in the future: confirmed pre-sale
-                                    print(f"  ⏳ {movie['title']} skipped: buy-only pre-sale (Type 4 date {type4_date} is future)")
-                                    self.logger.info(f"Pre-sale BLOCKED: {movie['title']} ({movie_id}) - buy-only on {buy_names[0]}, Type 4 date {type4_date} is future")
-                                    has_providers = False
-                                    presale_skipped += 1
-                            except ValueError:
-                                # Malformed date, treat as suspicious
-                                print(f"  ⏳ {movie['title']} skipped: buy-only, malformed Type 4 date '{type4_date}'")
-                                self.logger.warning(f"Pre-sale check: malformed Type 4 date '{type4_date}' for {movie['title']} ({movie_id})")
-                                has_providers = False
-                                presale_skipped += 1
-                        else:
-                            # No Type 4 date in TMDB: assume pre-sale, safer to wait
-                            print(f"  ⏳ {movie['title']} skipped: buy-only on {buy_names[0]}, no Type 4 date (suspected pre-sale)")
-                            self.logger.info(f"Pre-sale DEFERRED: {movie['title']} ({movie_id}) - buy-only on {buy_names[0]}, no Type 4 date")
+                        if amazon_status == 'pre-order':
+                            # Confirmed pre-order — track it but don't add to site yet
+                            movie['status'] = 'pre-order'
+                            movie['pre_order_detected'] = datetime.now().strftime('%Y-%m-%d')
+                            movie['providers'] = {
+                                'rent': rent_names,
+                                'buy': buy_names,
+                                'streaming': stream_names
+                            }
+                            preorder_detected += 1
+                            print(f"  ⏳ {movie['title']} is a pre-order on {buy_names[0]} — tracking for VOD date")
+                            self.logger.info(f"Pre-order detected: {movie['title']} ({movie_id}) on {buy_names[0]}")
+                            # Skip normal discovery — don't set digital_date, don't add to data.json
                             has_providers = False
-                            presale_skipped += 1
-
-                        # Rate limit the extra API call
-                        time.sleep(self.config.get('api', {}).get('tmdb_rate_limit', 0.25))
+                        else:
+                            # Amazon says "Buy"/"Rent" or check failed — proceed normally
+                            if amazon_status == 'available':
+                                print(f"  ~ {movie['title']} buy-only ({buy_names[0]}) confirmed available on Amazon")
+                            # has_providers stays True, normal discovery proceeds below
 
                     # Check if this movie needs enrichment
                     needs_enrichment = False
@@ -979,8 +975,8 @@ class DataGenerator:
         else:
             scan_tag = ""
 
-        presale_note = f" {presale_skipped} pre-sale skipped." if presale_skipped else ""
-        completion_msg = f"Polled {checked} tracking movies, found {newly_digital} changes{scan_tag}. {failed} failed.{presale_note}"
+        preorder_note = f" {preorder_detected} pre-orders detected." if preorder_detected else ""
+        completion_msg = f"Polled {checked} tracking movies, found {newly_digital} changes{scan_tag}. {failed} failed.{preorder_note}"
         print(f"\n✅ {completion_msg}")
         self.logger.info(completion_msg)
 
@@ -1004,7 +1000,7 @@ class DataGenerator:
                     'polled': checked,
                     'transitions': newly_digital,
                     'failed': failed,
-                    'presale_skipped': presale_skipped,
+                    'preorder_detected': preorder_detected,
                     'scan_tag': scan_tag.strip() if scan_tag else None
                 }
             }

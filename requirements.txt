@@ -22,5 +22,5 @@ google-genai
 jinja2
 
 # Trailer downloading and hosting for self-hosted playback
-yt-dlp
-b2sdk
+yt-dlp>=2025.1,<2027.0
+b2sdk>=2.0,<3.0

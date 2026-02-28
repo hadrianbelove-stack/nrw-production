@@ -66,9 +66,9 @@ const NRW = {
 
     getPurchaseLabel(service) {
         const s = service.toLowerCase();
-        if (s.includes('amazon') || s.includes('prime')) return 'RENT/BUY ON AMAZON';
-        if (s.includes('apple')) return 'RENT/BUY ON APPLE TV';
-        return `RENT/BUY ON ${service.toUpperCase()}`;
+        if (s.includes('amazon') || s.includes('prime')) return 'AMAZON';
+        if (s.includes('apple') || s.includes('itunes')) return 'APPLE TV';
+        return service.toUpperCase();
     },
 
     // Lightbox state
