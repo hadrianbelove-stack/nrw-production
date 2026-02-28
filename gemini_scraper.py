@@ -634,7 +634,8 @@ class GeminiRTFinder(GeminiFinderBase):
         title: str,
         year: int,
         director: str = None,
-        original_language: str = None
+        original_language: str = None,
+        original_title: str = None
     ) -> Optional[Dict[str, str]]:
         """
         Find Rotten Tomatoes URL and score for a movie using Gemini.
@@ -644,6 +645,7 @@ class GeminiRTFinder(GeminiFinderBase):
             year: Release year
             director: Optional director name for disambiguation
             original_language: ISO 639-1 language code (e.g. 'es', 'fr')
+            original_title: Original-language title from TMDB (if different from title)
 
         Returns:
             Dict with 'url' and 'score' keys, or None if not found
@@ -683,6 +685,8 @@ class GeminiRTFinder(GeminiFinderBase):
             }
             lang_name = lang_names.get(original_language, original_language)
             context_parts.append(f"(original language: {lang_name})")
+        if original_title and original_title != title:
+            context_parts.append(f"(original title: {original_title})")
         movie_context = " ".join(context_parts)
 
         # Construct prompt
@@ -874,7 +878,8 @@ class HybridRTFinder:
         """Expose cache for compatibility with generator.py."""
         return self.gemini_finder.cache
 
-    def _validate_with_playwright(self, gemini_result: Dict, title: str, year: int) -> Optional[Dict[str, str]]:
+    def _validate_with_playwright(self, gemini_result: Dict, title: str, year: int,
+                                    original_language: str = None, original_title: str = None) -> Optional[Dict[str, str]]:
         """Visit a Gemini-returned RT URL with Playwright to verify it's the right movie.
 
         Navigates to the RT page, extracts the actual movie title, and compares
@@ -884,6 +889,9 @@ class HybridRTFinder:
             gemini_result: Dict with 'url' and 'score' from Gemini
             title: The movie title we searched for
             year: The movie release year
+            original_language: ISO 639-1 language code; when not 'en' and neither
+                             title matches, accept anyway (RT slug may be translated)
+            original_title: Original-language title from TMDB (checked as alt match)
 
         Returns:
             Validated dict with 'url' and 'score', or None if wrong movie
@@ -923,13 +931,24 @@ class HybridRTFinder:
             movie_part = page_title.split('|')[0].strip() if '|' in page_title else page_title.strip()
             page_movie_title = re.sub(r'\s*\(\d{4}\)\s*$', '', movie_part).strip()
 
-            # Compare titles
-            if not self._page_title_matches(page_movie_title, title):
-                logger.warning(
-                    f"Playwright validation FAILED: page shows '{page_movie_title}', "
-                    f"expected '{title}'"
-                )
-                return None
+            # Compare titles (check both stored title and original_title)
+            title_matches = self._page_title_matches(page_movie_title, title)
+            alt_matches = (original_title and original_title != title and
+                           self._page_title_matches(page_movie_title, original_title))
+
+            if not title_matches and not alt_matches:
+                if original_language and original_language != 'en':
+                    # Foreign film — RT slug may be a translation we don't have
+                    logger.info(
+                        f"Accepting foreign-language film despite title mismatch "
+                        f"({original_language}): page='{page_movie_title}', expected='{title}'"
+                    )
+                else:
+                    logger.warning(
+                        f"Playwright validation FAILED: page shows '{page_movie_title}', "
+                        f"expected '{title}'"
+                    )
+                    return None
 
             # Title matched — extract actual score from the loaded page
             actual_score = self._extract_score_from_loaded_page(playwright)
@@ -1053,7 +1072,8 @@ class HybridRTFinder:
         year: int,
         director: str = None,
         use_fallback: bool = True,
-        original_language: str = None
+        original_language: str = None,
+        original_title: str = None
     ) -> Optional[Dict[str, str]]:
         """
         Find RT score using Gemini, validated by Playwright, with Playwright fallback.
@@ -1070,6 +1090,7 @@ class HybridRTFinder:
             director: Optional director for disambiguation
             use_fallback: Whether to try Playwright if Gemini fails
             original_language: ISO 639-1 language code (e.g. 'es', 'fr')
+            original_title: Original-language title from TMDB (if different from title)
 
         Returns:
             Dict with 'url' and 'score', or None
@@ -1078,7 +1099,7 @@ class HybridRTFinder:
         cache_key = f"{title}_{year}"
 
         # Try Gemini first
-        result = self.gemini_finder.find_rt_score(title, year, director, original_language=original_language)
+        result = self.gemini_finder.find_rt_score(title, year, director, original_language=original_language, original_title=original_title)
 
         if result is not None:
             # Check if already Playwright-validated (cached validation)
@@ -1088,7 +1109,9 @@ class HybridRTFinder:
                 return result
 
             # Validate with Playwright
-            validated = self._validate_with_playwright(result, title, year)
+            validated = self._validate_with_playwright(result, title, year,
+                                                       original_language=original_language,
+                                                       original_title=original_title)
             if validated:
                 # Mark as validated in cache
                 if cache_key in self.gemini_finder.cache:
@@ -1324,6 +1347,174 @@ Response:"""
 
         except Exception as e:
             logger.error(f"Gemini Wikipedia API error for {title} ({year}): {e}")
+            self.stats['gemini_failures'] += 1
+            return None
+
+
+# =============================================================================
+# VOD Date Finder
+# =============================================================================
+
+class GeminiVODDateFinder(GeminiFinderBase):
+    """
+    Finds VOD (digital purchase/rental) release dates using Gemini with Google Search grounding.
+
+    Used during daily pre-order resolution to find when a pre-ordered movie
+    will actually become available for digital purchase/rental.
+
+    Usage:
+        finder = GeminiVODDateFinder()
+        result = finder.find_vod_date("I Can Only Imagine 2", 2026)
+        # Returns: '2026-04-15' or None
+    """
+
+    _finder_name = 'VOD'
+
+    def __init__(self, cache_file: str = 'cache/vod_date_cache.json'):
+        super().__init__(cache_file=cache_file)
+
+    def _get_extra_stats(self) -> Dict[str, int]:
+        return {'invalid_dates': 0, 'future_dates': 0, 'past_dates': 0}
+
+    def find_vod_date(
+        self,
+        title: str,
+        year: int,
+        provider: str = None
+    ) -> Optional[str]:
+        """
+        Find VOD/digital release date for a movie using Gemini.
+
+        Args:
+            title: Movie title
+            year: Release year
+            provider: Optional provider name for context (e.g., "Fandango At Home")
+
+        Returns:
+            Date string in YYYY-MM-DD format, or None if not found
+        """
+        cache_key = f"{title}_{year}"
+
+        # Check cache (14-day TTL — dates get announced over time)
+        if cache_key in self.cache:
+            cached_data = self.cache[cache_key]
+            if isinstance(cached_data, dict):
+                scraped_at = cached_data.get('scraped_at', '')
+                if scraped_at:
+                    try:
+                        from datetime import datetime, timedelta
+                        cached_dt = datetime.fromisoformat(scraped_at)
+                        if datetime.now() - cached_dt < timedelta(days=14):
+                            vod_date = cached_data.get('vod_date')
+                            if vod_date:
+                                self.stats['cache_hits'] += 1
+                                logger.debug(f"VOD date cache hit for {title} ({year}): {vod_date}")
+                                return vod_date
+                    except (ValueError, TypeError):
+                        pass
+
+        # Initialize Gemini
+        if not self._init_gemini():
+            return None
+
+        self.stats['gemini_attempts'] += 1
+
+        # Build context
+        context = f'"{title}" ({year})'
+        if provider:
+            context += f" (currently listed on {provider})"
+
+        prompt = f"""Find the VOD (Video on Demand) digital release date for the movie {context}.
+
+I need to know when this movie becomes available for digital purchase or rental (NOT theatrical, NOT DVD/Blu-ray).
+
+Requirements:
+- Search for the official digital/VOD release date in the United States
+- Return the date in format: DATE: YYYY-MM-DD
+- If the movie is currently only available for pre-order but not yet released digitally, respond with: PREORDER_ONLY
+- If no VOD date information can be found, respond with: NOT_FOUND
+- Only return dates you are confident about from reliable sources
+
+Response:"""
+
+        def _make_api_request():
+            api_config = self.types.GenerateContentConfig(tools=[self.grounding_tool])
+            response = self.client.models.generate_content(
+                model=self.model_name,
+                contents=prompt,
+                config=api_config
+            )
+            return response.text.strip()
+
+        try:
+            self._enforce_rate_limit()
+            result_text = self._retry_with_backoff(_make_api_request)
+
+            if result_text is None:
+                logger.error(f"All retries failed for VOD date {title} ({year})")
+                self.stats['gemini_failures'] += 1
+                return None
+
+            logger.debug(f"Gemini VOD response for {title}: {result_text}")
+
+            # Handle explicit responses
+            if 'NOT_FOUND' in result_text:
+                logger.info(f"No VOD date found for {title} ({year})")
+                self.stats['gemini_failures'] += 1
+                return None
+
+            if 'PREORDER_ONLY' in result_text:
+                logger.info(f"Pre-order only confirmed for {title} ({year}), no date yet")
+                self.stats['gemini_failures'] += 1
+                return None
+
+            # Extract date from response
+            date_match = re.search(r'DATE:\s*(\d{4}-\d{2}-\d{2})', result_text)
+            if not date_match:
+                # Try broader date pattern
+                date_match = re.search(r'(\d{4}-\d{2}-\d{2})', result_text)
+
+            if date_match:
+                vod_date = date_match.group(1)
+
+                # Validate it's a real date
+                try:
+                    from datetime import datetime
+                    parsed = datetime.strptime(vod_date, '%Y-%m-%d')
+
+                    # Track future vs past
+                    if parsed > datetime.now():
+                        self.stats['future_dates'] += 1
+                    else:
+                        self.stats['past_dates'] += 1
+
+                    logger.info(f"Found VOD date for {title} ({year}): {vod_date}")
+
+                    # Cache the result
+                    self.cache[cache_key] = {
+                        'vod_date': vod_date,
+                        'title': title,
+                        'year': year,
+                        'source': 'gemini',
+                        'scraped_at': time.strftime('%Y-%m-%dT%H:%M:%S'),
+                        'raw_response': result_text[:500]
+                    }
+                    self._save_cache()
+                    self.stats['gemini_successes'] += 1
+                    return vod_date
+
+                except ValueError:
+                    logger.warning(f"Invalid date format for {title} ({year}): {vod_date}")
+                    self.stats['invalid_dates'] += 1
+                    self.stats['gemini_failures'] += 1
+                    return None
+            else:
+                logger.warning(f"No date found in VOD response for {title} ({year}): {result_text[:200]}")
+                self.stats['gemini_failures'] += 1
+                return None
+
+        except Exception as e:
+            logger.error(f"Gemini VOD date API error for {title} ({year}): {e}")
             self.stats['gemini_failures'] += 1
             return None
 

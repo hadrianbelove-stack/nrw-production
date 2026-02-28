@@ -1094,6 +1094,137 @@ class DataGenerator:
 
         return newly_digital
 
+    def resolve_preorder_dates(self):
+        """
+        Daily check for all pre-order movies: try to find their actual VOD release date.
+
+        Resolution chain per movie:
+        1. TMDB Type 4 date (free, fast)
+        2. Gemini search (grounded with Google Search)
+        3. Neither found — skip, try again tomorrow
+
+        When a date is found:
+        - If today or past: promote to 'available', set digital_date, add to site immediately
+        - If future: promote to 'available', set digital_date (front-end hides until date arrives)
+
+        Returns:
+            int: Number of pre-orders resolved
+        """
+        print("\n📅 Resolving pre-order dates...")
+        self.logger.info("Starting daily pre-order date resolution")
+
+        # Load tracking database
+        db = self.storage.load_json('movie_tracking.json')
+        if not db:
+            print("  ❌ Could not load movie_tracking.json")
+            return 0
+
+        movies = db.get('movies', db)
+
+        # Find all pre-order movies
+        preorder_movies = {
+            mid: movie for mid, movie in movies.items()
+            if movie.get('status') == 'pre-order'
+        }
+
+        if not preorder_movies:
+            print("  No pre-order movies to resolve")
+            self.logger.info("No pre-order movies found")
+            return 0
+
+        print(f"  Found {len(preorder_movies)} pre-order movie(s) to check")
+
+        resolved = 0
+        gemini_finder = None
+
+        for movie_id, movie in preorder_movies.items():
+            title = movie.get('title', f'Movie {movie_id}')
+            year = movie.get('year')
+            buy_providers = movie.get('providers', {}).get('buy', [])
+            provider_name = buy_providers[0] if buy_providers else None
+
+            print(f"  Checking: {title} ({year or 'unknown year'})...")
+
+            vod_date = None
+
+            # Step 1: Try TMDB Type 4 date (free, fast)
+            try:
+                type4_date = self.fetch_tmdb_type4_date(movie_id)
+                if type4_date:
+                    vod_date = type4_date
+                    print(f"    Found TMDB Type 4 date: {vod_date}")
+                    self.logger.info(f"Pre-order {title}: TMDB Type 4 date = {vod_date}")
+            except Exception as e:
+                self.logger.debug(f"TMDB Type 4 check failed for {title}: {e}")
+
+            # Step 2: If no TMDB date, try Gemini
+            if not vod_date:
+                try:
+                    if gemini_finder is None:
+                        from gemini_scraper import GeminiVODDateFinder
+                        gemini_finder = GeminiVODDateFinder()
+
+                    vod_date = gemini_finder.find_vod_date(title, year, provider=provider_name)
+                    if vod_date:
+                        print(f"    Found Gemini VOD date: {vod_date}")
+                        self.logger.info(f"Pre-order {title}: Gemini VOD date = {vod_date}")
+                    else:
+                        print(f"    No VOD date found yet — will retry tomorrow")
+                        self.logger.info(f"Pre-order {title}: no date found, will retry")
+                except Exception as e:
+                    self.logger.warning(f"Gemini VOD check failed for {title}: {e}")
+                    print(f"    Gemini check failed: {e}")
+
+            # Step 3: If we found a date, promote the movie
+            if vod_date:
+                movie['status'] = 'available'
+                movie['digital_date'] = vod_date
+                movie['pre_order_resolved'] = datetime.now().strftime('%Y-%m-%d')
+                movie['has_providers'] = True
+
+                # Determine if it's available now or in the future
+                try:
+                    date_obj = datetime.strptime(vod_date, '%Y-%m-%d')
+                    is_future = date_obj > datetime.now()
+                except ValueError:
+                    is_future = False
+
+                if is_future:
+                    print(f"    Promoted to available (future date: {vod_date})")
+                else:
+                    print(f"    Promoted to available (date: {vod_date})")
+
+                # Add to site immediately — front-end will handle future dates
+                self.add_movie_to_site_immediately(movie_id, movie)
+                resolved += 1
+
+        # Save tracking database
+        if self.storage.atomic_write_json(db, 'movie_tracking.json'):
+            print(f"  💾 Tracking database saved")
+        else:
+            print(f"  ❌ Failed to save tracking database")
+
+        # Emit metrics
+        try:
+            os.makedirs('metrics', exist_ok=True)
+            preorder_metrics = {
+                'timestamp': datetime.now().isoformat(),
+                'operation': 'resolve_preorders',
+                'total_preorders': len(preorder_movies),
+                'resolved': resolved,
+                'remaining': len(preorder_movies) - resolved
+            }
+            with open('metrics/preorder_resolution.json', 'w') as f:
+                json.dump(preorder_metrics, f, indent=2)
+        except Exception as e:
+            self.logger.warning(f"Failed to save pre-order metrics: {e}")
+
+        completion_msg = f"Pre-order resolution: {resolved}/{len(preorder_movies)} resolved"
+        print(f"  ✅ {completion_msg}")
+        self.logger.info(completion_msg)
+
+        return resolved
+
     # validate_enrichment_consistency DELETED (2025-12-05) - was causing loop bug
 
     # atomic_write_json moved to pipeline/storage.py (2025-11-10)
@@ -1846,6 +1977,7 @@ class DataGenerator:
             'year': movie_data.get('year'),  # From movie_tracking.json (intake captures this)
             'country': 'Unknown', # Will be filled by enrichment
             'original_language': None,  # Will be filled by enrichment (ISO 639-1 code)
+            'original_title': None,  # Will be filled by enrichment (original-language title)
             'rt_score': None,     # Will be filled by enrichment
             'providers': movie_data.get('providers', {'rent': [], 'buy': [], 'streaming': []}),
             'links': {'wikipedia': None, 'trailer': None, 'rt': None},
@@ -1907,6 +2039,7 @@ class DataGenerator:
 
         # Add original language (ISO 639-1 code: 'en', 'es', 'fr', etc.)
         entry['original_language'] = movie_details.get('original_language')
+        entry['original_title'] = movie_details.get('original_title')
 
         # Add cast/crew with error handling
         entry['crew'] = {'director': 'Unknown', 'cast': []}
@@ -2121,7 +2254,7 @@ class DataGenerator:
         return f"https://www.youtube.com/results?search_query={search_query}"
     
 
-    def find_rt_url(self, title, year, imdb_id, director=None, original_language=None):
+    def find_rt_url(self, title, year, imdb_id, director=None, original_language=None, original_title=None):
         """Find Rotten Tomatoes URL and score"""
         # 1. Check overrides first
         if imdb_id and imdb_id in self.rt_overrides:
@@ -2137,7 +2270,7 @@ class DataGenerator:
             return None
 
         # 3. Use RT scraper (handles caching internally)
-        result = self.scrape_rt_score(title, year, director=director, original_language=original_language)
+        result = self.scrape_rt_score(title, year, director=director, original_language=original_language, original_title=original_title)
         if result:
             return result
 
@@ -2244,7 +2377,7 @@ class DataGenerator:
             return False
 
 
-    def scrape_rt_score(self, title, year, director=None, original_language=None):
+    def scrape_rt_score(self, title, year, director=None, original_language=None, original_title=None):
         """Public wrapper function to scrape RT score for external consumers
 
         Args:
@@ -2252,6 +2385,7 @@ class DataGenerator:
             year: Release year
             director: Optional director name for disambiguation
             original_language: ISO 639-1 language code
+            original_title: Original-language title from TMDB
 
         Returns:
             dict: {'url': ..., 'score': ...} or None if not found
@@ -2266,11 +2400,11 @@ class DataGenerator:
 
         # Use the new Playwright scraper
         try:
-            # Pass original_language if the scraper supports it (HybridRTFinder)
-            if hasattr(self.rt_scraper, 'find_rt_score'):
-                result = self.rt_scraper.find_rt_score(title, year, director=director, original_language=original_language)
+            # HybridRTFinder uses find_rt_score(); Playwright-only uses scrape_rt_score()
+            if GEMINI_RT_AVAILABLE:
+                result = self.rt_scraper.find_rt_score(title, year, director=director, original_language=original_language, original_title=original_title)
             else:
-                result = self.rt_scraper.scrape_rt_score(title, year, director=director)
+                result = self.rt_scraper.scrape_rt_score(title, year)
 
             # Update stats from scraper
             scraper_stats = self.rt_scraper.get_stats()
@@ -2444,7 +2578,8 @@ class DataGenerator:
         try:
             rt_director = movie_details.get('crew', {}).get('director') if movie_details else None
             rt_lang = movie_details.get('original_language') if movie_details else None
-            rt_data = self.find_rt_url(title, year, imdb_id, director=rt_director, original_language=rt_lang)
+            rt_orig_title = movie_details.get('original_title') if movie_details else None
+            rt_data = self.find_rt_url(title, year, imdb_id, director=rt_director, original_language=rt_lang, original_title=rt_orig_title)
             if rt_data:
                 if isinstance(rt_data, dict):
                     if rt_data.get('url'):
@@ -2690,7 +2825,8 @@ class DataGenerator:
         # RT link and score (isolated failure handling)
         try:
             orig_lang = movie_data.get('original_language')
-            rt_data = self.find_rt_url(title, year, imdb_id, director=director, original_language=orig_lang)
+            orig_title = movie_data.get('original_title')
+            rt_data = self.find_rt_url(title, year, imdb_id, director=director, original_language=orig_lang, original_title=orig_title)
             if rt_data:
                 if isinstance(rt_data, dict):
                     if rt_data.get('url'):

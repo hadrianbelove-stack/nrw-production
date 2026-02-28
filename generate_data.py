@@ -75,6 +75,11 @@ def main():
         action='store_true',
         help='Re-enrich movies that have Amazon/Apple providers but no watch links'
     )
+    parser.add_argument(
+        '--resolve-preorders',
+        action='store_true',
+        help='Resolve pre-order movies: find VOD dates via TMDB Type 4 and Gemini'
+    )
 
     args = parser.parse_args()
     incremental = not args.full
@@ -144,6 +149,13 @@ def main():
 
     # CLI metrics handling removed - orchestrator now handles metrics consolidation from discovery_run.json
 
+    # Resolve pre-order dates if requested
+    preorder_resolved = 0
+    if args.resolve_preorders:
+        print("\n📅 Resolving pre-order movie dates...")
+        preorder_resolved = generator.resolve_preorder_dates()
+        print(f"✅ Pre-order resolution complete: {preorder_resolved} resolved")
+
     # Run enrichment if requested
     enriched_count = 0
     if args.enrich:
@@ -159,7 +171,7 @@ def main():
 
     # Generate the final display data (only for final generation phase, not intake/discovery/enrich/festival)
     festival_backfill = getattr(args, 'festival_backfill', False)
-    if not args.intake and not args.discover and not args.enrich and not festival_backfill and not args.reenrich_gaps:
+    if not args.intake and not args.discover and not args.enrich and not festival_backfill and not args.reenrich_gaps and not args.resolve_preorders:
         print("\n🎬 Generating final display data...")
         generator.generate_display_data(incremental=incremental, force_refresh=force_refresh)
     else:

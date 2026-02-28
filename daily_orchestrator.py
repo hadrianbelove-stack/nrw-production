@@ -1254,6 +1254,13 @@ class NRWOrchestrator:
             # Check for multi-day stalls (report-only)
             self.check_for_stall()
 
+            # Phase 2.5: Resolve pre-order dates (find VOD dates for confirmed pre-orders)
+            self.run_command(
+                "python3 generate_data.py --resolve-preorders",
+                "Resolve pre-order movie dates",
+                critical=False  # Don't fail pipeline if pre-order resolution has issues
+            )
+
             # Phase 3: Generate final display data with enrichment
             # NOTE: data.json uses eventual consistency model - only updated here in Phase 3
             # This means data.json may temporarily lag behind movie_tracking.json between
