@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-02-27T10:28:32.529684",
-  "duration_seconds": 3006.161912,
+  "timestamp": "2026-02-28T05:29:31.178162",
+  "duration_seconds": 2567.600569,
   "overall_success": false,
   "failure_count": 2,
   "warning_count": 0,
@@ -8,30 +8,37 @@
     {
       "name": "Intake new premieres from TMDB",
       "success": true,
-      "duration_seconds": 10.24145,
+      "duration_seconds": 10.231583,
       "error": null,
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-02-25 to 2026-02-27 (incremental mode, 47 intaked)\n\u2705 Movie intake complete: 47 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-01-28 to 2026-02-27\n   \ud83d\udccb \uc810\ud504\ubcf4\uc774 LIVE (1 eps)\n   \ud83d\udccb The Murder at th"
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-02-26 to 2026-02-28 (incremental mode, 30 intaked)\n\u2705 Movie intake complete: 30 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-01-29 to 2026-02-28\n   \ud83d\udccb Kamil Stoch: najlepszy raz (6 eps)\n   \ud83d\udccb"
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 2851.783305,
+      "duration_seconds": 2413.780559,
       "error": null,
-      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 14234 total movies\n\ud83d\udd0d Raw tracking filter: 12820 movies\n\ud83d\udd0d Assigned tracking_movies list: 12820\n\ud83d\udd0d Found 12820 movies in tracking status\n  Priority queue (last 180 days): 1169 movies\n  Older movies: 11651 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 12820 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/12820 (0.8%) | 0 found | 0m elapsed | ~46m remaining\n  \ud83d\udcbe Progress saved (b"
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 14267 total movies\n\ud83d\udd0d Raw tracking filter: 12843 movies\n\ud83d\udd0d Assigned tracking_movies list: 12843\n\ud83d\udd0d Found 12843 movies in tracking status\n  Priority queue (last 180 days): 1131 movies\n  Older movies: 11712 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 12843 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/12843 (0.8%) | 0 found | 0m elapsed | ~44m remaining\n  \ud83d\udcbe Progress saved (b"
+    },
+    {
+      "name": "Resolve pre-order movie dates",
+      "success": true,
+      "duration_seconds": 0.31431,
+      "error": null,
+      "output_preview": "\n\ud83d\udcc5 Resolving pre-order movie dates...\n\n\ud83d\udcc5 Resolving pre-order dates...\n  No pre-order movies to resolve\n\u2705 Pre-order resolution complete: 0 resolved\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Enrich newly available movies with metadata",
       "success": false,
-      "duration_seconds": 143.761059,
-      "error": "2026-02-27 10:26:08 [INFO] EnrichmentService initialized with enrichment_enabled=True\n2026-02-27 10:26:08 [INFO] Initialized with cache_file=cache/wikipedia_cache.json\n2026-02-27 10:26:08 [INFO] Cache loaded: 0 entries\n2026-02-27 10:26:08 [INFO] Screenshots: enabled\n2026-02-27 10:26:08 [INFO] Wikipedia Scraper initialized with cache_file=cache/wikipedia_cache.json\nNo Gemini API key found for Wikipedia finder\n2026-02-27 10:26:10 [INFO] Initializing Playwright browser via shared manager...\n2026-02-27 10:26:11 [INFO] Browser initialized successfully via shared manager\n2026-02-27 10:26:13 [WARNING] No Wikipedia article found for The Nutcracker at the Jacobs School of Music (2025)\n2026-02-27 10:26:14 [INFO] Screenshot saved: cache/screenshots/wikipedia/The_Nutcracker_at_the_Jacobs_School_of_Music_2025_20260227_102613.png\n2026-02-27 10:26:16 [WARNING] No Wikipedia article found for The Nutcracker at the Jacobs School of Music (2025)\n2026-02-27 10:26:16 [INFO] Screenshot saved: cache/screensh",
-      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 10 movies to enrich\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n[YouTubeTrailerScraper] Initializing browser via shared manager...\n  \u2192 Searching YouTube: The Nutcracker at the Ja"
+      "duration_seconds": 142.909006,
+      "error": "2026-02-28 05:27:08 [INFO] EnrichmentService initialized with enrichment_enabled=True\n2026-02-28 05:27:08 [INFO] Initialized with cache_file=cache/wikipedia_cache.json\n2026-02-28 05:27:08 [INFO] Cache loaded: 0 entries\n2026-02-28 05:27:08 [INFO] Screenshots: enabled\n2026-02-28 05:27:08 [INFO] Wikipedia Scraper initialized with cache_file=cache/wikipedia_cache.json\n2026-02-28 05:27:15 [INFO] Initializing Playwright browser via shared manager...\n2026-02-28 05:27:15 [INFO] Browser initialized successfully via shared manager\n2026-02-28 05:27:17 [WARNING] No Wikipedia article found for Front Row (2024)\n2026-02-28 05:27:17 [INFO] Screenshot saved: cache/screenshots/wikipedia/Front_Row_2024_20260228_052717.png\n2026-02-28 05:27:20 [WARNING] No Wikipedia article found for Front Row (2024)\n2026-02-28 05:27:20 [INFO] Screenshot saved: cache/screenshots/wikipedia/Front_Row_2024_20260228_052720.png\n2026-02-28 05:27:23 [WARNING] No Wikipedia article found for Front Row (2024)\n2026-02-28 05:27:23 [IN",
+      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 4 movies to enrich\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n[YouTubeTrailerScraper] Initializing browser via shared manager...\n  \u2192 Searching YouTube: Front Row (2024)\n  \u2713 Foun"
     },
     {
       "name": "Host trailers for newly enriched movies",
       "success": false,
-      "duration_seconds": 0.33813,
+      "duration_seconds": 0.326282,
       "error": null,
-      "output_preview": "=== Trailer Pipeline: full ===\n\n--- Step 1: Host new trailers ---\nMovies to host: 352\nConnecting to B2...\nERROR: /home/runner/work/nrw-production/nrw-production/.env not found\n"
+      "output_preview": "=== Trailer Pipeline: full ===\n\n--- Step 1: Host new trailers ---\nMovies to host: 37\nConnecting to B2...\nERROR: /home/runner/work/nrw-production/nrw-production/.env not found\n"
     }
   ],
   "health_issues": [],
@@ -44,27 +51,27 @@
       "phase": "Enrich newly available movies with metadata",
       "severity": "error",
       "message": "Phase failed with exit code 1",
-      "context": "2026-02-27 10:26:08 [INFO] EnrichmentService initialized with enrichment_enabled=True\n2026-02-27 10:26:08 [INFO] Initialized with cache_file=cache/wikipedia_cache.json\n2026-02-27 10:26:08 [INFO] Cache loaded: 0 entries\n2026-02-27 10:26:08 [INFO] Screenshots: enabled\n2026-02-27 10:26:08 [INFO] Wikipedia Scraper initialized with cache_file=cache/wikipedia_cache.json\nNo Gemini API key found for Wikipedia finder\n2026-02-27 10:26:10 [INFO] Initializing Playwright browser via shared manager...\n2026-02",
-      "stdout_preview": "\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 10 movies to enrich\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n[YouTubeTrailerScraper] Initializing browser via shared manager...\n  \u2192 Searching YouTube: The Nutcracker at the Jac"
+      "context": "2026-02-28 05:27:08 [INFO] EnrichmentService initialized with enrichment_enabled=True\n2026-02-28 05:27:08 [INFO] Initialized with cache_file=cache/wikipedia_cache.json\n2026-02-28 05:27:08 [INFO] Cache loaded: 0 entries\n2026-02-28 05:27:08 [INFO] Screenshots: enabled\n2026-02-28 05:27:08 [INFO] Wikipedia Scraper initialized with cache_file=cache/wikipedia_cache.json\n2026-02-28 05:27:15 [INFO] Initializing Playwright browser via shared manager...\n2026-02-28 05:27:15 [INFO] Browser initialized succe",
+      "stdout_preview": "\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 4 movies to enrich\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n[YouTubeTrailerScraper] Initializing browser via shared manager...\n  \u2192 Searching YouTube: Front Row (2024)\n  \u2713 Found"
     },
     {
       "phase": "Host trailers for newly enriched movies",
       "severity": "error",
       "message": "Phase failed with exit code 1",
       "context": null,
-      "stdout_preview": "=== Trailer Pipeline: full ===\n\n--- Step 1: Host new trailers ---\nMovies to host: 352\nConnecting to B2...\nERROR: /home/runner/work/nrw-production/nrw-production/.env not found"
+      "stdout_preview": "=== Trailer Pipeline: full ===\n\n--- Step 1: Host new trailers ---\nMovies to host: 37\nConnecting to B2...\nERROR: /home/runner/work/nrw-production/nrw-production/.env not found"
     }
   ],
   "warnings": [],
   "data_quality": {
-    "total": 14234,
-    "tracking": 12810,
-    "available": 1422,
-    "data_movies": 369,
-    "movies_with_links": 340,
-    "movies_with_rt": 319,
-    "movies_with_wikipedia": 174,
-    "movies_with_trailers": 354
+    "total": 14267,
+    "tracking": 12839,
+    "available": 1426,
+    "data_movies": 372,
+    "movies_with_links": 346,
+    "movies_with_rt": 326,
+    "movies_with_wikipedia": 179,
+    "movies_with_trailers": 364
   },
   "enrichment_metrics": {
     "timestamp": "2025-12-29T15:42:45.008551",
