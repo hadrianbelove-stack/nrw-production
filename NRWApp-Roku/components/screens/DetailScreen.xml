@@ -93,6 +93,17 @@
           font="font:SmallBoldSystemFont"
           color="0x000000FF"
           visible="false" />
+
+        <!-- Festival name label -->
+        <Label id="festivalLabel"
+          width="600"
+          height="30"
+          translation="[3, 786]"
+          horizAlign="center"
+          vertAlign="center"
+          font="font:SmallBoldSystemFont"
+          color="0xFFD700FF"
+          visible="false" />
       </Group>
 
       <!-- Right: Details panel -->

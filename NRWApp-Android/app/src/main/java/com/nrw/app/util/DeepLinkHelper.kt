@@ -314,14 +314,15 @@ object DeepLinkHelper {
      */
     fun openTrailer(context: Context, url: String): Boolean {
         // Self-hosted MP4 — open with native video player
-        if (url.endsWith(".mp4")) {
+        val path = Uri.parse(url).path ?: url
+        if (path.endsWith(".mp4")) {
             return try {
                 val intent = Intent(Intent.ACTION_VIEW)
                 intent.setDataAndType(Uri.parse(url), "video/mp4")
                 context.startActivity(intent)
                 true
-            } catch (e: Exception) {
-                Log.e(TAG, "Failed to open MP4 trailer: ${e.message}")
+            } catch (e: android.content.ActivityNotFoundException) {
+                Log.e(TAG, "No video player found for MP4: ${e.message}")
                 openUrl(context, url)
             }
         }

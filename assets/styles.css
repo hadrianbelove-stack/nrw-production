@@ -468,6 +468,53 @@ header h1 {
     color: #000;
 }
 
+/* Festival ribbon on poster card (bottom gradient with gold text) */
+.festival-ribbon {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 6px 4px;
+    background: linear-gradient(transparent, rgba(0,0,0,0.85));
+    color: #FFD700;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-align: center;
+    z-index: 5;
+    backface-visibility: hidden;
+    line-height: 1.2;
+}
+
+.movie-card.flipped .festival-ribbon {
+    display: none;
+}
+
+/* Festival name in lightbox */
+.lightbox-festival-name {
+    color: #FFD700;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+}
+
+/* Festival "Buy Ticket" button on cards */
+.watch-btn-festival {
+    background: #FFD700 !important;
+    color: #000 !important;
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.5px;
+}
+
+/* Festival "Buy Ticket" button in lightbox */
+.watch-btn-lb.festival {
+    background: #FFD700;
+    color: #000;
+    font-weight: 700;
+}
+
 .movie-info {
     margin-top: 0.4rem;
     text-align: center;
@@ -960,6 +1007,37 @@ header h1 {
     left: 0;
     width: 100%;
     height: 100%;
+}
+
+.trailer-loading,
+.trailer-error {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    color: #999;
+    font-size: 14px;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.trailer-error { color: #ff6b6b; }
+
+.trailer-spinner {
+    width: 36px;
+    height: 36px;
+    border: 3px solid #333;
+    border-top-color: #00D4AA;
+    border-radius: 50%;
+    animation: trailer-spin 0.8s linear infinite;
+}
+
+@keyframes trailer-spin {
+    to { transform: rotate(360deg); }
 }
 
 /* ============================================

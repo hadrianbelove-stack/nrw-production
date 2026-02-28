@@ -211,7 +211,25 @@ body {
 .badge-tubi { background: #FA382F; color: #fff; }
 .badge-plex { background: #E5A00D; color: #000; }
 .badge-vod { background: #ff9500; color: #000; }
+.badge-festival { background: #FFD700; color: #000; }
 .badge-restoration { background: #C8A951; color: #000; left: 10px; right: auto; }
+
+/* Festival ribbon on poster */
+.festival-ribbon {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 5px 4px;
+    background: linear-gradient(transparent, rgba(0,0,0,0.85));
+    color: #FFD700;
+    font-size: 7px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-align: center;
+    z-index: 5;
+    line-height: 1.2;
+}
 
 /* Staff Pick badge */
 .staff-badge {

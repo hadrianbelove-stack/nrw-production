@@ -112,14 +112,16 @@ export default function WatchButton({link, onPress, size = 'medium'}) {
 
   // Determine label
   let label = config.name;
-  if (isStreaming) {
+  if (link.labelOverride) {
+    label = link.labelOverride;
+  } else if (isStreaming) {
     label = `Watch on ${config.name}`;
   } else {
     label = `Rent on ${config.name}`;
   }
 
-  // Use short label for small size
-  if (size === 'small') {
+  // Use short label for small size (unless overridden)
+  if (size === 'small' && !link.labelOverride) {
     label = config.name;
   }
 

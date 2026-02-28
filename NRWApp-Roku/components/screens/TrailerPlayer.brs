@@ -53,6 +53,22 @@ Function OnKeyEvent(key as String, press as Boolean) as Boolean
     if key = "back"
         ClosePlayer()
         return true
+    else if key = "play"
+        ' Toggle play/pause
+        if m.videoPlayer.state = "paused"
+            m.videoPlayer.control = "resume"
+        else if m.videoPlayer.state = "playing"
+            m.videoPlayer.control = "pause"
+        end if
+        return true
+    else if key = "OK"
+        ' OK also toggles play/pause
+        if m.videoPlayer.state = "paused"
+            m.videoPlayer.control = "resume"
+        else if m.videoPlayer.state = "playing"
+            m.videoPlayer.control = "pause"
+        end if
+        return true
     end if
 
     return false

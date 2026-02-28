@@ -16,6 +16,7 @@ Function GetFilterCategories() as Object
         SERIES: "series"
         PLEX: "plex"
         RESTORATIONS: "restorations"
+        FESTIVALS: "festivals"
     }
 End Function
 
@@ -30,6 +31,7 @@ Function GetFilterDisplayName(filter as String) as String
         series: "Limited Series"
         plex: "Plex"
         restorations: "Restorations"
+        festivals: "Festivals"
     }
 
     if names.DoesExist(filter)
@@ -88,9 +90,76 @@ Function FilterMovies(movies as Object, filter as String) as Object
             if movie.categories <> invalid AND movie.categories.is_restoration = true
                 include = true
             end if
+
+        else if filter = categories.FESTIVALS
+            if movie.categories <> invalid AND movie.categories.is_festival = true
+                include = true
+            end if
         end if
 
         if include
+            result.Push(movie)
+        end if
+    end for
+
+    return result
+End Function
+
+' ============================================================================
+' Filter Movies by Multiple Categories (OR logic - cumulative)
+' ============================================================================
+Function FilterMoviesMulti(movies as Object, activeFilters as Object) as Object
+    result = []
+    categories = GetFilterCategories()
+
+    for each movie in movies
+        if movie.hidden = true
+            continue for
+        end if
+
+        ' No filters = show all
+        if activeFilters.Count() = 0
+            result.Push(movie)
+            continue for
+        end if
+
+        ' OR logic: match ANY active filter
+        matched = false
+        for each filter in activeFilters
+            if filter = categories.BIG_TIME
+                if movie.categories <> invalid AND movie.categories.tier = "big_time"
+                    matched = true
+                end if
+            else if filter = categories.NICHE
+                if movie.categories <> invalid AND movie.categories.tier = "niche"
+                    matched = true
+                end if
+            else if filter = categories.STAFF_PICKS
+                matched = IsStaffPick(movie)
+            else if filter = categories.FOREIGN
+                matched = IsForeign(movie)
+            else if filter = categories.SERIES
+                if movie.content_type = "limited_series"
+                    matched = true
+                end if
+            else if filter = categories.PLEX
+                if movie.plex <> invalid AND movie.plex.deep_link <> invalid
+                    matched = true
+                end if
+            else if filter = categories.RESTORATIONS
+                if movie.categories <> invalid AND movie.categories.is_restoration = true
+                    matched = true
+                end if
+            else if filter = categories.FESTIVALS
+                if movie.categories <> invalid AND movie.categories.is_festival = true
+                    matched = true
+                end if
+            end if
+
+            if matched then exit for
+        end for
+
+        if matched
             result.Push(movie)
         end if
     end for
@@ -429,6 +498,29 @@ Function NormalizeServiceName(service as String) as String
     end if
 
     return normalized
+End Function
+
+' Check if a VOD link is an Eventive / festival platform link
+Function IsEventiveLink(service as String, url as String) as Boolean
+    if service <> invalid
+        lowerService = LCase(service)
+        if InStr(1, lowerService, "eventive") > 0
+            return true
+        end if
+    end if
+    if url <> invalid
+        lowerUrl = LCase(url)
+        if InStr(1, lowerUrl, "eventive.org") > 0
+            return true
+        end if
+        if InStr(1, lowerUrl, "festivalplayer") > 0
+            return true
+        end if
+        if InStr(1, lowerUrl, "shift72.com") > 0
+            return true
+        end if
+    end if
+    return false
 End Function
 
 ' Get short service name for badge display

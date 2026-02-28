@@ -56,13 +56,21 @@ def main():
         year = movie.get('year', '')
         director = movie.get('crew', {}).get('director')
         original_language = movie.get('original_language')
+        original_title = movie.get('original_title')
 
         # Set 90-second timeout per movie
         signal.signal(signal.SIGALRM, timeout_handler)
         signal.alarm(90)
 
         try:
-            result = finder.find_rt_score(title, year, director=director, original_language=original_language)
+            # Clear caches for fresh attempt with improved matching
+            cache_key = f"{title}_{year}"
+            if cache_key in finder.gemini_finder.cache:
+                del finder.gemini_finder.cache[cache_key]
+            if finder.playwright_scraper and cache_key in finder.playwright_scraper.cache:
+                del finder.playwright_scraper.cache[cache_key]
+
+            result = finder.find_rt_score(title, year, director=director, original_language=original_language, original_title=original_title)
 
             if result:
                 url = result.get('url')
@@ -108,14 +116,14 @@ def main():
         # Checkpoint every 25 movies
         if (idx + 1) % 25 == 0 and stats['urls_found'] > 0:
             with open(data_path, 'w') as f:
-                json.dump(data, f, indent=2, ensure_ascii=False)
+                json.dump(data, f, indent=2)
             print(f"  [checkpoint saved at {idx+1}]")
             sys.stdout.flush()
 
     # Final save
     if stats['urls_found'] > 0:
         with open(data_path, 'w') as f:
-            json.dump(data, f, indent=2, ensure_ascii=False)
+            json.dump(data, f, indent=2)
 
     print()
     print("=" * 60)

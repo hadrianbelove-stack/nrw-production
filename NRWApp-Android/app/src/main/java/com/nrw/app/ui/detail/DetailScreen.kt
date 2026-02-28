@@ -295,6 +295,14 @@ private fun MovieDetail(
                                     )
                                 }
                             }
+                            movie.festivalInfo?.festivalName?.let { festivalName ->
+                                Text(
+                                    text = festivalName,
+                                    color = Color(0xFFFFD700),
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
                         }
                         movie.digitalDate?.let { date ->
                             Text(

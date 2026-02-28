@@ -18,7 +18,7 @@ Sub Init()
     ' State
     m.allMovies = []
     m.filteredMovies = []
-    m.currentFilter = "all"
+    m.activeFilters = []
     m.focusedArea = "grid"  ' "filter", "grid", or "detail"
 
     ' Set up observers
@@ -68,7 +68,7 @@ Sub onMoviesLoaded()
     end if
 
     ' Apply initial filter
-    ApplyFilter(m.currentFilter)
+    ApplyFilters()
 
     ' Show grid
     m.movieGrid.visible = true
@@ -86,23 +86,17 @@ Sub onMoviesLoaded()
 End Sub
 
 ' ============================================================================
-' Apply Filter
+' Apply Filters (multi-select with OR logic)
 ' ============================================================================
-Sub ApplyFilter(filter as String)
-    m.currentFilter = filter
-    m.top.currentFilter = filter
-
-    ' Filter movies
-    m.filteredMovies = FilterMovies(m.allMovies, filter)
+Sub ApplyFilters()
+    ' Filter movies using multi-select OR logic
+    m.filteredMovies = FilterMoviesMulti(m.allMovies, m.activeFilters)
 
     ' Group by date
     grouped = GroupMoviesByDate(m.filteredMovies)
 
     ' Build content for grid
     BuildGridContent(grouped)
-
-    ' Save filter preference
-    SavePreference("filter", filter)
 End Sub
 
 ' ============================================================================
@@ -135,11 +129,36 @@ End Sub
 ' Filter Selected Callback
 ' ============================================================================
 Sub onFilterSelected()
-    newFilter = m.filterBar.selectedFilter
-    if newFilter <> m.currentFilter
-        ApplyFilter(newFilter)
+    filterId = m.filterBar.selectedFilter
+    if filterId = "all"
+        m.activeFilters = []
+    else
+        ' Toggle filter in array
+        index = ArrayIndexOf(m.activeFilters, filterId)
+        if index >= 0
+            m.activeFilters.Delete(index)
+        else
+            m.activeFilters.Push(filterId)
+        end if
     end if
+
+    ' Update filter bar visual state
+    m.filterBar.activeFilters = m.activeFilters
+
+    ApplyFilters()
 End Sub
+
+' ============================================================================
+' Array Index Of Helper
+' ============================================================================
+Function ArrayIndexOf(arr as Object, value as String) as Integer
+    for i = 0 to arr.Count() - 1
+        if arr[i] = value
+            return i
+        end if
+    end for
+    return -1
+End Function
 
 ' ============================================================================
 ' Movie Selected Callback

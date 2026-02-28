@@ -169,6 +169,34 @@ class MovieRepository(private val context: Context) {
             FilterCategory.RESTORATIONS -> movies.filter {
                 it.hidden != true && it.categories?.isRestoration == true
             }
+            FilterCategory.FESTIVALS -> movies.filter {
+                it.hidden != true && it.categories?.isFestival == true
+            }
+        }
+    }
+
+    /**
+     * Filter movies by multiple categories (OR logic - cumulative)
+     */
+    fun filterMoviesMulti(movies: List<Movie>, activeFilters: Set<FilterCategory>): List<Movie> {
+        if (activeFilters.isEmpty()) {
+            return movies.filter { it.hidden != true }
+        }
+        return movies.filter { movie ->
+            if (movie.hidden == true) return@filter false
+            activeFilters.any { filter ->
+                when (filter) {
+                    FilterCategory.ALL -> true
+                    FilterCategory.BIG_TIME -> movie.categories?.tier == "big_time"
+                    FilterCategory.NICHE -> movie.categories?.tier == "niche"
+                    FilterCategory.STAFF_PICKS -> movie.isStaffPick()
+                    FilterCategory.FOREIGN -> movie.isForeign()
+                    FilterCategory.SERIES -> movie.contentType == "limited_series"
+                    FilterCategory.PLEX -> movie.plex?.deepLink != null
+                    FilterCategory.RESTORATIONS -> movie.categories?.isRestoration == true
+                    FilterCategory.FESTIVALS -> movie.categories?.isFestival == true
+                }
+            }
         }
     }
 

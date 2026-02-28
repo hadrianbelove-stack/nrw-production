@@ -59,7 +59,10 @@ data class Movie(
     @SerializedName("watch_links")
     val watchLinks: WatchLinks? = null,
 
-    val plex: PlexInfo? = null
+    val plex: PlexInfo? = null,
+
+    @SerializedName("festival_info")
+    val festivalInfo: FestivalInfo? = null
 )
 
 data class Country(
@@ -83,7 +86,10 @@ data class Categories(
     val isForeign: Boolean? = null,
 
     @SerializedName("is_restoration")
-    val isRestoration: Boolean? = null
+    val isRestoration: Boolean? = null,
+
+    @SerializedName("is_festival")
+    val isFestival: Boolean? = null
 )
 
 data class MovieLinks(
@@ -155,6 +161,13 @@ data class PlexInfo(
     val ratingKey: String? = null
 )
 
+data class FestivalInfo(
+    @SerializedName("platform") val platform: String? = null,
+    @SerializedName("festival_slug") val festivalSlug: String? = null,
+    @SerializedName("festival_name") val festivalName: String? = null,
+    @SerializedName("status") val status: String? = null
+)
+
 /**
  * API response wrapper
  */
@@ -203,7 +216,8 @@ enum class FilterCategory(val id: String, val displayName: String) {
     FOREIGN("foreign", "Foreign"),
     SERIES("series", "Limited Series"),
     PLEX("plex", "Plex"),
-    RESTORATIONS("restorations", "Restorations & Reissues")
+    RESTORATIONS("restorations", "Restorations & Reissues"),
+    FESTIVALS("festivals", "Festivals")
 }
 
 /**
@@ -292,12 +306,14 @@ fun Movie.getWatchOptions(): List<WatchOption> {
         ))
     }
 
-    // Add VOD options (purchase/rent) — Amazon + Apple TV
+    // Add VOD options (purchase/rent) — Amazon + Apple TV + Eventive
     watchLinks?.vod?.forEach { link ->
         if (link.link != null && isValidVodService(link.service)) {
+            val isEventive = isEventiveLink(link.service, link.link)
+            val vodLabel = if (isEventive) "Buy Ticket" else "Rent on ${link.service ?: "VOD"}"
             options.add(WatchOption(
                 service = normalizeServiceId(link.service) ?: "vod",
-                label = "Rent on ${link.service ?: "VOD"}",
+                label = vodLabel,
                 url = link.link,
                 type = WatchType.PURCHASE,
                 icon = normalizeServiceId(link.service) ?: "vod"
@@ -387,6 +403,15 @@ private val SERVICE_NAME_MAP = mapOf(
     "shudder" to "shudder",
     "plex" to "plex"
 )
+
+private fun isEventiveLink(service: String?, url: String?): Boolean {
+    val lowerService = service?.lowercase() ?: ""
+    val lowerUrl = url?.lowercase() ?: ""
+    return lowerService.contains("eventive") ||
+            lowerUrl.contains("eventive.org") ||
+            lowerUrl.contains("festivalplayer") ||
+            lowerUrl.contains("shift72.com")
+}
 
 private fun normalizeServiceId(serviceName: String?): String? {
     if (serviceName == null) return null

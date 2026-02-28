@@ -314,47 +314,43 @@ const HomeScreenTvOS = () => {
     });
   }, []);
 
-  // Get movies based on active filters (multi-select with AND logic)
+  // Get movies based on active filters (multi-select with OR logic - cumulative)
   const displayMovies = useMemo(() => {
     // If no filters selected, show all
     if (activeFilters.size === 0) {
       return filteredMovies;
     }
 
-    // Filter movies - must pass ALL selected filters (AND logic)
+    // Filter movies - must pass ANY selected filter (OR logic)
     return filteredMovies.filter(movie => {
       for (const filter of activeFilters) {
         switch (filter) {
           case 'big-time':
-            if (movie.categories?.tier !== 'big_time') return false;
+            if (movie.categories?.tier === 'big_time') return true;
             break;
           case 'niche':
-            if (movie.categories?.tier !== 'niche') return false;
+            if (movie.categories?.tier === 'niche') return true;
             break;
           case 'staff-picks':
-            // Support both new categories object and legacy featured field
-            if (!movie.categories?.is_staff_pick && !movie.featured) return false;
+            if (movie.categories?.is_staff_pick || movie.featured) return true;
             break;
           case 'foreign':
-            // Support both new categories object and legacy original_language
             const isForeign = movie.categories?.is_foreign ??
               (movie.original_language && movie.original_language !== 'en');
-            if (!isForeign) return false;
+            if (isForeign) return true;
             break;
           case 'series':
-            // Limited series / miniseries only
-            if (movie.content_type !== 'limited_series') return false;
+            if (movie.content_type === 'limited_series') return true;
             break;
           case 'plex':
-            // Movies available in personal Plex library
-            if (!movie.plex || !movie.plex.deep_link) return false;
+            if (movie.plex && movie.plex.deep_link) return true;
             break;
           case 'restorations':
-            if (!movie.categories?.is_restoration) return false;
+            if (movie.categories?.is_restoration) return true;
             break;
         }
       }
-      return true;
+      return false;
     });
   }, [filteredMovies, activeFilters]);
 

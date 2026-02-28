@@ -3097,6 +3097,116 @@ class DataGenerator:
 
         return enriched_count
 
+    def check_festival_expirations(self):
+        """
+        Check festival screening links for expiration.
+        Dead links (404/410) cause the movie to be hidden and returned to tracking.
+        """
+        import requests
+        from datetime import datetime
+
+        data_file = 'data.json'
+        if not os.path.exists(data_file):
+            print("  No data.json found")
+            return
+
+        with open(data_file, 'r') as f:
+            data = json.load(f)
+
+        movies = data.get('movies', [])
+        festival_movies = [m for m in movies if m.get('categories', {}).get('is_festival')]
+
+        if not festival_movies:
+            print("  No festival movies found")
+            return
+
+        print(f"  Checking {len(festival_movies)} festival movies...")
+        active_count = 0
+        expired_count = 0
+        today_str = datetime.now().strftime('%Y-%m-%d')
+        modified = False
+
+        # Load tracking database for status reset
+        tracking_path = 'movie_tracking.json'
+        tracking_data = {}
+        if os.path.exists(tracking_path):
+            with open(tracking_path, 'r') as f:
+                tracking_data = json.load(f)
+
+        for movie in festival_movies:
+            title = movie.get('title', 'Unknown')
+            festival_info = movie.get('festival_info', {})
+
+            # Skip already-expired movies
+            if festival_info.get('status') == 'expired':
+                continue
+
+            # Find the festival link to check
+            festival_link = None
+            watch_links = movie.get('watch_links', {})
+            vod = watch_links.get('vod')
+            if isinstance(vod, list):
+                for v in vod:
+                    svc = v.get('service', '').lower()
+                    link = v.get('link', '') or ''
+                    if svc == 'eventive' or 'eventive.org' in link or 'festivalplayer' in link or 'shift72.com' in link:
+                        festival_link = link
+                        break
+            elif isinstance(vod, dict):
+                link = vod.get('link', '') or ''
+                svc = vod.get('service', '').lower()
+                if svc == 'eventive' or 'eventive.org' in link or 'festivalplayer' in link or 'shift72.com' in link:
+                    festival_link = link
+
+            if not festival_link:
+                continue
+
+            # HTTP HEAD check
+            try:
+                resp = requests.head(festival_link, timeout=10, allow_redirects=True)
+                if resp.status_code in (404, 410, 403):
+                    # Link is dead — festival screening has ended
+                    expired_count += 1
+                    festival_info['status'] = 'expired'
+                    festival_info['last_checked'] = today_str
+                    movie['festival_info'] = festival_info
+                    movie['hidden'] = True
+                    modified = True
+                    slug = festival_info.get('festival_slug', '?')
+                    print(f"  ❌ Expired: {title} ({slug}) — HTTP {resp.status_code}")
+
+                    # Reset movie in tracking for re-discovery of normal VOD
+                    movie_id = str(movie.get('id', ''))
+                    if movie_id and movie_id in tracking_data.get('movies', {}):
+                        tracking_movie = tracking_data['movies'][movie_id]
+                        tracking_movie['status'] = 'tracking'
+                        if 'digital_date' in tracking_movie:
+                            del tracking_movie['digital_date']
+                        print(f"    → Returned to tracking for VOD re-discovery")
+                else:
+                    # Link is still alive
+                    active_count += 1
+                    festival_info['last_checked'] = today_str
+                    movie['festival_info'] = festival_info
+                    modified = True
+            except requests.RequestException as e:
+                # Network error — don't mark as expired, just log
+                print(f"  ⚠️  Could not check {title}: {e}")
+
+        # Save changes
+        if modified:
+            with open(data_file, 'w') as f:
+                json.dump(data, f, indent=2)
+            print(f"  💾 Updated data.json")
+
+            # Save tracking data if we reset any movies
+            if expired_count > 0 and tracking_data:
+                with open(tracking_path, 'w') as f:
+                    json.dump(tracking_data, f, indent=2)
+                print(f"  💾 Updated movie_tracking.json")
+
+        print(f"  📊 Results: {active_count} active, {expired_count} expired")
+
     def reenrich_watch_link_gaps(self):
         """
         Re-enrich movies that have Amazon/Apple providers but empty watch_links.
@@ -3617,6 +3727,7 @@ class DataGenerator:
             'is_foreign': is_foreign,
             'is_staff_pick': False,  # Set later from staff_picks.json
             'is_restoration': False,  # Set later from restoration detection
+            'is_festival': False,  # Set later from watch_links detection
             'auto_categorized': auto_categorized,
             'manual_override': manual_override
         }
@@ -3734,11 +3845,29 @@ class DataGenerator:
         if fields_updated > 0:
             print(f"📝 Applied {fields_updated} manual field edits from movie_tracking.json")
 
+        # Load festival name mapping from config
+        festival_names_map = self.config.get('festival_names', {})
+
         # Apply categorization to all movies
         big_time_count = 0
         niche_count = 0
         foreign_count = 0
         restoration_count = 0
+        festival_count = 0
+        festival_services = ['eventive']
+        festival_url_patterns = ['eventive.org', 'festivalplayer.sundance.org', 'shift72.com', 'xerb.tv', 'festivalscope.com']
+
+        def _check_festival_vod(entry):
+            """Check if a single vod entry is from a festival platform."""
+            svc = entry.get('service', '').lower()
+            link = entry.get('link', '') or ''
+            if svc in festival_services:
+                return True
+            for pattern in festival_url_patterns:
+                if pattern in link.lower():
+                    return True
+            return False
+
         for movie in display_movies:
             movie_id = str(movie.get('id'))
 
@@ -3780,6 +3909,76 @@ class DataGenerator:
 
             categories['is_restoration'] = is_restoration
 
+            # Mark festival screenings (Eventive and similar platforms)
+            is_festival = False
+            festival_services = ['eventive']
+            festival_url_patterns = ['eventive.org', 'festivalplayer.sundance.org', 'shift72.com', 'xerb.tv', 'festivalscope.com']
+            watch_links = movie.get('watch_links', {})
+            vod = watch_links.get('vod')
+            festival_link = None
+            festival_service = None
+
+            def _check_festival_vod(entry):
+                """Check if a single vod entry is from a festival platform."""
+                svc = entry.get('service', '').lower()
+                link = entry.get('link', '') or ''
+                if svc in festival_services:
+                    return True
+                for pattern in festival_url_patterns:
+                    if pattern in link.lower():
+                        return True
+                return False
+
+            if isinstance(vod, list):
+                for v in vod:
+                    if _check_festival_vod(v):
+                        is_festival = True
+                        festival_link = v.get('link', '')
+                        festival_service = v.get('service', '')
+                        break
+            elif isinstance(vod, dict):
+                if _check_festival_vod(vod):
+                    is_festival = True
+                    festival_link = vod.get('link', '')
+                    festival_service = vod.get('service', '')
+
+            categories['is_festival'] = is_festival
+
+            # Populate festival_info metadata for expiration tracking
+            if is_festival:
+                existing_festival_info = movie.get('festival_info', {})
+
+                # Extract festival slug from URL (pattern: watch.eventive.org/{slug}/play/{id})
+                festival_slug = ''
+                if festival_link:
+                    if 'eventive.org/' in festival_link:
+                        try:
+                            slug_part = festival_link.split('eventive.org/')[1].split('/')[0]
+                            if slug_part:
+                                festival_slug = slug_part
+                        except (IndexError, AttributeError):
+                            pass
+                    elif 'festivalplayer.sundance.org' in festival_link:
+                        festival_slug = 'sundance'
+
+                # Look up festival name from config mapping
+                festival_name = festival_names_map.get(festival_slug, '')
+                if not festival_name and festival_slug:
+                    # Fallback: title-case the slug
+                    festival_name = festival_slug.replace('_', ' ').replace('-', ' ').title()
+                    print(f"  ⚠️  Unknown festival slug '{festival_slug}' for {movie.get('title', 'Unknown')} — add to config.yaml festival_names")
+
+                from datetime import datetime
+                today_str = datetime.now().strftime('%Y-%m-%d')
+                movie['festival_info'] = {
+                    'platform': festival_service or 'Unknown',
+                    'festival_slug': festival_slug,
+                    'festival_name': festival_name,
+                    'discovered': existing_festival_info.get('discovered', today_str),
+                    'last_checked': existing_festival_info.get('last_checked', today_str),
+                    'status': existing_festival_info.get('status', 'active')
+                }
+
             movie['categories'] = categories
 
             # Set 'featured' field for backwards compatibility (true or false)
@@ -3794,6 +3993,8 @@ class DataGenerator:
                 foreign_count += 1
             if categories['is_restoration']:
                 restoration_count += 1
+            if categories['is_festival']:
+                festival_count += 1
 
         # Apply editorial ordering if specified
         if ordering:
@@ -3821,7 +4022,7 @@ class DataGenerator:
         ordered_count = len(ordering) if ordering else 0
 
         print(f"📝 Admin overrides applied:")
-        print(f"  Categories: {big_time_count} Big Time, {niche_count} Niche, {foreign_count} Foreign, {restoration_count} Restorations")
+        print(f"  Categories: {big_time_count} Big Time, {niche_count} Niche, {foreign_count} Foreign, {restoration_count} Restorations, {festival_count} Festivals")
         print(f"  Staff Picks: {staff_pick_count}")
         if ordered_count > 0:
             print(f"  Editorial ordering: {ordered_count} movies pinned to top")

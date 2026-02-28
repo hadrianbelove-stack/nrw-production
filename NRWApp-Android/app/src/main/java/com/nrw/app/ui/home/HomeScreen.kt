@@ -119,8 +119,8 @@ fun HomeScreen(
 
                     // Filter chips
                     FilterChips(
-                        selectedFilter = uiState.selectedFilter,
-                        onFilterSelected = { viewModel.setFilter(it) }
+                        activeFilters = uiState.activeFilters,
+                        onFilterToggled = { viewModel.toggleFilter(it) }
                     )
 
                     Spacer(modifier = Modifier.height(6.dp))

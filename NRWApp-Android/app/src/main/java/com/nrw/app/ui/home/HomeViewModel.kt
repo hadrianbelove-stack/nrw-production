@@ -20,7 +20,7 @@ data class HomeUiState(
     val movies: List<Movie> = emptyList(),
     val filteredMovies: List<Movie> = emptyList(),
     val groupedMovies: Map<String, List<Movie>> = emptyMap(),
-    val selectedFilter: FilterCategory = FilterCategory.ALL,
+    val activeFilters: Set<FilterCategory> = emptySet(),
     val searchQuery: String = "",
     val playlistUrl: String? = null
 )
@@ -66,10 +66,20 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     /**
-     * Set the filter category
+     * Toggle a filter category on/off (multi-select)
      */
-    fun setFilter(filter: FilterCategory) {
-        _uiState.value = _uiState.value.copy(selectedFilter = filter)
+    fun toggleFilter(filter: FilterCategory) {
+        val current = _uiState.value.activeFilters
+        val newFilters = if (filter == FilterCategory.ALL) {
+            emptySet()
+        } else {
+            if (current.contains(filter)) {
+                current - filter
+            } else {
+                current + filter
+            }
+        }
+        _uiState.value = _uiState.value.copy(activeFilters = newFilters)
         applyFilters()
     }
 
@@ -86,7 +96,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
      */
     private fun applyFilters() {
         val state = _uiState.value
-        var filtered = repository.filterMovies(state.movies, state.selectedFilter)
+        var filtered = repository.filterMoviesMulti(state.movies, state.activeFilters)
 
         if (state.searchQuery.isNotBlank()) {
             filtered = repository.searchMovies(filtered, state.searchQuery)

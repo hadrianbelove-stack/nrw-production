@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-02-27T10:25:59.259478",
+  "generated_at": "2026-02-27T20:27:33.588937",
   "count": 369,
   "movies": [
     {
@@ -23,12 +23,17 @@
         "streaming": []
       },
       "links": {
-        "wikipedia": null,
-        "trailer": null,
-        "rt": null
+        "trailer": "https://www.youtube.com/watch?v=QOrbb7XB_ec"
       },
-      "watch_links": {},
-      "_enrichment_status": "pending",
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.ce46db03-2e90-4cf2-942e-734894ce4b36&tag=nrw04-20"
+          }
+        ]
+      },
+      "_enrichment_status": "completed",
       "_discovered_at": "2026-02-27T10:25:59.259469",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
@@ -41,13 +46,14 @@
         "director": "Raven Deshay Carter",
         "cast": [
           "Aleigha Burt",
-          "Jasmine Gia Nguyen",
-          "Trisha Arozqueta",
-          "Tabby Getsy",
-          "Jessie Roddy"
+          "Jasmine Gia Nguyen"
         ]
       },
-      "_discovery_source": "provider_availability_check"
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "tmdb_type4",
+      "_enrichment_gaps": [
+        "rt_score"
+      ]
     },
     {
       "id": "1405748",
@@ -70,12 +76,17 @@
         "streaming": []
       },
       "links": {
-        "wikipedia": null,
-        "trailer": null,
-        "rt": null
+        "trailer": "https://www.youtube.com/watch?v=bwa1ttQbXJ8"
       },
-      "watch_links": {},
-      "_enrichment_status": "pending",
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.ee26e17e-0fc4-49bc-84b8-f56dfa6fa6f5&tag=nrw04-20"
+          }
+        ]
+      },
+      "_enrichment_status": "completed",
       "_discovered_at": "2026-02-27T10:25:58.385750",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
@@ -88,18 +99,19 @@
         "director": "Lola Rock'N'Rolla",
         "cast": [
           "Lady Bunny",
-          "Taylor Mac",
-          "Mario Diaz",
-          "Kevin Aviance",
-          "Heather Litteer"
+          "Taylor Mac"
         ]
       },
-      "_discovery_source": "provider_availability_check"
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "tmdb_type4",
+      "_enrichment_gaps": [
+        "rt_score"
+      ]
     },
     {
       "id": "799882",
       "title": "The Bluff",
-      "digital_date": "2026-02-27",
+      "digital_date": "2026-02-25",
       "bootstrap_date": false,
       "manually_corrected": false,
       "synopsis": "When her tranquil life on a remote island is shattered by the return of her vengeful former captain, a skilled ex-pirate must confront her bloody past and unleash her deadly talents to save her family from a ruthless siege.",
@@ -109,7 +121,7 @@
       ],
       "runtime": 102,
       "year": 2026,
-      "rt_score": null,
+      "rt_score": "70%",
       "providers": {
         "rent": [],
         "buy": [],
@@ -119,12 +131,17 @@
         ]
       },
       "links": {
-        "wikipedia": null,
-        "trailer": null,
-        "rt": null
+        "wikipedia": "https://en.wikipedia.org/wiki/The_Bluff_(2026_film)",
+        "trailer": "https://www.youtube.com/watch?v=uUYMqRjNxhM",
+        "rt": "https://www.rottentomatoes.com/m/the_bluff_2026"
       },
-      "watch_links": {},
-      "_enrichment_status": "pending",
+      "watch_links": {
+        "streaming": {
+          "service": "Amazon",
+          "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.a2ae5f76-c2c2-4715-9e7c-928dace7b349"
+        }
+      },
+      "_enrichment_status": "completed",
       "_discovered_at": "2026-02-27T10:25:45.275632",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
@@ -137,13 +154,11 @@
         "director": "Frank E. Flowers",
         "cast": [
           "Priyanka Chopra Jonas",
-          "Karl Urban",
-          "Safia Oakley-Green",
-          "Ismael Cruz Cordova",
-          "Temuera Morrison"
+          "Karl Urban"
         ]
       },
-      "_discovery_source": "provider_availability_check"
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "tmdb_type4"
     },
     {
       "id": "1622706",
@@ -157,7 +172,7 @@
       ],
       "runtime": 219,
       "year": 2026,
-      "rt_score": null,
+      "rt_score": "81%",
       "providers": {
         "rent": [],
         "buy": [],
@@ -166,12 +181,17 @@
         ]
       },
       "links": {
-        "wikipedia": null,
-        "trailer": null,
-        "rt": null
+        "wikipedia": "https://en.wikipedia.org/wiki/Royal_Rumble_(2026)",
+        "trailer": "https://www.youtube.com/watch?v=K22wL3h7_F0",
+        "rt": "https://www.rottentomatoes.com/m/wwe_royal_rumble_2026"
       },
-      "watch_links": {},
-      "_enrichment_status": "pending",
+      "watch_links": {
+        "streaming": {
+          "service": "Disney+",
+          "link": "https://disneyplus.bn5x.net/c/1206980/705874/9358?u=https%3A%2F%2Fwww.disneyplus.com%2Fbrowse%2Fentity-f6727c71-8ad2-48a1-aed3-33e7772dfca6&subId3=justappsvod"
+        }
+      },
+      "_enrichment_status": "completed",
       "_discovered_at": "2026-02-27T10:23:25.554458",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
@@ -184,13 +204,11 @@
         "director": "Unknown",
         "cast": [
           "Andrew Galloway",
-          "Rami Sebei",
-          "Allen Jones",
-          "Walter Hahn",
-          "Cody Rhodes"
+          "Rami Sebei"
         ]
       },
-      "_discovery_source": "provider_availability_check"
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection"
     },
     {
       "id": "1422627",
@@ -213,17 +231,16 @@
         "streaming": []
       },
       "links": {
-        "wikipedia": null,
-        "trailer": null,
-        "rt": null
+        "trailer": "https://www.youtube.com/watch?v=AE_l098CFIc",
+        "rt": "https://www.rottentomatoes.com/m/snow_leopard_sisters"
       },
       "watch_links": {},
-      "_enrichment_status": "pending",
+      "_enrichment_status": "completed",
       "_discovered_at": "2026-02-27T10:15:19.613342",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
       "poster": "https://image.tmdb.org/t/p/w500/3eT4xMPqHrLjqO5vOnfhHS8D6ml.jpg",
-      "studio": "Unknown",
+      "studio": null,
       "budget": 0,
       "country": "United Kingdom",
       "original_language": "en",
@@ -231,12 +248,16 @@
         "director": "Andrew Lynch",
         "cast": []
       },
-      "_discovery_source": "provider_availability_check"
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection",
+      "_enrichment_gaps": [
+        "watch_links"
+      ]
     },
     {
       "id": "1196946",
       "title": "Ikkis",
-      "digital_date": "2026-02-27",
+      "digital_date": "2026-02-25",
       "bootstrap_date": false,
       "manually_corrected": false,
       "synopsis": "Second Lieutenant and India's youngest Param Vir Chakra recipient, Arun Khetarpal, gave his life fighting for his battalion and the country during the 1971 Battle of Basantar. Ikkis also takes a reflective look at the futility of war through the eyes of Khetarpal's father, who visits his ancestral home in Sargodha and Alma Mater for reunion, which now happens to be in post-partition Pakistan, 30 years later.",
@@ -247,7 +268,7 @@
       ],
       "runtime": 148,
       "year": 2026,
-      "rt_score": null,
+      "rt_score": "100%",
       "providers": {
         "rent": [],
         "buy": [],
@@ -257,12 +278,17 @@
         ]
       },
       "links": {
-        "wikipedia": null,
-        "trailer": null,
-        "rt": null
+        "wikipedia": "https://en.wikipedia.org/wiki/Ikkis",
+        "trailer": "https://www.youtube.com/watch?v=QfnyH8odcus",
+        "rt": "https://www.rottentomatoes.com/m/ikkis"
       },
-      "watch_links": {},
-      "_enrichment_status": "pending",
+      "watch_links": {
+        "streaming": {
+          "service": "Amazon",
+          "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.a2889ba2-92ff-4733-ad35-c9e513dff0f7"
+        }
+      },
+      "_enrichment_status": "completed",
       "_discovered_at": "2026-02-27T10:12:43.195988",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
@@ -275,13 +301,11 @@
         "director": "Sriram Raghavan",
         "cast": [
           "Dharmendra",
-          "Jaideep Ahlawat",
-          "Agastya Nanda",
-          "Simar Bhatia",
-          "Shree Bishnoi"
+          "Jaideep Ahlawat"
         ]
       },
-      "_discovery_source": "provider_availability_check"
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "tmdb_type4"
     },
     {
       "id": "1239288",
@@ -296,7 +320,7 @@
       ],
       "runtime": 104,
       "year": 2025,
-      "rt_score": null,
+      "rt_score": "41%",
       "providers": {
         "rent": [
           "Amazon Video"
@@ -305,12 +329,19 @@
         "streaming": []
       },
       "links": {
-        "wikipedia": null,
-        "trailer": null,
-        "rt": null
+        "wikipedia": "https://en.wikipedia.org/wiki/Atropia_(film)",
+        "trailer": "https://www.youtube.com/watch?v=ikcywFRq0nk",
+        "rt": "https://www.rottentomatoes.com/m/atropia"
       },
-      "watch_links": {},
-      "_enrichment_status": "pending",
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.4f8772fc-8272-42c5-9146-6aacff7f0568&tag=nrw04-20"
+          }
+        ]
+      },
+      "_enrichment_status": "completed",
       "_discovered_at": "2026-02-27T10:07:22.034828",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
@@ -323,13 +354,11 @@
         "director": "Hailey Benton Gates",
         "cast": [
           "Alia Shawkat",
-          "Zahra Alzubaidi",
-          "Callum Turner",
-          "Cristian Valle",
-          "Toby Nichols"
+          "Zahra Alzubaidi"
         ]
       },
-      "_discovery_source": "provider_availability_check"
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection"
     },
     {
       "id": "1517594",
@@ -343,7 +372,7 @@
       ],
       "runtime": 60,
       "year": 2025,
-      "rt_score": null,
+      "rt_score": "65%",
       "providers": {
         "rent": [],
         "buy": [],
@@ -352,12 +381,16 @@
         ]
       },
       "links": {
-        "wikipedia": null,
-        "trailer": null,
-        "rt": null
+        "trailer": "https://www.youtube.com/watch?v=aUdV_NS5GkM",
+        "rt": "https://www.rottentomatoes.com/m/middle_school_the_worst_years_of_my_life"
       },
-      "watch_links": {},
-      "_enrichment_status": "pending",
+      "watch_links": {
+        "streaming": {
+          "service": "Angel Studios",
+          "link": "https://www.angel.com/title/movie/99114ebb-2c28-4c29-aa77-f78006d1110f?utm_source=catalog_feed"
+        }
+      },
+      "_enrichment_status": "completed",
       "_discovered_at": "2026-02-27T09:56:44.535251",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
@@ -370,7 +403,8 @@
         "director": "Nate Lundquist",
         "cast": []
       },
-      "_discovery_source": "provider_availability_check"
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection"
     },
     {
       "id": "1262426",
@@ -385,7 +419,7 @@
       ],
       "runtime": 125,
       "year": 2025,
-      "rt_score": null,
+      "rt_score": "95%",
       "providers": {
         "rent": [],
         "buy": [],
@@ -394,12 +428,17 @@
         ]
       },
       "links": {
-        "wikipedia": null,
-        "trailer": null,
-        "rt": null
+        "wikipedia": "https://en.wikipedia.org/wiki/Tin\u0101",
+        "trailer": "https://www.youtube.com/watch?v=p39afPLXALw",
+        "rt": "https://www.rottentomatoes.com/m/tina_2024"
       },
-      "watch_links": {},
-      "_enrichment_status": "pending",
+      "watch_links": {
+        "streaming": {
+          "service": "Angel Studios",
+          "link": "https://www.angel.com/title/movie/cb7fc978-58c6-4cba-a1fd-5aaf7ce6283c?utm_source=catalog_feed"
+        }
+      },
+      "_enrichment_status": "completed",
       "_discovered_at": "2026-02-27T09:50:22.467992",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
@@ -412,18 +451,16 @@
         "director": "Miki Magasiva",
         "cast": [
           "Anapela Polataivao",
-          "Antonia Robinson",
-          "Beulah Koale",
-          "Nicole Whippy",
-          "Dalip Sondhi"
+          "Antonia Robinson"
         ]
       },
-      "_discovery_source": "provider_availability_check"
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection"
     },
     {
       "id": "1548594",
       "title": "The Nutcracker at the Jacobs School of Music",
-      "digital_date": "2026-02-27",
+      "digital_date": "2025-07-27",
       "bootstrap_date": false,
       "manually_corrected": false,
       "synopsis": "An imaginative retelling of the classic ballet, featuring a full orchestral performance and stunning choreography. A colorful blend of live theater with cinematic artistry. Breathtaking scenic design combines with elaborate costumes and elegant dance. Captured live at the Musical Arts Center at Indiana University, this presentation creates a new holiday tradition for audiences of all ages.",
@@ -439,12 +476,15 @@
         ]
       },
       "links": {
-        "wikipedia": null,
-        "trailer": null,
-        "rt": null
+        "trailer": "https://www.youtube.com/watch?v=k_XoE3j3t_A"
       },
-      "watch_links": {},
-      "_enrichment_status": "pending",
+      "watch_links": {
+        "streaming": {
+          "service": "PBS",
+          "link": "https://www.pbs.org/show/the-nutcracker-at-the-jacobs-school-of-music"
+        }
+      },
+      "_enrichment_status": "completed",
       "_discovered_at": "2026-02-27T09:45:33.764715",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
@@ -457,7 +497,11 @@
         "director": "Unknown",
         "cast": []
       },
-      "_discovery_source": "provider_availability_check"
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "tmdb_type4",
+      "_enrichment_gaps": [
+        "rt_score"
+      ]
     },
     {
       "id": "1443940",

@@ -80,6 +80,11 @@ def main():
         action='store_true',
         help='Resolve pre-order movies: find VOD dates via TMDB Type 4 and Gemini'
     )
+    parser.add_argument(
+        '--check-festivals',
+        action='store_true',
+        help='Check festival screening links for expiration (dead links get hidden, movies return to tracking)'
+    )
 
     args = parser.parse_args()
     incremental = not args.full
@@ -169,9 +174,15 @@ def main():
         gap_count = generator.reenrich_watch_link_gaps()
         print(f"✅ Re-enrichment complete: {gap_count} movies updated")
 
+    # Check festival screening links for expiration
+    if args.check_festivals:
+        print("\n🎪 Checking festival screening links...")
+        generator.check_festival_expirations()
+        print(f"✅ Festival check complete")
+
     # Generate the final display data (only for final generation phase, not intake/discovery/enrich/festival)
     festival_backfill = getattr(args, 'festival_backfill', False)
-    if not args.intake and not args.discover and not args.enrich and not festival_backfill and not args.reenrich_gaps and not args.resolve_preorders:
+    if not args.intake and not args.discover and not args.enrich and not festival_backfill and not args.reenrich_gaps and not args.resolve_preorders and not args.check_festivals:
         print("\n🎬 Generating final display data...")
         generator.generate_display_data(incremental=incremental, force_refresh=force_refresh)
     else:

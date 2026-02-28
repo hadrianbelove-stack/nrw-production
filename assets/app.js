@@ -74,6 +74,7 @@ const NRW = {
     // Lightbox state
     lightboxMovies: [],  // Movies currently in the lightbox (filtered/displayed)
     lightboxIndex: 0,    // Current index in lightbox
+    trailerLightboxIndex: -1,  // Index in lightboxMovies of the movie whose trailer is playing (-1 = none)
 
     async init() {
         try {
@@ -238,36 +239,40 @@ const NRW = {
             if (filters.size === 0) {
                 // No category filter - show all
             } else {
-                // Must pass ALL selected filters (AND logic)
+                // Must pass ANY selected filter (OR logic - cumulative)
+                let matchesAny = false;
                 for (const filter of filters) {
                     switch (filter) {
                         case 'big-time':
-                            if (movie.categories?.tier !== 'big_time') return false;
+                            if (movie.categories?.tier === 'big_time') matchesAny = true;
                             break;
                         case 'niche':
-                            if (movie.categories?.tier !== 'niche') return false;
+                            if (movie.categories?.tier === 'niche') matchesAny = true;
                             break;
                         case 'staff-picks':
-                            if (!movie.categories?.is_staff_pick) return false;
+                            if (movie.categories?.is_staff_pick) matchesAny = true;
                             break;
                         case 'foreign':
-                            // Support both new categories object and legacy original_language
                             const isForeign = movie.categories?.is_foreign ??
                                 (movie.original_language && movie.original_language !== 'en');
-                            if (!isForeign) return false;
+                            if (isForeign) matchesAny = true;
                             break;
                         case 'series':
-                            if (movie.content_type !== 'limited_series') return false;
+                            if (movie.content_type === 'limited_series') matchesAny = true;
                             break;
                         case 'plex':
-                            // Movies available in personal Plex library
-                            if (!movie.plex || !movie.plex.deep_link) return false;
+                            if (movie.plex && movie.plex.deep_link) matchesAny = true;
                             break;
                         case 'restorations':
-                            if (!movie.categories?.is_restoration) return false;
+                            if (movie.categories?.is_restoration) matchesAny = true;
+                            break;
+                        case 'festivals':
+                            if (movie.categories?.is_festival) matchesAny = true;
                             break;
                     }
+                    if (matchesAny) break;
                 }
+                if (!matchesAny) return false;
             }
 
             // Then apply search filter if query exists
@@ -491,6 +496,8 @@ const NRW = {
                             buttonsHtml += `<a href="${vodLink}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-amazon" aria-label="Rent/Buy on Amazon"><img src="logos%20and%20images/pngimg.com%20-%20amazon_PNG17.png" alt="Amazon" class="btn-logo"></a>`;
                         } else if (svc.includes('apple') || svc.includes('itunes')) {
                             buttonsHtml += `<a href="${vodLink}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-apple" aria-label="Rent/Buy on Apple TV"><img src="logos%20and%20images/apple%20logo.png" alt="Apple TV" class="btn-logo"></a>`;
+                        } else if (svc.includes('eventive') || vodLink.includes('eventive.org') || vodLink.includes('festivalplayer') || vodLink.includes('shift72.com')) {
+                            buttonsHtml += `<a href="${vodLink}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-festival" aria-label="Buy Ticket">BUY TICKET</a>`;
                         } else {
                             buttonsHtml += `<a href="${vodLink}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-purchase" aria-label="Rent/Buy on ${vod.service}">${vod.service.toUpperCase()}</a>`;
                         }
@@ -560,6 +567,8 @@ const NRW = {
             const streamingBadge = getStreamingBadge(movie);
             const restorationBadge = movie.categories?.is_restoration
                 ? '<div class="restoration-badge">RESTORED</div>' : '';
+            const festivalRibbon = movie.categories?.is_festival && movie.festival_info?.festival_name
+                ? `<div class="festival-ribbon">${movie.festival_info.festival_name.toUpperCase()}</div>` : '';
 
             html += `
             <div class="movie-container${staffPickClass}">
@@ -569,6 +578,7 @@ const NRW = {
                         <div class="card-front">
                             ${streamingBadge}
                             ${restorationBadge}
+                            ${festivalRibbon}
                             <div class="poster-fallback"><span class="poster-fallback-title">${title}</span></div>
                             <img src="${movie.poster || ''}"
                                  onerror="this.style.display='none';"
@@ -615,9 +625,20 @@ const NRW = {
         return null;
     },
 
+    // Check if URL points to a self-hosted MP4 trailer (resilient to query strings)
+    isHostedTrailer(url) {
+        if (!url) return false;
+        try {
+            const pathname = new URL(url).pathname;
+            return pathname.endsWith('.mp4') || url.includes('/file/NRW-TRAILERS/');
+        } catch {
+            return url.endsWith('.mp4') || url.includes('/file/NRW-TRAILERS/');
+        }
+    },
+
     // Show trailer in embedded modal (supports self-hosted MP4 and YouTube)
     showTrailer(url) {
-        const isHosted = url && (url.endsWith('.mp4') || url.includes('/file/NRW-TRAILERS/'));
+        const isHosted = this.isHostedTrailer(url);
 
         // Create modal if it doesn't exist
         let modal = document.getElementById('trailer-modal');
@@ -650,8 +671,15 @@ const NRW = {
         const container = document.getElementById('trailer-video-container');
 
         if (isHosted) {
-            // Self-hosted MP4 — HTML5 video player
+            // Self-hosted MP4 — HTML5 video player with loading/error states
             container.innerHTML = `
+                <div class="trailer-loading" id="trailer-loading">
+                    <div class="trailer-spinner"></div>
+                    <span>Loading trailer...</span>
+                </div>
+                <div class="trailer-error" id="trailer-error" style="display:none;">
+                    Trailer unavailable
+                </div>
                 <video id="trailer-video"
                     src="${url}"
                     controls
@@ -661,6 +689,11 @@ const NRW = {
                     Your browser does not support video playback.
                 </video>
             `;
+            const video = document.getElementById('trailer-video');
+            const loading = document.getElementById('trailer-loading');
+            const error = document.getElementById('trailer-error');
+            video.addEventListener('canplay', () => { loading.style.display = 'none'; }, { once: true });
+            video.addEventListener('error', () => { loading.style.display = 'none'; error.style.display = ''; }, { once: true });
         } else {
             // YouTube URL — iframe embed
             const videoId = this.extractYouTubeId(url);
@@ -776,6 +809,17 @@ const NRW = {
             }
         }
 
+        // Update festival name in lightbox
+        const festivalNameEl = document.getElementById('lightbox-festival-name');
+        if (festivalNameEl) {
+            if (movie.categories?.is_festival && movie.festival_info?.festival_name) {
+                festivalNameEl.textContent = movie.festival_info.festival_name;
+                festivalNameEl.style.display = 'block';
+            } else {
+                festivalNameEl.style.display = 'none';
+            }
+        }
+
         // Build meta info (now includes studio)
         const metaParts = [];
         if (movie.year) metaParts.push(movie.year);
@@ -820,9 +864,19 @@ const NRW = {
             if (vod.service && vodLink) {
                 const svc = vod.service.toLowerCase();
                 let btnClass = 'purchase';
-                if (svc.includes('amazon') || svc.includes('prime')) btnClass = 'amazon';
-                else if (svc.includes('apple') || svc.includes('itunes')) btnClass = 'apple';
-                const label = this.getPurchaseLabel(vod.service);
+                let label;
+                if (svc.includes('amazon') || svc.includes('prime')) {
+                    btnClass = 'amazon';
+                    label = this.getPurchaseLabel(vod.service);
+                } else if (svc.includes('apple') || svc.includes('itunes')) {
+                    btnClass = 'apple';
+                    label = this.getPurchaseLabel(vod.service);
+                } else if (svc.includes('eventive') || vodLink.includes('eventive.org') || vodLink.includes('festivalplayer') || vodLink.includes('shift72.com')) {
+                    btnClass = 'festival';
+                    label = 'BUY TICKET';
+                } else {
+                    label = this.getPurchaseLabel(vod.service);
+                }
                 watchHtml += `<a href="${vodLink}" target="_blank" rel="noopener noreferrer" class="watch-btn-lb ${btnClass}">${label}</a>`;
             }
         });

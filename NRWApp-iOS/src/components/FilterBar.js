@@ -14,9 +14,10 @@ const FILTERS = [
   {id: 'niche', label: 'Niche'},
   {id: 'foreign', label: 'Foreign'},
   {id: 'restorations', label: 'Restorations & Reissues'},
+  {id: 'festivals', label: 'Festivals'},
 ];
 
-export default function FilterBar({selectedFilter, onFilterChange}) {
+export default function FilterBar({activeFilters, onFilterChange}) {
   return (
     <View style={styles.container}>
       <ScrollView
@@ -27,7 +28,7 @@ export default function FilterBar({selectedFilter, onFilterChange}) {
           <FilterButton
             key={filter.id}
             label={filter.label}
-            isSelected={selectedFilter === filter.id}
+            isSelected={filter.id === 'all' ? activeFilters.size === 0 : activeFilters.has(filter.id)}
             onPress={() => onFilterChange(filter.id)}
           />
         ))}

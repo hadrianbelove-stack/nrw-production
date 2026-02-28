@@ -22,6 +22,7 @@ Sub Init()
     m.staffPickLabel = m.top.FindNode("staffPickLabel")
     m.restorationBadge = m.top.FindNode("restorationBadge")
     m.restorationLabel = m.top.FindNode("restorationLabel")
+    m.festivalLabel = m.top.FindNode("festivalLabel")
 
     m.buttonsRow = m.top.FindNode("buttonsRow")
     m.trailerButton = m.top.FindNode("trailerButton")
@@ -190,6 +191,14 @@ Sub LoadMovie(index as Integer)
         m.restorationLabel.visible = false
     end if
 
+    ' Festival name
+    if movie.festival_info <> invalid AND movie.festival_info.festival_name <> invalid AND movie.festival_info.festival_name <> ""
+        m.festivalLabel.text = movie.festival_info.festival_name
+        m.festivalLabel.visible = true
+    else
+        m.festivalLabel.visible = false
+    end if
+
     ' Setup watch buttons
     SetupWatchButtons(movie)
 End Sub
@@ -222,14 +231,19 @@ Sub SetupWatchButtons(movie as Object)
         m.streamButton.visible = false
     end if
 
-    ' VOD buttons (up to 2: Amazon + Apple TV)
+    ' VOD buttons (up to 2: Amazon + Apple TV + Eventive)
     vodServices = GetVodServices(movie)
     vodButtons = [m.vodButton1, m.vodButton2]
     for i = 0 to 1
         if i < vodServices.Count() AND vodServices[i].service <> invalid
             vodButtons[i].service = vodServices[i].service
-            vodButtons[i].label = "Rent on " + GetServiceDisplayName(vodServices[i].service)
             vodButtons[i].url = vodServices[i].link
+            ' Use "Buy Ticket" for Eventive / festival platform links
+            if IsEventiveLink(vodServices[i].service, vodServices[i].link)
+                vodButtons[i].label = "Buy Ticket"
+            else
+                vodButtons[i].label = "Rent on " + GetServiceDisplayName(vodServices[i].service)
+            end if
             vodButtons[i].visible = true
             m.buttons.Push(vodButtons[i])
         else

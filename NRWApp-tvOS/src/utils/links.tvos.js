@@ -148,8 +148,15 @@ export async function openTrailer(url) {
   }
 
   // Self-hosted MP4 — open directly (tvOS plays MP4 natively via AVPlayer)
-  if (url.endsWith('.mp4')) {
-    return openURL(url);
+  try {
+    const pathname = new URL(url).pathname;
+    if (pathname.endsWith('.mp4')) {
+      return openURL(url);
+    }
+  } catch {
+    if (url.endsWith('.mp4')) {
+      return openURL(url);
+    }
   }
 
   // Extract YouTube video ID if it's a YouTube URL

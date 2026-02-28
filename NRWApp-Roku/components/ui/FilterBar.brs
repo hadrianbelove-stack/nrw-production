@@ -8,7 +8,7 @@ Sub Init()
     m.focusIndicator = m.top.FindNode("focusIndicator")
 
     ' Filter chip IDs in order
-    m.filterIds = ["all", "big_time", "niche", "staff_picks", "foreign", "series", "plex", "restorations"]
+    m.filterIds = ["all", "big_time", "niche", "staff_picks", "foreign", "series", "plex", "restorations", "festivals"]
 
     ' Chip widths for focus indicator positioning
     m.chipWidths = {
@@ -20,6 +20,7 @@ Sub Init()
         series: 130
         plex: 60
         restorations: 130
+        festivals: 90
     }
 
     ' Store chip references
@@ -58,13 +59,29 @@ End Sub
 ' Update Chip Visual Styles
 ' ============================================================================
 Sub UpdateChipStyles()
-    selectedFilter = m.top.selectedFilter
+    activeFilters = m.top.activeFilters
 
     for each filterId in m.filterIds
         chipBg = m.chipBgs[filterId]
         chipLabel = m.chipLabels[filterId]
 
-        if filterId = selectedFilter
+        isActive = false
+        if filterId = "all"
+            ' "All" is active when no filters are selected
+            if activeFilters.Count() = 0
+                isActive = true
+            end if
+        else
+            ' Check if this filter is in the active set
+            for each af in activeFilters
+                if af = filterId
+                    isActive = true
+                    exit for
+                end if
+            end for
+        end if
+
+        if isActive
             ' Selected state: teal background, dark text
             chipBg.color = m.colors.primary
             chipLabel.color = "0x000000FF"

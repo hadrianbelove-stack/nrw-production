@@ -438,6 +438,19 @@ festivals:
       start: "2026-10-12"
       end: "2026-10-18"
 
+# Festival screening name mapping
+# Maps Eventive URL slugs to human-readable festival names for poster ribbons
+# Add new entries here when new festival slugs appear in the data
+festival_names:
+  mjff2026: "Miami Jewish Film Festival"
+  tucsonfilm2026: "Tucson Film Festival"
+  pjff2026: "Portland Jewish Film Festival"
+  bsdff: "Big Sky Documentary Film Festival"
+  focusonfrenchcinema: "Focus on French Cinema"
+  36thsdijffmid: "San Diego Intl. Jewish Film Festival"
+  menafilmfestival: "MENA Film Festival"
+  sundance: "Sundance Film Festival"
+
 api:
   # API keys now loaded from .env file (see load_env.py)
   # Environment variables: TMDB_API_KEY, OMDB_API_KEY, GEMINI_API_KEY

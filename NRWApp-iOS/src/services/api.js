@@ -155,11 +155,54 @@ export function filterMovies(movies, filter = 'all') {
       return movies.filter(
         movie => !movie.hidden && movie.categories?.is_restoration === true,
       );
+    case 'festivals':
+      return movies.filter(
+        movie => !movie.hidden && movie.categories?.is_festival,
+      );
     case 'hidden':
       return movies.filter(movie => movie.hidden === true);
     default:
       return movies.filter(movie => !movie.hidden);
   }
+}
+
+/**
+ * Filter movies by multiple categories (OR logic - cumulative)
+ */
+export function filterMoviesMulti(movies, activeFilters) {
+  if (!movies || !Array.isArray(movies)) return [];
+  if (!activeFilters || activeFilters.size === 0) {
+    return movies.filter(movie => !movie.hidden);
+  }
+
+  return movies.filter(movie => {
+    if (movie.hidden) return false;
+
+    for (const filter of activeFilters) {
+      switch (filter) {
+        case 'staff-picks':
+          if (movie.categories?.is_staff_pick || movie.featured === true) return true;
+          break;
+        case 'big-time':
+          if (movie.categories?.tier === 'big_time') return true;
+          break;
+        case 'niche':
+          if (movie.categories?.tier === 'niche') return true;
+          break;
+        case 'foreign':
+          if (movie.categories?.is_foreign ||
+            (movie.original_language && movie.original_language !== 'en')) return true;
+          break;
+        case 'restorations':
+          if (movie.categories?.is_restoration === true) return true;
+          break;
+        case 'festivals':
+          if (movie.categories?.is_festival) return true;
+          break;
+      }
+    }
+    return false;
+  });
 }
 
 /**

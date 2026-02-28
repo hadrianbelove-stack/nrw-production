@@ -7,7 +7,7 @@ const NRWMobile = {
     allMovies: [],
     filteredMovies: [],
     staffPicks: [],
-    activeFilter: 'all',
+    activeFilters: new Set(),
     displayedCount: 0,
     loadIncrement: 15,
     isLoading: false,
@@ -126,12 +126,32 @@ const NRWMobile = {
             const pill = e.target.closest('.filter-pill');
             if (!pill) return;
 
-            // Update active state
-            filters.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
-            pill.classList.add('active');
+            const filter = pill.dataset.filter;
 
-            // Apply filter
-            this.activeFilter = pill.dataset.filter;
+            if (filter === 'all') {
+                // "All" clears all other filters
+                this.activeFilters.clear();
+                filters.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+                pill.classList.add('active');
+            } else {
+                // Toggle this filter on/off (multi-select)
+                if (this.activeFilters.has(filter)) {
+                    this.activeFilters.delete(filter);
+                    pill.classList.remove('active');
+                } else {
+                    this.activeFilters.add(filter);
+                    pill.classList.add('active');
+                }
+
+                // Update "All" button state
+                const allBtn = filters.querySelector('.filter-pill[data-filter="all"]');
+                if (this.activeFilters.size > 0) {
+                    allBtn.classList.remove('active');
+                } else {
+                    allBtn.classList.add('active');
+                }
+            }
+
             this.displayedCount = 0;
             this.applyFilter();
             this.render();
@@ -153,28 +173,40 @@ const NRWMobile = {
     },
 
     applyFilter() {
-        const filter = this.activeFilter;
+        const filters = this.activeFilters;
 
         this.filteredMovies = this.allMovies.filter(movie => {
-            if (filter === 'all') return true;
+            // No filters selected = show all
+            if (filters.size === 0) return true;
 
-            switch (filter) {
-                case 'big-time':
-                    return movie.categories?.tier === 'big_time';
-                case 'niche':
-                    return movie.categories?.tier === 'niche';
-                case 'staff-picks':
-                    return movie.categories?.is_staff_pick || this.staffPicks.includes(movie.id);
-                case 'foreign':
-                    return movie.categories?.is_foreign ||
-                           (movie.original_language && movie.original_language !== 'en');
-                case 'plex':
-                    return movie.plex && movie.plex.deep_link;
-                case 'restorations':
-                    return movie.categories?.is_restoration === true;
-                default:
-                    return true;
+            // OR logic: movie must match ANY selected filter
+            for (const filter of filters) {
+                switch (filter) {
+                    case 'big-time':
+                        if (movie.categories?.tier === 'big_time') return true;
+                        break;
+                    case 'niche':
+                        if (movie.categories?.tier === 'niche') return true;
+                        break;
+                    case 'staff-picks':
+                        if (movie.categories?.is_staff_pick || this.staffPicks.includes(movie.id)) return true;
+                        break;
+                    case 'foreign':
+                        if (movie.categories?.is_foreign ||
+                            (movie.original_language && movie.original_language !== 'en')) return true;
+                        break;
+                    case 'plex':
+                        if (movie.plex && movie.plex.deep_link) return true;
+                        break;
+                    case 'restorations':
+                        if (movie.categories?.is_restoration === true) return true;
+                        break;
+                    case 'festivals':
+                        if (movie.categories?.is_festival === true) return true;
+                        break;
+                }
             }
+            return false;
         });
     },
 
@@ -271,6 +303,7 @@ const NRWMobile = {
                              loading="lazy">
                         ${streamingBadge}
                         ${movie.categories?.is_restoration ? '<span class="poster-badge badge-restoration">RESTORED</span>' : ''}
+                        ${movie.categories?.is_festival && movie.festival_info?.festival_name ? `<div class="festival-ribbon">${movie.festival_info.festival_name.toUpperCase()}</div>` : ''}
                         ${isStaffPick ? '<span class="staff-badge">STAFF PICK</span>' : ''}
                     </div>
                 </div>
@@ -328,6 +361,14 @@ const NRWMobile = {
             // Check for VOD (array or single dict)
             const vodArr = Array.isArray(watchLinks.vod) ? watchLinks.vod
                 : (watchLinks.vod?.service ? [watchLinks.vod] : []);
+            const hasFestivalVod = vodArr.some(v => {
+                const s = (v.service || '').toLowerCase();
+                const l = v.link || '';
+                return s.includes('eventive') || l.includes('eventive.org') || l.includes('festivalplayer') || l.includes('shift72.com');
+            });
+            if (hasFestivalVod) {
+                return '<span class="poster-badge badge-festival">FESTIVAL</span>';
+            }
             if (vodArr.some(v => v.service && v.link) || providers.rental?.length > 0) {
                 return '<span class="poster-badge badge-vod">RENT</span>';
             }
@@ -382,6 +423,9 @@ const NRWMobile = {
                 } else if (svc.includes('apple') || svc.includes('itunes')) {
                     label = 'Apple TV';
                     style = 'background:#000;color:#fff';
+                } else if (svc.includes('eventive') || (vod.link && (vod.link.includes('eventive.org') || vod.link.includes('festivalplayer') || vod.link.includes('shift72.com')))) {
+                    label = 'Buy Ticket';
+                    style = 'background:#FFD700;color:#000';
                 } else {
                     label = vod.service;
                     style = 'background:#ff9500;color:#000';
@@ -401,6 +445,10 @@ const NRWMobile = {
     getTrailerButton(movie) {
         const trailerUrl = movie.links?.trailer_hosted || movie.links?.trailer;
         if (trailerUrl) {
+            const isMP4 = (() => { try { return new URL(trailerUrl).pathname.endsWith('.mp4'); } catch { return trailerUrl.endsWith('.mp4'); } })();
+            if (isMP4) {
+                return `<a href="#" onclick="NRWMobile.showTrailer('${trailerUrl}');return false;" class="btn-equal btn-trailer">Trailer</a>`;
+            }
             return `<a href="${trailerUrl}" target="_blank" rel="noopener" class="btn-equal btn-trailer">Trailer</a>`;
         }
         return '<span class="btn-equal btn-trailer" style="opacity:0.5">Trailer</span>';
@@ -419,6 +467,30 @@ const NRWMobile = {
             return `<a href="${movie.links.wikipedia}" target="_blank" rel="noopener" class="btn-equal btn-wiki">Wiki</a>`;
         }
         return '<span class="btn-equal btn-wiki" style="opacity:0.5">Wiki</span>';
+    },
+
+    // Inline trailer player for self-hosted MP4s
+    showTrailer(url) {
+        // Remove existing overlay if any
+        const existing = document.getElementById('trailer-overlay');
+        if (existing) existing.remove();
+
+        const overlay = document.createElement('div');
+        overlay.id = 'trailer-overlay';
+        overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);z-index:10000;display:flex;align-items:center;justify-content:center;flex-direction:column;';
+        overlay.innerHTML = `
+            <button id="trailer-close" style="position:absolute;top:12px;right:16px;background:none;border:none;color:#fff;font-size:32px;cursor:pointer;z-index:1;">&times;</button>
+            <video controls autoplay playsinline style="max-width:100%;max-height:85vh;background:#000;">
+                <source src="${url}" type="video/mp4">
+            </video>
+        `;
+        document.body.appendChild(overlay);
+        document.body.style.overflow = 'hidden';
+
+        const close = () => { overlay.remove(); document.body.style.overflow = ''; };
+        overlay.querySelector('#trailer-close').addEventListener('click', close);
+        overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
+        overlay.querySelector('video').addEventListener('ended', close);
     }
 };
 

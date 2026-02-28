@@ -55,7 +55,7 @@ def save_data(data):
     """Save data.json."""
     data_path = project_root / 'data.json'
     with open(data_path, 'w') as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
+        json.dump(data, f, indent=2)
 
 
 def find_movies_needing_rt_fix(data):

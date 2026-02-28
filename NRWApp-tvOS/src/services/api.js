@@ -196,6 +196,9 @@ export function filterMovies(movies, filters = 'all') {
         case 'restorations':
           if (!movie.categories?.is_restoration) return false;
           break;
+        case 'festivals':
+          if (!movie.categories?.is_festival) return false;
+          break;
         case 'featured':
           // Legacy support - maps to staff-picks
           const isFeatured = movie.categories?.is_staff_pick || movie.featured === true;

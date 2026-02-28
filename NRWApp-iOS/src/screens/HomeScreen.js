@@ -22,7 +22,7 @@ import {Colors, Typography, Spacing, Dimensions} from '../constants/colors';
 import {
   fetchMovies,
   refreshMovies,
-  filterMovies,
+  filterMoviesMulti,
   searchMovies,
   sortByDate,
   getNewThisWeek,
@@ -43,7 +43,7 @@ export default function HomeScreen({navigation}) {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(null);
-  const [filter, setFilter] = useState('all');
+  const [activeFilters, setActiveFilters] = useState(new Set());
   const [searchQuery, setSearchQuery] = useState('');
 
   // Initial load
@@ -53,13 +53,13 @@ export default function HomeScreen({navigation}) {
 
   // Apply filters and search
   useEffect(() => {
-    let result = filterMovies(movies, filter);
+    let result = filterMoviesMulti(movies, activeFilters);
     if (searchQuery.trim()) {
       result = searchMovies(result, searchQuery);
     }
     result = sortByDate(result);
     setDisplayedMovies(result);
-  }, [movies, filter, searchQuery]);
+  }, [movies, activeFilters, searchQuery]);
 
   const loadMovies = async () => {
     try {
@@ -90,9 +90,21 @@ export default function HomeScreen({navigation}) {
     }
   };
 
-  const handleFilterChange = useCallback(newFilter => {
-    setFilter(newFilter);
-    trackFilterChange(newFilter);
+  const handleFilterChange = useCallback(filterId => {
+    setActiveFilters(prev => {
+      const newFilters = new Set(prev);
+      if (filterId === 'all') {
+        newFilters.clear();
+      } else {
+        if (newFilters.has(filterId)) {
+          newFilters.delete(filterId);
+        } else {
+          newFilters.add(filterId);
+        }
+      }
+      trackFilterChange(filterId);
+      return newFilters;
+    });
   }, []);
 
   const handleSearch = useCallback(query => {
@@ -141,7 +153,7 @@ export default function HomeScreen({navigation}) {
       </View>
 
       {/* New This Week section */}
-      {newThisWeek.length > 0 && !searchQuery && filter === 'all' && (
+      {newThisWeek.length > 0 && !searchQuery && activeFilters.size === 0 && (
         <View style={styles.newThisWeekSection}>
           <Text style={styles.sectionTitle}>🎬 New This Week</Text>
           <Text style={styles.sectionSubtitle}>
@@ -191,7 +203,7 @@ export default function HomeScreen({navigation}) {
 
   return (
     <View style={[styles.container, {paddingBottom: insets.bottom}]}>
-      <FilterBar selectedFilter={filter} onFilterChange={handleFilterChange} />
+      <FilterBar activeFilters={activeFilters} onFilterChange={handleFilterChange} />
 
       <FlatList
         data={displayedMovies}

@@ -69,6 +69,15 @@ export default function MovieCard({movie, onPress, isFeatured = false}) {
           </View>
         )}
 
+        {/* Festival ribbon */}
+        {movie.categories?.is_festival && movie.festival_info?.festival_name && (
+          <View style={styles.festivalRibbon}>
+            <Text style={styles.festivalRibbonText} numberOfLines={1}>
+              {movie.festival_info.festival_name.toUpperCase()}
+            </Text>
+          </View>
+        )}
+
         {/* RT Score badge */}
         {movie.rt_score && (
           <View
@@ -158,6 +167,22 @@ const styles = StyleSheet.create({
     fontSize: 9,
     fontWeight: '700',
     letterSpacing: 0.5,
+  },
+  festivalRibbon: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.75)',
+    paddingHorizontal: 6,
+    paddingVertical: 4,
+  },
+  festivalRibbonText: {
+    color: '#FFD700',
+    fontSize: 9,
+    fontWeight: '700',
+    letterSpacing: 0.5,
+    textAlign: 'center',
   },
   rtBadge: {
     position: 'absolute',

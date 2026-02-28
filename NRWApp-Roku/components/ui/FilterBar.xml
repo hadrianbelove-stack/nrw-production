@@ -6,8 +6,11 @@
 -->
 <component name="FilterBar" extends="Group">
   <interface>
-    <!-- Current filter selection -->
+    <!-- Current filter selection (signals which filter was just pressed) -->
     <field id="selectedFilter" type="string" value="all" onChange="onFilterChanged" alwaysNotify="true" />
+
+    <!-- Active filters array (multi-select state) -->
+    <field id="activeFilters" type="array" value="[]" onChange="onFilterChanged" />
 
     <!-- Focus -->
     <field id="hasFocus" type="boolean" value="false" onChange="onFocusChanged" />
@@ -85,6 +88,14 @@
       <Group id="chip_restorations">
         <Rectangle id="chipBg_restorations" width="130" height="36" color="0x333333FF" />
         <Label id="chipLabel_restorations" text="Restorations" width="130" height="36"
+          horizAlign="center" vertAlign="center"
+          font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
+      </Group>
+
+      <!-- Festivals -->
+      <Group id="chip_festivals">
+        <Rectangle id="chipBg_festivals" width="90" height="36" color="0x333333FF" />
+        <Label id="chipLabel_festivals" text="Festivals" width="90" height="36"
           horizAlign="center" vertAlign="center"
           font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
       </Group>

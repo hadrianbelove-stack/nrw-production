@@ -696,10 +696,28 @@ def index() -> str:
             for category in ['streaming', 'vod']:
                 if category in movie_copy['providers']:
                     providers.update(movie_copy['providers'][category])
+        # Normalize watch_links so template only handles one format:
+        #   streaming → dict {service, link} or None
+        #   vod → list of dicts [{service, link}, ...]
+        wl = movie_copy.get('watch_links')
+        if wl:
+            s = wl.get('streaming')
+            if isinstance(s, list):
+                wl['streaming'] = s[0] if s else None
+            v = wl.get('vod')
+            if isinstance(v, dict):
+                wl['vod'] = [v]
+            elif not isinstance(v, list):
+                wl['vod'] = []
+
         if movie_copy.get('watch_links'):
             for category_data in movie_copy['watch_links'].values():
                 if isinstance(category_data, dict) and 'service' in category_data:
                     providers.add(category_data['service'])
+                elif isinstance(category_data, list):
+                    for item in category_data:
+                        if isinstance(item, dict) and 'service' in item:
+                            providers.add(item['service'])
         movie_copy['provider_list'] = ', '.join(sorted(providers)) if providers else ''
 
         # Handle poster URLs

@@ -252,6 +252,15 @@ const MovieCard = forwardRef(({
             </View>
           )}
 
+          {/* Festival ribbon - gold text on dark gradient at bottom */}
+          {movie.categories?.is_festival && movie.festival_info?.festival_name && !movie.featured && (
+            <View style={styles.festivalRibbon}>
+              <Text style={styles.festivalRibbonText} numberOfLines={1}>
+                {movie.festival_info.festival_name.toUpperCase()}
+              </Text>
+            </View>
+          )}
+
           {/* Focus border */}
           {isFocused && <View style={styles.focusBorder} />}
         </Animated.View>
@@ -347,6 +356,23 @@ const styles = StyleSheet.create({
     fontSize: Typography.tvos.caption - 2,
     fontWeight: '800',
     letterSpacing: 1.5,
+  },
+  festivalRibbon: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.75)',
+    paddingVertical: Spacing.tvos.xs,
+    borderBottomLeftRadius: 12,
+    borderBottomRightRadius: 12,
+    alignItems: 'center',
+  },
+  festivalRibbonText: {
+    color: '#FFD700',
+    fontSize: Typography.tvos.caption - 2,
+    fontWeight: '800',
+    letterSpacing: 1,
   },
   focusBorder: {
     ...StyleSheet.absoluteFillObject,

@@ -45,8 +45,8 @@ private val FocusCyan = Color(0xFF00FFCC)
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun FilterChips(
-    selectedFilter: FilterCategory,
-    onFilterSelected: (FilterCategory) -> Unit,
+    activeFilters: Set<FilterCategory>,
+    onFilterToggled: (FilterCategory) -> Unit,
     modifier: Modifier = Modifier
 ) {
     TvLazyRow(
@@ -55,12 +55,16 @@ fun FilterChips(
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         items(FilterCategory.values().toList()) { category ->
-            val isSelected = category == selectedFilter
+            val isSelected = if (category == FilterCategory.ALL) {
+                activeFilters.isEmpty()
+            } else {
+                activeFilters.contains(category)
+            }
 
             FilterPill(
                 text = category.displayName,
                 isSelected = isSelected,
-                onClick = { onFilterSelected(category) }
+                onClick = { onFilterToggled(category) }
             )
         }
     }

@@ -445,6 +445,13 @@ const MovieDetailTvOS = () => {
               )}
             </View>
 
+            {/* Festival name */}
+            {movie.categories?.is_festival && movie.festival_info?.festival_name && (
+              <Text style={styles.festivalName}>
+                {movie.festival_info.festival_name}
+              </Text>
+            )}
+
             {/* Metadata row */}
             <View style={styles.metadataRow}>
               {movie.year && (
@@ -518,15 +525,24 @@ const MovieDetailTvOS = () => {
                 )}
 
                 {/* RENT/BUY button - first purchase option */}
-                {purchaseLinks.length > 0 && (
-                  <ActionButton
-                    label="RENT / BUY"
-                    color="#ff9500"
-                    onPress={() => handleWatchPress(purchaseLinks[0])}
-                    hasTVPreferredFocus={!infoLinks.find(l => l.type === 'trailer')}
-                    testID="action-btn-purchase"
-                  />
-                )}
+                {purchaseLinks.length > 0 && (() => {
+                  const svc = (purchaseLinks[0].service || '').toLowerCase();
+                  const url = (purchaseLinks[0].url || '').toLowerCase();
+                  const isFestivalPlatform =
+                    svc.includes('eventive') ||
+                    url.includes('eventive.org') ||
+                    url.includes('festivalplayer') ||
+                    url.includes('shift72.com');
+                  return (
+                    <ActionButton
+                      label={isFestivalPlatform ? 'BUY TICKET' : 'RENT / BUY'}
+                      color={isFestivalPlatform ? '#FFD700' : '#ff9500'}
+                      onPress={() => handleWatchPress(purchaseLinks[0])}
+                      hasTVPreferredFocus={!infoLinks.find(l => l.type === 'trailer')}
+                      testID="action-btn-purchase"
+                    />
+                  );
+                })()}
 
                 {/* STREAM button - first streaming option, shows service name */}
                 {streamingLinks.length > 0 && (
@@ -687,6 +703,13 @@ const styles = StyleSheet.create({
     fontSize: Typography.tvos.title - 8,
     fontWeight: '700',
     marginLeft: Spacing.tvos.md,
+  },
+  festivalName: {
+    color: '#FFD700',
+    fontSize: Typography.tvos.body,
+    fontWeight: '700',
+    letterSpacing: 0.5,
+    marginBottom: Spacing.tvos.sm,
   },
   metadataRow: {
     flexDirection: 'row',

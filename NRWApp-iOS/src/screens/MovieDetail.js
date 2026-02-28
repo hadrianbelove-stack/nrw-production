@@ -123,7 +123,22 @@ export default function MovieDetail({route}) {
     trackMovieView(movie);
   }, [movie]);
 
-  const watchLinks = getWatchLinks(movie);
+  const rawWatchLinks = getWatchLinks(movie);
+
+  // For festival movies, relabel Eventive/festival platform buttons to "Buy Ticket"
+  const watchLinks = rawWatchLinks.map(link => {
+    const svc = (link.service || '').toLowerCase();
+    const url = (link.url || '').toLowerCase();
+    const isFestivalPlatform =
+      svc.includes('eventive') ||
+      url.includes('eventive.org') ||
+      url.includes('festivalplayer') ||
+      url.includes('shift72.com');
+    if (isFestivalPlatform) {
+      return {...link, labelOverride: 'Buy Ticket'};
+    }
+    return link;
+  });
 
   const handleWatchPress = useCallback(
     link => {
@@ -219,6 +234,13 @@ export default function MovieDetail({route}) {
               <Text style={styles.titleDate}>{formatShortDate(movie.digital_date)}</Text>
             )}
           </View>
+
+          {/* Festival name */}
+          {movie.categories?.is_festival && movie.festival_info?.festival_name && (
+            <Text style={styles.festivalName}>
+              {movie.festival_info.festival_name}
+            </Text>
+          )}
 
           {/* Metadata row */}
           <View style={styles.metaRow}>
@@ -446,6 +468,13 @@ const styles = StyleSheet.create({
     fontSize: Typography.subtitle - 2,
     fontWeight: '700',
     marginLeft: 8,
+  },
+  festivalName: {
+    color: '#FFD700',
+    fontSize: Typography.caption + 1,
+    fontWeight: '700',
+    letterSpacing: 0.5,
+    marginTop: Spacing.xs,
   },
   metaRow: {
     flexDirection: 'row',

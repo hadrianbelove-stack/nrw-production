@@ -19,6 +19,7 @@ import time
 import signal
 import argparse
 import logging
+import requests
 from pathlib import Path
 
 project_root = Path(__file__).parent.parent
@@ -51,13 +52,11 @@ def load_data():
 def save_data(data):
     data_path = project_root / 'data.json'
     with open(data_path, 'w') as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
+        json.dump(data, f, indent=2)
 
 
 def phase1_validate(data, dry_run=False):
-    """Visit every existing RT link and check for 404s."""
-    from playwright_manager import PlaywrightManager
-
+    """Validate all existing RT links using HTTP HEAD requests."""
     movies = data['movies']
     with_links = [(i, m) for i, m in enumerate(movies) if m.get('links', {}).get('rt')]
 
@@ -69,10 +68,10 @@ def phase1_validate(data, dry_run=False):
         print("No links to validate.")
         return {'checked': 0, 'valid': 0, 'invalid': 0}
 
-    pw_manager = PlaywrightManager()
-    browser = pw_manager.get_browser()
-    context = browser.new_context()
-    page = context.new_page()
+    session = requests.Session()
+    session.headers.update({
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+    })
 
     stats = {'checked': 0, 'valid': 0, 'invalid': 0, 'errors': 0}
     invalid_movies = []
@@ -83,42 +82,27 @@ def phase1_validate(data, dry_run=False):
         stats['checked'] += 1
 
         signal.signal(signal.SIGALRM, timeout_handler)
-        signal.alarm(30)  # 30s timeout for simple URL check
+        signal.alarm(30)
 
         try:
-            response = page.goto(url, wait_until='domcontentloaded')
-            time.sleep(1)
+            response = session.head(url, timeout=5, allow_redirects=True)
 
-            is_valid = True
-            reason = None
-
-            # Check HTTP status
-            if response and response.status >= 400:
-                is_valid = False
-                reason = f"HTTP {response.status}"
-
-            # Check page title for 404
-            if is_valid:
-                page_title = page.title() or ""
-                if 'page not found' in page_title.lower() or '404' in page_title:
-                    is_valid = False
-                    reason = "404 in page title"
-
-            if is_valid:
-                stats['valid'] += 1
-            else:
+            if response.status_code >= 400:
                 stats['invalid'] += 1
+                reason = f"HTTP {response.status_code}"
                 invalid_movies.append((title, movie.get('year'), url, reason))
                 print(f"  INVALID: {title} ({movie.get('year')}) -> {url} [{reason}]")
 
                 if not dry_run:
                     movies[i]['links']['rt'] = None
                     movies[i]['rt_score'] = None
+            else:
+                stats['valid'] += 1
 
         except MovieTimeout:
             stats['errors'] += 1
             print(f"  TIMEOUT: {title} ({movie.get('year')}) -> {url}")
-        except Exception as e:
+        except requests.RequestException as e:
             stats['errors'] += 1
             logger.debug(f"Error checking {title}: {e}")
         finally:
@@ -127,8 +111,6 @@ def phase1_validate(data, dry_run=False):
         # Progress every 50
         if (idx + 1) % 50 == 0:
             print(f"  ... checked {idx+1}/{len(with_links)} ({stats['invalid']} invalid so far)")
-
-    context.close()
 
     print(f"\nPhase 1 Results:")
     print(f"  Checked:  {stats['checked']}")
@@ -168,20 +150,24 @@ def phase2_enrich(data, dry_run=False):
         year = movie.get('year', '')
         director = movie.get('crew', {}).get('director')
         original_language = movie.get('original_language')
+        original_title = movie.get('original_title')
 
         signal.signal(signal.SIGALRM, timeout_handler)
         signal.alarm(90)
 
         try:
-            # Clear cache for fresh attempt with improved matching
+            # Clear caches for fresh attempt with improved matching
             cache_key = f"{title}_{year}"
             if cache_key in finder.gemini_finder.cache:
                 del finder.gemini_finder.cache[cache_key]
+            if finder.playwright_scraper and cache_key in finder.playwright_scraper.cache:
+                del finder.playwright_scraper.cache[cache_key]
 
             result = finder.find_rt_score(
                 title, year,
                 director=director,
-                original_language=original_language
+                original_language=original_language,
+                original_title=original_title
             )
 
             if result:
