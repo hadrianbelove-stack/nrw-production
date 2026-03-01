@@ -1,7 +1,78 @@
 {
-  "generated_at": "2026-02-28T12:08:41.245743",
-  "count": 377,
+  "generated_at": "2026-03-01T10:10:31.590578",
+  "count": 378,
   "movies": [
+    {
+      "id": "82695",
+      "title": "Les Mis\u00e9rables",
+      "digital_date": "2026-03-01",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "An adaptation of the successful stage musical based on Victor Hugo's classic novel set in 19th-century France. Jean Valjean, a man imprisoned for stealing bread, must flee a relentless policeman named Javert. The pursuit consumes both men's lives, and soon Valjean finds himself in the midst of the student revolutions in France.",
+      "genres": [
+        "History",
+        "Drama"
+      ],
+      "runtime": 158,
+      "year": 2012,
+      "rt_score": "70%",
+      "providers": {
+        "rent": [
+          "Amazon Video",
+          "Apple TV Store",
+          "Google Play Movies",
+          "YouTube",
+          "Fandango At Home"
+        ],
+        "buy": [
+          "Amazon Video",
+          "Apple TV Store",
+          "Google Play Movies",
+          "YouTube",
+          "Fandango At Home"
+        ],
+        "streaming": [
+          "Amazon Prime Video",
+          "Amazon Prime Video with Ads"
+        ]
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Les_Mis%C3%A9rables_(2012_film)",
+        "trailer": "https://www.youtube.com/watch?v=28sHoKcpugw",
+        "rt": "https://www.rottentomatoes.com/m/les_miserables"
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.94a9f773-7f1c-69fc-67b9-4ccae68a606d&tag=nrw04-20"
+          },
+          {
+            "service": "Apple TV",
+            "link": "https://tv.apple.com/us/movie/les-miserables/umc.cmc.74wk121u9bd0acbgzlr4o8rpq?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A592746206"
+          }
+        ]
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-01T10:10:08.925510",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/6CuzBs2Lb8At7qQr64mLXg2RYRb.jpg",
+      "studio": "Universal Pictures",
+      "budget": 61000000,
+      "country": "United Kingdom",
+      "original_language": "en",
+      "original_title": "Les Mis\u00e9rables",
+      "crew": {
+        "director": "Tom Hooper",
+        "cast": [
+          "Hugh Jackman",
+          "Russell Crowe"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "tmdb_type4"
+    },
     {
       "id": "1010755",
       "title": "The Strangers: Chapter 3",
@@ -23687,5 +23758,10 @@
   "featured": [
     "1608619"
   ],
-  "latest_playlist_url": "https://www.youtube.com/playlist?list=PLFCewXXu8_tFX6Qu6uvmbH6TUHUMAudpW"
+  "latest_playlist_url": "https://www.youtube.com/playlist?list=PLFCewXXu8_tGv71rObLAEsUeWbS5mqJM5",
+  "_metadata": {
+    "last_discovery_write": "2026-03-01T10:10:08.925520",
+    "discovery_count": 366,
+    "schema_version": "2.0"
+  }
 }
