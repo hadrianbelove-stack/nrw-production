@@ -54,6 +54,43 @@ const NRW = {
         plex:      { class: 'plex',      name: 'PLEX',         badgeName: 'PLEX',      matches: ['plex'] },
     },
 
+    // Filter descriptions — shown when a single filter is active
+    // User will rewrite all of these; placeholder text for now
+    FILTER_DESCRIPTIONS: {
+        'big-time': {
+            title: 'Big Time Stuff',
+            text: 'The wide releases, the studio fare, the main-streamers. Not saying they\'re good, not saying they\'re bad, but these are the movies that have either entered or tried to enter the mainstream conversation. They have budgets, recognizable actors, and large-scale billboard campaigns.'
+        },
+        'niche': {
+            title: 'Niche Notables',
+            text: 'The smaller films, the independents, the ones without a billboard campaign. These movies flew under the radar theatrically but are worth knowing about now that they\'re available to stream at home.'
+        },
+        'staff-picks': {
+            title: 'Staff Picks',
+            text: 'The ones we\'re vouching for. Out of everything on the wall, these are the movies we think are genuinely worth your time. Not a popularity contest, just honest recommendations.'
+        },
+        'foreign': {
+            title: 'Foreign',
+            text: 'Non-English language films from around the world. Some are massive in their home countries, some are intimate art-house pieces. The only thing they have in common is subtitles and the fact that they\'re streaming now.'
+        },
+        'series': {
+            title: 'Limited Series',
+            text: 'Not movies — limited series. The kind you can finish in a weekend. Prestige mini-series and limited runs that landed on streaming and deserve the same attention as a good film.'
+        },
+        'plex': {
+            title: 'Plex',
+            text: 'Movies from the wall that are also in your personal Plex library. Why stream it when you already own it?'
+        },
+        'restorations': {
+            title: 'Restorations & Reissues',
+            text: 'Classic and catalog titles with new digital life. These are films that have been restored, remastered, or newly reissued on streaming platforms. Old movies, fresh transfers.'
+        },
+        'festivals': {
+            title: 'Festivals',
+            text: 'Currently playing at film festivals. These aren\'t streaming yet — they\'re in theaters, at festivals, or doing the circuit. If you\'re near a screening, this is your heads-up.'
+        }
+    },
+
     // Resolve a raw service string (e.g. "Netflix basic with Ads") to its config entry
     resolveService(rawName) {
         if (!rawName) return null;
@@ -174,9 +211,26 @@ const NRW = {
 
                 this.displayedCount = this.loadIncrement; // Reset when changing filters
                 this.applyFilter();
+                this.updateFilterDescription();
                 this.renderWallWithMore();
             });
         });
+    },
+
+    // Show/hide filter description based on active filters
+    updateFilterDescription() {
+        const el = document.getElementById('filter-description');
+        if (!el) return;
+
+        const filters = Array.from(this.activeFilters);
+        if (filters.length === 1 && this.FILTER_DESCRIPTIONS[filters[0]]) {
+            const desc = this.FILTER_DESCRIPTIONS[filters[0]];
+            document.getElementById('filter-description-title').textContent = desc.title;
+            document.getElementById('filter-description-text').textContent = desc.text;
+            el.classList.add('active');
+        } else {
+            el.classList.remove('active');
+        }
     },
 
     setupSearchEventListeners() {

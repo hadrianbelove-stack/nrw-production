@@ -4,14 +4,32 @@
  * Controls: LEFT/RIGHT = prev/next trailer, MENU = close, PLAY_PAUSE = pause/resume
  */
 
-import React, { useState, useCallback, useRef, useMemo } from 'react';
-import { View, Text, StyleSheet, Dimensions, Animated } from 'react-native';
+import React, { useState, useCallback, useRef, useMemo, useEffect } from 'react';
+import { View, Text, StyleSheet, Dimensions, Animated, Linking } from 'react-native';
 import Video from 'react-native-video';
 import { useTVEventHandler, TV_EVENTS } from '../utils/focusManager.tvos';
 import { extractYouTubeId } from '../utils/links.tvos';
 import { Colors } from '../constants/colors';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+
+// Opens the YouTube app on Apple TV and auto-closes the trailer overlay
+const YouTubeLauncher = ({ youtubeId, onClose }) => {
+  useEffect(() => {
+    const url = `https://www.youtube.com/watch?v=${youtubeId}`;
+    Linking.openURL(url).catch(() => {});
+    // Auto-close after a brief delay so the overlay doesn't linger
+    const timer = setTimeout(onClose, 1500);
+    return () => clearTimeout(timer);
+  }, [youtubeId, onClose]);
+
+  return (
+    <View style={styles.youtubeFallback}>
+      <Text style={styles.youtubeFallbackIcon}>▶</Text>
+      <Text style={styles.youtubeFallbackText}>Opening YouTube...</Text>
+    </View>
+  );
+};
 
 const TrailerPlayer = ({ movieList, initialIndex, onClose }) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
@@ -107,11 +125,7 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose }) => {
           onError={() => onClose(currentIndex)}
         />
       ) : youtubeId ? (
-        <View style={styles.youtubeFallback}>
-          <Text style={styles.youtubeFallbackIcon}>▶</Text>
-          <Text style={styles.youtubeFallbackText}>YouTube trailer available</Text>
-          <Text style={styles.youtubeFallbackHint}>Search "{currentMovie?.title} trailer" on YouTube</Text>
-        </View>
+        <YouTubeLauncher youtubeId={youtubeId} onClose={() => onClose(currentIndex)} />
       ) : null}
 
       {/* Title overlay */}
