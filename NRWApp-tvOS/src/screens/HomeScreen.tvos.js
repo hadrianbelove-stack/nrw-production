@@ -13,6 +13,7 @@ import {
   TouchableOpacity,
   Linking,
   Animated,
+  Alert,
   findNodeHandle,
   InteractionManager,
 } from 'react-native';
@@ -37,6 +38,8 @@ const FILTERS = [
   { id: 'staff-picks', label: 'Staff Picks' },
   { id: 'foreign', label: 'Foreign' },
   { id: 'series', label: 'Limited Series' },
+  { id: 'festivals', label: 'Festivals' },
+  { id: 'restorations', label: 'Restorations' },
   { id: 'plex', label: 'Plex' },
 ];
 
@@ -345,6 +348,9 @@ const HomeScreenTvOS = () => {
             break;
           case 'plex':
             if (movie.plex && movie.plex.deep_link) return true;
+            break;
+          case 'festivals':
+            if (movie.categories?.is_festival) return true;
             break;
           case 'restorations':
             if (movie.categories?.is_restoration) return true;

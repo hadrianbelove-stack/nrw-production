@@ -3,7 +3,7 @@
  * Handles focus engine, remote control events, and navigation
  */
 
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
 import {
   TVEventHandler,
   findNodeHandle,
@@ -258,9 +258,6 @@ export function debounceFocus(func, delay = 100) {
     }, delay);
   };
 }
-
-// Add missing import for useState
-import { useState } from 'react';
 
 export default {
   TV_EVENTS,

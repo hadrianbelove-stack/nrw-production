@@ -179,9 +179,9 @@ const styles = StyleSheet.create({
   },
   festivalRibbonText: {
     color: '#000',
-    fontSize: 8,
-    fontWeight: '800',
-    letterSpacing: 1.2,
+    fontSize: 10,
+    fontWeight: '900',
+    letterSpacing: 0.5,
     textAlign: 'center',
   },
   rtBadge: {

@@ -617,6 +617,19 @@ class EnrichmentService:
         }
         self.storage.save_cache(self.watch_links_cache, 'cache/watch_links_cache.json')
 
+    # Known URL patterns for services not covered by JustWatch or agent scraper
+    SERVICE_URL_PATTERNS = {
+        'Bloodstream': 'https://bloodstreamtv.com/show-details/{slug}',
+    }
+
+    def _generate_service_url(self, service, title):
+        """Generate watch URL for services with known URL patterns."""
+        pattern = self.SERVICE_URL_PATTERNS.get(service)
+        if not pattern:
+            return None
+        slug = title.lower().replace("'", "").replace(":", "").replace(" ", "-")
+        return pattern.replace('{slug}', slug)
+
     def try_streaming_scraper(self, movie_id, title, year, service, category):
         """
         Try agent scraper for supported platforms.
@@ -636,6 +649,11 @@ class EnrichmentService:
 
         # Check if service is supported
         if service not in supported_platforms:
+            # Try URL pattern generation for known services
+            generated_url = self._generate_service_url(service, title)
+            if generated_url:
+                self.logger.info(f"Generated URL for {title} on {service}: {generated_url}")
+                return {'service': service, 'link': generated_url}
             self.logger.debug(f"'{service}' not supported by agent scraper, returning null")
             return {'service': service, 'link': None}
 

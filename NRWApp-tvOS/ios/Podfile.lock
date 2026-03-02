@@ -873,6 +873,15 @@ PODS:
     - React-debug
   - react-native-safe-area-context (4.14.1):
     - React-Core
+  - react-native-video (6.19.0):
+    - glog
+    - RCT-Folly (= 2022.05.16.00)
+    - React-Core
+    - react-native-video/Video (= 6.19.0)
+  - react-native-video/Video (6.19.0):
+    - glog
+    - RCT-Folly (= 2022.05.16.00)
+    - React-Core
   - React-nativeconfig (0.73.6-0)
   - React-NativeModulesApple (0.73.6-0):
     - glog
@@ -1076,6 +1085,7 @@ DEPENDENCIES:
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - React-Mapbuffer (from `../node_modules/react-native/ReactCommon`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
+  - react-native-video (from `../node_modules/react-native-video`)
   - React-nativeconfig (from `../node_modules/react-native/ReactCommon`)
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
@@ -1165,6 +1175,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
+  react-native-video:
+    :path: "../node_modules/react-native-video"
   React-nativeconfig:
     :path: "../node_modules/react-native/ReactCommon"
   React-NativeModulesApple:
@@ -1241,6 +1253,7 @@ SPEC CHECKSUMS:
   React-logger: 72bb56938ee509b8302ae2a7d50b3abb1a9a8be3
   React-Mapbuffer: de2290a6cb751a43dce0f02520c40eaf8a1fd8bd
   react-native-safe-area-context: 758e894ca5a9bd1868d2a9cfbca7326a2b6bf9dc
+  react-native-video: 67bd98edf0fd83b61ae07f9a9f889cbd4298b79b
   React-nativeconfig: f49636ecd9463fafd65e3028fb172c365769eb39
   React-NativeModulesApple: e8b9c9fe0bebcecaaa74e3685152073909a24fb4
   React-perflogger: 50253f50fef3e2ba3e5e2a7536dfb9c7afa39c9e
@@ -1265,6 +1278,6 @@ SPEC CHECKSUMS:
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   Yoga: 5009ceafbebde781098b25610a55eca140fe8bd5
 
-PODFILE CHECKSUM: 274346c6e96371e7b77287867507c0c7cd0b9ab8
+PODFILE CHECKSUM: 0f9f8baac740685026e08b4c2c31a7c51c1b25be
 
 COCOAPODS: 1.16.2

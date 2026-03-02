@@ -45,7 +45,7 @@ end
 
 target 'NRWApp-tvOS' do
   config = use_native_modules!
-  platform :tvos, min_ios_version_supported
+  platform :tvos, '14.0'
 
   use_react_native!(
     :path => config[:reactNativePath],

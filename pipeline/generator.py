@@ -826,8 +826,12 @@ class DataGenerator:
                     remaining = (total_to_check - checked) / rate if rate > 0 else 0
                     print(f"  📊 Discovery: {checked}/{total_to_check} ({progress_pct:.1f}%) | {newly_digital} found | {int(elapsed//60)}m elapsed | ~{int(remaining//60)}m remaining")
 
-                # Check providers with retry logic
-                url = f"https://api.themoviedb.org/3/movie/{movie_id}/watch/providers"
+                # Check providers with retry logic (use /tv/ endpoint for miniseries)
+                if str(movie_id).startswith('tv_'):
+                    numeric_id = str(movie_id).replace('tv_', '')
+                    url = f"https://api.themoviedb.org/3/tv/{numeric_id}/watch/providers"
+                else:
+                    url = f"https://api.themoviedb.org/3/movie/{movie_id}/watch/providers"
                 params = {'api_key': self.tmdb_key}
 
                 data = None
@@ -1770,6 +1774,22 @@ class DataGenerator:
             print(f"Error fetching details for {movie_id}: {e}")
         return None
 
+    def get_tv_details(self, tv_id):
+        """Get full TV series details from TMDB (for miniseries/limited series)"""
+        url = f"https://api.themoviedb.org/3/tv/{tv_id}"
+        params = {
+            'api_key': self.tmdb_key,
+            'append_to_response': 'credits,videos,external_ids'
+        }
+
+        try:
+            response = requests.get(url, params=params)
+            if response.status_code == 200:
+                return response.json()
+        except Exception as e:
+            print(f"Error fetching TV details for {tv_id}: {e}")
+        return None
+
     def fetch_tmdb_type4_date(self, movie_id):
         """
         Fetch US Type 4 (Digital) release date from TMDB release_dates endpoint.
@@ -1874,10 +1894,14 @@ class DataGenerator:
                 print(f"   📝 Movie {title} already in data.json - skipping immediate add")
                 return True
 
-            # Get TMDB details with fallback
+            # Get TMDB details with fallback (use TV endpoint for miniseries)
             movie_details = None
             try:
-                movie_details = self.get_movie_details(movie_id)
+                if str(movie_id).startswith('tv_'):
+                    numeric_id = str(movie_id).replace('tv_', '')
+                    movie_details = self.get_tv_details(numeric_id)
+                else:
+                    movie_details = self.get_movie_details(movie_id)
             except Exception as e:
                 self.logger.warning(f"TMDB fetch failed for {movie_id}: {e}")
                 # Continue with minimal data - don't fail discovery
@@ -1993,17 +2017,32 @@ class DataGenerator:
         # Use date from movie_tracking if available, otherwise today
         digital_date = movie_data.get('digital_date') or datetime.now().strftime('%Y-%m-%d')
 
+        # TV shows use different field names than movies in TMDB
+        is_tv = movie_data.get('content_type') == 'limited_series'
+        title_field = 'name' if is_tv else 'title'
+        date_field = 'first_air_date' if is_tv else 'release_date'
+        original_title_field = 'original_name' if is_tv else 'original_title'
+
+        # TV runtime: use episode_run_time array or tracking data
+        if is_tv:
+            ep_runtimes = movie_details.get('episode_run_time', [])
+            runtime = ep_runtimes[0] if ep_runtimes else movie_data.get('runtime')
+        else:
+            runtime = movie_details.get('runtime')
+
+        release_date_str = movie_details.get(date_field, '')
+
         # Start with minimal entry structure
         entry = {
             'id': str(movie_id),
-            'title': movie_details.get('title', movie_data.get('title', f'Movie {movie_id}')),
+            'title': movie_details.get(title_field, movie_data.get('title', f'Movie {movie_id}')),
             'digital_date': digital_date,  # YYYY-MM-DD format for display
             'bootstrap_date': False,
             'manually_corrected': False,
             'synopsis': movie_details.get('overview', ''),
             'genres': [genre['name'] for genre in movie_details.get('genres', [])],
-            'runtime': movie_details.get('runtime'),
-            'year': int(movie_details.get('release_date', '1900')[:4]) if movie_details.get('release_date') else None,
+            'runtime': runtime,
+            'year': int(release_date_str[:4]) if release_date_str else None,
             'rt_score': None,  # Will be filled by enrichment
             'providers': movie_data.get('providers', {'rent': [], 'buy': [], 'streaming': []}),
             'links': {'wikipedia': None, 'trailer': None, 'rt': None},
@@ -2013,6 +2052,13 @@ class DataGenerator:
             '_tmdb_fetch_failed': False,
             '_minimal_entry': False
         }
+
+        # Copy content_type and series metadata from tracking data
+        if is_tv:
+            entry['content_type'] = 'limited_series'
+            entry['episode_count'] = movie_data.get('episode_count')
+            networks = movie_details.get('networks', [])
+            entry['networks'] = [n.get('name') for n in networks if n.get('name')]
 
         # Add poster with error handling
         if movie_details.get('poster_path'):
@@ -2027,23 +2073,40 @@ class DataGenerator:
         else:
             entry['studio'] = 'Unknown'
 
-        # Add budget from TMDB (used for auto-categorization)
+        # Add budget from TMDB (used for auto-categorization; TV shows don't have budget)
         entry['budget'] = movie_details.get('budget', 0)
 
         # Add country with error handling
-        production_countries = movie_details.get('production_countries', [])
-        if production_countries and len(production_countries) > 0:
-            entry['country'] = production_countries[0].get('name', 'Unknown')
+        if is_tv:
+            # TV shows use origin_country (ISO codes like 'US', 'GB')
+            origin_countries = movie_details.get('origin_country', [])
+            entry['country'] = origin_countries[0] if origin_countries else 'Unknown'
         else:
-            entry['country'] = 'Unknown'
+            production_countries = movie_details.get('production_countries', [])
+            if production_countries and len(production_countries) > 0:
+                entry['country'] = production_countries[0].get('name', 'Unknown')
+            else:
+                entry['country'] = 'Unknown'
 
         # Add original language (ISO 639-1 code: 'en', 'es', 'fr', etc.)
         entry['original_language'] = movie_details.get('original_language')
-        entry['original_title'] = movie_details.get('original_title')
+        entry['original_title'] = movie_details.get(original_title_field)
 
         # Add cast/crew with error handling
         entry['crew'] = {'director': 'Unknown', 'cast': []}
-        if movie_details.get('credits'):
+        if is_tv:
+            # TV shows: use created_by for director, aggregate_credits for cast
+            try:
+                created_by = movie_details.get('created_by', [])
+                if created_by:
+                    entry['crew']['director'] = created_by[0].get('name', 'Unknown')
+                credits = movie_details.get('credits', {})
+                cast = [person['name'] for person in credits.get('cast', [])[:5]
+                       if person.get('name')]
+                entry['crew']['cast'] = cast
+            except Exception as e:
+                self.logger.warning(f"Failed to parse TV credits for {movie_id}: {e}")
+        elif movie_details.get('credits'):
             try:
                 credits = movie_details['credits']
 
@@ -3733,6 +3796,7 @@ class DataGenerator:
             'is_staff_pick': False,  # Set later from staff_picks.json
             'is_restoration': False,  # Set later from restoration detection
             'is_festival': False,  # Set later from watch_links detection
+            'is_series': False,  # Set later from content_type detection
             'auto_categorized': auto_categorized,
             'manual_override': manual_override
         }
@@ -3969,6 +4033,9 @@ class DataGenerator:
                     'last_checked': existing_festival_info.get('last_checked', today_str),
                     'status': existing_festival_info.get('status', 'active')
                 }
+
+            # Mark limited series
+            categories['is_series'] = movie.get('content_type') == 'limited_series'
 
             movie['categories'] = categories
 

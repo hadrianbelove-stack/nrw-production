@@ -7,7 +7,6 @@
 import React, { useState, useCallback, useRef, useMemo } from 'react';
 import { View, Text, StyleSheet, Dimensions, Animated } from 'react-native';
 import Video from 'react-native-video';
-import { WebView } from 'react-native-webview';
 import { useTVEventHandler, TV_EVENTS } from '../utils/focusManager.tvos';
 import { extractYouTubeId } from '../utils/links.tvos';
 import { Colors } from '../constants/colors';
@@ -80,17 +79,6 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose }) => {
     [TV_EVENTS.PLAY_PAUSE]: () => setPaused(p => !p),
   });
 
-  // YouTube embed HTML
-  const youtubeHtml = useMemo(() => {
-    if (!youtubeId) return '';
-    return `
-      <html><head><meta name="viewport" content="width=device-width,initial-scale=1">
-      <style>*{margin:0;padding:0;background:#000}iframe{width:100vw;height:100vh}</style></head>
-      <body><iframe src="https://www.youtube.com/embed/${youtubeId}?autoplay=1&controls=1&rel=0&modestbranding=1"
-        frameborder="0" allow="autoplay;encrypted-media" allowfullscreen></iframe></body></html>
-    `;
-  }, [youtubeId]);
-
   // Count trailers for the counter display
   const trailerCount = useMemo(() => {
     return movieList.filter(m => m.links?.trailer_hosted || m.links?.trailer).length;
@@ -119,13 +107,11 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose }) => {
           onError={() => onClose(currentIndex)}
         />
       ) : youtubeId ? (
-        <WebView
-          source={{ html: youtubeHtml }}
-          style={styles.video}
-          allowsInlineMediaPlayback={true}
-          mediaPlaybackRequiresUserAction={false}
-          javaScriptEnabled={true}
-        />
+        <View style={styles.youtubeFallback}>
+          <Text style={styles.youtubeFallbackIcon}>▶</Text>
+          <Text style={styles.youtubeFallbackText}>YouTube trailer available</Text>
+          <Text style={styles.youtubeFallbackHint}>Search "{currentMovie?.title} trailer" on YouTube</Text>
+        </View>
       ) : null}
 
       {/* Title overlay */}
@@ -215,6 +201,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   hintText: {
+    color: Colors.textMuted,
+    fontSize: 20,
+  },
+  youtubeFallback: {
+    flex: 1,
+    backgroundColor: '#000',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  youtubeFallbackIcon: {
+    fontSize: 60,
+    color: Colors.primary,
+    marginBottom: 20,
+  },
+  youtubeFallbackText: {
+    color: '#fff',
+    fontSize: 28,
+    fontWeight: '600',
+    marginBottom: 10,
+  },
+  youtubeFallbackHint: {
     color: Colors.textMuted,
     fontSize: 20,
   },

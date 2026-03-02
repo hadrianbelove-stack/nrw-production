@@ -43,6 +43,13 @@ export const Colors = {
   // Restoration badge
   restoration: '#C8A951',
   restorationText: '#000000',
+
+  // Festival badge
+  festivalGold: '#FFD700',
+  festivalGoldText: '#000000',
+
+  // Service colors
+  maxPurple: '#B537F2',
 };
 
 export const Typography = {

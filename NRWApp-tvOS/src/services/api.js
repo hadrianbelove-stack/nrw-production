@@ -8,9 +8,6 @@ import { getCachedData, setCachedData, CACHE_KEYS } from '../utils/cache';
 // GitHub raw content URL for data.json
 const DATA_URL = 'https://raw.githubusercontent.com/hadrianbelove-stack/nrw-production/main/data.json';
 
-// Cache duration: 24 hours in milliseconds
-const CACHE_DURATION = 24 * 60 * 60 * 1000;
-
 /**
  * Fetch movie data from GitHub
  * Returns cached data if available and not expired
@@ -83,13 +80,6 @@ function extractMoviesData(data) {
   } else {
     return { movies: [], featured: [], latestPlaylistUrl: null };
   }
-}
-
-/**
- * Check if cached data has expired
- */
-function isCacheExpired(timestamp) {
-  return Date.now() - timestamp > CACHE_DURATION;
 }
 
 /**

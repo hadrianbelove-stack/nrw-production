@@ -24,7 +24,7 @@ import {
   getMetadataString,
   getAccessibilityLabel,
 } from './useMovieDetail';
-import WatchButton, { InfoButton } from '../components/WatchButton.tvos';
+import WatchButton from '../components/WatchButton.tvos';
 import { Colors, Typography, Spacing } from '../constants/colors';
 import { useTVEventHandler, TV_EVENTS } from '../utils/focusManager.tvos';
 import {
@@ -301,7 +301,7 @@ const MovieDetailTvOS = () => {
         result = await openURL(link.url, link.service);
       }
 
-      if (!result.success) {
+      if (result && !result.success) {
         showLinkError(link.label);
       }
     } catch (error) {
@@ -542,8 +542,8 @@ const MovieDetailTvOS = () => {
                     <ActionButton
                       label={isFestivalPlatform ? 'BUY TICKET' : 'RENT / BUY'}
                       color={isFestivalPlatform ? 'transparent' : '#ff9500'}
-                      borderColor={isFestivalPlatform ? '#FFD700' : undefined}
-                      textColor={isFestivalPlatform ? '#FFD700' : undefined}
+                      borderColor={isFestivalPlatform ? Colors.festivalGold : undefined}
+                      textColor={isFestivalPlatform ? Colors.festivalGold : undefined}
                       onPress={() => handleWatchPress(purchaseLinks[0])}
                       hasTVPreferredFocus={!infoLinks.find(l => l.type === 'trailer')}
                       testID="action-btn-purchase"
@@ -726,8 +726,8 @@ const styles = StyleSheet.create({
     marginLeft: Spacing.tvos.md,
   },
   festivalName: {
-    backgroundColor: '#FFD700',
-    color: '#000',
+    backgroundColor: Colors.festivalGold,
+    color: Colors.festivalGoldText,
     fontSize: Typography.tvos.body - 2,
     fontWeight: '800',
     letterSpacing: 1.5,
@@ -785,24 +785,10 @@ const styles = StyleSheet.create({
   synopsisContainer: {
     marginTop: Spacing.tvos.lg,
   },
-  sectionTitle: {
-    color: Colors.textPrimary,
-    fontSize: Typography.tvos.subtitle,
-    fontWeight: '600',
-    marginBottom: Spacing.tvos.sm,
-  },
   synopsis: {
     color: Colors.textSecondary,
     fontSize: Typography.tvos.body,
     lineHeight: Typography.tvos.body * 1.5,
-  },
-  section: {
-    marginTop: Spacing.tvos.lg,
-  },
-  buttonRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginTop: Spacing.tvos.sm,
   },
   actionButtonRow: {
     flexDirection: 'row',

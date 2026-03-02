@@ -126,7 +126,7 @@ const MovieCard = forwardRef(({
     const s = service.toLowerCase();
     if (s.includes('netflix')) return { name: 'NETFLIX', color: '#E50914' };
     if (s.includes('disney')) return { name: 'DISNEY+', color: '#113CCF' };
-    if (s.includes('max') || s.includes('hbo')) return { name: 'MAX', color: '#002BE7' };
+    if (s.includes('max') || s.includes('hbo')) return { name: 'MAX', color: Colors.maxPurple };
     if (s.includes('amazon') || s.includes('prime')) return { name: 'PRIME', color: '#00A8E1' };
     if (s.includes('hulu')) return { name: 'HULU', color: '#1CE783' };
     if (s.includes('peacock')) return { name: 'PEACOCK', color: '#000000' };
@@ -362,17 +362,17 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: '#FFD700',
+    backgroundColor: Colors.festivalGold,
     paddingVertical: Spacing.tvos.xs,
     borderBottomLeftRadius: 12,
     borderBottomRightRadius: 12,
     alignItems: 'center',
   },
   festivalRibbonText: {
-    color: '#000',
-    fontSize: Typography.tvos.caption - 2,
-    fontWeight: '800',
-    letterSpacing: 1.2,
+    color: Colors.festivalGoldText,
+    fontSize: Typography.tvos.caption,
+    fontWeight: '900',
+    letterSpacing: 0.5,
   },
   focusBorder: {
     ...StyleSheet.absoluteFillObject,
