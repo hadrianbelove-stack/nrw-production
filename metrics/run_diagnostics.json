@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-03-01T10:10:32.589276",
-  "duration_seconds": 2565.956499,
+  "timestamp": "2026-03-02T10:43:24.093825",
+  "duration_seconds": 3475.976491,
   "overall_success": false,
   "failure_count": 1,
   "warning_count": 0,
@@ -8,37 +8,37 @@
     {
       "name": "Intake new premieres from TMDB",
       "success": true,
-      "duration_seconds": 8.91178,
+      "duration_seconds": 12.973562,
       "error": null,
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-02-27 to 2026-03-01 (incremental mode, 12 intaked)\n\u2705 Movie intake complete: 12 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-01-30 to 2026-03-01\n   \ud83d\udccb Disaster: The Chernobyl Meltdown (4 eps"
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-02-28 to 2026-03-02 (incremental mode, 11 intaked)\n\u2705 Movie intake complete: 11 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-01-31 to 2026-03-02\n   \ud83d\udccb NWSL: The Final Third (3 eps)\n   \ud83d\udccb Papa"
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 2535.416685,
+      "duration_seconds": 3043.989106,
       "error": null,
-      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 14286 total movies\n\ud83d\udd0d Raw tracking filter: 12853 movies\n\ud83d\udd0d Assigned tracking_movies list: 12853\n\ud83d\udd0d Found 12853 movies in tracking status\n  Priority queue (last 180 days): 1115 movies\n  Older movies: 11738 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 12853 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/12853 (0.8%) | 0 found | 0m elapsed | ~34m remaining\n  \ud83d\udcbe Progress saved (b"
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 14311 total movies\n\ud83d\udd0d Raw tracking filter: 12877 movies\n\ud83d\udd0d Assigned tracking_movies list: 12877\n\ud83d\udd0d Found 12877 movies in tracking status\n  Priority queue (last 180 days): 1088 movies\n  Older movies: 11789 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 12877 movies for digital availability...\n\n  \u2713 The Gray House now on Amazon Prime Video!\n   \u2705 Added The Gray House to site immediately ("
     },
     {
       "name": "Resolve pre-order movie dates",
       "success": true,
-      "duration_seconds": 0.294063,
+      "duration_seconds": 0.29555,
       "error": null,
       "output_preview": "\n\ud83d\udcc5 Resolving pre-order movie dates...\n\n\ud83d\udcc5 Resolving pre-order dates...\n  No pre-order movies to resolve\n\u2705 Pre-order resolution complete: 0 resolved\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Enrich newly available movies with metadata",
       "success": true,
-      "duration_seconds": 20.911041,
+      "duration_seconds": 418.317875,
       "error": null,
-      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 1 movies to enrich\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n  \u26a1 Les Mis\u00e9rables (20.0s) - Wiki:\u2713 Trailer:\u2713 RT:\u2713 Links:\u2713 Date:\u2713 | 5 success, 0 errors\n  \u2713 Les Mis\u00e9rables - Links:"
+      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 35 movies to enrich\n  \u2717 Could not fetch details for The Gray House\n  \u2717 Could not fetch details for Portobello\n  \u2717 Could not fetch details for Murder in Glitterball City\n  \u2717 Could not fetch details for Girl on the Run: The Hunt for America's Most Wanted Woman\n  \u2717 Could not fetch details for Being Gordon Ramsay\n  \u2717 Could not fetch details for Museum of Innocence\n  \u2717 Could not fetch details for The Art of Sar"
     },
     {
       "name": "Host trailers for newly enriched movies",
       "success": false,
-      "duration_seconds": 0.313873,
+      "duration_seconds": 0.297524,
       "error": null,
-      "output_preview": "=== Trailer Pipeline: full ===\n\n--- Step 1: Host new trailers ---\nMovies to host: 47\nConnecting to B2...\nERROR: /home/runner/work/nrw-production/nrw-production/.env not found\n"
+      "output_preview": "=== Trailer Pipeline: full ===\n\n--- Step 1: Host new trailers ---\nMovies to host: 65\nConnecting to B2...\nERROR: /home/runner/work/nrw-production/nrw-production/.env not found\n"
     }
   ],
   "health_issues": [],
@@ -52,19 +52,19 @@
       "severity": "error",
       "message": "Phase failed with exit code 1",
       "context": null,
-      "stdout_preview": "=== Trailer Pipeline: full ===\n\n--- Step 1: Host new trailers ---\nMovies to host: 47\nConnecting to B2...\nERROR: /home/runner/work/nrw-production/nrw-production/.env not found"
+      "stdout_preview": "=== Trailer Pipeline: full ===\n\n--- Step 1: Host new trailers ---\nMovies to host: 65\nConnecting to B2...\nERROR: /home/runner/work/nrw-production/nrw-production/.env not found"
     }
   ],
   "warnings": [],
   "data_quality": {
-    "total": 14286,
-    "tracking": 12852,
-    "available": 1432,
-    "data_movies": 378,
-    "movies_with_links": 351,
-    "movies_with_rt": 332,
-    "movies_with_wikipedia": 184,
-    "movies_with_trailers": 373
+    "total": 14311,
+    "tracking": 12842,
+    "available": 1467,
+    "data_movies": 413,
+    "movies_with_links": 359,
+    "movies_with_rt": 346,
+    "movies_with_wikipedia": 195,
+    "movies_with_trailers": 392
   },
   "enrichment_metrics": {
     "timestamp": "2025-12-29T15:42:45.008551",
