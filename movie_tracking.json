@@ -95264,14 +95264,22 @@
     },
     "1387976": {
       "title": "Videoheaven",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-04",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-03-03",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Criterion Channel"
+        ]
+      },
       "intake_pass": "backfill",
-      "has_providers": false,
+      "has_providers": true,
       "year": 2025,
-      "premiere_date": "2025-07-02"
+      "premiere_date": "2025-07-02",
+      "enriched": false,
+      "enrichment_date": null
     },
     "1317898": {
       "title": "Montauk",
@@ -109044,13 +109052,22 @@
     "15916": {
       "title": "Angel's Egg",
       "year": 2025,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-03-03",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "HBO Max",
+          "HBO Max Amazon Channel"
+        ]
+      },
       "intake_pass": "C",
       "festival": "Cannes",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1548363": {
       "title": "Mille et un bijoux",
@@ -119740,13 +119757,21 @@
     "1193501": {
       "title": "Whistle",
       "year": 2025,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-03-03",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "NYFF",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1341328": {
       "title": "The Only Way Out Is Through",
@@ -132803,13 +132828,21 @@
     "55847": {
       "title": "Four Nights of a Dreamer",
       "year": 1971,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-07",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-03-03",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Criterion Channel"
+        ]
+      },
       "intake_pass": "C",
       "festival": "Cannes",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1233208": {
       "title": "Santosh",
@@ -149073,12 +149106,20 @@
     "1301270": {
       "title": "Skate to Hell",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-17",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-03-03",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "998390": {
       "title": "VACANT",
@@ -149995,13 +150036,21 @@
     "1422562": {
       "title": "The Moment",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-20",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-03-03",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "Sundance",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1417935": {
       "title": "Filipi\u00f1ana",
@@ -156348,9 +156397,9 @@
       "title": "Toros Neza",
       "content_type": "limited_series",
       "tmdb_id": 310920,
-      "status": "tracking",
+      "status": "available",
       "first_air_date": "2026-01-09",
-      "digital_date": "2026-01-09",
+      "digital_date": "2026-03-03",
       "episode_count": 2,
       "runtime": 184,
       "poster": "https://image.tmdb.org/t/p/w500/lECZjiOVPhzuBE0FCD6PBxdftFP.jpg",
@@ -156360,13 +156409,17 @@
       ],
       "original_language": "es",
       "providers": {
-        "streaming": [],
         "rent": [],
-        "buy": []
+        "buy": [],
+        "streaming": [
+          "VIX "
+        ]
       },
       "intaked_at": "2026-01-30T09:36:28.298928",
       "networks": [],
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "tv_308275": {
       "title": "If Only You Weren't the One",
@@ -171153,12 +171206,20 @@
     "1642494": {
       "title": "Murder in the Highland Manor",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-03-01",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-03-03",
+      "providers": {
+        "rent": [
+          "Plex"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1632328": {
       "title": "Stardom in Kariya 2026 Mar.",
@@ -171874,7 +171935,399 @@
       "intaked_at": "2026-03-02T09:45:40.563890",
       "networks": [],
       "has_providers": false
+    },
+    "1632818": {
+      "title": "Dark Distortion",
+      "year": 2026,
+      "status": "available",
+      "first_seen": "2026-03-03",
+      "digital_date": "2026-03-03",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
+      "intake_pass": "A",
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
+    },
+    "1043766": {
+      "title": "A Little Prayer",
+      "year": 2025,
+      "status": "available",
+      "first_seen": "2026-03-03",
+      "digital_date": "2026-03-03",
+      "providers": {
+        "rent": [
+          "Amazon Video",
+          "Apple TV Store",
+          "Google Play Movies",
+          "YouTube",
+          "Fandango At Home"
+        ],
+        "buy": [
+          "Amazon Video",
+          "Apple TV Store",
+          "Google Play Movies",
+          "YouTube",
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
+      "intake_pass": "A",
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
+    },
+    "1026532": {
+      "title": "The Hermit",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-03",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A",
+      "has_providers": false
+    },
+    "1645214": {
+      "title": "Ligo",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-03",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1636942": {
+      "title": "The Brazilian inferno",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-03",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1627513": {
+      "title": "No One Rides Alone",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-03",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1624519": {
+      "title": "Small Talk",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-03",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1555620": {
+      "title": "Minbera",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-03",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1549709": {
+      "title": "Pee Nak 5",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-03",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1482365": {
+      "title": "Royal Ballet & Opera 2025/26: Giselle",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-03",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "951034": {
+      "title": "Portrait of a Confused Father",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-03",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1645454": {
+      "title": "L\u00e9o Lins - Peste branca",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-03",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1645345": {
+      "title": "Versailles in piano sequenza",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-03",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1645148": {
+      "title": "The Actor Awards 2026 Presented by SAG-AFTRA",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-03",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1644098": {
+      "title": "Mamonas: Eu Te Ai L\u00f3ve I\u00fa",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-03",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1640984": {
+      "title": "Hex",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-03",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "tv_314338": {
+      "title": "Europe on the Edge with Katya Adler",
+      "content_type": "limited_series",
+      "tmdb_id": 314338,
+      "status": "tracking",
+      "first_air_date": "2026-03-03",
+      "digital_date": "2026-03-03",
+      "episode_count": 3,
+      "runtime": 59,
+      "poster": "https://image.tmdb.org/t/p/w500/8zEoYiVeV0uEIqbJDbJbN8H30V0.jpg",
+      "synopsis": "Katya Adler examines the political situation in Europe.",
+      "genres": [
+        "Documentary"
+      ],
+      "original_language": "en",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-03-03T09:39:24.783444",
+      "networks": [
+        "BBC Two"
+      ],
+      "has_providers": false
+    },
+    "tv_315553": {
+      "title": "\uacbd\uc131\uc5ec\uc6b0\uc2a4\uce94\ub4e4",
+      "content_type": "limited_series",
+      "tmdb_id": 315553,
+      "status": "tracking",
+      "first_air_date": "2026-02-28",
+      "digital_date": "2026-02-28",
+      "episode_count": 1,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/nuHxQdcbOgqVXXK90HCMPMu7hM4.jpg",
+      "synopsis": "",
+      "genres": [],
+      "original_language": "ko",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-03-03T09:39:25.090792",
+      "networks": [],
+      "has_providers": false
+    },
+    "tv_315554": {
+      "title": "\u4eac\u5a5a\u6d53\u763e",
+      "content_type": "limited_series",
+      "tmdb_id": 315554,
+      "status": "tracking",
+      "first_air_date": "2026-02-23",
+      "digital_date": "2026-02-23",
+      "episode_count": 1,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/2PoZhNPm5dWi64DQm2fYvIFiQQj.jpg",
+      "synopsis": "",
+      "genres": [],
+      "original_language": "zh",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-03-03T09:39:25.431359",
+      "networks": [],
+      "has_providers": false
+    },
+    "tv_313963": {
+      "title": "The Masked Hearts",
+      "content_type": "limited_series",
+      "tmdb_id": 313963,
+      "status": "tracking",
+      "first_air_date": "2026-02-21",
+      "digital_date": "2026-02-21",
+      "episode_count": 8,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/zteYp3C9P9p1NfrXKpQM7FmG72m.jpg",
+      "synopsis": "A modern khon rivalry sparks when a cosplay enthusiast and a traditionalist club president discover their connection mirrors a forbidden past-life love.",
+      "genres": [
+        "Drama"
+      ],
+      "original_language": "th",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-03-03T09:39:26.130667",
+      "networks": [
+        "Amarin TV"
+      ],
+      "has_providers": false
+    },
+    "tv_315541": {
+      "title": "\u4e00\u89c1\u4f60\u5c31\u7b11",
+      "content_type": "limited_series",
+      "tmdb_id": 315541,
+      "status": "tracking",
+      "first_air_date": "2026-02-20",
+      "digital_date": "2026-02-20",
+      "episode_count": 1,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/2YV5S6RP3mkeUau1wGCGPYhR0XL.jpg",
+      "synopsis": "",
+      "genres": [],
+      "original_language": "zh",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-03-03T09:39:26.428154",
+      "networks": [],
+      "has_providers": false
+    },
+    "tv_315557": {
+      "title": "\u96ea\u843d\u65f6\u9022\u4f60",
+      "content_type": "limited_series",
+      "tmdb_id": 315557,
+      "status": "tracking",
+      "first_air_date": "2026-02-19",
+      "digital_date": "2026-02-19",
+      "episode_count": 1,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/aNc2opokgqGPbDAe03GbCVxJaGm.jpg",
+      "synopsis": "",
+      "genres": [],
+      "original_language": "zh",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-03-03T09:39:26.726325",
+      "networks": [],
+      "has_providers": false
+    },
+    "tv_315537": {
+      "title": "\u771f\u5047\u5343\u91d1\u8054\u624b\u4e86",
+      "content_type": "limited_series",
+      "tmdb_id": 315537,
+      "status": "tracking",
+      "first_air_date": "2026-02-07",
+      "digital_date": "2026-02-07",
+      "episode_count": 1,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/5RLQuiffeuxReImjdn1URgZTm2e.jpg",
+      "synopsis": "",
+      "genres": [],
+      "original_language": "zh",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-03-03T09:39:28.883204",
+      "networks": [],
+      "has_providers": false
+    },
+    "tv_315534": {
+      "title": "\u4e24\u4e16\u59fb\u7f18\u4e24\u4e16\u7a7a",
+      "content_type": "limited_series",
+      "tmdb_id": 315534,
+      "status": "tracking",
+      "first_air_date": "2026-02-07",
+      "digital_date": "2026-02-07",
+      "episode_count": 1,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/1hA4JrIS4H3Wf3ldhcUVhO2eRSG.jpg",
+      "synopsis": "",
+      "genres": [],
+      "original_language": "zh",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-03-03T09:39:29.229809",
+      "networks": [],
+      "has_providers": false
+    },
+    "tv_315538": {
+      "title": "\u8ba9\u4f60\u6446\u5730\u644a\uff0c\u4f60\u8ddf\u51f6\u731b\u5973\u795e\u95ea\u5a5a\u4e86",
+      "content_type": "limited_series",
+      "tmdb_id": 315538,
+      "status": "tracking",
+      "first_air_date": "2026-02-03",
+      "digital_date": "2026-02-03",
+      "episode_count": 1,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/48CrBR49d6RfumeSNDmAcMjSUf.jpg",
+      "synopsis": "",
+      "genres": [],
+      "original_language": "zh",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-03-03T09:39:29.924955",
+      "networks": [],
+      "has_providers": false
     }
   },
-  "last_update": "2026-03-02T09:45:34.155159"
+  "last_update": "2026-03-03T09:39:24.161834"
 }
