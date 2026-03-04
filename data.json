@@ -1,7 +1,385 @@
 {
-  "generated_at": "2026-03-03T10:36:10.268081",
-  "count": 423,
+  "generated_at": "2026-03-04T10:28:09.844195",
+  "count": 430,
   "movies": [
+    {
+      "id": "46908",
+      "title": "Dead Mountaineer's Hotel",
+      "digital_date": "2021-05-26",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "The police get a call-out to a lonely hotel in the Alps. When an officer gets to the hotel everything seems to be alright. Suddenly, an avalanche cuts them off from the rest of the world and strange things start happening.",
+      "genres": [
+        "Crime",
+        "Drama",
+        "Science Fiction",
+        "Horror"
+      ],
+      "runtime": 84,
+      "year": 1979,
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Cultpix",
+          "Klassiki"
+        ]
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Dead_Mountaineer%27s_Hotel_(film)",
+        "trailer": "https://www.youtube.com/watch?v=FlQCVh_HSzM"
+      },
+      "watch_links": {
+        "streaming": {
+          "service": "Cultpix",
+          "link": "https://www.cultpix.com/movie/hukkunud-alpinisti-hotell/1416"
+        },
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://www.amazon.com/dp/B0DZGNXXCZ?tag=justwatch09-20&linkCode=osi&th=1&psc=1"
+          }
+        ]
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-04T10:25:35.388249",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/6zD8cZ7gTvNLJdjEcnllYyJjkMY.jpg",
+      "studio": "Tallinnfilm",
+      "budget": 0,
+      "country": "Soviet Union",
+      "original_language": "et",
+      "original_title": "Hukkunud Alpinisti hotell",
+      "crew": {
+        "director": "Grigori Kromanov",
+        "cast": [
+          "Uldis P\u016bc\u012btis",
+          "J\u00fcri J\u00e4rvet"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "tmdb_type4",
+      "_enrichment_gaps": [
+        "rt_score"
+      ]
+    },
+    {
+      "id": "1320482",
+      "title": "From Darkness to Light",
+      "digital_date": "2026-03-04",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Explores Jerry Lewis' unreleased 1972 film \"The Day the Clown Cried,\" its mysterious disappearance, and the search for footage. Includes interviews with Lewis' associates and previously unseen production content.",
+      "genres": [
+        "Documentary"
+      ],
+      "runtime": 108,
+      "year": 2025,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "Eventive"
+        ],
+        "buy": [],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/From_Darkness_to_Light",
+        "trailer": "https://www.youtube.com/watch?v=ueyceKwAe80",
+        "rt": "https://www.rottentomatoes.com/m/from_darkness_to_light"
+      },
+      "watch_links": {},
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-04T10:13:51.636622",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/9WHK2hmkFAUOttK23fi7QOMMrlY.jpg",
+      "studio": "Sugar Town Filmproduktion",
+      "budget": 0,
+      "country": "Germany",
+      "original_language": "en",
+      "original_title": "From Darkness to Light",
+      "crew": {
+        "director": "Michael Lurie",
+        "cast": [
+          "Jerry Lewis",
+          "Martin Scorsese"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection",
+      "_enrichment_gaps": [
+        "watch_links"
+      ]
+    },
+    {
+      "id": "883126",
+      "title": "I'm Not Everything I Want to Be",
+      "digital_date": "2026-03-04",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "After the Soviet invasion of Czechoslovakia in 1968, Libu\u0161e Jarcovj\u00e1kov\u00e1, a young female photographer, strives to break free from the constraints of Czechoslovak normalization and embarks on a wild journey towards freedom, capturing her experiences on thousands of subjective photographs.",
+      "genres": [
+        "Documentary"
+      ],
+      "runtime": 91,
+      "year": 2024,
+      "rt_score": "100%",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Metrograph"
+        ]
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/I%27m_Not_Everything_I_Want_to_Be",
+        "trailer": "https://www.youtube.com/watch?v=_LOyyGtTGj0",
+        "rt": "https://www.rottentomatoes.com/m/im_not_everything_i_want_to_be"
+      },
+      "watch_links": {
+        "streaming": {
+          "service": "Metrograph",
+          "link": "https://watch.metrograph.com/videos/im-not-everything-i-want-to-be?ref=justwatch&utm_source=JustWatch&utm_medium=affiliate&utm_campaign=Just%20Watch%20Feed"
+        }
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-04T10:13:04.679288",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/gZ8Gm1Nspuf5zZDvvKm96yRByW3.jpg",
+      "studio": "Mischief Films",
+      "budget": 0,
+      "country": "Austria",
+      "original_language": "cs",
+      "original_title": "Je\u0161t\u011b nejsem, k\u00fdm chci b\u00fdt",
+      "crew": {
+        "director": "Kl\u00e1ra Tasovsk\u00e1",
+        "cast": [
+          "Libu\u0161e Jarcovj\u00e1kov\u00e1"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection"
+    },
+    {
+      "id": "1317159",
+      "title": "Way Home",
+      "digital_date": "2026-03-04",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "How far are you willing to go to save the people you love? This is the question Christian is forced to answer when he is smuggled into Syria in a desperate search for his son Adam. It's a deadly and soul-searching journey into a brutal, war-torn country. Gradually, Christian realises that he must be willing to sacrifice everything he believes in to be reunited with his son.",
+      "genres": [
+        "Drama",
+        "Thriller"
+      ],
+      "runtime": 98,
+      "year": 2024,
+      "rt_score": "0%",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Spider-Man:_No_Way_Home?wprov=srpw1_0",
+        "trailer": "https://www.youtube.com/watch?v=iOgFh_zqHvk",
+        "rt": "https://www.rottentomatoes.com/m/way_home_2024"
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.dd443310-e26f-4a2b-abd1-ab1e7dff3328&tag=nrw04-20"
+          }
+        ]
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-04T09:52:05.965898",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/iC0sFXBZuWPipYtye4dIf5U5E9k.jpg",
+      "studio": "Toolbox Film",
+      "budget": 0,
+      "country": "Denmark",
+      "original_language": "da",
+      "original_title": "Vejen hjem",
+      "crew": {
+        "director": "Charlotte Sieling",
+        "cast": [
+          "Nikolaj Lie Kaas",
+          "Albert Rudbeck Lindhardt"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection"
+    },
+    {
+      "id": "1503957",
+      "title": "The Mother's Eye",
+      "digital_date": "2025-07-04",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "A harrowing night unfolds when a woman realizes she's being hunted by a serial killer.",
+      "genres": [
+        "Horror"
+      ],
+      "runtime": 62,
+      "year": 2025,
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Troma NOW"
+        ]
+      },
+      "links": {
+        "trailer": "https://www.youtube.com/watch?v=_2XFAZgJXZA"
+      },
+      "watch_links": {
+        "streaming": {
+          "service": "Troma NOW",
+          "link": "https://watch.troma.com/videos/the-mother-s-eye?ref=justwatch"
+        }
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-04T09:46:25.524696",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/c9FhG83jjx9Ot7DlQ1BSIEqYW4U.jpg",
+      "studio": null,
+      "budget": 0,
+      "country": "United States of America",
+      "original_language": "en",
+      "original_title": "The Mother's Eye",
+      "crew": {
+        "director": "Jamie Grefe",
+        "cast": [
+          "America Sossi",
+          "Jamie Grefe"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "tmdb_type4",
+      "_enrichment_gaps": [
+        "rt_score"
+      ]
+    },
+    {
+      "id": "1541273",
+      "title": "Amityville La Llorona",
+      "digital_date": "2025-09-01",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "A married couple, reeling from loss, are thrust into a nightmarish situation when a demonic entity invades their guesthouse.",
+      "genres": [
+        "Horror"
+      ],
+      "runtime": 63,
+      "year": 2025,
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Troma NOW"
+        ]
+      },
+      "links": {
+        "trailer": "https://www.youtube.com/watch?v=Va2jBNW0w-g"
+      },
+      "watch_links": {
+        "streaming": {
+          "service": "Troma NOW",
+          "link": "https://watch.troma.com/videos/amityville-la-llorona?ref=justwatch"
+        }
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-04T09:42:40.216146",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/7j1HNIS3EVKdhgJ1CawOUyFi8uz.jpg",
+      "studio": "CineRidge Entertainment",
+      "budget": 0,
+      "country": "United States of America",
+      "original_language": "en",
+      "original_title": "Amityville La Llorona",
+      "crew": {
+        "director": "Jamie Grefe",
+        "cast": [
+          "Jamie Grefe",
+          "Skya Theobald"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "tmdb_type4",
+      "_enrichment_gaps": [
+        "rt_score"
+      ]
+    },
+    {
+      "id": "tv_206828",
+      "title": "DTF St. Louis",
+      "digital_date": "2026-03-04",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "A love triangle among three adults experiencing middle-age malaise leads to one of them ending up dead.",
+      "genres": [
+        "Crime",
+        "Drama"
+      ],
+      "runtime": null,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "HBO Max",
+          "HBO Max Amazon Channel",
+          "Spectrum On Demand"
+        ]
+      },
+      "links": {
+        "wikipedia": null,
+        "trailer": null,
+        "rt": null
+      },
+      "watch_links": {},
+      "_enrichment_status": "pending",
+      "_discovered_at": "2026-03-04T09:38:23.925481",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "content_type": "limited_series",
+      "episode_count": 7,
+      "networks": [
+        "HBO"
+      ],
+      "poster": "https://image.tmdb.org/t/p/w500/xHfafw9UmomDc7jO25s9MpiL4Zs.jpg",
+      "studio": "Escape Artists",
+      "budget": 0,
+      "country": "US",
+      "original_language": "en",
+      "original_title": "DTF St. Louis",
+      "crew": {
+        "director": "Steven Conrad",
+        "cast": [
+          "Jason Bateman",
+          "David Harbour",
+          "Linda Cardellini",
+          "Richard Jenkins",
+          "Joy Sunday"
+        ]
+      },
+      "_discovery_source": "provider_availability_check"
+    },
     {
       "id": "1043766",
       "title": "A Little Prayer",
@@ -26156,10 +26534,10 @@
   "featured": [
     "1608619"
   ],
-  "latest_playlist_url": "https://www.youtube.com/playlist?list=PLFCewXXu8_tE36KraMn1MYyHN-U1j3X2r",
+  "latest_playlist_url": "https://www.youtube.com/playlist?list=PLFCewXXu8_tGUqaQWvy0b9bNb5qFLuaen",
   "_metadata": {
-    "last_discovery_write": "2026-03-03T10:33:51.651716",
-    "discovery_count": 411,
+    "last_discovery_write": "2026-03-04T10:25:35.388259",
+    "discovery_count": 418,
     "schema_version": "2.0"
   }
 }

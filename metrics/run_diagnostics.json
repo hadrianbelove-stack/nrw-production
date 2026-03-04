@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-03-03T10:36:11.286981",
-  "duration_seconds": 3412.927565,
+  "timestamp": "2026-03-04T10:28:10.837145",
+  "duration_seconds": 2999.943419,
   "overall_success": false,
   "failure_count": 1,
   "warning_count": 0,
@@ -8,37 +8,37 @@
     {
       "name": "Intake new premieres from TMDB",
       "success": true,
-      "duration_seconds": 12.104685,
+      "duration_seconds": 10.933014,
       "error": null,
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-03-01 to 2026-03-03 (incremental mode, 16 intaked)\n\u2705 Movie intake complete: 16 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-02-01 to 2026-03-03\n   \ud83d\udccb Europe on the Edge with Katya Adler (3 "
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-03-02 to 2026-03-04 (incremental mode, 19 intaked)\n\u2705 Movie intake complete: 19 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-02-02 to 2026-03-04\n   \ud83d\udccb Hostage (1 eps)\n   \ud83d\udccb Artilheiros (10 ep"
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 3264.931791,
+      "duration_seconds": 2833.824675,
       "error": null,
-      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 14336 total movies\n\ud83d\udd0d Raw tracking filter: 12867 movies\n\ud83d\udd0d Assigned tracking_movies list: 12867\n\ud83d\udd0d Found 12867 movies in tracking status\n  Priority queue (last 180 days): 1035 movies\n  Older movies: 11832 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 12867 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/12867 (0.8%) | 0 found | 0m elapsed | ~52m remaining\n  \ud83d\udcbe Progress saved (b"
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 14363 total movies\n\ud83d\udd0d Raw tracking filter: 12883 movies\n\ud83d\udd0d Assigned tracking_movies list: 12883\n\ud83d\udd0d Found 12883 movies in tracking status\n  Priority queue (last 180 days): 957 movies\n  Older movies: 11926 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 12883 movies for digital availability...\n\n  \u2713 DTF St. Louis now on HBO Max!\n   \u2705 Added DTF St. Louis to site immediately (discovery-driv"
     },
     {
       "name": "Resolve pre-order movie dates",
       "success": true,
-      "duration_seconds": 0.316423,
+      "duration_seconds": 0.331955,
       "error": null,
       "output_preview": "\n\ud83d\udcc5 Resolving pre-order movie dates...\n\n\ud83d\udcc5 Resolving pre-order dates...\n  No pre-order movies to resolve\n\u2705 Pre-order resolution complete: 0 resolved\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Enrich newly available movies with metadata",
       "success": true,
-      "duration_seconds": 135.135493,
+      "duration_seconds": 154.397631,
       "error": null,
-      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 10 movies to enrich\n  \u2717 Could not fetch details for Toros Neza\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n  \u26a1 Videoheaven (10.4s) - Wiki:\u2713 Trailer:\u2713 RT:\u2713 Links:\u2713 Date:\u2713 | 5 succ"
+      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 7 movies to enrich\n  \u2717 Could not fetch details for DTF St. Louis\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n[YouTubeTrailerScraper] Initializing browser via shared manager...\n  "
     },
     {
       "name": "Host trailers for newly enriched movies",
       "success": false,
-      "duration_seconds": 0.323296,
+      "duration_seconds": 0.337687,
       "error": null,
-      "output_preview": "=== Trailer Pipeline: full ===\n\n--- Step 1: Host new trailers ---\nMovies to host: 73\nConnecting to B2...\nERROR: /home/runner/work/nrw-production/nrw-production/.env not found\n"
+      "output_preview": "=== Trailer Pipeline: full ===\n\n--- Step 1: Host new trailers ---\nMovies to host: 79\nConnecting to B2...\nERROR: /home/runner/work/nrw-production/nrw-production/.env not found\n"
     }
   ],
   "health_issues": [],
@@ -52,19 +52,19 @@
       "severity": "error",
       "message": "Phase failed with exit code 1",
       "context": null,
-      "stdout_preview": "=== Trailer Pipeline: full ===\n\n--- Step 1: Host new trailers ---\nMovies to host: 73\nConnecting to B2...\nERROR: /home/runner/work/nrw-production/nrw-production/.env not found"
+      "stdout_preview": "=== Trailer Pipeline: full ===\n\n--- Step 1: Host new trailers ---\nMovies to host: 79\nConnecting to B2...\nERROR: /home/runner/work/nrw-production/nrw-production/.env not found"
     }
   ],
   "warnings": [],
   "data_quality": {
-    "total": 14336,
-    "tracking": 12857,
-    "available": 1477,
-    "data_movies": 423,
-    "movies_with_links": 363,
-    "movies_with_rt": 353,
-    "movies_with_wikipedia": 201,
-    "movies_with_trailers": 401
+    "total": 14363,
+    "tracking": 12876,
+    "available": 1485,
+    "data_movies": 430,
+    "movies_with_links": 367,
+    "movies_with_rt": 356,
+    "movies_with_wikipedia": 205,
+    "movies_with_trailers": 407
   },
   "enrichment_metrics": {
     "timestamp": "2025-12-29T15:42:45.008551",

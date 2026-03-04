@@ -78305,14 +78305,24 @@
     },
     "1317159": {
       "title": "Way Home",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-04",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-03-04",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
       "intake_pass": "backfill",
-      "has_providers": false,
+      "has_providers": true,
       "year": 2024,
-      "premiere_date": "2024-11-28"
+      "premiere_date": "2024-11-28",
+      "enriched": false,
+      "enrichment_date": null
     },
     "1314637": {
       "title": "Weightless",
@@ -94560,14 +94570,22 @@
     },
     "1503957": {
       "title": "The Mother's Eye",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-04",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-03-04",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Troma NOW"
+        ]
+      },
       "intake_pass": "backfill",
-      "has_providers": false,
+      "has_providers": true,
       "year": 2025,
-      "premiere_date": "2025-07-04"
+      "premiere_date": "2025-07-04",
+      "enriched": false,
+      "enrichment_date": null
     },
     "1503951": {
       "title": "The Idaho College Killer",
@@ -100277,14 +100295,22 @@
     },
     "1541273": {
       "title": "Amityville La Llorona",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-04",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-03-04",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Troma NOW"
+        ]
+      },
       "intake_pass": "backfill",
-      "has_providers": false,
+      "has_providers": true,
       "year": 2025,
-      "premiere_date": "2025-09-01"
+      "premiere_date": "2025-09-01",
+      "enriched": false,
+      "enrichment_date": null
     },
     "1541117": {
       "title": "Hallervorden - Didi gegen den Rest der Welt",
@@ -101912,13 +101938,21 @@
     "883126": {
       "title": "I'm Not Everything I Want to Be",
       "year": 2024,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-03-04",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Metrograph"
+        ]
+      },
       "intake_pass": "C",
       "festival": "Berlin/Berlinale",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1233080": {
       "title": "What Did You Dream Last Night, Parajanov?",
@@ -104482,13 +104516,21 @@
     "1320482": {
       "title": "From Darkness to Light",
       "year": 2024,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-03-04",
+      "providers": {
+        "rent": [
+          "Eventive"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "Venice",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1320423": {
       "title": "My Birthday",
@@ -171341,9 +171383,9 @@
       "title": "DTF St. Louis",
       "content_type": "limited_series",
       "tmdb_id": 206828,
-      "status": "tracking",
+      "status": "available",
       "first_air_date": "2026-03-01",
-      "digital_date": "2026-03-01",
+      "digital_date": "2026-03-04",
       "episode_count": 7,
       "runtime": null,
       "poster": "https://image.tmdb.org/t/p/w500/xHfafw9UmomDc7jO25s9MpiL4Zs.jpg",
@@ -171354,15 +171396,21 @@
       ],
       "original_language": "en",
       "providers": {
-        "streaming": [],
         "rent": [],
-        "buy": []
+        "buy": [],
+        "streaming": [
+          "HBO Max",
+          "HBO Max Amazon Channel",
+          "Spectrum On Demand"
+        ]
       },
       "intaked_at": "2026-03-01T09:27:52.099445",
       "networks": [
         "HBO"
       ],
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "tv_315397": {
       "title": "\u5c11\u592b\u4eba\u6765\u81ea\u4e1c\u5317",
@@ -172327,7 +172375,402 @@
       "intaked_at": "2026-03-03T09:39:29.924955",
       "networks": [],
       "has_providers": false
+    },
+    "1629382": {
+      "title": "Street Flow 3",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-04",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A",
+      "has_providers": false
+    },
+    "1645755": {
+      "title": "CityWalk: The Musical",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-04",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A",
+      "has_providers": false
+    },
+    "1637862": {
+      "title": "My Dead Summer",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-04",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A",
+      "has_providers": false
+    },
+    "1644586": {
+      "title": "That March",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-04",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1640772": {
+      "title": "Tethered",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-04",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1635306": {
+      "title": "Vastavirta-documentary",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-04",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1622857": {
+      "title": "P\u0101rcilv\u0113ks",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-04",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1619668": {
+      "title": "Rural",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-04",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1616936": {
+      "title": "AURORA: What Happened to the Earth? Live From Mexico City",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-04",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1606729": {
+      "title": "Day by Day",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-04",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1595531": {
+      "title": "Othello",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-04",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1404346": {
+      "title": "Sisa",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-04",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1365181": {
+      "title": "Country Queer",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-04",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1306820": {
+      "title": "Mad Dance Office",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-04",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1266791": {
+      "title": "Alter Ego",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-04",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1159831": {
+      "title": "The Bride!",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-04",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1012591": {
+      "title": "Nino in Paradise",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-04",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1646005": {
+      "title": "2026\u5e74\u4e2d\u592e\u5e7f\u64ad\u7535\u89c6\u603b\u53f0\u5143\u5bb5\u665a\u4f1a",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-04",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "46908": {
+      "title": "Dead Mountaineer's Hotel",
+      "year": 2026,
+      "status": "available",
+      "first_seen": "2026-03-04",
+      "digital_date": "2026-03-04",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Cultpix",
+          "Klassiki"
+        ]
+      },
+      "intake_pass": "C",
+      "festival": "Berlin/Berlinale",
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
+    },
+    "tv_314339": {
+      "title": "Hostage",
+      "content_type": "limited_series",
+      "tmdb_id": 314339,
+      "status": "tracking",
+      "first_air_date": "2026-03-04",
+      "digital_date": "2026-03-04",
+      "episode_count": 1,
+      "runtime": 58,
+      "poster": null,
+      "synopsis": "Documentary series.",
+      "genres": [
+        "Documentary"
+      ],
+      "original_language": "en",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-03-04T09:38:17.426021",
+      "networks": [
+        "BBC Two"
+      ],
+      "has_providers": false
+    },
+    "tv_315608": {
+      "title": "Artilheiros",
+      "content_type": "limited_series",
+      "tmdb_id": 315608,
+      "status": "tracking",
+      "first_air_date": "2026-03-02",
+      "digital_date": "2026-03-02",
+      "episode_count": 10,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/v3x22yS6qXVbEHKUMuBV9d6TU34.jpg",
+      "synopsis": "",
+      "genres": [
+        "Documentary"
+      ],
+      "original_language": "pt",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-03-04T09:38:17.667251",
+      "networks": [
+        "SporTV"
+      ],
+      "has_providers": false
+    },
+    "tv_315633": {
+      "title": "\u7eb5\u5979\u5165\u9aa8",
+      "content_type": "limited_series",
+      "tmdb_id": 315633,
+      "status": "tracking",
+      "first_air_date": "2026-02-21",
+      "digital_date": "2026-02-21",
+      "episode_count": 1,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/qMwj5OpS0Dmlo5MssNdrWslj7Ih.jpg",
+      "synopsis": "",
+      "genres": [],
+      "original_language": "zh",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-03-04T09:38:18.270814",
+      "networks": [],
+      "has_providers": false
+    },
+    "tv_315626": {
+      "title": "\u70ba\u4f60\u9418\u60c5",
+      "content_type": "limited_series",
+      "tmdb_id": 315626,
+      "status": "tracking",
+      "first_air_date": "2026-02-20",
+      "digital_date": "2026-02-20",
+      "episode_count": 1,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/ogZchbxdFmMQRJoGIq5C8PEKPUX.jpg",
+      "synopsis": "",
+      "genres": [],
+      "original_language": "zh",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-03-04T09:38:18.497647",
+      "networks": [],
+      "has_providers": false
+    },
+    "tv_312722": {
+      "title": "Wild Boys: Strangers in Town",
+      "content_type": "limited_series",
+      "tmdb_id": 312722,
+      "status": "available",
+      "first_air_date": "2026-02-18",
+      "digital_date": "2026-02-18",
+      "episode_count": 2,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/37EbB6Ip8C1UkQd1grArnr4Xhzw.jpg",
+      "synopsis": "Chronicles the astonishing true story of two young brothers who emerged from the forests of British Columbia in the summer of 2003, claiming they had been raised entirely off the grid - without schools, doctors or any record of their existence. When a local mother takes them in hoping to help the brothers build a new life, a small-town obsession is ignited with journalists and authorities digging deeper and raising unsettling questions about how far people are willing to go to believe a story they want to be true.",
+      "genres": [
+        "Crime",
+        "Documentary"
+      ],
+      "original_language": "en",
+      "providers": {
+        "streaming": [
+          "Paramount Plus Premium",
+          "Paramount Plus Essential",
+          "Paramount Plus Apple TV Channel ",
+          "Paramount+ Amazon Channel"
+        ],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-03-04T09:38:19.109239",
+      "networks": [
+        "Paramount+"
+      ]
+    },
+    "tv_315628": {
+      "title": "\u7a7f\u6210\u5047\u5192\u5931\u5fc6\u5927\u4f6c\u5973\u53cb\u7684\u6076\u6bd2\u5973\u914d",
+      "content_type": "limited_series",
+      "tmdb_id": 315628,
+      "status": "tracking",
+      "first_air_date": "2026-02-17",
+      "digital_date": "2026-02-17",
+      "episode_count": 1,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/u3q0pGTr6SQG1byb1tEAWz9ynFU.jpg",
+      "synopsis": "",
+      "genres": [],
+      "original_language": "zh",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-03-04T09:38:19.714082",
+      "networks": [],
+      "has_providers": false
+    },
+    "tv_315592": {
+      "title": "\u041d\u0430 \u0417\u0430\u043a\u0430\u0442\u0435 \u042e\u043d\u043e\u0441\u0442\u0438",
+      "content_type": "limited_series",
+      "tmdb_id": 315592,
+      "status": "tracking",
+      "first_air_date": "2026-02-13",
+      "digital_date": "2026-02-13",
+      "episode_count": 3,
+      "runtime": null,
+      "poster": null,
+      "synopsis": "",
+      "genres": [
+        "Drama"
+      ],
+      "original_language": "ru",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-03-04T09:38:20.323460",
+      "networks": [],
+      "has_providers": false
+    },
+    "tv_313348": {
+      "title": "\u70bd\u7231\u5371\u5c40",
+      "content_type": "limited_series",
+      "tmdb_id": 313348,
+      "status": "tracking",
+      "first_air_date": "2026-02-06",
+      "digital_date": "2026-02-06",
+      "episode_count": 1,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/hmGBoAPddSZWclToOzWAeBqlTBu.jpg",
+      "synopsis": "",
+      "genres": [],
+      "original_language": "zh",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-03-04T09:38:21.316057",
+      "networks": [],
+      "has_providers": false
     }
   },
-  "last_update": "2026-03-03T09:39:24.161834"
+  "last_update": "2026-03-04T09:38:16.751337"
 }
