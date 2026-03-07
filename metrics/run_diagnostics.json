@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-03-06T10:28:52.243147",
-  "duration_seconds": 3168.407853,
+  "timestamp": "2026-03-07T10:07:38.927140",
+  "duration_seconds": 2453.359364,
   "overall_success": false,
   "failure_count": 1,
   "warning_count": 0,
@@ -8,37 +8,37 @@
     {
       "name": "Intake new premieres from TMDB",
       "success": true,
-      "duration_seconds": 14.600846,
+      "duration_seconds": 8.440655,
       "error": null,
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-03-04 to 2026-03-06 (incremental mode, 53 intaked)\n\u2705 Movie intake complete: 53 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-02-04 to 2026-03-06\n   \ud83d\udccb Friends Like These: The Murder of Skyla"
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-03-05 to 2026-03-07 (incremental mode, 37 intaked)\n\u2705 Movie intake complete: 37 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-02-05 to 2026-03-07\n   \ud83d\udccb \uc138\uc0c1\uc5d0 \uc5c6\ub294 \uc774\uc6c3 : \ubc40\ud30c\uc774\uc5b4 \ub0a8\uce5c\ub4e4 (1 eps)\n   \ud83d\udccb The O"
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 3060.803141,
+      "duration_seconds": 2137.371491,
       "error": null,
-      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 14481 total movies\n\ud83d\udd0d Raw tracking filter: 12984 movies\n\ud83d\udd0d Assigned tracking_movies list: 12984\n\ud83d\udd0d Found 12984 movies in tracking status\n  Priority queue (last 180 days): 960 movies\n  Older movies: 12024 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 12984 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/12984 (0.8%) | 0 found | 0m elapsed | ~51m remaining\n  \ud83d\udcbe Progress saved (ba"
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 14525 total movies\n\ud83d\udd0d Raw tracking filter: 13023 movies\n\ud83d\udd0d Assigned tracking_movies list: 13023\n\ud83d\udd0d Found 13023 movies in tracking status\n  Priority queue (last 180 days): 959 movies\n  Older movies: 12064 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 13023 movies for digital availability...\n\n  \u2713 Vladimir now on Netflix!\n   \u2705 Added Vladimir to site immediately (discovery-driven)\n  \u2713 A "
     },
     {
       "name": "Resolve pre-order movie dates",
       "success": true,
-      "duration_seconds": 0.31835,
+      "duration_seconds": 0.322813,
       "error": null,
       "output_preview": "\n\ud83d\udcc5 Resolving pre-order movie dates...\n\n\ud83d\udcc5 Resolving pre-order dates...\n  No pre-order movies to resolve\n\u2705 Pre-order resolution complete: 0 resolved\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Enrich newly available movies with metadata",
       "success": true,
-      "duration_seconds": 92.233117,
+      "duration_seconds": 306.763261,
       "error": null,
-      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 4 movies to enrich\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n  \u26a1 Bride of Frankenstein Awakens (28.6s) - Wiki:\u25cb Trailer:\u2713 RT:\u25cb Links:\u2713 Date:\u25cb | 2 success, 0 errors\n  \u2713 Bride of"
+      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 14 movies to enrich\n  \u2717 Could not fetch details for Vladimir\n  \u2717 Could not fetch details for A Friend, a Murderer\n  \u2717 Could not fetch details for Love Like a Bike\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[Playwri"
     },
     {
       "name": "Host trailers for newly enriched movies",
       "success": false,
-      "duration_seconds": 0.334775,
+      "duration_seconds": 0.342942,
       "error": null,
-      "output_preview": "=== Trailer Pipeline: full ===\n\n--- Step 1: Host new trailers ---\nMovies to host: 91\nConnecting to B2...\nERROR: /home/runner/work/nrw-production/nrw-production/.env not found\n"
+      "output_preview": "=== Trailer Pipeline: full ===\n\n--- Step 1: Host new trailers ---\nMovies to host: 102\nConnecting to B2...\nERROR: /home/runner/work/nrw-production/nrw-production/.env not found\n"
     }
   ],
   "health_issues": [],
@@ -52,19 +52,19 @@
       "severity": "error",
       "message": "Phase failed with exit code 1",
       "context": null,
-      "stdout_preview": "=== Trailer Pipeline: full ===\n\n--- Step 1: Host new trailers ---\nMovies to host: 91\nConnecting to B2...\nERROR: /home/runner/work/nrw-production/nrw-production/.env not found"
+      "stdout_preview": "=== Trailer Pipeline: full ===\n\n--- Step 1: Host new trailers ---\nMovies to host: 102\nConnecting to B2...\nERROR: /home/runner/work/nrw-production/nrw-production/.env not found"
     }
   ],
   "warnings": [],
   "data_quality": {
-    "total": 14481,
-    "tracking": 12980,
-    "available": 1499,
-    "data_movies": 443,
-    "movies_with_links": 372,
-    "movies_with_rt": 362,
-    "movies_with_wikipedia": 211,
-    "movies_with_trailers": 420
+    "total": 14525,
+    "tracking": 13009,
+    "available": 1514,
+    "data_movies": 457,
+    "movies_with_links": 376,
+    "movies_with_rt": 368,
+    "movies_with_wikipedia": 218,
+    "movies_with_trailers": 431
   },
   "enrichment_metrics": {
     "timestamp": "2025-12-29T15:42:45.008551",
