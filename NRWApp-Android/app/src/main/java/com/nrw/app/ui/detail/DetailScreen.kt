@@ -317,11 +317,13 @@ private fun MovieDetail(
                             }
                             movie.festivalInfo?.festivalName?.let { festivalName ->
                                 Text(
-                                    text = festivalName,
+                                    text = festivalName.uppercase(),
                                     color = Color.Black,
                                     fontSize = 11.sp,
                                     fontWeight = FontWeight.ExtraBold,
-                                    letterSpacing = 1.5.sp,
+                                    letterSpacing = 0.3.sp,
+                                    maxLines = 2,
+                                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                                     textAlign = androidx.compose.ui.text.style.TextAlign.Center,
                                     modifier = Modifier
                                         .fillMaxWidth()

@@ -622,8 +622,9 @@ const NRW = {
             const streamingBadge = getStreamingBadge(movie);
             const restorationBadge = movie.categories?.is_restoration
                 ? '<div class="restoration-badge">RESTORED</div>' : '';
+            const festivalName = movie.festival_info?.festival_name || 'FESTIVAL SCREENING';
             const festivalRibbon = movie.categories?.is_festival
-                ? '<div class="festival-ribbon">FESTIVAL SCREENING</div>' : '';
+                ? `<div class="festival-ribbon">${festivalName}</div>` : '';
 
             html += `
             <div class="movie-container${staffPickClass}">

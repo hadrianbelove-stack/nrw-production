@@ -303,7 +303,7 @@ const NRWMobile = {
                              loading="lazy">
                         ${streamingBadge}
                         ${movie.categories?.is_restoration ? '<span class="poster-badge badge-restoration">RESTORED</span>' : ''}
-                        ${movie.categories?.is_festival ? '<div class="festival-ribbon">FESTIVAL SCREENING</div>' : ''}
+                        ${movie.categories?.is_festival ? `<div class="festival-ribbon">${movie.festival_info?.festival_name || 'FESTIVAL SCREENING'}</div>` : ''}
                         ${isStaffPick ? '<span class="staff-badge">STAFF PICK</span>' : ''}
                     </div>
                 </div>

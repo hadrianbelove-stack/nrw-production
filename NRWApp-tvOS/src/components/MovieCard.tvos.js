@@ -252,11 +252,11 @@ const MovieCard = forwardRef(({
             </View>
           )}
 
-          {/* Festival ribbon - solid gold bar at bottom */}
+          {/* Festival ribbon - shows actual festival name */}
           {movie.categories?.is_festival && !movie.featured && (
             <View style={styles.festivalRibbon}>
-              <Text style={styles.festivalRibbonText} numberOfLines={1}>
-                FESTIVAL SCREENING
+              <Text style={styles.festivalRibbonText} numberOfLines={2}>
+                {movie.festival_info?.festival_name || 'FESTIVAL SCREENING'}
               </Text>
             </View>
           )}
@@ -364,6 +364,7 @@ const styles = StyleSheet.create({
     right: 0,
     backgroundColor: Colors.festivalGold,
     paddingVertical: Spacing.tvos.xs,
+    paddingHorizontal: 10,
     borderBottomLeftRadius: 12,
     borderBottomRightRadius: 12,
     alignItems: 'center',
@@ -372,7 +373,9 @@ const styles = StyleSheet.create({
     color: Colors.festivalGoldText,
     fontSize: Typography.tvos.caption,
     fontWeight: '900',
-    letterSpacing: 0.5,
+    letterSpacing: 0.3,
+    textAlign: 'center',
+    textTransform: 'uppercase',
   },
   focusBorder: {
     ...StyleSheet.absoluteFillObject,
