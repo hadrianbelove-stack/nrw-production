@@ -1,7 +1,813 @@
 {
-  "generated_at": "2026-03-07T10:07:37.958187",
-  "count": 457,
+  "generated_at": "2026-03-08T10:27:47.065168",
+  "count": 472,
   "movies": [
+    {
+      "id": "1631485",
+      "title": "Strangers in the Park",
+      "digital_date": "2026-03-06",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "A former communist militant and a \"live and let live\" man form an unlikely friendship on a park bench, sharing their life stories with humor and heart.",
+      "genres": [
+        "Comedy",
+        "Drama"
+      ],
+      "runtime": 115,
+      "year": 2026,
+      "rt_score": "0%",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
+      },
+      "links": {
+        "trailer": "https://www.youtube.com/watch?v=ynqnzu0ChEk",
+        "rt": "https://www.rottentomatoes.com/m/strangers_in_the_park"
+      },
+      "watch_links": {
+        "streaming": {
+          "service": "Netflix",
+          "link": "https://www.netflix.com/title/81957702"
+        }
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-08T10:13:58.739069",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/3hF38t5vPgmXhY7fBOoY4bFH7nl.jpg",
+      "studio": "100 Bares",
+      "budget": 0,
+      "country": "Argentina",
+      "original_language": "es",
+      "original_title": "Parque Lezama",
+      "crew": {
+        "director": "Juan Jos\u00e9 Campanella",
+        "cast": [
+          "Eduardo Blanco",
+          "Luis Brandoni"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "tmdb_type4"
+    },
+    {
+      "id": "1637046",
+      "title": "Supercars - Road to Glory",
+      "digital_date": "2026-03-08",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Go inside the pressure cooker of Australia's Supercars Final. Chaos erupts, hearts broken and dreams are realised on the streets of Adelaide.",
+      "genres": [
+        "Drama",
+        "Documentary"
+      ],
+      "runtime": 79,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Amazon Prime Video",
+          "Amazon Prime Video with Ads"
+        ]
+      },
+      "links": {
+        "trailer": "https://www.youtube.com/watch?v=AQgcsyFL9UY"
+      },
+      "watch_links": {
+        "streaming": {
+          "service": "Amazon",
+          "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.dfd0668e-0cfc-49d2-bc95-56d77bf6dfb4"
+        }
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-08T10:13:57.072592",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/n846J15sZ1CgwPrQzVnjnyNETs7.jpg",
+      "studio": "Supercars Media",
+      "budget": 0,
+      "country": "Australia",
+      "original_language": "en",
+      "original_title": "Supercars - Road to Glory",
+      "crew": {
+        "director": "Andrew Janson",
+        "cast": [
+          "Broc Feeney",
+          "Chaz Mostert"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection",
+      "_enrichment_gaps": [
+        "rt_score"
+      ]
+    },
+    {
+      "id": "1265609",
+      "title": "War Machine",
+      "digital_date": "2026-03-06",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "On one last grueling mission during Army Ranger training, a combat engineer must lead his unit in a fight against a giant otherworldly killing machine.",
+      "genres": [
+        "Action",
+        "Science Fiction",
+        "Thriller"
+      ],
+      "runtime": 110,
+      "year": 2026,
+      "rt_score": "70%",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/War_Machine_(2026_film)",
+        "trailer": "https://www.youtube.com/watch?v=AFuE1LRxm80",
+        "rt": "https://www.rottentomatoes.com/m/war_machine"
+      },
+      "watch_links": {
+        "streaming": [
+          {
+            "service": "Netflix",
+            "link": null
+          },
+          {
+            "service": "Netflix",
+            "link": null
+          }
+        ]
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-08T10:13:28.198724",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/rFhKkXhk7ClU03jQ5rHIApJDwev.jpg",
+      "studio": "Lionsgate",
+      "budget": 0,
+      "country": "Australia",
+      "original_language": "en",
+      "original_title": "War Machine",
+      "crew": {
+        "director": "Patrick Hughes",
+        "cast": [
+          "Alan Ritchson",
+          "Dennis Quaid"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "tmdb_type4"
+    },
+    {
+      "id": "1508564",
+      "title": "With Love",
+      "digital_date": "2026-03-08",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Sathya reluctantly agrees to a blind date arranged by his sister and meets Monisha. They discover they attended the same school years ago. Bonding over shared memories and old crushes, they reconnect with their past and grow closer.",
+      "genres": [
+        "Romance",
+        "Comedy"
+      ],
+      "runtime": 141,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/With_Love_(2026_film)",
+        "trailer": "https://www.youtube.com/watch?v=R3n0R_q6m60"
+      },
+      "watch_links": {
+        "streaming": {
+          "service": "Netflix",
+          "link": "https://www.netflix.com/title/82629230"
+        }
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-08T10:12:35.475815",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/84rCbRiY7cXwDO8lAXp5MIxuok5.jpg",
+      "studio": "MRP Entertainment",
+      "budget": 0,
+      "country": "India",
+      "original_language": "ta",
+      "original_title": "\u0bb5\u0bbf\u0ba4\u0bcd \u0bb2\u0bb5\u0bcd",
+      "crew": {
+        "director": "Madhan",
+        "cast": [
+          "Abishan Jeevinth",
+          "Anaswara Rajan"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection",
+      "_enrichment_gaps": [
+        "rt_score"
+      ]
+    },
+    {
+      "id": "696393",
+      "title": "Cold Storage",
+      "digital_date": "2026-03-06",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "When a mutating, highly contagious fungus escapes a sealed facility, two employees \u2013 joined by a grizzled bioterror operative \u2013 must survive the wildest night shift ever to save humanity from extinction.",
+      "genres": [
+        "Comedy",
+        "Horror",
+        "Science Fiction"
+      ],
+      "runtime": 99,
+      "year": 2026,
+      "rt_score": "33%",
+      "providers": {
+        "rent": [
+          "Fandango At Home"
+        ],
+        "buy": [
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Cold_Storage_(film)",
+        "trailer": "https://www.youtube.com/watch?v=kea7gnh1uYA",
+        "rt": "https://www.rottentomatoes.com/m/cold_storage"
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.e4d7b206-4188-494b-ade2-8fcbfde6cf20&tag=nrw04-20"
+          }
+        ]
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-08T10:11:42.738439",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/cspe06anYq41h44nE0dLSGkTucC.jpg",
+      "studio": "Pariah",
+      "budget": 10000000,
+      "country": "United Kingdom",
+      "original_language": "en",
+      "original_title": "Cold Storage",
+      "crew": {
+        "director": "Jonny Campbell",
+        "cast": [
+          "Joe Keery",
+          "Georgina Campbell"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "tmdb_type4"
+    },
+    {
+      "id": "1309083",
+      "title": "Dolly",
+      "digital_date": "2026-03-08",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Young Macy is abducted by a deranged, monstrous figure who wants to raise her as its child.",
+      "genres": [
+        "Horror"
+      ],
+      "runtime": 83,
+      "year": 2026,
+      "rt_score": "62%",
+      "providers": {
+        "rent": [],
+        "buy": [
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Dolly_(2025_film)",
+        "trailer": "https://www.youtube.com/watch?v=LALT2B-Ubpk",
+        "rt": "https://www.rottentomatoes.com/m/dolly"
+      },
+      "watch_links": {},
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-08T10:09:21.986377",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/sTPUg3XtdcKRAS5Vwsi1GYPFhNZ.jpg",
+      "studio": "Witchcraft Motion Picture Company",
+      "budget": 0,
+      "country": "United States of America",
+      "original_language": "en",
+      "original_title": "Dolly",
+      "crew": {
+        "director": "Rod Blackhurst",
+        "cast": [
+          "Fabianne Therese",
+          "Seann William Scott"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection",
+      "_enrichment_gaps": [
+        "watch_links"
+      ]
+    },
+    {
+      "id": "1198847",
+      "title": "Stray Bodies",
+      "digital_date": "2026-03-08",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Robin is pregnant but doesn't want to be a mother. Katerina and Gaia are single but want a child. Kiki suffers from an incurable disease and wants her life to end with dignity. The procedures they hope to get access to \u2013 abortion, IVF and euthanasia \u2013 are only available and legal in other countries. Therefore, they resort to so-called medical tourism.",
+      "genres": [
+        "Documentary"
+      ],
+      "runtime": 109,
+      "year": 2024,
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Film Movement Plus",
+          "Film Movement Plus Amazon Channel"
+        ]
+      },
+      "links": {
+        "trailer": "https://www.youtube.com/watch?v=MMwhHhvMhTM",
+        "rt": "https://www.rottentomatoes.com/m/stray_bodies"
+      },
+      "watch_links": {
+        "streaming": [
+          {
+            "service": "Film Movement Plus",
+            "link": null
+          },
+          {
+            "service": "Amazon",
+            "link": null
+          }
+        ]
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-08T10:06:35.575233",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/tmeenZDQlGlSLaFZZ36XyePiTR1.jpg",
+      "studio": "Jungle Films",
+      "budget": 0,
+      "country": "Bulgaria",
+      "original_language": "el",
+      "original_title": "\u0391\u03b4\u03ad\u03c3\u03c0\u03bf\u03c4\u03b1 \u039a\u03bf\u03c1\u03bc\u03b9\u03ac",
+      "crew": {
+        "director": "Elina Psykou",
+        "cast": []
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection"
+    },
+    {
+      "id": "1606958",
+      "title": "Theertharoopa Thandeyavarige",
+      "digital_date": "2026-03-08",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "A popular travel vlogger, Prithvi, uncovers a dark secret about his own family. His search for the truth leads him to his estranged father, setting him on a journey of self-discovery.  Does Prithvi Find Closure? Does Destination Meet Destiny?",
+      "genres": [],
+      "runtime": 130,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Theertharoopa_Thandeyavarige",
+        "trailer": "https://www.youtube.com/watch?v=7FGMhZeic4o"
+      },
+      "watch_links": {},
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-08T10:01:08.412327",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/mfwcUim9bRJDsGRRXotzvj43xFD.jpg",
+      "studio": null,
+      "budget": 0,
+      "country": null,
+      "original_language": "kn",
+      "original_title": "Theertharoopa Thandeyavarige",
+      "crew": {
+        "director": "Ramenahalli Jagannatha",
+        "cast": []
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection",
+      "_enrichment_gaps": [
+        "watch_links",
+        "rt_score"
+      ]
+    },
+    {
+      "id": "931942",
+      "title": "BLKNWS: Terms & Conditions",
+      "digital_date": "2026-03-06",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Adapted from Kahlil Joseph\u2019s renowned video art installation, BLKNWS: Terms &  Conditions is a distinctive cinematic experience that mirrors the sonic textures  of a record album, weaving fiction and history in an immersive journey where the  fictionalized figures of W. E. B Du Bois and Marcus Garvey join artists, musicians,  Joseph\u2019s family, and even Twitter chats, in a vision for black consciousness.",
+      "genres": [
+        "Documentary"
+      ],
+      "runtime": 103,
+      "year": 2025,
+      "rt_score": "100%",
+      "providers": {
+        "rent": [
+          "Fandango At Home"
+        ],
+        "buy": [
+          "Google Play Movies",
+          "YouTube",
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/BLKNWS:_Terms_%26_Conditions",
+        "trailer": "https://www.youtube.com/watch?v=fVMJ0WqtQcc",
+        "rt": "https://www.rottentomatoes.com/m/blknws_terms_and_conditions_2025"
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.6843e3d7-dc88-4491-9721-9f346115153b&tag=nrw04-20"
+          }
+        ]
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-08T09:51:40.280395",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/4DTTBR1TdT3gfthXmFtwl3tViZZ.jpg",
+      "studio": "Rich Spirit",
+      "budget": 6000000,
+      "country": "United States of America",
+      "original_language": "en",
+      "original_title": "BLKNWS: Terms & Conditions",
+      "crew": {
+        "director": "Kahlil Joseph",
+        "cast": [
+          "Shaunette Ren\u00e9e Wilson",
+          "Kaneza Schaal"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "tmdb_type4"
+    },
+    {
+      "id": "1306439",
+      "title": "Jellyfish",
+      "digital_date": "2026-03-08",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Henry is a slacker floating through young adulthood earning a measly income from selling his body as a human punching bag. Meanwhile he wonders if there is more to his stagnating existence than the punches life throws at him.",
+      "genres": [
+        "Drama",
+        "Comedy"
+      ],
+      "runtime": 109,
+      "year": 2025,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Jellyfish_(disambiguation)",
+        "trailer": "https://www.youtube.com/watch?v=_817WSEdIR0"
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Apple TV",
+            "link": "https://tv.apple.com/us/movie/jellyfish/umc.cmc.5m1iu2wyp6f167qoege0hkeoe?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1441455120"
+          }
+        ]
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-08T09:38:58.874340",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/v380dpQhh8GR9SMfLn8dfmlMOkd.jpg",
+      "studio": "Notepad",
+      "budget": 8000,
+      "country": "Australia",
+      "original_language": "en",
+      "original_title": "Jellyfish",
+      "crew": {
+        "director": "Giles Chan",
+        "cast": [
+          "Aidan Rynne",
+          "Brendan Schneider"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection",
+      "_enrichment_gaps": [
+        "rt_score"
+      ]
+    },
+    {
+      "id": "1513538",
+      "title": "The Kim Kardashian Diamond Heist",
+      "digital_date": "2026-03-08",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "A look back at the robbery that targeted Kim Kardashian, during which she was gagged and robbed of $9 million worth of jewelry.",
+      "genres": [
+        "Documentary",
+        "Crime"
+      ],
+      "runtime": 45,
+      "year": 2025,
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Britbox Apple TV Channel ",
+          "BritBox"
+        ]
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Kim_Kardashian?wprov=srpw1_0",
+        "trailer": "https://www.youtube.com/watch?v=ly3JrzS4TF8"
+      },
+      "watch_links": {
+        "streaming": {
+          "service": "Apple TV",
+          "link": "https://tv.apple.com"
+        }
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-08T09:35:21.846697",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/eg8M782cw6Sfj8OLSWo0kgYMA6e.jpg",
+      "studio": "Firecracker Films",
+      "budget": 0,
+      "country": "United Kingdom",
+      "original_language": "en",
+      "original_title": "The Kim Kardashian Diamond Heist",
+      "crew": {
+        "director": "Unknown",
+        "cast": [
+          "Kim Kardashian"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection",
+      "_enrichment_gaps": [
+        "rt_score"
+      ]
+    },
+    {
+      "id": "1437198",
+      "title": "Tafiti: Across the Desert",
+      "digital_date": "2026-03-08",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Tafiti, a young meerkat, initially rejects friendship with Bristles, a bush pig. When his grandpa is bitten by a snake, Tafiti sets off to find the flower for the cure. Bristles wants to prove that adventures are always better with friends.",
+      "genres": [
+        "Animation",
+        "Adventure",
+        "Family"
+      ],
+      "runtime": 82,
+      "year": 2025,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "Fandango At Home",
+          "Plex"
+        ],
+        "buy": [
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
+      "links": {
+        "trailer": "https://www.youtube.com/watch?v=gka7s0StdnY"
+      },
+      "watch_links": {},
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-08T09:31:48.077273",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/ohB1fdL0p9nHllCsQddgOTnDhPD.jpg",
+      "studio": "Little Dream Entertainment",
+      "budget": 0,
+      "country": "Germany",
+      "original_language": "de",
+      "original_title": "Tafiti - Ab durch die W\u00fcste",
+      "crew": {
+        "director": "Nina Wels",
+        "cast": [
+          "Cosima Henman",
+          "Steve Hudson"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection",
+      "_enrichment_gaps": [
+        "watch_links",
+        "rt_score"
+      ]
+    },
+    {
+      "id": "tv_308275",
+      "title": "If Only You Weren't the One",
+      "digital_date": "2026-03-08",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "After a painful breakup at thirty, a woman\u2019s life is thrown into turmoil when she reunites with a former illicit lover at her workplace, reigniting unresolved desire and drawing her back into a secret relationship where love and temptation blur.",
+      "genres": [
+        "Drama"
+      ],
+      "runtime": null,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Rakuten Viki"
+        ]
+      },
+      "links": {
+        "wikipedia": null,
+        "trailer": null,
+        "rt": null
+      },
+      "watch_links": {},
+      "_enrichment_status": "pending",
+      "_discovered_at": "2026-03-08T09:28:44.718500",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "content_type": "limited_series",
+      "episode_count": 5,
+      "networks": [
+        "MBS"
+      ],
+      "poster": "https://image.tmdb.org/t/p/w500/kqklAcwga8fvyc0pMVxwBw33tZI.jpg",
+      "studio": "Horipro",
+      "budget": 0,
+      "country": "JP",
+      "original_language": "ja",
+      "original_title": "\u672c\u547d\u3058\u3083\u306a\u304d\u3083\u3088\u304b\u3063\u305f\u306e\u306b",
+      "crew": {
+        "director": "Unknown",
+        "cast": [
+          "Higuchi Hina",
+          "Masashi Ikeda",
+          "Naoya Kusakawa",
+          "Yuna Mito",
+          "Mikoto Hibi"
+        ]
+      },
+      "_discovery_source": "provider_availability_check"
+    },
+    {
+      "id": "tv_281016",
+      "title": "Boyfriend on Demand",
+      "digital_date": "2026-03-08",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Seo Mi-rae is worn out by work. Love? It's the last thing on her mind. But a virtual dating service sparks feelings \u2014 and maybe a real shot at romance.",
+      "genres": [
+        "Sci-Fi & Fantasy",
+        "Comedy",
+        "Drama"
+      ],
+      "runtime": null,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
+      },
+      "links": {
+        "wikipedia": null,
+        "trailer": null,
+        "rt": null
+      },
+      "watch_links": {},
+      "_enrichment_status": "pending",
+      "_discovered_at": "2026-03-08T09:27:46.319276",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "content_type": "limited_series",
+      "episode_count": 10,
+      "networks": [
+        "Netflix"
+      ],
+      "poster": "https://image.tmdb.org/t/p/w500/8vBWQjdCnK7xSGuNbK1gBK1iIQL.jpg",
+      "studio": "Whynot Media",
+      "budget": 0,
+      "country": "KR",
+      "original_language": "ko",
+      "original_title": "\uc6d4\uac04\ub0a8\uce5c",
+      "crew": {
+        "director": "Namgung Do-young",
+        "cast": [
+          "JISOO",
+          "Seo In-guk",
+          "Gong Min-jeung",
+          "Cho Han-cheul"
+        ]
+      },
+      "_discovery_source": "provider_availability_check"
+    },
+    {
+      "id": "tv_313338",
+      "title": "The TikTok Killer",
+      "digital_date": "2026-03-08",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "When Esther vanishes without a trace, her family is able to piece together her last movements thanks to Jos\u00e9 Jurado Montilla, a traveler who journeys across Spain sharing heartfelt videos of his trips on his TikTok account. But \u201cDynamite\u201d Montilla \u2013 the last person to have been with Esther \u2013 hides a dark past",
+      "genres": [
+        "Documentary",
+        "Crime"
+      ],
+      "runtime": null,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
+      },
+      "links": {
+        "wikipedia": null,
+        "trailer": null,
+        "rt": null
+      },
+      "watch_links": {},
+      "_enrichment_status": "pending",
+      "_discovered_at": "2026-03-08T09:27:45.734696",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "content_type": "limited_series",
+      "episode_count": 2,
+      "networks": [
+        "Netflix"
+      ],
+      "poster": "https://image.tmdb.org/t/p/w500/giINp6zBiLd78VVlSHM1AUaDKf3.jpg",
+      "studio": "iZen Documentaries",
+      "budget": 0,
+      "country": "ES",
+      "original_language": "es",
+      "original_title": "El asesino de TikTok",
+      "crew": {
+        "director": "Unknown",
+        "cast": []
+      },
+      "_discovery_source": "provider_availability_check"
+    },
     {
       "id": "1440641",
       "title": "The Jolly Monkey",
@@ -28024,10 +28830,10 @@
   "featured": [
     "1608619"
   ],
-  "latest_playlist_url": "https://www.youtube.com/playlist?list=PLFCewXXu8_tHdC-wtv3PSSvizVDyoRG1J",
+  "latest_playlist_url": "https://www.youtube.com/playlist?list=PLFCewXXu8_tHBQtb6PI6ciTrSB38kJlNb",
   "_metadata": {
-    "last_discovery_write": "2026-03-07T10:02:31.119315",
-    "discovery_count": 445,
+    "last_discovery_write": "2026-03-08T10:13:58.739077",
+    "discovery_count": 460,
     "schema_version": "2.0"
   }
 }
