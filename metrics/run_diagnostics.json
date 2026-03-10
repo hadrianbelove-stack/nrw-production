@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-03-09T10:25:26.987968",
-  "duration_seconds": 2268.736614,
+  "timestamp": "2026-03-10T10:20:09.818722",
+  "duration_seconds": 2339.900388,
   "overall_success": false,
   "failure_count": 1,
   "warning_count": 0,
@@ -8,37 +8,37 @@
     {
       "name": "Intake new premieres from TMDB",
       "success": true,
-      "duration_seconds": 9.558122,
+      "duration_seconds": 7.972089,
       "error": null,
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-03-07 to 2026-03-09 (incremental mode, 76 intaked)\n\u2705 Movie intake complete: 76 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-02-07 to 2026-03-09\n   \ud83d\udccb Maison de retraite, la s\u00e9rie (6 eps)\n  "
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-03-08 to 2026-03-10 (incremental mode, 108 intaked)\n\u2705 Movie intake complete: 108 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-02-08 to 2026-03-10\n   \ud83d\udccb \ub0b4\uac00 \ub108\ub97c \uc6d0\ud574\uc11c (1 eps)\n\n\ud83d\udcca Miniseries intak"
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 2103.641977,
+      "duration_seconds": 2104.500674,
       "error": null,
-      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 14639 total movies\n\ud83d\udd0d Raw tracking filter: 13107 movies\n\ud83d\udd0d Assigned tracking_movies list: 13107\n\ud83d\udd0d Found 13107 movies in tracking status\n  Priority queue (last 180 days): 954 movies\n  Older movies: 12153 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 13107 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/13107 (0.8%) | 0 found | 0m elapsed | ~33m remaining\n  \ud83d\udcbe Progress saved (ba"
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 14748 total movies\n\ud83d\udd0d Raw tracking filter: 13211 movies\n\ud83d\udd0d Assigned tracking_movies list: 13211\n\ud83d\udd0d Found 13211 movies in tracking status\n  Priority queue (last 180 days): 942 movies\n  Older movies: 12269 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 13211 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/13211 (0.8%) | 0 found | 0m elapsed | ~33m remaining\n  \ud83d\udcbe Progress saved (ba"
     },
     {
       "name": "Resolve pre-order movie dates",
       "success": true,
-      "duration_seconds": 0.32356,
+      "duration_seconds": 0.344749,
       "error": null,
       "output_preview": "\n\ud83d\udcc5 Resolving pre-order movie dates...\n\n\ud83d\udcc5 Resolving pre-order dates...\n  No pre-order movies to resolve\n\u2705 Pre-order resolution complete: 0 resolved\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Enrich newly available movies with metadata",
       "success": true,
-      "duration_seconds": 154.759229,
+      "duration_seconds": 226.606908,
       "error": null,
-      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 5 movies to enrich\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n  \u26a1 Seven Citrus Aurantium (22.0s) - Wiki:\u25cb Trailer:\u2713 RT:\u25cb Links:\u2713 Date:\u25cb | 2 success, 0 errors\n  \u2713 Seven Citrus Au"
+      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 10 movies to enrich\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n  \u26a1 Big Star: The Nick Skelton Story (25.0s) - Wiki:\u25cb Trailer:\u2713 RT:\u25cb Links:\u2713 Date:\u25cb | 2 success, 0 errors\n  \u2713 Big "
     },
     {
       "name": "Host trailers for newly enriched movies",
       "success": false,
-      "duration_seconds": 0.335524,
+      "duration_seconds": 0.354421,
       "error": null,
-      "output_preview": "=== Trailer Pipeline: full ===\n\n--- Step 1: Host new trailers ---\nMovies to host: 118\nConnecting to B2...\nERROR: /home/runner/work/nrw-production/nrw-production/.env not found\n"
+      "output_preview": "=== Trailer Pipeline: full ===\n\n--- Step 1: Host new trailers ---\nMovies to host: 127\nConnecting to B2...\nERROR: /home/runner/work/nrw-production/nrw-production/.env not found\n"
     }
   ],
   "health_issues": [],
@@ -52,19 +52,19 @@
       "severity": "error",
       "message": "Phase failed with exit code 1",
       "context": null,
-      "stdout_preview": "=== Trailer Pipeline: full ===\n\n--- Step 1: Host new trailers ---\nMovies to host: 118\nConnecting to B2...\nERROR: /home/runner/work/nrw-production/nrw-production/.env not found"
+      "stdout_preview": "=== Trailer Pipeline: full ===\n\n--- Step 1: Host new trailers ---\nMovies to host: 127\nConnecting to B2...\nERROR: /home/runner/work/nrw-production/nrw-production/.env not found"
     }
   ],
   "warnings": [],
   "data_quality": {
-    "total": 14639,
-    "tracking": 13102,
-    "available": 1535,
-    "data_movies": 477,
-    "movies_with_links": 381,
-    "movies_with_rt": 376,
-    "movies_with_wikipedia": 228,
-    "movies_with_trailers": 448
+    "total": 14748,
+    "tracking": 13201,
+    "available": 1545,
+    "data_movies": 487,
+    "movies_with_links": 382,
+    "movies_with_rt": 383,
+    "movies_with_wikipedia": 233,
+    "movies_with_trailers": 458
   },
   "enrichment_metrics": {
     "timestamp": "2025-12-29T15:42:45.008551",

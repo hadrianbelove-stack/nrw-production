@@ -1,7 +1,534 @@
 {
-  "generated_at": "2026-03-09T10:25:25.937700",
-  "count": 477,
+  "generated_at": "2026-03-10T10:20:08.735682",
+  "count": 487,
   "movies": [
+    {
+      "id": "1627985",
+      "title": "Sugar & Vice: A Hannah Swensen Mystery",
+      "digital_date": "2026-03-10",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Hannah finds a body at the grand re-opening of the Lake Eden Inn. When a storm traps everyone inside, Hannah must find the culprit before the road clears and the killer escapes.",
+      "genres": [
+        "Mystery"
+      ],
+      "runtime": 84,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Hallmark+ Amazon Channel",
+          "Hallmark+ Apple TV Channel",
+          "Hallmark TV Amazon Channel"
+        ]
+      },
+      "links": {
+        "trailer": "https://www.youtube.com/watch?v=10_k5K3iglM",
+        "rt": "https://www.rottentomatoes.com/m/sugar_and_vice_a_hannah_swensen_mystery"
+      },
+      "watch_links": {
+        "streaming": {
+          "service": "Amazon",
+          "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.acbb85fb-c473-4eff-9179-c15b676099e5"
+        }
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-10T10:15:54.009492",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/z2ZQJVnXgyee42WKTU52lwGVySf.jpg",
+      "studio": null,
+      "budget": 0,
+      "country": null,
+      "original_language": "en",
+      "original_title": "Sugar & Vice: A Hannah Swensen Mystery",
+      "crew": {
+        "director": "Unknown",
+        "cast": [
+          "Alison Sweeney",
+          "Victor Webster"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection"
+    },
+    {
+      "id": "1643438",
+      "title": "The Couple Across the Street",
+      "digital_date": "2026-03-10",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "When a family seeks refuge with their \"doomsday prepper\" neighbors during a community lockdown, they start to suspect their hosts have dangerous intentions, until a shocking twist reveals the real threat was far closer than they ever imagined.",
+      "genres": [
+        "Thriller"
+      ],
+      "runtime": 90,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "Plex"
+        ],
+        "buy": [],
+        "streaming": []
+      },
+      "links": {
+        "trailer": "https://www.youtube.com/results?search_query=The%20Couple%20Across%20the%20Street%202026%20trailer",
+        "rt": "https://www.rottentomatoes.com/m/the_couple_across_the_street"
+      },
+      "watch_links": {},
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-10T10:15:49.897165",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/pJyGcuZ4zTwiMKmrhQJCCAdlxHC.jpg",
+      "studio": "Reel One Entertainment",
+      "budget": 0,
+      "country": "Canada",
+      "original_language": "en",
+      "original_title": "The Couple Across the Street",
+      "crew": {
+        "director": "Anjali Nayar",
+        "cast": [
+          "Ellen David",
+          "William MacDonald"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection",
+      "_enrichment_gaps": [
+        "watch_links"
+      ]
+    },
+    {
+      "id": "1436835",
+      "title": "NFT: Cursed Images",
+      "digital_date": "2026-03-06",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "A group of crypto savvy friends begin experiencing strange occurrences after buying into a cursed NFT collection.",
+      "genres": [
+        "Horror"
+      ],
+      "runtime": 80,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "Fandango At Home"
+        ],
+        "buy": [
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
+      "links": {
+        "trailer": "https://www.youtube.com/watch?v=hcAqm0ZS174"
+      },
+      "watch_links": {},
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-10T10:15:35.314746",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/7H7Aqun1GTiMAtlE6Z2DnwxUbo2.jpg",
+      "studio": "Old Jim Productions",
+      "budget": 0,
+      "country": "United Kingdom",
+      "original_language": "en",
+      "original_title": "NFT: Cursed Images",
+      "crew": {
+        "director": "Jonas Odenheimer",
+        "cast": [
+          "Najarra Townsend",
+          "David Wayman"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "tmdb_type4",
+      "_enrichment_gaps": [
+        "watch_links",
+        "rt_score"
+      ]
+    },
+    {
+      "id": "1125701",
+      "title": "Midwinter Break",
+      "digital_date": "2026-03-10",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Longtime retired couple Stella and Gerry realise that their relationship has reached a crossroads while on holiday in Amsterdam. After so much time and so many memories, long-held promises and deeply concealed wounds threaten to come to light and force them to confront their future.",
+      "genres": [
+        "Drama"
+      ],
+      "runtime": 91,
+      "year": 2026,
+      "rt_score": "56%",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Midwinter_Break",
+        "trailer": "https://www.youtube.com/watch?v=FeD_KEGIU_Q",
+        "rt": "https://www.rottentomatoes.com/m/midwinter_break"
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.dd2d924c-03ab-466d-b042-8699c03748c6&tag=nrw04-20"
+          },
+          {
+            "service": "Apple TV",
+            "link": "https://tv.apple.com/us/movie/midwinter-break/umc.cmc.7bjgzjvtuvm8v9p23idwx05bg?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1875808733"
+          }
+        ]
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-10T10:14:51.783429",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/vkMOruokVnD05xSiwI2hWBzG7UD.jpg",
+      "studio": "Shoebox Films",
+      "budget": 0,
+      "country": "United Kingdom",
+      "original_language": "en",
+      "original_title": "Midwinter Break",
+      "crew": {
+        "director": "Polly Findlay",
+        "cast": [
+          "Lesley Manville",
+          "Ciar\u00e1n Hinds"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection"
+    },
+    {
+      "id": "1291335",
+      "title": "Solo Mio",
+      "digital_date": "2026-03-10",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "After Matt's dreams of a picturesque Italian wedding are shattered when his fianc\u00e9e leaves him at the altar, he embarks on his planned honeymoon across Italy alone, immersing himself in the country's vibrant culture, food, and beauty, meeting Gia along the way.",
+      "genres": [
+        "Romance",
+        "Comedy"
+      ],
+      "runtime": 100,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Solo_Mio",
+        "trailer": "https://www.youtube.com/watch?v=Vy45xJxnCZM"
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.572b93a5-3990-44ff-b9e8-4b52cb001893&tag=nrw04-20"
+          }
+        ]
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-10T10:13:39.864950",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/efSsZJaddeq0LOABZqpCXdMxv9P.jpg",
+      "studio": "A Higher Standard",
+      "budget": 4000000,
+      "country": "United States of America",
+      "original_language": "en",
+      "original_title": "Solo Mio",
+      "crew": {
+        "director": "Charles Kinnane",
+        "cast": [
+          "Kevin James",
+          "Alyson Hannigan"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection",
+      "_enrichment_gaps": [
+        "rt_score"
+      ]
+    },
+    {
+      "id": "1119449",
+      "title": "Good Luck, Have Fun, Don't Die",
+      "digital_date": "2026-03-10",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "A man claiming to be from the future takes the patrons of an iconic Los Angeles diner hostage in search of unlikely recruits in a quest to save the world.",
+      "genres": [
+        "Science Fiction",
+        "Action",
+        "Adventure"
+      ],
+      "runtime": 134,
+      "year": 2026,
+      "rt_score": "83%",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Good_Luck,_Have_Fun,_Don%27t_Die",
+        "trailer": "https://www.youtube.com/watch?v=Nm4WbapDzDQ",
+        "rt": "https://www.rottentomatoes.com/m/good_luck_have_fun_dont_die"
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.8cfc32dc-85ed-4d06-b99b-b9535d920778&tag=nrw04-20"
+          }
+        ]
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-10T10:10:24.768286",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/rWcfOdY7TU6lTdazWj0ebDZnAfO.jpg",
+      "studio": "Constantin Film",
+      "budget": 20000000,
+      "country": "United States of America",
+      "original_language": "en",
+      "original_title": "Good Luck, Have Fun, Don't Die",
+      "crew": {
+        "director": "Gore Verbinski",
+        "cast": [
+          "Sam Rockwell",
+          "Juno Temple"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection"
+    },
+    {
+      "id": "1196913",
+      "title": "An Army of Women",
+      "digital_date": "2026-03-10",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "A group of women in Austin, Texas join forces and help build a movement of plaintiffs legally challenging the system that allowed their rapists to walk free. Their groundbreaking class-action lawsuit is the first to argue that sexual assault isn\u2019t prosecuted due to gender discrimination. This is the landmark story of women fighting to hold law enforcement accountable, with resounding relevance worldwide.",
+      "genres": [
+        "Documentary"
+      ],
+      "runtime": 84,
+      "year": 2024,
+      "rt_score": "100%",
+      "providers": {
+        "rent": [
+          "Google Play Movies",
+          "YouTube"
+        ],
+        "buy": [
+          "Google Play Movies",
+          "YouTube"
+        ],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/An_Army_of_Women",
+        "trailer": "https://www.youtube.com/watch?v=PRdZAg3NGVQ",
+        "rt": "https://www.rottentomatoes.com/m/an_army_of_women"
+      },
+      "watch_links": {},
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-10T10:06:36.014262",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/yMN8bRxzcpJftbCOj6OrpwkT4PX.jpg",
+      "studio": "Differ Media",
+      "budget": 0,
+      "country": "Germany",
+      "original_language": "en",
+      "original_title": "An Army of Women",
+      "crew": {
+        "director": "Julie Lunde Lilles\u00e6ter",
+        "cast": [
+          "Hanna Senko",
+          "Marina Garrett"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection",
+      "_enrichment_gaps": [
+        "watch_links"
+      ]
+    },
+    {
+      "id": "1260781",
+      "title": "Mother of Snow Cranes",
+      "digital_date": "2026-03-10",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Over 90 years old Ellen Vuosalo has lived many lives. First as a Finnish immigrant in Canada, then as a zoology student in California and finally as a mother of snow cranes in Iran.  Iiris H\u00e4rm\u00e4's Mother of Snow Cranes tells the story of an incredible woman's extraordinary life, from love to tragedy to revolution. It is a story about nature, humanity, and the role of women in both the West and Iranian culture. Or as Ellen herself says \" What a life! What a world!\"",
+      "genres": [
+        "Documentary"
+      ],
+      "runtime": 78,
+      "year": 2024,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "Eventive"
+        ],
+        "buy": [],
+        "streaming": []
+      },
+      "links": {
+        "trailer": "https://www.youtube.com/watch?v=95YBNXE4NC4",
+        "rt": "https://www.rottentomatoes.com/m/mother_of_snow_cranes"
+      },
+      "watch_links": {},
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-10T09:52:28.856232",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/m6ODf6jPE2mP2Yo1rP9W2S1Jsaq.jpg",
+      "studio": "Guerilla Films",
+      "budget": 0,
+      "country": "Finland",
+      "original_language": "fi",
+      "original_title": "Kurkien \u00e4iti",
+      "crew": {
+        "director": "Iiris H\u00e4rm\u00e4",
+        "cast": [
+          "Ellen Vuosalo"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection",
+      "_enrichment_gaps": [
+        "watch_links"
+      ]
+    },
+    {
+      "id": "1352992",
+      "title": "Straight On till Morning",
+      "digital_date": "2026-03-10",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Dani and Kaitlin are two dreamers falling for each other on a romantic roadtrip. The world is theirs -- until they cross paths with a family that has something much, much darker in mind. Be afraid.",
+      "genres": [
+        "Horror",
+        "Romance",
+        "Thriller"
+      ],
+      "runtime": 105,
+      "year": 2024,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Straight_On_till_Morning_(film)",
+        "trailer": "https://www.youtube.com/watch?v=96i8HaG3WZk",
+        "rt": "https://www.rottentomatoes.com/m/straight_on_till_morning_2026"
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.3a42ba2f-ce24-4f16-a7f2-1715bb726487&tag=nrw04-20"
+          }
+        ]
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-10T09:52:25.170507",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/7OuOYfJg7avyeyIfq700ptRKIK6.jpg",
+      "studio": null,
+      "budget": 0,
+      "country": null,
+      "original_language": "en",
+      "original_title": "Straight On till Morning",
+      "crew": {
+        "director": "Craig Ouellette",
+        "cast": [
+          "Kelsey Christian",
+          "Bonnie Jean Tyer"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection"
+    },
+    {
+      "id": "1498589",
+      "title": "Big Star: The Nick Skelton Story",
+      "digital_date": "2026-03-10",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Big Star: The Nick Skelton Story is the official all-access documentary of national hero Nick Skelton (CBE), one of the most decorated and enduring Equestrian champions the world has ever seen. Nick\u2019s passion and perseverance drove him to 7 Olympic games and inspired athletes in the sport worldwide. The film includes interviews with  Nick\u2019s family, and with key members of the British Equestrian Community.",
+      "genres": [
+        "Documentary"
+      ],
+      "runtime": 102,
+      "year": 2025,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
+      "links": {
+        "trailer": "https://www.youtube.com/watch?v=ljweYZxDW7c"
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.50c57b80-f1a0-435c-9b20-87d4d16aca0f&tag=nrw04-20"
+          }
+        ]
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-10T09:48:11.721936",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/dp7fvTWRlOSRVNN4Ykzmhl16Pew.jpg",
+      "studio": "Dartmouth Films",
+      "budget": 0,
+      "country": "United Kingdom",
+      "original_language": "en",
+      "original_title": "Big Star: The Nick Skelton Story",
+      "crew": {
+        "director": "Sarah George",
+        "cast": [
+          "Nick Skelton",
+          "Zara Tindall"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection",
+      "_enrichment_gaps": [
+        "rt_score"
+      ]
+    },
     {
       "id": "1517865",
       "title": "Vanished in an Instant",
@@ -29107,10 +29634,10 @@
   "featured": [
     "1608619"
   ],
-  "latest_playlist_url": "https://www.youtube.com/playlist?list=PLFCewXXu8_tGBHM99hW9oXGH4wvBOKLjf",
+  "latest_playlist_url": "https://www.youtube.com/playlist?list=PLFCewXXu8_tG2hgI1GQre64yJnf51M1kw",
   "_metadata": {
-    "last_discovery_write": "2026-03-09T10:22:32.258608",
-    "discovery_count": 465,
+    "last_discovery_write": "2026-03-10T10:15:54.009502",
+    "discovery_count": 475,
     "schema_version": "2.0"
   }
 }
