@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-03-10T10:20:09.818722",
-  "duration_seconds": 2339.900388,
+  "timestamp": "2026-03-11T10:20:29.559102",
+  "duration_seconds": 2428.293899,
   "overall_success": false,
   "failure_count": 1,
   "warning_count": 0,
@@ -8,37 +8,37 @@
     {
       "name": "Intake new premieres from TMDB",
       "success": true,
-      "duration_seconds": 7.972089,
+      "duration_seconds": 14.808531,
       "error": null,
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-03-08 to 2026-03-10 (incremental mode, 108 intaked)\n\u2705 Movie intake complete: 108 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-02-08 to 2026-03-10\n   \ud83d\udccb \ub0b4\uac00 \ub108\ub97c \uc6d0\ud574\uc11c (1 eps)\n\n\ud83d\udcca Miniseries intak"
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-03-09 to 2026-03-11 (incremental mode, 28 intaked)\n\u2705 Movie intake complete: 28 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-02-09 to 2026-03-11\n   \ud83d\udccb Secret (3 eps)\n   \ud83d\udccb \u5a5a\u5185\u521d\u75d2 (1 eps)\n   \ud83d\udccb \u534e"
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 2104.500674,
+      "duration_seconds": 2119.802906,
       "error": null,
-      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 14748 total movies\n\ud83d\udd0d Raw tracking filter: 13211 movies\n\ud83d\udd0d Assigned tracking_movies list: 13211\n\ud83d\udd0d Found 13211 movies in tracking status\n  Priority queue (last 180 days): 942 movies\n  Older movies: 12269 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 13211 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/13211 (0.8%) | 0 found | 0m elapsed | ~33m remaining\n  \ud83d\udcbe Progress saved (ba"
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 14782 total movies\n\ud83d\udd0d Raw tracking filter: 13235 movies\n\ud83d\udd0d Assigned tracking_movies list: 13235\n\ud83d\udd0d Found 13235 movies in tracking status\n  Priority queue (last 180 days): 937 movies\n  Older movies: 12298 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 13235 movies for digital availability...\n\n  \u2713 Girl from Nowhere: The Reset now on Netflix!\n   \u2705 Added Girl from Nowhere: The Reset to si"
     },
     {
       "name": "Resolve pre-order movie dates",
       "success": true,
-      "duration_seconds": 0.344749,
+      "duration_seconds": 0.339413,
       "error": null,
       "output_preview": "\n\ud83d\udcc5 Resolving pre-order movie dates...\n\n\ud83d\udcc5 Resolving pre-order dates...\n  No pre-order movies to resolve\n\u2705 Pre-order resolution complete: 0 resolved\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Enrich newly available movies with metadata",
       "success": true,
-      "duration_seconds": 226.606908,
+      "duration_seconds": 292.864782,
       "error": null,
-      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 10 movies to enrich\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n  \u26a1 Big Star: The Nick Skelton Story (25.0s) - Wiki:\u25cb Trailer:\u2713 RT:\u25cb Links:\u2713 Date:\u25cb | 2 success, 0 errors\n  \u2713 Big "
+      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 12 movies to enrich\n  \u2717 Could not fetch details for Girl from Nowhere: The Reset\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n  \u26a1 Ghost Elephants (13.2s) - Wiki:\u2713 Trailer:\u2713 RT:\u2713 L"
     },
     {
       "name": "Host trailers for newly enriched movies",
       "success": false,
-      "duration_seconds": 0.354421,
+      "duration_seconds": 0.355822,
       "error": null,
-      "output_preview": "=== Trailer Pipeline: full ===\n\n--- Step 1: Host new trailers ---\nMovies to host: 127\nConnecting to B2...\nERROR: /home/runner/work/nrw-production/nrw-production/.env not found\n"
+      "output_preview": "=== Trailer Pipeline: full ===\n\n--- Step 1: Host new trailers ---\nMovies to host: 138\nConnecting to B2...\nERROR: /home/runner/work/nrw-production/nrw-production/.env not found\n"
     }
   ],
   "health_issues": [],
@@ -52,19 +52,19 @@
       "severity": "error",
       "message": "Phase failed with exit code 1",
       "context": null,
-      "stdout_preview": "=== Trailer Pipeline: full ===\n\n--- Step 1: Host new trailers ---\nMovies to host: 127\nConnecting to B2...\nERROR: /home/runner/work/nrw-production/nrw-production/.env not found"
+      "stdout_preview": "=== Trailer Pipeline: full ===\n\n--- Step 1: Host new trailers ---\nMovies to host: 138\nConnecting to B2...\nERROR: /home/runner/work/nrw-production/nrw-production/.env not found"
     }
   ],
   "warnings": [],
   "data_quality": {
-    "total": 14748,
-    "tracking": 13201,
-    "available": 1545,
-    "data_movies": 487,
-    "movies_with_links": 382,
-    "movies_with_rt": 383,
-    "movies_with_wikipedia": 233,
-    "movies_with_trailers": 458
+    "total": 14782,
+    "tracking": 13223,
+    "available": 1557,
+    "data_movies": 499,
+    "movies_with_links": 385,
+    "movies_with_rt": 391,
+    "movies_with_wikipedia": 240,
+    "movies_with_trailers": 469
   },
   "enrichment_metrics": {
     "timestamp": "2025-12-29T15:42:45.008551",

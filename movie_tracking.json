@@ -1050,11 +1050,20 @@
     "1451867": {
       "title": "Ghost Elephants",
       "premiere_date": "2025-08-27",
-      "digital_date": null,
-      "has_providers": false,
-      "status": "tracking",
+      "digital_date": "2026-03-11",
+      "has_providers": true,
+      "status": "available",
       "added": "2025-09-06T16:47:39.333383",
-      "year": 2025
+      "year": 2025,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Hulu"
+        ]
+      },
+      "enriched": false,
+      "enrichment_date": null
     },
     "1395353": {
       "title": "La gioia",
@@ -4544,11 +4553,20 @@
     "1246049": {
       "title": "Dracula: A Love Tale",
       "premiere_date": "2025-07-30",
-      "digital_date": null,
-      "has_providers": false,
-      "status": "tracking",
+      "digital_date": "2026-03-11",
+      "has_providers": true,
+      "status": "available",
       "added": "2025-09-06T16:47:59.804376",
-      "year": 2025
+      "year": 2025,
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
+      "enriched": false,
+      "enrichment_date": null
     },
     "1131460": {
       "title": "Locust",
@@ -72628,14 +72646,22 @@
     },
     "1305787": {
       "title": "Micro Budget",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-04",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-03-11",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "backfill",
-      "has_providers": false,
+      "has_providers": true,
       "year": 2024,
-      "premiere_date": "2024-08-24"
+      "premiere_date": "2024-08-24",
+      "enriched": false,
+      "enrichment_date": null
     },
     "1271274": {
       "title": "Die Bachmanns",
@@ -75533,14 +75559,24 @@
     },
     "1232598": {
       "title": "The Carpenter",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-04",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-03-11",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
       "intake_pass": "backfill",
-      "has_providers": false,
+      "has_providers": true,
       "year": 2024,
-      "premiere_date": "2024-11-01"
+      "premiere_date": "2024-11-01",
+      "enriched": false,
+      "enrichment_date": null
     },
     "1229831": {
       "title": "XXL",
@@ -77290,14 +77326,22 @@
     },
     "1297311": {
       "title": "Quantum Supremacy",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-04",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-03-11",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "backfill",
-      "has_providers": false,
+      "has_providers": true,
       "year": 2024,
-      "premiere_date": "2024-12-02"
+      "premiere_date": "2024-12-02",
+      "enriched": false,
+      "enrichment_date": null
     },
     "1606594": {
       "title": "Jean Rondeau plays Louis Couperin",
@@ -111173,13 +111217,21 @@
     "1316719": {
       "title": "The Ugly",
       "year": 2025,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-03-11",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "Toronto/TIFF",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1307373": {
       "title": "Wasteman",
@@ -117087,13 +117139,21 @@
     "1154304": {
       "title": "Buffalo Kids",
       "year": 2024,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-03-11",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "Annecy",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1383984": {
       "title": "Wild Days",
@@ -151149,13 +151209,22 @@
     "1413097": {
       "title": "Melania",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-20",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-03-11",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Amazon Prime Video",
+          "Amazon Prime Video with Ads"
+        ]
+      },
       "intake_pass": "C",
       "festival": "Sundance",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1249508": {
       "title": "Grizzly Night",
@@ -173811,9 +173880,9 @@
       "title": "Girl from Nowhere: The Reset",
       "content_type": "limited_series",
       "tmdb_id": 310935,
-      "status": "tracking",
+      "status": "available",
       "first_air_date": "2026-03-04",
-      "digital_date": "2026-03-04",
+      "digital_date": "2026-03-11",
       "episode_count": 6,
       "runtime": null,
       "poster": "https://image.tmdb.org/t/p/w500/bRMEjZHvES9XLKSFVCtveFGdOHC.jpg",
@@ -173824,15 +173893,20 @@
       ],
       "original_language": "th",
       "providers": {
-        "streaming": [],
         "rent": [],
-        "buy": []
+        "buy": [],
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
       },
       "intaked_at": "2026-03-05T09:40:24.123432",
       "networks": [
         "ONE 31"
       ],
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "tv_315750": {
       "title": "Nordkoreas Geheimnisse",
@@ -176972,12 +177046,20 @@
     "1522832": {
       "title": "Squatch",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-03-10",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-03-11",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "A",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1637569": {
       "title": "Kat Crime: Tales of the Occult",
@@ -178135,7 +178217,450 @@
         "Heavenly"
       ],
       "has_providers": false
+    },
+    "1649221": {
+      "title": "Out Of Character",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A",
+      "has_providers": false
+    },
+    "1635182": {
+      "title": "NJPW New Japan Cup 2026 - Day 5",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A",
+      "has_providers": false
+    },
+    "1450811": {
+      "title": "Say Less",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A",
+      "has_providers": false
+    },
+    "1439660": {
+      "title": "Fukushima: A Nuclear Nightmare",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A",
+      "has_providers": false
+    },
+    "1254091": {
+      "title": "Skinny Love",
+      "year": 2026,
+      "status": "available",
+      "first_seen": "2026-03-11",
+      "digital_date": "2026-03-11",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
+      "intake_pass": "A",
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
+    },
+    "1649587": {
+      "title": "David Cross: The End of the Beginning of the End",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A",
+      "has_providers": false
+    },
+    "1649068": {
+      "title": "Tiny Gods",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1649039": {
+      "title": "We Have to Survive",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1648984": {
+      "title": "The Night Smells of Jasmine",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1648663": {
+      "title": "Candidates of Death",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1647427": {
+      "title": "Spirit Father",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1644715": {
+      "title": "Of the People: The Women of the Civil Rights Movement",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1642865": {
+      "title": "Makellos - Eine kurze Welle des Gl\u00fccks",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1631783": {
+      "title": "Motel Paraiso",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1630264": {
+      "title": "A Special Memory",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1622146": {
+      "title": "Clean",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1587950": {
+      "title": "The Curse of Kane",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1560392": {
+      "title": "Remaking the Middle East: Israel vs. Iran",
+      "year": 2026,
+      "status": "available",
+      "first_seen": "2026-03-11",
+      "digital_date": "2026-03-11",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": [
+          "PBS Documentaries Amazon Channel"
+        ]
+      },
+      "intake_pass": "B",
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
+    },
+    "1522668": {
+      "title": "Oh, Valentine",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1454680": {
+      "title": "Hugo",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1436219": {
+      "title": "Pizza movies",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1367642": {
+      "title": "Reminders of Him",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1295722": {
+      "title": "Les K d'Or",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1096963": {
+      "title": "Samakdo",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1001386": {
+      "title": "Cape Farewell",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1649651": {
+      "title": "Red Goes To Heck: The Final Herring",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1649529": {
+      "title": "Cursed Hearse",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1394462": {
+      "title": "Blood is Thicker",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "SXSW",
+      "has_providers": false
+    },
+    "tv_316234": {
+      "title": "Secret",
+      "content_type": "limited_series",
+      "tmdb_id": 316234,
+      "status": "tracking",
+      "first_air_date": "2026-03-11",
+      "digital_date": "2026-03-11",
+      "episode_count": 3,
+      "runtime": 27,
+      "poster": "https://image.tmdb.org/t/p/w500/5mFLo4qyszhIM4VfMKBZoMmwpyW.jpg",
+      "synopsis": "Jeongsu and Yuho awaken imprisoned in an unidentified locked room, forced to stand naked before one another. A mysterious man known only as X, camera in hand, coldly compels them to engage in forbidden acts of intimacy. Caught between fear and raw physical instinct, the two strangers are drawn into a distorted relationship shaped by coercion and desire. This is a brutal test of survival that pushes the limits of sensation. Before they are consumed by a cruel secret, they must uncover the true motive behind their captor's twisted game.",
+      "genres": [
+        "Drama",
+        "Crime"
+      ],
+      "original_language": "ko",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-03-11T09:40:12.790975",
+      "networks": [
+        "GagaOOLala"
+      ],
+      "has_providers": false
+    },
+    "tv_316222": {
+      "title": "\u5a5a\u5185\u521d\u75d2",
+      "content_type": "limited_series",
+      "tmdb_id": 316222,
+      "status": "tracking",
+      "first_air_date": "2026-02-26",
+      "digital_date": "2026-02-26",
+      "episode_count": 1,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/yCHE1IIJKwOherx0aVosdyfV7GB.jpg",
+      "synopsis": "",
+      "genres": [],
+      "original_language": "zh",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-03-11T09:40:13.561240",
+      "networks": [],
+      "has_providers": false
+    },
+    "tv_316224": {
+      "title": "\u534e\u4e3d\u7684\u7f30\u7ef3",
+      "content_type": "limited_series",
+      "tmdb_id": 316224,
+      "status": "tracking",
+      "first_air_date": "2026-02-25",
+      "digital_date": "2026-02-25",
+      "episode_count": 1,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/wZzqbdIbq9J9d07jIjyLL00WPD4.jpg",
+      "synopsis": "",
+      "genres": [],
+      "original_language": "zh",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-03-11T09:40:13.669013",
+      "networks": [],
+      "has_providers": false
+    },
+    "tv_313092": {
+      "title": "Stein Bagger og gr\u00e5dighedens ansigter",
+      "content_type": "limited_series",
+      "tmdb_id": 313092,
+      "status": "tracking",
+      "first_air_date": "2026-02-22",
+      "digital_date": "2026-02-22",
+      "episode_count": 3,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/uYc9rLHDBjsbFSyF3bcUo2GtlnW.jpg",
+      "synopsis": "",
+      "genres": [
+        "Drama",
+        "Documentary"
+      ],
+      "original_language": "da",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-03-11T09:40:14.115510",
+      "networks": [
+        "TV 2"
+      ],
+      "has_providers": false
+    },
+    "tv_316221": {
+      "title": "\u60c5\u4e0d\u538c\u8bc8",
+      "content_type": "limited_series",
+      "tmdb_id": 316221,
+      "status": "tracking",
+      "first_air_date": "2026-02-18",
+      "digital_date": "2026-02-18",
+      "episode_count": 1,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/r4Fg2CHx8d69Pt7kGEELh2XVjZg.jpg",
+      "synopsis": "",
+      "genres": [],
+      "original_language": "zh",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-03-11T09:40:14.546129",
+      "networks": [],
+      "has_providers": false
+    },
+    "tv_316226": {
+      "title": "\u524d\u592b\u8981\u518d\u5a5a\uff0c\u6211\u53ef\u4e0d\u662f\u5f53\u5e74\u4e56\u4e56\u5973",
+      "content_type": "limited_series",
+      "tmdb_id": 316226,
+      "status": "tracking",
+      "first_air_date": "2026-02-11",
+      "digital_date": "2026-02-11",
+      "episode_count": 1,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/p1D9kaMJ01IRnVEGfYWjfCoxhvB.jpg",
+      "synopsis": "",
+      "genres": [],
+      "original_language": "zh",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-03-11T09:40:15.605644",
+      "networks": [],
+      "has_providers": false
     }
   },
-  "last_update": "2026-03-10T09:41:14.806319"
+  "last_update": "2026-03-11T09:40:12.420454"
 }
