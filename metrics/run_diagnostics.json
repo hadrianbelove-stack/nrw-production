@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-03-13T10:30:19.949888",
-  "duration_seconds": 3220.438492,
+  "timestamp": "2026-03-14T10:08:45.022571",
+  "duration_seconds": 2318.099051,
   "overall_success": false,
   "failure_count": 1,
   "warning_count": 0,
@@ -8,37 +8,37 @@
     {
       "name": "Intake new premieres from TMDB",
       "success": true,
-      "duration_seconds": 13.00948,
+      "duration_seconds": 9.248309,
       "error": null,
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-03-11 to 2026-03-13 (incremental mode, 44 intaked)\n\u2705 Movie intake complete: 44 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-02-11 to 2026-03-13\n   \ud83d\udccb Sweet Blood (8 eps)\n   \ud83d\udccb Dynasty: The M"
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-03-12 to 2026-03-14 (incremental mode, 31 intaked)\n\u2705 Movie intake complete: 31 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-02-12 to 2026-03-14\n   \ud83d\udccb The Race for Ancient Egypt in Colour (2"
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 3017.537557,
+      "duration_seconds": 2150.952893,
       "error": null,
-      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 14880 total movies\n\ud83d\udd0d Raw tracking filter: 13309 movies\n\ud83d\udd0d Assigned tracking_movies list: 13309\n\ud83d\udd0d Found 13309 movies in tracking status\n  Priority queue (last 180 days): 944 movies\n  Older movies: 12365 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 13309 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/13309 (0.8%) | 0 found | 0m elapsed | ~48m remaining\n  \ud83d\udcbe Progress saved (ba"
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 14921 total movies\n\ud83d\udd0d Raw tracking filter: 13340 movies\n\ud83d\udd0d Assigned tracking_movies list: 13340\n\ud83d\udd0d Found 13340 movies in tracking status\n  Priority queue (last 180 days): 954 movies\n  Older movies: 12386 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 13340 movies for digital availability...\n\n  \u2713 Fit for a Killer now on HBO Max!\n   \u2705 Added Fit for a Killer to site immediately (discover"
     },
     {
       "name": "Resolve pre-order movie dates",
       "success": true,
-      "duration_seconds": 0.378475,
+      "duration_seconds": 0.344082,
       "error": null,
       "output_preview": "\n\ud83d\udcc5 Resolving pre-order movie dates...\n\n\ud83d\udcc5 Resolving pre-order dates...\n  No pre-order movies to resolve\n\u2705 Pre-order resolution complete: 0 resolved\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Enrich newly available movies with metadata",
       "success": true,
-      "duration_seconds": 188.998075,
+      "duration_seconds": 157.066378,
       "error": null,
-      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 10 movies to enrich\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n  \u26a1 Agent Zero (28.2s) - Wiki:\u25cb Trailer:\u2713 RT:\u25cb Links:\u2713 Date:\u2713 | 3 success, 0 errors\n  \u2713 Badh - Links: 1\n[YouTubeTr"
+      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 10 movies to enrich\n  \u2717 Could not fetch details for Fit for a Killer\n  \u2717 Could not fetch details for Keluarga Yang Tak Dirindukan\n[YouTubeTrailerScraper] Initializing browser via shared manager...\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium b"
     },
     {
       "name": "Host trailers for newly enriched movies",
       "success": false,
-      "duration_seconds": 0.37938,
+      "duration_seconds": 0.364912,
       "error": null,
-      "output_preview": "=== Trailer Pipeline: full ===\n\n--- Step 1: Host new trailers ---\nMovies to host: 159\nConnecting to B2...\nERROR: /home/runner/work/nrw-production/nrw-production/.env not found\n"
+      "output_preview": "=== Trailer Pipeline: full ===\n\n--- Step 1: Host new trailers ---\nMovies to host: 167\nConnecting to B2...\nERROR: /home/runner/work/nrw-production/nrw-production/.env not found\n"
     }
   ],
   "health_issues": [],
@@ -52,19 +52,19 @@
       "severity": "error",
       "message": "Phase failed with exit code 1",
       "context": null,
-      "stdout_preview": "=== Trailer Pipeline: full ===\n\n--- Step 1: Host new trailers ---\nMovies to host: 159\nConnecting to B2...\nERROR: /home/runner/work/nrw-production/nrw-production/.env not found"
+      "stdout_preview": "=== Trailer Pipeline: full ===\n\n--- Step 1: Host new trailers ---\nMovies to host: 167\nConnecting to B2...\nERROR: /home/runner/work/nrw-production/nrw-production/.env not found"
     }
   ],
   "warnings": [],
   "data_quality": {
-    "total": 14880,
-    "tracking": 13299,
-    "available": 1579,
-    "data_movies": 520,
-    "movies_with_links": 390,
-    "movies_with_rt": 404,
-    "movies_with_wikipedia": 257,
-    "movies_with_trailers": 490
+    "total": 14921,
+    "tracking": 13330,
+    "available": 1589,
+    "data_movies": 530,
+    "movies_with_links": 393,
+    "movies_with_rt": 407,
+    "movies_with_wikipedia": 262,
+    "movies_with_trailers": 498
   },
   "enrichment_metrics": {
     "timestamp": "2025-12-29T15:42:45.008551",

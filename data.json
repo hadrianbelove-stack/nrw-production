@@ -1,7 +1,560 @@
 {
-  "generated_at": "2026-03-13T10:30:18.638573",
-  "count": 520,
+  "generated_at": "2026-03-14T10:08:43.991329",
+  "count": 530,
   "movies": [
+    {
+      "id": "1636891",
+      "title": "Mexicali",
+      "digital_date": "2026-03-13",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "A former special forces contractor is forced out of retirement as an avocado farmer in Mexico when local gangsters try to force him and his family off their farm.",
+      "genres": [
+        "Action",
+        "Drama"
+      ],
+      "runtime": 99,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
+      "links": {
+        "trailer": "https://www.youtube.com/watch?v=ZT9-JyYQ0ew"
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.9656018c-f4bd-4f92-a59e-6de74266793b&tag=nrw04-20"
+          },
+          {
+            "service": "Apple TV",
+            "link": "https://tv.apple.com/us/movie/mexicali/umc.cmc.wcc2zv3xazjcoekip8x15hrw?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1880673575"
+          }
+        ]
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-14T10:06:02.095648",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/kQbmqipH7YvmILnB0PF8faOEcUp.jpg",
+      "studio": null,
+      "budget": 0,
+      "country": null,
+      "original_language": "en",
+      "original_title": "Mexicali",
+      "crew": {
+        "director": "Luke LaFontaine",
+        "cast": [
+          "Bren Foster",
+          "Plutarco Haza"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "tmdb_type4",
+      "_enrichment_gaps": [
+        "rt_score"
+      ]
+    },
+    {
+      "id": "1561687",
+      "title": "Made in Korea",
+      "digital_date": "2026-03-12",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "A woman from a small town in Tamil Nadu moves to South Korea \u2014 a place she always dreamed of \u2014 but struggles to find her footing in a foreign land.",
+      "genres": [
+        "Drama"
+      ],
+      "runtime": 113,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Made_in_Korea_(film)",
+        "trailer": "https://www.youtube.com/watch?v=RmLegZv1TZk",
+        "rt": "https://www.rottentomatoes.com/m/made_in_korea"
+      },
+      "watch_links": {
+        "streaming": {
+          "service": "Netflix",
+          "link": "https://www.netflix.com/title/81754582"
+        }
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-14T10:05:52.466895",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/foEObhyAMM3dxYeBEr242EdQDB7.jpg",
+      "studio": "Rise East Entertainments Pvt Ltd",
+      "budget": 0,
+      "country": "India",
+      "original_language": "ta",
+      "original_title": "\u0bae\u0bc7\u0b9f\u0bcd \u0b87\u0ba9\u0bcd \u0b95\u0bca\u0bb0\u0bbf\u0baf\u0bbe",
+      "crew": {
+        "director": "Ra. Karthik",
+        "cast": [
+          "Priyanka Arul Mohan",
+          "Park Hye-jin"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "tmdb_type4"
+    },
+    {
+      "id": "1649932",
+      "title": "Love Is Blind: The Reunion",
+      "digital_date": "2026-03-11",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "After the weddings, the Pod Squad from \"Love Is Blind: Ohio\" shares relationship statuses and receipts in this tell-all reunion special.",
+      "genres": [
+        "Documentary"
+      ],
+      "runtime": 92,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
+      },
+      "links": {
+        "trailer": "https://www.youtube.com/watch?v=b3CjryngmPc"
+      },
+      "watch_links": {
+        "streaming": {
+          "service": "Netflix",
+          "link": "https://www.netflix.com/title/82625901"
+        }
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-14T10:05:48.750180",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/7Cu4z6w50digziXpDn3FOdVW2AT.jpg",
+      "studio": "Kinetic Content",
+      "budget": 0,
+      "country": "United States of America",
+      "original_language": "en",
+      "original_title": "Love Is Blind: The Reunion",
+      "crew": {
+        "director": "Brian Smith",
+        "cast": [
+          "Nick Lachey",
+          "Vanessa Lachey"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "tmdb_type4",
+      "_enrichment_gaps": [
+        "rt_score"
+      ]
+    },
+    {
+      "id": "1323909",
+      "title": "Red Riding",
+      "digital_date": "2026-03-14",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "After her mother's overdose, teen Red Riding moves from London to her estranged grandmother's Scottish estate, where dark family secrets, missing children, and a monstrous wolf blur reality, forcing her to fight for survival.",
+      "genres": [
+        "Horror",
+        "Thriller"
+      ],
+      "runtime": 86,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Red_Riding",
+        "trailer": "https://www.youtube.com/watch?v=tVMK3PEflIc"
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.dc7c4580-8060-479b-8991-abd2ebc90744&tag=nrw04-20"
+          },
+          {
+            "service": "Apple TV",
+            "link": "https://tv.apple.com/us/movie/red-riding/umc.cmc.3y2iy7851n7ibh2t2ra57s5ls?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1873082320"
+          }
+        ]
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-14T10:05:11.528898",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/iXi1XA4rRvZl28F3k7y2zhdMast.jpg",
+      "studio": "House54",
+      "budget": 635000,
+      "country": "United Kingdom",
+      "original_language": "en",
+      "original_title": "Red Riding",
+      "crew": {
+        "director": "Craig Conway",
+        "cast": [
+          "Ian Whyte",
+          "Bill Fellows"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection",
+      "_enrichment_gaps": [
+        "rt_score"
+      ]
+    },
+    {
+      "id": "1440735",
+      "title": "Couple Friendly",
+      "digital_date": "2026-03-14",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "After connecting on a rideshare app, a young couple struggling to achieve their respective dreams form a romantic connection.",
+      "genres": [
+        "Romance",
+        "Drama"
+      ],
+      "runtime": 118,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Amazon Prime Video",
+          "Amazon Prime Video with Ads"
+        ]
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Couple_Friendly",
+        "trailer": "https://www.youtube.com/watch?v=exz-qgT2n4E"
+      },
+      "watch_links": {
+        "streaming": {
+          "service": "Amazon",
+          "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.b6cf81e2-e3a5-4472-913d-75c41bbf6be5"
+        }
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-14T10:03:52.075691",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/vyMF9P2iRXyMq49uKQUGMYXHsxi.jpg",
+      "studio": null,
+      "budget": 0,
+      "country": "India",
+      "original_language": "te",
+      "original_title": "Couple Friendly",
+      "crew": {
+        "director": "Ashwin Chandrasekar",
+        "cast": [
+          "Santosh Shoban",
+          "Manasa Varanasi"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection",
+      "_enrichment_gaps": [
+        "rt_score"
+      ]
+    },
+    {
+      "id": "1128547",
+      "title": "Islands",
+      "digital_date": "2026-03-14",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "In this twisty thriller, a tennis coach at a tropical resort finds himself at the center of a missing persons mystery. Tom teaches tennis during the day and parties at night. When an enigmatic tourist arrives, Tom is unable to shake the feeling he has met her before. Tension and attraction grow, until her husband disappears, and the police suspect Tom.",
+      "genres": [
+        "Thriller",
+        "Drama",
+        "Crime"
+      ],
+      "runtime": 123,
+      "year": 2025,
+      "rt_score": "96%",
+      "providers": {
+        "rent": [],
+        "buy": [
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Islands_(2025_German_film)",
+        "trailer": "https://www.youtube.com/watch?v=MifpmLyraBE",
+        "rt": "https://www.rottentomatoes.com/m/islands"
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://www.amazon.com/dp/B0GQCXK13Y?tag=justwatch09-20&linkCode=osi&th=1&psc=1"
+          },
+          {
+            "service": "Apple TV",
+            "link": "https://tv.apple.com/us/movie/islands/umc.cmc.6iegwe7vkuygrsioajrj3p8r2?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1863864735"
+          }
+        ]
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-14T09:56:55.810738",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/a5CewSvoMsfAdg093AKzovKfVHd.jpg",
+      "studio": "Leonine Studios",
+      "budget": 0,
+      "country": "Germany",
+      "original_language": "en",
+      "original_title": "Islands",
+      "crew": {
+        "director": "Jan Ole Gerster",
+        "cast": [
+          "Sam Riley",
+          "Stacy Martin"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection"
+    },
+    {
+      "id": "1601826",
+      "title": "K.G.N",
+      "digital_date": "2026-03-14",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "In British-ruled India, two brothers, one a law-abiding police officer, the other a fiery revolutionary - are torn apart by betrayal and injustice, but must unite to avenge their father's death and free their village from colonial tyranny.",
+      "genres": [
+        "Drama"
+      ],
+      "runtime": 130,
+      "year": 2025,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
+      "links": {
+        "trailer": "https://www.youtube.com/watch?v=cJCykmcc_mg",
+        "rt": "https://www.rottentomatoes.com/m/kgn"
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.fc0e750c-f42d-493e-b7cf-d645fa62f981&tag=nrw04-20"
+          }
+        ]
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-14T09:53:54.304882",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/u6oR62r1iOZLhKczNbY0zaAggmc.jpg",
+      "studio": null,
+      "budget": 0,
+      "country": null,
+      "original_language": "hi",
+      "original_title": "K.G.N",
+      "crew": {
+        "director": "Unknown",
+        "cast": []
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection"
+    },
+    {
+      "id": "1484209",
+      "title": "Viper",
+      "digital_date": "2025-01-01",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "A trio of covert operatives in an elite group of assassins-for-hire are bound by the strictest code of conduct: no romantic entanglements.",
+      "genres": [
+        "Action",
+        "Crime"
+      ],
+      "runtime": 97,
+      "year": 2025,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Viper_(film)",
+        "trailer": "https://www.youtube.com/watch?v=B8In5t1oODY"
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.31c0818c-ca78-4526-ae2b-6d4d857c8c01&tag=nrw04-20"
+          }
+        ]
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-14T09:40:01.401079",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/iNYcL3K1YYqEZ1MAeXXOrG6wxzn.jpg",
+      "studio": null,
+      "budget": 0,
+      "country": null,
+      "original_language": "th",
+      "original_title": "Viper",
+      "crew": {
+        "director": "Isara Nadee",
+        "cast": [
+          "Metinee Kingpayome",
+          "Natsiya Prommart"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "tmdb_type4",
+      "_enrichment_gaps": [
+        "rt_score"
+      ]
+    },
+    {
+      "id": "tv_313969",
+      "title": "Keluarga Yang Tak Dirindukan",
+      "digital_date": "2026-03-14",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "When tragedy befalls their father, three siblings face enormous pressure to keep their family together despite deep wounds and personal sacrifices.",
+      "genres": [
+        "Drama",
+        "Family",
+        "Soap"
+      ],
+      "runtime": 51,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
+      },
+      "links": {
+        "wikipedia": null,
+        "trailer": null,
+        "rt": null
+      },
+      "watch_links": {},
+      "_enrichment_status": "pending",
+      "_discovered_at": "2026-03-14T09:30:40.212814",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "content_type": "limited_series",
+      "episode_count": 2,
+      "networks": [
+        "Netflix",
+        "MDTV"
+      ],
+      "poster": "https://image.tmdb.org/t/p/w500/cC1sABAjJjUWXfIzDsxuBD3oPur.jpg",
+      "studio": "MD Entertainment",
+      "budget": 0,
+      "country": "ID",
+      "original_language": "id",
+      "original_title": "Keluarga Yang Tak Dirindukan",
+      "crew": {
+        "director": "Sanjeev Ram Kishan",
+        "cast": [
+          "Arbani Yasiz",
+          "Miqdad Addausy",
+          "Nabila Zavira",
+          "Lazuardy Mifzal",
+          "Lexia Aaliyah"
+        ]
+      },
+      "_discovery_source": "provider_availability_check"
+    },
+    {
+      "id": "tv_313228",
+      "title": "Fit for a Killer",
+      "digital_date": "2026-03-14",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "This chilling docuseries chronicles one of Poland's most notorious cold cases -- the brutal 1999 murder of female student Katarzyna Zowada.",
+      "genres": [
+        "Documentary",
+        "Crime"
+      ],
+      "runtime": null,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "HBO Max",
+          "HBO Max Amazon Channel"
+        ]
+      },
+      "links": {
+        "wikipedia": null,
+        "trailer": null,
+        "rt": null
+      },
+      "watch_links": {},
+      "_enrichment_status": "pending",
+      "_discovered_at": "2026-03-14T09:30:27.617753",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "content_type": "limited_series",
+      "episode_count": 3,
+      "networks": [
+        "HBO Max"
+      ],
+      "poster": "https://image.tmdb.org/t/p/w500/3pcmkcUSVbpgKvKLvM7kpDJivUU.jpg",
+      "studio": "TVN Warner Bros. Discovery",
+      "budget": 0,
+      "country": "PL",
+      "original_language": "pl",
+      "original_title": "Morderca szyty na miar\u0119",
+      "crew": {
+        "director": "Unknown",
+        "cast": []
+      },
+      "_discovery_source": "provider_availability_check"
+    },
     {
       "id": "1250629",
       "title": "Bank of Dave 2: The Loan Ranger",
@@ -31517,10 +32070,10 @@
   "featured": [
     "1608619"
   ],
-  "latest_playlist_url": "https://www.youtube.com/playlist?list=PLFCewXXu8_tGTaI2pX4o_bDrsjDg93NSd",
+  "latest_playlist_url": "https://www.youtube.com/playlist?list=PLFCewXXu8_tHAi-YbuFP_qsIbud8yJwKQ",
   "_metadata": {
-    "last_discovery_write": "2026-03-13T10:27:00.751953",
-    "discovery_count": 508,
+    "last_discovery_write": "2026-03-14T10:06:02.095657",
+    "discovery_count": 518,
     "schema_version": "2.0"
   }
 }
