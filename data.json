@@ -1,7 +1,792 @@
 {
-  "generated_at": "2026-03-14T10:08:43.991329",
-  "count": 530,
+  "generated_at": "2026-03-15T10:27:00.135179",
+  "count": 545,
   "movies": [
+    {
+      "id": "1643454",
+      "title": "The Boy with My Son's Face",
+      "digital_date": "2026-03-15",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Susan's baby dies, and she is convicted for a crime she doesn\u2019t even remember committing. Years later, out on parole and fighting to start over, Susan sees a photograph that stops her cold.",
+      "genres": [
+        "Thriller",
+        "Drama"
+      ],
+      "runtime": 90,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
+      "links": {
+        "trailer": "https://www.youtube.com/watch?v=_dVujM657uI",
+        "rt": "https://www.rottentomatoes.com/m/the_boy_with_my_sons_face"
+      },
+      "watch_links": {
+        "streaming": {
+          "service": "Lifetime",
+          "link": "https://www.mylifetime.com/movies/the-boy-with-my-sons-face"
+        },
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.3f25e817-140f-47da-b1a7-e8dada1e6d53&tag=nrw04-20"
+          }
+        ]
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-15T10:20:58.311572",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/1WzVkmDkHU4jnPrZDctkO94TEgC.jpg",
+      "studio": "CMW Winter Productions",
+      "budget": 0,
+      "country": "Canada",
+      "original_language": "en",
+      "original_title": "The Boy with My Son's Face",
+      "crew": {
+        "director": "Gigi Saul Guerrero",
+        "cast": [
+          "Italia Ricci",
+          "Stephanie Izsak"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection"
+    },
+    {
+      "id": "1649887",
+      "title": "Barbara \u2013 Becoming Shirin David",
+      "digital_date": "2026-03-13",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Shortly before her 30th birthday, Shirin David takes us on a personal journey through her career.",
+      "genres": [
+        "Documentary"
+      ],
+      "runtime": 91,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
+      },
+      "links": {
+        "trailer": "https://www.youtube.com/results?search_query=Barbara%20%E2%80%93%20Becoming%20Shirin%20David%202026%20trailer"
+      },
+      "watch_links": {
+        "streaming": {
+          "service": "Netflix",
+          "link": "https://www.netflix.com/title/81953975"
+        }
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-15T10:20:45.747615",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/pn9IFXqFcF58SfdOgq6FqMBs2oS.jpg",
+      "studio": "Leonine Documentaries",
+      "budget": 0,
+      "country": "Germany",
+      "original_language": "de",
+      "original_title": "Barbara \u2013 Becoming Shirin David",
+      "crew": {
+        "director": "Michael Schmitt",
+        "cast": [
+          "Shirin David"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "tmdb_type4",
+      "_enrichment_gaps": [
+        "rt_score"
+      ]
+    },
+    {
+      "id": "1510745",
+      "title": "Bodycam",
+      "digital_date": "2026-03-13",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "A call to a quiet suburban home unleashes unthinkable carnage when two officers mistakenly shoot a man and his infant child, spiraling the tragedy into a fierce, unrelenting fall into the unknown.",
+      "genres": [
+        "Horror"
+      ],
+      "runtime": 75,
+      "year": 2026,
+      "rt_score": "83%",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "AMC Plus Apple TV Channel ",
+          "AMC+ Amazon Channel",
+          "Shudder Amazon Channel",
+          "Shudder Apple TV Channel"
+        ]
+      },
+      "links": {
+        "trailer": "https://www.youtube.com/watch?v=Ga5xa3iyXKg",
+        "rt": "https://www.rottentomatoes.com/m/bodycam"
+      },
+      "watch_links": {
+        "streaming": {
+          "service": "Amazon",
+          "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.bfe7fb9e-cce9-4e6b-a11c-ada1cf6d9b5b"
+        }
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-15T10:20:42.603686",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/xFpBNcG3Dlr8mYF5Kz9Tizs3Pxn.jpg",
+      "studio": "Superchill",
+      "budget": 0,
+      "country": "Canada",
+      "original_language": "en",
+      "original_title": "Bodycam",
+      "crew": {
+        "director": "Brandon Christensen",
+        "cast": [
+          "Jaime M. Callica",
+          "Sean Rogerson"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "tmdb_type4"
+    },
+    {
+      "id": "1367642",
+      "title": "Reminders of Him",
+      "digital_date": "2026-03-15",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "When Diem's custodial grandparents adamantly refuse Kenna's attempts to see her daughter, Kenna discovers unexpected compassion, and then something truer and deeper, with former NFL player and local bar owner Ledger. As their secret romance develops, so do the dangers for both of them, leading Kenna toward heartbreak and, ultimately, the hope for a second chance.",
+      "genres": [
+        "Drama",
+        "Romance"
+      ],
+      "runtime": 114,
+      "year": 2026,
+      "rt_score": "56%",
+      "providers": {
+        "rent": [],
+        "buy": [
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Reminders_of_Him",
+        "trailer": "https://www.youtube.com/watch?v=i36Zw32GfRQ",
+        "rt": "https://www.rottentomatoes.com/m/reminders_of_him"
+      },
+      "watch_links": {},
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-15T10:20:35.812826",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/7L6rceYgzQ0NeHD7PRDNrRoQ291.jpg",
+      "studio": "Universal Pictures",
+      "budget": 30000000,
+      "country": "United States of America",
+      "original_language": "en",
+      "original_title": "Reminders of Him",
+      "crew": {
+        "director": "Vanessa Caswill",
+        "cast": [
+          "Maika Monroe",
+          "Tyriq Withers"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection",
+      "_enrichment_gaps": [
+        "watch_links"
+      ]
+    },
+    {
+      "id": "1054493",
+      "title": "Pennum Porattum",
+      "digital_date": "2026-03-15",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "In Pattada, a village defined by its association with death, the narrative centers on Gopalan Master, Charulatha, and Suttu, each facing the village's harsh judgment and violence. Through their struggles, the story highlights the plight of the marginalized. Suttu finds solace in freedom, choosing to leave. However, Charulatha remains, her future precarious, trapped within Pattada's cycle of violence and injustice.",
+      "genres": [
+        "Comedy",
+        "Drama"
+      ],
+      "runtime": 120,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
+      },
+      "links": {
+        "trailer": "https://www.youtube.com/watch?v=VIPJzawlKrY",
+        "rt": "https://www.rottentomatoes.com/m/pennum_porattum"
+      },
+      "watch_links": {
+        "streaming": {
+          "service": "Netflix",
+          "link": "https://www.netflix.com/title/82736435"
+        }
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-15T10:17:57.320391",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/3DNAh3pwPiBBD8FHwzLPUXqs45e.jpg",
+      "studio": "Stk Frames",
+      "budget": 0,
+      "country": "India",
+      "original_language": "ml",
+      "original_title": "\u0d2a\u0d46\u0d23\u0d4d\u0d23\u0d41\u0d02 \u0d2a\u0d4a\u0d31\u0d3e\u0d1f\u0d4d\u0d1f\u0d41\u0d02",
+      "crew": {
+        "director": "Rajesh Madhavan",
+        "cast": [
+          "Rajesh Madhavan",
+          "Raina Radhakrishnan"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection"
+    },
+    {
+      "id": "1631302",
+      "title": "Fantasy Rising",
+      "digital_date": "2026-02-06",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "The definitive story of the fantasy genre's journey to the heart of popular culture.",
+      "genres": [
+        "Documentary"
+      ],
+      "runtime": 125,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "Google Play Movies",
+          "YouTube",
+          "Fandango At Home"
+        ],
+        "buy": [
+          "Google Play Movies",
+          "YouTube",
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
+      "links": {
+        "trailer": "https://www.youtube.com/results?search_query=Fantasy%20Rising%202026%20trailer"
+      },
+      "watch_links": {},
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-15T10:17:01.079806",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/ofPSFiFjQuNFW51fapsWnh9zcft.jpg",
+      "studio": null,
+      "budget": 0,
+      "country": null,
+      "original_language": "en",
+      "original_title": "Fantasy Rising",
+      "crew": {
+        "director": "Unknown",
+        "cast": []
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "tmdb_type4",
+      "_enrichment_gaps": [
+        "watch_links",
+        "rt_score"
+      ]
+    },
+    {
+      "id": "1480387",
+      "title": "undertone",
+      "digital_date": "2026-04-07",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "The host of a popular paranormal podcast becomes haunted by terrifying recordings mysteriously sent her way.",
+      "genres": [
+        "Horror",
+        "Mystery"
+      ],
+      "runtime": 94,
+      "year": 2026,
+      "rt_score": "76%",
+      "providers": {
+        "rent": [],
+        "buy": [
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Undertone_(film)",
+        "trailer": "https://www.youtube.com/watch?v=1fCZhJMkBaY",
+        "rt": "https://www.rottentomatoes.com/m/undertone"
+      },
+      "watch_links": {},
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-15T10:13:36.043243",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/1wREWUEHzjDWSreNFbFLDO7YEaM.jpg",
+      "studio": "Black Fawn Films",
+      "budget": 500000,
+      "country": "Canada",
+      "original_language": "en",
+      "original_title": "undertone",
+      "crew": {
+        "director": "Ian Tuason",
+        "cast": [
+          "Nina Kiri",
+          "Adam DiMarco"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "tmdb_type4",
+      "_enrichment_gaps": [
+        "watch_links"
+      ]
+    },
+    {
+      "id": "1406657",
+      "title": "Scarlet",
+      "digital_date": "2026-03-15",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "After failing to avenge her father's murder, Princess Scarlet, wakes up in the \"Land of the Dead.\" In this world filled with madness, if she does not achieve her revenge against her nemesis and reach the \"No End Place,\" she will become \"Void\" and cease to exist. Can Scarlet find a way to live at the end of her endless journey?",
+      "genres": [
+        "Animation",
+        "Action",
+        "Drama",
+        "Science Fiction"
+      ],
+      "runtime": 112,
+      "year": 2025,
+      "rt_score": "74%",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Scarlet_(2025_film)",
+        "trailer": "https://www.youtube.com/watch?v=J_jm2YZ8pYU",
+        "rt": "https://www.rottentomatoes.com/m/scarlet_2025"
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.ace9a07d-0b96-4aab-b9ec-ecf8bfd38892&tag=nrw04-20"
+          }
+        ]
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-15T10:09:34.184469",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/2O2tOyS4kvO9GtFPHpWmbXvfRQv.jpg",
+      "studio": "Studio Chizu",
+      "budget": 0,
+      "country": "Japan",
+      "original_language": "ja",
+      "original_title": "\u679c\u3066\u3057\u306a\u304d\u30b9\u30ab\u30fc\u30ec\u30c3\u30c8",
+      "crew": {
+        "director": "Mamoru Hosoda",
+        "cast": [
+          "Mana Ashida",
+          "Masaki Okada"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection"
+    },
+    {
+      "id": "1465781",
+      "title": "It's Dorothy!",
+      "digital_date": "2026-03-15",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Since Dorothy Gale started her epic journey down the Yellow Brick Road over a century ago in THE WONDEFUL WIZARD OF OZ, she\u2019s become a celebrity, a brand, and a beacon for marginalized voices across our culture. IT\u2019S DOROTHY! brings to life her timeless adventures in Oz through those who\u2019ve played her, from Judy Garland to Nichelle Lewis (THE WIZ), and the cultural icons (John Waters, Lena Waithe, Rufus Wainwright) who she\u2019s inspired to hope and to dream. With a magical remix of archival and cinematic art, director Jeffrey McHale follows up his SHOWGIRLS documentary with another insightful look at a queer cultural touchstone.",
+      "genres": [
+        "Documentary"
+      ],
+      "runtime": 100,
+      "year": 2025,
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Peacock Premium",
+          "Peacock Premium Plus"
+        ]
+      },
+      "links": {
+        "trailer": "https://www.youtube.com/watch?v=QI-W3zhiX1g",
+        "rt": "https://www.rottentomatoes.com/m/its_dorothy"
+      },
+      "watch_links": {
+        "streaming": {
+          "service": "Peacock",
+          "link": "https://www.peacocktv.com/watch/asset/movies/its-dorothy/283bc1f9-1b0e-3227-b9c0-5f46a84bd231"
+        }
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-15T10:09:11.028910",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/b16AelEovOj0U7FJM9owNzSgfti.jpg",
+      "studio": null,
+      "budget": 0,
+      "country": "United States of America",
+      "original_language": "en",
+      "original_title": "It's Dorothy!",
+      "crew": {
+        "director": "Jeffrey McHale",
+        "cast": [
+          "Ashanti",
+          "Fairuza Balk"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection"
+    },
+    {
+      "id": "1297446",
+      "title": "Slanted",
+      "digital_date": "2026-03-15",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "An insecure Chinese-American teenager undergoes experimental surgery to appear white, hoping to secure the prom queen title and peer acceptance.",
+      "genres": [
+        "Comedy",
+        "Horror",
+        "Science Fiction"
+      ],
+      "runtime": 102,
+      "year": 2026,
+      "rt_score": "67%",
+      "providers": {
+        "rent": [],
+        "buy": [
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Slanted",
+        "trailer": "https://www.youtube.com/watch?v=FRYAuKuzmn0",
+        "rt": "https://www.rottentomatoes.com/m/slanted"
+      },
+      "watch_links": {},
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-15T10:08:40.161961",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/cr2SfN854IlEoZQBtIfpyC0zXR5.jpg",
+      "studio": "Tideline Entertainment",
+      "budget": 0,
+      "country": "United States of America",
+      "original_language": "en",
+      "original_title": "Slanted",
+      "crew": {
+        "director": "Amy Wang",
+        "cast": [
+          "Shirley Chen",
+          "Mckenna Grace"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection",
+      "_enrichment_gaps": [
+        "watch_links"
+      ]
+    },
+    {
+      "id": "1571123",
+      "title": "Night Flight",
+      "digital_date": "2026-03-15",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Brief impressions of a night flight on an airplane - the earth and the sky become two antagonistic but inseparable forces, moments of daytime tranquility are replaced by an anxious plunge into night fog and turbulence.",
+      "genres": [
+        "Documentary"
+      ],
+      "runtime": 7,
+      "year": 2025,
+      "rt_score": "18%",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Night Flight Plus"
+        ]
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Night_Flight",
+        "trailer": "https://www.youtube.com/watch?v=wbUcIYF-xy0",
+        "rt": "https://www.rottentomatoes.com/m/night_flight_1933"
+      },
+      "watch_links": {
+        "streaming": {
+          "service": "Night Flight Plus",
+          "link": "https://www.nightflightplus.com/videos/night-flight-music-video-festival-2025/692e29c45c6a91692e44be5d"
+        }
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-15T09:51:59.245538",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/8Je9yC7VDKF5SEuzZPL5qUhiPIN.jpg",
+      "studio": null,
+      "budget": 0,
+      "country": "Kazakhstan",
+      "original_language": "en",
+      "original_title": "Night Flight",
+      "crew": {
+        "director": "Evgeny Kondrov",
+        "cast": []
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection"
+    },
+    {
+      "id": "1485163",
+      "title": "N\u00e9nuphar",
+      "digital_date": "2026-03-15",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Maude invites her boyfriend J\u00e9r\u00e9my to her mother's villa. A dream vacation! And then, the feeling that an intruder is watching. Maude suspects her ex... Indeed, F\u00e9lix is \u200b\u200bjealous. F\u00e9lix is \u200b\u200bunstable. F\u00e9lix is \u200b\u200bcompletely crazy.",
+      "genres": [
+        "Thriller"
+      ],
+      "runtime": 105,
+      "year": 2025,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
+      "links": {
+        "trailer": "https://www.youtube.com/watch?v=k_l2k6w289c"
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.418beb7b-e7a8-4538-992e-056824e3987b&tag=nrw04-20"
+          }
+        ]
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-15T09:36:27.123626",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/74VJj0YbVObvopHeOM6SUbRmkSY.jpg",
+      "studio": "M\u00e9trages FM",
+      "budget": 0,
+      "country": "France",
+      "original_language": "fr",
+      "original_title": "N\u00e9nuphar",
+      "crew": {
+        "director": "Julien Botzanowski",
+        "cast": [
+          "Thomas Lesserteur",
+          "Julien Thibaut"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection",
+      "_enrichment_gaps": [
+        "rt_score"
+      ]
+    },
+    {
+      "id": "tv_283673",
+      "title": "That Night",
+      "digital_date": "2026-03-15",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "When a young, na\u00efve single mother gets embroiled in a murder during an island getaway, her sisters rush to help. But they only make things worse.",
+      "genres": [
+        "Crime",
+        "Drama",
+        "Mystery"
+      ],
+      "runtime": null,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
+      },
+      "links": {
+        "wikipedia": null,
+        "trailer": null,
+        "rt": null
+      },
+      "watch_links": {},
+      "_enrichment_status": "pending",
+      "_discovered_at": "2026-03-15T09:32:07.292168",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "content_type": "limited_series",
+      "episode_count": 4,
+      "networks": [
+        "Netflix"
+      ],
+      "poster": "https://image.tmdb.org/t/p/w500/xOB3odcE8pbTPK0FHzfwgRTneoS.jpg",
+      "studio": "Txintxua Films",
+      "budget": 0,
+      "country": "ES",
+      "original_language": "es",
+      "original_title": "Esa noche",
+      "crew": {
+        "director": "Jason George",
+        "cast": [
+          "Clara Galle",
+          "Claudia Salas",
+          "Paula Usero",
+          "Null Garc\u00eda",
+          "Raidher D\u00edaz"
+        ]
+      },
+      "_discovery_source": "provider_availability_check"
+    },
+    {
+      "id": "tv_307624",
+      "title": "Sammy's Children's Day",
+      "digital_date": "2026-03-15",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "In the lawless 1980s Kowloon Walled City, an aspiring student and a triad enforcer find an unlikely, dangerous love while fighting for their lives.",
+      "genres": [
+        "Drama",
+        "Crime",
+        "Action & Adventure"
+      ],
+      "runtime": 45,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Rakuten Viki"
+        ]
+      },
+      "links": {
+        "wikipedia": null,
+        "trailer": null,
+        "rt": null
+      },
+      "watch_links": {},
+      "_enrichment_status": "pending",
+      "_discovered_at": "2026-03-15T09:32:06.921521",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "content_type": "limited_series",
+      "episode_count": 1,
+      "networks": [
+        "GagaOOLala"
+      ],
+      "poster": "https://image.tmdb.org/t/p/w500/87poJu88dlaReAe67HD6TUec1Cr.jpg",
+      "studio": "EASTONE ENTERTAINMENT",
+      "budget": 0,
+      "country": "CN",
+      "original_language": "zh",
+      "original_title": "\u521d\u4e09\u7684\u516d\u4e00\u5152\u7ae5\u7bc0",
+      "crew": {
+        "director": "\u5b89\u4f18",
+        "cast": [
+          "He Changxi",
+          "He Yanchao",
+          "Zhang Mingbo",
+          "Matthew Han"
+        ]
+      },
+      "_discovery_source": "provider_availability_check"
+    },
+    {
+      "id": "tv_315159",
+      "title": "Dynasty: The Murdochs",
+      "digital_date": "2026-03-15",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Offers an unprecedented look at one the world\u2019s most powerful families at a crossroads, as its patriarch, Rupert Murdoch, makes one last play to ensure his legacy at all costs.",
+      "genres": [
+        "Documentary"
+      ],
+      "runtime": null,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
+      },
+      "links": {
+        "wikipedia": null,
+        "trailer": null,
+        "rt": null
+      },
+      "watch_links": {},
+      "_enrichment_status": "pending",
+      "_discovered_at": "2026-03-15T09:32:06.108123",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "content_type": "limited_series",
+      "episode_count": 4,
+      "networks": [
+        "Netflix"
+      ],
+      "poster": "https://image.tmdb.org/t/p/w500/j5wfKP6lxz6A2IBca5rqSXru5v0.jpg",
+      "studio": "Story Syndicate",
+      "budget": 0,
+      "country": "US",
+      "original_language": "en",
+      "original_title": "Dynasty: The Murdochs",
+      "crew": {
+        "director": "Unknown",
+        "cast": []
+      },
+      "_discovery_source": "provider_availability_check"
+    },
     {
       "id": "1636891",
       "title": "Mexicali",
@@ -32070,10 +32855,10 @@
   "featured": [
     "1608619"
   ],
-  "latest_playlist_url": "https://www.youtube.com/playlist?list=PLFCewXXu8_tHAi-YbuFP_qsIbud8yJwKQ",
+  "latest_playlist_url": "https://www.youtube.com/playlist?list=PLFCewXXu8_tFX5XTY9WRl8zHlH9Tks4Os",
   "_metadata": {
-    "last_discovery_write": "2026-03-14T10:06:02.095657",
-    "discovery_count": 518,
+    "last_discovery_write": "2026-03-15T10:20:58.311580",
+    "discovery_count": 533,
     "schema_version": "2.0"
   }
 }

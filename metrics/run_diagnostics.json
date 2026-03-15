@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-03-14T10:08:45.022571",
-  "duration_seconds": 2318.099051,
+  "timestamp": "2026-03-15T10:27:01.282568",
+  "duration_seconds": 3307.352762,
   "overall_success": false,
   "failure_count": 1,
   "warning_count": 0,
@@ -8,37 +8,37 @@
     {
       "name": "Intake new premieres from TMDB",
       "success": true,
-      "duration_seconds": 9.248309,
+      "duration_seconds": 10.522919,
       "error": null,
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-03-12 to 2026-03-14 (incremental mode, 31 intaked)\n\u2705 Movie intake complete: 31 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-02-12 to 2026-03-14\n   \ud83d\udccb The Race for Ancient Egypt in Colour (2"
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-03-13 to 2026-03-15 (incremental mode, 21 intaked)\n\u2705 Movie intake complete: 21 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-02-13 to 2026-03-15\n   \ud83d\udccb Rooster Fighter (12 eps)\n   \ud83d\udccb Quelqu\u2019un"
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 2150.952893,
+      "duration_seconds": 2942.04983,
       "error": null,
-      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 14921 total movies\n\ud83d\udd0d Raw tracking filter: 13340 movies\n\ud83d\udd0d Assigned tracking_movies list: 13340\n\ud83d\udd0d Found 13340 movies in tracking status\n  Priority queue (last 180 days): 954 movies\n  Older movies: 12386 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 13340 movies for digital availability...\n\n  \u2713 Fit for a Killer now on HBO Max!\n   \u2705 Added Fit for a Killer to site immediately (discover"
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 14945 total movies\n\ud83d\udd0d Raw tracking filter: 13354 movies\n\ud83d\udd0d Assigned tracking_movies list: 13354\n\ud83d\udd0d Found 13354 movies in tracking status\n  Priority queue (last 180 days): 955 movies\n  Older movies: 12399 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 13354 movies for digital availability...\n\n  \u2713 Dynasty: The Murdochs now on Netflix!\n   \u2705 Added Dynasty: The Murdochs to site immediately"
     },
     {
       "name": "Resolve pre-order movie dates",
       "success": true,
-      "duration_seconds": 0.344082,
+      "duration_seconds": 0.326794,
       "error": null,
       "output_preview": "\n\ud83d\udcc5 Resolving pre-order movie dates...\n\n\ud83d\udcc5 Resolving pre-order dates...\n  No pre-order movies to resolve\n\u2705 Pre-order resolution complete: 0 resolved\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Enrich newly available movies with metadata",
       "success": true,
-      "duration_seconds": 157.066378,
+      "duration_seconds": 354.007723,
       "error": null,
-      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 10 movies to enrich\n  \u2717 Could not fetch details for Fit for a Killer\n  \u2717 Could not fetch details for Keluarga Yang Tak Dirindukan\n[YouTubeTrailerScraper] Initializing browser via shared manager...\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium b"
+      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 15 movies to enrich\n  \u2717 Could not fetch details for Dynasty: The Murdochs\n  \u2717 Could not fetch details for Sammy's Children's Day\n  \u2717 Could not fetch details for That Night\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)..."
     },
     {
       "name": "Host trailers for newly enriched movies",
       "success": false,
-      "duration_seconds": 0.364912,
+      "duration_seconds": 0.325619,
       "error": null,
-      "output_preview": "=== Trailer Pipeline: full ===\n\n--- Step 1: Host new trailers ---\nMovies to host: 167\nConnecting to B2...\nERROR: /home/runner/work/nrw-production/nrw-production/.env not found\n"
+      "output_preview": "=== Trailer Pipeline: full ===\n\n--- Step 1: Host new trailers ---\nMovies to host: 177\nConnecting to B2...\nERROR: /home/runner/work/nrw-production/nrw-production/.env not found\n"
     }
   ],
   "health_issues": [],
@@ -52,19 +52,19 @@
       "severity": "error",
       "message": "Phase failed with exit code 1",
       "context": null,
-      "stdout_preview": "=== Trailer Pipeline: full ===\n\n--- Step 1: Host new trailers ---\nMovies to host: 167\nConnecting to B2...\nERROR: /home/runner/work/nrw-production/nrw-production/.env not found"
+      "stdout_preview": "=== Trailer Pipeline: full ===\n\n--- Step 1: Host new trailers ---\nMovies to host: 177\nConnecting to B2...\nERROR: /home/runner/work/nrw-production/nrw-production/.env not found"
     }
   ],
   "warnings": [],
   "data_quality": {
-    "total": 14921,
-    "tracking": 13330,
-    "available": 1589,
-    "data_movies": 530,
-    "movies_with_links": 393,
-    "movies_with_rt": 407,
-    "movies_with_wikipedia": 262,
-    "movies_with_trailers": 498
+    "total": 14945,
+    "tracking": 13339,
+    "available": 1604,
+    "data_movies": 545,
+    "movies_with_links": 399,
+    "movies_with_rt": 416,
+    "movies_with_wikipedia": 267,
+    "movies_with_trailers": 510
   },
   "enrichment_metrics": {
     "timestamp": "2025-12-29T15:42:45.008551",
