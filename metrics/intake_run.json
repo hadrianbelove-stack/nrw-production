@@ -1,19 +1,19 @@
 {
-  "timestamp": "2026-03-16T10:04:32.026800",
+  "timestamp": "2026-03-17T09:54:26.720481",
   "operation": "intake_premieres",
   "scan_window": {
-    "start_date": "2026-03-14",
-    "end_date": "2026-03-16",
+    "start_date": "2026-03-15",
+    "end_date": "2026-03-17",
     "days_back": 2,
     "mode": "incremental",
     "bootstrap": false
   },
   "results": {
-    "intaked": 15,
-    "pages_fetched": 25,
-    "total_results": 435,
-    "duplicates_skipped": 420,
-    "miniseries_intaked": 2,
-    "total_intaked": 17
+    "intaked": 20,
+    "pages_fetched": 23,
+    "total_results": 419,
+    "duplicates_skipped": 399,
+    "miniseries_intaked": 6,
+    "total_intaked": 26
   }
 }

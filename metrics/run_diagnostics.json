@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-03-16T10:50:43.143175",
-  "duration_seconds": 2776.733587,
+  "timestamp": "2026-03-17T10:41:32.833566",
+  "duration_seconds": 2830.826913,
   "overall_success": false,
   "failure_count": 1,
   "warning_count": 0,
@@ -8,37 +8,37 @@
     {
       "name": "Intake new premieres from TMDB",
       "success": true,
-      "duration_seconds": 9.34091,
+      "duration_seconds": 8.657306,
       "error": null,
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-03-14 to 2026-03-16 (incremental mode, 15 intaked)\n\u2705 Movie intake complete: 15 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-02-14 to 2026-03-16\n   \ud83d\udccb The Last Duel (1 eps)\n   \ud83d\udccb Born to Bowl"
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-03-15 to 2026-03-17 (incremental mode, 20 intaked)\n\u2705 Movie intake complete: 20 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-02-15 to 2026-03-17\n   \ud83d\udccb Never Forget Your Enemy (10 eps)\n   \ud83d\udccb I"
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 2624.59197,
+      "duration_seconds": 2644.284275,
       "error": null,
-      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 14962 total movies\n\ud83d\udd0d Raw tracking filter: 13356 movies\n\ud83d\udd0d Assigned tracking_movies list: 13356\n\ud83d\udd0d Found 13356 movies in tracking status\n  Priority queue (last 180 days): 954 movies\n  Older movies: 12402 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 13356 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/13356 (0.7%) | 0 found | 0m elapsed | ~42m remaining\n  \ud83d\udcbe Progress saved (ba"
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 14988 total movies\n\ud83d\udd0d Raw tracking filter: 13377 movies\n\ud83d\udd0d Assigned tracking_movies list: 13377\n\ud83d\udd0d Found 13377 movies in tracking status\n  Priority queue (last 180 days): 958 movies\n  Older movies: 12419 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 13377 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/13377 (0.7%) | 0 found | 0m elapsed | ~42m remaining\n  \ud83d\udcbe Progress saved (ba"
     },
     {
       "name": "Resolve pre-order movie dates",
       "success": true,
-      "duration_seconds": 0.341345,
+      "duration_seconds": 0.310792,
       "error": null,
       "output_preview": "\n\ud83d\udcc5 Resolving pre-order movie dates...\n\n\ud83d\udcc5 Resolving pre-order dates...\n  No pre-order movies to resolve\n\u2705 Pre-order resolution complete: 0 resolved\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Enrich newly available movies with metadata",
       "success": true,
-      "duration_seconds": 141.98563,
+      "duration_seconds": 177.14027,
       "error": null,
-      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 4 movies to enrich\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n[YouTubeTrailerScraper] Initializing browser via shared manager...\n  \u2192 Searching YouTube: Blooming Death (2025)\n  \u2713"
+      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 7 movies to enrich\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n  \u26a1 The Ties That Bind Us (40.3s) - Wiki:\u2713 Trailer:\u2713 RT:\u2713 Links:\u2713 Date:\u25cb | 4 success, 0 errors\n  \u2713 The Ties That Bi"
     },
     {
       "name": "Host trailers for newly enriched movies",
       "success": false,
-      "duration_seconds": 0.353912,
+      "duration_seconds": 0.327719,
       "error": null,
-      "output_preview": "=== Trailer Pipeline: full ===\n\n--- Step 1: Host new trailers ---\nMovies to host: 181\nConnecting to B2...\nERROR: /home/runner/work/nrw-production/nrw-production/.env not found\n"
+      "output_preview": "=== Trailer Pipeline: full ===\n\n--- Step 1: Host new trailers ---\nMovies to host: 188\nConnecting to B2...\nERROR: /home/runner/work/nrw-production/nrw-production/.env not found\n"
     }
   ],
   "health_issues": [],
@@ -52,19 +52,19 @@
       "severity": "error",
       "message": "Phase failed with exit code 1",
       "context": null,
-      "stdout_preview": "=== Trailer Pipeline: full ===\n\n--- Step 1: Host new trailers ---\nMovies to host: 181\nConnecting to B2...\nERROR: /home/runner/work/nrw-production/nrw-production/.env not found"
+      "stdout_preview": "=== Trailer Pipeline: full ===\n\n--- Step 1: Host new trailers ---\nMovies to host: 188\nConnecting to B2...\nERROR: /home/runner/work/nrw-production/nrw-production/.env not found"
     }
   ],
   "warnings": [],
   "data_quality": {
-    "total": 14962,
-    "tracking": 13352,
-    "available": 1608,
-    "data_movies": 549,
-    "movies_with_links": 400,
-    "movies_with_rt": 419,
-    "movies_with_wikipedia": 268,
-    "movies_with_trailers": 514
+    "total": 14988,
+    "tracking": 13370,
+    "available": 1616,
+    "data_movies": 556,
+    "movies_with_links": 402,
+    "movies_with_rt": 422,
+    "movies_with_wikipedia": 270,
+    "movies_with_trailers": 521
   },
   "enrichment_metrics": {
     "timestamp": "2025-12-29T15:42:45.008551",

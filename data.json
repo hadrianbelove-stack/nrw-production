@@ -1,7 +1,390 @@
 {
-  "generated_at": "2026-03-16T10:50:42.076092",
-  "count": 549,
+  "generated_at": "2026-03-17T10:41:31.889293",
+  "count": 556,
   "movies": [
+    {
+      "id": "1393942",
+      "title": "Jitters",
+      "digital_date": "2026-03-17",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Detective Collymore, a single divorced father, stumbles upon a mysterious case involving the death of Tiffany, initially deemed natural. Digging deeper, he discovers the horrors of Jitters.",
+      "genres": [
+        "Horror",
+        "Thriller"
+      ],
+      "runtime": 94,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
+      "links": {
+        "trailer": "https://www.youtube.com/watch?v=wByrNek3PXQ"
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.cc6a08f2-3854-4bc4-abc8-cee80cc88a3e&tag=nrw04-20"
+          },
+          {
+            "service": "Apple TV",
+            "link": "https://tv.apple.com/us/movie/jitters/umc.cmc.6lrl4rywl1qhlccu8uhk3w1c5?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1876258763"
+          }
+        ]
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-17T10:38:30.248892",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/fccvkZkZ9yL6BIxojXdqFxPC8fR.jpg",
+      "studio": "Aptitude Films",
+      "budget": 0,
+      "country": "United States of America",
+      "original_language": "en",
+      "original_title": "Jitters",
+      "crew": {
+        "director": "Marc Zammit",
+        "cast": [
+          "Fabrizio Santino",
+          "Daniel Jordan"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "tmdb_type4",
+      "_enrichment_gaps": [
+        "rt_score"
+      ]
+    },
+    {
+      "id": "1636918",
+      "title": "The Plastic Detox",
+      "digital_date": "2026-03-16",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "This eye-opening documentary follows six couples with unexplained infertility as they lower their exposure to plastics in hopes it helps them conceive.",
+      "genres": [
+        "Documentary"
+      ],
+      "runtime": 92,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
+      },
+      "links": {
+        "trailer": "https://www.youtube.com/watch?v=kYm4gMhF4oU"
+      },
+      "watch_links": {
+        "streaming": {
+          "service": "Netflix",
+          "link": "https://www.netflix.com/title/82074244"
+        }
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-17T10:38:28.392113",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/lltML74nj0XRdJ4f1J3YCrQcoTj.jpg",
+      "studio": null,
+      "budget": 0,
+      "country": null,
+      "original_language": "en",
+      "original_title": "The Plastic Detox",
+      "crew": {
+        "director": "Louie Psihoyos",
+        "cast": []
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "tmdb_type4",
+      "_enrichment_gaps": [
+        "rt_score"
+      ]
+    },
+    {
+      "id": "1649529",
+      "title": "Cursed Hearse",
+      "digital_date": "2026-03-17",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "When a down on his luck hipster buys an old hearse with the hopes of converting it into a limousine service, he soon finds out that there's a lot more to the hearse than he bargained for .",
+      "genres": [
+        "Comedy",
+        "Horror"
+      ],
+      "runtime": 96,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
+      "links": {
+        "trailer": "https://www.youtube.com/watch?v=3oJnFacnmoQ",
+        "rt": "https://www.rottentomatoes.com/m/cursed_hearse"
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.3f032dd9-ab0c-4ec7-a751-288b0a7952be&tag=nrw04-20"
+          }
+        ]
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-17T10:38:02.717370",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/aPEJjaROb3YtDxtd9ZIQbS7OHDp.jpg",
+      "studio": null,
+      "budget": 0,
+      "country": "United States of America",
+      "original_language": "en",
+      "original_title": "Cursed Hearse",
+      "crew": {
+        "director": "Matthew Luke Tucci",
+        "cast": []
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection"
+    },
+    {
+      "id": "1127674",
+      "title": "The Forbidden City",
+      "digital_date": "2026-03-17",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "The son of an indebted restaurant owner joins a foreign girl in search of her sister. Together, they\u2019ll have to fight side by side against the most ruthless members of the Roman criminal underworld.",
+      "genres": [
+        "Action",
+        "Romance",
+        "Drama"
+      ],
+      "runtime": 138,
+      "year": 2025,
+      "rt_score": "92%",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Forbidden_City_(film)",
+        "trailer": "https://www.youtube.com/watch?v=E02CbJ9dCQY",
+        "rt": "https://www.rottentomatoes.com/m/the_forbidden_city_2025"
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.4a88dfa7-d459-43ff-aaf7-c6ca681b2ae7&tag=nrw04-20"
+          }
+        ]
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-17T10:31:55.756046",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/gWnADMIkTzzg1phq7dBgLbL3uRp.jpg",
+      "studio": "Wildside",
+      "budget": 18218260,
+      "country": "Italy",
+      "original_language": "it",
+      "original_title": "La citt\u00e0 proibita",
+      "crew": {
+        "director": "Gabriele Mainetti",
+        "cast": [
+          "Liu Yaxi",
+          "Enrico Borello"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "tmdb_type4"
+    },
+    {
+      "id": "1568889",
+      "title": "Lexington: 250 Years",
+      "digital_date": "2026-03-17",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Lexington: 250 Years chronicles the Kentucky city\u2019s establishment and some of its most important moments and events.  Beginning on the banks of Town Branch Creek, this documentary takes viewers on a sprawling historical journey that includes the Civil War, the Great Depression and world wars, the establishment of Transylvania University and the University of Kentucky, and Henry Clay, Mary Todd Lincoln and other notable figures in the city\u2019s history. Narrated by Lexington native and actor Josh Hopkins.",
+      "genres": [
+        "Documentary",
+        "History"
+      ],
+      "runtime": 153,
+      "year": 2025,
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "PBS"
+        ]
+      },
+      "links": {
+        "trailer": "https://www.youtube.com/watch?v=kY0-uLgN-hQ"
+      },
+      "watch_links": {
+        "streaming": {
+          "service": "PBS",
+          "link": "https://www.pbs.org/show/lexington-250-years"
+        }
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-17T10:31:02.072214",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/dmSdCGRDzI4AmkNi1a00lktOPG6.jpg",
+      "studio": "Kentucky Educational Television",
+      "budget": 0,
+      "country": null,
+      "original_language": "en",
+      "original_title": "Lexington: 250 Years",
+      "crew": {
+        "director": "Unknown",
+        "cast": []
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection",
+      "_enrichment_gaps": [
+        "rt_score"
+      ]
+    },
+    {
+      "id": "1013052",
+      "title": "U Are the Universe",
+      "digital_date": "2026-03-17",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "After the explosion of the Earth, the Ukrainian space trucker Andriy becomes the only human in the Universe until French woman Catherine calls him from the faraway space station. Andriy decides to see her despite all the obstacles.",
+      "genres": [
+        "Science Fiction",
+        "Adventure",
+        "Comedy"
+      ],
+      "runtime": 101,
+      "year": 2025,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
+      "links": {
+        "trailer": "https://www.youtube.com/watch?v=NKVB2VoNFYY"
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.c8d98e72-97e9-45e1-8f3e-43075467675a&tag=nrw04-20"
+          },
+          {
+            "service": "Apple TV",
+            "link": "https://tv.apple.com/us/movie/u-are-the-universe/umc.cmc.3sx71pcmjyhr7vdc2t0rnlwji?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1880210143"
+          }
+        ]
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-17T10:26:41.400511",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/oJpjWajfSGHIbenzqyeKoQuYfem.jpg",
+      "studio": "ForeFilms",
+      "budget": 0,
+      "country": "Belgium",
+      "original_language": "uk",
+      "original_title": "\u0422\u0438 \u2013 \u041a\u043e\u0441\u043c\u043e\u0441",
+      "crew": {
+        "director": "Pavlo Ostrikov",
+        "cast": [
+          "Volodymyr Kravchuk",
+          "Alexia Depicker"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection",
+      "_enrichment_gaps": [
+        "rt_score"
+      ]
+    },
+    {
+      "id": "1096642",
+      "title": "The Ties That Bind Us",
+      "digital_date": "2026-03-17",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "A young single father trying to find the strength to love. A feminist librarian, single by conviction, who\u2019s decided that she won\u2019t be a mother. A six-year-old child trying to find a place in a new family structure. By revealing their aspirations, their fears, their choices, Carine Tardieu depicts different ways in which humans create families.",
+      "genres": [
+        "Drama"
+      ],
+      "runtime": 106,
+      "year": 2025,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/The_Ties_That_Bind_Us",
+        "trailer": "https://www.youtube.com/watch?v=F1hA2sU70-0",
+        "rt": "https://www.rottentomatoes.com/m/the_lies_that_bind_us"
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.bdfa7e05-4ac1-4524-a60b-f3f49063061f&tag=nrw04-20"
+          },
+          {
+            "service": "Apple TV",
+            "link": "https://tv.apple.com/us/movie/the-ties-that-bind-us/umc.cmc.6a22ej5969fqvxx23bbywv5ka?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1878695934"
+          }
+        ]
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-17T10:26:30.509255",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/tRLvA1kqbII1IuFDaRncQUkDLqW.jpg",
+      "studio": "Kar\u00e9 Productions",
+      "budget": 0,
+      "country": "Belgium",
+      "original_language": "fr",
+      "original_title": "L'Attachement",
+      "crew": {
+        "director": "Carine Tardieu",
+        "cast": [
+          "Pio Marma\u00ef",
+          "Valeria Bruni Tedeschi"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection"
+    },
     {
       "id": "1560067",
       "title": "The Pink Pill: Sex, Drugs and Who Has Control",
@@ -33069,10 +33452,10 @@
   "featured": [
     "1608619"
   ],
-  "latest_playlist_url": "https://www.youtube.com/playlist?list=PLFCewXXu8_tE24TWtIlh4XHxRpRkIjrxV",
+  "latest_playlist_url": "https://www.youtube.com/playlist?list=PLFCewXXu8_tG-n4OqQdWDcQ6ax69KhLES",
   "_metadata": {
-    "last_discovery_write": "2026-03-16T10:48:18.507600",
-    "discovery_count": 537,
+    "last_discovery_write": "2026-03-17T10:38:30.248902",
+    "discovery_count": 544,
     "schema_version": "2.0"
   }
 }
