@@ -991,3 +991,88 @@ h1 {
 .health-btn:hover {
     background: rgba(255, 255, 255, 0.2);
 }
+
+/* Trailer Player */
+.poster-with-trailer {
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.poster-with-trailer img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.poster-play-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.3);
+    transition: background 0.2s;
+}
+
+.poster-with-trailer:hover .poster-play-overlay {
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.play-icon {
+    font-size: 2.5rem;
+    color: rgba(255, 255, 255, 0.8);
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    transition: transform 0.2s;
+}
+
+.poster-with-trailer:hover .play-icon {
+    transform: scale(1.2);
+    color: #fff;
+}
+
+.admin-trailer-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.admin-trailer-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.9);
+}
+
+.admin-trailer-content {
+    position: relative;
+    width: 90%;
+    max-width: 900px;
+    z-index: 1;
+}
+
+.admin-trailer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: #2a2a2a;
+    border-radius: 8px 8px 0 0;
+    border: 1px solid #3a3a3a;
+    border-bottom: none;
+}
+
+.admin-trailer-title {
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.admin-trailer-video {
+    background: #000;
+    border-radius: 0 0 8px 8px;
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+}

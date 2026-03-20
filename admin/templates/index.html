@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The New Release Wall - Admin Panel</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}?v=8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}?v=10">
 </head>
 <body>
     <!-- Health Status Banner -->
@@ -266,7 +266,17 @@
             <div class="drag-handle">
                 <div class="drag-icon">⋮⋮</div>
             </div>
-            {% if movie.poster_url %}
+            {% set trailer_url = movie.get('links', {}).get('trailer_hosted', '') or movie.get('links', {}).get('trailer', '') %}
+            {% if trailer_url %}
+            <div class="movie-poster poster-with-trailer" data-trailer-url="{{ trailer_url }}" data-trailer-title="{{ movie.title }}" title="Play trailer">
+                {% if movie.poster_url %}
+                <img src="{{ movie.poster_url }}" alt="{{ movie.title }}">
+                {% endif %}
+                <div class="poster-play-overlay">
+                    <span class="play-icon">▶</span>
+                </div>
+            </div>
+            {% elif movie.poster_url %}
             <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" class="movie-poster">
             {% else %}
             <div class="movie-poster no-poster-placeholder">
@@ -574,6 +584,18 @@
 
     <div class="success-msg" id="success-msg">Changes saved!</div>
 
-    <script src="{{ url_for('static', filename='js/admin.js') }}?v=8"></script>
+    <!-- Trailer Modal -->
+    <div id="admin-trailer-modal" class="admin-trailer-modal" style="display:none;">
+        <div class="admin-trailer-backdrop" onclick="closeAdminTrailer()"></div>
+        <div class="admin-trailer-content">
+            <div class="admin-trailer-header">
+                <span class="admin-trailer-title" id="admin-trailer-title"></span>
+                <button class="close-btn" onclick="closeAdminTrailer()">&times;</button>
+            </div>
+            <div class="admin-trailer-video" id="admin-trailer-video"></div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/admin.js') }}?v=10"></script>
 </body>
 </html>

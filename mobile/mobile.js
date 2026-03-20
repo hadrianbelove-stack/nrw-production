@@ -195,6 +195,9 @@ const NRWMobile = {
                         if (movie.categories?.is_foreign ||
                             (movie.original_language && movie.original_language !== 'en')) return true;
                         break;
+                    case 'series':
+                        if (movie.content_type === 'limited_series') return true;
+                        break;
                     case 'plex':
                         if (movie.plex && movie.plex.deep_link) return true;
                         break;
@@ -303,7 +306,7 @@ const NRWMobile = {
                              loading="lazy">
                         ${streamingBadge}
                         ${movie.categories?.is_restoration ? '<span class="poster-badge badge-restoration">RESTORED</span>' : ''}
-                        ${movie.categories?.is_festival ? `<div class="festival-ribbon">${movie.festival_info?.festival_name || 'FESTIVAL SCREENING'}</div>` : ''}
+                        ${movie.categories?.is_festival ? `<div class="festival-ribbon">${(movie.festival_info?.festival_name || 'FESTIVAL SCREENING').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>` : ''}
                         ${isStaffPick ? '<span class="staff-badge">STAFF PICK</span>' : ''}
                     </div>
                 </div>

@@ -4,7 +4,7 @@
  * Navigate between movies with left/right on remote
  */
 
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
@@ -16,8 +16,9 @@ import {
   ScrollView,
   Linking,
 } from 'react-native';
-import { Colors, Typography, Spacing } from '../constants/colors';
+import { Colors, getServiceColor, isFestivalPlatform } from '../constants/colors';
 import { useTVEventHandler, TV_EVENTS } from '../utils/focusManager.tvos';
+import TrailerPlayer from './TrailerPlayer.tvos';
 
 const FullscreenPosterModal = ({
   visible,
@@ -27,6 +28,7 @@ const FullscreenPosterModal = ({
   plexLibrary = {},
 }) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex || 0);
+  const [trailerVisible, setTrailerVisible] = useState(false);
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const [imageError, setImageError] = useState(false);
 
@@ -54,11 +56,13 @@ const FullscreenPosterModal = ({
     setImageError(false);
   }, [currentIndex, movies.length]);
 
-  // Handle TV remote events
-  useTVEventHandler({
+  // Handle TV remote events (MENU = back/dismiss on Apple TV remote)
+  useTVEventHandler(trailerVisible ? {} : {
     [TV_EVENTS.LEFT]: () => navigate(-1),
     [TV_EVENTS.RIGHT]: () => navigate(1),
-    [TV_EVENTS.BACK]: () => onClose(),
+    [TV_EVENTS.SWIPE_LEFT]: () => navigate(-1),
+    [TV_EVENTS.SWIPE_RIGHT]: () => navigate(1),
+    [TV_EVENTS.MENU]: () => onClose(),
   });
 
   // Get poster URL
@@ -120,8 +124,18 @@ const FullscreenPosterModal = ({
     }
   }, []);
 
+  // Get VOD/rental info with festival platform detection (memoized)
+  const vodInfo = useMemo(() => {
+    const watchLinks = movie.watch_links || {};
+    const vodLinks = watchLinks.vod || [];
+    if (!Array.isArray(vodLinks) || vodLinks.length === 0) return null;
+    const vod = vodLinks[0];
+    const isFestival = isFestivalPlatform(vod.service, vod.link || vod.url);
+    return { ...vod, isFestival };
+  }, [movie]);
+
   // Button component with focus handling
-  const ActionButton = ({ label, onPress, isPrimary = false, disabled = false }) => {
+  const ActionButton = ({ label, onPress, color, borderColor, textColor, isPrimary = false, disabled = false }) => {
     const [isFocused, setIsFocused] = useState(false);
     const scaleAnim = useRef(new Animated.Value(1)).current;
 
@@ -143,6 +157,8 @@ const FullscreenPosterModal = ({
       }).start();
     };
 
+    const bgColor = color || (isPrimary ? '#E50914' : '#333');
+
     return (
       <TouchableOpacity
         onPress={onPress}
@@ -154,13 +170,14 @@ const FullscreenPosterModal = ({
         <Animated.View
           style={[
             styles.button,
-            isPrimary ? styles.buttonPrimary : styles.buttonSecondary,
+            { backgroundColor: bgColor },
+            borderColor && { borderWidth: 2, borderColor },
             isFocused && styles.buttonFocused,
             disabled && styles.buttonDisabled,
             { transform: [{ scale: scaleAnim }] },
           ]}
         >
-          <Text style={[styles.buttonText, isPrimary && styles.buttonTextPrimary]}>
+          <Text style={[styles.buttonText, textColor && { color: textColor }]}>
             {label}
           </Text>
         </Animated.View>
@@ -239,8 +256,19 @@ const FullscreenPosterModal = ({
                 <ActionButton
                   label={`Watch on ${streamingInfo.service}`}
                   onPress={() => openLink(streamingInfo.link)}
-                  isPrimary={true}
+                  color={getServiceColor(streamingInfo.service)}
                   disabled={!streamingInfo.link}
+                />
+              )}
+
+              {vodInfo && (
+                <ActionButton
+                  label={vodInfo.isFestival ? 'Buy Ticket' : 'Rent / Buy'}
+                  onPress={() => openLink(vodInfo.link || vodInfo.url)}
+                  color={vodInfo.isFestival ? 'transparent' : '#ff9500'}
+                  borderColor={vodInfo.isFestival ? Colors.festivalGold : undefined}
+                  textColor={vodInfo.isFestival ? Colors.festivalGold : undefined}
+                  disabled={!(vodInfo.link || vodInfo.url)}
                 />
               )}
 
@@ -248,13 +276,15 @@ const FullscreenPosterModal = ({
                 <ActionButton
                   label="Play on Plex"
                   onPress={() => openLink(plexLibrary[String(movie.id)].deep_link)}
+                  color="#E5A00D"
                 />
               )}
 
-              {movie.links?.trailer && (
+              {(movie.links?.trailer_hosted || movie.links?.trailer) && (
                 <ActionButton
                   label="Watch Trailer"
-                  onPress={() => openLink(movie.links.trailer)}
+                  onPress={() => setTrailerVisible(true)}
+                  color="#E50914"
                 />
               )}
 
@@ -274,10 +304,21 @@ const FullscreenPosterModal = ({
           {currentIndex + 1} / {movies.length}
         </Text>
 
-        {/* Hint */}
-        <Text style={styles.hint}>
-          Swipe left/right to navigate • Menu to close
-        </Text>
+
+        {/* Trailer player overlay */}
+        {trailerVisible && movies.length > 0 && (
+          <TrailerPlayer
+            movieList={movies}
+            initialIndex={currentIndex}
+            onClose={(lastIndex) => {
+              setTrailerVisible(false);
+              if (lastIndex !== currentIndex && lastIndex >= 0 && lastIndex < movies.length) {
+                setCurrentIndex(lastIndex);
+                setImageError(false);
+              }
+            }}
+          />
+        )}
       </Animated.View>
     </Modal>
   );
@@ -358,15 +399,9 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
   },
-  buttonPrimary: {
-    backgroundColor: '#E50914',
-  },
-  buttonSecondary: {
-    backgroundColor: '#333',
-  },
   buttonFocused: {
     borderWidth: 3,
-    borderColor: '#00ffcc',
+    borderColor: Colors.focusBorderHighlight,
   },
   buttonDisabled: {
     opacity: 0.5,
@@ -376,9 +411,6 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: '600',
   },
-  buttonTextPrimary: {
-    fontWeight: '700',
-  },
   navArrow: {
     position: 'absolute',
     top: '50%',
@@ -386,7 +418,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'rgba(0, 212, 170, 0.1)',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -397,12 +429,12 @@ const styles = StyleSheet.create({
     right: 30,
   },
   navArrowFocused: {
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    backgroundColor: 'rgba(0, 212, 170, 0.25)',
     borderWidth: 2,
-    borderColor: '#00ffcc',
+    borderColor: Colors.focusBorderHighlight,
   },
   navArrowText: {
-    color: '#fff',
+    color: 'rgba(0, 212, 170, 0.6)',
     fontSize: 48,
     fontWeight: '300',
   },
@@ -411,12 +443,6 @@ const styles = StyleSheet.create({
     bottom: 40,
     color: '#888',
     fontSize: 20,
-  },
-  hint: {
-    position: 'absolute',
-    bottom: 20,
-    color: '#555',
-    fontSize: 16,
   },
 });
 

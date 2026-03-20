@@ -622,7 +622,8 @@ const NRW = {
             const streamingBadge = getStreamingBadge(movie);
             const restorationBadge = movie.categories?.is_restoration
                 ? '<div class="restoration-badge">RESTORED</div>' : '';
-            const festivalName = movie.festival_info?.festival_name || 'FESTIVAL SCREENING';
+            const rawFestivalName = movie.festival_info?.festival_name || 'FESTIVAL SCREENING';
+            const festivalName = rawFestivalName.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
             const festivalRibbon = movie.categories?.is_festival
                 ? `<div class="festival-ribbon">${festivalName}</div>` : '';
 
@@ -681,7 +682,9 @@ const NRW = {
         return null;
     },
 
-    // Check if URL points to a self-hosted MP4 trailer (resilient to query strings)
+    // Trailer architecture: trailers are downloaded via yt-dlp and self-hosted as MP4s on Backblaze B2.
+    // trailer_hosted (B2 MP4) is always preferred; trailer (YouTube URL) is fallback only.
+    // See docs/features/TRAILER_HOSTING.md
     isHostedTrailer(url) {
         if (!url) return false;
         try {
@@ -812,7 +815,6 @@ const NRW = {
                         <div class="trailer-video-container" id="trailer-video-container"></div>
                         <button class="trailer-nav next" id="trailer-nav-next" aria-label="Next trailer">&rarr;</button>
                     </div>
-                    <div class="trailer-hint">Arrow keys to navigate trailers &bull; ESC to return</div>
                 </div>
             `;
             document.body.appendChild(modal);

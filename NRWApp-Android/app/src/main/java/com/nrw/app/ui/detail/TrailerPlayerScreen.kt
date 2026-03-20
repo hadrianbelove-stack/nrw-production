@@ -60,6 +60,10 @@ private fun findNextTrailerIndex(movieList: List<Movie>, fromIndex: Int, directi
 /**
  * Fullscreen trailer player overlay with D-pad prev/next navigation.
  * LEFT/RIGHT = prev/next trailer, BACK = close and return to detail screen.
+ *
+ * Trailers are self-hosted MP4s on Backblaze B2 (trailerHosted field), played
+ * via Mp4Player. YouTube WebView embed is fallback only for movies not yet
+ * downloaded. See docs/features/TRAILER_HOSTING.md
  */
 @Composable
 fun TrailerPlayerOverlay(

@@ -1523,3 +1523,104 @@ function copyAndDismissHealth() {
     btn.innerHTML = '✓ Copied!';
     setTimeout(() => { btn.innerHTML = originalText; }, 1500);
 }
+
+// ============================================
+// Trailer Player
+// Trailers are self-hosted MP4s on Backblaze B2 (played via HTML5 <video>).
+// YouTube iframe is fallback only, for the few movies not yet downloaded.
+// See docs/features/TRAILER_HOSTING.md
+// ============================================
+
+function isHostedTrailer(url) {
+    if (!url) return false;
+    try {
+        return new URL(url).pathname.endsWith('.mp4') || url.includes('/file/NRW-TRAILERS/');
+    } catch {
+        return url.endsWith('.mp4') || url.includes('/file/NRW-TRAILERS/');
+    }
+}
+
+function extractYouTubeId(url) {
+    if (!url) return null;
+    const patterns = [
+        /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\?\/]+)/,
+        /youtube\.com\/v\/([^&\?\/]+)/,
+        /youtube\.com\/shorts\/([^&\?\/]+)/
+    ];
+    for (const pattern of patterns) {
+        const match = url.match(pattern);
+        if (match) return match[1];
+    }
+    return null;
+}
+
+function playTrailer(url, title) {
+    const modal = document.getElementById('admin-trailer-modal');
+    const container = document.getElementById('admin-trailer-video');
+    const titleEl = document.getElementById('admin-trailer-title');
+    if (!modal || !container) return;
+
+    titleEl.textContent = title || '';
+
+    if (isHostedTrailer(url)) {
+        container.innerHTML = `
+            <video id="admin-trailer-vid"
+                src="${url}"
+                controls
+                autoplay
+                preload="auto"
+                style="width:100%; height:100%; background:#000;">
+            </video>
+        `;
+    } else {
+        const videoId = extractYouTubeId(url);
+        if (!videoId) return;
+        container.innerHTML = `
+            <iframe
+                src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+                style="width:100%; height:100%;">
+            </iframe>
+        `;
+    }
+
+    modal.style.display = 'flex';
+}
+
+function closeAdminTrailer() {
+    const modal = document.getElementById('admin-trailer-modal');
+    const container = document.getElementById('admin-trailer-video');
+    if (!modal) return;
+
+    // Stop playback
+    const video = container?.querySelector('video');
+    if (video) { video.pause(); video.src = ''; }
+    const iframe = container?.querySelector('iframe');
+    if (iframe) { iframe.src = ''; }
+
+    modal.style.display = 'none';
+    if (container) container.innerHTML = '';
+}
+
+// Click handler for trailer play buttons (uses data attributes to avoid quote issues)
+document.addEventListener('click', function(e) {
+    const trailerEl = e.target.closest('.poster-with-trailer');
+    if (trailerEl) {
+        const url = trailerEl.dataset.trailerUrl;
+        const title = trailerEl.dataset.trailerTitle;
+        if (url) playTrailer(url, title);
+    }
+});
+
+// ESC to close trailer modal
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        const modal = document.getElementById('admin-trailer-modal');
+        if (modal && modal.style.display !== 'none') {
+            e.stopPropagation();
+            closeAdminTrailer();
+        }
+    }
+});

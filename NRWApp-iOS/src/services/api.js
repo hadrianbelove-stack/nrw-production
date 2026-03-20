@@ -212,7 +212,7 @@ export function filterMoviesMulti(movies, activeFilters) {
 }
 
 /**
- * Search movies by title, director, or genre
+ * Search movies by title, director, genre, country, synopsis, or year
  */
 export function searchMovies(movies, query) {
   if (!movies || !Array.isArray(movies) || !query) return movies;
@@ -221,13 +221,19 @@ export function searchMovies(movies, query) {
 
   return movies.filter(movie => {
     const title = (movie.title || '').toLowerCase();
-    const director = (movie.director || '').toLowerCase();
+    const director = (movie.crew?.director || movie.director || '').toLowerCase();
     const genres = (movie.genres || []).map(g => g.toLowerCase());
+    const country = (movie.country || '').toLowerCase();
+    const synopsis = (movie.synopsis || '').toLowerCase();
+    const year = String(movie.year || '');
 
     return (
       title.includes(lowerQuery) ||
       director.includes(lowerQuery) ||
-      genres.some(g => g.includes(lowerQuery))
+      genres.some(g => g.includes(lowerQuery)) ||
+      country.includes(lowerQuery) ||
+      synopsis.includes(lowerQuery) ||
+      year.includes(lowerQuery)
     );
   });
 }

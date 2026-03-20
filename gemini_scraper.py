@@ -1543,6 +1543,403 @@ def find_youtube_trailer(
         finder.cleanup()
 
 
+# =============================================================================
+# Pull Quote Finder
+# =============================================================================
+
+class GeminiPullQuoteFinder(GeminiFinderBase):
+    """
+    Finds real critic quotes and Letterboxd reviews using Gemini with Google Search grounding.
+
+    Returns 5-10 quotes per movie for curator selection. All quotes default to
+    unselected — nothing displays on the site until manually approved.
+
+    Usage:
+        finder = GeminiPullQuoteFinder()
+        quotes = finder.find_pull_quotes("The Brutalist", 2024, director="Brady Corbet")
+        # Returns: list of quote dicts, or empty list
+    """
+
+    _finder_name = 'PullQuotes'
+
+    def __init__(self, cache_file: str = 'cache/pull_quotes_cache.json'):
+        super().__init__(cache_file=cache_file)
+
+    def _get_extra_stats(self) -> Dict[str, int]:
+        return {'quotes_found': 0, 'insufficient_quotes': 0}
+
+    def _parse_quotes(self, text: str, source_type: str = 'critic') -> list:
+        """Parse quote lines from Gemini response text."""
+        quotes = []
+        # Match: QUOTE: "text" -- Critic Name, Publication
+        pattern = r'QUOTE:\s*["\u201c]([^"\u201d]+)["\u201d]\s*[-\u2014]{1,2}\s*([^,\n]+),\s*([^\n]+)'
+        for match in re.finditer(pattern, text):
+            quote_text = match.group(1).strip()
+            critic = match.group(2).strip()
+            outlet = match.group(3).strip()
+            # Skip if quote is too short or looks like an error
+            if len(quote_text) < 10:
+                continue
+            quotes.append({
+                'text': quote_text,
+                'critic': critic,
+                'outlet': outlet,
+                'source': source_type,
+                'selected': False,
+                'added_at': time.strftime('%Y-%m-%dT%H:%M:%S')
+            })
+        return quotes
+
+    def find_pull_quotes(
+        self,
+        title: str,
+        year: int,
+        director: str = None,
+        num_quotes: int = 8
+    ) -> list:
+        """
+        Find pull quotes for a movie using Gemini with Google Search grounding.
+
+        Args:
+            title: Movie title
+            year: Release year
+            director: Optional director name for context
+            num_quotes: Number of quotes to request (default 8)
+
+        Returns:
+            List of quote dicts with keys: text, critic, outlet, source, selected, added_at
+            Returns empty list if not enough quotes found.
+        """
+        cache_key = f"{title}_{year}"
+
+        # Check cache
+        if cache_key in self.cache:
+            cached_data = self.cache[cache_key]
+            if isinstance(cached_data, dict):
+                scraped_at = cached_data.get('scraped_at', '')
+                if scraped_at:
+                    try:
+                        from datetime import datetime, timedelta
+                        cached_dt = datetime.fromisoformat(scraped_at)
+                        if datetime.now() - cached_dt < timedelta(days=self.cache_ttl_days):
+                            cached_quotes = cached_data.get('quotes', [])
+                            if cached_quotes:
+                                self.stats['cache_hits'] += 1
+                                logger.debug(f"Pull quotes cache hit for {title} ({year}): {len(cached_quotes)} quotes")
+                                return cached_quotes
+                    except (ValueError, TypeError):
+                        pass
+
+        # Initialize Gemini
+        if not self._init_gemini():
+            return []
+
+        self.stats['gemini_attempts'] += 1
+
+        # Build context
+        context = f'"{title}" ({year})'
+        if director:
+            context += f" directed by {director}"
+
+        # --- Critic quotes prompt ---
+        critic_prompt = f"""Find {num_quotes} real critic pull quotes for the movie {context}.
+
+Requirements:
+- Return ONLY real quotes from published professional reviews
+- Each quote must include: the exact quote text, critic name, and publication name
+- Prefer short, punchy quotes (1-2 sentences, under 30 words ideal)
+- Include a mix of major outlets (NYT, Variety, Hollywood Reporter, The Guardian) and notable indie outlets (IndieWire, The Playlist, RogerEbert.com)
+- Do NOT fabricate or paraphrase quotes - only real published quotes
+- If fewer than 3 real quotes exist, respond with: INSUFFICIENT_QUOTES
+
+Format each quote as:
+QUOTE: "exact quote text" -- Critic Name, Publication Name
+
+Response:"""
+
+        all_quotes = []
+
+        # Fetch critic quotes
+        def _fetch_critic_quotes():
+            api_config = self.types.GenerateContentConfig(tools=[self.grounding_tool])
+            response = self.client.models.generate_content(
+                model=self.model_name,
+                contents=critic_prompt,
+                config=api_config
+            )
+            return response.text.strip()
+
+        try:
+            self._enforce_rate_limit()
+            result_text = self._retry_with_backoff(_fetch_critic_quotes)
+
+            if result_text and 'INSUFFICIENT_QUOTES' not in result_text:
+                critic_quotes = self._parse_quotes(result_text, source_type='critic')
+                all_quotes.extend(critic_quotes)
+                logger.info(f"Found {len(critic_quotes)} critic quotes for {title} ({year})")
+            else:
+                logger.info(f"Insufficient critic quotes for {title} ({year})")
+                self.stats['insufficient_quotes'] += 1
+
+        except Exception as e:
+            logger.warning(f"Error fetching critic quotes for {title} ({year}): {e}")
+
+        # --- Letterboxd quotes prompt ---
+        letterboxd_prompt = f"""Find 3 notable Letterboxd user reviews for the movie {context}.
+
+Requirements:
+- Only reviews with significant engagement (popular/liked reviews)
+- Prefer witty, insightful, or unusually well-written reviews
+- Include the Letterboxd username (with @ prefix)
+- Do NOT fabricate reviews - only real Letterboxd reviews
+- If no notable reviews exist, respond with: NO_REVIEWS
+
+Format each as:
+QUOTE: "review text" -- @username, Letterboxd
+
+Response:"""
+
+        def _fetch_letterboxd_quotes():
+            api_config = self.types.GenerateContentConfig(tools=[self.grounding_tool])
+            response = self.client.models.generate_content(
+                model=self.model_name,
+                contents=letterboxd_prompt,
+                config=api_config
+            )
+            return response.text.strip()
+
+        try:
+            self._enforce_rate_limit()
+            lb_text = self._retry_with_backoff(_fetch_letterboxd_quotes)
+
+            if lb_text and 'NO_REVIEWS' not in lb_text:
+                lb_quotes = self._parse_quotes(lb_text, source_type='letterboxd')
+                all_quotes.extend(lb_quotes)
+                logger.info(f"Found {len(lb_quotes)} Letterboxd quotes for {title} ({year})")
+
+        except Exception as e:
+            logger.warning(f"Error fetching Letterboxd quotes for {title} ({year}): {e}")
+
+        # Cache results (even if empty, to avoid re-fetching)
+        if all_quotes:
+            self.stats['gemini_successes'] += 1
+            self.stats['quotes_found'] += len(all_quotes)
+        else:
+            self.stats['gemini_failures'] += 1
+
+        self.cache[cache_key] = {
+            'quotes': all_quotes,
+            'title': title,
+            'year': year,
+            'scraped_at': time.strftime('%Y-%m-%dT%H:%M:%S')
+        }
+        self._save_cache()
+
+        return all_quotes
+
+
+class GeminiQuoteExtractor(GeminiFinderBase):
+    """
+    Extracts the punchiest pull-quote line from Letterboxd reviews.
+
+    NOT a generator — Gemini selects from existing text.
+    Every extraction is verified as a verbatim substring of the original.
+    """
+
+    _finder_name = 'QuoteExtractor'
+
+    def __init__(self):
+        super().__init__(cache_file='cache/quote_extractions_cache.json')
+
+    def _get_extra_stats(self) -> Dict[str, int]:
+        return {
+            'reviews_processed': 0,
+            'quotes_extracted': 0,
+            'quotes_skipped': 0,
+            'verification_failures': 0
+        }
+
+    def _verify_verbatim(self, extracted: str, original: str) -> bool:
+        """Verify extracted quote exists verbatim in original review text."""
+        # Normalize whitespace for comparison (reviews may have odd spacing)
+        norm_extracted = ' '.join(extracted.split()).strip()
+        norm_original = ' '.join(original.split()).strip()
+        return norm_extracted.lower() in norm_original.lower()
+
+    def _build_prompt(self, reviews: list) -> str:
+        """Build the extraction prompt for a batch of reviews."""
+        review_block = []
+        for i, review in enumerate(reviews):
+            text = review.get('text', '').strip()
+            word_count = len(text.split())
+            review_block.append(f"[{i+1}] ({word_count} words) \"{text}\"")
+
+        reviews_text = '\n\n'.join(review_block)
+
+        return f"""You are extracting pull quotes from Letterboxd movie reviews.
+
+For each numbered review below, extract the SINGLE most quotable sentence or phrase.
+
+RULES:
+- Copy the text EXACTLY as written. Do not change, rephrase, or "improve" ANY words.
+- Maximum 50 words for the extracted quote.
+- If the review is already short (under 50 words) and punchy, return it exactly as-is.
+- If the review has no quotable material (boring, generic, or incoherent), return SKIP.
+- Look for: wit, humor, sharp observations, vivid imagery, memorable one-liners, personality.
+- Avoid: generic praise ("great movie"), vague feelings ("it made me feel things"), plot summaries.
+
+FORMAT (one per line):
+[1] "exact extracted text here"
+[2] SKIP
+[3] "exact extracted text here"
+
+REVIEWS:
+{reviews_text}"""
+
+    def _parse_response(self, response_text: str, reviews: list) -> Dict[int, str]:
+        """Parse Gemini response into index -> extracted quote mapping."""
+        results = {}
+        pattern = r'\[(\d+)\]\s*(?:"([^"]+)"|[\u201c]([^\u201d]+)[\u201d]|SKIP)'
+
+        for match in re.finditer(pattern, response_text):
+            idx = int(match.group(1)) - 1  # Convert to 0-based
+            quote = match.group(2) or match.group(3)  # ASCII or smart quotes
+
+            if idx < 0 or idx >= len(reviews):
+                continue
+
+            if quote:  # Not SKIP
+                results[idx] = quote.strip()
+            # SKIP entries are intentionally omitted
+
+        return results
+
+    def extract_quotes(self, reviews: list, title: str = '', year: int = 0) -> list:
+        """
+        Extract punchy pull quotes from a list of Letterboxd reviews.
+
+        Args:
+            reviews: List of review dicts (from letterboxd_reviews_cache.json)
+            title: Movie title (for cache key)
+            year: Movie year (for cache key)
+
+        Returns:
+            The same list with 'pull_quote' field added to each review.
+            pull_quote = extracted line, or None if skipped/failed.
+        """
+        if not reviews:
+            return reviews
+
+        # Check cache
+        cache_key = f"{title}_{year}" if title else None
+        if cache_key and cache_key in self.cache:
+            cached = self.cache[cache_key]
+            cached_at = cached.get('extracted_at', '')
+            # Check TTL
+            if cached_at:
+                try:
+                    from datetime import datetime, timedelta
+                    cached_time = datetime.fromisoformat(cached_at)
+                    if datetime.now() - cached_time < timedelta(days=self.cache_ttl_days):
+                        logger.info(f"Using cached extractions for {title} ({year})")
+                        self.stats['cache_hits'] += 1
+                        return cached.get('reviews', reviews)
+                except (ValueError, TypeError):
+                    pass
+
+        if not self._init_gemini():
+            logger.error("Cannot extract quotes - Gemini not available")
+            return reviews
+
+        # Process in batches of 10 (to stay within prompt limits)
+        batch_size = 10
+        all_results = {}
+
+        for batch_start in range(0, len(reviews), batch_size):
+            batch = reviews[batch_start:batch_start + batch_size]
+            prompt = self._build_prompt(batch)
+
+            self.stats['gemini_attempts'] += 1
+            self._enforce_rate_limit()
+
+            def _make_request():
+                # No grounding needed — we're analyzing provided text, not searching
+                config = self.types.GenerateContentConfig()
+                response = self.client.models.generate_content(
+                    model=self.model_name,
+                    contents=prompt,
+                    config=config
+                )
+                return response.text.strip()
+
+            response_text = self._retry_with_backoff(_make_request)
+
+            if not response_text:
+                self.stats['gemini_failures'] += 1
+                logger.warning(f"No response from Gemini for batch starting at {batch_start}")
+                continue
+
+            self.stats['gemini_successes'] += 1
+            batch_results = self._parse_response(response_text, batch)
+
+            # Map batch indices back to global indices
+            for batch_idx, quote in batch_results.items():
+                all_results[batch_start + batch_idx] = quote
+
+        # Apply results to reviews with verbatim verification
+        for i, review in enumerate(reviews):
+            self.stats['reviews_processed'] += 1
+            original_text = review.get('text', '')
+            word_count = len(original_text.split())
+
+            if i in all_results:
+                extracted = all_results[i]
+
+                # Verify verbatim
+                if self._verify_verbatim(extracted, original_text):
+                    review['pull_quote'] = extracted
+                    self.stats['quotes_extracted'] += 1
+                    logger.debug(f"  Extracted: \"{extracted[:60]}...\"")
+                else:
+                    # Verification failed — Gemini modified the text
+                    self.stats['verification_failures'] += 1
+                    logger.warning(
+                        f"  Verification FAILED for review {i+1} by {review.get('critic', '?')}: "
+                        f"extracted text not found verbatim in original"
+                    )
+                    # Fallback: use full text if short, otherwise None
+                    if word_count <= 50:
+                        review['pull_quote'] = original_text
+                    else:
+                        review['pull_quote'] = None
+            else:
+                # Gemini returned SKIP or didn't include this review
+                self.stats['quotes_skipped'] += 1
+                # For very short reviews, keep them anyway — they're already punchy
+                if word_count <= 20:
+                    review['pull_quote'] = original_text
+                else:
+                    review['pull_quote'] = None
+
+        # Cache results
+        if cache_key:
+            from datetime import datetime
+            self.cache[cache_key] = {
+                'reviews': reviews,
+                'title': title,
+                'year': year,
+                'extracted_at': datetime.now().isoformat()
+            }
+            self._save_cache()
+
+        extracted_count = sum(1 for r in reviews if r.get('pull_quote'))
+        logger.info(
+            f"Quote extraction for {title}: {extracted_count}/{len(reviews)} reviews → pull quotes"
+        )
+
+        return reviews
+
+
 if __name__ == "__main__":
     # Test the finder
     import sys

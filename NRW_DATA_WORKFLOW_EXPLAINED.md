@@ -84,7 +84,7 @@ An ongoing, accumulating database of digital release dates that no one else trac
 - Similar multi-tier approach with manual overrides → cache → API/scraper → fallback
 - **Wikipedia:** 4-tier waterfall (Cache → Wikidata SPARQL → REST API → Playwright). Uses OMDb API fallback for IMDb ID when TMDB doesn't have it.
 - **Rotten Tomatoes:** Playwright scraper with 90-day cache
-- **YouTube Trailers:** Playwright scraper integrated into generate_data.py
+- **Trailers:** YouTube URLs found via Playwright scraper, then downloaded as MP4s and self-hosted on Backblaze B2 (see [docs/features/TRAILER_HOSTING.md](docs/features/TRAILER_HOSTING.md))
 
 ### **Phase 3: Optional Editorial Review**
 **What happens:** Optional manual curation when editorial review is desired. By default, the daily automation auto-commits discovered content directly to `main` and produces data.json without requiring admin approval.

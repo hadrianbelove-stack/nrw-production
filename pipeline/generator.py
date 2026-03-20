@@ -647,6 +647,13 @@ class DataGenerator:
                         print(f"   ⏭️  Not a miniseries (type={details.get('type')}): {series.get('name')}")
                     continue
 
+                # Skip single-episode shows (TV movies misclassified as miniseries)
+                episode_count = details.get('number_of_episodes', 0)
+                if episode_count < 2:
+                    if debug:
+                        print(f"   ⏭️  Too few episodes ({episode_count}): {series.get('name')}")
+                    continue
+
                 # Get watch providers
                 providers_url = f"https://api.themoviedb.org/3/tv/{series['id']}/watch/providers"
                 try:
@@ -662,7 +669,7 @@ class DataGenerator:
                     'title': series.get('name', 'Unknown'),
                     'content_type': 'limited_series',
                     'tmdb_id': series['id'],
-                    'status': 'available' if us_providers else 'tracking',
+                    'status': 'tracking',  # Always start as tracking; discovery phase handles transition to available
                     'first_air_date': first_air_date,
                     'digital_date': first_air_date,  # Use first_air_date as digital_date for sorting
                     'episode_count': details.get('number_of_episodes'),
@@ -2236,8 +2243,8 @@ class DataGenerator:
 
     def find_trailer_url(self, movie_details):
         """Extract trailer URL from TMDB movie details or scrape YouTube"""
-        title = movie_details.get('title', '')
-        year = movie_details.get('release_date', '')[:4] if movie_details.get('release_date') else ''
+        title = movie_details.get('name') or movie_details.get('title', '')
+        year = (movie_details.get('first_air_date') or movie_details.get('release_date', ''))[:4] if (movie_details.get('first_air_date') or movie_details.get('release_date')) else ''
 
         # 1. Check manual overrides first
         override_key = f"{title}_{year}"
@@ -2576,9 +2583,10 @@ class DataGenerator:
             self.logger.error(f"Movie details missing for movie_id {movie_id}")
             return None
 
-        # Safely extract basic info with fallbacks
-        title = movie_details.get('title', f'Unknown Movie {movie_id}')
-        release_date = movie_details.get('release_date', '')
+        # Safely extract basic info with fallbacks (TV series use different TMDB field names)
+        is_tv = movie_data.get('content_type') == 'limited_series'
+        title = movie_details.get('name' if is_tv else 'title', f'Unknown Movie {movie_id}')
+        release_date = movie_details.get('first_air_date' if is_tv else 'release_date', '')
         year = release_date[:4] if release_date else ''
         imdb_id = movie_details.get('external_ids', {}).get('imdb_id')
 
@@ -2591,11 +2599,18 @@ class DataGenerator:
         movie_start_time = time.time()
 
         # Initialize result with basic TMDB data (always available)
+        # TV series runtime: use episode_run_time array; movies: use runtime directly
+        if is_tv:
+            ep_runtimes = movie_details.get('episode_run_time', [])
+            runtime = ep_runtimes[0] if ep_runtimes else movie_data.get('runtime')
+        else:
+            runtime = movie_details.get('runtime')
+
         result = {
             'title': title,
             'poster': f"https://image.tmdb.org/t/p/w500{movie_details['poster_path']}" if movie_details.get('poster_path') else None,
             'synopsis': movie_details.get('overview', 'No synopsis available.'),
-            'runtime': movie_details.get('runtime'),
+            'runtime': runtime,
             'year': int(year) if year.isdigit() else None,
             'rt_score': None,
             'links': {},
@@ -2643,7 +2658,7 @@ class DataGenerator:
         try:
             rt_director = movie_details.get('crew', {}).get('director') if movie_details else None
             rt_lang = movie_details.get('original_language') if movie_details else None
-            rt_orig_title = movie_details.get('original_title') if movie_details else None
+            rt_orig_title = movie_details.get('original_name' if is_tv else 'original_title') if movie_details else None
             rt_data = self.find_rt_url(title, year, imdb_id, director=rt_director, original_language=rt_lang, original_title=rt_orig_title)
             if rt_data:
                 if isinstance(rt_data, dict):
@@ -2705,10 +2720,16 @@ class DataGenerator:
             director = "Unknown"
             cast = []
 
-            for crew in credits.get('crew', []):
-                if crew['job'] == 'Director':
-                    director = crew['name']
-                    break
+            if is_tv:
+                # TV series: use created_by for director
+                created_by = movie_details.get('created_by', [])
+                if created_by:
+                    director = created_by[0].get('name', 'Unknown')
+            else:
+                for crew in credits.get('crew', []):
+                    if crew['job'] == 'Director':
+                        director = crew['name']
+                        break
 
             for actor in credits.get('cast', [])[:2]:  # Top 2 actors
                 cast.append(actor['name'])
@@ -2720,9 +2741,15 @@ class DataGenerator:
                 studio = production_companies[0]['name']
 
             country = None
-            production_countries = movie_details.get('production_countries', [])
-            if production_countries:
-                country = production_countries[0]['name']
+            if is_tv:
+                # TV series: origin_country is ISO codes like ['US', 'GB']
+                origin_countries = movie_details.get('origin_country', [])
+                if origin_countries:
+                    country = origin_countries[0]
+            else:
+                production_countries = movie_details.get('production_countries', [])
+                if production_countries:
+                    country = production_countries[0]['name']
 
             # Add metadata to result
             result.update({
@@ -2745,20 +2772,25 @@ class DataGenerator:
             })
 
         # Digital date correction from TMDB Type 4 (isolated failure handling)
-        try:
-            type4_date = self.fetch_tmdb_type4_date(movie_id)
-            if type4_date:
-                result['digital_date'] = type4_date
-                result['_digital_date_source'] = 'tmdb_type4'
-                enrichment_results['digital_date'] = 'success'
-                self.logger.debug(f"Digital Date: Corrected to {type4_date} for {title}")
-            else:
+        # TV series don't have Type 4 release dates - skip for limited series
+        if is_tv:
+            result['_digital_date_source'] = 'first_air_date'
+            enrichment_results['digital_date'] = 'not_attempted'
+        else:
+            try:
+                type4_date = self.fetch_tmdb_type4_date(movie_id)
+                if type4_date:
+                    result['digital_date'] = type4_date
+                    result['_digital_date_source'] = 'tmdb_type4'
+                    enrichment_results['digital_date'] = 'success'
+                    self.logger.debug(f"Digital Date: Corrected to {type4_date} for {title}")
+                else:
+                    result['_digital_date_source'] = 'detection'
+                    enrichment_results['digital_date'] = 'not_found'
+            except Exception as e:
+                enrichment_results['digital_date'] = 'error'
                 result['_digital_date_source'] = 'detection'
-                enrichment_results['digital_date'] = 'not_found'
-        except Exception as e:
-            enrichment_results['digital_date'] = 'error'
-            result['_digital_date_source'] = 'detection'
-            self.logger.warning(f"Digital Date: Error for {title}: {type(e).__name__}: {str(e)[:100]}")
+                self.logger.warning(f"Digital Date: Error for {title}: {type(e).__name__}: {str(e)[:100]}")
 
         # Calculate enrichment timing and log detailed results
         movie_duration = time.time() - movie_start_time
@@ -2995,6 +3027,8 @@ class DataGenerator:
             int: Number of movies successfully enriched
         """
         print("🎨 Starting enrichment phase...")
+        import time as _time
+        _enrich_start = _time.time()
 
         # Check if data.json exists
         if not os.path.exists('data.json'):
@@ -3066,8 +3100,12 @@ class DataGenerator:
             movie_index = movie_lookup[movie_id]
 
             try:
-                # Get full movie details from TMDB
-                movie_details = self.get_movie_details(movie_id)
+                # Get full movie/TV details from TMDB
+                if str(movie_id).startswith('tv_'):
+                    numeric_id = str(movie_id).replace('tv_', '')
+                    movie_details = self.get_tv_details(numeric_id)
+                else:
+                    movie_details = self.get_movie_details(movie_id)
                 if not movie_details:
                     print(f"  ✗ Could not fetch details for {movie_data.get('title', movie_id)}")
                     continue
@@ -3111,6 +3149,9 @@ class DataGenerator:
                     existing_movies[movie_index]['_enrichment_status'] = 'error'
                 print(f"  ✗ Error enriching {movie_data.get('title', movie_id)}: {e}")
                 continue
+
+        # Categorize all movies (backfills any missing categories from prior runs)
+        existing_movies, _ = self.apply_admin_overrides(existing_movies)
 
         # Save enrichment results to data.json BEFORE trailer hosting
         # (trailer hosting can crash and must not prevent saving enrichment data)
@@ -3162,6 +3203,20 @@ class DataGenerator:
                 print("  No new trailers to host")
         else:
             print("🎬 Trailer hosting: disabled (config)")
+
+        # Write enrichment metrics
+        try:
+            enrichment_metrics = {
+                "timestamp": datetime.now().isoformat(),
+                "movies_requested": len(movie_ids_to_enrich),
+                "movies_enriched": enriched_count,
+                "movies_deferred": len(movie_ids_to_enrich) - enriched_count,
+                "enrichment_duration_seconds": round(_time.time() - _enrich_start, 2),
+            }
+            with open('metrics/enrichment_run.json', 'w') as f:
+                json.dump(enrichment_metrics, f, indent=2)
+        except Exception as e:
+            print(f"⚠️ Could not write enrichment metrics: {e}")
 
         return enriched_count
 

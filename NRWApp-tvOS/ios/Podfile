@@ -1,6 +1,9 @@
 source 'https://github.com/react-native-tvos/react-native-tvos-podspecs.git'
 source 'https://cdn.cocoapods.org/'
 
+# Suppress deprecation warnings from third-party pods (Folly, SocketRocket, Hermes)
+inhibit_all_warnings!
+
 # Resolve react_native_pods.rb with node to allow for hoisting
 require Pod::Executable.execute_command('node', ['-p',
   'require.resolve(
@@ -73,4 +76,13 @@ post_install do |installer|
     config[:reactNativePath],
     :mac_catalyst_enabled => false
   )
+
+  # Bump pod deployment targets to avoid deprecation warnings with modern Xcode
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      if config.build_settings['TVOS_DEPLOYMENT_TARGET'].to_f < 15.0
+        config.build_settings['TVOS_DEPLOYMENT_TARGET'] = '15.0'
+      end
+    end
+  end
 end

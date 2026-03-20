@@ -1,41 +1,30 @@
 /**
  * New Release Wall - tvOS Trailer Player
  * Fullscreen overlay for in-app trailer playback with prev/next navigation
- * Controls: LEFT/RIGHT = prev/next trailer, MENU = close, PLAY_PAUSE = pause/resume
+ * Controls: LEFT/RIGHT or SWIPE = prev/next trailer, MENU = close,
+ *           PLAY_PAUSE or SELECT = pause/resume
+ *
+ * Trailers are self-hosted MP4s on Backblaze B2 (trailer_hosted field), played
+ * via react-native-video. YouTube iframe is fallback only for movies not yet
+ * downloaded. See docs/features/TRAILER_HOSTING.md
  */
 
-import React, { useState, useCallback, useRef, useMemo, useEffect } from 'react';
-import { View, Text, StyleSheet, Dimensions, Animated, Linking } from 'react-native';
+import React, { useState, useCallback, useRef, useMemo } from 'react';
+import { View, Text, StyleSheet, Dimensions, Animated } from 'react-native';
 import Video from 'react-native-video';
+import { WebView } from 'react-native-webview';
 import { useTVEventHandler, TV_EVENTS } from '../utils/focusManager.tvos';
 import { extractYouTubeId } from '../utils/links.tvos';
 import { Colors } from '../constants/colors';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
-// Opens the YouTube app on Apple TV and auto-closes the trailer overlay
-const YouTubeLauncher = ({ youtubeId, onClose }) => {
-  useEffect(() => {
-    const url = `https://www.youtube.com/watch?v=${youtubeId}`;
-    Linking.openURL(url).catch(() => {});
-    // Auto-close after a brief delay so the overlay doesn't linger
-    const timer = setTimeout(onClose, 1500);
-    return () => clearTimeout(timer);
-  }, [youtubeId, onClose]);
-
-  return (
-    <View style={styles.youtubeFallback}>
-      <Text style={styles.youtubeFallbackIcon}>▶</Text>
-      <Text style={styles.youtubeFallbackText}>Opening YouTube...</Text>
-    </View>
-  );
-};
-
 const TrailerPlayer = ({ movieList, initialIndex, onClose }) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [paused, setPaused] = useState(false);
   const leftArrowOpacity = useRef(new Animated.Value(0.4)).current;
   const rightArrowOpacity = useRef(new Animated.Value(0.4)).current;
+  const webViewRef = useRef(null);
 
   const currentMovie = movieList[currentIndex];
   const trailerUrl = currentMovie?.links?.trailer_hosted || currentMovie?.links?.trailer || '';
@@ -48,6 +37,47 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose }) => {
       return trailerUrl.endsWith('.mp4');
     }
   }, [trailerUrl]);
+
+  // YouTube embed HTML using IFrame Player API for programmatic control
+  const youtubeHtml = useMemo(() => {
+    if (!youtubeId) return '';
+    return `
+      <html><head><meta name="viewport" content="width=device-width,initial-scale=1">
+      <style>*{margin:0;padding:0;background:#000}#ytplayer{width:100vw;height:100vh}</style>
+      <script>
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        document.head.appendChild(tag);
+        var player;
+        function onYouTubeIframeAPIReady() {
+          player = new YT.Player('ytplayer', {
+            width: '100%', height: '100%',
+            videoId: '${youtubeId}',
+            playerVars: {
+              autoplay: 1, controls: 0, rel: 0,
+              modestbranding: 1, playsinline: 1, fs: 0
+            },
+          });
+        }
+        function togglePlayPause() {
+          if (!player || !player.getPlayerState) return;
+          var state = player.getPlayerState();
+          if (state === 1) player.pauseVideo();
+          else player.playVideo();
+        }
+      </script></head>
+      <body><div id="ytplayer"></div></body></html>
+    `;
+  }, [youtubeId]);
+
+  // Toggle play/pause for both MP4 and YouTube
+  const togglePlayPause = useCallback(() => {
+    if (isMP4) {
+      setPaused(p => !p);
+    } else if (youtubeId && webViewRef.current) {
+      webViewRef.current.injectJavaScript('togglePlayPause(); true;');
+    }
+  }, [isMP4, youtubeId]);
 
   // Flash arrow animation for navigation feedback
   const flashArrow = useCallback((arrowAnim) => {
@@ -90,11 +120,16 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose }) => {
   }, [currentIndex, findNextTrailerIndex, flashArrow, leftArrowOpacity]);
 
   // Handle TV remote events
+  // Note: useTVEventHandler creates a global TVEventHandler (null component),
+  // so events fire regardless of WebView focus state.
   useTVEventHandler({
     [TV_EVENTS.LEFT]: navigatePrevious,
     [TV_EVENTS.RIGHT]: navigateNext,
+    [TV_EVENTS.SWIPE_LEFT]: navigatePrevious,
+    [TV_EVENTS.SWIPE_RIGHT]: navigateNext,
     [TV_EVENTS.MENU]: () => onClose(currentIndex),
-    [TV_EVENTS.PLAY_PAUSE]: () => setPaused(p => !p),
+    [TV_EVENTS.PLAY_PAUSE]: togglePlayPause,
+    [TV_EVENTS.SELECT]: togglePlayPause,
   });
 
   // Count trailers for the counter display
@@ -125,7 +160,15 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose }) => {
           onError={() => onClose(currentIndex)}
         />
       ) : youtubeId ? (
-        <YouTubeLauncher youtubeId={youtubeId} onClose={() => onClose(currentIndex)} />
+        <WebView
+          ref={webViewRef}
+          source={{ html: youtubeHtml }}
+          style={styles.video}
+          scrollEnabled={false}
+          allowsInlineMediaPlayback={true}
+          mediaPlaybackRequiresUserAction={false}
+          javaScriptEnabled={true}
+        />
       ) : null}
 
       {/* Title overlay */}
@@ -146,10 +189,6 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose }) => {
         </View>
       )}
 
-      {/* Hint */}
-      <View style={styles.hintBar}>
-        <Text style={styles.hintText}>◀ ▶ Navigate trailers  •  Menu to return</Text>
-      </View>
     </View>
   );
 };
@@ -206,38 +245,6 @@ const styles = StyleSheet.create({
     color: Colors.primary,
     fontSize: 80,
     fontWeight: '300',
-  },
-  hintBar: {
-    position: 'absolute',
-    bottom: 30,
-    left: 0,
-    right: 0,
-    alignItems: 'center',
-  },
-  hintText: {
-    color: Colors.textMuted,
-    fontSize: 20,
-  },
-  youtubeFallback: {
-    flex: 1,
-    backgroundColor: '#000',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  youtubeFallbackIcon: {
-    fontSize: 60,
-    color: Colors.primary,
-    marginBottom: 20,
-  },
-  youtubeFallbackText: {
-    color: '#fff',
-    fontSize: 28,
-    fontWeight: '600',
-    marginBottom: 10,
-  },
-  youtubeFallbackHint: {
-    color: Colors.textMuted,
-    fontSize: 20,
   },
 });
 

@@ -12,10 +12,13 @@ import {
 } from 'react-native';
 
 // Event types from Siri Remote
+// Note: On newer remotes the "Menu" button is labeled "Back" (<) but both
+// fire as 'menu' in React Native tvOS. BACK is an alias for semantic clarity.
 export const TV_EVENTS = {
   SELECT: 'select',
   PLAY_PAUSE: 'playPause',
   MENU: 'menu',
+  BACK: 'menu',  // Alias — same event, clearer intent for dismiss/go-back
   UP: 'up',
   DOWN: 'down',
   LEFT: 'left',

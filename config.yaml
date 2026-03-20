@@ -468,6 +468,8 @@ gemini_scraper:
   youtube_enabled: true            # YouTube-specific toggle - set false for Playwright-only trailers
   rt_enabled: true                 # RT-specific toggle - set false for Playwright-only RT
   wikipedia_enabled: true          # Wikipedia-specific toggle - set false for Playwright-only Wikipedia
+  pull_quotes_enabled: true        # Pull quotes - find critic/Letterboxd quotes per movie
+  pull_quotes_count: 8             # Number of critic quotes to request per movie
   use_playwright_fallback: true    # Try Playwright if Gemini fails
   timeout_seconds: 30              # Prevent hanging API calls
   rate_limit: 1.0                  # Seconds between API calls

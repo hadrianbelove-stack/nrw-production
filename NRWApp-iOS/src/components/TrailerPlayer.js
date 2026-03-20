@@ -2,6 +2,10 @@
  * New Release Wall - iOS Trailer Player
  * Fullscreen overlay for in-app trailer playback with prev/next navigation
  * Controls: Swipe left/right or tap arrows = prev/next, X button = close
+ *
+ * Trailers are self-hosted MP4s on Backblaze B2 (trailer_hosted field), played
+ * via react-native-video. YouTube iframe is fallback only for movies not yet
+ * downloaded. See docs/features/TRAILER_HOSTING.md
  */
 
 import React, { useState, useCallback, useRef, useMemo } from 'react';

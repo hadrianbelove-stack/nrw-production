@@ -23,6 +23,9 @@ jobs:
       OMDB_API_KEY: ${{ secrets.OMDB_API_KEY }}
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       MIN_PROVIDER_COVERAGE: ${{ secrets.MIN_PROVIDER_COVERAGE }}
+      B2_KEY_ID: ${{ secrets.B2_KEY_ID }}
+      B2_APPLICATION_KEY: ${{ secrets.B2_APPLICATION_KEY }}
+      B2_BUCKET_NAME: ${{ secrets.B2_BUCKET_NAME }}
       # Playwright configuration
       NRW_USE_SHARED_PLAYWRIGHT: 'true'  # Use shared PlaywrightManager (now default behavior)
 

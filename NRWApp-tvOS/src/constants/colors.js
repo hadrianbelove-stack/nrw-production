@@ -50,6 +50,50 @@ export const Colors = {
 
   // Service colors
   maxPurple: '#B537F2',
+
+  // Focus highlight (brighter teal for focused button borders)
+  focusBorderHighlight: '#00ffcc',
+};
+
+/**
+ * Get brand color for a streaming service
+ * @param {string} service - Service name (e.g. 'Netflix', 'Disney+')
+ * @returns {string} Hex color code
+ */
+export const getServiceColor = (service) => {
+  const colors = {
+    netflix: '#E50914',
+    'disney+': '#113CCF',
+    disneyplus: '#113CCF',
+    max: '#B537F2',
+    hbo: '#B537F2',
+    prime: '#00A8E1',
+    amazon: '#00A8E1',
+    hulu: '#1CE783',
+    peacock: '#000000',
+    appletv: '#000000',
+    paramount: '#0064FF',
+    plex: '#E5A00D',
+  };
+  const key = service.toLowerCase().replace(/[^a-z0-9]/g, '');
+  return colors[key] || '#00d4aa';
+};
+
+/**
+ * Check if a VOD service/URL is a festival ticketing platform
+ * @param {string} service - Service name
+ * @param {string} url - Link URL
+ * @returns {boolean}
+ */
+export const isFestivalPlatform = (service, url) => {
+  const svc = (service || '').toLowerCase();
+  const link = (url || '').toLowerCase();
+  return (
+    svc.includes('eventive') ||
+    link.includes('eventive.org') ||
+    link.includes('festivalplayer') ||
+    link.includes('shift72.com')
+  );
 };
 
 export const Typography = {

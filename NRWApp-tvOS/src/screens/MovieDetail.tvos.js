@@ -25,7 +25,7 @@ import {
   getAccessibilityLabel,
 } from './useMovieDetail';
 import WatchButton from '../components/WatchButton.tvos';
-import { Colors, Typography, Spacing } from '../constants/colors';
+import { Colors, Typography, Spacing, getServiceColor, isFestivalPlatform } from '../constants/colors';
 import { useTVEventHandler, TV_EVENTS } from '../utils/focusManager.tvos';
 import {
   openAmazon,
@@ -47,26 +47,6 @@ const formatShortDate = (dateStr) => {
   const [y, m, d] = dateStr.split('-');
   const dt = new Date(y, m - 1, d);
   return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-};
-
-// Service colors for streaming buttons
-const getServiceColor = (service) => {
-  const colors = {
-    netflix: '#E50914',
-    'disney+': '#113CCF',
-    disneyplus: '#113CCF',
-    max: '#B537F2',
-    hbo: '#B537F2',
-    prime: '#00A8E1',
-    amazon: '#00A8E1',
-    hulu: '#1CE783',
-    peacock: '#000000',
-    appletv: '#000000',
-    paramount: '#0064FF',
-    plex: '#E5A00D',
-  };
-  const key = service.toLowerCase().replace(/[^a-z0-9]/g, '');
-  return colors[key] || '#00d4aa';
 };
 
 // Simple action button with equal sizing
@@ -128,7 +108,7 @@ const actionButtonStyles = StyleSheet.create({
   },
   buttonFocused: {
     borderWidth: 4,
-    borderColor: '#ffffff',
+    borderColor: Colors.focusBorderHighlight,
   },
   label: {
     color: '#ffffff',
@@ -531,19 +511,13 @@ const MovieDetailTvOS = () => {
 
                 {/* RENT/BUY button - first purchase option */}
                 {purchaseLinks.length > 0 && (() => {
-                  const svc = (purchaseLinks[0].service || '').toLowerCase();
-                  const url = (purchaseLinks[0].url || '').toLowerCase();
-                  const isFestivalPlatform =
-                    svc.includes('eventive') ||
-                    url.includes('eventive.org') ||
-                    url.includes('festivalplayer') ||
-                    url.includes('shift72.com');
+                  const isFestival = isFestivalPlatform(purchaseLinks[0].service, purchaseLinks[0].url);
                   return (
                     <ActionButton
-                      label={isFestivalPlatform ? 'BUY TICKET' : 'RENT / BUY'}
-                      color={isFestivalPlatform ? 'transparent' : '#ff9500'}
-                      borderColor={isFestivalPlatform ? Colors.festivalGold : undefined}
-                      textColor={isFestivalPlatform ? Colors.festivalGold : undefined}
+                      label={isFestival ? 'BUY TICKET' : 'RENT / BUY'}
+                      color={isFestival ? 'transparent' : '#ff9500'}
+                      borderColor={isFestival ? Colors.festivalGold : undefined}
+                      textColor={isFestival ? Colors.festivalGold : undefined}
                       onPress={() => handleWatchPress(purchaseLinks[0])}
                       hasTVPreferredFocus={!infoLinks.find(l => l.type === 'trailer')}
                       testID="action-btn-purchase"
@@ -574,13 +548,23 @@ const MovieDetailTvOS = () => {
               </View>
             )}
 
-            {/* Synopsis (no header) */}
+            {/* Synopsis — tap to expand/collapse */}
             {movie.synopsis && (
-              <View style={styles.synopsisContainer}>
+              <TouchableOpacity
+                style={styles.synopsisContainer}
+                onPress={toggleSynopsis}
+                activeOpacity={0.8}
+                accessible={true}
+                accessibilityLabel={synopsisExpanded ? 'Collapse synopsis' : 'Expand synopsis'}
+                accessibilityRole="button"
+              >
                 <Text style={styles.synopsis} numberOfLines={synopsisExpanded ? undefined : 6}>
                   {movie.synopsis}
                 </Text>
-              </View>
+                {!synopsisExpanded && movie.synopsis.length > 300 && (
+                  <Text style={styles.synopsisMore}>Select to read more</Text>
+                )}
+              </TouchableOpacity>
             )}
           </ScrollView>
         </View>
@@ -593,6 +577,7 @@ const MovieDetailTvOS = () => {
       <View style={styles.navArrowRight}>
         <Animated.Text style={[styles.navArrowText, { opacity: rightArrowOpacity }]}>›</Animated.Text>
       </View>
+
 
       {/* Trailer player overlay */}
       {trailerVisible && movieList.length > 0 && (
@@ -816,6 +801,12 @@ const styles = StyleSheet.create({
     color: 'rgba(0, 212, 170, 0.6)',  // Teal at 60%
     fontSize: 80,
     fontWeight: '300',
+  },
+  synopsisMore: {
+    color: Colors.primary,
+    fontSize: Typography.tvos.caption,
+    marginTop: Spacing.tvos.xs,
+    fontWeight: '500',
   },
   errorContainer: {
     flex: 1,

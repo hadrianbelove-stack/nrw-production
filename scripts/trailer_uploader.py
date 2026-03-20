@@ -28,10 +28,9 @@ ENV_FILE = os.path.join(PROJECT_ROOT, '.env')
 
 
 def load_env():
-    """Load .env file into environment variables."""
+    """Load .env file into environment variables (skips if not found — CI uses env vars directly)."""
     if not os.path.exists(ENV_FILE):
-        print(f'ERROR: {ENV_FILE} not found')
-        sys.exit(1)
+        return
     with open(ENV_FILE, 'r') as f:
         for line in f:
             line = line.strip()

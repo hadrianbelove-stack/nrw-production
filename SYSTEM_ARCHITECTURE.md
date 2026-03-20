@@ -303,7 +303,7 @@ rt_scraper:
 **Cache Strategy Per Component**:
 - **Static data (RT ratings, Wikipedia)**: 90-day TTL
 - **Dynamic streaming links**: 7-day TTL (faster platform changes)
-- **Video trailers**: 90-day TTL (stable YouTube URLs)
+- **Video trailers**: 90-day TTL (YouTube source URLs cached; trailers are downloaded and self-hosted as MP4s — see [docs/features/TRAILER_HOSTING.md](docs/features/TRAILER_HOSTING.md))
 - **Agent scraping results**: 30-day TTL (balance between performance and freshness)
 
 ## 🌐 External APIs & Rate Limits
@@ -402,6 +402,7 @@ Filtered, enriched subset for frontend display:
     "runtime": 120
   },
   "links": {
+    "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/12345.mp4",
     "trailer": "https://youtube.com/...",
     "rt": "https://rottentomatoes.com/...",
     "wikipedia": "https://en.wikipedia.org/..."
@@ -426,7 +427,7 @@ Filtered, enriched subset for frontend display:
 - `digital_date` (ISO‑8601 format)
 - `poster`, `crew.director`, `crew.cast[]`, `synopsis`
 - `metadata.runtime`
-- `links.{trailer,rt,wikipedia}` (nullable)
+- `links.{trailer_hosted,trailer,rt,wikipedia}` (nullable — `trailer_hosted` is the self-hosted MP4, `trailer` is YouTube fallback; see [docs/features/TRAILER_HOSTING.md](docs/features/TRAILER_HOSTING.md))
 - `watch_links` (optional, but structured per schema above)
 
 ### Enrichment Flags
