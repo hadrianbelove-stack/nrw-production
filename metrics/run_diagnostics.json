@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-03-19T10:19:13.256560",
-  "duration_seconds": 2303.828832,
+  "timestamp": "2026-03-20T10:17:24.251579",
+  "duration_seconds": 2350.824623,
   "overall_success": false,
   "failure_count": 1,
   "warning_count": 0,
@@ -8,37 +8,37 @@
     {
       "name": "Intake new premieres from TMDB",
       "success": true,
-      "duration_seconds": 9.255674,
+      "duration_seconds": 8.122602,
       "error": null,
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-03-17 to 2026-03-19 (incremental mode, 37 intaked)\n\u2705 Movie intake complete: 37 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-02-17 to 2026-03-19\n   \ud83d\udccb Braunschlag 1986 (5 eps)\n   \ud83d\udccb \ubaa8\ub450\uc758 \uacbd\ucc30 (1"
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-03-18 to 2026-03-20 (incremental mode, 45 intaked)\n\u2705 Movie intake complete: 45 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-02-18 to 2026-03-20\n   \ud83d\udccb \u90a3\u5e74\u51ac\u81f3 (1 eps)\n   \ud83d\udccb \u7eb9\u5fc3\u5c16 (1 eps)\n   \ud83d\udccb \u6843\u70ec\u4e5d\u91cd"
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 2145.613661,
+      "duration_seconds": 1975.441024,
       "error": null,
-      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 15071 total movies\n\ud83d\udd0d Raw tracking filter: 13445 movies\n\ud83d\udd0d Assigned tracking_movies list: 13445\n\ud83d\udd0d Found 13445 movies in tracking status\n  Priority queue (last 180 days): 973 movies\n  Older movies: 12472 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 13445 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/13445 (0.7%) | 0 found | 0m elapsed | ~33m remaining\n  \ud83d\udcbe Progress saved (ba"
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 15121 total movies\n\ud83d\udd0d Raw tracking filter: 13484 movies\n\ud83d\udd0d Assigned tracking_movies list: 13484\n\ud83d\udd0d Found 13484 movies in tracking status\n  Priority queue (last 180 days): 978 movies\n  Older movies: 12506 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 13484 movies for digital availability...\n\n  \u2713 Born to Bowl now on HBO Max!\n   \u2705 Added Born to Bowl to site immediately (discovery-driven"
     },
     {
       "name": "Resolve pre-order movie dates",
       "success": true,
-      "duration_seconds": 0.355778,
+      "duration_seconds": 0.339707,
       "error": null,
       "output_preview": "\n\ud83d\udcc5 Resolving pre-order movie dates...\n\n\ud83d\udcc5 Resolving pre-order dates...\n  No pre-order movies to resolve\n\u2705 Pre-order resolution complete: 0 resolved\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Enrich newly available movies with metadata",
       "success": true,
-      "duration_seconds": 148.116763,
+      "duration_seconds": 366.44787,
       "error": null,
-      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 11 movies to enrich\n  \u26a1 By Design (4.8s) - Wiki:\u2713 Trailer:\u2713 RT:\u25cb Links:\u2713 Date:\u25cb | 3 success, 0 errors\n  \u2713 By Design - Links: 1\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n  \u26a1 For"
+      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 15 movies to enrich\n  \u2717 Could not fetch details for Born to Bowl\n[YouTubeTrailerScraper] Initializing browser via shared manager...\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n  "
     },
     {
       "name": "Host trailers for newly enriched movies",
       "success": false,
-      "duration_seconds": 0.366744,
+      "duration_seconds": 0.353633,
       "error": null,
-      "output_preview": "=== Trailer Pipeline: full ===\n\n--- Step 1: Host new trailers ---\nMovies to host: 206\nConnecting to B2...\nERROR: /home/runner/work/nrw-production/nrw-production/.env not found\n"
+      "output_preview": "=== Trailer Pipeline: full ===\n\n--- Step 1: Host new trailers ---\nMovies to host: 219\nConnecting to B2...\nERROR: /home/runner/work/nrw-production/nrw-production/.env not found\n"
     }
   ],
   "health_issues": [],
@@ -52,19 +52,19 @@
       "severity": "error",
       "message": "Phase failed with exit code 1",
       "context": null,
-      "stdout_preview": "=== Trailer Pipeline: full ===\n\n--- Step 1: Host new trailers ---\nMovies to host: 206\nConnecting to B2...\nERROR: /home/runner/work/nrw-production/nrw-production/.env not found"
+      "stdout_preview": "=== Trailer Pipeline: full ===\n\n--- Step 1: Host new trailers ---\nMovies to host: 219\nConnecting to B2...\nERROR: /home/runner/work/nrw-production/nrw-production/.env not found"
     }
   ],
   "warnings": [],
   "data_quality": {
-    "total": 15071,
-    "tracking": 13434,
-    "available": 1635,
-    "data_movies": 573,
-    "movies_with_links": 401,
-    "movies_with_rt": 432,
-    "movies_with_wikipedia": 279,
-    "movies_with_trailers": 537
+    "total": 15121,
+    "tracking": 13469,
+    "available": 1650,
+    "data_movies": 588,
+    "movies_with_links": 409,
+    "movies_with_rt": 437,
+    "movies_with_wikipedia": 286,
+    "movies_with_trailers": 551
   },
   "enrichment_metrics": {
     "timestamp": "2025-12-29T15:42:45.008551",
