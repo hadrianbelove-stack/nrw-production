@@ -275,13 +275,6 @@ def host_new_trailers(movie_ids=None, limit=0, dry_run=False):
         )
 
         if hosted_url:
-            # Stamp into data.json in memory
-            for m in data.get('movies', []):
-                if str(m.get('id', '')) == movie['id']:
-                    if 'links' not in m:
-                        m['links'] = {}
-                    m['links']['trailer_hosted'] = hosted_url
-                    break
             stats['hosted'] += 1
             print(f'    Hosted: {hosted_url}')
         else:
@@ -291,10 +284,9 @@ def host_new_trailers(movie_ids=None, limit=0, dry_run=False):
         if i < total:
             time.sleep(2)
 
-    # Save data.json if we hosted any
-    if stats['hosted'] > 0:
-        safe_write_json(DATA_JSON, data)
-        print(f'Saved data.json with {stats["hosted"]} new trailer_hosted URLs')
+    # Note: data.json is NOT modified here. CI's `stamp` command handles
+    # writing trailer_hosted URLs into data.json based on what's in B2.
+    # This avoids merge conflicts when host runs locally and CI runs remotely.
 
     return stats
 

@@ -21,13 +21,14 @@ const SIDEBAR_WIDTH = 320;
 const FILTER_OPTIONS = [
   { id: 'all', label: 'All', icon: '🎬' },
   { id: 'big-time', label: 'Big Time Stuff', icon: '🎯' },
-  { id: 'niche', label: 'Niche Notables', icon: '💎' },
+  { id: 'niche', label: 'Indie', icon: '💎' },
   { id: 'staff-picks', label: 'Staff Picks', icon: '⭐' },
   { id: 'foreign', label: 'Foreign', icon: '🌍' },
   { id: 'series', label: 'Limited Series', icon: '📺' },
   { id: 'plex', label: 'Plex', icon: '🟧' },
   { id: 'restorations', label: 'Restorations & Reissues', icon: '🎞' },
-  { id: 'festivals', label: 'Festivals', icon: '🎪' },
+  { id: 'documentary', label: 'Documentary', icon: '🎥' },
+  { id: 'festivals', label: 'Virtual Screenings', icon: '🎪' },
 ];
 
 const FilterSidebar = ({

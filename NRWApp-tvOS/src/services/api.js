@@ -185,6 +185,9 @@ export function filterMovies(movies, filters = 'all') {
         case 'restorations':
           if (movie.categories?.is_restoration) return true;
           break;
+        case 'documentary':
+          if (movie.categories?.is_documentary === true) return true;
+          break;
         case 'festivals':
           if (movie.categories?.is_festival) return true;
           break;

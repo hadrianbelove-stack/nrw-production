@@ -155,6 +155,10 @@ export function filterMovies(movies, filter = 'all') {
       return movies.filter(
         movie => !movie.hidden && movie.categories?.is_restoration === true,
       );
+    case 'documentary':
+      return movies.filter(
+        movie => !movie.hidden && movie.categories?.is_documentary === true,
+      );
     case 'festivals':
       return movies.filter(
         movie => !movie.hidden && movie.categories?.is_festival,
@@ -201,6 +205,9 @@ export function filterMoviesMulti(movies, activeFilters) {
           break;
         case 'restorations':
           if (movie.categories?.is_restoration === true) return true;
+          break;
+        case 'documentary':
+          if (movie.categories?.is_documentary === true) return true;
           break;
         case 'festivals':
           if (movie.categories?.is_festival) return true;

@@ -35,29 +35,28 @@ export const TV_EVENTS = {
  * @param {Object} handlers - Object with event handlers for each event type
  */
 export function useTVEventHandler(handlers) {
-  const tvEventHandlerRef = useRef(null);
+  const handlersRef = useRef(handlers);
+  handlersRef.current = handlers;
 
   useEffect(() => {
     if (Platform.OS !== 'ios' || !Platform.isTV) {
       return;
     }
 
-    tvEventHandlerRef.current = new TVEventHandler();
+    const handler = new TVEventHandler();
 
-    tvEventHandlerRef.current.enable(null, (cmp, evt) => {
+    handler.enable(null, (cmp, evt) => {
       const eventType = evt?.eventType;
 
-      if (eventType && handlers[eventType]) {
-        handlers[eventType](evt);
+      if (eventType && handlersRef.current[eventType]) {
+        handlersRef.current[eventType](evt);
       }
     });
 
     return () => {
-      if (tvEventHandlerRef.current) {
-        tvEventHandlerRef.current.disable();
-      }
+      handler.disable();
     };
-  }, [handlers]);
+  }, []);
 }
 
 /**

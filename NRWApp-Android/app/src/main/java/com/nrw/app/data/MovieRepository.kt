@@ -169,6 +169,9 @@ class MovieRepository(private val context: Context) {
             FilterCategory.RESTORATIONS -> movies.filter {
                 it.hidden != true && it.categories?.isRestoration == true
             }
+            FilterCategory.DOCUMENTARY -> movies.filter {
+                it.hidden != true && it.categories?.isDocumentary == true
+            }
             FilterCategory.FESTIVALS -> movies.filter {
                 it.hidden != true && it.categories?.isFestival == true
             }
@@ -194,6 +197,7 @@ class MovieRepository(private val context: Context) {
                     FilterCategory.SERIES -> movie.contentType == "limited_series"
                     FilterCategory.PLEX -> movie.plex?.deepLink != null
                     FilterCategory.RESTORATIONS -> movie.categories?.isRestoration == true
+                    FilterCategory.DOCUMENTARY -> movie.categories?.isDocumentary == true
                     FilterCategory.FESTIVALS -> movie.categories?.isFestival == true
                 }
             }

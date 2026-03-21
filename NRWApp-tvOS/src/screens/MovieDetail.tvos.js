@@ -247,9 +247,8 @@ const MovieDetailTvOS = () => {
       navigation.goBack();
     },
     [TV_EVENTS.PLAY_PAUSE]: () => {
-      // Play trailer if available
-      const trailerLink = infoLinks.find((l) => l.type === 'trailer');
-      if (trailerLink) {
+      // Play trailer if MP4 hosted trailer available
+      if (movie?.links?.trailer_hosted) {
         setTrailerVisible(true);
       }
     },
@@ -498,8 +497,8 @@ const MovieDetailTvOS = () => {
             {/* Action buttons - single row, equal sizing (above synopsis) */}
             {(hasWatchOptions || hasInfoLinks) && (
               <View style={styles.actionButtonRow}>
-                {/* TRAILER button */}
-                {infoLinks.find(l => l.type === 'trailer') && (
+                {/* TRAILER button — MP4 hosted trailers only (no WebView on tvOS) */}
+                {movie?.links?.trailer_hosted && (
                   <ActionButton
                     label="TRAILER"
                     color="#E50914"

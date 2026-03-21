@@ -1282,13 +1282,14 @@ class NRWOrchestrator:
             else:
                 print("📝 Skipping Plex enrichment (no plex_config.json)")
 
-            # Phase 3.6: Trailer hosting (download + upload + stamp for new movies)
+            # Phase 3.6: Trailer hosting — stamp B2 URLs into data.json
+            # Downloads happen locally via launchd (scripts/local_daily.sh), not in CI
             trailer_config = config.get('trailer_hosting', {})
             if trailer_config.get('enabled', False):
-                print("\n🎬 Phase 3.6: Trailer Hosting")
+                print("\n🎬 Phase 3.6: Trailer Hosting (stamp)")
                 self.run_command(
-                    "python3 scripts/trailer_pipeline.py full",
-                    "Host trailers for newly enriched movies",
+                    "python3 scripts/trailer_pipeline.py stamp",
+                    "Stamp hosted trailer URLs into data.json",
                     critical=False  # Don't fail pipeline if trailer hosting fails
                 )
             else:

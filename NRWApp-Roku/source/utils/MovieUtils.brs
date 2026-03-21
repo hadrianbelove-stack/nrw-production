@@ -16,6 +16,7 @@ Function GetFilterCategories() as Object
         SERIES: "series"
         PLEX: "plex"
         RESTORATIONS: "restorations"
+        DOCUMENTARY: "documentary"
         FESTIVALS: "festivals"
     }
 End Function
@@ -25,13 +26,14 @@ Function GetFilterDisplayName(filter as String) as String
     names = {
         all: "All"
         big_time: "Big Time Stuff"
-        niche: "Niche Notables"
+        niche: "Indie"
         staff_picks: "Staff Picks"
         foreign: "Foreign"
         series: "Limited Series"
         plex: "Plex"
         restorations: "Restorations"
-        festivals: "Festivals"
+        documentary: "Documentary"
+        festivals: "Virtual Screenings"
     }
 
     if names.DoesExist(filter)
@@ -88,6 +90,11 @@ Function FilterMovies(movies as Object, filter as String) as Object
 
         else if filter = categories.RESTORATIONS
             if movie.categories <> invalid AND movie.categories.is_restoration = true
+                include = true
+            end if
+
+        else if filter = categories.DOCUMENTARY
+            if movie.categories <> invalid AND movie.categories.is_documentary = true
                 include = true
             end if
 
@@ -148,6 +155,10 @@ Function FilterMoviesMulti(movies as Object, activeFilters as Object) as Object
                 end if
             else if filter = categories.RESTORATIONS
                 if movie.categories <> invalid AND movie.categories.is_restoration = true
+                    matched = true
+                end if
+            else if filter = categories.DOCUMENTARY
+                if movie.categories <> invalid AND movie.categories.is_documentary = true
                     matched = true
                 end if
             else if filter = categories.FESTIVALS

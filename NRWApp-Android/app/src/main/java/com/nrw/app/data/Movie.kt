@@ -88,6 +88,9 @@ data class Categories(
     @SerializedName("is_restoration")
     val isRestoration: Boolean? = null,
 
+    @SerializedName("is_documentary")
+    val isDocumentary: Boolean? = null,
+
     @SerializedName("is_festival")
     val isFestival: Boolean? = null
 )
@@ -211,13 +214,14 @@ data class InfoOption(
 enum class FilterCategory(val id: String, val displayName: String) {
     ALL("all", "All"),
     BIG_TIME("big-time", "Big Time Stuff"),
-    NICHE("niche", "Niche Notables"),
+    NICHE("niche", "Indie"),
     STAFF_PICKS("staff-picks", "Staff Picks"),
     FOREIGN("foreign", "Foreign"),
     SERIES("series", "Limited Series"),
     PLEX("plex", "Plex"),
     RESTORATIONS("restorations", "Restorations & Reissues"),
-    FESTIVALS("festivals", "Festivals")
+    DOCUMENTARY("documentary", "Documentary"),
+    FESTIVALS("festivals", "Virtual Screenings")
 }
 
 /**

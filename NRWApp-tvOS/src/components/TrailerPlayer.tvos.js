@@ -5,16 +5,14 @@
  *           PLAY_PAUSE or SELECT = pause/resume
  *
  * Trailers are self-hosted MP4s on Backblaze B2 (trailer_hosted field), played
- * via react-native-video. YouTube iframe is fallback only for movies not yet
- * downloaded. See docs/features/TRAILER_HOSTING.md
+ * via react-native-video. tvOS does not support WebView, so only MP4 trailers
+ * are playable. See docs/features/TRAILER_HOSTING.md
  */
 
 import React, { useState, useCallback, useRef, useMemo } from 'react';
 import { View, Text, StyleSheet, Dimensions, Animated } from 'react-native';
 import Video from 'react-native-video';
-import { WebView } from 'react-native-webview';
 import { useTVEventHandler, TV_EVENTS } from '../utils/focusManager.tvos';
-import { extractYouTubeId } from '../utils/links.tvos';
 import { Colors } from '../constants/colors';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -24,11 +22,9 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose }) => {
   const [paused, setPaused] = useState(false);
   const leftArrowOpacity = useRef(new Animated.Value(0.4)).current;
   const rightArrowOpacity = useRef(new Animated.Value(0.4)).current;
-  const webViewRef = useRef(null);
 
   const currentMovie = movieList[currentIndex];
-  const trailerUrl = currentMovie?.links?.trailer_hosted || currentMovie?.links?.trailer || '';
-  const youtubeId = useMemo(() => extractYouTubeId(trailerUrl), [trailerUrl]);
+  const trailerUrl = currentMovie?.links?.trailer_hosted || '';
   const isMP4 = useMemo(() => {
     if (!trailerUrl) return false;
     try {
@@ -38,46 +34,10 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose }) => {
     }
   }, [trailerUrl]);
 
-  // YouTube embed HTML using IFrame Player API for programmatic control
-  const youtubeHtml = useMemo(() => {
-    if (!youtubeId) return '';
-    return `
-      <html><head><meta name="viewport" content="width=device-width,initial-scale=1">
-      <style>*{margin:0;padding:0;background:#000}#ytplayer{width:100vw;height:100vh}</style>
-      <script>
-        var tag = document.createElement('script');
-        tag.src = "https://www.youtube.com/iframe_api";
-        document.head.appendChild(tag);
-        var player;
-        function onYouTubeIframeAPIReady() {
-          player = new YT.Player('ytplayer', {
-            width: '100%', height: '100%',
-            videoId: '${youtubeId}',
-            playerVars: {
-              autoplay: 1, controls: 0, rel: 0,
-              modestbranding: 1, playsinline: 1, fs: 0
-            },
-          });
-        }
-        function togglePlayPause() {
-          if (!player || !player.getPlayerState) return;
-          var state = player.getPlayerState();
-          if (state === 1) player.pauseVideo();
-          else player.playVideo();
-        }
-      </script></head>
-      <body><div id="ytplayer"></div></body></html>
-    `;
-  }, [youtubeId]);
-
-  // Toggle play/pause for both MP4 and YouTube
+  // Toggle play/pause
   const togglePlayPause = useCallback(() => {
-    if (isMP4) {
-      setPaused(p => !p);
-    } else if (youtubeId && webViewRef.current) {
-      webViewRef.current.injectJavaScript('togglePlayPause(); true;');
-    }
-  }, [isMP4, youtubeId]);
+    setPaused(p => !p);
+  }, []);
 
   // Flash arrow animation for navigation feedback
   const flashArrow = useCallback((arrowAnim) => {
@@ -87,7 +47,7 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose }) => {
     ]).start();
   }, []);
 
-  // Find next movie with a trailer in given direction, wrapping around
+  // Find next movie with an MP4 trailer in given direction, wrapping around
   const findNextTrailerIndex = useCallback((fromIndex, direction) => {
     const count = movieList.length;
     if (count === 0) return -1;
@@ -95,8 +55,7 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose }) => {
     for (let i = 0; i < count - 1; i++) {
       idx = (idx + direction + count) % count;
       const movie = movieList[idx];
-      const url = movie.links?.trailer_hosted || movie.links?.trailer;
-      if (url) return idx;
+      if (movie.links?.trailer_hosted) return idx;
     }
     return -1;
   }, [movieList]);
@@ -120,8 +79,6 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose }) => {
   }, [currentIndex, findNextTrailerIndex, flashArrow, leftArrowOpacity]);
 
   // Handle TV remote events
-  // Note: useTVEventHandler creates a global TVEventHandler (null component),
-  // so events fire regardless of WebView focus state.
   useTVEventHandler({
     [TV_EVENTS.LEFT]: navigatePrevious,
     [TV_EVENTS.RIGHT]: navigateNext,
@@ -134,14 +91,13 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose }) => {
 
   // Count trailers for the counter display
   const trailerCount = useMemo(() => {
-    return movieList.filter(m => m.links?.trailer_hosted || m.links?.trailer).length;
+    return movieList.filter(m => m.links?.trailer_hosted).length;
   }, [movieList]);
 
   const currentTrailerNumber = useMemo(() => {
     let count = 0;
     for (let i = 0; i <= currentIndex; i++) {
-      const m = movieList[i];
-      if (m.links?.trailer_hosted || m.links?.trailer) count++;
+      if (movieList[i].links?.trailer_hosted) count++;
     }
     return count;
   }, [movieList, currentIndex]);
@@ -149,7 +105,7 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose }) => {
   return (
     <View style={styles.container}>
       {/* Video player */}
-      {isMP4 ? (
+      {isMP4 && (
         <Video
           source={{ uri: trailerUrl }}
           style={styles.video}
@@ -159,17 +115,7 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose }) => {
           onEnd={() => onClose(currentIndex)}
           onError={() => onClose(currentIndex)}
         />
-      ) : youtubeId ? (
-        <WebView
-          ref={webViewRef}
-          source={{ html: youtubeHtml }}
-          style={styles.video}
-          scrollEnabled={false}
-          allowsInlineMediaPlayback={true}
-          mediaPlaybackRequiresUserAction={false}
-          javaScriptEnabled={true}
-        />
-      ) : null}
+      )}
 
       {/* Title overlay */}
       <View style={styles.titleBar}>

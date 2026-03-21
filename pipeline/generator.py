@@ -2564,8 +2564,7 @@ class DataGenerator:
                 self.logger.info(f"Trailer hosted: {title} ({year}) -> {hosted_url}")
             return hosted_url
         except BaseException as e:
-            # BaseException catches SystemExit from trailer_uploader's sys.exit(1)
-            # which would otherwise kill the entire enrichment process
+            # BaseException catches RuntimeError from get_b2_api() and other trailer hosting failures
             self.logger.warning(f"Trailer hosting failed for {title}: {type(e).__name__}: {str(e)[:100]}")
             return None
 
@@ -2622,6 +2621,7 @@ class DataGenerator:
             'wikipedia': 'not_attempted',
             'trailer': 'not_attempted',
             'rt_score': 'not_attempted',
+            'pull_quotes': 'not_attempted',
             'watch_links': 'not_attempted',
             'digital_date': 'not_attempted'
         }
@@ -2675,6 +2675,25 @@ class DataGenerator:
         except Exception as e:
             enrichment_results['rt_score'] = 'error'
             self.logger.warning(f"RT: Error for {title} ({year}): {type(e).__name__}: {str(e)[:100]}")
+
+        # Pull quotes (isolated failure handling)
+        pull_quotes_enabled = self.config.get('gemini_scraper', {}).get('pull_quotes_enabled', False)
+        if pull_quotes_enabled:
+            try:
+                from gemini_scraper import GeminiPullQuoteFinder
+                pq_finder = GeminiPullQuoteFinder()
+                pq_director = result.get('crew', {}).get('director') if result.get('crew') else None
+                pq_count = self.config.get('gemini_scraper', {}).get('pull_quotes_count', 8)
+                quotes = pq_finder.find_pull_quotes(title, year, director=pq_director, num_quotes=pq_count)
+                if quotes:
+                    enrichment_results['pull_quotes'] = 'success'
+                else:
+                    enrichment_results['pull_quotes'] = 'not_found'
+            except Exception as e:
+                enrichment_results['pull_quotes'] = 'error'
+                self.logger.warning(f"Pull quotes: Error for {title} ({year}): {str(e)[:100]}")
+        else:
+            enrichment_results['pull_quotes'] = 'disabled'
 
         # Watch links (isolated failure handling)
         try:
@@ -2811,10 +2830,11 @@ class DataGenerator:
         wiki_icon = status_icons.get(enrichment_results['wikipedia'], '?')
         trailer_icon = status_icons.get(enrichment_results['trailer'], '?')
         rt_icon = status_icons.get(enrichment_results['rt_score'], '?')
+        pq_icon = status_icons.get(enrichment_results.get('pull_quotes', 'not_attempted'), '?')
         links_icon = status_icons.get(enrichment_results['watch_links'], '?')
         date_icon = status_icons.get(enrichment_results['digital_date'], '?')
 
-        print(f"  ⚡ {title} ({movie_duration:.1f}s) - Wiki:{wiki_icon} Trailer:{trailer_icon} RT:{rt_icon} Links:{links_icon} Date:{date_icon} | {success_count} success, {error_count} errors")
+        print(f"  ⚡ {title} ({movie_duration:.1f}s) - Wiki:{wiki_icon} Trailer:{trailer_icon} RT:{rt_icon} PQ:{pq_icon} Links:{links_icon} Date:{date_icon} | {success_count} success, {error_count} errors")
 
         # Detailed logging for metrics
         self.logger.info(f"Enrichment completed for {title} ({year}) in {movie_duration:.1f}s: {enrichment_results}")
@@ -3435,6 +3455,59 @@ class DataGenerator:
 
         return fixed_count
 
+    def _inject_selected_pull_quotes(self, movies_list):
+        """Add selected pull quotes from cache to movies for data.json output."""
+        combined_path = 'cache/pull_quotes_combined.json'
+        gemini_path = 'cache/pull_quotes_cache.json'
+
+        combined = {}
+        gemini = {}
+        try:
+            if os.path.exists(combined_path):
+                with open(combined_path, 'r') as f:
+                    combined = json.load(f)
+            if os.path.exists(gemini_path):
+                with open(gemini_path, 'r') as f:
+                    gemini = json.load(f)
+        except Exception as e:
+            self.logger.warning(f"Pull quotes injection: Error loading caches: {e}")
+            return
+
+        injected = 0
+        for movie in movies_list:
+            title = movie.get('title', '')
+            year = movie.get('year', '')
+            key = f"{title}_{year}"
+
+            # Check combined cache first (richer data with curation), then gemini cache
+            all_quotes = []
+            entry = combined.get(key, {})
+            if entry:
+                all_quotes = entry.get('rt_quotes', []) + entry.get('lb_quotes', [])
+            elif key in gemini:
+                all_quotes = gemini[key].get('quotes', [])
+
+            # Only include selected quotes
+            selected = []
+            for q in all_quotes:
+                if q.get('selected'):
+                    selected.append({
+                        'text': q.get('pull_quote', q.get('text', '')),
+                        'critic': q.get('critic', ''),
+                        'outlet': q.get('outlet', ''),
+                        'source': q.get('source', '')
+                    })
+
+            if selected:
+                movie['pull_quotes'] = selected
+                injected += 1
+            elif 'pull_quotes' in movie:
+                # Remove stale quotes if none are selected anymore
+                del movie['pull_quotes']
+
+        if injected:
+            print(f"💬 Injected pull quotes for {injected} movies")
+
     def generate_display_data(self, days_back=90, incremental=True, force_refresh=False):
         """
         PHASE 4: Apply admin overrides and prepare final display data.
@@ -3477,6 +3550,9 @@ class DataGenerator:
             print(f"❌ Error loading data.json for display: {e} - aborting to preserve data")
             self.logger.error(f"Error loading data.json for display: {e}")
             return
+
+        # Inject selected pull quotes from cache into movie data
+        self._inject_selected_pull_quotes(all_movies)
 
         # Apply admin overrides to ALL movies (not just recent ones)
         print(f"🔧 Applying admin overrides to {len(all_movies)} movies...")
@@ -3806,13 +3882,13 @@ class DataGenerator:
 
     def categorize_movie(self, movie, category_config):
         """
-        Categorize a movie as 'big_time' or 'niche' based on studio and budget.
+        Categorize a movie as 'big_time', 'niche' (indie), or None based on studio and budget.
 
         Logic:
         1. Check manual override first (admin can force tier)
         2. Match studio against big_time_studios list
         3. Fallback to budget threshold ($10M default)
-        4. Default to 'niche' if no match
+        4. Default to None (uncategorized) if no match
 
         Returns:
             dict: Categories object with tier, is_foreign, is_staff_pick, auto_categorized, manual_override
@@ -3824,6 +3900,7 @@ class DataGenerator:
         studio = movie.get('studio', '')
         budget = movie.get('budget', 0) or 0  # Handle None
         original_language = movie.get('original_language', 'en')
+        genres = movie.get('genres', []) or []
 
         # Check for existing manual override from movie_tracking.json
         manual_override = movie.get('categories', {}).get('manual_override')
@@ -3839,11 +3916,14 @@ class DataGenerator:
             tier = 'big_time'
             auto_categorized = True
         else:
-            tier = 'niche'
+            tier = None
             auto_categorized = True
 
         # Determine foreign status
         is_foreign = original_language and original_language != 'en'
+
+        # Determine documentary status from TMDB genres
+        is_documentary = 'Documentary' in genres
 
         return {
             'tier': tier,
@@ -3852,6 +3932,7 @@ class DataGenerator:
             'is_restoration': False,  # Set later from restoration detection
             'is_festival': False,  # Set later from watch_links detection
             'is_series': False,  # Set later from content_type detection
+            'is_documentary': is_documentary,
             'auto_categorized': auto_categorized,
             'manual_override': manual_override
         }
@@ -3975,9 +4056,11 @@ class DataGenerator:
         # Apply categorization to all movies
         big_time_count = 0
         niche_count = 0
+        uncategorized_count = 0
         foreign_count = 0
         restoration_count = 0
         festival_count = 0
+        documentary_count = 0
         festival_services = ['eventive']
         festival_url_patterns = ['eventive.org', 'festivalplayer.sundance.org', 'shift72.com', 'xerb.tv', 'festivalscope.com']
 
@@ -4100,14 +4183,18 @@ class DataGenerator:
             # Count for stats
             if categories['tier'] == 'big_time':
                 big_time_count += 1
-            else:
+            elif categories['tier'] == 'niche':
                 niche_count += 1
+            else:
+                uncategorized_count += 1
             if categories['is_foreign']:
                 foreign_count += 1
             if categories['is_restoration']:
                 restoration_count += 1
             if categories['is_festival']:
                 festival_count += 1
+            if categories.get('is_documentary'):
+                documentary_count += 1
 
         # Apply editorial ordering if specified
         if ordering:
@@ -4135,7 +4222,7 @@ class DataGenerator:
         ordered_count = len(ordering) if ordering else 0
 
         print(f"📝 Admin overrides applied:")
-        print(f"  Categories: {big_time_count} Big Time, {niche_count} Niche, {foreign_count} Foreign, {restoration_count} Restorations, {festival_count} Festivals")
+        print(f"  Categories: {big_time_count} Big Time, {niche_count} Indie, {uncategorized_count} Uncategorized, {foreign_count} Foreign, {restoration_count} Restorations, {festival_count} Virtual Screenings, {documentary_count} Documentaries")
         print(f"  Staff Picks: {staff_pick_count}")
         if ordered_count > 0:
             print(f"  Editorial ordering: {ordered_count} movies pinned to top")

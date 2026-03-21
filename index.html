@@ -12,13 +12,14 @@
         <div class="filters">
             <button class="filter-btn active" data-filter="all">All</button>
             <button class="filter-btn" data-filter="big-time">Big Time Stuff</button>
-            <button class="filter-btn" data-filter="niche">Niche Notables</button>
+            <button class="filter-btn" data-filter="niche">Indie</button>
             <button class="filter-btn" data-filter="staff-picks">Staff Picks</button>
             <button class="filter-btn" data-filter="foreign">Foreign</button>
             <button class="filter-btn" data-filter="series">Limited Series</button>
             <button class="filter-btn" data-filter="plex">Plex</button>
             <button class="filter-btn" data-filter="restorations">Restorations & Reissues</button>
-            <button class="filter-btn" data-filter="festivals">Festivals</button>
+            <button class="filter-btn" data-filter="documentary">Documentary</button>
+            <button class="filter-btn" data-filter="festivals">Virtual Screenings</button>
             <div class="search-container">
                 <input type="text" id="search-input" placeholder="Search title, director, genre..." autocomplete="off">
                 <button id="search-clear" class="search-clear" aria-label="Clear search">&times;</button>
@@ -53,6 +54,7 @@
                 </div>
                 <div class="lightbox-meta" id="lightbox-meta"></div>
                 <p class="lightbox-synopsis" id="lightbox-synopsis"></p>
+                <div class="lightbox-pull-quotes" id="lightbox-pull-quotes" style="display:none;"></div>
                 <div class="lightbox-buttons" id="lightbox-buttons"></div>
             </div>
             <button class="lightbox-nav next" onclick="NRW.lightboxNav(1)" aria-label="Next">&rarr;</button>

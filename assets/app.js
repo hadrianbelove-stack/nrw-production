@@ -62,7 +62,7 @@ const NRW = {
             text: 'The wide releases, the studio fare, the main-streamers. Not saying they\'re good, not saying they\'re bad, but these are the movies that have either entered or tried to enter the mainstream conversation. They have budgets, recognizable actors, and large-scale billboard campaigns.'
         },
         'niche': {
-            title: 'Niche Notables',
+            title: 'Indie',
             text: 'The smaller films, the independents, the ones without a billboard campaign. These movies flew under the radar theatrically but are worth knowing about now that they\'re available to stream at home.'
         },
         'staff-picks': {
@@ -85,8 +85,12 @@ const NRW = {
             title: 'Restorations & Reissues',
             text: 'Classic and catalog titles with new digital life. These are films that have been restored, remastered, or newly reissued on streaming platforms. Old movies, fresh transfers.'
         },
+        'documentary': {
+            title: 'Documentary',
+            text: 'Non-fiction filmmaking. Documentaries covering real stories, real people, and real events — now available to stream at home.'
+        },
         'festivals': {
-            title: 'Festivals',
+            title: 'Virtual Screenings',
             text: 'Currently playing at film festivals. These aren\'t streaming yet — they\'re in theaters, at festivals, or doing the circuit. If you\'re near a screening, this is your heads-up.'
         }
     },
@@ -320,6 +324,9 @@ const NRW = {
                             break;
                         case 'restorations':
                             if (movie.categories?.is_restoration) matchesAny = true;
+                            break;
+                        case 'documentary':
+                            if (movie.categories?.is_documentary) matchesAny = true;
                             break;
                         case 'festivals':
                             if (movie.categories?.is_festival) matchesAny = true;
@@ -981,6 +988,22 @@ const NRW = {
 
         // Update synopsis
         document.getElementById('lightbox-synopsis').textContent = movie.synopsis || 'Synopsis coming soon.';
+
+        // Pull quotes
+        const pqContainer = document.getElementById('lightbox-pull-quotes');
+        if (movie.pull_quotes && movie.pull_quotes.length > 0) {
+            let pqHtml = '';
+            for (const q of movie.pull_quotes) {
+                const srcBadge = q.source === 'letterboxd' ? '<span class="pq-source pq-lb">LB</span>' : '<span class="pq-source pq-rt">RT</span>';
+                const attribution = [q.critic, q.outlet].filter(Boolean).join(', ');
+                pqHtml += `<div class="pq-card">${srcBadge}<q class="pq-text">${q.text}</q>${attribution ? `<cite class="pq-cite">${attribution}</cite>` : ''}</div>`;
+            }
+            pqContainer.innerHTML = pqHtml;
+            pqContainer.style.display = '';
+        } else {
+            pqContainer.innerHTML = '';
+            pqContainer.style.display = 'none';
+        }
 
         // === Watch stack (full-width, stacked, service-colored) ===
         let watchHtml = '';

@@ -575,6 +575,7 @@
                     {% else %}
                     <button class="action-btn btn-feature" onclick="toggleRestoration('{{ movie_id }}', true)" style="border-color: #C8A951; color: #C8A951;">Mark Restoration</button>
                     {% endif %}
+                    <a href="/pull-quotes/{{ movie_id }}" class="action-btn" style="background: #6c5ce7; color: white; text-decoration: none; font-size: 0.8rem;" title="Curate pull quotes">💬 Quotes</a>
                     <button class="action-btn btn-remove" onclick="removeMovie('{{ movie_id }}', '{{ movie.title | e }}')" title="Remove from wall">🗑️</button>
                 </div>
             </div>

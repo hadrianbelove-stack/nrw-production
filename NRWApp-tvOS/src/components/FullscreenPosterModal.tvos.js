@@ -56,12 +56,9 @@ const FullscreenPosterModal = ({
     setImageError(false);
   }, [currentIndex, movies.length]);
 
-  // Handle TV remote events (MENU = back/dismiss on Apple TV remote)
+  // Handle TV remote events — only MENU for dismissal
+  // LEFT/RIGHT navigation is handled by native tvOS focus system + NavArrow onPress
   useTVEventHandler(trailerVisible ? {} : {
-    [TV_EVENTS.LEFT]: () => navigate(-1),
-    [TV_EVENTS.RIGHT]: () => navigate(1),
-    [TV_EVENTS.SWIPE_LEFT]: () => navigate(-1),
-    [TV_EVENTS.SWIPE_RIGHT]: () => navigate(1),
     [TV_EVENTS.MENU]: () => onClose(),
   });
 
@@ -185,7 +182,7 @@ const FullscreenPosterModal = ({
     );
   };
 
-  // Navigation arrow component
+  // Navigation arrow component — focusable button, SELECT navigates to prev/next movie
   const NavArrow = ({ direction, onPress }) => {
     const [isFocused, setIsFocused] = useState(false);
     const isLeft = direction === 'left';
@@ -280,7 +277,7 @@ const FullscreenPosterModal = ({
                 />
               )}
 
-              {(movie.links?.trailer_hosted || movie.links?.trailer) && (
+              {movie.links?.trailer_hosted && (
                 <ActionButton
                   label="Watch Trailer"
                   onPress={() => setTrailerVisible(true)}

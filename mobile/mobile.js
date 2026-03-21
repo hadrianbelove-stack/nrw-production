@@ -204,6 +204,9 @@ const NRWMobile = {
                     case 'restorations':
                         if (movie.categories?.is_restoration === true) return true;
                         break;
+                    case 'documentary':
+                        if (movie.categories?.is_documentary === true) return true;
+                        break;
                     case 'festivals':
                         if (movie.categories?.is_festival === true) return true;
                         break;

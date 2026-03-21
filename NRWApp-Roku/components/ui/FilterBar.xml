@@ -44,10 +44,10 @@
           font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
       </Group>
 
-      <!-- Niche Notables -->
+      <!-- Indie -->
       <Group id="chip_niche">
-        <Rectangle id="chipBg_niche" width="140" height="36" color="0x333333FF" />
-        <Label id="chipLabel_niche" text="Niche Notables" width="140" height="36"
+        <Rectangle id="chipBg_niche" width="60" height="36" color="0x333333FF" />
+        <Label id="chipLabel_niche" text="Indie" width="60" height="36"
           horizAlign="center" vertAlign="center"
           font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
       </Group>
@@ -92,10 +92,18 @@
           font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
       </Group>
 
-      <!-- Festivals -->
+      <!-- Documentary -->
+      <Group id="chip_documentary">
+        <Rectangle id="chipBg_documentary" width="120" height="36" color="0x333333FF" />
+        <Label id="chipLabel_documentary" text="Documentary" width="120" height="36"
+          horizAlign="center" vertAlign="center"
+          font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
+      </Group>
+
+      <!-- Virtual Screenings -->
       <Group id="chip_festivals">
-        <Rectangle id="chipBg_festivals" width="90" height="36" color="0x333333FF" />
-        <Label id="chipLabel_festivals" text="Festivals" width="90" height="36"
+        <Rectangle id="chipBg_festivals" width="170" height="36" color="0x333333FF" />
+        <Label id="chipLabel_festivals" text="Virtual Screenings" width="170" height="36"
           horizAlign="center" vertAlign="center"
           font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
       </Group>

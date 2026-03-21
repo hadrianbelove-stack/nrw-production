@@ -1298,6 +1298,62 @@ header h1 {
     overflow-y: auto;
 }
 
+/* Pull quotes in lightbox */
+.lightbox-pull-quotes {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+.pq-card {
+    position: relative;
+    padding: 0.6rem 0.75rem 0.6rem 2.2rem;
+    background: rgba(255,255,255,0.04);
+    border-radius: 6px;
+    border-left: 2px solid rgba(255,255,255,0.15);
+}
+
+.pq-text {
+    display: block;
+    font-style: italic;
+    color: #ddd;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    quotes: "\201C" "\201D";
+}
+
+.pq-cite {
+    display: block;
+    font-style: normal;
+    font-size: 0.75rem;
+    color: #888;
+    margin-top: 0.25rem;
+}
+
+.pq-source {
+    position: absolute;
+    left: 0.5rem;
+    top: 0.65rem;
+    font-size: 0.55rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    padding: 1px 4px;
+    border-radius: 3px;
+}
+
+.pq-rt {
+    background: rgba(250,50,50,0.25);
+    color: #ff6b6b;
+}
+
+.pq-lb {
+    background: rgba(0,210,120,0.2);
+    color: #00d278;
+}
+
 /* Lightbox buttons container */
 .lightbox-buttons {
     margin-top: auto;

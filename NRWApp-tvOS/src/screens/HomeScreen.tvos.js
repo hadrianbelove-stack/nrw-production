@@ -34,11 +34,12 @@ import {
 const FILTERS = [
   { id: 'all', label: 'All' },
   { id: 'big-time', label: 'Big Time Stuff' },
-  { id: 'niche', label: 'Niche Notables' },
+  { id: 'niche', label: 'Indie' },
   { id: 'staff-picks', label: 'Staff Picks' },
   { id: 'foreign', label: 'Foreign' },
   { id: 'series', label: 'Limited Series' },
-  { id: 'festivals', label: 'Festivals' },
+  { id: 'documentary', label: 'Documentary' },
+  { id: 'festivals', label: 'Virtual Screenings' },
   { id: 'restorations', label: 'Restorations' },
   { id: 'plex', label: 'Plex' },
 ];
@@ -348,6 +349,9 @@ const HomeScreenTvOS = () => {
             break;
           case 'plex':
             if (movie.plex && movie.plex.deep_link) return true;
+            break;
+          case 'documentary':
+            if (movie.categories?.is_documentary === true) return true;
             break;
           case 'festivals':
             if (movie.categories?.is_festival) return true;
