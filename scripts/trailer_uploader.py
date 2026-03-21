@@ -4,9 +4,9 @@ Trailer Uploader — Phase 2 of In-App Trailer Playback
 Uploads downloaded trailer MP4 files to Backblaze B2 for CDN delivery.
 
 Usage:
-    python3.11 scripts/trailer_uploader.py                # Upload all local trailers
-    python3.11 scripts/trailer_uploader.py --limit 5      # Upload first 5 only (test)
-    python3.11 scripts/trailer_uploader.py --dry-run       # Show what would be uploaded
+    python3 scripts/trailer_uploader.py                # Upload all local trailers
+    python3 scripts/trailer_uploader.py --limit 5      # Upload first 5 only (test)
+    python3 scripts/trailer_uploader.py --dry-run       # Show what would be uploaded
 
 Requires: B2_KEY_ID, B2_APPLICATION_KEY, B2_BUCKET_NAME in .env
 Requires Python 3.10+ (matches trailer_downloader.py requirement).
@@ -46,9 +46,7 @@ def get_b2_api():
     bucket_name = os.environ.get('B2_BUCKET_NAME')
 
     if not all([key_id, app_key, bucket_name]):
-        print('ERROR: Missing B2 credentials in .env')
-        print('Required: B2_KEY_ID, B2_APPLICATION_KEY, B2_BUCKET_NAME')
-        sys.exit(1)
+        raise RuntimeError('Missing B2 credentials. Set B2_KEY_ID, B2_APPLICATION_KEY, B2_BUCKET_NAME as env vars or in .env')
 
     info = InMemoryAccountInfo()
     api = B2Api(info)

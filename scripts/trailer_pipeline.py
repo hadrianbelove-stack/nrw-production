@@ -6,11 +6,11 @@ Ties together downloading (trailer_downloader.py), uploading (trailer_uploader.p
 URL stamping into data.json, and rotation (storage cap enforcement).
 
 Usage:
-    python3.11 scripts/trailer_pipeline.py stamp              # Backfill: stamp URLs for uploaded trailers
-    python3.11 scripts/trailer_pipeline.py stamp --dry-run     # Preview what would be stamped
-    python3.11 scripts/trailer_pipeline.py host --limit 5      # Download+upload for 5 missing trailers
-    python3.11 scripts/trailer_pipeline.py rotate --dry-run     # Preview rotation deletions
-    python3.11 scripts/trailer_pipeline.py full                 # Full pass: host new -> stamp -> rotate
+    python3 scripts/trailer_pipeline.py stamp              # Backfill: stamp URLs for uploaded trailers
+    python3 scripts/trailer_pipeline.py stamp --dry-run     # Preview what would be stamped
+    python3 scripts/trailer_pipeline.py host --limit 5      # Download+upload for 5 missing trailers
+    python3 scripts/trailer_pipeline.py rotate --dry-run     # Preview rotation deletions
+    python3 scripts/trailer_pipeline.py full                 # Full pass: host new -> stamp -> rotate
 
 Requires: B2_KEY_ID, B2_APPLICATION_KEY, B2_BUCKET_NAME in .env
 Requires Python 3.10+ (matches trailer_downloader.py requirement).
@@ -105,15 +105,22 @@ def stamp_trailer_hosted_urls(dry_run=False):
     with open(DATA_JSON, 'r') as f:
         data = json.load(f)
 
-    stats = {'stamped': 0, 'already_had': 0, 'no_trailer_in_b2': 0}
+    stats = {'stamped': 0, 'already_had': 0, 'no_trailer_in_b2': 0, 'stale_cleaned': 0}
 
     for movie in data.get('movies', []):
         movie_id = str(movie.get('id', ''))
         links = movie.get('links', {})
 
-        # Already has trailer_hosted
         if links.get('trailer_hosted'):
-            stats['already_had'] += 1
+            # Verify existing URL — clean up if the B2 file was rotated out
+            if movie_id in hosted_ids:
+                stats['already_had'] += 1
+            else:
+                if dry_run:
+                    print(f'  Would clean stale URL: {movie.get("title", movie_id)}')
+                else:
+                    links.pop('trailer_hosted', None)
+                stats['stale_cleaned'] += 1
             continue
 
         # Check if this movie's trailer is in B2
@@ -130,14 +137,15 @@ def stamp_trailer_hosted_urls(dry_run=False):
             stats['no_trailer_in_b2'] += 1
 
     # Save data.json
-    if not dry_run and stats['stamped'] > 0:
+    changes = stats['stamped'] + stats['stale_cleaned']
+    if not dry_run and changes > 0:
         safe_write_json(DATA_JSON, data)
-        print(f'Saved data.json with {stats["stamped"]} new trailer_hosted URLs')
+        print(f'Saved data.json: {stats["stamped"]} stamped, {stats["stale_cleaned"]} stale cleaned')
 
     return stats
 
 
-def download_and_upload_trailer(movie_id, title, year, youtube_url, bucket, bucket_url):
+def download_and_upload_trailer(movie_id, title, year, youtube_url, bucket, bucket_url, clean_after_upload=False):
     """
     Download a trailer from YouTube and upload to B2.
     Returns the hosted URL on success, None on failure.
@@ -179,6 +187,9 @@ def download_and_upload_trailer(movie_id, title, year, youtube_url, bucket, buck
     try:
         upload_file(bucket, local_path, remote_name)
         hosted_url = f'{bucket_url}/{remote_name}'
+        if clean_after_upload and os.path.exists(local_path):
+            os.remove(local_path)
+            print(f'    Cleaned local: {local_path}')
         return hosted_url
     except Exception as e:
         print(f'    Upload failed: {str(e)[:100]}')
@@ -249,6 +260,7 @@ def host_new_trailers(movie_ids=None, limit=0, dry_run=False):
         return {'hosted': 0, 'failed': 0, 'skipped': len(to_host)}
     # Use config bucket_url if available, else B2 native URL
     url_base = bucket_url or b2_bucket_url
+    clean_after = config.get('clean_local_after_upload', False)
 
     stats = {'hosted': 0, 'failed': 0, 'skipped': 0}
     total = len(to_host)
@@ -258,7 +270,8 @@ def host_new_trailers(movie_ids=None, limit=0, dry_run=False):
 
         hosted_url = download_and_upload_trailer(
             movie['id'], movie['title'], movie['year'],
-            movie['trailer_url'], bucket, url_base
+            movie['trailer_url'], bucket, url_base,
+            clean_after_upload=clean_after
         )
 
         if hosted_url:
@@ -375,6 +388,44 @@ def rotate_trailers(dry_run=False):
     return {'deleted': deleted, 'current_count': current_count - deleted, 'max_hosted': max_hosted}
 
 
+def clean_local_trailers(dry_run=False):
+    """
+    Delete ALL local MP4 files in media/trailers/.
+    Local files are staging copies — no reason to keep them after upload.
+
+    Returns: {'deleted': int, 'total_local': int}
+    """
+    if not os.path.isdir(MEDIA_DIR):
+        print('No media/trailers/ directory found.')
+        return {'deleted': 0, 'total_local': 0}
+
+    local_files = [f for f in os.listdir(MEDIA_DIR) if f.endswith('.mp4')]
+    if not local_files:
+        print('No local MP4 files to clean.')
+        return {'deleted': 0, 'total_local': 0}
+
+    print(f'Local trailer files: {len(local_files)}')
+
+    stats = {'deleted': 0, 'total_local': len(local_files)}
+    total_bytes = 0
+
+    for filename in sorted(local_files):
+        local_path = os.path.join(MEDIA_DIR, filename)
+        file_size = os.path.getsize(local_path)
+        if dry_run:
+            print(f'  Would delete: {filename} ({file_size / 1024 / 1024:.1f} MB)')
+        else:
+            os.remove(local_path)
+            print(f'  Deleted: {filename} ({file_size / 1024 / 1024:.1f} MB)')
+        total_bytes += file_size
+        stats['deleted'] += 1
+
+    action = 'Would free' if dry_run else 'Freed'
+    print(f'\n{action}: {total_bytes / 1024 / 1024 / 1024:.2f} GB')
+
+    return stats
+
+
 def main():
     parser = argparse.ArgumentParser(description='Trailer hosting pipeline')
     subparsers = parser.add_subparsers(dest='command', help='Command to run')
@@ -393,8 +444,12 @@ def main():
     rotate_parser = subparsers.add_parser('rotate', help='Delete oldest trailers to stay under cap')
     rotate_parser.add_argument('--dry-run', action='store_true', help='Preview without deleting')
 
+    # clean_local
+    clean_parser = subparsers.add_parser('clean_local', help='Delete local MP4s confirmed in B2')
+    clean_parser.add_argument('--dry-run', action='store_true', help='Preview without deleting')
+
     # full
-    full_parser = subparsers.add_parser('full', help='Full pipeline: host new -> stamp -> rotate')
+    full_parser = subparsers.add_parser('full', help='Full pipeline: host -> stamp -> rotate -> clean')
     full_parser.add_argument('--dry-run', action='store_true', help='Preview all steps')
     full_parser.add_argument('--limit', type=int, default=0, help='Max new trailers to host (0 = all)')
 
@@ -412,6 +467,7 @@ def main():
         print(f'\nStamp results:')
         print(f'  Stamped:          {stats["stamped"]}')
         print(f'  Already had URL:  {stats["already_had"]}')
+        print(f'  Stale cleaned:    {stats["stale_cleaned"]}')
         print(f'  Not in B2:        {stats["no_trailer_in_b2"]}')
 
     elif args.command == 'host':
@@ -432,6 +488,12 @@ def main():
         print(f'  Current count:  {stats["current_count"]}')
         print(f'  Max hosted:     {stats["max_hosted"]}')
 
+    elif args.command == 'clean_local':
+        stats = clean_local_trailers(dry_run=args.dry_run)
+        print(f'\nClean local results:')
+        print(f'  Deleted:      {stats["deleted"]}')
+        print(f'  Total local:  {stats["total_local"]}')
+
     elif args.command == 'full':
         # Step 1: Host new trailers
         print('--- Step 1: Host new trailers ---')
@@ -448,13 +510,20 @@ def main():
         rotate_stats = rotate_trailers(dry_run=args.dry_run)
         print()
 
+        # Step 4: Clean local files confirmed in B2
+        print('--- Step 4: Clean local ---')
+        clean_stats = clean_local_trailers(dry_run=args.dry_run)
+        print()
+
         # Summary
         print('=' * 60)
         print('FULL PIPELINE SUMMARY')
         print('=' * 60)
         print(f'  New trailers hosted:  {host_stats["hosted"]}')
         print(f'  URLs stamped:         {stamp_stats["stamped"]}')
+        print(f'  Stale URLs cleaned:   {stamp_stats["stale_cleaned"]}')
         print(f'  Trailers rotated:     {rotate_stats["deleted"]}')
+        print(f'  Local files cleaned:  {clean_stats["deleted"]}')
         print(f'  Current in B2:        {rotate_stats["current_count"]}')
         print('=' * 60)
 

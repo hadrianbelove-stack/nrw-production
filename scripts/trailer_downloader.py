@@ -4,11 +4,11 @@ Trailer Downloader — Phase 1 of In-App Trailer Playback
 Downloads movie trailers from YouTube as 1080p MP4 files using yt-dlp.
 
 Usage:
-    python3.11 scripts/trailer_downloader.py                      # Download all trailers
-    python3.11 scripts/trailer_downloader.py --limit 10           # Download first 10 only
-    python3.11 scripts/trailer_downloader.py --dry-run             # Test without downloading
-    python3.11 scripts/trailer_downloader.py --cookies safari      # Use browser cookies (for age-restricted)
-    python3.11 scripts/trailer_downloader.py --retry-failed        # Re-attempt only previously failed/skipped
+    python3 scripts/trailer_downloader.py                      # Download all trailers
+    python3 scripts/trailer_downloader.py --limit 10           # Download first 10 only
+    python3 scripts/trailer_downloader.py --dry-run             # Test without downloading
+    python3 scripts/trailer_downloader.py --cookies safari      # Use browser cookies (for age-restricted)
+    python3 scripts/trailer_downloader.py --retry-failed        # Re-attempt only previously failed/skipped
 
 Requires Python 3.10+ (yt-dlp dropped 3.9 support).
 """

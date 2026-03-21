@@ -638,4 +638,5 @@ trailer_hosting:
   enabled: true                      # Master toggle for trailer hosting pipeline
   bucket_url: "https://f004.backblazeb2.com/file/NRW-TRAILERS"  # Public URL base (change when CloudFlare is set up)
   max_hosted: 200                    # Rotation cap — delete oldest trailers when over this count
+  clean_local_after_upload: true     # Auto-delete local MP4 after confirmed B2 upload
   pipeline_integration: true         # Auto-host trailers for new movies during daily enrichment

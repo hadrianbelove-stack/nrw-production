@@ -1287,7 +1287,7 @@ class NRWOrchestrator:
             if trailer_config.get('enabled', False):
                 print("\n🎬 Phase 3.6: Trailer Hosting")
                 self.run_command(
-                    "python3.11 scripts/trailer_pipeline.py full",
+                    "python3 scripts/trailer_pipeline.py full",
                     "Host trailers for newly enriched movies",
                     critical=False  # Don't fail pipeline if trailer hosting fails
                 )
