@@ -1,44 +1,44 @@
 {
-  "timestamp": "2026-03-20T10:17:24.251579",
-  "duration_seconds": 2350.824623,
-  "overall_success": false,
-  "failure_count": 1,
+  "timestamp": "2026-03-21T10:39:02.345316",
+  "duration_seconds": 4167.307154,
+  "overall_success": true,
+  "failure_count": 0,
   "warning_count": 0,
   "phases": [
     {
       "name": "Intake new premieres from TMDB",
       "success": true,
-      "duration_seconds": 8.122602,
+      "duration_seconds": 10.516557,
       "error": null,
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-03-18 to 2026-03-20 (incremental mode, 45 intaked)\n\u2705 Movie intake complete: 45 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-02-18 to 2026-03-20\n   \ud83d\udccb \u90a3\u5e74\u51ac\u81f3 (1 eps)\n   \ud83d\udccb \u7eb9\u5fc3\u5c16 (1 eps)\n   \ud83d\udccb \u6843\u70ec\u4e5d\u91cd"
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-03-19 to 2026-03-21 (incremental mode, 45 intaked)\n\u2705 Movie intake complete: 45 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-02-19 to 2026-03-21\n   \ud83d\udccb \uc5b5\ub9cc\uc7a5\uc790 \uc0c1\uc18d\ub140\uc758 \ub85c\ub9e8\ud2f1 \uc5d4\ub529 (2 eps)\n\n\ud83d\udcca Miniseries "
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 1975.441024,
+      "duration_seconds": 3093.312297,
       "error": null,
-      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 15121 total movies\n\ud83d\udd0d Raw tracking filter: 13484 movies\n\ud83d\udd0d Assigned tracking_movies list: 13484\n\ud83d\udd0d Found 13484 movies in tracking status\n  Priority queue (last 180 days): 978 movies\n  Older movies: 12506 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 13484 movies for digital availability...\n\n  \u2713 Born to Bowl now on HBO Max!\n   \u2705 Added Born to Bowl to site immediately (discovery-driven"
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 15167 total movies\n\ud83d\udd0d Raw tracking filter: 13515 movies\n\ud83d\udd0d Assigned tracking_movies list: 13515\n\ud83d\udd0d Found 13515 movies in tracking status\n  Priority queue (last 180 days): 978 movies\n  Older movies: 12537 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 13515 movies for digital availability...\n\n  \u2713 Radioactive Emergency now on Netflix!\n   \u2705 Added Radioactive Emergency to site immediately"
     },
     {
       "name": "Resolve pre-order movie dates",
       "success": true,
-      "duration_seconds": 0.339707,
+      "duration_seconds": 0.342646,
       "error": null,
       "output_preview": "\n\ud83d\udcc5 Resolving pre-order movie dates...\n\n\ud83d\udcc5 Resolving pre-order dates...\n  No pre-order movies to resolve\n\u2705 Pre-order resolution complete: 0 resolved\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Enrich newly available movies with metadata",
       "success": true,
-      "duration_seconds": 366.44787,
+      "duration_seconds": 420.97224,
       "error": null,
-      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 15 movies to enrich\n  \u2717 Could not fetch details for Born to Bowl\n[YouTubeTrailerScraper] Initializing browser via shared manager...\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n  "
+      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 12 movies to enrich\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n[YouTubeTrailerScraper] Initializing browser via shared manager...\n  \u2192 Searching YouTube: Radioactive Emergency (2"
     },
     {
       "name": "Host trailers for newly enriched movies",
-      "success": false,
-      "duration_seconds": 0.353633,
+      "success": true,
+      "duration_seconds": 642.043994,
       "error": null,
-      "output_preview": "=== Trailer Pipeline: full ===\n\n--- Step 1: Host new trailers ---\nMovies to host: 219\nConnecting to B2...\nERROR: /home/runner/work/nrw-production/nrw-production/.env not found\n"
+      "output_preview": "=== Trailer Pipeline: full ===\n\n--- Step 1: Host new trailers ---\nMovies to host: 232\nConnecting to B2...\n[1/232] Meal Ticket (2026)...\n    Download: skipped_age_restricted (ERROR: [youtube] QWB_iPFa2OE: Sign in to confirm you\u2019re not a bot. Use --cookies-from-browser or --c)\n[2/232] Vishnu Vinyasam (2026)...\n    Download: skipped_age_restricted (ERROR: [youtube] QkkMjnbLZHw: Sign in to confirm you\u2019re not a bot. Use --cookies-from-browser or --c)\n[3/232] Seetha Payanam (2026)...\n    Download: ski"
     }
   ],
   "health_issues": [],
@@ -46,36 +46,23 @@
     "stalled": false,
     "days_without_transitions": 0
   },
-  "failures": [
-    {
-      "phase": "Host trailers for newly enriched movies",
-      "severity": "error",
-      "message": "Phase failed with exit code 1",
-      "context": null,
-      "stdout_preview": "=== Trailer Pipeline: full ===\n\n--- Step 1: Host new trailers ---\nMovies to host: 219\nConnecting to B2...\nERROR: /home/runner/work/nrw-production/nrw-production/.env not found"
-    }
-  ],
+  "failures": [],
   "warnings": [],
   "data_quality": {
-    "total": 15121,
-    "tracking": 13469,
-    "available": 1650,
-    "data_movies": 588,
-    "movies_with_links": 409,
-    "movies_with_rt": 437,
-    "movies_with_wikipedia": 286,
-    "movies_with_trailers": 551
+    "total": 15167,
+    "tracking": 13503,
+    "available": 1662,
+    "data_movies": 600,
+    "movies_with_links": 418,
+    "movies_with_rt": 444,
+    "movies_with_wikipedia": 293,
+    "movies_with_trailers": 564
   },
   "enrichment_metrics": {
-    "timestamp": "2025-12-29T15:42:45.008551",
-    "batch_cap_triggered": false,
-    "loop_timeout_triggered": false,
-    "movies_requested": 11,
-    "movies_processed": 11,
-    "movies_enriched": 11,
+    "timestamp": "2026-03-21T10:28:19.844326",
+    "movies_requested": 12,
+    "movies_enriched": 12,
     "movies_deferred": 0,
-    "enrichment_duration_seconds": 1260.8056180477142,
-    "max_batch_size": 100,
-    "timeout_limit_minutes": 60
+    "enrichment_duration_seconds": 420.32
   }
 }
