@@ -1,7 +1,139 @@
 {
-  "generated_at": "2026-03-22T10:33:04.478564",
-  "count": 603,
+  "generated_at": "2026-03-23T10:52:24.667040",
+  "count": 605,
   "movies": [
+    {
+      "id": "1655051",
+      "title": "Chopin. I Am Not Afraid of Darkness",
+      "digital_date": "2026-03-20",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "An unusual documentary film asking whether classical music can heal places affected by war and suffering, taking the viewer on a cinematic journey through unique and sinister sceneries. It weaves the stories of three outstanding pianists, a Pole, a Korean, and a Syrian immigrant, who prepare for special concerts, where no one would expect to hear live music.",
+      "genres": [
+        "Documentary",
+        "Music",
+        "War"
+      ],
+      "runtime": 0,
+      "year": 2022,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "Apple TV Store"
+        ],
+        "buy": [
+          "Apple TV Store"
+        ],
+        "streaming": []
+      },
+      "links": {
+        "trailer": "https://www.youtube.com/watch?v=j3Nf22I8s3Q"
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Apple TV",
+            "link": "https://tv.apple.com/us/movie/chopin-i-am-not-afraid-of-darkness/umc.cmc.bncgbi6ogqrmm3pi8bi63i6p?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1824171748"
+          }
+        ]
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-23T10:50:45.909397",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/6TT1NZl6nMuISFYnou9wgyXlBi5.jpg",
+      "studio": "Inbornmedia",
+      "budget": 0,
+      "country": "Poland",
+      "original_language": "pl",
+      "original_title": "Chopin. Nie boj\u0119 si\u0119 ciemno\u015bci",
+      "crew": {
+        "director": "Joanna Kaczmarek",
+        "cast": [
+          "Leszek Mo\u017cd\u017cer",
+          "Won Jae-yeon"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "tmdb_type4",
+      "_enrichment_gaps": [
+        "rt_score"
+      ],
+      "categories": {
+        "tier": null,
+        "is_foreign": true,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_festival": false,
+        "is_series": false,
+        "is_documentary": true,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
+    {
+      "id": "1574859",
+      "title": "Rubber Nose Massacre",
+      "digital_date": "2026-03-23",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Two Florida Man vigilantes hunt for a psychopathic serial-killing clown.",
+      "genres": [],
+      "runtime": 79,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Night Flight Plus"
+        ]
+      },
+      "links": {
+        "trailer": "https://www.youtube.com/watch?v=kY41jV70j4c"
+      },
+      "watch_links": {
+        "streaming": {
+          "service": "Night Flight Plus",
+          "link": "https://www.nightflightplus.com/videos/rubber-nose-massacre/69bcb7eda4d52855ea1706c6"
+        }
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-03-23T10:49:42.483702",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/1yOiDgXK0uger8vuKW4aNSEmHcn.jpg",
+      "studio": null,
+      "budget": 24000,
+      "country": null,
+      "original_language": "en",
+      "original_title": "Rubber Nose Massacre",
+      "crew": {
+        "director": "Sam Gaffin",
+        "cast": [
+          "Charles Harris",
+          "Samuel Williams"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_digital_date_source": "detection",
+      "_enrichment_gaps": [
+        "rt_score"
+      ],
+      "categories": {
+        "tier": null,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_festival": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
     {
       "id": "1482168",
       "title": "The Rise of the Red Hot Chili Peppers: Our Brother, Hillel",
@@ -27,7 +159,8 @@
       "links": {
         "wikipedia": "https://en.wikipedia.org/wiki/Red_Hot_Chili_Peppers?wprov=srpw1_0",
         "trailer": "https://www.youtube.com/watch?v=Exs7-tOaQQY",
-        "rt": "https://www.rottentomatoes.com/m/the_rise_of_the_red_hot_chili_peppers"
+        "rt": "https://www.rottentomatoes.com/m/the_rise_of_the_red_hot_chili_peppers",
+        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1482168.mp4"
       },
       "watch_links": {
         "streaming": {
@@ -89,7 +222,8 @@
         "streaming": []
       },
       "links": {
-        "trailer": "https://www.youtube.com/watch?v=P_yeWY0b_RE"
+        "trailer": "https://www.youtube.com/watch?v=P_yeWY0b_RE",
+        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1464099.mp4"
       },
       "watch_links": {},
       "_enrichment_status": "completed",
@@ -152,7 +286,8 @@
       },
       "links": {
         "wikipedia": "https://en.wikipedia.org/wiki/Agent_Zeta",
-        "trailer": "https://www.youtube.com/watch?v=d56tjzLzYZM"
+        "trailer": "https://www.youtube.com/watch?v=d56tjzLzYZM",
+        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1314786.mp4"
       },
       "watch_links": {
         "streaming": {
@@ -1074,8 +1209,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -1146,8 +1280,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -1214,8 +1347,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -1278,8 +1410,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -1341,8 +1472,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -1417,8 +1547,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -1498,8 +1627,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -1564,8 +1692,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       }
     },
     {
@@ -1627,8 +1754,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -1688,8 +1814,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false,
       "festival_info": {
@@ -1759,8 +1884,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -1822,8 +1946,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -1881,8 +2004,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false,
       "festival_info": {
@@ -1952,8 +2074,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -2013,8 +2134,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false,
       "festival_info": {
@@ -2081,8 +2201,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "festival_info": {
         "platform": "Eventive",
@@ -2151,8 +2270,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false,
       "festival_info": {
@@ -2221,8 +2339,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -2277,8 +2394,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -2337,8 +2453,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false,
       "rt_score": null,
@@ -2410,8 +2525,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false,
       "festival_info": {
@@ -2480,8 +2594,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false,
       "festival_info": {
@@ -2552,8 +2665,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -2614,8 +2726,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -2678,8 +2789,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false,
       "festival_info": {
@@ -2754,8 +2864,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -2814,8 +2923,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -2875,8 +2983,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false,
       "rt_score": null
@@ -2940,8 +3047,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -3002,8 +3108,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -3067,8 +3172,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -3133,8 +3237,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -3205,8 +3308,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -3269,8 +3371,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -3338,8 +3439,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -3403,8 +3503,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -3471,8 +3570,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -3535,8 +3633,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -3604,8 +3701,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -3667,8 +3763,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -3732,8 +3827,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -3797,8 +3891,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false,
       "rt_score": "0%"
@@ -3863,8 +3956,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -3925,8 +4017,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -3985,8 +4076,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -4049,8 +4139,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -4115,8 +4204,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -4176,8 +4264,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -4239,8 +4326,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -4306,8 +4392,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -4371,8 +4456,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -4433,8 +4517,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -4498,8 +4581,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -4560,8 +4642,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -4620,8 +4701,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -4683,8 +4763,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false,
       "rt_score": null
@@ -4748,8 +4827,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -4811,8 +4889,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -4871,8 +4948,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false,
       "rt_score": "74%"
@@ -4930,8 +5006,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -4987,8 +5062,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -5046,8 +5120,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -5104,8 +5177,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -5165,8 +5237,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -5224,8 +5295,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -5296,8 +5366,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -5359,8 +5428,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -5422,8 +5490,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -5486,8 +5553,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -5553,8 +5619,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -5616,8 +5681,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -5683,8 +5747,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -5749,8 +5812,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -5813,8 +5875,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -5878,8 +5939,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -5939,8 +5999,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -6003,8 +6062,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -6068,8 +6126,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -6136,8 +6193,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -6199,8 +6255,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -6262,8 +6317,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -6333,8 +6387,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -6409,8 +6462,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -6471,8 +6523,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -6533,8 +6584,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false,
       "rt_score": "98%"
@@ -6597,8 +6647,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false,
       "rt_score": "83%"
@@ -6663,8 +6712,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -6736,8 +6784,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -6803,8 +6850,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -6870,8 +6916,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -6933,8 +6978,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -6991,8 +7035,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -7058,8 +7101,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -7118,8 +7160,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -7183,8 +7224,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -7250,8 +7290,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -7315,8 +7354,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -7377,8 +7415,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false,
       "festival_info": {
@@ -7446,8 +7483,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -7510,8 +7546,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -7576,8 +7611,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -7643,8 +7677,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -7707,8 +7740,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": true
     },
@@ -7767,8 +7799,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false,
       "festival_info": {
@@ -7836,8 +7867,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false,
       "festival_info": {
@@ -7907,8 +7937,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false,
       "festival_info": {
@@ -7978,8 +8007,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -8044,8 +8072,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -8107,8 +8134,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -8171,8 +8197,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -8237,8 +8262,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -8300,8 +8324,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -8363,8 +8386,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -8428,8 +8450,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -8493,8 +8514,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -8559,8 +8579,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -8624,8 +8643,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -8692,8 +8710,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -8755,8 +8772,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -8819,8 +8835,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -8883,8 +8898,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -8946,8 +8960,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -9014,8 +9027,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -9081,8 +9093,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -9148,8 +9159,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -9215,8 +9225,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -9280,8 +9289,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -9346,8 +9354,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -9413,8 +9420,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -9479,8 +9485,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -9542,8 +9547,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -9610,8 +9614,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -9670,8 +9673,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false,
       "festival_info": {
@@ -9742,8 +9744,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -9808,8 +9809,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -9873,8 +9873,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -9937,8 +9936,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -10001,8 +9999,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -10066,8 +10063,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -10128,8 +10124,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -10195,8 +10190,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -10263,8 +10257,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -10329,8 +10322,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -10394,8 +10386,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -10458,8 +10449,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -10523,8 +10513,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -10588,8 +10577,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -10653,8 +10641,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -10717,8 +10704,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -10780,8 +10766,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -10846,8 +10831,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -10912,8 +10896,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -10976,8 +10959,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -11035,8 +11017,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false,
       "festival_info": {
@@ -11108,8 +11089,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -11173,8 +11153,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -11227,8 +11206,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -11287,8 +11265,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false,
       "festival_info": {
@@ -11355,8 +11332,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false,
       "festival_info": {
@@ -11429,8 +11405,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -11493,8 +11468,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -11557,8 +11531,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -11625,8 +11598,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -11688,8 +11660,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -11749,8 +11720,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -11813,8 +11783,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -11882,8 +11851,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -11948,8 +11916,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -12016,8 +11983,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -12084,8 +12050,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -12149,8 +12114,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -12212,8 +12176,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -12277,8 +12240,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -12340,8 +12302,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -12405,8 +12366,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -12467,8 +12427,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -12532,8 +12491,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -12595,8 +12553,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -12664,8 +12621,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -12727,8 +12683,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -12789,8 +12744,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -12853,8 +12807,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -12922,8 +12875,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -12987,8 +12939,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -13054,8 +13005,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -13117,8 +13067,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -13182,8 +13131,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -13247,8 +13195,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -13312,8 +13259,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -13377,8 +13323,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -13442,8 +13387,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -13507,8 +13451,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -13585,8 +13528,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -13650,8 +13592,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -13717,8 +13658,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -13784,8 +13724,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -13848,8 +13787,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -13911,8 +13849,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false,
       "festival_info": {
@@ -13985,8 +13922,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -14049,8 +13985,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -14114,8 +14049,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -14178,8 +14112,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -14242,8 +14175,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -14306,8 +14238,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -14369,8 +14300,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -14433,8 +14363,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -14512,8 +14441,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -14575,8 +14503,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -14639,8 +14566,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false,
       "festival_info": {
@@ -14710,8 +14636,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false,
       "festival_info": {
@@ -14782,8 +14707,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -14844,8 +14768,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -14909,8 +14832,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -14972,8 +14894,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false,
       "festival_info": {
@@ -15045,8 +14966,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false,
       "festival_info": {
@@ -15117,8 +15037,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -15181,8 +15100,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -15244,8 +15162,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -15309,8 +15226,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -15380,8 +15296,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -15444,8 +15359,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false,
       "festival_info": {
@@ -15517,8 +15431,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -15579,8 +15492,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false,
       "festival_info": {
@@ -15650,8 +15562,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -15719,8 +15630,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -15790,8 +15700,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -15860,8 +15769,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -15925,8 +15833,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -15991,8 +15898,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -16055,8 +15961,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -16119,8 +16024,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -16183,8 +16087,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -16247,8 +16150,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -16308,8 +16210,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -16370,8 +16271,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -16430,8 +16330,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -16496,8 +16395,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -16558,8 +16456,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -16623,8 +16520,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -16685,8 +16581,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -16748,8 +16643,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -16807,8 +16701,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -16874,8 +16767,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -16939,8 +16831,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -17003,8 +16894,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -17070,8 +16960,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -17135,8 +17024,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -17199,8 +17087,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -17263,8 +17150,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -17328,8 +17214,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -17391,8 +17276,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -17457,8 +17341,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -17523,8 +17406,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -17587,8 +17469,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -17652,8 +17533,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -17717,8 +17597,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -17802,8 +17681,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -17865,8 +17743,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -17928,8 +17805,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -17994,8 +17870,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -18056,8 +17931,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false,
       "festival_info": {
@@ -18131,8 +18005,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -18193,8 +18066,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -18258,8 +18130,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -18326,8 +18197,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -18389,8 +18259,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -18451,8 +18320,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false,
       "festival_info": {
@@ -18521,8 +18389,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false,
       "festival_info": {
@@ -18593,8 +18460,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -18660,8 +18526,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -18720,8 +18585,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -18785,8 +18649,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -18847,8 +18710,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -18910,8 +18772,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -18973,8 +18834,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -19037,8 +18897,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -19099,8 +18958,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -19164,8 +19022,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -19230,8 +19087,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -19295,8 +19151,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -19357,8 +19212,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -19421,8 +19275,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -19483,8 +19336,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -19542,8 +19394,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -19606,8 +19457,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -19674,8 +19524,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -19740,8 +19589,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -19801,8 +19649,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -19867,8 +19714,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -19929,8 +19775,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -19988,8 +19833,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false,
       "festival_info": {
@@ -20059,8 +19903,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -20122,8 +19965,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false,
       "festival_info": {
@@ -20191,8 +20033,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -20255,8 +20096,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -20319,8 +20159,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -20382,8 +20221,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -20455,8 +20293,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -20520,8 +20357,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -20581,8 +20417,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -20646,8 +20481,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -20717,8 +20551,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -20781,8 +20614,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -20846,8 +20678,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -20912,8 +20743,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -20972,8 +20802,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -21031,8 +20860,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -21092,8 +20920,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -21157,8 +20984,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -21220,8 +21046,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -21282,8 +21107,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -21342,8 +21166,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -21404,8 +21227,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -21465,8 +21287,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -21529,8 +21350,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -21594,8 +21414,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -21658,8 +21477,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -21711,8 +21529,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -21755,8 +21572,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false,
       "rt_score": "91%",
@@ -21828,8 +21644,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -21881,8 +21696,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -21936,8 +21750,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false,
       "rt_score": "94%"
@@ -21999,8 +21812,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -22066,8 +21878,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -22133,8 +21944,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       }
     },
     {
@@ -22195,8 +22005,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -22249,8 +22058,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -22301,8 +22109,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false,
       "rt_score": "100%"
@@ -22347,8 +22154,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -22408,8 +22214,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -22475,8 +22280,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -22540,8 +22344,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -22601,8 +22404,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -22665,8 +22467,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -22703,8 +22504,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -22757,8 +22557,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -22821,8 +22620,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -22886,8 +22684,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -22947,8 +22744,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -23001,8 +22797,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -23046,8 +22841,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -23092,8 +22886,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false,
       "rt_score": "93%"
@@ -23138,8 +22931,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -23178,8 +22970,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false,
       "rt_score": "80%"
@@ -23224,8 +23015,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -23263,8 +23053,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -23303,8 +23092,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -23369,8 +23157,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -23420,8 +23207,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false,
       "rt_score": "87%"
@@ -23466,8 +23252,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false,
       "rt_score": "77%"
@@ -23507,8 +23292,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false,
       "rt_score": "96%"
@@ -23548,8 +23332,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -23590,8 +23373,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -23656,8 +23438,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -23719,8 +23500,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -23759,8 +23539,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false,
       "rt_score": "75%"
@@ -23823,8 +23602,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -23874,8 +23652,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false,
       "rt_score": "28%"
@@ -23947,8 +23724,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -24007,8 +23783,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -24066,8 +23841,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -24140,8 +23914,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -24216,8 +23989,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -24294,8 +24066,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -24368,8 +24139,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -24432,8 +24202,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -24494,8 +24263,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -24559,8 +24327,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -24619,8 +24386,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -24692,8 +24458,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -24764,8 +24529,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -24823,8 +24587,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -24889,8 +24652,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -24961,8 +24723,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -25023,8 +24784,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -25088,8 +24848,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -25176,8 +24935,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -25245,8 +25003,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -25309,8 +25066,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -25374,8 +25130,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -25439,8 +25194,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -25510,8 +25264,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -25579,8 +25332,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -25644,8 +25396,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -25712,8 +25463,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -25779,8 +25529,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -25841,8 +25590,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -25905,8 +25653,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -25976,8 +25723,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -26042,8 +25788,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -26108,8 +25853,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -26174,8 +25918,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -26245,8 +25988,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -26315,8 +26057,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -26389,8 +26130,7 @@
         "is_series": true,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -26453,8 +26193,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -26519,8 +26258,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -26588,8 +26326,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -26657,8 +26394,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -26720,8 +26456,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -26785,8 +26520,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -26858,8 +26592,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -26923,8 +26656,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -26990,8 +26722,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -27051,8 +26782,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -27112,8 +26842,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -27178,8 +26907,7 @@
         "is_series": true,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -27257,8 +26985,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -27331,8 +27058,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -27393,8 +27119,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -27466,8 +27191,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -27532,8 +27256,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -27601,8 +27324,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -27664,8 +27386,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -27738,8 +27459,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -27808,8 +27528,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -27873,8 +27592,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -27937,8 +27655,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -28000,8 +27717,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -28068,8 +27784,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -28135,8 +27850,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -28204,8 +27918,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -28275,8 +27988,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -28339,8 +28051,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -28405,8 +28116,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -28475,8 +28185,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -28540,8 +28249,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -28605,8 +28313,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -28667,8 +28374,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -28736,8 +28442,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -28805,8 +28510,7 @@
         "is_series": true,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -28872,8 +28576,7 @@
         "is_series": true,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -28933,8 +28636,7 @@
         "is_series": true,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -28998,8 +28700,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -29072,8 +28773,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -29141,8 +28841,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -29214,8 +28913,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -29279,8 +28977,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -29349,8 +29046,7 @@
         "is_series": true,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -29411,8 +29107,7 @@
         "is_series": true,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -29476,8 +29171,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -29543,8 +29237,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -29616,8 +29309,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -29683,8 +29375,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -29751,8 +29442,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -29819,8 +29509,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -29897,8 +29586,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -29965,8 +29653,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -30052,8 +29739,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -30121,8 +29807,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -30187,8 +29872,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -30261,8 +29945,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -30329,8 +30012,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -30394,8 +30076,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -30463,8 +30144,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -30526,8 +30206,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -30593,8 +30272,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -30661,8 +30339,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -30736,8 +30413,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -30808,8 +30484,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -30878,8 +30553,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -30951,8 +30625,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -31015,8 +30688,7 @@
         "is_series": true,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -31083,8 +30755,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -31149,8 +30820,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -31232,8 +30902,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -31309,8 +30978,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -31384,8 +31052,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -31454,8 +31121,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -31522,8 +31188,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -31594,8 +31259,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -31660,8 +31324,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -31721,8 +31384,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -31792,8 +31454,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -31862,8 +31523,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -31931,8 +31591,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -31998,8 +31657,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -32058,8 +31716,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -32127,8 +31784,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -32195,8 +31851,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -32261,8 +31916,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -32331,8 +31985,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -32402,8 +32055,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -32466,8 +32118,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -32536,8 +32187,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -32607,8 +32257,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -32673,8 +32322,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -32738,8 +32386,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -32806,8 +32453,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -32874,8 +32520,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -32937,8 +32582,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -33005,8 +32649,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -33065,8 +32708,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -33137,8 +32779,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -33205,8 +32846,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -33272,8 +32912,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -33338,8 +32977,7 @@
         "is_series": true,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -33406,8 +33044,7 @@
         "is_series": true,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -33468,8 +33105,7 @@
         "is_series": true,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -33533,8 +33169,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -33601,8 +33236,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -33669,8 +33303,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -33743,8 +33376,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -33812,8 +33444,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -33882,8 +33513,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -33949,8 +33579,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -34017,8 +33646,7 @@
         "is_series": true,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -34079,8 +33707,7 @@
         "is_series": true,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -34147,8 +33774,7 @@
         "is_series": true,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -34211,8 +33837,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -34277,8 +33902,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -34351,8 +33975,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -34422,8 +34045,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -34492,8 +34114,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -34556,8 +34177,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -34626,8 +34246,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -34698,8 +34317,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -34763,8 +34381,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -34837,8 +34454,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -34908,8 +34524,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -34974,8 +34589,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -35037,8 +34651,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -35104,8 +34717,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -35167,8 +34779,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -35231,8 +34842,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -35300,8 +34910,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -35369,8 +34978,7 @@
         "is_series": true,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -35433,8 +35041,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -35509,8 +35116,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -35575,8 +35181,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -35644,8 +35249,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -35706,8 +35310,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -35775,8 +35378,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -35844,8 +35446,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -35910,8 +35511,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -35978,8 +35578,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -36046,8 +35645,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -36106,8 +35704,7 @@
         "is_series": true,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -36175,8 +35772,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -36249,8 +35845,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -36316,8 +35911,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -36380,8 +35974,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -36445,8 +36038,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -36510,8 +36102,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -36575,8 +36166,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -36643,8 +36233,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -36707,8 +36296,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -36772,8 +36360,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -36835,8 +36422,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -36897,8 +36483,7 @@
         "is_series": true,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -36966,8 +36551,7 @@
         "is_series": true,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -37032,8 +36616,7 @@
         "is_series": true,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -37102,8 +36685,7 @@
         "is_series": true,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -37167,8 +36749,7 @@
         "is_series": true,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -37232,8 +36813,7 @@
         "is_series": true,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -37300,8 +36880,7 @@
         "is_series": true,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -37360,8 +36939,7 @@
         "is_series": true,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -37427,8 +37005,7 @@
         "is_series": true,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -37496,8 +37073,7 @@
         "is_series": true,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -37563,8 +37139,7 @@
         "is_series": true,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -37626,8 +37201,7 @@
         "is_series": true,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -37686,8 +37260,7 @@
         "is_series": true,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -37748,8 +37321,7 @@
         "is_series": true,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -37816,8 +37388,7 @@
         "is_series": true,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -37885,8 +37456,7 @@
         "is_series": true,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -37949,8 +37519,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -38034,8 +37603,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -38099,8 +37667,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -38175,8 +37742,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -38241,8 +37807,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -38309,8 +37874,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -38375,8 +37939,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -38451,8 +38014,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -38518,8 +38080,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -38588,8 +38149,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -38658,8 +38218,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -38722,8 +38281,7 @@
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": true
+        "manual_override": null
       },
       "featured": false
     },
@@ -38791,8 +38349,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -38867,8 +38424,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -38952,8 +38508,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -39036,8 +38591,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -39101,8 +38655,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -39166,8 +38719,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -39227,8 +38779,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -39312,8 +38863,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -39383,8 +38933,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -39456,8 +39005,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     },
@@ -39532,8 +39080,7 @@
         "is_series": false,
         "is_documentary": false,
         "auto_categorized": true,
-        "manual_override": null,
-        "is_documentary": false
+        "manual_override": null
       },
       "featured": false
     }
@@ -39544,10 +39091,10 @@
   "featured": [
     "1608619"
   ],
-  "latest_playlist_url": "https://www.youtube.com/playlist?list=PLFCewXXu8_tFS9ssibn1qIIhO70UrWh_Z",
+  "latest_playlist_url": "https://www.youtube.com/playlist?list=PLFCewXXu8_tGU7APl1SKPnbU9Wo6p6Nlv",
   "_metadata": {
-    "last_discovery_write": "2026-03-22T10:21:51.039956",
-    "discovery_count": 591,
+    "last_discovery_write": "2026-03-23T10:50:45.909407",
+    "discovery_count": 593,
     "schema_version": "2.0"
   }
 }
