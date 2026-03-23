@@ -103,7 +103,7 @@ def download_trailer(movie, dry_run=False, cookies_browser=None):
         return {'status': 'dry_run', 'detail': f'Would download {movie["trailer_url"]}'}
 
     ydl_opts = {
-        'format': 'bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]/best[height<=1080][ext=mp4]/best[height<=1080]',
+        'format': 'bestvideo[height<=1080][vcodec^=avc1]+bestaudio[ext=m4a]/bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]/best[height<=1080][ext=mp4]/best[height<=1080]',
         'merge_output_format': 'mp4',
         'outtmpl': output_path,
         'quiet': True,

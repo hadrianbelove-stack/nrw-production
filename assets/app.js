@@ -989,19 +989,36 @@ const NRW = {
         // Update synopsis
         document.getElementById('lightbox-synopsis').textContent = movie.synopsis || 'Synopsis coming soon.';
 
-        // Pull quotes
+        // Pull quotes (built via DOM to prevent XSS)
         const pqContainer = document.getElementById('lightbox-pull-quotes');
+        pqContainer.innerHTML = '';
         if (movie.pull_quotes && movie.pull_quotes.length > 0) {
-            let pqHtml = '';
             for (const q of movie.pull_quotes) {
-                const srcBadge = q.source === 'letterboxd' ? '<span class="pq-source pq-lb">LB</span>' : '<span class="pq-source pq-rt">RT</span>';
+                const card = document.createElement('div');
+                card.className = 'pq-card';
+
+                const badge = document.createElement('span');
+                badge.className = q.source === 'letterboxd' ? 'pq-source pq-lb' : 'pq-source pq-rt';
+                badge.textContent = q.source === 'letterboxd' ? 'LB' : 'RT';
+                card.appendChild(badge);
+
+                const quote = document.createElement('q');
+                quote.className = 'pq-text';
+                quote.textContent = q.text;
+                card.appendChild(quote);
+
                 const attribution = [q.critic, q.outlet].filter(Boolean).join(', ');
-                pqHtml += `<div class="pq-card">${srcBadge}<q class="pq-text">${q.text}</q>${attribution ? `<cite class="pq-cite">${attribution}</cite>` : ''}</div>`;
+                if (attribution) {
+                    const cite = document.createElement('cite');
+                    cite.className = 'pq-cite';
+                    cite.textContent = attribution;
+                    card.appendChild(cite);
+                }
+
+                pqContainer.appendChild(card);
             }
-            pqContainer.innerHTML = pqHtml;
             pqContainer.style.display = '';
         } else {
-            pqContainer.innerHTML = '';
             pqContainer.style.display = 'none';
         }
 

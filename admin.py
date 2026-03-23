@@ -2490,8 +2490,8 @@ def toggle_pull_quote():
     source = data.get('source')  # 'rt_quotes' or 'lb_quotes'
     index = data.get('index')
 
-    if not cache_key or source is None or index is None:
-        return jsonify({'success': False, 'error': 'Missing parameters'})
+    if not cache_key or source not in ('rt_quotes', 'lb_quotes') or index is None:
+        return jsonify({'success': False, 'error': 'Missing or invalid parameters'})
 
     quotes_cache = load_json(PULL_QUOTES_CACHE, {})
     if cache_key not in quotes_cache:

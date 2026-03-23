@@ -321,6 +321,7 @@ const NRWMobile = {
                         ${movie.digital_date ? `<span class="back-date">${this.formatShortDate(movie.digital_date)}</span>` : ''}
                     </div>
                     <p class="back-synopsis">${movie.synopsis || 'No synopsis available.'}</p>
+                    ${movie.pull_quotes?.length ? `<div class="back-pull-quotes">${movie.pull_quotes.map(q => '<div class="back-pq"></div>').join('')}</div>` : ''}
                     <p class="back-meta">
                         <strong>Dir:</strong> ${movie.crew?.director || 'Unknown'}
                         ${this.abbreviateCountry(movie.country) ? ` &bull; ${this.abbreviateCountry(movie.country)}` : ''}
@@ -342,6 +343,23 @@ const NRWMobile = {
                 </div>
             </div>
         `;
+
+        // Populate pull quote text safely (avoid XSS from innerHTML)
+        if (movie.pull_quotes?.length) {
+            const pqDivs = card.querySelectorAll('.back-pq');
+            movie.pull_quotes.forEach((q, i) => {
+                if (pqDivs[i]) {
+                    const quote = document.createElement('q');
+                    quote.textContent = q.text;
+                    pqDivs[i].appendChild(quote);
+                    if (q.critic || q.outlet) {
+                        const cite = document.createElement('cite');
+                        cite.textContent = [q.critic, q.outlet].filter(Boolean).join(', ');
+                        pqDivs[i].appendChild(cite);
+                    }
+                }
+            });
+        }
 
         // Add flip handler
         card.addEventListener('click', (e) => {

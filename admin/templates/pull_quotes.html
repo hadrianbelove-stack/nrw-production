@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pull Quotes - {{ movie.title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}?v=10">
+    <style>
+        /* Pull Quotes Page Styles */
+        .pq-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 1.5rem 2rem;
+            background: #2a2a2a;
+            border-bottom: 1px solid #3a3a3a;
+        }
+        .pq-back {
+            color: #999;
+            text-decoration: none;
+            font-size: 0.9rem;
+            padding: 0.4rem 0.8rem;
+            border: 1px solid #3a3a3a;
+            border-radius: 4px;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .pq-back:hover { color: #fff; border-color: #666; }
+        .pq-poster {
+            width: 60px;
+            height: 90px;
+            border-radius: 4px;
+            object-fit: cover;
+        }
+        .pq-movie-info h1 {
+            font-size: 1.4rem;
+            margin: 0 0 0.3rem 0;
+            color: #fff;
+        }
+        .pq-stats {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.85rem;
+            color: #999;
+        }
+        .pq-stat-num { color: #ff6b6b; font-weight: 600; }
+
+        /* Tabs */
+        .pq-tabs {
+            display: flex;
+            gap: 0;
+            padding: 0 2rem;
+            background: #222;
+            border-bottom: 1px solid #3a3a3a;
+        }
+        .pq-tab {
+            padding: 0.75rem 1.5rem;
+            background: none;
+            border: none;
+            color: #999;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        .pq-tab:hover { color: #ccc; }
+        .pq-tab.active {
+            color: #ff6b6b;
+            border-bottom-color: #ff6b6b;
+        }
+
+        /* Content */
+        .pq-content { padding: 1.5rem 2rem; max-width: 1200px; }
+
+        /* Section Headers */
+        .pq-section-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 1.5rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #3a3a3a;
+        }
+        .pq-section-header:first-child { margin-top: 0; }
+        .pq-section-header h2 {
+            font-size: 1.1rem;
+            color: #fff;
+            margin: 0;
+        }
+        .pq-section-count {
+            font-size: 0.85rem;
+            color: #999;
+            font-weight: normal;
+        }
+        .pq-selected-count {
+            font-size: 0.8rem;
+            color: #28a745;
+            margin-left: auto;
+        }
+
+        /* Quote Cards */
+        .pq-quote-card {
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            transition: all 0.2s;
+        }
+        .pq-quote-card:hover {
+            border-color: #4a4a6a;
+        }
+        .pq-quote-card.selected {
+            border-color: #28a745;
+            background: linear-gradient(135deg, rgba(40, 167, 69, 0.08), transparent);
+        }
+
+        .pq-quote-text {
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #e0e0e0;
+            margin-bottom: 0.75rem;
+            font-style: italic;
+        }
+        .pq-quote-text::before { content: '\201C'; color: #ff6b6b; }
+        .pq-quote-text::after { content: '\201D'; color: #ff6b6b; }
+
+        /* Extracted pull quote highlight */
+        .pq-extracted {
+            background: rgba(255, 193, 7, 0.08);
+            border-left: 3px solid #ffc107;
+            padding: 0.5rem 0.75rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0 4px 4px 0;
+            font-size: 1.05rem;
+        }
+        .pq-extracted-label {
+            font-size: 0.7rem;
+            color: #ffc107;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.25rem;
+            font-style: normal;
+        }
+        .pq-full-review {
+            font-size: 0.85rem;
+            color: #999;
+            line-height: 1.4;
+            font-style: normal;
+        }
+        .pq-full-review summary {
+            cursor: pointer;
+            color: #666;
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+        }
+        .pq-full-review summary:hover { color: #999; }
+        .pq-full-review-text {
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            background: #1a1a1a;
+            border-radius: 4px;
+        }
+
+        .pq-quote-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.5rem;
+        }
+        .pq-critic {
+            font-weight: 600;
+            color: #ccc;
+            font-size: 0.85rem;
+        }
+        .pq-outlet {
+            color: #888;
+            font-size: 0.8rem;
+        }
+        .pq-badge {
+            font-size: 0.7rem;
+            padding: 0.15rem 0.4rem;
+            border-radius: 3px;
+            font-weight: 600;
+        }
+        .pq-badge.top-critic {
+            background: #ffc107;
+            color: #000;
+        }
+        .pq-badge.fresh { color: #28a745; }
+        .pq-badge.rotten { color: #dc3545; }
+        .pq-badge.lb-rating {
+            background: #3a3a3a;
+            color: #ffc107;
+        }
+
+        .pq-quote-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .pq-select-btn {
+            padding: 0.35rem 0.8rem;
+            border: 1px solid #3a3a3a;
+            border-radius: 4px;
+            background: #1a1a1a;
+            color: #999;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .pq-select-btn:hover {
+            border-color: #28a745;
+            color: #28a745;
+        }
+        .pq-select-btn.active {
+            background: #28a745;
+            border-color: #28a745;
+            color: #fff;
+        }
+        .pq-review-link {
+            color: #66b3ff;
+            text-decoration: none;
+            font-size: 0.8rem;
+        }
+        .pq-review-link:hover { text-decoration: underline; }
+
+        /* Eye Test */
+        .pq-eye-test {
+            max-width: 900px;
+        }
+        .pq-eye-test-intro {
+            color: #999;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+        .pq-matchup {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 1rem;
+            align-items: stretch;
+            margin-bottom: 1rem;
+        }
+        .pq-option {
+            background: #2a2a2a;
+            border: 2px solid #3a3a3a;
+            border-radius: 8px;
+            padding: 1.25rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+        }
+        .pq-option:hover {
+            border-color: #ff6b6b;
+            transform: translateY(-2px);
+        }
+        .pq-option-label {
+            font-size: 0.75rem;
+            color: #ff6b6b;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .pq-option-text {
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #e0e0e0;
+            font-style: italic;
+            flex: 1;
+        }
+        .pq-option-meta {
+            margin-top: 0.75rem;
+            font-size: 0.8rem;
+            color: #888;
+        }
+        .pq-vs {
+            display: flex;
+            align-items: center;
+            font-size: 1.2rem;
+            color: #666;
+            font-weight: 700;
+        }
+        .pq-neither-btn {
+            display: block;
+            width: 100%;
+            padding: 0.6rem;
+            background: none;
+            border: 1px solid #3a3a3a;
+            border-radius: 4px;
+            color: #666;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 1rem;
+        }
+        .pq-neither-btn:hover {
+            border-color: #999;
+            color: #999;
+        }
+        .pq-note-input {
+            width: 100%;
+            padding: 0.5rem;
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+            color: #ccc;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            margin-bottom: 0.75rem;
+        }
+        .pq-note-input::placeholder { color: #555; }
+        .pq-eye-counter {
+            text-align: center;
+            color: #666;
+            font-size: 0.85rem;
+            margin-top: 1rem;
+        }
+        .pq-eye-done {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #999;
+        }
+
+        /* Add Quote */
+        .pq-add-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.45rem 1rem;
+            background: #2a2a2a;
+            border: 1px dashed #4a4a4a;
+            border-radius: 6px;
+            color: #999;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 1rem;
+        }
+        .pq-add-btn:hover {
+            border-color: #6c5ce7;
+            color: #6c5ce7;
+        }
+        .pq-add-form {
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        .pq-add-form textarea {
+            width: 100%;
+            min-height: 60px;
+            padding: 0.5rem;
+            background: #1a1a1a;
+            border: 1px solid #3a3a3a;
+            color: #e0e0e0;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            font-family: inherit;
+            resize: vertical;
+            margin-bottom: 0.5rem;
+        }
+        .pq-add-row {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .pq-add-row input {
+            flex: 1;
+            padding: 0.4rem 0.6rem;
+            background: #1a1a1a;
+            border: 1px solid #3a3a3a;
+            color: #e0e0e0;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+        .pq-add-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .pq-save-btn {
+            padding: 0.4rem 1rem;
+            background: #6c5ce7;
+            border: none;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+        .pq-save-btn:hover { background: #5a4bd1; }
+        .pq-cancel-btn {
+            padding: 0.4rem 1rem;
+            background: none;
+            border: 1px solid #3a3a3a;
+            border-radius: 4px;
+            color: #999;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+        .pq-cancel-btn:hover { color: #ccc; border-color: #666; }
+        .pq-badge.manual {
+            background: #3a3a4a;
+            color: #a0a0c0;
+        }
+
+        /* No quotes state */
+        .pq-empty {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #666;
+        }
+        .pq-empty code {
+            display: block;
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background: #2a2a2a;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            color: #ccc;
+        }
+
+        /* Success flash */
+        .pq-flash {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: #28a745;
+            color: #fff;
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 100;
+            pointer-events: none;
+        }
+        .pq-flash.show { opacity: 1; }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="pq-header">
+        <a href="/" class="pq-back">&larr; Admin</a>
+        {% if movie.poster_url or movie.get('poster') %}
+        <img src="{{ movie.poster_url or movie.get('poster') }}" class="pq-poster" alt="{{ movie.title }}">
+        {% endif %}
+        <div class="pq-movie-info">
+            <h1>{{ movie.title }} ({{ movie.year }})</h1>
+            <div class="pq-stats">
+                <span>RT: <span class="pq-stat-num">{{ rt_quotes|length }}</span> quotes</span>
+                <span>Letterboxd: <span class="pq-stat-num">{{ lb_quotes|length }}</span> reviews</span>
+                <span>Selected: <span class="pq-stat-num" id="total-selected">{{ rt_selected + lb_selected }}</span></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="pq-tabs">
+        <button class="pq-tab active" onclick="switchTab('all')">All Quotes</button>
+        <button class="pq-tab" onclick="switchTab('eye-test')">Eye Test</button>
+    </div>
+
+    <!-- All Quotes Panel -->
+    <div class="pq-content pq-panel" id="panel-all">
+        <!-- Add Quote (always visible) -->
+        <button class="pq-add-btn" id="add-quote-btn" onclick="document.getElementById('add-quote-form').style.display='block'; this.style.display='none';">+ Add Quote</button>
+        <div class="pq-add-form" id="add-quote-form" style="display:none;">
+            <textarea id="add-quote-text" placeholder="Quote text..."></textarea>
+            <div class="pq-add-row">
+                <input id="add-quote-critic" placeholder="Critic name">
+                <input id="add-quote-outlet" placeholder="Publication / outlet">
+            </div>
+            <div class="pq-add-actions">
+                <button class="pq-save-btn" onclick="submitAddQuote()">Save Quote</button>
+                <button class="pq-cancel-btn" onclick="cancelAddQuote()">Cancel</button>
+            </div>
+        </div>
+
+        {% if not has_quotes %}
+        <div class="pq-empty" id="pq-empty-msg">
+            <p>No pull quotes scraped yet for this movie.</p>
+            <p>Run the scraper from the command line:</p>
+            <code>/usr/bin/python3 pull_quotes_scraper.py "{{ movie.title }}" {{ movie.year }}{% if rt_url %} "{{ rt_url }}"{% endif %}</code>
+        </div>
+        {% else %}
+
+        <!-- RT Critics -->
+        {% if rt_quotes %}
+        <div class="pq-section-header">
+            <h2>RT Critic Quotes</h2>
+            <span class="pq-section-count">({{ rt_quotes|length }})</span>
+            <span class="pq-selected-count" id="rt-selected-count">{{ rt_selected }} selected</span>
+        </div>
+        {% for q in rt_quotes %}
+        <div class="pq-quote-card {% if q.selected %}selected{% endif %}" id="rt-card-{{ loop.index0 }}">
+            <div class="pq-quote-text">{{ q.text }}</div>
+            <div class="pq-quote-meta">
+                <span class="pq-critic">{{ q.critic }}</span>
+                <span class="pq-outlet">{{ q.outlet }}</span>
+                {% if q.is_top_critic %}<span class="pq-badge top-critic">TOP CRITIC</span>{% endif %}
+                {% if q.fresh == 'fresh' %}<span class="pq-badge fresh">FRESH</span>
+                {% elif q.fresh == 'rotten' %}<span class="pq-badge rotten">ROTTEN</span>{% endif %}
+            </div>
+            <div class="pq-quote-actions">
+                <button class="pq-select-btn {% if q.selected %}active{% endif %}"
+                        onclick="toggleQuote('{{ cache_key }}', 'rt_quotes', {{ loop.index0 }}, this)">
+                    {% if q.selected %}&#10003; Selected{% else %}Select{% endif %}
+                </button>
+                {% if q.review_url %}
+                <a href="{{ q.review_url }}" target="_blank" class="pq-review-link">Read Review &rarr;</a>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        <!-- Letterboxd Reviews -->
+        {% if lb_quotes %}
+        <div class="pq-section-header">
+            <h2>Letterboxd Reviews</h2>
+            <span class="pq-section-count">({{ lb_quotes|length }})</span>
+            <span class="pq-selected-count" id="lb-selected-count">{{ lb_selected }} selected</span>
+        </div>
+        {% for q in lb_quotes %}
+        <div class="pq-quote-card {% if q.selected %}selected{% endif %}" id="lb-card-{{ loop.index0 }}">
+            {% if q.pull_quote and q.pull_quote != q.text %}
+            <div class="pq-extracted">
+                <div class="pq-extracted-label">Extracted Pull Quote</div>
+                <div class="pq-quote-text">{{ q.pull_quote }}</div>
+            </div>
+            <div class="pq-full-review">
+                <details>
+                    <summary>Full review ({{ q.text|length }} chars)</summary>
+                    <div class="pq-full-review-text">{{ q.text }}</div>
+                </details>
+            </div>
+            {% else %}
+            <div class="pq-quote-text">{{ q.text }}</div>
+            {% endif %}
+            <div class="pq-quote-meta">
+                <span class="pq-critic">{{ q.critic }}</span>
+                {% if q.rating_stars %}<span class="pq-badge lb-rating">{{ q.rating_stars }}</span>{% endif %}
+                {% if q.comments %}<span style="color: #666; font-size: 0.75rem;">{{ q.comments }} comments</span>{% endif %}
+            </div>
+            <div class="pq-quote-actions">
+                <button class="pq-select-btn {% if q.selected %}active{% endif %}"
+                        onclick="toggleQuote('{{ cache_key }}', 'lb_quotes', {{ loop.index0 }}, this)">
+                    {% if q.selected %}&#10003; Selected{% else %}Select{% endif %}
+                </button>
+                {% if q.review_url %}
+                <a href="{{ q.review_url }}" target="_blank" class="pq-review-link">View on Letterboxd &rarr;</a>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        {% endif %}
+    </div>
+
+    <!-- Eye Test Panel -->
+    <div class="pq-content pq-panel" id="panel-eye-test" style="display:none;">
+        {% if not has_quotes %}
+        <div class="pq-empty">
+            <p>Need quotes to run eye test. Scrape quotes first.</p>
+        </div>
+        {% else %}
+        <div class="pq-eye-test">
+            <div class="pq-eye-test-intro">
+                Pick which quote you'd prefer as a pull quote for the movie.
+                Add a note about WHY to build your taste profile.
+            </div>
+
+            <div id="eye-test-area">
+                <!-- Populated by JS -->
+            </div>
+
+            <div class="pq-eye-counter" id="eye-counter"></div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Flash message -->
+    <div class="pq-flash" id="pq-flash"></div>
+
+    <script>
+        // All quotes data (for eye test)
+        const allQuotes = [
+            {% for q in rt_quotes %}
+            {
+                text: {{ q.text|tojson }},
+                display: {{ q.text|tojson }},
+                critic: {{ q.critic|tojson }},
+                outlet: {{ q.outlet|tojson }},
+                source: 'rt_critic',
+                is_top_critic: {{ 'true' if q.is_top_critic else 'false' }}
+            },
+            {% endfor %}
+            {% for q in lb_quotes %}
+            {
+                text: {{ q.text|tojson }},
+                display: {{ (q.pull_quote or q.text)|tojson }},
+                critic: {{ q.critic|tojson }},
+                outlet: 'Letterboxd',
+                source: 'letterboxd',
+                rating: {{ q.rating|tojson if q.rating else 'null' }}
+            },
+            {% endfor %}
+        ];
+
+        const movieTitle = {{ movie.title|tojson }};
+        let eyeTestPairs = [];
+        let currentPairIndex = 0;
+        let eyeTestRounds = 0;
+
+        // Tab switching
+        function switchTab(tab) {
+            document.querySelectorAll('.pq-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.pq-panel').forEach(p => p.style.display = 'none');
+
+            if (tab === 'all') {
+                document.querySelectorAll('.pq-tab')[0].classList.add('active');
+                document.getElementById('panel-all').style.display = 'block';
+            } else {
+                document.querySelectorAll('.pq-tab')[1].classList.add('active');
+                document.getElementById('panel-eye-test').style.display = 'block';
+                if (eyeTestPairs.length === 0) initEyeTest();
+            }
+        }
+
+        // Toggle quote selection
+        function toggleQuote(cacheKey, source, index, btn) {
+            btn.disabled = true;
+
+            fetch('/pull-quotes/toggle', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ cache_key: cacheKey, source: source, index: index })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    const card = btn.closest('.pq-quote-card');
+                    if (data.selected) {
+                        btn.classList.add('active');
+                        btn.innerHTML = '&#10003; Selected';
+                        card.classList.add('selected');
+                    } else {
+                        btn.classList.remove('active');
+                        btn.innerHTML = 'Select';
+                        card.classList.remove('selected');
+                    }
+
+                    // Update counts
+                    const countEl = document.getElementById(
+                        source === 'rt_quotes' ? 'rt-selected-count' : 'lb-selected-count'
+                    );
+                    if (countEl) countEl.textContent = data.total_selected + ' selected';
+
+                    // Update total
+                    const rtSel = parseInt((document.getElementById('rt-selected-count')?.textContent || '0'));
+                    const lbSel = parseInt((document.getElementById('lb-selected-count')?.textContent || '0'));
+                    document.getElementById('total-selected').textContent = rtSel + lbSel;
+
+                    showFlash(data.selected ? 'Quote selected' : 'Quote deselected');
+                } else {
+                    alert(data.error || 'Failed to toggle');
+                }
+                btn.disabled = false;
+            })
+            .catch(err => {
+                alert('Error: ' + err);
+                btn.disabled = false;
+            });
+        }
+
+        // Flash message
+        function showFlash(msg) {
+            const el = document.getElementById('pq-flash');
+            el.textContent = msg;
+            el.classList.add('show');
+            setTimeout(() => el.classList.remove('show'), 1500);
+        }
+
+        // Eye Test
+        function initEyeTest() {
+            if (allQuotes.length < 2) {
+                document.getElementById('eye-test-area').innerHTML =
+                    '<div class="pq-eye-done">Need at least 2 quotes for eye test.</div>';
+                return;
+            }
+
+            // Generate random pairs
+            eyeTestPairs = [];
+            const indices = [...Array(allQuotes.length).keys()];
+            // Shuffle
+            for (let i = indices.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [indices[i], indices[j]] = [indices[j], indices[i]];
+            }
+            // Create pairs
+            for (let i = 0; i < indices.length - 1; i += 2) {
+                eyeTestPairs.push([indices[i], indices[i + 1]]);
+            }
+            currentPairIndex = 0;
+            eyeTestRounds = 0;
+            showNextPair();
+        }
+
+        function showNextPair() {
+            if (currentPairIndex >= eyeTestPairs.length) {
+                document.getElementById('eye-test-area').innerHTML =
+                    '<div class="pq-eye-done">' +
+                    '<p>All pairs compared! (' + eyeTestRounds + ' rounds)</p>' +
+                    '<button class="pq-select-btn" style="margin-top:1rem; padding: 0.5rem 1.5rem;" onclick="initEyeTest()">Shuffle &amp; Go Again</button>' +
+                    '</div>';
+                document.getElementById('eye-counter').textContent = '';
+                return;
+            }
+
+            const [iA, iB] = eyeTestPairs[currentPairIndex];
+            const a = allQuotes[iA];
+            const b = allQuotes[iB];
+
+            const sourceTag = (q) => q.source === 'rt_critic' ? 'RT' : 'LB';
+            const metaLine = (q) => {
+                let parts = [q.critic];
+                if (q.outlet && q.outlet !== 'Letterboxd') parts.push(q.outlet);
+                if (q.source === 'rt_critic' && q.is_top_critic) parts.push('[TOP]');
+                if (q.source === 'letterboxd' && q.rating) parts.push(q.rating + '/5');
+                return parts.join(' \u2022 ');
+            };
+
+            document.getElementById('eye-test-area').innerHTML = `
+                <div class="pq-matchup">
+                    <div class="pq-option" onclick="pickOption('a')">
+                        <div class="pq-option-label">${sourceTag(a)} &mdash; Option A</div>
+                        <div class="pq-option-text">\u201C${esc(a.display)}\u201D</div>
+                        <div class="pq-option-meta">${esc(metaLine(a))}</div>
+                    </div>
+                    <div class="pq-vs">VS</div>
+                    <div class="pq-option" onclick="pickOption('b')">
+                        <div class="pq-option-label">${sourceTag(b)} &mdash; Option B</div>
+                        <div class="pq-option-text">\u201C${esc(b.display)}\u201D</div>
+                        <div class="pq-option-meta">${esc(metaLine(b))}</div>
+                    </div>
+                </div>
+                <button class="pq-neither-btn" onclick="pickOption('neither')">Neither &mdash; skip this pair</button>
+                <input type="text" class="pq-note-input" id="eye-note" placeholder="Why? (optional \u2014 builds taste profile)">
+            `;
+
+            document.getElementById('eye-counter').textContent =
+                `Round ${currentPairIndex + 1} of ${eyeTestPairs.length}`;
+        }
+
+        let eyeTestBusy = false;
+        function pickOption(choice) {
+            if (eyeTestBusy) return;
+            eyeTestBusy = true;
+
+            const [iA, iB] = eyeTestPairs[currentPairIndex];
+            const a = allQuotes[iA];
+            const b = allQuotes[iB];
+            const note = document.getElementById('eye-note')?.value || '';
+
+            const payload = {
+                movie: movieTitle,
+                source: a.source === b.source ? a.source : 'mixed'
+            };
+
+            if (choice === 'a') {
+                payload.winner = { critic: a.critic, outlet: a.outlet, text: a.display };
+                payload.loser = { critic: b.critic, outlet: b.outlet, text: b.display };
+            } else if (choice === 'b') {
+                payload.winner = { critic: b.critic, outlet: b.outlet, text: b.display };
+                payload.loser = { critic: a.critic, outlet: a.outlet, text: a.display };
+            } else {
+                payload.option_a = { critic: a.critic, outlet: a.outlet, text: a.display };
+                payload.option_b = { critic: b.critic, outlet: b.outlet, text: b.display };
+            }
+
+            if (note) payload.note = note;
+
+            fetch('/pull-quotes/eye-test-save', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    eyeTestRounds++;
+                    currentPairIndex++;
+                    showFlash(choice === 'neither' ? 'Skipped' : 'Saved! Round ' + data.round);
+                    showNextPair();
+                } else {
+                    showFlash('Save failed — try again');
+                }
+                eyeTestBusy = false;
+            })
+            .catch(() => { eyeTestBusy = false; showFlash('Network error'); });
+        }
+
+        // HTML-escape helper
+        function esc(str) {
+            const d = document.createElement('div');
+            d.textContent = str;
+            return d.innerHTML;
+        }
+
+        // Add Quote
+        function submitAddQuote() {
+            const text = document.getElementById('add-quote-text').value.trim();
+            const critic = document.getElementById('add-quote-critic').value.trim();
+            const outlet = document.getElementById('add-quote-outlet').value.trim();
+
+            if (!text) { alert('Quote text is required'); return; }
+
+            const saveBtn = document.querySelector('.pq-save-btn');
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'Saving...';
+
+            const cacheKey = {{ cache_key|tojson }};
+
+            fetch('/pull-quotes/add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ cache_key: cacheKey, text, critic, outlet })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    // Hide empty message if present
+                    const emptyMsg = document.getElementById('pq-empty-msg');
+                    if (emptyMsg) emptyMsg.style.display = 'none';
+
+                    // Find or create RT section
+                    let rtSection = document.querySelector('.pq-section-header');
+                    if (!rtSection || !rtSection.textContent.includes('RT')) {
+                        // Create RT section header
+                        const header = document.createElement('div');
+                        header.className = 'pq-section-header';
+                        header.innerHTML = '<h2>Quotes</h2><span class="pq-section-count" id="rt-count">(1)</span><span class="pq-selected-count" id="rt-selected-count">0 selected</span>';
+                        document.getElementById('add-quote-form').after(header);
+                    } else {
+                        // Update count
+                        const countEl = document.getElementById('rt-count') || rtSection.querySelector('.pq-section-count');
+                        if (countEl) {
+                            const current = parseInt(countEl.textContent.replace(/[()]/g, '')) || 0;
+                            countEl.textContent = '(' + (current + 1) + ')';
+                        }
+                    }
+
+                    // Build new card safely using DOM (no innerHTML with user input)
+                    const card = document.createElement('div');
+                    card.className = 'pq-quote-card';
+                    card.id = 'rt-card-' + data.index;
+
+                    const quoteDiv = document.createElement('div');
+                    quoteDiv.className = 'pq-quote-text';
+                    quoteDiv.textContent = text;
+                    card.appendChild(quoteDiv);
+
+                    const metaDiv = document.createElement('div');
+                    metaDiv.className = 'pq-quote-meta';
+                    const criticSpan = document.createElement('span');
+                    criticSpan.className = 'pq-critic';
+                    criticSpan.textContent = critic;
+                    const outletSpan = document.createElement('span');
+                    outletSpan.className = 'pq-outlet';
+                    outletSpan.textContent = outlet;
+                    const badgeSpan = document.createElement('span');
+                    badgeSpan.className = 'pq-badge manual';
+                    badgeSpan.textContent = 'MANUAL';
+                    metaDiv.appendChild(criticSpan);
+                    metaDiv.appendChild(outletSpan);
+                    metaDiv.appendChild(badgeSpan);
+                    card.appendChild(metaDiv);
+
+                    const actionsDiv = document.createElement('div');
+                    actionsDiv.className = 'pq-quote-actions';
+                    const selectBtn = document.createElement('button');
+                    selectBtn.className = 'pq-select-btn';
+                    selectBtn.textContent = 'Select';
+                    selectBtn.onclick = function() { toggleQuote(cacheKey, 'rt_quotes', data.index, this); };
+                    actionsDiv.appendChild(selectBtn);
+                    card.appendChild(actionsDiv);
+
+                    // Insert after form (or after last RT card)
+                    const lastRtCard = document.querySelectorAll('[id^="rt-card-"]');
+                    if (lastRtCard.length > 0) {
+                        lastRtCard[lastRtCard.length - 1].after(card);
+                    } else {
+                        const form = document.getElementById('add-quote-form');
+                        const headerEl = form.nextElementSibling;
+                        if (headerEl && headerEl.classList.contains('pq-section-header')) {
+                            headerEl.after(card);
+                        } else {
+                            form.after(card);
+                        }
+                    }
+
+                    // Reset form
+                    cancelAddQuote();
+                    showFlash('Quote added');
+                } else {
+                    alert(data.error || 'Failed to add quote');
+                }
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'Save Quote';
+            })
+            .catch(err => {
+                alert('Error: ' + err);
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'Save Quote';
+            });
+        }
+
+        function cancelAddQuote() {
+            document.getElementById('add-quote-form').style.display = 'none';
+            document.getElementById('add-quote-btn').style.display = '';
+            document.getElementById('add-quote-text').value = '';
+            document.getElementById('add-quote-critic').value = '';
+            document.getElementById('add-quote-outlet').value = '';
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (document.getElementById('panel-eye-test').style.display !== 'none') {
+                if (e.target.tagName === 'INPUT') return;
+                if (e.key === 'a' || e.key === 'A' || e.key === '1') pickOption('a');
+                if (e.key === 'b' || e.key === 'B' || e.key === '2') pickOption('b');
+                if (e.key === 'n' || e.key === 'N' || e.key === '0') pickOption('neither');
+            }
+        });
+    </script>
+</body>
+</html>

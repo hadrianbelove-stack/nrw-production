@@ -3492,7 +3492,7 @@ class DataGenerator:
             for q in all_quotes:
                 if q.get('selected'):
                     selected.append({
-                        'text': q.get('pull_quote', q.get('text', '')),
+                        'text': q.get('text') or q.get('pull_quote', ''),
                         'critic': q.get('critic', ''),
                         'outlet': q.get('outlet', ''),
                         'source': q.get('source', '')

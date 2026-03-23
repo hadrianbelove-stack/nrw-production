@@ -25,7 +25,9 @@ This is the authoritative style guide for all NRW visual design. All UI work (ne
 |----------|-----|-------|
 | **Staff Picks** | `#dc143c` | Crimson - badges, borders, accents |
 | **Big Time Stuff** | `#ffffff` | White - default styling |
-| **Niche Notables** | `#00d4aa` | Teal - matches primary accent |
+| **Indie** | `#00d4aa` | Teal - matches primary accent |
+| **Documentary** | `#4A90D9` | Blue - informational, non-fiction |
+| **Virtual Screenings** | `#FFD700` | Gold - festival/screening accent |
 | **The Slop Pile** | `#888888` | Gray - muted, de-emphasized |
 | **Restorations** | `#C8A951` | Antique gold - badge pill on poster |
 
