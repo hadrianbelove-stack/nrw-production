@@ -45,9 +45,9 @@
       </Group>
 
       <!-- Indie -->
-      <Group id="chip_niche">
-        <Rectangle id="chipBg_niche" width="60" height="36" color="0x333333FF" />
-        <Label id="chipLabel_niche" text="Indie" width="60" height="36"
+      <Group id="chip_indie">
+        <Rectangle id="chipBg_indie" width="60" height="36" color="0x333333FF" />
+        <Label id="chipLabel_indie" text="Indie" width="60" height="36"
           horizAlign="center" vertAlign="center"
           font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
       </Group>
@@ -101,9 +101,9 @@
       </Group>
 
       <!-- Virtual Screenings -->
-      <Group id="chip_festivals">
-        <Rectangle id="chipBg_festivals" width="170" height="36" color="0x333333FF" />
-        <Label id="chipLabel_festivals" text="Virtual Screenings" width="170" height="36"
+      <Group id="chip_virtual_screenings">
+        <Rectangle id="chipBg_virtual_screenings" width="170" height="36" color="0x333333FF" />
+        <Label id="chipLabel_virtual_screenings" text="Virtual Screenings" width="170" height="36"
           horizAlign="center" vertAlign="center"
           font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
       </Group>

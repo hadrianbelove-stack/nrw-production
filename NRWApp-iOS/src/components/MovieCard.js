@@ -69,11 +69,11 @@ export default function MovieCard({movie, onPress, isFeatured = false}) {
           </View>
         )}
 
-        {/* Festival ribbon - shows actual festival name */}
-        {movie.categories?.is_festival && (
-          <View style={styles.festivalRibbon}>
-            <Text style={styles.festivalRibbonText} numberOfLines={2}>
-              {movie.festival_info?.festival_name || 'FESTIVAL SCREENING'}
+        {/* Virtual screening ribbon - shows actual screening name */}
+        {movie.categories?.is_virtual_screening && (
+          <View style={styles.screeningRibbon}>
+            <Text style={styles.screeningRibbonText} numberOfLines={2}>
+              {movie.virtual_screening_info?.screening_name || 'VIRTUAL SCREENING'}
             </Text>
           </View>
         )}
@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     letterSpacing: 0.5,
   },
-  festivalRibbon: {
+  screeningRibbon: {
     position: 'absolute',
     bottom: 0,
     left: 0,
@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 5,
   },
-  festivalRibbonText: {
+  screeningRibbonText: {
     color: '#000',
     fontSize: 10,
     fontWeight: '900',

@@ -140,9 +140,9 @@ export function filterMovies(movies, filter = 'all') {
       return movies.filter(
         movie => !movie.hidden && movie.categories?.tier === 'big_time',
       );
-    case 'niche':
+    case 'indie':
       return movies.filter(
-        movie => !movie.hidden && movie.categories?.tier === 'niche',
+        movie => !movie.hidden && movie.categories?.tier === 'indie',
       );
     case 'foreign':
       return movies.filter(
@@ -159,9 +159,9 @@ export function filterMovies(movies, filter = 'all') {
       return movies.filter(
         movie => !movie.hidden && movie.categories?.is_documentary === true,
       );
-    case 'festivals':
+    case 'virtual-screenings':
       return movies.filter(
-        movie => !movie.hidden && movie.categories?.is_festival,
+        movie => !movie.hidden && movie.categories?.is_virtual_screening,
       );
     case 'hidden':
       return movies.filter(movie => movie.hidden === true);
@@ -190,8 +190,8 @@ export function filterMoviesMulti(movies, activeFilters) {
         case 'big-time':
           if (movie.categories?.tier === 'big_time') return true;
           break;
-        case 'niche':
-          if (movie.categories?.tier === 'niche') return true;
+        case 'indie':
+          if (movie.categories?.tier === 'indie') return true;
           break;
         case 'foreign':
           if (movie.categories?.is_foreign ||
@@ -209,8 +209,8 @@ export function filterMoviesMulti(movies, activeFilters) {
         case 'documentary':
           if (movie.categories?.is_documentary === true) return true;
           break;
-        case 'festivals':
-          if (movie.categories?.is_festival) return true;
+        case 'virtual-screenings':
+          if (movie.categories?.is_virtual_screening) return true;
           break;
       }
     }

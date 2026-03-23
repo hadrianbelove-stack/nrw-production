@@ -438,10 +438,10 @@ festivals:
       start: "2026-10-12"
       end: "2026-10-18"
 
-# Festival screening name mapping
-# Maps Eventive URL slugs to human-readable festival names for poster ribbons
-# Add new entries here when new festival slugs appear in the data
-festival_names:
+# Virtual screening name mapping
+# Maps Eventive URL slugs to human-readable screening names for poster ribbons
+# Add new entries here when new screening slugs appear in the data
+screening_names:
   mjff2026: "Miami Jewish Film Festival"
   tucsonfilm2026: "Tucson Film Festival"
   pjff2026: "Portland Jewish Film Festival"

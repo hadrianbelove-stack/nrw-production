@@ -211,11 +211,11 @@ body {
 .badge-tubi { background: #FA382F; color: #fff; }
 .badge-plex { background: #E5A00D; color: #000; }
 .badge-vod { background: #ff9500; color: #000; }
-.badge-festival { background: transparent; color: #FFD700; border: 1px solid #FFD700; }
+.badge-screening { background: transparent; color: #FFD700; border: 1px solid #FFD700; }
 .badge-restoration { background: #C8A951; color: #000; left: 10px; right: auto; }
 
-/* Festival ribbon on poster (solid gold bar, shows festival name) */
-.festival-ribbon {
+/* Virtual screening ribbon on poster (solid gold bar, shows screening name) */
+.screening-ribbon {
     position: absolute;
     bottom: 0;
     left: 0;

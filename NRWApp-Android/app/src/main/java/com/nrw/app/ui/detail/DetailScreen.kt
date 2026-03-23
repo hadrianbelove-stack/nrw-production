@@ -315,9 +315,9 @@ private fun MovieDetail(
                                     )
                                 }
                             }
-                            movie.festivalInfo?.festivalName?.let { festivalName ->
+                            movie.screeningInfo?.screeningName?.let { screeningName ->
                                 Text(
-                                    text = festivalName.uppercase(),
+                                    text = screeningName.uppercase(),
                                     color = Color.Black,
                                     fontSize = 11.sp,
                                     fontWeight = FontWeight.ExtraBold,

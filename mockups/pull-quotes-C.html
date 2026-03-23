@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pull Quotes C — Multi-Quote Carousel</title>
+    <style>
+        :root {
+            --accent-primary: #00d4aa;
+            --accent-hover: #00ffbb;
+            --accent-glow: rgba(0, 212, 170, 0.3);
+            --bg-dark: #1a1a2e;
+            --bg-darker: #0a0a0a;
+            --text-muted: #888;
+            --text-white: #fff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+            background-attachment: fixed;
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .mockup-label {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .mockup-label h1 {
+            font-weight: 100;
+            letter-spacing: 0.15em;
+            font-size: 1.5rem;
+            color: var(--accent-primary);
+            margin-bottom: 0.25rem;
+        }
+        .mockup-label p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Simulated lightbox info panel */
+        .lightbox-info {
+            width: 380px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 3rem;
+        }
+
+        .lightbox-title-row {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 0.75rem;
+            border-bottom: 2px solid rgba(0, 212, 170, 0.4);
+            padding-bottom: 0.6rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .lightbox-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #fff;
+            margin: 0;
+            line-height: 1;
+        }
+
+        .lightbox-date {
+            color: #00d4aa;
+            font-size: 1.2rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .lightbox-meta {
+            color: #888;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .lightbox-synopsis {
+            color: #ccc;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+
+        /* === OPTION C: Multi-Quote Carousel === */
+        .pull-quote-carousel {
+            position: relative;
+            background: rgba(0, 212, 170, 0.05);
+            border-left: 3px solid var(--accent-primary);
+            border-radius: 0 8px 8px 0;
+            padding: 1rem 1rem 0.6rem 1.2rem;
+            margin-bottom: 1rem;
+            min-height: 90px;
+        }
+
+        .pull-quote-carousel .pq-mark {
+            position: absolute;
+            top: -2px;
+            left: 8px;
+            font-size: 2.5rem;
+            color: var(--accent-primary);
+            opacity: 0.25;
+            line-height: 1;
+            font-family: Georgia, 'Times New Roman', serif;
+        }
+
+        .pq-slide {
+            display: none;
+            padding-top: 0.3rem;
+            animation: pqFadeIn 0.4s ease;
+        }
+
+        .pq-slide.active {
+            display: block;
+        }
+
+        @keyframes pqFadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .pq-slide .pq-text {
+            color: #fff;
+            font-style: italic;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .pq-slide .pq-attribution {
+            margin-top: 0.4rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-style: normal;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .pq-slide .pq-attribution .pq-outlet {
+            color: var(--accent-primary);
+        }
+
+        .pq-slide .pq-attribution .pq-source-tag {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 0.12rem 0.35rem;
+            border-radius: 3px;
+            background: rgba(0, 212, 170, 0.15);
+            color: var(--accent-primary);
+        }
+
+        .pq-slide .pq-attribution .pq-source-tag.letterboxd {
+            background: rgba(0, 200, 100, 0.15);
+            color: #00c864;
+        }
+
+        /* Carousel navigation dots */
+        .pq-dots {
+            display: flex;
+            justify-content: center;
+            gap: 0.4rem;
+            margin-top: 0.6rem;
+            padding-top: 0.5rem;
+            border-top: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .pq-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            padding: 0;
+        }
+
+        .pq-dot.active {
+            background: var(--accent-primary);
+            box-shadow: 0 0 6px var(--accent-glow);
+        }
+
+        .pq-dot:hover {
+            background: rgba(255,255,255,0.4);
+        }
+
+        /* Watch buttons placeholder */
+        .watch-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .watch-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-decoration: none;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+        .watch-btn.prime { background: #00A8E1; }
+        .watch-btn.apple { background: #333; border: 1px solid #aaa; }
+
+        .note {
+            max-width: 380px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            line-height: 1.5;
+            margin-bottom: 3rem;
+            padding: 1rem;
+            border: 1px dashed rgba(255,255,255,0.15);
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="mockup-label">
+        <h1>Option C — Multi-Quote Carousel</h1>
+        <p>Multiple quotes with dot navigation. Click dots to browse.</p>
+    </div>
+
+    <!-- Example 1: 3 quotes for The Brutalist -->
+    <div class="lightbox-info">
+        <div class="lightbox-title-row">
+            <h2 class="lightbox-title">The Brutalist</h2>
+            <span class="lightbox-date">Dec 20</span>
+        </div>
+        <div class="lightbox-meta">2024 &middot; 3h 35min &middot; Drama &middot; Brady Corbet</div>
+        <p class="lightbox-synopsis">A visionary architect escapes postwar Europe for America, where a mysterious benefactor offers him the opportunity of a lifetime — to build a monument that will define both their legacies.</p>
+
+        <div class="pull-quote-carousel" data-carousel="brutalist">
+            <span class="pq-mark">&ldquo;</span>
+
+            <div class="pq-slide active">
+                <div class="pq-text">A masterwork of patience and precision that rewards every minute of its three-and-a-half-hour runtime.</div>
+                <div class="pq-attribution">
+                    — David Ehrlich, <span class="pq-outlet">IndieWire</span>
+                    <span class="pq-source-tag">Critic</span>
+                </div>
+            </div>
+
+            <div class="pq-slide">
+                <div class="pq-text">Brady Corbet has made one of the most ambitious American films of the century.</div>
+                <div class="pq-attribution">
+                    — Justin Chang, <span class="pq-outlet">The New Yorker</span>
+                    <span class="pq-source-tag">Critic</span>
+                </div>
+            </div>
+
+            <div class="pq-slide">
+                <div class="pq-text">This film made me feel like I was watching something that will outlast all of us. A genuine monument.</div>
+                <div class="pq-attribution">
+                    — @cinemadrifter, <span class="pq-outlet">Letterboxd</span>
+                    <span class="pq-source-tag letterboxd">Letterboxd</span>
+                </div>
+            </div>
+
+            <div class="pq-dots">
+                <button class="pq-dot active" onclick="showSlide('brutalist', 0)"></button>
+                <button class="pq-dot" onclick="showSlide('brutalist', 1)"></button>
+                <button class="pq-dot" onclick="showSlide('brutalist', 2)"></button>
+            </div>
+        </div>
+
+        <div class="watch-buttons">
+            <button class="watch-btn prime">Rent on Prime Video — $5.99</button>
+            <button class="watch-btn apple">Rent on Apple TV — $5.99</button>
+        </div>
+    </div>
+
+    <!-- Example 2: 2 quotes for Anora -->
+    <div class="lightbox-info">
+        <div class="lightbox-title-row">
+            <h2 class="lightbox-title">Anora</h2>
+            <span class="lightbox-date">Jan 21</span>
+        </div>
+        <div class="lightbox-meta">2024 &middot; 2h 19min &middot; Comedy, Drama &middot; Sean Baker</div>
+        <p class="lightbox-synopsis">A young sex worker from Brooklyn gets her chance at a Cinderella story when she marries the son of a Russian oligarch — but the fairy tale is short-lived when his family shows up to annul the union.</p>
+
+        <div class="pull-quote-carousel" data-carousel="anora">
+            <span class="pq-mark">&ldquo;</span>
+
+            <div class="pq-slide active">
+                <div class="pq-text">Wildly entertaining, darkly funny, and genuinely moving.</div>
+                <div class="pq-attribution">
+                    — Peter Bradshaw, <span class="pq-outlet">The Guardian</span>
+                    <span class="pq-source-tag">Critic</span>
+                </div>
+            </div>
+
+            <div class="pq-slide">
+                <div class="pq-text">Mikey Madison is a revelation. You can't take your eyes off her.</div>
+                <div class="pq-attribution">
+                    — @filmtwit_sam, <span class="pq-outlet">Letterboxd</span>
+                    <span class="pq-source-tag letterboxd">Letterboxd</span>
+                </div>
+            </div>
+
+            <div class="pq-dots">
+                <button class="pq-dot active" onclick="showSlide('anora', 0)"></button>
+                <button class="pq-dot" onclick="showSlide('anora', 1)"></button>
+            </div>
+        </div>
+
+        <div class="watch-buttons">
+            <button class="watch-btn prime">Rent on Prime Video — $5.99</button>
+            <button class="watch-btn apple">Rent on Apple TV — $5.99</button>
+        </div>
+    </div>
+
+    <!-- Example 3: Single quote (no carousel, just shows as B-style) -->
+    <div class="lightbox-info">
+        <div class="lightbox-title-row">
+            <h2 class="lightbox-title">Nosferatu</h2>
+            <span class="lightbox-date">Feb 18</span>
+        </div>
+        <div class="lightbox-meta">2024 &middot; 2h 12min &middot; Horror &middot; Robert Eggers</div>
+        <p class="lightbox-synopsis">A gothic tale of obsession between a haunted young woman and the terrifying vampire infatuated with her, bringing untold horror with him.</p>
+
+        <div class="pull-quote-carousel" data-carousel="nosferatu">
+            <span class="pq-mark">&ldquo;</span>
+
+            <div class="pq-slide active">
+                <div class="pq-text">Bill Skarsgård's Orlok is genuinely repulsive in the best possible way. This is what horror is supposed to feel like.</div>
+                <div class="pq-attribution">
+                    — @sarahfilm, <span class="pq-outlet">Letterboxd</span>
+                    <span class="pq-source-tag letterboxd">Letterboxd</span>
+                </div>
+            </div>
+
+            <!-- No dots when there's only one quote -->
+        </div>
+
+        <div class="watch-buttons">
+            <button class="watch-btn prime">Rent on Prime Video — $5.99</button>
+            <button class="watch-btn apple">Rent on Apple TV — $5.99</button>
+        </div>
+    </div>
+
+    <div class="note">
+        <strong>Option C notes:</strong> When a movie has multiple great quotes, you see all of them via small navigation dots. Quotes crossfade smoothly. With only 1 quote, it renders identically to Option B (no dots shown). Mixes critics and Letterboxd reviews naturally with source tags distinguishing them. Dots use the accent green glow for the active state.
+    </div>
+
+    <script>
+        function showSlide(carouselId, index) {
+            const carousel = document.querySelector(`[data-carousel="${carouselId}"]`);
+            if (!carousel) return;
+
+            const slides = carousel.querySelectorAll('.pq-slide');
+            const dots = carousel.querySelectorAll('.pq-dot');
+
+            slides.forEach((s, i) => {
+                s.classList.toggle('active', i === index);
+            });
+            dots.forEach((d, i) => {
+                d.classList.toggle('active', i === index);
+            });
+        }
+
+        // Auto-advance carousels every 6 seconds
+        document.querySelectorAll('.pull-quote-carousel').forEach(carousel => {
+            const id = carousel.dataset.carousel;
+            const slides = carousel.querySelectorAll('.pq-slide');
+            if (slides.length <= 1) return;
+
+            let current = 0;
+            setInterval(() => {
+                current = (current + 1) % slides.length;
+                showSlide(id, current);
+            }, 6000);
+        });
+    </script>
+
+</body>
+</html>

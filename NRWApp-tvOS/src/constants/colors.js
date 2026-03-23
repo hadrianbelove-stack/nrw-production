@@ -44,9 +44,9 @@ export const Colors = {
   restoration: '#C8A951',
   restorationText: '#000000',
 
-  // Festival badge
-  festivalGold: '#FFD700',
-  festivalGoldText: '#000000',
+  // Virtual screening badge
+  screeningGold: '#FFD700',
+  screeningGoldText: '#000000',
 
   // Service colors
   maxPurple: '#B537F2',
@@ -80,12 +80,12 @@ export const getServiceColor = (service) => {
 };
 
 /**
- * Check if a VOD service/URL is a festival ticketing platform
+ * Check if a VOD service/URL is a virtual screening ticketing platform
  * @param {string} service - Service name
  * @param {string} url - Link URL
  * @returns {boolean}
  */
-export const isFestivalPlatform = (service, url) => {
+export const isVirtualScreeningPlatform = (service, url) => {
   const svc = (service || '').toLowerCase();
   const link = (url || '').toLowerCase();
   return (

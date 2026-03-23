@@ -61,7 +61,7 @@ const NRW = {
             title: 'Big Time Stuff',
             text: 'The wide releases, the studio fare, the main-streamers. Not saying they\'re good, not saying they\'re bad, but these are the movies that have either entered or tried to enter the mainstream conversation. They have budgets, recognizable actors, and large-scale billboard campaigns.'
         },
-        'niche': {
+        'indie': {
             title: 'Indie',
             text: 'The smaller films, the independents, the ones without a billboard campaign. These movies flew under the radar theatrically but are worth knowing about now that they\'re available to stream at home.'
         },
@@ -89,7 +89,7 @@ const NRW = {
             title: 'Documentary',
             text: 'Non-fiction filmmaking. Documentaries covering real stories, real people, and real events — now available to stream at home.'
         },
-        'festivals': {
+        'virtual-screenings': {
             title: 'Virtual Screenings',
             text: 'Currently playing at film festivals. These aren\'t streaming yet — they\'re in theaters, at festivals, or doing the circuit. If you\'re near a screening, this is your heads-up.'
         }
@@ -304,8 +304,8 @@ const NRW = {
                         case 'big-time':
                             if (movie.categories?.tier === 'big_time') matchesAny = true;
                             break;
-                        case 'niche':
-                            if (movie.categories?.tier === 'niche') matchesAny = true;
+                        case 'indie':
+                            if (movie.categories?.tier === 'indie') matchesAny = true;
                             break;
                         case 'staff-picks':
                             if (movie.categories?.is_staff_pick || movie.featured) matchesAny = true;
@@ -328,8 +328,8 @@ const NRW = {
                         case 'documentary':
                             if (movie.categories?.is_documentary) matchesAny = true;
                             break;
-                        case 'festivals':
-                            if (movie.categories?.is_festival) matchesAny = true;
+                        case 'virtual-screenings':
+                            if (movie.categories?.is_virtual_screening) matchesAny = true;
                             break;
                     }
                     if (matchesAny) break;
@@ -559,7 +559,7 @@ const NRW = {
                         } else if (svc.includes('apple') || svc.includes('itunes')) {
                             buttonsHtml += `<a href="${vodLink}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-apple" aria-label="Rent/Buy on Apple TV"><img src="logos%20and%20images/apple%20logo.png" alt="Apple TV" class="btn-logo"></a>`;
                         } else if (svc.includes('eventive') || vodLink.includes('eventive.org') || vodLink.includes('festivalplayer') || vodLink.includes('shift72.com')) {
-                            buttonsHtml += `<a href="${vodLink}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-festival" aria-label="Buy Ticket">BUY TICKET</a>`;
+                            buttonsHtml += `<a href="${vodLink}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-screening" aria-label="Buy Ticket">BUY TICKET</a>`;
                         } else {
                             buttonsHtml += `<a href="${vodLink}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-purchase" aria-label="Rent/Buy on ${vod.service}">${vod.service.toUpperCase()}</a>`;
                         }
@@ -629,10 +629,10 @@ const NRW = {
             const streamingBadge = getStreamingBadge(movie);
             const restorationBadge = movie.categories?.is_restoration
                 ? '<div class="restoration-badge">RESTORED</div>' : '';
-            const rawFestivalName = movie.festival_info?.festival_name || 'FESTIVAL SCREENING';
-            const festivalName = rawFestivalName.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-            const festivalRibbon = movie.categories?.is_festival
-                ? `<div class="festival-ribbon">${festivalName}</div>` : '';
+            const rawScreeningName = movie.virtual_screening_info?.screening_name || 'VIRTUAL SCREENING';
+            const screeningName = rawScreeningName.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+            const screeningRibbon = movie.categories?.is_virtual_screening
+                ? `<div class="screening-ribbon">${screeningName}</div>` : '';
 
             html += `
             <div class="movie-container${staffPickClass}">
@@ -642,7 +642,7 @@ const NRW = {
                         <div class="card-front">
                             ${streamingBadge}
                             ${restorationBadge}
-                            ${festivalRibbon}
+                            ${screeningRibbon}
                             <div class="poster-fallback"><span class="poster-fallback-title">${title}</span></div>
                             <img src="${movie.poster || ''}"
                                  onerror="this.style.display='none';"
@@ -965,14 +965,14 @@ const NRW = {
             }
         }
 
-        // Update festival name in lightbox
-        const festivalNameEl = document.getElementById('lightbox-festival-name');
-        if (festivalNameEl) {
-            if (movie.categories?.is_festival && movie.festival_info?.festival_name) {
-                festivalNameEl.textContent = movie.festival_info.festival_name;
-                festivalNameEl.style.display = 'block';
+        // Update screening name in lightbox
+        const screeningNameEl = document.getElementById('lightbox-screening-name');
+        if (screeningNameEl) {
+            if (movie.categories?.is_virtual_screening && movie.virtual_screening_info?.screening_name) {
+                screeningNameEl.textContent = movie.virtual_screening_info.screening_name;
+                screeningNameEl.style.display = 'block';
             } else {
-                festivalNameEl.style.display = 'none';
+                screeningNameEl.style.display = 'none';
             }
         }
 
@@ -1061,7 +1061,7 @@ const NRW = {
                     btnClass = 'apple';
                     label = this.getPurchaseLabel(vod.service);
                 } else if (svc.includes('eventive') || vodLink.includes('eventive.org') || vodLink.includes('festivalplayer') || vodLink.includes('shift72.com')) {
-                    btnClass = 'festival';
+                    btnClass = 'screening';
                     label = 'BUY TICKET';
                 } else {
                     label = this.getPurchaseLabel(vod.service);

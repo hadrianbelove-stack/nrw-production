@@ -151,8 +151,8 @@ class MovieRepository(private val context: Context) {
             FilterCategory.BIG_TIME -> movies.filter {
                 it.hidden != true && it.categories?.tier == "big_time"
             }
-            FilterCategory.NICHE -> movies.filter {
-                it.hidden != true && it.categories?.tier == "niche"
+            FilterCategory.INDIE -> movies.filter {
+                it.hidden != true && it.categories?.tier == "indie"
             }
             FilterCategory.STAFF_PICKS -> movies.filter {
                 it.hidden != true && it.isStaffPick()
@@ -172,8 +172,8 @@ class MovieRepository(private val context: Context) {
             FilterCategory.DOCUMENTARY -> movies.filter {
                 it.hidden != true && it.categories?.isDocumentary == true
             }
-            FilterCategory.FESTIVALS -> movies.filter {
-                it.hidden != true && it.categories?.isFestival == true
+            FilterCategory.VIRTUAL_SCREENINGS -> movies.filter {
+                it.hidden != true && it.categories?.isVirtualScreening == true
             }
         }
     }
@@ -191,14 +191,14 @@ class MovieRepository(private val context: Context) {
                 when (filter) {
                     FilterCategory.ALL -> true
                     FilterCategory.BIG_TIME -> movie.categories?.tier == "big_time"
-                    FilterCategory.NICHE -> movie.categories?.tier == "niche"
+                    FilterCategory.INDIE -> movie.categories?.tier == "indie"
                     FilterCategory.STAFF_PICKS -> movie.isStaffPick()
                     FilterCategory.FOREIGN -> movie.isForeign()
                     FilterCategory.SERIES -> movie.contentType == "limited_series"
                     FilterCategory.PLEX -> movie.plex?.deepLink != null
                     FilterCategory.RESTORATIONS -> movie.categories?.isRestoration == true
                     FilterCategory.DOCUMENTARY -> movie.categories?.isDocumentary == true
-                    FilterCategory.FESTIVALS -> movie.categories?.isFestival == true
+                    FilterCategory.VIRTUAL_SCREENINGS -> movie.categories?.isVirtualScreening == true
                 }
             }
         }

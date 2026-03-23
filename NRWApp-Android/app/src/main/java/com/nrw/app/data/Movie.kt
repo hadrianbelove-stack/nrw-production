@@ -61,8 +61,8 @@ data class Movie(
 
     val plex: PlexInfo? = null,
 
-    @SerializedName("festival_info")
-    val festivalInfo: FestivalInfo? = null
+    @SerializedName("virtual_screening_info")
+    val screeningInfo: ScreeningInfo? = null
 )
 
 data class Country(
@@ -91,8 +91,8 @@ data class Categories(
     @SerializedName("is_documentary")
     val isDocumentary: Boolean? = null,
 
-    @SerializedName("is_festival")
-    val isFestival: Boolean? = null
+    @SerializedName("is_virtual_screening")
+    val isVirtualScreening: Boolean? = null
 )
 
 data class MovieLinks(
@@ -164,10 +164,10 @@ data class PlexInfo(
     val ratingKey: String? = null
 )
 
-data class FestivalInfo(
+data class ScreeningInfo(
     @SerializedName("platform") val platform: String? = null,
-    @SerializedName("festival_slug") val festivalSlug: String? = null,
-    @SerializedName("festival_name") val festivalName: String? = null,
+    @SerializedName("screening_slug") val screeningSlug: String? = null,
+    @SerializedName("screening_name") val screeningName: String? = null,
     @SerializedName("status") val status: String? = null
 )
 
@@ -214,14 +214,14 @@ data class InfoOption(
 enum class FilterCategory(val id: String, val displayName: String) {
     ALL("all", "All"),
     BIG_TIME("big-time", "Big Time Stuff"),
-    NICHE("niche", "Indie"),
+    INDIE("indie", "Indie"),
     STAFF_PICKS("staff-picks", "Staff Picks"),
     FOREIGN("foreign", "Foreign"),
     SERIES("series", "Limited Series"),
     PLEX("plex", "Plex"),
     RESTORATIONS("restorations", "Restorations & Reissues"),
     DOCUMENTARY("documentary", "Documentary"),
-    FESTIVALS("festivals", "Virtual Screenings")
+    VIRTUAL_SCREENINGS("virtual-screenings", "Virtual Screenings")
 }
 
 /**

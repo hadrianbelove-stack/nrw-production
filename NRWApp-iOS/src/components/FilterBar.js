@@ -11,11 +11,11 @@ const FILTERS = [
   {id: 'all', label: 'All'},
   {id: 'staff-picks', label: 'Staff Picks'},
   {id: 'big-time', label: 'Big Time'},
-  {id: 'niche', label: 'Indie'},
+  {id: 'indie', label: 'Indie'},
   {id: 'foreign', label: 'Foreign'},
   {id: 'restorations', label: 'Restorations & Reissues'},
   {id: 'documentary', label: 'Documentary'},
-  {id: 'festivals', label: 'Virtual Screenings'},
+  {id: 'virtual-screenings', label: 'Virtual Screenings'},
 ];
 
 export default function FilterBar({activeFilters, onFilterChange}) {

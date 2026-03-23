@@ -10,14 +10,14 @@ Function GetFilterCategories() as Object
     return {
         ALL: "all"
         BIG_TIME: "big_time"
-        NICHE: "niche"
+        INDIE: "indie"
         STAFF_PICKS: "staff_picks"
         FOREIGN: "foreign"
         SERIES: "series"
         PLEX: "plex"
         RESTORATIONS: "restorations"
         DOCUMENTARY: "documentary"
-        FESTIVALS: "festivals"
+        VIRTUAL_SCREENINGS: "virtual_screenings"
     }
 End Function
 
@@ -26,14 +26,14 @@ Function GetFilterDisplayName(filter as String) as String
     names = {
         all: "All"
         big_time: "Big Time Stuff"
-        niche: "Indie"
+        indie: "Indie"
         staff_picks: "Staff Picks"
         foreign: "Foreign"
         series: "Limited Series"
         plex: "Plex"
         restorations: "Restorations"
         documentary: "Documentary"
-        festivals: "Virtual Screenings"
+        virtual_screenings: "Virtual Screenings"
     }
 
     if names.DoesExist(filter)
@@ -67,8 +67,8 @@ Function FilterMovies(movies as Object, filter as String) as Object
                 include = true
             end if
 
-        else if filter = categories.NICHE
-            if movie.categories <> invalid AND movie.categories.tier = "niche"
+        else if filter = categories.INDIE
+            if movie.categories <> invalid AND movie.categories.tier = "indie"
                 include = true
             end if
 
@@ -98,8 +98,8 @@ Function FilterMovies(movies as Object, filter as String) as Object
                 include = true
             end if
 
-        else if filter = categories.FESTIVALS
-            if movie.categories <> invalid AND movie.categories.is_festival = true
+        else if filter = categories.VIRTUAL_SCREENINGS
+            if movie.categories <> invalid AND movie.categories.is_virtual_screening = true
                 include = true
             end if
         end if
@@ -137,8 +137,8 @@ Function FilterMoviesMulti(movies as Object, activeFilters as Object) as Object
                 if movie.categories <> invalid AND movie.categories.tier = "big_time"
                     matched = true
                 end if
-            else if filter = categories.NICHE
-                if movie.categories <> invalid AND movie.categories.tier = "niche"
+            else if filter = categories.INDIE
+                if movie.categories <> invalid AND movie.categories.tier = "indie"
                     matched = true
                 end if
             else if filter = categories.STAFF_PICKS
@@ -161,8 +161,8 @@ Function FilterMoviesMulti(movies as Object, activeFilters as Object) as Object
                 if movie.categories <> invalid AND movie.categories.is_documentary = true
                     matched = true
                 end if
-            else if filter = categories.FESTIVALS
-                if movie.categories <> invalid AND movie.categories.is_festival = true
+            else if filter = categories.VIRTUAL_SCREENINGS
+                if movie.categories <> invalid AND movie.categories.is_virtual_screening = true
                     matched = true
                 end if
             end if
@@ -511,7 +511,7 @@ Function NormalizeServiceName(service as String) as String
     return normalized
 End Function
 
-' Check if a VOD link is an Eventive / festival platform link
+' Check if a VOD link is an Eventive / virtual screening platform link
 Function IsEventiveLink(service as String, url as String) as Boolean
     if service <> invalid
         lowerService = LCase(service)

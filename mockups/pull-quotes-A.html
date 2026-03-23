@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pull Quotes A — Multiple Inline Quotes (Full Lightbox)</title>
+    <style>
+        :root {
+            --accent-primary: #00d4aa;
+            --accent-hover: #00ffbb;
+            --accent-glow: rgba(0, 212, 170, 0.3);
+            --bg-dark: #1a1a2e;
+            --bg-darker: #0a0a0a;
+            --border-subtle: #333;
+            --text-muted: #888;
+            --text-white: #fff;
+            --staff-pick: #dc143c;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #000;
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .mockup-header {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(0, 212, 170, 0.08);
+            border-bottom: 1px solid rgba(0, 212, 170, 0.2);
+        }
+        .mockup-header h1 {
+            font-weight: 100;
+            letter-spacing: 0.15em;
+            font-size: 1.2rem;
+            color: var(--accent-primary);
+        }
+        .mockup-header p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* Full lightbox overlay */
+        .poster-lightbox {
+            display: flex;
+            position: relative;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.95);
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            min-height: calc(100vh - 60px);
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            font-size: 2rem;
+            border-radius: 50%;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .lightbox-content {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            max-width: 1400px;
+            max-height: 90vh;
+        }
+
+        .lightbox-nav {
+            flex-shrink: 0;
+            width: 50px;
+            height: 50px;
+            background: rgba(0, 212, 170, 0.1);
+            border: none;
+            color: #00d4aa;
+            font-size: 1.5rem;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .lightbox-poster-wrap {
+            position: relative;
+        }
+
+        .poster-placeholder {
+            height: 80vh;
+            max-height: 700px;
+            width: calc((80vh) * 0.667);
+            max-width: calc(700px * 0.667);
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(180deg, #1a1a2e 0%, #0f3460 40%, #16213e 100%);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .poster-placeholder .poster-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
+        }
+        .poster-placeholder .poster-year {
+            font-size: 1rem;
+            color: var(--accent-primary);
+            letter-spacing: 0.2em;
+        }
+
+        /* Info panel — matched to poster height */
+        .lightbox-info {
+            width: 480px;
+            height: 80vh;
+            max-height: 700px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .lightbox-title-row {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 0.75rem;
+            border-bottom: 2px solid rgba(0, 212, 170, 0.4);
+            padding-bottom: 0.6rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .lightbox-title-side {
+            display: flex;
+            align-items: baseline;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            line-height: 1;
+        }
+
+        .lightbox-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #fff;
+            margin: 0;
+            line-height: 1;
+        }
+
+        .staff-pick-badge {
+            background: var(--staff-pick);
+            color: #fff;
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            text-transform: uppercase;
+            transform: translateY(2px);
+        }
+
+        .lightbox-date {
+            color: #00d4aa;
+            font-size: 1.2rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .lightbox-meta {
+            color: #888;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .lightbox-synopsis {
+            color: #ccc;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            flex-shrink: 0;
+        }
+
+        /* === PULL QUOTES SECTION (3-5 stacked, scrollable) === */
+        .pull-quotes-section {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+            min-height: 0;
+            padding-right: 0.25rem;
+            border-left: 3px solid var(--accent-primary);
+            padding-left: 0;
+        }
+
+        /* Subtle scrollbar */
+        .pull-quotes-section::-webkit-scrollbar {
+            width: 3px;
+        }
+        .pull-quotes-section::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .pull-quotes-section::-webkit-scrollbar-thumb {
+            background: rgba(0, 212, 170, 0.3);
+            border-radius: 3px;
+        }
+
+        .pull-quote {
+            border-left: none;
+            padding: 0.45rem 0.85rem;
+            margin-bottom: 0.6rem;
+        }
+
+        .pull-quote:last-child {
+            margin-bottom: 0;
+        }
+
+        .pull-quote .pq-text {
+            color: #fff;
+            font-style: italic;
+            font-size: 0.85rem;
+            line-height: 1.45;
+        }
+
+        .pull-quote .pq-attribution {
+            margin-top: 0.25rem;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            font-style: normal;
+        }
+
+        .pull-quote .pq-attribution .pq-outlet {
+            color: var(--accent-primary);
+        }
+
+        /* Watch buttons — match production */
+        .lightbox-buttons {
+            margin-top: auto;
+        }
+
+        .watch-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .watch-btn-lb {
+            padding: 0.6rem 0.8rem;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: none;
+            letter-spacing: 0.5px;
+            gap: 0.4rem;
+            width: 100%;
+            color: #fff;
+        }
+        .watch-btn-lb.prime { background: #00A8E1; }
+        .watch-btn-lb.apple { background: #000; border: 1px solid #444; }
+        .watch-btn-lb.purchase { background: #ff9500; color: #000; }
+
+        .info-row {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .info-btn-lb {
+            flex: 1;
+            padding: 0.5rem;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            text-decoration: none;
+            color: #fff;
+        }
+        .info-btn-lb.trailer { background: #E50914; }
+        .info-btn-lb.glass { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); }
+
+        .lightbox-hint {
+            position: absolute;
+            bottom: 1rem;
+            right: 1rem;
+            color: #555;
+            font-size: 0.8rem;
+        }
+
+        .lightbox-counter {
+            position: absolute;
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        .example-divider {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            border-top: 1px dashed rgba(255,255,255,0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="mockup-header">
+        <h1>Option A — Multiple Inline Quotes (3-5)</h1>
+        <p>Stacked pull quotes with left accent bar. Wider info panel.</p>
+    </div>
+
+    <!-- ====== EXAMPLE 1: The Brutalist — 5 quotes ====== -->
+    <div class="poster-lightbox">
+        <button class="lightbox-close">&times;</button>
+
+        <div class="lightbox-content">
+            <button class="lightbox-nav prev">&larr;</button>
+
+            <div class="lightbox-poster-wrap">
+                <div class="poster-placeholder">
+                    <div class="poster-title">The Brutalist</div>
+                    <div class="poster-year">2024</div>
+                </div>
+            </div>
+
+            <div class="lightbox-info">
+                <div class="lightbox-title-row">
+                    <div class="lightbox-title-side">
+                        <h2 class="lightbox-title">The Brutalist</h2>
+                        <span class="staff-pick-badge">STAFF PICK</span>
+                    </div>
+                    <span class="lightbox-date">Dec 20</span>
+                </div>
+                <div class="lightbox-meta">2024 &middot; 3h 35min &middot; Drama &middot; Brady Corbet</div>
+                <p class="lightbox-synopsis">A visionary architect escapes postwar Europe for America, where a mysterious benefactor offers him the opportunity of a lifetime — to build a monument that will define both their legacies.</p>
+
+                <div class="pull-quotes-section">
+                    <div class="pull-quote">
+                        <div class="pq-text">"A masterwork of patience and precision that rewards every minute of its runtime."</div>
+                        <div class="pq-attribution">— David Ehrlich, <span class="pq-outlet">IndieWire</span></div>
+                    </div>
+                    <div class="pull-quote">
+                        <div class="pq-text">"One of the most ambitious American films of the century."</div>
+                        <div class="pq-attribution">— Justin Chang, <span class="pq-outlet">The New Yorker</span></div>
+                    </div>
+                    <div class="pull-quote">
+                        <div class="pq-text">"Adrien Brody delivers a career-defining performance of staggering emotional range."</div>
+                        <div class="pq-attribution">— Robbie Collin, <span class="pq-outlet">The Telegraph</span></div>
+                    </div>
+                    <div class="pull-quote">
+                        <div class="pq-text">"An extraordinary act of world-building. You feel this movie in your bones."</div>
+                        <div class="pq-attribution">— @cinemadrifter, <span class="pq-outlet">Letterboxd</span></div>
+                    </div>
+                    <div class="pull-quote">
+                        <div class="pq-text">"A genuine monument. This will outlast all of us."</div>
+                        <div class="pq-attribution">— @halflight, <span class="pq-outlet">Letterboxd</span></div>
+                    </div>
+                </div>
+
+                <div class="lightbox-buttons">
+                    <div class="watch-stack">
+                        <a class="watch-btn-lb prime">RENT ON PRIME VIDEO — $5.99</a>
+                        <a class="watch-btn-lb apple">RENT ON APPLE TV — $5.99</a>
+                    </div>
+                    <div class="info-row">
+                        <a class="info-btn-lb trailer">Trailer</a>
+                        <a class="info-btn-lb glass">Wikipedia</a>
+                        <a class="info-btn-lb glass">RT: 92%</a>
+                    </div>
+                </div>
+            </div>
+
+            <button class="lightbox-nav next">&rarr;</button>
+        </div>
+
+        <div class="lightbox-counter">3 of 457</div>
+        <div class="lightbox-hint">Arrow keys to navigate &bull; ESC to close</div>
+    </div>
+
+    <div class="example-divider">Example 2: 3 quotes (mix of critic + Letterboxd) &darr;</div>
+
+    <!-- ====== EXAMPLE 2: Anora — 3 quotes ====== -->
+    <div class="poster-lightbox">
+        <button class="lightbox-close">&times;</button>
+
+        <div class="lightbox-content">
+            <button class="lightbox-nav prev">&larr;</button>
+
+            <div class="lightbox-poster-wrap">
+                <div class="poster-placeholder">
+                    <div class="poster-title">Anora</div>
+                    <div class="poster-year">2024</div>
+                </div>
+            </div>
+
+            <div class="lightbox-info">
+                <div class="lightbox-title-row">
+                    <div class="lightbox-title-side">
+                        <h2 class="lightbox-title">Anora</h2>
+                    </div>
+                    <span class="lightbox-date">Jan 21</span>
+                </div>
+                <div class="lightbox-meta">2024 &middot; 2h 19min &middot; Comedy, Drama &middot; Sean Baker</div>
+                <p class="lightbox-synopsis">A young sex worker from Brooklyn gets her chance at a Cinderella story when she marries the son of a Russian oligarch — but the fairy tale is short-lived when his family shows up to annul the union.</p>
+
+                <div class="pull-quotes-section">
+                    <div class="pull-quote">
+                        <div class="pq-text">"Wildly entertaining, darkly funny, and genuinely moving."</div>
+                        <div class="pq-attribution">— Peter Bradshaw, <span class="pq-outlet">The Guardian</span></div>
+                    </div>
+                    <div class="pull-quote">
+                        <div class="pq-text">"Mikey Madison is a revelation. You can't take your eyes off her."</div>
+                        <div class="pq-attribution">— Manohla Dargis, <span class="pq-outlet">The New York Times</span></div>
+                    </div>
+                    <div class="pull-quote">
+                        <div class="pq-text">"Sean Baker's best film yet. The last 30 minutes are absolutely unhinged."</div>
+                        <div class="pq-attribution">— @filmtwit_sam, <span class="pq-outlet">Letterboxd</span></div>
+                    </div>
+                </div>
+
+                <div class="lightbox-buttons">
+                    <div class="watch-stack">
+                        <a class="watch-btn-lb prime">RENT ON PRIME VIDEO — $5.99</a>
+                        <a class="watch-btn-lb apple">RENT ON APPLE TV — $5.99</a>
+                    </div>
+                    <div class="info-row">
+                        <a class="info-btn-lb trailer">Trailer</a>
+                        <a class="info-btn-lb glass">Wikipedia</a>
+                        <a class="info-btn-lb glass">RT: 95%</a>
+                    </div>
+                </div>
+            </div>
+
+            <button class="lightbox-nav next">&rarr;</button>
+        </div>
+
+        <div class="lightbox-counter">12 of 457</div>
+        <div class="lightbox-hint">Arrow keys to navigate &bull; ESC to close</div>
+    </div>
+
+    <div class="example-divider">Example 3: 4 quotes for a horror film &darr;</div>
+
+    <!-- ====== EXAMPLE 3: Nosferatu — 4 quotes ====== -->
+    <div class="poster-lightbox">
+        <button class="lightbox-close">&times;</button>
+
+        <div class="lightbox-content">
+            <button class="lightbox-nav prev">&larr;</button>
+
+            <div class="lightbox-poster-wrap">
+                <div class="poster-placeholder">
+                    <div class="poster-title">Nosferatu</div>
+                    <div class="poster-year">2024</div>
+                </div>
+            </div>
+
+            <div class="lightbox-info">
+                <div class="lightbox-title-row">
+                    <div class="lightbox-title-side">
+                        <h2 class="lightbox-title">Nosferatu</h2>
+                    </div>
+                    <span class="lightbox-date">Feb 18</span>
+                </div>
+                <div class="lightbox-meta">2024 &middot; 2h 12min &middot; Horror &middot; Robert Eggers</div>
+                <p class="lightbox-synopsis">A gothic tale of obsession between a haunted young woman and the terrifying vampire infatuated with her, bringing untold horror with him.</p>
+
+                <div class="pull-quotes-section">
+                    <div class="pull-quote">
+                        <div class="pq-text">"Eggers has crafted the most visually stunning horror film in years."</div>
+                        <div class="pq-attribution">— David Fear, <span class="pq-outlet">Rolling Stone</span></div>
+                    </div>
+                    <div class="pull-quote">
+                        <div class="pq-text">"Skarsgård's Orlok is genuinely repulsive in the best possible way."</div>
+                        <div class="pq-attribution">— @sarahfilm, <span class="pq-outlet">Letterboxd</span></div>
+                    </div>
+                    <div class="pull-quote">
+                        <div class="pq-text">"A gorgeous nightmare you don't want to wake up from."</div>
+                        <div class="pq-attribution">— Clarisse Loughrey, <span class="pq-outlet">The Independent</span></div>
+                    </div>
+                    <div class="pull-quote">
+                        <div class="pq-text">"Lily-Rose Depp finally has the role she was born to play."</div>
+                        <div class="pq-attribution">— @darkmovies, <span class="pq-outlet">Letterboxd</span></div>
+                    </div>
+                </div>
+
+                <div class="lightbox-buttons">
+                    <div class="watch-stack">
+                        <a class="watch-btn-lb purchase">BUY ON AMAZON — $19.99</a>
+                        <a class="watch-btn-lb apple">RENT ON APPLE TV — $5.99</a>
+                    </div>
+                    <div class="info-row">
+                        <a class="info-btn-lb trailer">Trailer</a>
+                        <a class="info-btn-lb glass">Wikipedia</a>
+                        <a class="info-btn-lb glass">RT: 85%</a>
+                    </div>
+                </div>
+            </div>
+
+            <button class="lightbox-nav next">&rarr;</button>
+        </div>
+
+        <div class="lightbox-counter">45 of 457</div>
+        <div class="lightbox-hint">Arrow keys to navigate &bull; ESC to close</div>
+    </div>
+
+    <div class="example-divider">Example 4: No quotes available &darr;</div>
+
+    <!-- ====== EXAMPLE 4: No quotes ====== -->
+    <div class="poster-lightbox">
+        <button class="lightbox-close">&times;</button>
+
+        <div class="lightbox-content">
+            <button class="lightbox-nav prev">&larr;</button>
+
+            <div class="lightbox-poster-wrap">
+                <div class="poster-placeholder">
+                    <div class="poster-title">The Jolly Monkey</div>
+                    <div class="poster-year">2025</div>
+                </div>
+            </div>
+
+            <div class="lightbox-info">
+                <div class="lightbox-title-row">
+                    <div class="lightbox-title-side">
+                        <h2 class="lightbox-title">The Jolly Monkey</h2>
+                    </div>
+                    <span class="lightbox-date">Mar 4</span>
+                </div>
+                <div class="lightbox-meta">2025 &middot; 1h 28min &middot; Horror</div>
+                <p class="lightbox-synopsis">40 years ago, families disappeared near the isolated Jolly Monkey motel. Now a group of friends stopping by for the night discovers the horrifying truth behind those vanishings.</p>
+
+                <div class="lightbox-buttons">
+                    <div class="watch-stack">
+                        <a class="watch-btn-lb prime">RENT ON PRIME VIDEO — $4.99</a>
+                        <a class="watch-btn-lb apple">RENT ON APPLE TV — $4.99</a>
+                    </div>
+                    <div class="info-row">
+                        <a class="info-btn-lb trailer">Trailer</a>
+                        <a class="info-btn-lb glass">Wikipedia</a>
+                    </div>
+                </div>
+            </div>
+
+            <button class="lightbox-nav next">&rarr;</button>
+        </div>
+
+        <div class="lightbox-counter">201 of 457</div>
+        <div class="lightbox-hint">Arrow keys to navigate &bull; ESC to close</div>
+    </div>
+
+</body>
+</html>

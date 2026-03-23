@@ -12,7 +12,7 @@ This Roku app is part of the NRW multi-platform ecosystem, sharing data and desi
 ## Features
 
 - **8-column movie grid** matching other platforms
-- **Filtering**: All, Big Time Stuff, Niche Notables, Staff Picks, Foreign, Limited Series, Plex
+- **Filtering**: All, Big Time Stuff, Indie, Staff Picks, Foreign, Limited Series, Plex, Restorations, Documentary, Virtual Screenings
 - **Search** by title, director, or genre
 - **Movie details** with large poster, metadata, and watch buttons
 - **Deep linking** to streaming apps (Netflix, Prime, Disney+, Max, Hulu, etc.)

@@ -185,8 +185,8 @@ const NRWMobile = {
                     case 'big-time':
                         if (movie.categories?.tier === 'big_time') return true;
                         break;
-                    case 'niche':
-                        if (movie.categories?.tier === 'niche') return true;
+                    case 'indie':
+                        if (movie.categories?.tier === 'indie') return true;
                         break;
                     case 'staff-picks':
                         if (movie.categories?.is_staff_pick || this.staffPicks.includes(movie.id)) return true;
@@ -207,8 +207,8 @@ const NRWMobile = {
                     case 'documentary':
                         if (movie.categories?.is_documentary === true) return true;
                         break;
-                    case 'festivals':
-                        if (movie.categories?.is_festival === true) return true;
+                    case 'virtual-screenings':
+                        if (movie.categories?.is_virtual_screening === true) return true;
                         break;
                 }
             }
@@ -309,7 +309,7 @@ const NRWMobile = {
                              loading="lazy">
                         ${streamingBadge}
                         ${movie.categories?.is_restoration ? '<span class="poster-badge badge-restoration">RESTORED</span>' : ''}
-                        ${movie.categories?.is_festival ? `<div class="festival-ribbon">${(movie.festival_info?.festival_name || 'FESTIVAL SCREENING').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>` : ''}
+                        ${movie.categories?.is_virtual_screening ? `<div class="screening-ribbon">${(movie.virtual_screening_info?.screening_name || 'VIRTUAL SCREENING').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>` : ''}
                         ${isStaffPick ? '<span class="staff-badge">STAFF PICK</span>' : ''}
                     </div>
                 </div>
@@ -385,13 +385,13 @@ const NRWMobile = {
             // Check for VOD (array or single dict)
             const vodArr = Array.isArray(watchLinks.vod) ? watchLinks.vod
                 : (watchLinks.vod?.service ? [watchLinks.vod] : []);
-            const hasFestivalVod = vodArr.some(v => {
+            const hasScreeningVod = vodArr.some(v => {
                 const s = (v.service || '').toLowerCase();
                 const l = v.link || '';
                 return s.includes('eventive') || l.includes('eventive.org') || l.includes('festivalplayer') || l.includes('shift72.com');
             });
-            if (hasFestivalVod) {
-                return '<span class="poster-badge badge-festival">FESTIVAL</span>';
+            if (hasScreeningVod) {
+                return '<span class="poster-badge badge-screening">VIRTUAL SCREENING</span>';
             }
             if (vodArr.some(v => v.service && v.link) || providers.rental?.length > 0) {
                 return '<span class="poster-badge badge-vod">RENT</span>';

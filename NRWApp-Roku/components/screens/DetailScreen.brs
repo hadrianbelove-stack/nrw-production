@@ -22,8 +22,8 @@ Sub Init()
     m.staffPickLabel = m.top.FindNode("staffPickLabel")
     m.restorationBadge = m.top.FindNode("restorationBadge")
     m.restorationLabel = m.top.FindNode("restorationLabel")
-    m.festivalBadge = m.top.FindNode("festivalBadge")
-    m.festivalLabel = m.top.FindNode("festivalLabel")
+    m.screeningBadge = m.top.FindNode("screeningBadge")
+    m.screeningLabel = m.top.FindNode("screeningLabel")
 
     m.buttonsRow = m.top.FindNode("buttonsRow")
     m.trailerButton = m.top.FindNode("trailerButton")
@@ -192,14 +192,14 @@ Sub LoadMovie(index as Integer)
         m.restorationLabel.visible = false
     end if
 
-    ' Festival name banner
-    if movie.festival_info <> invalid AND movie.festival_info.festival_name <> invalid AND movie.festival_info.festival_name <> ""
-        m.festivalLabel.text = movie.festival_info.festival_name
-        m.festivalBadge.visible = true
-        m.festivalLabel.visible = true
+    ' Virtual screening name banner
+    if movie.virtual_screening_info <> invalid AND movie.virtual_screening_info.screening_name <> invalid AND movie.virtual_screening_info.screening_name <> ""
+        m.screeningLabel.text = movie.virtual_screening_info.screening_name
+        m.screeningBadge.visible = true
+        m.screeningLabel.visible = true
     else
-        m.festivalBadge.visible = false
-        m.festivalLabel.visible = false
+        m.screeningBadge.visible = false
+        m.screeningLabel.visible = false
     end if
 
     ' Setup watch buttons
@@ -241,7 +241,7 @@ Sub SetupWatchButtons(movie as Object)
         if i < vodServices.Count() AND vodServices[i].service <> invalid
             vodButtons[i].service = vodServices[i].service
             vodButtons[i].url = vodServices[i].link
-            ' Use "Buy Ticket" for Eventive / festival platform links
+            ' Use "Buy Ticket" for Eventive / virtual screening platform links
             if IsEventiveLink(vodServices[i].service, vodServices[i].link)
                 vodButtons[i].label = "Buy Ticket"
             else

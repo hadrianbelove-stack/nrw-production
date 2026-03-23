@@ -34,12 +34,12 @@ import {
 const FILTERS = [
   { id: 'all', label: 'All' },
   { id: 'big-time', label: 'Big Time Stuff' },
-  { id: 'niche', label: 'Indie' },
+  { id: 'indie', label: 'Indie' },
   { id: 'staff-picks', label: 'Staff Picks' },
   { id: 'foreign', label: 'Foreign' },
   { id: 'series', label: 'Limited Series' },
   { id: 'documentary', label: 'Documentary' },
-  { id: 'festivals', label: 'Virtual Screenings' },
+  { id: 'virtual-screenings', label: 'Virtual Screenings' },
   { id: 'restorations', label: 'Restorations' },
   { id: 'plex', label: 'Plex' },
 ];
@@ -332,8 +332,8 @@ const HomeScreenTvOS = () => {
           case 'big-time':
             if (movie.categories?.tier === 'big_time') return true;
             break;
-          case 'niche':
-            if (movie.categories?.tier === 'niche') return true;
+          case 'indie':
+            if (movie.categories?.tier === 'indie') return true;
             break;
           case 'staff-picks':
             if (movie.categories?.is_staff_pick || movie.featured) return true;
@@ -353,8 +353,8 @@ const HomeScreenTvOS = () => {
           case 'documentary':
             if (movie.categories?.is_documentary === true) return true;
             break;
-          case 'festivals':
-            if (movie.categories?.is_festival) return true;
+          case 'virtual-screenings':
+            if (movie.categories?.is_virtual_screening) return true;
             break;
           case 'restorations':
             if (movie.categories?.is_restoration) return true;

@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Layout Options</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #111; color: #fff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+
+/* Layout switcher */
+.layout-switcher {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: #1a1a1a; border-bottom: 2px solid #333;
+    display: flex; gap: 0; padding: 0;
+}
+.layout-switcher button {
+    flex: 1; padding: 1rem; background: #1a1a1a; color: #999; border: none;
+    font-size: 1rem; cursor: pointer; transition: all 0.2s;
+    border-bottom: 3px solid transparent;
+}
+.layout-switcher button.active {
+    color: #fff; background: #222; border-bottom-color: #ff6b6b;
+}
+.layout-switcher button:hover { color: #fff; }
+
+.layout { display: none; padding-top: 60px; }
+.layout.active { display: block; }
+
+/* ===================== LAYOUT A: Compact Rows ===================== */
+.date-section { margin-bottom: 0.5rem; }
+.date-header {
+    padding: 0.6rem 1.5rem;
+    background: #1a1a1a;
+    color: #ff6b6b;
+    font-size: 0.9rem;
+    font-weight: 600;
+    position: sticky; top: 56px; z-index: 10;
+    border-bottom: 1px solid #2a2a2a;
+    display: flex; justify-content: space-between; align-items: center;
+}
+.date-header .count { color: #666; font-weight: normal; font-size: 0.8rem; }
+
+.movie-row {
+    display: flex; align-items: center; gap: 1rem;
+    padding: 0.6rem 1.5rem;
+    border-bottom: 1px solid #1e1e1e;
+    transition: background 0.15s;
+    cursor: default;
+}
+.movie-row:hover { background: #1a1a2e; }
+
+.row-poster {
+    width: 45px; height: 67px; border-radius: 4px; object-fit: cover;
+    background: #222; flex-shrink: 0;
+}
+.row-play {
+    width: 45px; height: 67px; border-radius: 4px;
+    background: #222; flex-shrink: 0; display: flex; align-items: center;
+    justify-content: center; cursor: pointer; position: relative;
+}
+.row-play img { width: 100%; height: 100%; object-fit: cover; border-radius: 4px; opacity: 0.7; }
+.row-play-icon {
+    position: absolute; color: #fff; font-size: 1.2rem;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+}
+.row-play:hover img { opacity: 0.4; }
+
+.row-title { font-weight: 600; font-size: 0.95rem; min-width: 200px; flex-shrink: 0; }
+.row-director { color: #999; font-size: 0.85rem; min-width: 160px; flex-shrink: 0; }
+.row-country { color: #666; font-size: 0.8rem; width: 30px; flex-shrink: 0; text-align: center; }
+
+.row-badges { display: flex; gap: 0.3rem; flex-shrink: 0; }
+.badge {
+    padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.65rem;
+    font-weight: bold; color: #fff;
+}
+.badge-good { background: #28a745; }
+.badge-bad { background: #dc3545; }
+.badge-pick { background: #ffd700; color: #000; }
+
+.row-actions { margin-left: auto; display: flex; gap: 0.4rem; opacity: 0; transition: opacity 0.15s; }
+.movie-row:hover .row-actions { opacity: 1; }
+.row-action-btn {
+    padding: 0.25rem 0.5rem; border: none; border-radius: 3px;
+    font-size: 0.75rem; cursor: pointer; color: #fff; background: #333;
+}
+.row-action-btn:hover { background: #555; }
+
+/* ===================== LAYOUT B: Horizontal Cards ===================== */
+.date-section-b { margin-bottom: 1.5rem; }
+.date-header-b {
+    padding: 0.8rem 1.5rem;
+    color: #ff6b6b;
+    font-size: 1rem;
+    font-weight: 600;
+    border-left: 3px solid #ff6b6b;
+    margin: 0 1rem;
+    display: flex; justify-content: space-between; align-items: center;
+}
+.date-header-b .count { color: #666; font-weight: normal; font-size: 0.85rem; }
+
+.card-scroll {
+    display: flex; gap: 1rem; padding: 0.75rem 1.5rem;
+    overflow-x: auto; scroll-snap-type: x mandatory;
+    scrollbar-width: thin; scrollbar-color: #333 transparent;
+}
+.card-scroll::-webkit-scrollbar { height: 4px; }
+.card-scroll::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+
+.hcard {
+    flex-shrink: 0; width: 280px; scroll-snap-align: start;
+    background: #1e1e1e; border-radius: 8px; border: 1px solid #2a2a2a;
+    overflow: hidden; transition: border-color 0.2s;
+}
+.hcard:hover { border-color: #444; }
+.hcard.featured { border-color: #ffd700; }
+.hcard.incomplete { border-left: 3px solid #dc3545; }
+
+.hcard-poster {
+    width: 100%; height: 160px; object-fit: cover; background: #111;
+    display: block; position: relative;
+}
+.hcard-poster-wrap { position: relative; cursor: pointer; }
+.hcard-poster-wrap .hcard-play {
+    position: absolute; inset: 0; display: flex; align-items: center;
+    justify-content: center; background: rgba(0,0,0,0.2);
+    opacity: 0; transition: opacity 0.2s;
+}
+.hcard-poster-wrap:hover .hcard-play { opacity: 1; }
+.hcard-play span { font-size: 2rem; color: #fff; text-shadow: 0 2px 8px rgba(0,0,0,0.5); }
+
+.hcard-body { padding: 0.75rem; }
+.hcard-title { font-size: 0.9rem; font-weight: 600; margin-bottom: 0.3rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hcard-meta { font-size: 0.8rem; color: #999; margin-bottom: 0.5rem; }
+.hcard-badges { display: flex; gap: 0.25rem; flex-wrap: wrap; }
+
+/* ===================== LAYOUT C: Dense Table ===================== */
+.date-section-c { margin-bottom: 0; }
+.date-header-c {
+    padding: 0.5rem 1rem;
+    background: #222;
+    color: #ff6b6b;
+    font-size: 0.85rem;
+    font-weight: 600;
+    position: sticky; top: 56px; z-index: 10;
+}
+
+.movie-table { width: 100%; border-collapse: collapse; }
+.movie-table td {
+    padding: 0.4rem 0.6rem;
+    border-bottom: 1px solid #1a1a1a;
+    font-size: 0.85rem;
+    vertical-align: middle;
+}
+.movie-table tr:hover { background: #1a1a2e; }
+
+.table-poster {
+    width: 32px; height: 48px; border-radius: 3px; object-fit: cover;
+}
+.td-title { font-weight: 600; }
+.td-director { color: #999; }
+.td-country { color: #666; text-align: center; }
+.td-badges { white-space: nowrap; }
+.td-actions { text-align: right; }
+.td-actions button {
+    padding: 0.2rem 0.4rem; border: none; border-radius: 3px;
+    font-size: 0.7rem; cursor: pointer; color: #ccc; background: transparent;
+}
+.td-actions button:hover { background: #333; color: #fff; }
+
+/* Shared */
+.no-poster-tiny { background: #222; display: flex; align-items: center; justify-content: center; color: #444; font-size: 0.5rem; }
+</style>
+</head>
+<body>
+
+<div class="layout-switcher">
+    <button class="active" onclick="showLayout('a')">A: Compact Rows</button>
+    <button onclick="showLayout('b')">B: Horizontal Scroll Cards</button>
+    <button onclick="showLayout('c')">C: Dense Table</button>
+</div>
+
+<!-- ==================== LAYOUT A ==================== -->
+<div id="layout-a" class="layout active">
+
+<div class="date-section">
+    <div class="date-header">March 8, 2026 <span class="count">11 new</span></div>
+
+    <div class="movie-row">
+        <div class="row-play"><img src="https://image.tmdb.org/t/p/w92/vxqFMEkMNayfTqSwWD5gSDEXpMg.jpg"><span class="row-play-icon">&#9654;</span></div>
+        <div class="row-title">Supercars - Road to Glory</div>
+        <div class="row-director">Andrew Janson</div>
+        <div class="row-country">US</div>
+        <div class="row-badges">
+            <span class="badge badge-good">TRLR</span>
+            <span class="badge badge-good">RT</span>
+            <span class="badge badge-good">IMG</span>
+        </div>
+        <div class="row-actions">
+            <button class="row-action-btn">Edit</button>
+            <button class="row-action-btn">&#9733;</button>
+        </div>
+    </div>
+
+    <div class="movie-row">
+        <div class="row-play"><img src="https://image.tmdb.org/t/p/w92/d1PwMvPlShJFoXG9V3MO1ral7gW.jpg"><span class="row-play-icon">&#9654;</span></div>
+        <div class="row-title">With Love</div>
+        <div class="row-director">Madhan</div>
+        <div class="row-country">IN</div>
+        <div class="row-badges">
+            <span class="badge badge-good">TRLR</span>
+            <span class="badge badge-bad">RT</span>
+            <span class="badge badge-good">IMG</span>
+        </div>
+        <div class="row-actions">
+            <button class="row-action-btn">Edit</button>
+            <button class="row-action-btn">&#9733;</button>
+        </div>
+    </div>
+
+    <div class="movie-row">
+        <div class="row-play"><img src="https://image.tmdb.org/t/p/w92/lrHLjJiNLHMjYIlPcGeVJeNVPwl.jpg"><span class="row-play-icon">&#9654;</span></div>
+        <div class="row-title">Dolly</div>
+        <div class="row-director">Rod Blackhurst</div>
+        <div class="row-country">US</div>
+        <div class="row-badges">
+            <span class="badge badge-good">TRLR</span>
+            <span class="badge badge-good">RT</span>
+            <span class="badge badge-good">IMG</span>
+        </div>
+        <div class="row-actions">
+            <button class="row-action-btn">Edit</button>
+            <button class="row-action-btn">&#9733;</button>
+        </div>
+    </div>
+
+    <div class="movie-row">
+        <div class="row-play"><div class="no-poster-tiny" style="width:45px;height:67px;border-radius:4px;">?</div><span class="row-play-icon" style="position:relative;">&#9654;</span></div>
+        <div class="row-title">Alto Knights</div>
+        <div class="row-director">Barry Levinson</div>
+        <div class="row-country">US</div>
+        <div class="row-badges">
+            <span class="badge badge-good">TRLR</span>
+            <span class="badge badge-bad">RT</span>
+            <span class="badge badge-bad">IMG</span>
+        </div>
+        <div class="row-actions">
+            <button class="row-action-btn">Edit</button>
+            <button class="row-action-btn">&#9733;</button>
+        </div>
+    </div>
+
+    <div class="movie-row" style="border-left: 3px solid #ffd700;">
+        <div class="row-play"><img src="https://image.tmdb.org/t/p/w92/sfs5f0lRWHUTDAqFrRPDAJYaUR3.jpg"><span class="row-play-icon">&#9654;</span></div>
+        <div class="row-title">The Assessment <span class="badge badge-pick" style="font-size:0.6rem; vertical-align: middle;">PICK</span></div>
+        <div class="row-director">Fleur Fortuné</div>
+        <div class="row-country">UK</div>
+        <div class="row-badges">
+            <span class="badge badge-good">TRLR</span>
+            <span class="badge badge-good">RT</span>
+            <span class="badge badge-good">IMG</span>
+        </div>
+        <div class="row-actions">
+            <button class="row-action-btn">Edit</button>
+            <button class="row-action-btn" style="color:#ffd700;">&#9733;</button>
+        </div>
+    </div>
+</div>
+
+<div class="date-section">
+    <div class="date-header">March 7, 2026 <span class="count">10 new</span></div>
+
+    <div class="movie-row">
+        <div class="row-play"><img src="https://image.tmdb.org/t/p/w92/jKH1JLm34XKRI6pIWdGBVbOjEpD.jpg"><span class="row-play-icon">&#9654;</span></div>
+        <div class="row-title">Hurry Up Tomorrow</div>
+        <div class="row-director">Trey Edward Shults</div>
+        <div class="row-country">US</div>
+        <div class="row-badges">
+            <span class="badge badge-good">TRLR</span>
+            <span class="badge badge-good">RT</span>
+            <span class="badge badge-good">IMG</span>
+        </div>
+        <div class="row-actions">
+            <button class="row-action-btn">Edit</button>
+            <button class="row-action-btn">&#9733;</button>
+        </div>
+    </div>
+
+    <div class="movie-row">
+        <div class="row-play"><img src="https://image.tmdb.org/t/p/w92/bYQMbiBCftswFWMvPVQFRxmSByz.jpg"><span class="row-play-icon">&#9654;</span></div>
+        <div class="row-title">Black Bag</div>
+        <div class="row-director">Steven Soderbergh</div>
+        <div class="row-country">US</div>
+        <div class="row-badges">
+            <span class="badge badge-good">TRLR</span>
+            <span class="badge badge-good">RT</span>
+            <span class="badge badge-good">IMG</span>
+        </div>
+        <div class="row-actions">
+            <button class="row-action-btn">Edit</button>
+            <button class="row-action-btn">&#9733;</button>
+        </div>
+    </div>
+
+    <div class="movie-row">
+        <div class="row-play"><img src="https://image.tmdb.org/t/p/w92/rExq0grzeByrtc4Da4CnwfpKRiQ.jpg"><span class="row-play-icon">&#9654;</span></div>
+        <div class="row-title">Novocaine</div>
+        <div class="row-director">Dan Berk</div>
+        <div class="row-country">US</div>
+        <div class="row-badges">
+            <span class="badge badge-good">TRLR</span>
+            <span class="badge badge-bad">RT</span>
+            <span class="badge badge-good">IMG</span>
+        </div>
+        <div class="row-actions">
+            <button class="row-action-btn">Edit</button>
+            <button class="row-action-btn">&#9733;</button>
+        </div>
+    </div>
+</div>
+
+<div class="date-section">
+    <div class="date-header">March 6, 2026 <span class="count">7 new</span></div>
+
+    <div class="movie-row">
+        <div class="row-play"><img src="https://image.tmdb.org/t/p/w92/mWmMIkFjBVeKLUqKxdMvb3hMN6t.jpg"><span class="row-play-icon">&#9654;</span></div>
+        <div class="row-title">Strangers in the Park</div>
+        <div class="row-director">Juan José Campanella</div>
+        <div class="row-country">AR</div>
+        <div class="row-badges">
+            <span class="badge badge-good">TRLR</span>
+            <span class="badge badge-good">RT</span>
+            <span class="badge badge-good">IMG</span>
+        </div>
+        <div class="row-actions">
+            <button class="row-action-btn">Edit</button>
+            <button class="row-action-btn">&#9733;</button>
+        </div>
+    </div>
+
+    <div class="movie-row">
+        <div class="row-play"><img src="https://image.tmdb.org/t/p/w92/jcFtcauEPjQWzKggjmHjU2WUISM.jpg"><span class="row-play-icon">&#9654;</span></div>
+        <div class="row-title">War Machine</div>
+        <div class="row-director">Patrick Hughes</div>
+        <div class="row-country">US</div>
+        <div class="row-badges">
+            <span class="badge badge-good">TRLR</span>
+            <span class="badge badge-good">RT</span>
+            <span class="badge badge-good">IMG</span>
+        </div>
+        <div class="row-actions">
+            <button class="row-action-btn">Edit</button>
+            <button class="row-action-btn">&#9733;</button>
+        </div>
+    </div>
+
+    <div class="movie-row">
+        <div class="row-play"><img src="https://image.tmdb.org/t/p/w92/8BGDQBN0g4FQIGfFJF1pHvFaN5z.jpg"><span class="row-play-icon">&#9654;</span></div>
+        <div class="row-title">Cold Storage</div>
+        <div class="row-director">Jonny Campbell</div>
+        <div class="row-country">UK</div>
+        <div class="row-badges">
+            <span class="badge badge-good">TRLR</span>
+            <span class="badge badge-good">RT</span>
+            <span class="badge badge-good">IMG</span>
+        </div>
+        <div class="row-actions">
+            <button class="row-action-btn">Edit</button>
+            <button class="row-action-btn">&#9733;</button>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- ==================== LAYOUT B ==================== -->
+<div id="layout-b" class="layout">
+
+<div class="date-section-b">
+    <div class="date-header-b">March 8, 2026 <span class="count">11 new</span></div>
+    <div class="card-scroll">
+        <div class="hcard">
+            <div class="hcard-poster-wrap">
+                <img class="hcard-poster" src="https://image.tmdb.org/t/p/w300/vxqFMEkMNayfTqSwWD5gSDEXpMg.jpg">
+                <div class="hcard-play"><span>&#9654;</span></div>
+            </div>
+            <div class="hcard-body">
+                <div class="hcard-title">Supercars - Road to Glory</div>
+                <div class="hcard-meta">Andrew Janson &middot; US</div>
+                <div class="hcard-badges">
+                    <span class="badge badge-good">TRLR</span>
+                    <span class="badge badge-good">RT</span>
+                    <span class="badge badge-good">IMG</span>
+                </div>
+            </div>
+        </div>
+        <div class="hcard">
+            <div class="hcard-poster-wrap">
+                <img class="hcard-poster" src="https://image.tmdb.org/t/p/w300/d1PwMvPlShJFoXG9V3MO1ral7gW.jpg">
+                <div class="hcard-play"><span>&#9654;</span></div>
+            </div>
+            <div class="hcard-body">
+                <div class="hcard-title">With Love</div>
+                <div class="hcard-meta">Madhan &middot; IN</div>
+                <div class="hcard-badges">
+                    <span class="badge badge-good">TRLR</span>
+                    <span class="badge badge-bad">RT</span>
+                    <span class="badge badge-good">IMG</span>
+                </div>
+            </div>
+        </div>
+        <div class="hcard">
+            <div class="hcard-poster-wrap">
+                <img class="hcard-poster" src="https://image.tmdb.org/t/p/w300/lrHLjJiNLHMjYIlPcGeVJeNVPwl.jpg">
+                <div class="hcard-play"><span>&#9654;</span></div>
+            </div>
+            <div class="hcard-body">
+                <div class="hcard-title">Dolly</div>
+                <div class="hcard-meta">Rod Blackhurst &middot; US</div>
+                <div class="hcard-badges">
+                    <span class="badge badge-good">TRLR</span>
+                    <span class="badge badge-good">RT</span>
+                    <span class="badge badge-good">IMG</span>
+                </div>
+            </div>
+        </div>
+        <div class="hcard featured">
+            <div class="hcard-poster-wrap">
+                <img class="hcard-poster" src="https://image.tmdb.org/t/p/w300/sfs5f0lRWHUTDAqFrRPDAJYaUR3.jpg">
+                <div class="hcard-play"><span>&#9654;</span></div>
+            </div>
+            <div class="hcard-body">
+                <div class="hcard-title">The Assessment <span class="badge badge-pick" style="font-size:0.6rem;">PICK</span></div>
+                <div class="hcard-meta">Fleur Fortuné &middot; UK</div>
+                <div class="hcard-badges">
+                    <span class="badge badge-good">TRLR</span>
+                    <span class="badge badge-good">RT</span>
+                    <span class="badge badge-good">IMG</span>
+                </div>
+            </div>
+        </div>
+        <div class="hcard incomplete">
+            <div class="hcard-poster-wrap">
+                <div class="hcard-poster no-poster-tiny" style="height:160px; font-size: 0.8rem;">No Poster</div>
+            </div>
+            <div class="hcard-body">
+                <div class="hcard-title">Alto Knights</div>
+                <div class="hcard-meta">Barry Levinson &middot; US</div>
+                <div class="hcard-badges">
+                    <span class="badge badge-good">TRLR</span>
+                    <span class="badge badge-bad">RT</span>
+                    <span class="badge badge-bad">IMG</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="date-section-b">
+    <div class="date-header-b">March 7, 2026 <span class="count">10 new</span></div>
+    <div class="card-scroll">
+        <div class="hcard">
+            <div class="hcard-poster-wrap">
+                <img class="hcard-poster" src="https://image.tmdb.org/t/p/w300/jKH1JLm34XKRI6pIWdGBVbOjEpD.jpg">
+                <div class="hcard-play"><span>&#9654;</span></div>
+            </div>
+            <div class="hcard-body">
+                <div class="hcard-title">Hurry Up Tomorrow</div>
+                <div class="hcard-meta">Trey Edward Shults &middot; US</div>
+                <div class="hcard-badges">
+                    <span class="badge badge-good">TRLR</span>
+                    <span class="badge badge-good">RT</span>
+                    <span class="badge badge-good">IMG</span>
+                </div>
+            </div>
+        </div>
+        <div class="hcard">
+            <div class="hcard-poster-wrap">
+                <img class="hcard-poster" src="https://image.tmdb.org/t/p/w300/bYQMbiBCftswFWMvPVQFRxmSByz.jpg">
+                <div class="hcard-play"><span>&#9654;</span></div>
+            </div>
+            <div class="hcard-body">
+                <div class="hcard-title">Black Bag</div>
+                <div class="hcard-meta">Steven Soderbergh &middot; US</div>
+                <div class="hcard-badges">
+                    <span class="badge badge-good">TRLR</span>
+                    <span class="badge badge-good">RT</span>
+                    <span class="badge badge-good">IMG</span>
+                </div>
+            </div>
+        </div>
+        <div class="hcard">
+            <div class="hcard-poster-wrap">
+                <img class="hcard-poster" src="https://image.tmdb.org/t/p/w300/rExq0grzeByrtc4Da4CnwfpKRiQ.jpg">
+                <div class="hcard-play"><span>&#9654;</span></div>
+            </div>
+            <div class="hcard-body">
+                <div class="hcard-title">Novocaine</div>
+                <div class="hcard-meta">Dan Berk &middot; US</div>
+                <div class="hcard-badges">
+                    <span class="badge badge-good">TRLR</span>
+                    <span class="badge badge-bad">RT</span>
+                    <span class="badge badge-good">IMG</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="date-section-b">
+    <div class="date-header-b">March 6, 2026 <span class="count">7 new</span></div>
+    <div class="card-scroll">
+        <div class="hcard">
+            <div class="hcard-poster-wrap">
+                <img class="hcard-poster" src="https://image.tmdb.org/t/p/w300/mWmMIkFjBVeKLUqKxdMvb3hMN6t.jpg">
+                <div class="hcard-play"><span>&#9654;</span></div>
+            </div>
+            <div class="hcard-body">
+                <div class="hcard-title">Strangers in the Park</div>
+                <div class="hcard-meta">Juan José Campanella &middot; AR</div>
+                <div class="hcard-badges">
+                    <span class="badge badge-good">TRLR</span>
+                    <span class="badge badge-good">RT</span>
+                    <span class="badge badge-good">IMG</span>
+                </div>
+            </div>
+        </div>
+        <div class="hcard">
+            <div class="hcard-poster-wrap">
+                <img class="hcard-poster" src="https://image.tmdb.org/t/p/w300/jcFtcauEPjQWzKggjmHjU2WUISM.jpg">
+                <div class="hcard-play"><span>&#9654;</span></div>
+            </div>
+            <div class="hcard-body">
+                <div class="hcard-title">War Machine</div>
+                <div class="hcard-meta">Patrick Hughes &middot; US</div>
+                <div class="hcard-badges">
+                    <span class="badge badge-good">TRLR</span>
+                    <span class="badge badge-good">RT</span>
+                    <span class="badge badge-good">IMG</span>
+                </div>
+            </div>
+        </div>
+        <div class="hcard">
+            <div class="hcard-poster-wrap">
+                <img class="hcard-poster" src="https://image.tmdb.org/t/p/w300/8BGDQBN0g4FQIGfFJF1pHvFaN5z.jpg">
+                <div class="hcard-play"><span>&#9654;</span></div>
+            </div>
+            <div class="hcard-body">
+                <div class="hcard-title">Cold Storage</div>
+                <div class="hcard-meta">Jonny Campbell &middot; UK</div>
+                <div class="hcard-badges">
+                    <span class="badge badge-good">TRLR</span>
+                    <span class="badge badge-good">RT</span>
+                    <span class="badge badge-good">IMG</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- ==================== LAYOUT C ==================== -->
+<div id="layout-c" class="layout">
+
+<div class="date-section-c">
+    <div class="date-header-c">March 8, 2026 &mdash; 11 new</div>
+    <table class="movie-table">
+        <tr>
+            <td><img class="table-poster" src="https://image.tmdb.org/t/p/w92/vxqFMEkMNayfTqSwWD5gSDEXpMg.jpg"></td>
+            <td class="td-title">Supercars - Road to Glory</td>
+            <td class="td-director">Andrew Janson</td>
+            <td class="td-country">US</td>
+            <td class="td-badges">
+                <span class="badge badge-good">TRLR</span>
+                <span class="badge badge-good">RT</span>
+                <span class="badge badge-good">IMG</span>
+            </td>
+            <td class="td-actions"><button>Edit</button> <button>&#9733;</button></td>
+        </tr>
+        <tr>
+            <td><img class="table-poster" src="https://image.tmdb.org/t/p/w92/d1PwMvPlShJFoXG9V3MO1ral7gW.jpg"></td>
+            <td class="td-title">With Love</td>
+            <td class="td-director">Madhan</td>
+            <td class="td-country">IN</td>
+            <td class="td-badges">
+                <span class="badge badge-good">TRLR</span>
+                <span class="badge badge-bad">RT</span>
+                <span class="badge badge-good">IMG</span>
+            </td>
+            <td class="td-actions"><button>Edit</button> <button>&#9733;</button></td>
+        </tr>
+        <tr>
+            <td><img class="table-poster" src="https://image.tmdb.org/t/p/w92/lrHLjJiNLHMjYIlPcGeVJeNVPwl.jpg"></td>
+            <td class="td-title">Dolly</td>
+            <td class="td-director">Rod Blackhurst</td>
+            <td class="td-country">US</td>
+            <td class="td-badges">
+                <span class="badge badge-good">TRLR</span>
+                <span class="badge badge-good">RT</span>
+                <span class="badge badge-good">IMG</span>
+            </td>
+            <td class="td-actions"><button>Edit</button> <button>&#9733;</button></td>
+        </tr>
+        <tr style="background: rgba(255,215,0,0.05);">
+            <td><img class="table-poster" src="https://image.tmdb.org/t/p/w92/sfs5f0lRWHUTDAqFrRPDAJYaUR3.jpg"></td>
+            <td class="td-title">The Assessment <span class="badge badge-pick" style="font-size:0.55rem;">PICK</span></td>
+            <td class="td-director">Fleur Fortuné</td>
+            <td class="td-country">UK</td>
+            <td class="td-badges">
+                <span class="badge badge-good">TRLR</span>
+                <span class="badge badge-good">RT</span>
+                <span class="badge badge-good">IMG</span>
+            </td>
+            <td class="td-actions"><button>Edit</button> <button style="color:#ffd700;">&#9733;</button></td>
+        </tr>
+        <tr style="border-left: 3px solid #dc3545;">
+            <td><div class="table-poster no-poster-tiny" style="width:32px;height:48px;border-radius:3px;">?</div></td>
+            <td class="td-title">Alto Knights</td>
+            <td class="td-director">Barry Levinson</td>
+            <td class="td-country">US</td>
+            <td class="td-badges">
+                <span class="badge badge-good">TRLR</span>
+                <span class="badge badge-bad">RT</span>
+                <span class="badge badge-bad">IMG</span>
+            </td>
+            <td class="td-actions"><button>Edit</button> <button>&#9733;</button></td>
+        </tr>
+    </table>
+</div>
+
+<div class="date-section-c">
+    <div class="date-header-c">March 7, 2026 &mdash; 10 new</div>
+    <table class="movie-table">
+        <tr>
+            <td><img class="table-poster" src="https://image.tmdb.org/t/p/w92/jKH1JLm34XKRI6pIWdGBVbOjEpD.jpg"></td>
+            <td class="td-title">Hurry Up Tomorrow</td>
+            <td class="td-director">Trey Edward Shults</td>
+            <td class="td-country">US</td>
+            <td class="td-badges">
+                <span class="badge badge-good">TRLR</span>
+                <span class="badge badge-good">RT</span>
+                <span class="badge badge-good">IMG</span>
+            </td>
+            <td class="td-actions"><button>Edit</button> <button>&#9733;</button></td>
+        </tr>
+        <tr>
+            <td><img class="table-poster" src="https://image.tmdb.org/t/p/w92/bYQMbiBCftswFWMvPVQFRxmSByz.jpg"></td>
+            <td class="td-title">Black Bag</td>
+            <td class="td-director">Steven Soderbergh</td>
+            <td class="td-country">US</td>
+            <td class="td-badges">
+                <span class="badge badge-good">TRLR</span>
+                <span class="badge badge-good">RT</span>
+                <span class="badge badge-good">IMG</span>
+            </td>
+            <td class="td-actions"><button>Edit</button> <button>&#9733;</button></td>
+        </tr>
+        <tr>
+            <td><img class="table-poster" src="https://image.tmdb.org/t/p/w92/rExq0grzeByrtc4Da4CnwfpKRiQ.jpg"></td>
+            <td class="td-title">Novocaine</td>
+            <td class="td-director">Dan Berk</td>
+            <td class="td-country">US</td>
+            <td class="td-badges">
+                <span class="badge badge-good">TRLR</span>
+                <span class="badge badge-bad">RT</span>
+                <span class="badge badge-good">IMG</span>
+            </td>
+            <td class="td-actions"><button>Edit</button> <button>&#9733;</button></td>
+        </tr>
+    </table>
+</div>
+
+<div class="date-section-c">
+    <div class="date-header-c">March 6, 2026 &mdash; 7 new</div>
+    <table class="movie-table">
+        <tr>
+            <td><img class="table-poster" src="https://image.tmdb.org/t/p/w92/mWmMIkFjBVeKLUqKxdMvb3hMN6t.jpg"></td>
+            <td class="td-title">Strangers in the Park</td>
+            <td class="td-director">Juan José Campanella</td>
+            <td class="td-country">AR</td>
+            <td class="td-badges">
+                <span class="badge badge-good">TRLR</span>
+                <span class="badge badge-good">RT</span>
+                <span class="badge badge-good">IMG</span>
+            </td>
+            <td class="td-actions"><button>Edit</button> <button>&#9733;</button></td>
+        </tr>
+        <tr>
+            <td><img class="table-poster" src="https://image.tmdb.org/t/p/w92/jcFtcauEPjQWzKggjmHjU2WUISM.jpg"></td>
+            <td class="td-title">War Machine</td>
+            <td class="td-director">Patrick Hughes</td>
+            <td class="td-country">US</td>
+            <td class="td-badges">
+                <span class="badge badge-good">TRLR</span>
+                <span class="badge badge-good">RT</span>
+                <span class="badge badge-good">IMG</span>
+            </td>
+            <td class="td-actions"><button>Edit</button> <button>&#9733;</button></td>
+        </tr>
+        <tr>
+            <td><img class="table-poster" src="https://image.tmdb.org/t/p/w92/8BGDQBN0g4FQIGfFJF1pHvFaN5z.jpg"></td>
+            <td class="td-title">Cold Storage</td>
+            <td class="td-director">Jonny Campbell</td>
+            <td class="td-country">UK</td>
+            <td class="td-badges">
+                <span class="badge badge-good">TRLR</span>
+                <span class="badge badge-good">RT</span>
+                <span class="badge badge-good">IMG</span>
+            </td>
+            <td class="td-actions"><button>Edit</button> <button>&#9733;</button></td>
+        </tr>
+    </table>
+</div>
+</div>
+
+<script>
+function showLayout(id) {
+    document.querySelectorAll('.layout').forEach(l => l.classList.remove('active'));
+    document.querySelectorAll('.layout-switcher button').forEach(b => b.classList.remove('active'));
+    document.getElementById('layout-' + id).classList.add('active');
+    event.target.classList.add('active');
+}
+</script>
+</body>
+</html>

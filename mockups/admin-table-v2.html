@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Table Layout v2</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #1a1a1a; color: #fff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; padding: 1rem 1.5rem; max-width: 1100px; margin: 0 auto; }
+
+/* Header */
+.header {
+    background: #2a2a2a; padding: 1.25rem; border-radius: 8px; margin-bottom: 0.75rem;
+    border: 1px solid #3a3a3a; display: flex; justify-content: space-between; align-items: center;
+}
+.header h1 { font-size: 1.3rem; color: #ff6b6b; }
+.header-right { display: flex; gap: 0.75rem; align-items: center; }
+.stat { color: #999; font-size: 0.85rem; }
+.stat strong { color: #fff; }
+.hdr-btn { padding: 0.45rem 0.9rem; border: none; border-radius: 4px; font-size: 0.85rem; cursor: pointer; color: #fff; font-weight: 600; }
+
+/* Filters bar */
+.filters {
+    display: flex; gap: 0.5rem; margin-bottom: 0.75rem; align-items: center;
+    background: #2a2a2a; padding: 0.6rem 1rem; border-radius: 8px; border: 1px solid #3a3a3a;
+}
+.fbtn { padding: 0.35rem 0.7rem; background: #4a4a6a; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 0.8rem; position: relative; }
+.fbtn.active { background: #ff6b6b; }
+.fbtn.warn { background: #dc3545; font-weight: bold; }
+.fbtn .ct { position: absolute; top: -6px; right: -6px; background: #fff; color: #dc3545; border-radius: 50%; width: 18px; height: 18px; font-size: 0.6rem; font-weight: bold; display: flex; align-items: center; justify-content: center; border: 2px solid #dc3545; }
+.search-input { margin-left: auto; padding: 0.35rem 0.7rem; background: #1a1a1a; border: 1px solid #3a3a3a; color: #fff; border-radius: 4px; font-size: 0.8rem; width: 180px; }
+
+/* Date header */
+.date-header {
+    padding: 0.45rem 0.75rem; background: #222; color: #ff6b6b;
+    font-size: 0.85rem; font-weight: 600; position: sticky; top: 0; z-index: 20;
+    display: flex; justify-content: space-between; border-bottom: 1px solid #333;
+}
+.date-header .ct { color: #555; font-weight: normal; font-size: 0.8rem; }
+
+/* Movie row */
+.movie-row {
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr) minmax(0, 0.7fr) 28px 36px auto auto 50px;
+    align-items: center; gap: 0.5rem;
+    padding: 0.4rem 0.75rem;
+    border-bottom: 1px solid #1e1e1e;
+    cursor: pointer; transition: background 0.1s;
+}
+.movie-row:hover { background: #222; }
+.movie-row.expanded { background: #1a1a2e; border-bottom-color: #1a1a2e; }
+.movie-row.pick { border-left: 3px solid #ffd700; }
+.movie-row.missing { border-left: 3px solid #dc3545; }
+
+/* Poster */
+.pst { width: 42px; height: 63px; border-radius: 3px; object-fit: cover; background: #111; display: block; }
+.pst-wrap { width: 42px; height: 63px; position: relative; border-radius: 3px; overflow: hidden; flex-shrink: 0; }
+.pst-wrap .play-hover {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.5); opacity: 0; transition: opacity 0.15s; cursor: pointer;
+}
+.pst-wrap:hover .play-hover { opacity: 1; }
+.play-hover span { color: #fff; font-size: 1.1rem; }
+.no-pst { width: 42px; height: 63px; background: #222; border-radius: 3px; display: flex; align-items: center; justify-content: center; color: #444; font-size: 0.4rem; }
+
+/* Row cells */
+.r-title { font-weight: 600; font-size: 0.88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.r-dir { color: #999; font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.r-dir.bad { color: #dc3545; }
+.r-cc { color: #666; font-size: 0.75rem; text-align: center; }
+.r-min { color: #555; font-size: 0.75rem; text-align: center; }
+
+/* Quick links on collapsed row */
+.r-links { display: flex; gap: 3px; }
+.r-link {
+    padding: 1px 5px; border-radius: 2px; font-size: 0.55rem; font-weight: 700;
+    text-decoration: none; color: #888; background: #2a2a2a; letter-spacing: 0.02em;
+    transition: all 0.1s;
+}
+.r-link:hover { color: #fff; background: #444; }
+.r-link.dead { color: #444; background: transparent; pointer-events: none; }
+
+/* Inline tags on collapsed row */
+.row-tags { display: inline; margin-left: 0.4rem; }
+.row-tag {
+    display: inline-block; padding: 1px 5px; border-radius: 3px;
+    font-size: 0.55rem; font-weight: 700; vertical-align: middle;
+    letter-spacing: 0.03em;
+}
+.tag-pick { background: #ffd700; color: #000; }
+.tag-restore { background: #C8A951; color: #000; }
+.tag-bigtime { background: #ff6b6b; color: #fff; }
+.tag-niche { background: #4a90d9; color: #fff; }
+.tag-foreign { background: #9b59b6; color: #fff; }
+.tag-series { background: #17a2b8; color: #fff; }
+.tag-festival { background: #e67e22; color: #fff; }
+
+/* Data badges */
+.badges { display: flex; gap: 2px; }
+.b { padding: 1px 4px; border-radius: 2px; font-size: 0.55rem; font-weight: 700; color: #fff; letter-spacing: 0.02em; }
+.bg { background: #28a745; }
+.br { background: #dc3545; }
+
+/* Row actions */
+.r-act { display: flex; gap: 2px; justify-content: flex-end; }
+.r-btn { padding: 2px 5px; border: none; border-radius: 3px; font-size: 0.7rem; cursor: pointer; color: #666; background: transparent; }
+.r-btn:hover { background: #333; color: #fff; }
+
+/* ======= EXPANDED EDIT PANEL ======= */
+.ep {
+    display: none; padding: 0.6rem 0.75rem 0.6rem 56px;
+    background: #1a1a2e; border-bottom: 1px solid #2a2a4a; font-size: 0.8rem;
+}
+.ep.open { display: block; }
+
+/* Two-column layout: left = fields/links/watch, right = synopsis full height + remove */
+.ep-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0 1rem;
+    grid-template-rows: auto;
+}
+.ep-left { display: flex; flex-direction: column; gap: 0.35rem; }
+.ep-right { display: flex; flex-direction: column; }
+
+/* Field rows */
+.fr { display: flex; gap: 0.3rem; align-items: center; }
+.fl { font-size: 0.7rem; color: #666; min-width: 48px; flex-shrink: 0; }
+.fi { flex: 1; padding: 0.2rem 0.35rem; background: #2a2a2a; border: 1px solid #3a3a3a; color: #fff; border-radius: 3px; font-size: 0.78rem; }
+.fi.miss { background: #3a1a1a; border-color: #dc3545; }
+.fi-sm { width: 55px; flex: none; }
+.sv { padding: 0.2rem 0.45rem; background: #28a745; color: #fff; border: none; border-radius: 3px; font-size: 0.7rem; cursor: pointer; }
+
+/* Link buttons */
+.lnk-row { display: flex; gap: 2px; margin-bottom: 0.25rem; }
+.lb { padding: 0.25rem 0.45rem; border: none; border-radius: 3px; font-size: 0.62rem; font-weight: 700; color: #fff; cursor: pointer; }
+.lb.g { background: #28a745; }
+.lb.r { background: #dc3545; }
+.lnk-input { display: flex; gap: 0.25rem; }
+.lf { flex: 1; padding: 0.2rem 0.35rem; background: #2a2a2a; border: 1px solid #3a3a3a; color: #fff; border-radius: 3px; font-size: 0.72rem; }
+.lnk-hint { font-size: 0.6rem; color: #555; margin-top: 0.15rem; }
+
+/* Filter toggles (checkboxes) */
+.filter-toggles { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.25rem; }
+.ftoggle {
+    display: flex; align-items: center; gap: 0.3rem; cursor: pointer;
+    padding: 0.2rem 0.5rem; border-radius: 4px; border: 1px solid #3a3a3a;
+    font-size: 0.72rem; color: #999; transition: all 0.15s; user-select: none;
+}
+.ftoggle:hover { border-color: #555; color: #ccc; }
+.ftoggle.on { border-color: var(--tag-color); color: var(--tag-color); background: rgba(255,255,255,0.05); }
+.ftoggle input { display: none; }
+.ftoggle .check { width: 14px; height: 14px; border: 1.5px solid #555; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; transition: all 0.15s; }
+.ftoggle.on .check { border-color: var(--tag-color); background: var(--tag-color); color: #000; }
+
+/* Synopsis - fills full right column */
+.syn-wrap { flex: 1; display: flex; flex-direction: column; }
+.syn-hdr { display: flex; justify-content: space-between; margin-bottom: 0.15rem; }
+.syn-hdr span { font-size: 0.65rem; color: #555; }
+.syn {
+    width: 100%; flex: 1; min-height: 140px; padding: 0.3rem 0.4rem;
+    background: #2a2a2a; border: 1px solid #3a3a3a;
+    color: #fff; border-radius: 3px; font-size: 0.75rem; resize: vertical;
+    font-family: inherit;
+}
+.syn.miss { background: #3a1a1a; border-color: #dc3545; }
+
+/* Remove button below synopsis */
+.remove-row { display: flex; justify-content: flex-end; margin-top: 0.4rem; }
+.rm-btn { padding: 0.25rem 0.6rem; background: #dc3545; color: #fff; border: none; border-radius: 3px; font-size: 0.75rem; cursor: pointer; }
+.rm-btn:hover { background: #c82333; }
+
+/* Watch links */
+.wl { margin-top: 0.2rem; }
+.wl-label { font-size: 0.68rem; color: #666; margin-bottom: 0.15rem; }
+.svc-row { display: flex; gap: 2px; margin-bottom: 0.2rem; }
+.sb { padding: 0.2rem 0.4rem; border: none; border-radius: 3px; font-size: 0.58rem; font-weight: 700; color: #fff; cursor: pointer; }
+.sb.g { background: #28a745; }
+.sb.r { background: #dc3545; }
+.sb.add { background: transparent; border: 1px dashed #555; color: #666; font-weight: 400; }
+.sb.add:hover { border-color: #999; color: #ccc; }
+
+/* Image preview overlay */
+.img-overlay { display: none; position: fixed; inset: 0; z-index: 1001; background: rgba(0,0,0,0.88); align-items: center; justify-content: center; cursor: pointer; }
+.img-overlay.open { display: flex; }
+.img-overlay img { max-height: 80vh; max-width: 90vw; border-radius: 8px; box-shadow: 0 8px 40px rgba(0,0,0,0.6); }
+
+/* Trailer overlay */
+.t-overlay { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.92); align-items: center; justify-content: center; }
+.t-overlay.open { display: flex; }
+.t-box { width: 90%; max-width: 880px; position: relative; }
+.t-bar { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0.8rem; background: #2a2a2a; border-radius: 8px 8px 0 0; }
+.t-bar span { color: #fff; font-weight: 600; font-size: 0.95rem; }
+.t-close { background: none; border: none; color: #999; font-size: 1.4rem; cursor: pointer; padding: 0; width: 1.8rem; height: 1.8rem; display: flex; align-items: center; justify-content: center; border-radius: 4px; }
+.t-close:hover { background: #dc3545; color: #fff; }
+.t-vid { background: #000; aspect-ratio: 16/9; border-radius: 0 0 8px 8px; display: flex; align-items: center; justify-content: center; color: #333; font-size: 0.85rem; }
+</style>
+</head>
+<body>
+
+<div class="header">
+    <div>
+        <h1>The New Release Wall - Admin</h1>
+        <div style="display:flex; gap:1.5rem; margin-top:0.3rem;">
+            <span class="stat">Total: <strong>472</strong></span>
+            <span class="stat">Picks: <strong>12</strong></span>
+        </div>
+    </div>
+    <div class="header-right">
+        <button class="hdr-btn" style="background:#17a2b8;">View Site</button>
+        <button class="hdr-btn" style="background:#007bff;">Save Changes</button>
+        <button class="hdr-btn" style="background:#ff0000;">Playlist</button>
+        <button class="hdr-btn" style="background:#17a2b8;">+ Add</button>
+    </div>
+</div>
+
+<div class="filters">
+    <button class="fbtn warn">Missing Data <span class="ct">38</span></button>
+    <button class="fbtn active">All</button>
+    <button class="fbtn">Picks</button>
+    <button class="fbtn">Restorations</button>
+    <input class="search-input" placeholder="Search movies...">
+</div>
+
+<div id="movie-list"></div>
+
+<div class="img-overlay" id="imgoverlay" onclick="closeImg()">
+    <img id="img-preview" src="">
+</div>
+
+<div class="t-overlay" id="toverlay" onclick="closeTrl()">
+    <div class="t-box" onclick="event.stopPropagation()">
+        <div class="t-bar"><span id="trl-title"></span><button class="t-close" onclick="closeTrl()">&times;</button></div>
+        <div class="t-vid" id="trl-vid">[Trailer plays here]</div>
+    </div>
+</div>
+
+<script>
+const MOVIES = [
+  { date: '2026-03-08', items: [
+    { title: 'Supercars - Road to Glory', dir: 'Andrew Janson', cc: 'AU', min: 79,
+      poster: 'https://image.tmdb.org/t/p/w92/n846J15sZ1CgwPrQzVnjnyNETs7.jpg',
+      trlr: true, rt: false, img: true, wiki: false, pick: false, restore: false,
+      bigtime: false, niche: true, foreign: false, series: false, festival: false,
+      wiki_url: '', imdb: 'tt26388498',
+      syn: 'An inspiring look at Australia\'s premier touring car championship, featuring fierce rivalries and legendary circuits as drivers chase glory at over 300km/h.',
+      streaming: '', vod_amazon: false, vod_apple: false, vod_vudu: false },
+    { title: 'With Love', dir: 'Madhan', cc: 'IN', min: 141,
+      poster: 'https://image.tmdb.org/t/p/w92/84rCbRiY7cXwDO8lAXp5MIxuok5.jpg',
+      trlr: true, rt: false, img: true, wiki: true, pick: false, restore: false,
+      bigtime: false, niche: true, foreign: true, series: false, festival: false,
+      wiki_url: 'https://en.wikipedia.org/wiki/With_Love_(2026_film)', imdb: 'tt31407680',
+      syn: 'A love story set across multiple timelines, exploring the enduring power of human connection through decades of change in southern India.',
+      streaming: '', vod_amazon: false, vod_apple: true, vod_vudu: false },
+    { title: 'Dolly', dir: 'Rod Blackhurst', cc: 'US', min: 83,
+      poster: 'https://image.tmdb.org/t/p/w92/sTPUg3XtdcKRAS5Vwsi1GYPFhNZ.jpg',
+      trlr: true, rt: true, img: true, wiki: true, pick: false, restore: false,
+      bigtime: false, niche: true, foreign: false, series: false, festival: false,
+      wiki_url: 'https://en.wikipedia.org/wiki/Dolly_(2026_film)', imdb: 'tt21372026',
+      syn: 'When a couple brings home a high-tech A.I. companion doll for their daughter, they discover it has developed a sinister agenda of its own. As the doll\'s behavior grows increasingly dangerous, they must find a way to shut it down before it tears their family apart.',
+      streaming: '', vod_amazon: true, vod_apple: true, vod_vudu: false },
+    { title: 'Stray Bodies', dir: 'Elina Psykou', cc: 'BG', min: 109,
+      poster: 'https://image.tmdb.org/t/p/w92/tmeenZDQlGlSLaFZZ36XyePiTR1.jpg',
+      trlr: true, rt: true, img: true, wiki: false, pick: true, restore: false,
+      bigtime: false, niche: true, foreign: true, series: false, festival: true,
+      wiki_url: '', imdb: '',
+      syn: 'A surreal Greek drama exploring bodily autonomy through interconnected stories of people whose bodies become sites of political and personal struggle.',
+      streaming: 'Mubi', vod_amazon: false, vod_apple: false, vod_vudu: false },
+    { title: 'Theertharoopa Thandeyavarige', dir: 'Ramenahalli Jagannatha', cc: '', min: 130,
+      poster: 'https://image.tmdb.org/t/p/w92/mfwcUim9bRJDsGRRXotzvj43xFD.jpg',
+      trlr: true, rt: false, img: true, wiki: true, pick: false, restore: false,
+      bigtime: false, niche: false, foreign: true, series: false, festival: false,
+      wiki_url: 'https://en.wikipedia.org/wiki/Theertharoopa_Thandeyavarige', imdb: 'tt33022810',
+      syn: '', streaming: '', vod_amazon: false, vod_apple: false, vod_vudu: false },
+    { title: 'Jellyfish', dir: 'Giles Chan', cc: 'AU', min: 109,
+      poster: 'https://image.tmdb.org/t/p/w92/v380dpQhh8GR9SMfLn8dfmlMOkd.jpg',
+      trlr: true, rt: false, img: true, wiki: true, pick: false, restore: false,
+      bigtime: false, niche: true, foreign: false, series: false, festival: false,
+      wiki_url: 'https://en.wikipedia.org/wiki/Jellyfish_(2026_film)', imdb: 'tt28009498',
+      syn: 'An intimate portrait of a young woman navigating family dysfunction and finding unexpected connection in the chaos of adolescence.',
+      streaming: '', vod_amazon: false, vod_apple: false, vod_vudu: false },
+  ]},
+  { date: '2026-03-07', items: [
+    { title: 'Hurry Up Tomorrow', dir: 'Trey Edward Shults', cc: 'US', min: 120,
+      poster: 'https://image.tmdb.org/t/p/w92/jKH1JLm34XKRI6pIWdGBVbOjEpD.jpg',
+      trlr: true, rt: true, img: true, wiki: true, pick: false, restore: false,
+      bigtime: true, niche: false, foreign: false, series: false, festival: false,
+      wiki_url: 'https://en.wikipedia.org/wiki/Hurry_Up_Tomorrow_(film)', imdb: 'tt22085724',
+      syn: 'A psychological thriller about obsession and identity starring The Weeknd and Jenna Ortega. Two strangers cross paths in a psychiatric hospital, setting off a chain of events that blur the line between reality and delusion.',
+      streaming: '', vod_amazon: true, vod_apple: true, vod_vudu: true },
+    { title: 'Black Bag', dir: 'Steven Soderbergh', cc: 'US', min: 93,
+      poster: 'https://image.tmdb.org/t/p/w92/bYQMbiBCftswFWMvPVQFRxmSByz.jpg',
+      trlr: true, rt: true, img: true, wiki: true, pick: true, restore: true,
+      bigtime: true, niche: false, foreign: false, series: false, festival: false,
+      wiki_url: 'https://en.wikipedia.org/wiki/Black_Bag_(film)', imdb: 'tt27911000',
+      syn: 'An intelligence operative discovers her husband may be a traitor in this taut espionage thriller from Steven Soderbergh. When loyalty clashes with duty, every conversation becomes a potential interrogation and every gesture a possible clue.',
+      streaming: '', vod_amazon: true, vod_apple: true, vod_vudu: false },
+    { title: 'Novocaine', dir: 'Dan Berk', cc: 'US', min: 110,
+      poster: 'https://image.tmdb.org/t/p/w92/rExq0grzeByrtc4Da4CnwfpKRiQ.jpg',
+      trlr: true, rt: false, img: true, wiki: true, pick: false, restore: false,
+      bigtime: true, niche: false, foreign: false, series: false, festival: false,
+      wiki_url: 'https://en.wikipedia.org/wiki/Novocaine_(2025_film)', imdb: 'tt21692408',
+      syn: 'A man who can\'t feel pain must rescue his kidnapped girlfriend using his unique condition as a weapon.',
+      streaming: '', vod_amazon: true, vod_apple: false, vod_vudu: false },
+    { title: 'Some Indie Film', dir: '', cc: '', min: 0,
+      poster: '', trlr: false, rt: false, img: false, wiki: false, pick: false, restore: false,
+      bigtime: false, niche: false, foreign: false, series: false, festival: false,
+      wiki_url: '', imdb: '',
+      syn: '', streaming: '', vod_amazon: false, vod_apple: false, vod_vudu: false },
+  ]},
+  { date: '2026-03-06', items: [
+    { title: 'Strangers in the Park', dir: 'Juan José Campanella', cc: 'AR', min: 107,
+      poster: 'https://image.tmdb.org/t/p/w92/mWmMIkFjBVeKLUqKxdMvb3hMN6t.jpg',
+      trlr: true, rt: true, img: true, wiki: true, pick: false, restore: true,
+      bigtime: false, niche: true, foreign: true, series: false, festival: false,
+      wiki_url: 'https://en.wikipedia.org/wiki/Strangers_in_the_Park', imdb: 'tt15433956',
+      syn: 'A former communist militant and a "live and let live" woman confront their opposing worldviews after a chance encounter in a Buenos Aires park. As their debates grow more personal, both are forced to reconsider everything they thought they believed.',
+      streaming: 'Netflix', vod_amazon: false, vod_apple: false, vod_vudu: false },
+    { title: 'War Machine', dir: 'Patrick Hughes', cc: 'US', min: 100,
+      poster: 'https://image.tmdb.org/t/p/w92/jcFtcauEPjQWzKggjmHjU2WUISM.jpg',
+      trlr: true, rt: true, img: true, wiki: true, pick: false, restore: false,
+      bigtime: true, niche: false, foreign: false, series: false, festival: false,
+      wiki_url: 'https://en.wikipedia.org/wiki/War_Machine_(2026_film)', imdb: 'tt14209916',
+      syn: 'A retired Special Forces operative is drawn back into action when a global threat emerges that only he can neutralize.',
+      streaming: '', vod_amazon: true, vod_apple: true, vod_vudu: true },
+    { title: 'Cold Storage', dir: 'Jonny Campbell', cc: 'UK', min: 90,
+      poster: 'https://image.tmdb.org/t/p/w92/8BGDQBN0g4FQIGfFJF1pHvFaN5z.jpg',
+      trlr: true, rt: true, img: true, wiki: true, pick: false, restore: false,
+      bigtime: false, niche: true, foreign: false, series: false, festival: false,
+      wiki_url: 'https://en.wikipedia.org/wiki/Cold_Storage_(film)', imdb: 'tt21132166',
+      syn: 'A chilling thriller about secrets buried beneath a remote facility in the Scottish Highlands. When a young researcher uncovers evidence of decades-old experiments, she realizes the facility\'s most dangerous subject may still be alive.',
+      streaming: '', vod_amazon: false, vod_apple: true, vod_vudu: false },
+  ]},
+];
+
+function badge(has) { return has ? '<span class="b bg">' : '<span class="b br">'; }
+
+function renderRow(m, idx) {
+    const isMissing = !m.trlr || !m.img || !m.dir || !m.cc;
+    const posterHtml = m.poster
+        ? `<div class="pst-wrap" onclick="event.stopPropagation(); openTrl('${m.title.replace(/'/g,"\\'")}')"><img class="pst" src="${m.poster}"><div class="play-hover"><span>&#9654;</span></div></div>`
+        : `<div class="no-pst">?</div>`;
+
+    // Tags shown inline on collapsed row — all active filters
+    let tags = '';
+    if (m.pick) tags += '<span class="row-tag tag-pick">PICK</span>';
+    if (m.bigtime) tags += '<span class="row-tag tag-bigtime">BIG TIME</span>';
+    if (m.niche) tags += '<span class="row-tag tag-niche">NICHE</span>';
+    if (m.foreign) tags += '<span class="row-tag tag-foreign">FOREIGN</span>';
+    if (m.series) tags += '<span class="row-tag tag-series">SERIES</span>';
+    if (m.restore) tags += '<span class="row-tag tag-restore">RESTORATION</span>';
+    if (m.festival) tags += '<span class="row-tag tag-festival">FESTIVAL</span>';
+
+    return `
+    <div class="movie-row ${m.pick?'pick':''} ${isMissing?'missing':''}" onclick="toggle(this)">
+        ${posterHtml}
+        <div class="r-title">${m.title}${tags ? '<span class="row-tags">'+tags+'</span>' : ''}</div>
+        <div class="r-dir ${!m.dir?'bad':''}">${m.dir || 'Unknown'}</div>
+        <div class="r-cc">${m.cc}</div>
+        <div class="r-min">${m.min||''}</div>
+        <div class="badges">
+            ${badge(m.trlr)}TRLR</span>
+            ${badge(m.rt)}RT</span>
+            ${badge(m.img)}IMG</span>
+            ${badge(m.wiki)}WIKI</span>
+        </div>
+        <div class="r-links" onclick="event.stopPropagation()">
+            ${m.wiki_url ? `<a class="r-link" href="${m.wiki_url}" target="_blank" title="Wikipedia">WIKI</a>` : '<span class="r-link dead">WIKI</span>'}
+            ${m.imdb ? `<a class="r-link" href="https://www.imdb.com/title/${m.imdb}/" target="_blank" title="IMDb">IMDB</a>` : '<span class="r-link dead">IMDB</span>'}
+        </div>
+        <div class="r-act">
+            <button class="r-btn" onclick="event.stopPropagation()" title="Delete">&#128465;</button>
+        </div>
+    </div>
+    <div class="ep">
+        <div class="ep-grid">
+            <div class="ep-left">
+                <div class="fr">
+                    <span class="fl">Director</span>
+                    <input class="fi ${!m.dir?'miss':''}" value="${m.dir}">
+                </div>
+                <div class="fr">
+                    <span class="fl">Country</span>
+                    <input class="fi fi-sm ${!m.cc?'miss':''}" value="${m.cc}">
+                    <span class="fl" style="min-width:28px; margin-left:0.3rem;">Min</span>
+                    <input class="fi fi-sm" value="${m.min||''}">
+                    <button class="sv" style="margin-left:0.2rem;">Save</button>
+                </div>
+
+                <div style="margin-top:0.15rem;">
+                    <div class="lnk-row">
+                        <button class="lb ${m.trlr?'g':'r'}">&#9654; TRLR</button>
+                        <button class="lb ${m.rt?'g':'r'}">&#127813; RT</button>
+                        <button class="lb ${m.img?'g':'r'}" onclick="event.stopPropagation(); ${m.poster ? `showImg('${m.poster.replace('/w92/','/w500/')}')` : ''}">&#128444; IMG</button>
+                        <button class="lb ${m.wiki?'g':'r'}">&#128218; WIKI</button>
+                    </div>
+                    <div class="lnk-input">
+                        <input class="lf" placeholder="Select a button above to edit..." readonly>
+                        <button class="sv">Save</button>
+                    </div>
+                    <div class="lnk-hint">Click a button to edit that link</div>
+                </div>
+
+                <div class="wl">
+                    <div class="wl-label">Streaming:</div>
+                    <div class="svc-row">
+                        ${m.streaming ? `<button class="sb g">${m.streaming.toUpperCase()}</button>` : ''}
+                        <button class="sb add">+ add</button>
+                    </div>
+                </div>
+                <div class="wl">
+                    <div class="wl-label">VOD:</div>
+                    <div class="svc-row">
+                        ${m.vod_amazon ? '<button class="sb g">AMAZON</button>' : ''}
+                        ${m.vod_apple ? '<button class="sb g">ITUNES</button>' : ''}
+                        ${m.vod_vudu ? '<button class="sb g">VUDU</button>' : ''}
+                        <button class="sb add">+ add</button>
+                    </div>
+                    <div class="lnk-input">
+                        <input class="lf" placeholder="Select service above..." readonly>
+                        <button class="sv">Save</button>
+                    </div>
+                </div>
+
+                <!-- Filter toggles as checkboxes -->
+                <div style="margin-top:0.35rem;">
+                    <div class="fl" style="margin-bottom:0.2rem;">Filters:</div>
+                    <div class="filter-toggles">
+                        <label class="ftoggle ${m.pick?'on':''}" style="--tag-color: #ffd700;" onclick="this.classList.toggle('on')">
+                            <span class="check">${m.pick?'&#10003;':''}</span>
+                            Staff Pick
+                        </label>
+                        <label class="ftoggle ${m.bigtime?'on':''}" style="--tag-color: #ff6b6b;" onclick="this.classList.toggle('on')">
+                            <span class="check">${m.bigtime?'&#10003;':''}</span>
+                            Big Time
+                        </label>
+                        <label class="ftoggle ${m.niche?'on':''}" style="--tag-color: #4a90d9;" onclick="this.classList.toggle('on')">
+                            <span class="check">${m.niche?'&#10003;':''}</span>
+                            Niche
+                        </label>
+                        <label class="ftoggle ${m.foreign?'on':''}" style="--tag-color: #9b59b6;" onclick="this.classList.toggle('on')">
+                            <span class="check">${m.foreign?'&#10003;':''}</span>
+                            Foreign
+                        </label>
+                        <label class="ftoggle ${m.series?'on':''}" style="--tag-color: #17a2b8;" onclick="this.classList.toggle('on')">
+                            <span class="check">${m.series?'&#10003;':''}</span>
+                            Limited Series
+                        </label>
+                        <label class="ftoggle ${m.restore?'on':''}" style="--tag-color: #C8A951;" onclick="this.classList.toggle('on')">
+                            <span class="check">${m.restore?'&#10003;':''}</span>
+                            Restoration
+                        </label>
+                        <label class="ftoggle ${m.festival?'on':''}" style="--tag-color: #e67e22;" onclick="this.classList.toggle('on')">
+                            <span class="check">${m.festival?'&#10003;':''}</span>
+                            Festival
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ep-right">
+                <div class="syn-wrap">
+                    <div class="syn-hdr">
+                        <span class="fl">Synopsis:</span>
+                        <span>${(m.syn||'').length}/600</span>
+                    </div>
+                    <textarea class="syn ${!m.syn?'miss':''}">${m.syn||''}</textarea>
+                </div>
+                <div class="remove-row">
+                    <button class="rm-btn">Remove from wall</button>
+                </div>
+            </div>
+        </div>
+    </div>`;
+}
+
+function formatDate(d) {
+    const dt = new Date(d + 'T12:00:00');
+    return dt.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+}
+
+let html = '';
+for (const section of MOVIES) {
+    html += `<div class="date-header">${formatDate(section.date)} <span class="ct">${section.items.length} movies</span></div>`;
+    section.items.forEach((m, i) => { html += renderRow(m, section.date + '-' + i); });
+}
+document.getElementById('movie-list').innerHTML = html;
+
+function toggle(row) {
+    const panel = row.nextElementSibling;
+    const wasOpen = panel.classList.contains('open');
+    document.querySelectorAll('.ep').forEach(p => p.classList.remove('open'));
+    document.querySelectorAll('.movie-row').forEach(r => r.classList.remove('expanded'));
+    if (!wasOpen) { panel.classList.add('open'); row.classList.add('expanded'); }
+}
+
+function openTrl(title) {
+    document.getElementById('trl-title').textContent = title;
+    document.getElementById('trl-vid').textContent = 'Playing: ' + title;
+    document.getElementById('toverlay').classList.add('open');
+}
+function closeTrl() { document.getElementById('toverlay').classList.remove('open'); }
+function showImg(url) { document.getElementById('img-preview').src = url; document.getElementById('imgoverlay').classList.add('open'); }
+function closeImg() { document.getElementById('imgoverlay').classList.remove('open'); }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeTrl(); closeImg(); } });
+</script>
+</body>
+</html>

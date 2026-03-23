@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>NRW Pull Quotes Review v2 — Extracted Quotes</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0a0a0a; color: #e0e0e0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; padding: 2rem; max-width: 900px; margin: 0 auto; }
+h1 { color: #00d4aa; margin-bottom: 0.5rem; font-size: 1.8rem; }
+.subtitle { color: #888; margin-bottom: 1.5rem; font-size: 0.9rem; line-height: 1.5; }
+.legend { display: flex; gap: 1.5rem; margin-bottom: 2rem; font-size: 0.8rem; color: #888; flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: 0.4rem; }
+.legend-swatch { width: 14px; height: 14px; border-radius: 3px; }
+.swatch-rt { background: #00d4aa; }
+.swatch-lb { background: #ff8000; }
+.swatch-extracted { background: #ff8000; border: 2px solid #fff; }
+.movie { margin-bottom: 3rem; border: 1px solid #333; border-radius: 12px; padding: 1.5rem; background: #111; }
+.movie-title { color: #fff; font-size: 1.4rem; margin-bottom: 0.25rem; }
+.movie-stats { color: #888; font-size: 0.8rem; margin-bottom: 1rem; }
+.source-section { margin-bottom: 1.5rem; }
+.source-label { font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem; padding-bottom: 0.25rem; border-bottom: 1px solid #333; }
+.source-label.rt { color: #00d4aa; }
+.source-label.lb { color: #ff8000; }
+
+.quote { padding: 0.6rem 0.8rem; margin-bottom: 0.6rem; border-left: 3px solid #00d4aa; background: #1a1a1a; border-radius: 0 6px 6px 0; }
+.quote.lb { border-left-color: #ff8000; }
+.quote.rotten { border-left-color: #ff4444; }
+.quote.extracted { border-left-color: #ff8000; border-left-width: 3px; background: #1a1500; }
+
+.quote-text { color: #fff; font-style: italic; font-size: 0.9rem; line-height: 1.5; margin-bottom: 0.3rem; }
+.quote-text a { color: #fff; text-decoration: none; }
+.quote-text a:hover { text-decoration: underline; }
+
+.quote-attr { font-size: 0.72rem; color: #888; }
+.quote-attr a { color: inherit; text-decoration: none; }
+.quote-attr a:hover { text-decoration: underline; }
+.quote-attr .outlet { color: #00d4aa; }
+.quote-attr .outlet.lb { color: #ff8000; }
+.badge { display: inline-block; padding: 1px 5px; border-radius: 3px; font-size: 0.65rem; margin-left: 4px; }
+.badge.fresh { background: #00d4aa22; color: #00d4aa; }
+.badge.rotten { background: #ff444422; color: #ff4444; }
+.badge.top { background: #ffd70022; color: #ffd700; }
+.badge.stars { color: #ff8000; background: none; }
+.badge.comments { color: #888; background: #ffffff11; }
+.badge.extracted-tag { color: #fff; background: #ff880033; font-weight: 600; }
+.link-icon { font-size: 0.7rem; margin-left: 4px; opacity: 0.5; }
+.link-icon:hover { opacity: 1; }
+
+.full-review { margin-top: 0.4rem; }
+.full-review summary { font-size: 0.7rem; color: #666; cursor: pointer; }
+.full-review summary:hover { color: #999; }
+.full-review .full-text { font-size: 0.75rem; color: #999; line-height: 1.4; margin-top: 0.3rem; font-style: italic; padding: 0.5rem; background: #111; border-radius: 4px; }
+</style>
+</head>
+<body>
+<h1>Pull Quotes Review v2 — With Gemini Extraction</h1>
+<p class="subtitle">
+RT quotes shown as-is (for you to curate). Letterboxd reviews processed by Gemini to extract the punchiest line — every extraction verified as verbatim substring of the original. Long reviews show the extracted quote with expandable full text.
+</p>
+<div class="legend">
+<div class="legend-item"><div class="legend-swatch swatch-rt"></div> RT Critic Quote</div>
+<div class="legend-item"><div class="legend-swatch swatch-lb"></div> Letterboxd Review</div>
+<div class="legend-item"><div class="legend-swatch swatch-extracted"></div> Extracted Pull Quote (from longer review)</div>
+</div>
+
+<div class="movie">
+<div class="movie-title">Anora (2024)</div>
+<div class="movie-stats">20 RT + 11 Letterboxd (4 extracted from longer reviews) = 31 total</div>
+<div class="source-section">
+<div class="source-label rt">Rotten Tomatoes Critic Quotes</div>
+<div class="quote ">
+<div class="quote-text"><a href="https://www.bfi.org.uk/sight-and-sound/reviews/anora-sean-bakers-demolition-pretty-woman-fantasy-his-most-vivid-creation-yet" target="_blank">"By turns swoony, funny, panicky and sad, this is the director’s most vivid creation yet."</a></div>
+<div class="quote-attr">— Jessica Kiang, <span class="outlet">Sight &amp; Sound</span><span class="badge fresh">Fresh</span><span class="badge top">Top Critic</span><a href="https://www.bfi.org.uk/sight-and-sound/reviews/anora-sean-bakers-demolition-pretty-woman-fantasy-his-most-vivid-creation-yet" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote ">
+<div class="quote-text"><a href="https://thefilmfrenzy.com/2025/05/30/view-from-the-couch-la-vie-en-rose-queer-the-three-musketeers-etc/" target="_blank">"One of the year's best films also contains one of the very best set-pieces found in 2024 cinema."</a></div>
+<div class="quote-attr">— Matt Brunson, <span class="outlet">Film Frenzy</span><span class="badge fresh">Fresh</span><a href="https://thefilmfrenzy.com/2025/05/30/view-from-the-couch-la-vie-en-rose-queer-the-three-musketeers-etc/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote ">
+<div class="quote-text"><a href="https://concreteplayground.com/brisbane/arts-entertainment/film-tv/2025-oscar-winning-films-to-watch" target="_blank">"[Baker] pens, helms and edits with a wholehearted commitment to seeing people who they are."</a></div>
+<div class="quote-attr">— Sarah Ward, <span class="outlet">Concrete Playground</span><span class="badge fresh">Fresh</span><a href="https://concreteplayground.com/brisbane/arts-entertainment/film-tv/2025-oscar-winning-films-to-watch" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote ">
+<div class="quote-text"><a href="https://mundocine.es/critica-72ssiff-anora/" target="_blank">"Anora is a name that will stay with you long after the film ends, and a story like this could only have been crafted by Sean Baker. [Full Review in Spanish]"</a></div>
+<div class="quote-attr">— Marta Medina Pérez, <span class="outlet">mundoCine</span><span class="badge fresh">Fresh</span><a href="https://mundocine.es/critica-72ssiff-anora/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote ">
+<div class="quote-text"><a href="https://youtu.be/944vtBaT-YU" target="_blank">"Anora is a brilliant exploration of love, longing, and the complexities of human connection."</a></div>
+<div class="quote-attr">— Matthew Koss, <span class="outlet">The Wandering Screen (YouTube)</span><span class="badge fresh">Fresh</span><a href="https://youtu.be/944vtBaT-YU" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote ">
+<div class="quote-text"><a href="https://www.abc4.com/dailydish/see-it-or-skip-it/anora-is-a-best-actress-contender-review/" target="_blank">"Baker has a trend of bolstering socially “unwelcome” characters and making them sympathetic, and with this new film, I believe he’s found the perfect formula for that."</a></div>
+<div class="quote-attr">— Patrick Beatty, <span class="outlet">ABC4 Utah</span><span class="badge fresh">Fresh</span><a href="https://www.abc4.com/dailydish/see-it-or-skip-it/anora-is-a-best-actress-contender-review/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote ">
+<div class="quote-text"><a href="https://shadestudios.com/film-and-tv-reviews/f/tiff-movie-review-anora-%E2%80%93-the-banger-of-the-year" target="_blank">"Anora is the kind of movie that stays with you, leaving you craving more. It’s a rare gem—refreshing, fun, and surprisingly deep for a rom-com."</a></div>
+<div class="quote-attr">— Marissa Hill, <span class="outlet">Shade Studios</span><span class="badge fresh">Fresh</span><a href="https://shadestudios.com/film-and-tv-reviews/f/tiff-movie-review-anora-%E2%80%93-the-banger-of-the-year" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote ">
+<div class="quote-text"><a href="https://thetreatment.substack.com/p/anora-and-letting-characters-be-people" target="_blank">"But, rebelliously, Anora constructs itself in a way that indicts the burden of proof placed upon Ani’s personhood... Anora is a brilliant achievement in this regard."</a></div>
+<div class="quote-attr">— Charlotte Simmons, <span class="outlet">The Treatment (Substack)</span><span class="badge fresh">Fresh</span><a href="https://thetreatment.substack.com/p/anora-and-letting-characters-be-people" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote ">
+<div class="quote-text"><a href="https://www.thecinemaspot.com/2024/11/23/anora-non-spoiler-review-mikey-madison-stripped-into-her-best-role-yet/" target="_blank">"As the eponymous character, Madison represents the brains, the beauty, and frankly, the brawn of the film."</a></div>
+<div class="quote-attr">— John Daniel Tangalin, <span class="outlet">The Cinema Spot</span><span class="badge fresh">Fresh</span><a href="https://www.thecinemaspot.com/2024/11/23/anora-non-spoiler-review-mikey-madison-stripped-into-her-best-role-yet/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote ">
+<div class="quote-text"><a href="https://roughdraftatlanta.com/2024/11/01/anora-is-the-anti-pretty-woman-for-a-new-generation/" target="_blank">"Baker has long been interested in people living on the outskirts, and sex work in particular has played an important role in his films, from “Tangerine” to “Red Rocket.” “Anora” continues that tradition and magnifies it."</a></div>
+<div class="quote-attr">— Sammie Purcell, <span class="outlet">Rough Draft Atlanta</span><span class="badge fresh">Fresh</span><a href="https://roughdraftatlanta.com/2024/11/01/anora-is-the-anti-pretty-woman-for-a-new-generation/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote ">
+<div class="quote-text"><a href="https://www.thecurb.com.au/anora-review-sean-baker-3/" target="_blank">"Anora stands as a vibrant celebration of resilience and the enduring power of dreams."</a></div>
+<div class="quote-attr">— Codie Allen, <span class="outlet">The Curb</span><span class="badge fresh">Fresh</span><a href="https://www.thecurb.com.au/anora-review-sean-baker-3/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote ">
+<div class="quote-text"><a href="https://youtu.be/oyXcfR5IM5E?si=JcscWAlWAxgyeYWV" target="_blank">"An exciting and captivating roller coaster, anchored by a revelatory central performance. [Full review in Spanish]"</a></div>
+<div class="quote-attr">— Nestor Bentancor, <span class="outlet">Nestor Cine Desde Hollywood</span><span class="badge fresh">Fresh</span><a href="https://youtu.be/oyXcfR5IM5E?si=JcscWAlWAxgyeYWV" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote ">
+<div class="quote-text"><a href="https://www.cinemasight.com/review-anora-2024/" target="_blank">"Anora features a fairly straight forward narrative that is overpopulated with thematic templates and an abundance of dialogue that doesn’t always make sense."</a></div>
+<div class="quote-attr">— Wesley Lovell, <span class="outlet">Cinema Sight</span><span class="badge fresh">Fresh</span><a href="https://www.cinemasight.com/review-anora-2024/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote ">
+<div class="quote-text"><a href="https://battleshippretension.com/home-video-hovel-anora-by-rudie-obias/" target="_blank">"The movie Anora is bright and energetic with a bit of empathy towards its characters."</a></div>
+<div class="quote-attr">— Rudie Obias, <span class="outlet">Battleship Pretension</span><span class="badge fresh">Fresh</span><a href="https://battleshippretension.com/home-video-hovel-anora-by-rudie-obias/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote ">
+<div class="quote-text"><a href="https://elementsofmadness.com/2025/04/28/anora-4k/" target="_blank">"It’s clear early in Anora that Ani’s story probably won’t have a magical ending, but, like her, you want to believe that it might, thanks to Mikey Madison’s knockout performance as Ani."</a></div>
+<div class="quote-attr">— Michelle Swope, <span class="outlet">Elements of Madness</span><span class="badge fresh">Fresh</span><a href="https://elementsofmadness.com/2025/04/28/anora-4k/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote ">
+<div class="quote-text"><a href="https://www.kget.com/community/ricks-reviews/anora-tops-among-new-dvd-blu-ray-releases/" target="_blank">"Madison’s intense performance resulted in her winning the Oscar for Best Actress and helped lead the film to being named Best Picture. Her work is presented with a brutal reality that makes the production at times tough to watch but always compelling."</a></div>
+<div class="quote-attr">— Rick Bentley, <span class="outlet">KGET-TV (Bakersfield, CA)</span><span class="badge fresh">Fresh</span><a href="https://www.kget.com/community/ricks-reviews/anora-tops-among-new-dvd-blu-ray-releases/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote rotten">
+<div class="quote-text"><a href="https://www.wsws.org/en/articles/2025/02/22/xtmr-f22.html" target="_blank">"Baker’s watchword, as it were, is no indictment, no condemnation. When it comes to Ani, that’s fine. When it comes to the social order, that turns into artistic and social negligence."</a></div>
+<div class="quote-attr">— David Walsh, <span class="outlet">World Socialist Web Site</span><span class="badge rotten">Rotten</span><a href="https://www.wsws.org/en/articles/2025/02/22/xtmr-f22.html" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote rotten">
+<div class="quote-text"><a href="https://www.stabroeknews.com/2024/12/29/sunday/reel-encounters/anora-a-tale-of-sound-and-fury/" target="_blank">"There’s a sense that “Anora” has little beyond ambivalence for the characters within it."</a></div>
+<div class="quote-attr">— Andrew Kendall, <span class="outlet">Stabroek News</span><span class="badge rotten">Rotten</span><a href="https://www.stabroeknews.com/2024/12/29/sunday/reel-encounters/anora-a-tale-of-sound-and-fury/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote ">
+<div class="quote-text"><a href="https://open.spotify.com/episode/6GMmS8YAr94ptQsKYuzu6S?si=cysIuX9YQVipFtGlaxMnrg" target="_blank">"Baker proves his point in a movie of split motivations held together by the revelation that is Mikey Madison."</a></div>
+<div class="quote-attr">— Don Shanahan, <span class="outlet">Cinephile Hissy Fit Podcast</span><span class="badge fresh">Fresh</span><a href="https://open.spotify.com/episode/6GMmS8YAr94ptQsKYuzu6S?si=cysIuX9YQVipFtGlaxMnrg" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote ">
+<div class="quote-text"><a href="https://www.hindustantimes.com/entertainment/hollywood/anora-review-mikey-madison-delivers-a-star-making-performance-in-sean-bakers-wild-fairy-tale-gone-haywire-101742267430390.html" target="_blank">"The final gut punch of Anora is in Sean Baker's decision to suggest what these characters will do after the movie ends. It is a moment of emotional vitality and unexpected truth, delivered with the help of Mikey Madison's wondrous performance."</a></div>
+<div class="quote-attr">— Santanu Das, <span class="outlet">Hindustan Times</span><span class="badge fresh">Fresh</span><a href="https://www.hindustantimes.com/entertainment/hollywood/anora-review-mikey-madison-delivers-a-star-making-performance-in-sean-bakers-wild-fairy-tale-gone-haywire-101742267430390.html" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+</div>
+<div class="source-section">
+<div class="source-label lb">Letterboxd Popular Reviews</div>
+<div class="quote lb">
+<div class="quote-text"><a href="https://letterboxd.com/incomingmail/film/anora/" target="_blank">"A terrifying tale of dating a mama’s boy"</a></div>
+<div class="quote-attr">— @ava adore, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★★</span><span class="badge comments">98 comments</span><a href="https://letterboxd.com/incomingmail/film/anora/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote lb">
+<div class="quote-text"><a href="https://letterboxd.com/ikast/film/anora/1/" target="_blank">"That's why you shouldn't trust twinks"</a></div>
+<div class="quote-attr">— @kauan., <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★★★</span><span class="badge comments">10 comments</span><a href="https://letterboxd.com/ikast/film/anora/1/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote lb extracted">
+<div class="quote-text"><a href="https://letterboxd.com/samarah/film/anora/1/" target="_blank">"it’s really sad to me that a character driven piece about a woman fails to make a real character out of her."</a></div>
+<div class="quote-attr">— @samara, <span class="outlet lb">Letterboxd</span><span class="badge stars">★</span><span class="badge comments">859 comments</span><span class="badge extracted-tag">120→22 words</span><a href="https://letterboxd.com/samarah/film/anora/1/" target="_blank" class="link-icon">&#x2197;</a></div>
+<details class="full-review"><summary>Show full review (120 words)</summary><div class="full-text">it’s really sad to me that a character driven piece about a woman fails to make a real character out of her. we do not see anora’s desires or emotions outside of a punchline or even outside of her husband who she met the week before. in the film, the distinction between anora’s work and personal lives is blurred to the point where it’s nonexistent. i believe this is where the majority of my problems with the film arise. the only thing she really wants in this film is to find her husband and stay with him. the way it’s presented were led to believe that she actually loves him. of course, as a person i’d say she probably just…</div></details>
+</div>
+<div class="quote lb">
+<div class="quote-text"><a href="https://letterboxd.com/sam_kam/film/anora/" target="_blank">"Sean Baker does for sex workers what Martin Scorsese did for Gangsters"</a></div>
+<div class="quote-attr">— @Sam, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★★½</span><span class="badge comments">38 comments</span><a href="https://letterboxd.com/sam_kam/film/anora/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote lb extracted">
+<div class="quote-text"><a href="https://letterboxd.com/drewgregory/film/anora/" target="_blank">"But I prefer a straight dude voyeur director to spare us the self-righteousness."</a></div>
+<div class="quote-attr">— @Drew Burnett Gregory, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★</span><span class="badge comments">152 comments</span><span class="badge extracted-tag">69→13 words</span><a href="https://letterboxd.com/drewgregory/film/anora/" target="_blank" class="link-icon">&#x2197;</a></div>
+<details class="full-review"><summary>Show full review (69 words)</summary><div class="full-text">Once Igor appears on screen the movie shifts to his perspective. (Or, in a way, it clarifies the perspective it already had.) Baker expects us to be impressed that Igor views Ani as a human being. He seems to expect the same praise for himself. I’m not impressed. I’m impressed by his skills as a filmmaker. But I prefer a straight dude voyeur director to spare us the self-righteousness.</div></details>
+</div>
+<div class="quote lb">
+<div class="quote-text"><a href="https://letterboxd.com/schaffrillas/film/anora/" target="_blank">"Home invasion scene might be the funniest (non Hundreds of Beavers) scene of the year"</a></div>
+<div class="quote-attr">— @James (Schaffrillas), <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★★½</span><a href="https://letterboxd.com/schaffrillas/film/anora/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote lb">
+<div class="quote-text"><a href="https://letterboxd.com/melodramafilms/film/anora/" target="_blank">"see what happens when a twink acts like he can handle a baddie"</a></div>
+<div class="quote-attr">— @mathew, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★★★</span><span class="badge comments">21 comments</span><a href="https://letterboxd.com/melodramafilms/film/anora/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote lb extracted">
+<div class="quote-text"><a href="https://letterboxd.com/ilyclemmie/film/anora/" target="_blank">"i know we would have thee most life altering convo in the girls bathroom and then never speak ever again. i would die for her"</a></div>
+<div class="quote-attr">— @clementine, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★★½</span><span class="badge comments">19 comments</span><span class="badge extracted-tag">51→25 words</span><a href="https://letterboxd.com/ilyclemmie/film/anora/" target="_blank" class="link-icon">&#x2197;</a></div>
+<details class="full-review"><summary>Show full review (51 words)</summary><div class="full-text">the things i would do to get on this bitch finsta..the things i would give to have a drunk cig with her on myrtle broadway at 3am...i know we would have thee most life altering convo in the girls bathroom and then never speak ever again. i would die for her</div></details>
+</div>
+<div class="quote lb">
+<div class="quote-text"><a href="https://letterboxd.com/kevintporter/film/anora/" target="_blank">"Bouncing on it in a way that makes you cry at the end."</a></div>
+<div class="quote-attr">— @kevintporter, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★★½</span><span class="badge comments">41 comments</span><a href="https://letterboxd.com/kevintporter/film/anora/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote lb">
+<div class="quote-text"><a href="https://letterboxd.com/zoerosebryant/film/anora/" target="_blank">"a cinderella story for girls on SSRIs"</a></div>
+<div class="quote-attr">— @zoë rose bryant, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★★★</span><span class="badge comments">11 comments</span><a href="https://letterboxd.com/zoerosebryant/film/anora/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote lb">
+<div class="quote-text"><a href="https://letterboxd.com/moviesrtherapy/film/anora/" target="_blank">"Simultaneously the funniest and one of the saddest movies of the year. That’s what it feels like for most of us. If you don’t laugh you’ll cry."</a></div>
+<div class="quote-attr">— @Kit Lazer, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★★★</span><span class="badge comments">16 comments</span><a href="https://letterboxd.com/moviesrtherapy/film/anora/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+</div>
+</div>
+<div class="movie">
+<div class="movie-title">The Substance (2024)</div>
+<div class="movie-stats">0 RT + 12 Letterboxd (1 extracted from longer reviews) = 12 total</div>
+<div class="source-section">
+<div class="source-label lb">Letterboxd Popular Reviews</div>
+<div class="quote lb">
+<div class="quote-text"><a href="https://letterboxd.com/jarodzsz/film/the-substance/" target="_blank">"mama a girl inside you"</a></div>
+<div class="quote-attr">— @jarod, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★★</span><span class="badge comments">212 comments</span><a href="https://letterboxd.com/jarodzsz/film/the-substance/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote lb">
+<div class="quote-text"><a href="https://letterboxd.com/jacksalvadori/film/the-substance/" target="_blank">"Yet the most unbelievable thing is that she built that secret room all by herself"</a></div>
+<div class="quote-attr">— @Jack Salvadori, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★½</span><span class="badge comments">230 comments</span><a href="https://letterboxd.com/jacksalvadori/film/the-substance/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote lb">
+<div class="quote-text"><a href="https://letterboxd.com/mammothmafia/film/the-substance/1/" target="_blank">"somehow the nastiest thing in this film was dennis quaid eating shrimp"</a></div>
+<div class="quote-attr">— @hugeasmammoth, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★★★</span><span class="badge comments">185 comments</span><a href="https://letterboxd.com/mammothmafia/film/the-substance/1/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote lb">
+<div class="quote-text"><a href="https://letterboxd.com/heyitsvasili/film/the-substance/" target="_blank">"very mindful very demi moore"</a></div>
+<div class="quote-attr">— @vasili, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★★½</span><span class="badge comments">161 comments</span><a href="https://letterboxd.com/heyitsvasili/film/the-substance/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote lb">
+<div class="quote-text"><a href="https://letterboxd.com/swjerr/film/the-substance/" target="_blank">"Barbie for people who listen to Charli xcx"</a></div>
+<div class="quote-attr">— @jer ☘️, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★★★</span><a href="https://letterboxd.com/swjerr/film/the-substance/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote lb">
+<div class="quote-text"><a href="https://letterboxd.com/oppenmommy/film/the-substance/" target="_blank">"This is what ozempic is secretly doing to y'all"</a></div>
+<div class="quote-attr">— @Sophie Holsinger, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★</span><span class="badge comments">67 comments</span><a href="https://letterboxd.com/oppenmommy/film/the-substance/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote lb">
+<div class="quote-text"><a href="https://letterboxd.com/thegaladriel/film/the-substance/" target="_blank">"when an ugly stranger calls you twin 😂😭 No Bitch 🙅✋"</a></div>
+<div class="quote-attr">— @júlia, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★★</span><span class="badge comments">70 comments</span><a href="https://letterboxd.com/thegaladriel/film/the-substance/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote lb extracted">
+<div class="quote-text"><a href="https://letterboxd.com/estheronfilm/film/the-substance/" target="_blank">"dennis quaid plays his harvey weinstein-like producer (literally named harvey, for all the morons in the audience) more like a swishy gay guy than a lech."</a></div>
+<div class="quote-attr">— @esther, <span class="outlet lb">Letterboxd</span><span class="badge stars">★½</span><span class="badge comments">805 comments</span><span class="badge extracted-tag">120→26 words</span><a href="https://letterboxd.com/estheronfilm/film/the-substance/" target="_blank" class="link-icon">&#x2197;</a></div>
+<details class="full-review"><summary>Show full review (120 words)</summary><div class="full-text">on a positive note, i really loved the gore effects, they're all awesomely nasty. unfortunately this is the dumbest movie of the year i think. i understand that it's a satire and therefore a humorously simplistic portrait of the entertainment industry, but the depiction of hollywood is so far removed from reality that nothing lands. the main character is a hugely famous celebrity from hosting a......primetime aerobics show? dennis quaid plays his harvey weinstein-like producer (literally named harvey, for all the morons in the audience) more like a swishy gay guy than a lech. the most important entertainment event imaginable is hosting &quot;the new year's eve show&quot; on &quot;the network&quot;. at one point qualley goes on a late night talk…</div></details>
+</div>
+<div class="quote lb">
+<div class="quote-text"><a href="https://letterboxd.com/davidehrlich/film/the-substance/1/" target="_blank">"watching the last 30 minutes of this movie with a packed audience is truly one of life's greatest pleasures."</a></div>
+<div class="quote-attr">— @davidehrlich, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★★½</span><a href="https://letterboxd.com/davidehrlich/film/the-substance/1/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote lb">
+<div class="quote-text"><a href="https://letterboxd.com/kurstboy/film/the-substance/" target="_blank">"new year new me"</a></div>
+<div class="quote-attr">— @Karsten, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★★½</span><a href="https://letterboxd.com/kurstboy/film/the-substance/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote lb">
+<div class="quote-text"><a href="https://letterboxd.com/menslaughter/film/the-substance/" target="_blank">"If I became Margaret Qualley, I wouldn't want to go back to my real body either"</a></div>
+<div class="quote-attr">— @noen, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★★</span><span class="badge comments">26 comments</span><a href="https://letterboxd.com/menslaughter/film/the-substance/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote lb">
+<div class="quote-text"><a href="https://letterboxd.com/alexvlahov/film/the-substance/" target="_blank">"i would fuck up those directions so bad"</a></div>
+<div class="quote-attr">— @Alex Vlahov, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★★★</span><span class="badge comments">62 comments</span><a href="https://letterboxd.com/alexvlahov/film/the-substance/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+</div>
+</div>
+<div class="movie">
+<div class="movie-title">Nosferatu (2024)</div>
+<div class="movie-stats">0 RT + 12 Letterboxd (3 extracted from longer reviews) = 12 total</div>
+<div class="source-section">
+<div class="source-label lb">Letterboxd Popular Reviews</div>
+<div class="quote lb">
+<div class="quote-text"><a href="https://letterboxd.com/larsongunnar/film/nosferatu/" target="_blank">"I only watched this to understand the Spongebob reference"</a></div>
+<div class="quote-attr">— @Gunnar Larson, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★★½</span><span class="badge comments">19 comments</span><a href="https://letterboxd.com/larsongunnar/film/nosferatu/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote lb">
+<div class="quote-text"><a href="https://letterboxd.com/barbiesswanlake/film/nosferatu/" target="_blank">"damn, i can't believe nosferatu's shadow grabbed ellen's titty like that"</a></div>
+<div class="quote-attr">— @👽 Zara 👽, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★</span><span class="badge comments">16 comments</span><a href="https://letterboxd.com/barbiesswanlake/film/nosferatu/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote lb">
+<div class="quote-text"><a href="https://letterboxd.com/abovemegan/film/nosferatu/" target="_blank">"I'm sorry, but the part where Nosferatu is trying to sneak around the town lugging that huge coffin made me laugh so hard. There's even a bit where he stops and looks both ways before crossing the street. We stan a safety conscious king!"</a></div>
+<div class="quote-attr">— @meg, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★</span><span class="badge comments">21 comments</span><a href="https://letterboxd.com/abovemegan/film/nosferatu/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote lb extracted">
+<div class="quote-text"><a href="https://letterboxd.com/fookthis/film/nosferatu/" target="_blank">"Hell, people were barely used to watching films let alone see this fucking freak looking at you."</a></div>
+<div class="quote-attr">— @Sarah Jane 🔪, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★★</span><span class="badge comments">19 comments</span><span class="badge extracted-tag">69→17 words</span><a href="https://letterboxd.com/fookthis/film/nosferatu/" target="_blank" class="link-icon">&#x2197;</a></div>
+<details class="full-review"><summary>Show full review (69 words)</summary><div class="full-text">I cannot EVEN imagine what the audiences thought of this film in 1922. Max Schrek is horrifying. I have to believe more than one person ran out of the theatre screaming. Hell, people were barely used to watching films let alone see this fucking freak looking at you. Yeeesh!I love this film. This is always a go-to for showing on one of the television screens at a Halloween party.</div></details>
+</div>
+<div class="quote lb">
+<div class="quote-text"><a href="https://letterboxd.com/siooo/film/nosferatu/" target="_blank">"ladies when we say we like guys who look pale and sleep-deprived this is what we mean 😍"</a></div>
+<div class="quote-attr">— @siobhan, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★★</span><span class="badge comments">7 comments</span><a href="https://letterboxd.com/siooo/film/nosferatu/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote lb">
+<div class="quote-text"><a href="https://letterboxd.com/pd187/film/nosferatu/" target="_blank">"why dont vampires wear funny little caps anymore"</a></div>
+<div class="quote-attr">— @pd187, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★★★</span><span class="badge comments">6 comments</span><a href="https://letterboxd.com/pd187/film/nosferatu/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote lb extracted">
+<div class="quote-text"><a href="https://letterboxd.com/dirkh/film/nosferatu/" target="_blank">"Schreck's mimicry is just fantastic and his appearance has rightfully become iconic."</a></div>
+<div class="quote-attr">— @DirkH, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★★★</span><span class="badge comments">22 comments</span><span class="badge extracted-tag">60→12 words</span><a href="https://letterboxd.com/dirkh/film/nosferatu/" target="_blank" class="link-icon">&#x2197;</a></div>
+<details class="full-review"><summary>Show full review (60 words)</summary><div class="full-text">I've had the very rare opportunity of seeing this film at a screening in a neo-Gothic church with live organ music. This really enhanced the innate eeriness and visual dramatics in Murnau's film and made me appreciate it even more. Schreck's mimicry is just fantastic and his appearance has rightfully become iconic. A Classic in every sense of the word.</div></details>
+</div>
+<div class="quote lb extracted">
+<div class="quote-text"><a href="https://letterboxd.com/neilbahadur/film/nosferatu/" target="_blank">"Godard tells us"</a></div>
+<div class="quote-attr">— @Neil Bahadur, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★★★</span><span class="badge comments">2 comments</span><span class="badge extracted-tag">34→3 words</span><a href="https://letterboxd.com/neilbahadur/film/nosferatu/" target="_blank" class="link-icon">&#x2197;</a></div>
+<details class="full-review"><summary>Show full review (34 words)</summary><div class="full-text">Godard tells us &quot;All you need to make a movie is a girl and a gun.&quot; I love Godard, but this isn't true. All you need to make a movie is light and shadow.</div></details>
+</div>
+<div class="quote lb">
+<div class="quote-text"><a href="https://letterboxd.com/venusbarbie/film/nosferatu/" target="_blank">"thats not nosferatu thats just jeffree star"</a></div>
+<div class="quote-attr">— @Katie, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★★</span><span class="badge comments">12 comments</span><a href="https://letterboxd.com/venusbarbie/film/nosferatu/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote lb">
+<div class="quote-text"><a href="https://letterboxd.com/thegaladriel/film/nosferatu/" target="_blank">"who is this DIVA💜"</a></div>
+<div class="quote-attr">— @júlia, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★★½</span><span class="badge comments">1 comments</span><a href="https://letterboxd.com/thegaladriel/film/nosferatu/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote lb">
+<div class="quote-text"><a href="https://letterboxd.com/mattjpg/film/nosferatu/" target="_blank">"the vibe i bring to the function"</a></div>
+<div class="quote-attr">— @matt, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★</span><a href="https://letterboxd.com/mattjpg/film/nosferatu/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote lb">
+<div class="quote-text"><a href="https://letterboxd.com/gwenlikesfilm/film/nosferatu/" target="_blank">"live-action gru."</a></div>
+<div class="quote-attr">— @Sabrina 🏳️‍🌈🏳️‍⚧️, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★½</span><span class="badge comments">5 comments</span><a href="https://letterboxd.com/gwenlikesfilm/film/nosferatu/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+</div>
+</div>
+<div class="movie">
+<div class="movie-title">Conclave (2024)</div>
+<div class="movie-stats">0 RT + 12 Letterboxd (1 extracted from longer reviews) = 12 total</div>
+<div class="source-section">
+<div class="source-label lb">Letterboxd Popular Reviews</div>
+<div class="quote lb">
+<div class="quote-text"><a href="https://letterboxd.com/samiser/film/conclave/" target="_blank">"most diabolical vape hit of all time"</a></div>
+<div class="quote-attr">— @samiser, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★★½</span><span class="badge comments">108 comments</span><a href="https://letterboxd.com/samiser/film/conclave/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote lb">
+<div class="quote-text"><a href="https://letterboxd.com/thegaladriel/film/conclave/" target="_blank">"your eminence, may i spill the tea"</a></div>
+<div class="quote-attr">— @júlia, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★★½</span><span class="badge comments">38 comments</span><a href="https://letterboxd.com/thegaladriel/film/conclave/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote lb">
+<div class="quote-text"><a href="https://letterboxd.com/mammothmafia/film/conclave/" target="_blank">"divas in long dresses gossiping with each other trying to snatch a win… this is basically rupaul’s drag race"</a></div>
+<div class="quote-attr">— @hugeasmammoth, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★★</span><span class="badge comments">50 comments</span><a href="https://letterboxd.com/mammothmafia/film/conclave/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote lb">
+<div class="quote-text"><a href="https://letterboxd.com/ashmatxx/film/conclave/" target="_blank">"Best third act use of a photocopier since Regina George in Mean Girls"</a></div>
+<div class="quote-attr">— @ash, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★★</span><span class="badge comments">1 comments</span><a href="https://letterboxd.com/ashmatxx/film/conclave/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote lb">
+<div class="quote-text"><a href="https://letterboxd.com/bobbyfinger/film/conclave/" target="_blank">"Accidentally became important at work and it’s ruining my conclave."</a></div>
+<div class="quote-attr">— @Bobby Finger, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★★</span><span class="badge comments">11 comments</span><a href="https://letterboxd.com/bobbyfinger/film/conclave/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote lb extracted">
+<div class="quote-text"><a href="https://letterboxd.com/artwithin/film/conclave/" target="_blank">"this is the kind of well-staged ”men in rooms” drama that feels like it could’ve been made in the 1940s, or the 90s."</a></div>
+<div class="quote-attr">— @Georgia Coley, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★★★</span><span class="badge comments">84 comments</span><span class="badge extracted-tag">122→23 words</span><a href="https://letterboxd.com/artwithin/film/conclave/" target="_blank" class="link-icon">&#x2197;</a></div>
+<details class="full-review"><summary>Show full review (122 words)</summary><div class="full-text">I’m seeing a lot of enjoyably quippy Letterboxd reviews saying that this is a funny movie about priests gossiping, and that isn’t untrue—but it also neglects to mention that it’s a very earnest and profoundly soul-stirring picture about the tension of faith, the desperate search for certainty, and the true purpose of the church in the world. the ending touched me dearly and I think it’s brilliant. this is the kind of well-staged ”men in rooms” drama that feels like it could’ve been made in the 1940s, or the 90s. it’s going to be an all-timer for me without question; I felt seen by it in ways that are too personal to describe now. will write more soon.update. i wrote more: boxd.it/7OxAZh</div></details>
+</div>
+<div class="quote lb">
+<div class="quote-text"><a href="https://letterboxd.com/sarahlovett/film/conclave/" target="_blank">"My favorite character was the cunty purple one who could not keep a secret for the life of him"</a></div>
+<div class="quote-attr">— @sawah 🦖, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★★</span><span class="badge comments">24 comments</span><a href="https://letterboxd.com/sarahlovett/film/conclave/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote lb">
+<div class="quote-text"><a href="https://letterboxd.com/itsdrewclark/film/conclave/" target="_blank">"How picking a movie with the homies feels sometimes"</a></div>
+<div class="quote-attr">— @Kenneth Clark, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★★</span><span class="badge comments">28 comments</span><a href="https://letterboxd.com/itsdrewclark/film/conclave/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote lb">
+<div class="quote-text"><a href="https://letterboxd.com/impressionblend/film/conclave/" target="_blank">"Ralph Fiennes: I am sequestered, don't tell me anything!Also Ralph Fiennes: OK, but if it's drama-worthy - tell me now while I still have time to start said drama during this conclave 👀"</a></div>
+<div class="quote-attr">— @Marianna Neal 🇺🇦, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★½</span><span class="badge comments">8 comments</span><a href="https://letterboxd.com/impressionblend/film/conclave/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote lb">
+<div class="quote-text"><a href="https://letterboxd.com/itsrambb/film/conclave/" target="_blank">"12 angry men for catholic people"</a></div>
+<div class="quote-attr">— @ram&lt;3, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★★</span><span class="badge comments">46 comments</span><a href="https://letterboxd.com/itsrambb/film/conclave/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote lb">
+<div class="quote-text"><a href="https://letterboxd.com/jotyco/film/conclave/" target="_blank">"looks like the messy bitch convention came to town"</a></div>
+<div class="quote-attr">— @tyler, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★</span><span class="badge comments">5 comments</span><a href="https://letterboxd.com/jotyco/film/conclave/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote lb">
+<div class="quote-text"><a href="https://letterboxd.com/cbnash/film/conclave/" target="_blank">"The Real Housewives of Vatican City"</a></div>
+<div class="quote-attr">— @Caroline, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★★★</span><span class="badge comments">15 comments</span><a href="https://letterboxd.com/cbnash/film/conclave/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+</div>
+</div>
+<div class="movie">
+<div class="movie-title">The Brutalist (2024)</div>
+<div class="movie-stats">0 RT + 12 Letterboxd (7 extracted from longer reviews) = 12 total</div>
+<div class="source-section">
+<div class="source-label lb">Letterboxd Popular Reviews</div>
+<div class="quote lb extracted">
+<div class="quote-text"><a href="https://letterboxd.com/thediegoandaluz/film/the-brutalist/" target="_blank">"In an abrupt tonal shift, the complex, grand, uncomfortable atmosphere of the previous three hours is stripped away and haphazardly replaced by upbeat music, digital footage, and a celebration."</a></div>
+<div class="quote-attr">— @diego andaluz, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★★</span><span class="badge comments">108 comments</span><span class="badge extracted-tag">120→29 words</span><a href="https://letterboxd.com/thediegoandaluz/film/the-brutalist/" target="_blank" class="link-icon">&#x2197;</a></div>
+<details class="full-review"><summary>Show full review (120 words)</summary><div class="full-text">To anyone who thinks the ending is too simplistic and attempts to tie things up in a nice bow, do you really think “it is the destination, not the journey” was meant to be taken at face value?Zsofia—like much of America trying to sell how great the “American Dream” is—attempts to package Laszlo’s life in a nice, digestible speech with a pleasant ending. In an abrupt tonal shift, the complex, grand, uncomfortable atmosphere of the previous three hours is stripped away and haphazardly replaced by upbeat music, digital footage, and a celebration. She tells those around her that in the end, for Laszlo, it was all worth it. He has secured a legacy, and has “achieved” the American Dream. …</div></details>
+</div>
+<div class="quote lb extracted">
+<div class="quote-text"><a href="https://letterboxd.com/connoreatspants/film/the-brutalist/" target="_blank">"Walked back into the theater during the surprise 2nd Handjob scene."</a></div>
+<div class="quote-attr">— @ConnorEatsPants, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★½</span><span class="badge comments">123 comments</span><span class="badge extracted-tag">74→11 words</span><a href="https://letterboxd.com/connoreatspants/film/the-brutalist/" target="_blank" class="link-icon">&#x2197;</a></div>
+<details class="full-review"><summary>Show full review (74 words)</summary><div class="full-text">i had to use the restroom and walked back in during the first Handjob scene. was really awkward. Then like 15 mins later there was an intermission and I didn’t need to go to the restroom anymore so i played angry birds on my phone. Had to use the restroom again during the second half of the film (i had a large soda). Walked back into the theater during the surprise 2nd Handjob scene.</div></details>
+</div>
+<div class="quote lb">
+<div class="quote-text"><a href="https://letterboxd.com/benoftheweek/film/the-brutalist/" target="_blank">"went through the same shit building my stardew valley community center"</a></div>
+<div class="quote-attr">— @benoftheweek, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★★★</span><span class="badge comments">66 comments</span><a href="https://letterboxd.com/benoftheweek/film/the-brutalist/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote lb extracted">
+<div class="quote-text"><a href="https://letterboxd.com/demiadejuyigbe/film/the-brutalist/" target="_blank">"it’s like watching an impressive floor routine that ends in the running man."</a></div>
+<div class="quote-attr">— @demi adejuyigbe, <span class="outlet lb">Letterboxd</span><span class="badge comments">106 comments</span><span class="badge extracted-tag">92→13 words</span><a href="https://letterboxd.com/demiadejuyigbe/film/the-brutalist/" target="_blank" class="link-icon">&#x2197;</a></div>
+<details class="full-review"><summary>Show full review (92 words)</summary><div class="full-text">the first half is terrific– reminded me of watching a really good 90/2000s biopic– as is the score and cinematography through the entire thing, but the second half… i don’t know. it’s like watching an impressive floor routine that ends in the running man. what were you going for. why’d you end with that. cannot stress enough that I looooved the first half though, even the opening credits made me almost gasp with joy. bowled over by the production itself, too- shot in 31 days for under $10 million? how the fuck?</div></details>
+</div>
+<div class="quote lb">
+<div class="quote-text"><a href="https://letterboxd.com/martybear/film/the-brutalist/" target="_blank">"This made me want to light a cigarette and stare at a wall for two hours. Five stars."</a></div>
+<div class="quote-attr">— @marty, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★★★</span><span class="badge comments">20 comments</span><a href="https://letterboxd.com/martybear/film/the-brutalist/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote lb">
+<div class="quote-text"><a href="https://letterboxd.com/thegaladriel/film/the-brutalist/" target="_blank">"i simply cannot accept the fact that lászló tóth isn't a real person... i just got tár'd again"</a></div>
+<div class="quote-attr">— @júlia, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★★½</span><span class="badge comments">51 comments</span><a href="https://letterboxd.com/thegaladriel/film/the-brutalist/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote lb extracted">
+<div class="quote-text"><a href="https://letterboxd.com/deathproof/film/the-brutalist/" target="_blank">"the first half is a deconstruction of the american dream, and the second half takes a sledgehammer to it."</a></div>
+<div class="quote-attr">— @Lucy, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★★½</span><span class="badge comments">1 comments</span><span class="badge extracted-tag">90→19 words</span><a href="https://letterboxd.com/deathproof/film/the-brutalist/" target="_blank" class="link-icon">&#x2197;</a></div>
+<details class="full-review"><summary>Show full review (90 words)</summary><div class="full-text">gargantuan. there is a single shot near the end of this film where felicity jones nearly steals the whole thing in one fell swoop. over three hours in and i could hardly believe the build up had led to such a simplisticly monsterous scene, and so much of it clicked miraculously into place for me right then. the first half is a deconstruction of the american dream, and the second half takes a sledgehammer to it. this is the kind of movie we should be going to the movies for</div></details>
+</div>
+<div class="quote lb">
+<div class="quote-text"><a href="https://letterboxd.com/theendofcinema/film/the-brutalist/" target="_blank">"The kind of movie that uses newsreel inserts to explain to the audience concepts like “Pennsylvania” and “heroin”."</a></div>
+<div class="quote-attr">— @Sean Gilman, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★</span><span class="badge comments">33 comments</span><a href="https://letterboxd.com/theendofcinema/film/the-brutalist/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote lb extracted">
+<div class="quote-text"><a href="https://letterboxd.com/miakhalifa93/film/the-brutalist/" target="_blank">"This movie was breathtaking- literally, I found myself gasping at some shots and parts of the score."</a></div>
+<div class="quote-attr">— @Mia K., <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★</span><span class="badge comments">131 comments</span><span class="badge extracted-tag">118→17 words</span><a href="https://letterboxd.com/miakhalifa93/film/the-brutalist/" target="_blank" class="link-icon">&#x2197;</a></div>
+<details class="full-review"><summary>Show full review (118 words)</summary><div class="full-text">Guy Pearce’s unwavering support for Palestine on this press tour is the only reason I’m not writing off completely. This movie was breathtaking- literally, I found myself gasping at some shots and parts of the score. Brody, Pearce, and Alwyn were phenomenal, and the first half is one of the greatest pieces of work I’ve ever seen. I appreciated the tone switch for the protagonist within the metaphor of the first half being the American dream, and the second the dismantling of that dream, but the tip-toeing around Zionism in the second part, and the pacing and stylistic  choices of the epilogue were what had me wanting to stay in the first part. Free Palestine. Death to colonialism.</div></details>
+</div>
+<div class="quote lb extracted">
+<div class="quote-text"><a href="https://letterboxd.com/broey_deschanel/film/the-brutalist/" target="_blank">"breathtaking cinematography, engrossing performances, and a captivating score are hardly containing whatever noxious substance lurks beneath the surface of this film."</a></div>
+<div class="quote-attr">— @Maia, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★</span><span class="badge comments">91 comments</span><span class="badge extracted-tag">121→21 words</span><a href="https://letterboxd.com/broey_deschanel/film/the-brutalist/" target="_blank" class="link-icon">&#x2197;</a></div>
+<details class="full-review"><summary>Show full review (121 words)</summary><div class="full-text">The Brutalist has once again invited a question that’s been irking me for some time now. How easy is it to mistake competence for brilliance? What I mean to say is that breathtaking cinematography, engrossing performances, and a captivating score are hardly containing whatever noxious substance lurks beneath the surface of this film. It was easy to be swept up in some truly astounding visual feats - a train exploding in the distance, the Statue of Liberty turning on its head, that incredible heroin-induced sex scene. It was also easy to fall face-first into some very moving sequences - like Adrian Brody’s László breaking down in sobs as his equally traumatized wife, Erzsébet, clinging to his dick, pleads with him to…</div></details>
+</div>
+<div class="quote lb">
+<div class="quote-text"><a href="https://letterboxd.com/maiapog/film/the-brutalist/" target="_blank">"shoutout to concrete gotta be one of my favorite building materials"</a></div>
+<div class="quote-attr">— @maiapog, <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★★</span><span class="badge comments">12 comments</span><a href="https://letterboxd.com/maiapog/film/the-brutalist/" target="_blank" class="link-icon">&#x2197;</a></div>
+</div>
+<div class="quote lb extracted">
+<div class="quote-text"><a href="https://letterboxd.com/schaffrillas/film/the-brutalist/" target="_blank">"I'll take this over an Emilia Perez win in any category however."</a></div>
+<div class="quote-attr">— @James (Schaffrillas), <span class="outlet lb">Letterboxd</span><span class="badge stars">★★★</span><span class="badge extracted-tag">49→12 words</span><a href="https://letterboxd.com/schaffrillas/film/the-brutalist/" target="_blank" class="link-icon">&#x2197;</a></div>
+<details class="full-review"><summary>Show full review (49 words)</summary><div class="full-text">It's difficult to articulate why this didn't fully work for me. The performances and direction were solid but the story felt like a rather stock deconstruction of the American Dream, one that rarely surprised or engaged me. I'll take this over an Emilia Perez win in any category however.</div></details>
+</div>
+</div>
+</div>
+</body></html>

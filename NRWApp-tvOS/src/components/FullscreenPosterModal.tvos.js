@@ -16,7 +16,7 @@ import {
   ScrollView,
   Linking,
 } from 'react-native';
-import { Colors, getServiceColor, isFestivalPlatform } from '../constants/colors';
+import { Colors, getServiceColor, isVirtualScreeningPlatform } from '../constants/colors';
 import { useTVEventHandler, TV_EVENTS } from '../utils/focusManager.tvos';
 import TrailerPlayer from './TrailerPlayer.tvos';
 
@@ -121,14 +121,14 @@ const FullscreenPosterModal = ({
     }
   }, []);
 
-  // Get VOD/rental info with festival platform detection (memoized)
+  // Get VOD/rental info with virtual screening platform detection (memoized)
   const vodInfo = useMemo(() => {
     const watchLinks = movie.watch_links || {};
     const vodLinks = watchLinks.vod || [];
     if (!Array.isArray(vodLinks) || vodLinks.length === 0) return null;
     const vod = vodLinks[0];
-    const isFestival = isFestivalPlatform(vod.service, vod.link || vod.url);
-    return { ...vod, isFestival };
+    const isVirtualScreening = isVirtualScreeningPlatform(vod.service, vod.link || vod.url);
+    return { ...vod, isVirtualScreening };
   }, [movie]);
 
   // Button component with focus handling
@@ -260,11 +260,11 @@ const FullscreenPosterModal = ({
 
               {vodInfo && (
                 <ActionButton
-                  label={vodInfo.isFestival ? 'Buy Ticket' : 'Rent / Buy'}
+                  label={vodInfo.isVirtualScreening ? 'Buy Ticket' : 'Rent / Buy'}
                   onPress={() => openLink(vodInfo.link || vodInfo.url)}
-                  color={vodInfo.isFestival ? 'transparent' : '#ff9500'}
-                  borderColor={vodInfo.isFestival ? Colors.festivalGold : undefined}
-                  textColor={vodInfo.isFestival ? Colors.festivalGold : undefined}
+                  color={vodInfo.isVirtualScreening ? 'transparent' : '#ff9500'}
+                  borderColor={vodInfo.isVirtualScreening ? Colors.screeningGold : undefined}
+                  textColor={vodInfo.isVirtualScreening ? Colors.screeningGold : undefined}
                   disabled={!(vodInfo.link || vodInfo.url)}
                 />
               )}

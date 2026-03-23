@@ -25,7 +25,7 @@ import {
   getAccessibilityLabel,
 } from './useMovieDetail';
 import WatchButton from '../components/WatchButton.tvos';
-import { Colors, Typography, Spacing, getServiceColor, isFestivalPlatform } from '../constants/colors';
+import { Colors, Typography, Spacing, getServiceColor, isVirtualScreeningPlatform } from '../constants/colors';
 import { useTVEventHandler, TV_EVENTS } from '../utils/focusManager.tvos';
 import {
   openAmazon,
@@ -429,10 +429,10 @@ const MovieDetailTvOS = () => {
               )}
             </View>
 
-            {/* Festival name */}
-            {movie.categories?.is_festival && movie.festival_info?.festival_name && (
-              <Text style={styles.festivalName}>
-                {movie.festival_info.festival_name}
+            {/* Virtual screening name */}
+            {movie.categories?.is_virtual_screening && movie.virtual_screening_info?.screening_name && (
+              <Text style={styles.screeningName}>
+                {movie.virtual_screening_info.screening_name}
               </Text>
             )}
 
@@ -510,13 +510,13 @@ const MovieDetailTvOS = () => {
 
                 {/* RENT/BUY button - first purchase option */}
                 {purchaseLinks.length > 0 && (() => {
-                  const isFestival = isFestivalPlatform(purchaseLinks[0].service, purchaseLinks[0].url);
+                  const isVirtualScreening = isVirtualScreeningPlatform(purchaseLinks[0].service, purchaseLinks[0].url);
                   return (
                     <ActionButton
-                      label={isFestival ? 'BUY TICKET' : 'RENT / BUY'}
-                      color={isFestival ? 'transparent' : '#ff9500'}
-                      borderColor={isFestival ? Colors.festivalGold : undefined}
-                      textColor={isFestival ? Colors.festivalGold : undefined}
+                      label={isVirtualScreening ? 'BUY TICKET' : 'RENT / BUY'}
+                      color={isVirtualScreening ? 'transparent' : '#ff9500'}
+                      borderColor={isVirtualScreening ? Colors.screeningGold : undefined}
+                      textColor={isVirtualScreening ? Colors.screeningGold : undefined}
                       onPress={() => handleWatchPress(purchaseLinks[0])}
                       hasTVPreferredFocus={!infoLinks.find(l => l.type === 'trailer')}
                       testID="action-btn-purchase"
@@ -709,9 +709,9 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     marginLeft: Spacing.tvos.md,
   },
-  festivalName: {
-    backgroundColor: Colors.festivalGold,
-    color: Colors.festivalGoldText,
+  screeningName: {
+    backgroundColor: Colors.screeningGold,
+    color: Colors.screeningGoldText,
     fontSize: Typography.tvos.body - 2,
     fontWeight: '800',
     letterSpacing: 1.5,

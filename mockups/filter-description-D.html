@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NRW Mockup D — Two-Column Split</title>
+    <style>
+        :root {
+            --accent-primary: #00d4aa;
+            --accent-hover: #00ffbb;
+            --accent-glow: rgba(0, 212, 170, 0.3);
+            --bg-dark: #1a1a2e;
+            --bg-darker: #0a0a0a;
+            --text-muted: #888;
+            --text-white: #fff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+            background-attachment: fixed;
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        header {
+            padding: 1.5rem 1rem 1rem;
+            text-align: center;
+            border-bottom: 1px solid #333;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        header h1 {
+            font-weight: 100;
+            letter-spacing: 0.3em;
+            font-size: 2.5rem;
+            background: linear-gradient(45deg, #fff, var(--accent-primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .filters {
+            display: flex;
+            justify-content: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            cursor: pointer;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px var(--accent-glow);
+        }
+
+        .search-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        #search-input {
+            padding: 0.5rem 2rem 0.5rem 1rem;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            width: 150px;
+        }
+
+        #search-input::placeholder { color: rgba(255,255,255,0.5); }
+
+        /* ===== MOCKUP D: TWO-COLUMN SPLIT ===== */
+        .filter-description {
+            display: flex;
+            align-items: baseline;
+            padding: 2.5rem 3rem 2rem;
+            gap: 3rem;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .filter-description h2 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #fff;
+            line-height: 1.05;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .filter-description-right {
+            flex: 1;
+            padding-top: 0.5rem;
+        }
+
+        .filter-description p {
+            font-size: 1.05rem;
+            color: #999;
+            line-height: 1.8;
+        }
+
+        /* Grid */
+        #wall {
+            padding: 1.5rem 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(189px, 1fr));
+            gap: 2rem 1rem;
+        }
+
+        #wall > * { justify-self: center; }
+
+        .movie-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .movie-card {
+            width: 189px;
+            height: 282px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .movie-card:hover { transform: scale(1.05); }
+
+        .movie-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .movie-info {
+            margin-top: 0.4rem;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #bbb;
+            line-height: 1.2;
+            max-width: 189px;
+        }
+
+        .movie-info .movie-title {
+            color: #fff;
+            font-weight: bold;
+            font-size: 1rem;
+            margin-bottom: 0.3rem;
+            line-height: 1.3;
+        }
+
+        .movie-info .director {
+            color: var(--accent-primary);
+            font-weight: bold;
+        }
+
+        .streaming-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+            z-index: 5;
+        }
+
+        .badge-netflix { background: #E50914; color: white; }
+        .badge-max { background: #B537F2; color: white; }
+        .badge-disney { background: #113CCF; color: white; }
+        .badge-prime { background: #00A8E1; color: white; }
+        .badge-hulu { background: #1CE783; color: black; }
+        .badge-peacock { background: #000; color: white; }
+
+        .card-wrapper { position: relative; }
+
+        .mockup-label {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            background: rgba(0,212,170,0.15);
+            border: 1px solid var(--accent-primary);
+            color: var(--accent-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>THE NEW RELEASE WALL</h1>
+        <div class="filters">
+            <button class="filter-btn" data-filter="all">All</button>
+            <button class="filter-btn active" data-filter="big-time">Big Time Stuff</button>
+            <button class="filter-btn" data-filter="niche">Niche Notables</button>
+            <button class="filter-btn" data-filter="staff-picks">Staff Picks</button>
+            <button class="filter-btn" data-filter="foreign">Foreign</button>
+            <button class="filter-btn" data-filter="series">Limited Series</button>
+            <button class="filter-btn" data-filter="plex">Plex</button>
+            <button class="filter-btn" data-filter="restorations">Restorations & Reissues</button>
+            <button class="filter-btn" data-filter="festivals">Festivals</button>
+            <div class="search-container">
+                <input type="text" id="search-input" placeholder="Search title, director, genre..." autocomplete="off">
+            </div>
+        </div>
+    </header>
+
+    <!-- Two-column: big title left, description right -->
+    <div class="filter-description">
+        <h2>Big Time<br>Stuff</h2>
+        <div class="filter-description-right">
+            <p>The wide releases, the studio fare, the main-streamers. Not saying they're good, not saying they're bad, but these are the movies that have either entered or tried to enter the mainstream conversation. They have budgets, recognizable actors, and large-scale billboard campaigns.</p>
+        </div>
+    </div>
+
+    <main id="wall">
+        <div class="movie-container"><div class="card-wrapper"><div class="movie-card"><img src="https://image.tmdb.org/t/p/w342/vkRaeMVhflQMCPAfRkBvMlnAXWG.jpg" alt="Poster"></div><span class="streaming-badge badge-netflix">NETFLIX</span></div><div class="movie-info"><div class="movie-title">Interstellar</div><span class="director">Christopher Nolan</span> &middot; USA</div></div>
+        <div class="movie-container"><div class="card-wrapper"><div class="movie-card"><img src="https://image.tmdb.org/t/p/w342/8b8R8l88Qje9dn9OE8PY05Nez7H.jpg" alt="Poster"></div><span class="streaming-badge badge-max">MAX</span></div><div class="movie-info"><div class="movie-title">Dune: Part Two</div><span class="director">Denis Villeneuve</span> &middot; USA</div></div>
+        <div class="movie-container"><div class="card-wrapper"><div class="movie-card"><img src="https://image.tmdb.org/t/p/w342/qJ2tW6WMUDux911BTUgsMV5CPuI.jpg" alt="Poster"></div><span class="streaming-badge badge-disney">DISNEY+</span></div><div class="movie-info"><div class="movie-title">Inside Out 2</div><span class="director">Kelsey Mann</span> &middot; USA</div></div>
+        <div class="movie-container"><div class="card-wrapper"><div class="movie-card"><img src="https://image.tmdb.org/t/p/w342/z1p34vh7dEOnLDV4jC1kCTAo0dt.jpg" alt="Poster"></div><span class="streaming-badge badge-prime">PRIME</span></div><div class="movie-info"><div class="movie-title">Gladiator II</div><span class="director">Ridley Scott</span> &middot; USA / UK</div></div>
+        <div class="movie-container"><div class="card-wrapper"><div class="movie-card"><img src="https://image.tmdb.org/t/p/w342/aosm8NMQ3UyoBVpSxyimorCQykC.jpg" alt="Poster"></div><span class="streaming-badge badge-hulu">HULU</span></div><div class="movie-info"><div class="movie-title">Alien: Romulus</div><span class="director">Fede Alvarez</span> &middot; USA</div></div>
+        <div class="movie-container"><div class="card-wrapper"><div class="movie-card"><img src="https://image.tmdb.org/t/p/w342/vpnVM9B6NMmQpWeZvzLvDESb2QY.jpg" alt="Poster"></div><span class="streaming-badge badge-netflix">NETFLIX</span></div><div class="movie-info"><div class="movie-title">The Wild Robot</div><span class="director">Chris Sanders</span> &middot; USA</div></div>
+        <div class="movie-container"><div class="card-wrapper"><div class="movie-card"><img src="https://image.tmdb.org/t/p/w342/xLPjrJFXmHSHz6hBQICOvNiZ8ER.jpg" alt="Poster"></div><span class="streaming-badge badge-peacock">PEACOCK</span></div><div class="movie-info"><div class="movie-title">Twisters</div><span class="director">Lee Isaac Chung</span> &middot; USA</div></div>
+        <div class="movie-container"><div class="card-wrapper"><div class="movie-card"><img src="https://image.tmdb.org/t/p/w342/kDp1vUBnMpe8ak4rjgl3cLELqjU.jpg" alt="Poster"></div><span class="streaming-badge badge-max">MAX</span></div><div class="movie-info"><div class="movie-title">Beetlejuice Beetlejuice</div><span class="director">Tim Burton</span> &middot; USA</div></div>
+        <div class="movie-container"><div class="card-wrapper"><div class="movie-card"><img src="https://image.tmdb.org/t/p/w342/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg" alt="Poster"></div><span class="streaming-badge badge-netflix">NETFLIX</span></div><div class="movie-info"><div class="movie-title">Deadpool & Wolverine</div><span class="director">Shawn Levy</span> &middot; USA</div></div>
+        <div class="movie-container"><div class="card-wrapper"><div class="movie-card"><img src="https://image.tmdb.org/t/p/w342/wWba3TaojhK7NdycRhoQpsG0FaH.jpg" alt="Poster"></div><span class="streaming-badge badge-prime">PRIME</span></div><div class="movie-info"><div class="movie-title">Wicked</div><span class="director">Jon M. Chu</span> &middot; USA</div></div>
+        <div class="movie-container"><div class="card-wrapper"><div class="movie-card"><img src="https://image.tmdb.org/t/p/w342/gKkl37BQuKTanygYQG1pyYgLVgf.jpg" alt="Poster"></div><span class="streaming-badge badge-disney">DISNEY+</span></div><div class="movie-info"><div class="movie-title">Kingdom of the Planet of the Apes</div><span class="director">Wes Ball</span> &middot; USA</div></div>
+        <div class="movie-container"><div class="card-wrapper"><div class="movie-card"><img src="https://image.tmdb.org/t/p/w342/hu40Ber92DjCm36s3UWydpb6bEB.jpg" alt="Poster"></div><span class="streaming-badge badge-hulu">HULU</span></div><div class="movie-info"><div class="movie-title">A Quiet Place: Day One</div><span class="director">Michael Sarnoski</span> &middot; USA</div></div>
+    </main>
+
+    <div class="mockup-label">MOCKUP D — Two-Column Split</div>
+</body>
+</html>

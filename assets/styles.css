@@ -468,8 +468,8 @@ header h1 {
     color: #000;
 }
 
-/* Festival ribbon on poster card (solid gold bar, shows festival name) */
-.festival-ribbon {
+/* Screening ribbon on poster card (solid gold bar, shows screening name) */
+.screening-ribbon {
     position: absolute;
     bottom: 0;
     left: 0;
@@ -491,12 +491,12 @@ header h1 {
     -webkit-box-orient: vertical;
 }
 
-.movie-card.flipped .festival-ribbon {
+.movie-card.flipped .screening-ribbon {
     display: none;
 }
 
-/* Festival name banner in lightbox (full-width gold bar at top of info panel) */
-.lightbox-festival-name {
+/* Virtual screening name banner in lightbox (full-width gold bar at top of info panel) */
+.lightbox-screening-name {
     background: #FFD700;
     color: #000;
     font-size: 0.7rem;
@@ -508,8 +508,8 @@ header h1 {
     border-radius: 12px 12px 0 0;
 }
 
-/* Festival "Buy Ticket" button on cards (outlined gold) */
-.watch-btn-festival {
+/* Virtual screening "Buy Ticket" button on cards (outlined gold) */
+.watch-btn-screening {
     background: transparent !important;
     color: #FFD700 !important;
     border: 2px solid #FFD700 !important;
@@ -518,8 +518,8 @@ header h1 {
     letter-spacing: 0.5px;
 }
 
-/* Festival "Buy Ticket" button in lightbox (outlined gold) */
-.watch-btn-lb.festival {
+/* Virtual screening "Buy Ticket" button in lightbox (outlined gold) */
+.watch-btn-lb.screening {
     background: transparent;
     color: #FFD700;
     border: 2px solid #FFD700;

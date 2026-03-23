@@ -41,7 +41,7 @@ Function GetColors() as Object
         staffPick: "0xDC143CFF"
         restoration: "0xC8A951FF"
         bigTime: "0xFFFFFFFF"
-        niche: "0x00D4AAFF"
+        indie: "0x00D4AAFF"
         slop: "0x888888FF"
 
         ' Border colors

@@ -126,16 +126,16 @@ export default function MovieDetail({route}) {
 
   const rawWatchLinks = getWatchLinks(movie);
 
-  // For festival movies, relabel Eventive/festival platform buttons to "Buy Ticket"
+  // For virtual screening movies, relabel Eventive/screening platform buttons to "Buy Ticket"
   const watchLinks = rawWatchLinks.map(link => {
     const svc = (link.service || '').toLowerCase();
     const url = (link.url || '').toLowerCase();
-    const isFestivalPlatform =
+    const isVirtualScreeningPlatform =
       svc.includes('eventive') ||
       url.includes('eventive.org') ||
       url.includes('festivalplayer') ||
       url.includes('shift72.com');
-    if (isFestivalPlatform) {
+    if (isVirtualScreeningPlatform) {
       return {...link, labelOverride: 'Buy Ticket'};
     }
     return link;
@@ -236,10 +236,10 @@ export default function MovieDetail({route}) {
             )}
           </View>
 
-          {/* Festival name */}
-          {movie.categories?.is_festival && movie.festival_info?.festival_name && (
-            <Text style={styles.festivalName}>
-              {movie.festival_info.festival_name}
+          {/* Virtual screening name */}
+          {movie.categories?.is_virtual_screening && movie.virtual_screening_info?.screening_name && (
+            <Text style={styles.screeningName}>
+              {movie.virtual_screening_info.screening_name}
             </Text>
           )}
 
@@ -485,7 +485,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     marginLeft: 8,
   },
-  festivalName: {
+  screeningName: {
     backgroundColor: '#FFD700',
     color: '#000',
     fontSize: Typography.caption,

@@ -162,8 +162,8 @@ export function filterMovies(movies, filters = 'all') {
         case 'big-time':
           if (movie.categories?.tier === 'big_time') return true;
           break;
-        case 'niche':
-          if (movie.categories?.tier === 'niche') return true;
+        case 'indie':
+          if (movie.categories?.tier === 'indie') return true;
           break;
         case 'staff-picks': {
           const isStaffPick = movie.categories?.is_staff_pick || movie.featured === true;
@@ -188,8 +188,8 @@ export function filterMovies(movies, filters = 'all') {
         case 'documentary':
           if (movie.categories?.is_documentary === true) return true;
           break;
-        case 'festivals':
-          if (movie.categories?.is_festival) return true;
+        case 'virtual-screenings':
+          if (movie.categories?.is_virtual_screening) return true;
           break;
         case 'featured': {
           const isFeatured = movie.categories?.is_staff_pick || movie.featured === true;

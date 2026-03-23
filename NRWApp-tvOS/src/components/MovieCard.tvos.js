@@ -252,11 +252,11 @@ const MovieCard = forwardRef(({
             </View>
           )}
 
-          {/* Festival ribbon - shows actual festival name */}
-          {movie.categories?.is_festival && !movie.featured && (
-            <View style={styles.festivalRibbon}>
-              <Text style={styles.festivalRibbonText} numberOfLines={2}>
-                {movie.festival_info?.festival_name || 'FESTIVAL SCREENING'}
+          {/* Virtual screening ribbon - shows actual screening name */}
+          {movie.categories?.is_virtual_screening && !movie.featured && (
+            <View style={styles.screeningRibbon}>
+              <Text style={styles.screeningRibbonText} numberOfLines={2}>
+                {movie.virtual_screening_info?.screening_name || 'VIRTUAL SCREENING'}
               </Text>
             </View>
           )}
@@ -357,20 +357,20 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     letterSpacing: 1.5,
   },
-  festivalRibbon: {
+  screeningRibbon: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: Colors.festivalGold,
+    backgroundColor: Colors.screeningGold,
     paddingVertical: Spacing.tvos.xs,
     paddingHorizontal: 10,
     borderBottomLeftRadius: 12,
     borderBottomRightRadius: 12,
     alignItems: 'center',
   },
-  festivalRibbonText: {
-    color: Colors.festivalGoldText,
+  screeningRibbonText: {
+    color: Colors.screeningGoldText,
     fontSize: Typography.tvos.caption,
     fontWeight: '900',
     letterSpacing: 0.3,

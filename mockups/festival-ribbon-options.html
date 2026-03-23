@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Festival Ribbon Options - NRW Mockup</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: linear-gradient(180deg, #0a0a0a, #1a1a2e);
+    color: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    padding: 40px;
+    min-height: 100vh;
+  }
+
+  h1 {
+    font-weight: 100;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+    color: #FFD700;
+  }
+  .subtitle {
+    color: #888;
+    font-size: 0.9rem;
+    margin-bottom: 40px;
+  }
+
+  .option-section {
+    margin-bottom: 50px;
+  }
+  .option-label {
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #00d4aa;
+    margin-bottom: 8px;
+  }
+  .option-desc {
+    color: #bbb;
+    font-size: 0.85rem;
+    margin-bottom: 20px;
+  }
+
+  .card-row {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .card-wrapper {
+    text-align: center;
+  }
+  .card-wrapper .festival-label {
+    color: #888;
+    font-size: 0.7rem;
+    margin-top: 8px;
+    max-width: 189px;
+  }
+
+  /* Movie card - matches production */
+  .movie-card {
+    width: 189px;
+    height: 282px;
+    border-radius: 15px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+  .movie-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* ===== OPTION A: Current (single line, generic) ===== */
+  .ribbon-a {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 5px 4px;
+    background: #FFD700;
+    color: #000;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 0.5px;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  /* ===== OPTION B: Two-line, festival name + "SCREENING" ===== */
+  .ribbon-b {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 4px 6px;
+    background: #FFD700;
+    color: #000;
+    text-align: center;
+    text-transform: uppercase;
+  }
+  .ribbon-b .ribbon-name {
+    font-size: 9px;
+    font-weight: 900;
+    letter-spacing: 0.3px;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .ribbon-b .ribbon-sub {
+    font-size: 7px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    opacity: 0.6;
+    margin-top: 1px;
+  }
+
+  /* ===== OPTION C: Two-line, bold name + lighter label ===== */
+  .ribbon-c {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 5px 6px;
+    background: #FFD700;
+    color: #000;
+    text-align: center;
+    text-transform: uppercase;
+  }
+  .ribbon-c .ribbon-name {
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 0.3px;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .ribbon-c .ribbon-sub {
+    font-size: 7px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    opacity: 0.55;
+    margin-top: 2px;
+  }
+
+  /* ===== OPTION D: Taller ribbon, name wraps to 2 lines ===== */
+  .ribbon-d {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 5px 8px;
+    background: #FFD700;
+    color: #000;
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 0.3px;
+    line-height: 1.25;
+    /* Allow natural wrapping */
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+</style>
+</head>
+<body>
+
+<h1>Festival Ribbon Options</h1>
+<p class="subtitle">Compare ribbon styles across different festival name lengths. Cards are production size (189 x 282px).</p>
+
+<!-- OPTION A -->
+<div class="option-section">
+  <div class="option-label">Option A: Current (Single Line, Generic)</div>
+  <div class="option-desc">Always says "FESTIVAL SCREENING" at 11px/900 weight. Readable but doesn't identify which festival.</div>
+  <div class="card-row">
+    <div class="card-wrapper">
+      <div class="movie-card">
+        <img src="https://image.tmdb.org/t/p/w500/3HIXQOyf5yhnt5ZtOnlk6qa9DWp.jpg" alt="poster">
+        <div class="ribbon-a">FESTIVAL SCREENING</div>
+      </div>
+      <div class="festival-label">Miami Jewish Film Festival</div>
+    </div>
+    <div class="card-wrapper">
+      <div class="movie-card">
+        <img src="https://image.tmdb.org/t/p/w500/bz8toDcg1qrbeoFLwScC7ydR3Ts.jpg" alt="poster">
+        <div class="ribbon-a">FESTIVAL SCREENING</div>
+      </div>
+      <div class="festival-label">Tucson Film Festival</div>
+    </div>
+    <div class="card-wrapper">
+      <div class="movie-card">
+        <img src="https://image.tmdb.org/t/p/w500/kBSQYB4PH9FeEDp7kuv1J8WBNc2.jpg" alt="poster">
+        <div class="ribbon-a">FESTIVAL SCREENING</div>
+      </div>
+      <div class="festival-label">Sundance Film Festival</div>
+    </div>
+    <div class="card-wrapper">
+      <div class="movie-card">
+        <img src="https://image.tmdb.org/t/p/w500/o5LyN68dyvXzhXGWlcfUrIN7bHJ.jpg" alt="poster">
+        <div class="ribbon-a">FESTIVAL SCREENING</div>
+      </div>
+      <div class="festival-label">Big Sky Documentary Film Festival</div>
+    </div>
+  </div>
+</div>
+
+<!-- OPTION B -->
+<div class="option-section">
+  <div class="option-label">Option B: Two-Line (Name + "Festival Screening")</div>
+  <div class="option-desc">Top line: festival name at 9px bold. Bottom line: "FESTIVAL SCREENING" at 7px, faded. Shows the actual name without getting too tall.</div>
+  <div class="card-row">
+    <div class="card-wrapper">
+      <div class="movie-card">
+        <img src="https://image.tmdb.org/t/p/w500/3HIXQOyf5yhnt5ZtOnlk6qa9DWp.jpg" alt="poster">
+        <div class="ribbon-b">
+          <div class="ribbon-name">Miami Jewish Film Festival</div>
+          <div class="ribbon-sub">Festival Screening</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-wrapper">
+      <div class="movie-card">
+        <img src="https://image.tmdb.org/t/p/w500/bz8toDcg1qrbeoFLwScC7ydR3Ts.jpg" alt="poster">
+        <div class="ribbon-b">
+          <div class="ribbon-name">Tucson Film Festival</div>
+          <div class="ribbon-sub">Festival Screening</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-wrapper">
+      <div class="movie-card">
+        <img src="https://image.tmdb.org/t/p/w500/kBSQYB4PH9FeEDp7kuv1J8WBNc2.jpg" alt="poster">
+        <div class="ribbon-b">
+          <div class="ribbon-name">Sundance Film Festival</div>
+          <div class="ribbon-sub">Festival Screening</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-wrapper">
+      <div class="movie-card">
+        <img src="https://image.tmdb.org/t/p/w500/o5LyN68dyvXzhXGWlcfUrIN7bHJ.jpg" alt="poster">
+        <div class="ribbon-b">
+          <div class="ribbon-name">Big Sky Documentary Film Festival</div>
+          <div class="ribbon-sub">Festival Screening</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-wrapper">
+      <div class="movie-card">
+        <img src="https://image.tmdb.org/t/p/w500/gzQIHRcg38fxWHNdRbxURpb2XGK.jpg" alt="poster">
+        <div class="ribbon-b">
+          <div class="ribbon-name">San Diego Intl. Jewish Film Festival</div>
+          <div class="ribbon-sub">Festival Screening</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-wrapper">
+      <div class="movie-card">
+        <img src="https://image.tmdb.org/t/p/w500/eLoN3hLCAfkEFSuwtzbwuuvhOQM.jpg" alt="poster">
+        <div class="ribbon-b">
+          <div class="ribbon-name">MENA Film Festival</div>
+          <div class="ribbon-sub">Festival Screening</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- OPTION C -->
+<div class="option-section">
+  <div class="option-label">Option C: Two-Line (Bigger Name + Faded Label)</div>
+  <div class="option-desc">Top line: festival name at 10px black weight. Bottom line: "FESTIVAL SCREENING" at 7px, faded. More emphasis on the name.</div>
+  <div class="card-row">
+    <div class="card-wrapper">
+      <div class="movie-card">
+        <img src="https://image.tmdb.org/t/p/w500/3HIXQOyf5yhnt5ZtOnlk6qa9DWp.jpg" alt="poster">
+        <div class="ribbon-c">
+          <div class="ribbon-name">Miami Jewish Film Festival</div>
+          <div class="ribbon-sub">Festival Screening</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-wrapper">
+      <div class="movie-card">
+        <img src="https://image.tmdb.org/t/p/w500/bz8toDcg1qrbeoFLwScC7ydR3Ts.jpg" alt="poster">
+        <div class="ribbon-c">
+          <div class="ribbon-name">Tucson Film Festival</div>
+          <div class="ribbon-sub">Festival Screening</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-wrapper">
+      <div class="movie-card">
+        <img src="https://image.tmdb.org/t/p/w500/kBSQYB4PH9FeEDp7kuv1J8WBNc2.jpg" alt="poster">
+        <div class="ribbon-c">
+          <div class="ribbon-name">Sundance Film Festival</div>
+          <div class="ribbon-sub">Festival Screening</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-wrapper">
+      <div class="movie-card">
+        <img src="https://image.tmdb.org/t/p/w500/o5LyN68dyvXzhXGWlcfUrIN7bHJ.jpg" alt="poster">
+        <div class="ribbon-c">
+          <div class="ribbon-name">Big Sky Documentary Film Festival</div>
+          <div class="ribbon-sub">Festival Screening</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-wrapper">
+      <div class="movie-card">
+        <img src="https://image.tmdb.org/t/p/w500/gzQIHRcg38fxWHNdRbxURpb2XGK.jpg" alt="poster">
+        <div class="ribbon-c">
+          <div class="ribbon-name">San Diego Intl. Jewish Film Festival</div>
+          <div class="ribbon-sub">Festival Screening</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-wrapper">
+      <div class="movie-card">
+        <img src="https://image.tmdb.org/t/p/w500/eLoN3hLCAfkEFSuwtzbwuuvhOQM.jpg" alt="poster">
+        <div class="ribbon-c">
+          <div class="ribbon-name">MENA Film Festival</div>
+          <div class="ribbon-sub">Festival Screening</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- OPTION D -->
+<div class="option-section">
+  <div class="option-label">Option D: Natural Wrap (Name Only, Up to 2 Lines)</div>
+  <div class="option-desc">Just the festival name at 10px, allowed to wrap to two lines naturally. No "Festival Screening" subtitle. Tallest ribbon but cleanest look.</div>
+  <div class="card-row">
+    <div class="card-wrapper">
+      <div class="movie-card">
+        <img src="https://image.tmdb.org/t/p/w500/3HIXQOyf5yhnt5ZtOnlk6qa9DWp.jpg" alt="poster">
+        <div class="ribbon-d">Miami Jewish Film Festival</div>
+      </div>
+    </div>
+    <div class="card-wrapper">
+      <div class="movie-card">
+        <img src="https://image.tmdb.org/t/p/w500/bz8toDcg1qrbeoFLwScC7ydR3Ts.jpg" alt="poster">
+        <div class="ribbon-d">Tucson Film Festival</div>
+      </div>
+    </div>
+    <div class="card-wrapper">
+      <div class="movie-card">
+        <img src="https://image.tmdb.org/t/p/w500/kBSQYB4PH9FeEDp7kuv1J8WBNc2.jpg" alt="poster">
+        <div class="ribbon-d">Sundance Film Festival</div>
+      </div>
+    </div>
+    <div class="card-wrapper">
+      <div class="movie-card">
+        <img src="https://image.tmdb.org/t/p/w500/o5LyN68dyvXzhXGWlcfUrIN7bHJ.jpg" alt="poster">
+        <div class="ribbon-d">Big Sky Documentary Film Festival</div>
+      </div>
+    </div>
+    <div class="card-wrapper">
+      <div class="movie-card">
+        <img src="https://image.tmdb.org/t/p/w500/gzQIHRcg38fxWHNdRbxURpb2XGK.jpg" alt="poster">
+        <div class="ribbon-d">San Diego Intl. Jewish Film Festival</div>
+      </div>
+    </div>
+    <div class="card-wrapper">
+      <div class="movie-card">
+        <img src="https://image.tmdb.org/t/p/w500/eLoN3hLCAfkEFSuwtzbwuuvhOQM.jpg" alt="poster">
+        <div class="ribbon-d">MENA Film Festival</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
