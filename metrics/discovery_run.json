@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-03-24T10:49:05.339499",
+  "timestamp": "2026-03-24T16:35:50.689026",
   "operation": "discover_availability",
   "scan_context": {
     "poll_all_tracking": true,
@@ -8,10 +8,16 @@
     "full_scan": true
   },
   "results": {
-    "polled": 13565,
-    "transitions": 6,
+    "polled": 13568,
+    "transitions": 12,
     "failed": 0,
     "preorder_detected": 0,
     "scan_tag": "(full scan, no limits)"
+  },
+  "justwatch_verification": {
+    "verified": 10,
+    "rejected": 1,
+    "buy_only": 0,
+    "unavailable": 2
   }
 }
