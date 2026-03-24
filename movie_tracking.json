@@ -93465,14 +93465,24 @@
     },
     "1478049": {
       "title": "Marlon Williams: Two Worlds",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-04",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-03-24",
+      "providers": {
+        "rent": [
+          "Apple TV Store"
+        ],
+        "buy": [
+          "Apple TV Store"
+        ],
+        "streaming": []
+      },
       "intake_pass": "backfill",
-      "has_providers": false,
+      "has_providers": true,
       "year": 2025,
-      "premiere_date": "2025-06-01"
+      "premiere_date": "2025-06-01",
+      "enriched": false,
+      "enrichment_date": null
     },
     "1475465": {
       "title": "Time Keeper",
@@ -165095,12 +165105,24 @@
     "1427157": {
       "title": "My Lord",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-02-13",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-03-24",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": [
+          "Sun Nxt"
+        ]
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1423035": {
       "title": "Aontas",
@@ -175356,9 +175378,9 @@
       "title": "Women's Hell",
       "content_type": "limited_series",
       "tmdb_id": 286702,
-      "status": "tracking",
+      "status": "available",
       "first_air_date": "2026-03-06",
-      "digital_date": "2026-03-06",
+      "digital_date": "2026-03-24",
       "episode_count": 6,
       "runtime": null,
       "poster": null,
@@ -175369,15 +175391,20 @@
       ],
       "original_language": "pl",
       "providers": {
-        "streaming": [],
         "rent": [],
-        "buy": []
+        "buy": [],
+        "streaming": [
+          "HBO Max",
+          "HBO Max Amazon Channel"
+        ]
       },
       "intaked_at": "2026-03-06T09:36:11.816224",
       "networks": [
         "HBO Max"
       ],
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "tv_281016": {
       "title": "Boyfriend on Demand",
@@ -184444,12 +184471,21 @@
     "1628123": {
       "title": "BTS THE COMEBACK LIVE | ARIRANG",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-03-22",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-03-24",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
+      },
       "intake_pass": "A",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1482168": {
       "title": "The Rise of the Red Hot Chili Peppers: Our Brother, Hillel",
@@ -184721,9 +184757,9 @@
       "title": "Hope Valley: 1874",
       "content_type": "limited_series",
       "tmdb_id": 308136,
-      "status": "tracking",
+      "status": "available",
       "first_air_date": "2026-03-21",
-      "digital_date": "2026-03-21",
+      "digital_date": "2026-03-24",
       "episode_count": 8,
       "runtime": null,
       "poster": "https://image.tmdb.org/t/p/w500/yMXKPnHPsANQL4G6CjNqYqd8ofj.jpg",
@@ -184733,15 +184769,21 @@
       ],
       "original_language": "en",
       "providers": {
-        "streaming": [],
         "rent": [],
-        "buy": []
+        "buy": [],
+        "streaming": [
+          "Hallmark+ Amazon Channel",
+          "Hallmark+ Apple TV Channel",
+          "Hallmark TV Amazon Channel"
+        ]
       },
       "intaked_at": "2026-03-22T09:30:19.637784",
       "networks": [
         "Hallmark+"
       ],
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1636603": {
       "title": "Daggers Inn",
@@ -184976,12 +185018,22 @@
     "1628522": {
       "title": "Two for Tee",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-03-23",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-03-24",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Hallmark+ Amazon Channel",
+          "Hallmark+ Apple TV Channel",
+          "Hallmark TV Amazon Channel"
+        ]
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null
     },
     "1620277": {
       "title": "Road To L'Etape Du Tour",
@@ -185019,7 +185071,270 @@
         "BBC Two"
       ],
       "has_providers": false
+    },
+    "1555160": {
+      "title": "Jeff Ross: Take a Banana for the Ride",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A",
+      "has_providers": false
+    },
+    "1395140": {
+      "title": "LUPIN THE IIIRD: The Movie - The Immortal Bloodline",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A",
+      "has_providers": false
+    },
+    "1143801": {
+      "title": "Quakeasaurus",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A",
+      "has_providers": false
+    },
+    "1370805": {
+      "title": "The Fright Stuff",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A",
+      "has_providers": false
+    },
+    "1657007": {
+      "title": "\u9f99\u53e3\u8d70\u86df",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1655881": {
+      "title": "XY9",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1654763": {
+      "title": "Muito Barulho",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1653344": {
+      "title": "The Celestial Mechanic of Kites",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1651875": {
+      "title": "Power: The Downfall of Huw Edwards",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1649495": {
+      "title": "A mamma non piace",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1648143": {
+      "title": "Assem's Head",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1633347": {
+      "title": "Labore Nobile",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1596175": {
+      "title": "From Here to the Apple Tree",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1657045": {
+      "title": "O Dia da Cruz",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1656923": {
+      "title": "At my bedside: an autopsy of the healthcare system",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1656634": {
+      "title": "RAW DOGS",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1648882": {
+      "title": "Aponjon",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1644629": {
+      "title": "Love Sitter",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1656532": {
+      "title": "Melanie Bracewell: A Little Treat",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1402435": {
+      "title": "The Hedonist",
+      "year": 2025,
+      "status": "tracking",
+      "first_seen": "2026-03-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "SXSW",
+      "has_providers": false
+    },
+    "1373854": {
+      "title": "Sugar Rot",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-24",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "SXSW",
+      "has_providers": false
+    },
+    "tv_316906": {
+      "title": "Andr\u00e0 forse tutto bene",
+      "content_type": "limited_series",
+      "tmdb_id": 316906,
+      "status": "tracking",
+      "first_air_date": "2026-03-23",
+      "digital_date": "2026-03-23",
+      "episode_count": 4,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/agTBgb9hr6ddGSe61oKMhKDmvzF.jpg",
+      "synopsis": "",
+      "genres": [
+        "Drama",
+        "Family"
+      ],
+      "original_language": "it",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-03-24T09:54:13.373544",
+      "networks": [],
+      "has_providers": false
+    },
+    "tv_315170": {
+      "title": "Please, Stop!",
+      "content_type": "limited_series",
+      "tmdb_id": 315170,
+      "status": "tracking",
+      "first_air_date": "2026-02-26",
+      "digital_date": "2026-02-26",
+      "episode_count": 6,
+      "runtime": 8,
+      "poster": "https://image.tmdb.org/t/p/w500/2JgdNAaJ1qKpupuBdZ3GSLU15lG.jpg",
+      "synopsis": "A story about a younger brother's secret crush on his older brother\u2014who only has eyes for girls. For the older brother, this love is a \"happy trouble\"; but for the younger one, it\u2019s a silent storm.",
+      "genres": [
+        "Drama"
+      ],
+      "original_language": "zh",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-03-24T09:54:16.247602",
+      "networks": [
+        "YouTube"
+      ],
+      "has_providers": false
     }
   },
-  "last_update": "2026-03-23T10:00:41.019213"
+  "last_update": "2026-03-24T09:54:12.743171"
 }
