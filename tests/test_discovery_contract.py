@@ -144,7 +144,7 @@ discovery:
             'discovery': {'days_back': 14, 'max_pages': 20}
         }
         self.tmdb_key = 'test'
-        # Note: Watchmode deprecated 2024-12, JustWatch is now primary source
+        # Watch links: cache + Playwright scrapers
 
     def test_provider_detection_transitions_status(self):
         """

@@ -417,6 +417,7 @@ header h1 {
     background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
     -webkit-transform: rotateY(180deg);
     transform: rotateY(180deg);
+    pointer-events: none;
     padding: 0.8rem;
     box-sizing: border-box;
     border-radius: 15px;
@@ -759,7 +760,7 @@ header h1 {
 
 .info-links {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
     gap: 0.5rem;
 }
 
@@ -934,7 +935,7 @@ header h1 {
     }
 
     .info-links {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
     }
 
     .actions {
@@ -1365,6 +1366,17 @@ header h1 {
     flex-direction: column;
     gap: 0.5rem;
     margin-bottom: 0.5rem;
+}
+
+/* VOD row: rent/buy buttons side-by-side */
+.lightbox-buttons .vod-row {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+}
+
+.lightbox-buttons .vod-row > * {
+    flex: 1;
 }
 
 .lightbox-buttons .watch-btn-lb {

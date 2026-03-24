@@ -114,7 +114,7 @@ Example metrics entry:
 ### High Missing Stream Links
 **Pattern:** `"missing_stream_link": 100+`
 **Indicates:** Provider API issues or geographic availability problems
-**Action:** Check JustWatch API status, review provider coverage
+**Action:** Check Playwright scraper selectors, review provider coverage
 
 ### High Missing RT Scores
 **Pattern:** `"missing_rt": 30+`

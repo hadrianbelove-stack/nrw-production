@@ -182,6 +182,7 @@ class NewsletterDataQuery:
             'year': movie.get('year'),
             'synopsis': movie.get('synopsis'),
             'rt_score': self._parse_rt_score(movie.get('rt_score')),
+            'imdb_rating': movie.get('imdb_rating'),
             'runtime': movie.get('runtime'),
             'poster': movie.get('poster'),
             'genres': movie.get('genres', []),

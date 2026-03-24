@@ -316,9 +316,10 @@ class GeminiYouTubeFinder(GeminiFinderBase):
 
 Requirements:
 - Return ONLY the YouTube URL, nothing else
-- Must be the official trailer (not fan-made, not clips, not reviews)
+- Must be the official trailer or preview (not fan-made, not clips, not reviews)
 - If there are multiple trailers, prefer the main theatrical trailer
-- If no official trailer exists, respond with exactly: NO_TRAILER_EXISTS
+- An official preview (e.g. from a network or studio) is acceptable if no trailer exists
+- If no official trailer or preview exists, respond with exactly: NO_TRAILER_EXISTS
 - If you cannot find it, respond with exactly: NOT_FOUND
 
 YouTube URL:"""

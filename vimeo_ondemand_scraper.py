@@ -355,7 +355,8 @@ class VimeoOnDemandScraper(PlaywrightScraperBase):
             # Search TMDB
             search_params = {
                 'api_key': self.tmdb_api_key,
-                'query': title
+                'query': title,
+                'language': 'en-US'
             }
             if year:
                 search_params['year'] = year

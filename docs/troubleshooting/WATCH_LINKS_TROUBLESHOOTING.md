@@ -1,20 +1,16 @@
 # Watch Links Troubleshooting Guide
 
-> **Note (Dec 2024):** Watch links now use **JustWatch API** as the primary source.
-> Watchmode API was deprecated due to quota/cost issues. Most of this doc refers to
-> the legacy Watchmode system and is kept for historical reference.
-
-## Current Architecture (Dec 2024+)
+## Current Architecture (Mar 2026)
 
 **Priority Waterfall:**
 1. Manual overrides (`overrides/watch_links_overrides.json`)
 2. Cache (`cache/watch_links_cache.json`)
-3. **JustWatch API** (primary - free, reliable)
-4. Agent scraper (Netflix, Disney+, HBO Max, Hulu fallback)
+3. Playwright scrapers — Amazon/Apple TV (`streaming_platform_scraper.py`)
+4. Agent scraper (Netflix, Disney+, HBO Max, Hulu)
 5. TMDB provider names with null links
 
 **Key Files:**
-- `justwatch_client.py` - JustWatch GraphQL API client
+- `streaming_platform_scraper.py` - Playwright-based scraper for Amazon/Apple TV
 - `pipeline/enrichment.py` - Watch links waterfall logic
 
 ---
@@ -29,11 +25,13 @@
 ### Root Cause (Legacy - Pre Dec 2024)
 Previously: Watchmode API quota exhausted. System fell back to Google search URLs.
 
-### Current Cause (Dec 2024+)
-JustWatch API couldn't find the movie. Check that:
+### Current Cause (Mar 2026)
+Playwright scraper tried Amazon + Apple TV but couldn't find the movie. Speculative scraping
+now tries both platforms for ALL movies (not just TMDB-listed providers). Check:
 1. Movie title and year are correct in movie_tracking.json
-2. JustWatch API is accessible (test with `justwatch_client.py`)
+2. Amazon/Apple TV HTML selectors are up to date in `streaming_platform_scraper.py`
 3. Cache isn't stale (delete entry in `cache/watch_links_cache.json` to force refresh)
+4. Movie may genuinely not be available for digital purchase yet
 
 ---
 
@@ -45,22 +43,20 @@ Most streaming service links (Netflix, Hulu, Disney+, Max, etc.) show `link: nul
 
 ### Why Streaming Links Are Null
 
-**Primary Reason: Watchmode API Quota Exhausted**
-- Watchmode API is the primary source for streaming service deep links
-- Free tier quota: 1000 calls/month
-- Current status: Exhausted (over quota)
-- Quota resets: November 1st, 2025 (automatic)
-- Graceful degradation: System falls back to other sources when Watchmode unavailable
+**Primary Reason: Platform Not Supported by Scraper**
+- Playwright scraper currently supports: Amazon Prime Video, Apple TV
+- Agent scraper supports: Netflix, Disney+, HBO Max, Hulu
+- Other services (Peacock, Paramount+, fuboTV, Criterion, etc.) not supported by any scraper
 
-**Secondary Reason: Agent Scraper Limited Support**
-- Agent scraper (agent_link_scraper.py) only supports: Netflix, Disney+, HBO Max, Hulu
-- Other services (Peacock, Paramount+, fuboTV, Criterion, etc.) not supported
-- When Watchmode unavailable AND agent scraper doesn't support the service → null link
-
-**Tertiary Reason: TMDB Providers Don't Include Links**
+**Secondary Reason: TMDB Providers Don't Include Links**
 - TMDB API returns provider NAMES ("Netflix", "Hulu") but not URLs
-- Without Watchmode or agent scraper, system can only show service name with null link
+- Without a working scraper for that service, system can only show service name with null link
 - By design: better to show null than wrong/broken links
+
+**Tertiary Reason: Movie Not Available for Digital Purchase Yet**
+- Very new or obscure movies may not be on Amazon/Apple TV yet
+- Speculative scraping tries both platforms for ALL movies regardless of TMDB data
+- One-shot enrichment means missed movies need `reenrich_watch_link_gaps()` to retry
 
 ### What Works Despite Null Streaming Links
 
@@ -69,19 +65,12 @@ Most streaming service links (Netflix, Hulu, Disney+, Max, etc.) show `link: nul
 ✅ **Graceful Degradation:** System continues working, doesn't break
 ✅ **Google Search Fallback:** Some movies have Google search links as last resort
 
-### When Will Streaming Links Be Populated
+### How To Get Missing Links Populated
 
-**November 1st, 2025 (Expected)**
-- Watchmode API quota resets to 0/1000
-- System automatically detects reset (see `_check_monthly_reset()` function in watchmode_api.py)
-- Next data generation run will use Watchmode API again
-- Streaming links will be populated with real deep links
-
-**How the auto-reset works:**
-- The watchmode_api.py module checks reset_date on every run
-- If current date >= reset_date, quota counter resets to 0
-- System resumes calling Watchmode API automatically
-- No manual intervention required
+1. **Run re-enrichment** for ALL movies missing VOD links (uses `reenrich_watch_link_gaps()` — no longer filtered by TMDB providers, processes in batches of 50)
+2. **Add manual overrides** via admin panel for high-priority movies
+3. **Check scraper selectors** — Amazon/Apple TV change HTML periodically
+4. **Speculative scraping** — new movies automatically try Amazon + Apple TV even without TMDB data
 
 ### Current Workarounds
 
@@ -115,10 +104,7 @@ if (!watchLinks.streaming?.link && !amazonLink && !appleLink) {
 
 ### Long-term Solution
 
-With Phase 2.1 optimization (enrichment-on-transition), the system now uses only 150-300 Watchmode calls/month instead of 9,540. This means:
-- Free tier (1000 calls/month) is sustainable indefinitely
-- No need to upgrade to $249/month paid plan
-- Quota exhaustion should not happen again after Nov 1st reset
+Playwright scrapers for Amazon/Apple TV are free and have no API quotas. Cache prevents redundant scraping. One-shot enrichment means each movie is only scraped once on its digital release date.
 
 ---
 
@@ -126,52 +112,29 @@ With Phase 2.1 optimization (enrichment-on-transition), the system now uses only
 
 Follow these steps to diagnose the issue:
 
-### 1. Test API Key
+### 1. Test Playwright Scraper
 ```bash
-curl "https://api.watchmode.com/v1/search/?apiKey=YOUR_KEY&search_field=tmdb_movie_id&search_value=507244"
+/usr/bin/python3 streaming_platform_scraper.py
 ```
-
-**Expected Results:**
-- 200 OK with data → API works
-- 401 Unauthorized → API key invalid
-- 429 Too Many Requests → Rate limit exceeded
+This runs a quick test on a known movie to verify Amazon/Apple TV scraping works.
 
 ### 2. Check Logs
 ```bash
-grep -i watchmode logs/generate_data.log
+grep -i "scraper\|watch_links" logs/admin.log | tail -20
 ```
 Look for error messages or warnings.
 
 ### 3. Check Statistics
 Run `python3 generate_data.py` and look for:
 ```
-Watchmode API Statistics:
-  Watchmode successes: 0  ← Problem if zero
+Watch Links Enrichment:
+  Scraper successes: X
+  VOD scraper success rate: X%
 ```
 
 ## Solutions
 
-### Option 1: Get New API Key (Recommended)
-
-**Steps:**
-1. Sign up at https://api.watchmode.com/ (free tier: 1000 calls/month)
-2. Copy your new API key
-3. Set environment variable:
-   ```bash
-   export WATCHMODE_API_KEY="YOUR_NEW_API_KEY"
-   ```
-   **Note:** You can also set the key in `config.yaml` but environment variables are preferred for security
-4. Regenerate data:
-   ```bash
-   python3 generate_data.py --full
-   ```
-
-**Why This Works:**
-- Environment variables override config.yaml settings
-- Fresh API key resets quota and resolves authentication issues
-- Full regeneration ensures all movies get new watch links
-
-### Option 2: Enable Platform Scraper (Amazon/Apple TV)
+### Option 1: Enable Platform Scraper (Amazon/Apple TV)
 
 **Status:** ✅ Enabled and tested (Playwright-based as of 2025-10-25)
 
@@ -190,9 +153,7 @@ platform_scraper:
 - ✅ Amazon scraper success rate: 100% (validated as of 2025-10-25)
 - ✅ Average search time: 6-8 seconds (30-40% faster with Playwright)
 - ✅ Selectors verified: 2025-10-25 (Playwright implementation)
-- ❌ Watchmode API: Not tested (TMDB API key missing)
-- ⚠️ Overall coverage: Invalid test - re-run required
-- Known issues: Configuration error - TMDB API key not set in config.yaml
+- ✅ Selectors updated: Mar 2026 (Prime Video HTML restructure)
 
 **Test Command:**
 ```bash
@@ -245,7 +206,7 @@ For high-priority movies, add manual deep links:
 
 **When to Use:**
 - High-priority movies need immediate fixes
-- Watchmode API is down temporarily
+- Scraper can't find specific movie
 - Platform scraper can't find specific movies
 - Manual verification of links is required
 
@@ -255,34 +216,19 @@ For high-priority movies, add manual deep links:
 
 | Tier | Source | Coverage | Status |
 |------|--------|----------|--------|
-| 1 | Watchmode API | ⚠️ Not Tested | 🔴 Test Invalid |
+| 1 | Cache | Existing movies | ✅ Working |
 | 2 | Amazon Scraper | 100% (validated) | ✅ Working |
-| 3 | Manual Overrides | TBD (pending re-test) | ⏳ Pending |
-| **Total** | **Combined** | **⚠️ Invalid Test** | **🔴 Re-test Required** |
+| 3 | Apple TV Scraper | Varies | ✅ Working |
+| 4 | Manual Overrides | As needed | ✅ Working |
 
-### Test Invalidation Notice (2025-10-24)
-
-⚠️ The validation test failed due to missing TMDB API key configuration. The script crashed before testing Watchmode API. Only Amazon scraper results are valid.
-
-**Action Required:** Fix config.yaml (add TMDB API key) and re-run validation test.
-
-See `IMPLEMENTATION_ROADMAP.md` (CRITICAL-003) for detailed re-test checklist.
-
-**Last Tested:** 2025-10-24 (INVALID - configuration error)
-**Last Selector Update:** 2025-10-23
-**Next Maintenance:** 2026-01-23 (quarterly)
+**Last Selector Update:** 2026-03-23 (Prime Video HTML restructure)
+**Next Maintenance:** Check quarterly or when success rate drops
 
 ## Known Limitations
 
-### Watchmode API
-- Tends to miss recent 2025 releases: ⚠️ Not tested (configuration error)
-- Coverage: ⚠️ Not tested (re-test required)
-- Free tier: 1,000 requests/month (sufficient for daily automation)
-- **Status:** Configuration error prevented testing - add TMDB API key to config.yaml
-
 ### Amazon Scraper (Playwright-based)
 - Success rate: ~100% (as of 2025-10-25 with Playwright)
-- Only runs when Watchmode has no data
+- Primary source for Amazon/Apple TV deep links
 - Focuses on recent releases
 - Some failures expected:
   - Anti-bot detection: No
@@ -291,7 +237,7 @@ See `IMPLEMENTATION_ROADMAP.md` (CRITICAL-003) for detailed re-test checklist.
 - Performance: 6-8 seconds per search (improved with Playwright, ~48 minutes for full regeneration)
 
 ### Manual Overrides (Final Fallback)
-- Required for: ~132 movies (53.4% as of 2025-10-24 invalid test)
+- Required for: Movies not on Amazon/Apple TV
 - Use Admin Panel to add: http://localhost:5555
 - Format: `admin/watch_link_overrides.json`
 
@@ -307,7 +253,7 @@ After applying a fix:
 2. **Count success rate:**
    ```bash
    python3 generate_data.py --full
-   # Look for "Watchmode success rate" and "Platform scraper success rate" in output
+   # Look for "Platform scraper success rate" in output
    ```
 
 3. **Test 3-5 links manually** in a browser:
@@ -325,24 +271,19 @@ After applying a fix:
 python3 generate_data.py --full
 
 # Look for these metrics in output:
-# - Watchmode success rate: Currently 0% (needs investigation)
-# - Platform scraper link attempts: Link-level attempts (e.g., 266 attempts)
-# - Platform scraper success rate: Currently 100% (excellent)
-# - Movies covered: Movie-level coverage (e.g., 115 movies with links)
-# - Final coverage: Currently 46.6% (below 85-90% target)
+# - Platform scraper link attempts: Link-level attempts
+# - Platform scraper success rate: Should be >40%
+# - Movies covered: Movie-level coverage
+# - Scraper successes: Total successful scrapes
 ```
 
 ### Warning Signs
-- ⚠️ Watchmode success rate drops below 50% → Check API quota
 - ⚠️ Platform scraper success rate drops below 40% → Update selectors
 - ⚠️ Many "No Amazon link found" messages → Check anti-bot detection
 - ⚠️ Final coverage drops below 80% → Investigate both tiers
 
 ### Quick Fixes
 ```bash
-# If Watchmode API fails (quota exceeded)
-# Wait for quota reset or get new API key from https://api.watchmode.com/
-
 # If Amazon scraper fails (selectors outdated)
 # Run with visible browser to inspect HTML:
 python3 streaming_platform_scraper.py  # Playwright-based, headless=False in test function
@@ -352,10 +293,9 @@ python3 streaming_platform_scraper.py  # Playwright-based, headless=False in tes
 ```
 
 ### Success Criteria
-- At least 50% of Amazon/Apple TV movies have real deep links (Watchmode API handles most)
+- At least 50% of Amazon/Apple TV movies have real deep links
 - Links work (no 404 errors)
 - Platform scraper statistics show success rate > 40%
-- Watchmode API should handle majority of movies
 
 ## Related Documentation
 

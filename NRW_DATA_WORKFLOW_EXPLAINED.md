@@ -73,12 +73,9 @@ An ongoing, accumulating database of digital release dates that no one else trac
 
 **Watch Links (Streaming/VOD):**
 - **Tier 1:** `overrides/watch_links_overrides.json` - Manual curator fixes (highest priority)
-- **Tier 2:** `cache/watch_links_cache.json` - JustWatch API deep links cache
-- **Tier 3:** JustWatch API - Direct links to Netflix, Amazon, Apple TV, etc. (via `justwatch_client.py`)
-- **Tier 4:** `streaming_platform_scraper.py` - Playwright-based scraping for Amazon, Apple TV
-- **Tier 5:** TMDB provider names with null links - Frontend shows error state
-
-> **Note (Dec 2024):** Watchmode API was deprecated. JustWatch is now primary source.
+- **Tier 2:** `cache/watch_links_cache.json` - Deep links cache
+- **Tier 3:** `streaming_platform_scraper.py` - Playwright-based scraping for Amazon, Apple TV (tries ALL movies, not just TMDB-listed providers)
+- **Tier 4:** TMDB provider names with null links - Frontend shows error state
 
 **Wikipedia/RT/YouTube Links:**
 - Similar multi-tier approach with manual overrides → cache → API/scraper → fallback

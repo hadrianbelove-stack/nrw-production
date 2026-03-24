@@ -157,61 +157,136 @@ class YouTubeTrailerScraper:
         # Initialize browser if needed
         self._init_browser()
 
-        try:
-            # Build search query
-            search_query = f"{title} {year} official trailer"
-            search_url = f"https://www.youtube.com/results?search_query={search_query.replace(' ', '+')}"
+        # Try "official trailer" first, then "preview" as fallback
+        search_terms = [
+            f"{title} {year} official trailer",
+            f"{title} {year} official preview",
+        ]
 
-            print(f"  → Searching YouTube: {title} ({year})")
-            self.page.goto(search_url, wait_until='domcontentloaded')
-
-            # Wait for video results to load
+        for search_query in search_terms:
             try:
-                self.page.wait_for_selector('a#video-title', timeout=10000)
-                self.page.wait_for_timeout(1000)  # Small additional wait for full render
-            except PlaywrightTimeoutError as e:
-                print(f"  ✗ Timeout waiting for results: {e}")
-                self.cache[cache_key] = None
-                self._save_cache()
-                return None
+                search_url = f"https://www.youtube.com/results?search_query={search_query.replace(' ', '+')}"
 
-            # Try to find the first video link
-            # YouTube uses <a> tags with /watch?v= in the href
-            video_links = self.page.locator('a#video-title').all()
+                print(f"  → Searching YouTube: {search_query}")
+                self.page.goto(search_url, wait_until='domcontentloaded')
 
-            if video_links:
-                # Get the href of the first video
-                first_video = video_links[0]
-                video_url = first_video.get_attribute('href')
+                # Wait for video results to load
+                try:
+                    self.page.wait_for_selector('a#video-title', timeout=10000)
+                    self.page.wait_for_timeout(1000)  # Small additional wait for full render
+                except PlaywrightTimeoutError:
+                    continue
 
-                if video_url and '/watch?v=' in video_url:
-                    # Normalize relative URLs to absolute URLs
+                # Try to find the first video link
+                # YouTube uses <a> tags with /watch?v= in the href
+                video_links = self.page.locator('a#video-title').all()
+
+                if video_links:
+                    # Get the href of the first video
+                    first_video = video_links[0]
+                    video_url = first_video.get_attribute('href')
+
+                    if video_url and '/watch?v=' in video_url:
+                        # Normalize relative URLs to absolute URLs
+                        if video_url.startswith('/watch'):
+                            video_url = f"https://www.youtube.com{video_url}"
+
+                        # Clean up URL (remove any extra parameters after video ID)
+                        if '&' in video_url:
+                            video_url = video_url.split('&')[0]
+
+                        print(f"  ✓ Found: {video_url}")
+
+                        # Cache the result
+                        self.cache[cache_key] = video_url
+                        self._save_cache()
+
+                        return video_url
+
+            except Exception as e:
+                print(f"  ✗ Error scraping {title} with '{search_query}': {e}")
+                continue
+
+        print(f"  ✗ No trailer found for {title} ({year})")
+
+        # Cache the failure (so we don't keep trying)
+        self.cache[cache_key] = None
+        self._save_cache()
+
+        return None
+
+    def find_trailer_broad(self, title, year):
+        """
+        Broader trailer search — tries 'trailer' then 'preview' as search terms,
+        and filters results to only accept videos with 'trailer' or 'preview' in
+        the title. Used as a last-resort fallback (Tier 6) after Gemini/Playwright
+        standard search has already failed.
+
+        Args:
+            title: Movie title
+            year: Movie year
+
+        Returns:
+            Direct YouTube watch URL or None if not found
+        """
+        cache_key = f"{title}_{year}"
+
+        # Check cache first
+        if cache_key in self.cache:
+            return self.cache[cache_key]
+
+        # Initialize browser if needed
+        self._init_browser()
+
+        search_terms = [
+            f"{title} {year} trailer",
+            f"{title} {year} preview",
+        ]
+
+        for search_query in search_terms:
+            try:
+                search_url = f"https://www.youtube.com/results?search_query={search_query.replace(' ', '+')}"
+                print(f"  → Broad search: {search_query}")
+                self.page.goto(search_url, wait_until='domcontentloaded')
+
+                try:
+                    self.page.wait_for_selector('a#video-title', timeout=10000)
+                    self.page.wait_for_timeout(1000)
+                except PlaywrightTimeoutError:
+                    continue
+
+                video_links = self.page.locator('a#video-title').all()
+
+                # Check up to first 5 results for a title containing 'trailer' or 'preview'
+                for link in video_links[:5]:
+                    video_title = (link.get_attribute('title') or '').lower()
+                    video_url = link.get_attribute('href')
+
+                    if not video_url or '/watch?v=' not in video_url:
+                        continue
+
+                    # Filter: video title must contain 'trailer' or 'preview'
+                    if 'trailer' not in video_title and 'preview' not in video_title:
+                        continue
+
                     if video_url.startswith('/watch'):
                         video_url = f"https://www.youtube.com{video_url}"
-
-                    # Clean up URL (remove any extra parameters after video ID)
                     if '&' in video_url:
                         video_url = video_url.split('&')[0]
 
-                    print(f"  ✓ Found: {video_url}")
-
-                    # Cache the result
+                    print(f"  ✓ Broad search found: {video_url} ({video_title[:60]})")
                     self.cache[cache_key] = video_url
                     self._save_cache()
-
                     return video_url
 
-            print(f"  ✗ No trailer found for {title} ({year})")
+            except Exception as e:
+                print(f"  ✗ Broad search error for '{search_query}': {e}")
+                continue
 
-            # Cache the failure (so we don't keep trying)
-            self.cache[cache_key] = None
-            self._save_cache()
-
-            return None
-
-        except Exception as e:
-            print(f"  ✗ Error scraping {title}: {e}")
-            return None
+        print(f"  ✗ Broad search: no trailer/preview found for {title} ({year})")
+        self.cache[cache_key] = None
+        self._save_cache()
+        return None
 
     def batch_find_trailers(self, movies_list, max_searches=None):
         """

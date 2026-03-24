@@ -37,6 +37,68 @@ sys.path.insert(0, SCRIPT_DIR)
 from trailer_uploader import load_env, get_b2_api, get_remote_files, upload_file, get_bucket_url
 from trailer_downloader import download_trailer, extract_youtube_id
 
+BAD_URLS_FILE = os.path.join(PROJECT_ROOT, 'cache', 'bad_trailer_urls.json')
+
+
+def load_bad_urls():
+    """Load the bad trailer URL blocklist."""
+    if os.path.exists(BAD_URLS_FILE):
+        with open(BAD_URLS_FILE, 'r') as f:
+            return json.load(f)
+    return {}
+
+
+def record_bad_url(youtube_url, title, year, reason):
+    """Record a YouTube URL that failed download in the blocklist."""
+    video_id = extract_youtube_id(youtube_url)
+    if not video_id:
+        return
+    bad_urls = load_bad_urls()
+    bad_urls[video_id] = {
+        'title': title,
+        'year': str(year),
+        'reason': reason,
+        'url': youtube_url,
+        'recorded_at': datetime.now().isoformat(),
+    }
+    os.makedirs(os.path.dirname(BAD_URLS_FILE), exist_ok=True)
+    with open(BAD_URLS_FILE, 'w') as f:
+        json.dump(bad_urls, f, indent=2)
+
+
+def rediscover_trailer_url(title, year, bad_url):
+    """Try to find an alternative trailer URL using Gemini/YouTube search.
+    Returns a new YouTube URL different from bad_url, or None."""
+    try:
+        sys.path.insert(0, PROJECT_ROOT)
+        from gemini_scraper import HybridYouTubeFinder
+        finder = HybridYouTubeFinder(cache_file=os.path.join(PROJECT_ROOT, 'cache', 'youtube_trailer_cache.json'))
+        new_url = finder.find_trailer(title, year)
+        if new_url and new_url != bad_url:
+            return new_url
+        # If Gemini returned the same URL or nothing, try broad Playwright search
+        scraper = finder._get_playwright_finder()
+        if scraper and hasattr(scraper, 'find_trailer_broad'):
+            broad_url = scraper.find_trailer_broad(title, year)
+            if broad_url and broad_url != bad_url:
+                return broad_url
+    except Exception as e:
+        print(f'    Re-discovery error: {e}')
+    return None
+
+
+def update_trailer_url_in_data(movie_id, new_url):
+    """Update links.trailer in data.json for a specific movie."""
+    with open(DATA_JSON, 'r') as f:
+        data = json.load(f)
+    for movie in data.get('movies', []):
+        if str(movie.get('id', '')) == str(movie_id):
+            movie.setdefault('links', {})['trailer'] = new_url
+            safe_write_json(DATA_JSON, data)
+            print(f'    Updated data.json trailer URL for {movie.get("title", movie_id)}')
+            return True
+    return False
+
 
 def load_config():
     """Load trailer_hosting config from config.yaml."""
@@ -145,15 +207,16 @@ def stamp_trailer_hosted_urls(dry_run=False):
     return stats
 
 
-def download_and_upload_trailer(movie_id, title, year, youtube_url, bucket, bucket_url, clean_after_upload=False):
+def download_and_upload_trailer(movie_id, title, year, youtube_url, bucket, bucket_url, clean_after_upload=False, cookies_browser=None, rediscover_on_failure=True):
     """
     Download a trailer from YouTube and upload to B2.
-    Returns the hosted URL on success, None on failure.
+    Returns (hosted_url, new_trailer_url) on success, (None, None) on failure.
+    new_trailer_url is set only if re-discovery found a different URL.
     """
     video_id = extract_youtube_id(youtube_url)
     if not video_id:
         print(f'    Could not extract YouTube ID from {youtube_url}')
-        return None
+        return None, None
 
     # Build the dict that download_trailer() expects
     movie_dict = {
@@ -165,7 +228,7 @@ def download_and_upload_trailer(movie_id, title, year, youtube_url, bucket, buck
     }
 
     # Download
-    result = download_trailer(movie_dict)
+    result = download_trailer(movie_dict, cookies_browser=cookies_browser)
     status = result['status']
 
     if status == 'skipped_exists':
@@ -175,13 +238,33 @@ def download_and_upload_trailer(movie_id, title, year, youtube_url, bucket, buck
         pass
     else:
         print(f'    Download: {status} ({result["detail"]})')
-        return None
+        # Only blocklist content-specific failures (not bot detection or transient errors)
+        # skipped_age_restricted covers both real age gates AND bot detection, so skip it
+        blocklist_statuses = ('skipped_region_locked', 'skipped_unavailable')
+        if status in blocklist_statuses:
+            record_bad_url(youtube_url, title, year, status)
+        if rediscover_on_failure:
+            print(f'    Re-discovering trailer for {title} ({year})...')
+            new_url = rediscover_trailer_url(title, year, youtube_url)
+            if new_url:
+                print(f'    Found alternative: {new_url}')
+                hosted_url, _ = download_and_upload_trailer(
+                    movie_id, title, year, new_url, bucket, bucket_url,
+                    clean_after_upload=clean_after_upload,
+                    cookies_browser=cookies_browser,
+                    rediscover_on_failure=False,  # Prevent recursion
+                )
+                if hosted_url:
+                    return hosted_url, new_url
+            else:
+                print(f'    No alternative found for {title} ({year})')
+        return None, None
 
     # Upload to B2
     local_path = os.path.join(MEDIA_DIR, f'{movie_id}.mp4')
     if not os.path.exists(local_path):
         print(f'    No local file at {local_path}')
-        return None
+        return None, None
 
     remote_name = f'{movie_id}.mp4'
     try:
@@ -190,13 +273,13 @@ def download_and_upload_trailer(movie_id, title, year, youtube_url, bucket, buck
         if clean_after_upload and os.path.exists(local_path):
             os.remove(local_path)
             print(f'    Cleaned local: {local_path}')
-        return hosted_url
+        return hosted_url, None
     except Exception as e:
         print(f'    Upload failed: {str(e)[:100]}')
-        return None
+        return None, None
 
 
-def host_new_trailers(movie_ids=None, limit=0, dry_run=False):
+def host_new_trailers(movie_ids=None, limit=0, dry_run=False, cookies_browser=None):
     """
     Download and upload trailers for movies that have links.trailer but no links.trailer_hosted.
 
@@ -209,14 +292,20 @@ def host_new_trailers(movie_ids=None, limit=0, dry_run=False):
     """
     config = load_config()
     bucket_url = config.get('bucket_url', '')
+    max_hosted = config.get('max_hosted', 200)
 
     # Load data.json
     with open(DATA_JSON, 'r') as f:
         data = json.load(f)
 
+    # Only consider the most recent N movies (matches rotation cap).
+    # data.json is ordered most-recent-first, so [:max_hosted] gets the wall.
+    all_movies = data.get('movies', [])
+    scope = all_movies if movie_ids else all_movies[:max_hosted]
+
     # Find movies needing hosting
     to_host = []
-    for movie in data.get('movies', []):
+    for movie in scope:
         movie_id = str(movie.get('id', ''))
         links = movie.get('links', {})
         trailer_url = links.get('trailer', '')
@@ -268,15 +357,19 @@ def host_new_trailers(movie_ids=None, limit=0, dry_run=False):
     for i, movie in enumerate(to_host, 1):
         print(f'[{i}/{total}] {movie["title"]} ({movie["year"]})...')
 
-        hosted_url = download_and_upload_trailer(
+        hosted_url, new_trailer_url = download_and_upload_trailer(
             movie['id'], movie['title'], movie['year'],
             movie['trailer_url'], bucket, url_base,
-            clean_after_upload=clean_after
+            clean_after_upload=clean_after,
+            cookies_browser=cookies_browser
         )
 
         if hosted_url:
             stats['hosted'] += 1
             print(f'    Hosted: {hosted_url}')
+            # If re-discovery found a better URL, update data.json
+            if new_trailer_url:
+                update_trailer_url_in_data(movie['id'], new_trailer_url)
         else:
             stats['failed'] += 1
 
@@ -431,6 +524,8 @@ def main():
     host_parser.add_argument('--limit', type=int, default=0, help='Max trailers to process (0 = all)')
     host_parser.add_argument('--movie-ids', nargs='+', help='Specific TMDB IDs to process')
     host_parser.add_argument('--dry-run', action='store_true', help='Preview without downloading/uploading')
+    host_parser.add_argument('--cookies', type=str, default=None, metavar='BROWSER',
+                             help='Browser for YouTube cookies (e.g. chrome, safari)')
 
     # rotate
     rotate_parser = subparsers.add_parser('rotate', help='Delete oldest trailers to stay under cap')
@@ -444,6 +539,8 @@ def main():
     full_parser = subparsers.add_parser('full', help='Full pipeline: host -> stamp -> rotate -> clean')
     full_parser.add_argument('--dry-run', action='store_true', help='Preview all steps')
     full_parser.add_argument('--limit', type=int, default=0, help='Max new trailers to host (0 = all)')
+    full_parser.add_argument('--cookies', type=str, default=None, metavar='BROWSER',
+                             help='Browser for YouTube cookies (e.g. chrome, safari)')
 
     args = parser.parse_args()
 
@@ -467,6 +564,7 @@ def main():
             movie_ids=args.movie_ids,
             limit=args.limit,
             dry_run=args.dry_run,
+            cookies_browser=args.cookies,
         )
         print(f'\nHost results:')
         print(f'  Hosted:   {stats["hosted"]}')
@@ -489,7 +587,7 @@ def main():
     elif args.command == 'full':
         # Step 1: Host new trailers
         print('--- Step 1: Host new trailers ---')
-        host_stats = host_new_trailers(limit=args.limit, dry_run=args.dry_run)
+        host_stats = host_new_trailers(limit=args.limit, dry_run=args.dry_run, cookies_browser=args.cookies)
         print()
 
         # Step 2: Stamp any uploaded-but-not-stamped trailers

@@ -35,7 +35,7 @@ Copy movie cards from below and paste into the sections above:
 
 {% if movie.director or movie.runtime or movie.country %}**Director:** {{ movie.director | default('N/A') }} | **Runtime:** {{ movie.runtime | default('N/A') }}min | **Country:** {{ movie.country | default('N/A') }}{% endif %}
 
-{% if movie.rt_score %}**RT Score:** {{ movie.rt_score }}% &#127813;{% endif %}
+{% if movie.rt_score %}**RT Score:** {{ movie.rt_score }}% &#127813;{% endif %}{% if movie.imdb_rating %} **IMDb:** {{ movie.imdb_rating }}{% endif %}
 
 {% if movie.synopsis %}{{ movie.synopsis }}{% endif %}
 

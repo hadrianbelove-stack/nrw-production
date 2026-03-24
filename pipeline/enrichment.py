@@ -111,7 +111,8 @@ class EnrichmentService:
         self.watch_links_cache = watch_links_cache
         self.watch_links_overrides = watch_links_overrides
 
-    def get_watch_links(self, movie_id, title, year, providers, force_refresh=False, tracking_data=None):
+    def get_watch_links(self, movie_id, title, year, providers, force_refresh=False,
+                        tracking_data=None, original_title=None, alternative_titles=None):
         """
         Get deep links with canonical streaming/vod structure.
 
@@ -126,11 +127,13 @@ class EnrichmentService:
 
         Args:
             movie_id: TMDB movie ID
-            title: Movie title
+            title: Movie title (English)
             year: Release year
             providers: Dict with streaming/vod provider lists from TMDB
             force_refresh: Skip cache and re-fetch
             tracking_data: Movie tracking data with optional manual_watch_links
+            original_title: Original language title from TMDB (for scraper fallback)
+            alternative_titles: List of TMDB alternative title dicts (for scraper fallback)
 
         Returns:
             Dict: {
@@ -138,12 +141,43 @@ class EnrichmentService:
                 'vod': [{'service': 'Amazon Video', 'link': 'https://...'}]
             }
         """
+        # Build title variants for scraper fallback (English → original → US alternative)
+        title_variants = [title]
+        if original_title and original_title.lower() != title.lower():
+            title_variants.append(original_title)
+        if alternative_titles:
+            for alt in alternative_titles:
+                if alt.get('iso_3166_1') == 'US':
+                    us_title = alt.get('title')
+                    if us_title and us_title.lower() != title.lower():
+                        title_variants.append(us_title)
+                    break
+
         cache_key = str(movie_id)
 
         # 1. Try manual watch links (highest priority)
         manual_result = self._try_manual_links(tracking_data, title, cache_key)
         if manual_result:
             return manual_result
+
+        # 1.5. Try discovery-provided JustWatch links (captured at discovery time)
+        if tracking_data and tracking_data.get('watch_links') and tracking_data.get('watch_links_source') == 'justwatch_discovery':
+            try:
+                discovery_links = tracking_data['watch_links']
+                validated_discovery = self.validator.validate_watch_links_schema(discovery_links, title)
+                if validated_discovery:
+                    self.logger.info(f"Using JustWatch discovery watch_links for {title}")
+                    self.stats['justwatch_discovery_reuse'] = self.stats.get('justwatch_discovery_reuse', 0) + 1
+                    # Cache for future lookups
+                    self.watch_links_cache[cache_key] = {
+                        'links': validated_discovery,
+                        'cached_at': datetime.now().isoformat(),
+                        'source': 'justwatch_discovery'
+                    }
+                    self.storage.save_cache(self.watch_links_cache, 'cache/watch_links_cache.json')
+                    return validated_discovery
+            except Exception as e:
+                self.logger.warning(f"Discovery watch_links invalid for {title}: {e}")
 
         # 2. Try override links
         override_result = self._try_override_links(cache_key, title)
@@ -159,13 +193,14 @@ class EnrichmentService:
             return cached_result
 
         # 4. Try JustWatch API
-        justwatch_result = self._try_justwatch_api(title, year, cache_key, validated_overrides)
+        justwatch_result = self._try_justwatch_api(title, year, cache_key, validated_overrides, providers=providers)
         if justwatch_result:
             return justwatch_result
 
         # 5. Build from scrapers (fallback)
         watch_links, vod_scraper_used = self._build_scraper_fallback_links(
-            movie_id, title, year, providers, validated_overrides
+            movie_id, title, year, providers, validated_overrides,
+            title_variants=title_variants
         )
 
         # 6. Normalize URLs
@@ -318,7 +353,7 @@ class EnrichmentService:
             self._check_category_has_links(category_data)
             for category_data in migrated_links.values()
         )
-        source_type = 'justwatch_api' if has_links else 'tmdb_providers'
+        source_type = 'legacy_cache' if has_links else 'tmdb_providers'
         self.watch_links_cache[cache_key]['source'] = source_type
         self.watch_links_cache[cache_key]['cached_at'] = datetime.now().isoformat()
 
@@ -332,7 +367,7 @@ class EnrichmentService:
             return category_data.get('link') is not None
         return False
 
-    def _try_justwatch_api(self, title, year, cache_key, validated_overrides):
+    def _try_justwatch_api(self, title, year, cache_key, validated_overrides, providers=None):
         """
         Try to get links from JustWatch API.
 
@@ -341,6 +376,7 @@ class EnrichmentService:
             year: Release year
             cache_key: Cache key for storing result
             validated_overrides: Dict of admin overrides to apply
+            providers: TMDB provider dict for cross-validation
 
         Returns:
             Dict of validated links if found, None otherwise
@@ -365,6 +401,9 @@ class EnrichmentService:
             if justwatch_links:
                 self.logger.info(f"JustWatch found links for {title}: {list(justwatch_links.keys())}")
                 self.stats['justwatch_successes'] = self.stats.get('justwatch_successes', 0) + 1
+
+                # Domain validation: reject JustWatch links where service doesn't match URL domain
+                justwatch_links = self._validate_justwatch_domains(justwatch_links, title, providers)
 
                 validated_links = self.validator.validate_watch_links_schema(justwatch_links, title)
                 if validated_links:
@@ -391,6 +430,57 @@ class EnrichmentService:
 
         return None
 
+    def _validate_justwatch_domains(self, justwatch_links, title, providers=None):
+        """Validate JustWatch results: check domain matches service and cross-check with TMDB providers."""
+        # Build set of TMDB provider names (lowercase) for cross-validation
+        tmdb_services = set()
+        if providers:
+            for cat in ['streaming', 'rent', 'buy']:
+                for p in providers.get(cat, []):
+                    tmdb_services.add(p.lower())
+
+        for category in list(justwatch_links.keys()):
+            link_data = justwatch_links[category]
+
+            # Handle both dict (single entry) and list formats
+            entries = link_data if isinstance(link_data, list) else [link_data] if isinstance(link_data, dict) else []
+            validated_entries = []
+
+            for entry in entries:
+                if not isinstance(entry, dict):
+                    validated_entries.append(entry)
+                    continue
+
+                service = entry.get('service', '')
+                link = entry.get('link', '')
+
+                # Check 1: Domain must match service name
+                if link and not self._validate_link_domain(link, service):
+                    self.logger.warning(
+                        f"JustWatch domain mismatch for '{title}': service '{service}' returned link '{link}'. Rejecting."
+                    )
+                    continue
+
+                # Check 2: For streaming category, cross-check with TMDB providers
+                if category == 'streaming' and tmdb_services and service:
+                    service_lower = service.lower()
+                    if not any(service_lower in tp or tp in service_lower for tp in tmdb_services):
+                        self.logger.warning(
+                            f"JustWatch service mismatch for '{title}': JustWatch says '{service}' "
+                            f"but TMDB providers are {list(tmdb_services)}. Rejecting streaming link."
+                        )
+                        continue
+
+                validated_entries.append(entry)
+
+            # Update the category with validated entries
+            if isinstance(link_data, list):
+                justwatch_links[category] = validated_entries
+            elif isinstance(link_data, dict):
+                justwatch_links[category] = validated_entries[0] if validated_entries else {'service': link_data.get('service', ''), 'link': None}
+
+        return justwatch_links
+
     def _get_amazon_affiliate_tag(self):
         """Get Amazon affiliate tag from config if enabled."""
         affiliate_config = self.config.get('affiliate', {})
@@ -405,7 +495,8 @@ class EnrichmentService:
 
         return amazon_tag
 
-    def _build_scraper_fallback_links(self, movie_id, title, year, providers, validated_overrides):
+    def _build_scraper_fallback_links(self, movie_id, title, year, providers, validated_overrides,
+                                       title_variants=None):
         """
         Build watch links from scrapers when JustWatch has no data.
 
@@ -415,6 +506,7 @@ class EnrichmentService:
             year: Release year
             providers: Dict with streaming/vod provider lists from TMDB
             validated_overrides: Dict of admin overrides
+            title_variants: List of title variants to try (English, original, US alt)
 
         Returns:
             Tuple of (watch_links dict, vod_scraper_used bool)
@@ -453,13 +545,15 @@ class EnrichmentService:
         # Build streaming links
         if not skip_streaming:
             watch_links['streaming'] = self._build_streaming_links(
-                movie_id, title, year, providers, tmdb_streaming, tmdb_rent, tmdb_buy
+                movie_id, title, year, providers, tmdb_streaming, tmdb_rent, tmdb_buy,
+                title_variants=title_variants
             )
 
         # Build VOD links
         if not (skip_rent and skip_buy):
             watch_links['vod'] = self._build_vod_links(
-                movie_id, title, year, providers, tmdb_rent, tmdb_buy, has_vod_scraper
+                movie_id, title, year, providers, tmdb_rent, tmdb_buy, has_vod_scraper,
+                title_variants=title_variants
             )
 
         # Overlay admin overrides
@@ -476,7 +570,8 @@ class EnrichmentService:
         except ImportError:
             return False
 
-    def _build_streaming_links(self, movie_id, title, year, providers, tmdb_streaming, tmdb_rent, tmdb_buy):
+    def _build_streaming_links(self, movie_id, title, year, providers, tmdb_streaming, tmdb_rent, tmdb_buy,
+                               title_variants=None):
         """Build streaming services array from available sources."""
         streaming_services = []
 
@@ -495,7 +590,8 @@ class EnrichmentService:
                     amazon_link = self._find_amazon_link(tmdb_rent, tmdb_buy)
                     streaming_services.append({'service': provider, 'link': amazon_link})
                 else:
-                    agent_result = self.try_streaming_scraper(movie_id, title, year, provider, 'streaming')
+                    agent_result = self.try_streaming_scraper(movie_id, title, year, provider, 'streaming',
+                                                              title_variants=title_variants)
                     streaming_services.append(agent_result)
 
         # Filter to services with links, or keep all if none have links
@@ -512,7 +608,8 @@ class EnrichmentService:
                 return source['link']
         return None
 
-    def _build_vod_links(self, movie_id, title, year, providers, tmdb_rent, tmdb_buy, has_vod_scraper):
+    def _build_vod_links(self, movie_id, title, year, providers, tmdb_rent, tmdb_buy, has_vod_scraper,
+                         title_variants=None):
         """Build VOD services array filtered to Amazon and Apple TV."""
         vod_sources = tmdb_rent + tmdb_buy
 
@@ -523,9 +620,16 @@ class EnrichmentService:
                 filtered_vod.append(source)
 
         if not filtered_vod:
-            # Try additional providers
+            # Try additional providers from TMDB + always include Amazon/Apple
             vod_providers = providers.get('rent', []) + providers.get('buy', [])
             amazon_apple_providers = [p for p in vod_providers if self.is_amazon_or_apple_service(p)]
+
+            # Always include Amazon and Apple TV as candidates (TMDB data is incomplete)
+            platforms_config = self.config.get('vod_scraper', {}).get('platforms', {})
+            if platforms_config.get('amazon', True) and 'Amazon Video' not in amazon_apple_providers:
+                amazon_apple_providers.append('Amazon Video')
+            if platforms_config.get('apple_tv', True) and 'Apple TV' not in amazon_apple_providers:
+                amazon_apple_providers.append('Apple TV')
 
             for vod_service in amazon_apple_providers:
                 if has_vod_scraper:
@@ -537,7 +641,8 @@ class EnrichmentService:
 
                 if not any(self.is_amazon_or_apple_service(s.get('service')) and s.get('service') == vod_service
                            for s in filtered_vod):
-                    agent_result = self.try_streaming_scraper(movie_id, title, year, vod_service, 'vod')
+                    agent_result = self.try_streaming_scraper(movie_id, title, year, vod_service, 'vod',
+                                                              title_variants=title_variants)
                     if agent_result.get('link'):
                         filtered_vod.append(agent_result)
 
@@ -606,7 +711,7 @@ class EnrichmentService:
         if vod_scraper_used:
             source_type = 'agent_search'
         elif has_links:
-            source_type = 'justwatch_api'
+            source_type = 'legacy_cache'
         else:
             source_type = 'tmdb_providers'
 
@@ -617,7 +722,35 @@ class EnrichmentService:
         }
         self.storage.save_cache(self.watch_links_cache, 'cache/watch_links_cache.json')
 
-    # Known URL patterns for services not covered by JustWatch or agent scraper
+    # Expected URL domains for each streaming service — used to reject cross-service mismatches
+    EXPECTED_DOMAINS = {
+        'Netflix': ['netflix.com'],
+        'Disney+': ['disneyplus.com'],
+        'Disney Plus': ['disneyplus.com'],
+        'HBO Max': ['max.com', 'play.max.com'],
+        'Max': ['max.com', 'play.max.com'],
+        'Hulu': ['hulu.com'],
+        'Amazon Video': ['amazon.com', 'watch.amazon.com', 'primevideo.com'],
+        'Amazon Prime Video': ['amazon.com', 'watch.amazon.com', 'primevideo.com'],
+        'Prime Video': ['amazon.com', 'watch.amazon.com', 'primevideo.com'],
+        'Apple TV': ['tv.apple.com'],
+        'Shudder': ['shudder.com'],
+        'Criterion': ['criterionchannel.com'],
+        'MUBI': ['mubi.com'],
+        'Eventive': ['eventive.org', 'watch.eventive.org'],
+    }
+
+    def _validate_link_domain(self, link_url, service):
+        """Check if a link URL's domain matches the expected service."""
+        if not link_url or not service:
+            return True  # Can't validate, allow through
+        expected = self.EXPECTED_DOMAINS.get(service)
+        if not expected:
+            return True  # Unknown service, allow through
+        link_lower = link_url.lower()
+        return any(domain in link_lower for domain in expected)
+
+    # Known URL patterns for services not covered by scraper
     SERVICE_URL_PATTERNS = {
         'Bloodstream': 'https://bloodstreamtv.com/show-details/{slug}',
     }
@@ -630,16 +763,17 @@ class EnrichmentService:
         slug = title.lower().replace("'", "").replace(":", "").replace(" ", "-")
         return pattern.replace('{slug}', slug)
 
-    def try_streaming_scraper(self, movie_id, title, year, service, category):
+    def try_streaming_scraper(self, movie_id, title, year, service, category, title_variants=None):
         """
-        Try agent scraper for supported platforms.
+        Try agent scraper for supported platforms, with title variant fallback.
 
         Args:
             movie_id: TMDB movie ID
-            title: Movie title
+            title: Movie title (primary)
             year: Release year
             service: Service name to try
             category: Category (streaming/vod)
+            title_variants: Optional list of title variants to try in sequence
 
         Returns:
             Dict: {'service': service_name, 'link': url_or_none}
@@ -663,35 +797,51 @@ class EnrichmentService:
         if self.streaming_scraper is False:
             return {'service': service, 'link': None}
 
-        try:
-            self.logger.debug(f"Trying agent scraper for {title} on {service}")
-            self.stats['streaming_attempts'] += 1
+        # Build list of titles to try (primary title + variants)
+        titles_to_try = title_variants if title_variants else [title]
 
-            result = self.streaming_scraper.find_watch_link(movie_id, title, year, service)
+        for title_attempt in titles_to_try:
+            try:
+                self.logger.debug(f"Trying agent scraper for '{title_attempt}' on {service}")
+                self.stats['streaming_attempts'] += 1
 
-            # Defensive logging and guard against None result shape
-            self.logger.debug(f"Agent result type: {type(result).__name__}, value: {result}")
-            if not isinstance(result, dict):
-                self.logger.warning(f"Agent result was not a dict, converting to {{'link': None}}")
-                result = {'link': None}
+                result = self.streaming_scraper.find_watch_link(movie_id, title_attempt, year, service)
 
-            if result.get('cached'):
-                self.stats['vod_cache_hits'] += 1
+                # Defensive logging and guard against None result shape
+                self.logger.debug(f"Agent result type: {type(result).__name__}, value: {result}")
+                if not isinstance(result, dict):
+                    self.logger.warning(f"Agent result was not a dict, converting to {{'link': None}}")
+                    result = {'link': None}
 
-            if result.get('link'):
-                self.stats['streaming_successes'] += 1
-                self.logger.info(f"Agent found link for {title} on {service}")
-            else:
-                self.stats['streaming_failures'] += 1
-                self.logger.debug(f"Agent could not find link for {title} on {service}")
+                if result.get('cached'):
+                    self.stats['vod_cache_hits'] += 1
 
-            # Return found link or null (no Google fallback)
-            return {'service': service, 'link': result.get('link')}
+                link = result.get('link')
 
-        except Exception as e:
-            self.stats['streaming_failures'] += 1
-            self.logger.error(f"Error in agent scraper for {title}: {e}")
-            return {'service': service, 'link': None}
+                # Domain validation: reject links that don't match the expected service
+                if link and not self._validate_link_domain(link, service):
+                    self.logger.warning(f"Domain mismatch for {title_attempt}: got '{link}' but expected {service} domain. Rejecting.")
+                    continue  # Try next title variant
+
+                if link:
+                    self.stats['streaming_successes'] += 1
+                    if title_attempt != title:
+                        self.logger.info(f"Agent found link for '{title}' on {service} using variant title: '{title_attempt}'")
+                    else:
+                        self.logger.info(f"Agent found link for {title} on {service}")
+                    return {'service': service, 'link': link}
+
+            except Exception as e:
+                self.logger.error(f"Error in agent scraper for '{title_attempt}' on {service}: {e}")
+                continue  # Try next title variant
+
+        # All title variants failed
+        self.stats['streaming_failures'] += 1
+        if len(titles_to_try) > 1:
+            self.logger.debug(f"Agent could not find link for {title} on {service} (tried {len(titles_to_try)} title variants)")
+        else:
+            self.logger.debug(f"Agent could not find link for {title} on {service}")
+        return {'service': service, 'link': None}
 
     def _init_streaming_scraper(self):
         """Initialize agent scraper if not already initialized"""
@@ -734,7 +884,7 @@ class EnrichmentService:
 
     def try_vod_scraper(self, title, year, providers, tmdb_streaming, tmdb_rent, tmdb_buy, skip_streaming, skip_rent, skip_buy):
         """
-        Try platform scraper (Playwright) for Amazon/Apple TV when JustWatch API has no data.
+        Try platform scraper (Playwright) for Amazon/Apple TV deep links.
 
         Args:
             title: Movie title
@@ -785,7 +935,7 @@ class EnrichmentService:
                 return False
             return any('google.com/search' in item.get('link', '') for item in link_list)
 
-        # Try streaming providers (if no JustWatch streaming data OR Google fallback, and not skipped)
+        # Try streaming providers (if no streaming data OR Google fallback, and not skipped)
         if not skip_streaming and (not tmdb_streaming or has_google_fallback(tmdb_streaming)) and providers.get('streaming'):
             for provider in providers['streaming']:
                 # Filter platforms based on config and validate actual services
@@ -812,7 +962,7 @@ class EnrichmentService:
                 else:
                     self.logger.debug(f"Platform {provider} disabled in config, skipping")
 
-        # Try rent providers (if no JustWatch rent data OR Google fallback, and not skipped)
+        # Try rent providers (if no rent data OR Google fallback, and not skipped)
         if not skip_rent and (not tmdb_rent or has_google_fallback(tmdb_rent)) and providers.get('rent'):
             for provider in providers['rent']:
                 # Filter platforms based on config and validate actual services
@@ -839,7 +989,7 @@ class EnrichmentService:
                 else:
                     self.logger.debug(f"Platform {provider} disabled in config, skipping")
 
-        # Try buy providers (if no JustWatch buy data OR Google fallback, and not skipped)
+        # Try buy providers (if no buy data OR Google fallback, and not skipped)
         if not skip_buy and (not tmdb_buy or has_google_fallback(tmdb_buy)) and providers.get('buy'):
             for provider in providers['buy']:
                 # Filter platforms based on config and validate actual services
@@ -865,6 +1015,46 @@ class EnrichmentService:
                         self.stats['vod_failures'] = self.stats.get('vod_failures', 0) + 1
                 else:
                     self.logger.debug(f"Platform {provider} disabled in config, skipping")
+
+        # --- Speculative scraping: try Amazon/Apple for ALL movies ---
+        # TMDB provider data is often incomplete. Many movies are available on
+        # Amazon/Apple but TMDB doesn't list them. Try both platforms regardless.
+        already_has_amazon = any(
+            self.is_actual_amazon_service(s.get('service', ''))
+            for s in (tmdb_rent + tmdb_buy + tmdb_streaming) if s.get('link')
+        )
+        already_has_apple = any(
+            self.is_actual_apple_service(s.get('service', ''))
+            for s in (tmdb_rent + tmdb_buy + tmdb_streaming) if s.get('link')
+        )
+
+        if amazon_enabled and not already_has_amazon and not skip_rent:
+            try:
+                self.logger.debug(f"Speculative Amazon scrape for {title} (not in TMDB providers)")
+                deep_link = self.get_platform_deep_link_with_cache(title, year, 'Amazon Video')
+                if deep_link:
+                    self.logger.info(f"Speculative scrape found Amazon link for {title}")
+                    tmdb_rent.append({'service': 'Amazon Video', 'link': deep_link})
+                    self.stats['vod_successes'] = self.stats.get('vod_successes', 0) + 1
+                else:
+                    self.stats['vod_speculative_misses'] = self.stats.get('vod_speculative_misses', 0) + 1
+            except Exception as e:
+                self.logger.error(f"Error in speculative Amazon scrape for {title}: {e}")
+                self.stats['vod_failures'] = self.stats.get('vod_failures', 0) + 1
+
+        if apple_tv_enabled and not already_has_apple and not skip_buy:
+            try:
+                self.logger.debug(f"Speculative Apple TV scrape for {title} (not in TMDB providers)")
+                deep_link = self.get_platform_deep_link_with_cache(title, year, 'Apple TV')
+                if deep_link:
+                    self.logger.info(f"Speculative scrape found Apple TV link for {title}")
+                    tmdb_buy.append({'service': 'Apple TV', 'link': deep_link})
+                    self.stats['vod_successes'] = self.stats.get('vod_successes', 0) + 1
+                else:
+                    self.stats['vod_speculative_misses'] = self.stats.get('vod_speculative_misses', 0) + 1
+            except Exception as e:
+                self.logger.error(f"Error in speculative Apple TV scrape for {title}: {e}")
+                self.stats['vod_failures'] = self.stats.get('vod_failures', 0) + 1
 
     def get_platform_deep_link_with_cache(self, title, year, provider):
         """

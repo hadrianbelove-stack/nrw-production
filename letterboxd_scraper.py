@@ -167,7 +167,7 @@ class LetterboxdScraper:
             return cached.get('data'), cached.get('confidence', 'none')
 
         try:
-            params = {'api_key': self.tmdb_api_key, 'query': title}
+            params = {'api_key': self.tmdb_api_key, 'query': title, 'language': 'en-US'}
             if year:
                 params['year'] = year
 

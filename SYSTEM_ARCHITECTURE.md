@@ -159,7 +159,7 @@ git push origin main
 | `data.json` | Display data (append-only, 90-day window) | ~230 | JSON object |
 | `metrics/newly_available.json` | Today's enrichment queue | Variable (0-20/day) | JSON object |
 | `config.yaml` | System configuration | N/A | YAML |
-| `cache/watch_links_cache.json` | JustWatch API response cache | ~200 entries | JSON |
+| `cache/watch_links_cache.json` | Watch links cache | ~200 entries | JSON |
 
 ### 3.3 Core Scripts
 
@@ -234,7 +234,7 @@ All API keys follow the 12-factor app pattern:
 - `TMDB_API_KEY` - The Movie Database API key
 - `OMDB_API_KEY` - OMDb API key (used for IMDb ID fallback in Wikipedia lookup)
 
-> **Note (Dec 2024):** Watchmode API was deprecated. JustWatch GraphQL API is now the primary source for watch links.
+> **Note (Mar 2026):** Watch links use cache + Playwright scrapers for Amazon/Apple TV deep links. Speculative scraping tries both platforms for ALL movies regardless of TMDB provider data.
 
 **Launch Method:**
 - `./launch_all.sh` - launches both admin panel (5556) and public site (3000)
@@ -313,7 +313,7 @@ rt_scraper:
 | API | Key Required | Rate Limit | Usage |
 |-----|--------------|------------|-------|
 | TMDB | Yes (`TMDB_API_KEY`) | 40/10s | Movie metadata |
-| JustWatch | No | 1/s self-imposed | Watch links |
+| Playwright Scrapers | No | 2s delay | Watch links (Amazon/Apple TV) |
 | OMDb | Yes (`OMDB_API_KEY`) | 1000/day | IMDb ID fallback |
 | Agent Scraping | No | 2s delay | Platform deep links |
 
@@ -354,9 +354,9 @@ The `watch_links` field in `data.json` uses a **two-category structure** represe
 ### Cache Strategy
 - **Location:** `cache/watch_links_cache.json`
 - **Key:** TMDB ID (string)
-- **Value:** `{links: {...}, cached_at: ISO-8601, source: 'justwatch_api'|'tmdb_providers'}`
-- **Purpose:** Prevents redundant API calls (saves 13,380 calls/month)
-- **Effectiveness:** With cache, monthly usage is ~300 calls (new movies only); without cache, would be 13,680 calls (exceeds free tier)
+- **Value:** `{links: {...}, cached_at: ISO-8601, source: 'legacy_cache'|'agent_search'|'tmdb_providers'}`
+- **Purpose:** Prevents redundant scraper calls
+- **Effectiveness:** Cached links avoid re-scraping for known movies
 - **Schema:** Uses canonical `streaming`/`vod` format (legacy `rent`/`buy` deprecated Dec 2024)
 
 ## 📊 Data Contracts
@@ -730,12 +730,11 @@ See Section 5 above for detailed enrichment-on-transition caching.
 
 ### 7.4 Multi-Tier Fallback
 
-**5-Tier Waterfall**:
-1. Direct platform APIs
-2. JustWatch integration
-3. Streaming platform search
-4. TMDB recommendations
-5. Manual override files
+**4-Tier Waterfall**:
+1. Manual overrides
+2. Cache (deep links)
+3. Playwright scrapers (Amazon/Apple TV — tries ALL movies, not just TMDB-listed)
+4. TMDB provider names (fallback)
 
 ### 7.5 Wikipedia Scraper Waterfall
 
@@ -788,7 +787,7 @@ The Wikipedia scraper uses a 4-tier waterfall approach for reliable Wikipedia li
 |---------|--------------|-------------|
 | 2+ hour runtimes | Enriched flags corrupted | Workflow Timeout |
 | "No recent movies" | Validation catch-22 | Validation Failures |
-| Missing watch links | JustWatch API issues | Watch Links Missing |
+| Missing watch links | Scraper selector issues | Watch Links Missing |
 | 0 transitions found | API key or TMDB issues | Change Detection |
 
 **Performance thresholds:**

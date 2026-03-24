@@ -71,9 +71,10 @@ class BasePlatformScraper:
         # Exact title match bonus: if result contains the exact full title, accept with lower threshold
         has_exact_title = normalized_title in normalized_result
 
-        # Require at least two non-stopword matches or exact title presence for very short titles
+        # Short titles (1-2 words) require exact full title match to prevent false positives
+        # e.g., "Women's Hell" must appear as a phrase — matching just "hell" alone won't work
         if len(search_title_words) <= 2:
-            actual_threshold = 0.5 if (has_exact_title or matching_words >= 2) else 1.0
+            actual_threshold = 0.5 if has_exact_title else 1.0
         else:
             actual_threshold = 0.6 if has_exact_title else threshold
 
@@ -146,92 +147,27 @@ class NetflixScraper(BasePlatformScraper):
                         logger.debug(f"[NetflixScraper] Found {len(elements)} elements with selector: {selector}")
 
                         if elements:
-                            # Check first few elements for valid Netflix links
                             for j, element in enumerate(elements[:8]):
                                 try:
-                                    # For high-confidence selectors (first 2 in SELECTORS list), attempt alternative validation first
-                                    # before applying position-based filtering
-                                    if i < 2:  # High-confidence selector
-                                        # Try alternative validation first for featured results
-                                        try:
-                                            href = element.get_attribute('href')
-                                            if href and 'netflix.com/title/' in href:
-                                                # Try alternative validation for featured results
-                                                link_text = element.text_content().strip().lower()
-                                                if link_text:  # If we have text content, try simple matching
-                                                    search_words = title.lower().replace('the ', '').replace('a ', '').split()
-                                                    search_words = [w for w in search_words if len(w) > 1]
-                                                    matches = sum(1 for word in search_words if word in link_text)
-                                                    match_pct = matches / len(search_words) if search_words else 0
-
-                                                    # Try nearby parent text search (from streaming_platform_scraper.py logic)
-                                                    nearby_text = ""
-                                                    try:
-                                                        for level in range(1, 6):
-                                                            parent_candidate = element.locator(f"xpath={'/..' * level}").first
-                                                            if parent_candidate.count() > 0:
-                                                                candidate_text = parent_candidate.text_content().lower()
-                                                                if 10 < len(candidate_text) < 500:
-                                                                    nearby_text = candidate_text
-                                                                    break
-                                                    except:
-                                                        pass
-
-                                                    # Use nearby text if available for better matching
-                                                    if nearby_text:
-                                                        nearby_matches = sum(1 for word in search_words if word in nearby_text)
-                                                        nearby_match_pct = nearby_matches / len(search_words) if search_words else 0
-                                                        if nearby_match_pct >= 0.5:  # 50% threshold for high-confidence selectors
-                                                            logger.info(f"[NetflixScraper] ✓ Found Netflix link (featured result, alternative validation): {href}")
-                                                            logger.debug(f"[NetflixScraper] ✓ Nearby parent title match: {nearby_match_pct:.1%}")
-                                                            return {
-                                                                'link': href,
-                                                                'selector_used': selector
-                                                            }
-                                                    elif match_pct >= 0.5:  # Fallback to link text matching
-                                                        logger.info(f"[NetflixScraper] ✓ Found Netflix link (featured result): {href}")
-                                                        logger.debug(f"[NetflixScraper] ✓ Alternative title match: {match_pct:.1%}")
-                                                        return {
-                                                            'link': href,
-                                                            'selector_used': selector
-                                                        }
-                                        except Exception:
-                                            pass  # Continue to normal validation
-
-                                    # Skip strict validation for high-confidence selectors
-                                    if i < 2:
-                                        continue
-
-                                    # Position-based filtering: skip first result (likely sponsored)
-                                    # Only apply this if not high-confidence or alternative validation failed
-                                    if j == 0 and i >= 2:  # Only skip for non-high-confidence selectors
-                                        logger.debug(f"[NetflixScraper] Element {j+1}: Skipping position {j+1} (likely sponsored)")
-                                        continue
-
                                     href = element.get_attribute('href')
                                     if href and 'netflix.com/title/' in href:
-                                        # Enhanced title validation
+                                        # Title validation - consistent threshold for all selectors
                                         try:
                                             parent_text = element.locator("xpath=./..").text_content().lower()
-                                            # Use relaxed threshold for high-confidence selectors
-                                            threshold = 0.5 if i < 2 else 0.7
-                                            is_match, overlap_percentage, has_exact_title = self.validate_title_match(title, parent_text, threshold)
+                                            is_match, overlap_percentage, has_exact_title = self.validate_title_match(title, parent_text, 0.7)
 
                                             if not is_match:
                                                 logger.debug(f"[NetflixScraper] Element {j+1}: Title match failed ({overlap_percentage:.1%}), skipping")
                                                 continue
 
-                                            # Year validation (skip for high-confidence selectors)
-                                            if i >= 2:  # Only apply year validation for non-high-confidence selectors
-                                                year_bonus, year_penalty = self.validate_year_match(year, parent_text)
-                                                if year_penalty > 0:
-                                                    logger.debug(f"[NetflixScraper] Element {j+1}: Year penalty applied (probably wrong movie), skipping")
-                                                    continue
-                                            else:
-                                                year_bonus = 0
+                                            # Year validation - always applied
+                                            year_bonus, year_penalty = self.validate_year_match(year, parent_text)
+                                            if year_penalty > 0:
+                                                logger.debug(f"[NetflixScraper] Element {j+1}: Year penalty applied (probably wrong movie), skipping")
+                                                continue
 
                                             # Negative keyword detection
-                                            negative_keywords = ['not available', 'unavailable', 'coming soon', 'pre-order', 'tv series', 'season']
+                                            negative_keywords = ['not available', 'unavailable', 'coming soon', 'pre-order']
                                             has_negative = any(keyword in parent_text for keyword in negative_keywords)
                                             if has_negative:
                                                 logger.debug(f"[NetflixScraper] Element {j+1}: Contains negative keywords, skipping")
@@ -247,7 +183,6 @@ class NetflixScraper(BasePlatformScraper):
                                         except Exception as validation_error:
                                             # Try expanded parent container selection
                                             try:
-                                                # Try ancestor div selectors
                                                 ancestor_selectors = [
                                                     "xpath=./ancestor::div[contains(@class, 'title-card')]",
                                                     "xpath=./ancestor::div[contains(@class, 'slider-item')]",
@@ -271,7 +206,7 @@ class NetflixScraper(BasePlatformScraper):
                                                     if is_match:
                                                         year_bonus, year_penalty = self.validate_year_match(year, expanded_parent_text)
                                                         if year_penalty == 0:
-                                                            negative_keywords = ['not available', 'unavailable', 'coming soon', 'pre-order', 'tv series', 'season']
+                                                            negative_keywords = ['not available', 'unavailable', 'coming soon', 'pre-order']
                                                             has_negative = any(keyword in expanded_parent_text for keyword in negative_keywords)
                                                             if not has_negative:
                                                                 logger.info(f"[NetflixScraper] ✓ Found Netflix link using expanded parent search")
@@ -281,15 +216,10 @@ class NetflixScraper(BasePlatformScraper):
                                                                     'selector_used': selector
                                                                 }
                                             except Exception:
-                                                pass  # Continue to final fallback
+                                                pass
 
-                                            # Final fallback for high-confidence selectors
-                                            if i < 2:
-                                                logger.debug(f"[NetflixScraper] Element {j+1}: Using fallback validation for high-confidence selector")
-                                                continue
-                                            else:
-                                                logger.debug(f"[NetflixScraper] Element {j+1}: Validation error: {validation_error}")
-                                                continue
+                                            logger.debug(f"[NetflixScraper] Element {j+1}: Validation error: {validation_error}")
+                                            continue
 
                                 except Exception as e:
                                     logger.warning(f"[NetflixScraper] Error checking element {j}: {e}")
@@ -319,6 +249,7 @@ class DisneyPlusScraper(BasePlatformScraper):
         ".search-result a",
         "[data-testid='movie-card'] a",
         "a[href*='/movies/']",
+        "a[href*='/series/']",
         "a[href*='/video/']"
     ]
 
@@ -347,89 +278,22 @@ class DisneyPlusScraper(BasePlatformScraper):
                         if elements:
                             for j, element in enumerate(elements[:8]):
                                 try:
-                                    # For high-confidence selectors (first 2 in SELECTORS list), attempt alternative validation first
-                                    # before applying position-based filtering
-                                    if i < 2:  # High-confidence selector
-                                        # Try alternative validation first for featured results
-                                        try:
-                                            href = element.get_attribute('href')
-                                            if href and ('disneyplus.com/movies/' in href or 'disneyplus.com/video/' in href):
-                                                # Try alternative validation for featured results
-                                                link_text = element.text_content().strip().lower()
-                                                if link_text:  # If we have text content, try simple matching
-                                                    search_words = title.lower().replace('the ', '').replace('a ', '').split()
-                                                    search_words = [w for w in search_words if len(w) > 1]
-                                                    matches = sum(1 for word in search_words if word in link_text)
-                                                    match_pct = matches / len(search_words) if search_words else 0
-
-                                                    # Try nearby parent text search (from streaming_platform_scraper.py logic)
-                                                    nearby_text = ""
-                                                    try:
-                                                        for level in range(1, 6):
-                                                            parent_candidate = element.locator(f"xpath={'/..' * level}").first
-                                                            if parent_candidate.count() > 0:
-                                                                candidate_text = parent_candidate.text_content().lower()
-                                                                if 10 < len(candidate_text) < 500:
-                                                                    nearby_text = candidate_text
-                                                                    break
-                                                    except:
-                                                        pass
-
-                                                    # Use nearby text if available for better matching
-                                                    if nearby_text:
-                                                        nearby_matches = sum(1 for word in search_words if word in nearby_text)
-                                                        nearby_match_pct = nearby_matches / len(search_words) if search_words else 0
-                                                        if nearby_match_pct >= 0.5:  # 50% threshold for high-confidence selectors
-                                                            logger.info(f"[DisneyPlusScraper] ✓ Found Disney+ link (featured result, alternative validation): {href}")
-                                                            logger.debug(f"[DisneyPlusScraper] ✓ Nearby parent title match: {nearby_match_pct:.1%}")
-                                                            return {
-                                                                'link': href,
-                                                                'selector_used': selector
-                                                            }
-                                                    elif match_pct >= 0.5:  # Fallback to link text matching
-                                                        logger.info(f"[DisneyPlusScraper] ✓ Found Disney+ link (featured result): {href}")
-                                                        logger.debug(f"[DisneyPlusScraper] ✓ Alternative title match: {match_pct:.1%}")
-                                                        return {
-                                                            'link': href,
-                                                            'selector_used': selector
-                                                        }
-                                        except Exception:
-                                            pass  # Continue to normal validation
-
-                                    # Skip strict validation for high-confidence selectors
-                                    if i < 2:
-                                        continue
-
-                                    # Position-based filtering: skip first result (likely sponsored)
-                                    # Only apply this if not high-confidence or alternative validation failed
-                                    if j == 0 and i >= 2:  # Only skip for non-high-confidence selectors
-                                        logger.debug(f"[DisneyPlusScraper] Element {j+1}: Skipping position {j+1} (likely sponsored)")
-                                        continue
-
                                     href = element.get_attribute('href')
-                                    if href and ('disneyplus.com/movies/' in href or 'disneyplus.com/video/' in href):
-                                        # Enhanced title validation
+                                    if href and ('disneyplus.com/movies/' in href or 'disneyplus.com/series/' in href or 'disneyplus.com/video/' in href):
                                         try:
                                             parent_text = element.locator("xpath=./..").text_content().lower()
-                                            # Use relaxed threshold for high-confidence selectors
-                                            threshold = 0.5 if i < 2 else 0.7
-                                            is_match, overlap_percentage, has_exact_title = self.validate_title_match(title, parent_text, threshold)
+                                            is_match, overlap_percentage, has_exact_title = self.validate_title_match(title, parent_text, 0.7)
 
                                             if not is_match:
                                                 logger.debug(f"[DisneyPlusScraper] Element {j+1}: Title match failed ({overlap_percentage:.1%}), skipping")
                                                 continue
 
-                                            # Year validation (skip for high-confidence selectors)
-                                            if i >= 2:  # Only apply year validation for non-high-confidence selectors
-                                                year_bonus, year_penalty = self.validate_year_match(year, parent_text)
-                                                if year_penalty > 0:
-                                                    logger.debug(f"[DisneyPlusScraper] Element {j+1}: Year penalty applied (probably wrong movie), skipping")
-                                                    continue
-                                            else:
-                                                year_bonus = 0
+                                            year_bonus, year_penalty = self.validate_year_match(year, parent_text)
+                                            if year_penalty > 0:
+                                                logger.debug(f"[DisneyPlusScraper] Element {j+1}: Year penalty applied (probably wrong movie), skipping")
+                                                continue
 
-                                            # Negative keyword detection
-                                            negative_keywords = ['not available', 'unavailable', 'coming soon', 'pre-order', 'tv series', 'season']
+                                            negative_keywords = ['not available', 'unavailable', 'coming soon', 'pre-order']
                                             has_negative = any(keyword in parent_text for keyword in negative_keywords)
                                             if has_negative:
                                                 logger.debug(f"[DisneyPlusScraper] Element {j+1}: Contains negative keywords, skipping")
@@ -443,9 +307,7 @@ class DisneyPlusScraper(BasePlatformScraper):
                                             }
 
                                         except Exception as validation_error:
-                                            # Try expanded parent container selection
                                             try:
-                                                # Try ancestor div selectors for Disney+
                                                 ancestor_selectors = [
                                                     "xpath=./ancestor::div[contains(@data-testid, 'search-result')]",
                                                     "xpath=./ancestor::div[contains(@class, 'search-result')]",
@@ -469,7 +331,7 @@ class DisneyPlusScraper(BasePlatformScraper):
                                                     if is_match:
                                                         year_bonus, year_penalty = self.validate_year_match(year, expanded_parent_text)
                                                         if year_penalty == 0:
-                                                            negative_keywords = ['not available', 'unavailable', 'coming soon', 'pre-order', 'tv series', 'season']
+                                                            negative_keywords = ['not available', 'unavailable', 'coming soon', 'pre-order']
                                                             has_negative = any(keyword in expanded_parent_text for keyword in negative_keywords)
                                                             if not has_negative:
                                                                 logger.info(f"[DisneyPlusScraper] ✓ Found Disney+ link using expanded parent search")
@@ -479,15 +341,10 @@ class DisneyPlusScraper(BasePlatformScraper):
                                                                     'selector_used': selector
                                                                 }
                                             except Exception:
-                                                pass  # Continue to final fallback
+                                                pass
 
-                                            # Final fallback for high-confidence selectors
-                                            if i < 2:
-                                                logger.debug(f"[DisneyPlusScraper] Element {j+1}: Using fallback validation for high-confidence selector")
-                                                continue
-                                            else:
-                                                logger.debug(f"[DisneyPlusScraper] Element {j+1}: Validation error: {validation_error}")
-                                                continue
+                                            logger.debug(f"[DisneyPlusScraper] Element {j+1}: Validation error: {validation_error}")
+                                            continue
 
                                 except Exception as e:
                                     logger.warning(f"[DisneyPlusScraper] Error checking element {j}: {e}")
@@ -517,6 +374,7 @@ class HBOMaxScraper(BasePlatformScraper):
         "[data-testid='tile'] a",
         "[data-testid='movie-card'] a",
         "a[href*='/movies/']",
+        "a[href*='/shows/']",
         ".content-card a"
     ]
 
@@ -545,89 +403,25 @@ class HBOMaxScraper(BasePlatformScraper):
                         if elements:
                             for j, element in enumerate(elements[:8]):
                                 try:
-                                    # For high-confidence selectors (first 2 in SELECTORS list), attempt alternative validation first
-                                    # before applying position-based filtering
-                                    if i < 2:  # High-confidence selector
-                                        # Try alternative validation first for featured results
-                                        try:
-                                            href = element.get_attribute('href')
-                                            if href and 'max.com/movies/' in href:
-                                                # Try alternative validation for featured results
-                                                link_text = element.text_content().strip().lower()
-                                                if link_text:  # If we have text content, try simple matching
-                                                    search_words = title.lower().replace('the ', '').replace('a ', '').split()
-                                                    search_words = [w for w in search_words if len(w) > 1]
-                                                    matches = sum(1 for word in search_words if word in link_text)
-                                                    match_pct = matches / len(search_words) if search_words else 0
-
-                                                    # Try nearby parent text search (from streaming_platform_scraper.py logic)
-                                                    nearby_text = ""
-                                                    try:
-                                                        for level in range(1, 6):
-                                                            parent_candidate = element.locator(f"xpath={'/..' * level}").first
-                                                            if parent_candidate.count() > 0:
-                                                                candidate_text = parent_candidate.text_content().lower()
-                                                                if 10 < len(candidate_text) < 500:
-                                                                    nearby_text = candidate_text
-                                                                    break
-                                                    except:
-                                                        pass
-
-                                                    # Use nearby text if available for better matching
-                                                    if nearby_text:
-                                                        nearby_matches = sum(1 for word in search_words if word in nearby_text)
-                                                        nearby_match_pct = nearby_matches / len(search_words) if search_words else 0
-                                                        if nearby_match_pct >= 0.5:  # 50% threshold for high-confidence selectors
-                                                            logger.info(f"[HBOMaxScraper] ✓ Found Max link (featured result, alternative validation): {href}")
-                                                            logger.debug(f"[HBOMaxScraper] ✓ Nearby parent title match: {nearby_match_pct:.1%}")
-                                                            return {
-                                                                'link': href,
-                                                                'selector_used': selector
-                                                            }
-                                                    elif match_pct >= 0.5:  # Fallback to link text matching
-                                                        logger.info(f"[HBOMaxScraper] ✓ Found Max link (featured result): {href}")
-                                                        logger.debug(f"[HBOMaxScraper] ✓ Alternative title match: {match_pct:.1%}")
-                                                        return {
-                                                            'link': href,
-                                                            'selector_used': selector
-                                                        }
-                                        except Exception:
-                                            pass  # Continue to normal validation
-
-                                    # Skip strict validation for high-confidence selectors
-                                    if i < 2:
-                                        continue
-
-                                    # Position-based filtering: skip first result (likely sponsored)
-                                    # Only apply this if not high-confidence or alternative validation failed
-                                    if j == 0 and i >= 2:  # Only skip for non-high-confidence selectors
-                                        logger.debug(f"[HBOMaxScraper] Element {j+1}: Skipping position {j+1} (likely sponsored)")
-                                        continue
-
                                     href = element.get_attribute('href')
-                                    if href and 'max.com/movies/' in href:
-                                        # Enhanced title validation
+                                    if href and ('max.com/movies/' in href or 'max.com/shows/' in href):
+                                        # Title validation - consistent threshold for all selectors
                                         try:
                                             parent_text = element.locator("xpath=./..").text_content().lower()
-                                            # Use relaxed threshold for high-confidence selectors
-                                            threshold = 0.5 if i < 2 else 0.7
-                                            is_match, overlap_percentage, has_exact_title = self.validate_title_match(title, parent_text, threshold)
+                                            is_match, overlap_percentage, has_exact_title = self.validate_title_match(title, parent_text, 0.7)
 
                                             if not is_match:
                                                 logger.debug(f"[HBOMaxScraper] Element {j+1}: Title match failed ({overlap_percentage:.1%}), skipping")
                                                 continue
 
-                                            # Year validation (skip for high-confidence selectors)
-                                            if i >= 2:  # Only apply year validation for non-high-confidence selectors
-                                                year_bonus, year_penalty = self.validate_year_match(year, parent_text)
-                                                if year_penalty > 0:
-                                                    logger.debug(f"[HBOMaxScraper] Element {j+1}: Year penalty applied (probably wrong movie), skipping")
-                                                    continue
-                                            else:
-                                                year_bonus = 0
+                                            # Year validation - always applied
+                                            year_bonus, year_penalty = self.validate_year_match(year, parent_text)
+                                            if year_penalty > 0:
+                                                logger.debug(f"[HBOMaxScraper] Element {j+1}: Year penalty applied (probably wrong movie), skipping")
+                                                continue
 
                                             # Negative keyword detection
-                                            negative_keywords = ['not available', 'unavailable', 'coming soon', 'pre-order', 'tv series', 'season']
+                                            negative_keywords = ['not available', 'unavailable', 'coming soon', 'pre-order']
                                             has_negative = any(keyword in parent_text for keyword in negative_keywords)
                                             if has_negative:
                                                 logger.debug(f"[HBOMaxScraper] Element {j+1}: Contains negative keywords, skipping")
@@ -643,7 +437,6 @@ class HBOMaxScraper(BasePlatformScraper):
                                         except Exception as validation_error:
                                             # Try expanded parent container selection
                                             try:
-                                                # Try ancestor div selectors for HBO Max/Max
                                                 ancestor_selectors = [
                                                     "xpath=./ancestor::div[contains(@class, 'search-result')]",
                                                     "xpath=./ancestor::div[contains(@data-testid, 'tile')]",
@@ -667,7 +460,7 @@ class HBOMaxScraper(BasePlatformScraper):
                                                     if is_match:
                                                         year_bonus, year_penalty = self.validate_year_match(year, expanded_parent_text)
                                                         if year_penalty == 0:
-                                                            negative_keywords = ['not available', 'unavailable', 'coming soon', 'pre-order', 'tv series', 'season']
+                                                            negative_keywords = ['not available', 'unavailable', 'coming soon', 'pre-order']
                                                             has_negative = any(keyword in expanded_parent_text for keyword in negative_keywords)
                                                             if not has_negative:
                                                                 logger.info(f"[HBOMaxScraper] ✓ Found Max link using expanded parent search")
@@ -677,15 +470,10 @@ class HBOMaxScraper(BasePlatformScraper):
                                                                     'selector_used': selector
                                                                 }
                                             except Exception:
-                                                pass  # Continue to final fallback
+                                                pass
 
-                                            # Final fallback for high-confidence selectors
-                                            if i < 2:
-                                                logger.debug(f"[HBOMaxScraper] Element {j+1}: Using fallback validation for high-confidence selector")
-                                                continue
-                                            else:
-                                                logger.debug(f"[HBOMaxScraper] Element {j+1}: Validation error: {validation_error}")
-                                                continue
+                                            logger.debug(f"[HBOMaxScraper] Element {j+1}: Validation error: {validation_error}")
+                                            continue
 
                                 except Exception as e:
                                     logger.warning(f"[HBOMaxScraper] Error checking element {j}: {e}")
@@ -715,6 +503,7 @@ class HuluScraper(BasePlatformScraper):
         ".search-results a",
         "[data-testid='movie-card'] a",
         "a[href*='/movie/']",
+        "a[href*='/series/']",
         "a[href*='/watch/']"
     ]
 
@@ -743,89 +532,25 @@ class HuluScraper(BasePlatformScraper):
                         if elements:
                             for j, element in enumerate(elements[:8]):
                                 try:
-                                    # For high-confidence selectors (first 2 in SELECTORS list), attempt alternative validation first
-                                    # before applying position-based filtering
-                                    if i < 2:  # High-confidence selector
-                                        # Try alternative validation first for featured results
-                                        try:
-                                            href = element.get_attribute('href')
-                                            if href and ('hulu.com/movie/' in href or 'hulu.com/watch/' in href):
-                                                # Try alternative validation for featured results
-                                                link_text = element.text_content().strip().lower()
-                                                if link_text:  # If we have text content, try simple matching
-                                                    search_words = title.lower().replace('the ', '').replace('a ', '').split()
-                                                    search_words = [w for w in search_words if len(w) > 1]
-                                                    matches = sum(1 for word in search_words if word in link_text)
-                                                    match_pct = matches / len(search_words) if search_words else 0
-
-                                                    # Try nearby parent text search (from streaming_platform_scraper.py logic)
-                                                    nearby_text = ""
-                                                    try:
-                                                        for level in range(1, 6):
-                                                            parent_candidate = element.locator(f"xpath={'/..' * level}").first
-                                                            if parent_candidate.count() > 0:
-                                                                candidate_text = parent_candidate.text_content().lower()
-                                                                if 10 < len(candidate_text) < 500:
-                                                                    nearby_text = candidate_text
-                                                                    break
-                                                    except:
-                                                        pass
-
-                                                    # Use nearby text if available for better matching
-                                                    if nearby_text:
-                                                        nearby_matches = sum(1 for word in search_words if word in nearby_text)
-                                                        nearby_match_pct = nearby_matches / len(search_words) if search_words else 0
-                                                        if nearby_match_pct >= 0.5:  # 50% threshold for high-confidence selectors
-                                                            logger.info(f"[HuluScraper] ✓ Found Hulu link (featured result, alternative validation): {href}")
-                                                            logger.debug(f"[HuluScraper] ✓ Nearby parent title match: {nearby_match_pct:.1%}")
-                                                            return {
-                                                                'link': href,
-                                                                'selector_used': selector
-                                                            }
-                                                    elif match_pct >= 0.5:  # Fallback to link text matching
-                                                        logger.info(f"[HuluScraper] ✓ Found Hulu link (featured result): {href}")
-                                                        logger.debug(f"[HuluScraper] ✓ Alternative title match: {match_pct:.1%}")
-                                                        return {
-                                                            'link': href,
-                                                            'selector_used': selector
-                                                        }
-                                        except Exception:
-                                            pass  # Continue to normal validation
-
-                                    # Skip strict validation for high-confidence selectors
-                                    if i < 2:
-                                        continue
-
-                                    # Position-based filtering: skip first result (likely sponsored)
-                                    # Only apply this if not high-confidence or alternative validation failed
-                                    if j == 0 and i >= 2:  # Only skip for non-high-confidence selectors
-                                        logger.debug(f"[HuluScraper] Element {j+1}: Skipping position {j+1} (likely sponsored)")
-                                        continue
-
                                     href = element.get_attribute('href')
-                                    if href and ('hulu.com/movie/' in href or 'hulu.com/watch/' in href):
-                                        # Enhanced title validation
+                                    if href and ('hulu.com/movie/' in href or 'hulu.com/series/' in href or 'hulu.com/watch/' in href):
+                                        # Title validation - consistent threshold for all selectors
                                         try:
                                             parent_text = element.locator("xpath=./..").text_content().lower()
-                                            # Use relaxed threshold for high-confidence selectors
-                                            threshold = 0.5 if i < 2 else 0.7
-                                            is_match, overlap_percentage, has_exact_title = self.validate_title_match(title, parent_text, threshold)
+                                            is_match, overlap_percentage, has_exact_title = self.validate_title_match(title, parent_text, 0.7)
 
                                             if not is_match:
                                                 logger.debug(f"[HuluScraper] Element {j+1}: Title match failed ({overlap_percentage:.1%}), skipping")
                                                 continue
 
-                                            # Year validation (skip for high-confidence selectors)
-                                            if i >= 2:  # Only apply year validation for non-high-confidence selectors
-                                                year_bonus, year_penalty = self.validate_year_match(year, parent_text)
-                                                if year_penalty > 0:
-                                                    logger.debug(f"[HuluScraper] Element {j+1}: Year penalty applied (probably wrong movie), skipping")
-                                                    continue
-                                            else:
-                                                year_bonus = 0
+                                            # Year validation - always applied
+                                            year_bonus, year_penalty = self.validate_year_match(year, parent_text)
+                                            if year_penalty > 0:
+                                                logger.debug(f"[HuluScraper] Element {j+1}: Year penalty applied (probably wrong movie), skipping")
+                                                continue
 
                                             # Negative keyword detection
-                                            negative_keywords = ['not available', 'unavailable', 'coming soon', 'pre-order', 'tv series', 'season']
+                                            negative_keywords = ['not available', 'unavailable', 'coming soon', 'pre-order']
                                             has_negative = any(keyword in parent_text for keyword in negative_keywords)
                                             if has_negative:
                                                 logger.debug(f"[HuluScraper] Element {j+1}: Contains negative keywords, skipping")
@@ -841,7 +566,6 @@ class HuluScraper(BasePlatformScraper):
                                         except Exception as validation_error:
                                             # Try expanded parent container selection
                                             try:
-                                                # Try ancestor div selectors for Hulu
                                                 ancestor_selectors = [
                                                     "xpath=./ancestor::div[contains(@class, 'entity-card')]",
                                                     "xpath=./ancestor::div[contains(@class, 'search-results')]",
@@ -865,7 +589,7 @@ class HuluScraper(BasePlatformScraper):
                                                     if is_match:
                                                         year_bonus, year_penalty = self.validate_year_match(year, expanded_parent_text)
                                                         if year_penalty == 0:
-                                                            negative_keywords = ['not available', 'unavailable', 'coming soon', 'pre-order', 'tv series', 'season']
+                                                            negative_keywords = ['not available', 'unavailable', 'coming soon', 'pre-order']
                                                             has_negative = any(keyword in expanded_parent_text for keyword in negative_keywords)
                                                             if not has_negative:
                                                                 logger.info(f"[HuluScraper] ✓ Found Hulu link using expanded parent search")
@@ -875,15 +599,10 @@ class HuluScraper(BasePlatformScraper):
                                                                     'selector_used': selector
                                                                 }
                                             except Exception:
-                                                pass  # Continue to final fallback
+                                                pass
 
-                                            # Final fallback for high-confidence selectors
-                                            if i < 2:
-                                                logger.debug(f"[HuluScraper] Element {j+1}: Using fallback validation for high-confidence selector")
-                                                continue
-                                            else:
-                                                logger.debug(f"[HuluScraper] Element {j+1}: Validation error: {validation_error}")
-                                                continue
+                                            logger.debug(f"[HuluScraper] Element {j+1}: Validation error: {validation_error}")
+                                            continue
 
                                 except Exception as e:
                                     logger.warning(f"[HuluScraper] Error checking element {j}: {e}")

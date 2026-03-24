@@ -37,7 +37,15 @@ tracking:
   archive_available_on_detect: false  # Archive available movies to separate file (experimental)
   compaction_batch_size: 50  # Maximum entries to move per compaction run
   compaction_recent_days: null  # Only compact entries from last N days (null = no age limit)
-  excluded_services: ['fuboTV', 'Philo']  # Services to exclude from watch provider results
+  excluded_services: ['fuboTV', 'Philo', 'Sun Nxt', 'Fandango']  # Services to exclude from watch provider results
+
+# JustWatch verification during discovery phase
+# Called only for movies TMDB flags as having new providers (~1-10/day)
+justwatch_verification:
+  enabled: true                    # Master toggle for JustWatch verification
+  rate_limit: 0.5                  # Seconds between JustWatch API calls
+  min_confidence: 'close_year'     # Minimum match confidence: exact_year, close_year, title_only, first_result
+  fallback_to_tmdb: true           # If JustWatch fails, use TMDB-only behavior (current)
 
 # Backup retention policy for quarantined corrupt files and atomic write backups
 # Prevents unbounded disk growth from .corrupted-* and .backup-* files in backups/ directory
@@ -450,6 +458,7 @@ screening_names:
   36thsdijffmid: "San Diego Intl. Jewish Film Festival"
   menafilmfestival: "MENA Film Festival"
   sundance: "Sundance Film Festival"
+  nofs: "2026 French Film Festival"
 
 api:
   # API keys now loaded from .env file (see load_env.py)
@@ -637,6 +646,6 @@ affiliate:
 trailer_hosting:
   enabled: true                      # Master toggle for trailer hosting pipeline
   bucket_url: "https://f004.backblazeb2.com/file/NRW-TRAILERS"  # Public URL base (change when CloudFlare is set up)
-  max_hosted: 200                    # Rotation cap — delete oldest trailers when over this count
+  max_hosted: 200                    # Only the 200 most recent movies get trailers; oldest rotate out
   clean_local_after_upload: true     # Auto-delete local MP4 after confirmed B2 upload
   pipeline_integration: true         # Auto-host trailers for new movies during daily enrichment

@@ -48,6 +48,17 @@
     </tr>
     {% endif %}
 
+    <!-- IMDB Rating Row -->
+    {% if movie.imdb_rating %}
+    <tr>
+        <td style="padding: 5px 15px;">
+            <p style="margin: 0; font-size: 14px;">
+                <span style="color: #F5C518; font-weight: bold;">IMDb {{ movie.imdb_rating }}</span>
+            </p>
+        </td>
+    </tr>
+    {% endif %}
+
     <!-- Synopsis Row -->
     {% if movie.synopsis %}
     <tr>

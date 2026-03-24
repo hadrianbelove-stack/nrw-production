@@ -394,6 +394,23 @@ private fun MovieDetail(
                             )
                         }
                     }
+                    // IMDB Rating badge inline
+                    movie.imdbRating?.toFloatOrNull()?.let { rating ->
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(4.dp))
+                                .background(Color(0xFFF5C518))
+                                .padding(horizontal = 6.dp, vertical = 2.dp)
+                        ) {
+                            Text(
+                                text = "IMDb ${"%.1f".format(rating)}",
+                                color = Color.Black,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 11.sp
+                            )
+                        }
+                    }
                 }
 
                 // Genres as chips

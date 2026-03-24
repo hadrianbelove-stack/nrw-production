@@ -189,18 +189,20 @@ class StreamingPlatformScraper(PlaywrightScraperBase):
             logger.debug(f"  Searching Amazon for: {search_query}")
             logger.debug(f"  URL: {search_url}")
 
-            self.page.goto(search_url, wait_until='networkidle')
+            self.page.goto(search_url, wait_until='domcontentloaded', timeout=self.timeout_seconds * 1000)
 
             logger.debug(f"  Page loaded, waiting for search results...")
 
             try:
-                self.page.wait_for_selector(".s-result-item, .s-widget-container", timeout=self.timeout_seconds * 1000)
+                self.page.wait_for_selector("article[data-testid='card'], .s-result-item, .s-widget-container, [data-testid='grid-container'], a[href*='/gp/video/detail/']", timeout=self.timeout_seconds * 1000)
                 logger.debug(f"  Search results loaded successfully")
             except PlaywrightTimeoutError:
                 logger.warning(f"  Warning: Search results may not have loaded completely")
 
             # High-confidence selectors
             high_confidence_selectors = [
+                "article[data-testid='card'] a[href*='/gp/video/detail/']",
+                "[data-testid='packshot'] a[href*='/gp/video/detail/']",
                 "div[data-component-type='s-search-result'] h2 a[href*='/gp/video/detail/']",
                 ".s-widget-container a[href*='/gp/video/detail/']",
                 "a[href*='/gp/video/detail/']",
@@ -252,12 +254,22 @@ class StreamingPlatformScraper(PlaywrightScraperBase):
                             # Title validation
                             try:
                                 parent = None
+                                # Try Prime Video search layout (article cards)
                                 try:
-                                    parent = element.locator("xpath=./ancestor::div[@data-component-type='s-search-result']").first
+                                    parent = element.locator("xpath=./ancestor::article[@data-testid='card']").first
                                     if parent.count() == 0:
                                         parent = None
                                 except:
                                     pass
+
+                                # Try classic Amazon product search layout
+                                if parent is None:
+                                    try:
+                                        parent = element.locator("xpath=./ancestor::div[@data-component-type='s-search-result']").first
+                                        if parent.count() == 0:
+                                            parent = None
+                                    except:
+                                        pass
 
                                 if parent is None:
                                     try:
@@ -290,17 +302,14 @@ class StreamingPlatformScraper(PlaywrightScraperBase):
 
                                     has_exact_title = normalized_title in normalized_result
 
+                                    # Short titles require exact full title match to prevent false positives
                                     if len(search_title_words) <= 2:
-                                        threshold = 0.5 if (has_exact_title or matching_words >= 2) else 1.0
+                                        threshold = 0.5 if has_exact_title else 1.0
                                     else:
                                         threshold = 0.6 if has_exact_title else 0.7
 
-                                    if is_high_confidence and '/gp/video/detail/' in href:
-                                        adjusted_threshold = 0.4
-                                    else:
-                                        adjusted_threshold = threshold
-
-                                    if overlap_percentage < adjusted_threshold:
+                                    # Use consistent threshold — no relaxation for high-confidence selectors
+                                    if overlap_percentage < threshold:
                                         continue
 
                                     # Check negative keywords

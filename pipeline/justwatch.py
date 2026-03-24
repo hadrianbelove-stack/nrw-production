@@ -302,39 +302,172 @@ class JustWatchClient:
 
         return result
 
+    def verify_availability(
+        self,
+        title: str,
+        year: Optional[int] = None,
+        excluded_services: Optional[List[str]] = None,
+        affiliate_tag: Optional[str] = None
+    ) -> Optional[Dict[str, Any]]:
+        """
+        Verify a movie's availability for the discovery phase.
+
+        Called ONLY for movies TMDB flags as having providers (~1-10/day).
+        Returns structured verification data including match confidence,
+        offer breakdown, and ready-to-use watch_links.
+
+        Returns:
+            Dict with:
+              'verified': True, False, or 'buy_only'
+              'match_confidence': 'exact_year', 'close_year', 'title_only', 'first_result'
+              'jw_title': str - title JustWatch matched
+              'jw_year': int or None - year JustWatch matched
+              'has_streaming': bool
+              'has_rent': bool
+              'has_buy': bool
+              'provider_names': {'streaming': [...], 'rent': [...], 'buy': [...]}
+              'watch_links': dict in NRW schema (ready to store)
+            None if search fails entirely.
+        """
+        movie = self.search_movie(title, year)
+        if not movie:
+            return None
+
+        content = movie.get('content', {})
+        jw_title = content.get('title', '')
+        jw_year = content.get('originalReleaseYear')
+
+        # Determine match confidence
+        if year is not None:
+            try:
+                year = int(year)
+            except (ValueError, TypeError):
+                year = None
+
+        if year and jw_year == year:
+            confidence = 'exact_year'
+        elif year and jw_year and abs(jw_year - year) <= 1:
+            confidence = 'close_year'
+        elif jw_title.lower() == title.lower():
+            confidence = 'title_only'
+        else:
+            confidence = 'first_result'
+
+        offers = movie.get('offers', [])
+        excluded_lower = [s.lower() for s in (excluded_services or [])]
+
+        # Group offers by monetization type
+        streaming_offers = []
+        rent_offers = []
+        buy_offers = []
+        streaming_names = []
+        rent_names = []
+        buy_names = []
+
+        for offer in offers:
+            mtype = offer.get('monetizationType')
+            url = offer.get('standardWebURL')
+            service = offer.get('package', {}).get('clearName', '')
+            price = offer.get('retailPrice')
+
+            if not url or not service:
+                continue
+
+            if any(excluded in service.lower() for excluded in excluded_lower):
+                continue
+
+            if 'youtube.com/results' in url:
+                continue
+
+            offer_data = {'service': service, 'link': url, 'price': price}
+
+            if mtype == 'FLATRATE':
+                streaming_offers.append(offer_data)
+                if service not in streaming_names:
+                    streaming_names.append(service)
+            elif mtype == 'RENT':
+                rent_offers.append(offer_data)
+                if service not in rent_names:
+                    rent_names.append(service)
+            elif mtype == 'BUY':
+                buy_offers.append(offer_data)
+                if service not in buy_names:
+                    buy_names.append(service)
+
+        has_streaming = bool(streaming_offers)
+        has_rent = bool(rent_offers)
+        has_buy = bool(buy_offers)
+
+        # Determine verification status
+        if has_rent or has_streaming:
+            verified = True
+        elif has_buy and not has_rent and not has_streaming:
+            verified = 'buy_only'
+        else:
+            verified = False
+
+        # Build watch_links in NRW schema (same format as get_watch_links)
+        watch_links = {}
+        if streaming_offers:
+            best_streaming = self._select_best_offer(streaming_offers, self.STREAMING_PRIORITY)
+            if best_streaming:
+                watch_links['streaming'] = {
+                    'service': best_streaming['service'],
+                    'link': best_streaming['link']
+                }
+
+        vod_offers = rent_offers + buy_offers
+        if vod_offers:
+            vod_entries = self._select_vod_offers(vod_offers, affiliate_tag)
+            if vod_entries:
+                watch_links['vod'] = vod_entries
+
+        return {
+            'verified': verified,
+            'match_confidence': confidence,
+            'jw_title': jw_title,
+            'jw_year': jw_year,
+            'has_streaming': has_streaming,
+            'has_rent': has_rent,
+            'has_buy': has_buy,
+            'provider_names': {
+                'streaming': streaming_names,
+                'rent': rent_names,
+                'buy': buy_names
+            },
+            'watch_links': watch_links
+        }
+
     def _select_vod_offers(
         self,
         offers: List[Dict],
         affiliate_tag: Optional[str] = None
     ) -> List[Dict]:
         """
-        Select up to one Amazon and one Apple TV offer from VOD offers.
-        Returns an array of offer dicts (1 or 2 entries).
+        Select best VOD offers — one per service, deduplicated.
+        Returns an array of offer dicts.
         """
-        amazon_offer = None
-        apple_offer = None
-
-        # Find best Amazon and best Apple TV offer (prefer rent over buy)
+        # Deduplicate: keep first (best) offer per service
+        seen_services = set()
+        unique_offers = []
         for offer in offers:
             svc = offer['service'].lower()
-            if not amazon_offer and ('amazon' in svc or 'prime' in svc):
-                amazon_offer = offer
-            elif not apple_offer and ('apple' in svc or 'itunes' in svc):
-                apple_offer = offer
+            if svc not in seen_services:
+                seen_services.add(svc)
+                unique_offers.append(offer)
 
         result = []
-        for offer in [amazon_offer, apple_offer]:
-            if offer:
-                link = offer['link']
-                # Add affiliate tag to Amazon links
-                if affiliate_tag and 'amazon' in link.lower():
-                    separator = '&' if '?' in link else '?'
-                    if 'tag=' not in link:
-                        link = f"{link}{separator}tag={affiliate_tag}"
-                entry = {'service': offer['service'], 'link': link}
-                if offer.get('price'):
-                    entry['price'] = offer['price']
-                result.append(entry)
+        for offer in unique_offers:
+            link = offer['link']
+            # Add affiliate tag to Amazon links
+            if affiliate_tag and 'amazon' in link.lower():
+                separator = '&' if '?' in link else '?'
+                if 'tag=' not in link:
+                    link = f"{link}{separator}tag={affiliate_tag}"
+            entry = {'service': offer['service'], 'link': link}
+            if offer.get('price'):
+                entry['price'] = offer['price']
+            result.append(entry)
 
         return result
 

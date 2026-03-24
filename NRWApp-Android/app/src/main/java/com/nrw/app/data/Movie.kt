@@ -54,6 +54,9 @@ data class Movie(
     @SerializedName("rt_score")
     val rtScore: String? = null,
 
+    @SerializedName("imdb_rating")
+    val imdbRating: String? = null,
+
     val links: MovieLinks? = null,
 
     @SerializedName("watch_links")
@@ -106,7 +109,9 @@ data class MovieLinks(
     @SerializedName("rotten_tomatoes")
     val rottenTomatoes: String? = null,
 
-    val wikipedia: String? = null
+    val wikipedia: String? = null,
+
+    val imdb: String? = null
 )
 
 data class WatchLinks(

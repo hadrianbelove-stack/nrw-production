@@ -473,6 +473,7 @@ class PatreonFilmScraper(PlaywrightScraperBase):
             params = {
                 'api_key': self.tmdb_api_key,
                 'query': title,
+                'language': 'en-US',
                 'page': 1
             }
 

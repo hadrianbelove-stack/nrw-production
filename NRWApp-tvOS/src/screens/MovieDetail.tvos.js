@@ -221,6 +221,7 @@ const MovieDetailTvOS = () => {
     formattedRuntime,
     formattedGenres,
     rtScore,
+    imdbScore,
     formattedCountries,
     hasWatchOptions,
     hasInfoLinks,
@@ -402,6 +403,14 @@ const MovieDetailTvOS = () => {
               <Text style={styles.rtLabel}>
                 {rtScore.isFresh ? 'Fresh' : 'Rotten'}
               </Text>
+            </View>
+          )}
+
+          {/* IMDB Score badge */}
+          {imdbScore && (
+            <View style={[styles.rtBadge, { backgroundColor: '#F5C518' }]}>
+              <Text style={[styles.rtScore, { color: '#000' }]}>{imdbScore.label}</Text>
+              <Text style={[styles.rtLabel, { color: '#000' }]}>IMDb</Text>
             </View>
           )}
         </View>

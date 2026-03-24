@@ -131,6 +131,14 @@ Sub LoadMovie(index as Integer)
         end if
     end if
 
+    if movie.imdb_rating <> invalid
+        ratingStr = movie.imdb_rating.ToStr()
+        ratingNum = Val(ratingStr)
+        if ratingNum > 0
+            metaParts.Push("IMDb " + ratingStr)
+        end if
+    end if
+
     m.metadataLabel.text = metaParts.Join(" • ")
 
     ' Set genres

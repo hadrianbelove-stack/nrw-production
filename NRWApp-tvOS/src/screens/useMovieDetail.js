@@ -77,6 +77,14 @@ export function useMovieDetail(movie) {
     };
   }, [movie]);
 
+  // Get IMDB rating display
+  const imdbScore = useMemo(() => {
+    if (!movie?.imdb_rating) return null;
+    const rating = parseFloat(movie.imdb_rating);
+    if (isNaN(rating)) return null;
+    return { value: rating, label: rating.toFixed(1) };
+  }, [movie]);
+
   // Get formatted countries
   const formattedCountries = useMemo(() => {
     if (!movie?.countries || !Array.isArray(movie.countries)) return '';
@@ -116,6 +124,7 @@ export function useMovieDetail(movie) {
     formattedRuntime,
     formattedGenres,
     rtScore,
+    imdbScore,
     formattedCountries,
     formattedLanguage,
     hasWatchOptions,

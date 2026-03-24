@@ -7,19 +7,19 @@
 
 ## Overview
 
-The Agent Link Scraper provides automated discovery of streaming platform watch links when JustWatch API has gaps. It uses Playwright browser automation to search platforms directly and extract deep links to watch pages, serving as a fallback tier in the watch links system.
+The Agent Link Scraper provides automated discovery of streaming platform watch links. It uses Playwright browser automation to search platforms directly and extract deep links to watch pages.
 
 ## Problem Statement
 
-JustWatch API provides excellent coverage for most streaming platforms, but occasionally has gaps for certain services (Netflix, Disney+, HBO Max, Hulu). These platforms don't have predictable URL patterns that can be constructed programmatically. Users need direct links to these platforms, not search URLs or null links.
+Some streaming platforms (Netflix, Disney+, HBO Max, Hulu) don't have predictable URL patterns that can be constructed programmatically. Users need direct links to these platforms, not search URLs or null links.
 
 ## Solution Architecture
 
 The agent scraper is part of a multi-tier system:
 1. **Tier 1:** Manual overrides + `overrides/watch_links_overrides.json`
 2. **Tier 2:** Cache (`cache/watch_links_cache.json`)
-3. **Tier 3:** JustWatch API (primary source - most reliable, Dec 2024+)
-4. **Tier 4:** Agent scraping for Netflix/Disney+/HBO Max/Hulu (fallback)
+3. **Tier 3:** Playwright scrapers (Amazon/Apple TV via `streaming_platform_scraper.py`)
+4. **Tier 4:** Agent scraping for Netflix/Disney+/HBO Max/Hulu
 5. **Tier 5:** TMDB provider names with null links (last resort)
 
 ## Technical Implementation
@@ -45,10 +45,9 @@ The agent scraper is part of a multi-tier system:
 - **HBO Max/Max** - `https://www.max.com/movies/{slug}/{id}`
 - **Hulu** - `https://www.hulu.com/movie/{slug}/{id}`
 
-**Not Supported (JustWatch has good coverage):**
-- Amazon Prime Video (JustWatch API provides links)
-- Apple TV+ (JustWatch API provides links)
-- Paramount+, Peacock, MUBI, etc. (JustWatch coverage sufficient)
+**Handled by Platform Scraper (`streaming_platform_scraper.py`) instead:**
+- Amazon Prime Video
+- Apple TV+
 
 ### Selector Fallback Strategy
 
@@ -60,10 +59,9 @@ Each platform has 4-6 selector fallbacks (ordered by reliability):
 ### Integration Point
 
 The scraper integrates into the enrichment pipeline `get_watch_links()` method:
-- After JustWatch API returns no streaming links
+- After cache lookup returns no streaming links
 - Before returning `{service: X, link: None}`
 - Only for supported platforms: Netflix, Disney+, HBO Max, Hulu
-- Does NOT scrape VOD categories (JustWatch API provides VOD coverage)
 
 ## Cache System
 
@@ -210,7 +208,7 @@ Users should be aware of potential ToS violations and use responsibly.
 
 If agent scraping causes issues:
 1. Disable in config.yaml: `streaming_scraper.enabled: false`
-2. System falls back to JustWatch API only
+2. System falls back to cache + TMDB providers only
 3. No data loss (agent is additive)
 
 ## Implementation Status

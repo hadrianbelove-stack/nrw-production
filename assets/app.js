@@ -591,6 +591,15 @@ const NRW = {
                 infoLinks.push(`<a href="${movie.links.rt}" target="_blank" rel="noopener noreferrer" class="${rtClass}">${rtText}</a>`);
             }
 
+            if (movie.imdb_rating) {
+                const imdbUrl = movie.links?.imdb;
+                if (imdbUrl) {
+                    infoLinks.push(`<a href="${imdbUrl}" target="_blank" rel="noopener noreferrer" class="info-btn">IMDb ${movie.imdb_rating}</a>`);
+                } else {
+                    infoLinks.push(`<span class="info-btn info-btn-neutral">IMDb ${movie.imdb_rating}</span>`);
+                }
+            }
+
             if (movie.links?.wikipedia) {
                 infoLinks.push(`<a href="${movie.links.wikipedia}" target="_blank" rel="noopener noreferrer" class="info-btn">Wiki</a>`);
             }
@@ -1044,10 +1053,11 @@ const NRW = {
             }
         }
 
-        // Purchase (VOD) buttons — separate Amazon + Apple TV
+        // Purchase (VOD) buttons — separate Amazon + Apple TV (side-by-side)
         const lbVodEntries = Array.isArray(watchLinks.vod) ? watchLinks.vod
             : (watchLinks.vod?.service ? [watchLinks.vod] : []);
 
+        let vodHtml = '';
         lbVodEntries.forEach(vod => {
             const vodLink = vod.link || vod.url;
             if (vod.service && vodLink) {
@@ -1066,9 +1076,10 @@ const NRW = {
                 } else {
                     label = this.getPurchaseLabel(vod.service);
                 }
-                watchHtml += `<a href="${vodLink}" target="_blank" rel="noopener noreferrer" class="watch-btn-lb ${btnClass}">${label}</a>`;
+                vodHtml += `<a href="${vodLink}" target="_blank" rel="noopener noreferrer" class="watch-btn-lb ${btnClass}">${label}</a>`;
             }
         });
+        if (vodHtml) watchHtml += `<div class="vod-row">${vodHtml}</div>`;
 
         // Plex button
         const plexInfo = this.plexLibrary[String(movie.id)];
@@ -1088,6 +1099,14 @@ const NRW = {
         if (movie.links?.rt) {
             const score = movie.rt_score ? ` ${movie.rt_score}` : '';
             infoHtml += `<a href="${movie.links.rt}" target="_blank" rel="noopener noreferrer" class="info-btn-lb glass">RT${score}</a>`;
+        }
+        if (movie.imdb_rating) {
+            const imdbUrl = movie.links?.imdb;
+            if (imdbUrl) {
+                infoHtml += `<a href="${imdbUrl}" target="_blank" rel="noopener noreferrer" class="info-btn-lb glass">IMDb ${movie.imdb_rating}</a>`;
+            } else {
+                infoHtml += `<span class="info-btn-lb glass">IMDb ${movie.imdb_rating}</span>`;
+            }
         }
         if (movie.links?.wikipedia) {
             infoHtml += `<a href="${movie.links.wikipedia}" target="_blank" rel="noopener noreferrer" class="info-btn-lb glass">Wiki</a>`;

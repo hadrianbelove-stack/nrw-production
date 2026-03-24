@@ -274,6 +274,16 @@ export default function MovieDetail({route}) {
             </TouchableOpacity>
           )}
 
+          {/* IMDB Rating */}
+          {movie.imdb_rating && (
+            <View style={styles.rtContainer}>
+              <View style={[styles.rtBadge, { backgroundColor: '#F5C518' }]}>
+                <Text style={[styles.rtScore, { color: '#000' }]}>{movie.imdb_rating}</Text>
+              </View>
+              <Text style={styles.rtLabel}>IMDb</Text>
+            </View>
+          )}
+
           {/* Genres */}
           {genres.length > 0 && (
             <View style={styles.genresContainer}>

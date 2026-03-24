@@ -338,6 +338,7 @@ const NRWMobile = {
                     </div>
                     <div class="buttons-row">
                         ${this.getRTButton(movie)}
+                        ${this.getIMDbButton(movie)}
                         ${this.getWikiButton(movie)}
                     </div>
                 </div>
@@ -484,6 +485,17 @@ const NRWMobile = {
             return `<a href="${movie.links.rt}" target="_blank" rel="noopener" class="btn-equal btn-rt">${rtText}</a>`;
         }
         return `<span class="btn-equal btn-rt" style="opacity:0.5">${rtText}</span>`;
+    },
+
+    getIMDbButton(movie) {
+        if (movie.imdb_rating) {
+            const imdbUrl = movie.links?.imdb;
+            if (imdbUrl) {
+                return `<a href="${imdbUrl}" target="_blank" rel="noopener" class="btn-equal btn-rt">IMDb ${movie.imdb_rating}</a>`;
+            }
+            return `<span class="btn-equal btn-rt" style="opacity:0.5">IMDb ${movie.imdb_rating}</span>`;
+        }
+        return '';
     },
 
     getWikiButton(movie) {

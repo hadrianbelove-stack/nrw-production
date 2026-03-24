@@ -93,7 +93,7 @@ Manually Corrected: {movie.get('manually_corrected', False)}
 
 Research Links:
 TMDB: https://www.themoviedb.org/movie/{movie['id']}
-JustWatch: https://www.justwatch.com/us/search?q={movie['title'].replace(' ', '%20')}
+Amazon: https://www.amazon.com/s?i=instant-video&k={movie['title'].replace(' ', '+')}
 Google: https://www.google.com/search?q="{movie['title']}"+digital+release+date
 """
 

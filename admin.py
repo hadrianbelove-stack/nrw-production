@@ -408,7 +408,7 @@ def get_poster_url(tmdb_id: Union[str, int]) -> Optional[str]:
     try:
         response = requests.get(
             f"https://api.themoviedb.org/3/movie/{tmdb_id}",
-            params={"api_key": api_key},
+            params={"api_key": api_key, "language": "en-US"},
             timeout=10  # 10 second timeout
         )
         if response.status_code == 200:
@@ -1771,6 +1771,7 @@ def search_tmdb() -> dict:
             params={
                 "api_key": api_key,
                 "query": query,
+                "language": "en-US",
                 "include_adult": False
             },
             timeout=10
@@ -1905,7 +1906,7 @@ def add_movie() -> dict:
                 # Fetch basic movie info
                 response = requests.get(
                     f"https://api.themoviedb.org/3/movie/{tmdb_id}",
-                    params={"api_key": api_key},
+                    params={"api_key": api_key, "language": "en-US"},
                     timeout=10
                 )
                 if response.status_code == 200:

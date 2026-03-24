@@ -435,7 +435,7 @@ class NRWOrchestrator:
 
             movies = data.get('movies', [])
             link_sources = {
-                'deep_links': 0,  # Real links from JustWatch API or scrapers
+                'deep_links': 0,  # Real links from scrapers or cache
                 'search_urls': 0,
                 'no_links': 0
             }

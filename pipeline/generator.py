@@ -184,6 +184,7 @@ class DataGenerator:
         self._init_streaming_scraper()  # Initialize streaming scraper
         self.trailer_finder = None  # Lazy initialization (HybridYouTubeFinder: Gemini + Playwright fallback)
         self.youtube_trailer_cache = self.storage.load_cache('cache/youtube_trailer_cache.json')
+        self.bad_trailer_urls = self.storage.load_cache('cache/bad_trailer_urls.json')
         self.rt_scraper = None  # Lazy initialization for RT scraping with Playwright
         self.wikipedia_scraper = None  # Lazy initialization for Wikipedia scraping with Playwright
 
@@ -609,6 +610,7 @@ class DataGenerator:
                 # NOTE: Removed watch_region and with_watch_monetization_types filters
                 # TMDB provider data lags for new shows - we check providers separately
                 'sort_by': 'first_air_date.desc',
+                'language': 'en-US',
                 'page': page
             }
 
@@ -635,7 +637,7 @@ class DataGenerator:
                 # Get full series details
                 details_url = f"https://api.themoviedb.org/3/tv/{series['id']}"
                 try:
-                    details_resp = requests.get(details_url, params={'api_key': self.tmdb_key}, timeout=15)
+                    details_resp = requests.get(details_url, params={'api_key': self.tmdb_key, 'language': 'en-US'}, timeout=15)
                     details = details_resp.json()
                 except Exception as e:
                     self.logger.warning(f"Failed to get details for {series.get('name')}: {e}")
@@ -657,7 +659,7 @@ class DataGenerator:
                 # Get watch providers
                 providers_url = f"https://api.themoviedb.org/3/tv/{series['id']}/watch/providers"
                 try:
-                    prov_resp = requests.get(providers_url, params={'api_key': self.tmdb_key}, timeout=15)
+                    prov_resp = requests.get(providers_url, params={'api_key': self.tmdb_key, 'language': 'en-US'}, timeout=15)
                     prov_data = prov_resp.json()
                     us_providers = prov_data.get('results', {}).get('US', {})
                 except Exception as e:
@@ -818,6 +820,12 @@ class DataGenerator:
         total_to_check = len(tracking_movies)
         newly_available_ids = []  # Track movie IDs that transition to available
 
+        # JustWatch verification counters
+        jw_verified = 0
+        jw_rejected = 0
+        jw_buy_only = 0
+        jw_unavailable = 0
+
         print(f"\n🎬 Checking {total_to_check} movies for digital availability...\n")
         discovery_start_time = time.time()
 
@@ -891,6 +899,39 @@ class DataGenerator:
                     # Always update has_providers flag based on current provider availability
                     movie['has_providers'] = has_providers
 
+                    # JustWatch verification: confirm availability before promoting
+                    jw_watch_links = None
+                    if has_providers and movie['status'] == 'tracking':
+                        jw_result = self._verify_with_justwatch(movie['title'], movie.get('year'), movie_id)
+
+                        if jw_result is not None:
+                            if jw_result['verified'] is True:
+                                # JustWatch confirms: real rent/streaming offers exist
+                                jw_watch_links = jw_result.get('watch_links')
+                                jw_verified += 1
+                                self.logger.info(
+                                    f"JustWatch VERIFIED: {movie['title']} ({jw_result['match_confidence']}) "
+                                    f"streaming={jw_result['has_streaming']}, rent={jw_result['has_rent']}, buy={jw_result['has_buy']}"
+                                )
+                                print(f"  ✓ {movie['title']} verified by JustWatch (rent/streaming confirmed)")
+                            elif jw_result['verified'] == 'buy_only':
+                                # Buy-only on JustWatch — defer to pre-order detection below
+                                jw_buy_only += 1
+                                self.logger.info(
+                                    f"JustWatch BUY-ONLY: {movie['title']} — deferring to pre-order detection"
+                                )
+                            elif jw_result['verified'] is False:
+                                # JustWatch says NO offers — TMDB was wrong, stay in tracking
+                                has_providers = False
+                                jw_rejected += 1
+                                self.logger.info(
+                                    f"JustWatch REJECTED: {movie['title']} — no real offers despite TMDB showing providers"
+                                )
+                                print(f"  ~ {movie['title']} rejected by JustWatch (no real offers found)")
+                        else:
+                            # JustWatch unavailable — fall through to current TMDB-only behavior
+                            jw_unavailable += 1
+
                     # Pre-order detection: buy-only + single provider = check Amazon
                     is_buy_only = bool(buy_names) and not rent_names and not stream_names
                     if is_buy_only and len(buy_names) == 1 and has_providers and movie['status'] == 'tracking':
@@ -939,6 +980,12 @@ class DataGenerator:
                         # Mark for enrichment (Phase 2.1 optimization)
                         movie['enriched'] = False
                         movie['enrichment_date'] = None
+
+                        # Store JustWatch watch_links at discovery time (enrichment can reuse)
+                        if jw_watch_links:
+                            movie['watch_links'] = jw_watch_links
+                            movie['watch_links_source'] = 'justwatch_discovery'
+                            self.logger.info(f"Stored JustWatch watch_links for {movie['title']} at discovery time")
 
                         newly_digital += 1
                         needs_enrichment = True
@@ -1013,6 +1060,12 @@ class DataGenerator:
                     'failed': failed,
                     'preorder_detected': preorder_detected,
                     'scan_tag': scan_tag.strip() if scan_tag else None
+                },
+                'justwatch_verification': {
+                    'verified': jw_verified,
+                    'rejected': jw_rejected,
+                    'buy_only': jw_buy_only,
+                    'unavailable': jw_unavailable
                 }
             }
 
@@ -1104,6 +1157,67 @@ class DataGenerator:
                     print(f"📦 Compaction: moved {moved_count} available movies to archive{age_filter}")
 
         return newly_digital
+
+    def _verify_with_justwatch(self, title, year, movie_id):
+        """
+        Verify availability via JustWatch. Called only for movies TMDB says have providers.
+
+        Returns:
+            Dict with 'verified', 'watch_links', 'match_confidence', etc.
+            Returns None if JustWatch is unavailable or fails (triggers TMDB-only fallback).
+        """
+        jw_config = self.config.get('justwatch_verification', {})
+        if not jw_config.get('enabled', True):
+            return None
+
+        # Lazy-initialize JustWatch client
+        if not hasattr(self, '_jw_verifier'):
+            try:
+                from pipeline.justwatch import JustWatchClient
+                self._jw_verifier = JustWatchClient(logger=self.logger)
+            except ImportError:
+                self.logger.debug("JustWatch client not available for verification")
+                self._jw_verifier = False
+        if self._jw_verifier is False:
+            return None
+
+        try:
+            excluded_services = self.config.get('tracking', {}).get('excluded_services', ['fuboTV', 'Philo'])
+            amazon_tag = self.config.get('enrichment', {}).get('amazon_affiliate_tag')
+
+            result = self._jw_verifier.verify_availability(
+                title, year,
+                excluded_services=excluded_services,
+                affiliate_tag=amazon_tag
+            )
+
+            if result is None:
+                return None
+
+            # Reject low-confidence matches
+            min_confidence = jw_config.get('min_confidence', 'close_year')
+            confidence_levels = ['exact_year', 'close_year', 'title_only', 'first_result']
+            min_idx = confidence_levels.index(min_confidence) if min_confidence in confidence_levels else 1
+            result_idx = confidence_levels.index(result['match_confidence']) if result['match_confidence'] in confidence_levels else 3
+
+            if result_idx > min_idx:
+                self.logger.warning(
+                    f"JustWatch low-confidence match for {title} ({year}): "
+                    f"matched '{result['jw_title']}' ({result['jw_year']}) "
+                    f"[confidence: {result['match_confidence']}] — skipping verification"
+                )
+                return None
+
+            # Rate limit
+            rate_limit = jw_config.get('rate_limit', 0.5)
+            if rate_limit > 0:
+                time.sleep(rate_limit)
+
+            return result
+
+        except Exception as e:
+            self.logger.warning(f"JustWatch verification error for {title}: {e}")
+            return None
 
     def resolve_preorder_dates(self):
         """
@@ -1770,7 +1884,8 @@ class DataGenerator:
         url = f"https://api.themoviedb.org/3/movie/{movie_id}"
         params = {
             'api_key': self.tmdb_key,
-            'append_to_response': 'credits,videos,external_ids'
+            'language': 'en-US',
+            'append_to_response': 'credits,videos,external_ids,alternative_titles'
         }
 
         try:
@@ -1786,7 +1901,8 @@ class DataGenerator:
         url = f"https://api.themoviedb.org/3/tv/{tv_id}"
         params = {
             'api_key': self.tmdb_key,
-            'append_to_response': 'credits,videos,external_ids'
+            'language': 'en-US',
+            'append_to_response': 'credits,videos,external_ids,alternative_titles'
         }
 
         try:
@@ -2180,6 +2296,48 @@ class DataGenerator:
             self.logger.debug(f"OMDb API error for '{title}': {e}")
             return None
 
+    def get_imdb_rating(self, imdb_id):
+        """Fetch IMDB rating for a known IMDb ID from OMDb API.
+
+        Args:
+            imdb_id: IMDb ID (e.g., 'tt12345678')
+
+        Returns:
+            str: IMDB rating (e.g., '7.5') or None if not found
+        """
+        if not imdb_id:
+            return None
+
+        omdb_key = os.environ.get('OMDB_API_KEY') or self.config.get('api', {}).get('omdb_api_key')
+        if not omdb_key:
+            self.logger.debug("OMDb API key not configured, skipping IMDB rating")
+            return None
+
+        try:
+            url = f"http://www.omdbapi.com/?i={imdb_id}&apikey={omdb_key}"
+            response = requests.get(url, timeout=5)
+
+            if response.status_code != 200:
+                self.logger.debug(f"OMDb API error for {imdb_id}: HTTP {response.status_code}")
+                return None
+
+            data = response.json()
+
+            if data.get('Response') == 'False':
+                self.logger.debug(f"OMDb: No data for {imdb_id}")
+                return None
+
+            rating = data.get('imdbRating')
+            if rating and rating != 'N/A':
+                self.logger.debug(f"OMDb: IMDB rating {rating} for {imdb_id}")
+                return rating
+
+            return None
+
+        except Exception as e:
+            self.logger.debug(f"OMDb rating error for {imdb_id}: {e}")
+            return None
+
     def find_wikipedia_url(self, title, year, imdb_id, movie_id=None):
         """Find Wikipedia URL using Playwright-based scraper with waterfall approach
 
@@ -2301,6 +2459,9 @@ class DataGenerator:
         # --- Tier 2: TMDB official trailers (validated) ---
         for video in videos:
             if video['type'] == 'Trailer' and video['site'] == 'YouTube':
+                if video['key'] in self.bad_trailer_urls:
+                    self.logger.info(f"Skipping known-bad TMDB trailer for {title} ({year}): {video['key']}")
+                    continue
                 url = f"https://www.youtube.com/watch?v={video['key']}"
                 if self._validate_youtube_url_live(url):
                     self.logger.info(f"Trailer for {title} ({year}): tier=tmdb_official, url={url}")
@@ -2356,17 +2517,35 @@ class DataGenerator:
         # --- Tier 5: TMDB any YouTube video — teasers/clips (validated) ---
         for video in videos:
             if video['site'] == 'YouTube' and video['type'] != 'Trailer':
+                if video['key'] in self.bad_trailer_urls:
+                    self.logger.info(f"Skipping known-bad TMDB fallback for {title} ({year}): {video['key']}")
+                    continue
                 url = f"https://www.youtube.com/watch?v={video['key']}"
                 if self._validate_youtube_url_live(url):
                     self.logger.info(f"Trailer for {title} ({year}): tier=tmdb_fallback ({video['type']}), url={url}")
                     return url
                 self.logger.warning(f"Trailer dead link for {title} ({year}): tier=tmdb_fallback, url={url}")
 
-        # --- Tier 6: YouTube search URL fallback (no validation — not a direct video) ---
-        search_query = quote(f"{title} {year} trailer")
-        fallback_url = f"https://www.youtube.com/results?search_query={search_query}"
-        self.logger.info(f"Trailer for {title} ({year}): tier=search_fallback")
-        return fallback_url
+        # --- Tier 6: Broad YouTube search (validated — searches for 'trailer' and 'preview') ---
+        if self._init_trailer_finder():
+            # Use Playwright broad search if available (tries 'trailer' then 'preview',
+            # filters results to only accept videos with trailer/preview in title)
+            scraper = None
+            if hasattr(self.trailer_finder, '_get_playwright_finder'):
+                scraper = self.trailer_finder._get_playwright_finder()
+            elif hasattr(self.trailer_finder, 'find_trailer_broad'):
+                scraper = self.trailer_finder
+
+            if scraper and hasattr(scraper, 'find_trailer_broad'):
+                broad_url = scraper.find_trailer_broad(title, year)
+                if broad_url and self._validate_youtube_url_live(broad_url):
+                    self.logger.info(f"Trailer for {title} ({year}): tier=broad_search, url={broad_url}")
+                    return broad_url
+                elif broad_url:
+                    self.logger.warning(f"Trailer dead link for {title} ({year}): tier=broad_search, url={broad_url}")
+
+        self.logger.info(f"Trailer for {title} ({year}): no trailer found across all tiers")
+        return None
     
 
     def find_rt_url(self, title, year, imdb_id, director=None, original_language=None, original_title=None):
@@ -2604,7 +2783,7 @@ class DataGenerator:
             # Prefer config bucket_url over B2 native URL
             config_url = trailer_config.get('bucket_url', '') or bucket_url
 
-            hosted_url = download_and_upload_trailer(movie_id, title, year, youtube_url, bucket, config_url)
+            hosted_url, new_trailer_url = download_and_upload_trailer(movie_id, title, year, youtube_url, bucket, config_url)
             if hosted_url:
                 self.logger.info(f"Trailer hosted: {title} ({year}) -> {hosted_url}")
             return hosted_url
@@ -2612,6 +2791,113 @@ class DataGenerator:
             # BaseException catches RuntimeError from get_b2_api() and other trailer hosting failures
             self.logger.warning(f"Trailer hosting failed for {title}: {type(e).__name__}: {str(e)[:100]}")
             return None
+
+    def validate_enrichment_quality(self, result, movie_data, movie_details, movie_id, is_tv=False):
+        """Post-enrichment quality gate: flag suspicious entries before publishing.
+
+        Checks for mismatched watch links, unexpected title changes, foreign titles,
+        and other data quality issues. Sets _needs_review and _quality_warnings on
+        entries that fail checks.
+        """
+        from urllib.parse import urlparse
+        warnings = []
+
+        title = result.get('title', '')
+        tracking_title = movie_data.get('title', '')
+
+        # --- Check 1: URL domain vs service name ---
+        EXPECTED_DOMAINS = {
+            'Netflix': ['netflix.com'],
+            'Disney+': ['disneyplus.com'],
+            'HBO Max': ['max.com', 'play.max.com'],
+            'Max': ['max.com', 'play.max.com'],
+            'Hulu': ['hulu.com'],
+            'Amazon Video': ['amazon.com', 'watch.amazon.com', 'primevideo.com'],
+            'Amazon Prime Video': ['amazon.com', 'watch.amazon.com', 'primevideo.com'],
+            'Prime Video': ['amazon.com', 'watch.amazon.com', 'primevideo.com'],
+            'Apple TV': ['tv.apple.com'],
+            'Shudder': ['shudder.com'],
+            'Criterion': ['criterionchannel.com'],
+            'MUBI': ['mubi.com'],
+        }
+
+        for category, link_obj in result.get('watch_links', {}).items():
+            items = link_obj if isinstance(link_obj, list) else [link_obj] if isinstance(link_obj, dict) else []
+            for item in items:
+                if not isinstance(item, dict):
+                    continue
+                service = item.get('service', '')
+                link = item.get('link', '')
+                if not link or not service:
+                    continue
+                expected = EXPECTED_DOMAINS.get(service)
+                if expected and not any(d in link.lower() for d in expected):
+                    warnings.append(f"Watch link domain mismatch: '{service}' link is '{link}' (expected domains: {expected})")
+
+        # --- Check 2: Watch link service vs TMDB providers ---
+        tmdb_providers = movie_data.get('providers', {})
+        tmdb_streaming = [p.lower() for p in tmdb_providers.get('streaming', [])]
+        tmdb_rent = [p.lower() for p in tmdb_providers.get('rent', [])]
+        tmdb_buy = [p.lower() for p in tmdb_providers.get('buy', [])]
+        all_tmdb = set(tmdb_streaming + tmdb_rent + tmdb_buy)
+
+        for category, link_obj in result.get('watch_links', {}).items():
+            items = link_obj if isinstance(link_obj, list) else [link_obj] if isinstance(link_obj, dict) else []
+            for item in items:
+                if not isinstance(item, dict):
+                    continue
+                service = item.get('service', '')
+                link = item.get('link', '')
+                if not link or not service:
+                    continue
+                # Check if the scraped service appears anywhere in TMDB providers
+                service_lower = service.lower()
+                if all_tmdb and not any(service_lower in tp or tp in service_lower for tp in all_tmdb):
+                    warnings.append(f"Service '{service}' not in TMDB providers for this title (TMDB has: {list(all_tmdb)[:5]})")
+
+        # --- Check 3: Title change detection ---
+        if tracking_title and title:
+            tracking_norm = tracking_title.lower().strip()
+            title_norm = title.lower().strip()
+            if tracking_norm != title_norm:
+                # Allow minor differences (punctuation, "the" prefix, etc.)
+                import re
+                clean = lambda s: re.sub(r'[^a-z0-9 ]', '', s).strip()
+                if clean(tracking_norm) != clean(title_norm):
+                    warnings.append(f"Title changed from tracking: '{tracking_title}' -> '{title}'")
+
+        # --- Check 4: Foreign title detection ---
+        orig_lang = movie_details.get('original_language', 'en') if movie_details else 'en'
+        orig_title = movie_details.get('original_name' if is_tv else 'original_title', '') if movie_details else ''
+        if orig_lang != 'en':
+            # Check if we might be using the foreign title
+            if orig_title and title and orig_title.lower() == title.lower():
+                warnings.append(f"Title matches original foreign title (language: {orig_lang}): '{orig_title}'")
+            # Also check for non-ASCII characters suggesting a non-English title
+            if title and not all(ord(c) < 128 for c in title):
+                warnings.append(f"Title contains non-ASCII characters (language: {orig_lang}): '{title}'")
+
+        # --- Check 5: Content type sanity ---
+        if is_tv:
+            for category, link_obj in result.get('watch_links', {}).items():
+                items = link_obj if isinstance(link_obj, list) else [link_obj] if isinstance(link_obj, dict) else []
+                for item in items:
+                    if not isinstance(item, dict):
+                        continue
+                    link = item.get('link', '') or ''
+                    if '/movies/' in link.lower() or '/movie/' in link.lower():
+                        warnings.append(f"TV series has movie-type URL: '{link}'")
+
+        # Apply warnings to result
+        if warnings:
+            result['_needs_review'] = True
+            result['_quality_warnings'] = warnings
+            for w in warnings:
+                self.logger.warning(f"Quality gate [{movie_id}] {title}: {w}")
+        else:
+            result['_needs_review'] = False
+
+        return warnings
 
     def get_enrichment_only_fields(self, movie_id, movie_data, movie_details, force_refresh=False):
         """Extract enrichment-only fields with graceful partial failure handling
@@ -2657,6 +2943,7 @@ class DataGenerator:
             'runtime': runtime,
             'year': int(year) if year.isdigit() else None,
             'rt_score': None,
+            'imdb_rating': None,
             'links': {},
             'watch_links': {}
         }
@@ -2721,6 +3008,22 @@ class DataGenerator:
             enrichment_results['rt_score'] = 'error'
             self.logger.warning(f"RT: Error for {title} ({year}): {type(e).__name__}: {str(e)[:100]}")
 
+        # IMDB rating (isolated failure handling)
+        try:
+            imdb_rating = self.get_imdb_rating(imdb_id)
+            if imdb_rating:
+                result['imdb_rating'] = imdb_rating
+                enrichment_results['imdb_rating'] = 'success'
+                self.logger.debug(f"IMDB: Rating {imdb_rating} for {title} ({year})")
+            else:
+                enrichment_results['imdb_rating'] = 'not_found'
+                self.logger.debug(f"IMDB: No rating found for {title} ({year})")
+            if imdb_id:
+                result['links']['imdb'] = f"https://www.imdb.com/title/{imdb_id}/"
+        except Exception as e:
+            enrichment_results['imdb_rating'] = 'error'
+            self.logger.warning(f"IMDB: Error for {title} ({year}): {type(e).__name__}: {str(e)[:100]}")
+
         # Pull quotes (isolated failure handling)
         pull_quotes_enabled = self.config.get('gemini_scraper', {}).get('pull_quotes_enabled', False)
         if pull_quotes_enabled:
@@ -2742,7 +3045,17 @@ class DataGenerator:
 
         # Watch links (isolated failure handling)
         try:
-            watch_links_raw = self.enrichment.get_watch_links(movie_id, title, year, movie_data.get('providers', {}), force_refresh, tracking_data=movie_data)
+            # Extract title variants for scraper fallback (English → original → US alternative)
+            orig_title_key = 'original_name' if is_tv else 'original_title'
+            original_title = movie_details.get(orig_title_key) if movie_details else None
+            alt_titles_raw = movie_details.get('alternative_titles', {}).get('results', []) if movie_details else []
+
+            watch_links_raw = self.enrichment.get_watch_links(
+                movie_id, title, year, movie_data.get('providers', {}), force_refresh,
+                tracking_data=movie_data,
+                original_title=original_title,
+                alternative_titles=alt_titles_raw
+            )
 
             # Simplify provider names in watch links (handle both array and dict formats)
             for category, link_obj in watch_links_raw.items():
@@ -2884,6 +3197,14 @@ class DataGenerator:
         # Detailed logging for metrics
         self.logger.info(f"Enrichment completed for {title} ({year}) in {movie_duration:.1f}s: {enrichment_results}")
 
+        # Post-enrichment quality gate
+        quality_warnings = self.validate_enrichment_quality(result, movie_data, movie_details, movie_id, is_tv=is_tv)
+        if quality_warnings:
+            print(f"  ⚠️  Quality gate flagged {title}: {len(quality_warnings)} warning(s)")
+            enrichment_results['quality_gate'] = 'flagged'
+        else:
+            enrichment_results['quality_gate'] = 'passed'
+
         # Always return result - never None for partial failures
         return result
 
@@ -2931,6 +3252,7 @@ class DataGenerator:
         # Build links object with waterfall approach and graceful failure handling
         links = {}
         rt_score = None
+        imdb_rating = None
 
         # Track enrichment success/failure for detailed logging
         enrichment_results = {
@@ -3005,6 +3327,21 @@ class DataGenerator:
             enrichment_results['rt_score'] = 'error'
             self.logger.warning(f"RT: Error for {title} ({year}): {type(e).__name__}: {str(e)[:100]}")
 
+        # IMDB rating (isolated failure handling)
+        try:
+            imdb_rating = self.get_imdb_rating(imdb_id)
+            if imdb_rating:
+                enrichment_results['imdb_rating'] = 'success'
+                self.logger.debug(f"IMDB: Rating {imdb_rating} for {title} ({year})")
+            else:
+                enrichment_results['imdb_rating'] = 'not_found'
+                self.logger.debug(f"IMDB: No rating found for {title} ({year})")
+            if imdb_id:
+                links['imdb'] = f"https://www.imdb.com/title/{imdb_id}/"
+        except Exception as e:
+            enrichment_results['imdb_rating'] = 'error'
+            self.logger.warning(f"IMDB: Error for {title} ({year}): {type(e).__name__}: {str(e)[:100]}")
+
         # Watch links (deep links to streaming platforms)
         watch_links_raw = self.enrichment.get_watch_links(movie_id, title, year, movie_data.get('providers', {}), force_refresh, tracking_data=movie_data)
 
@@ -3053,6 +3390,7 @@ class DataGenerator:
             'year': int(year) if year else None,
             'country': country,
             'rt_score': rt_score,
+            'imdb_rating': imdb_rating,
             'providers': movie_data.get('providers', {}),
             'links': links,
             'watch_links': watch_links
@@ -3463,23 +3801,29 @@ class DataGenerator:
         for movie_index, movie in gap_movies:
             movie_id = str(movie.get('id', ''))
             title = movie.get('title', 'Unknown')
+            year = str(movie.get('year', ''))
+            providers = movie.get('providers', {})
 
             try:
-                movie_details = self.get_movie_details(movie_id)
-                if not movie_details:
-                    print(f"  ✗ Could not fetch TMDB details for {title}")
-                    continue
-
                 # Get tracking data for this movie (needed for manual_watch_links check)
                 tracking_movie = tracking_data.get('movies', {}).get(movie_id, movie)
 
-                enrichment_fields = self.get_enrichment_only_fields(
-                    movie_id, tracking_movie, movie_details, force_refresh=True
+                # Only scrape watch links — skip Wikipedia, RT, trailers, etc.
+                watch_links = self.enrichment.get_watch_links(
+                    movie_id, title, year, providers,
+                    force_refresh=True, tracking_data=tracking_movie
                 )
 
-                if enrichment_fields and enrichment_fields.get('watch_links'):
-                    existing_movies[movie_index].update(enrichment_fields)
-                    existing_movies[movie_index]['_enrichment_status'] = 'completed'
+                # Check if we got real VOD links
+                vod = watch_links.get('vod', []) if watch_links else []
+                has_real_vod = False
+                if isinstance(vod, list):
+                    has_real_vod = any(isinstance(v, dict) and v.get('link') for v in vod)
+                elif isinstance(vod, dict):
+                    has_real_vod = bool(vod.get('link'))
+
+                if has_real_vod:
+                    existing_movies[movie_index]['watch_links'] = watch_links
                     # Clear gap tracking if watch_links resolved
                     existing_gaps = existing_movies[movie_index].get('_enrichment_gaps', [])
                     if 'watch_links' in existing_gaps:
@@ -3491,7 +3835,7 @@ class DataGenerator:
                     print(f"  ✓ {title} — watch links resolved")
                     fixed_count += 1
                 else:
-                    print(f"  ○ {title} — still no links (may need manual override)")
+                    print(f"  ○ {title} — not on Amazon/Apple TV")
             except Exception as e:
                 print(f"  ✗ Error re-enriching {title}: {e}")
                 continue
@@ -4212,12 +4556,10 @@ class DataGenerator:
                     elif 'festivalplayer.sundance.org' in screening_link:
                         screening_slug = 'sundance'
 
-                # Look up screening name from config mapping
+                # Look up screening name: config.yaml → Eventive page scrape → title-case fallback
                 screening_name = screening_names_map.get(screening_slug, '')
                 if not screening_name and screening_slug:
-                    # Fallback: title-case the slug
-                    screening_name = screening_slug.replace('_', ' ').replace('-', ' ').title()
-                    print(f"  ⚠️  Unknown screening slug '{screening_slug}' for {movie.get('title', 'Unknown')} — add to config.yaml screening_names")
+                    screening_name = self._fetch_eventive_screening_name(screening_slug)
 
                 today_str = datetime.now().strftime('%Y-%m-%d')
                 movie['virtual_screening_info'] = {

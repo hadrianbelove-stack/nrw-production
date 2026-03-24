@@ -374,24 +374,19 @@ The enrichment system tracks which movies have been processed with additional me
 
 ### 4. Watch Links Missing (Low Provider Coverage)
 
-> **Note (Dec 2024):** Watchmode API was deprecated. System now uses **JustWatch API** as primary source.
-
 **Symptoms:**
 - Warning: `Provider coverage too low: X < 5`
 - Most movies have no watch links (streaming/vod)
 - Only 1-5 movies out of 80+ have provider links
 
-**Root Causes (Current - Dec 2024+):**
-- JustWatch API couldn't find movie (title/year mismatch)
-- Movie is very new or obscure (not yet in JustWatch database)
+**Root Causes:**
+- Playwright scraper selectors outdated (Amazon/Apple TV change HTML periodically)
+- Movie is very new or obscure (not yet available for digital purchase)
 - Cache is stale and needs refresh
 
 **Solutions:**
 
 ```bash
-# Test JustWatch API for a specific movie
-python3 -c "from justwatch_client import JustWatchClient; c=JustWatchClient(); print(c.get_watch_links('Conclave', 2024))"
-
 # Force refresh by clearing cache entry
 python3 -c "import json; c=json.load(open('cache/watch_links_cache.json')); del c['MOVIE_ID']; json.dump(c, open('cache/watch_links_cache.json','w'))"
 
@@ -550,7 +545,7 @@ grep "Processing.*movies" logs/
 cp movie_tracking.json.backup movie_tracking.json
 
 # Check enrichment stats for watch link issues
-grep -i "justwatch\|watch_links" logs/admin.log | tail -20
+grep -i "watch_links\|scraper" logs/admin.log | tail -20
 ```
 
 ### Performance Monitoring
