@@ -45,7 +45,7 @@ try:
 except ImportError:
     StreamingPlatformScraper = None
 
-# Watch link discovery: JustWatch API (primary) + Playwright scrapers (fallback)
+# Watch link discovery: cache + Playwright scrapers
 
 
 def setup_logger(name, log_file='logs/admin.log', level=logging.INFO):
@@ -129,7 +129,7 @@ class DataGenerator:
             )
             raise ValueError("TMDB_API_KEY is required")
 
-        # Watch link discovery via JustWatch API (primary) + scrapers (fallback)
+        # Watch link discovery via cache + Playwright scrapers
         self.wikipedia_cache = self.storage.load_cache('cache/wikipedia_cache.json')
         self.rt_cache = self.storage.load_cache('cache/rt_cache.json')
         self.wikipedia_overrides = self.storage.load_cache('overrides/wikipedia_overrides.json')
@@ -166,7 +166,7 @@ class DataGenerator:
             'schema_validation_passes': 0,
             'search_calls': 0,
             'source_calls': 0,
-            'justwatch_successes': 0
+            'scraper_successes': 0
         }
 
         # Initialize validation service (extracted 2025-11-10) - shares enrichment_stats dict
@@ -2241,87 +2241,132 @@ class DataGenerator:
             return None
     
 
+    def _validate_youtube_url_live(self, url):
+        """Check if a YouTube URL actually resolves to a playable video.
+        Uses YouTube's oEmbed endpoint — fast (~100ms), no API key needed."""
+        try:
+            import requests
+            oembed = f"https://www.youtube.com/oembed?url={url}&format=json"
+            resp = requests.head(oembed, timeout=5)
+            return resp.status_code == 200
+        except Exception:
+            return True  # If check itself fails, don't block — assume valid
+
+    def _init_trailer_finder(self):
+        """Lazily initialize the Gemini+Playwright trailer finder."""
+        if self.trailer_finder is not None:
+            return True
+        if not self.enrichment_enabled:
+            self.logger.debug("YouTube trailer finder disabled - enrichment not enabled")
+            return False
+        gemini_config = self.config.get('gemini_scraper', {})
+        youtube_gemini_disabled = not gemini_config.get('enabled', True) or not gemini_config.get('youtube_enabled', True)
+        if GEMINI_AVAILABLE and not youtube_gemini_disabled:
+            self.trailer_finder = HybridYouTubeFinder(
+                cache_file='cache/youtube_trailer_cache.json'
+            )
+            self.logger.info("YouTube trailer finder initialized (Gemini + Playwright fallback)")
+        else:
+            from scripts.youtube_trailer_scraper import YouTubeTrailerScraper
+            self.trailer_finder = YouTubeTrailerScraper(
+                cache_file='cache/youtube_trailer_cache.json',
+                headless=True
+            )
+            reason = "config disabled" if youtube_gemini_disabled else "Gemini unavailable"
+            self.logger.warning(f"YouTube trailer finder initialized (Playwright-only, {reason})")
+        return True
+
     def find_trailer_url(self, movie_details):
-        """Extract trailer URL from TMDB movie details or scrape YouTube"""
+        """Find trailer URL using a tiered waterfall with liveness validation.
+
+        Tier order (each validated before accepting):
+          1. Manual overrides (trusted, no validation)
+          2. TMDB official trailers (validated — TMDB data can go stale)
+          3. YouTube scraper cache (validated — free/instant, checked before Gemini)
+          4. Gemini+Playwright live search (validated — most reliable but costs tokens)
+          5. TMDB any YouTube video (validated — teasers/clips, last resort from TMDB)
+          6. YouTube search URL fallback (no validation — not a direct video)
+        """
         title = movie_details.get('name') or movie_details.get('title', '')
         year = (movie_details.get('first_air_date') or movie_details.get('release_date', ''))[:4] if (movie_details.get('first_air_date') or movie_details.get('release_date')) else ''
 
-        # 1. Check manual overrides first
+        # --- Tier 1: Manual overrides (always trusted) ---
         override_key = f"{title}_{year}"
         if override_key in self.trailer_overrides:
+            self.logger.info(f"Trailer for {title} ({year}): tier=override")
             return self.trailer_overrides[override_key]
 
         videos = movie_details.get('videos', {}).get('results', [])
 
-        # 2. Prioritize official trailers from TMDB
+        # --- Tier 2: TMDB official trailers (validated) ---
         for video in videos:
             if video['type'] == 'Trailer' and video['site'] == 'YouTube':
-                return f"https://www.youtube.com/watch?v={video['key']}"
+                url = f"https://www.youtube.com/watch?v={video['key']}"
+                if self._validate_youtube_url_live(url):
+                    self.logger.info(f"Trailer for {title} ({year}): tier=tmdb_official, url={url}")
+                    return url
+                self.logger.warning(f"Trailer dead link for {title} ({year}): tier=tmdb_official, url={url}")
 
-        # 3. Fall back to any YouTube video from TMDB
-        for video in videos:
-            if video['site'] == 'YouTube':
-                return f"https://www.youtube.com/watch?v={video['key']}"
-
-        # 4. Check YouTube scraper cache
+        # --- Tier 3: YouTube scraper cache (validated, checked before Gemini to save cost) ---
         cache_key = f"{title}_{year}"
         if cache_key in self.youtube_trailer_cache:
             cached_url = self.youtube_trailer_cache[cache_key]
-            if cached_url:  # Don't return None from cache, keep trying
+            if cached_url and self._validate_youtube_url_live(cached_url):
+                self.logger.info(f"Trailer for {title} ({year}): tier=cache, url={cached_url}")
                 return cached_url
+            elif cached_url:
+                self.logger.warning(f"Trailer dead link for {title} ({year}): tier=cache, url={cached_url}")
+                del self.youtube_trailer_cache[cache_key]  # Invalidate dead cache entry
 
-        # 5. Try scraping YouTube for the trailer (Gemini-first with Playwright fallback)
-        if self.trailer_finder is None:
-            # Check enrichment flag first
-            if not self.enrichment_enabled:
-                self.logger.debug("YouTube trailer finder disabled - enrichment not enabled")
-                return None
+        # --- Tier 4: Gemini+Playwright live search (validated) ---
+        if self._init_trailer_finder():
+            # Clear dead entries from finder's internal cache (loaded from same file)
+            # HybridYouTubeFinder stores cache at .gemini_finder.cache
+            # YouTubeTrailerScraper stores cache at .cache directly
+            finder_cache = None
+            if hasattr(self.trailer_finder, 'gemini_finder'):
+                finder_cache = self.trailer_finder.gemini_finder.cache
+            elif hasattr(self.trailer_finder, 'cache'):
+                finder_cache = self.trailer_finder.cache
+            if finder_cache and cache_key in finder_cache:
+                finder_url = finder_cache[cache_key]
+                if finder_url and cache_key not in self.youtube_trailer_cache:
+                    # We already proved this URL is dead in Tier 3
+                    del finder_cache[cache_key]
+                    self.logger.info(f"Cleared dead URL from finder cache for {title} ({year})")
 
-            # Check config kill switch for YouTube Gemini
-            gemini_config = self.config.get('gemini_scraper', {})
-            youtube_gemini_disabled = not gemini_config.get('enabled', True) or not gemini_config.get('youtube_enabled', True)
+            self.enrichment_stats['trailer_attempts'] += 1
 
-            if GEMINI_AVAILABLE and not youtube_gemini_disabled:
-                self.trailer_finder = HybridYouTubeFinder(
-                    cache_file='cache/youtube_trailer_cache.json'
-                )
-                self.logger.info("YouTube trailer finder initialized (Gemini + Playwright fallback)")
+            director = movie_details.get('crew', {}).get('director') if movie_details else None
+            cast_list = movie_details.get('crew', {}).get('cast', []) if movie_details else []
+            cast = cast_list[:3] if cast_list else None
+
+            if GEMINI_AVAILABLE:
+                scraped_url = self.trailer_finder.find_trailer(title, year, director=director, cast=cast)
             else:
-                from scripts.youtube_trailer_scraper import YouTubeTrailerScraper
-                self.trailer_finder = YouTubeTrailerScraper(
-                    cache_file='cache/youtube_trailer_cache.json',
-                    headless=True
-                )
-                reason = "config disabled" if youtube_gemini_disabled else "Gemini unavailable"
-                self.logger.warning(f"YouTube trailer finder initialized (Playwright-only, {reason})")
+                scraped_url = self.trailer_finder.find_trailer(title, year)
 
-        # Check if this is a cache hit first
-        cache_key = f"{title}_{year}"
-        is_cache_hit = cache_key in self.trailer_finder.cache if hasattr(self.trailer_finder, 'cache') else False
+            if scraped_url and self._validate_youtube_url_live(scraped_url):
+                self.enrichment_stats['trailer_successes'] += 1
+                self.logger.info(f"Trailer for {title} ({year}): tier=gemini_playwright, url={scraped_url}")
+                return scraped_url
+            elif scraped_url:
+                self.logger.warning(f"Trailer dead link for {title} ({year}): tier=gemini_playwright, url={scraped_url}")
 
-        # Track trailer scraper usage
-        self.enrichment_stats['trailer_attempts'] += 1
-        if is_cache_hit:
-            self.enrichment_stats['trailer_cache_hits'] += 1
+        # --- Tier 5: TMDB any YouTube video — teasers/clips (validated) ---
+        for video in videos:
+            if video['site'] == 'YouTube' and video['type'] != 'Trailer':
+                url = f"https://www.youtube.com/watch?v={video['key']}"
+                if self._validate_youtube_url_live(url):
+                    self.logger.info(f"Trailer for {title} ({year}): tier=tmdb_fallback ({video['type']}), url={url}")
+                    return url
+                self.logger.warning(f"Trailer dead link for {title} ({year}): tier=tmdb_fallback, url={url}")
 
-        # Pass director/cast context for better Gemini accuracy
-        director = movie_details.get('crew', {}).get('director') if movie_details else None
-        cast_list = movie_details.get('crew', {}).get('cast', []) if movie_details else []
-        cast = cast_list[:3] if cast_list else None
-
-        # Call with context if Gemini available and method supports it
-        if GEMINI_AVAILABLE:
-            scraped_url = self.trailer_finder.find_trailer(title, year, director=director, cast=cast)
-        else:
-            scraped_url = self.trailer_finder.find_trailer(title, year)
-
-        if scraped_url:
-            self.enrichment_stats['trailer_successes'] += 1
-            return scraped_url
-
-        # 6. Final fallback: generate YouTube search URL
+        # --- Tier 6: YouTube search URL fallback (no validation — not a direct video) ---
         search_query = quote(f"{title} {year} trailer")
-        return f"https://www.youtube.com/results?search_query={search_query}"
+        fallback_url = f"https://www.youtube.com/results?search_query={search_query}"
+        self.logger.info(f"Trailer for {title} ({year}): tier=search_fallback")
+        return fallback_url
     
 
     def find_rt_url(self, title, year, imdb_id, director=None, original_language=None, original_title=None):
@@ -3360,8 +3405,9 @@ class DataGenerator:
 
     def reenrich_watch_link_gaps(self):
         """
-        Re-enrich movies that have Amazon/Apple providers but empty watch_links.
-        Uses force_refresh=True to bypass cache and retry JustWatch.
+        Re-enrich ALL movies missing VOD deep links (not filtered by TMDB providers).
+        Uses force_refresh=True to bypass cache and retry with Playwright scrapers.
+        Speculative scraping in enrichment will try Amazon + Apple TV for every movie.
 
         Returns:
             int: Number of movies successfully re-enriched with watch links
@@ -3375,31 +3421,37 @@ class DataGenerator:
 
         existing_movies = display_data.get('movies', [])
 
-        # Find movies with Amazon/Apple providers but no watch_links.vod
-        amazon_apple_variants = ['amazon', 'prime video', 'apple tv', 'apple itunes', 'itunes']
+        # Find ALL movies missing VOD deep links (regardless of TMDB providers)
         gap_movies = []
 
         for i, movie in enumerate(existing_movies):
-            providers = movie.get('providers', {})
             watch_links = movie.get('watch_links', {})
-            rent_buy = providers.get('rent', []) + providers.get('buy', [])
-            relevant = [p for p in rent_buy if any(v in p.lower() for v in amazon_apple_variants)]
 
             vod = watch_links.get('vod')
             has_vod = (isinstance(vod, list) and any(isinstance(v, dict) and v.get('link') for v in vod)) or \
                       (isinstance(vod, dict) and bool(vod.get('link')))
-            if relevant and not has_vod:
+            if not has_vod:
                 gap_movies.append((i, movie))
 
         if not gap_movies:
-            print("✅ No watch link gaps found — all Amazon/Apple providers have links")
+            print("✅ No watch link gaps found — all movies have VOD links")
             return 0
 
-        print(f"🔍 Found {len(gap_movies)} movies with watch link gaps:")
+        # Batch limit to prevent marathon runs
+        vod_config = self.config.get('vod_scraper', {})
+        max_batch = vod_config.get('reenrich_batch_size', 50)
+        total_gaps = len(gap_movies)
+        if max_batch > 0 and len(gap_movies) > max_batch:
+            print(f"🔍 Found {total_gaps} movies missing VOD links (processing first {max_batch}):")
+            gap_movies = gap_movies[:max_batch]
+        else:
+            print(f"🔍 Found {total_gaps} movies missing VOD links:")
+
         for _, movie in gap_movies:
             providers = movie.get('providers', {})
             rent_buy = providers.get('rent', []) + providers.get('buy', [])
-            print(f"  • {movie.get('title')} ({', '.join(rent_buy)})")
+            provider_info = f" ({', '.join(rent_buy)})" if rent_buy else " (no TMDB providers)"
+            print(f"  • {movie.get('title')}{provider_info}")
 
         # Load tracking database for enrichment
         tracking_data = self.storage.load_all_movies()
@@ -3648,15 +3700,15 @@ class DataGenerator:
             print(f"  Wikidata success rate: {wikidata_success_rate:.1f}%")
         print(f"  Wikipedia links recovered via Wikidata: {self.wikipedia_stats['wikidata_successes']}")
 
-        # Enrichment statistics (JustWatch API is primary source)
+        # Enrichment statistics
         total_calls = self.enrichment_stats['search_calls'] + self.enrichment_stats['source_calls']
         cache_hit_rate = (self.enrichment_stats['cache_hits'] / (self.enrichment_stats['cache_hits'] + total_calls) * 100) if (self.enrichment_stats['cache_hits'] + total_calls) > 0 else 0
 
         print(f"\n📊 Watch Links Enrichment:")
         print(f"  Cache hits: {self.enrichment_stats['cache_hits']}")
         print(f"  Cache hit rate: {cache_hit_rate:.1f}%")
-        justwatch_successes = self.enrichment_stats.get('justwatch_successes', 0)
-        print(f"  JustWatch successes: {justwatch_successes}")
+        scraper_successes = self.enrichment_stats.get('scraper_successes', 0)
+        print(f"  Scraper successes: {scraper_successes}")
 
         print(f"\n📊 Agent Scraper Usage:")
         print(f"  Streaming enabled: {self.config.get('streaming_scraper', {}).get('enabled', True)}")
@@ -3691,10 +3743,10 @@ class DataGenerator:
             platform_success_rate = (platform_successes / platform_attempts * 100)
             print(f"  VOD scraper success rate: {platform_success_rate:.1f}%")
 
-            # Compare with JustWatch API success rate
+            # Show overall success comparison
             if success_rate > 0:
                 comparison = "higher" if platform_success_rate > success_rate else "lower"
-                print(f"  Success rate vs JustWatch API: {platform_success_rate:.1f}% ({comparison} than {success_rate:.1f}%)")
+                print(f"  Success rate vs cache: {platform_success_rate:.1f}% ({comparison} than {success_rate:.1f}%)")
         else:
             print(f"  ⚠️  VOD scraper was never called (check if movies have Amazon/Apple TV providers)")
 
@@ -3872,9 +3924,6 @@ class DataGenerator:
             if wiki_rate is not None:
                 status = "✅" if wiki_rate >= 80 else "⚠️" if wiki_rate >= 50 else "❌"
                 print(f"  Wikipedia: {status} {wiki_rate}% success ({health['scrapers']['wikipedia_scraper']['wikidata_successes']}/{health['scrapers']['wikipedia_scraper']['wikidata_attempts']})")
-
-            # JustWatch API (primary source for watch links)
-            # Note: JustWatch replaced Watchmode API in Dec 2024
 
             # Validation
             val_rate = health['validation']['pass_rate']

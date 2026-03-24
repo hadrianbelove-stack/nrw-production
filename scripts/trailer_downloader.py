@@ -114,6 +114,8 @@ def download_trailer(movie, dry_run=False, cookies_browser=None):
         'fragment_retries': 2,
         # Don't download if longer than 5 minutes
         'match_filter': yt_dlp.utils.match_filter_func(f'duration < {MAX_DURATION_SECONDS}'),
+        # YouTube n-parameter challenge solver (required since early 2026)
+        'js_runtimes': {'node': {}},
     }
 
     # Use browser cookies for age-restricted content
