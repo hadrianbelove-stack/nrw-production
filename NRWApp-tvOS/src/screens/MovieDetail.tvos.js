@@ -438,11 +438,18 @@ const MovieDetailTvOS = () => {
               )}
             </View>
 
-            {/* Virtual screening name */}
+            {/* Virtual screening name + availability */}
             {movie.categories?.is_virtual_screening && movie.virtual_screening_info?.screening_name && (
-              <Text style={styles.screeningName}>
-                {movie.virtual_screening_info.screening_name}
-              </Text>
+              <View>
+                <Text style={styles.screeningName}>
+                  {movie.virtual_screening_info.screening_name}
+                </Text>
+                {movie.virtual_screening_info?.available_end && (
+                  <Text style={styles.screeningDates}>
+                    Ends {formatShortDate(movie.virtual_screening_info.available_end)}
+                  </Text>
+                )}
+              </View>
             )}
 
             {/* Metadata row */}
@@ -727,8 +734,18 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingVertical: 8,
     paddingHorizontal: 12,
-    marginBottom: Spacing.tvos.sm,
+    marginBottom: 0,
     overflow: 'hidden',
+  },
+  screeningDates: {
+    backgroundColor: '#E6C200',
+    color: Colors.screeningGoldText,
+    fontSize: Typography.tvos.body - 4,
+    fontWeight: '600',
+    textAlign: 'center',
+    paddingVertical: 4,
+    paddingHorizontal: 12,
+    marginBottom: Spacing.tvos.sm,
   },
   metadataRow: {
     flexDirection: 'row',

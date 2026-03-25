@@ -51,6 +51,13 @@ const NRW = {
         shudder:   { class: 'shudder',   name: 'SHUDDER',      badgeName: 'SHUDDER',   matches: ['shudder'] },
         criterion: { class: 'criterion', name: 'CRITERION',    badgeName: 'CRITERION', matches: ['criterion'] },
         tubi:      { class: 'tubi',      name: 'TUBI',         badgeName: 'TUBI',      matches: ['tubi'] },
+        youtube:   { class: 'youtube',   name: 'YOUTUBE',      badgeName: 'YOUTUBE',   matches: ['youtube'] },
+        paramount: { class: 'paramount', name: 'PARAMOUNT+',   badgeName: 'P+',        matches: ['paramount'] },
+        kanopy:    { class: 'kanopy',    name: 'KANOPY',       badgeName: 'KANOPY',    matches: ['kanopy'] },
+        hoopla:    { class: 'hoopla',    name: 'HOOPLA',       badgeName: 'HOOPLA',    matches: ['hoopla'] },
+        roku:      { class: 'roku',      name: 'ROKU CH.',     badgeName: 'ROKU',      matches: ['roku'] },
+        pluto:     { class: 'pluto',     name: 'PLUTO TV',     badgeName: 'PLUTO',     matches: ['pluto'] },
+        crackle:   { class: 'crackle',   name: 'CRACKLE',      badgeName: 'CRACKLE',   matches: ['crackle'] },
         plex:      { class: 'plex',      name: 'PLEX',         badgeName: 'PLEX',      matches: ['plex'] },
     },
 
@@ -116,11 +123,13 @@ const NRW = {
     lightboxMovies: [],  // Movies currently in the lightbox (filtered/displayed)
     lightboxIndex: 0,    // Current index in lightbox
     trailerLightboxIndex: -1,  // Index in lightboxMovies of the movie whose trailer is playing (-1 = none)
+    trailerReelMovies: [],     // Movies in the trailer reel (last 7 days with hosted trailers)
+    isTrailerReel: false,      // true when playing the trailer reel (vs individual trailer from lightbox)
 
     async init() {
         try {
             // Load movie data
-            const movieResponse = await fetch('data.json');
+            const movieResponse = await fetch('data.json?t=' + Date.now());
             const data = await movieResponse.json();
 
             // Load staff picks (supports both new and legacy field names)
@@ -420,21 +429,21 @@ const NRW = {
             // Add inline date divider card when date changes
             if (date !== lastDate) {
                 // Add NEW TRAILERS button before the first date marker
-                if (isFirstDate && this.latestPlaylistUrl) {
+                if (isFirstDate) {
                     const now = new Date();
                     const weekStart = new Date(now);
                     weekStart.setDate(now.getDate() - now.getDay());
                     const weekEnd = new Date(weekStart);
                     weekEnd.setDate(weekStart.getDate() + 6);
                     const dateRange = weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' - ' + weekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                    html += `<a href="${this.latestPlaylistUrl}" target="_blank" rel="noopener noreferrer" class="trailers-card">
+                    html += `<div class="trailers-card" data-trailer-reel>
                         <div class="trailers-content">
                             <div class="trailers-text">NEW</div>
                             <div class="trailers-text">TRAILERS</div>
                             <div class="trailers-date">${dateRange}</div>
                             <div class="trailers-icon">▶</div>
                         </div>
-                    </a>`;
+                    </div>`;
                     isFirstDate = false;
                 }
 
@@ -481,7 +490,7 @@ const NRW = {
             }
             const bottomInfo = bottomMetadata.join(' | ');
 
-            // Build platform-based watch buttons (SVOD, Amazon, Apple, Plex)
+            // Build platform-based watch buttons (SVOD, Amazon, Apple, YouTube, Plex)
             const buildPlatformButtons = (movie) => {
                 const watchLinks = movie.watch_links || {};
                 const providers = movie.providers || {};
@@ -558,11 +567,12 @@ const NRW = {
                             buttonsHtml += `<a href="${vodLink}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-amazon" aria-label="Rent/Buy on Amazon"><img src="logos%20and%20images/pngimg.com%20-%20amazon_PNG17.png" alt="Amazon" class="btn-logo"></a>`;
                         } else if (svc.includes('apple') || svc.includes('itunes')) {
                             buttonsHtml += `<a href="${vodLink}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-apple" aria-label="Rent/Buy on Apple TV"><img src="logos%20and%20images/apple%20logo.png" alt="Apple TV" class="btn-logo"></a>`;
+                        } else if (svc.includes('youtube') || svc.includes('google play')) {
+                            buttonsHtml += `<a href="${vodLink}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-youtube" aria-label="Rent/Buy on YouTube">YOUTUBE</a>`;
                         } else if (svc.includes('eventive') || vodLink.includes('eventive.org') || vodLink.includes('festivalplayer') || vodLink.includes('shift72.com')) {
                             buttonsHtml += `<a href="${vodLink}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-screening" aria-label="Buy Ticket">BUY TICKET</a>`;
-                        } else {
-                            buttonsHtml += `<a href="${vodLink}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-purchase" aria-label="Rent/Buy on ${vod.service}">${vod.service.toUpperCase()}</a>`;
                         }
+                        // VOD whitelist: only Amazon, Apple, YouTube, and festival tickets
                     }
                 });
 
@@ -608,6 +618,14 @@ const NRW = {
             const staffPickClass = isStaffPick ? ' staff-pick-movie' : '';
             const staffPickBadge = isStaffPick ? '<div class="staff-pick-badge">STAFF PICK</div>' : '';
 
+            // Format screening end date: "2026-03-30" → "Mar 30"
+            const formatScreeningDate = (dateStr) => {
+                if (!dateStr) return '';
+                const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+                const [y, m, d] = dateStr.split('-');
+                return `${months[parseInt(m, 10) - 1]} ${parseInt(d, 10)}`;
+            };
+
             // Streaming service pill badge for card front
             const getStreamingBadge = (movie) => {
                 const watchLinks = movie.watch_links || {};
@@ -640,8 +658,11 @@ const NRW = {
                 ? '<div class="restoration-badge">RESTORED</div>' : '';
             const rawScreeningName = movie.virtual_screening_info?.screening_name || 'VIRTUAL SCREENING';
             const screeningName = rawScreeningName.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+            const screeningEndDate = movie.virtual_screening_info?.available_end;
+            const screeningDatesHtml = screeningEndDate
+                ? `<div class="screening-dates">Ends ${formatScreeningDate(screeningEndDate)}</div>` : '';
             const screeningRibbon = movie.categories?.is_virtual_screening
-                ? `<div class="screening-ribbon">${screeningName}</div>` : '';
+                ? `<div class="screening-ribbon">${screeningName}${screeningDatesHtml}</div>` : '';
 
             html += `
             <div class="movie-container${staffPickClass}">
@@ -715,12 +736,13 @@ const NRW = {
     // direction: +1 (forward) or -1 (backward), wraps around
     // Returns -1 if no other movie with a trailer exists
     findNextTrailerIndex(fromIndex, direction) {
-        const count = this.lightboxMovies.length;
+        const movies = this.isTrailerReel ? this.trailerReelMovies : this.lightboxMovies;
+        const count = movies.length;
         if (count === 0) return -1;
         let idx = fromIndex;
         for (let i = 0; i < count - 1; i++) {
             idx = (idx + direction + count) % count;
-            const movie = this.lightboxMovies[idx];
+            const movie = movies[idx];
             const trailerUrl = movie.links?.trailer_hosted || movie.links?.trailer;
             if (trailerUrl) return idx;
         }
@@ -760,7 +782,11 @@ const NRW = {
             const loading = document.getElementById('trailer-loading');
             const error = document.getElementById('trailer-error');
             video.addEventListener('canplay', () => { loading.style.display = 'none'; }, { once: true });
-            video.addEventListener('error', () => { loading.style.display = 'none'; error.style.display = ''; }, { once: true });
+            video.addEventListener('error', () => {
+                loading.style.display = 'none'; error.style.display = '';
+                if (this.isTrailerReel) setTimeout(() => this.trailerNav(1), 1500);
+            }, { once: true });
+            video.addEventListener('ended', () => { if (this.isTrailerReel) this.trailerNav(1); }, { once: true });
         } else {
             const videoId = this.extractYouTubeId(url);
             if (!videoId) {
@@ -785,7 +811,8 @@ const NRW = {
         if (nextIdx < 0) return;
 
         this.trailerLightboxIndex = nextIdx;
-        const movie = this.lightboxMovies[nextIdx];
+        const movies = this.isTrailerReel ? this.trailerReelMovies : this.lightboxMovies;
+        const movie = movies[nextIdx];
         const trailerUrl = movie.links?.trailer_hosted || movie.links?.trailer;
 
         const titleEl = document.getElementById('trailer-movie-title');
@@ -793,6 +820,7 @@ const NRW = {
 
         this.updateTrailerNavVisibility();
         this.loadTrailerVideo(trailerUrl);
+        this.updateReelCounter();
     },
 
     // Show/hide trailer nav arrows based on whether neighbors have trailers
@@ -801,7 +829,8 @@ const NRW = {
         const nextBtn = document.getElementById('trailer-nav-next');
         if (!prevBtn || !nextBtn) return;
 
-        if (this.trailerLightboxIndex < 0 || this.lightboxMovies.length === 0) {
+        const movies = this.isTrailerReel ? this.trailerReelMovies : this.lightboxMovies;
+        if (this.trailerLightboxIndex < 0 || movies.length === 0) {
             prevBtn.style.display = 'none';
             nextBtn.style.display = 'none';
             return;
@@ -824,6 +853,7 @@ const NRW = {
                 <div class="trailer-modal-content">
                     <div class="trailer-header">
                         <span class="trailer-movie-title" id="trailer-movie-title"></span>
+                        <span class="trailer-reel-counter" id="trailer-reel-counter" style="display:none;"></span>
                         <button class="trailer-close-btn" aria-label="Close trailer">&times;</button>
                     </div>
                     <div class="trailer-nav-wrapper">
@@ -843,17 +873,12 @@ const NRW = {
             modal.querySelector('#trailer-nav-prev').addEventListener('click', () => this.trailerNav(-1));
             modal.querySelector('#trailer-nav-next').addEventListener('click', () => this.trailerNav(1));
 
-            // Close on Escape key (stop propagation so lightbox doesn't also close)
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && modal.classList.contains('active')) {
-                    e.stopPropagation();
-                    this.closeTrailer();
-                }
-            });
+            // Escape handled by setupLightboxKeyboardHandler (capture phase)
         }
 
         // Determine which movie this trailer belongs to
-        this.trailerLightboxIndex = this.lightboxMovies.findIndex(m => {
+        const movies = this.isTrailerReel ? this.trailerReelMovies : this.lightboxMovies;
+        this.trailerLightboxIndex = movies.findIndex(m => {
             const mUrl = m.links?.trailer_hosted || m.links?.trailer;
             return mUrl === url;
         });
@@ -861,7 +886,7 @@ const NRW = {
         // Set movie title
         const titleEl = document.getElementById('trailer-movie-title');
         if (titleEl && this.trailerLightboxIndex >= 0) {
-            titleEl.textContent = this.lightboxMovies[this.trailerLightboxIndex].title;
+            titleEl.textContent = movies[this.trailerLightboxIndex].title;
         } else if (titleEl) {
             titleEl.textContent = '';
         }
@@ -887,18 +912,56 @@ const NRW = {
                 if (iframe) { iframe.src = ''; }
             }
 
-            // Sync lightbox to the movie whose trailer was playing
-            if (this.trailerLightboxIndex >= 0) {
+            // Sync lightbox to the movie whose trailer was playing (only when not in reel mode)
+            if (!this.isTrailerReel && this.trailerLightboxIndex >= 0) {
                 this.lightboxIndex = this.trailerLightboxIndex;
                 this.updateLightbox();
             }
             this.trailerLightboxIndex = -1;
+            this.isTrailerReel = false;
+            this.trailerReelMovies = [];
 
             // Only restore scrolling if lightbox isn't still open
             const lightbox = document.getElementById('poster-lightbox');
             if (!lightbox || !lightbox.classList.contains('active')) {
                 document.body.style.overflow = '';
             }
+        }
+    },
+
+    // Open trailer reel — plays through hosted trailers from the last 7 days
+    openTrailerReel() {
+        const cutoff = new Date();
+        cutoff.setDate(cutoff.getDate() - 7);
+
+        this.trailerReelMovies = this.allMovies
+            .filter(m => {
+                if (!m.digital_date) return false;
+                if (new Date(m.digital_date) < cutoff) return false;
+                return m.links?.trailer_hosted;
+            })
+            .sort((a, b) => new Date(b.digital_date) - new Date(a.digital_date));
+
+        if (this.trailerReelMovies.length === 0) return;
+
+        this.isTrailerReel = true;
+        this.trailerLightboxIndex = 0;
+
+        const movie = this.trailerReelMovies[0];
+        this.showTrailer(movie.links.trailer_hosted);
+        this.updateReelCounter();
+    },
+
+    // Update reel position counter (e.g. "3 of 12") — only visible in reel mode
+    updateReelCounter() {
+        const counter = document.getElementById('trailer-reel-counter');
+        if (!counter) return;
+        if (this.isTrailerReel && this.trailerLightboxIndex >= 0) {
+            counter.textContent = `${this.trailerLightboxIndex + 1} of ${this.trailerReelMovies.length}`;
+            counter.style.display = '';
+        } else {
+            counter.textContent = '';
+            counter.style.display = 'none';
         }
     },
 
@@ -978,7 +1041,9 @@ const NRW = {
         const screeningNameEl = document.getElementById('lightbox-screening-name');
         if (screeningNameEl) {
             if (movie.categories?.is_virtual_screening && movie.virtual_screening_info?.screening_name) {
-                screeningNameEl.textContent = movie.virtual_screening_info.screening_name;
+                const endDate = movie.virtual_screening_info?.available_end;
+                const dateStr = endDate ? ` · Ends ${formatScreeningDate(endDate)}` : '';
+                screeningNameEl.textContent = movie.virtual_screening_info.screening_name + dateStr;
                 screeningNameEl.style.display = 'block';
             } else {
                 screeningNameEl.style.display = 'none';
@@ -1070,11 +1135,14 @@ const NRW = {
                 } else if (svc.includes('apple') || svc.includes('itunes')) {
                     btnClass = 'apple';
                     label = this.getPurchaseLabel(vod.service);
+                } else if (svc.includes('youtube') || svc.includes('google play')) {
+                    btnClass = 'youtube';
+                    label = this.getPurchaseLabel(vod.service);
                 } else if (svc.includes('eventive') || vodLink.includes('eventive.org') || vodLink.includes('festivalplayer') || vodLink.includes('shift72.com')) {
                     btnClass = 'screening';
                     label = 'BUY TICKET';
                 } else {
-                    label = this.getPurchaseLabel(vod.service);
+                    return; // VOD whitelist: only Amazon, Apple, YouTube, and festival tickets
                 }
                 vodHtml += `<a href="${vodLink}" target="_blank" rel="noopener noreferrer" class="watch-btn-lb ${btnClass}">${label}</a>`;
             }
@@ -1090,23 +1158,27 @@ const NRW = {
         let buttonsHtml = '';
         if (watchHtml) buttonsHtml += `<div class="watch-stack">${watchHtml}</div>`;
 
-        // === Info row (horizontal: Trailer, RT, Wiki) ===
-        let infoHtml = '';
-        const lbTrailerUrl = movie.links?.trailer_hosted || movie.links?.trailer;
-        if (lbTrailerUrl) {
-            infoHtml += `<button class="info-btn-lb trailer" data-trailer="${lbTrailerUrl}">Trailer</button>`;
-        }
+        // === Score badges on poster overlay ===
+        let scoreHtml = '';
         if (movie.links?.rt) {
             const score = movie.rt_score ? ` ${movie.rt_score}` : '';
-            infoHtml += `<a href="${movie.links.rt}" target="_blank" rel="noopener noreferrer" class="info-btn-lb glass">RT${score}</a>`;
+            scoreHtml += `<a href="${movie.links.rt}" target="_blank" rel="noopener noreferrer" class="lightbox-score-badge rt">RT${score}</a>`;
         }
         if (movie.imdb_rating) {
             const imdbUrl = movie.links?.imdb;
             if (imdbUrl) {
-                infoHtml += `<a href="${imdbUrl}" target="_blank" rel="noopener noreferrer" class="info-btn-lb glass">IMDb ${movie.imdb_rating}</a>`;
+                scoreHtml += `<a href="${imdbUrl}" target="_blank" rel="noopener noreferrer" class="lightbox-score-badge imdb">IMDb ${movie.imdb_rating}</a>`;
             } else {
-                infoHtml += `<span class="info-btn-lb glass">IMDb ${movie.imdb_rating}</span>`;
+                scoreHtml += `<span class="lightbox-score-badge imdb">IMDb ${movie.imdb_rating}</span>`;
             }
+        }
+        document.getElementById('lightbox-score-overlay').innerHTML = scoreHtml;
+
+        // === Info row (horizontal: Trailer, Wiki) ===
+        let infoHtml = '';
+        const lbTrailerUrl = movie.links?.trailer_hosted || movie.links?.trailer;
+        if (lbTrailerUrl) {
+            infoHtml += `<button class="info-btn-lb trailer" data-trailer="${lbTrailerUrl}">Trailer</button>`;
         }
         if (movie.links?.wikipedia) {
             infoHtml += `<a href="${movie.links.wikipedia}" target="_blank" rel="noopener noreferrer" class="info-btn-lb glass">Wiki</a>`;
@@ -1116,18 +1188,22 @@ const NRW = {
         document.getElementById('lightbox-buttons').innerHTML = buttonsHtml;
     },
 
-    // Setup lightbox keyboard navigation
+    // Setup lightbox + trailer keyboard navigation
+    // Uses capture phase so it fires BEFORE native video controls can consume key events
     setupLightboxKeyboardHandler() {
         document.addEventListener('keydown', (e) => {
-            // Handle trailer navigation when trailer modal is active
+            // Handle trailer keyboard when trailer modal is active
             const trailerModal = document.getElementById('trailer-modal');
             if (trailerModal && trailerModal.classList.contains('active')) {
-                if (e.key === 'ArrowLeft') {
+                if (e.key === 'Escape') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.closeTrailer();
+                } else if (e.key === 'ArrowLeft') {
                     this.trailerNav(-1);
                 } else if (e.key === 'ArrowRight') {
                     this.trailerNav(1);
                 }
-                // Escape is handled by showTrailer's own keydown listener
                 return;
             }
 
@@ -1141,13 +1217,21 @@ const NRW = {
             } else if (e.key === 'ArrowRight') {
                 this.lightboxNav(1);
             }
-        });
+        }, true);  // capture phase — fires before video/iframe controls
     },
 
     // Delegated click handlers - one listener catches clicks on dynamically created elements
     setupDelegatedClickHandlers() {
         // Handle clicks on #wall (movie cards, expand buttons, trailer links, load more)
         document.getElementById('wall').addEventListener('click', (e) => {
+            // Trailer reel card -> open trailer reel
+            const reelCard = e.target.closest('[data-trailer-reel]');
+            if (reelCard) {
+                e.preventDefault();
+                this.openTrailerReel();
+                return;
+            }
+
             // Expand button -> open lightbox
             const expandBtn = e.target.closest('[data-movie-id]');
             if (expandBtn) {

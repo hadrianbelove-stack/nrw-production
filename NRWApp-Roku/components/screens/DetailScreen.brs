@@ -24,6 +24,8 @@ Sub Init()
     m.restorationLabel = m.top.FindNode("restorationLabel")
     m.screeningBadge = m.top.FindNode("screeningBadge")
     m.screeningLabel = m.top.FindNode("screeningLabel")
+    m.screeningDatesBadge = m.top.FindNode("screeningDatesBadge")
+    m.screeningDatesLabel = m.top.FindNode("screeningDatesLabel")
 
     m.buttonsRow = m.top.FindNode("buttonsRow")
     m.trailerButton = m.top.FindNode("trailerButton")
@@ -205,9 +207,20 @@ Sub LoadMovie(index as Integer)
         m.screeningLabel.text = movie.virtual_screening_info.screening_name
         m.screeningBadge.visible = true
         m.screeningLabel.visible = true
+        ' Screening dates (darker gold bar below name)
+        if movie.virtual_screening_info.available_end <> invalid AND movie.virtual_screening_info.available_end <> ""
+            m.screeningDatesLabel.text = "Ends " + FormatShortDate(movie.virtual_screening_info.available_end)
+            m.screeningDatesBadge.visible = true
+            m.screeningDatesLabel.visible = true
+        else
+            m.screeningDatesBadge.visible = false
+            m.screeningDatesLabel.visible = false
+        end if
     else
         m.screeningBadge.visible = false
         m.screeningLabel.visible = false
+        m.screeningDatesBadge.visible = false
+        m.screeningDatesLabel.visible = false
     end if
 
     ' Setup watch buttons

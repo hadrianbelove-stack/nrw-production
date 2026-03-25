@@ -236,11 +236,18 @@ export default function MovieDetail({route}) {
             )}
           </View>
 
-          {/* Virtual screening name */}
+          {/* Virtual screening name + availability */}
           {movie.categories?.is_virtual_screening && movie.virtual_screening_info?.screening_name && (
-            <Text style={styles.screeningName}>
-              {movie.virtual_screening_info.screening_name}
-            </Text>
+            <View>
+              <Text style={styles.screeningName}>
+                {movie.virtual_screening_info.screening_name}
+              </Text>
+              {movie.virtual_screening_info?.available_end && (
+                <Text style={styles.screeningDates}>
+                  Ends {formatShortDate(movie.virtual_screening_info.available_end)}
+                </Text>
+              )}
+            </View>
           )}
 
           {/* Metadata row */}
@@ -503,6 +510,16 @@ const styles = StyleSheet.create({
     letterSpacing: 1.5,
     textAlign: 'center',
     paddingVertical: 8,
+    paddingHorizontal: 12,
+    marginBottom: 0,
+  },
+  screeningDates: {
+    backgroundColor: '#E6C200',
+    color: '#000',
+    fontSize: Typography.caption - 1,
+    fontWeight: '600',
+    textAlign: 'center',
+    paddingVertical: 4,
     paddingHorizontal: 12,
     marginBottom: Spacing.sm,
   },

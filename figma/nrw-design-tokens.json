@@ -1,0 +1,90 @@
+{
+  "NRW Colors": {
+    "$type": "color",
+    "accent-primary": {
+      "$value": "#00d4aa",
+      "$description": "Teal — links, highlights, interactive elements"
+    },
+    "accent-hover": {
+      "$value": "#00ffbb",
+      "$description": "Brighter teal — hover states"
+    },
+    "bg-darker": {
+      "$value": "#0a0a0a",
+      "$description": "Page background, gradient start"
+    },
+    "bg-dark": {
+      "$value": "#1a1a2e",
+      "$description": "Card backgrounds, gradient end"
+    },
+    "text-primary": {
+      "$value": "#ffffff",
+      "$description": "Headings, main text"
+    },
+    "text-secondary": {
+      "$value": "#bbbbbb",
+      "$description": "Body text"
+    },
+    "text-muted": {
+      "$value": "#888888",
+      "$description": "Metadata, timestamps"
+    },
+    "border-subtle": {
+      "$value": "#333333",
+      "$description": "Card borders, dividers"
+    },
+    "staff-pick": {
+      "$value": "#dc143c",
+      "$description": "Crimson — staff pick badges and borders"
+    },
+    "restoration": {
+      "$value": "#C8A951",
+      "$description": "Antique gold — restoration badges"
+    }
+  },
+  "Service Colors": {
+    "$type": "color",
+    "netflix": {
+      "$value": "#E50914"
+    },
+    "disney-plus": {
+      "$value": "#113CCF"
+    },
+    "max": {
+      "$value": "#B537F2"
+    },
+    "prime-video": {
+      "$value": "#00A8E1"
+    },
+    "hulu": {
+      "$value": "#1CE783"
+    },
+    "peacock": {
+      "$value": "#000000"
+    },
+    "plex": {
+      "$value": "#E5A00D"
+    },
+    "apple-tv": {
+      "$value": "#aaaaaa"
+    },
+    "purchase-rent": {
+      "$value": "#ff9500"
+    }
+  },
+  "NRW Spacing": {
+    "$type": "dimension",
+    "card-radius": {
+      "$value": {"value": 15, "unit": "px"}
+    },
+    "button-radius": {
+      "$value": {"value": 25, "unit": "px"}
+    },
+    "card-gap": {
+      "$value": {"value": 16, "unit": "px"}
+    },
+    "section-padding": {
+      "$value": {"value": 24, "unit": "px"}
+    }
+  }
+}

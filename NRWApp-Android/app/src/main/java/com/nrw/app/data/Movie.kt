@@ -173,6 +173,8 @@ data class ScreeningInfo(
     @SerializedName("platform") val platform: String? = null,
     @SerializedName("screening_slug") val screeningSlug: String? = null,
     @SerializedName("screening_name") val screeningName: String? = null,
+    @SerializedName("available_start") val availableStart: String? = null,
+    @SerializedName("available_end") val availableEnd: String? = null,
     @SerializedName("status") val status: String? = null
 )
 

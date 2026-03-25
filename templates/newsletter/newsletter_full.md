@@ -22,12 +22,17 @@
 {% for movie in featured_movies %}
 ### {{ movie.title }}{% if movie.year %} ({{ movie.year }}){% endif %}
 
+{% if movie.is_virtual_screening and movie.screening_name %}**VIRTUAL SCREENING: {{ movie.screening_name }}{% if movie.screening_end_display %} · {{ movie.screening_end_display }}{% endif %}**{% endif %}
+
 {% if movie.poster %}![{{ movie.title }} poster]({{ movie.poster }}){% endif %}
 
 {% if movie.director or movie.runtime or movie.country %}**Director:** {{ movie.director | default('N/A') }} | **Runtime:** {{ movie.runtime | default('N/A') }}min | **Country:** {{ movie.country | default('N/A') }}{% endif %}
 
 {% if movie.rt_score %}**RT Score:** {{ movie.rt_score }}% &#127813;{% endif %}{% if movie.imdb_rating %} **IMDb:** {{ movie.imdb_rating }}{% endif %}
 
+{% if movie.pull_quotes and movie.pull_quotes|length > 0 %}{% for pq in movie.pull_quotes %}
+> *"{{ pq.text }}"* — {{ pq.critic }}, {{ pq.outlet }}
+{% endfor %}{% endif %}
 {% if movie.synopsis %}{{ movie.synopsis }}{% endif %}
 
 {% if movie.streaming_services or movie.vod_services %}**Watch:** {% for service in movie.streaming_services %}[{{ service.name }}]({{ service.url }}){% if not loop.last %} | {% endif %}{% endfor %}{% if movie.streaming_services and movie.vod_services %} | {% endif %}{% for service in movie.vod_services %}[{{ service.name }}]({{ service.url }}){% if not loop.last %} | {% endif %}{% endfor %}{% endif %}
@@ -47,12 +52,17 @@
 {% for movie in rest_movies %}
 ### {{ movie.title }}{% if movie.year %} ({{ movie.year }}){% endif %}
 
+{% if movie.is_virtual_screening and movie.screening_name %}**VIRTUAL SCREENING: {{ movie.screening_name }}{% if movie.screening_end_display %} · {{ movie.screening_end_display }}{% endif %}**{% endif %}
+
 {% if movie.poster %}![{{ movie.title }} poster]({{ movie.poster }}){% endif %}
 
 {% if movie.director or movie.runtime or movie.country %}**Director:** {{ movie.director | default('N/A') }} | **Runtime:** {{ movie.runtime | default('N/A') }}min | **Country:** {{ movie.country | default('N/A') }}{% endif %}
 
 {% if movie.rt_score %}**RT Score:** {{ movie.rt_score }}% &#127813;{% endif %}{% if movie.imdb_rating %} **IMDb:** {{ movie.imdb_rating }}{% endif %}
 
+{% if movie.pull_quotes and movie.pull_quotes|length > 0 %}{% for pq in movie.pull_quotes %}
+> *"{{ pq.text }}"* — {{ pq.critic }}, {{ pq.outlet }}
+{% endfor %}{% endif %}
 {% if movie.synopsis %}{{ movie.synopsis }}{% endif %}
 
 {% if movie.streaming_services or movie.vod_services %}**Watch:** {% for service in movie.streaming_services %}[{{ service.name }}]({{ service.url }}){% if not loop.last %} | {% endif %}{% endfor %}{% if movie.streaming_services and movie.vod_services %} | {% endif %}{% for service in movie.vod_services %}[{{ service.name }}]({{ service.url }}){% if not loop.last %} | {% endif %}{% endfor %}{% endif %}
@@ -72,12 +82,17 @@
 {% for movie in movies %}
 ### {{ movie.title }}{% if movie.year %} ({{ movie.year }}){% endif %}
 
+{% if movie.is_virtual_screening and movie.screening_name %}**VIRTUAL SCREENING: {{ movie.screening_name }}{% if movie.screening_end_display %} · {{ movie.screening_end_display }}{% endif %}**{% endif %}
+
 {% if movie.poster %}![{{ movie.title }} poster]({{ movie.poster }}){% endif %}
 
 {% if movie.director or movie.runtime or movie.country %}**Director:** {{ movie.director | default('N/A') }} | **Runtime:** {{ movie.runtime | default('N/A') }}min | **Country:** {{ movie.country | default('N/A') }}{% endif %}
 
 {% if movie.rt_score %}**RT Score:** {{ movie.rt_score }}% &#127813;{% endif %}{% if movie.imdb_rating %} **IMDb:** {{ movie.imdb_rating }}{% endif %}
 
+{% if movie.pull_quotes and movie.pull_quotes|length > 0 %}{% for pq in movie.pull_quotes %}
+> *"{{ pq.text }}"* — {{ pq.critic }}, {{ pq.outlet }}
+{% endfor %}{% endif %}
 {% if movie.synopsis %}{{ movie.synopsis }}{% endif %}
 
 {% if movie.streaming_services or movie.vod_services %}**Watch:** {% for service in movie.streaming_services %}[{{ service.name }}]({{ service.url }}){% if not loop.last %} | {% endif %}{% endfor %}{% if movie.streaming_services and movie.vod_services %} | {% endif %}{% for service in movie.vod_services %}[{{ service.name }}]({{ service.url }}){% if not loop.last %} | {% endif %}{% endfor %}{% endif %}

@@ -293,6 +293,23 @@ class NewsletterDataQuery:
             metadata['wikipedia_url'] = None
             metadata['trailer_url'] = None
 
+        # Virtual screening info
+        categories = movie.get('categories', {})
+        screening_info = movie.get('virtual_screening_info', {})
+        metadata['is_virtual_screening'] = bool(categories.get('is_virtual_screening'))
+        metadata['screening_name'] = screening_info.get('screening_name')
+        metadata['screening_available_end'] = screening_info.get('available_end')
+        # Pre-formatted display string for templates
+        if metadata['screening_available_end']:
+            try:
+                parts = metadata['screening_available_end'].split('-')
+                months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+                metadata['screening_end_display'] = f"Ends {months[int(parts[1])-1]} {int(parts[2])}"
+            except (IndexError, ValueError):
+                metadata['screening_end_display'] = None
+        else:
+            metadata['screening_end_display'] = None
+
         # Track missing critical fields
         critical_fields = ['title', 'synopsis', 'poster']
         for field in critical_fields:

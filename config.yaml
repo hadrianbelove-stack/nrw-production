@@ -455,10 +455,22 @@ screening_names:
   pjff2026: "Portland Jewish Film Festival"
   bsdff: "Big Sky Documentary Film Festival"
   focusonfrenchcinema: "Focus on French Cinema"
-  36thsdijffmid: "San Diego Intl. Jewish Film Festival"
+  36thsdijffmid: "San Diego Intl. Jewish Film Fest"
   menafilmfestival: "MENA Film Festival"
   sundance: "Sundance Film Festival"
   nofs: "2026 French Film Festival"
+  eastbayjewishfilm: "East Bay Intl. Jewish Film Fest"
+  jfilmboca2026: "Boca Intl. Jewish Film Fest"
+
+# Manual end dates for festivals where Eventive page doesn't embed dates
+# Used as fallback when auto-detection fails. Format: YYYY-MM-DD
+screening_end_dates:
+  mjff2026: "2026-01-29"
+  36thsdijffmid: "2026-02-04"
+  menafilmfestival: "2026-01-30"
+  bsdff: "2026-02-22"
+  pjff2026: "2026-03-01"
+  sundance: "2021-02-03"
 
 api:
   # API keys now loaded from .env file (see load_env.py)

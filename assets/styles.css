@@ -449,6 +449,13 @@ header h1 {
 .badge-shudder { background: #8B0000; color: white; }
 .badge-criterion { background: #000; color: white; border: 1px solid #444; }
 .badge-tubi { background: #FA382F; color: white; }
+.badge-youtube { background: #FF0000; color: white; }
+.badge-paramount { background: #0064FF; color: white; }
+.badge-kanopy { background: #1B7A43; color: white; }
+.badge-hoopla { background: #FC4F08; color: white; }
+.badge-roku { background: #6C3A97; color: white; }
+.badge-pluto { background: #00B4E4; color: white; }
+.badge-crackle { background: #FF6600; color: white; }
 .badge-plex { background: #E5A00D; color: black; }
 .badge-other { background: #444; color: white; }
 
@@ -490,6 +497,13 @@ header h1 {
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
+}
+
+.screening-dates {
+    font-size: 9px;
+    font-weight: 600;
+    opacity: 0.85;
+    margin-top: 2px;
 }
 
 .movie-card.flipped .screening-ribbon {
@@ -692,10 +706,6 @@ header h1 {
     box-shadow: 0 5px 20px rgba(0,0,0,0.5);
 }
 
-.actions .watch-btn-apple .btn-logo {
-    filter: brightness(0) invert(1);
-}
-
 /* Plex button - personal library */
 .actions .watch-btn-plex {
     background: #E5A00D;
@@ -717,6 +727,28 @@ header h1 {
     max-width: 32px;
     object-fit: contain;
 }
+
+/* YouTube VOD button */
+.actions .watch-btn-youtube {
+    background: #FF0000;
+    color: #fff;
+    flex: 0 0 auto;
+    min-width: 44px;
+    padding: 0.4rem 0.6rem;
+    font-weight: 700;
+    font-size: 0.65rem;
+}
+
+.actions .watch-btn-youtube:hover {
+    background: #cc0000;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(255,0,0,0.5);
+}
+
+.actions .watch-btn-apple .btn-logo {
+    filter: brightness(0) invert(1);
+}
+
 
 .btn-logo {
     max-width: 100%;
@@ -1123,6 +1155,15 @@ header h1 {
     max-width: calc(100% - 60px);
 }
 
+.trailer-reel-counter {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.85rem;
+    font-weight: 400;
+    white-space: nowrap;
+    margin-left: 12px;
+    flex-shrink: 0;
+}
+
 /* Trailer Navigation Arrows */
 .trailer-nav-wrapper {
     display: flex;
@@ -1213,9 +1254,37 @@ header h1 {
     to { opacity: 1; transform: scale(1); }
 }
 
-/* Poster wrapper for positioning shrink button */
+/* Poster wrapper for positioning shrink button + score overlay */
 .lightbox-poster-wrap {
     position: relative;
+}
+
+/* Score badges on poster */
+.lightbox-score-overlay {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    display: flex;
+    gap: 5px;
+}
+.lightbox-score-overlay:empty { display: none; }
+.lightbox-score-badge {
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-decoration: none;
+    backdrop-filter: blur(8px);
+    transition: opacity 0.2s;
+}
+.lightbox-score-badge:hover { opacity: 0.85; }
+.lightbox-score-badge.rt {
+    background: rgba(250, 50, 50, 0.85);
+    color: #fff;
+}
+.lightbox-score-badge.imdb {
+    background: rgba(245, 197, 24, 0.9);
+    color: #000;
 }
 
 /* Large poster */
@@ -1417,6 +1486,13 @@ header h1 {
 .watch-btn-lb.amazon { background: #ff9900; color: #000; }
 .watch-btn-lb.apple { background: #000; color: #fff; border: 1px solid #444; }
 .watch-btn-lb.tubi { background: #FA382F; color: #fff; }
+.watch-btn-lb.youtube { background: #FF0000; color: #fff; }
+.watch-btn-lb.paramount { background: #0064FF; color: #fff; }
+.watch-btn-lb.kanopy { background: #1B7A43; color: #fff; }
+.watch-btn-lb.hoopla { background: #FC4F08; color: #fff; }
+.watch-btn-lb.roku { background: #6C3A97; color: #fff; }
+.watch-btn-lb.pluto { background: #00B4E4; color: #fff; }
+.watch-btn-lb.crackle { background: #FF6600; color: #fff; }
 .watch-btn-lb.plex { background: #E5A00D; color: #000; }
 
 /* Info row: horizontal, equal-width */

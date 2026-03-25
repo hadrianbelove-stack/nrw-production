@@ -118,12 +118,13 @@ class EnrichmentService:
 
         Priority waterfall:
         1. Manual watch links from movie_tracking.json - highest priority
-        2. Overrides (overrides/watch_links_overrides.json)
-        3. Cache (cache/watch_links_cache.json)
-        4. JustWatch API (primary source - most reliable)
-        5. Agent scraper (Netflix, Disney+, HBO Max, Hulu) - fallback
-        6. VOD scraper (Amazon, Apple TV) - fallback
-        7. TMDB provider names with null links - last resort
+        2. Overrides (overrides/watch_links_overrides.json) - always wins over automated
+        3. Discovery-provided JustWatch links (captured at discovery time)
+        4. Cache (cache/watch_links_cache.json)
+        5. JustWatch API (primary source - most reliable)
+        6. Agent scraper (Netflix, Disney+, HBO Max, Hulu) - fallback
+        7. VOD scraper (Amazon, Apple TV) - fallback
+        8. TMDB provider names with null links - last resort
 
         Args:
             movie_id: TMDB movie ID
@@ -160,7 +161,12 @@ class EnrichmentService:
         if manual_result:
             return manual_result
 
-        # 1.5. Try discovery-provided JustWatch links (captured at discovery time)
+        # 2. Try override links (must be before discovery links so overrides always win)
+        override_result = self._try_override_links(cache_key, title)
+        if override_result:
+            return override_result
+
+        # 3. Try discovery-provided JustWatch links (captured at discovery time)
         if tracking_data and tracking_data.get('watch_links') and tracking_data.get('watch_links_source') == 'justwatch_discovery':
             try:
                 discovery_links = tracking_data['watch_links']
@@ -179,43 +185,38 @@ class EnrichmentService:
             except Exception as e:
                 self.logger.warning(f"Discovery watch_links invalid for {title}: {e}")
 
-        # 2. Try override links
-        override_result = self._try_override_links(cache_key, title)
-        if override_result:
-            return override_result
-
         # Legacy admin overrides removed (Dec 2024) - empty dict for compatibility
         validated_overrides = {}
 
-        # 3. Try cached links
+        # 4. Try cached links
         cached_result = self._try_cached_links(cache_key, force_refresh)
         if cached_result:
             return cached_result
 
-        # 4. Try JustWatch API
+        # 5. Try JustWatch API
         justwatch_result = self._try_justwatch_api(title, year, cache_key, validated_overrides, providers=providers)
         if justwatch_result:
             return justwatch_result
 
-        # 5. Build from scrapers (fallback)
+        # 6. Build from scrapers (fallback)
         watch_links, vod_scraper_used = self._build_scraper_fallback_links(
             movie_id, title, year, providers, validated_overrides,
             title_variants=title_variants
         )
 
-        # 6. Normalize URLs
+        # 7. Normalize URLs
         watch_links = self.normalize_watch_links_urls(watch_links)
 
-        # 7. Validate schema
+        # 8. Validate schema
         validated_links = self.validator.validate_watch_links_schema(watch_links, title)
 
-        # 8. Apply affiliate tags
+        # 9. Apply affiliate tags
         self._apply_affiliate_tags_batch(validated_links, title)
 
-        # 9. Validate link consistency
+        # 10. Validate link consistency
         self._validate_link_consistency_batch(validated_links, title)
 
-        # 10. Cache and return
+        # 11. Cache and return
         self._cache_watch_links_result(cache_key, validated_links, vod_scraper_used)
 
         return validated_links
@@ -369,7 +370,11 @@ class EnrichmentService:
 
     def _try_justwatch_api(self, title, year, cache_key, validated_overrides, providers=None):
         """
-        Try to get links from JustWatch API.
+        Try to get links from JustWatch API with confidence checking.
+
+        Uses verify_availability() to ensure JustWatch matched the correct movie
+        before accepting watch links. Rejects low-confidence matches (e.g., wrong
+        title/year) to prevent linking to the wrong film.
 
         Args:
             title: Movie title
@@ -394,12 +399,43 @@ class EnrichmentService:
             if not hasattr(self, '_justwatch_client'):
                 self._justwatch_client = JustWatchClient(logger=self.logger)
 
-            justwatch_links = self._justwatch_client.get_watch_links(
-                title, year, affiliate_tag=amazon_tag, excluded_services=excluded_services
+            # Detect TV shows (tv_ prefix on TMDB ID) and search JustWatch accordingly
+            content_type = 'tv' if cache_key.startswith('tv_') else 'movie'
+
+            # Use verify_availability for confidence-checked search
+            result = self._justwatch_client.verify_availability(
+                title, year, excluded_services=excluded_services, affiliate_tag=amazon_tag,
+                content_type=content_type
             )
 
+            if result is None:
+                self.logger.debug(f"JustWatch: no results for {title}")
+                return None
+
+            # Reject low-confidence matches (prevents wrong-movie links)
+            confidence = result.get('match_confidence', 'first_result')
+            jw_config = self.config.get('justwatch_verification', {})
+            min_confidence = jw_config.get('min_confidence', 'close_year')
+            confidence_levels = ['exact_year', 'close_year', 'title_only', 'first_result']
+            min_idx = confidence_levels.index(min_confidence) if min_confidence in confidence_levels else 1
+            result_idx = confidence_levels.index(confidence) if confidence in confidence_levels else 3
+
+            if result_idx > min_idx:
+                self.logger.warning(
+                    f"JustWatch enrichment: low-confidence match for {title} ({year}) — "
+                    f"matched '{result['jw_title']}' ({result['jw_year']}) "
+                    f"[confidence: {confidence}] — rejecting watch links"
+                )
+                return None
+
+            justwatch_links = result.get('watch_links', {})
+
             if justwatch_links:
-                self.logger.info(f"JustWatch found links for {title}: {list(justwatch_links.keys())}")
+                self.logger.info(
+                    f"JustWatch found links for {title} [confidence: {confidence}, "
+                    f"matched: '{result['jw_title']}' ({result['jw_year']})]: "
+                    f"{list(justwatch_links.keys())}"
+                )
                 self.stats['justwatch_successes'] = self.stats.get('justwatch_successes', 0) + 1
 
                 # Domain validation: reject JustWatch links where service doesn't match URL domain
@@ -421,7 +457,7 @@ class EnrichmentService:
 
                     return validated_links
             else:
-                self.logger.debug(f"JustWatch: no results for {title}")
+                self.logger.debug(f"JustWatch: no watch links for {title}")
 
         except ImportError:
             self.logger.debug("JustWatch client not available")

@@ -25,6 +25,21 @@ Featured Films or The Rest section above.
         </td>
     </tr>
 
+    <!-- Virtual Screening Banner -->
+    {% if movie.is_virtual_screening and movie.screening_name %}
+    <tr>
+        <td style="padding: 5px 15px 0 15px;">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                <tr>
+                    <td style="background-color: #FFD700; color: #000000; padding: 6px 12px; text-align: center; font-size: 11px; font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase; border-radius: 4px; font-family: Arial, Helvetica, sans-serif;">
+                        {{ movie.screening_name }}{% if movie.screening_end_display %} &middot; {{ movie.screening_end_display }}{% endif %}
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    {% endif %}
+
     <!-- Metadata Row -->
     <tr>
         <td style="padding: 5px 15px;">
@@ -56,6 +71,20 @@ Featured Films or The Rest section above.
             <p style="margin: 0; font-size: 14px; font-family: Arial, Helvetica, sans-serif;">
                 <span style="color: #F5C518; font-weight: bold;">IMDb {{ movie.imdb_rating }}</span>
             </p>
+        </td>
+    </tr>
+    {% endif %}
+
+    <!-- Pull Quotes Row -->
+    {% if movie.pull_quotes and movie.pull_quotes|length > 0 %}
+    <tr>
+        <td style="padding: 3px 15px;">
+            {% for pq in movie.pull_quotes %}
+            <p style="margin: 0 0 6px 0; font-size: 12px; font-style: italic; color: #bbbbbb; border-left: 2px solid rgba(255,255,255,0.15); padding-left: 8px; font-family: Arial, Helvetica, sans-serif;">
+                &ldquo;{{ pq.text }}&rdquo;
+                <span style="font-style: normal; font-size: 11px; color: #888888;">&mdash; {{ pq.critic }}, {{ pq.outlet }}</span>
+            </p>
+            {% endfor %}
         </td>
     </tr>
     {% endif %}

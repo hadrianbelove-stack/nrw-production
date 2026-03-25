@@ -42,4 +42,8 @@ fi
 echo "Hosting new trailers..." >> "$LOG"
 /opt/homebrew/bin/python3.11 scripts/trailer_pipeline.py host >> "$LOG" 2> >(grep -v "Cookies.binarycookies" >> "$LOG")
 
+# Step 3: IMDB rating collection with Playwright (catches OMDb "N/A" movies)
+echo "Running IMDB rating collection..." >> "$LOG"
+/usr/bin/python3 scripts/imdb_backfill.py --limit 50 >> "$LOG" 2>&1
+
 echo "=== Done: $(date) ===" >> "$LOG"

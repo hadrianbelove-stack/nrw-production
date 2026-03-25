@@ -110,6 +110,23 @@
           font="font:SmallBoldSystemFont"
           color="0x000000FF"
           visible="false" />
+
+        <!-- Screening dates bar (darker gold, below screening name) -->
+        <Rectangle id="screeningDatesBadge"
+          width="600"
+          height="28"
+          translation="[3, 822]"
+          color="0xE6C200FF"
+          visible="false" />
+        <Label id="screeningDatesLabel"
+          width="600"
+          height="28"
+          translation="[3, 822]"
+          horizAlign="center"
+          vertAlign="center"
+          font="font:SmallSystemFont"
+          color="0x000000FF"
+          visible="false" />
       </Group>
 
       <!-- Right: Details panel -->

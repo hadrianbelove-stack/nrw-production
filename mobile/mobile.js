@@ -25,6 +25,13 @@ const NRWMobile = {
         shudder:   { class: 'shudder',   name: 'SHUDDER',   btnName: 'Shudder',   bg: '#8B0000', text: '#fff',  matches: ['shudder'] },
         criterion: { class: 'criterion', name: 'CRITERION', btnName: 'Criterion', bg: '#000',    text: '#fff',  matches: ['criterion'] },
         tubi:      { class: 'tubi',      name: 'TUBI',      btnName: 'Tubi',      bg: '#FA382F', text: '#fff',  matches: ['tubi'] },
+        youtube:   { class: 'youtube',   name: 'YOUTUBE',   btnName: 'YouTube',   bg: '#FF0000', text: '#fff',  matches: ['youtube'] },
+        paramount: { class: 'paramount', name: 'P+',        btnName: 'Paramount+',bg: '#0064FF', text: '#fff',  matches: ['paramount'] },
+        kanopy:    { class: 'kanopy',    name: 'KANOPY',    btnName: 'Kanopy',    bg: '#1B7A43', text: '#fff',  matches: ['kanopy'] },
+        hoopla:    { class: 'hoopla',    name: 'HOOPLA',    btnName: 'Hoopla',    bg: '#FC4F08', text: '#fff',  matches: ['hoopla'] },
+        roku:      { class: 'roku',      name: 'ROKU',      btnName: 'Roku Ch.',  bg: '#6C3A97', text: '#fff',  matches: ['roku'] },
+        pluto:     { class: 'pluto',     name: 'PLUTO',     btnName: 'Pluto TV',  bg: '#00B4E4', text: '#fff',  matches: ['pluto'] },
+        crackle:   { class: 'crackle',   name: 'CRACKLE',   btnName: 'Crackle',   bg: '#FF6600', text: '#fff',  matches: ['crackle'] },
         plex:      { class: 'plex',      name: 'PLEX',      btnName: 'Plex',      bg: '#E5A00D', text: '#000',  matches: ['plex'] },
     },
 
@@ -68,7 +75,7 @@ const NRWMobile = {
     async init() {
         try {
             // Fetch data from parent directory
-            const response = await fetch('../data.json');
+            const response = await fetch('../data.json?t=' + Date.now());
             const data = await response.json();
 
             // Load staff picks
@@ -309,7 +316,12 @@ const NRWMobile = {
                              loading="lazy">
                         ${streamingBadge}
                         ${movie.categories?.is_restoration ? '<span class="poster-badge badge-restoration">RESTORED</span>' : ''}
-                        ${movie.categories?.is_virtual_screening ? `<div class="screening-ribbon">${(movie.virtual_screening_info?.screening_name || 'VIRTUAL SCREENING').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>` : ''}
+                        ${movie.categories?.is_virtual_screening ? (() => {
+                            const sName = (movie.virtual_screening_info?.screening_name || 'VIRTUAL SCREENING').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+                            const endDate = movie.virtual_screening_info?.available_end;
+                            const dateHtml = endDate ? `<div class="screening-dates">Ends ${((d) => { const mo = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']; const [y,m,day] = d.split('-'); return mo[parseInt(m,10)-1] + ' ' + parseInt(day,10); })(endDate)}</div>` : '';
+                            return `<div class="screening-ribbon">${sName}${dateHtml}</div>`;
+                        })() : ''}
                         ${isStaffPick ? '<span class="staff-badge">STAFF PICK</span>' : ''}
                     </div>
                 </div>
@@ -448,12 +460,14 @@ const NRWMobile = {
                 } else if (svc.includes('apple') || svc.includes('itunes')) {
                     label = 'Apple TV';
                     style = 'background:#000;color:#fff';
+                } else if (svc.includes('youtube') || svc.includes('google play')) {
+                    label = 'YouTube';
+                    style = 'background:#FF0000;color:#fff';
                 } else if (svc.includes('eventive') || (vod.link && (vod.link.includes('eventive.org') || vod.link.includes('festivalplayer') || vod.link.includes('shift72.com')))) {
                     label = 'Buy Ticket';
                     style = 'background:transparent;color:#FFD700;border:2px solid #FFD700';
                 } else {
-                    label = vod.service;
-                    style = 'background:#ff9500;color:#000';
+                    return ''; // VOD whitelist: only Amazon, Apple, YouTube, and festival tickets
                 }
                 return `<a href="${vod.link}" target="_blank" rel="noopener" class="btn-equal btn-watch" style="${style}">${label}</a>`;
             }).join('');
@@ -523,7 +537,9 @@ const NRWMobile = {
         document.body.appendChild(overlay);
         document.body.style.overflow = 'hidden';
 
-        const close = () => { overlay.remove(); document.body.style.overflow = ''; };
+        const onKeydown = (e) => { if (e.key === 'Escape') close(); };
+        const close = () => { overlay.remove(); document.body.style.overflow = ''; document.removeEventListener('keydown', onKeydown); };
+        document.addEventListener('keydown', onKeydown);
         overlay.querySelector('#trailer-close').addEventListener('click', close);
         overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
         overlay.querySelector('video').addEventListener('ended', close);

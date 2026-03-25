@@ -330,6 +330,19 @@ private fun MovieDetail(
                                         .background(Color(0xFFFFD700))
                                         .padding(vertical = 8.dp, horizontal = 12.dp)
                                 )
+                                movie.screeningInfo?.availableEnd?.let { endDate ->
+                                    Text(
+                                        text = "Ends ${formatShortDate(endDate)}",
+                                        color = Color.Black,
+                                        fontSize = 9.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .background(Color(0xFFE6C200))
+                                            .padding(vertical = 4.dp, horizontal = 12.dp)
+                                    )
+                                }
                             }
                         }
                         movie.digitalDate?.let { date ->

@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NRW Lightbox – Score Placement Options</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    background: #0a0a0a;
+    color: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    padding: 2rem;
+}
+h1 {
+    font-weight: 100;
+    letter-spacing: 0.2em;
+    text-align: center;
+    margin-bottom: 0.5rem;
+    color: #00d4aa;
+    font-size: 1.8rem;
+}
+.subtitle {
+    text-align: center;
+    color: #888;
+    font-size: 0.9rem;
+    margin-bottom: 3rem;
+}
+.options-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    gap: 2.5rem;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+.option-card {
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    overflow: hidden;
+}
+.option-header {
+    background: rgba(0, 212, 170, 0.1);
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+}
+.option-number {
+    background: #00d4aa;
+    color: #000;
+    font-weight: 800;
+    font-size: 0.75rem;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.option-name { font-weight: 600; font-size: 0.95rem; }
+.option-desc {
+    color: #888;
+    font-size: 0.8rem;
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.lb-sim {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    min-height: 420px;
+}
+.lb-title-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
+    border-bottom: 2px solid rgba(0, 212, 170, 0.4);
+    padding-bottom: 0.6rem;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+}
+.lb-title-side {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    line-height: 1;
+}
+.lb-title { font-size: 1.4rem; font-weight: 600; color: #fff; line-height: 1.1; }
+.lb-date { color: #00d4aa; font-size: 1.15rem; font-weight: 700; white-space: nowrap; }
+.lb-staff-pick {
+    background: #dc143c; color: #fff; font-size: 0.6rem; font-weight: 700;
+    letter-spacing: 0.1em; padding: 0.2rem 0.4rem; border-radius: 4px;
+    text-transform: uppercase;
+}
+.lb-meta { color: #888; margin-bottom: 0.75rem; font-size: 0.85rem; }
+.lb-synopsis { color: #bbb; font-size: 0.85rem; line-height: 1.6; flex: 1; margin-bottom: 0.75rem; }
+.lb-synopsis-short {
+    display: -webkit-box; -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical; overflow: hidden;
+}
+.lb-pq {
+    padding: 0.5rem 0.6rem 0.5rem 1rem;
+    background: rgba(255,255,255,0.04); border-radius: 6px;
+    border-left: 2px solid rgba(255,255,255,0.15); margin-bottom: 0.75rem;
+}
+.lb-pq-text { font-style: italic; color: #ddd; font-size: 0.8rem; line-height: 1.4; }
+.lb-pq-cite { font-style: normal; font-size: 0.7rem; color: #888; margin-top: 0.15rem; }
+.lb-buttons { margin-top: auto; }
+.lb-watch-stack { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 0.5rem; }
+.lb-watch-btn {
+    padding: 0.5rem 0.8rem; border-radius: 8px; text-align: center;
+    font-weight: bold; font-size: 0.8rem; text-transform: uppercase;
+    text-decoration: none; display: block; cursor: pointer; border: none;
+}
+.lb-watch-btn.netflix { background: #E50914; color: #fff; }
+.lb-info-row { display: flex; gap: 0.4rem; }
+.lb-info-btn {
+    flex: 1; padding: 0.45rem; border-radius: 5px; text-align: center;
+    font-size: 0.8rem; font-weight: 600; cursor: pointer; border: none;
+    text-decoration: none; color: #fff;
+}
+.lb-info-btn.trailer { background: #E50914; }
+.lb-info-btn.glass { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); }
+
+.score-pill {
+    display: inline-flex; align-items: center; padding: 0.15rem 0.5rem;
+    border-radius: 10px; font-size: 0.75rem; font-weight: 700; text-decoration: none;
+}
+.score-pill.rt { background: rgba(250,50,50,0.2); color: #ff6b6b; }
+.score-pill.imdb { background: rgba(245,197,24,0.15); color: #f5c518; }
+
+.score-tiny {
+    font-size: 0.7rem; font-weight: 700; text-decoration: none;
+    padding: 0.1rem 0.35rem; border-radius: 3px;
+}
+.score-tiny.rt { background: rgba(250,50,50,0.2); color: #ff6b6b; }
+.score-tiny.imdb { background: rgba(245,197,24,0.15); color: #f5c518; }
+
+.score-bar {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.4rem 0.6rem; background: rgba(255,255,255,0.03);
+    border-radius: 6px; border: 1px solid rgba(255,255,255,0.06); margin-bottom: 0.75rem;
+}
+.score-bar a { text-decoration: none; font-size: 0.8rem; font-weight: 600; }
+.score-bar .rt-label { color: #ff6b6b; }
+.score-bar .imdb-label { color: #f5c518; }
+.score-bar .divider { width: 1px; height: 14px; background: rgba(255,255,255,0.15); }
+
+.poster-wrap {
+    position: relative; width: 100%; background: #222;
+    border-radius: 10px; overflow: hidden; margin-bottom: 0.75rem;
+}
+.poster-placeholder {
+    width: 100%; height: 100%;
+    background: linear-gradient(135deg, #2a2a3e, #1a1a2e);
+    display: flex; align-items: center; justify-content: center;
+    color: #555; font-size: 0.9rem;
+}
+.poster-score-overlay { position: absolute; bottom: 8px; left: 8px; display: flex; gap: 4px; }
+.poster-score-badge {
+    padding: 0.2rem 0.45rem; border-radius: 4px; font-size: 0.7rem;
+    font-weight: 800; text-decoration: none; backdrop-filter: blur(8px);
+}
+.poster-score-badge.rt { background: rgba(250,50,50,0.85); color: #fff; }
+.poster-score-badge.imdb { background: rgba(245,197,24,0.9); color: #000; }
+
+.hl { outline: 1px dashed rgba(0,212,170,0.5); outline-offset: 3px; border-radius: 4px; }
+.current-label {
+    background: rgba(255,0,0,0.15); color: #ff6b6b; font-size: 0.65rem;
+    font-weight: 700; padding: 0.15rem 0.4rem; border-radius: 3px; text-transform: uppercase;
+}
+</style>
+</head>
+<body>
+<h1>SCORE PLACEMENT OPTIONS</h1>
+<p class="subtitle">Where should RT and IMDb scores live in the lightbox? Dashed teal outlines highlight the score placement in each option.</p>
+
+<div class="options-grid">
+
+<!-- OPTION 1 -->
+<div class="option-card">
+    <div class="option-header">
+        <span class="option-number">1</span>
+        <span class="option-name">Inline After Title</span>
+    </div>
+    <p class="option-desc">Tiny colored badges right next to the title. Highest scanability — eye goes title then scores instantly.</p>
+    <div class="lb-sim">
+        <div class="lb-title-row">
+            <div class="lb-title-side">
+                <span class="lb-title">Nosferatu</span>
+                <span class="lb-staff-pick">STAFF PICK</span>
+                <span class="hl" style="display:inline-flex;gap:0.3rem">
+                    <a href="#" class="score-tiny rt">RT 84%</a>
+                    <a href="#" class="score-tiny imdb">7.1</a>
+                </span>
+            </div>
+            <span class="lb-date">Mar 21</span>
+        </div>
+        <div class="lb-meta">Robert Eggers · USA / Czech Republic · 132 min</div>
+        <div class="lb-synopsis lb-synopsis-short">A Gothic tale of obsession between a haunted young woman and the terrifying vampire infatuated with her...</div>
+        <div class="lb-pq"><div class="lb-pq-text">"A masterly exercise in visual grandeur"</div><div class="lb-pq-cite">— The Guardian</div></div>
+        <div class="lb-buttons">
+            <div class="lb-watch-stack"><a href="#" class="lb-watch-btn netflix">Netflix</a></div>
+            <div class="lb-info-row"><button class="lb-info-btn trailer">Trailer</button><a href="#" class="lb-info-btn glass">Wiki</a></div>
+        </div>
+    </div>
+</div>
+
+<!-- OPTION 2 -->
+<div class="option-card">
+    <div class="option-header">
+        <span class="option-number">2</span>
+        <span class="option-name">Score Row Under Title</span>
+    </div>
+    <p class="option-desc">Own line as colored pills between title row and meta. Clean separation, easy to scan.</p>
+    <div class="lb-sim">
+        <div class="lb-title-row">
+            <div class="lb-title-side"><span class="lb-title">Nosferatu</span><span class="lb-staff-pick">STAFF PICK</span></div>
+            <span class="lb-date">Mar 21</span>
+        </div>
+        <div class="hl" style="display:flex;gap:0.5rem;margin-bottom:0.75rem">
+            <a href="#" class="score-pill rt">RT 84%</a>
+            <a href="#" class="score-pill imdb">IMDb 7.1</a>
+        </div>
+        <div class="lb-meta">Robert Eggers · USA / Czech Republic · 132 min</div>
+        <div class="lb-synopsis lb-synopsis-short">A Gothic tale of obsession between a haunted young woman and the terrifying vampire infatuated with her...</div>
+        <div class="lb-pq"><div class="lb-pq-text">"A masterly exercise in visual grandeur"</div><div class="lb-pq-cite">— The Guardian</div></div>
+        <div class="lb-buttons">
+            <div class="lb-watch-stack"><a href="#" class="lb-watch-btn netflix">Netflix</a></div>
+            <div class="lb-info-row"><button class="lb-info-btn trailer">Trailer</button><a href="#" class="lb-info-btn glass">Wiki</a></div>
+        </div>
+    </div>
+</div>
+
+<!-- OPTION 3 -->
+<div class="option-card">
+    <div class="option-header">
+        <span class="option-number">3</span>
+        <span class="option-name">Right Side of Title Row</span>
+    </div>
+    <p class="option-desc">Scores replace the date's position (date moves left). Scores anchor right — balanced, symmetrical.</p>
+    <div class="lb-sim">
+        <div class="lb-title-row">
+            <div class="lb-title-side">
+                <span class="lb-title">Nosferatu</span>
+                <span class="lb-staff-pick">STAFF PICK</span>
+                <span class="lb-date" style="font-size:1rem">Mar 21</span>
+            </div>
+            <span class="hl" style="display:flex;gap:0.4rem;align-items:baseline">
+                <a href="#" style="color:#ff6b6b;font-size:0.8rem;font-weight:700;text-decoration:none">RT 84%</a>
+                <a href="#" style="color:#f5c518;font-size:0.8rem;font-weight:700;text-decoration:none">7.1</a>
+            </span>
+        </div>
+        <div class="lb-meta">Robert Eggers · USA / Czech Republic · 132 min</div>
+        <div class="lb-synopsis lb-synopsis-short">A Gothic tale of obsession between a haunted young woman and the terrifying vampire infatuated with her...</div>
+        <div class="lb-pq"><div class="lb-pq-text">"A masterly exercise in visual grandeur"</div><div class="lb-pq-cite">— The Guardian</div></div>
+        <div class="lb-buttons">
+            <div class="lb-watch-stack"><a href="#" class="lb-watch-btn netflix">Netflix</a></div>
+            <div class="lb-info-row"><button class="lb-info-btn trailer">Trailer</button><a href="#" class="lb-info-btn glass">Wiki</a></div>
+        </div>
+    </div>
+</div>
+
+<!-- OPTION 4 -->
+<div class="option-card">
+    <div class="option-header">
+        <span class="option-number">4</span>
+        <span class="option-name">Appended to Meta Line</span>
+    </div>
+    <p class="option-desc">Scores join Director · Country · Runtime as additional metadata. Minimal footprint, no new elements.</p>
+    <div class="lb-sim">
+        <div class="lb-title-row">
+            <div class="lb-title-side"><span class="lb-title">Nosferatu</span><span class="lb-staff-pick">STAFF PICK</span></div>
+            <span class="lb-date">Mar 21</span>
+        </div>
+        <div class="lb-meta hl">
+            Robert Eggers · USA / Czech Republic · 132 min ·
+            <a href="#" style="color:#ff6b6b;font-size:0.85rem;font-weight:600;text-decoration:none">RT 84%</a> ·
+            <a href="#" style="color:#f5c518;font-size:0.85rem;font-weight:600;text-decoration:none">IMDb 7.1</a>
+        </div>
+        <div class="lb-synopsis lb-synopsis-short">A Gothic tale of obsession between a haunted young woman and the terrifying vampire infatuated with her...</div>
+        <div class="lb-pq"><div class="lb-pq-text">"A masterly exercise in visual grandeur"</div><div class="lb-pq-cite">— The Guardian</div></div>
+        <div class="lb-buttons">
+            <div class="lb-watch-stack"><a href="#" class="lb-watch-btn netflix">Netflix</a></div>
+            <div class="lb-info-row"><button class="lb-info-btn trailer">Trailer</button><a href="#" class="lb-info-btn glass">Wiki</a></div>
+        </div>
+    </div>
+</div>
+
+<!-- OPTION 5 -->
+<div class="option-card">
+    <div class="option-header">
+        <span class="option-number">5</span>
+        <span class="option-name">Score Bar Strip</span>
+    </div>
+    <p class="option-desc">Subtle background strip between meta and synopsis. A "ratings shelf" — distinct but not heavy.</p>
+    <div class="lb-sim">
+        <div class="lb-title-row">
+            <div class="lb-title-side"><span class="lb-title">Nosferatu</span><span class="lb-staff-pick">STAFF PICK</span></div>
+            <span class="lb-date">Mar 21</span>
+        </div>
+        <div class="lb-meta">Robert Eggers · USA / Czech Republic · 132 min</div>
+        <div class="score-bar hl">
+            <a href="#" style="text-decoration:none"><span class="rt-label">RT</span> <span class="rt-label" style="font-weight:800">84%</span></a>
+            <span class="divider"></span>
+            <a href="#" style="text-decoration:none"><span class="imdb-label">IMDb</span> <span class="imdb-label" style="font-weight:800">7.1</span></a>
+        </div>
+        <div class="lb-synopsis lb-synopsis-short">A Gothic tale of obsession between a haunted young woman and the terrifying vampire infatuated with her...</div>
+        <div class="lb-pq"><div class="lb-pq-text">"A masterly exercise in visual grandeur"</div><div class="lb-pq-cite">— The Guardian</div></div>
+        <div class="lb-buttons">
+            <div class="lb-watch-stack"><a href="#" class="lb-watch-btn netflix">Netflix</a></div>
+            <div class="lb-info-row"><button class="lb-info-btn trailer">Trailer</button><a href="#" class="lb-info-btn glass">Wiki</a></div>
+        </div>
+    </div>
+</div>
+
+<!-- OPTION 6 -->
+<div class="option-card">
+    <div class="option-header">
+        <span class="option-number">6</span>
+        <span class="option-name">Beside the Date</span>
+    </div>
+    <p class="option-desc">Small text right after the date. Title (left) — Date + Scores (right). Compact, zero extra lines.</p>
+    <div class="lb-sim">
+        <div class="lb-title-row">
+            <div class="lb-title-side"><span class="lb-title">Nosferatu</span><span class="lb-staff-pick">STAFF PICK</span></div>
+            <div class="hl" style="display:flex;align-items:baseline;gap:0.5rem">
+                <span class="lb-date">Mar 21</span>
+                <span style="color:#555;font-size:0.8rem">·</span>
+                <a href="#" style="color:#ff6b6b;font-size:0.75rem;font-weight:600;text-decoration:none">84%</a>
+                <a href="#" style="color:#f5c518;font-size:0.75rem;font-weight:600;text-decoration:none">7.1</a>
+            </div>
+        </div>
+        <div class="lb-meta">Robert Eggers · USA / Czech Republic · 132 min</div>
+        <div class="lb-synopsis lb-synopsis-short">A Gothic tale of obsession between a haunted young woman and the terrifying vampire infatuated with her...</div>
+        <div class="lb-pq"><div class="lb-pq-text">"A masterly exercise in visual grandeur"</div><div class="lb-pq-cite">— The Guardian</div></div>
+        <div class="lb-buttons">
+            <div class="lb-watch-stack"><a href="#" class="lb-watch-btn netflix">Netflix</a></div>
+            <div class="lb-info-row"><button class="lb-info-btn trailer">Trailer</button><a href="#" class="lb-info-btn glass">Wiki</a></div>
+        </div>
+    </div>
+</div>
+
+<!-- OPTION 7 -->
+<div class="option-card">
+    <div class="option-header">
+        <span class="option-number">7</span>
+        <span class="option-name">Under Date, Right-Aligned</span>
+    </div>
+    <p class="option-desc">Scores sit directly below the date as small right-aligned text. Natural "header block" of title + date + ratings.</p>
+    <div class="lb-sim">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:0.75rem;border-bottom:2px solid rgba(0,212,170,0.4);padding-bottom:0.6rem;margin-bottom:0.75rem">
+            <div class="lb-title-side"><span class="lb-title">Nosferatu</span><span class="lb-staff-pick">STAFF PICK</span></div>
+            <div style="text-align:right;flex-shrink:0">
+                <div class="lb-date">Mar 21</div>
+                <div class="hl" style="display:flex;gap:0.4rem;justify-content:flex-end;margin-top:0.2rem">
+                    <a href="#" style="color:#ff6b6b;font-size:0.7rem;font-weight:700;text-decoration:none">RT 84%</a>
+                    <a href="#" style="color:#f5c518;font-size:0.7rem;font-weight:700;text-decoration:none">IMDb 7.1</a>
+                </div>
+            </div>
+        </div>
+        <div class="lb-meta">Robert Eggers · USA / Czech Republic · 132 min</div>
+        <div class="lb-synopsis lb-synopsis-short">A Gothic tale of obsession between a haunted young woman and the terrifying vampire infatuated with her...</div>
+        <div class="lb-pq"><div class="lb-pq-text">"A masterly exercise in visual grandeur"</div><div class="lb-pq-cite">— The Guardian</div></div>
+        <div class="lb-buttons">
+            <div class="lb-watch-stack"><a href="#" class="lb-watch-btn netflix">Netflix</a></div>
+            <div class="lb-info-row"><button class="lb-info-btn trailer">Trailer</button><a href="#" class="lb-info-btn glass">Wiki</a></div>
+        </div>
+    </div>
+</div>
+
+<!-- OPTION 8 -->
+<div class="option-card">
+    <div class="option-header">
+        <span class="option-number">8</span>
+        <span class="option-name">Poster Corner Overlay</span>
+    </div>
+    <p class="option-desc">Badges on the poster itself (bottom-left). Visible before reading the info panel. Letterboxd-style.</p>
+    <div class="lb-sim">
+        <div class="poster-wrap hl" style="height:140px">
+            <div class="poster-placeholder">[ poster image ]</div>
+            <div class="poster-score-overlay">
+                <a href="#" class="poster-score-badge rt">RT 84%</a>
+                <a href="#" class="poster-score-badge imdb">IMDb 7.1</a>
+            </div>
+        </div>
+        <div class="lb-title-row">
+            <div class="lb-title-side"><span class="lb-title">Nosferatu</span><span class="lb-staff-pick">STAFF PICK</span></div>
+            <span class="lb-date">Mar 21</span>
+        </div>
+        <div class="lb-meta">Robert Eggers · USA / Czech Republic · 132 min</div>
+        <div class="lb-synopsis lb-synopsis-short" style="-webkit-line-clamp:2">A Gothic tale of obsession between a haunted young woman and the terrifying vampire infatuated with her...</div>
+        <div class="lb-buttons">
+            <div class="lb-watch-stack"><a href="#" class="lb-watch-btn netflix">Netflix</a></div>
+            <div class="lb-info-row"><button class="lb-info-btn trailer">Trailer</button><a href="#" class="lb-info-btn glass">Wiki</a></div>
+        </div>
+    </div>
+</div>
+
+<!-- OPTION 9 -->
+<div class="option-card">
+    <div class="option-header">
+        <span class="option-number">9</span>
+        <span class="option-name">Plain Text Above Synopsis</span>
+    </div>
+    <p class="option-desc">Plain colored text links between meta and synopsis. No pills, no background. Maximally understated.</p>
+    <div class="lb-sim">
+        <div class="lb-title-row">
+            <div class="lb-title-side"><span class="lb-title">Nosferatu</span><span class="lb-staff-pick">STAFF PICK</span></div>
+            <span class="lb-date">Mar 21</span>
+        </div>
+        <div class="lb-meta">Robert Eggers · USA / Czech Republic · 132 min</div>
+        <div class="hl" style="margin-bottom:0.6rem;display:flex;gap:0.75rem">
+            <a href="#" style="color:#ff6b6b;font-size:0.8rem;font-weight:600;text-decoration:none">Rotten Tomatoes 84%</a>
+            <a href="#" style="color:#f5c518;font-size:0.8rem;font-weight:600;text-decoration:none">IMDb 7.1</a>
+        </div>
+        <div class="lb-synopsis lb-synopsis-short">A Gothic tale of obsession between a haunted young woman and the terrifying vampire infatuated with her...</div>
+        <div class="lb-pq"><div class="lb-pq-text">"A masterly exercise in visual grandeur"</div><div class="lb-pq-cite">— The Guardian</div></div>
+        <div class="lb-buttons">
+            <div class="lb-watch-stack"><a href="#" class="lb-watch-btn netflix">Netflix</a></div>
+            <div class="lb-info-row"><button class="lb-info-btn trailer">Trailer</button><a href="#" class="lb-info-btn glass">Wiki</a></div>
+        </div>
+    </div>
+</div>
+
+<!-- CURRENT (Reference) -->
+<div class="option-card" style="border-color:rgba(255,100,100,0.3)">
+    <div class="option-header" style="background:rgba(255,100,100,0.1)">
+        <span class="option-number" style="background:#ff6b6b">X</span>
+        <span class="option-name">Current Layout</span>
+        <span class="current-label">CURRENT</span>
+    </div>
+    <p class="option-desc">RT and IMDb are glass buttons in the info row at the bottom, alongside Trailer and Wiki. Scores compete with actions and are far from the title.</p>
+    <div class="lb-sim">
+        <div class="lb-title-row">
+            <div class="lb-title-side"><span class="lb-title">Nosferatu</span><span class="lb-staff-pick">STAFF PICK</span></div>
+            <span class="lb-date">Mar 21</span>
+        </div>
+        <div class="lb-meta">Robert Eggers · USA / Czech Republic · 132 min</div>
+        <div class="lb-synopsis lb-synopsis-short">A Gothic tale of obsession between a haunted young woman and the terrifying vampire infatuated with her...</div>
+        <div class="lb-pq"><div class="lb-pq-text">"A masterly exercise in visual grandeur"</div><div class="lb-pq-cite">— The Guardian</div></div>
+        <div class="lb-buttons">
+            <div class="lb-watch-stack"><a href="#" class="lb-watch-btn netflix">Netflix</a></div>
+            <div class="lb-info-row hl" style="outline-color:rgba(255,100,100,0.5)">
+                <button class="lb-info-btn trailer">Trailer</button>
+                <a href="#" class="lb-info-btn glass">RT 84%</a>
+                <a href="#" class="lb-info-btn glass">IMDb 7.1</a>
+                <a href="#" class="lb-info-btn glass">Wiki</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+
+<div style="max-width:800px;margin:3rem auto;padding:1.5rem;background:rgba(255,255,255,0.03);border-radius:12px;border:1px solid rgba(255,255,255,0.08)">
+    <h2 style="font-size:1rem;font-weight:600;color:#00d4aa;margin-bottom:0.75rem">Quick Comparison</h2>
+    <table style="width:100%;font-size:0.8rem;color:#bbb;border-collapse:collapse">
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.1);color:#888;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em">
+            <th style="text-align:left;padding:0.5rem">Option</th>
+            <th style="text-align:center;padding:0.5rem">Scanability</th>
+            <th style="text-align:center;padding:0.5rem">Weight</th>
+            <th style="text-align:center;padding:0.5rem">+Lines</th>
+            <th style="text-align:left;padding:0.5rem">Tradeoff</th>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
+            <td style="padding:0.4rem 0.5rem">1. Inline w/ Title</td>
+            <td style="text-align:center;color:#00d4aa">★★★</td>
+            <td style="text-align:center">Low</td>
+            <td style="text-align:center">0</td>
+            <td style="padding:0.4rem 0.5rem">Can crowd long titles</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
+            <td style="padding:0.4rem 0.5rem">2. Score Row</td>
+            <td style="text-align:center;color:#00d4aa">★★★</td>
+            <td style="text-align:center">Medium</td>
+            <td style="text-align:center">+1</td>
+            <td style="padding:0.4rem 0.5rem">Clean but adds a row</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
+            <td style="padding:0.4rem 0.5rem">3. Right of Title Row</td>
+            <td style="text-align:center;color:#00d4aa">★★★</td>
+            <td style="text-align:center">Low</td>
+            <td style="text-align:center">0</td>
+            <td style="padding:0.4rem 0.5rem">Date moves left, less prominent</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
+            <td style="padding:0.4rem 0.5rem">4. In Meta Line</td>
+            <td style="text-align:center">★★</td>
+            <td style="text-align:center">Minimal</td>
+            <td style="text-align:center">0</td>
+            <td style="padding:0.4rem 0.5rem">Scores can get lost in metadata</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
+            <td style="padding:0.4rem 0.5rem">5. Score Bar Strip</td>
+            <td style="text-align:center;color:#00d4aa">★★★</td>
+            <td style="text-align:center">Medium</td>
+            <td style="text-align:center">+1</td>
+            <td style="padding:0.4rem 0.5rem">Most "designed" feel</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
+            <td style="padding:0.4rem 0.5rem">6. Beside Date</td>
+            <td style="text-align:center">★★</td>
+            <td style="text-align:center">Minimal</td>
+            <td style="text-align:center">0</td>
+            <td style="padding:0.4rem 0.5rem">Compact but may feel cramped</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
+            <td style="padding:0.4rem 0.5rem">7. Under Date</td>
+            <td style="text-align:center;color:#00d4aa">★★★</td>
+            <td style="text-align:center">Low</td>
+            <td style="text-align:center">0</td>
+            <td style="padding:0.4rem 0.5rem">Elegant, needs taller title row</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
+            <td style="padding:0.4rem 0.5rem">8. Poster Overlay</td>
+            <td style="text-align:center;color:#00d4aa">★★★</td>
+            <td style="text-align:center">Medium</td>
+            <td style="text-align:center">0</td>
+            <td style="padding:0.4rem 0.5rem">Desktop only; poster is separate</td>
+        </tr>
+        <tr>
+            <td style="padding:0.4rem 0.5rem">9. Plain Text</td>
+            <td style="text-align:center">★★</td>
+            <td style="text-align:center">Minimal</td>
+            <td style="text-align:center">+1</td>
+            <td style="padding:0.4rem 0.5rem">Most understated, could be missed</td>
+        </tr>
+    </table>
+</div>
+
+</body>
+</html>
