@@ -1265,6 +1265,7 @@ class NRWOrchestrator:
             # NOTE: data.json uses eventual consistency model - only updated here in Phase 3
             # This means data.json may temporarily lag behind movie_tracking.json between
             # discovery (Phase 2) and final generation (Phase 3)
+            # IMDb ratings are fetched inline during enrichment (5-tier waterfall in get_imdb_rating)
             print(f"\n📊 Phase 3: Data Generation")
             success = self.run_command(
                 "python3 generate_data.py --enrich",
