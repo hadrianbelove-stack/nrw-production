@@ -914,6 +914,7 @@ class DataGenerator:
                                     has_providers = True
                                     movie['has_providers'] = True
                                     movie['_discovery_source'] = 'tmdb_type4'
+                                    movie['_type4_date'] = type4_date
                                     self.logger.info(f"Type 4 discovery: {movie['title']} — digital date {type4_date}")
                                     print(f"  📅 {movie['title']} has Type 4 digital date {type4_date}")
                             except ValueError:
@@ -991,7 +992,8 @@ class DataGenerator:
                     if has_providers and movie['status'] == 'tracking':
                         # Newly discovered movie - always needs enrichment
                         movie['status'] = 'available'
-                        movie['digital_date'] = datetime.now().strftime('%Y-%m-%d')
+                        # Use Type 4 date if discovered that way, otherwise today
+                        movie['digital_date'] = movie.get('_type4_date') or datetime.now().strftime('%Y-%m-%d')
                         movie['providers'] = {
                             'rent': rent_names,
                             'buy': buy_names,
@@ -1011,8 +1013,11 @@ class DataGenerator:
                         needs_enrichment = True
 
                         # Show which service it appeared on
-                        first_service = stream_names[0] if stream_names else rent_names[0] if rent_names else buy_names[0]
-                        print(f"  ✓ {movie['title']} now on {first_service}!")
+                        if stream_names or rent_names or buy_names:
+                            first_service = stream_names[0] if stream_names else rent_names[0] if rent_names else buy_names[0]
+                            print(f"  ✓ {movie['title']} now on {first_service}!")
+                        else:
+                            print(f"  ✓ {movie['title']} now available (Type 4 digital release)!")
 
                     # Catch-up logic removed: Only enrich brand new transitions
                     # Movies get ONE enrichment attempt on the day they transition to available
@@ -2347,6 +2352,18 @@ class DataGenerator:
         except Exception as e:
             self.logger.debug(f"Failed to save IMDB cache: {e}")
 
+    def _get_imdb_page(self):
+        """Get a new Playwright page for IMDb scraping (lazy browser init)."""
+        from playwright.sync_api import sync_playwright
+        if not hasattr(self, '_imdb_browser') or self._imdb_browser is None:
+            self._imdb_pw = sync_playwright().start()
+            self._imdb_browser = self._imdb_pw.chromium.launch(headless=True)
+            self._imdb_context = self._imdb_browser.new_context(
+                user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                viewport={'width': 1920, 'height': 1080}
+            )
+        return self._imdb_context.new_page()
+
     def _scrape_imdb_rating_playwright(self, imdb_id):
         """Scrape IMDb rating directly from IMDb page using Playwright.
 
@@ -2354,19 +2371,8 @@ class DataGenerator:
         """
         page = None
         try:
-            from playwright.sync_api import sync_playwright
-            if not hasattr(self, '_imdb_browser') or self._imdb_browser is None:
-                self._imdb_pw = sync_playwright().start()
-                self._imdb_browser = self._imdb_pw.chromium.launch(headless=True)
-                self._imdb_context = self._imdb_browser.new_context(
-                    user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                    viewport={'width': 1920, 'height': 1080}
-                )
-            page = self._imdb_context.new_page()
-
-            url = f"https://www.imdb.com/title/{imdb_id}/"
-            page.goto(url, wait_until='domcontentloaded', timeout=15000)
-            import time
+            page = self._get_imdb_page()
+            page.goto(f"https://www.imdb.com/title/{imdb_id}/", wait_until='domcontentloaded', timeout=15000)
             time.sleep(1)
 
             # Method 1: JSON-LD structured data (most reliable)
@@ -2381,6 +2387,7 @@ class DataGenerator:
                         rating_value = data['aggregateRating'].get('ratingValue')
                         if rating_value:
                             page.close()
+                            time.sleep(2)  # Rate limit after page visit
                             return str(rating_value)
                 except (json.JSONDecodeError, AttributeError):
                     continue
@@ -2394,11 +2401,13 @@ class DataGenerator:
                         val = float(text.strip())
                         if 0 < val <= 10:
                             page.close()
+                            time.sleep(2)  # Rate limit after page visit
                             return str(val)
                     except ValueError:
                         pass
 
             page.close()
+            time.sleep(2)  # Rate limit after page visit
             return None
 
         except Exception as e:
@@ -2417,22 +2426,10 @@ class DataGenerator:
         """
         page = None
         try:
-            from playwright.sync_api import sync_playwright
-            import re
-            from urllib.parse import quote
-            if not hasattr(self, '_imdb_browser') or self._imdb_browser is None:
-                self._imdb_pw = sync_playwright().start()
-                self._imdb_browser = self._imdb_pw.chromium.launch(headless=True)
-                self._imdb_context = self._imdb_browser.new_context(
-                    user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                    viewport={'width': 1920, 'height': 1080}
-                )
-            page = self._imdb_context.new_page()
-
+            page = self._get_imdb_page()
             search_query = f"{title} {year}" if year else title
             search_url = f"https://www.imdb.com/find/?q={quote(search_query)}&s=tt&ttype=ft"
             page.goto(search_url, wait_until='domcontentloaded', timeout=15000)
-            import time
             time.sleep(1)
 
             # Find first result link
@@ -2447,6 +2444,7 @@ class DataGenerator:
 
             page.close()
             if not imdb_id:
+                time.sleep(2)  # Rate limit after page visit
                 return None, None
 
             # Scrape the rating from the found movie page
@@ -2480,8 +2478,6 @@ class DataGenerator:
         Returns:
             str: IMDb rating (e.g., '7.5') or None if not found
         """
-        import time
-
         # Tier 1: Cache check
         if imdb_id:
             cache = self._load_imdb_cache()
@@ -2516,14 +2512,12 @@ class DataGenerator:
                 self.logger.debug(f"Playwright scrape: rating {rating} for {imdb_id}")
                 self._save_to_imdb_cache(imdb_id, rating, title=title, source='playwright')
                 return rating
-            time.sleep(2)  # Rate limit
 
         # Tier 4: OMDb title search (finds both ID and rating)
         if title and not imdb_id:
             omdb_key = os.environ.get('OMDB_API_KEY') or self.config.get('api', {}).get('omdb_api_key')
             if omdb_key:
                 try:
-                    from urllib.parse import quote
                     url = f"http://www.omdbapi.com/?t={quote(title)}&apikey={omdb_key}"
                     if year:
                         url += f"&y={year}"
@@ -2549,7 +2543,6 @@ class DataGenerator:
                 self.logger.debug(f"Playwright IMDb search: {found_id} -> {rating}")
                 self._save_to_imdb_cache(found_id, rating, title=title, source='playwright')
                 return rating
-            time.sleep(2)  # Rate limit
 
         return None
 
