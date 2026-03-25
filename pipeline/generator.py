@@ -209,6 +209,9 @@ class DataGenerator:
             self.watch_links_overrides
         )
 
+        # IMDB rating cache (persistent across pipeline runs)
+        self._imdb_rating_cache = None
+
         # Wikipedia usage statistics
         self.wikipedia_stats = {
             'wikidata_attempts': 0,
@@ -899,6 +902,23 @@ class DataGenerator:
                     # Always update has_providers flag based on current provider availability
                     movie['has_providers'] = has_providers
 
+                    # Fallback: If no providers from watch/providers endpoint,
+                    # check TMDB Type 4 (Digital) release date as transition trigger
+                    if not has_providers and movie['status'] == 'tracking':
+                        type4_date = self.fetch_tmdb_type4_date(movie_id)
+                        if type4_date:
+                            try:
+                                type4_dt = datetime.strptime(type4_date, '%Y-%m-%d')
+                                today_dt = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+                                if type4_dt <= today_dt:
+                                    has_providers = True
+                                    movie['has_providers'] = True
+                                    movie['_discovery_source'] = 'tmdb_type4'
+                                    self.logger.info(f"Type 4 discovery: {movie['title']} — digital date {type4_date}")
+                                    print(f"  📅 {movie['title']} has Type 4 digital date {type4_date}")
+                            except ValueError:
+                                pass
+
                     # JustWatch verification: confirm availability before promoting
                     jw_watch_links = None
                     if has_providers and movie['status'] == 'tracking':
@@ -1185,10 +1205,12 @@ class DataGenerator:
             excluded_services = self.config.get('tracking', {}).get('excluded_services', ['fuboTV', 'Philo'])
             amazon_tag = self.config.get('enrichment', {}).get('amazon_affiliate_tag')
 
+            content_type = 'tv' if str(movie_id).startswith('tv_') else 'movie'
             result = self._jw_verifier.verify_availability(
                 title, year,
                 excluded_services=excluded_services,
-                affiliate_tag=amazon_tag
+                affiliate_tag=amazon_tag,
+                content_type=content_type
             )
 
             if result is None:
@@ -2296,47 +2318,240 @@ class DataGenerator:
             self.logger.debug(f"OMDb API error for '{title}': {e}")
             return None
 
-    def get_imdb_rating(self, imdb_id):
-        """Fetch IMDB rating for a known IMDb ID from OMDb API.
+    def _load_imdb_cache(self):
+        """Lazy-load IMDB rating cache from cache/imdb_rating_cache.json."""
+        if self._imdb_rating_cache is None:
+            cache_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'cache', 'imdb_rating_cache.json')
+            try:
+                with open(cache_path, 'r') as f:
+                    self._imdb_rating_cache = json.load(f)
+                self.logger.debug(f"Loaded IMDB cache: {len(self._imdb_rating_cache)} entries")
+            except (FileNotFoundError, json.JSONDecodeError):
+                self._imdb_rating_cache = {}
+        return self._imdb_rating_cache
 
-        Args:
-            imdb_id: IMDb ID (e.g., 'tt12345678')
-
-        Returns:
-            str: IMDB rating (e.g., '7.5') or None if not found
-        """
-        if not imdb_id:
-            return None
-
-        omdb_key = os.environ.get('OMDB_API_KEY') or self.config.get('api', {}).get('omdb_api_key')
-        if not omdb_key:
-            self.logger.debug("OMDb API key not configured, skipping IMDB rating")
-            return None
-
+    def _save_to_imdb_cache(self, imdb_id, rating, title=None, source='omdb_pipeline'):
+        """Write a single rating to the IMDB cache (in-memory + disk)."""
+        cache = self._load_imdb_cache()
+        cache[imdb_id] = {
+            'imdb_id': imdb_id,
+            'rating': rating,
+            'title': title,
+            'scraped_at': datetime.now().isoformat(),
+            'source': source
+        }
+        cache_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'cache', 'imdb_rating_cache.json')
         try:
-            url = f"http://www.omdbapi.com/?i={imdb_id}&apikey={omdb_key}"
-            response = requests.get(url, timeout=5)
+            with open(cache_path, 'w') as f:
+                json.dump(cache, f, indent=2)
+        except Exception as e:
+            self.logger.debug(f"Failed to save IMDB cache: {e}")
 
-            if response.status_code != 200:
-                self.logger.debug(f"OMDb API error for {imdb_id}: HTTP {response.status_code}")
-                return None
+    def _scrape_imdb_rating_playwright(self, imdb_id):
+        """Scrape IMDb rating directly from IMDb page using Playwright.
 
-            data = response.json()
+        Extracts rating from JSON-LD structured data, falls back to CSS selector.
+        """
+        page = None
+        try:
+            from playwright.sync_api import sync_playwright
+            if not hasattr(self, '_imdb_browser') or self._imdb_browser is None:
+                self._imdb_pw = sync_playwright().start()
+                self._imdb_browser = self._imdb_pw.chromium.launch(headless=True)
+                self._imdb_context = self._imdb_browser.new_context(
+                    user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                    viewport={'width': 1920, 'height': 1080}
+                )
+            page = self._imdb_context.new_page()
 
-            if data.get('Response') == 'False':
-                self.logger.debug(f"OMDb: No data for {imdb_id}")
-                return None
+            url = f"https://www.imdb.com/title/{imdb_id}/"
+            page.goto(url, wait_until='domcontentloaded', timeout=15000)
+            import time
+            time.sleep(1)
 
-            rating = data.get('imdbRating')
-            if rating and rating != 'N/A':
-                self.logger.debug(f"OMDb: IMDB rating {rating} for {imdb_id}")
-                return rating
+            # Method 1: JSON-LD structured data (most reliable)
+            scripts = page.query_selector_all('script[type="application/ld+json"]')
+            for script in scripts:
+                try:
+                    text = script.text_content()
+                    if not text:
+                        continue
+                    data = json.loads(text)
+                    if 'aggregateRating' in data:
+                        rating_value = data['aggregateRating'].get('ratingValue')
+                        if rating_value:
+                            page.close()
+                            return str(rating_value)
+                except (json.JSONDecodeError, AttributeError):
+                    continue
 
+            # Method 2: CSS selector fallback
+            rating_el = page.query_selector('[data-testid="hero-rating-bar__aggregate-rating__score"] span')
+            if rating_el:
+                text = rating_el.text_content()
+                if text:
+                    try:
+                        val = float(text.strip())
+                        if 0 < val <= 10:
+                            page.close()
+                            return str(val)
+                    except ValueError:
+                        pass
+
+            page.close()
             return None
 
         except Exception as e:
-            self.logger.debug(f"OMDb rating error for {imdb_id}: {e}")
+            self.logger.debug(f"Playwright scrape error for {imdb_id}: {e}")
+            if page:
+                try:
+                    page.close()
+                except Exception:
+                    pass
             return None
+
+    def _search_imdb_by_title_playwright(self, title, year=None):
+        """Search IMDb by title using Playwright, return (imdb_id, rating).
+
+        Visits IMDb search page, finds the best match, then scrapes its rating.
+        """
+        page = None
+        try:
+            from playwright.sync_api import sync_playwright
+            import re
+            from urllib.parse import quote
+            if not hasattr(self, '_imdb_browser') or self._imdb_browser is None:
+                self._imdb_pw = sync_playwright().start()
+                self._imdb_browser = self._imdb_pw.chromium.launch(headless=True)
+                self._imdb_context = self._imdb_browser.new_context(
+                    user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                    viewport={'width': 1920, 'height': 1080}
+                )
+            page = self._imdb_context.new_page()
+
+            search_query = f"{title} {year}" if year else title
+            search_url = f"https://www.imdb.com/find/?q={quote(search_query)}&s=tt&ttype=ft"
+            page.goto(search_url, wait_until='domcontentloaded', timeout=15000)
+            import time
+            time.sleep(1)
+
+            # Find first result link
+            results = page.query_selector_all('a[href*="/title/tt"]')
+            imdb_id = None
+            for result in results:
+                href = result.get_attribute('href') or ''
+                match = re.search(r'/title/(tt\d+)', href)
+                if match:
+                    imdb_id = match.group(1)
+                    break
+
+            page.close()
+            if not imdb_id:
+                return None, None
+
+            # Scrape the rating from the found movie page
+            rating = self._scrape_imdb_rating_playwright(imdb_id)
+            return imdb_id, rating
+
+        except Exception as e:
+            self.logger.debug(f"Playwright IMDb search error for '{title}': {e}")
+            if page:
+                try:
+                    page.close()
+                except Exception:
+                    pass
+            return None, None
+
+    def get_imdb_rating(self, imdb_id, title=None, year=None):
+        """Fetch IMDb rating using 5-tier waterfall.
+
+        Tiers:
+            1. Cache check
+            2. OMDb API by ID
+            3. Playwright scrape IMDb page (by ID)
+            4. OMDb title search (finds ID + rating)
+            5. Playwright IMDb search by title (last resort)
+
+        Args:
+            imdb_id: IMDb ID (e.g., 'tt12345678'), can be None
+            title: Movie title (for fallback search tiers)
+            year: Release year (for fallback search tiers)
+
+        Returns:
+            str: IMDb rating (e.g., '7.5') or None if not found
+        """
+        import time
+
+        # Tier 1: Cache check
+        if imdb_id:
+            cache = self._load_imdb_cache()
+            if imdb_id in cache:
+                cached_rating = cache[imdb_id].get('rating')
+                if cached_rating:
+                    self.logger.debug(f"IMDB cache hit: {imdb_id} -> {cached_rating}")
+                    return cached_rating
+
+        # Tier 2: OMDb API by ID
+        if imdb_id:
+            omdb_key = os.environ.get('OMDB_API_KEY') or self.config.get('api', {}).get('omdb_api_key')
+            if omdb_key:
+                try:
+                    url = f"http://www.omdbapi.com/?i={imdb_id}&apikey={omdb_key}"
+                    response = requests.get(url, timeout=5)
+                    if response.status_code == 200:
+                        data = response.json()
+                        if data.get('Response') != 'False':
+                            rating = data.get('imdbRating')
+                            if rating and rating != 'N/A':
+                                self.logger.debug(f"OMDb: rating {rating} for {imdb_id}")
+                                self._save_to_imdb_cache(imdb_id, rating, title=title, source='omdb')
+                                return rating
+                except Exception as e:
+                    self.logger.debug(f"OMDb rating error for {imdb_id}: {e}")
+
+        # Tier 3: Playwright scrape IMDb page directly
+        if imdb_id:
+            rating = self._scrape_imdb_rating_playwright(imdb_id)
+            if rating:
+                self.logger.debug(f"Playwright scrape: rating {rating} for {imdb_id}")
+                self._save_to_imdb_cache(imdb_id, rating, title=title, source='playwright')
+                return rating
+            time.sleep(2)  # Rate limit
+
+        # Tier 4: OMDb title search (finds both ID and rating)
+        if title and not imdb_id:
+            omdb_key = os.environ.get('OMDB_API_KEY') or self.config.get('api', {}).get('omdb_api_key')
+            if omdb_key:
+                try:
+                    from urllib.parse import quote
+                    url = f"http://www.omdbapi.com/?t={quote(title)}&apikey={omdb_key}"
+                    if year:
+                        url += f"&y={year}"
+                    response = requests.get(url, timeout=5)
+                    if response.status_code == 200:
+                        data = response.json()
+                        if data.get('Response') != 'False':
+                            found_id = data.get('imdbID')
+                            rating = data.get('imdbRating')
+                            if rating == 'N/A':
+                                rating = None
+                            if found_id and rating:
+                                self.logger.debug(f"OMDb title search: {found_id} -> {rating}")
+                                self._save_to_imdb_cache(found_id, rating, title=title, source='omdb')
+                                return rating
+                except Exception as e:
+                    self.logger.debug(f"OMDb title search error for '{title}': {e}")
+
+        # Tier 5: Playwright IMDb search by title (last resort)
+        if title and not imdb_id:
+            found_id, rating = self._search_imdb_by_title_playwright(title, year)
+            if found_id and rating:
+                self.logger.debug(f"Playwright IMDb search: {found_id} -> {rating}")
+                self._save_to_imdb_cache(found_id, rating, title=title, source='playwright')
+                return rating
+            time.sleep(2)  # Rate limit
+
+        return None
 
     def find_wikipedia_url(self, title, year, imdb_id, movie_id=None):
         """Find Wikipedia URL using Playwright-based scraper with waterfall approach
@@ -3010,7 +3225,7 @@ class DataGenerator:
 
         # IMDB rating (isolated failure handling)
         try:
-            imdb_rating = self.get_imdb_rating(imdb_id)
+            imdb_rating = self.get_imdb_rating(imdb_id, title, year)
             if imdb_rating:
                 result['imdb_rating'] = imdb_rating
                 enrichment_results['imdb_rating'] = 'success'
@@ -3329,7 +3544,7 @@ class DataGenerator:
 
         # IMDB rating (isolated failure handling)
         try:
-            imdb_rating = self.get_imdb_rating(imdb_id)
+            imdb_rating = self.get_imdb_rating(imdb_id, title, year)
             if imdb_rating:
                 enrichment_results['imdb_rating'] = 'success'
                 self.logger.debug(f"IMDB: Rating {imdb_rating} for {title} ({year})")
@@ -3631,6 +3846,64 @@ class DataGenerator:
 
         return enriched_count
 
+    def _fetch_eventive_screening_info(self, slug):
+        """
+        Fetch festival name and availability window from Eventive page.
+        Returns dict: {'name': str, 'available_start': str|None, 'available_end': str|None}
+
+        Results are cached in memory so each slug is only fetched once per run.
+        """
+        if not hasattr(self, '_screening_info_cache'):
+            self._screening_info_cache = {}
+
+        if slug in self._screening_info_cache:
+            return self._screening_info_cache[slug]
+
+        import re
+        result = {'name': None, 'available_start': None, 'available_end': None}
+
+        try:
+            resp = requests.get(f'https://watch.eventive.org/{slug}/', timeout=10,
+                                headers={'User-Agent': 'Mozilla/5.0'})
+            if resp.ok:
+                # Extract festival name from <title> tag
+                title_match = re.search(r'<title[^>]*>([^<]+)</title>', resp.text, re.IGNORECASE)
+                if title_match:
+                    raw_title = title_match.group(1).strip()
+                    # Eventive titles: "Catalog | Name", "Festival Program | Name", etc.
+                    name = re.sub(r'^[^|]+\|\s*', '', raw_title).strip() if '|' in raw_title else raw_title.strip()
+                    # Strip trailing edition numbers like "31" from "EBIJFF31" (but keep 4-digit years)
+                    name = re.sub(r'(?<!\d)\d{1,2}$', '', name).strip()
+                    if name:
+                        result['name'] = name
+
+                # Extract availability window from embedded JSON (start_time/end_time)
+                time_matches = re.findall(
+                    r'"start_time":"(\d{4}-\d{2}-\d{2})T[^"]*","end_time":"(\d{4}-\d{2}-\d{2})T[^"]*"',
+                    resp.text
+                )
+                if time_matches:
+                    # All films in a festival share the same window — use the latest end date
+                    starts = sorted(set(s for s, _ in time_matches))
+                    ends = sorted(set(e for _, e in time_matches))
+                    result['available_start'] = starts[0]
+                    result['available_end'] = ends[-1]
+
+                if result['name']:
+                    dates_str = f", {result['available_start']} to {result['available_end']}" if result['available_end'] else ""
+                    print(f"  ℹ️  Auto-detected screening info for '{slug}': \"{result['name']}\"{dates_str}")
+
+        except Exception as e:
+            self.logger.debug(f"Could not fetch Eventive page for slug '{slug}': {e}")
+
+        # Fallback name if nothing was found
+        if not result['name']:
+            result['name'] = slug.replace('_', ' ').replace('-', ' ').title()
+            print(f"  ⚠️  Could not auto-detect screening name for '{slug}', using fallback: \"{result['name']}\"")
+
+        self._screening_info_cache[slug] = result
+        return result
+
     def check_virtual_screening_expirations(self):
         """
         Check virtual screening links for expiration.
@@ -3659,6 +3932,9 @@ class DataGenerator:
         expired_count = 0
         today_str = datetime.now().strftime('%Y-%m-%d')
         modified = False
+
+        # Load manual end dates from config as fallback
+        config_end_dates = self.config.get('screening_end_dates', {})
 
         # Load tracking database for status reset
         tracking_path = 'movie_tracking.json'
@@ -3692,31 +3968,43 @@ class DataGenerator:
                 if svc == 'eventive' or 'eventive.org' in link or 'festivalplayer' in link or 'shift72.com' in link:
                     screening_link = link
 
-            if not screening_link:
+            def _expire_movie(reason):
+                """Mark a screening as expired, hide it, return to tracking."""
+                nonlocal expired_count, modified
+                expired_count += 1
+                screening_info['status'] = 'expired'
+                screening_info['last_checked'] = today_str
+                movie['virtual_screening_info'] = screening_info
+                movie['hidden'] = True
+                modified = True
+                slug = screening_info.get('screening_slug', '?')
+                print(f"  ❌ Expired: {title} ({slug}) — {reason}")
+
+                movie_id = str(movie.get('id', ''))
+                if movie_id and movie_id in tracking_data.get('movies', {}):
+                    tracking_movie = tracking_data['movies'][movie_id]
+                    tracking_movie['status'] = 'tracking'
+                    if 'digital_date' in tracking_movie:
+                        del tracking_movie['digital_date']
+                    print(f"    → Returned to tracking for VOD re-discovery")
+
+            # Check 1: Date-based expiration (available_end in the past)
+            slug = screening_info.get('screening_slug', '')
+            available_end = screening_info.get('available_end') or config_end_dates.get(slug)
+            if available_end and available_end < today_str:
+                _expire_movie(f"availability ended {available_end}")
                 continue
 
-            # HTTP HEAD check
+            # Check 2: No watch link at all (festival likely ended, link was never found)
+            if not screening_link:
+                _expire_movie("no watch link found")
+                continue
+
+            # Check 3: HTTP HEAD check on the actual link
             try:
                 resp = requests.head(screening_link, timeout=10, allow_redirects=True)
                 if resp.status_code in (404, 410, 403):
-                    # Link is dead — virtual screening has ended
-                    expired_count += 1
-                    screening_info['status'] = 'expired'
-                    screening_info['last_checked'] = today_str
-                    movie['virtual_screening_info'] = screening_info
-                    movie['hidden'] = True
-                    modified = True
-                    slug = screening_info.get('screening_slug', '?')
-                    print(f"  ❌ Expired: {title} ({slug}) — HTTP {resp.status_code}")
-
-                    # Reset movie in tracking for re-discovery of normal VOD
-                    movie_id = str(movie.get('id', ''))
-                    if movie_id and movie_id in tracking_data.get('movies', {}):
-                        tracking_movie = tracking_data['movies'][movie_id]
-                        tracking_movie['status'] = 'tracking'
-                        if 'digital_date' in tracking_movie:
-                            del tracking_movie['digital_date']
-                        print(f"    → Returned to tracking for VOD re-discovery")
+                    _expire_movie(f"HTTP {resp.status_code}")
                 else:
                     # Link is still alive
                     active_count += 1
@@ -3798,6 +4086,8 @@ class DataGenerator:
             return 0
 
         fixed_count = 0
+        unsaved_count = 0
+        save_interval = 10  # Save every 10 successful fixes to prevent data loss
         for movie_index, movie in gap_movies:
             movie_id = str(movie.get('id', ''))
             title = movie.get('title', 'Unknown')
@@ -3834,14 +4124,24 @@ class DataGenerator:
                             existing_movies[movie_index].pop('_enrichment_gaps', None)
                     print(f"  ✓ {title} — watch links resolved")
                     fixed_count += 1
+                    unsaved_count += 1
+
+                    # Incremental save to prevent data loss if interrupted
+                    if unsaved_count >= save_interval:
+                        display_data['movies'] = existing_movies
+                        display_data['generated_at'] = datetime.now().isoformat()
+                        with open('data.json', 'w') as f:
+                            json.dump(display_data, f, indent=2)
+                        print(f"  💾 Incremental save ({fixed_count} fixed so far)")
+                        unsaved_count = 0
                 else:
                     print(f"  ○ {title} — not on Amazon/Apple TV")
             except Exception as e:
                 print(f"  ✗ Error re-enriching {title}: {e}")
                 continue
 
-        # Save if anything changed
-        if fixed_count > 0:
+        # Final save if anything changed since last incremental save
+        if unsaved_count > 0:
             display_data['movies'] = existing_movies
             display_data['generated_at'] = datetime.now().isoformat()
 
@@ -4451,8 +4751,9 @@ class DataGenerator:
         if fields_updated > 0:
             print(f"📝 Applied {fields_updated} manual field edits from movie_tracking.json")
 
-        # Load screening name mapping from config
+        # Load screening name mapping and manual end dates from config
         screening_names_map = self.config.get('screening_names', {})
+        screening_end_dates_map = self.config.get('screening_end_dates', {})
 
         # Apply categorization to all movies
         big_time_count = 0
@@ -4556,20 +4857,28 @@ class DataGenerator:
                     elif 'festivalplayer.sundance.org' in screening_link:
                         screening_slug = 'sundance'
 
-                # Look up screening name: config.yaml → Eventive page scrape → title-case fallback
-                screening_name = screening_names_map.get(screening_slug, '')
-                if not screening_name and screening_slug:
-                    screening_name = self._fetch_eventive_screening_name(screening_slug)
+                # Look up screening info: config.yaml name → Eventive page (name + dates) → fallback
+                eventive_info = self._fetch_eventive_screening_info(screening_slug) if screening_slug else {}
+                screening_name = screening_names_map.get(screening_slug, '') or eventive_info.get('name', screening_slug)
 
                 today_str = datetime.now().strftime('%Y-%m-%d')
+                available_end = eventive_info.get('available_end') or screening_end_dates_map.get(screening_slug) or existing_screening_info.get('available_end')
+                screening_expired = available_end and available_end < today_str
+
                 movie['virtual_screening_info'] = {
                     'platform': screening_service or 'Unknown',
                     'screening_slug': screening_slug,
                     'screening_name': screening_name,
+                    'available_start': eventive_info.get('available_start') or existing_screening_info.get('available_start'),
+                    'available_end': available_end,
                     'discovered': existing_screening_info.get('discovered', today_str),
                     'last_checked': existing_screening_info.get('last_checked', today_str),
-                    'status': existing_screening_info.get('status', 'active')
+                    'status': 'expired' if screening_expired else existing_screening_info.get('status', 'active')
                 }
+
+                # Hide expired virtual screenings automatically
+                if screening_expired:
+                    movie['hidden'] = True
 
             # Mark limited series
             categories['is_series'] = movie.get('content_type') == 'limited_series'
