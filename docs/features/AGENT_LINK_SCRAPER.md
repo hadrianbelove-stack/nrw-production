@@ -15,12 +15,13 @@ Some streaming platforms (Netflix, Disney+, HBO Max, Hulu) don't have predictabl
 
 ## Solution Architecture
 
-The agent scraper is part of a multi-tier system:
-1. **Tier 1:** Manual overrides + `overrides/watch_links_overrides.json`
-2. **Tier 2:** Cache (`cache/watch_links_cache.json`)
-3. **Tier 3:** Playwright scrapers (Amazon/Apple TV via `streaming_platform_scraper.py`)
-4. **Tier 4:** Agent scraping for Netflix/Disney+/HBO Max/Hulu
-5. **Tier 5:** TMDB provider names with null links (last resort)
+The agent scraper is part of a multi-tier system (see `docs/features/WATCH_LINK_ARCHITECTURE.md`):
+1. **Tier 1:** Manual watch links (`movie_tracking.json`)
+2. **Tier 2:** Overrides (`overrides/watch_links_overrides.json`)
+3. **Tier 3:** Cache (`cache/watch_links_cache.json`)
+4. **Tier 4:** JustWatch API — primary source for rent/buy deep links
+5. **Tier 5:** VOD scraper (Playwright: Amazon/Apple TV) — backup when JustWatch fails
+6. **Tier 6:** TMDB provider names with null links (last resort)
 
 ## Technical Implementation
 

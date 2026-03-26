@@ -1,12 +1,15 @@
 # **NRW Data Workflow - Complete Overview**
 
-**Last Updated:** 2025-12-29
+**Last Updated:** 2026-03-26
 
 ---
 
 ## **🎯 What This System Does**
 
-**The New Release Wall tracks when movies become available for digital streaming/rental.**
+**The New Release Wall is a well-stocked video store for the streaming age.** It finds every cool movie that has debuted online — for streaming, rental, or purchase — and puts them on a wall where people can shop, watch trailers, and click through to rent, buy, or stream on the right platforms.
+
+### The Video Store Design Principle
+Discovery uses a **wide net**. If TMDB providers OR Type 4 digital dates indicate a movie is available, it transitions to the wall. The pipeline stocks the shelves; the admin curates (hides low-quality titles, features highlights). We want to find EVERY movie that's newly available digitally — curation happens after, not before.
 
 ### The Core Problem
 When a movie leaves theaters, there's no API that says "this movie became available on Netflix today." TMDB's provider API only shows what's *currently* available, not *when* it became available. We solve this by polling daily and detecting transitions ourselves.
@@ -47,15 +50,18 @@ An ongoing, accumulating database of digital release dates that no one else trac
 - **Intake:** Searches TMDB API for movies released in past 7 days (festival, limited theatrical, theatrical, direct to streaming, etc.)
 - **Adds to database:** New movies get status = "tracking", digital_date = null
 
-**🔧 `generate_data.py --discover`** - *Discovery: Provider Availability*
-- **Monitoring:** Checks ALL movies in database with status = "tracking" for digital availability on Netflix, Amazon, etc.
-- **The Core Problem:** APIs don't tell us "this movie became available digitally today" - they only show what's available right now. We have to detect transitions ourselves.
-- **Magic moment:** When it finds new providers, sets `digital_date` = today, status = "available"
-- **Type 4 fallback:** Also checks TMDB's Type 4 (Digital) release dates for movies with no providers yet. If a Type 4 date exists within the last 14 days, the movie transitions to "available" using that date as `digital_date`. This catches movies where TMDB's provider data lags behind actual availability.
+**🔧 `generate_data.py --discover`** - *Discovery: Detecting Digital Transitions*
+- **Monitoring:** Checks ALL movies in database with status = "tracking" for digital availability
+- **Two co-equal discovery signals:**
+  1. **TMDB /watch/providers** — Detects streaming providers (Netflix, Disney+, etc.) and rent/buy availability (Amazon, Apple TV, etc.)
+  2. **TMDB Type 4 digital release dates** — Detects when a movie's digital release date has arrived. Many movies have Type 4 dates before provider lists are populated, making this a primary discovery mechanism.
+- **Magic moment:** When either signal fires, sets `digital_date` = today (or Type 4 date), status = "available"
+- **Pre-order detection:** Buy-only + single-provider movies are checked against Amazon to catch pre-orders (not yet available for viewing)
+- **JustWatch:** NOT used in discovery. JustWatch provides actual rent/buy deep links (Amazon/Apple TV URLs) during enrichment, not during discovery.
 - **State file:** Writes list of newly available movie IDs to `metrics/newly_available.json`
 
 **📄 `movie_tracking.json`** - *The Master Database*
-- **What it is:** Complete database of all movies we're monitoring (~330 movies)
+- **What it is:** Complete database of all movies we're monitoring (~15,000+ movies)
 - **Contains:** Movie details, tracking status ("tracking" vs "available"), provider info
 - **Example:** `{"1404864": {"title": "Inspector Zende", "status": "tracking", "digital_date": null}}`
 
@@ -68,15 +74,17 @@ An ongoing, accumulating database of digital release dates that no one else trac
 - **Batch cap:** Maximum 100 movies per enrichment run (new arrivals + catch-up combined)
 - **Overlay model:** Updates EXISTING entries in data.json (never creates new entries)
 - **Performance:** 95%+ cost reduction by only enriching new arrivals (1-10 per day)
-- **Link resolution:** Multi-tier waterfall (overrides → cache → API → scraper → null)
+- **Link resolution:** Multi-tier waterfall: manual → overrides → cache → JustWatch API → VOD scraper → null (see `docs/features/WATCH_LINK_ARCHITECTURE.md`)
 
 **📂 Link Resolution System** - *Multi-Tier Intelligent Lookup*
 
-**Watch Links (Streaming/VOD):**
-- **Tier 1:** `overrides/watch_links_overrides.json` - Manual curator fixes (highest priority)
-- **Tier 2:** `cache/watch_links_cache.json` - Deep links cache
-- **Tier 3:** `streaming_platform_scraper.py` - Playwright-based scraping for Amazon, Apple TV (tries ALL movies, not just TMDB-listed providers)
-- **Tier 4:** TMDB provider names with null links - Frontend shows error state
+**Watch Links (Streaming/VOD)** — see `docs/features/WATCH_LINK_ARCHITECTURE.md`:
+- **Tier 1:** Manual watch links (`movie_tracking.json`) — hand-set by curator (highest priority)
+- **Tier 2:** Overrides (`overrides/watch_links_overrides.json`) — admin quick-fix file
+- **Tier 3:** Cache (`cache/watch_links_cache.json`) — previously-resolved deep links
+- **Tier 4:** JustWatch API — **PRIMARY** source for rent/buy deep links (Amazon, Apple TV URLs with prices)
+- **Tier 5:** VOD scraper (Playwright) — Amazon, Apple TV scraping (backup when JustWatch fails)
+- **Tier 6:** TMDB provider names with null links — last resort, no clickable URL
 
 **Wikipedia/RT/YouTube Links:**
 - Similar multi-tier approach with manual overrides → cache → API/scraper → fallback
@@ -209,7 +217,7 @@ The orchestrator records all failures and warnings in `metrics/run_diagnostics.j
 4. **Simple Mental Model:** Discovery adds, enrichment enhances, nothing deletes
 5. **Speed:** Website loads fast (only reads 1 JSON file)
 6. **Reliability:** Links verified via multi-tier fallbacks (overrides → cache → API → scraper → null)
-7. **Scalability:** Can track 6,700+ movies, display ~230 most recent
+7. **Scalability:** Can track 15,000+ movies, display ~670 most recent
 8. **Automation:** Runs itself daily, commits changes to git
 9. **Editorial Control:** Admin panel allows curation and manual fixes
 

@@ -42,7 +42,7 @@ tracking:
 # JustWatch configuration (enrichment only)
 # NOTE: JustWatch verification removed from discovery phase (Mar 2026).
 # JustWatch is used in enrichment only — for resolving actual rent/buy watch links
-# (Amazon, Apple TV deep URLs) that TMDB doesn't provide. See pipeline/enrichment.py tier 5.
+# (Amazon, Apple TV deep URLs) that TMDB doesn't provide. See docs/features/WATCH_LINK_ARCHITECTURE.md (tier 4).
 justwatch_verification:
   enabled: true                    # Used by enrichment for watch link resolution
   rate_limit: 0.5                  # Seconds between JustWatch API calls

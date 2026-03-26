@@ -446,10 +446,11 @@ The enrichment system tracks which movies have been processed with additional me
 - Most movies have no watch links (streaming/vod)
 - Only 1-5 movies out of 80+ have provider links
 
-**Root Causes:**
-- Playwright scraper selectors outdated (Amazon/Apple TV change HTML periodically)
-- Movie is very new or obscure (not yet available for digital purchase)
+**Root Causes** (check in waterfall order — see `docs/features/WATCH_LINK_ARCHITECTURE.md`):
+- JustWatch API not finding the movie (confidence too low, title mismatch, or API down)
 - Cache is stale and needs refresh
+- Playwright VOD scraper selectors outdated (only matters if JustWatch also failed)
+- Movie is very new or obscure (not yet available for digital purchase)
 
 **Solutions:**
 

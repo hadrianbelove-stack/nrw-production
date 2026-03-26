@@ -2,16 +2,18 @@
 
 ## Current Architecture (Mar 2026)
 
-**Priority Waterfall:**
-1. Manual overrides (`overrides/watch_links_overrides.json`)
-2. Cache (`cache/watch_links_cache.json`)
-3. Playwright scrapers — Amazon/Apple TV (`streaming_platform_scraper.py`)
-4. Agent scraper (Netflix, Disney+, HBO Max, Hulu)
-5. TMDB provider names with null links
+**Priority Waterfall** (see `docs/features/WATCH_LINK_ARCHITECTURE.md` for full details):
+1. Manual watch links (`movie_tracking.json`) — hand-set by curator
+2. Overrides (`overrides/watch_links_overrides.json`) — admin quick-fix
+3. Cache (`cache/watch_links_cache.json`) — previous run results
+4. **JustWatch API** — PRIMARY: real deep links with prices
+5. VOD scraper (Playwright: Amazon + Apple TV) — backup, only if JustWatch fails
+6. TMDB provider names with null links — last resort
 
 **Key Files:**
-- `streaming_platform_scraper.py` - Playwright-based scraper for Amazon/Apple TV
 - `pipeline/enrichment.py` - Watch links waterfall logic
+- `pipeline/justwatch.py` - JustWatch API (primary deep link source)
+- `streaming_platform_scraper.py` - Playwright-based scraper (backup)
 
 ---
 
@@ -26,11 +28,10 @@
 Previously: Watchmode API quota exhausted. System fell back to Google search URLs.
 
 ### Current Cause (Mar 2026)
-Playwright scraper tried Amazon + Apple TV but couldn't find the movie. Speculative scraping
-now tries both platforms for ALL movies (not just TMDB-listed providers). Check:
-1. Movie title and year are correct in movie_tracking.json
-2. Amazon/Apple TV HTML selectors are up to date in `streaming_platform_scraper.py`
-3. Cache isn't stale (delete entry in `cache/watch_links_cache.json` to force refresh)
+Check in waterfall order (most common issue first):
+1. **JustWatch API** — is it finding the movie? Check enrichment logs for confidence level. Low-confidence matches get rejected (`min_confidence` in config).
+2. **Cache stale** — delete entry in `cache/watch_links_cache.json` to force re-lookup
+3. **Playwright selectors outdated** — Amazon/Apple TV change HTML periodically. Only matters if JustWatch also failed.
 4. Movie may genuinely not be available for digital purchase yet
 
 ---
