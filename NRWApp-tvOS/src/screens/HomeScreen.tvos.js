@@ -330,10 +330,10 @@ const HomeScreenTvOS = () => {
       for (const filter of activeFilters) {
         switch (filter) {
           case 'big-time':
-            if (movie.categories?.tier === 'big_time') return true;
+            if (movie.categories?.is_big_time || movie.categories?.tier === 'big_time') return true;
             break;
           case 'indie':
-            if (movie.categories?.tier === 'indie') return true;
+            if (movie.categories?.is_indie || movie.categories?.tier === 'indie') return true;
             break;
           case 'staff-picks':
             if (movie.categories?.is_staff_pick || movie.featured) return true;

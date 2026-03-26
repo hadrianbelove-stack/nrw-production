@@ -192,7 +192,9 @@ def apply_security_headers(response):
         "style-src 'self' 'unsafe-inline'; "
         "img-src 'self' data: https:; "
         "font-src 'self'; "
-        "connect-src 'self'"
+        "connect-src 'self'; "
+        "frame-src https://www.youtube.com; "
+        "media-src 'self' https:"
     )
     response.headers['Content-Security-Policy'] = csp
 
@@ -210,6 +212,7 @@ DATA_FILE = 'data.json'  # Root directory - production display data
 STAFF_PICKS_FILE = 'admin/staff_picks.json'  # Staff picks (formerly featured_movies.json)
 FEATURED_FILE = STAFF_PICKS_FILE  # Backwards compatibility alias
 RESTORATIONS_FILE = 'admin/restorations.json'  # Manual restoration/reissue flags
+CATEGORY_OVERRIDES_FILE = 'admin/category_overrides.json'  # Per-movie category overrides
 PENDING_CHANGES_FLAG = 'admin/.pending_changes'  # Dirty flag for unsaved changes
 
 
@@ -763,11 +766,31 @@ def index() -> str:
     # Load health status for banner
     health_status = load_health_status()
 
+    # Load category overrides for template
+    category_overrides = load_json(CATEGORY_OVERRIDES_FILE, {})
+
+    # Group movies by digital_date for spreadsheet view
+    from collections import OrderedDict
+    date_groups = OrderedDict()
+    # Sort movies by digital_date descending
+    sorted_movies = sorted(
+        processed_movies.values(),
+        key=lambda m: m.get('digital_date', '') or '',
+        reverse=True
+    )
+    for movie in sorted_movies:
+        date = movie.get('digital_date', 'Unknown')
+        if date not in date_groups:
+            date_groups[date] = []
+        date_groups[date].append(movie)
+
     return render_template(
         'index.html',
         movies=processed_movies,
+        movies_by_date=list(date_groups.items()),
         featured=featured,
         restorations=restorations,
+        category_overrides=category_overrides,
         featured_count=featured_count,
         missing_data_count=missing_data_count,
         bootstrap_count=bootstrap_count,
@@ -782,25 +805,6 @@ def dismiss_health():
     return jsonify({'success': True})
 
 
-"""
-VERIFICATION STEPS FOR /toggle-status ENDPOINT:
-===============================================
-
-Test commands for manual verification (requires admin panel running on localhost:5556):
-
-1. Feature a movie:
-   curl -X POST http://localhost:5556/toggle-status -H "Content-Type: application/json" -d '{"movie_id": "12345", "status_type": "featured", "value": true}'
-
-2. Unfeature a movie:
-   curl -X POST http://localhost:5556/toggle-status -H "Content-Type: application/json" -d '{"movie_id": "12345", "status_type": "featured", "value": false}'
-
-3. Test invalid status_type:
-   curl -X POST http://localhost:5556/toggle-status -H "Content-Type: application/json" -d '{"movie_id": "12345", "status_type": "invalid", "value": true}'
-   Expected: {"success": false, "error": "Invalid status_type \"invalid\". Must be \"featured\""}
-
-All tests should return HTTP 200. Success cases return {"success": true}, error cases return {"success": false, "error": "..."}
-Check admin/staff_picks.json for file updates after successful operations.
-"""
 
 @app.route('/toggle-status', methods=['POST'])
 def toggle_status() -> dict:
@@ -851,7 +855,7 @@ def toggle_status() -> dict:
         if not isinstance(value, bool):
             return jsonify({'success': False, 'error': 'Parameter value must be boolean'})
 
-        # Status type mapping
+        # Status types that use sidecar list files (legacy pattern)
         STATUS_FILES = {
             'featured': FEATURED_FILE,
             'restoration': RESTORATIONS_FILE
@@ -862,38 +866,67 @@ def toggle_status() -> dict:
             'restoration': ('marked as restoration', 'unmarked as restoration')
         }
 
-        if status_type not in STATUS_FILES:
+        # Status types that use category_overrides.json
+        CATEGORY_OVERRIDE_TYPES = {
+            'big_time': 'is_big_time',
+            'indie': 'is_indie',
+            'foreign': 'is_foreign',
+            'series': 'is_series',
+            'virtual_screening': 'is_virtual_screening',
+            'documentary': 'is_documentary'
+        }
+
+        ALL_TYPES = set(STATUS_FILES.keys()) | set(CATEGORY_OVERRIDE_TYPES.keys())
+
+        if status_type not in ALL_TYPES:
             return jsonify({
                 'success': False,
-                'error': f'Invalid status_type "{status_type}". Must be one of: {", ".join(STATUS_FILES.keys())}'
+                'error': f'Invalid status_type "{status_type}". Must be one of: {", ".join(sorted(ALL_TYPES))}'
             })
 
-        # Load appropriate file
-        file_path = STATUS_FILES[status_type]
-        status_list = load_json(file_path, [])
-
-        # Toggle logic and track changes
         changed = False
-        if value and movie_id not in status_list:
-            status_list.append(movie_id)
-            changed = True
-        elif not value and movie_id in status_list:
-            status_list.remove(movie_id)
-            changed = True
 
-        # Save file with atomic write
-        # Ensure admin directory exists
-        os.makedirs('admin', exist_ok=True)
-        safe_write_json(file_path, status_list)
+        if status_type in STATUS_FILES:
+            # Legacy sidecar file toggle (featured, restoration)
+            file_path = STATUS_FILES[status_type]
+            status_list = load_json(file_path, [])
+
+            if value and movie_id not in status_list:
+                status_list.append(movie_id)
+                changed = True
+            elif not value and movie_id in status_list:
+                status_list.remove(movie_id)
+                changed = True
+
+            os.makedirs('admin', exist_ok=True)
+            safe_write_json(file_path, status_list)
+        else:
+            # Category override toggle
+            field_name = CATEGORY_OVERRIDE_TYPES[status_type]
+            overrides = load_json(CATEGORY_OVERRIDES_FILE, {})
+
+            if movie_id not in overrides:
+                overrides[movie_id] = {}
+
+            current = overrides[movie_id].get(field_name)
+            if current != value:
+                overrides[movie_id][field_name] = value
+                changed = True
+
+            # Clean up empty override entries
+            if not overrides[movie_id]:
+                del overrides[movie_id]
+
+            os.makedirs('admin', exist_ok=True)
+            safe_write_json(CATEGORY_OVERRIDES_FILE, overrides)
 
         # Mark changes as pending if state actually changed
         if changed:
             mark_changes_pending()
 
-        # Increment session counters for tracking real changes
         # Log action
-        verb_true, verb_false = STATUS_VERBS[status_type]
-        action = verb_true if value else verb_false
+        verb = status_type.replace('_', ' ')
+        action = f"set {verb}={value}"
         logger.info(f"Movie {movie_id} {action}")
 
         return jsonify({'success': True})
@@ -2366,6 +2399,62 @@ def filter_data() -> dict:
 PULL_QUOTES_CACHE = 'cache/pull_quotes_combined.json'
 PULL_QUOTES_GEMINI_CACHE = 'cache/pull_quotes_cache.json'
 TASTE_PROFILE_FILE = 'cache/taste_profile_pullquotes.json'
+
+
+@app.route('/api/pull-quotes/<movie_id>')
+def pull_quotes_api(movie_id):
+    """Return pull quotes as JSON for inline loading in admin spreadsheet."""
+    data = load_json(DATA_FILE, {})
+    if isinstance(data, dict) and 'movies' in data:
+        movies_list = data['movies']
+    elif isinstance(data, list):
+        movies_list = data
+    else:
+        movies_list = []
+
+    movie = None
+    for m in movies_list:
+        if str(m.get('id')) == str(movie_id):
+            movie = m
+            break
+
+    if not movie:
+        return jsonify({'quotes': [], 'cache_key': None})
+
+    title = movie.get('title', '')
+    year = movie.get('year', 0)
+    cache_key = f"{title}_{year}"
+
+    combined_cache = load_json(PULL_QUOTES_CACHE, {})
+    movie_quotes = combined_cache.get(cache_key, {})
+
+    rt_quotes = movie_quotes.get('rt_quotes', [])
+    lb_quotes = movie_quotes.get('lb_quotes', [])
+
+    # Merge all quotes into a flat list with source info
+    quotes = []
+    for i, q in enumerate(rt_quotes):
+        quotes.append({
+            'text': q.get('text', '') or q.get('quote', ''),
+            'source': q.get('critic', '') or q.get('publication', 'RT'),
+            'selected': q.get('selected', False),
+            'pool': 'rt_quotes',
+            'index': i
+        })
+    for i, q in enumerate(lb_quotes):
+        quotes.append({
+            'text': q.get('text', '') or q.get('quote', ''),
+            'source': q.get('reviewer', '') or 'Letterboxd',
+            'selected': q.get('selected', False),
+            'pool': 'lb_quotes',
+            'index': i
+        })
+
+    return jsonify({
+        'quotes': quotes,
+        'cache_key': cache_key,
+        'has_quotes': bool(quotes)
+    })
 
 
 def _promote_gemini_cache(cache_key, gemini_cache, combined_cache):

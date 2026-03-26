@@ -320,10 +320,10 @@ const NRW = {
                 for (const filter of filters) {
                     switch (filter) {
                         case 'big-time':
-                            if (movie.categories?.tier === 'big_time') matchesAny = true;
+                            if (movie.categories?.is_big_time || movie.categories?.tier === 'big_time') matchesAny = true;
                             break;
                         case 'indie':
-                            if (movie.categories?.tier === 'indie') matchesAny = true;
+                            if (movie.categories?.is_indie || movie.categories?.tier === 'indie') matchesAny = true;
                             break;
                         case 'staff-picks':
                             if (movie.categories?.is_staff_pick || movie.featured) matchesAny = true;
@@ -625,7 +625,6 @@ const NRW = {
 
             const isStaffPick = movie.categories?.is_staff_pick || this.staffPicks.includes(movie.id);
             const staffPickClass = isStaffPick ? ' staff-pick-movie' : '';
-            const staffPickBadge = isStaffPick ? '<div class="staff-pick-badge">STAFF PICK</div>' : '';
 
             const formatScreeningDate = NRW.formatScreeningDate;
 
@@ -659,13 +658,13 @@ const NRW = {
             const streamingBadge = getStreamingBadge(movie);
             const restorationBadge = movie.categories?.is_restoration
                 ? '<div class="restoration-badge">RESTORED</div>' : '';
-            const rawScreeningName = movie.virtual_screening_info?.screening_name || 'VIRTUAL SCREENING';
-            const screeningName = rawScreeningName.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-            const screeningEndDate = movie.virtual_screening_info?.available_end;
-            const screeningDatesHtml = screeningEndDate
-                ? `<div class="screening-dates">Ends ${formatScreeningDate(screeningEndDate)}</div>` : '';
-            const screeningRibbon = movie.categories?.is_virtual_screening
-                ? `<div class="screening-ribbon">${screeningName}${screeningDatesHtml}</div>` : '';
+            const isScreening = movie.categories?.is_virtual_screening;
+            const screeningClass = isScreening ? ' screening-movie' : '';
+            const badgeBar = isScreening
+                ? '<div class="badge-bar gold">\u2605 VIRTUAL SCREENING \u2605</div>'
+                : isStaffPick
+                ? '<div class="badge-bar red">\u2605 STAFF PICK \u2605</div>'
+                : '';
 
             // Score badges for card front (bottom-left overlay)
             let cardScoreBadges = '';
@@ -683,14 +682,12 @@ const NRW = {
             const cardScoreHtml = cardScoreBadges ? `<div class="card-score-overlay">${cardScoreBadges}</div>` : '';
 
             html += `
-            <div class="movie-container${staffPickClass}">
-                ${staffPickBadge}
+            <div class="movie-container${staffPickClass}${screeningClass}">
                 <div class="movie-card">
                     <div class="card-inner">
                         <div class="card-front">
                             ${streamingBadge}
                             ${restorationBadge}
-                            ${screeningRibbon}
                             <div class="poster-fallback"><span class="poster-fallback-title">${title}</span></div>
                             <img src="${movie.poster || ''}"
                                  onerror="this.style.display='none';"
@@ -714,6 +711,7 @@ const NRW = {
                     <div class="movie-title">${movie.title}</div>
                     <span class="director">${movie.crew?.director || 'Unknown Director'}</span> • <span class="country">${NRW.abbreviateCountry(movie.country) || 'Unknown Country'}</span>
                 </div>
+                ${badgeBar}
             </div>`;
         });
         
@@ -993,8 +991,7 @@ const NRW = {
         // Build list of currently displayed movies (sorted by date, matching page render order)
         this.lightboxMovies = [...this.filteredMovies]
             .sort((a, b) => new Date(b.digital_date) - new Date(a.digital_date))
-            .slice(0, this.displayedCount)
-            .filter(m => m.poster); // Only movies with posters
+            .slice(0, this.displayedCount);
 
         // Find the index of the selected movie
         const index = this.lightboxMovies.findIndex(m => String(m.id) === String(movieId));
@@ -1040,7 +1037,18 @@ const NRW = {
             if (movie.digital_date) {
                 const [y, m, d] = movie.digital_date.split('-');
                 const dt = new Date(y, m - 1, d);
-                dateEl.textContent = dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                let dateText = dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                // For virtual screenings, show date range (e.g. "Mar 22–26" or "Mar 22–Apr 10")
+                if (movie.categories?.is_virtual_screening && movie.virtual_screening_info?.available_end) {
+                    const [ey, em, ed] = movie.virtual_screening_info.available_end.split('-');
+                    if (em === m) {
+                        dateText += '\u2013' + parseInt(ed, 10);
+                    } else {
+                        const endDt = new Date(ey, em - 1, ed);
+                        dateText += '\u2013' + endDt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    }
+                }
+                dateEl.textContent = dateText;
             } else {
                 dateEl.textContent = '';
             }
@@ -1060,9 +1068,7 @@ const NRW = {
         const screeningNameEl = document.getElementById('lightbox-screening-name');
         if (screeningNameEl) {
             if (movie.categories?.is_virtual_screening && movie.virtual_screening_info?.screening_name) {
-                const endDate = movie.virtual_screening_info?.available_end;
-                const dateStr = endDate ? ` · Ends ${NRW.formatScreeningDate(endDate)}` : '';
-                screeningNameEl.textContent = movie.virtual_screening_info.screening_name + dateStr;
+                screeningNameEl.textContent = movie.virtual_screening_info.screening_name;
                 screeningNameEl.style.display = 'block';
             } else {
                 screeningNameEl.style.display = 'none';
@@ -1080,7 +1086,21 @@ const NRW = {
         document.getElementById('lightbox-meta').textContent = metaParts.join(' • ');
 
         // Update synopsis
-        document.getElementById('lightbox-synopsis').textContent = movie.synopsis || 'Synopsis coming soon.';
+        const synopsisEl = document.getElementById('lightbox-synopsis');
+        synopsisEl.textContent = movie.synopsis || 'Synopsis coming soon.';
+        // Append screening availability callout for virtual screenings
+        if (movie.categories?.is_virtual_screening && movie.virtual_screening_info?.screening_name) {
+            const festName = movie.virtual_screening_info.screening_name;
+            const endDate = movie.virtual_screening_info?.available_end;
+            const callout = document.createElement('span');
+            callout.className = 'screening-callout';
+            if (endDate) {
+                callout.textContent = ` Virtual screening available as part of the ${festName}. Ends ${NRW.formatScreeningDate(endDate)}.`;
+            } else {
+                callout.textContent = ` Virtual screening available as part of the ${festName}.`;
+            }
+            synopsisEl.appendChild(callout);
+        }
 
         // Pull quotes (built via DOM to prevent XSS)
         const pqContainer = document.getElementById('lightbox-pull-quotes');

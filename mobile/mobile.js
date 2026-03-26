@@ -190,10 +190,10 @@ const NRWMobile = {
             for (const filter of filters) {
                 switch (filter) {
                     case 'big-time':
-                        if (movie.categories?.tier === 'big_time') return true;
+                        if (movie.categories?.is_big_time || movie.categories?.tier === 'big_time') return true;
                         break;
                     case 'indie':
-                        if (movie.categories?.tier === 'indie') return true;
+                        if (movie.categories?.is_indie || movie.categories?.tier === 'indie') return true;
                         break;
                     case 'staff-picks':
                         if (movie.categories?.is_staff_pick || this.staffPicks.includes(movie.id)) return true;
@@ -298,7 +298,7 @@ const NRWMobile = {
         const isStaffPick = movie.categories?.is_staff_pick || this.staffPicks.includes(movie.id);
 
         const card = document.createElement('div');
-        card.className = `flip-card${isStaffPick ? ' staff-pick' : ''}`;
+        card.className = `flip-card${isStaffPick ? ' staff-pick' : ''}${movie.categories?.is_virtual_screening ? ' screening-movie' : ''}`;
         card.dataset.id = movie.id;
 
         // Get streaming badge info
@@ -316,13 +316,11 @@ const NRWMobile = {
                              loading="lazy">
                         ${streamingBadge}
                         ${movie.categories?.is_restoration ? '<span class="poster-badge badge-restoration">RESTORED</span>' : ''}
-                        ${movie.categories?.is_virtual_screening ? (() => {
-                            const sName = (movie.virtual_screening_info?.screening_name || 'VIRTUAL SCREENING').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-                            const endDate = movie.virtual_screening_info?.available_end;
-                            const dateHtml = endDate ? `<div class="screening-dates">Ends ${((d) => { const mo = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']; const [y,m,day] = d.split('-'); return mo[parseInt(m,10)-1] + ' ' + parseInt(day,10); })(endDate)}</div>` : '';
-                            return `<div class="screening-ribbon">${sName}${dateHtml}</div>`;
-                        })() : ''}
-                        ${isStaffPick ? '<span class="staff-badge">STAFF PICK</span>' : ''}
+                        ${movie.categories?.is_virtual_screening
+                            ? '<div class="badge-bar gold">\u2605 VIRTUAL SCREENING \u2605</div>'
+                            : isStaffPick
+                            ? '<div class="badge-bar red">\u2605 STAFF PICK \u2605</div>'
+                            : ''}
                         ${this.getScoreBadges(movie)}
                     </div>
                 </div>
@@ -373,6 +371,25 @@ const NRWMobile = {
                     }
                 }
             });
+        }
+
+        // Add screening callout to synopsis
+        if (movie.categories?.is_virtual_screening && movie.virtual_screening_info?.screening_name) {
+            const synopsisEl = card.querySelector('.back-synopsis');
+            if (synopsisEl) {
+                const callout = document.createElement('span');
+                callout.className = 'screening-callout';
+                const festName = movie.virtual_screening_info.screening_name;
+                const endDate = movie.virtual_screening_info?.available_end;
+                if (endDate) {
+                    const [y, m, d] = endDate.split('-');
+                    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+                    callout.textContent = ` Virtual screening available as part of the ${festName}. Ends ${months[parseInt(m,10)-1]} ${parseInt(d,10)}.`;
+                } else {
+                    callout.textContent = ` Virtual screening available as part of the ${festName}.`;
+                }
+                synopsisEl.appendChild(callout);
+            }
         }
 
         // Add flip handler

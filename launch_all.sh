@@ -51,6 +51,17 @@ echo "Admin: http://localhost:$ADMIN_PORT (background)"
 echo "Site:  http://localhost:$SITE_PORT (foreground)"
 echo ""
 
+# Bump cache-busting version on admin assets
+ADMIN_TMPL="admin/templates/index.html"
+if [ -f "$ADMIN_TMPL" ]; then
+    OLD_V=$(grep -o '?v=[0-9]*' "$ADMIN_TMPL" | head -1 | sed 's/?v=//')
+    if [ -n "$OLD_V" ]; then
+        NEW_V=$((OLD_V + 1))
+        sed -i '' "s/?v=${OLD_V}/?v=${NEW_V}/g" "$ADMIN_TMPL"
+        echo "📦 Cache bust: v${OLD_V} → v${NEW_V}"
+    fi
+fi
+
 # Launch admin in background
 echo "🚀 Starting admin panel..."
 ADMIN_PORT=$ADMIN_PORT python3 admin.py &

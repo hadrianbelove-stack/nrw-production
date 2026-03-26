@@ -63,12 +63,12 @@ Function FilterMovies(movies as Object, filter as String) as Object
             include = true
 
         else if filter = categories.BIG_TIME
-            if movie.categories <> invalid AND movie.categories.tier = "big_time"
+            if movie.categories <> invalid AND (movie.categories.is_big_time = true OR movie.categories.tier = "big_time")
                 include = true
             end if
 
         else if filter = categories.INDIE
-            if movie.categories <> invalid AND movie.categories.tier = "indie"
+            if movie.categories <> invalid AND (movie.categories.is_indie = true OR movie.categories.tier = "indie")
                 include = true
             end if
 
@@ -134,11 +134,11 @@ Function FilterMoviesMulti(movies as Object, activeFilters as Object) as Object
         matched = false
         for each filter in activeFilters
             if filter = categories.BIG_TIME
-                if movie.categories <> invalid AND movie.categories.tier = "big_time"
+                if movie.categories <> invalid AND (movie.categories.is_big_time = true OR movie.categories.tier = "big_time")
                     matched = true
                 end if
             else if filter = categories.INDIE
-                if movie.categories <> invalid AND movie.categories.tier = "indie"
+                if movie.categories <> invalid AND (movie.categories.is_indie = true OR movie.categories.tier = "indie")
                     matched = true
                 end if
             else if filter = categories.STAFF_PICKS

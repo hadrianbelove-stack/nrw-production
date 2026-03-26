@@ -64,6 +64,9 @@ data class Movie(
 
     val plex: PlexInfo? = null,
 
+    @SerializedName("pull_quotes")
+    val pullQuotes: List<PullQuote>? = null,
+
     @SerializedName("virtual_screening_info")
     val screeningInfo: ScreeningInfo? = null
 )
@@ -81,6 +84,12 @@ data class Crew(
 
 data class Categories(
     val tier: String? = null,
+
+    @SerializedName("is_big_time")
+    val isBigTime: Boolean? = null,
+
+    @SerializedName("is_indie")
+    val isIndie: Boolean? = null,
 
     @SerializedName("is_staff_pick")
     val isStaffPick: Boolean? = null,
@@ -167,6 +176,13 @@ data class PlexInfo(
     val deepLink: String? = null,
 
     val ratingKey: String? = null
+)
+
+data class PullQuote(
+    val text: String? = null,
+    val critic: String? = null,
+    val outlet: String? = null,
+    val source: String? = null
 )
 
 data class ScreeningInfo(

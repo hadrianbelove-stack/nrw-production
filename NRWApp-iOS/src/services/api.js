@@ -138,11 +138,11 @@ export function filterMovies(movies, filter = 'all') {
       );
     case 'big-time':
       return movies.filter(
-        movie => !movie.hidden && movie.categories?.tier === 'big_time',
+        movie => !movie.hidden && (movie.categories?.is_big_time || movie.categories?.tier === 'big_time'),
       );
     case 'indie':
       return movies.filter(
-        movie => !movie.hidden && movie.categories?.tier === 'indie',
+        movie => !movie.hidden && (movie.categories?.is_indie || movie.categories?.tier === 'indie'),
       );
     case 'foreign':
       return movies.filter(
@@ -188,10 +188,10 @@ export function filterMoviesMulti(movies, activeFilters) {
           if (movie.categories?.is_staff_pick || movie.featured === true) return true;
           break;
         case 'big-time':
-          if (movie.categories?.tier === 'big_time') return true;
+          if (movie.categories?.is_big_time || movie.categories?.tier === 'big_time') return true;
           break;
         case 'indie':
-          if (movie.categories?.tier === 'indie') return true;
+          if (movie.categories?.is_indie || movie.categories?.tier === 'indie') return true;
           break;
         case 'foreign':
           if (movie.categories?.is_foreign ||

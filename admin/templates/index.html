@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The New Release Wall - Admin Panel</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}?v=10">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}?v=22">
 </head>
 <body>
     <!-- Health Status Banner -->
@@ -20,143 +20,78 @@
             </span>
         </div>
         <button class="health-btn" onclick="copyAndDismissHealth()" title="Copy details to clipboard and dismiss">
-            📋 Copy & Dismiss
+            Copy & Dismiss
         </button>
         <textarea id="health-details" style="position:absolute;left:-9999px;">{{ health_status.details }}</textarea>
     </div>
     {% endif %}
 
     <div class="header">
-        <h1>🎬 The New Release Wall - Admin Panel</h1>
-        <div class="stats">
-            <div class="stat-item">
-                <span>Total Movies:</span>
-                <span class="stat-value">{{ movies|length }}</span>
-            </div>
-            <div class="stat-item">
-                <span>Staff Picks:</span>
-                <span class="stat-value" id="featured-count">{{ featured_count }}</span>
+        <div>
+            <h1>The New Release Wall - Admin</h1>
+            <div class="stats">
+                <span class="stat-item">Total: <span class="stat-value">{{ movies|length }}</span></span>
+                <span class="stat-item">Picks: <span class="stat-value" id="featured-count">{{ featured_count }}</span></span>
             </div>
         </div>
         <div class="header-actions">
-            <button onclick="viewSite()"
-                    class="action-btn btn-large"
-                    style="background: #17a2b8;">
-                🌐 VIEW SITE
-            </button>
-
-            <button onclick="regenerateData()"
-                    class="action-btn btn-large"
-                    id="regenerate-btn">
-                💾 Save Changes
-            </button>
+            <button onclick="viewSite()" class="action-btn btn-large" style="background: #17a2b8;">View Site</button>
+            <button onclick="regenerateData()" class="action-btn btn-large" id="regenerate-btn">Save Changes</button>
             <span id="regenerate-status" class="status-text"></span>
-
-            <button onclick="togglePlaylistForm()"
-                    class="action-btn btn-large danger">
-                📺 Create YouTube Playlist
-            </button>
-
-            <button onclick="showAddMovieModal()"
-                    class="action-btn btn-large info">
-                ➕ Add Movie
-            </button>
+            <button onclick="togglePlaylistForm()" class="action-btn btn-large" style="background:#dc3545;">YouTube Playlist</button>
+            <button onclick="showAddMovieModal()" class="action-btn btn-large info">+ Add Movie</button>
         </div>
 
         <!-- YouTube Playlist Creation Form -->
         <div id="playlist-form" class="playlist-form">
             <h3 class="form-title">Create YouTube Playlist</h3>
-
             <div class="form-grid">
                 <div>
-                    <label class="form-label">
-                        Date Range Type:
-                    </label>
-                    <select id="playlist-date-type"
-                            onchange="updateDateInputs()"
-                            class="form-input">
+                    <label class="form-label">Date Range Type:</label>
+                    <select id="playlist-date-type" onchange="updateDateInputs()" class="form-input">
                         <option value="last_x_days">Last X Days</option>
                         <option value="date_range">Custom Date Range</option>
                     </select>
                 </div>
-
                 <div id="days-input-container">
-                    <label class="form-label">
-                        Number of Days:
-                    </label>
-                    <input type="number"
-                           id="playlist-days"
-                           value="7"
-                           min="1"
-                           max="365"
-                           class="form-input">
+                    <label class="form-label">Number of Days:</label>
+                    <input type="number" id="playlist-days" value="7" min="1" max="365" class="form-input">
                 </div>
-
                 <div id="date-range-container" style="display: none; grid-column: span 2;">
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                         <div>
-                            <label style="display: block; font-size: 0.85rem; color: #999; margin-bottom: 0.3rem;">
-                                From Date:
-                            </label>
-                            <input type="date"
-                                   id="playlist-from-date"
-                                   style="width: 100%; padding: 0.5rem; background: #2a2a2a; border: 1px solid #3a3a3a; color: white; border-radius: 4px;">
+                            <label class="form-label">From Date:</label>
+                            <input type="date" id="playlist-from-date" class="form-input">
                         </div>
                         <div>
-                            <label style="display: block; font-size: 0.85rem; color: #999; margin-bottom: 0.3rem;">
-                                To Date:
-                            </label>
-                            <input type="date"
-                                   id="playlist-to-date"
-                                   style="width: 100%; padding: 0.5rem; background: #2a2a2a; border: 1px solid #3a3a3a; color: white; border-radius: 4px;">
+                            <label class="form-label">To Date:</label>
+                            <input type="date" id="playlist-to-date" class="form-input">
                         </div>
                     </div>
                 </div>
             </div>
-
             <div class="form-field">
-                <label class="form-label">
-                    Playlist Title (optional - auto-generated if blank):
-                </label>
-                <input type="text"
-                       id="playlist-title"
-                       placeholder="e.g., This Week's New Releases"
-                       class="form-input">
+                <label class="form-label">Playlist Title (optional):</label>
+                <input type="text" id="playlist-title" placeholder="e.g., This Week's New Releases" class="form-input">
             </div>
-
             <div class="form-field">
-                <label class="form-label">
-                    Privacy:
-                </label>
-                <select id="playlist-privacy"
-                        class="form-input">
+                <label class="form-label">Privacy:</label>
+                <select id="playlist-privacy" class="form-input">
                     <option value="public">Public</option>
                     <option value="unlisted">Unlisted</option>
                     <option value="private">Private</option>
                 </select>
             </div>
-
             <div class="form-field">
                 <label class="form-checkbox-label">
-                    <input type="checkbox"
-                           id="playlist-dry-run"
-                           class="form-checkbox">
-                    <span class="form-label">Dry Run (preview only, don't create playlist)</span>
+                    <input type="checkbox" id="playlist-dry-run" class="form-checkbox">
+                    <span class="form-label">Dry Run (preview only)</span>
                 </label>
             </div>
-
             <div class="form-button-group">
-                <button onclick="createYouTubePlaylist()"
-                        class="action-btn btn-large success"
-                        id="create-playlist-btn">
-                    🎬 Create Playlist
-                </button>
-                <button onclick="togglePlaylistForm()"
-                        class="action-btn btn-large secondary">
-                    Cancel
-                </button>
+                <button onclick="createYouTubePlaylist()" class="action-btn btn-large success" id="create-playlist-btn">Create Playlist</button>
+                <button onclick="togglePlaylistForm()" class="action-btn btn-large secondary">Cancel</button>
             </div>
-
             <div id="playlist-status" class="status-message"></div>
             <div id="playlist-result" class="result-container"></div>
         </div>
@@ -165,70 +100,43 @@
         <div id="add-movie-modal" class="modal" style="display: none;">
             <div class="modal-content" style="max-width: 500px;">
                 <div class="modal-header">
-                    <h3>➕ Add Movie</h3>
-                    <button class="close-btn" onclick="hideAddMovieModal()">✕</button>
+                    <h3>Add Movie</h3>
+                    <button class="close-btn" onclick="hideAddMovieModal()">&#10005;</button>
                 </div>
                 <div class="modal-body">
-                    <!-- Step 1: Search -->
                     <div id="add-movie-step1">
                         <div class="form-field">
                             <label class="form-label">Search for a movie:</label>
                             <div style="display: flex; gap: 0.5rem;">
-                                <input type="text"
-                                       id="add-movie-search"
-                                       placeholder="Type movie title..."
-                                       class="form-input"
-                                       style="flex: 1;"
-                                       onkeypress="if(event.key==='Enter') searchTMDB()">
-                                <button class="action-btn info" onclick="searchTMDB()" id="search-tmdb-btn">
-                                    🔍 Search
-                                </button>
+                                <input type="text" id="add-movie-search" placeholder="Type movie title..." class="form-input" style="flex: 1;" onkeypress="if(event.key==='Enter') searchTMDB()">
+                                <button class="action-btn info" onclick="searchTMDB()" id="search-tmdb-btn">Search</button>
                             </div>
                         </div>
-
                         <div id="tmdb-search-status" class="status-message" style="margin-bottom: 0.5rem;"></div>
-
-                        <div id="tmdb-search-results" style="max-height: 400px; overflow-y: auto;">
-                            <!-- Search results will appear here -->
-                        </div>
+                        <div id="tmdb-search-results" style="max-height: 400px; overflow-y: auto;"></div>
                     </div>
-
-                    <!-- Step 2: Watch Link (shown after movie selected) -->
                     <div id="add-movie-step2" style="display: none;">
-                        <div id="selected-movie-info" style="display: flex; gap: 1rem; margin-bottom: 1rem; padding: 0.75rem; background: var(--bg-color); border-radius: 8px;">
+                        <div id="selected-movie-info" style="display: flex; gap: 1rem; margin-bottom: 1rem; padding: 0.75rem; background: #1a1a1a; border-radius: 8px;">
                             <img id="selected-movie-poster" src="" alt="" style="width: 60px; border-radius: 4px;">
                             <div>
                                 <div id="selected-movie-title" style="font-weight: 600;"></div>
-                                <div id="selected-movie-year" style="font-size: 0.85rem; color: var(--text-secondary);"></div>
+                                <div id="selected-movie-year" style="font-size: 0.85rem; color: #999;"></div>
                             </div>
                         </div>
-
                         <div class="form-field">
                             <label class="form-label">Release Date:</label>
-                            <input type="date"
-                                   id="add-movie-date"
-                                   class="form-input"
-                                   style="width: auto;">
-                            <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">Defaults to today if not set</div>
+                            <input type="date" id="add-movie-date" class="form-input" style="width: auto;">
+                            <div style="font-size: 0.75rem; color: #999; margin-top: 0.25rem;">Defaults to today if not set</div>
                         </div>
-
                         <div class="form-field">
-                            <label class="form-label">Watch Link (where can people rent/buy this?):</label>
-                            <input type="text"
-                                   id="add-movie-watch-url"
-                                   placeholder="https://vimeo.com/ondemand/..."
-                                   class="form-input"
-                                   oninput="detectServiceFromUrl()">
-                            <div id="detected-service" style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-secondary);"></div>
+                            <label class="form-label">Watch Link:</label>
+                            <input type="text" id="add-movie-watch-url" placeholder="https://vimeo.com/ondemand/..." class="form-input" oninput="detectServiceFromUrl()">
+                            <div id="detected-service" style="margin-top: 0.5rem; font-size: 0.85rem; color: #999;"></div>
                         </div>
-
                         <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
-                            <button class="action-btn" onclick="goBackToSearch()">← Back</button>
-                            <button class="action-btn success" onclick="confirmAddMovie()" id="confirm-add-btn" style="flex: 1;">
-                                Add Movie
-                            </button>
+                            <button class="action-btn" onclick="goBackToSearch()">&#8592; Back</button>
+                            <button class="action-btn success" onclick="confirmAddMovie()" id="confirm-add-btn" style="flex: 1; background: #28a745;">Add Movie</button>
                         </div>
-
                         <div id="add-movie-status" class="status-message" style="margin-top: 0.5rem;"></div>
                     </div>
                 </div>
@@ -236,351 +144,253 @@
         </div>
     </div>
 
+    <!-- Filters -->
     <div class="filters">
         <button class="filter-btn warning-badge" onclick="filterMovies('missing-data')">
-            ⚠️ Missing Data
+            Missing Data
             <span class="notification-badge" id="missing-data-count">{{ missing_data_count }}</span>
         </button>
-        <button class="filter-btn active" onclick="filterMovies('all')">All Movies</button>
-        <button class="filter-btn" onclick="filterMovies('staff-picks')">Staff Picks</button>
-        <input type="text" id="search-box" class="search-box" placeholder="Search movies..." onkeyup="searchMovies()">
-
-        <div class="ordering-controls">
-            <span style="color: #999; font-size: 0.85rem;">Drag movies to reorder</span>
-        </div>
+        <button class="filter-btn active" onclick="filterMovies('all')">All</button>
+        <button class="filter-btn" onclick="filterMovies('staff-picks')">Picks</button>
+        <button class="filter-btn" onclick="filterMovies('restorations')">Restorations</button>
+        <input type="text" id="search-box" class="search-input" placeholder="Search movies..." onkeyup="searchMovies()">
     </div>
 
-    <div class="movie-grid" id="movie-grid">
-        {% for movie_id, movie in movies.items() %}
-        <div class="movie-card {% if movie_id in featured %}featured{% endif %}"
+    <!-- Column Headers -->
+    <div class="col-headers">
+        <div class="col-hdr"></div>
+        <div class="col-hdr"></div>
+        <div class="col-hdr">Title / Labels</div>
+        <div class="col-hdr">Director</div>
+        <div class="col-hdr" style="text-align:center;">CC</div>
+        <div class="col-hdr" style="text-align:center;">Min</div>
+        <div class="col-hdr" style="text-align:center;">Links</div>
+        <div class="col-hdr" style="text-align:center;">RT</div>
+        <div class="col-hdr" style="text-align:center;">IMDb</div>
+        <div class="col-hdr">Stream</div>
+        <div class="col-hdr"></div>
+        <div class="col-hdr"></div>
+        <div class="col-hdr"></div>
+    </div>
+
+    <!-- Movie Rows Grouped by Date -->
+    <div id="movie-list">
+    {% for date_str, group in movies_by_date %}
+        <div class="date-header">
+            {{ date_str }}
+            <span class="ct">{{ group|length }} movies</span>
+        </div>
+        {% for movie in group %}
+        {% set movie_id = movie.id|string %}
+        {% set cats = movie.get('categories', {}) %}
+        {% set is_pick = cats.get('is_staff_pick', false) or movie_id in featured %}
+        {% set is_big = cats.get('is_big_time', false) or cats.get('tier') == 'big_time' %}
+        {% set is_indie = cats.get('is_indie', false) or cats.get('tier') == 'indie' %}
+        {% set is_foreign = cats.get('is_foreign', false) %}
+        {% set is_series = cats.get('is_series', false) %}
+        {% set is_rest = cats.get('is_restoration', false) or movie_id in restorations %}
+        {% set is_vscr = cats.get('is_virtual_screening', false) %}
+        {% set is_doc = cats.get('is_documentary', false) %}
+        {% set trailer_url = movie.get('links', {}).get('trailer_hosted', '') or movie.get('links', {}).get('trailer', '') %}
+        {% set has_trailer = movie.get('links', {}).get('trailer') %}
+        {% set has_poster = movie.poster_url or movie.get('poster') %}
+        {% set has_director = movie.director and movie.director != 'Unknown' %}
+        {% set has_country = movie.get('country') %}
+        {% set has_synopsis = movie.get('synopsis') %}
+        {% set has_rt = movie.get('links', {}).get('rt') %}
+        {% set has_wiki = movie.get('links', {}).get('wikipedia') %}
+        {% set incomplete = not has_trailer or not has_poster or not has_director or not has_country or not has_synopsis or not has_rt or not has_wiki %}
+        {% set streaming_svc = movie.get('watch_links', {}).get('streaming', {}).get('service', '') if movie.get('watch_links', {}).get('streaming') else '' %}
+        {% set imdb_id = movie.get('imdb_id', '') or movie.get('external_ids', {}).get('imdb_id', '') %}
+
+        <!-- Movie Row -->
+        <div class="movie-row {{ 'pick' if is_pick else '' }} {{ 'incomplete' if incomplete else '' }}"
              data-movie-id="{{ movie_id }}"
              data-title="{{ movie.title|lower }}"
-             data-has-trailer="{{ 'yes' if movie.get('links', {}).get('trailer') else 'no' }}"
-             data-has-poster="{{ 'yes' if movie.poster_url or movie.get('poster') else 'no' }}"
-             data-has-director="{{ 'yes' if movie.director and movie.director != 'Unknown' else 'no' }}"
-             data-has-country="{{ 'yes' if movie.get('country') else 'no' }}"
-             data-has-watch-links="{{ 'yes' if movie.get('watch_links') and (movie.get('watch_links', {}).get('streaming') or movie.get('watch_links', {}).get('vod')) else 'no' }}"
-             data-missing-any="{{ 'yes' if not movie.get('links', {}).get('trailer') or not (movie.poster_url or movie.get('poster')) or not movie.director or movie.director == 'Unknown' or not movie.get('country') else 'no' }}"
+             data-missing-any="{{ 'yes' if incomplete else 'no' }}"
              data-digital-date="{{ movie.digital_date or '' }}"
-             draggable="true">
-            <div class="drag-handle">
-                <div class="drag-icon">⋮⋮</div>
+             data-is-pick="{{ 'yes' if is_pick else 'no' }}"
+             draggable="true"
+             onclick="toggleRow(this)">
+            <div class="drag-handle" onclick="event.stopPropagation()">&#8942;&#8942;</div>
+            {% if has_poster %}
+            <div class="pst-wrap" {% if trailer_url %}onclick="event.stopPropagation(); openTrailer('{{ movie_id }}', '{{ movie.title|e }}', '{{ trailer_url|e }}')"{% endif %}>
+                <img class="pst" src="{{ movie.poster_url or movie.get('poster') }}" alt="">
+                {% if trailer_url %}<span class="pst-play">&#9654;</span>{% endif %}
             </div>
-            {% set trailer_url = movie.get('links', {}).get('trailer_hosted', '') or movie.get('links', {}).get('trailer', '') %}
-            {% if trailer_url %}
-            <div class="movie-poster poster-with-trailer" data-trailer-url="{{ trailer_url }}" data-trailer-title="{{ movie.title }}" title="Play trailer">
-                {% if movie.poster_url %}
-                <img src="{{ movie.poster_url }}" alt="{{ movie.title }}">
-                {% endif %}
-                <div class="poster-play-overlay">
-                    <span class="play-icon">▶</span>
-                </div>
-            </div>
-            {% elif movie.poster_url %}
-            <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" class="movie-poster">
             {% else %}
-            <div class="movie-poster no-poster-placeholder">
-                No Poster
-            </div>
+            <div class="no-pst" {% if trailer_url %}onclick="event.stopPropagation(); openTrailer('{{ movie_id }}', '{{ movie.title|e }}', '{{ trailer_url|e }}')"{% endif %}>?</div>
             {% endif %}
-
-            <div class="movie-info">
-                <div class="movie-title">{{ movie.title }}{% if movie.digital_date %} <span style="font-weight: normal; font-size: 0.85em; color: #888;">({{ movie.digital_date[5:10].replace('-', '/') }})</span>{% endif %}</div>
-
-                <!-- Issue Badges -->
-                <div class="issue-badges">
-                    {% if not movie.get('links', {}).get('trailer') %}
-                    <span class="issue-badge trailer-missing" title="Missing Trailer">▶️</span>
-                    {% endif %}
-                    {% if not (movie.poster_url or movie.get('poster')) %}
-                    <span class="issue-badge poster-missing" title="Missing Poster">🖼️</span>
-                    {% endif %}
-                    {% if not (movie.get('watch_links') and (movie.get('watch_links', {}).get('streaming') or movie.get('watch_links', {}).get('vod'))) %}
-                    <span class="issue-badge watch-missing" title="Missing Watch Links">📺</span>
-                    {% endif %}
+            <div class="r-title-labels">
+                <div class="r-title" title="{{ movie.title }}">{{ movie.title }}</div>
+                <div class="row-cat-btns" onclick="event.stopPropagation()">
+                    <button class="cat-btn {{ 'on' if is_pick else '' }}" style="--c:#ffd700;--ct:#000" onclick="toggleCategory('{{ movie_id }}', 'featured', {{ 'false' if is_pick else 'true' }})" title="Staff Pick">&#9733;</button>
+                    <button class="cat-btn {{ 'on' if is_big else '' }}" style="--c:#ff6b6b" onclick="toggleCategory('{{ movie_id }}', 'big_time', {{ 'false' if is_big else 'true' }})" title="Big Time">BIG</button>
+                    <button class="cat-btn {{ 'on' if is_indie else '' }}" style="--c:#4a90d9" onclick="toggleCategory('{{ movie_id }}', 'indie', {{ 'false' if is_indie else 'true' }})" title="Indie">INDIE</button>
+                    <button class="cat-btn {{ 'on' if is_foreign else '' }}" style="--c:#9b59b6" onclick="toggleCategory('{{ movie_id }}', 'foreign', {{ 'false' if is_foreign else 'true' }})" title="Foreign">FRGN</button>
+                    <button class="cat-btn {{ 'on' if is_series else '' }}" style="--c:#17a2b8" onclick="toggleCategory('{{ movie_id }}', 'series', {{ 'false' if is_series else 'true' }})" title="Series">SERIES</button>
+                    <button class="cat-btn {{ 'on' if is_rest else '' }}" style="--c:#C8A951;--ct:#000" onclick="toggleCategory('{{ movie_id }}', 'restoration', {{ 'false' if is_rest else 'true' }})" title="Restoration">REST</button>
+                    <button class="cat-btn {{ 'on' if is_vscr else '' }}" style="--c:#e67e22" onclick="toggleCategory('{{ movie_id }}', 'virtual_screening', {{ 'false' if is_vscr else 'true' }})" title="Virtual Screening">VSCR</button>
+                    <button class="cat-btn {{ 'on' if is_doc else '' }}" style="--c:#4A90D9" onclick="toggleCategory('{{ movie_id }}', 'documentary', {{ 'false' if is_doc else 'true' }})" title="Documentary">DOC</button>
                 </div>
+            </div>
+            <div class="r-dir {{ 'bad' if not has_director else '' }}">{{ movie.director or '—' }}</div>
+            <div class="r-cc">{{ (movie.get('country', '')|country_code) or '—' }}</div>
+            <div class="r-min">{{ movie.runtime or '—' }}</div>
+            <div class="quick-links" onclick="event.stopPropagation()">
+                <a class="ql {{ '' if has_wiki else 'dead' }}" {% if has_wiki %}href="{{ movie.get('links', {}).get('wikipedia') }}" target="_blank"{% endif %} title="Wikipedia">WIKI</a>
+                <a class="ql {{ '' if imdb_id else 'dead' }}" {% if imdb_id %}href="https://www.imdb.com/title/{{ imdb_id }}/" target="_blank"{% endif %} title="IMDb">IMDB</a>
+                <a class="ql {{ '' if has_rt else 'dead' }}" {% if has_rt %}href="{{ movie.get('links', {}).get('rt') }}" target="_blank"{% endif %} title="Rotten Tomatoes">RT</a>
+            </div>
+            {% if movie.rt_score is not none and movie.rt_score is defined %}
+            {% set rt = movie.rt_score|float(0) %}
+            <div class="r-score {{ 'rt-high' if rt >= 75 else ('rt-mid' if rt >= 50 else 'rt-low') }}">{{ movie.rt_score }}</div>
+            {% else %}
+            <div class="r-score score-none">—</div>
+            {% endif %}
+            {% if movie.get('imdb_rating') %}
+            {% set imdb = movie.imdb_rating|float(0) %}
+            <div class="r-score {{ 'imdb-good' if imdb >= 7.0 else 'imdb-ok' }}">{{ movie.imdb_rating }}</div>
+            {% else %}
+            <div class="r-score score-none">—</div>
+            {% endif %}
+            <div>
+                {% if streaming_svc %}
+                {% set svc_lower = streaming_svc|lower %}
+                {% if 'netflix' in svc_lower %}{% set svc_class = 'netflix' %}
+                {% elif 'mubi' in svc_lower %}{% set svc_class = 'mubi' %}
+                {% elif 'disney' in svc_lower %}{% set svc_class = 'disney' %}
+                {% elif 'max' in svc_lower or 'hbo' in svc_lower %}{% set svc_class = 'max' %}
+                {% elif 'hulu' in svc_lower %}{% set svc_class = 'hulu' %}
+                {% elif 'prime' in svc_lower or 'amazon' in svc_lower %}{% set svc_class = 'prime' %}
+                {% elif 'apple' in svc_lower %}{% set svc_class = 'apple' %}
+                {% elif 'criterion' in svc_lower %}{% set svc_class = 'criterion' %}
+                {% elif 'paramount' in svc_lower %}{% set svc_class = 'paramount' %}
+                {% elif 'peacock' in svc_lower %}{% set svc_class = 'peacock' %}
+                {% else %}{% set svc_class = 'generic' %}{% endif %}
+                <span class="stream-pill stream-{{ svc_class }}">{{ streaming_svc }}</span>
+                {% endif %}
+            </div>
+            <div class="incomplete-dot">{{ '<span class="inc-flag" title="Incomplete data"></span>'|safe if incomplete else '' }}</div>
+            <button class="trash-btn" onclick="event.stopPropagation(); removeMovie('{{ movie_id }}', '{{ movie.title|e }}')" title="Remove">&#128465;</button>
+            <div></div>
+        </div>
 
-                <!-- Editable Fields Section -->
-                <div class="edit-section">
-                    <!-- Director, Country, Runtime Row -->
-                    <div style="display: grid; grid-template-columns: 2.5fr 0.4fr 0.4fr auto; gap: 0.5rem; margin-bottom: 0.5rem; align-items: end;">
-                        <div class="edit-field-group">
-                            <label class="edit-label">
-                                Director:
-                            </label>
-                            <input type="text"
-                                   id="director-{{ movie_id }}"
-                                   value="{{ movie.director or '' }}"
-                                   placeholder="Director name"
-                                   class="edit-input {% if not movie.director or movie.director == 'Unknown' %}missing{% endif %}">
-                        </div>
-                        <div class="edit-field-group">
-                            <label class="edit-label">
-                                Country:
-                            </label>
-                            <input type="text"
-                                   id="country-{{ movie_id }}"
-                                   value="{{ movie.get('country', '')|country_code }}"
-                                   placeholder=""
-                                   class="edit-input {% if not movie.get('country') %}missing{% endif %}">
-                        </div>
-                        <div class="edit-field-group">
-                            <label class="edit-label">
-                                Min:
-                            </label>
-                            <input type="text"
-                                   id="runtime-{{ movie_id }}"
-                                   value="{{ movie.runtime or '' }}"
-                                   placeholder=""
-                                   class="edit-input">
-                        </div>
-                        <button type="button"
-                                id="save-metadata-{{ movie_id }}"
-                                onclick="saveMetadata('{{ movie_id }}')"
-                                style="padding: 0.3rem 0.5rem; background: #28a745; color: white; border: none; border-radius: 4px; font-size: 0.75rem; cursor: pointer; height: 28px;">
-                            💾
-                        </button>
+        <!-- Expanded Edit Panel -->
+        <div class="ep" data-movie-id="{{ movie_id }}">
+            <div class="ep-grid">
+                <!-- Left Column: Metadata + Links + Watch -->
+                <div class="ep-col">
+                    <div class="ep-section-label">Metadata</div>
+                    <div class="fr">
+                        <span class="fl">Director</span>
+                        <input class="fi {{ 'miss' if not has_director else '' }}" id="director-{{ movie_id }}" value="{{ movie.director or '' }}">
                     </div>
-                    <!-- Hidden fields for data preservation -->
-                    <input type="hidden" id="digital-date-{{ movie_id }}" value="{% if movie.digital_date %}{{ movie.digital_date }}{% endif %}">
+                    <div class="fr">
+                        <span class="fl">Country</span>
+                        <input class="fi fi-sm {{ 'miss' if not has_country else '' }}" id="country-{{ movie_id }}" value="{{ movie.get('country', '')|country_code }}">
+                        <span class="fl" style="min-width:24px; margin-left:0.2rem;">Min</span>
+                        <input class="fi fi-sm" id="runtime-{{ movie_id }}" value="{{ movie.runtime or '' }}">
+                        <button class="sv" onclick="saveMetadata('{{ movie_id }}')">Save</button>
+                    </div>
+                    <!-- Hidden fields -->
+                    <input type="hidden" id="digital-date-{{ movie_id }}" value="{{ movie.digital_date or '' }}">
                     <input type="hidden" id="year-{{ movie_id }}" value="{{ movie.year or '' }}">
                     <input type="hidden" id="rt-score-{{ movie_id }}" value="{{ movie.rt_score or '' }}">
 
-                    <!-- Link Editing Interface -->
-                    <div style="margin-bottom: 0.5rem;">
-                        <label style="display: block; font-size: 0.75rem; color: #999; margin-bottom: 0.3rem;">
-                            Links:
-                        </label>
-
-                        <!-- Link Buttons -->
-                        <div style="display: flex; gap: 0.3rem; margin-bottom: 0.3rem;">
-                            <button type="button"
-                                    class="link-btn {% if movie.get('links', {}).get('trailer') %}link-good{% else %}link-bad{% endif %}"
-                                    onclick="setLinkMode('{{ movie_id }}', 'trailer')"
-                                    style="padding: 0.4rem 0.6rem; border: none; border-radius: 4px; font-size: 0.7rem; cursor: pointer; color: white; font-weight: bold;">
-                                ▶️ TRLR
-                            </button>
-                            <button type="button"
-                                    class="link-btn {% if movie.get('links', {}).get('rt') %}link-good{% else %}link-bad{% endif %}"
-                                    onclick="setLinkMode('{{ movie_id }}', 'rt')"
-                                    style="padding: 0.4rem 0.6rem; border: none; border-radius: 4px; font-size: 0.7rem; cursor: pointer; color: white; font-weight: bold;">
-                                🍅 RT
-                            </button>
-                            <button type="button"
-                                    class="link-btn {% if movie.poster_url or movie.get('poster') %}link-good{% else %}link-bad{% endif %}"
-                                    onclick="setLinkMode('{{ movie_id }}', 'poster')"
-                                    style="padding: 0.4rem 0.6rem; border: none; border-radius: 4px; font-size: 0.7rem; cursor: pointer; color: white; font-weight: bold;">
-                                🖼️ IMG
-                            </button>
-                            <button type="button"
-                                    class="link-btn {% if movie.get('links', {}).get('wikipedia') %}link-good{% else %}link-bad{% endif %}"
-                                    onclick="setLinkMode('{{ movie_id }}', 'wikipedia')"
-                                    style="padding: 0.4rem 0.6rem; border: none; border-radius: 4px; font-size: 0.7rem; cursor: pointer; color: white; font-weight: bold;">
-                                📚 WIKI
-                            </button>
-                        </div>
-
-                        <!-- Universal Link Input -->
-                        <div style="display: flex; gap: 0.3rem;">
-                            <input type="url"
-                                   id="universal-link-{{ movie_id }}"
-                                   placeholder="Select a button above to edit that link..."
-                                   readonly
-                                   style="flex: 1; padding: 0.3rem; background: #2a2a2a; border: 1px solid #3a3a3a; color: white; border-radius: 4px; font-size: 0.75rem;">
-                            <button type="button"
-                                    id="save-link-{{ movie_id }}"
-                                    onclick="saveLinkField('{{ movie_id }}')"
-                                    disabled
-                                    style="padding: 0.3rem 0.6rem; background: #28a745; color: white; border: none; border-radius: 4px; font-size: 0.75rem; cursor: pointer; opacity: 0.6;">
-                                💾
-                            </button>
-                        </div>
-
-                        <!-- Current link mode indicator -->
-                        <div id="link-mode-indicator-{{ movie_id }}"
-                             style="font-size: 0.65rem; color: #666; margin-top: 0.2rem;">
-                            Click a button above to edit that link
-                        </div>
+                    <div class="ep-section-label" style="margin-top:0.4rem;">Links</div>
+                    <div class="lnk-row">
+                        <button class="lb {{ 'g' if has_trailer else 'r' }}" onclick="setLinkMode('{{ movie_id }}', 'trailer')">&#9654; TRLR</button>
+                        <button class="lb {{ 'g' if has_rt else 'r' }}" onclick="setLinkMode('{{ movie_id }}', 'rt')">RT</button>
+                        <button class="lb {{ 'g' if has_poster else 'r' }}" onclick="setLinkMode('{{ movie_id }}', 'poster')">IMG</button>
+                        <button class="lb {{ 'g' if has_wiki else 'r' }}" onclick="setLinkMode('{{ movie_id }}', 'wikipedia')">WIKI</button>
                     </div>
-
-                    <!-- Synopsis -->
-                    <div style="margin-bottom: 0.5rem;">
-                        <label style="display: block; font-size: 0.75rem; color: #999; margin-bottom: 0.2rem;">
-                            Synopsis:
-                            <span class="char-counter" id="synopsis-counter-{{ movie_id }}">0/600</span>
-                        </label>
-                        <textarea id="synopsis-{{ movie_id }}"
-                                  placeholder="Movie description/plot summary"
-                                  rows="6"
-                                  maxlength="600"
-                                  oninput="updateCharCounter(this, 'synopsis-counter-{{ movie_id }}', 140, 600)"
-                                  style="width: 100%; padding: 0.3rem; background: {% if not movie.get('synopsis') %}#3a1a1a{% else %}#2a2a2a{% endif %}; border: 1px solid {% if not movie.get('synopsis') %}#dc3545{% else %}#3a3a3a{% endif %}; color: white; border-radius: 4px; font-size: 0.75rem; resize: vertical; font-family: inherit;">{{ movie.get('synopsis', '') }}</textarea>
-                        <div class="validation-warning" id="synopsis-warning-{{ movie_id }}" style="display: none;"></div>
+                    <div class="lnk-input">
+                        <input class="lf" id="universal-link-{{ movie_id }}" placeholder="Select a link button to edit..." readonly>
+                        <button class="sv" id="save-link-{{ movie_id }}" onclick="saveLinkField('{{ movie_id }}')" disabled style="opacity:0.6;">Save</button>
                     </div>
+                    <div class="lnk-hint" id="link-mode-indicator-{{ movie_id }}">Click a button to edit that link</div>
 
-
-                    <!-- Watch Links -->
-                    {# Python normalizes: streaming = dict or None, vod = list of dicts #}
+                    <div class="ep-section-label" style="margin-top:0.4rem;">Watch Links</div>
                     {% set linked_streaming = movie.get('watch_links', {}).get('streaming', {}).get('service', '') if movie.get('watch_links', {}).get('streaming') else '' %}
-                    {% set vod_services = movie.get('watch_links', {}).get('vod', []) | map(attribute='service') | list %}
-
-                    <div style="margin-bottom: 0.5rem;">
-                        <label style="display: block; font-size: 0.75rem; color: #999; margin-bottom: 0.3rem;">
-                            Streaming:
-                        </label>
-                        <div style="display: flex; gap: 0.3rem; margin-bottom: 0.3rem;">
-                            {% set streaming_providers = movie.get('providers', {}).get('streaming', []) %}
-                            {% set has_netflix = 'Netflix' in streaming_providers or 'Netflix Standard with Ads' in streaming_providers %}
-                            {% if has_netflix %}
-                            <button type="button"
-                                    class="service-btn {% if linked_streaming == 'Netflix' %}link-good{% else %}link-bad{% endif %}"
-                                    onclick="setWatchService('{{ movie_id }}', 'streaming', 'Netflix')"
-                                    style="padding: 0.4rem 0.6rem; border: none; border-radius: 4px; font-size: 0.7rem; cursor: pointer; color: white; font-weight: bold;">
-                                NETFLIX
-                            </button>
-                            {% endif %}
-
-                            {% set has_disney = 'Disney Plus' in streaming_providers or 'Disney+' in streaming_providers %}
-                            {% if has_disney %}
-                            <button type="button"
-                                    class="service-btn {% if linked_streaming == 'Disney+' %}link-good{% else %}link-bad{% endif %}"
-                                    onclick="setWatchService('{{ movie_id }}', 'streaming', 'Disney+')"
-                                    style="padding: 0.4rem 0.6rem; border: none; border-radius: 4px; font-size: 0.7rem; cursor: pointer; color: white; font-weight: bold;">
-                                DISNEY+
-                            </button>
-                            {% endif %}
-
-                            {% set has_mubi = 'Mubi' in streaming_providers %}
-                            {% if has_mubi %}
-                            <button type="button"
-                                    class="service-btn {% if linked_streaming == 'Mubi' %}link-good{% else %}link-bad{% endif %}"
-                                    onclick="setWatchService('{{ movie_id }}', 'streaming', 'Mubi')"
-                                    style="padding: 0.4rem 0.6rem; border: none; border-radius: 4px; font-size: 0.7rem; cursor: pointer; color: white; font-weight: bold;">
-                                MUBI
-                            </button>
-                            {% endif %}
-
-                            {% set has_hbo = 'HBO Max' in streaming_providers or 'Max' in streaming_providers %}
-                            {% if has_hbo %}
-                            <button type="button"
-                                    class="service-btn {% if linked_streaming in ['HBO Max', 'Max'] %}link-good{% else %}link-bad{% endif %}"
-                                    onclick="setWatchService('{{ movie_id }}', 'streaming', 'HBO Max')"
-                                    style="padding: 0.4rem 0.6rem; border: none; border-radius: 4px; font-size: 0.7rem; cursor: pointer; color: white; font-weight: bold;">
-                                MAX
-                            </button>
-                            {% endif %}
-
-                            <button type="button"
-                                    class="service-btn {% if linked_streaming and linked_streaming not in ['Netflix', 'Disney+', 'Mubi', 'HBO Max', 'Max'] %}link-good{% else %}link-bad{% endif %}"
-                                    onclick="setWatchService('{{ movie_id }}', 'streaming', 'ADD')"
-                                    style="padding: 0.4rem 0.6rem; border: none; border-radius: 4px; font-size: 0.7rem; cursor: pointer; color: white; font-weight: bold;">
-                                ADD
-                            </button>
-                        </div>
-                        <div style="display: flex; gap: 0.3rem; margin-bottom: 0.3rem;">
-                            <input type="url"
-                                   id="streaming-link-{{ movie_id }}"
-                                   placeholder="Select service above to add link..."
-                                   readonly
-                                   style="flex: 1; padding: 0.3rem; background: #2a2a2a; border: 1px solid #3a3a3a; color: white; border-radius: 4px; font-size: 0.75rem;">
-                            <button type="button"
-                                    id="save-streaming-{{ movie_id }}"
-                                    onclick="saveWatchService('{{ movie_id }}', 'streaming')"
-                                    disabled
-                                    style="padding: 0.3rem 0.6rem; background: #28a745; color: white; border: none; border-radius: 4px; font-size: 0.75rem; cursor: pointer; opacity: 0.6;">
-                                💾
-                            </button>
-                        </div>
-
-                        <label style="display: block; font-size: 0.75rem; color: #999; margin-bottom: 0.3rem;">
-                            VOD:
-                        </label>
-                        <div style="display: flex; gap: 0.3rem; margin-bottom: 0.3rem;">
-                            {# Combine rent and buy providers into VOD #}
-                            {% set vod_providers = movie.get('providers', {}).get('rent', []) + movie.get('providers', {}).get('buy', []) %}
-
-                            {% set has_amazon = 'Amazon Prime Video' in vod_providers or 'Amazon Video' in vod_providers %}
-                            {% if has_amazon %}
-                            <button type="button"
-                                    class="service-btn {% if 'Amazon' in vod_services %}link-good{% else %}link-bad{% endif %}"
-                                    onclick="setWatchService('{{ movie_id }}', 'vod', 'Amazon')"
-                                    style="padding: 0.4rem 0.6rem; border: none; border-radius: 4px; font-size: 0.7rem; cursor: pointer; color: white; font-weight: bold;">
-                                AMAZON
-                            </button>
-                            {% endif %}
-
-                            {% set has_apple = 'Apple TV' in vod_providers or 'Apple iTunes' in vod_providers %}
-                            {% if has_apple %}
-                            <button type="button"
-                                    class="service-btn {% if 'Apple TV' in vod_services %}link-good{% else %}link-bad{% endif %}"
-                                    onclick="setWatchService('{{ movie_id }}', 'vod', 'Apple TV')"
-                                    style="padding: 0.4rem 0.6rem; border: none; border-radius: 4px; font-size: 0.7rem; cursor: pointer; color: white; font-weight: bold;">
-                                ITUNES
-                            </button>
-                            {% endif %}
-
-                            {% set has_vudu = 'Vudu' in vod_providers %}
-                            {% if has_vudu %}
-                            <button type="button"
-                                    class="service-btn {% if 'Vudu' in vod_services %}link-good{% else %}link-bad{% endif %}"
-                                    onclick="setWatchService('{{ movie_id }}', 'vod', 'Vudu')"
-                                    style="padding: 0.4rem 0.6rem; border: none; border-radius: 4px; font-size: 0.7rem; cursor: pointer; color: white; font-weight: bold;">
-                                VUDU
-                            </button>
-                            {% endif %}
-
-                            {% set other_vod = vod_services | reject('in', ['Amazon', 'Apple TV', 'Vudu']) | list %}
-                            <button type="button"
-                                    class="service-btn {% if other_vod | length > 0 %}link-good{% else %}link-bad{% endif %}"
-                                    onclick="setWatchService('{{ movie_id }}', 'vod', 'ADD')"
-                                    style="padding: 0.4rem 0.6rem; border: none; border-radius: 4px; font-size: 0.7rem; cursor: pointer; color: white; font-weight: bold;">
-                                ADD
-                            </button>
-                        </div>
-                        <div style="display: flex; gap: 0.3rem;">
-                            <input type="url"
-                                   id="vod-link-{{ movie_id }}"
-                                   placeholder="Select service above to add link..."
-                                   readonly
-                                   style="flex: 1; padding: 0.3rem; background: #2a2a2a; border: 1px solid #3a3a3a; color: white; border-radius: 4px; font-size: 0.75rem;">
-                            <button type="button"
-                                    id="save-vod-{{ movie_id }}"
-                                    onclick="saveWatchService('{{ movie_id }}', 'vod')"
-                                    disabled
-                                    style="padding: 0.3rem 0.6rem; background: #28a745; color: white; border: none; border-radius: 4px; font-size: 0.75rem; cursor: pointer; opacity: 0.6;">
-                                💾
-                            </button>
-                        </div>
-
-                        <!-- Hidden fields for compatibility with existing save function -->
-                        <input type="hidden" id="streaming-service-{{ movie_id }}" value="{{ linked_streaming }}">
-                        <input type="hidden" id="vod-service-{{ movie_id }}" value="{{ vod_services[0] if vod_services else '' }}">
+                    {% set vod_list = movie.get('watch_links', {}).get('vod', []) %}
+                    {% set vod_services = vod_list | map(attribute='service') | list if vod_list else [] %}
+                    <div class="svc-row">
+                        <span class="fl" style="min-width:auto;">Stream</span>
+                        {% set streaming_providers = movie.get('providers', {}).get('streaming', []) %}
+                        {% if 'Netflix' in streaming_providers or 'Netflix Standard with Ads' in streaming_providers %}
+                        <button class="sb {{ 'g' if linked_streaming == 'Netflix' else 'r' }}" onclick="setWatchService('{{ movie_id }}', 'streaming', 'Netflix')">NETFLIX</button>
+                        {% endif %}
+                        {% if 'Mubi' in streaming_providers %}
+                        <button class="sb {{ 'g' if linked_streaming == 'Mubi' else 'r' }}" onclick="setWatchService('{{ movie_id }}', 'streaming', 'Mubi')">MUBI</button>
+                        {% endif %}
+                        {% if 'Disney Plus' in streaming_providers or 'Disney+' in streaming_providers %}
+                        <button class="sb {{ 'g' if linked_streaming == 'Disney+' else 'r' }}" onclick="setWatchService('{{ movie_id }}', 'streaming', 'Disney+')">DISNEY+</button>
+                        {% endif %}
+                        {% if 'HBO Max' in streaming_providers or 'Max' in streaming_providers %}
+                        <button class="sb {{ 'g' if linked_streaming in ['HBO Max', 'Max'] else 'r' }}" onclick="setWatchService('{{ movie_id }}', 'streaming', 'HBO Max')">MAX</button>
+                        {% endif %}
+                        {% if linked_streaming and linked_streaming not in ['Netflix', 'Mubi', 'Disney+', 'HBO Max', 'Max'] %}
+                        <button class="sb g">{{ linked_streaming|upper }}</button>
+                        {% endif %}
+                        <button class="sb add" onclick="setWatchService('{{ movie_id }}', 'streaming', 'ADD')">+ add</button>
                     </div>
-
+                    <div class="svc-row">
+                        <span class="fl" style="min-width:auto;">VOD</span>
+                        {% set vod_providers = movie.get('providers', {}).get('rent', []) + movie.get('providers', {}).get('buy', []) %}
+                        {% if 'Amazon Prime Video' in vod_providers or 'Amazon Video' in vod_providers %}
+                        <button class="sb {{ 'g' if 'Amazon' in vod_services else 'r' }}" onclick="setWatchService('{{ movie_id }}', 'vod', 'Amazon')">AMAZON</button>
+                        {% endif %}
+                        {% if 'Apple TV' in vod_providers or 'Apple iTunes' in vod_providers %}
+                        <button class="sb {{ 'g' if 'Apple TV' in vod_services else 'r' }}" onclick="setWatchService('{{ movie_id }}', 'vod', 'Apple TV')">ITUNES</button>
+                        {% endif %}
+                        {% if 'Vudu' in vod_providers %}
+                        <button class="sb {{ 'g' if 'Vudu' in vod_services else 'r' }}" onclick="setWatchService('{{ movie_id }}', 'vod', 'Vudu')">VUDU</button>
+                        {% endif %}
+                        <button class="sb add" onclick="setWatchService('{{ movie_id }}', 'vod', 'ADD')">+ add</button>
+                    </div>
+                    <div class="lnk-input" style="margin-top:0.15rem;">
+                        <input class="lf" id="streaming-link-{{ movie_id }}" placeholder="Select service to add link..." readonly>
+                        <button class="sv" id="save-streaming-{{ movie_id }}" onclick="saveWatchService('{{ movie_id }}', 'streaming')" disabled style="opacity:0.6;">Save</button>
+                    </div>
+                    <input type="hidden" id="streaming-service-{{ movie_id }}" value="{{ linked_streaming }}">
+                    <input type="hidden" id="vod-service-{{ movie_id }}" value="{{ vod_services[0] if vod_services else '' }}">
+                    <input type="hidden" id="vod-link-{{ movie_id }}" value="">
                 </div>
 
+                <!-- Middle Column: Pull Quotes -->
+                <div class="ep-col">
+                    <div class="ep-section-label">Pull Quotes <span class="quote-count" id="quote-count-{{ movie_id }}"></span></div>
+                    <div class="quotes-list" id="quotes-list-{{ movie_id }}">
+                        <div class="quotes-loading">Loading quotes...</div>
+                    </div>
+                    <div class="quote-add-row">
+                        <input class="quote-add-input" id="quote-add-{{ movie_id }}" placeholder="Add a pull quote...">
+                        <button class="quote-add-btn" onclick="addQuote('{{ movie_id }}')">+ Add</button>
+                    </div>
+                </div>
 
-                {% if movie.provider_list %}
-                <div class="movie-providers">{{ movie.provider_list }}</div>
-                {% endif %}
-
-                <div class="movie-actions">
-                    {% if movie_id in featured %}
-                    <button class="action-btn btn-unfeature" onclick="toggleFeatured('{{ movie_id }}', false)">⭐ Remove Pick</button>
-                    {% else %}
-                    <button class="action-btn btn-feature" onclick="toggleFeatured('{{ movie_id }}', true)">⭐ Staff Pick</button>
-                    {% endif %}
-                    {% if movie_id in restorations %}
-                    <button class="action-btn btn-unfeature" onclick="toggleRestoration('{{ movie_id }}', false)" style="border-color: #C8A951; color: #C8A951;">Unmark Restoration</button>
-                    {% else %}
-                    <button class="action-btn btn-feature" onclick="toggleRestoration('{{ movie_id }}', true)" style="border-color: #C8A951; color: #C8A951;">Mark Restoration</button>
-                    {% endif %}
-                    <a href="/pull-quotes/{{ movie_id }}" class="action-btn" style="background: #6c5ce7; color: white; text-decoration: none; font-size: 0.8rem;" title="Curate pull quotes">💬 Quotes</a>
-                    <button class="action-btn btn-remove" onclick="removeMovie('{{ movie_id }}', '{{ movie.title | e }}')" title="Remove from wall">🗑️</button>
+                <!-- Right Column: Synopsis + Actions -->
+                <div class="ep-col">
+                    <div class="syn-wrap">
+                        <div class="syn-hdr">
+                            <span class="ep-section-label" style="border:none; padding:0; margin:0;">Synopsis</span>
+                            <span class="char-counter" id="synopsis-counter-{{ movie_id }}">{{ (movie.get('synopsis', '') or '')|length }}/600</span>
+                        </div>
+                        <textarea class="syn {{ 'miss' if not has_synopsis else '' }}"
+                                  id="synopsis-{{ movie_id }}"
+                                  maxlength="600"
+                                  oninput="updateCharCounter(this, 'synopsis-counter-{{ movie_id }}', 140, 600)">{{ movie.get('synopsis', '') }}</textarea>
+                    </div>
+                    <div class="ep-actions">
+                        <a href="/pull-quotes/{{ movie_id }}" class="quote-btn" title="Full quote curation page">Quotes Page</a>
+                        <button class="rm-btn" onclick="removeMovie('{{ movie_id }}', '{{ movie.title|e }}')">Remove from wall</button>
+                    </div>
                 </div>
             </div>
         </div>
         {% endfor %}
+    {% endfor %}
     </div>
 
     <div class="success-msg" id="success-msg">Changes saved!</div>
@@ -593,10 +403,19 @@
                 <span class="admin-trailer-title" id="admin-trailer-title"></span>
                 <button class="close-btn" onclick="closeAdminTrailer()">&times;</button>
             </div>
-            <div class="admin-trailer-video" id="admin-trailer-video"></div>
+            <div class="admin-trailer-nav-wrapper">
+                <button class="admin-trailer-nav prev" id="admin-trailer-prev" onclick="adminTrailerNav(-1)">&larr;</button>
+                <div class="admin-trailer-video" id="admin-trailer-video"></div>
+                <button class="admin-trailer-nav next" id="admin-trailer-next" onclick="adminTrailerNav(1)">&rarr;</button>
+            </div>
         </div>
     </div>
 
-    <script src="{{ url_for('static', filename='js/admin.js') }}?v=10"></script>
+    <!-- Image Overlay -->
+    <div class="img-overlay" id="imgoverlay" onclick="closeImg()">
+        <img id="img-preview" src="">
+    </div>
+
+    <script src="{{ url_for('static', filename='js/admin.js') }}?v=22"></script>
 </body>
 </html>

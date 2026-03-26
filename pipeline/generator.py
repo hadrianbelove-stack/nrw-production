@@ -2536,6 +2536,10 @@ class DataGenerator:
     def find_trailer_url(self, movie_details):
         """Find trailer URL using a tiered waterfall with liveness validation.
 
+        Returns (url, source_tier) tuple, or None if no trailer found.
+        source_tier is one of: override, tmdb_official, cache, gemini_playwright,
+        tmdb_fallback, broad_search, search_fallback.
+
         Tier order (each validated before accepting):
           1. Manual overrides (trusted, no validation)
           2. TMDB official trailers (validated — TMDB data can go stale)
@@ -2551,7 +2555,7 @@ class DataGenerator:
         override_key = f"{title}_{year}"
         if override_key in self.trailer_overrides:
             self.logger.info(f"Trailer for {title} ({year}): tier=override")
-            return self.trailer_overrides[override_key]
+            return self.trailer_overrides[override_key], 'override'
 
         videos = movie_details.get('videos', {}).get('results', [])
 
@@ -2564,7 +2568,7 @@ class DataGenerator:
                 url = f"https://www.youtube.com/watch?v={video['key']}"
                 if self._validate_youtube_url_live(url):
                     self.logger.info(f"Trailer for {title} ({year}): tier=tmdb_official, url={url}")
-                    return url
+                    return url, 'tmdb_official'
                 self.logger.warning(f"Trailer dead link for {title} ({year}): tier=tmdb_official, url={url}")
 
         # --- Tier 3: YouTube scraper cache (validated, checked before Gemini to save cost) ---
@@ -2573,7 +2577,7 @@ class DataGenerator:
             cached_url = self.youtube_trailer_cache[cache_key]
             if cached_url and self._validate_youtube_url_live(cached_url):
                 self.logger.info(f"Trailer for {title} ({year}): tier=cache, url={cached_url}")
-                return cached_url
+                return cached_url, 'cache'
             elif cached_url:
                 self.logger.warning(f"Trailer dead link for {title} ({year}): tier=cache, url={cached_url}")
                 del self.youtube_trailer_cache[cache_key]  # Invalidate dead cache entry
@@ -2609,7 +2613,7 @@ class DataGenerator:
             if scraped_url and self._validate_youtube_url_live(scraped_url):
                 self.enrichment_stats['trailer_successes'] += 1
                 self.logger.info(f"Trailer for {title} ({year}): tier=gemini_playwright, url={scraped_url}")
-                return scraped_url
+                return scraped_url, 'gemini_playwright'
             elif scraped_url:
                 self.logger.warning(f"Trailer dead link for {title} ({year}): tier=gemini_playwright, url={scraped_url}")
 
@@ -2622,7 +2626,7 @@ class DataGenerator:
                 url = f"https://www.youtube.com/watch?v={video['key']}"
                 if self._validate_youtube_url_live(url):
                     self.logger.info(f"Trailer for {title} ({year}): tier=tmdb_fallback ({video['type']}), url={url}")
-                    return url
+                    return url, 'tmdb_fallback'
                 self.logger.warning(f"Trailer dead link for {title} ({year}): tier=tmdb_fallback, url={url}")
 
         # --- Tier 6: Broad YouTube search (validated — searches for 'trailer' and 'preview') ---
@@ -2639,7 +2643,7 @@ class DataGenerator:
                 broad_url = scraper.find_trailer_broad(title, year)
                 if broad_url and self._validate_youtube_url_live(broad_url):
                     self.logger.info(f"Trailer for {title} ({year}): tier=broad_search, url={broad_url}")
-                    return broad_url
+                    return broad_url, 'broad_search'
                 elif broad_url:
                     self.logger.warning(f"Trailer dead link for {title} ({year}): tier=broad_search, url={broad_url}")
 
@@ -3073,9 +3077,11 @@ class DataGenerator:
 
         # Trailer link (isolated failure handling)
         try:
-            trailer_url = self.find_trailer_url(movie_details)
-            if trailer_url:
+            trailer_result = self.find_trailer_url(movie_details)
+            if trailer_result:
+                trailer_url, trailer_source = trailer_result
                 result['links']['trailer'] = trailer_url
+                result['_trailer_source'] = trailer_source
                 enrichment_results['trailer'] = 'success'
                 self.logger.debug(f"Trailer: Found for {title} ({year})")
             else:
@@ -3392,9 +3398,11 @@ class DataGenerator:
             self.logger.warning(f"Wikipedia: Error for {title} ({year}): {type(e).__name__}: {str(e)[:100]}")
 
         # Trailer link (isolated failure handling)
+        trailer_source = None
         try:
-            trailer_url = self.find_trailer_url(movie_details)
-            if trailer_url:
+            trailer_result = self.find_trailer_url(movie_details)
+            if trailer_result:
+                trailer_url, trailer_source = trailer_result
                 links['trailer'] = trailer_url
                 enrichment_results['trailer'] = 'success'
                 self.logger.debug(f"Trailer: Found for {title} ({year})")
@@ -3500,6 +3508,9 @@ class DataGenerator:
         if review:
             movie_dict['review'] = review
 
+        if trailer_source:
+            movie_dict['_trailer_source'] = trailer_source
+
         # Log enrichment results with visual indicators
         status_icons = {
             'success': '✓',
@@ -3580,9 +3591,9 @@ class DataGenerator:
             movie_id = str(movie.get('id', ''))
             if not movie_id or movie_id in seen_ids:
                 continue
-            # Only catch up movies added recently
-            added_date = movie.get('date_added', '')
-            if added_date < cutoff_date:
+            # Only catch up movies that became available recently
+            digital_date = movie.get('digital_date', '')
+            if digital_date < cutoff_date:
                 continue
             status = movie.get('_enrichment_status', '')
             gaps = movie.get('_enrichment_gaps')
@@ -4660,7 +4671,9 @@ class DataGenerator:
         is_documentary = 'Documentary' in genres
 
         return {
-            'tier': tier,
+            'tier': tier,  # Kept for backward compatibility
+            'is_big_time': tier == 'big_time',
+            'is_indie': False,  # Default; set via admin override
             'is_foreign': is_foreign,
             'is_staff_pick': False,  # Set later from staff_picks.json
             'is_restoration': False,  # Set later from restoration detection
@@ -4704,6 +4717,12 @@ class DataGenerator:
         if os.path.exists('admin/restorations.json'):
             with open('admin/restorations.json', 'r') as f:
                 manual_restorations = json.load(f)
+
+        # Load category overrides (admin toggles for all categories)
+        category_overrides = {}
+        if os.path.exists('admin/category_overrides.json'):
+            with open('admin/category_overrides.json', 'r') as f:
+                category_overrides = json.load(f)
 
         if os.path.exists('admin/ordering.json'):
             with open('admin/ordering.json', 'r') as f:
@@ -4918,15 +4937,30 @@ class DataGenerator:
 
             movie['categories'] = categories
 
+            # Apply category overrides from admin panel
+            if movie_id in category_overrides:
+                overrides = category_overrides[movie_id]
+                for key, val in overrides.items():
+                    if key in categories:
+                        categories[key] = val
+                        categories['auto_categorized'] = False
+                # Sync tier field for backward compatibility
+                if categories.get('is_big_time'):
+                    categories['tier'] = 'big_time'
+                elif categories.get('is_indie'):
+                    categories['tier'] = 'indie'
+                elif 'is_big_time' in overrides or 'is_indie' in overrides:
+                    categories['tier'] = None
+
             # Set 'featured' field for backwards compatibility (true or false)
             movie['featured'] = categories['is_staff_pick']
 
             # Count for stats
-            if categories['tier'] == 'big_time':
+            if categories.get('is_big_time'):
                 big_time_count += 1
-            elif categories['tier'] == 'indie':
+            if categories.get('is_indie'):
                 indie_count += 1
-            else:
+            if not categories.get('is_big_time') and not categories.get('is_indie'):
                 uncategorized_count += 1
             if categories['is_foreign']:
                 foreign_count += 1

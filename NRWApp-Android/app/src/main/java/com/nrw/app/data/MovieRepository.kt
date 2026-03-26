@@ -149,10 +149,10 @@ class MovieRepository(private val context: Context) {
         return when (filter) {
             FilterCategory.ALL -> movies.filter { it.hidden != true }
             FilterCategory.BIG_TIME -> movies.filter {
-                it.hidden != true && it.categories?.tier == "big_time"
+                it.hidden != true && (it.categories?.isBigTime == true || it.categories?.tier == "big_time")
             }
             FilterCategory.INDIE -> movies.filter {
-                it.hidden != true && it.categories?.tier == "indie"
+                it.hidden != true && (it.categories?.isIndie == true || it.categories?.tier == "indie")
             }
             FilterCategory.STAFF_PICKS -> movies.filter {
                 it.hidden != true && it.isStaffPick()
@@ -190,8 +190,8 @@ class MovieRepository(private val context: Context) {
             activeFilters.any { filter ->
                 when (filter) {
                     FilterCategory.ALL -> true
-                    FilterCategory.BIG_TIME -> movie.categories?.tier == "big_time"
-                    FilterCategory.INDIE -> movie.categories?.tier == "indie"
+                    FilterCategory.BIG_TIME -> movie.categories?.isBigTime == true || movie.categories?.tier == "big_time"
+                    FilterCategory.INDIE -> movie.categories?.isIndie == true || movie.categories?.tier == "indie"
                     FilterCategory.STAFF_PICKS -> movie.isStaffPick()
                     FilterCategory.FOREIGN -> movie.isForeign()
                     FilterCategory.SERIES -> movie.contentType == "limited_series"
