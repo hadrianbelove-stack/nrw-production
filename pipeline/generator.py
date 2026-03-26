@@ -910,7 +910,10 @@ class DataGenerator:
                             try:
                                 type4_dt = datetime.strptime(type4_date, '%Y-%m-%d')
                                 today_dt = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-                                if type4_dt <= today_dt:
+                                # Only trigger for recent Type 4 dates (last 14 days)
+                                # to avoid mass-transitioning old movies
+                                days_ago = (today_dt - type4_dt).days
+                                if type4_dt <= today_dt and days_ago <= 14:
                                     has_providers = True
                                     movie['has_providers'] = True
                                     movie['_discovery_source'] = 'tmdb_type4'
