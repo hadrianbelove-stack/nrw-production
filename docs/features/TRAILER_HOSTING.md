@@ -15,6 +15,19 @@ YouTube (source) → yt-dlp (download) → Backblaze B2 (storage) → HTML5 <vid
 
 YouTube is only involved as the *source* for downloading. The actual playback never touches YouTube.
 
+## Two-Stage Pipeline (CI + Local)
+
+Trailer hosting is split between CI (GitHub Actions) and the local Mac:
+
+| Stage | When | What | Command |
+|-------|------|------|---------|
+| **CI** | 3 AM UTC | Stamps existing B2 URLs into data.json | `scripts/trailer_pipeline.py stamp` |
+| **Local** | 10 AM (launchd) | Downloads from YouTube + uploads to B2 | `scripts/trailer_pipeline.py host` |
+
+**Why split?** YouTube downloads require cookies/auth that only work on the local Mac. CI cannot download from YouTube. So CI handles URL stamping, while local handles the actual download and upload to B2.
+
+**Hosting gap (3 AM - 10 AM):** Newly discovered movies have YouTube URLs but no hosted MP4s yet. During this window, desktop/mobile/iOS/tvOS/Android fall back to YouTube embeds. Roku has no trailer available (MP4-only, no YouTube fallback). After 10 AM, the local script hosts the trailers. The next CI run stamps the B2 URLs.
+
 ## Data Fields
 
 Each movie in data.json has two trailer-related fields:

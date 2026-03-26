@@ -288,7 +288,74 @@ time python3 generate_data.py
 
 ---
 
-### 6. Enrichment Flag Corruption
+### 6. Enrichment Hangs or Takes Too Long
+
+**Symptoms:**
+- Enrichment phase runs for 60+ minutes without completing
+- Log shows VOD scraper retrying Amazon/Apple TV searches endlessly
+- `metrics/enrichment_run.json` shows very high `enrichment_duration_seconds`
+
+**Root Causes:**
+1. Playwright browser hanging on Amazon/Apple TV scraping (VOD scraper)
+2. External API timeout (Wikipedia, TMDB, OMDb)
+3. Too many catch-up movies accumulated in the enrichment queue
+
+**Solutions:**
+```bash
+# Check if Playwright processes are stuck
+ps aux | grep -i playwright
+
+# Kill stuck browsers
+pkill -f "chromium.*--headless"
+
+# Kill stuck enrichment
+pkill -f "generate_data.*enrich"
+
+# Temporarily disable VOD scraper (config.yaml → vod_scraper.enabled: false)
+# Then re-run enrichment
+```
+
+**Prevention:**
+- `MAX_ENRICHMENT_BATCH` (constants.py) caps at 100 movies per run
+- `MAX_ENRICHMENT_ATTEMPTS` (3) prevents infinite catch-up retries
+- Enrichment catch-up prioritizes new arrivals over retries
+
+---
+
+### 7. Movies in Tracking but Not in data.json
+
+**Symptoms:**
+- `movie_tracking.json` shows a movie as `status=available` but it's not in data.json
+- Movie was discovered but never appeared on the site
+
+**Root Cause:** Discovery crashed after updating movie_tracking.json but before `add_movie_to_site_immediately()` completed.
+
+**Solution:**
+```bash
+# Check if movie exists in tracking
+python3 -c "
+import json
+MOVIE_ID = 'YOUR_ID_HERE'
+with open('movie_tracking.json') as f: db = json.load(f)
+m = db.get('movies', {}).get(MOVIE_ID)
+print(json.dumps(m, indent=2) if m else 'Not found')
+"
+
+# Reset to tracking and re-run discovery
+python3 -c "
+import json
+MOVIE_ID = 'YOUR_ID_HERE'
+with open('movie_tracking.json') as f: db = json.load(f)
+if MOVIE_ID in db['movies']:
+    db['movies'][MOVIE_ID]['status'] = 'tracking'
+    with open('movie_tracking.json', 'w') as f: json.dump(db, f, indent=2)
+    print('Reset to tracking — re-run discovery')
+"
+```
+
+---
+
+### 8. Enrichment Flag Corruption
 
 **Symptoms:**
 - Startup error: `🚨 CONSISTENCY CHECK FAILED: X% available movies have enriched=false`

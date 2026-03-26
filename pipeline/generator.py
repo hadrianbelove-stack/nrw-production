@@ -39,7 +39,7 @@ except ImportError as e:
     from rt_scraper_playwright import RTScraperPlaywright as HybridRTFinder
     GEMINI_RT_AVAILABLE = False
 
-from constants import PLACEHOLDER_ASINS, get_scraper_config, MAX_ENRICHMENT_BATCH, ENRICHMENT_LOOP_TIMEOUT_MINUTES
+from constants import PLACEHOLDER_ASINS, get_scraper_config, MAX_ENRICHMENT_BATCH, ENRICHMENT_LOOP_TIMEOUT_MINUTES, MAX_ENRICHMENT_ATTEMPTS
 try:
     from streaming_platform_scraper import StreamingPlatformScraper
 except ImportError:
@@ -3667,31 +3667,52 @@ class DataGenerator:
 
         # Find movies to enrich from newly_available.json
         newly_available_file = 'metrics/newly_available.json'
-        if not os.path.exists(newly_available_file):
-            print(f"❌ No {newly_available_file} found - no movies to enrich")
-            return 0
+        movie_ids_to_enrich = []
+        if os.path.exists(newly_available_file):
+            try:
+                with open(newly_available_file, 'r') as f:
+                    newly_available = json.load(f)
+                movie_ids_to_enrich = [str(mid) for mid in newly_available.get('movie_ids', [])]
+                state_date = newly_available.get('date', 'unknown')
 
-        try:
-            with open(newly_available_file, 'r') as f:
-                newly_available = json.load(f)
-            movie_ids_to_enrich = newly_available.get('movie_ids', [])
-            state_date = newly_available.get('date', 'unknown')
+                from datetime import datetime
+                today = datetime.now().strftime('%Y-%m-%d')
+                if state_date != today:
+                    print(f"⚠️ State file date ({state_date}) is not today ({today}) - may be stale")
+            except Exception as e:
+                print(f"⚠️ Could not load {newly_available_file}: {e}")
 
-            # Validate the state file has today's date - warn if stale
-            from datetime import datetime
-            today = datetime.now().strftime('%Y-%m-%d')
-            if state_date != today:
-                print(f"⚠️ State file date ({state_date}) is not today ({today}) - may be stale")
+        newly_count = len(movie_ids_to_enrich)
 
-        except Exception as e:
-            print(f"❌ Error loading {newly_available_file}: {e}")
-            return 0
+        # Catch-up: scan data.json for movies with incomplete enrichment
+        seen_ids = set(movie_ids_to_enrich)
+        catchup_ids = []
+        for movie in existing_movies:
+            movie_id = str(movie.get('id', ''))
+            if not movie_id or movie_id in seen_ids:
+                continue
+            status = movie.get('_enrichment_status', '')
+            gaps = movie.get('_enrichment_gaps')
+            attempts = movie.get('_enrichment_attempts', 0)
+            if attempts >= MAX_ENRICHMENT_ATTEMPTS:
+                continue
+            if status in ('pending', 'failed', 'error', 'timeout'):
+                catchup_ids.append(movie_id)
+            elif status == 'completed' and gaps:
+                catchup_ids.append(movie_id)
+
+        movie_ids_to_enrich.extend(catchup_ids)
+
+        # Enforce batch limit
+        if len(movie_ids_to_enrich) > MAX_ENRICHMENT_BATCH:
+            movie_ids_to_enrich = movie_ids_to_enrich[:MAX_ENRICHMENT_BATCH]
 
         if not movie_ids_to_enrich:
-            print("✅ No new movies to enrich")
+            print("✅ No movies to enrich (no new arrivals, no catch-up needed)")
             return 0
 
-        print(f"🎯 Found {len(movie_ids_to_enrich)} movies to enrich")
+        catchup_count = len(catchup_ids)
+        print(f"🎯 Enrichment queue: {newly_count} new + {catchup_count} catch-up = {len(movie_ids_to_enrich)} total")
 
         # Load tracking database for movie details
         tracking_data = self.storage.load_all_movies()
@@ -3714,6 +3735,10 @@ class DataGenerator:
             movie_index = movie_lookup[movie_id]
 
             try:
+                # Track enrichment attempts for catch-up retry limiting
+                existing_movies[movie_index]['_enrichment_attempts'] = \
+                    existing_movies[movie_index].get('_enrichment_attempts', 0) + 1
+
                 # Get full movie/TV details from TMDB
                 if str(movie_id).startswith('tv_'):
                     numeric_id = str(movie_id).replace('tv_', '')
@@ -3776,6 +3801,23 @@ class DataGenerator:
                     existing_movies[movie_index]['_enrichment_status'] = 'error'
                 print(f"  ✗ Error enriching {movie_data.get('title', movie_id)}: {e}")
                 continue
+
+        # Sync enriched flag to movie_tracking.json
+        try:
+            tracking_updated = 0
+            for mid in movie_ids_to_enrich:
+                mid = str(mid)
+                if mid in movie_lookup:
+                    movie = existing_movies[movie_lookup[mid]]
+                    if movie.get('_enrichment_status') == 'completed' and mid in tracking_data.get('movies', {}):
+                        tracking_data['movies'][mid]['enriched'] = True
+                        tracking_data['movies'][mid]['enrichment_date'] = datetime.now().strftime('%Y-%m-%d')
+                        tracking_updated += 1
+            if tracking_updated > 0:
+                self.storage.atomic_write_json(tracking_data, 'movie_tracking.json', backup=True)
+                print(f"📝 Updated movie_tracking.json: {tracking_updated} movies marked enriched")
+        except Exception as e:
+            print(f"⚠️ Could not update movie_tracking.json: {e}")
 
         # Categorize all movies (backfills any missing categories from prior runs)
         existing_movies, _ = self.apply_admin_overrides(existing_movies)

@@ -51,6 +51,7 @@ An ongoing, accumulating database of digital release dates that no one else trac
 - **Monitoring:** Checks ALL movies in database with status = "tracking" for digital availability on Netflix, Amazon, etc.
 - **The Core Problem:** APIs don't tell us "this movie became available digitally today" - they only show what's available right now. We have to detect transitions ourselves.
 - **Magic moment:** When it finds new providers, sets `digital_date` = today, status = "available"
+- **Type 4 fallback:** Also checks TMDB's Type 4 (Digital) release dates for movies with no providers yet. If a Type 4 date exists within the last 14 days, the movie transitions to "available" using that date as `digital_date`. This catches movies where TMDB's provider data lags behind actual availability.
 - **State file:** Writes list of newly available movie IDs to `metrics/newly_available.json`
 
 **📄 `movie_tracking.json`** - *The Master Database*
@@ -63,8 +64,8 @@ An ongoing, accumulating database of digital release dates that no one else trac
 
 **🔧 `generate_data.py`** - *The Enrichment Overlay*
 - **Reads today's queue:** `metrics/newly_available.json` contains movie IDs that transitioned TODAY
-- **ONE attempt per movie:** Each movie gets a single enrichment attempt on its transition day
-- **No retries:** Queue resets daily - movies not enriched today won't be re-queued tomorrow
+- **Self-healing retries:** If enrichment fails or is incomplete, movies are automatically retried on subsequent runs (up to 3 attempts). Newly available movies are always prioritized over catch-up retries.
+- **Batch cap:** Maximum 100 movies per enrichment run (new arrivals + catch-up combined)
 - **Overlay model:** Updates EXISTING entries in data.json (never creates new entries)
 - **Performance:** 95%+ cost reduction by only enriching new arrivals (1-10 per day)
 - **Link resolution:** Multi-tier waterfall (overrides → cache → API → scraper → null)
@@ -154,6 +155,16 @@ Daily Intake & Discovery → movie_tracking.json → OPTIONAL REVIEW → data.js
 - Installs Playwright browsers (`playwright install chromium`)
 - Executes full pipeline automatically
 - Commits results to repository
+
+**Local Daily Script (runs at 10 AM via launchd, AFTER CI completes):**
+```
+scripts/local_daily.sh
+```
+- **Step 1:** Pulls latest from GitHub (CI's data.json is authoritative)
+- **Step 2:** Hosts new trailers — downloads from YouTube, uploads to B2 (`scripts/trailer_pipeline.py host`)
+- **Step 3:** IMDb rating collection with Playwright (`scripts/imdb_backfill.py --limit 50`)
+
+CI stamps YouTube URLs into data.json; the local script downloads and re-hosts them on Backblaze B2. The next CI run stamps the B2 URLs into data.json.
 
 **Note:** Daily automation runs without admin approval by default. Optional admin review can be enabled when editorial curation is desired.
 
