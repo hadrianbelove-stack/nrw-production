@@ -51,7 +51,7 @@ class StreamingPlatformScraper(PlaywrightScraperBase):
         internal_config = config or {}
 
         # Get centralized scraper configuration
-        scraper_config = get_scraper_config(internal_config, 'streaming_platform_scraper')
+        scraper_config = get_scraper_config(internal_config, 'vod_scraper')
 
         # Store original parameters before base class init
         self._headless = headless
@@ -70,7 +70,7 @@ class StreamingPlatformScraper(PlaywrightScraperBase):
             cache_file='cache/amazon_asin_cache.json',
             config=internal_config,
             logger=None,  # Streaming scraper uses print, not logger
-            config_key='streaming_platform_scraper',
+            config_key='vod_scraper',
             log_prefix='StreamingPlatformScraper',
             screenshot_subdir='streaming'
         )
@@ -373,7 +373,7 @@ class StreamingPlatformScraper(PlaywrightScraperBase):
             search_url = f"https://tv.apple.com/search?term={search_query}"
 
             logger.debug(f"  Searching Apple TV for: {title}")
-            self.page.goto(search_url, wait_until='networkidle')
+            self.page.goto(search_url, wait_until='domcontentloaded', timeout=self.timeout_seconds * 1000)
 
             selectors = [
                 "a[href*='/movie/'][href*='umc.cmc']",
@@ -384,9 +384,12 @@ class StreamingPlatformScraper(PlaywrightScraperBase):
                 "a[href*='umc.cmc']"
             ]
 
-            for selector in selectors:
+            for i, selector in enumerate(selectors):
                 try:
-                    self.page.wait_for_selector(selector, timeout=self.timeout_seconds*1000)
+                    # First selector gets full timeout (page may still render);
+                    # rest get quick 3s check since page is already loaded
+                    selector_timeout = (self.timeout_seconds * 1000) if i == 0 else 3000
+                    self.page.wait_for_selector(selector, timeout=selector_timeout)
                     elements = self.page.locator(selector).all()
                     for element in elements:
                         href = element.get_attribute('href')

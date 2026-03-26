@@ -39,13 +39,15 @@ tracking:
   compaction_recent_days: null  # Only compact entries from last N days (null = no age limit)
   excluded_services: ['fuboTV', 'Philo', 'Sun Nxt', 'Fandango']  # Services to exclude from watch provider results
 
-# JustWatch verification during discovery phase
-# Called only for movies TMDB flags as having new providers (~1-10/day)
+# JustWatch configuration (enrichment only)
+# NOTE: JustWatch verification removed from discovery phase (Mar 2026).
+# JustWatch is used in enrichment only — for resolving actual rent/buy watch links
+# (Amazon, Apple TV deep URLs) that TMDB doesn't provide. See pipeline/enrichment.py tier 5.
 justwatch_verification:
-  enabled: true                    # Master toggle for JustWatch verification
+  enabled: true                    # Used by enrichment for watch link resolution
   rate_limit: 0.5                  # Seconds between JustWatch API calls
   min_confidence: 'close_year'     # Minimum match confidence: exact_year, close_year, title_only, first_result
-  fallback_to_tmdb: true           # If JustWatch fails, use TMDB-only behavior (current)
+  fallback_to_tmdb: true           # If JustWatch fails, use TMDB provider names (no deep links)
 
 # Backup retention policy for quarantined corrupt files and atomic write backups
 # Prevents unbounded disk growth from .corrupted-* and .backup-* files in backups/ directory
@@ -522,6 +524,8 @@ vod_scraper:
   rate_limit: 2.0  # Seconds between scrapes to avoid rate limiting
   timeout: 10  # Page load timeout in seconds
   max_retries: 2  # Retry attempts on failure
+  per_movie_timeout: 90  # Hard cap per movie in seconds (prevents hangs)
+  speculative_scraping: true  # Try Amazon/Apple even when not in TMDB providers (set false for faster runs)
   platforms:
     amazon: true  # Enable Amazon Prime Video scraping
     apple_tv: true  # Enable Apple TV scraping

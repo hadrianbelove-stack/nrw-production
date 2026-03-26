@@ -7,6 +7,7 @@ Handles all watch link discovery across multiple sources with priority waterfall
 """
 
 import os
+import signal
 import time
 from datetime import datetime
 from typing import Dict, List, Optional, Union, Any
@@ -14,6 +15,11 @@ import logging
 from urllib.parse import urljoin
 
 from constants import PLACEHOLDER_ASINS
+
+
+class VODScraperTimeout(Exception):
+    """Raised when VOD scraping for a single movie exceeds the time limit."""
+    pass
 
 
 class EnrichmentService:
@@ -119,12 +125,10 @@ class EnrichmentService:
         Priority waterfall:
         1. Manual watch links from movie_tracking.json - highest priority
         2. Overrides (overrides/watch_links_overrides.json) - always wins over automated
-        3. Discovery-provided JustWatch links (captured at discovery time)
-        4. Cache (cache/watch_links_cache.json)
-        5. JustWatch API (primary source - most reliable)
-        6. Agent scraper (Netflix, Disney+, HBO Max, Hulu) - fallback
-        7. VOD scraper (Amazon, Apple TV) - fallback
-        8. TMDB provider names with null links - last resort
+        3. Cache (cache/watch_links_cache.json)
+        4. JustWatch API (primary source for rent/buy deep links)
+        5. VOD scraper (Amazon, Apple TV) - Playwright fallback
+        6. TMDB provider names with null links - last resort
 
         Args:
             movie_id: TMDB movie ID
@@ -161,62 +165,35 @@ class EnrichmentService:
         if manual_result:
             return manual_result
 
-        # 2. Try override links (must be before discovery links so overrides always win)
+        # 2. Try override links (always wins over automated sources)
         override_result = self._try_override_links(cache_key, title)
         if override_result:
             return override_result
 
-        # 3. Try discovery-provided JustWatch links (captured at discovery time)
-        if tracking_data and tracking_data.get('watch_links') and tracking_data.get('watch_links_source') == 'justwatch_discovery':
-            try:
-                discovery_links = tracking_data['watch_links']
-                validated_discovery = self.validator.validate_watch_links_schema(discovery_links, title)
-                if validated_discovery:
-                    self.logger.info(f"Using JustWatch discovery watch_links for {title}")
-                    self.stats['justwatch_discovery_reuse'] = self.stats.get('justwatch_discovery_reuse', 0) + 1
-                    # Cache for future lookups
-                    self.watch_links_cache[cache_key] = {
-                        'links': validated_discovery,
-                        'cached_at': datetime.now().isoformat(),
-                        'source': 'justwatch_discovery'
-                    }
-                    self.storage.save_cache(self.watch_links_cache, 'cache/watch_links_cache.json')
-                    return validated_discovery
-            except Exception as e:
-                self.logger.warning(f"Discovery watch_links invalid for {title}: {e}")
-
         # Legacy admin overrides removed (Dec 2024) - empty dict for compatibility
         validated_overrides = {}
 
-        # 4. Try cached links
+        # 3. Try cached links
         cached_result = self._try_cached_links(cache_key, force_refresh)
         if cached_result:
             return cached_result
 
-        # 5. Try JustWatch API
+        # 4. Try JustWatch API (primary source for rent/buy deep links)
         justwatch_result = self._try_justwatch_api(title, year, cache_key, validated_overrides, providers=providers)
         if justwatch_result:
             return justwatch_result
 
-        # 6. Build from scrapers (fallback)
+        # 5. Build from scrapers (fallback — Amazon, Apple TV via Playwright)
         watch_links, vod_scraper_used = self._build_scraper_fallback_links(
             movie_id, title, year, providers, validated_overrides,
             title_variants=title_variants
         )
 
-        # 7. Normalize URLs
+        # 6. Normalize URLs, validate, apply affiliate tags, cache
         watch_links = self.normalize_watch_links_urls(watch_links)
-
-        # 8. Validate schema
         validated_links = self.validator.validate_watch_links_schema(watch_links, title)
-
-        # 9. Apply affiliate tags
         self._apply_affiliate_tags_batch(validated_links, title)
-
-        # 10. Validate link consistency
         self._validate_link_consistency_batch(validated_links, title)
-
-        # 11. Cache and return
         self._cache_watch_links_result(cache_key, validated_links, vod_scraper_used)
 
         return validated_links
@@ -545,11 +522,25 @@ class EnrichmentService:
         rent_len_before = len(tmdb_rent)
         buy_len_before = len(tmdb_buy)
 
-        # Try VOD scraper
+        # Try VOD scraper with per-movie timeout safety net
         has_vod_scraper = self._check_vod_scraper_available()
         if has_vod_scraper:
-            self.try_vod_scraper(title, year, providers, tmdb_streaming, tmdb_rent, tmdb_buy,
-                                 skip_streaming, skip_rent, skip_buy)
+            vod_timeout = self.config.get('vod_scraper', {}).get('per_movie_timeout', 90)
+
+            def _vod_timeout_handler(signum, frame):
+                raise VODScraperTimeout(f"VOD scraping exceeded {vod_timeout}s limit")
+
+            old_handler = signal.signal(signal.SIGALRM, _vod_timeout_handler)
+            signal.alarm(vod_timeout)
+            try:
+                self.try_vod_scraper(title, year, providers, tmdb_streaming, tmdb_rent, tmdb_buy,
+                                     skip_streaming, skip_rent, skip_buy)
+            except VODScraperTimeout:
+                self.logger.warning(f"VOD scraping timed out for {title} after {vod_timeout}s — skipping")
+                self.stats['vod_timeouts'] = self.stats.get('vod_timeouts', 0) + 1
+            finally:
+                signal.alarm(0)
+                signal.signal(signal.SIGALRM, old_handler)
 
         # Check if platform scraper added any links
         vod_scraper_used = (
@@ -1038,6 +1029,10 @@ class EnrichmentService:
         # --- Speculative scraping: try Amazon/Apple for ALL movies ---
         # TMDB provider data is often incomplete. Many movies are available on
         # Amazon/Apple but TMDB doesn't list them. Try both platforms regardless.
+        vod_config = self.config.get('vod_scraper', {})
+        if not vod_config.get('speculative_scraping', True):
+            return
+
         already_has_amazon = any(
             self.is_actual_amazon_service(s.get('service', ''))
             for s in (tmdb_rent + tmdb_buy + tmdb_streaming) if s.get('link')

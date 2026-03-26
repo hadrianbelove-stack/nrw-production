@@ -823,12 +823,6 @@ class DataGenerator:
         total_to_check = len(tracking_movies)
         newly_available_ids = []  # Track movie IDs that transition to available
 
-        # JustWatch verification counters
-        jw_verified = 0
-        jw_rejected = 0
-        jw_buy_only = 0
-        jw_unavailable = 0
-
         print(f"\n🎬 Checking {total_to_check} movies for digital availability...\n")
         discovery_start_time = time.time()
 
@@ -902,8 +896,10 @@ class DataGenerator:
                     # Always update has_providers flag based on current provider availability
                     movie['has_providers'] = has_providers
 
-                    # Fallback: If no providers from watch/providers endpoint,
-                    # check TMDB Type 4 (Digital) release date as transition trigger
+                    # Type 4 digital release date: If no providers from watch/providers endpoint,
+                    # check if TMDB has a digital release date that has passed.
+                    # This is a primary discovery mechanism — many movies have Type 4 dates
+                    # before provider lists are populated.
                     if not has_providers and movie['status'] == 'tracking':
                         type4_date = self.fetch_tmdb_type4_date(movie_id)
                         if type4_date:
@@ -922,39 +918,6 @@ class DataGenerator:
                                     print(f"  📅 {movie['title']} has Type 4 digital date {type4_date}")
                             except ValueError:
                                 pass
-
-                    # JustWatch verification: confirm availability before promoting
-                    jw_watch_links = None
-                    if has_providers and movie['status'] == 'tracking':
-                        jw_result = self._verify_with_justwatch(movie['title'], movie.get('year'), movie_id)
-
-                        if jw_result is not None:
-                            if jw_result['verified'] is True:
-                                # JustWatch confirms: real rent/streaming offers exist
-                                jw_watch_links = jw_result.get('watch_links')
-                                jw_verified += 1
-                                self.logger.info(
-                                    f"JustWatch VERIFIED: {movie['title']} ({jw_result['match_confidence']}) "
-                                    f"streaming={jw_result['has_streaming']}, rent={jw_result['has_rent']}, buy={jw_result['has_buy']}"
-                                )
-                                print(f"  ✓ {movie['title']} verified by JustWatch (rent/streaming confirmed)")
-                            elif jw_result['verified'] == 'buy_only':
-                                # Buy-only on JustWatch — defer to pre-order detection below
-                                jw_buy_only += 1
-                                self.logger.info(
-                                    f"JustWatch BUY-ONLY: {movie['title']} — deferring to pre-order detection"
-                                )
-                            elif jw_result['verified'] is False:
-                                # JustWatch says NO offers — TMDB was wrong, stay in tracking
-                                has_providers = False
-                                jw_rejected += 1
-                                self.logger.info(
-                                    f"JustWatch REJECTED: {movie['title']} — no real offers despite TMDB showing providers"
-                                )
-                                print(f"  ~ {movie['title']} rejected by JustWatch (no real offers found)")
-                        else:
-                            # JustWatch unavailable — fall through to current TMDB-only behavior
-                            jw_unavailable += 1
 
                     # Pre-order detection: buy-only + single provider = check Amazon
                     is_buy_only = bool(buy_names) and not rent_names and not stream_names
@@ -1005,12 +968,6 @@ class DataGenerator:
                         # Mark for enrichment (Phase 2.1 optimization)
                         movie['enriched'] = False
                         movie['enrichment_date'] = None
-
-                        # Store JustWatch watch_links at discovery time (enrichment can reuse)
-                        if jw_watch_links:
-                            movie['watch_links'] = jw_watch_links
-                            movie['watch_links_source'] = 'justwatch_discovery'
-                            self.logger.info(f"Stored JustWatch watch_links for {movie['title']} at discovery time")
 
                         newly_digital += 1
                         needs_enrichment = True
@@ -1088,12 +1045,6 @@ class DataGenerator:
                     'failed': failed,
                     'preorder_detected': preorder_detected,
                     'scan_tag': scan_tag.strip() if scan_tag else None
-                },
-                'justwatch_verification': {
-                    'verified': jw_verified,
-                    'rejected': jw_rejected,
-                    'buy_only': jw_buy_only,
-                    'unavailable': jw_unavailable
                 }
             }
 
@@ -3684,12 +3635,17 @@ class DataGenerator:
 
         newly_count = len(movie_ids_to_enrich)
 
-        # Catch-up: scan data.json for movies with incomplete enrichment
+        # Catch-up: retry recently-added movies with incomplete enrichment (last 7 days only)
         seen_ids = set(movie_ids_to_enrich)
         catchup_ids = []
+        cutoff_date = (datetime.now() - timedelta(days=7)).strftime('%Y-%m-%d')
         for movie in existing_movies:
             movie_id = str(movie.get('id', ''))
             if not movie_id or movie_id in seen_ids:
+                continue
+            # Only catch up movies added recently
+            added_date = movie.get('date_added', '')
+            if added_date < cutoff_date:
                 continue
             status = movie.get('_enrichment_status', '')
             gaps = movie.get('_enrichment_gaps')
@@ -3721,7 +3677,16 @@ class DataGenerator:
             return 0
 
         enriched_count = 0
+        import time as _loop_time
+        _loop_start = _loop_time.time()
+        _loop_timeout = ENRICHMENT_LOOP_TIMEOUT_MINUTES * 60
+
         for movie_id in movie_ids_to_enrich:
+            # Safety net: bail out if enrichment has been running too long
+            if (_loop_time.time() - _loop_start) > _loop_timeout:
+                print(f"  ⏰ Enrichment loop exceeded {ENRICHMENT_LOOP_TIMEOUT_MINUTES} min — stopping. Remaining movies will be retried next run.")
+                break
+
             movie_id = str(movie_id)  # Ensure consistent string format for lookup
             if movie_id not in movie_lookup:
                 print(f"  ⚠️ Movie {movie_id} not found in data.json - skipping")
