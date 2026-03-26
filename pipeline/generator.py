@@ -1137,69 +1137,6 @@ class DataGenerator:
 
         return newly_digital
 
-    def _verify_with_justwatch(self, title, year, movie_id):
-        """
-        Verify availability via JustWatch. Called only for movies TMDB says have providers.
-
-        Returns:
-            Dict with 'verified', 'watch_links', 'match_confidence', etc.
-            Returns None if JustWatch is unavailable or fails (triggers TMDB-only fallback).
-        """
-        jw_config = self.config.get('justwatch_verification', {})
-        if not jw_config.get('enabled', True):
-            return None
-
-        # Lazy-initialize JustWatch client
-        if not hasattr(self, '_jw_verifier'):
-            try:
-                from pipeline.justwatch import JustWatchClient
-                self._jw_verifier = JustWatchClient(logger=self.logger)
-            except ImportError:
-                self.logger.debug("JustWatch client not available for verification")
-                self._jw_verifier = False
-        if self._jw_verifier is False:
-            return None
-
-        try:
-            excluded_services = self.config.get('tracking', {}).get('excluded_services', ['fuboTV', 'Philo'])
-            amazon_tag = self.config.get('enrichment', {}).get('amazon_affiliate_tag')
-
-            content_type = 'tv' if str(movie_id).startswith('tv_') else 'movie'
-            result = self._jw_verifier.verify_availability(
-                title, year,
-                excluded_services=excluded_services,
-                affiliate_tag=amazon_tag,
-                content_type=content_type
-            )
-
-            if result is None:
-                return None
-
-            # Reject low-confidence matches
-            min_confidence = jw_config.get('min_confidence', 'close_year')
-            confidence_levels = ['exact_year', 'close_year', 'title_only', 'first_result']
-            min_idx = confidence_levels.index(min_confidence) if min_confidence in confidence_levels else 1
-            result_idx = confidence_levels.index(result['match_confidence']) if result['match_confidence'] in confidence_levels else 3
-
-            if result_idx > min_idx:
-                self.logger.warning(
-                    f"JustWatch low-confidence match for {title} ({year}): "
-                    f"matched '{result['jw_title']}' ({result['jw_year']}) "
-                    f"[confidence: {result['match_confidence']}] — skipping verification"
-                )
-                return None
-
-            # Rate limit
-            rate_limit = jw_config.get('rate_limit', 0.5)
-            if rate_limit > 0:
-                time.sleep(rate_limit)
-
-            return result
-
-        except Exception as e:
-            self.logger.warning(f"JustWatch verification error for {title}: {e}")
-            return None
-
     def resolve_preorder_dates(self):
         """
         Daily check for all pre-order movies: try to find their actual VOD release date.
@@ -3735,12 +3672,18 @@ class DataGenerator:
                     # Mark enrichment status as completed
                     existing_movies[movie_index]['_enrichment_status'] = 'completed'
 
-                    # Track enrichment gaps (fields that enrichment couldn't resolve)
+                    # Track enrichment gaps (all meaningful fields, not just watch_links/rt)
                     gaps = []
                     if not enrichment_fields.get('watch_links'):
                         gaps.append('watch_links')
                     if enrichment_fields.get('links', {}).get('rt') is None and enrichment_fields.get('rt_score') is None:
                         gaps.append('rt_score')
+                    if not enrichment_fields.get('links', {}).get('trailer'):
+                        gaps.append('trailer')
+                    if not enrichment_fields.get('links', {}).get('wikipedia'):
+                        gaps.append('wikipedia')
+                    if enrichment_fields.get('imdb_rating') is None:
+                        gaps.append('imdb_rating')
                     if gaps:
                         existing_movies[movie_index]['_enrichment_gaps'] = gaps
                     elif '_enrichment_gaps' in existing_movies[movie_index]:
