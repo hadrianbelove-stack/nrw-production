@@ -896,11 +896,10 @@ class DataGenerator:
                     # Always update has_providers flag based on current provider availability
                     movie['has_providers'] = has_providers
 
-                    # Type 4 digital release date: If no providers from watch/providers endpoint,
-                    # check if TMDB has a digital release date that has passed.
-                    # This is a primary discovery mechanism — many movies have Type 4 dates
-                    # before provider lists are populated.
-                    if not has_providers and movie['status'] == 'tracking':
+                    # PRIMARY: Type 4 digital release date
+                    # Check for ALL tracking movies — this is the main discovery mechanism.
+                    # Provider availability alone can be transient/wrong (e.g. Malavia false positive).
+                    if movie['status'] == 'tracking':
                         type4_date = self.fetch_tmdb_type4_date(movie_id)
                         if type4_date:
                             try:
@@ -918,6 +917,11 @@ class DataGenerator:
                                     print(f"  📅 {movie['title']} has Type 4 digital date {type4_date}")
                             except ValueError:
                                 pass
+
+                    # FALLBACK: Provider availability (only if Type 4 didn't already discover)
+                    # Provider data can be transient/wrong, so this is secondary
+                    if has_providers and movie['status'] == 'tracking' and not movie.get('_discovery_source'):
+                        movie['_discovery_source'] = 'provider_availability_check'
 
                     # Pre-order detection: buy-only + single provider = check Amazon
                     is_buy_only = bool(buy_names) and not rent_names and not stream_names
