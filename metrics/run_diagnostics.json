@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-03-25T10:28:12.066762",
-  "duration_seconds": 2165.080607,
+  "timestamp": "2026-03-26T11:52:55.124310",
+  "duration_seconds": 6817.957364,
   "overall_success": true,
   "failure_count": 0,
   "warning_count": 0,
@@ -8,37 +8,37 @@
     {
       "name": "Intake new premieres from TMDB",
       "success": true,
-      "duration_seconds": 6.925698,
+      "duration_seconds": 12.1835,
       "error": null,
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-03-23 to 2026-03-25 (incremental mode, 21 intaked)\n\u2705 Movie intake complete: 21 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-02-23 to 2026-03-25\n   \ud83d\udccb Flavor of Us (2 eps)\n   \ud83d\udccb Please Hold O"
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-03-24 to 2026-03-26 (incremental mode, 42 intaked)\n\u2705 Movie intake complete: 42 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-02-24 to 2026-03-26\n   \ud83d\udccb Winter Fever (4 eps)\n   \ud83d\udccb Por cien mill"
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 2156.020743,
+      "duration_seconds": 4575.122264,
       "error": null,
-      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 15277 total movies\n\ud83d\udd0d Raw tracking filter: 13579 movies\n\ud83d\udd0d Assigned tracking_movies list: 13579\n\ud83d\udd0d Found 13579 movies in tracking status\n  Priority queue (last 180 days): 979 movies\n  Older movies: 12600 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 13579 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/13579 (0.7%) | 0 found | 0m elapsed | ~34m remaining\n  \ud83d\udcbe Progress saved (ba"
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 15324 total movies\n\ud83d\udd0d Raw tracking filter: 13638 movies\n\ud83d\udd0d Assigned tracking_movies list: 13638\n\ud83d\udd0d Found 13638 movies in tracking status\n  Priority queue (last 180 days): 727 movies\n  Older movies: 12911 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 13638 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/13638 (0.7%) | 0 found | 0m elapsed | ~74m remaining\n  \ud83d\udcbe Progress saved (ba"
     },
     {
       "name": "Resolve pre-order movie dates",
       "success": true,
-      "duration_seconds": 0.346795,
+      "duration_seconds": 0.347249,
       "error": null,
       "output_preview": "\n\ud83d\udcc5 Resolving pre-order movie dates...\n\n\ud83d\udcc5 Resolving pre-order dates...\n  No pre-order movies to resolve\n\u2705 Pre-order resolution complete: 0 resolved\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Enrich newly available movies with metadata",
       "success": true,
-      "duration_seconds": 0.329623,
+      "duration_seconds": 2229.492822,
       "error": null,
-      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\u2705 No new movies to enrich\n\u2705 Enrichment complete: 0 movies enriched\n\ud83d\udccb Phase complete\n"
+      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Found 44 movies to enrich\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] WARNING: Event loop already running: <_UnixSelectorEventLoop running=True closed=False debug=False>\n[PlaywrightManager] This will cause Playwright sync API to fail!\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] WARNING: Event loop already running: <_UnixSelectorEventLo"
     },
     {
       "name": "Stamp hosted trailer URLs into data.json",
       "success": true,
-      "duration_seconds": 1.332863,
+      "duration_seconds": 0.68145,
       "error": null,
-      "output_preview": "=== Trailer Pipeline: stamp ===\n\nConnecting to B2...\nFound 151 trailers in B2 bucket\nSaved data.json: 83 stamped, 185 stale cleaned\n\nStamp results:\n  Stamped:          83\n  Already had URL:  68\n  Stale cleaned:    185\n  Not in B2:        281\n"
+      "output_preview": "=== Trailer Pipeline: stamp ===\n\nConnecting to B2...\nFound 184 trailers in B2 bucket\nSaved data.json: 83 stamped, 151 stale cleaned\n\nStamp results:\n  Stamped:          83\n  Already had URL:  101\n  Stale cleaned:    151\n  Not in B2:        335\n"
     }
   ],
   "health_issues": [],
@@ -49,20 +49,20 @@
   "failures": [],
   "warnings": [],
   "data_quality": {
-    "total": 15277,
-    "tracking": 13579,
-    "available": 1696,
-    "data_movies": 617,
-    "movies_with_links": 419,
-    "movies_with_rt": 453,
-    "movies_with_wikipedia": 301,
-    "movies_with_trailers": 562
+    "total": 15324,
+    "tracking": 13594,
+    "available": 1728,
+    "data_movies": 670,
+    "movies_with_links": 204,
+    "movies_with_rt": 456,
+    "movies_with_wikipedia": 307,
+    "movies_with_trailers": 581
   },
   "enrichment_metrics": {
-    "timestamp": "2026-03-24T16:21:48.449087",
-    "movies_requested": 11,
-    "movies_enriched": 11,
+    "timestamp": "2026-03-26T11:52:54.042746",
+    "movies_requested": 44,
+    "movies_enriched": 44,
     "movies_deferred": 0,
-    "enrichment_duration_seconds": 446.63
+    "enrichment_duration_seconds": 2228.9
   }
 }
