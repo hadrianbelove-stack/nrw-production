@@ -467,14 +467,7 @@ class EnrichmentService:
         return None
 
     def _validate_justwatch_domains(self, justwatch_links, title, providers=None):
-        """Validate JustWatch results: check domain matches service and cross-check with TMDB providers."""
-        # Build set of TMDB provider names (lowercase) for cross-validation
-        tmdb_services = set()
-        if providers:
-            for cat in ['streaming', 'rent', 'buy']:
-                for p in providers.get(cat, []):
-                    tmdb_services.add(p.lower())
-
+        """Validate JustWatch results: check URL domain matches service name."""
         for category in list(justwatch_links.keys()):
             link_data = justwatch_links[category]
 
@@ -496,16 +489,6 @@ class EnrichmentService:
                         f"JustWatch domain mismatch for '{title}': service '{service}' returned link '{link}'. Rejecting."
                     )
                     continue
-
-                # Check 2: For streaming category, cross-check with TMDB providers
-                if category == 'streaming' and tmdb_services and service:
-                    service_lower = service.lower()
-                    if not any(service_lower in tp or tp in service_lower for tp in tmdb_services):
-                        self.logger.warning(
-                            f"JustWatch service mismatch for '{title}': JustWatch says '{service}' "
-                            f"but TMDB providers are {list(tmdb_services)}. Rejecting streaming link."
-                        )
-                        continue
 
                 validated_entries.append(entry)
 

@@ -4024,9 +4024,15 @@ class DataGenerator:
 
     def reenrich_watch_link_gaps(self):
         """
-        Re-enrich ALL movies missing VOD deep links (not filtered by TMDB providers).
-        Uses force_refresh=True to bypass cache and retry with Playwright scrapers.
-        Speculative scraping in enrichment will try Amazon + Apple TV for every movie.
+        Re-enrich movies with missing or unverified watch links.
+
+        Finds two categories:
+        1. Gap movies: missing VOD deep links entirely
+        2. Unverified movies: have watch_links but were never verified by the
+           improved JustWatch title-matching code (_watch_links_verified not set)
+
+        Re-runs JustWatch with force_refresh=True. JustWatch's own confidence
+        checking decides if links are good — no TMDB cross-referencing needed.
 
         Returns:
             int: Number of movies successfully re-enriched with watch links
@@ -4040,37 +4046,53 @@ class DataGenerator:
 
         existing_movies = display_data.get('movies', [])
 
-        # Find ALL movies missing VOD deep links (regardless of TMDB providers)
+        # Find movies missing VOD deep links
         gap_movies = []
-
+        gap_indices = set()
         for i, movie in enumerate(existing_movies):
             watch_links = movie.get('watch_links', {})
-
             vod = watch_links.get('vod')
             has_vod = (isinstance(vod, list) and any(isinstance(v, dict) and v.get('link') for v in vod)) or \
                       (isinstance(vod, dict) and bool(vod.get('link')))
             if not has_vod:
                 gap_movies.append((i, movie))
+                gap_indices.add(i)
 
-        if not gap_movies:
-            print("✅ No watch link gaps found — all movies have VOD links")
+        # Find movies with unverified watch links — re-run through improved JustWatch
+        unverified_movies = []
+        unverified_indices = set()
+        for i, movie in enumerate(existing_movies):
+            if movie.get('_watch_links_verified'):
+                continue
+            watch_links = movie.get('watch_links', {})
+            if not watch_links:
+                continue
+            unverified_movies.append((i, movie))
+            unverified_indices.add(i)
+
+        if not gap_movies and not unverified_movies:
+            print("✅ No watch link issues found — all movies verified")
             return 0
 
-        # Batch limit to prevent marathon runs
+        # Combine — unverified first (wrong data worse than missing), deduplicate
+        gap_only = [(i, m) for i, m in gap_movies if i not in unverified_indices]
+        all_movies = unverified_movies + gap_only
         vod_config = self.config.get('vod_scraper', {})
         max_batch = vod_config.get('reenrich_batch_size', 50)
-        total_gaps = len(gap_movies)
-        if max_batch > 0 and len(gap_movies) > max_batch:
-            print(f"🔍 Found {total_gaps} movies missing VOD links (processing first {max_batch}):")
-            gap_movies = gap_movies[:max_batch]
-        else:
-            print(f"🔍 Found {total_gaps} movies missing VOD links:")
 
-        for _, movie in gap_movies:
-            providers = movie.get('providers', {})
-            rent_buy = providers.get('rent', []) + providers.get('buy', [])
-            provider_info = f" ({', '.join(rent_buy)})" if rent_buy else " (no TMDB providers)"
-            print(f"  • {movie.get('title')}{provider_info}")
+        if unverified_movies:
+            print(f"🔍 Found {len(unverified_movies)} movies with unverified watch links")
+        if gap_movies:
+            print(f"🔍 Found {len(gap_movies)} movies missing VOD links")
+
+        if max_batch > 0 and len(all_movies) > max_batch:
+            print(f"  Processing first {max_batch} of {len(all_movies)} total:")
+            all_movies = all_movies[:max_batch]
+        else:
+            print(f"  Processing {len(all_movies)} movies:")
+
+        for _, movie in all_movies:
+            print(f"  • {movie.get('title')}")
 
         # Load tracking database for enrichment
         tracking_data = self.storage.load_all_movies()
@@ -4080,24 +4102,26 @@ class DataGenerator:
 
         fixed_count = 0
         unsaved_count = 0
-        save_interval = 10  # Save every 10 successful fixes to prevent data loss
-        for movie_index, movie in gap_movies:
+        save_interval = 10
+        for movie_index, movie in all_movies:
             movie_id = str(movie.get('id', ''))
             title = movie.get('title', 'Unknown')
             year = str(movie.get('year', ''))
             providers = movie.get('providers', {})
+            is_unverified = movie_index in unverified_indices
 
             try:
-                # Get tracking data for this movie (needed for manual_watch_links check)
+                # Clear old watch_links for unverified movies so JustWatch starts fresh
+                if is_unverified:
+                    existing_movies[movie_index]['watch_links'] = {}
+
                 tracking_movie = tracking_data.get('movies', {}).get(movie_id, movie)
 
-                # Only scrape watch links — skip Wikipedia, RT, trailers, etc.
                 watch_links = self.enrichment.get_watch_links(
                     movie_id, title, year, providers,
                     force_refresh=True, tracking_data=tracking_movie
                 )
 
-                # Check if we got real VOD links
                 vod = watch_links.get('vod', []) if watch_links else []
                 has_real_vod = False
                 if isinstance(vod, list):
@@ -4105,9 +4129,8 @@ class DataGenerator:
                 elif isinstance(vod, dict):
                     has_real_vod = bool(vod.get('link'))
 
-                if has_real_vod:
+                if has_real_vod or (watch_links and watch_links.get('streaming')):
                     existing_movies[movie_index]['watch_links'] = watch_links
-                    # Clear gap tracking if watch_links resolved
                     existing_gaps = existing_movies[movie_index].get('_enrichment_gaps', [])
                     if 'watch_links' in existing_gaps:
                         existing_gaps.remove('watch_links')
@@ -4115,11 +4138,14 @@ class DataGenerator:
                             existing_movies[movie_index]['_enrichment_gaps'] = existing_gaps
                         else:
                             existing_movies[movie_index].pop('_enrichment_gaps', None)
-                    print(f"  ✓ {title} — watch links resolved")
+                    existing_movies[movie_index].pop('_quality_warnings', None)
+                    existing_movies[movie_index].pop('_needs_review', None)
+                    existing_movies[movie_index]['_watch_links_verified'] = datetime.now().isoformat()
+                    label = "verified" if is_unverified else "resolved"
+                    print(f"  ✓ {title} — {label}")
                     fixed_count += 1
                     unsaved_count += 1
 
-                    # Incremental save to prevent data loss if interrupted
                     if unsaved_count >= save_interval:
                         display_data['movies'] = existing_movies
                         display_data['generated_at'] = datetime.now().isoformat()
@@ -4127,13 +4153,20 @@ class DataGenerator:
                             json.dump(display_data, f, indent=2)
                         print(f"  💾 Incremental save ({fixed_count} fixed so far)")
                         unsaved_count = 0
+                elif is_unverified:
+                    existing_movies[movie_index]['watch_links'] = {}
+                    existing_movies[movie_index].pop('_quality_warnings', None)
+                    existing_movies[movie_index].pop('_needs_review', None)
+                    existing_movies[movie_index]['_watch_links_verified'] = datetime.now().isoformat()
+                    print(f"  ○ {title} — cleared (JustWatch no match)")
+                    unsaved_count += 1
                 else:
-                    print(f"  ○ {title} — not on Amazon/Apple TV")
+                    print(f"  ○ {title} — not found")
             except Exception as e:
                 print(f"  ✗ Error re-enriching {title}: {e}")
                 continue
 
-        # Final save if anything changed since last incremental save
+        # Final save
         if unsaved_count > 0:
             display_data['movies'] = existing_movies
             display_data['generated_at'] = datetime.now().isoformat()
@@ -4145,7 +4178,7 @@ class DataGenerator:
                     shutil.copy2('data.json', backup_path)
                 with open('data.json', 'w') as f:
                     json.dump(display_data, f, indent=2)
-                print(f"✅ Re-enriched {fixed_count}/{len(gap_movies)} movies with watch links")
+                print(f"✅ Re-enriched {fixed_count}/{len(all_movies)} movies")
             except Exception as e:
                 print(f"❌ Error saving data.json: {e}")
                 return 0
@@ -4205,6 +4238,52 @@ class DataGenerator:
         if injected:
             print(f"💬 Injected pull quotes for {injected} movies")
 
+    def _apply_cached_watch_links(self, movies_list):
+        """Apply cached watch links to movies with empty watch_links.
+
+        Reads from cache/watch_links_cache.json and patches movies whose
+        watch_links are empty but have cached data (e.g. from TV show fix).
+        """
+        cache_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'cache', 'watch_links_cache.json')
+        if not os.path.exists(cache_path):
+            return
+
+        try:
+            with open(cache_path, 'r') as f:
+                cache = json.load(f)
+        except Exception as e:
+            self.logger.warning(f"Watch links cache injection: Error loading cache: {e}")
+            return
+
+        applied = 0
+        for movie in movies_list:
+            # Skip movies that already have working watch links (non-null URLs)
+            existing = movie.get('watch_links', {})
+            streaming = existing.get('streaming', [])
+            if isinstance(streaming, dict):
+                streaming = [streaming]
+            vod = existing.get('vod', [])
+            if isinstance(vod, dict):
+                vod = [vod]
+            has_real_streaming = any(s.get('link') for s in streaming if isinstance(s, dict))
+            has_real_vod = any(v.get('link') for v in vod if isinstance(v, dict))
+            if has_real_streaming or has_real_vod:
+                continue
+
+            # Check cache by movie ID
+            movie_id = str(movie.get('id', ''))
+            cached = cache.get(movie_id, {})
+            cached_links = cached.get('links', {})
+            if not cached_links:
+                continue
+
+            movie['watch_links'] = cached_links
+            applied += 1
+            self.logger.debug(f"Applied cached watch links for {movie.get('title')}")
+
+        if applied:
+            print(f"🔗 Applied cached watch links for {applied} movies")
+
     def generate_display_data(self, days_back=90, incremental=True, force_refresh=False):
         """
         PHASE 4: Apply admin overrides and prepare final display data.
@@ -4250,6 +4329,9 @@ class DataGenerator:
 
         # Inject selected pull quotes from cache into movie data
         self._inject_selected_pull_quotes(all_movies)
+
+        # Apply cached watch links to movies with empty watch_links
+        self._apply_cached_watch_links(all_movies)
 
         # Apply admin overrides to ALL movies (not just recent ones)
         print(f"🔧 Applying admin overrides to {len(all_movies)} movies...")

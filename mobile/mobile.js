@@ -323,6 +323,7 @@ const NRWMobile = {
                             return `<div class="screening-ribbon">${sName}${dateHtml}</div>`;
                         })() : ''}
                         ${isStaffPick ? '<span class="staff-badge">STAFF PICK</span>' : ''}
+                        ${this.getScoreBadges(movie)}
                     </div>
                 </div>
                 <div class="flip-back">
@@ -510,6 +511,22 @@ const NRWMobile = {
             return `<span class="btn-equal btn-rt" style="opacity:0.5">IMDb ${movie.imdb_rating}</span>`;
         }
         return '';
+    },
+
+    getScoreBadges(movie) {
+        let badges = '';
+        if (movie.rt_score && movie.links?.rt) {
+            badges += `<a href="${movie.links.rt}" target="_blank" rel="noopener" class="card-score-badge rt">RT ${movie.rt_score}</a>`;
+        }
+        if (movie.imdb_rating) {
+            const imdbUrl = movie.links?.imdb;
+            if (imdbUrl) {
+                badges += `<a href="${imdbUrl}" target="_blank" rel="noopener" class="card-score-badge imdb">${movie.imdb_rating}</a>`;
+            } else {
+                badges += `<span class="card-score-badge imdb">${movie.imdb_rating}</span>`;
+            }
+        }
+        return badges ? `<div class="card-score-overlay">${badges}</div>` : '';
     },
 
     getWikiButton(movie) {

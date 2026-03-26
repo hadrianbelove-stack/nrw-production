@@ -126,6 +126,14 @@ const NRW = {
     trailerReelMovies: [],     // Movies in the trailer reel (last 7 days with hosted trailers)
     isTrailerReel: false,      // true when playing the trailer reel (vs individual trailer from lightbox)
 
+    // Format screening end date: "2026-03-30" → "Mar 30"
+    formatScreeningDate(dateStr) {
+        if (!dateStr) return '';
+        const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        const [y, m, d] = dateStr.split('-');
+        return `${months[parseInt(m, 10) - 1]} ${parseInt(d, 10)}`;
+    },
+
     async init() {
         try {
             // Load movie data
@@ -175,18 +183,19 @@ const NRW = {
     },
 
     setupCardFlipHandler() {
-        // Add click handler to open lightbox directly (experimental UIX)
+        // Click anywhere on a movie card to open lightbox
         document.getElementById('wall').addEventListener('click', (e) => {
             if (e.target.tagName === 'A') return;
             if (e.target.closest('.movie-info')) return;
-            if (e.target.closest('.expand-btn')) return; // Let expand btn handle itself
+            if (e.target.closest('[data-trailer-reel]')) return;
+
+            // Find the movie card — try multiple selectors for robustness
             const container = e.target.closest('.movie-container');
-            if (container) {
-                // Find movie ID from the expand button's data attribute
-                const expandBtn = container.querySelector('.expand-btn[data-movie-id]');
-                if (expandBtn) {
-                    this.openLightbox(expandBtn.dataset.movieId);
-                }
+            if (!container) return;
+
+            const expandBtn = container.querySelector('.expand-btn[data-movie-id]');
+            if (expandBtn) {
+                this.openLightbox(expandBtn.dataset.movieId);
             }
         });
     },
@@ -618,13 +627,7 @@ const NRW = {
             const staffPickClass = isStaffPick ? ' staff-pick-movie' : '';
             const staffPickBadge = isStaffPick ? '<div class="staff-pick-badge">STAFF PICK</div>' : '';
 
-            // Format screening end date: "2026-03-30" → "Mar 30"
-            const formatScreeningDate = (dateStr) => {
-                if (!dateStr) return '';
-                const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-                const [y, m, d] = dateStr.split('-');
-                return `${months[parseInt(m, 10) - 1]} ${parseInt(d, 10)}`;
-            };
+            const formatScreeningDate = NRW.formatScreeningDate;
 
             // Streaming service pill badge for card front
             const getStreamingBadge = (movie) => {
@@ -664,6 +667,21 @@ const NRW = {
             const screeningRibbon = movie.categories?.is_virtual_screening
                 ? `<div class="screening-ribbon">${screeningName}${screeningDatesHtml}</div>` : '';
 
+            // Score badges for card front (bottom-left overlay)
+            let cardScoreBadges = '';
+            if (movie.rt_score && movie.links?.rt) {
+                cardScoreBadges += `<a href="${movie.links.rt}" target="_blank" rel="noopener noreferrer" class="card-score-badge rt">RT ${movie.rt_score}</a>`;
+            }
+            if (movie.imdb_rating) {
+                const imdbUrl = movie.links?.imdb;
+                if (imdbUrl) {
+                    cardScoreBadges += `<a href="${imdbUrl}" target="_blank" rel="noopener noreferrer" class="card-score-badge imdb">${movie.imdb_rating}</a>`;
+                } else {
+                    cardScoreBadges += `<span class="card-score-badge imdb">${movie.imdb_rating}</span>`;
+                }
+            }
+            const cardScoreHtml = cardScoreBadges ? `<div class="card-score-overlay">${cardScoreBadges}</div>` : '';
+
             html += `
             <div class="movie-container${staffPickClass}">
                 ${staffPickBadge}
@@ -677,6 +695,7 @@ const NRW = {
                             <img src="${movie.poster || ''}"
                                  onerror="this.style.display='none';"
                                  ${movie.poster ? '' : 'style="display:none"'}>
+                            ${cardScoreHtml}
                             <button class="expand-btn" data-movie-id="${movie.id}" aria-label="View fullscreen">&#x26F6;</button>
                         </div>
                         <div class="card-back">
@@ -1042,7 +1061,7 @@ const NRW = {
         if (screeningNameEl) {
             if (movie.categories?.is_virtual_screening && movie.virtual_screening_info?.screening_name) {
                 const endDate = movie.virtual_screening_info?.available_end;
-                const dateStr = endDate ? ` · Ends ${formatScreeningDate(endDate)}` : '';
+                const dateStr = endDate ? ` · Ends ${NRW.formatScreeningDate(endDate)}` : '';
                 screeningNameEl.textContent = movie.virtual_screening_info.screening_name + dateStr;
                 screeningNameEl.style.display = 'block';
             } else {
