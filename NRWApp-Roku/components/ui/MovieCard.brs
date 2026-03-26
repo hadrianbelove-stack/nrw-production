@@ -15,6 +15,8 @@ Sub Init()
     m.serviceBadge = m.top.FindNode("serviceBadge")
     m.rtBadgeBg = m.top.FindNode("rtBadgeBg")
     m.rtBadge = m.top.FindNode("rtBadge")
+    m.imdbBadgeBg = m.top.FindNode("imdbBadgeBg")
+    m.imdbBadge = m.top.FindNode("imdbBadge")
     m.staffPickStrip = m.top.FindNode("staffPickStrip")
 
     ' Director label
@@ -65,6 +67,14 @@ Sub onMovieChanged()
     else
         m.rtBadge.visible = false
         m.rtBadgeBg.visible = false
+    end if
+
+    ' Set IMDb rating badge
+    if movie.imdb_rating <> invalid AND movie.imdb_rating <> ""
+        SetupImdbBadge(movie.imdb_rating)
+    else
+        m.imdbBadge.visible = false
+        m.imdbBadgeBg.visible = false
     end if
 
     ' Set staff pick strip
@@ -132,16 +142,47 @@ Sub SetupRtBadge(score as Dynamic)
     end if
 
     ' Set badge text
-    m.rtBadge.text = scoreInt.ToStr() + "%"
+    m.rtBadge.text = "RT " + scoreInt.ToStr() + "%"
     m.rtBadge.visible = true
-
-    ' Set color based on score (Fresh = 60+, Rotten = <60)
-    if scoreInt >= 60
-        m.rtBadgeBg.color = "0x34C759FF"  ' Green (fresh)
-    else
-        m.rtBadgeBg.color = "0xFF3B30FF"  ' Red (rotten)
-    end if
+    m.rtBadgeBg.color = "0xFA3232D9"  ' Consistent RT red
     m.rtBadgeBg.visible = true
+End Sub
+
+' ============================================================================
+' Setup IMDb Rating Badge
+' ============================================================================
+Sub SetupImdbBadge(rating as Dynamic)
+    ratingStr = ""
+    if Type(rating) = "String" OR Type(rating) = "roString"
+        ratingStr = rating
+    else if Type(rating) = "Float" OR Type(rating) = "roFloat"
+        ratingStr = Str(rating).Trim()
+    else if Type(rating) = "Integer" OR Type(rating) = "roInt"
+        ratingStr = Str(rating).Trim()
+    else
+        m.imdbBadge.visible = false
+        m.imdbBadgeBg.visible = false
+        return
+    end if
+
+    if ratingStr = "" OR ratingStr = "0"
+        m.imdbBadge.visible = false
+        m.imdbBadgeBg.visible = false
+        return
+    end if
+
+    m.imdbBadge.text = ratingStr
+    m.imdbBadge.visible = true
+    m.imdbBadgeBg.visible = true
+
+    ' Position: shift left when RT badge is also visible
+    if m.rtBadge.visible
+        m.imdbBadge.translation = [108, 274]
+        m.imdbBadgeBg.translation = [108, 274]
+    else
+        m.imdbBadge.translation = [160, 274]
+        m.imdbBadgeBg.translation = [160, 274]
+    end if
 End Sub
 
 ' ============================================================================

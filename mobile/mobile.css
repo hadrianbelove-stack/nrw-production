@@ -243,6 +243,37 @@ body {
     margin-top: 1px;
 }
 
+/* Score badges on card front (RT + IMDb, bottom-left) */
+.card-score-overlay {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    display: flex;
+    gap: 4px;
+    z-index: 5;
+}
+.card-score-overlay:empty { display: none; }
+.card-score-badge {
+    padding: 3px 6px;
+    border-radius: 3px;
+    font-size: 9px;
+    font-weight: 800;
+    text-decoration: none;
+    line-height: 1;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.5);
+}
+.card-score-badge.rt {
+    background: rgba(250, 50, 50, 0.85);
+    color: #fff;
+}
+.card-score-badge.imdb {
+    background: rgba(245, 197, 24, 0.9);
+    color: #000;
+}
+.screening-ribbon ~ .card-score-overlay {
+    bottom: 35px;
+}
+
 /* Staff Pick badge */
 .staff-badge {
     position: absolute;

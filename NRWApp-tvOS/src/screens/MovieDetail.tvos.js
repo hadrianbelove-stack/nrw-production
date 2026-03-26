@@ -396,7 +396,7 @@ const MovieDetailTvOS = () => {
             <View
               style={[
                 styles.rtBadge,
-                { backgroundColor: rtScore.isFresh ? Colors.green : Colors.red },
+                { backgroundColor: 'rgba(250, 50, 50, 0.85)' },
               ]}
             >
               <Text style={styles.rtScore}>{rtScore.label}</Text>

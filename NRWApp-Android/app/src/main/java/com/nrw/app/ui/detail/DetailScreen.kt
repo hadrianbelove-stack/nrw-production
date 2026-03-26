@@ -396,11 +396,11 @@ private fun MovieDetail(
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(4.dp))
-                                .background(if (isFresh) Green else Red)
+                                .background(Color(0xFFFA3232).copy(alpha = 0.85f))
                                 .padding(horizontal = 6.dp, vertical = 2.dp)
                         ) {
                             Text(
-                                text = "🍅 $score%",
+                                text = "RT $score%",
                                 color = TextPrimary,
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 11.sp

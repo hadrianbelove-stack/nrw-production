@@ -271,8 +271,7 @@ export default function MovieDetail({route}) {
                 style={[
                   styles.rtBadge,
                   {
-                    backgroundColor:
-                      parseInt(movie.rt_score, 10) >= 60 ? Colors.green : Colors.red,
+                    backgroundColor: 'rgba(250, 50, 50, 0.85)',
                   },
                 ]}>
                 <Text style={styles.rtScore}>{movie.rt_score}</Text>

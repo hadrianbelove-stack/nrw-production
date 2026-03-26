@@ -3725,7 +3725,12 @@ class DataGenerator:
                     continue
 
                 # Get enrichment fields only
+                import time as _etime
+                _movie_start = _etime.time()
                 enrichment_fields = self.get_enrichment_only_fields(movie_id, movie_data, movie_details, force_refresh=False)
+                _movie_elapsed = _etime.time() - _movie_start
+                if _movie_elapsed > 90:
+                    print(f"  ⚠️ {movie_data.get('title', movie_id)} took {_movie_elapsed:.0f}s (slow)", flush=True)
                 if enrichment_fields:
                     # Deep merge links: enrichment sets {wikipedia, trailer, rt},
                     # but external processes may have added other keys (e.g. trailer_hosted).

@@ -66,17 +66,34 @@
           color="0xFFFFFFFF"
           visible="false" />
 
+        <!-- IMDb rating badge (bottom-right, left of RT) -->
+        <Rectangle id="imdbBadgeBg"
+          width="36"
+          height="22"
+          translation="[116, 274]"
+          color="0xF5C518E5"
+          visible="false" />
+        <Label id="imdbBadge"
+          width="36"
+          height="22"
+          translation="[116, 274]"
+          horizAlign="center"
+          vertAlign="center"
+          font="font:SmallSystemFont"
+          color="0x000000FF"
+          visible="false" />
+
         <!-- RT score badge (bottom-right) -->
         <Rectangle id="rtBadgeBg"
-          width="36"
+          width="44"
           height="22"
-          translation="[160, 274]"
-          color="0x34C759FF"
+          translation="[152, 274]"
+          color="0xFA3232D9"
           visible="false" />
         <Label id="rtBadge"
-          width="36"
+          width="44"
           height="22"
-          translation="[160, 274]"
+          translation="[152, 274]"
           horizAlign="center"
           vertAlign="center"
           font="font:SmallSystemFont"

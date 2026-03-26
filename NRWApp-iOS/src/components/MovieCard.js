@@ -78,17 +78,19 @@ export default function MovieCard({movie, onPress, isFeatured = false}) {
           </View>
         )}
 
-        {/* RT Score badge */}
-        {movie.rt_score && (
-          <View
-            style={[
-              styles.rtBadge,
-              {
-                backgroundColor:
-                  parseInt(movie.rt_score, 10) >= 60 ? Colors.green : Colors.red,
-              },
-            ]}>
-            <Text style={styles.rtText}>{movie.rt_score}</Text>
+        {/* Score badges (RT + IMDb) */}
+        {(movie.rt_score || movie.imdb_rating) && (
+          <View style={styles.scoreBadgeRow}>
+            {movie.rt_score && (
+              <View style={[styles.scoreBadge, styles.rtScoreBadge]}>
+                <Text style={styles.rtScoreText}>RT {movie.rt_score}</Text>
+              </View>
+            )}
+            {movie.imdb_rating && (
+              <View style={[styles.scoreBadge, styles.imdbScoreBadge]}>
+                <Text style={styles.imdbScoreText}>{movie.imdb_rating}</Text>
+              </View>
+            )}
           </View>
         )}
       </View>
@@ -186,18 +188,33 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     textTransform: 'uppercase',
   },
-  rtBadge: {
+  scoreBadgeRow: {
     position: 'absolute',
-    top: 8,
-    right: 8,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 4,
+    bottom: 8,
+    left: 8,
+    flexDirection: 'row',
+    gap: 4,
   },
-  rtText: {
-    color: Colors.textPrimary,
-    fontSize: 11,
-    fontWeight: '700',
+  scoreBadge: {
+    paddingHorizontal: 5,
+    paddingVertical: 2,
+    borderRadius: 3,
+  },
+  rtScoreBadge: {
+    backgroundColor: 'rgba(250, 50, 50, 0.85)',
+  },
+  rtScoreText: {
+    color: '#fff',
+    fontSize: 9,
+    fontWeight: '800',
+  },
+  imdbScoreBadge: {
+    backgroundColor: 'rgba(245, 197, 24, 0.9)',
+  },
+  imdbScoreText: {
+    color: '#000',
+    fontSize: 9,
+    fontWeight: '800',
   },
   info: {
     paddingTop: Spacing.sm,

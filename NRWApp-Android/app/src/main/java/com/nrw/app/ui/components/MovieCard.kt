@@ -12,6 +12,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -210,19 +211,25 @@ fun MovieCard(
                     }
                 }
 
-                // RT Score badge (bottom right, above staff pick if present)
-                movie.rtScore?.let { scoreStr ->
-                    val score = scoreStr.replace("%", "").trim().toIntOrNull()
-                    if (score != null) {
-                        RtBadge(
-                            score = score,
-                            modifier = Modifier
-                                .align(Alignment.BottomEnd)
-                                .padding(
-                                    end = 4.dp,
-                                    bottom = if (isStaffPick) 22.dp else 4.dp
-                                )
-                        )
+                // Score badges (bottom right, above staff pick if present)
+                val rtScore = movie.rtScore?.replace("%", "")?.trim()?.toIntOrNull()
+                val hasScores = rtScore != null || movie.imdbRating != null
+                if (hasScores) {
+                    Row(
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(
+                                end = 4.dp,
+                                bottom = if (isStaffPick) 22.dp else 4.dp
+                            ),
+                        horizontalArrangement = Arrangement.spacedBy(3.dp)
+                    ) {
+                        if (rtScore != null) {
+                            RtBadge(score = rtScore)
+                        }
+                        movie.imdbRating?.let { rating ->
+                            ImdbBadge(rating = rating)
+                        }
                     }
                 }
             }
@@ -291,19 +298,36 @@ private fun RtBadge(
     score: Int,
     modifier: Modifier = Modifier
 ) {
-    val isFresh = score >= 60
-    val backgroundColor = if (isFresh) Color(0xFF2ECC71) else Color(0xFFE74C3C)
-
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(3.dp))
-            .background(backgroundColor)
+            .background(Color(0xFFFA3232).copy(alpha = 0.85f))
             .padding(horizontal = 4.dp, vertical = 2.dp)
     ) {
         Text(
-            text = "$score%",
-            color = TextPrimary,
-            fontSize = 8.sp,
+            text = "RT $score%",
+            color = Color.White,
+            fontSize = 7.sp,
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+@Composable
+private fun ImdbBadge(
+    rating: String,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(3.dp))
+            .background(Color(0xFFF5C518).copy(alpha = 0.9f))
+            .padding(horizontal = 4.dp, vertical = 2.dp)
+    ) {
+        Text(
+            text = rating,
+            color = Color.Black,
+            fontSize = 7.sp,
             fontWeight = FontWeight.Bold
         )
     }
