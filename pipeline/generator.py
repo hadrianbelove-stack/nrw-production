@@ -838,156 +838,145 @@ class DataGenerator:
                     remaining = (total_to_check - checked) / rate if rate > 0 else 0
                     print(f"  📊 Discovery: {checked}/{total_to_check} ({progress_pct:.1f}%) | {newly_digital} found | {int(elapsed//60)}m elapsed | ~{int(remaining//60)}m remaining")
 
-                # Check providers with retry logic (use /tv/ endpoint for miniseries)
-                if str(movie_id).startswith('tv_'):
-                    numeric_id = str(movie_id).replace('tv_', '')
-                    url = f"https://api.themoviedb.org/3/tv/{numeric_id}/watch/providers"
-                else:
-                    url = f"https://api.themoviedb.org/3/movie/{movie_id}/watch/providers"
-                params = {'api_key': self.tmdb_key}
+                # PRIMARY: Type 4 digital release check (authoritative, gives accurate date)
+                # Type 4 is checked first — it provides the real digital release date
+                # and has fewer false positives than provider availability.
+                type4_found = False
+                if movie['status'] == 'tracking':
+                    type4_date = self.fetch_tmdb_type4_date(movie_id)
+                    if type4_date:
+                        try:
+                            type4_dt = datetime.strptime(type4_date, '%Y-%m-%d')
+                            today_dt = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+                            movie['has_providers'] = True
+                            movie['_discovery_source'] = 'tmdb_type4'
+                            movie['digital_date'] = type4_date
+                            movie['status'] = 'available'
+                            movie['enriched'] = False
+                            movie['enrichment_date'] = None
+                            movie['providers'] = {'rent': [], 'buy': [], 'streaming': []}
+                            newly_digital += 1
+                            newly_available_ids.append(movie_id)
+                            self.add_movie_to_site_immediately(movie_id, movie)
+                            type4_found = True
+                            if type4_dt <= today_dt:
+                                self.logger.info(f"Type 4 discovery: {movie['title']} — digital release {type4_date}")
+                                print(f"  📅 {movie['title']} — digital release {type4_date}")
+                            else:
+                                days_until = (type4_dt - today_dt).days
+                                self.logger.info(f"Type 4 discovery: {movie['title']} — digital in {days_until}d ({type4_date})")
+                                print(f"  ⏳ {movie['title']} — digital in {days_until}d ({type4_date})")
+                        except ValueError:
+                            pass
 
-                data = None
-                max_retries = 3
-                for attempt in range(max_retries):
-                    try:
-                        response = requests.get(url, params=params, timeout=(5, 15))
-                        if response.status_code == 200:
-                            data = response.json()
-                            break
-                        elif response.status_code == 429:  # Rate limited
+                # SECONDARY: Provider availability check (for ~44% of movies without Type 4)
+                # Only runs when Type 4 didn't find a digital release date.
+                if not type4_found and movie['status'] == 'tracking':
+                    if str(movie_id).startswith('tv_'):
+                        numeric_id = str(movie_id).replace('tv_', '')
+                        url = f"https://api.themoviedb.org/3/tv/{numeric_id}/watch/providers"
+                    else:
+                        url = f"https://api.themoviedb.org/3/movie/{movie_id}/watch/providers"
+                    params = {'api_key': self.tmdb_key}
+
+                    data = None
+                    max_retries = 3
+                    for attempt in range(max_retries):
+                        try:
+                            response = requests.get(url, params=params, timeout=(5, 15))
+                            if response.status_code == 200:
+                                data = response.json()
+                                break
+                            elif response.status_code == 429:  # Rate limited
+                                wait_time = (2 ** attempt) + random.uniform(0, 1)
+                                print(f"  Rate limited on {movie['title']}, waiting {wait_time:.1f}s")
+                                time.sleep(wait_time)
+                                continue
+                            else:
+                                self.logger.warning(f"HTTP {response.status_code} for {movie['title']}")
+                                break
+                        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as e:
                             wait_time = (2 ** attempt) + random.uniform(0, 1)
-                            print(f"  Rate limited on {movie['title']}, waiting {wait_time:.1f}s")
-                            time.sleep(wait_time)
-                            continue
-                        else:
-                            self.logger.warning(f"HTTP {response.status_code} for {movie['title']}")
-                            break
-                    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as e:
-                        wait_time = (2 ** attempt) + random.uniform(0, 1)
-                        if attempt < max_retries - 1:
-                            print(f"  Timeout/connection error for {movie['title']}, retrying in {wait_time:.1f}s")
-                            time.sleep(wait_time)
-                            continue
-                        else:
-                            self.logger.warning(f"Failed after {max_retries} attempts for {movie['title']}: {type(e).__name__}")
+                            if attempt < max_retries - 1:
+                                print(f"  Timeout/connection error for {movie['title']}, retrying in {wait_time:.1f}s")
+                                time.sleep(wait_time)
+                                continue
+                            else:
+                                self.logger.warning(f"Failed after {max_retries} attempts for {movie['title']}: {type(e).__name__}")
+                                failed += 1
+                                break
+                        except requests.exceptions.RequestException as e:
+                            self.logger.warning(f"Request error for {movie['title']}: {type(e).__name__}")
                             failed += 1
                             break
-                    except requests.exceptions.RequestException as e:
-                        self.logger.warning(f"Request error for {movie['title']}: {type(e).__name__}")
-                        failed += 1
-                        break
 
-                if data:
-                    us = data.get('results', {}).get('US', {})
+                    if data:
+                        us = data.get('results', {}).get('US', {})
 
-                    # Get all provider types
-                    rent_providers = us.get('rent', [])
-                    buy_providers = us.get('buy', [])
-                    stream_providers = us.get('flatrate', [])
+                        # Get all provider types
+                        rent_providers = us.get('rent', [])
+                        buy_providers = us.get('buy', [])
+                        stream_providers = us.get('flatrate', [])
 
-                    # Extract provider names (using centralized excluded services helper)
-                    rent_names = [p.get('provider_name', '') for p in rent_providers if not self.enrichment.is_excluded_service(p.get('provider_name', ''))]
-                    buy_names = [p.get('provider_name', '') for p in buy_providers if not self.enrichment.is_excluded_service(p.get('provider_name', ''))]
-                    stream_names = [p.get('provider_name', '') for p in stream_providers if not self.enrichment.is_excluded_service(p.get('provider_name', ''))]
+                        # Extract provider names (using centralized excluded services helper)
+                        rent_names = [p.get('provider_name', '') for p in rent_providers if not self.enrichment.is_excluded_service(p.get('provider_name', ''))]
+                        buy_names = [p.get('provider_name', '') for p in buy_providers if not self.enrichment.is_excluded_service(p.get('provider_name', ''))]
+                        stream_names = [p.get('provider_name', '') for p in stream_providers if not self.enrichment.is_excluded_service(p.get('provider_name', ''))]
 
-                    # Check if ANY providers exist (after filtering out excluded services)
-                    has_providers = bool(rent_names or buy_names or stream_names)
+                        has_providers = bool(rent_names or buy_names or stream_names)
+                        movie['has_providers'] = has_providers
 
-                    # Always update has_providers flag based on current provider availability
-                    movie['has_providers'] = has_providers
+                        if has_providers and movie['status'] == 'tracking':
+                            movie['_discovery_source'] = 'provider_availability_check'
 
-                    # PRIMARY: Type 4 digital release existence check.
-                    # If TMDB has a US Type 4 (Digital) entry, the movie is digitally
-                    # available (past date) or pre-announced (future date). Either way, transition it.
-                    if movie['status'] == 'tracking':
-                        type4_date = self.fetch_tmdb_type4_date(movie_id)
-                        if type4_date:
+                        # Pre-order detection: buy-only + single provider = check Amazon
+                        is_buy_only = bool(buy_names) and not rent_names and not stream_names
+                        if is_buy_only and len(buy_names) == 1 and has_providers and movie['status'] == 'tracking':
+                            amazon_status = None
                             try:
-                                type4_dt = datetime.strptime(type4_date, '%Y-%m-%d')
-                                today_dt = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-                                has_providers = True
-                                movie['has_providers'] = True
-                                movie['_discovery_source'] = 'tmdb_type4'
-                                movie['digital_date'] = type4_date
-                                if type4_dt <= today_dt:
-                                    self.logger.info(f"Type 4 discovery: {movie['title']} — digital release {type4_date}")
-                                    print(f"  📅 {movie['title']} — digital release {type4_date}")
-                                else:
-                                    days_until = (type4_dt - today_dt).days
-                                    self.logger.info(f"Type 4 discovery: {movie['title']} — digital in {days_until}d ({type4_date})")
-                                    print(f"  ⏳ {movie['title']} — digital in {days_until}d ({type4_date})")
-                            except ValueError:
-                                pass
+                                if not hasattr(self, '_amazon_detector'):
+                                    from amazon_preorder_detector import AmazonPreorderDetector
+                                    self._amazon_detector = AmazonPreorderDetector()
+                                amazon_status = self._amazon_detector.check_preorder(movie['title'], movie.get('year'))
+                            except Exception as e:
+                                self.logger.warning(f"Amazon pre-order check failed for {movie['title']}: {e}")
 
-                    # SECONDARY: Provider availability (catches ~44% of movies without Type 4)
-                    if has_providers and movie['status'] == 'tracking' and not movie.get('_discovery_source'):
-                        movie['_discovery_source'] = 'provider_availability_check'
+                            if amazon_status == 'pre-order':
+                                movie['status'] = 'pre-order'
+                                movie['pre_order_detected'] = datetime.now().strftime('%Y-%m-%d')
+                                movie['providers'] = {
+                                    'rent': rent_names,
+                                    'buy': buy_names,
+                                    'streaming': stream_names
+                                }
+                                preorder_detected += 1
+                                print(f"  ⏳ {movie['title']} is a pre-order on {buy_names[0]} — tracking for VOD date")
+                                self.logger.info(f"Pre-order detected: {movie['title']} ({movie_id}) on {buy_names[0]}")
+                                has_providers = False
+                            elif amazon_status == 'available':
+                                print(f"  ~ {movie['title']} buy-only ({buy_names[0]}) confirmed available on Amazon")
+                            else:
+                                has_providers = False
+                                print(f"  ? {movie['title']} — Amazon check inconclusive, skipping")
 
-                    # Pre-order detection: buy-only + single provider = check Amazon
-                    is_buy_only = bool(buy_names) and not rent_names and not stream_names
-                    if is_buy_only and len(buy_names) == 1 and has_providers and movie['status'] == 'tracking':
-                        # Check Amazon product page for "Pre-order" vs "Buy" button
-                        amazon_status = None
-                        try:
-                            if not hasattr(self, '_amazon_detector'):
-                                from amazon_preorder_detector import AmazonPreorderDetector
-                                self._amazon_detector = AmazonPreorderDetector()
-                            amazon_status = self._amazon_detector.check_preorder(movie['title'], movie.get('year'))
-                        except Exception as e:
-                            self.logger.warning(f"Amazon pre-order check failed for {movie['title']}: {e}")
-
-                        if amazon_status == 'pre-order':
-                            # Confirmed pre-order — track it but don't add to site yet
-                            movie['status'] = 'pre-order'
-                            movie['pre_order_detected'] = datetime.now().strftime('%Y-%m-%d')
+                        # Transition provider-discovered movie
+                        if has_providers and movie['status'] == 'tracking':
+                            movie['status'] = 'available'
+                            if not movie.get('digital_date'):
+                                movie['digital_date'] = datetime.now().strftime('%Y-%m-%d')
                             movie['providers'] = {
                                 'rent': rent_names,
                                 'buy': buy_names,
                                 'streaming': stream_names
                             }
-                            preorder_detected += 1
-                            print(f"  ⏳ {movie['title']} is a pre-order on {buy_names[0]} — tracking for VOD date")
-                            self.logger.info(f"Pre-order detected: {movie['title']} ({movie_id}) on {buy_names[0]}")
-                            # Skip normal discovery — don't set digital_date, don't add to data.json
-                            has_providers = False
-                        else:
-                            # Amazon says "Buy"/"Rent" or check failed — proceed normally
-                            if amazon_status == 'available':
-                                print(f"  ~ {movie['title']} buy-only ({buy_names[0]}) confirmed available on Amazon")
-                            # has_providers stays True, normal discovery proceeds below
+                            movie['enriched'] = False
+                            movie['enrichment_date'] = None
+                            newly_digital += 1
 
-                    # Check if this movie needs enrichment
-                    needs_enrichment = False
-
-                    if has_providers and movie['status'] == 'tracking':
-                        # Newly discovered movie
-                        movie['status'] = 'available'
-                        if not movie.get('digital_date'):
-                            movie['digital_date'] = datetime.now().strftime('%Y-%m-%d')
-                        movie['providers'] = {
-                            'rent': rent_names,
-                            'buy': buy_names,
-                            'streaming': stream_names
-                        }
-                        movie['enriched'] = False
-                        movie['enrichment_date'] = None
-
-                        newly_digital += 1
-                        needs_enrichment = True
-
-                        source = movie.get('_discovery_source', 'provider')
-                        first_service = stream_names[0] if stream_names else rent_names[0] if rent_names else buy_names[0] if buy_names else '?'
-                        if source == 'tmdb_type4':
-                            print(f"  ✓ {movie['title']} — Type 4 ({movie.get('digital_date','')})")
-                        else:
+                            first_service = stream_names[0] if stream_names else rent_names[0] if rent_names else buy_names[0] if buy_names else '?'
                             print(f"  ✓ {movie['title']} now on {first_service}!")
 
-                    # Add to enrichment queue if needed
-                    if needs_enrichment:
-                        newly_available_ids.append(movie_id)
-
-                        # Add to data.json immediately
-                        if movie['status'] == 'available' and needs_enrichment:
+                            newly_available_ids.append(movie_id)
                             self.add_movie_to_site_immediately(movie_id, movie)
 
                 # Incremental save every 100 movies
@@ -3582,27 +3571,31 @@ class DataGenerator:
 
         newly_count = len(movie_ids_to_enrich)
 
-        # Catch-up: retry recently-added movies with incomplete enrichment (last 7 days only)
+        # Catch-up: retry movies with incomplete enrichment
         seen_ids = set(movie_ids_to_enrich)
         catchup_ids = []
-        cutoff_date = (datetime.now() - timedelta(days=7)).strftime('%Y-%m-%d')
+        retry_cutoff = (datetime.now() - timedelta(days=7)).strftime('%Y-%m-%d')
+        orphan_cutoff = (datetime.now() - timedelta(days=30)).strftime('%Y-%m-%d')
         for movie in existing_movies:
             movie_id = str(movie.get('id', ''))
             if not movie_id or movie_id in seen_ids:
                 continue
-            # Only catch up movies that became available recently
             digital_date = movie.get('digital_date', '')
-            if digital_date < cutoff_date:
-                continue
             status = movie.get('_enrichment_status', '')
             gaps = movie.get('_enrichment_gaps')
             attempts = movie.get('_enrichment_attempts', 0)
             if attempts >= MAX_ENRICHMENT_ATTEMPTS:
                 continue
-            if status in ('pending', 'failed', 'error', 'timeout'):
-                catchup_ids.append(movie_id)
-            elif status == 'completed' and gaps:
-                catchup_ids.append(movie_id)
+            # Never attempted — wider 30-day window since these were missed entirely
+            if not status and not movie.get('enriched', True):
+                if digital_date >= orphan_cutoff:
+                    catchup_ids.append(movie_id)
+            # Retry failed/pending — 7-day window
+            elif digital_date >= retry_cutoff:
+                if status in ('pending', 'failed', 'error', 'timeout'):
+                    catchup_ids.append(movie_id)
+                elif status == 'completed' and gaps:
+                    catchup_ids.append(movie_id)
 
         movie_ids_to_enrich.extend(catchup_ids)
 
