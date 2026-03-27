@@ -1,6 +1,6 @@
 #!/bin/bash
 # NRW Local Daily Script
-# Runs via launchd at 10 AM daily (after CI completes at ~3 AM)
+# Runs via launchd at 6 AM daily (after CI completes at ~5 AM)
 # 1. Pulls latest data from GitHub
 # 2. Uploads new trailers to B2 (CI stamps URLs into data.json next morning)
 
@@ -41,9 +41,5 @@ fi
 # Step 2: Upload new trailers to B2 (download from YouTube + upload, no data.json writes)
 echo "Hosting new trailers..." >> "$LOG"
 /opt/homebrew/bin/python3.11 scripts/trailer_pipeline.py host >> "$LOG" 2> >(grep -v "Cookies.binarycookies" >> "$LOG")
-
-# Step 3: IMDB rating collection with Playwright (catches OMDb "N/A" movies)
-echo "Running IMDB rating collection..." >> "$LOG"
-/usr/bin/python3 scripts/imdb_backfill.py --limit 50 >> "$LOG" 2>&1
 
 echo "=== Done: $(date) ===" >> "$LOG"
