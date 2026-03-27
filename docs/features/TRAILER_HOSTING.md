@@ -72,7 +72,7 @@ trailer_hosting:
 ```
 
 **`max_hosted` controls TWO things:**
-1. **Hosting scope** — the `host` command only downloads trailers for the most recent 200 movies (by data.json order)
+1. **Hosting scope** — the `host` command only downloads trailers for the most recent 200 movies (by `digital_date`, newest first)
 2. **Rotation cap** — the `rotate` command deletes oldest trailers from B2 when over this count
 
 This means trailers are a rolling window: as new movies arrive, old ones rotate out.

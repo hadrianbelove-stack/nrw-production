@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The New Release Wall - Admin Panel</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}?v=22">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}?v=25">
 </head>
 <body>
     <!-- Health Status Banner -->
@@ -146,13 +146,13 @@
 
     <!-- Filters -->
     <div class="filters">
-        <button class="filter-btn warning-badge" onclick="filterMovies('missing-data')">
+        <button class="filter-btn warning-badge" onclick="filterMovies('missing-data', event)">
             Missing Data
             <span class="notification-badge" id="missing-data-count">{{ missing_data_count }}</span>
         </button>
-        <button class="filter-btn active" onclick="filterMovies('all')">All</button>
-        <button class="filter-btn" onclick="filterMovies('staff-picks')">Picks</button>
-        <button class="filter-btn" onclick="filterMovies('restorations')">Restorations</button>
+        <button class="filter-btn active" onclick="filterMovies('all', event)">All</button>
+        <button class="filter-btn" onclick="filterMovies('staff-picks', event)">Picks</button>
+        <button class="filter-btn" onclick="filterMovies('restorations', event)">Restorations</button>
         <input type="text" id="search-box" class="search-input" placeholder="Search movies..." onkeyup="searchMovies()">
     </div>
 
@@ -214,12 +214,12 @@
              onclick="toggleRow(this)">
             <div class="drag-handle" onclick="event.stopPropagation()">&#8942;&#8942;</div>
             {% if has_poster %}
-            <div class="pst-wrap" {% if trailer_url %}onclick="event.stopPropagation(); openTrailer('{{ movie_id }}', '{{ movie.title|e }}', '{{ trailer_url|e }}')"{% endif %}>
+            <div class="pst-wrap" {% if trailer_url %}data-trailer-url="{{ trailer_url|e }}" data-trailer-title="{{ movie.title|e }}" onclick="event.stopPropagation(); openTrailer('{{ movie_id }}', this)"{% endif %}>
                 <img class="pst" src="{{ movie.poster_url or movie.get('poster') }}" alt="">
                 {% if trailer_url %}<span class="pst-play">&#9654;</span>{% endif %}
             </div>
             {% else %}
-            <div class="no-pst" {% if trailer_url %}onclick="event.stopPropagation(); openTrailer('{{ movie_id }}', '{{ movie.title|e }}', '{{ trailer_url|e }}')"{% endif %}>?</div>
+            <div class="no-pst" {% if trailer_url %}data-trailer-url="{{ trailer_url|e }}" data-trailer-title="{{ movie.title|e }}" onclick="event.stopPropagation(); openTrailer('{{ movie_id }}', this)"{% endif %}>?</div>
             {% endif %}
             <div class="r-title-labels">
                 <div class="r-title" title="{{ movie.title }}">{{ movie.title }}</div>
@@ -416,6 +416,6 @@
         <img id="img-preview" src="">
     </div>
 
-    <script src="{{ url_for('static', filename='js/admin.js') }}?v=22"></script>
+    <script src="{{ url_for('static', filename='js/admin.js') }}?v=25"></script>
 </body>
 </html>

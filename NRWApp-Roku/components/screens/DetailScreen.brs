@@ -17,6 +17,7 @@ Sub Init()
     m.castLabel = m.top.FindNode("castLabel")
     m.languageLabel = m.top.FindNode("languageLabel")
     m.synopsisLabel = m.top.FindNode("synopsisLabel")
+    m.pullQuotesLabel = m.top.FindNode("pullQuotesLabel")
 
     m.staffPickBadge = m.top.FindNode("staffPickBadge")
     m.staffPickLabel = m.top.FindNode("staffPickLabel")
@@ -24,8 +25,6 @@ Sub Init()
     m.restorationLabel = m.top.FindNode("restorationLabel")
     m.screeningBadge = m.top.FindNode("screeningBadge")
     m.screeningLabel = m.top.FindNode("screeningLabel")
-    m.screeningDatesBadge = m.top.FindNode("screeningDatesBadge")
-    m.screeningDatesLabel = m.top.FindNode("screeningDatesLabel")
 
     m.buttonsRow = m.top.FindNode("buttonsRow")
     m.trailerButton = m.top.FindNode("trailerButton")
@@ -177,9 +176,49 @@ Sub LoadMovie(index as Integer)
 
     ' Set synopsis
     if movie.synopsis <> invalid AND movie.synopsis <> ""
-        m.synopsisLabel.text = movie.synopsis
+        synopsisText = movie.synopsis
+        ' Append screening callout to synopsis
+        if movie.categories <> invalid AND movie.categories.is_virtual_screening = true AND movie.virtual_screening_info <> invalid AND movie.virtual_screening_info.screening_name <> invalid
+            callout = " Virtual screening available as part of the " + movie.virtual_screening_info.screening_name + "."
+            if movie.virtual_screening_info.available_end <> invalid AND movie.virtual_screening_info.available_end <> ""
+                callout = callout + " Ends " + FormatShortDate(movie.virtual_screening_info.available_end) + "."
+            end if
+            synopsisText = synopsisText + callout
+        end if
+        m.synopsisLabel.text = synopsisText
     else
         m.synopsisLabel.text = "No synopsis available."
+    end if
+
+    ' Pull quotes
+    if movie.pull_quotes <> invalid AND movie.pull_quotes.Count() > 0
+        pqText = ""
+        maxQuotes = 2
+        if movie.pull_quotes.Count() < maxQuotes then maxQuotes = movie.pull_quotes.Count()
+        for i = 0 to maxQuotes - 1
+            pq = movie.pull_quotes[i]
+            if pq.text <> invalid AND pq.text <> ""
+                if pqText <> "" then pqText = pqText + chr(10)
+                srcTag = "LB"
+                if pq.source <> invalid AND pq.source = "rotten_tomatoes" then srcTag = "RT"
+                pqText = pqText + "[" + srcTag + "] " + chr(8220) + pq.text + chr(8221)
+                attribution = ""
+                if pq.critic <> invalid AND pq.critic <> "" then attribution = pq.critic
+                if pq.outlet <> invalid AND pq.outlet <> ""
+                    if attribution <> "" then attribution = attribution + ", "
+                    attribution = attribution + pq.outlet
+                end if
+                if attribution <> "" then pqText = pqText + " — " + attribution
+            end if
+        end for
+        if pqText <> ""
+            m.pullQuotesLabel.text = pqText
+            m.pullQuotesLabel.visible = true
+        else
+            m.pullQuotesLabel.visible = false
+        end if
+    else
+        m.pullQuotesLabel.visible = false
     end if
 
     ' Staff pick badge
@@ -202,25 +241,14 @@ Sub LoadMovie(index as Integer)
         m.restorationLabel.visible = false
     end if
 
-    ' Virtual screening name banner
-    if movie.virtual_screening_info <> invalid AND movie.virtual_screening_info.screening_name <> invalid AND movie.virtual_screening_info.screening_name <> ""
-        m.screeningLabel.text = movie.virtual_screening_info.screening_name
+    ' Virtual screening badge
+    if movie.categories <> invalid AND movie.categories.is_virtual_screening = true
+        m.screeningLabel.text = chr(9733) + " VIRTUAL SCREENING " + chr(9733)
         m.screeningBadge.visible = true
         m.screeningLabel.visible = true
-        ' Screening dates (darker gold bar below name)
-        if movie.virtual_screening_info.available_end <> invalid AND movie.virtual_screening_info.available_end <> ""
-            m.screeningDatesLabel.text = "Ends " + FormatShortDate(movie.virtual_screening_info.available_end)
-            m.screeningDatesBadge.visible = true
-            m.screeningDatesLabel.visible = true
-        else
-            m.screeningDatesBadge.visible = false
-            m.screeningDatesLabel.visible = false
-        end if
     else
         m.screeningBadge.visible = false
         m.screeningLabel.visible = false
-        m.screeningDatesBadge.visible = false
-        m.screeningDatesLabel.visible = false
     end if
 
     ' Setup watch buttons

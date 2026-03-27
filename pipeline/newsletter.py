@@ -293,8 +293,17 @@ class NewsletterDataQuery:
             metadata['wikipedia_url'] = None
             metadata['trailer_url'] = None
 
-        # Virtual screening info
+        # Category flags
         categories = movie.get('categories', {})
+        metadata['is_staff_pick'] = bool(categories.get('is_staff_pick'))
+        metadata['is_restoration'] = bool(categories.get('is_restoration'))
+
+        # Cast
+        crew = movie.get('crew', {})
+        cast = crew.get('cast', [])
+        metadata['cast'] = ', '.join(cast[:3]) if cast else None
+
+        # Virtual screening info
         screening_info = movie.get('virtual_screening_info', {})
         metadata['is_virtual_screening'] = bool(categories.get('is_virtual_screening'))
         metadata['screening_name'] = screening_info.get('screening_name')

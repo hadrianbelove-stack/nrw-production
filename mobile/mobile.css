@@ -4,6 +4,8 @@
 :root {
     --staff-pick: #dc143c;
     --staff-pick-glow: rgba(220, 20, 60, 0.3);
+    --screening-gold: #FFD700;
+    --screening-glow: rgba(255, 215, 0, 0.3);
 }
 
 * {
@@ -131,6 +133,11 @@ body {
     box-shadow: 0 0 20px var(--staff-pick-glow);
 }
 
+.flip-card.screening-movie .flip-inner {
+    border: 3px solid var(--screening-gold);
+    box-shadow: 0 0 20px var(--screening-glow);
+}
+
 .flip-inner {
     position: relative;
     width: 100%;
@@ -214,33 +221,28 @@ body {
 .badge-screening { background: transparent; color: #FFD700; border: 1px solid #FFD700; }
 .badge-restoration { background: #C8A951; color: #000; left: 10px; right: auto; }
 
-/* Virtual screening ribbon on poster (solid gold bar, shows screening name) */
-.screening-ribbon {
+/* Design K badge bar (bottom of poster, replaces old screening ribbon) */
+.badge-bar {
     position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
-    padding: 4px 6px;
-    background: #FFD700;
-    color: #000;
+    text-align: center;
+    padding: 5px 4px;
     font-size: 9px;
     font-weight: 900;
-    letter-spacing: 0.3px;
-    line-height: 1.25;
-    text-align: center;
+    letter-spacing: 0.15em;
     text-transform: uppercase;
     z-index: 5;
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
 }
+.badge-bar.red { background: var(--staff-pick); color: #fff; }
+.badge-bar.gold { background: var(--screening-gold); color: #000; }
 
-.screening-dates {
-    font-size: 8px;
-    font-weight: 600;
-    opacity: 0.85;
-    margin-top: 1px;
+/* Screening callout in synopsis (card back) */
+.screening-callout {
+    color: #FFD700;
+    font-weight: 700;
+    font-style: italic;
 }
 
 /* Score badges on card front (RT + IMDb, bottom-left) */
@@ -270,24 +272,10 @@ body {
     background: rgba(245, 197, 24, 0.9);
     color: #000;
 }
-.screening-ribbon ~ .card-score-overlay {
+.badge-bar ~ .card-score-overlay {
     bottom: 35px;
 }
 
-/* Staff Pick badge */
-.staff-badge {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    background: var(--staff-pick);
-    color: #fff;
-    padding: 5px 12px;
-    border-radius: 10px;
-    font-size: 9px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.5);
-}
 
 /* Tap hint */
 .tap-hint {

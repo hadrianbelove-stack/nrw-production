@@ -236,18 +236,11 @@ export default function MovieDetail({route}) {
             )}
           </View>
 
-          {/* Virtual screening name + availability */}
-          {movie.categories?.is_virtual_screening && movie.virtual_screening_info?.screening_name && (
-            <View>
-              <Text style={styles.screeningName}>
-                {movie.virtual_screening_info.screening_name}
-              </Text>
-              {movie.virtual_screening_info?.available_end && (
-                <Text style={styles.screeningDates}>
-                  Ends {formatShortDate(movie.virtual_screening_info.available_end)}
-                </Text>
-              )}
-            </View>
+          {/* Virtual screening badge */}
+          {movie.categories?.is_virtual_screening && (
+            <Text style={styles.screeningName}>
+              ★ VIRTUAL SCREENING ★
+            </Text>
           )}
 
           {/* Metadata row */}
@@ -257,6 +250,14 @@ export default function MovieDetail({route}) {
               <>
                 <Text style={styles.metaDot}>•</Text>
                 <Text style={styles.metaText}>{formatRuntime(runtime)}</Text>
+              </>
+            )}
+            {movie.rating && (
+              <>
+                <Text style={styles.metaDot}>•</Text>
+                <View style={styles.ratingBadge}>
+                  <Text style={styles.ratingText}>{movie.rating}</Text>
+                </View>
               </>
             )}
           </View>
@@ -322,7 +323,33 @@ export default function MovieDetail({route}) {
       {movie.synopsis && (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Synopsis</Text>
-          <Text style={styles.synopsis}>{movie.synopsis}</Text>
+          <Text style={styles.synopsis}>
+            {movie.synopsis}
+            {movie.categories?.is_virtual_screening && movie.virtual_screening_info?.screening_name && (
+              <Text style={styles.screeningCallout}>
+                {` Virtual screening available as part of the ${movie.virtual_screening_info.screening_name}.${movie.virtual_screening_info?.available_end ? ` Ends ${formatShortDate(movie.virtual_screening_info.available_end)}.` : ''}`}
+              </Text>
+            )}
+          </Text>
+        </View>
+      )}
+
+      {/* Pull Quotes */}
+      {movie.pull_quotes?.length > 0 && (
+        <View style={styles.section}>
+          {movie.pull_quotes.slice(0, 2).map((pq, i) => (
+            <View key={i} style={styles.pullQuoteRow}>
+              <View style={[styles.pqSourceBadge, { backgroundColor: pq.source === 'rotten_tomatoes' ? '#FA3232' : '#00E054' }]}>
+                <Text style={styles.pqSourceText}>{pq.source === 'rotten_tomatoes' ? 'RT' : 'LB'}</Text>
+              </View>
+              <View style={styles.pqContent}>
+                <Text style={styles.pqText}>{'\u201C'}{pq.text}{'\u201D'}</Text>
+                {(pq.critic || pq.outlet) && (
+                  <Text style={styles.pqAttribution}>{'\u2014'} {[pq.critic, pq.outlet].filter(Boolean).join(', ')}</Text>
+                )}
+              </View>
+            </View>
+          ))}
         </View>
       )}
 
@@ -510,17 +537,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingVertical: 8,
     paddingHorizontal: 12,
-    marginBottom: 0,
-  },
-  screeningDates: {
-    backgroundColor: '#E6C200',
-    color: '#000',
-    fontSize: Typography.caption - 1,
-    fontWeight: '600',
-    textAlign: 'center',
-    paddingVertical: 4,
-    paddingHorizontal: 12,
     marginBottom: Spacing.sm,
+  },
+  screeningCallout: {
+    color: '#FFD700',
+    fontWeight: '700',
+    fontStyle: 'italic',
   },
   metaRow: {
     flexDirection: 'row',
@@ -534,6 +556,18 @@ const styles = StyleSheet.create({
   metaDot: {
     color: Colors.textMuted,
     marginHorizontal: 6,
+  },
+  ratingBadge: {
+    borderWidth: 1,
+    borderColor: Colors.textSecondary,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 3,
+  },
+  ratingText: {
+    color: Colors.textSecondary,
+    fontSize: Typography.caption,
+    fontWeight: '600',
   },
   rtContainer: {
     flexDirection: 'row',
@@ -617,5 +651,35 @@ const styles = StyleSheet.create({
   detailValue: {
     color: Colors.textSecondary,
     fontSize: Typography.body,
+  },
+  pullQuoteRow: {
+    flexDirection: 'row',
+    marginBottom: Spacing.sm,
+  },
+  pqSourceBadge: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 3,
+    marginRight: 8,
+    marginTop: 2,
+  },
+  pqSourceText: {
+    color: '#fff',
+    fontSize: 9,
+    fontWeight: '700',
+  },
+  pqContent: {
+    flex: 1,
+  },
+  pqText: {
+    color: Colors.textSecondary,
+    fontSize: Typography.caption,
+    fontStyle: 'italic',
+    lineHeight: 18,
+  },
+  pqAttribution: {
+    color: Colors.textMuted,
+    fontSize: Typography.caption - 1,
+    marginTop: 2,
   },
 });

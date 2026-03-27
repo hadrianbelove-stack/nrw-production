@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Badge Design Options — NRW</title>
+<style>
+:root {
+    --staff-pick: #dc143c;
+    --staff-pick-glow: rgba(220, 20, 60, 0.3);
+    --staff-pick-subtle: rgba(220, 20, 60, 0.05);
+    --screening-gold: #FFD700;
+    --screening-glow: rgba(255, 215, 0, 0.3);
+    --screening-subtle: rgba(255, 215, 0, 0.05);
+    --accent-primary: #00D4AA;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+    background-attachment: fixed;
+    color: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    padding: 2rem;
+}
+
+h1 { text-align: center; margin-bottom: 0.5rem; font-size: 1.5rem; }
+h2 { color: #00D4AA; margin: 2.5rem 0 1rem; font-size: 1.1rem; letter-spacing: 0.1em; }
+.subtitle { text-align: center; color: #888; margin-bottom: 2rem; font-size: 0.85rem; max-width: 700px; margin-left: auto; margin-right: auto; }
+
+.row {
+    display: flex;
+    gap: 2.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+    align-items: flex-start;
+}
+
+/* === Shared card base === */
+.movie-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.movie-card {
+    width: 189px;
+    height: 282px;
+    border-radius: 15px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+
+.card-front {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1a 100%);
+}
+
+.card-front img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Movie info below card */
+.movie-info {
+    margin-top: 0.5rem;
+    text-align: center;
+    font-size: 0.85rem;
+    color: #bbb;
+    line-height: 1.3;
+    max-width: 189px;
+    padding: 0 4px;
+}
+.movie-info .movie-title {
+    color: #fff;
+    font-weight: bold;
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+    line-height: 1.3;
+}
+.movie-info .director { color: var(--accent-primary); font-weight: bold; }
+.movie-info .country { color: var(--accent-primary); }
+
+/* Streaming badge */
+.streaming-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    z-index: 6;
+    background: #00a8e1;
+    color: #fff;
+}
+
+/* Score overlay */
+.card-score-overlay {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    display: flex;
+    gap: 4px;
+    z-index: 4;
+}
+.card-score-badge {
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+}
+.card-score-badge.rt { background: #FA320A; color: #fff; }
+.card-score-badge.imdb { background: #F5C518; color: #000; }
+
+/* === Shared glow containers === */
+.glow-red {
+    border: 3px solid var(--staff-pick);
+    border-radius: 15px;
+    padding: 8px;
+    background: var(--staff-pick-subtle);
+    box-shadow: 0 0 20px var(--staff-pick-glow);
+}
+.glow-gold {
+    border: 3px solid var(--screening-gold);
+    border-radius: 15px;
+    padding: 8px;
+    background: var(--screening-subtle);
+    box-shadow: 0 0 20px var(--screening-glow);
+}
+
+/* ============================================================
+   DESIGN A: Current layout (for reference)
+   ============================================================ */
+.design-a .screening-ribbon {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 6px 4px;
+    background: #FFD700;
+    color: #000;
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: 1.5px;
+    text-align: center;
+    text-transform: uppercase;
+    z-index: 5;
+}
+.design-a .badge-top-center {
+    position: absolute;
+    top: -5px; left: 50%;
+    transform: translateX(-50%);
+    background: var(--staff-pick);
+    color: white;
+    padding: 4px 16px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    letter-spacing: 0.1em;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    white-space: nowrap;
+}
+
+/* ============================================================
+   All designs below: badge BELOW title/director, at bottom
+   of the border. Poster is completely clean.
+   ============================================================ */
+
+/* --- F: Solid filled bar at very bottom of border --- */
+.badge-bottom-bar {
+    width: calc(100% + 16px);
+    margin: 6px -8px -8px -8px;
+    text-align: center;
+    padding: 5px 4px;
+    font-size: 0.6rem;
+    font-weight: 900;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    border-radius: 0 0 12px 12px;
+}
+.badge-bottom-bar.red { background: var(--staff-pick); color: #fff; }
+.badge-bottom-bar.gold { background: var(--screening-gold); color: #000; }
+
+/* --- G: Text-only label at bottom of border --- */
+.badge-bottom-text {
+    width: 100%;
+    text-align: center;
+    padding: 6px 4px 2px;
+    font-size: 0.55rem;
+    font-weight: 900;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+}
+.badge-bottom-text.red { color: var(--staff-pick); }
+.badge-bottom-text.gold { color: var(--screening-gold); }
+
+/* --- H: Nameplate with decorative lines --- */
+.badge-bottom-nameplate {
+    width: 100%;
+    text-align: center;
+    padding: 6px 4px 2px;
+    font-size: 0.55rem;
+    font-weight: 900;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+.badge-bottom-nameplate::before,
+.badge-bottom-nameplate::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    max-width: 25px;
+}
+.badge-bottom-nameplate.red { color: var(--staff-pick); }
+.badge-bottom-nameplate.red::before,
+.badge-bottom-nameplate.red::after { background: var(--staff-pick); opacity: 0.5; }
+.badge-bottom-nameplate.gold { color: var(--screening-gold); }
+.badge-bottom-nameplate.gold::before,
+.badge-bottom-nameplate.gold::after { background: var(--screening-gold); opacity: 0.5; }
+
+/* --- I: Outlined pill badge at bottom --- */
+.badge-bottom-pill {
+    margin-top: 6px;
+    padding: 3px 14px;
+    font-size: 0.5rem;
+    font-weight: 900;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    border-radius: 10px;
+    border-width: 2px;
+    border-style: solid;
+}
+.badge-bottom-pill.red {
+    color: var(--staff-pick);
+    border-color: var(--staff-pick);
+}
+.badge-bottom-pill.gold {
+    color: var(--screening-gold);
+    border-color: var(--screening-gold);
+}
+
+/* --- J: Solid pill badge at bottom --- */
+.badge-bottom-pill-solid {
+    margin-top: 6px;
+    padding: 3px 14px;
+    font-size: 0.5rem;
+    font-weight: 900;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    border-radius: 10px;
+}
+.badge-bottom-pill-solid.red {
+    background: var(--staff-pick);
+    color: #fff;
+}
+.badge-bottom-pill-solid.gold {
+    background: var(--screening-gold);
+    color: #000;
+}
+
+/* --- K: Bottom bar with icon/star decorations --- */
+.badge-bottom-decorated {
+    width: calc(100% + 16px);
+    margin: 6px -8px -8px -8px;
+    text-align: center;
+    padding: 5px 4px;
+    font-size: 0.55rem;
+    font-weight: 900;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    border-radius: 0 0 12px 12px;
+}
+.badge-bottom-decorated.red { background: var(--staff-pick); color: #fff; }
+.badge-bottom-decorated.gold { background: var(--screening-gold); color: #000; }
+</style>
+</head>
+<body>
+
+<h1>Badge Below Title/Director — All Variations</h1>
+<p class="subtitle">Every design places the badge BELOW the title and director, at the bottom of the border frame. Poster is completely clean — no overlays. A regular movie is shown for comparison.</p>
+
+<!-- ============ DESIGN A: Current (reference only) ============ -->
+<h2>CURRENT — For reference</h2>
+<p class="subtitle">Staff Pick pill overlaps Prime. Screening ribbon covers poster. Included only for comparison.</p>
+<div class="row design-a">
+    <div>
+        <div class="movie-container glow-red">
+            <div class="badge-top-center">STAFF PICK</div>
+            <div class="movie-card">
+                <div class="card-front">
+                    <div class="streaming-badge">PRIME</div>
+                    <img src="https://image.tmdb.org/t/p/w300/gbGHezV6yrhua0KfAgwviKLSELB.jpg" alt="poster">
+                    <div class="card-score-overlay">
+                        <span class="card-score-badge rt">RT 96</span>
+                        <span class="card-score-badge imdb">7.8</span>
+                    </div>
+                </div>
+            </div>
+            <div class="movie-info">
+                <div class="movie-title">A Real Pain</div>
+                <span class="director">Jesse Eisenberg</span> &bull; <span class="country">USA</span>
+            </div>
+        </div>
+    </div>
+    <div>
+        <div class="movie-container glow-gold">
+            <div class="movie-card">
+                <div class="card-front">
+                    <img src="https://image.tmdb.org/t/p/w300/6FZVIbVq3VaJTCnAOiasOOD0rYU.jpg" alt="poster">
+                    <div class="screening-ribbon">VIRTUAL SCREENING</div>
+                </div>
+            </div>
+            <div class="movie-info">
+                <div class="movie-title">Ethan Bloom</div>
+                <span class="director">Herschel Faber</span> &bull; <span class="country">USA</span>
+            </div>
+        </div>
+    </div>
+    <div>
+        <div class="movie-container">
+            <div class="movie-card">
+                <div class="card-front">
+                    <div class="streaming-badge">PRIME</div>
+                    <img src="https://image.tmdb.org/t/p/w300/zEqCFBfZqBiHoLMDnMRFOC3DCVB.jpg" alt="poster">
+                    <div class="card-score-overlay">
+                        <span class="card-score-badge rt">RT 88</span>
+                        <span class="card-score-badge imdb">7.2</span>
+                    </div>
+                </div>
+            </div>
+            <div class="movie-info">
+                <div class="movie-title">The Brutalist</div>
+                <span class="director">Brady Corbet</span> &bull; <span class="country">UK</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============ F: Solid bar flush with bottom border ============ -->
+<h2>F — Solid bar flush with bottom of border</h2>
+<p class="subtitle">Colored bar fills the entire bottom edge of the border frame, below title/director. Feels structural, like part of the frame itself.</p>
+<div class="row">
+    <div>
+        <div class="movie-container glow-red">
+            <div class="movie-card">
+                <div class="card-front">
+                    <div class="streaming-badge">PRIME</div>
+                    <img src="https://image.tmdb.org/t/p/w300/gbGHezV6yrhua0KfAgwviKLSELB.jpg" alt="poster">
+                    <div class="card-score-overlay">
+                        <span class="card-score-badge rt">RT 96</span>
+                        <span class="card-score-badge imdb">7.8</span>
+                    </div>
+                </div>
+            </div>
+            <div class="movie-info">
+                <div class="movie-title">A Real Pain</div>
+                <span class="director">Jesse Eisenberg</span> &bull; <span class="country">USA</span>
+            </div>
+            <div class="badge-bottom-bar red">Staff Pick</div>
+        </div>
+    </div>
+    <div>
+        <div class="movie-container glow-gold">
+            <div class="movie-card">
+                <div class="card-front">
+                    <img src="https://image.tmdb.org/t/p/w300/6FZVIbVq3VaJTCnAOiasOOD0rYU.jpg" alt="poster">
+                </div>
+            </div>
+            <div class="movie-info">
+                <div class="movie-title">Ethan Bloom</div>
+                <span class="director">Herschel Faber</span> &bull; <span class="country">USA</span>
+            </div>
+            <div class="badge-bottom-bar gold">Virtual Screening</div>
+        </div>
+    </div>
+    <div>
+        <div class="movie-container">
+            <div class="movie-card">
+                <div class="card-front">
+                    <div class="streaming-badge">PRIME</div>
+                    <img src="https://image.tmdb.org/t/p/w300/zEqCFBfZqBiHoLMDnMRFOC3DCVB.jpg" alt="poster">
+                    <div class="card-score-overlay">
+                        <span class="card-score-badge rt">RT 88</span>
+                        <span class="card-score-badge imdb">7.2</span>
+                    </div>
+                </div>
+            </div>
+            <div class="movie-info">
+                <div class="movie-title">The Brutalist</div>
+                <span class="director">Brady Corbet</span> &bull; <span class="country">UK</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============ G: Text-only label at bottom ============ -->
+<h2>G — Text-only label at bottom of border</h2>
+<p class="subtitle">No fill, just colored text below director. Minimal and subtle — the glow border does the heavy lifting.</p>
+<div class="row">
+    <div>
+        <div class="movie-container glow-red">
+            <div class="movie-card">
+                <div class="card-front">
+                    <div class="streaming-badge">PRIME</div>
+                    <img src="https://image.tmdb.org/t/p/w300/gbGHezV6yrhua0KfAgwviKLSELB.jpg" alt="poster">
+                    <div class="card-score-overlay">
+                        <span class="card-score-badge rt">RT 96</span>
+                        <span class="card-score-badge imdb">7.8</span>
+                    </div>
+                </div>
+            </div>
+            <div class="movie-info">
+                <div class="movie-title">A Real Pain</div>
+                <span class="director">Jesse Eisenberg</span> &bull; <span class="country">USA</span>
+            </div>
+            <div class="badge-bottom-text red">Staff Pick</div>
+        </div>
+    </div>
+    <div>
+        <div class="movie-container glow-gold">
+            <div class="movie-card">
+                <div class="card-front">
+                    <img src="https://image.tmdb.org/t/p/w300/6FZVIbVq3VaJTCnAOiasOOD0rYU.jpg" alt="poster">
+                </div>
+            </div>
+            <div class="movie-info">
+                <div class="movie-title">Ethan Bloom</div>
+                <span class="director">Herschel Faber</span> &bull; <span class="country">USA</span>
+            </div>
+            <div class="badge-bottom-text gold">Virtual Screening</div>
+        </div>
+    </div>
+    <div>
+        <div class="movie-container">
+            <div class="movie-card">
+                <div class="card-front">
+                    <div class="streaming-badge">PRIME</div>
+                    <img src="https://image.tmdb.org/t/p/w300/zEqCFBfZqBiHoLMDnMRFOC3DCVB.jpg" alt="poster">
+                    <div class="card-score-overlay">
+                        <span class="card-score-badge rt">RT 88</span>
+                        <span class="card-score-badge imdb">7.2</span>
+                    </div>
+                </div>
+            </div>
+            <div class="movie-info">
+                <div class="movie-title">The Brutalist</div>
+                <span class="director">Brady Corbet</span> &bull; <span class="country">UK</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============ H: Nameplate with flanking lines ============ -->
+<h2>H — Nameplate with decorative lines at bottom</h2>
+<p class="subtitle">Small horizontal rules flank the label. Art-gallery nameplate feel. Sits at very bottom of the border.</p>
+<div class="row">
+    <div>
+        <div class="movie-container glow-red">
+            <div class="movie-card">
+                <div class="card-front">
+                    <div class="streaming-badge">PRIME</div>
+                    <img src="https://image.tmdb.org/t/p/w300/gbGHezV6yrhua0KfAgwviKLSELB.jpg" alt="poster">
+                    <div class="card-score-overlay">
+                        <span class="card-score-badge rt">RT 96</span>
+                        <span class="card-score-badge imdb">7.8</span>
+                    </div>
+                </div>
+            </div>
+            <div class="movie-info">
+                <div class="movie-title">A Real Pain</div>
+                <span class="director">Jesse Eisenberg</span> &bull; <span class="country">USA</span>
+            </div>
+            <div class="badge-bottom-nameplate red">Staff Pick</div>
+        </div>
+    </div>
+    <div>
+        <div class="movie-container glow-gold">
+            <div class="movie-card">
+                <div class="card-front">
+                    <img src="https://image.tmdb.org/t/p/w300/6FZVIbVq3VaJTCnAOiasOOD0rYU.jpg" alt="poster">
+                </div>
+            </div>
+            <div class="movie-info">
+                <div class="movie-title">Ethan Bloom</div>
+                <span class="director">Herschel Faber</span> &bull; <span class="country">USA</span>
+            </div>
+            <div class="badge-bottom-nameplate gold">Virtual Screening</div>
+        </div>
+    </div>
+    <div>
+        <div class="movie-container">
+            <div class="movie-card">
+                <div class="card-front">
+                    <div class="streaming-badge">PRIME</div>
+                    <img src="https://image.tmdb.org/t/p/w300/zEqCFBfZqBiHoLMDnMRFOC3DCVB.jpg" alt="poster">
+                    <div class="card-score-overlay">
+                        <span class="card-score-badge rt">RT 88</span>
+                        <span class="card-score-badge imdb">7.2</span>
+                    </div>
+                </div>
+            </div>
+            <div class="movie-info">
+                <div class="movie-title">The Brutalist</div>
+                <span class="director">Brady Corbet</span> &bull; <span class="country">UK</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============ I: Outlined pill at bottom ============ -->
+<h2>I — Outlined pill badge at bottom</h2>
+<p class="subtitle">Hollow pill with colored border, echoing the container border. Floats below director as a tag.</p>
+<div class="row">
+    <div>
+        <div class="movie-container glow-red">
+            <div class="movie-card">
+                <div class="card-front">
+                    <div class="streaming-badge">PRIME</div>
+                    <img src="https://image.tmdb.org/t/p/w300/gbGHezV6yrhua0KfAgwviKLSELB.jpg" alt="poster">
+                    <div class="card-score-overlay">
+                        <span class="card-score-badge rt">RT 96</span>
+                        <span class="card-score-badge imdb">7.8</span>
+                    </div>
+                </div>
+            </div>
+            <div class="movie-info">
+                <div class="movie-title">A Real Pain</div>
+                <span class="director">Jesse Eisenberg</span> &bull; <span class="country">USA</span>
+            </div>
+            <div class="badge-bottom-pill red">Staff Pick</div>
+        </div>
+    </div>
+    <div>
+        <div class="movie-container glow-gold">
+            <div class="movie-card">
+                <div class="card-front">
+                    <img src="https://image.tmdb.org/t/p/w300/6FZVIbVq3VaJTCnAOiasOOD0rYU.jpg" alt="poster">
+                </div>
+            </div>
+            <div class="movie-info">
+                <div class="movie-title">Ethan Bloom</div>
+                <span class="director">Herschel Faber</span> &bull; <span class="country">USA</span>
+            </div>
+            <div class="badge-bottom-pill gold">Virtual Screening</div>
+        </div>
+    </div>
+    <div>
+        <div class="movie-container">
+            <div class="movie-card">
+                <div class="card-front">
+                    <div class="streaming-badge">PRIME</div>
+                    <img src="https://image.tmdb.org/t/p/w300/zEqCFBfZqBiHoLMDnMRFOC3DCVB.jpg" alt="poster">
+                    <div class="card-score-overlay">
+                        <span class="card-score-badge rt">RT 88</span>
+                        <span class="card-score-badge imdb">7.2</span>
+                    </div>
+                </div>
+            </div>
+            <div class="movie-info">
+                <div class="movie-title">The Brutalist</div>
+                <span class="director">Brady Corbet</span> &bull; <span class="country">UK</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============ J: Solid pill at bottom ============ -->
+<h2>J — Solid pill badge at bottom</h2>
+<p class="subtitle">Filled pill, same shape as current Staff Pick but moved to the bottom. Bold and punchy.</p>
+<div class="row">
+    <div>
+        <div class="movie-container glow-red">
+            <div class="movie-card">
+                <div class="card-front">
+                    <div class="streaming-badge">PRIME</div>
+                    <img src="https://image.tmdb.org/t/p/w300/gbGHezV6yrhua0KfAgwviKLSELB.jpg" alt="poster">
+                    <div class="card-score-overlay">
+                        <span class="card-score-badge rt">RT 96</span>
+                        <span class="card-score-badge imdb">7.8</span>
+                    </div>
+                </div>
+            </div>
+            <div class="movie-info">
+                <div class="movie-title">A Real Pain</div>
+                <span class="director">Jesse Eisenberg</span> &bull; <span class="country">USA</span>
+            </div>
+            <div class="badge-bottom-pill-solid red">Staff Pick</div>
+        </div>
+    </div>
+    <div>
+        <div class="movie-container glow-gold">
+            <div class="movie-card">
+                <div class="card-front">
+                    <img src="https://image.tmdb.org/t/p/w300/6FZVIbVq3VaJTCnAOiasOOD0rYU.jpg" alt="poster">
+                </div>
+            </div>
+            <div class="movie-info">
+                <div class="movie-title">Ethan Bloom</div>
+                <span class="director">Herschel Faber</span> &bull; <span class="country">USA</span>
+            </div>
+            <div class="badge-bottom-pill-solid gold">Virtual Screening</div>
+        </div>
+    </div>
+    <div>
+        <div class="movie-container">
+            <div class="movie-card">
+                <div class="card-front">
+                    <div class="streaming-badge">PRIME</div>
+                    <img src="https://image.tmdb.org/t/p/w300/zEqCFBfZqBiHoLMDnMRFOC3DCVB.jpg" alt="poster">
+                    <div class="card-score-overlay">
+                        <span class="card-score-badge rt">RT 88</span>
+                        <span class="card-score-badge imdb">7.2</span>
+                    </div>
+                </div>
+            </div>
+            <div class="movie-info">
+                <div class="movie-title">The Brutalist</div>
+                <span class="director">Brady Corbet</span> &bull; <span class="country">UK</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============ K: Decorated solid bar with stars ============ -->
+<h2>K — Decorated solid bar at bottom</h2>
+<p class="subtitle">Same as F but with star decorations. A bit more festive.</p>
+<div class="row">
+    <div>
+        <div class="movie-container glow-red">
+            <div class="movie-card">
+                <div class="card-front">
+                    <div class="streaming-badge">PRIME</div>
+                    <img src="https://image.tmdb.org/t/p/w300/gbGHezV6yrhua0KfAgwviKLSELB.jpg" alt="poster">
+                    <div class="card-score-overlay">
+                        <span class="card-score-badge rt">RT 96</span>
+                        <span class="card-score-badge imdb">7.8</span>
+                    </div>
+                </div>
+            </div>
+            <div class="movie-info">
+                <div class="movie-title">A Real Pain</div>
+                <span class="director">Jesse Eisenberg</span> &bull; <span class="country">USA</span>
+            </div>
+            <div class="badge-bottom-decorated red">&#9733; Staff Pick &#9733;</div>
+        </div>
+    </div>
+    <div>
+        <div class="movie-container glow-gold">
+            <div class="movie-card">
+                <div class="card-front">
+                    <img src="https://image.tmdb.org/t/p/w300/6FZVIbVq3VaJTCnAOiasOOD0rYU.jpg" alt="poster">
+                </div>
+            </div>
+            <div class="movie-info">
+                <div class="movie-title">Ethan Bloom</div>
+                <span class="director">Herschel Faber</span> &bull; <span class="country">USA</span>
+            </div>
+            <div class="badge-bottom-decorated gold">&#9733; Virtual Screening &#9733;</div>
+        </div>
+    </div>
+    <div>
+        <div class="movie-container">
+            <div class="movie-card">
+                <div class="card-front">
+                    <div class="streaming-badge">PRIME</div>
+                    <img src="https://image.tmdb.org/t/p/w300/zEqCFBfZqBiHoLMDnMRFOC3DCVB.jpg" alt="poster">
+                    <div class="card-score-overlay">
+                        <span class="card-score-badge rt">RT 88</span>
+                        <span class="card-score-badge imdb">7.2</span>
+                    </div>
+                </div>
+            </div>
+            <div class="movie-info">
+                <div class="movie-title">The Brutalist</div>
+                <span class="director">Brady Corbet</span> &bull; <span class="country">UK</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

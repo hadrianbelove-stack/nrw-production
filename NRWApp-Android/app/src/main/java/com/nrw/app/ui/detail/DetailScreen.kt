@@ -3,6 +3,7 @@ package com.nrw.app.ui.detail
 import android.app.Activity
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,7 +43,10 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -315,34 +319,19 @@ private fun MovieDetail(
                                     )
                                 }
                             }
-                            movie.screeningInfo?.screeningName?.let { screeningName ->
+                            if (movie.isVirtualScreening) {
                                 Text(
-                                    text = screeningName.uppercase(),
+                                    text = "★ VIRTUAL SCREENING ★",
                                     color = Color.Black,
                                     fontSize = 11.sp,
                                     fontWeight = FontWeight.ExtraBold,
-                                    letterSpacing = 0.3.sp,
-                                    maxLines = 2,
-                                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                                    letterSpacing = 1.5.sp,
                                     textAlign = androidx.compose.ui.text.style.TextAlign.Center,
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .background(Color(0xFFFFD700))
                                         .padding(vertical = 8.dp, horizontal = 12.dp)
                                 )
-                                movie.screeningInfo?.availableEnd?.let { endDate ->
-                                    Text(
-                                        text = "Ends ${formatShortDate(endDate)}",
-                                        color = Color.Black,
-                                        fontSize = 9.sp,
-                                        fontWeight = FontWeight.SemiBold,
-                                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .background(Color(0xFFE6C200))
-                                            .padding(vertical = 4.dp, horizontal = 12.dp)
-                                    )
-                                }
                             }
                         }
                         movie.digitalDate?.let { date ->
@@ -389,6 +378,21 @@ private fun MovieDetail(
                     }
                     movie.getFormattedRuntime()?.let { runtime ->
                         Text(text = runtime, color = TextSecondary, fontSize = 12.sp)
+                    }
+                    movie.rating?.let { rating ->
+                        Text(text = "•", color = TextMuted, fontSize = 12.sp)
+                        Box(
+                            modifier = Modifier
+                                .border(1.dp, TextSecondary, RoundedCornerShape(3.dp))
+                                .padding(horizontal = 6.dp, vertical = 2.dp)
+                        ) {
+                            Text(
+                                text = rating,
+                                color = TextSecondary,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
                     }
                     // RT Score badge inline
                     rtInfo?.let { (score, isFresh) ->
@@ -474,12 +478,81 @@ private fun MovieDetail(
 
                 // Synopsis - compact
                 movie.synopsis?.let { synopsis ->
+                    val screeningCallout = if (movie.isVirtualScreening && movie.screeningInfo?.screeningName != null) {
+                        val festName = movie.screeningInfo!!.screeningName!!
+                        val endStr = movie.screeningInfo?.availableEnd?.let { " Ends ${formatShortDate(it)}." } ?: ""
+                        " Virtual screening available as part of the $festName.$endStr"
+                    } else null
+
                     Text(
-                        text = synopsis,
+                        text = buildAnnotatedString {
+                            append(synopsis)
+                            screeningCallout?.let {
+                                withStyle(SpanStyle(
+                                    color = Color(0xFFFFD700),
+                                    fontWeight = FontWeight.Bold,
+                                    fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                                )) {
+                                    append(it)
+                                }
+                            }
+                        },
                         color = TextSecondary,
                         fontSize = 14.sp,
                         lineHeight = 20.sp
                     )
+                }
+
+                // Pull quotes
+                if (!movie.pullQuotes.isNullOrEmpty()) {
+                    Spacer(modifier = Modifier.height(12.dp))
+                    movie.pullQuotes!!.take(2).forEach { pq ->
+                        pq.text?.let { quoteText ->
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 8.dp)
+                                    .border(0.dp, Color.Transparent)
+                            ) {
+                                Row {
+                                    Box(
+                                        modifier = Modifier
+                                            .background(
+                                                if (pq.source == "rotten_tomatoes") Color(0xFFFA3232)
+                                                else Color(0xFF00E054),
+                                                RoundedCornerShape(3.dp)
+                                            )
+                                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                                    ) {
+                                        Text(
+                                            text = if (pq.source == "rotten_tomatoes") "RT" else "LB",
+                                            color = Color.White,
+                                            fontSize = 9.sp,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(
+                                        text = "\u201C$quoteText\u201D",
+                                        color = TextSecondary,
+                                        fontSize = 12.sp,
+                                        fontStyle = androidx.compose.ui.text.font.FontStyle.Italic,
+                                        lineHeight = 16.sp,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                }
+                                val attribution = listOfNotNull(pq.critic, pq.outlet).joinToString(", ")
+                                if (attribution.isNotEmpty()) {
+                                    Text(
+                                        text = "\u2014 $attribution",
+                                        color = TextMuted,
+                                        fontSize = 10.sp,
+                                        modifier = Modifier.padding(start = 32.dp, top = 2.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))

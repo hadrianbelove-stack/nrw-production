@@ -116,6 +116,7 @@ def download_trailer(movie, dry_run=False, cookies_browser=None):
         'match_filter': yt_dlp.utils.match_filter_func(f'duration < {MAX_DURATION_SECONDS}'),
         # YouTube n-parameter challenge solver (required since early 2026)
         'js_runtimes': {'node': {}},
+        'remote_components': ['ejs:github'],
     }
 
     # Use browser cookies for age-restricted content

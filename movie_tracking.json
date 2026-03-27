@@ -1825,11 +1825,21 @@
     "1523985": {
       "title": "The Warning Live From Auditorio Nacional, CDMX",
       "premiere_date": "2025-08-21",
-      "digital_date": null,
-      "has_providers": false,
-      "status": "tracking",
+      "digital_date": "2026-03-27",
+      "has_providers": true,
+      "status": "available",
       "added": "2025-09-06T16:47:43.095513",
-      "year": 2025
+      "year": 2025,
+      "_discovery_source": "provider_availability_check",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
+      "enriched": false,
+      "enrichment_date": null
     },
     "1511505": {
       "title": "1000 Women in Horror",
@@ -8388,11 +8398,19 @@
     "1280738": {
       "title": "The Furious",
       "premiere_date": "2025-09-07",
-      "digital_date": null,
-      "has_providers": false,
-      "status": "tracking",
+      "digital_date": "2026-05-29",
+      "has_providers": true,
+      "status": "available",
       "added": "2025-09-13T22:15:44.802099",
-      "year": 2025
+      "year": 2025,
+      "_discovery_source": "tmdb_type4",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "enriched": false,
+      "enrichment_date": null
     },
     "1544763": {
       "title": "Les Cavaliers de chez moi",
@@ -23418,13 +23436,20 @@
     },
     "1421005": {
       "title": "The Traveler",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2025-11-05",
-      "digital_date": "2025-10-31",
-      "providers": {},
+      "digital_date": "2026-03-27",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
       "discovery_pass": "A",
-      "has_providers": false,
-      "year": 2026
+      "has_providers": true,
+      "year": 2026,
+      "_discovery_source": "tmdb_type4",
+      "enriched": false,
+      "enrichment_date": null
     },
     "1419265": {
       "title": "Pinocchio Unmasked",

@@ -261,9 +261,8 @@ function updateStats() {
 // ============================================
 // Filter & Search
 // ============================================
-function filterMovies(filter) {
+function filterMovies(filter, event) {
     const rows = document.querySelectorAll('.movie-row');
-    const panels = document.querySelectorAll('.ep');
     const dateHeaders = document.querySelectorAll('.date-header');
     const buttons = document.querySelectorAll('.filter-btn');
 
@@ -765,18 +764,20 @@ let currentTrailerIndex = -1;
 function buildTrailerList() {
     trailerList = [];
     document.querySelectorAll('.movie-row[data-movie-id]').forEach(row => {
-        const pst = row.querySelector('.pst-wrap[onclick], .no-pst[onclick]');
+        const pst = row.querySelector('[data-trailer-url]');
         if (!pst) return;
-        const onclick = pst.getAttribute('onclick');
-        if (!onclick) return;
-        const match = onclick.match(/openTrailer\('([^']+)',\s*'([^']*)',\s*'([^']+)'\)/);
-        if (match) {
-            trailerList.push({ movieId: match[1], title: match[2], url: match[3] });
+        const url = pst.dataset.trailerUrl;
+        const title = pst.dataset.trailerTitle || '';
+        const movieId = row.dataset.movieId;
+        if (url && movieId) {
+            trailerList.push({ movieId, title, url });
         }
     });
 }
 
-function openTrailer(movieId, title, url) {
+function openTrailer(movieId, el) {
+    const url = el.dataset.trailerUrl;
+    const title = el.dataset.trailerTitle || '';
     buildTrailerList();
     currentTrailerIndex = trailerList.findIndex(t => t.movieId === movieId);
     playTrailer(url, title);

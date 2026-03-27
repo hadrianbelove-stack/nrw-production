@@ -438,18 +438,11 @@ const MovieDetailTvOS = () => {
               )}
             </View>
 
-            {/* Virtual screening name + availability */}
-            {movie.categories?.is_virtual_screening && movie.virtual_screening_info?.screening_name && (
-              <View>
-                <Text style={styles.screeningName}>
-                  {movie.virtual_screening_info.screening_name}
-                </Text>
-                {movie.virtual_screening_info?.available_end && (
-                  <Text style={styles.screeningDates}>
-                    Ends {formatShortDate(movie.virtual_screening_info.available_end)}
-                  </Text>
-                )}
-              </View>
+            {/* Virtual screening badge */}
+            {movie.categories?.is_virtual_screening && (
+              <Text style={styles.screeningName}>
+                ★ VIRTUAL SCREENING ★
+              </Text>
             )}
 
             {/* Metadata row */}
@@ -575,11 +568,35 @@ const MovieDetailTvOS = () => {
               >
                 <Text style={styles.synopsis} numberOfLines={synopsisExpanded ? undefined : 6}>
                   {movie.synopsis}
+                  {movie.categories?.is_virtual_screening && movie.virtual_screening_info?.screening_name && (
+                    <Text style={styles.screeningCallout}>
+                      {` Virtual screening available as part of the ${movie.virtual_screening_info.screening_name}.${movie.virtual_screening_info?.available_end ? ` Ends ${formatShortDate(movie.virtual_screening_info.available_end)}.` : ''}`}
+                    </Text>
+                  )}
                 </Text>
                 {!synopsisExpanded && movie.synopsis.length > 300 && (
                   <Text style={styles.synopsisMore}>Select to read more</Text>
                 )}
               </TouchableOpacity>
+            )}
+
+            {/* Pull Quotes */}
+            {movie.pull_quotes?.length > 0 && (
+              <View style={styles.pullQuotesSection}>
+                {movie.pull_quotes.slice(0, 2).map((pq, i) => (
+                  <View key={i} style={styles.pullQuoteRow}>
+                    <View style={[styles.pqSourceBadge, { backgroundColor: pq.source === 'rotten_tomatoes' ? '#FA3232' : '#00E054' }]}>
+                      <Text style={styles.pqSourceText}>{pq.source === 'rotten_tomatoes' ? 'RT' : 'LB'}</Text>
+                    </View>
+                    <View style={styles.pqContent}>
+                      <Text style={styles.pqText}>{'\u201C'}{pq.text}{'\u201D'}</Text>
+                      {(pq.critic || pq.outlet) && (
+                        <Text style={styles.pqAttribution}>{'\u2014'} {[pq.critic, pq.outlet].filter(Boolean).join(', ')}</Text>
+                      )}
+                    </View>
+                  </View>
+                ))}
+              </View>
             )}
           </ScrollView>
         </View>
@@ -734,18 +751,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingVertical: 8,
     paddingHorizontal: 12,
-    marginBottom: 0,
+    marginBottom: Spacing.tvos.sm,
     overflow: 'hidden',
   },
-  screeningDates: {
-    backgroundColor: '#E6C200',
-    color: Colors.screeningGoldText,
-    fontSize: Typography.tvos.body - 4,
-    fontWeight: '600',
-    textAlign: 'center',
-    paddingVertical: 4,
-    paddingHorizontal: 12,
-    marginBottom: Spacing.tvos.sm,
+  screeningCallout: {
+    color: Colors.screeningGold,
+    fontWeight: '700',
+    fontStyle: 'italic',
   },
   metadataRow: {
     flexDirection: 'row',
@@ -846,6 +858,39 @@ const styles = StyleSheet.create({
   errorHint: {
     color: Colors.textMuted,
     fontSize: Typography.tvos.caption,
+  },
+  pullQuotesSection: {
+    marginTop: Spacing.tvos.lg,
+  },
+  pullQuoteRow: {
+    flexDirection: 'row',
+    marginBottom: Spacing.tvos.sm,
+  },
+  pqSourceBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 4,
+    marginRight: 10,
+    marginTop: 3,
+  },
+  pqSourceText: {
+    color: '#fff',
+    fontSize: Typography.tvos.caption - 2,
+    fontWeight: '700',
+  },
+  pqContent: {
+    flex: 1,
+  },
+  pqText: {
+    color: Colors.textSecondary,
+    fontSize: Typography.tvos.body - 2,
+    fontStyle: 'italic',
+    lineHeight: (Typography.tvos.body - 2) * 1.4,
+  },
+  pqAttribution: {
+    color: Colors.textMuted,
+    fontSize: Typography.tvos.caption,
+    marginTop: 3,
   },
 });
 

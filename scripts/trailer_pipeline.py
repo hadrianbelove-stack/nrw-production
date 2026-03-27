@@ -293,15 +293,23 @@ def host_new_trailers(movie_ids=None, limit=0, dry_run=False, cookies_browser=No
     config = load_config()
     bucket_url = config.get('bucket_url', '')
     max_hosted = config.get('max_hosted', 200)
+    # Default to Safari cookies for age-restricted content (overridable via CLI --cookies)
+    if cookies_browser is None:
+        cookies_browser = config.get('cookies_browser', 'safari')
 
     # Load data.json
     with open(DATA_JSON, 'r') as f:
         data = json.load(f)
 
     # Only consider the most recent N movies (matches rotation cap).
-    # data.json is ordered most-recent-first, so [:max_hosted] gets the wall.
     all_movies = data.get('movies', [])
-    scope = all_movies if movie_ids else all_movies[:max_hosted]
+    if movie_ids:
+        scope = all_movies
+    else:
+        # Sort by digital_date descending — data.json order is NOT guaranteed
+        # (editorial overrides can reorder it)
+        sorted_movies = sorted(all_movies, key=lambda m: m.get('digital_date', ''), reverse=True)
+        scope = sorted_movies[:max_hosted]
 
     # Find movies needing hosting
     to_host = []

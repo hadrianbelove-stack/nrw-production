@@ -17,8 +17,8 @@ cd "$PROJECT_DIR" || { echo "ERROR: Cannot cd to $PROJECT_DIR" >> "$LOG"; exit 1
 # stash everything else, pull, then restore stash.
 echo "Pulling latest from GitHub..." >> "$LOG"
 
-# Always reset data.json to match HEAD before pulling (CI regenerates it)
-/usr/bin/git checkout -- data.json >> "$LOG" 2>&1
+# Always reset CI-regenerated files before pulling (CI versions are authoritative)
+/usr/bin/git checkout -- data.json movie_tracking.json metrics/ >> "$LOG" 2>&1
 
 # Stash any other local changes
 STASHED=false

@@ -24,14 +24,38 @@
         </td>
     </tr>
 
-    <!-- Virtual Screening Banner -->
-    {% if movie.is_virtual_screening and movie.screening_name %}
+    <!-- Category Banners -->
+    {% if movie.is_virtual_screening %}
     <tr>
         <td style="padding: 5px 15px 0 15px;">
             <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
                 <tr>
-                    <td style="background-color: #FFD700; color: #000000; padding: 6px 12px; text-align: center; font-size: 11px; font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase; border-radius: 4px;">
-                        {{ movie.screening_name }}{% if movie.screening_end_display %} &middot; {{ movie.screening_end_display }}{% endif %}
+                    <td style="background-color: #FFD700; color: #000000; padding: 6px 12px; text-align: center; font-size: 11px; font-weight: bold; letter-spacing: 1.5px; text-transform: uppercase; border-radius: 4px;">
+                        &#9733; VIRTUAL SCREENING &#9733;
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    {% elif movie.is_staff_pick %}
+    <tr>
+        <td style="padding: 5px 15px 0 15px;">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                <tr>
+                    <td style="background-color: #dc143c; color: #ffffff; padding: 6px 12px; text-align: center; font-size: 11px; font-weight: bold; letter-spacing: 1.5px; text-transform: uppercase; border-radius: 4px;">
+                        &#9733; STAFF PICK &#9733;
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    {% elif movie.is_restoration %}
+    <tr>
+        <td style="padding: 5px 15px 0 15px;">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                <tr>
+                    <td style="background-color: #C8A951; color: #000000; padding: 6px 12px; text-align: center; font-size: 11px; font-weight: bold; letter-spacing: 1.5px; text-transform: uppercase; border-radius: 4px;">
+                        RESTORATION
                     </td>
                 </tr>
             </table>
@@ -47,6 +71,11 @@
                 {% if movie.runtime %} | <strong>Runtime:</strong> {{ movie.runtime }}min{% endif %}
                 {% if movie.country %} | <strong>Country:</strong> {{ movie.country }}{% endif %}
             </p>
+            {% if movie.cast %}
+            <p style="margin: 4px 0 0 0; color: #999999; font-size: 13px;">
+                <strong>Starring:</strong> {{ movie.cast }}
+            </p>
+            {% endif %}
         </td>
     </tr>
 
@@ -95,6 +124,11 @@
             <p style="margin: 0; color: #ffffff; font-size: 14px; line-height: 1.5;">
                 {{ movie.synopsis }}
             </p>
+            {% if movie.is_virtual_screening and movie.screening_name %}
+            <p style="margin: 8px 0 0 0; color: #FFD700; font-size: 13px; font-weight: bold; font-style: italic;">
+                Virtual screening available as part of the {{ movie.screening_name }}.{% if movie.screening_end_display %} {{ movie.screening_end_display }}.{% endif %}
+            </p>
+            {% endif %}
         </td>
     </tr>
     {% endif %}

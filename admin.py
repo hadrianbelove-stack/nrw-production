@@ -201,10 +201,6 @@ def apply_security_headers(response):
     return response
 
 # Authentication removed for local development
-
-
-# Authentication removed for local development
-
 # Password verification removed for local development
 
 # Configuration

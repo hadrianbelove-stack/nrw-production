@@ -402,10 +402,6 @@ body {
 }
 .close-btn:hover { background: #dc3545; color: white; }
 .modal-body { padding: 1rem; }
-.modal-footer {
-    display: flex; gap: 0.5rem; justify-content: flex-end;
-    padding: 1rem; border-top: 1px solid #3a3a3a;
-}
 .field-hint { font-size: 0.8rem; color: #999; margin-top: 0.3rem; }
 .field-hint a { color: #66b3ff; text-decoration: none; }
 .field-hint a:hover { text-decoration: underline; }
