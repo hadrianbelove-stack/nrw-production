@@ -896,30 +896,30 @@ class DataGenerator:
                     # Always update has_providers flag based on current provider availability
                     movie['has_providers'] = has_providers
 
-                    # PRIMARY: Type 4 digital release date
-                    # Check for ALL tracking movies — this is the main discovery mechanism.
-                    # Provider availability alone can be transient/wrong (e.g. Malavia false positive).
+                    # PRIMARY: Type 4 digital release existence check.
+                    # If TMDB has a US Type 4 (Digital) entry, the movie is digitally
+                    # available (past date) or pre-announced (future date). Either way, transition it.
                     if movie['status'] == 'tracking':
                         type4_date = self.fetch_tmdb_type4_date(movie_id)
                         if type4_date:
                             try:
                                 type4_dt = datetime.strptime(type4_date, '%Y-%m-%d')
                                 today_dt = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-                                # Only trigger for recent Type 4 dates (last 14 days)
-                                # to avoid mass-transitioning old movies
-                                days_ago = (today_dt - type4_dt).days
-                                if type4_dt <= today_dt and days_ago <= 14:
-                                    has_providers = True
-                                    movie['has_providers'] = True
-                                    movie['_discovery_source'] = 'tmdb_type4'
-                                    movie['_type4_date'] = type4_date
-                                    self.logger.info(f"Type 4 discovery: {movie['title']} — digital date {type4_date}")
-                                    print(f"  📅 {movie['title']} has Type 4 digital date {type4_date}")
+                                has_providers = True
+                                movie['has_providers'] = True
+                                movie['_discovery_source'] = 'tmdb_type4'
+                                movie['digital_date'] = type4_date
+                                if type4_dt <= today_dt:
+                                    self.logger.info(f"Type 4 discovery: {movie['title']} — digital release {type4_date}")
+                                    print(f"  📅 {movie['title']} — digital release {type4_date}")
+                                else:
+                                    days_until = (type4_dt - today_dt).days
+                                    self.logger.info(f"Type 4 discovery: {movie['title']} — digital in {days_until}d ({type4_date})")
+                                    print(f"  ⏳ {movie['title']} — digital in {days_until}d ({type4_date})")
                             except ValueError:
                                 pass
 
-                    # FALLBACK: Provider availability (only if Type 4 didn't already discover)
-                    # Provider data can be transient/wrong, so this is secondary
+                    # SECONDARY: Provider availability (catches ~44% of movies without Type 4)
                     if has_providers and movie['status'] == 'tracking' and not movie.get('_discovery_source'):
                         movie['_discovery_source'] = 'provider_availability_check'
 
@@ -960,38 +960,33 @@ class DataGenerator:
                     needs_enrichment = False
 
                     if has_providers and movie['status'] == 'tracking':
-                        # Newly discovered movie - always needs enrichment
+                        # Newly discovered movie
                         movie['status'] = 'available'
-                        # Use Type 4 date if discovered that way, otherwise today
-                        movie['digital_date'] = movie.get('_type4_date') or datetime.now().strftime('%Y-%m-%d')
+                        if not movie.get('digital_date'):
+                            movie['digital_date'] = datetime.now().strftime('%Y-%m-%d')
                         movie['providers'] = {
                             'rent': rent_names,
                             'buy': buy_names,
                             'streaming': stream_names
                         }
-                        # Mark for enrichment (Phase 2.1 optimization)
                         movie['enriched'] = False
                         movie['enrichment_date'] = None
 
                         newly_digital += 1
                         needs_enrichment = True
 
-                        # Show which service it appeared on
-                        if stream_names or rent_names or buy_names:
-                            first_service = stream_names[0] if stream_names else rent_names[0] if rent_names else buy_names[0]
-                            print(f"  ✓ {movie['title']} now on {first_service}!")
+                        source = movie.get('_discovery_source', 'provider')
+                        first_service = stream_names[0] if stream_names else rent_names[0] if rent_names else buy_names[0] if buy_names else '?'
+                        if source == 'tmdb_type4':
+                            print(f"  ✓ {movie['title']} — Type 4 ({movie.get('digital_date','')})")
                         else:
-                            print(f"  ✓ {movie['title']} now available (Type 4 digital release)!")
-
-                    # Catch-up logic removed: Only enrich brand new transitions
-                    # Movies get ONE enrichment attempt on the day they transition to available
+                            print(f"  ✓ {movie['title']} now on {first_service}!")
 
                     # Add to enrichment queue if needed
                     if needs_enrichment:
-                        newly_available_ids.append(movie_id)  # Track for enrichment state file
+                        newly_available_ids.append(movie_id)
 
-                        # ARCHITECTURAL FIX: Immediately add newly discovered movie to data.json
-                        # Movies should appear on site upon discovery, not contingent on enrichment success
+                        # Add to data.json immediately
                         if movie['status'] == 'available' and needs_enrichment:
                             self.add_movie_to_site_immediately(movie_id, movie)
 
