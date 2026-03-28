@@ -758,6 +758,25 @@ class DataGenerator:
             db = json.load(f)
 
         print(f'DB loaded: {len(db.get("movies", {}))} total movies')
+
+        # One-time cleanup: revert future-dated Type 4 movies incorrectly marked available
+        # Safe to remove after 2026-04-28
+        today_str = datetime.now().strftime('%Y-%m-%d')
+        reverted_count = 0
+        for mid, m in db['movies'].items():
+            if (m.get('status') == 'available' and
+                m.get('_discovery_source') == 'tmdb_type4' and
+                m.get('digital_date', '') > today_str):
+                m['status'] = 'tracking'
+                m['_type4_pending'] = True
+                m['enriched'] = False
+                m['enrichment_date'] = None
+                reverted_count += 1
+                self.logger.info(f"Reverted future Type 4: {m['title']} ({m['digital_date']})")
+                print(f"  🔧 Reverted future Type 4: {m['title']} ({m['digital_date']})")
+        if reverted_count:
+            print(f"  🔧 Reverted {reverted_count} future-dated Type 4 movies to pending")
+
         tracking_count = len([m for m in db['movies'].values() if m['status'] == 'tracking'])
         print(f"🔍 Raw tracking filter: {tracking_count} movies")
 
@@ -841,33 +860,69 @@ class DataGenerator:
                 # PRIMARY: Type 4 digital release check (authoritative, gives accurate date)
                 # Type 4 is checked first — it provides the real digital release date
                 # and has fewer false positives than provider availability.
+                # Future dates are stored as pending — no transition until the date arrives.
                 type4_found = False
                 if movie['status'] == 'tracking':
-                    type4_date = self.fetch_tmdb_type4_date(movie_id)
-                    if type4_date:
-                        try:
-                            type4_dt = datetime.strptime(type4_date, '%Y-%m-%d')
-                            today_dt = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-                            movie['has_providers'] = True
-                            movie['_discovery_source'] = 'tmdb_type4'
-                            movie['digital_date'] = type4_date
-                            movie['status'] = 'available'
-                            movie['enriched'] = False
-                            movie['enrichment_date'] = None
-                            movie['providers'] = {'rent': [], 'buy': [], 'streaming': []}
-                            newly_digital += 1
-                            newly_available_ids.append(movie_id)
-                            self.add_movie_to_site_immediately(movie_id, movie)
-                            type4_found = True
-                            if type4_dt <= today_dt:
-                                self.logger.info(f"Type 4 discovery: {movie['title']} — digital release {type4_date}")
-                                print(f"  📅 {movie['title']} — digital release {type4_date}")
-                            else:
-                                days_until = (type4_dt - today_dt).days
-                                self.logger.info(f"Type 4 discovery: {movie['title']} — digital in {days_until}d ({type4_date})")
-                                print(f"  ⏳ {movie['title']} — digital in {days_until}d ({type4_date})")
-                        except ValueError:
-                            pass
+                    today_dt = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+
+                    if movie.get('_type4_pending'):
+                        # Already have a Type 4 date stored — check if it has arrived
+                        pending_date = movie.get('digital_date')
+                        if pending_date:
+                            try:
+                                pending_dt = datetime.strptime(pending_date, '%Y-%m-%d')
+                                if pending_dt <= today_dt:
+                                    # Date arrived — transition to available
+                                    movie['has_providers'] = True
+                                    movie['status'] = 'available'
+                                    movie['enriched'] = False
+                                    movie['enrichment_date'] = None
+                                    movie['providers'] = {'rent': [], 'buy': [], 'streaming': []}
+                                    del movie['_type4_pending']
+                                    newly_digital += 1
+                                    newly_available_ids.append(movie_id)
+                                    self.add_movie_to_site_immediately(movie_id, movie)
+                                    self.logger.info(f"Type 4 pending released: {movie['title']} — {pending_date}")
+                                    print(f"  📅 {movie['title']} — pending Type 4 arrived ({pending_date})")
+                                else:
+                                    days_until = (pending_dt - today_dt).days
+                                    self.logger.debug(f"Type 4 still pending: {movie['title']} — {days_until}d until {pending_date}")
+                            except ValueError:
+                                pass
+                        type4_found = True  # Skip provider check either way
+
+                    else:
+                        # Fresh lookup — call TMDB Type 4 API
+                        type4_date = self.fetch_tmdb_type4_date(movie_id)
+                        if type4_date:
+                            try:
+                                type4_dt = datetime.strptime(type4_date, '%Y-%m-%d')
+                                if type4_dt <= today_dt:
+                                    # Past or today — immediate transition
+                                    movie['has_providers'] = True
+                                    movie['_discovery_source'] = 'tmdb_type4'
+                                    movie['digital_date'] = type4_date
+                                    movie['status'] = 'available'
+                                    movie['enriched'] = False
+                                    movie['enrichment_date'] = None
+                                    movie['providers'] = {'rent': [], 'buy': [], 'streaming': []}
+                                    newly_digital += 1
+                                    newly_available_ids.append(movie_id)
+                                    self.add_movie_to_site_immediately(movie_id, movie)
+                                    type4_found = True
+                                    self.logger.info(f"Type 4 discovery: {movie['title']} — digital release {type4_date}")
+                                    print(f"  📅 {movie['title']} — digital release {type4_date}")
+                                else:
+                                    # Future date — store as pending, stay tracking
+                                    days_until = (type4_dt - today_dt).days
+                                    movie['digital_date'] = type4_date
+                                    movie['_discovery_source'] = 'tmdb_type4'
+                                    movie['_type4_pending'] = True
+                                    type4_found = True  # Skip provider check
+                                    self.logger.info(f"Type 4 future: {movie['title']} — {days_until}d until {type4_date} [pending]")
+                                    print(f"  ⏳ {movie['title']} — digital in {days_until}d ({type4_date}) [pending]")
+                            except ValueError:
+                                pass
 
                 # SECONDARY: Provider availability check (for ~44% of movies without Type 4)
                 # Only runs when Type 4 didn't find a digital release date.
@@ -3201,7 +3256,7 @@ class DataGenerator:
                         director = crew['name']
                         break
 
-            for actor in credits.get('cast', [])[:2]:  # Top 2 actors
+            for actor in credits.get('cast', [])[:5]:  # Top 5 actors
                 cast.append(actor['name'])
 
             genres = [g['name'] for g in movie_details.get('genres', [])]
@@ -3324,9 +3379,9 @@ class DataGenerator:
                 director = crew['name']
                 break
         
-        for actor in credits.get('cast', [])[:2]:  # Top 2 actors
+        for actor in credits.get('cast', [])[:5]:  # Top 5 actors
             cast.append(actor['name'])
-        
+
         # Extract additional metadata
         genres = [g['name'] for g in movie_details.get('genres', [])]
         studio = None
