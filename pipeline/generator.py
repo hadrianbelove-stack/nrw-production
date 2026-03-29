@@ -211,6 +211,7 @@ class DataGenerator:
 
         # IMDB rating cache (persistent across pipeline runs)
         self._imdb_rating_cache = None
+        self._imdb_dataset = None  # Lazy-loaded IMDb bulk dataset
 
         # Wikipedia usage statistics
         self.wikipedia_stats = {
@@ -2062,6 +2063,62 @@ class DataGenerator:
             # CRITICAL: Return False but don't raise - discovery should continue
             return False
 
+    def _safe_save_data_json(self, display_data, existing_movies, label="save"):
+        """Save data.json with reload-merge to prevent lost updates.
+
+        Reloads data.json from disk before saving. Any movies present on disk
+        but missing from the in-memory copy are appended (rescued from being
+        silently dropped). Logs reconciliation info for diagnostics.
+
+        Args:
+            display_data: The full data.json dict (movies will be overwritten)
+            existing_movies: The in-memory movies list to save
+            label: Log label for this save point (e.g. "enrichment", "trailer")
+
+        Returns:
+            bool: True if save succeeded
+        """
+        try:
+            import shutil
+            backup_path = f"data.json.backup.{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+            if os.path.exists('data.json'):
+                shutil.copy2('data.json', backup_path)
+
+            # Reload from disk to catch any movies added since we loaded
+            rescued = []
+            if os.path.exists('data.json'):
+                try:
+                    with open('data.json', 'r') as f:
+                        disk_data = json.load(f)
+                    disk_movies = disk_data.get('movies', [])
+                    in_memory_ids = {str(m.get('id', '')) for m in existing_movies if m.get('id')}
+                    for dm in disk_movies:
+                        dm_id = str(dm.get('id', ''))
+                        if dm_id and dm_id not in in_memory_ids:
+                            existing_movies.append(dm)
+                            rescued.append(f"{dm.get('title', dm_id)} ({dm_id})")
+                except Exception as reload_err:
+                    self.logger.warning(f"Reload-merge failed during {label}: {reload_err}")
+
+            if rescued:
+                self.logger.warning(f"MERGE [{label}]: rescued {len(rescued)} movies that would have been lost: {rescued}")
+                print(f"  🔀 MERGE: rescued {len(rescued)} movies from being dropped")
+
+            display_data['movies'] = existing_movies
+            display_data['generated_at'] = datetime.now().isoformat()
+            display_data['count'] = len(existing_movies)
+
+            with open('data.json', 'w') as f:
+                json.dump(display_data, f, indent=2)
+
+            self.logger.info(f"Safe save [{label}]: {len(existing_movies)} movies written")
+            return True
+
+        except Exception as e:
+            self.logger.error(f"Failed safe save [{label}]: {e}")
+            print(f"❌ Error saving data.json ({label}): {e}")
+            return False
+
     def _create_minimal_entry(self, movie_id, movie_data):
         """Create minimal movie entry when TMDB details unavailable
 
@@ -2286,123 +2343,52 @@ class DataGenerator:
         except Exception as e:
             self.logger.debug(f"Failed to save IMDB cache: {e}")
 
-    def _get_imdb_page(self):
-        """Get a new Playwright page for IMDb scraping (lazy browser init)."""
-        from playwright.sync_api import sync_playwright
-        if not hasattr(self, '_imdb_browser') or self._imdb_browser is None:
-            self._imdb_pw = sync_playwright().start()
-            self._imdb_browser = self._imdb_pw.chromium.launch(headless=True)
-            self._imdb_context = self._imdb_browser.new_context(
-                user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                viewport={'width': 1920, 'height': 1080}
-            )
-        return self._imdb_context.new_page()
+    def _load_imdb_dataset(self):
+        """Download and parse IMDb's bulk ratings dataset (lazy, once per run).
 
-    def _scrape_imdb_rating_playwright(self, imdb_id):
-        """Scrape IMDb rating directly from IMDb page using Playwright.
-
-        Extracts rating from JSON-LD structured data, falls back to CSS selector.
+        Downloads title.ratings.tsv.gz (~5MB) from datasets.imdbws.com,
+        parses into a dict: {imdb_id: rating_string}.
+        Free for non-commercial use. Updated daily by IMDb.
         """
-        page = None
+        if self._imdb_dataset is not None:
+            return self._imdb_dataset
+
+        import gzip
+        import io
+
+        dataset_url = 'https://datasets.imdbws.com/title.ratings.tsv.gz'
+        self._imdb_dataset = {}
+
         try:
-            page = self._get_imdb_page()
-            page.goto(f"https://www.imdb.com/title/{imdb_id}/", wait_until='domcontentloaded', timeout=15000)
-            time.sleep(1)
+            self.logger.info("Downloading IMDb ratings dataset (~5MB)...")
+            response = requests.get(dataset_url, timeout=30)
+            if response.status_code != 200:
+                self.logger.warning(f"IMDb dataset download failed: HTTP {response.status_code}")
+                return self._imdb_dataset
 
-            # Method 1: JSON-LD structured data (most reliable)
-            scripts = page.query_selector_all('script[type="application/ld+json"]')
-            for script in scripts:
-                try:
-                    text = script.text_content()
-                    if not text:
-                        continue
-                    data = json.loads(text)
-                    if 'aggregateRating' in data:
-                        rating_value = data['aggregateRating'].get('ratingValue')
-                        if rating_value:
-                            page.close()
-                            time.sleep(2)  # Rate limit after page visit
-                            return str(rating_value)
-                except (json.JSONDecodeError, AttributeError):
-                    continue
+            with gzip.GzipFile(fileobj=io.BytesIO(response.content)) as gz:
+                reader = io.TextIOWrapper(gz, encoding='utf-8')
+                header = reader.readline()  # Skip header: tconst\taverageRating\tnumVotes
+                for line in reader:
+                    parts = line.strip().split('\t')
+                    if len(parts) >= 2:
+                        self._imdb_dataset[parts[0]] = parts[1]  # {tt_id: "7.4"}
 
-            # Method 2: CSS selector fallback
-            rating_el = page.query_selector('[data-testid="hero-rating-bar__aggregate-rating__score"] span')
-            if rating_el:
-                text = rating_el.text_content()
-                if text:
-                    try:
-                        val = float(text.strip())
-                        if 0 < val <= 10:
-                            page.close()
-                            time.sleep(2)  # Rate limit after page visit
-                            return str(val)
-                    except ValueError:
-                        pass
-
-            page.close()
-            time.sleep(2)  # Rate limit after page visit
-            return None
+            self.logger.info(f"IMDb dataset loaded: {len(self._imdb_dataset)} ratings")
 
         except Exception as e:
-            self.logger.debug(f"Playwright scrape error for {imdb_id}: {e}")
-            if page:
-                try:
-                    page.close()
-                except Exception:
-                    pass
-            return None
+            self.logger.warning(f"IMDb dataset download error: {e}")
 
-    def _search_imdb_by_title_playwright(self, title, year=None):
-        """Search IMDb by title using Playwright, return (imdb_id, rating).
-
-        Visits IMDb search page, finds the best match, then scrapes its rating.
-        """
-        page = None
-        try:
-            page = self._get_imdb_page()
-            search_query = f"{title} {year}" if year else title
-            search_url = f"https://www.imdb.com/find/?q={quote(search_query)}&s=tt&ttype=ft"
-            page.goto(search_url, wait_until='domcontentloaded', timeout=15000)
-            time.sleep(1)
-
-            # Find first result link
-            results = page.query_selector_all('a[href*="/title/tt"]')
-            imdb_id = None
-            for result in results:
-                href = result.get_attribute('href') or ''
-                match = re.search(r'/title/(tt\d+)', href)
-                if match:
-                    imdb_id = match.group(1)
-                    break
-
-            page.close()
-            if not imdb_id:
-                time.sleep(2)  # Rate limit after page visit
-                return None, None
-
-            # Scrape the rating from the found movie page
-            rating = self._scrape_imdb_rating_playwright(imdb_id)
-            return imdb_id, rating
-
-        except Exception as e:
-            self.logger.debug(f"Playwright IMDb search error for '{title}': {e}")
-            if page:
-                try:
-                    page.close()
-                except Exception:
-                    pass
-            return None, None
+        return self._imdb_dataset
 
     def get_imdb_rating(self, imdb_id, title=None, year=None):
-        """Fetch IMDb rating using 5-tier waterfall.
+        """Fetch IMDb rating using 4-tier waterfall.
 
         Tiers:
             1. Cache check
-            2. OMDb API by ID
-            3. Playwright scrape IMDb page (by ID)
-            4. OMDb title search (finds ID + rating)
-            5. Playwright IMDb search by title (last resort)
+            2. IMDb bulk dataset (daily TSV from datasets.imdbws.com)
+            3. OMDb API by ID
+            4. OMDb title search (finds ID + rating, only when no IMDb ID)
 
         Args:
             imdb_id: IMDb ID (e.g., 'tt12345678'), can be None
@@ -2421,7 +2407,16 @@ class DataGenerator:
                     self.logger.debug(f"IMDB cache hit: {imdb_id} -> {cached_rating}")
                     return cached_rating
 
-        # Tier 2: OMDb API by ID
+        # Tier 2: IMDb bulk dataset lookup (free daily dump, covers 99%+ of rated titles)
+        if imdb_id:
+            dataset = self._load_imdb_dataset()
+            if imdb_id in dataset:
+                rating = dataset[imdb_id]
+                self.logger.debug(f"IMDb dataset: rating {rating} for {imdb_id}")
+                self._save_to_imdb_cache(imdb_id, rating, title=title, source='imdb_dataset')
+                return rating
+
+        # Tier 3: OMDb API by ID (fallback for very new movies not yet in daily dump)
         if imdb_id:
             omdb_key = os.environ.get('OMDB_API_KEY') or self.config.get('api', {}).get('omdb_api_key')
             if omdb_key:
@@ -2439,15 +2434,7 @@ class DataGenerator:
                 except Exception as e:
                     self.logger.debug(f"OMDb rating error for {imdb_id}: {e}")
 
-        # Tier 3: Playwright scrape IMDb page directly
-        if imdb_id:
-            rating = self._scrape_imdb_rating_playwright(imdb_id)
-            if rating:
-                self.logger.debug(f"Playwright scrape: rating {rating} for {imdb_id}")
-                self._save_to_imdb_cache(imdb_id, rating, title=title, source='playwright')
-                return rating
-
-        # Tier 4: OMDb title search (finds both ID and rating)
+        # Tier 4: OMDb title search (finds both ID and rating, only when no IMDb ID)
         if title and not imdb_id:
             omdb_key = os.environ.get('OMDB_API_KEY') or self.config.get('api', {}).get('omdb_api_key')
             if omdb_key:
@@ -2469,14 +2456,6 @@ class DataGenerator:
                                 return rating
                 except Exception as e:
                     self.logger.debug(f"OMDb title search error for '{title}': {e}")
-
-        # Tier 5: Playwright IMDb search by title (last resort)
-        if title and not imdb_id:
-            found_id, rating = self._search_imdb_by_title_playwright(title, year)
-            if found_id and rating:
-                self.logger.debug(f"Playwright IMDb search: {found_id} -> {rating}")
-                self._save_to_imdb_cache(found_id, rating, title=title, source='playwright')
-                return rating
 
         return None
 
@@ -3606,6 +3585,8 @@ class DataGenerator:
 
         existing_movies = display_data.get('movies', [])
         movie_lookup = {str(m.get('id', '')): i for i, m in enumerate(existing_movies) if m.get('id')}
+        _initial_movie_count = len(existing_movies)
+        self.logger.info(f"Enrichment loaded data.json: {_initial_movie_count} movies")
 
         # Find movies to enrich from newly_available.json
         newly_available_file = 'metrics/newly_available.json'
@@ -3789,23 +3770,10 @@ class DataGenerator:
         existing_movies, _ = self.apply_admin_overrides(existing_movies)
 
         # Save enrichment results to data.json BEFORE trailer hosting
-        # (trailer hosting can crash and must not prevent saving enrichment data)
-        display_data['movies'] = existing_movies
-        display_data['generated_at'] = datetime.now().isoformat()
-        display_data['count'] = len(existing_movies)
-
-        try:
-            backup_path = f"data.json.backup.{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-            import shutil
-            if os.path.exists('data.json'):
-                shutil.copy2('data.json', backup_path)
-
-            with open('data.json', 'w') as f:
-                json.dump(display_data, f, indent=2)
-            print(f"✅ Enriched {enriched_count}/{len(movie_ids_to_enrich)} movies")
-        except Exception as e:
-            print(f"❌ Error saving enriched data.json: {e}")
+        # Uses safe save with reload-merge to prevent lost updates
+        if not self._safe_save_data_json(display_data, existing_movies, label="enrichment"):
             return 0
+        print(f"✅ Enriched {enriched_count}/{len(movie_ids_to_enrich)} movies ({len(existing_movies)} total, was {_initial_movie_count} at load)")
 
         # Post-enrichment: Host trailers for newly enriched movies
         trailer_config = self.config.get('trailer_hosting', {})
@@ -3830,9 +3798,8 @@ class DataGenerator:
                         existing_movies[movie_index]['links']['trailer_hosted'] = hosted_url
                         hosted_count += 1
             if hosted_count > 0:
-                # Re-save with trailer_hosted URLs added
-                with open('data.json', 'w') as f:
-                    json.dump(display_data, f, indent=2)
+                # Re-save with trailer_hosted URLs added (safe save prevents lost updates)
+                self._safe_save_data_json(display_data, existing_movies, label="trailer_hosting")
                 print(f"  ✓ Hosted {hosted_count} trailer(s)")
             else:
                 print("  No new trailers to host")
@@ -4163,10 +4130,7 @@ class DataGenerator:
                     unsaved_count += 1
 
                     if unsaved_count >= save_interval:
-                        display_data['movies'] = existing_movies
-                        display_data['generated_at'] = datetime.now().isoformat()
-                        with open('data.json', 'w') as f:
-                            json.dump(display_data, f, indent=2)
+                        self._safe_save_data_json(display_data, existing_movies, label="reenrich_incremental")
                         print(f"  💾 Incremental save ({fixed_count} fixed so far)")
                         unsaved_count = 0
                 elif is_unverified:
@@ -4182,22 +4146,11 @@ class DataGenerator:
                 print(f"  ✗ Error re-enriching {title}: {e}")
                 continue
 
-        # Final save
+        # Final save (safe save prevents lost updates)
         if unsaved_count > 0:
-            display_data['movies'] = existing_movies
-            display_data['generated_at'] = datetime.now().isoformat()
-
-            try:
-                import shutil
-                backup_path = f"data.json.backup.{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-                if os.path.exists('data.json'):
-                    shutil.copy2('data.json', backup_path)
-                with open('data.json', 'w') as f:
-                    json.dump(display_data, f, indent=2)
-                print(f"✅ Re-enriched {fixed_count}/{len(all_movies)} movies")
-            except Exception as e:
-                print(f"❌ Error saving data.json: {e}")
+            if not self._safe_save_data_json(display_data, existing_movies, label="reenrich_final"):
                 return 0
+            print(f"✅ Re-enriched {fixed_count}/{len(all_movies)} movies")
 
         return fixed_count
 
@@ -4372,8 +4325,7 @@ class DataGenerator:
             'latest_playlist_url': existing_playlist_url or 'NOT SET'
         }
 
-        with open('data.json', 'w') as f:
-            json.dump(output_data, f, indent=2)
+        self._safe_save_data_json(output_data, display_movies, label="display_generation")
         
         # Cleanup agent scraper if initialized
         if self.streaming_scraper and self.streaming_scraper != False:
