@@ -16,7 +16,7 @@ permissions:
 jobs:
   daily-update:
     runs-on: ubuntu-latest
-    timeout-minutes: 180  # 3 hours for full pipeline: intake + discovery (~4.7k titles) + generation
+    timeout-minutes: 300  # 5 hours for full pipeline: intake + discovery (~12k titles) + enrichment (120 min cap)
     env:
       PYTHONUNBUFFERED: '1'  # Disable Python output buffering for real-time logs
       TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
