@@ -2382,13 +2382,14 @@ class DataGenerator:
         return self._imdb_dataset
 
     def get_imdb_rating(self, imdb_id, title=None, year=None):
-        """Fetch IMDb rating using 4-tier waterfall.
+        """Fetch IMDb rating using 5-tier waterfall.
 
         Tiers:
             1. Cache check
             2. IMDb bulk dataset (daily TSV from datasets.imdbws.com)
             3. OMDb API by ID
-            4. OMDb title search (finds ID + rating, only when no IMDb ID)
+            4. Gemini + Google Search grounding (catches new/low-vote movies)
+            5. OMDb title search (finds ID + rating, only when no IMDb ID)
 
         Args:
             imdb_id: IMDb ID (e.g., 'tt12345678'), can be None
@@ -2434,7 +2435,21 @@ class DataGenerator:
                 except Exception as e:
                     self.logger.debug(f"OMDb rating error for {imdb_id}: {e}")
 
-        # Tier 4: OMDb title search (finds both ID and rating, only when no IMDb ID)
+        # Tier 4: Gemini + Google Search grounding (catches new/obscure movies)
+        if imdb_id and title:
+            try:
+                if not hasattr(self, '_gemini_imdb'):
+                    from gemini_scraper import GeminiIMDbFinder
+                    self._gemini_imdb = GeminiIMDbFinder()
+                rating = self._gemini_imdb.find_rating(title, year, imdb_id=imdb_id)
+                if rating:
+                    self.logger.debug(f"Gemini IMDb: rating {rating} for {imdb_id}")
+                    self._save_to_imdb_cache(imdb_id, rating, title=title, source='gemini')
+                    return rating
+            except Exception as e:
+                self.logger.debug(f"Gemini IMDb error for {imdb_id}: {e}")
+
+        # Tier 5: OMDb title search (finds both ID and rating, only when no IMDb ID)
         if title and not imdb_id:
             omdb_key = os.environ.get('OMDB_API_KEY') or self.config.get('api', {}).get('omdb_api_key')
             if omdb_key:
@@ -2531,6 +2546,18 @@ class DataGenerator:
         except Exception:
             return True  # If check itself fails, don't block — assume valid
 
+    def _cache_bad_trailer_key(self, key, title, year, url):
+        """Add a dead YouTube key to bad_trailer_urls cache and save."""
+        from datetime import datetime
+        self.bad_trailer_urls[key] = {
+            'title': title,
+            'year': str(year),
+            'reason': 'failed_live_validation',
+            'url': url,
+            'recorded_at': datetime.now().isoformat()
+        }
+        self.save_cache(self.bad_trailer_urls, 'cache/bad_trailer_urls.json')
+
     def _init_trailer_finder(self):
         """Lazily initialize the Gemini+Playwright trailer finder."""
         if self.trailer_finder is not None:
@@ -2592,6 +2619,7 @@ class DataGenerator:
                     self.logger.info(f"Trailer for {title} ({year}): tier=tmdb_official, url={url}")
                     return url, 'tmdb_official'
                 self.logger.warning(f"Trailer dead link for {title} ({year}): tier=tmdb_official, url={url}")
+                self._cache_bad_trailer_key(video['key'], title, year, url)
 
         # --- Tier 3: YouTube scraper cache (validated, checked before Gemini to save cost) ---
         cache_key = f"{title}_{year}"
@@ -2650,6 +2678,7 @@ class DataGenerator:
                     self.logger.info(f"Trailer for {title} ({year}): tier=tmdb_fallback ({video['type']}), url={url}")
                     return url, 'tmdb_fallback'
                 self.logger.warning(f"Trailer dead link for {title} ({year}): tier=tmdb_fallback, url={url}")
+                self._cache_bad_trailer_key(video['key'], title, year, url)
 
         # --- Tier 6: Broad YouTube search (validated — searches for 'trailer' and 'preview') ---
         if self._init_trailer_finder():
@@ -3646,6 +3675,9 @@ class DataGenerator:
         catchup_count = len(catchup_ids)
         print(f"🎯 Enrichment queue: {newly_count} new + {catchup_count} catch-up = {len(movie_ids_to_enrich)} total")
 
+        # Preload IMDb dataset so first movie isn't penalized
+        self._load_imdb_dataset()
+
         # Load tracking database for movie details
         tracking_data = self.storage.load_all_movies()
         if not tracking_data:
@@ -3690,10 +3722,27 @@ class DataGenerator:
                     print(f"  ✗ Could not fetch details for {movie_data.get('title', movie_id)}")
                     continue
 
-                # Get enrichment fields only
+                # Get enrichment fields only (with per-movie hard timeout)
                 import time as _etime
+                import signal as _signal
+                PER_MOVIE_TIMEOUT = 120
+
+                def _movie_timeout_handler(signum, frame):
+                    raise TimeoutError(f"Movie enrichment exceeded {PER_MOVIE_TIMEOUT}s")
+
                 _movie_start = _etime.time()
-                enrichment_fields = self.get_enrichment_only_fields(movie_id, movie_data, movie_details, force_refresh=False)
+                _old_handler = _signal.signal(_signal.SIGALRM, _movie_timeout_handler)
+                _signal.alarm(PER_MOVIE_TIMEOUT)
+                try:
+                    enrichment_fields = self.get_enrichment_only_fields(movie_id, movie_data, movie_details, force_refresh=False)
+                except TimeoutError:
+                    print(f"  ⏱️ {movie_data.get('title', movie_id)} timed out after {PER_MOVIE_TIMEOUT}s — skipping", flush=True)
+                    self.logger.warning(f"Movie enrichment timeout: {movie_data.get('title', movie_id)} after {PER_MOVIE_TIMEOUT}s")
+                    enrichment_fields = None
+                finally:
+                    _signal.alarm(0)
+                    _signal.signal(_signal.SIGALRM, _old_handler)
+
                 _movie_elapsed = _etime.time() - _movie_start
                 if _movie_elapsed > 90:
                     print(f"  ⚠️ {movie_data.get('title', movie_id)} took {_movie_elapsed:.0f}s (slow)", flush=True)

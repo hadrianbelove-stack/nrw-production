@@ -524,23 +524,15 @@ class EnrichmentService:
 
         # Try VOD scraper with per-movie timeout safety net
         has_vod_scraper = self._check_vod_scraper_available()
-        if has_vod_scraper:
-            vod_timeout = self.config.get('vod_scraper', {}).get('per_movie_timeout', 90)
-
-            def _vod_timeout_handler(signum, frame):
-                raise VODScraperTimeout(f"VOD scraping exceeded {vod_timeout}s limit")
-
-            old_handler = signal.signal(signal.SIGALRM, _vod_timeout_handler)
-            signal.alarm(vod_timeout)
-            try:
-                self.try_vod_scraper(title, year, providers, tmdb_streaming, tmdb_rent, tmdb_buy,
-                                     skip_streaming, skip_rent, skip_buy)
-            except VODScraperTimeout:
-                self.logger.warning(f"VOD scraping timed out for {title} after {vod_timeout}s — skipping")
-                self.stats['vod_timeouts'] = self.stats.get('vod_timeouts', 0) + 1
-            finally:
-                signal.alarm(0)
-                signal.signal(signal.SIGALRM, old_handler)
+        has_any_providers = any(providers.get(cat) for cat in ('streaming', 'rent', 'buy'))
+        if has_vod_scraper and not has_any_providers:
+            self.logger.debug(f"Skipping VOD scraper for {title} — no providers from any source")
+            self.stats['vod_skipped_no_providers'] = self.stats.get('vod_skipped_no_providers', 0) + 1
+        elif has_vod_scraper:
+            # Note: no per-VOD SIGALRM here — the per-movie 120s timeout in generator.py
+            # covers stuck VOD scraping. Nesting SIGALRM handlers would cancel the outer alarm.
+            self.try_vod_scraper(title, year, providers, tmdb_streaming, tmdb_rent, tmdb_buy,
+                                 skip_streaming, skip_rent, skip_buy)
 
         # Check if platform scraper added any links
         vod_scraper_used = (

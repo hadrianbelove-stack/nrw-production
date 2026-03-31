@@ -41,6 +41,11 @@ except ImportError as e:
     GEMINI_WIKIPEDIA_AVAILABLE = False
 
 
+class WikipediaNoResults(Exception):
+    """Raised when Wikipedia search returns no matching results (don't retry)."""
+    pass
+
+
 class WikipediaScraperPlaywright(PlaywrightScraperBase):
     """Wikipedia scraper using Playwright for finding movie pages.
 
@@ -163,6 +168,9 @@ class WikipediaScraperPlaywright(PlaywrightScraperBase):
                     self._log(f"Attempt {attempt + 1} failed, retrying in {sleep_time:.1f}s...", level='debug')
                     time.sleep(sleep_time)
 
+            except WikipediaNoResults:
+                # Clean miss — retrying won't help
+                return None
             except (PlaywrightTimeoutError, Exception) as e:
                 last_error = e
                 self._log(f"Attempt {attempt + 1} error: {e}", level='debug')
@@ -340,11 +348,10 @@ class WikipediaScraperPlaywright(PlaywrightScraperBase):
                 else:
                     self._log(f"First result '{result_text}' doesn't match '{title}'", level='debug')
 
-            # No matching results found
+            # No matching results found — don't retry, don't screenshot
             self._log(f"No Wikipedia article found for {title} ({year})", level='warning')
             self.stats['failures'] += 1
-            self._capture_failure_diagnostics(title, year, "No matching Wikipedia article found")
-            return None
+            raise WikipediaNoResults(f"No matching article for {title} ({year})")
 
         except Exception as e:
             self._log(f"Playwright scraping error for {title} ({year}): {e}", level='error')
