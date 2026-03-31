@@ -3719,7 +3719,8 @@ class DataGenerator:
                 else:
                     movie_details = self.get_movie_details(movie_id)
                 if not movie_details:
-                    print(f"  ✗ Could not fetch details for {movie_data.get('title', movie_id)}")
+                    existing_movies[movie_index]['_enrichment_status'] = 'failed'
+                    print(f"  ✗ Could not fetch TMDB details for {movie_data.get('title', movie_id)} — marked failed for retry")
                     continue
 
                 # Get enrichment fields only (with per-movie hard timeout)
