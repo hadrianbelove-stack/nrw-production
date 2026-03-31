@@ -42632,13 +42632,20 @@
     },
     "768614": {
       "title": "Silver Star",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2025-11-28",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-03-31",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
       "discovery_pass": "B",
-      "has_providers": false,
-      "year": 2025
+      "has_providers": true,
+      "year": 2025,
+      "_discovery_source": "tmdb_type4",
+      "enriched": false,
+      "enrichment_date": null
     },
     "1589225": {
       "title": "Wax and Wish",
@@ -62741,7 +62748,7 @@
     },
     "83533": {
       "title": "Avatar: Fire and Ash",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2025-12-17",
       "digital_date": "2026-03-31",
       "providers": {
@@ -62754,8 +62761,7 @@
       "year": 2025,
       "_discovery_source": "tmdb_type4",
       "enriched": false,
-      "enrichment_date": null,
-      "_type4_pending": true
+      "enrichment_date": null
     },
     "1599598": {
       "title": "A Cookie for Caspian",
@@ -87121,14 +87127,23 @@
     },
     "922849": {
       "title": "Hey Joe",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-04",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-03-31",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "backfill",
-      "has_providers": false,
+      "has_providers": true,
       "year": 2024,
-      "premiere_date": "2024-11-28"
+      "premiere_date": "2024-11-28",
+      "_discovery_source": "provider_availability_check",
+      "enriched": false,
+      "enrichment_date": null
     },
     "722391": {
       "title": "El proceso",
@@ -91541,14 +91556,23 @@
     },
     "1363103": {
       "title": "Blazing Fists",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-04",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-03-31",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "backfill",
-      "has_providers": false,
+      "has_providers": true,
       "year": 2025,
-      "premiere_date": "2025-01-31"
+      "premiere_date": "2025-01-31",
+      "_discovery_source": "provider_availability_check",
+      "enriched": false,
+      "enrichment_date": null
     },
     "1358805": {
       "title": "Justice",
@@ -117838,11 +117862,13 @@
       "year": 2025,
       "status": "tracking",
       "first_seen": "2026-01-06",
-      "digital_date": null,
+      "digital_date": "2026-04-03",
       "providers": {},
       "intake_pass": "C",
       "festival": "Berlin/Berlinale",
-      "has_providers": false
+      "has_providers": false,
+      "_discovery_source": "tmdb_type4",
+      "_type4_pending": true
     },
     "1266809": {
       "title": "The Safe House",
@@ -118787,13 +118813,22 @@
     "1430968": {
       "title": "Idiotka",
       "year": 2025,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-03-31",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "SXSW",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": false,
+      "enrichment_date": null
     },
     "1420948": {
       "title": "Saints And Warriors",
@@ -166619,7 +166654,7 @@
     "1316092": {
       "title": "\"Wuthering Heights\"",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-30",
       "digital_date": "2026-03-31",
       "providers": {
@@ -166632,8 +166667,7 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "enriched": false,
-      "enrichment_date": null,
-      "_type4_pending": true
+      "enrichment_date": null
     },
     "1537035": {
       "title": "Goodbye, Art",
@@ -175008,7 +175042,7 @@
     "1268127": {
       "title": "HUMINT",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-02-11",
       "digital_date": "2026-03-31",
       "providers": {
@@ -175020,8 +175054,7 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "enriched": false,
-      "enrichment_date": null,
-      "_type4_pending": true
+      "enrichment_date": null
     },
     "1632920": {
       "title": "Huy\u1ec1n T\u00ecnh D\u1ea1 Tr\u1ea1ch",
@@ -199605,12 +199638,21 @@
     "1547656": {
       "title": "Picture Perfect Sister-in-Law",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-03-29",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-03-31",
+      "providers": {
+        "rent": [
+          "Plex"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": false,
+      "enrichment_date": null
     },
     "1659755": {
       "title": "Madras - The Scene and Politics: A Discussion from Pa Ranjith",
@@ -200003,7 +200045,267 @@
       "intaked_at": "2026-03-30T10:14:55.482503",
       "networks": [],
       "has_providers": false
+    },
+    "1646341": {
+      "title": "Rory McIlroy: The Masters Wait",
+      "year": 2026,
+      "status": "available",
+      "first_seen": "2026-03-31",
+      "digital_date": "2026-03-30",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "intake_pass": "A",
+      "has_providers": true,
+      "_discovery_source": "tmdb_type4",
+      "enriched": false,
+      "enrichment_date": null
+    },
+    "1659027": {
+      "title": "My new way of seeing",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-31",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1655719": {
+      "title": "Aufstand der Jugend",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-31",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1641961": {
+      "title": "Untold: The Death & Life of Lamar Odom",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-31",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1638643": {
+      "title": "Less Travelled",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-31",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1622787": {
+      "title": "The Rise Of The Dead",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-31",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1615833": {
+      "title": "Outer Sector",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-31",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1269595": {
+      "title": "Nuclear War: A Scenario",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-31",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1660659": {
+      "title": "Babies",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-31",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1335839": {
+      "title": "Florida, Man",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-31",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "811677": {
+      "title": "\u91cd\u6848\u00b7\u65e0\u7f6a",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-31",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1661033": {
+      "title": "Comedy Family Style",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-03-31",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "SXSW",
+      "has_providers": false
+    },
+    "tv_218274": {
+      "title": "Secrets of the Bees",
+      "content_type": "limited_series",
+      "tmdb_id": 218274,
+      "status": "tracking",
+      "first_air_date": "2026-03-31",
+      "digital_date": "2026-03-31",
+      "episode_count": 2,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/k2snA5sP2zXtrwKcN0s7gBNeTbl.jpg",
+      "synopsis": "With the expertise of entomologist and fellow National Geographic Explorer Dr. Samuel Ramsey, the series uses groundbreaking filming technology to reveal the extraordinary world of bees; and uncover their astonishing architecture and intelligence, unlocking their secrets and featuring never-before-filmed moments.",
+      "genres": [
+        "Documentary"
+      ],
+      "original_language": "en",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-03-31T10:04:27.161378",
+      "networks": [
+        "National Geographic",
+        "Nat Geo Wild"
+      ],
+      "has_providers": false
+    },
+    "tv_315179": {
+      "title": "Ugly",
+      "content_type": "limited_series",
+      "tmdb_id": 315179,
+      "status": "tracking",
+      "first_air_date": "2026-03-29",
+      "digital_date": "2026-03-29",
+      "episode_count": 3,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/nrBNLQUzs6KiqL6nTRfVTQdlVgP.jpg",
+      "synopsis": "The series follows Meryem, who holds onto life with nothing but good intentions, as she reunites with her one true love, Kadir\u2014now a man whose world has been shaped by power, wealth, and ambition.",
+      "genres": [
+        "Drama"
+      ],
+      "original_language": "tr",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-03-31T10:04:27.406955",
+      "networks": [
+        "Star TV"
+      ],
+      "has_providers": false
+    },
+    "tv_316295": {
+      "title": "The Predator of Seville",
+      "content_type": "limited_series",
+      "tmdb_id": 316295,
+      "status": "available",
+      "first_air_date": "2026-03-27",
+      "digital_date": "2026-03-27",
+      "episode_count": 3,
+      "runtime": 143,
+      "poster": "https://image.tmdb.org/t/p/w500/ayrLeA54JHe7qvmwAT3kAtWybb7.jpg",
+      "synopsis": "For years, Manuel Blanco was known among international students as \u201cManu White\u201d, a friendly guide who organised cheap trips across Spain. But behind that image lay a far darker story. The case came to light when several young women began to connect experiences of abuse that had previously seemed unrelated.",
+      "genres": [
+        "Documentary",
+        "Crime"
+      ],
+      "original_language": "es",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
+      },
+      "intaked_at": "2026-03-31T10:04:27.762340",
+      "networks": [
+        "Netflix"
+      ],
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": false,
+      "enrichment_date": null
+    },
+    "tv_317689": {
+      "title": "Accomplices",
+      "content_type": "limited_series",
+      "tmdb_id": 317689,
+      "status": "tracking",
+      "first_air_date": "2026-03-14",
+      "digital_date": "2026-03-14",
+      "episode_count": 4,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/3KTbrPdBQIRTYhaPQ14dMpBGxhA.jpg",
+      "synopsis": "After a car accident, Sofia and Branko's idyllic life unravels. As they struggle to cope with the aftermath, their conscience haunts them, transforming their relationship and leading to a series of unexpected events.",
+      "genres": [
+        "Drama"
+      ],
+      "original_language": "sr",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-03-31T10:04:29.891335",
+      "networks": [],
+      "has_providers": false
+    },
+    "tv_315862": {
+      "title": "\u5343\u5c81\u5927\u4eba\u7684\u6708\u5149\u543b",
+      "content_type": "limited_series",
+      "tmdb_id": 315862,
+      "status": "tracking",
+      "first_air_date": "2026-03-05",
+      "digital_date": "2026-03-05",
+      "episode_count": 22,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/lDrCI3JLOK7fJw8NTNSVeAUL7M1.jpg",
+      "synopsis": "",
+      "genres": [],
+      "original_language": "zh",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-03-31T10:04:31.574600",
+      "networks": [],
+      "has_providers": false
     }
   },
-  "last_update": "2026-03-30T10:14:54.236328"
+  "last_update": "2026-03-31T10:04:26.584103"
 }
