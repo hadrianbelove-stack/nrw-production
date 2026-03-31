@@ -285,9 +285,9 @@ jobs:
             commit_msg="$commit_msg, new_arrivals=${NEW_ARRIVALS:-0}"
           fi
 
-          # Stage generated files (data.json, movie_tracking.json, and all metrics)
-          echo "📦 Staging data.json, movie_tracking.json, and all metrics files"
-          git add data.json movie_tracking.json metrics/
+          # Stage generated files (data.json, archive, movie_tracking.json, and all metrics)
+          echo "📦 Staging data.json, data_archive.json, movie_tracking.json, and all metrics files"
+          git add data.json data_archive.json movie_tracking.json metrics/
 
           # Only commit if there are staged changes and set flag accordingly
           if git diff --cached --quiet; then

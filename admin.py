@@ -152,6 +152,54 @@ COUNTRY_CODES = {
     'Kazakhstan': 'KAZ', 'Pakistan': 'PAK', 'Bangladesh': 'BGD', 'Sri Lanka': 'LKA',
 }
 
+@app.template_filter('weekday')
+def weekday_filter(date_str):
+    """Convert YYYY-MM-DD to 3-letter weekday abbreviation."""
+    if not date_str or date_str == 'Unknown':
+        return ''
+    try:
+        from datetime import datetime
+        dt = datetime.strptime(str(date_str), '%Y-%m-%d')
+        return dt.strftime('%a')
+    except (ValueError, TypeError):
+        return ''
+
+@app.template_filter('short_date')
+def short_date_filter(date_str):
+    """Convert YYYY-MM-DD to 'Mon D' format (e.g., 'Mar 30')."""
+    if not date_str or date_str == 'Unknown':
+        return '—'
+    try:
+        from datetime import datetime
+        dt = datetime.strptime(str(date_str), '%Y-%m-%d')
+        return dt.strftime('%b %-d')
+    except (ValueError, TypeError):
+        return date_str
+
+@app.template_filter('date_month')
+def date_month_filter(date_str):
+    """Extract month abbreviation from YYYY-MM-DD."""
+    if not date_str or date_str == 'Unknown':
+        return ''
+    try:
+        from datetime import datetime
+        dt = datetime.strptime(str(date_str), '%Y-%m-%d')
+        return dt.strftime('%b')
+    except (ValueError, TypeError):
+        return ''
+
+@app.template_filter('date_day')
+def date_day_filter(date_str):
+    """Extract day number from YYYY-MM-DD."""
+    if not date_str or date_str == 'Unknown':
+        return '—'
+    try:
+        from datetime import datetime
+        dt = datetime.strptime(str(date_str), '%Y-%m-%d')
+        return str(dt.day)
+    except (ValueError, TypeError):
+        return ''
+
 @app.template_filter('country_code')
 def country_code_filter(country):
     """Convert country name to 3-letter code."""
@@ -765,15 +813,29 @@ def index() -> str:
     # Load category overrides for template
     category_overrides = load_json(CATEGORY_OVERRIDES_FILE, {})
 
-    # Group movies by digital_date for spreadsheet view
-    from collections import OrderedDict
-    date_groups = OrderedDict()
+    # Split movies into pre-orders (future dates) and wall (today/past)
+    from datetime import date as date_type
+    today_str = date_type.today().isoformat()
+
     # Sort movies by digital_date descending
     sorted_movies = sorted(
         processed_movies.values(),
         key=lambda m: m.get('digital_date', '') or '',
         reverse=True
     )
+
+    preorder_movies = []
+    wall_movies = []
+    for movie in sorted_movies:
+        dd = movie.get('digital_date', '') or ''
+        if dd > today_str:
+            preorder_movies.append(movie)
+        else:
+            wall_movies.append(movie)
+
+    # Also keep legacy movies_by_date for backwards compat
+    from collections import OrderedDict
+    date_groups = OrderedDict()
     for movie in sorted_movies:
         date = movie.get('digital_date', 'Unknown')
         if date not in date_groups:
@@ -784,6 +846,10 @@ def index() -> str:
         'index.html',
         movies=processed_movies,
         movies_by_date=list(date_groups.items()),
+        preorder_movies=preorder_movies,
+        wall_movies=wall_movies,
+        preorder_count=len(preorder_movies),
+        wall_count=len(wall_movies),
         featured=featured,
         restorations=restorations,
         category_overrides=category_overrides,

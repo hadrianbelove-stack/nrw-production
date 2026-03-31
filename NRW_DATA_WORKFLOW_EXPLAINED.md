@@ -29,10 +29,10 @@ When a movie leaves theaters, there's no API that says "this movie became availa
 │  movie_tracking    • Write to data.json  Overlay onto               │
 │  .json             • Queue for enrich    existing entry             │
 │                                                                     │
-│  KEY PRINCIPLE: data.json is APPEND-ONLY                            │
+│  KEY PRINCIPLE: data.json = rolling 90-day window                    │
 │  - Discovery ADDS movies                                            │
 │  - Enrichment OVERLAYS data                                         │
-│  - Nothing DELETES movies                                           │
+│  - Old movies auto-archived after 90 days → data_archive.json       │
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -120,7 +120,7 @@ Daily Intake & Discovery → movie_tracking.json → OPTIONAL REVIEW → data.js
 **What happens:** data.json accumulates discovered movies and gets enhanced with enrichment data.
 
 **📄 `data.json`** - *The Website Database* (Updated 2025-12-29)
-- **Append-only:** Movies are ADDED during discovery, NEVER deleted
+- **Rolling window:** Movies are ADDED during discovery. After 90 days, auto-archived to data_archive.json
 - **Two write sources:**
   1. **Discovery phase:** Writes minimal entry immediately when movie transitions to available
   2. **Enrichment phase:** Overlays rich data onto existing entries
@@ -211,7 +211,7 @@ The orchestrator records all failures and warnings in `metrics/run_diagnostics.j
 
 ## **🎯 Why This Architecture Works**
 
-1. **No Data Loss:** Append-only data.json means discovered movies are always visible
+1. **No Data Loss:** Old movies preserved in data_archive.json, recent movies in data.json
 2. **Immediate Visibility:** Movies appear the moment they're discovered, not after enrichment
 3. **Graceful Degradation:** Enrichment failures don't hide movies - they just have less metadata
 4. **Simple Mental Model:** Discovery adds, enrichment enhances, nothing deletes

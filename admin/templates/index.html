@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The New Release Wall - Admin Panel</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}?v=29">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}?v=36">
 </head>
 <body>
     <!-- Health Status Banner -->
@@ -159,6 +159,7 @@
     <!-- Column Headers -->
     <div class="col-headers">
         <div class="col-hdr"></div>
+        <div class="col-hdr">Date</div>
         <div class="col-hdr"></div>
         <div class="col-hdr">Title / Labels</div>
         <div class="col-hdr">Director</div>
@@ -173,14 +174,8 @@
         <div class="col-hdr"></div>
     </div>
 
-    <!-- Movie Rows Grouped by Date -->
-    <div id="movie-list">
-    {% for date_str, group in movies_by_date %}
-        <div class="date-header">
-            {{ date_str }}
-            <span class="ct">{{ group|length }} movies</span>
-        </div>
-        {% for movie in group %}
+    {# ---- Movie row macro (used by both sections) ---- #}
+    {% macro movie_row(movie) %}
         {% set movie_id = movie.id|string %}
         {% set cats = movie.get('categories', {}) %}
         {% set is_pick = cats.get('is_staff_pick', false) or movie_id in featured %}
@@ -202,17 +197,20 @@
         {% set incomplete = not has_trailer or not has_poster or not has_director or not has_country or not has_synopsis or not has_rt or not has_wiki %}
         {% set streaming_svc = movie.get('watch_links', {}).get('streaming', {}).get('service', '') if movie.get('watch_links', {}).get('streaming') else '' %}
         {% set imdb_id = movie.get('imdb_id', '') or movie.get('external_ids', {}).get('imdb_id', '') %}
+        {% set enrich_failed = movie.get('_enrichment_status') in ('failed', 'error', 'timeout') %}
+        {% set dd = movie.digital_date or '' %}
 
         <!-- Movie Row -->
         <div class="movie-row {{ 'pick' if is_pick else '' }} {{ 'incomplete' if incomplete else '' }}"
              data-movie-id="{{ movie_id }}"
              data-title="{{ movie.title|lower }}"
              data-missing-any="{{ 'yes' if incomplete else 'no' }}"
-             data-digital-date="{{ movie.digital_date or '' }}"
+             data-digital-date="{{ dd }}"
              data-is-pick="{{ 'yes' if is_pick else 'no' }}"
              draggable="true"
              onclick="toggleRow(this)">
             <div class="drag-handle" onclick="event.stopPropagation()">&#8942;&#8942;</div>
+            <div class="date-pill"><span class="month">{{ dd|date_month }}</span><span class="day">{{ dd|date_day }}</span><span class="weekday">{{ dd|weekday }}</span></div>
             {% if has_poster %}
             <div class="pst-wrap" {% if trailer_url %}data-trailer-url="{{ trailer_url|e }}" data-trailer-title="{{ movie.title|e }}" onclick="event.stopPropagation(); openTrailer('{{ movie_id }}', this)"{% endif %}>
                 <img class="pst" src="{{ movie.poster_url or movie.get('poster') }}" alt="">
@@ -271,7 +269,7 @@
                 <span class="stream-pill stream-{{ svc_class }}">{{ streaming_svc }}</span>
                 {% endif %}
             </div>
-            <div class="incomplete-dot">{{ '<span class="inc-flag" title="Incomplete data"></span>'|safe if incomplete else '' }}</div>
+            <div class="incomplete-dot">{% if enrich_failed %}<span class="enrich-fail" title="Enrichment {{ movie.get('_enrichment_status', 'failed') }}">!</span>{% elif incomplete %}<span class="inc-flag" title="Incomplete data"></span>{% endif %}</div>
             <button class="trash-btn" onclick="event.stopPropagation(); removeMovie('{{ movie_id }}', '{{ movie.title|e }}')" title="Remove">&#128465;</button>
             <div></div>
         </div>
@@ -389,8 +387,29 @@
                 </div>
             </div>
         </div>
+    {% endmacro %}
+
+    <!-- Movie Rows with Section Headers -->
+    <div id="movie-list">
+    {% if preorder_movies %}
+        <div class="section-header">
+            <span class="label">Pre-Orders</span>
+            <span class="sub">upcoming theatrical &amp; digital</span>
+            <span class="count">{{ preorder_count }} movies</span>
+        </div>
+        {% for movie in preorder_movies %}
+            {{ movie_row(movie) }}
         {% endfor %}
-    {% endfor %}
+    {% endif %}
+
+        <div class="section-header">
+            <span class="label">The Wall</span>
+            <span class="sub">currently on digital</span>
+            <span class="count">{{ wall_count }} movies</span>
+        </div>
+        {% for movie in wall_movies %}
+            {{ movie_row(movie) }}
+        {% endfor %}
     </div>
 
     <div class="success-msg" id="success-msg">Changes saved!</div>
@@ -416,6 +435,6 @@
         <img id="img-preview" src="">
     </div>
 
-    <script src="{{ url_for('static', filename='js/admin.js') }}?v=29"></script>
+    <script src="{{ url_for('static', filename='js/admin.js') }}?v=36"></script>
 </body>
 </html>

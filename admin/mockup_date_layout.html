@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Date Layout Mockups</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #111; color: #fff; padding: 2rem;
+}
+
+.version-label {
+    font-size: 1.4rem; font-weight: 700; color: #ff6b6b;
+    margin: 3rem 0 0.5rem 0; padding-bottom: 0.5rem;
+    border-bottom: 2px solid #ff6b6b;
+}
+.version-label:first-child { margin-top: 0; }
+.version-desc {
+    font-size: 0.85rem; color: #999; margin-bottom: 1rem; line-height: 1.5;
+}
+
+/* =========================================
+   SHARED STYLES
+   ========================================= */
+.mock-wrap {
+    background: #1a1a1a; border-radius: 8px; overflow: hidden;
+    border: 1px solid #2a2a2a; margin-bottom: 2rem;
+}
+
+/* Poster */
+.pst {
+    width: 32px; height: 48px; border-radius: 3px; object-fit: cover;
+    background: #333; display: block; flex-shrink: 0;
+}
+
+/* Title + tag area */
+.r-title {
+    font-weight: 600; font-size: 0.85rem;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.cat-btn {
+    padding: 1px 4px; border-radius: 3px; font-size: 0.5rem; font-weight: 700;
+    border: 1px solid #333; background: transparent; color: #444;
+    cursor: pointer; white-space: nowrap; line-height: 1.3;
+}
+.cat-btn.on { border-color: var(--c); background: var(--c); color: var(--ct, #fff); }
+
+/* Director */
+.r-dir { color: #999; font-size: 0.78rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* CC + Min */
+.r-cc, .r-min { color: #888; font-size: 0.72rem; text-align: center; }
+
+/* Quick links */
+.ql {
+    padding: 2px 5px; border-radius: 2px; font-size: 0.52rem; font-weight: 700;
+    text-decoration: none; color: #999; background: #2a2a2a;
+    display: flex; align-items: center; justify-content: center;
+    height: 18px; letter-spacing: 0.02em;
+}
+.ql.dead { color: #333; }
+
+/* Score cells */
+.r-score { text-align: center; font-size: 0.7rem; font-weight: 700; padding: 2px 3px; border-radius: 3px; }
+.rt-high { background: #28a745; color: #fff; }
+.imdb-good { color: #ffd700; }
+.score-none { color: #333; }
+
+/* Streaming pill */
+.stream-pill {
+    font-size: 0.55rem; font-weight: 700; padding: 2px 5px;
+    border-radius: 3px; color: #fff; text-transform: uppercase;
+    white-space: nowrap; display: inline-block;
+}
+.stream-netflix { background: #E50914; }
+.stream-mubi { background: #1a73e8; }
+.stream-criterion { background: #000; border: 1px solid #444; }
+
+/* Drag handle */
+.drag-handle { color: #444; font-size: 0.8rem; text-align: center; letter-spacing: -2px; }
+
+/* Incomplete dot */
+.inc-flag { width: 9px; height: 9px; border-radius: 50%; background: #dc3545; display: inline-block; }
+
+/* Trash */
+.trash-btn { background: none; border: none; color: #444; font-size: 0.8rem; padding: 2px; cursor: pointer; }
+
+/* Pick highlight */
+.movie-row.pick { border-left: 3px solid #ffd700; }
+
+/* =========================================
+   VERSION A: Simple date text column
+   ========================================= */
+.va-section-header {
+    padding: 0.5rem 1rem; background: #222;
+    font-size: 0.9rem; font-weight: 700;
+    border-bottom: 2px solid #3a3a3a;
+    display: flex; align-items: center; gap: 0.75rem;
+}
+.va-section-header .label { color: #ff6b6b; text-transform: uppercase; letter-spacing: 0.08em; }
+.va-section-header .count { color: #555; font-size: 0.78rem; font-weight: 400; }
+
+.va-col-headers {
+    display: grid;
+    grid-template-columns: 16px 52px 36px minmax(150px,500px) 130px 26px 30px 90px 30px 30px 68px 20px 24px 1fr;
+    gap: 0 0.25rem;
+    padding: 0.3rem 0.5rem;
+    background: #222; border-bottom: 1px solid #3a3a3a;
+    font-size: 0.6rem; color: #666; text-transform: uppercase; letter-spacing: 0.04em;
+    align-items: center;
+}
+
+.va-row {
+    display: grid;
+    grid-template-columns: 16px 52px 36px minmax(150px,500px) 130px 26px 30px 90px 30px 30px 68px 20px 24px 1fr;
+    gap: 0 0.25rem;
+    padding: 0.25rem 0.5rem;
+    align-items: center;
+    border-bottom: 1px solid #1e1e1e;
+    min-height: 46px;
+}
+.va-row:hover { background: #222; }
+
+.va-date {
+    font-size: 0.62rem; color: #888; line-height: 1.2;
+    white-space: nowrap;
+}
+.va-date .day { font-weight: 700; color: #ccc; font-size: 0.72rem; }
+
+/* =========================================
+   VERSION B: Date pill/badge column
+   ========================================= */
+.vb-section-header {
+    padding: 0.4rem 1rem; background: linear-gradient(90deg, #2a1a1a, #1a1a1a);
+    border-bottom: 1px solid #3a3a3a;
+    border-left: 3px solid #ff6b6b;
+    display: flex; align-items: center; gap: 0.75rem;
+}
+.vb-section-header .label {
+    color: #ff6b6b; font-size: 0.82rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.06em;
+}
+.vb-section-header .count { color: #555; font-size: 0.75rem; font-weight: 400; }
+.vb-section-header .sub { color: #666; font-size: 0.72rem; font-style: italic; }
+
+.vb-col-headers {
+    display: grid;
+    grid-template-columns: 16px 48px 36px minmax(150px,500px) 130px 26px 30px 90px 30px 30px 68px 20px 24px 1fr;
+    gap: 0 0.25rem;
+    padding: 0.3rem 0.5rem;
+    background: #222; border-bottom: 1px solid #3a3a3a;
+    font-size: 0.6rem; color: #666; text-transform: uppercase; letter-spacing: 0.04em;
+    align-items: center;
+}
+
+.vb-row {
+    display: grid;
+    grid-template-columns: 16px 48px 36px minmax(150px,500px) 130px 26px 30px 90px 30px 30px 68px 20px 24px 1fr;
+    gap: 0 0.25rem;
+    padding: 0.25rem 0.5rem;
+    align-items: center;
+    border-bottom: 1px solid #1e1e1e;
+    min-height: 46px;
+}
+.vb-row:hover { background: #222; }
+
+.vb-date-pill {
+    font-size: 0.56rem; font-weight: 600;
+    padding: 3px 5px; border-radius: 4px;
+    background: #2a2a2a; border: 1px solid #3a3a3a;
+    color: #aaa; text-align: center;
+    line-height: 1.3;
+}
+.vb-date-pill .month { text-transform: uppercase; letter-spacing: 0.04em; color: #00d4aa; }
+.vb-date-pill .day { font-size: 0.82rem; font-weight: 800; color: #00d4aa; display: block; }
+.vb-date-pill .weekday { font-size: 0.5rem; text-transform: uppercase; color: #00d4aa; letter-spacing: 0.04em; display: block; margin-top: 1px; }
+
+/* =========================================
+   VERSION C: Compact date — just the day number,
+   with a subtle date-change divider line
+   ========================================= */
+.vc-section-header {
+    padding: 0.5rem 1rem; background: #1e1e1e;
+    border-bottom: 2px solid #ff6b6b;
+    display: flex; align-items: center; gap: 0.5rem;
+}
+.vc-section-header .icon { font-size: 1rem; }
+.vc-section-header .label {
+    color: #ff6b6b; font-size: 0.85rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.06em;
+}
+.vc-section-header .count { color: #555; font-size: 0.75rem; font-weight: 400; margin-left: auto; }
+
+.vc-col-headers {
+    display: grid;
+    grid-template-columns: 16px 30px 36px minmax(150px,500px) 130px 26px 30px 90px 30px 30px 68px 20px 24px 1fr;
+    gap: 0 0.25rem;
+    padding: 0.3rem 0.5rem;
+    background: #222; border-bottom: 1px solid #3a3a3a;
+    font-size: 0.6rem; color: #666; text-transform: uppercase; letter-spacing: 0.04em;
+    align-items: center;
+}
+
+.vc-row {
+    display: grid;
+    grid-template-columns: 16px 30px 36px minmax(150px,500px) 130px 26px 30px 90px 30px 30px 68px 20px 24px 1fr;
+    gap: 0 0.25rem;
+    padding: 0.25rem 0.5rem;
+    align-items: center;
+    border-bottom: 1px solid #1e1e1e;
+    min-height: 46px;
+}
+.vc-row:hover { background: #222; }
+
+.vc-date-change {
+    grid-column: 1 / -1;
+    border-top: 1px solid #333;
+    margin-top: 2px;
+    padding-top: 4px;
+}
+
+.vc-day {
+    font-size: 0.82rem; font-weight: 800; color: #ff6b6b;
+    text-align: center; line-height: 1;
+}
+.vc-day .sub {
+    font-size: 0.5rem; font-weight: 400; color: #666;
+    display: block; margin-top: 1px; text-transform: uppercase;
+}
+/* Only show date on first movie of each day group */
+.vc-day.blank { color: transparent; }
+.vc-day.blank .sub { color: transparent; }
+
+/* =========================================
+   VERSION D: Date merged row-span style
+   (simulated with first-of-group approach)
+   ========================================= */
+.vd-section-header {
+    padding: 0.6rem 1rem; background: #222;
+    border-bottom: 2px solid #3a3a3a;
+    display: flex; align-items: center; justify-content: space-between;
+}
+.vd-section-header .label {
+    color: #ff6b6b; font-size: 0.9rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.1em;
+}
+.vd-section-header .meta { color: #555; font-size: 0.75rem; }
+
+.vd-col-headers {
+    display: grid;
+    grid-template-columns: 56px 36px minmax(150px,500px) 130px 26px 30px 90px 30px 30px 68px 20px 24px 1fr;
+    gap: 0 0.25rem;
+    padding: 0.3rem 0.5rem;
+    background: #222; border-bottom: 1px solid #3a3a3a;
+    font-size: 0.6rem; color: #666; text-transform: uppercase; letter-spacing: 0.04em;
+    align-items: center;
+}
+
+.vd-date-group {
+    display: flex; border-bottom: 1px solid #2a2a2a;
+}
+.vd-date-sidebar {
+    width: 56px; flex-shrink: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 0.5rem 0;
+    border-right: 2px solid #2a2a2a;
+    background: #1e1e1e;
+}
+.vd-date-sidebar .month {
+    font-size: 0.55rem; font-weight: 600; color: #ff6b6b;
+    text-transform: uppercase; letter-spacing: 0.06em;
+}
+.vd-date-sidebar .day {
+    font-size: 1.2rem; font-weight: 800; color: #fff; line-height: 1;
+}
+.vd-date-sidebar .weekday {
+    font-size: 0.5rem; color: #666; text-transform: uppercase;
+}
+.vd-date-sidebar .movie-ct {
+    font-size: 0.5rem; color: #444; margin-top: 4px;
+}
+
+.vd-rows { flex: 1; }
+.vd-row {
+    display: grid;
+    grid-template-columns: 36px minmax(150px,500px) 130px 26px 30px 90px 30px 30px 68px 20px 24px 1fr;
+    gap: 0 0.25rem;
+    padding: 0.25rem 0.5rem;
+    align-items: center;
+    border-bottom: 1px solid #1e1e1e;
+    min-height: 46px;
+}
+.vd-row:last-child { border-bottom: none; }
+.vd-row:hover { background: #222; }
+
+/* =========================================
+   Shared title+labels cell
+   ========================================= */
+.r-title-labels {
+    display: flex; align-items: center; gap: 0; min-width: 0; overflow: hidden;
+}
+.row-cat-btns { display: flex; gap: 2px; flex-shrink: 0; margin-left: 0.35rem; }
+.quick-links { display: flex; gap: 2px; justify-content: center; }
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     VERSION A: Simple date text to the left of poster
+     ============================================================ -->
+<div class="version-label">Version A: Date as text column</div>
+<p class="version-desc">
+    Date shown as small stacked text (month+day) in its own column left of the poster.
+    Full-width section headers divide "Pre-Orders" from each wall week.
+</p>
+
+<div class="mock-wrap">
+    <!-- Section: Pre-Orders -->
+    <div class="va-section-header">
+        <span class="label">Pre-Orders</span>
+        <span class="count">3 movies</span>
+    </div>
+    <div class="va-col-headers">
+        <div></div><div style="padding:0 0.3rem;">Date</div><div></div>
+        <div style="padding:0 0.3rem;">Title / Labels</div><div style="padding:0 0.3rem;">Director</div>
+        <div style="text-align:center;">CC</div><div style="text-align:center;">Min</div>
+        <div style="text-align:center;">Links</div><div style="text-align:center;">RT</div>
+        <div style="text-align:center;">IMDb</div><div>Stream</div>
+        <div></div><div></div><div></div>
+    </div>
+
+    <div class="va-row">
+        <div class="drag-handle">&#8942;&#8942;</div>
+        <div class="va-date"><span class="day">Apr 8</span></div>
+        <img class="pst" src="https://image.tmdb.org/t/p/w92/hEiEFgMkYiKlBBo4kFoIFXmwpag.jpg">
+        <div class="r-title-labels">
+            <div class="r-title">Sinners</div>
+            <div class="row-cat-btns">
+                <button class="cat-btn on" style="--c:#ffd700;--ct:#000">&#9733;</button>
+                <button class="cat-btn on" style="--c:#ff6b6b">BIG</button>
+            </div>
+        </div>
+        <div class="r-dir">Ryan Coogler</div>
+        <div class="r-cc">US</div>
+        <div class="r-min">137</div>
+        <div class="quick-links"><a class="ql">WIKI</a><a class="ql">IMDB</a><a class="ql">RT</a></div>
+        <div class="r-score rt-high">92</div>
+        <div class="r-score imdb-good">7.8</div>
+        <div></div>
+        <div></div>
+        <div class="trash-btn">&#128465;</div>
+        <div></div>
+    </div>
+    <div class="va-row">
+        <div class="drag-handle">&#8942;&#8942;</div>
+        <div class="va-date"><span class="day">Apr 11</span></div>
+        <img class="pst" src="https://image.tmdb.org/t/p/w92/5BG9MiMQi8LjPiTFGM6g37bMkfg.jpg">
+        <div class="r-title-labels">
+            <div class="r-title">Thunderbolts*</div>
+            <div class="row-cat-btns">
+                <button class="cat-btn on" style="--c:#ff6b6b">BIG</button>
+            </div>
+        </div>
+        <div class="r-dir">Jake Schreier</div>
+        <div class="r-cc">US</div>
+        <div class="r-min">127</div>
+        <div class="quick-links"><a class="ql">WIKI</a><a class="ql">IMDB</a><a class="ql dead">RT</a></div>
+        <div class="r-score score-none">&mdash;</div>
+        <div class="r-score score-none">&mdash;</div>
+        <div></div>
+        <div></div>
+        <div class="trash-btn">&#128465;</div>
+        <div></div>
+    </div>
+    <div class="va-row">
+        <div class="drag-handle">&#8942;&#8942;</div>
+        <div class="va-date"><span class="day">Apr 18</span></div>
+        <img class="pst" src="https://image.tmdb.org/t/p/w92/jBJbFllqZPcPBVDABg7kU7VaarV.jpg">
+        <div class="r-title-labels">
+            <div class="r-title">Drop</div>
+            <div class="row-cat-btns">
+                <button class="cat-btn on" style="--c:#ff6b6b">BIG</button>
+            </div>
+        </div>
+        <div class="r-dir">Christopher Landon</div>
+        <div class="r-cc">US</div>
+        <div class="r-min">—</div>
+        <div class="quick-links"><a class="ql">WIKI</a><a class="ql">IMDB</a><a class="ql dead">RT</a></div>
+        <div class="r-score score-none">&mdash;</div>
+        <div class="r-score score-none">&mdash;</div>
+        <div></div>
+        <div><span class="inc-flag"></span></div>
+        <div class="trash-btn">&#128465;</div>
+        <div></div>
+    </div>
+
+    <!-- Section: NRW Wall -->
+    <div class="va-section-header">
+        <span class="label">On The Wall</span>
+        <span class="count">5 movies</span>
+    </div>
+    <div class="va-row pick">
+        <div class="drag-handle">&#8942;&#8942;</div>
+        <div class="va-date"><span class="day">Mar 30</span></div>
+        <img class="pst" src="https://image.tmdb.org/t/p/w92/AjV6jFJ2YFIluYo4GQf13AA1tqu.jpg">
+        <div class="r-title-labels">
+            <div class="r-title">The Brutalist</div>
+            <div class="row-cat-btns">
+                <button class="cat-btn on" style="--c:#ffd700;--ct:#000">&#9733;</button>
+                <button class="cat-btn on" style="--c:#ff6b6b">BIG</button>
+            </div>
+        </div>
+        <div class="r-dir">Brady Corbet</div>
+        <div class="r-cc">US</div>
+        <div class="r-min">215</div>
+        <div class="quick-links"><a class="ql">WIKI</a><a class="ql">IMDB</a><a class="ql">RT</a></div>
+        <div class="r-score rt-high">93</div>
+        <div class="r-score imdb-good">7.4</div>
+        <div><span class="stream-pill stream-netflix">Netflix</span></div>
+        <div></div>
+        <div class="trash-btn">&#128465;</div>
+        <div></div>
+    </div>
+    <div class="va-row">
+        <div class="drag-handle">&#8942;&#8942;</div>
+        <div class="va-date"><span class="day">Mar 30</span></div>
+        <img class="pst" src="https://image.tmdb.org/t/p/w92/pU2Uz9VGabZdI2O5bMBOTakXiNa.jpg">
+        <div class="r-title-labels">
+            <div class="r-title">Nickel Boys</div>
+            <div class="row-cat-btns">
+                <button class="cat-btn on" style="--c:#4a90d9">INDIE</button>
+            </div>
+        </div>
+        <div class="r-dir">RaMell Ross</div>
+        <div class="r-cc">US</div>
+        <div class="r-min">140</div>
+        <div class="quick-links"><a class="ql">WIKI</a><a class="ql">IMDB</a><a class="ql">RT</a></div>
+        <div class="r-score rt-high">97</div>
+        <div class="r-score imdb-good">7.1</div>
+        <div></div>
+        <div></div>
+        <div class="trash-btn">&#128465;</div>
+        <div></div>
+    </div>
+    <div class="va-row">
+        <div class="drag-handle">&#8942;&#8942;</div>
+        <div class="va-date"><span class="day">Mar 29</span></div>
+        <img class="pst" src="https://image.tmdb.org/t/p/w92/rCB3jiPCFPHhSiaGGgkVfOKBoJT.jpg">
+        <div class="r-title-labels">
+            <div class="r-title">Babygirl</div>
+            <div class="row-cat-btns">
+                <button class="cat-btn on" style="--c:#ff6b6b">BIG</button>
+            </div>
+        </div>
+        <div class="r-dir">Halina Reijn</div>
+        <div class="r-cc">US</div>
+        <div class="r-min">114</div>
+        <div class="quick-links"><a class="ql">WIKI</a><a class="ql">IMDB</a><a class="ql">RT</a></div>
+        <div class="r-score rt-high">80</div>
+        <div class="r-score imdb-good">7.0</div>
+        <div><span class="stream-pill stream-mubi">Mubi</span></div>
+        <div></div>
+        <div class="trash-btn">&#128465;</div>
+        <div></div>
+    </div>
+    <div class="va-row">
+        <div class="drag-handle">&#8942;&#8942;</div>
+        <div class="va-date"><span class="day">Mar 29</span></div>
+        <img class="pst" src="https://image.tmdb.org/t/p/w92/sfs3U0EwvEIahHgyy88bCFo361r.jpg">
+        <div class="r-title-labels">
+            <div class="r-title">Nosferatu</div>
+            <div class="row-cat-btns">
+                <button class="cat-btn on" style="--c:#ffd700;--ct:#000">&#9733;</button>
+                <button class="cat-btn on" style="--c:#ff6b6b">BIG</button>
+            </div>
+        </div>
+        <div class="r-dir">Robert Eggers</div>
+        <div class="r-cc">US</div>
+        <div class="r-min">132</div>
+        <div class="quick-links"><a class="ql">WIKI</a><a class="ql">IMDB</a><a class="ql">RT</a></div>
+        <div class="r-score rt-high">85</div>
+        <div class="r-score imdb-good">7.2</div>
+        <div></div>
+        <div></div>
+        <div class="trash-btn">&#128465;</div>
+        <div></div>
+    </div>
+    <div class="va-row">
+        <div class="drag-handle">&#8942;&#8942;</div>
+        <div class="va-date"><span class="day">Mar 25</span></div>
+        <img class="pst" src="https://image.tmdb.org/t/p/w92/lRSiUEfBtcB7TOZZ5iyQbB5fhIi.jpg">
+        <div class="r-title-labels">
+            <div class="r-title">Hard Truths</div>
+            <div class="row-cat-btns">
+                <button class="cat-btn on" style="--c:#4a90d9">INDIE</button>
+                <button class="cat-btn on" style="--c:#9b59b6">FRGN</button>
+            </div>
+        </div>
+        <div class="r-dir">Mike Leigh</div>
+        <div class="r-cc">GB</div>
+        <div class="r-min">97</div>
+        <div class="quick-links"><a class="ql">WIKI</a><a class="ql">IMDB</a><a class="ql">RT</a></div>
+        <div class="r-score rt-high">91</div>
+        <div class="r-score imdb-good">7.3</div>
+        <div><span class="stream-pill stream-criterion">Criterion</span></div>
+        <div></div>
+        <div class="trash-btn">&#128465;</div>
+        <div></div>
+    </div>
+</div>
+
+
+<!-- ============================================================
+     VERSION B: Date as a styled pill/badge
+     ============================================================ -->
+<div class="version-label">Version B: Date pill badge</div>
+<p class="version-desc">
+    Date rendered as a compact card/pill with large day number and small month.
+    Section headers have a left accent bar. More visual weight on dates.
+</p>
+
+<div class="mock-wrap">
+    <!-- Pre-Orders -->
+    <div class="vb-section-header">
+        <span class="label">Pre-Orders</span>
+        <span class="sub">upcoming theatrical &amp; digital</span>
+        <span class="count" style="margin-left:auto;">3 movies</span>
+    </div>
+
+    <div class="vb-row">
+        <div class="drag-handle">&#8942;&#8942;</div>
+        <div class="vb-date-pill"><span class="month">Apr</span><span class="day">8</span><span class="weekday">Tue</span></div>
+        <img class="pst" src="https://image.tmdb.org/t/p/w92/hEiEFgMkYiKlBBo4kFoIFXmwpag.jpg">
+        <div class="r-title-labels">
+            <div class="r-title">Sinners</div>
+            <div class="row-cat-btns">
+                <button class="cat-btn on" style="--c:#ffd700;--ct:#000">&#9733;</button>
+                <button class="cat-btn on" style="--c:#ff6b6b">BIG</button>
+            </div>
+        </div>
+        <div class="r-dir">Ryan Coogler</div>
+        <div class="r-cc">US</div>
+        <div class="r-min">137</div>
+        <div class="quick-links"><a class="ql">WIKI</a><a class="ql">IMDB</a><a class="ql">RT</a></div>
+        <div class="r-score rt-high">92</div>
+        <div class="r-score imdb-good">7.8</div>
+        <div></div>
+        <div></div>
+        <div class="trash-btn">&#128465;</div>
+        <div></div>
+    </div>
+    <div class="vb-row">
+        <div class="drag-handle">&#8942;&#8942;</div>
+        <div class="vb-date-pill"><span class="month">Apr</span><span class="day">11</span><span class="weekday">Fri</span></div>
+        <img class="pst" src="https://image.tmdb.org/t/p/w92/5BG9MiMQi8LjPiTFGM6g37bMkfg.jpg">
+        <div class="r-title-labels">
+            <div class="r-title">Thunderbolts*</div>
+            <div class="row-cat-btns">
+                <button class="cat-btn on" style="--c:#ff6b6b">BIG</button>
+            </div>
+        </div>
+        <div class="r-dir">Jake Schreier</div>
+        <div class="r-cc">US</div>
+        <div class="r-min">127</div>
+        <div class="quick-links"><a class="ql">WIKI</a><a class="ql">IMDB</a><a class="ql dead">RT</a></div>
+        <div class="r-score score-none">&mdash;</div>
+        <div class="r-score score-none">&mdash;</div>
+        <div></div>
+        <div></div>
+        <div class="trash-btn">&#128465;</div>
+        <div></div>
+    </div>
+    <div class="vb-row">
+        <div class="drag-handle">&#8942;&#8942;</div>
+        <div class="vb-date-pill"><span class="month">Apr</span><span class="day">18</span><span class="weekday">Fri</span></div>
+        <img class="pst" src="https://image.tmdb.org/t/p/w92/jBJbFllqZPcPBVDABg7kU7VaarV.jpg">
+        <div class="r-title-labels">
+            <div class="r-title">Drop</div>
+            <div class="row-cat-btns">
+                <button class="cat-btn on" style="--c:#ff6b6b">BIG</button>
+            </div>
+        </div>
+        <div class="r-dir">Christopher Landon</div>
+        <div class="r-cc">US</div>
+        <div class="r-min">—</div>
+        <div class="quick-links"><a class="ql">WIKI</a><a class="ql">IMDB</a><a class="ql dead">RT</a></div>
+        <div class="r-score score-none">&mdash;</div>
+        <div class="r-score score-none">&mdash;</div>
+        <div></div>
+        <div><span class="inc-flag"></span></div>
+        <div class="trash-btn">&#128465;</div>
+        <div></div>
+    </div>
+
+    <!-- On The Wall -->
+    <div class="vb-section-header">
+        <span class="label">The Wall</span>
+        <span class="sub">currently on digital</span>
+        <span class="count" style="margin-left:auto;">5 movies</span>
+    </div>
+
+    <div class="vb-row pick">
+        <div class="drag-handle">&#8942;&#8942;</div>
+        <div class="vb-date-pill"><span class="month">Mar</span><span class="day">30</span><span class="weekday">Sun</span></div>
+        <img class="pst" src="https://image.tmdb.org/t/p/w92/AjV6jFJ2YFIluYo4GQf13AA1tqu.jpg">
+        <div class="r-title-labels">
+            <div class="r-title">The Brutalist</div>
+            <div class="row-cat-btns">
+                <button class="cat-btn on" style="--c:#ffd700;--ct:#000">&#9733;</button>
+                <button class="cat-btn on" style="--c:#ff6b6b">BIG</button>
+            </div>
+        </div>
+        <div class="r-dir">Brady Corbet</div>
+        <div class="r-cc">US</div>
+        <div class="r-min">215</div>
+        <div class="quick-links"><a class="ql">WIKI</a><a class="ql">IMDB</a><a class="ql">RT</a></div>
+        <div class="r-score rt-high">93</div>
+        <div class="r-score imdb-good">7.4</div>
+        <div><span class="stream-pill stream-netflix">Netflix</span></div>
+        <div></div>
+        <div class="trash-btn">&#128465;</div>
+        <div></div>
+    </div>
+    <div class="vb-row">
+        <div class="drag-handle">&#8942;&#8942;</div>
+        <div class="vb-date-pill"><span class="month">Mar</span><span class="day">30</span><span class="weekday">Sun</span></div>
+        <img class="pst" src="https://image.tmdb.org/t/p/w92/pU2Uz9VGabZdI2O5bMBOTakXiNa.jpg">
+        <div class="r-title-labels">
+            <div class="r-title">Nickel Boys</div>
+            <div class="row-cat-btns">
+                <button class="cat-btn on" style="--c:#4a90d9">INDIE</button>
+            </div>
+        </div>
+        <div class="r-dir">RaMell Ross</div>
+        <div class="r-cc">US</div>
+        <div class="r-min">140</div>
+        <div class="quick-links"><a class="ql">WIKI</a><a class="ql">IMDB</a><a class="ql">RT</a></div>
+        <div class="r-score rt-high">97</div>
+        <div class="r-score imdb-good">7.1</div>
+        <div></div>
+        <div></div>
+        <div class="trash-btn">&#128465;</div>
+        <div></div>
+    </div>
+    <div class="vb-row">
+        <div class="drag-handle">&#8942;&#8942;</div>
+        <div class="vb-date-pill"><span class="month">Mar</span><span class="day">29</span><span class="weekday">Sat</span></div>
+        <img class="pst" src="https://image.tmdb.org/t/p/w92/rCB3jiPCFPHhSiaGGgkVfOKBoJT.jpg">
+        <div class="r-title-labels">
+            <div class="r-title">Babygirl</div>
+            <div class="row-cat-btns">
+                <button class="cat-btn on" style="--c:#ff6b6b">BIG</button>
+            </div>
+        </div>
+        <div class="r-dir">Halina Reijn</div>
+        <div class="r-cc">US</div>
+        <div class="r-min">114</div>
+        <div class="quick-links"><a class="ql">WIKI</a><a class="ql">IMDB</a><a class="ql">RT</a></div>
+        <div class="r-score rt-high">80</div>
+        <div class="r-score imdb-good">7.0</div>
+        <div><span class="stream-pill stream-mubi">Mubi</span></div>
+        <div></div>
+        <div class="trash-btn">&#128465;</div>
+        <div></div>
+    </div>
+    <div class="vb-row">
+        <div class="drag-handle">&#8942;&#8942;</div>
+        <div class="vb-date-pill"><span class="month">Mar</span><span class="day">29</span><span class="weekday">Sat</span></div>
+        <img class="pst" src="https://image.tmdb.org/t/p/w92/sfs3U0EwvEIahHgyy88bCFo361r.jpg">
+        <div class="r-title-labels">
+            <div class="r-title">Nosferatu</div>
+            <div class="row-cat-btns">
+                <button class="cat-btn on" style="--c:#ffd700;--ct:#000">&#9733;</button>
+                <button class="cat-btn on" style="--c:#ff6b6b">BIG</button>
+            </div>
+        </div>
+        <div class="r-dir">Robert Eggers</div>
+        <div class="r-cc">US</div>
+        <div class="r-min">132</div>
+        <div class="quick-links"><a class="ql">WIKI</a><a class="ql">IMDB</a><a class="ql">RT</a></div>
+        <div class="r-score rt-high">85</div>
+        <div class="r-score imdb-good">7.2</div>
+        <div></div>
+        <div></div>
+        <div class="trash-btn">&#128465;</div>
+        <div></div>
+    </div>
+    <div class="vb-row">
+        <div class="drag-handle">&#8942;&#8942;</div>
+        <div class="vb-date-pill"><span class="month">Mar</span><span class="day">25</span><span class="weekday">Tue</span></div>
+        <img class="pst" src="https://image.tmdb.org/t/p/w92/lRSiUEfBtcB7TOZZ5iyQbB5fhIi.jpg">
+        <div class="r-title-labels">
+            <div class="r-title">Hard Truths</div>
+            <div class="row-cat-btns">
+                <button class="cat-btn on" style="--c:#4a90d9">INDIE</button>
+                <button class="cat-btn on" style="--c:#9b59b6">FRGN</button>
+            </div>
+        </div>
+        <div class="r-dir">Mike Leigh</div>
+        <div class="r-cc">GB</div>
+        <div class="r-min">97</div>
+        <div class="quick-links"><a class="ql">WIKI</a><a class="ql">IMDB</a><a class="ql">RT</a></div>
+        <div class="r-score rt-high">91</div>
+        <div class="r-score imdb-good">7.3</div>
+        <div><span class="stream-pill stream-criterion">Criterion</span></div>
+        <div></div>
+        <div class="trash-btn">&#128465;</div>
+        <div></div>
+    </div>
+</div>
+
+
+<!-- ============================================================
+     VERSION C: Ultra-compact — just the day number,
+     date shown only on first movie of each group
+     ============================================================ -->
+<div class="version-label">Version C: Compact day number (first-of-group only)</div>
+<p class="version-desc">
+    Narrowest approach. The date column is only ~30px wide, showing just the day number in bold red.
+    Date only appears on the first movie of each day group; subsequent same-day movies leave it blank.
+    Subtle divider lines between day groups within sections.
+</p>
+
+<div class="mock-wrap">
+    <!-- Pre-Orders -->
+    <div class="vc-section-header">
+        <span class="label">Pre-Orders</span>
+        <span class="count">3 movies</span>
+    </div>
+
+    <div class="vc-row">
+        <div class="drag-handle">&#8942;&#8942;</div>
+        <div class="vc-day">8<span class="sub">Apr</span></div>
+        <img class="pst" src="https://image.tmdb.org/t/p/w92/hEiEFgMkYiKlBBo4kFoIFXmwpag.jpg">
+        <div class="r-title-labels">
+            <div class="r-title">Sinners</div>
+            <div class="row-cat-btns">
+                <button class="cat-btn on" style="--c:#ffd700;--ct:#000">&#9733;</button>
+                <button class="cat-btn on" style="--c:#ff6b6b">BIG</button>
+            </div>
+        </div>
+        <div class="r-dir">Ryan Coogler</div>
+        <div class="r-cc">US</div>
+        <div class="r-min">137</div>
+        <div class="quick-links"><a class="ql">WIKI</a><a class="ql">IMDB</a><a class="ql">RT</a></div>
+        <div class="r-score rt-high">92</div>
+        <div class="r-score imdb-good">7.8</div>
+        <div></div>
+        <div></div>
+        <div class="trash-btn">&#128465;</div>
+        <div></div>
+    </div>
+    <div class="vc-row">
+        <div class="drag-handle">&#8942;&#8942;</div>
+        <div class="vc-day">11<span class="sub">Apr</span></div>
+        <img class="pst" src="https://image.tmdb.org/t/p/w92/5BG9MiMQi8LjPiTFGM6g37bMkfg.jpg">
+        <div class="r-title-labels">
+            <div class="r-title">Thunderbolts*</div>
+            <div class="row-cat-btns">
+                <button class="cat-btn on" style="--c:#ff6b6b">BIG</button>
+            </div>
+        </div>
+        <div class="r-dir">Jake Schreier</div>
+        <div class="r-cc">US</div>
+        <div class="r-min">127</div>
+        <div class="quick-links"><a class="ql">WIKI</a><a class="ql">IMDB</a><a class="ql dead">RT</a></div>
+        <div class="r-score score-none">&mdash;</div>
+        <div class="r-score score-none">&mdash;</div>
+        <div></div>
+        <div></div>
+        <div class="trash-btn">&#128465;</div>
+        <div></div>
+    </div>
+    <div class="vc-row">
+        <div class="drag-handle">&#8942;&#8942;</div>
+        <div class="vc-day">18<span class="sub">Apr</span></div>
+        <img class="pst" src="https://image.tmdb.org/t/p/w92/jBJbFllqZPcPBVDABg7kU7VaarV.jpg">
+        <div class="r-title-labels">
+            <div class="r-title">Drop</div>
+            <div class="row-cat-btns">
+                <button class="cat-btn on" style="--c:#ff6b6b">BIG</button>
+            </div>
+        </div>
+        <div class="r-dir">Christopher Landon</div>
+        <div class="r-cc">US</div>
+        <div class="r-min">—</div>
+        <div class="quick-links"><a class="ql">WIKI</a><a class="ql">IMDB</a><a class="ql dead">RT</a></div>
+        <div class="r-score score-none">&mdash;</div>
+        <div class="r-score score-none">&mdash;</div>
+        <div></div>
+        <div><span class="inc-flag"></span></div>
+        <div class="trash-btn">&#128465;</div>
+        <div></div>
+    </div>
+
+    <!-- Wall -->
+    <div class="vc-section-header">
+        <span class="label">The Wall</span>
+        <span class="count">5 movies</span>
+    </div>
+
+    <!-- Mar 30 group -->
+    <div class="vc-row pick">
+        <div class="drag-handle">&#8942;&#8942;</div>
+        <div class="vc-day">30<span class="sub">Mar</span></div>
+        <img class="pst" src="https://image.tmdb.org/t/p/w92/AjV6jFJ2YFIluYo4GQf13AA1tqu.jpg">
+        <div class="r-title-labels">
+            <div class="r-title">The Brutalist</div>
+            <div class="row-cat-btns">
+                <button class="cat-btn on" style="--c:#ffd700;--ct:#000">&#9733;</button>
+                <button class="cat-btn on" style="--c:#ff6b6b">BIG</button>
+            </div>
+        </div>
+        <div class="r-dir">Brady Corbet</div>
+        <div class="r-cc">US</div>
+        <div class="r-min">215</div>
+        <div class="quick-links"><a class="ql">WIKI</a><a class="ql">IMDB</a><a class="ql">RT</a></div>
+        <div class="r-score rt-high">93</div>
+        <div class="r-score imdb-good">7.4</div>
+        <div><span class="stream-pill stream-netflix">Netflix</span></div>
+        <div></div>
+        <div class="trash-btn">&#128465;</div>
+        <div></div>
+    </div>
+    <div class="vc-row">
+        <div class="drag-handle">&#8942;&#8942;</div>
+        <div class="vc-day blank">30<span class="sub">Mar</span></div>
+        <img class="pst" src="https://image.tmdb.org/t/p/w92/pU2Uz9VGabZdI2O5bMBOTakXiNa.jpg">
+        <div class="r-title-labels">
+            <div class="r-title">Nickel Boys</div>
+            <div class="row-cat-btns">
+                <button class="cat-btn on" style="--c:#4a90d9">INDIE</button>
+            </div>
+        </div>
+        <div class="r-dir">RaMell Ross</div>
+        <div class="r-cc">US</div>
+        <div class="r-min">140</div>
+        <div class="quick-links"><a class="ql">WIKI</a><a class="ql">IMDB</a><a class="ql">RT</a></div>
+        <div class="r-score rt-high">97</div>
+        <div class="r-score imdb-good">7.1</div>
+        <div></div>
+        <div></div>
+        <div class="trash-btn">&#128465;</div>
+        <div></div>
+    </div>
+
+    <!-- Mar 29 group — subtle divider -->
+    <div class="vc-row" style="border-top: 1px solid #333;">
+        <div class="drag-handle">&#8942;&#8942;</div>
+        <div class="vc-day">29<span class="sub">Mar</span></div>
+        <img class="pst" src="https://image.tmdb.org/t/p/w92/rCB3jiPCFPHhSiaGGgkVfOKBoJT.jpg">
+        <div class="r-title-labels">
+            <div class="r-title">Babygirl</div>
+            <div class="row-cat-btns">
+                <button class="cat-btn on" style="--c:#ff6b6b">BIG</button>
+            </div>
+        </div>
+        <div class="r-dir">Halina Reijn</div>
+        <div class="r-cc">US</div>
+        <div class="r-min">114</div>
+        <div class="quick-links"><a class="ql">WIKI</a><a class="ql">IMDB</a><a class="ql">RT</a></div>
+        <div class="r-score rt-high">80</div>
+        <div class="r-score imdb-good">7.0</div>
+        <div><span class="stream-pill stream-mubi">Mubi</span></div>
+        <div></div>
+        <div class="trash-btn">&#128465;</div>
+        <div></div>
+    </div>
+    <div class="vc-row">
+        <div class="drag-handle">&#8942;&#8942;</div>
+        <div class="vc-day blank">29<span class="sub">Mar</span></div>
+        <img class="pst" src="https://image.tmdb.org/t/p/w92/sfs3U0EwvEIahHgyy88bCFo361r.jpg">
+        <div class="r-title-labels">
+            <div class="r-title">Nosferatu</div>
+            <div class="row-cat-btns">
+                <button class="cat-btn on" style="--c:#ffd700;--ct:#000">&#9733;</button>
+                <button class="cat-btn on" style="--c:#ff6b6b">BIG</button>
+            </div>
+        </div>
+        <div class="r-dir">Robert Eggers</div>
+        <div class="r-cc">US</div>
+        <div class="r-min">132</div>
+        <div class="quick-links"><a class="ql">WIKI</a><a class="ql">IMDB</a><a class="ql">RT</a></div>
+        <div class="r-score rt-high">85</div>
+        <div class="r-score imdb-good">7.2</div>
+        <div></div>
+        <div></div>
+        <div class="trash-btn">&#128465;</div>
+        <div></div>
+    </div>
+
+    <!-- Mar 25 group -->
+    <div class="vc-row" style="border-top: 1px solid #333;">
+        <div class="drag-handle">&#8942;&#8942;</div>
+        <div class="vc-day">25<span class="sub">Mar</span></div>
+        <img class="pst" src="https://image.tmdb.org/t/p/w92/lRSiUEfBtcB7TOZZ5iyQbB5fhIi.jpg">
+        <div class="r-title-labels">
+            <div class="r-title">Hard Truths</div>
+            <div class="row-cat-btns">
+                <button class="cat-btn on" style="--c:#4a90d9">INDIE</button>
+                <button class="cat-btn on" style="--c:#9b59b6">FRGN</button>
+            </div>
+        </div>
+        <div class="r-dir">Mike Leigh</div>
+        <div class="r-cc">GB</div>
+        <div class="r-min">97</div>
+        <div class="quick-links"><a class="ql">WIKI</a><a class="ql">IMDB</a><a class="ql">RT</a></div>
+        <div class="r-score rt-high">91</div>
+        <div class="r-score imdb-good">7.3</div>
+        <div><span class="stream-pill stream-criterion">Criterion</span></div>
+        <div></div>
+        <div class="trash-btn">&#128465;</div>
+        <div></div>
+    </div>
+</div>
+
+
+<!-- ============================================================
+     VERSION D: Date sidebar (row-span visual)
+     ============================================================ -->
+<div class="version-label">Version D: Date sidebar with grouped rows</div>
+<p class="version-desc">
+    Date gets its own sidebar "cell" that visually spans all movies sharing that date.
+    Breaks out of the grid for each date group using flexbox (sidebar + rows).
+    Most visual hierarchy but different structure from the other columns.
+</p>
+
+<div class="mock-wrap">
+    <!-- Pre-Orders -->
+    <div class="vd-section-header">
+        <span class="label">Pre-Orders</span>
+        <span class="meta">3 upcoming</span>
+    </div>
+
+    <div class="vd-date-group">
+        <div class="vd-date-sidebar">
+            <span class="month">Apr</span>
+            <span class="day">8</span>
+            <span class="weekday">Tue</span>
+        </div>
+        <div class="vd-rows">
+            <div class="vd-row">
+                <img class="pst" src="https://image.tmdb.org/t/p/w92/hEiEFgMkYiKlBBo4kFoIFXmwpag.jpg">
+                <div class="r-title-labels">
+                    <div class="r-title">Sinners</div>
+                    <div class="row-cat-btns">
+                        <button class="cat-btn on" style="--c:#ffd700;--ct:#000">&#9733;</button>
+                        <button class="cat-btn on" style="--c:#ff6b6b">BIG</button>
+                    </div>
+                </div>
+                <div class="r-dir">Ryan Coogler</div>
+                <div class="r-cc">US</div>
+                <div class="r-min">137</div>
+                <div class="quick-links"><a class="ql">WIKI</a><a class="ql">IMDB</a><a class="ql">RT</a></div>
+                <div class="r-score rt-high">92</div>
+                <div class="r-score imdb-good">7.8</div>
+                <div></div>
+                <div></div>
+                <div class="trash-btn">&#128465;</div>
+                <div></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="vd-date-group">
+        <div class="vd-date-sidebar">
+            <span class="month">Apr</span>
+            <span class="day">11</span>
+            <span class="weekday">Fri</span>
+        </div>
+        <div class="vd-rows">
+            <div class="vd-row">
+                <img class="pst" src="https://image.tmdb.org/t/p/w92/5BG9MiMQi8LjPiTFGM6g37bMkfg.jpg">
+                <div class="r-title-labels">
+                    <div class="r-title">Thunderbolts*</div>
+                    <div class="row-cat-btns">
+                        <button class="cat-btn on" style="--c:#ff6b6b">BIG</button>
+                    </div>
+                </div>
+                <div class="r-dir">Jake Schreier</div>
+                <div class="r-cc">US</div>
+                <div class="r-min">127</div>
+                <div class="quick-links"><a class="ql">WIKI</a><a class="ql">IMDB</a><a class="ql dead">RT</a></div>
+                <div class="r-score score-none">&mdash;</div>
+                <div class="r-score score-none">&mdash;</div>
+                <div></div>
+                <div></div>
+                <div class="trash-btn">&#128465;</div>
+                <div></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="vd-date-group">
+        <div class="vd-date-sidebar">
+            <span class="month">Apr</span>
+            <span class="day">18</span>
+            <span class="weekday">Fri</span>
+        </div>
+        <div class="vd-rows">
+            <div class="vd-row">
+                <img class="pst" src="https://image.tmdb.org/t/p/w92/jBJbFllqZPcPBVDABg7kU7VaarV.jpg">
+                <div class="r-title-labels">
+                    <div class="r-title">Drop</div>
+                    <div class="row-cat-btns">
+                        <button class="cat-btn on" style="--c:#ff6b6b">BIG</button>
+                    </div>
+                </div>
+                <div class="r-dir">Christopher Landon</div>
+                <div class="r-cc">US</div>
+                <div class="r-min">—</div>
+                <div class="quick-links"><a class="ql">WIKI</a><a class="ql">IMDB</a><a class="ql dead">RT</a></div>
+                <div class="r-score score-none">&mdash;</div>
+                <div class="r-score score-none">&mdash;</div>
+                <div></div>
+                <div><span class="inc-flag"></span></div>
+                <div class="trash-btn">&#128465;</div>
+                <div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- The Wall -->
+    <div class="vd-section-header">
+        <span class="label">The Wall</span>
+        <span class="meta">5 on digital</span>
+    </div>
+
+    <div class="vd-date-group">
+        <div class="vd-date-sidebar">
+            <span class="month">Mar</span>
+            <span class="day">30</span>
+            <span class="weekday">Sun</span>
+            <span class="movie-ct">2 movies</span>
+        </div>
+        <div class="vd-rows">
+            <div class="vd-row" style="border-left: 3px solid #ffd700;">
+                <img class="pst" src="https://image.tmdb.org/t/p/w92/AjV6jFJ2YFIluYo4GQf13AA1tqu.jpg">
+                <div class="r-title-labels">
+                    <div class="r-title">The Brutalist</div>
+                    <div class="row-cat-btns">
+                        <button class="cat-btn on" style="--c:#ffd700;--ct:#000">&#9733;</button>
+                        <button class="cat-btn on" style="--c:#ff6b6b">BIG</button>
+                    </div>
+                </div>
+                <div class="r-dir">Brady Corbet</div>
+                <div class="r-cc">US</div>
+                <div class="r-min">215</div>
+                <div class="quick-links"><a class="ql">WIKI</a><a class="ql">IMDB</a><a class="ql">RT</a></div>
+                <div class="r-score rt-high">93</div>
+                <div class="r-score imdb-good">7.4</div>
+                <div><span class="stream-pill stream-netflix">Netflix</span></div>
+                <div></div>
+                <div class="trash-btn">&#128465;</div>
+                <div></div>
+            </div>
+            <div class="vd-row">
+                <img class="pst" src="https://image.tmdb.org/t/p/w92/pU2Uz9VGabZdI2O5bMBOTakXiNa.jpg">
+                <div class="r-title-labels">
+                    <div class="r-title">Nickel Boys</div>
+                    <div class="row-cat-btns">
+                        <button class="cat-btn on" style="--c:#4a90d9">INDIE</button>
+                    </div>
+                </div>
+                <div class="r-dir">RaMell Ross</div>
+                <div class="r-cc">US</div>
+                <div class="r-min">140</div>
+                <div class="quick-links"><a class="ql">WIKI</a><a class="ql">IMDB</a><a class="ql">RT</a></div>
+                <div class="r-score rt-high">97</div>
+                <div class="r-score imdb-good">7.1</div>
+                <div></div>
+                <div></div>
+                <div class="trash-btn">&#128465;</div>
+                <div></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="vd-date-group">
+        <div class="vd-date-sidebar">
+            <span class="month">Mar</span>
+            <span class="day">29</span>
+            <span class="weekday">Sat</span>
+            <span class="movie-ct">2 movies</span>
+        </div>
+        <div class="vd-rows">
+            <div class="vd-row">
+                <img class="pst" src="https://image.tmdb.org/t/p/w92/rCB3jiPCFPHhSiaGGgkVfOKBoJT.jpg">
+                <div class="r-title-labels">
+                    <div class="r-title">Babygirl</div>
+                    <div class="row-cat-btns">
+                        <button class="cat-btn on" style="--c:#ff6b6b">BIG</button>
+                    </div>
+                </div>
+                <div class="r-dir">Halina Reijn</div>
+                <div class="r-cc">US</div>
+                <div class="r-min">114</div>
+                <div class="quick-links"><a class="ql">WIKI</a><a class="ql">IMDB</a><a class="ql">RT</a></div>
+                <div class="r-score rt-high">80</div>
+                <div class="r-score imdb-good">7.0</div>
+                <div><span class="stream-pill stream-mubi">Mubi</span></div>
+                <div></div>
+                <div class="trash-btn">&#128465;</div>
+                <div></div>
+            </div>
+            <div class="vd-row">
+                <img class="pst" src="https://image.tmdb.org/t/p/w92/sfs3U0EwvEIahHgyy88bCFo361r.jpg">
+                <div class="r-title-labels">
+                    <div class="r-title">Nosferatu</div>
+                    <div class="row-cat-btns">
+                        <button class="cat-btn on" style="--c:#ffd700;--ct:#000">&#9733;</button>
+                        <button class="cat-btn on" style="--c:#ff6b6b">BIG</button>
+                    </div>
+                </div>
+                <div class="r-dir">Robert Eggers</div>
+                <div class="r-cc">US</div>
+                <div class="r-min">132</div>
+                <div class="quick-links"><a class="ql">WIKI</a><a class="ql">IMDB</a><a class="ql">RT</a></div>
+                <div class="r-score rt-high">85</div>
+                <div class="r-score imdb-good">7.2</div>
+                <div></div>
+                <div></div>
+                <div class="trash-btn">&#128465;</div>
+                <div></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="vd-date-group">
+        <div class="vd-date-sidebar">
+            <span class="month">Mar</span>
+            <span class="day">25</span>
+            <span class="weekday">Tue</span>
+        </div>
+        <div class="vd-rows">
+            <div class="vd-row">
+                <img class="pst" src="https://image.tmdb.org/t/p/w92/lRSiUEfBtcB7TOZZ5iyQbB5fhIi.jpg">
+                <div class="r-title-labels">
+                    <div class="r-title">Hard Truths</div>
+                    <div class="row-cat-btns">
+                        <button class="cat-btn on" style="--c:#4a90d9">INDIE</button>
+                        <button class="cat-btn on" style="--c:#9b59b6">FRGN</button>
+                    </div>
+                </div>
+                <div class="r-dir">Mike Leigh</div>
+                <div class="r-cc">GB</div>
+                <div class="r-min">97</div>
+                <div class="quick-links"><a class="ql">WIKI</a><a class="ql">IMDB</a><a class="ql">RT</a></div>
+                <div class="r-score rt-high">91</div>
+                <div class="r-score imdb-good">7.3</div>
+                <div><span class="stream-pill stream-criterion">Criterion</span></div>
+                <div></div>
+                <div class="trash-btn">&#128465;</div>
+                <div></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
