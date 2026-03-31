@@ -518,13 +518,31 @@ class EnrichmentService:
 
         # Try VOD scraper on every film — TMDB provider data is unreliable
         # (Type 4 movies often have zero providers listed but ARE available).
-        # The per-movie 120s timeout in generator.py provides a safety net for hangs.
         # Films with existing watch_links are already short-circuited by the cache
         # at step 3 of the waterfall, so this only runs on uncached films.
         has_vod_scraper = self._check_vod_scraper_available()
         if has_vod_scraper:
-            self.try_vod_scraper(title, year, providers, tmdb_streaming, tmdb_rent, tmdb_buy,
-                                 skip_streaming, skip_rent, skip_buy)
+            import threading
+            VOD_TIMEOUT = 60
+
+            def _run_vod():
+                self.try_vod_scraper(title, year, providers, tmdb_streaming, tmdb_rent, tmdb_buy,
+                                     skip_streaming, skip_rent, skip_buy)
+
+            vod_thread = threading.Thread(target=_run_vod, daemon=True)
+            vod_thread.start()
+            vod_thread.join(timeout=VOD_TIMEOUT)
+
+            if vod_thread.is_alive():
+                self.logger.warning(f"VOD scraper timed out for {title} after {VOD_TIMEOUT}s — killing browser")
+                try:
+                    if self.vod_scraper and hasattr(self.vod_scraper, 'page') and self.vod_scraper.page:
+                        self.vod_scraper.page.close()
+                except Exception:
+                    pass
+                vod_thread.join(timeout=5)
+                # Reset scraper so next movie gets a fresh browser
+                self.vod_scraper = None
 
         # Check if platform scraper added any links
         vod_scraper_used = (
@@ -1026,33 +1044,40 @@ class EnrichmentService:
             for s in (tmdb_rent + tmdb_buy + tmdb_streaming) if s.get('link')
         )
 
-        if amazon_enabled and not already_has_amazon and not skip_rent:
-            try:
-                self.logger.debug(f"Speculative Amazon scrape for {title} (not in TMDB providers)")
-                deep_link = self.get_platform_deep_link_with_cache(title, year, 'Amazon Video')
-                if deep_link:
-                    self.logger.info(f"Speculative scrape found Amazon link for {title}")
-                    tmdb_rent.append({'service': 'Amazon Video', 'link': deep_link})
-                    self.stats['vod_successes'] = self.stats.get('vod_successes', 0) + 1
-                else:
-                    self.stats['vod_speculative_misses'] = self.stats.get('vod_speculative_misses', 0) + 1
-            except Exception as e:
-                self.logger.error(f"Error in speculative Amazon scrape for {title}: {e}")
-                self.stats['vod_failures'] = self.stats.get('vod_failures', 0) + 1
+        # Reduce retries for speculative scraping (mostly misses, don't waste time)
+        original_retries = self.vod_scraper.max_retries
+        self.vod_scraper.max_retries = 1
 
-        if apple_tv_enabled and not already_has_apple and not skip_buy:
-            try:
-                self.logger.debug(f"Speculative Apple TV scrape for {title} (not in TMDB providers)")
-                deep_link = self.get_platform_deep_link_with_cache(title, year, 'Apple TV')
-                if deep_link:
-                    self.logger.info(f"Speculative scrape found Apple TV link for {title}")
-                    tmdb_buy.append({'service': 'Apple TV', 'link': deep_link})
-                    self.stats['vod_successes'] = self.stats.get('vod_successes', 0) + 1
-                else:
-                    self.stats['vod_speculative_misses'] = self.stats.get('vod_speculative_misses', 0) + 1
-            except Exception as e:
-                self.logger.error(f"Error in speculative Apple TV scrape for {title}: {e}")
-                self.stats['vod_failures'] = self.stats.get('vod_failures', 0) + 1
+        try:
+            if amazon_enabled and not already_has_amazon and not skip_rent:
+                try:
+                    self.logger.debug(f"Speculative Amazon scrape for {title} (not in TMDB providers)")
+                    deep_link = self.get_platform_deep_link_with_cache(title, year, 'Amazon Video')
+                    if deep_link:
+                        self.logger.info(f"Speculative scrape found Amazon link for {title}")
+                        tmdb_rent.append({'service': 'Amazon Video', 'link': deep_link})
+                        self.stats['vod_successes'] = self.stats.get('vod_successes', 0) + 1
+                    else:
+                        self.stats['vod_speculative_misses'] = self.stats.get('vod_speculative_misses', 0) + 1
+                except Exception as e:
+                    self.logger.error(f"Error in speculative Amazon scrape for {title}: {e}")
+                    self.stats['vod_failures'] = self.stats.get('vod_failures', 0) + 1
+
+            if apple_tv_enabled and not already_has_apple and not skip_buy:
+                try:
+                    self.logger.debug(f"Speculative Apple TV scrape for {title} (not in TMDB providers)")
+                    deep_link = self.get_platform_deep_link_with_cache(title, year, 'Apple TV')
+                    if deep_link:
+                        self.logger.info(f"Speculative scrape found Apple TV link for {title}")
+                        tmdb_buy.append({'service': 'Apple TV', 'link': deep_link})
+                        self.stats['vod_successes'] = self.stats.get('vod_successes', 0) + 1
+                    else:
+                        self.stats['vod_speculative_misses'] = self.stats.get('vod_speculative_misses', 0) + 1
+                except Exception as e:
+                    self.logger.error(f"Error in speculative Apple TV scrape for {title}: {e}")
+                    self.stats['vod_failures'] = self.stats.get('vod_failures', 0) + 1
+        finally:
+            self.vod_scraper.max_retries = original_retries
 
     def get_platform_deep_link_with_cache(self, title, year, provider):
         """

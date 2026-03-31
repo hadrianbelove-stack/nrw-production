@@ -3731,27 +3731,10 @@ class DataGenerator:
                     print(f"  ✗ Could not fetch TMDB details for {movie_data.get('title', movie_id)} — marked failed for retry")
                     continue
 
-                # Get enrichment fields only (with per-movie hard timeout)
+                # Get enrichment fields only
                 import time as _etime
-                import signal as _signal
-                PER_MOVIE_TIMEOUT = 120
-
-                def _movie_timeout_handler(signum, frame):
-                    raise TimeoutError(f"Movie enrichment exceeded {PER_MOVIE_TIMEOUT}s")
-
                 _movie_start = _etime.time()
-                _old_handler = _signal.signal(_signal.SIGALRM, _movie_timeout_handler)
-                _signal.alarm(PER_MOVIE_TIMEOUT)
-                try:
-                    enrichment_fields = self.get_enrichment_only_fields(movie_id, movie_data, movie_details, force_refresh=False)
-                except TimeoutError:
-                    print(f"  ⏱️ {movie_data.get('title', movie_id)} timed out after {PER_MOVIE_TIMEOUT}s — skipping", flush=True)
-                    self.logger.warning(f"Movie enrichment timeout: {movie_data.get('title', movie_id)} after {PER_MOVIE_TIMEOUT}s")
-                    enrichment_fields = None
-                finally:
-                    _signal.alarm(0)
-                    _signal.signal(_signal.SIGALRM, _old_handler)
-
+                enrichment_fields = self.get_enrichment_only_fields(movie_id, movie_data, movie_details, force_refresh=False)
                 _movie_elapsed = _etime.time() - _movie_start
                 if _movie_elapsed > 90:
                     print(f"  ⚠️ {movie_data.get('title', movie_id)} took {_movie_elapsed:.0f}s (slow)", flush=True)
