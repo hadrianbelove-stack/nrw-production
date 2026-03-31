@@ -7,7 +7,6 @@ Handles all watch link discovery across multiple sources with priority waterfall
 """
 
 import os
-import signal
 import time
 from datetime import datetime
 from typing import Dict, List, Optional, Union, Any
@@ -15,11 +14,6 @@ import logging
 from urllib.parse import urljoin
 
 from constants import PLACEHOLDER_ASINS
-
-
-class VODScraperTimeout(Exception):
-    """Raised when VOD scraping for a single movie exceeds the time limit."""
-    pass
 
 
 class EnrichmentService:
@@ -522,15 +516,13 @@ class EnrichmentService:
         rent_len_before = len(tmdb_rent)
         buy_len_before = len(tmdb_buy)
 
-        # Try VOD scraper with per-movie timeout safety net
+        # Try VOD scraper on every film — TMDB provider data is unreliable
+        # (Type 4 movies often have zero providers listed but ARE available).
+        # The per-movie 120s timeout in generator.py provides a safety net for hangs.
+        # Films with existing watch_links are already short-circuited by the cache
+        # at step 3 of the waterfall, so this only runs on uncached films.
         has_vod_scraper = self._check_vod_scraper_available()
-        has_any_providers = any(providers.get(cat) for cat in ('streaming', 'rent', 'buy'))
-        if has_vod_scraper and not has_any_providers:
-            self.logger.debug(f"Skipping VOD scraper for {title} — no providers from any source")
-            self.stats['vod_skipped_no_providers'] = self.stats.get('vod_skipped_no_providers', 0) + 1
-        elif has_vod_scraper:
-            # Note: no per-VOD SIGALRM here — the per-movie 120s timeout in generator.py
-            # covers stuck VOD scraping. Nesting SIGALRM handlers would cancel the outer alarm.
+        if has_vod_scraper:
             self.try_vod_scraper(title, year, providers, tmdb_streaming, tmdb_rent, tmdb_buy,
                                  skip_streaming, skip_rent, skip_buy)
 

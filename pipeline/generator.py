@@ -1922,7 +1922,7 @@ class DataGenerator:
             bool: True if successful, False otherwise
         """
         try:
-            # Load current data.json - APPEND-ONLY: never wipe existing movies
+            # Load current data.json (old movies auto-archived to data_archive.json)
             data_movies = []
             if os.path.exists('data.json'):
                 # Try to fix schema issues (adds missing keys, never removes movies)
@@ -2068,7 +2068,7 @@ class DataGenerator:
 
         Reloads data.json from disk before saving. Any movies present on disk
         but missing from the in-memory copy are appended (rescued from being
-        silently dropped). Logs reconciliation info for diagnostics.
+        silently dropped). Uses atomic_write_json for crash-safe writes.
 
         Args:
             display_data: The full data.json dict (movies will be overwritten)
@@ -2079,11 +2079,6 @@ class DataGenerator:
             bool: True if save succeeded
         """
         try:
-            import shutil
-            backup_path = f"data.json.backup.{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-            if os.path.exists('data.json'):
-                shutil.copy2('data.json', backup_path)
-
             # Reload from disk to catch any movies added since we loaded
             rescued = []
             if os.path.exists('data.json'):
@@ -2108,8 +2103,9 @@ class DataGenerator:
             display_data['generated_at'] = datetime.now().isoformat()
             display_data['count'] = len(existing_movies)
 
-            with open('data.json', 'w') as f:
-                json.dump(display_data, f, indent=2)
+            if not self.storage.atomic_write_json(display_data, 'data.json', backup=True):
+                self.logger.error(f"Atomic write failed during {label}")
+                return False
 
             self.logger.info(f"Safe save [{label}]: {len(existing_movies)} movies written")
             return True
@@ -3617,6 +3613,18 @@ class DataGenerator:
         _initial_movie_count = len(existing_movies)
         self.logger.info(f"Enrichment loaded data.json: {_initial_movie_count} movies")
 
+        # Auto-retire movies whose digital_date is older than 90 days
+        retire_cutoff = (datetime.now() - timedelta(days=90)).strftime('%Y-%m-%d')
+        retired_count = 0
+        for movie in existing_movies:
+            dd = movie.get('digital_date') or ''
+            if dd and dd < retire_cutoff and movie.get('_enrichment_status') != 'retired':
+                movie['_enrichment_status'] = 'retired'
+                retired_count += 1
+        if retired_count:
+            print(f"  📦 Retired {retired_count} movies older than 90 days from enrichment")
+            self.logger.info(f"Retired {retired_count} movies older than 90 days from enrichment")
+
         # Find movies to enrich from newly_available.json
         newly_available_file = 'metrics/newly_available.json'
         movie_ids_to_enrich = []
@@ -4204,6 +4212,70 @@ class DataGenerator:
 
         return fixed_count
 
+    def archive_old_movies(self, days=90):
+        """
+        Move movies older than `days` from data.json into data_archive.json.
+
+        Keeps data.json lean. Archive is append-only and deduped by movie ID.
+        Pre-order movies (future dates) and movies without digital_date are never archived.
+        """
+        if not os.path.exists('data.json'):
+            return
+
+        with open('data.json', 'r') as f:
+            data = json.load(f)
+
+        movies = data.get('movies', [])
+        cutoff = (datetime.now() - timedelta(days=days)).strftime('%Y-%m-%d')
+        today = datetime.now().strftime('%Y-%m-%d')
+
+        keep = []
+        to_archive = []
+        for m in movies:
+            dd = m.get('digital_date') or ''
+            # Archive if digital_date exists, is in the past, and older than cutoff
+            if dd and dd <= today and dd < cutoff:
+                to_archive.append(m)
+            else:
+                keep.append(m)
+
+        if not to_archive:
+            return
+
+        # Load or create archive
+        archive_path = 'data_archive.json'
+        archive_movies = []
+        if os.path.exists(archive_path):
+            try:
+                with open(archive_path, 'r') as f:
+                    archive_data = json.load(f)
+                archive_movies = archive_data.get('movies', [])
+            except Exception:
+                archive_movies = []
+
+        # Dedupe by ID before appending
+        existing_ids = {str(m.get('id')) for m in archive_movies}
+        new_archived = [m for m in to_archive if str(m.get('id')) not in existing_ids]
+        archive_movies.extend(new_archived)
+
+        # Save archive FIRST (before modifying data.json) — atomic so a crash
+        # mid-write doesn't destroy the archive before data.json is trimmed.
+        archive_data = {
+            'archived_at': datetime.now().isoformat(),
+            'count': len(archive_movies),
+            'movies': archive_movies
+        }
+        self.storage.atomic_write_json(archive_data, archive_path, backup=False)
+
+        # Now slim down data.json (atomic write — archive IS the backup)
+        data['movies'] = keep
+        data['count'] = len(keep)
+        self.storage.atomic_write_json(data, 'data.json', backup=False)
+
+        print(f"📦 Archived {len(to_archive)} movies (>{days} days old) → data_archive.json")
+        print(f"   data.json: {len(keep)} movies | archive: {len(archive_movies)} total")
+        self.logger.info(f"Archived {len(to_archive)} movies older than {days} days")
+
     def _inject_selected_pull_quotes(self, movies_list):
         """Add selected pull quotes from cache to movies for data.json output."""
         combined_path = 'cache/pull_quotes_combined.json'
@@ -4308,7 +4380,7 @@ class DataGenerator:
         PHASE 4: Apply admin overrides and prepare final display data.
 
         Loads data.json, applies admin overrides (hide/featured/ordering),
-        and saves the result. APPEND-ONLY: never removes movies.
+        and saves the result. Old movies (>90 days) are archived to data_archive.json.
 
         Args:
             days_back: Used for stats only (frontend handles date filtering)
@@ -4319,7 +4391,7 @@ class DataGenerator:
         if os.path.exists('data.json'):
             self.validator.fix_data_json_schema('data.json')
 
-        # APPEND-ONLY: Load ALL movies from data.json - never filter out old movies
+        # Load ALL current movies from data.json (old movies already archived)
         all_movies = []
         existing_display_data = None  # Initialize for later use preserving fields like latest_playlist_url
         cutoff_date = datetime.now() - timedelta(days=days_back)
@@ -4362,7 +4434,7 @@ class DataGenerator:
         # Apply admin panel overrides (categorize movies, apply staff picks, ordering)
         display_movies, staff_pick_ids = self.apply_admin_overrides(all_movies)
 
-        # Save ALL movies back to data.json (APPEND-ONLY: never remove old movies)
+        # Save movies to data.json (old movies archived separately after this step)
         # Preserve latest_playlist_url if it exists from YouTube playlist manager
         existing_playlist_url = existing_display_data.get('latest_playlist_url') if existing_display_data else None
 
@@ -4376,7 +4448,10 @@ class DataGenerator:
         }
 
         self._safe_save_data_json(output_data, display_movies, label="display_generation")
-        
+
+        # Archive movies older than 90 days to data_archive.json
+        self.archive_old_movies(days=90)
+
         # Cleanup agent scraper if initialized
         if self.streaming_scraper and self.streaming_scraper != False:
             try:
