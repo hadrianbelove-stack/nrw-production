@@ -1,11 +1,17 @@
 #!/bin/bash
 # NRW Local Daily Script
-# Runs via launchd at 6 AM daily (after CI completes at ~5 AM)
+# Runs via launchd every 30 min; sentinel file ensures it only runs once per day.
 # 1. Pulls latest data from GitHub
 # 2. Uploads new trailers to B2 (CI stamps URLs into data.json next morning)
 
 PROJECT_DIR="/Users/hadrianbelove/Downloads/nrw-production"
 LOG="$PROJECT_DIR/logs/launchagent.log"
+
+# Already ran today? Skip.
+SENTINEL="/var/tmp/nrw_daily_$(date +%Y%m%d)"
+if [ -f "$SENTINEL" ]; then
+    exit 0
+fi
 
 echo "" >> "$LOG"
 echo "=== NRW Local Daily: $(date) ===" >> "$LOG"
@@ -42,4 +48,5 @@ fi
 echo "Hosting new trailers..." >> "$LOG"
 /opt/homebrew/bin/python3.11 scripts/trailer_pipeline.py host >> "$LOG" 2> >(grep -v "Cookies.binarycookies" >> "$LOG")
 
+touch "$SENTINEL"
 echo "=== Done: $(date) ===" >> "$LOG"
