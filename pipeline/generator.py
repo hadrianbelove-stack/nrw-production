@@ -3635,7 +3635,6 @@ class DataGenerator:
                 movie_ids_to_enrich = [str(mid) for mid in newly_available.get('movie_ids', [])]
                 state_date = newly_available.get('date', 'unknown')
 
-                from datetime import datetime
                 today = datetime.now().strftime('%Y-%m-%d')
                 if state_date != today:
                     print(f"⚠️ State file date ({state_date}) is not today ({today}) - may be stale")

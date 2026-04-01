@@ -353,6 +353,8 @@ class WikipediaScraperPlaywright(PlaywrightScraperBase):
             self.stats['failures'] += 1
             raise WikipediaNoResults(f"No matching article for {title} ({year})")
 
+        except WikipediaNoResults:
+            raise  # Let _retry_with_backoff handle this (no retry for clean misses)
         except Exception as e:
             self._log(f"Playwright scraping error for {title} ({year}): {e}", level='error')
             self.stats['failures'] += 1

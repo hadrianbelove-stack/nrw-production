@@ -520,29 +520,13 @@ class EnrichmentService:
         # (Type 4 movies often have zero providers listed but ARE available).
         # Films with existing watch_links are already short-circuited by the cache
         # at step 3 of the waterfall, so this only runs on uncached films.
+        # Note: Playwright is not thread-safe — running VOD scraper in a
+        # separate thread poisons the shared browser for all subsequent scrapers.
+        # Rely on built-in page timeouts (10s) + speculative retries=1 instead.
         has_vod_scraper = self._check_vod_scraper_available()
         if has_vod_scraper:
-            import threading
-            VOD_TIMEOUT = 60
-
-            def _run_vod():
-                self.try_vod_scraper(title, year, providers, tmdb_streaming, tmdb_rent, tmdb_buy,
-                                     skip_streaming, skip_rent, skip_buy)
-
-            vod_thread = threading.Thread(target=_run_vod, daemon=True)
-            vod_thread.start()
-            vod_thread.join(timeout=VOD_TIMEOUT)
-
-            if vod_thread.is_alive():
-                self.logger.warning(f"VOD scraper timed out for {title} after {VOD_TIMEOUT}s — killing browser")
-                try:
-                    if self.vod_scraper and hasattr(self.vod_scraper, 'page') and self.vod_scraper.page:
-                        self.vod_scraper.page.close()
-                except Exception:
-                    pass
-                vod_thread.join(timeout=5)
-                # Reset scraper so next movie gets a fresh browser
-                self.vod_scraper = None
+            self.try_vod_scraper(title, year, providers, tmdb_streaming, tmdb_rent, tmdb_buy,
+                                 skip_streaming, skip_rent, skip_buy)
 
         # Check if platform scraper added any links
         vod_scraper_used = (
