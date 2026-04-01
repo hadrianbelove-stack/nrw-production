@@ -11,6 +11,7 @@ import time
 from datetime import datetime
 from typing import Dict, List, Optional, Union, Any
 import logging
+import re
 from urllib.parse import urljoin
 
 from constants import PLACEHOLDER_ASINS
@@ -1087,7 +1088,6 @@ class EnrichmentService:
 
         # Cache Amazon ASIN if found
         if deep_link and self.is_actual_amazon_service(provider):
-            import re
             asin_match = re.search(r'/gp/video/detail/([A-Z0-9]{10})', deep_link)
             if asin_match:
                 self._amazon_asin_cache[(title.lower(), str(year or '').strip())] = asin_match.group(1)

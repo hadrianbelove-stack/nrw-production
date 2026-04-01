@@ -27,6 +27,7 @@ import json
 import os
 import random
 import re
+import requests
 from datetime import datetime
 from urllib.parse import quote
 
@@ -116,14 +117,14 @@ class WikipediaScraperPlaywright(PlaywrightScraperBase):
         if self.page:
             try:
                 self.page.close()
-            except:
+            except Exception:
                 pass
             self.page = None
 
         if self.context:
             try:
                 self.context.close()
-            except:
+            except Exception:
                 pass
             self.context = None
 
@@ -132,7 +133,7 @@ class WikipediaScraperPlaywright(PlaywrightScraperBase):
             try:
                 self.manager.release()
                 self._log("Released shared browser reference", level='debug')
-            except:
+            except Exception:
                 pass
             self.playwright = None
             self.browser = None
@@ -453,8 +454,6 @@ class WikipediaScraperPlaywright(PlaywrightScraperBase):
 
     def _query_wikidata(self, imdb_id):
         """Query Wikidata SPARQL endpoint for Wikipedia URL."""
-        import requests
-
         self.stats['wikidata_attempts'] += 1
 
         try:
@@ -504,8 +503,6 @@ class WikipediaScraperPlaywright(PlaywrightScraperBase):
         2. "Title (film)" - common disambiguation
         3. "Title" - plain title for unique names
         """
-        import requests
-
         try:
             headers = {
                 'User-Agent': 'NewReleaseWall/1.0 (https://github.com/hadrianbelove-stack/nrw-production; hadrianbelove@gmail.com)'

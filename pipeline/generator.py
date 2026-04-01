@@ -576,9 +576,6 @@ class DataGenerator:
         Returns:
             int: Number of new miniseries added to tracking
         """
-        import requests
-        from datetime import datetime, timedelta
-
         print("\n" + "="*60)
         print("MINISERIES INTAKE - Discovering new limited series")
         print("="*60)
@@ -732,10 +729,6 @@ class DataGenerator:
         Returns:
             int: Number of newly digital movies found
         """
-        import random
-        import requests
-        import os
-
         # Load poll_all_tracking configuration
         poll_all_tracking = self.config.get('tracking', {}).get('poll_all_tracking', True)
 
@@ -798,7 +791,7 @@ class DataGenerator:
             if date_str:
                 try:
                     return datetime.strptime(date_str, '%Y-%m-%d')
-                except:
+                except ValueError:
                     pass
             return datetime.min  # Put movies with no date at the end
 
@@ -820,7 +813,7 @@ class DataGenerator:
                             priority_movies.append((movie_id, movie))
                         else:
                             older_movies.append((movie_id, movie))
-                    except:
+                    except ValueError:
                         older_movies.append((movie_id, movie))
                 else:
                     older_movies.append((movie_id, movie))
@@ -1155,7 +1148,7 @@ class DataGenerator:
                     try:
                         digital_date = datetime.strptime(movie['digital_date'], '%Y-%m-%d')
                         available_movies.append((movie_id, movie, digital_date))
-                    except:
+                    except ValueError:
                         pass
 
             # Filter by age if compaction_recent_days is set
@@ -2544,7 +2537,6 @@ class DataGenerator:
 
     def _cache_bad_trailer_key(self, key, title, year, url):
         """Add a dead YouTube key to bad_trailer_urls cache and save."""
-        from datetime import datetime
         self.bad_trailer_urls[key] = {
             'title': title,
             'year': str(year),
@@ -3011,7 +3003,6 @@ class DataGenerator:
             title_norm = title.lower().strip()
             if tracking_norm != title_norm:
                 # Allow minor differences (punctuation, "the" prefix, etc.)
-                import re
                 clean = lambda s: re.sub(r'[^a-z0-9 ]', '', s).strip()
                 if clean(tracking_norm) != clean(title_norm):
                     warnings.append(f"Title changed from tracking: '{tracking_title}' -> '{title}'")
@@ -3075,7 +3066,6 @@ class DataGenerator:
             imdb_id = self.get_imdb_from_omdb(title, year)
 
         # Start timing this movie's enrichment
-        import time
         movie_start_time = time.time()
 
         # Initialize result with basic TMDB data (always available)
@@ -3587,8 +3577,7 @@ class DataGenerator:
             int: Number of movies successfully enriched
         """
         print("🎨 Starting enrichment phase...")
-        import time as _time
-        _enrich_start = _time.time()
+        _enrich_start = time.time()
 
         # Check if data.json exists
         if not os.path.exists('data.json'):
@@ -3692,13 +3681,12 @@ class DataGenerator:
             return 0
 
         enriched_count = 0
-        import time as _loop_time
-        _loop_start = _loop_time.time()
+        _loop_start = time.time()
         _loop_timeout = ENRICHMENT_LOOP_TIMEOUT_MINUTES * 60
 
         for movie_id in movie_ids_to_enrich:
             # Safety net: bail out if enrichment has been running too long
-            if (_loop_time.time() - _loop_start) > _loop_timeout:
+            if (time.time() - _loop_start) > _loop_timeout:
                 print(f"  ⏰ Enrichment loop exceeded {ENRICHMENT_LOOP_TIMEOUT_MINUTES} min — stopping. Remaining movies will be retried next run.")
                 break
 
@@ -3731,10 +3719,9 @@ class DataGenerator:
                     continue
 
                 # Get enrichment fields only
-                import time as _etime
-                _movie_start = _etime.time()
+                _movie_start = time.time()
                 enrichment_fields = self.get_enrichment_only_fields(movie_id, movie_data, movie_details, force_refresh=False)
-                _movie_elapsed = _etime.time() - _movie_start
+                _movie_elapsed = time.time() - _movie_start
                 if _movie_elapsed > 90:
                     print(f"  ⚠️ {movie_data.get('title', movie_id)} took {_movie_elapsed:.0f}s (slow)", flush=True)
                 if enrichment_fields:
@@ -3853,7 +3840,7 @@ class DataGenerator:
                 "movies_requested": len(movie_ids_to_enrich),
                 "movies_enriched": enriched_count,
                 "movies_deferred": len(movie_ids_to_enrich) - enriched_count,
-                "enrichment_duration_seconds": round(_time.time() - _enrich_start, 2),
+                "enrichment_duration_seconds": round(time.time() - _enrich_start, 2),
             }
             with open('metrics/enrichment_run.json', 'w') as f:
                 json.dump(enrichment_metrics, f, indent=2)
@@ -3875,7 +3862,6 @@ class DataGenerator:
         if slug in self._screening_info_cache:
             return self._screening_info_cache[slug]
 
-        import re
         result = {'name': None, 'available_start': None, 'available_end': None}
 
         try:
@@ -3925,9 +3911,6 @@ class DataGenerator:
         Check virtual screening links for expiration.
         Dead links (404/410) cause the movie to be hidden and returned to tracking.
         """
-        import requests
-        from datetime import datetime
-
         data_file = 'data.json'
         if not os.path.exists(data_file):
             print("  No data.json found")
@@ -4612,9 +4595,6 @@ class DataGenerator:
         Tracks success rates, cache hits, and failure patterns across all scrapers
         to enable proactive maintenance and debugging.
         """
-        from datetime import datetime
-        import os
-
         # Calculate success rates
         def calc_rate(successes, attempts):
             if attempts == 0:
@@ -4697,7 +4677,6 @@ class DataGenerator:
         health_file = 'metrics/scraper_health.jsonl'
         try:
             with open(health_file, 'a') as f:
-                import json
                 f.write(json.dumps(health) + '\n')
 
             # Also save as latest snapshot for easy viewing
