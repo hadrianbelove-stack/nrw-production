@@ -12,6 +12,22 @@ if git diff --cached | grep -qE '^(<<<<<<<|=======|>>>>>>>)'; then
   exit 1
 fi
 
+# Protect CI-authoritative data files from accidental local commits.
+# Override with: NRW_ALLOW_DATA_COMMIT=1 git commit ...
+if [ "$NRW_ALLOW_DATA_COMMIT" != "1" ]; then
+    for file in data.json data_archive.json movie_tracking.json; do
+        if git diff --cached --name-only | grep -q "^${file}$"; then
+            echo "BLOCKED: ${file} is staged for commit."
+            echo ""
+            echo "data.json, data_archive.json, and movie_tracking.json are CI-authoritative."
+            echo "Local commits overwrite CI's version and can lose discovered movies."
+            echo ""
+            echo "To override: NRW_ALLOW_DATA_COMMIT=1 git commit ..."
+            exit 1
+        fi
+    done
+fi
+
 # AMENDMENT-032: Root Markdown Whitelist (Updated 2026-02-02)
 ALLOWED_ROOT_MD_FILES=(
     "CLAUDE.md"
