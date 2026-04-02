@@ -1025,8 +1025,11 @@ const NRW = {
         const movie = this.lightboxMovies[this.lightboxIndex];
         if (!movie) return;
 
-        // Update poster
+        // Update poster (with fallback for missing posters)
         document.getElementById('lightbox-poster').src = movie.poster || '';
+        document.getElementById('lightbox-poster').style.display = movie.poster ? '' : 'none';
+        document.getElementById('lightbox-poster-fallback').style.display = movie.poster ? 'none' : 'flex';
+        document.getElementById('lightbox-poster-fallback-title').textContent = movie.title;
 
         // Update title
         document.getElementById('lightbox-title').textContent = movie.title;

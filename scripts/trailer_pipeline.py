@@ -54,12 +54,14 @@ def record_bad_url(youtube_url, title, year, reason):
     if not video_id:
         return
     bad_urls = load_bad_urls()
+    existing = bad_urls.get(video_id, {})
     bad_urls[video_id] = {
         'title': title,
         'year': str(year),
         'reason': reason,
         'url': youtube_url,
-        'recorded_at': datetime.now().isoformat(),
+        'recorded_at': existing.get('recorded_at', datetime.now().isoformat()),
+        'last_failed': datetime.now().isoformat(),
     }
     os.makedirs(os.path.dirname(BAD_URLS_FILE), exist_ok=True)
     with open(BAD_URLS_FILE, 'w') as f:
@@ -361,9 +363,22 @@ def host_new_trailers(movie_ids=None, limit=0, dry_run=False, cookies_browser=No
 
     stats = {'hosted': 0, 'failed': 0, 'skipped': 0}
     total = len(to_host)
+    bad_urls = load_bad_urls()
+    BLACKLIST_GRACE_DAYS = 3
 
     for i, movie in enumerate(to_host, 1):
         print(f'[{i}/{total}] {movie["title"]} ({movie["year"]})...')
+
+        # Skip URLs blacklisted for more than 3 days (transient issues resolve sooner)
+        video_id = extract_youtube_id(movie['trailer_url'])
+        if video_id and video_id in bad_urls:
+            recorded = bad_urls[video_id].get('recorded_at', '')
+            if recorded:
+                days_ago = (datetime.now() - datetime.fromisoformat(recorded)).days
+                if days_ago >= BLACKLIST_GRACE_DAYS:
+                    print(f'    Skipped: blacklisted {days_ago} days ago ({bad_urls[video_id].get("reason", "unknown")})')
+                    stats['skipped'] += 1
+                    continue
 
         hosted_url, new_trailer_url = download_and_upload_trailer(
             movie['id'], movie['title'], movie['year'],
