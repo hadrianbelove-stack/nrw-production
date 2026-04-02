@@ -1,44 +1,44 @@
 {
-  "timestamp": "2026-04-01T10:50:34.015056",
-  "duration_seconds": 2758.536722,
-  "overall_success": false,
-  "failure_count": 1,
+  "timestamp": "2026-04-02T11:26:08.990164",
+  "duration_seconds": 5174.81056,
+  "overall_success": true,
+  "failure_count": 0,
   "warning_count": 0,
   "phases": [
     {
       "name": "Intake new premieres from TMDB",
       "success": true,
-      "duration_seconds": 7.399028,
+      "duration_seconds": 10.788876,
       "error": null,
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-03-30 to 2026-04-01 (incremental mode, 29 intaked)\n\u2705 Movie intake complete: 29 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-03-02 to 2026-04-01\n   \ud83d\udccb Hate the Player: The Ben Johnson Story "
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-03-31 to 2026-04-02 (incremental mode, 35 intaked)\n\u2705 Movie intake complete: 35 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-03-03 to 2026-04-02\n   \ud83d\udccb P\u00e9cheresses (6 eps)\n\n\ud83d\udcca Miniseries intak"
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 2748.83081,
+      "duration_seconds": 4083.439138,
       "error": null,
-      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 15479 total movies\n\ud83d\udd0d Raw tracking filter: 12364 movies\n\ud83d\udd0d Assigned tracking_movies list: 12364\n\ud83d\udd0d Found 12364 movies in tracking status\n  Priority queue (last 180 days): 734 movies\n  Older movies: 11630 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 12364 movies for digital availability...\n\n   \ud83d\udcdd Movie Crime 101 already in data.json - skipping immediate add\n  \ud83d\udcc5 Crime 101 \u2014 pending Typ"
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 15518 total movies\n\ud83d\udd0d Raw tracking filter: 12400 movies\n\ud83d\udd0d Assigned tracking_movies list: 12400\n\ud83d\udd0d Found 12400 movies in tracking status\n  Priority queue (last 180 days): 735 movies\n  Older movies: 11665 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 12400 movies for digital availability...\n\n   \u2705 Added Touch Me to site immediately (discovery-driven)\n  \ud83d\udcc5 Touch Me \u2014 pending Type 4 arriv"
     },
     {
       "name": "Resolve pre-order movie dates",
       "success": true,
-      "duration_seconds": 0.359648,
+      "duration_seconds": 0.345669,
       "error": null,
       "output_preview": "\n\ud83d\udcc5 Resolving pre-order movie dates...\n\n\ud83d\udcc5 Resolving pre-order dates...\n  No pre-order movies to resolve\n\u2705 Pre-order resolution complete: 0 resolved\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Enrich newly available movies with metadata",
-      "success": false,
-      "duration_seconds": 0.345404,
-      "error": "2026-04-01 10:50:32 [INFO] EnrichmentService initialized with enrichment_enabled=True\n2026-04-01 10:50:32 [INFO] Enrichment loaded data.json: 807 movies\nTraceback (most recent call last):\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 193, in <module>\n    main()\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 168, in main\n    enriched_count = generator.enrich_newly_available_movies()\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/nrw-production/nrw-production/pipeline/generator.py\", line 3617, in enrich_newly_available_movies\n    retire_cutoff = (datetime.now() - timedelta(days=90)).strftime('%Y-%m-%d')\n                     ^^^^^^^^\nUnboundLocalError: cannot access local variable 'datetime' where it is not associated with a value\n",
-      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n"
+      "success": true,
+      "duration_seconds": 1079.38105,
+      "error": null,
+      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n  \ud83d\udce6 Retired 10 movies older than 90 days from enrichment\n\ud83c\udfaf Enrichment queue: 14 new + 0 catch-up = 14 total\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n  \u26a1 Touch Me (62.2s) - Wiki:\u2713 Trai"
     },
     {
       "name": "Stamp hosted trailer URLs into data.json",
       "success": true,
-      "duration_seconds": 1.561895,
+      "duration_seconds": 0.723418,
       "error": null,
-      "output_preview": "=== Trailer Pipeline: stamp ===\n\nConnecting to B2...\nFound 290 trailers in B2 bucket\nSaved data.json: 19 stamped, 0 stale cleaned\n\nStamp results:\n  Stamped:          19\n  Already had URL:  270\n  Stale cleaned:    0\n  Not in B2:        518\n"
+      "output_preview": "=== Trailer Pipeline: stamp ===\n\nConnecting to B2...\nFound 308 trailers in B2 bucket\nSaved data.json: 37 stamped, 0 stale cleaned\n\nStamp results:\n  Stamped:          37\n  Already had URL:  270\n  Stale cleaned:    0\n  Not in B2:        508\n"
     }
   ],
   "health_issues": [],
@@ -46,31 +46,23 @@
     "stalled": false,
     "days_without_transitions": 0
   },
-  "failures": [
-    {
-      "phase": "Enrich newly available movies with metadata",
-      "severity": "error",
-      "message": "Phase failed with exit code 1",
-      "context": "2026-04-01 10:50:32 [INFO] EnrichmentService initialized with enrichment_enabled=True\n2026-04-01 10:50:32 [INFO] Enrichment loaded data.json: 807 movies\nTraceback (most recent call last):\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 193, in <module>\n    main()\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 168, in main\n    enriched_count = generator.enrich_newly_available_movies()\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^",
-      "stdout_preview": "\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase..."
-    }
-  ],
+  "failures": [],
   "warnings": [],
   "data_quality": {
-    "total": 15479,
-    "tracking": 12355,
-    "available": 3122,
-    "data_movies": 807,
-    "movies_with_links": 230,
-    "movies_with_rt": 501,
-    "movies_with_wikipedia": 348,
-    "movies_with_trailers": 649
+    "total": 15518,
+    "tracking": 12386,
+    "available": 3130,
+    "data_movies": 815,
+    "movies_with_links": 233,
+    "movies_with_rt": 528,
+    "movies_with_wikipedia": 368,
+    "movies_with_trailers": 686
   },
   "enrichment_metrics": {
-    "timestamp": "2026-03-28T12:18:53.066466",
-    "movies_requested": 52,
-    "movies_enriched": 52,
+    "timestamp": "2026-04-02T11:26:07.730140",
+    "movies_requested": 14,
+    "movies_enriched": 14,
     "movies_deferred": 0,
-    "enrichment_duration_seconds": 7336.94
+    "enrichment_duration_seconds": 1078.66
   }
 }
