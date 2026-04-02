@@ -111,7 +111,7 @@ jobs:
             echo "===================="
 
             # Extract standardized discovery metrics line
-            discovery_line=$(grep -E "^Polled [0-9]+ movies, [0-9]+ changes detected" .local_run.log | tail -n 1 || echo "")
+            discovery_line=$(grep -E "Polled [0-9]+ movies, [0-9]+ changes detected" .local_run.log | tail -n 1 || echo "")
 
             if [ -n "$discovery_line" ]; then
               # Parse the line to extract numbers
