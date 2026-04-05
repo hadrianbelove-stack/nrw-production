@@ -3564,7 +3564,7 @@
         ]
       },
       "enriched": true,
-      "enrichment_date": "2026-04-04"
+      "enrichment_date": "2026-04-05"
     },
     "1541524": {
       "title": "Safe.",
@@ -63389,7 +63389,7 @@
       "year": 2025,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-04-04"
+      "enrichment_date": "2026-04-05"
     },
     "1598116": {
       "title": "Gabby and Eleanor Go Up and Down the Mountain",
@@ -92031,7 +92031,7 @@
       "premiere_date": "2025-01-30",
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-04-04"
+      "enrichment_date": "2026-04-05"
     },
     "1380292": {
       "title": "The World of the Dead",
@@ -108154,7 +108154,7 @@
       "premiere_date": "2025-07-31",
       "_discovery_source": "tmdb_type4",
       "enriched": true,
-      "enrichment_date": "2026-04-04"
+      "enrichment_date": "2026-04-05"
     },
     "1409532": {
       "title": "30 Minutes",
@@ -116055,7 +116055,7 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "enriched": true,
-      "enrichment_date": "2026-04-04"
+      "enrichment_date": "2026-04-05"
     },
     "1320830": {
       "title": "My Fathers' Daughter",
@@ -133361,7 +133361,7 @@
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-04-04"
+      "enrichment_date": "2026-04-05"
     },
     "1320324": {
       "title": "The Last Podcast",
@@ -160274,12 +160274,22 @@
     "1282440": {
       "title": "Happy Patel: Khatarnak Jasoos",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-16",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-04-05",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-04-05"
     },
     "1276874": {
       "title": "Life and Deaths of Max Linder",
@@ -166322,7 +166332,7 @@
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-04-04"
+      "enrichment_date": "2026-04-05"
     },
     "1547844": {
       "title": "Tuhan, Benarkah Kau Mendengarku?",
@@ -186779,7 +186789,7 @@
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-04-04"
+      "enrichment_date": "2026-04-05"
     },
     "1527180": {
       "title": "Hekla",
@@ -190486,11 +190496,13 @@
       "year": 2026,
       "status": "tracking",
       "first_seen": "2026-03-10",
-      "digital_date": null,
+      "digital_date": "2026-04-28",
       "providers": {},
       "intake_pass": "C",
       "festival": "SXSW",
-      "has_providers": false
+      "has_providers": false,
+      "_discovery_source": "tmdb_type4",
+      "_type4_pending": true
     },
     "1263532": {
       "title": "Beast Race",
@@ -190530,7 +190542,7 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "enriched": true,
-      "enrichment_date": "2026-04-04"
+      "enrichment_date": "2026-04-05"
     },
     "1629367": {
       "title": "Summer of '94",
@@ -199519,7 +199531,7 @@
       "title": "Muthu Engira Kaattaan",
       "content_type": "limited_series",
       "tmdb_id": 301734,
-      "status": "tracking",
+      "status": "available",
       "first_air_date": "2026-03-27",
       "digital_date": "2026-03-27",
       "episode_count": 10,
@@ -199533,15 +199545,20 @@
       ],
       "original_language": "ta",
       "providers": {
-        "streaming": [],
         "rent": [],
-        "buy": []
+        "buy": [],
+        "streaming": [
+          "Hulu"
+        ]
       },
       "intaked_at": "2026-03-28T09:35:15.204818",
       "networks": [
         "JioHotstar"
       ],
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-04-05"
     },
     "tv_217838": {
       "title": "Love Upon a Time",
@@ -200412,7 +200429,7 @@
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-04-04"
+      "enrichment_date": "2026-04-05"
     },
     "tv_315179": {
       "title": "Ugly",
@@ -201190,7 +201207,8 @@
       "digital_date": null,
       "providers": {},
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check"
     },
     "1134517": {
       "title": "Streets of Gl\u00f3ria",
@@ -201335,7 +201353,7 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "enriched": true,
-      "enrichment_date": "2026-04-04"
+      "enrichment_date": "2026-04-05"
     },
     "1612991": {
       "title": "Nikola Tesla 19hz",
@@ -201352,7 +201370,7 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "enriched": true,
-      "enrichment_date": "2026-04-04"
+      "enrichment_date": "2026-04-05"
     },
     "945961": {
       "title": "Alien: Romulus",
@@ -201386,7 +201404,7 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "enriched": true,
-      "enrichment_date": "2026-04-04"
+      "enrichment_date": "2026-04-05"
     },
     "1532053": {
       "title": "Samhain",
@@ -201403,7 +201421,7 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "enriched": true,
-      "enrichment_date": "2026-04-04"
+      "enrichment_date": "2026-04-05"
     },
     "1662654": {
       "title": "Rob Beckett: Giraffe",
@@ -201771,7 +201789,7 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "enriched": true,
-      "enrichment_date": "2026-04-04"
+      "enrichment_date": "2026-04-05"
     },
     "1657686": {
       "title": "NXT Stand & Deliver 2026",
@@ -201788,7 +201806,7 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "enriched": true,
-      "enrichment_date": "2026-04-04"
+      "enrichment_date": "2026-04-05"
     },
     "1662735": {
       "title": "SEVENTEEN WORLD TOUR [NEW_] ENCORE",
@@ -201868,7 +201886,7 @@
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-04-04"
+      "enrichment_date": "2026-04-05"
     },
     "1593694": {
       "title": "The Strawberry",
@@ -201966,6 +201984,255 @@
       "intaked_at": "2026-04-04T09:35:32.750725",
       "networks": [
         "Netflix"
+      ],
+      "has_providers": false
+    },
+    "1643335": {
+      "title": "NJPW Sakura Genesis 2026",
+      "year": 2026,
+      "status": "available",
+      "first_seen": "2026-04-05",
+      "digital_date": "2026-04-04",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "intake_pass": "A",
+      "has_providers": true,
+      "_discovery_source": "tmdb_type4",
+      "enriched": true,
+      "enrichment_date": "2026-04-05"
+    },
+    "1663739": {
+      "title": "UFO Hunters II: Tales from the Universe",
+      "year": 2023,
+      "status": "available",
+      "first_seen": "2026-04-05",
+      "digital_date": "2023-05-19",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "intake_pass": "A",
+      "has_providers": true,
+      "_discovery_source": "tmdb_type4",
+      "enriched": true,
+      "enrichment_date": "2026-04-05"
+    },
+    "1663422": {
+      "title": "Ye Live at SoFi",
+      "year": 2026,
+      "status": "available",
+      "first_seen": "2026-04-05",
+      "digital_date": "2026-04-03",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "intake_pass": "A",
+      "has_providers": true,
+      "_discovery_source": "tmdb_type4",
+      "enriched": true,
+      "enrichment_date": "2026-04-05"
+    },
+    "1462146": {
+      "title": "S4: The Bob Lazar Story",
+      "year": 2026,
+      "status": "available",
+      "first_seen": "2026-04-05",
+      "digital_date": "2026-04-03",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "intake_pass": "A",
+      "has_providers": true,
+      "_discovery_source": "tmdb_type4",
+      "enriched": true,
+      "enrichment_date": "2026-04-05"
+    },
+    "1653929": {
+      "title": "Bach: Passion Oratorio - Il Gardellino Ensemble",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-05",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1650930": {
+      "title": "Domingo Sem Deus",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-05",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1664030": {
+      "title": "Concerto di Pasqua 2026 - OSN",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-05",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1663875": {
+      "title": "GCW: Maniac 2026",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-05",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1663625": {
+      "title": "Theatre of Magic",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-05",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1418657": {
+      "title": "The Yeti",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-05",
+      "digital_date": "2026-04-10",
+      "providers": {},
+      "intake_pass": "B",
+      "_discovery_source": "tmdb_type4",
+      "_type4_pending": true
+    },
+    "1129104": {
+      "title": "Flavia",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-05",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1664047": {
+      "title": "Speechless",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-05",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1664010": {
+      "title": "Hamlet p\u00e5 Elverket",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-05",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1663915": {
+      "title": "Jaspreet Singh: Grown Up",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-05",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1663587": {
+      "title": "K\u0131ble: Bitlisli Belk\u0131s",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-05",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "tv_318626": {
+      "title": "Raw love",
+      "content_type": "limited_series",
+      "tmdb_id": 318626,
+      "status": "tracking",
+      "first_air_date": "2026-03-25",
+      "digital_date": "2026-03-25",
+      "episode_count": 4,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/quiDfyiI4byrKZgSghszYoPCnDg.jpg",
+      "synopsis": ".......................",
+      "genres": [],
+      "original_language": "th",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-04-05T09:36:58.924333",
+      "networks": [],
+      "has_providers": false
+    },
+    "tv_318624": {
+      "title": "The end of summer",
+      "content_type": "limited_series",
+      "tmdb_id": 318624,
+      "status": "tracking",
+      "first_air_date": "2026-03-08",
+      "digital_date": "2026-03-08",
+      "episode_count": 10,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/nqGkCIwo5yHmPS192ZLaHuaTgKq.jpg",
+      "synopsis": "Photographer Jiang Mo accidentally meets Xia An at a bar, whom she hasn't seen in five years - the one who saved her from being bullied during her high school days! When they meet again, the memories come back like waves...",
+      "genres": [],
+      "original_language": "zh",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-04-05T09:37:00.849652",
+      "networks": [],
+      "has_providers": false
+    },
+    "tv_318589": {
+      "title": "\ub9c8\uce68\ub0b4, \ubd04",
+      "content_type": "limited_series",
+      "tmdb_id": 318589,
+      "status": "tracking",
+      "first_air_date": "2026-03-06",
+      "digital_date": "2026-03-06",
+      "episode_count": 4,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/3gWZV8mgLVASehOD4j1fK5Ppu4u.jpg",
+      "synopsis": "",
+      "genres": [
+        "Drama"
+      ],
+      "original_language": "ko",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-04-05T09:37:00.998613",
+      "networks": [
+        "YouTube"
       ],
       "has_providers": false
     }
