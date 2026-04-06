@@ -95377,14 +95377,23 @@
     },
     "1233620": {
       "title": "Winner Takes the Cake",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-04",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-04-06",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "ViX Premium Amazon Channel"
+        ]
+      },
       "intake_pass": "backfill",
-      "has_providers": false,
+      "has_providers": true,
       "year": 2025,
-      "premiere_date": "2025-02-27"
+      "premiere_date": "2025-02-27",
+      "_discovery_source": "provider_availability_check",
+      "enriched": false,
+      "enrichment_date": null
     },
     "1224481": {
       "title": "Amichemai",
@@ -114244,13 +114253,22 @@
     "1275772": {
       "title": "Bitterroot",
       "year": 2024,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-04-06",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "Tribeca",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": false,
+      "enrichment_date": null
     },
     "1232072": {
       "title": "Eternal Playground",
@@ -171555,12 +171573,22 @@
     "1595507": {
       "title": "Vadh 2",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-02-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-04-06",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": false,
+      "enrichment_date": null
     },
     "1587124": {
       "title": "Bhabiji Ghar Par Hain!",
@@ -186854,12 +186882,22 @@
     "1428294": {
       "title": "Mrithyunjay",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-03-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-04-06",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": false,
+      "enrichment_date": null
     },
     "1424055": {
       "title": "H\u00e9r\u00e9sie",
@@ -201697,7 +201735,7 @@
       "title": "Feel What You Feel",
       "content_type": "limited_series",
       "tmdb_id": 316795,
-      "status": "tracking",
+      "status": "available",
       "first_air_date": "2026-04-03",
       "digital_date": "2026-04-03",
       "episode_count": 8,
@@ -201709,16 +201747,21 @@
       ],
       "original_language": "zh",
       "providers": {
-        "streaming": [],
         "rent": [],
-        "buy": []
+        "buy": [],
+        "streaming": [
+          "Rakuten Viki"
+        ]
       },
       "intaked_at": "2026-04-03T09:51:44.998739",
       "networks": [
         "Viki",
         "GagaOOLala"
       ],
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": false,
+      "enrichment_date": null
     },
     "tv_316452": {
       "title": "Gina Lollobrigida: Diva Contesa",
@@ -202235,6 +202278,129 @@
         "YouTube"
       ],
       "has_providers": false
+    },
+    "1663196": {
+      "title": "Paree - Chapter 2",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-06",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1660018": {
+      "title": "Ring (Variations de couple)",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-06",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1529500": {
+      "title": "Deadskin",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-06",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1664393": {
+      "title": "20 anys d'Amics. La festa major",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-06",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1664476": {
+      "title": "tripleS OT 24 Concerts in Asia  My Secret New Zone in Seoul",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-06",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1663090": {
+      "title": "NOAH Lethal Odyssey Tour 2026",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-06",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1662522": {
+      "title": "Stardom in Osaka 2026 Apr.",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-06",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "tv_317782": {
+      "title": "Ben Fogle in China",
+      "content_type": "limited_series",
+      "tmdb_id": 317782,
+      "status": "tracking",
+      "first_air_date": "2026-04-06",
+      "digital_date": "2026-04-06",
+      "episode_count": 3,
+      "runtime": null,
+      "poster": null,
+      "synopsis": "In beautifully crafted episodes, presenter Ben Fogle embarks on a once-in-a-lifetime journey to understand China - to see its most staggering sights, go beyond the stereotypes and discover its true identity. Ben delves into an epic 3000-year tale of how China has got to where it is today - how centuries of Imperial rule gave way to Communist revolution under Chairman Mao and the breakneck economic transformation as the state capitalist China of recent years has emerged. Mixing both the experiences from the people themselves, and a tour of this magnificent region Ben takes the temperature of a country now at the very centre of humanity in the 21st century. So why and how has contemporary China become so important to all our lives?",
+      "genres": [
+        "Documentary"
+      ],
+      "original_language": "en",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-04-06T10:06:48.184815",
+      "networks": [
+        "5"
+      ],
+      "has_providers": false
+    },
+    "tv_313899": {
+      "title": "Taiketsu",
+      "content_type": "limited_series",
+      "tmdb_id": 313899,
+      "status": "tracking",
+      "first_air_date": "2026-04-05",
+      "digital_date": "2026-04-05",
+      "episode_count": 2,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/5ygfB3iJBktJzksJl9BSdRDhXRJ.jpg",
+      "synopsis": "When a sharp-eyed newspaper journalist begins investigating a powerful medical university director, two women hardened by injustice in a male-dominated world find themselves on opposing sides\u2014locked in a fierce clash of ambition, belief, and truth.",
+      "genres": [
+        "Mystery"
+      ],
+      "original_language": "ja",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-04-06T10:06:48.326840",
+      "networks": [
+        "NHK"
+      ],
+      "has_providers": false
     }
-  }
+  },
+  "last_update": "2026-04-06T10:06:47.800359"
 }
