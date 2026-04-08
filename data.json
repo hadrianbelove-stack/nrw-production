@@ -1,7 +1,657 @@
 {
-  "generated_at": "2026-04-07T11:27:54.652708",
-  "count": 857,
+  "generated_at": "2026-04-08T11:24:48.028291",
+  "count": 865,
   "movies": [
+    {
+      "id": "564056",
+      "title": "The World Is Full of Secrets",
+      "digital_date": "2026-04-08",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "An old woman's voice recalls a terrible event from her distant past: on a summer night in 1996, five teenage girls meet in a suburban house, absent of parental supervision. To pass the time, they begin to tell morbid stories of the world outside, trying to best one another in a grim competition.",
+      "genres": [
+        "Drama",
+        "Horror"
+      ],
+      "runtime": 98,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "Amazon Video",
+          "Apple TV Store",
+          "Google Play Movies",
+          "YouTube"
+        ],
+        "buy": [
+          "Amazon Video",
+          "Apple TV Store",
+          "Google Play Movies",
+          "YouTube"
+        ],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": null,
+        "trailer": "https://www.youtube.com/watch?v=lEHMc3K1hgA",
+        "rt": "https://www.rottentomatoes.com/m/the_world_is_full_of_secrets",
+        "imdb": "https://www.imdb.com/title/tt9143604/"
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Apple TV",
+            "link": "https://tv.apple.com/us/movie/the-world-is-full-of-secrets/umc.cmc.4hlfvk82h04lxg8q73v7lf3ib?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1532817991"
+          },
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.a8ba5ea1-0584-7fc7-0b2a-bb0604639613&tag=nrw04-20"
+          },
+          {
+            "service": "Google Play",
+            "link": "https://play.google.com/store/movies/details/The_World_is_Full_of_Secrets?gl=US&hl=en&id=rjv0mag2yZY.P"
+          },
+          {
+            "service": "Barnes & Noble",
+            "link": "https://www.barnesandnoble.com/w/dvd-the-world-is-full-of-secrets-graham-swon/35307994"
+          },
+          {
+            "service": "Amazon",
+            "link": "https://www.amazon.com/dp/B08F6DJ8G4?tag=justwatch09-20&linkCode=osi&th=1&psc=1"
+          }
+        ]
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-04-08T10:57:54.805760",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/llbEOPs3adtMqnU0EUL2ecKadsz.jpg",
+      "studio": "Ravenser Odd",
+      "budget": 0,
+      "country": "United States of America",
+      "original_language": "en",
+      "original_title": "The World Is Full of Secrets",
+      "crew": {
+        "director": "Graham Swon",
+        "cast": [
+          "Elena Burger",
+          "Dennise Gregory",
+          "Ayla Guttman",
+          "Alexa Shae Niziak",
+          "Violet Piper"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_enrichment_attempts": 1,
+      "imdb_rating": "4.4",
+      "_trailer_source": "broad_search",
+      "_digital_date_source": "detection",
+      "_needs_review": true,
+      "_quality_warnings": [
+        "Service 'Barnes & Noble' not in TMDB providers for this title (TMDB has: ['amazon video', 'google play movies', 'youtube', 'apple tv store'])"
+      ],
+      "_enrichment_gaps": [
+        "wikipedia"
+      ],
+      "categories": {
+        "tier": null,
+        "is_big_time": false,
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
+    {
+      "id": "1095024",
+      "title": "An Evening Song (for Three Voices)",
+      "digital_date": "2026-04-08",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "1939, in the Midwest: an impeded author, her pulp-writer husband and their pious maid. A spellbinding plunge into their intertwined thoughts, memories and visions.",
+      "genres": [
+        "Drama"
+      ],
+      "runtime": 86,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": [
+          "Fandor Amazon Channel"
+        ]
+      },
+      "links": {
+        "wikipedia": null,
+        "trailer": "https://www.youtube.com/watch?v=VXaOQWb8a7c",
+        "rt": null,
+        "imdb": "https://www.imdb.com/title/tt20221044/"
+      },
+      "watch_links": {
+        "streaming": {
+          "service": "Amazon",
+          "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.0b6018a9-cc68-402f-b8d5-a3da1f11b7b4"
+        },
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.0b6018a9-cc68-402f-b8d5-a3da1f11b7b4&tag=nrw04-20"
+          }
+        ]
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-04-08T10:57:54.302787",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/muzAJ4sAqHMWFRfy2IcYZGENqps.jpg",
+      "studio": "Ravenser Odd",
+      "budget": 0,
+      "country": "United States of America",
+      "original_language": "en",
+      "original_title": "An Evening Song (for Three Voices)",
+      "crew": {
+        "director": "Graham Swon",
+        "cast": [
+          "Hannah Gross",
+          "Peter Vack",
+          "Deragh Campbell"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_enrichment_attempts": 1,
+      "imdb_rating": "6.8",
+      "_trailer_source": "broad_search",
+      "_digital_date_source": "detection",
+      "_needs_review": false,
+      "_enrichment_gaps": [
+        "rt_score",
+        "wikipedia"
+      ],
+      "categories": {
+        "tier": null,
+        "is_big_time": false,
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
+    {
+      "id": "1665224",
+      "title": "Sheng Wang: Purple",
+      "digital_date": "2026-04-07",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Sheng Wang shares his thoughts on edible bras, braving the ghosts in your house and guarding expensive berries from your friends' kids.",
+      "genres": [
+        "Comedy"
+      ],
+      "runtime": 61,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": null,
+        "trailer": "https://www.youtube.com/watch?v=auFBzA5JuFw",
+        "rt": "https://www.rottentomatoes.com/m/sheng_wang_purple",
+        "imdb": "https://www.imdb.com/title/tt36933778/"
+      },
+      "watch_links": {},
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-04-08T10:57:49.056901",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/6BKDUcNi9blIZDXRaHZAL7OkwP1.jpg",
+      "studio": null,
+      "budget": 0,
+      "country": "United States of America",
+      "original_language": "en",
+      "original_title": "Sheng Wang: Purple",
+      "crew": {
+        "director": "Ali Wong",
+        "cast": [
+          "Sheng Wang"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_enrichment_attempts": 1,
+      "imdb_rating": null,
+      "_trailer_source": "tmdb_official",
+      "_digital_date_source": "tmdb_type4",
+      "_needs_review": false,
+      "_enrichment_gaps": [
+        "watch_links",
+        "wikipedia",
+        "imdb_rating"
+      ],
+      "categories": {
+        "tier": null,
+        "is_big_time": false,
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
+    {
+      "id": "1575690",
+      "title": "Off We Go 2",
+      "digital_date": "2026-03-23",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "",
+      "genres": [
+        "Comedy",
+        "Romance"
+      ],
+      "runtime": 0,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": null,
+        "trailer": "https://www.youtube.com/watch?v=Doo_En9Myug",
+        "rt": null,
+        "imdb": "https://www.imdb.com/title/tt39371145/"
+      },
+      "watch_links": {},
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-04-08T10:52:41.121004",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/aoMEQbYMfFx8i8rHKFdLrVRXyDV.jpg",
+      "studio": "DreamLake",
+      "budget": 0,
+      "country": "Poland",
+      "original_language": "pl",
+      "original_title": "Dalej jazda! 2",
+      "crew": {
+        "director": "Mariusz Kuczewski",
+        "cast": [
+          "Marian Opania",
+          "Ma\u0142gorzata Ro\u017cniatowska",
+          "Julia Wieniawa",
+          "Anita Soko\u0142owska",
+          "Mariusz Dr\u0119\u017cek"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_enrichment_attempts": 1,
+      "imdb_rating": "5.9",
+      "_trailer_source": "broad_search",
+      "_digital_date_source": "tmdb_type4",
+      "_needs_review": false,
+      "_enrichment_gaps": [
+        "watch_links",
+        "rt_score",
+        "wikipedia"
+      ],
+      "categories": {
+        "tier": null,
+        "is_big_time": false,
+        "is_indie": false,
+        "is_foreign": true,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
+    {
+      "id": "1443598",
+      "title": "Katwe",
+      "digital_date": "2026-04-08",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Nima Shirali\u2019s subtly humorous film follows a community tucked between Uganda\u2019s Katwe Salt Lake and a national park. Through the eyes of an enthusiastic teacher, a jaded caretaker and a sharp-witted mother, the salt lake is seen as a vital lifeline. Between harvests and floods, the lake transforms from a role that is central to local identity and offering a promising industry, to become a symbol of failed development. The low price of salt adds to the woes of toxic labour conditions. And yet, for many in Katwe it remains the only path of opportunity. As a flamboyant, retro-styled local politician pushes grand plans onto a crumbling mine and community, the local population reflects on what the future holds.",
+      "genres": [
+        "Documentary"
+      ],
+      "runtime": 96,
+      "year": 2025,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "Google Play Movies",
+          "YouTube"
+        ],
+        "buy": [
+          "Google Play Movies",
+          "YouTube"
+        ],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Queen_of_Katwe?wprov=srpw1_0",
+        "trailer": "https://www.youtube.com/watch?v=eo8bbhVooE8",
+        "rt": null,
+        "imdb": "https://www.imdb.com/title/tt35978647/"
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Google Play",
+            "link": "https://play.google.com/store/movies/details/Katwe?gl=US&hl=en&id=ffxJR6d18yk.P"
+          }
+        ]
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-04-08T10:49:30.640311",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/4RFmbykqdEaZyb0fwyqNpQeRNjY.jpg",
+      "studio": null,
+      "budget": 0,
+      "country": null,
+      "original_language": "en",
+      "original_title": "Katwe",
+      "crew": {
+        "director": "Nima Shirali",
+        "cast": []
+      },
+      "_discovery_source": "provider_availability_check",
+      "_enrichment_attempts": 1,
+      "imdb_rating": null,
+      "_trailer_source": "broad_search",
+      "_digital_date_source": "detection",
+      "_needs_review": false,
+      "_enrichment_gaps": [
+        "rt_score",
+        "imdb_rating"
+      ],
+      "categories": {
+        "tier": null,
+        "is_big_time": false,
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": true,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
+    {
+      "id": "1427586",
+      "title": "Other People's Bodies",
+      "digital_date": "2026-04-07",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "A queer reimagining of the French classic La Piscine, in which four former friends and lovers reunite on a hot summer weekend, reigniting long-simmering passions, grievances, and regrets. Olivia, a modern dancer, is vacationing with her husband, Seb, at a secluded country house, when they are paid an unexpected visit by Olivia\u2019s former best friend and, briefly Seb\u2019s lover, Mateo, whose own dance career ended after a serious injury. They haven\u2019t seen or heard from one other in eight years since Mateo cut Olivia and Seb off after a painful betrayal. Adding to this emotionally fraught reunion, Mateo brings along his young and very sexy lover, Zaki. When two more former dance colleagues, Gabriella and her husband and Fabian, Olivia\u2019s lover before Seb, pay a surprise visit, everyone\u2019s romantic and sexual pasts, and desires, collide.",
+      "genres": [
+        "Drama"
+      ],
+      "runtime": 85,
+      "year": 2025,
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": null,
+        "trailer": "https://www.youtube.com/watch?v=6YKKScbA2GE",
+        "rt": "https://www.rottentomatoes.com/m/other_peoples_bodies",
+        "imdb": "https://www.imdb.com/title/tt26597224/"
+      },
+      "watch_links": {},
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-04-08T10:48:55.326552",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/xjcJYvtEQKG1oDliNwV01454L6T.jpg",
+      "studio": null,
+      "budget": 0,
+      "country": null,
+      "original_language": "en",
+      "original_title": "Other People's Bodies",
+      "crew": {
+        "director": "Alan Brown",
+        "cast": [
+          "McKinley Belcher III",
+          "Jasai Chase-Owens",
+          "Annie Parisse",
+          "A.J. Shively",
+          "Adam Jepsen"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_enrichment_attempts": 1,
+      "imdb_rating": "5.9",
+      "_trailer_source": "broad_search",
+      "_digital_date_source": "tmdb_type4",
+      "_needs_review": false,
+      "_enrichment_gaps": [
+        "watch_links",
+        "wikipedia"
+      ],
+      "categories": {
+        "tier": null,
+        "is_big_time": false,
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
+    {
+      "id": "1473027",
+      "title": "Matter of Time",
+      "digital_date": "2026-04-08",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Charlie Fleck, a 29-year-old aspiring video game designer, is has the opportunity of a lifetime with a time-stopping device given to him by his friend, an eccentric Toy shop owner Gibbs. Challenges ensues, and hardships arise as he navigates world, and pursue his dreams",
+      "genres": [
+        "Drama",
+        "Comedy",
+        "Science Fiction"
+      ],
+      "runtime": 106,
+      "year": 2026,
+      "rt_score": "99%",
+      "providers": {
+        "rent": [
+          "Amazon Video",
+          "Google Play Movies",
+          "YouTube"
+        ],
+        "buy": [
+          "Amazon Video",
+          "Google Play Movies",
+          "YouTube"
+        ],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": null,
+        "trailer": null,
+        "rt": "https://www.rottentomatoes.com/m/matter_of_time_2026"
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.48f5b5ba-6ee7-4458-ab13-53e4b211904a&tag=nrw04-20"
+          },
+          {
+            "service": "Google Play",
+            "link": "https://play.google.com/store/movies/details/Matter_of_Time?gl=US&hl=en&id=r4Z-OApHrMc.P"
+          }
+        ]
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-04-08T10:48:52.472141",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/42FhOpXHh9LyAyqYfvqIKdd3Zv1.jpg",
+      "studio": "Mediajuice Studios",
+      "budget": 0,
+      "country": "United States of America",
+      "original_language": "en",
+      "original_title": "Matter of Time",
+      "crew": {
+        "director": "Jeremy Snead",
+        "cast": [
+          "Sean Astin",
+          "Myles Erlick",
+          "Ali Astin",
+          "Jamie Alexander",
+          "Patrick Britton"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_enrichment_attempts": 1,
+      "imdb_rating": null,
+      "_digital_date_source": "detection",
+      "_needs_review": false,
+      "_enrichment_gaps": [
+        "trailer",
+        "wikipedia",
+        "imdb_rating"
+      ],
+      "categories": {
+        "tier": null,
+        "is_big_time": false,
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
+    {
+      "id": "tv_278143",
+      "title": "Love You Teacher",
+      "digital_date": "2026-03-14",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "A stern teacher who hates kids must now parent his own boyfriend after an accident leaves him with the mind of a seven-year-old.",
+      "genres": [
+        "Drama",
+        "Comedy"
+      ],
+      "runtime": null,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Rakuten Viki"
+        ]
+      },
+      "links": {
+        "wikipedia": null,
+        "trailer": "https://www.youtube.com/watch?v=c4QnAOLeI2o",
+        "rt": null,
+        "imdb": "https://www.imdb.com/title/tt34903754/"
+      },
+      "watch_links": {
+        "streaming": {
+          "service": "Rakuten Viki",
+          "link": "https://www.viki.com/videos/1269581v-love-you-teacher-episode-2"
+        }
+      },
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-04-08T10:15:51.827430",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "content_type": "limited_series",
+      "episode_count": 10,
+      "networks": [
+        "GMM 25"
+      ],
+      "poster": "https://image.tmdb.org/t/p/w500/7NEZmleIbrL7krMmZtWpl6ReuOn.jpg",
+      "studio": "GMMTV",
+      "budget": 0,
+      "country": "TH",
+      "original_language": "th",
+      "original_title": "\u0e23\u0e31\u0e01\u0e04\u0e23\u0e39\u0e40\u0e17\u0e48\u0e32\u0e42\u0e25\u0e01\u0e40\u0e25\u0e22",
+      "crew": {
+        "director": "Unknown",
+        "cast": [
+          "Tanapon Sukumpantanasan",
+          "Pongsapak Udomphoch",
+          "Samantha Melanie Coates",
+          "Kay Lertsittichai",
+          "Ploynira Hiruntaveesin"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_enrichment_attempts": 1,
+      "imdb_rating": "9.3",
+      "_trailer_source": "tmdb_official",
+      "_digital_date_source": "first_air_date",
+      "_needs_review": false,
+      "_enrichment_gaps": [
+        "rt_score",
+        "wikipedia"
+      ],
+      "categories": {
+        "tier": null,
+        "is_big_time": false,
+        "is_indie": false,
+        "is_foreign": true,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": true,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
     {
       "id": "1426912",
       "title": "The Space Rodent",
@@ -57,7 +707,7 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "imdb_rating": "8.9",
       "_trailer_source": "tmdb_official",
       "_digital_date_source": "tmdb_type4",
@@ -105,14 +755,7 @@
         "rt": null,
         "imdb": "https://www.imdb.com/title/tt36459652/"
       },
-      "watch_links": {
-        "vod": [
-          {
-            "service": "Amazon",
-            "link": "https://www.amazon.com/gp/video/detail/B0CHXXM2JF?tag=nrw04-20"
-          }
-        ]
-      },
+      "watch_links": {},
       "_enrichment_status": "completed",
       "_discovered_at": "2026-04-07T10:51:23.611299",
       "_tmdb_fetch_failed": false,
@@ -134,12 +777,13 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "imdb_rating": null,
       "_trailer_source": "tmdb_official",
       "_digital_date_source": "tmdb_type4",
       "_needs_review": false,
       "_enrichment_gaps": [
+        "watch_links",
         "rt_score",
         "imdb_rating"
       ],
@@ -178,9 +822,9 @@
         "streaming": []
       },
       "links": {
-        "wikipedia": null,
+        "wikipedia": "https://en.wikipedia.org/wiki/Sniper_(film_series)",
         "trailer": "https://www.youtube.com/watch?v=-smVu1cxPm8",
-        "rt": null,
+        "rt": "https://www.rottentomatoes.com/m/sniper_no_nation",
         "imdb": "https://www.imdb.com/title/tt39538786/"
       },
       "watch_links": {
@@ -188,6 +832,14 @@
           {
             "service": "Amazon",
             "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.910cf0df-d76b-4678-b7b2-c198da2052da&tag=nrw04-20"
+          },
+          {
+            "service": "Apple TV",
+            "link": "https://tv.apple.com/us/movie/sniper-no-nation/umc.cmc.qoj63h4aw1eh5mpw1e6p9lz6?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1883758018"
+          },
+          {
+            "service": "Plex",
+            "link": "https://watch.plex.tv/movie/sniper-no-nation-2026?utm_content=69b69f9f18fd4e188f015194&utm_medium=deeplink&utm_source=justWatch-v2-catalog"
           }
         ]
       },
@@ -212,14 +864,12 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "imdb_rating": null,
       "_trailer_source": "tmdb_official",
       "_digital_date_source": "tmdb_type4",
       "_needs_review": false,
       "_enrichment_gaps": [
-        "rt_score",
-        "wikipedia",
         "imdb_rating"
       ],
       "categories": {
@@ -267,8 +917,8 @@
       "watch_links": {
         "vod": [
           {
-            "service": "Amazon",
-            "link": "https://www.amazon.com/gp/video/detail/B0GPYC4LQ6?tag=nrw04-20"
+            "service": "Apple TV",
+            "link": "https://tv.apple.com/us/movie/winter-battleground/umc.cmc.6jp61ea2qucl2dkkmw0xb42jd?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1878698190"
           }
         ]
       },
@@ -291,7 +941,7 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "imdb_rating": null,
       "_trailer_source": "tmdb_official",
       "_digital_date_source": "tmdb_type4",
@@ -336,14 +986,14 @@
       },
       "links": {
         "wikipedia": "https://en.wikipedia.org/wiki/Unseen",
-        "trailer": "https://www.youtube.com/watch?v=LHCfP3tozTU",
+        "trailer": "https://www.youtube.com/watch?v=75kbNBJnCls",
         "rt": "https://www.rottentomatoes.com/m/the_unseen_2026"
       },
       "watch_links": {
         "vod": [
           {
-            "service": "Amazon",
-            "link": "https://www.amazon.com/gp/video/detail/B0GQJFJBR2?tag=nrw04-20"
+            "service": "Apple TV",
+            "link": "https://tv.apple.com/us/movie/the-unseen/umc.cmc.qsgoetusgezbkzoerblcf19u?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1882082461"
           }
         ]
       },
@@ -362,7 +1012,7 @@
         "cast": []
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "imdb_rating": null,
       "_trailer_source": "gemini_playwright",
       "_digital_date_source": "tmdb_type4",
@@ -432,10 +1082,10 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "imdb_rating": "8.4",
       "_trailer_source": "tmdb_official",
-      "_digital_date_source": "tmdb_type4",
+      "_digital_date_source": "detection",
       "_needs_review": false,
       "_enrichment_gaps": [
         "watch_links"
@@ -513,7 +1163,7 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "imdb_rating": "5.4",
       "_trailer_source": "tmdb_official",
       "_digital_date_source": "detection",
@@ -552,7 +1202,7 @@
       ],
       "runtime": 126,
       "year": 2024,
-      "rt_score": null,
+      "rt_score": "100%",
       "providers": {
         "rent": [
           "Google Play Movies",
@@ -567,7 +1217,7 @@
       "links": {
         "wikipedia": "https://en.wikipedia.org/wiki/Ghaath_(2023_film)",
         "trailer": "https://www.youtube.com/watch?v=fYLd7OEJ6OM",
-        "rt": null,
+        "rt": "https://www.rottentomatoes.com/m/ghaath",
         "imdb": "https://www.imdb.com/title/tt26332440/"
       },
       "watch_links": {
@@ -599,14 +1249,11 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "imdb_rating": "7.6",
       "_trailer_source": "tmdb_official",
       "_digital_date_source": "detection",
       "_needs_review": false,
-      "_enrichment_gaps": [
-        "rt_score"
-      ],
       "categories": {
         "tier": null,
         "is_big_time": false,
@@ -907,7 +1554,7 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "imdb_rating": "7.7",
       "_trailer_source": "gemini_playwright",
       "_digital_date_source": "detection",
@@ -953,7 +1600,7 @@
       "links": {
         "wikipedia": null,
         "trailer": "https://www.youtube.com/watch?v=ntzBD3ihVXg",
-        "rt": null,
+        "rt": "https://www.rottentomatoes.com/m/meryl_streep_the_winner_takes_it_all",
         "imdb": "https://www.imdb.com/title/tt34723784/"
       },
       "watch_links": {
@@ -983,13 +1630,12 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "imdb_rating": "6.3",
       "_trailer_source": "tmdb_official",
       "_digital_date_source": "detection",
       "_needs_review": false,
       "_enrichment_gaps": [
-        "rt_score",
         "wikipedia"
       ],
       "categories": {
@@ -1029,7 +1675,7 @@
       },
       "links": {
         "wikipedia": null,
-        "trailer": "https://www.youtube.com/watch?v=qmziNSBdIF8",
+        "trailer": "https://www.youtube.com/watch?v=qj04_RfNPlo",
         "rt": null,
         "imdb": "https://www.imdb.com/title/tt40768745/"
       },
@@ -1066,9 +1712,9 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "imdb_rating": null,
-      "_trailer_source": "broad_search",
+      "_trailer_source": "tmdb_official",
       "_digital_date_source": "first_air_date",
       "_needs_review": false,
       "_enrichment_gaps": [
@@ -1170,11 +1816,12 @@
       "manually_corrected": false,
       "synopsis": "Kanye West performs live at SoFi Stadium in Inglewood, California, as part of the \u201cBULLY\u201d tour on April 3, 2026.",
       "genres": [
-        "Music"
+        "Music",
+        "Documentary"
       ],
       "runtime": 193,
       "year": 2026,
-      "rt_score": null,
+      "rt_score": "84%",
       "providers": {
         "rent": [],
         "buy": [],
@@ -1182,8 +1829,8 @@
       },
       "links": {
         "wikipedia": null,
-        "trailer": "https://www.youtube.com/watch?v=jFTPHGmTSYc",
-        "rt": null
+        "trailer": "https://www.youtube.com/watch?v=kAE9tSKeejM",
+        "rt": "https://www.rottentomatoes.com/m/the_weeknd_live_at_sofi_stadium"
       },
       "watch_links": {},
       "_enrichment_status": "completed",
@@ -1205,14 +1852,13 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 2,
+      "_enrichment_attempts": 3,
       "imdb_rating": null,
       "_trailer_source": "gemini_playwright",
       "_digital_date_source": "tmdb_type4",
       "_needs_review": false,
       "_enrichment_gaps": [
         "watch_links",
-        "rt_score",
         "wikipedia",
         "imdb_rating"
       ],
@@ -1225,7 +1871,7 @@
         "is_restoration": false,
         "is_virtual_screening": false,
         "is_series": false,
-        "is_documentary": false,
+        "is_documentary": true,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -1348,7 +1994,7 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 2,
+      "_enrichment_attempts": 3,
       "imdb_rating": null,
       "_trailer_source": "broad_search",
       "_digital_date_source": "tmdb_type4",
@@ -8493,7 +9139,7 @@
           }
         ]
       },
-      "_enrichment_status": "completed",
+      "_enrichment_status": "retired",
       "_discovered_at": "2026-01-07T22:25:33.508744",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
@@ -8576,7 +9222,7 @@
           }
         ]
       },
-      "_enrichment_status": "completed",
+      "_enrichment_status": "retired",
       "_discovered_at": "2026-01-07T22:25:33.508744",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
@@ -8651,7 +9297,7 @@
           }
         ]
       },
-      "_enrichment_status": "completed",
+      "_enrichment_status": "retired",
       "_discovered_at": "2026-01-07T22:25:33.508744",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
@@ -8726,7 +9372,7 @@
           }
         ]
       },
-      "_enrichment_status": "completed",
+      "_enrichment_status": "retired",
       "_discovered_at": "2026-01-07T22:25:33.508744",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
@@ -8793,7 +9439,7 @@
           }
         ]
       },
-      "_enrichment_status": "completed",
+      "_enrichment_status": "retired",
       "_discovered_at": "2026-01-07T22:25:33.508744",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
@@ -8883,7 +9529,7 @@
           }
         ]
       },
-      "_enrichment_status": "completed",
+      "_enrichment_status": "retired",
       "_discovered_at": "2026-01-07T22:25:33.508744",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
@@ -8977,7 +9623,7 @@
           }
         ]
       },
-      "_enrichment_status": "completed",
+      "_enrichment_status": "retired",
       "_discovered_at": "2026-01-07T22:25:33.508744",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
@@ -64115,10 +64761,10 @@
   "featured": [
     "1608619"
   ],
-  "latest_playlist_url": "https://www.youtube.com/playlist?list=PLFCewXXu8_tEvd79M8K8xWu-Z_kfNzsKm",
+  "latest_playlist_url": "https://www.youtube.com/playlist?list=PLFCewXXu8_tGagu7b0tPaKP-uRVTVuwyX",
   "_metadata": {
-    "last_discovery_write": "2026-04-07T10:51:23.888452",
-    "discovery_count": 845,
+    "last_discovery_write": "2026-04-08T10:57:54.805769",
+    "discovery_count": 853,
     "schema_version": "2.0"
   }
 }

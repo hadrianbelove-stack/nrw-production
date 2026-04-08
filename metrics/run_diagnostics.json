@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-04-07T11:30:17.973191",
-  "duration_seconds": 4873.235725,
+  "timestamp": "2026-04-08T11:29:22.305543",
+  "duration_seconds": 4426.934759,
   "overall_success": true,
   "failure_count": 0,
   "warning_count": 0,
@@ -8,37 +8,37 @@
     {
       "name": "Intake new premieres from TMDB",
       "success": true,
-      "duration_seconds": 6.475425,
+      "duration_seconds": 6.074877,
       "error": null,
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-04-05 to 2026-04-07 (incremental mode, 17 intaked)\n\u2705 Movie intake complete: 17 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-03-08 to 2026-04-07\n   \ud83d\udccb Tune In (6 eps)\n   \ud83d\udccb Life in Smokey Blu"
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-04-06 to 2026-04-08 (incremental mode, 19 intaked)\n\u2705 Movie intake complete: 19 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-03-09 to 2026-04-08\n   \ud83d\udccb Trust Me: The False Prophet (4 eps)\n\n\ud83d\udcca "
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 2535.447028,
+      "duration_seconds": 2534.29666,
       "error": null,
-      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 15617 total movies\n\ud83d\udd0d Raw tracking filter: 12451 movies\n\ud83d\udd0d Assigned tracking_movies list: 12451\n\ud83d\udd0d Found 12451 movies in tracking status\n  Priority queue (last 180 days): 716 movies\n  Older movies: 11735 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 12451 movies for digital availability...\n\n   \u2705 Added EPiC: Elvis Presley in Concert to site immediately (discovery-driven)\n  \ud83d\udcc5 EPiC: Elv"
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 15637 total movies\n\ud83d\udd0d Raw tracking filter: 12459 movies\n\ud83d\udd0d Assigned tracking_movies list: 12459\n\ud83d\udd0d Found 12459 movies in tracking status\n  Priority queue (last 180 days): 704 movies\n  Older movies: 11755 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 12459 movies for digital availability...\n\n  \u2713 Love You Teacher now on Rakuten Viki!\n   \u2705 Added Love You Teacher to site immediately (dis"
     },
     {
       "name": "Resolve pre-order movie dates",
       "success": true,
-      "duration_seconds": 0.366431,
+      "duration_seconds": 0.368806,
       "error": null,
       "output_preview": "\n\ud83d\udcc5 Resolving pre-order movie dates...\n\n\ud83d\udcc5 Resolving pre-order dates...\n  No pre-order movies to resolve\n\u2705 Pre-order resolution complete: 0 resolved\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Enrich newly available movies with metadata",
       "success": true,
-      "duration_seconds": 2329.598724,
+      "duration_seconds": 1884.76959,
       "error": null,
-      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n  \ud83d\udce6 Retired 12 movies older than 90 days from enrichment\n\ud83c\udfaf Enrichment queue: 12 new + 18 catch-up = 30 total\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n  \u26a1 EPiC: Elvis Presley in Concer"
+      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n  \ud83d\udce6 Retired 7 movies older than 90 days from enrichment\n\ud83c\udfaf Enrichment queue: 8 new + 13 catch-up = 21 total\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n  \u26a1 Love You Teacher (34.4s) - Wiki"
     },
     {
       "name": "Stamp hosted trailer URLs into data.json",
       "success": true,
-      "duration_seconds": 1.205874,
+      "duration_seconds": 1.285656,
       "error": null,
-      "output_preview": "=== Trailer Pipeline: stamp ===\n\nConnecting to B2...\nFound 328 trailers in B2 bucket\n\nStamp results:\n  Stamped:          0\n  Already had URL:  327\n  Stale cleaned:    0\n  Not in B2:        530\n"
+      "output_preview": "=== Trailer Pipeline: stamp ===\n\nConnecting to B2...\nFound 328 trailers in B2 bucket\n\nStamp results:\n  Stamped:          0\n  Already had URL:  327\n  Stale cleaned:    0\n  Not in B2:        538\n"
     }
   ],
   "health_issues": [],
@@ -49,20 +49,20 @@
   "failures": [],
   "warnings": [],
   "data_quality": {
-    "total": 15617,
-    "tracking": 12439,
-    "available": 3176,
-    "data_movies": 857,
-    "movies_with_links": 250,
-    "movies_with_rt": 554,
-    "movies_with_wikipedia": 389,
-    "movies_with_trailers": 728
+    "total": 15637,
+    "tracking": 12451,
+    "available": 3184,
+    "data_movies": 865,
+    "movies_with_links": 252,
+    "movies_with_rt": 562,
+    "movies_with_wikipedia": 391,
+    "movies_with_trailers": 735
   },
   "enrichment_metrics": {
-    "timestamp": "2026-04-07T11:30:16.183102",
-    "movies_requested": 30,
-    "movies_enriched": 30,
+    "timestamp": "2026-04-08T11:29:20.315025",
+    "movies_requested": 21,
+    "movies_enriched": 21,
     "movies_deferred": 0,
-    "enrichment_duration_seconds": 2328.83
+    "enrichment_duration_seconds": 1883.87
   }
 }

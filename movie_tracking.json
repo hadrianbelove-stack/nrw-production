@@ -83130,7 +83130,7 @@
       "premiere_date": "2024-09-27",
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-04-07"
+      "enrichment_date": "2026-04-08"
     },
     "1042199": {
       "title": "Defect",
@@ -95406,7 +95406,7 @@
       "premiere_date": "2025-02-27",
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-04-07"
+      "enrichment_date": "2026-04-08"
     },
     "1224481": {
       "title": "Amichemai",
@@ -114281,7 +114281,7 @@
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-04-07"
+      "enrichment_date": "2026-04-08"
     },
     "1232072": {
       "title": "Eternal Playground",
@@ -131670,13 +131670,28 @@
     "1473027": {
       "title": "Matter of Time",
       "year": 2025,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-04-08",
+      "providers": {
+        "rent": [
+          "Amazon Video",
+          "Google Play Movies",
+          "YouTube"
+        ],
+        "buy": [
+          "Amazon Video",
+          "Google Play Movies",
+          "YouTube"
+        ],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "NYFF",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-04-08"
     },
     "1463432": {
       "title": "Steve Schapiro: Being Everywhere",
@@ -131854,13 +131869,20 @@
     "1427586": {
       "title": "Other People's Bodies",
       "year": 2025,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-04-07",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "NYFF",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "tmdb_type4",
+      "enriched": true,
+      "enrichment_date": "2026-04-08"
     },
     "1398655": {
       "title": "Blue Film",
@@ -133954,13 +133976,26 @@
     "1443598": {
       "title": "Katwe",
       "year": 2025,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-04-08",
+      "providers": {
+        "rent": [
+          "Google Play Movies",
+          "YouTube"
+        ],
+        "buy": [
+          "Google Play Movies",
+          "YouTube"
+        ],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "Sheffield DocFest",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-04-08"
     },
     "1440094": {
       "title": "Row",
@@ -163699,7 +163734,7 @@
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-04-07"
+      "enrichment_date": "2026-04-08"
     },
     "1536911": {
       "title": "Carmeni Selvam",
@@ -171625,12 +171660,19 @@
     "1575690": {
       "title": "Off We Go 2",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-02-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-03-23",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "tmdb_type4",
+      "enriched": true,
+      "enrichment_date": "2026-04-08"
     },
     "1572763": {
       "title": "Nikki hako no koi",
@@ -192442,7 +192484,7 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "enriched": true,
-      "enrichment_date": "2026-04-07"
+      "enrichment_date": "2026-04-08"
     },
     "1650818": {
       "title": "[\u00d2DIO]",
@@ -193209,7 +193251,7 @@
       "title": "Love You Teacher",
       "content_type": "limited_series",
       "tmdb_id": 278143,
-      "status": "tracking",
+      "status": "available",
       "first_air_date": "2026-03-14",
       "digital_date": "2026-03-14",
       "episode_count": 10,
@@ -193222,15 +193264,20 @@
       ],
       "original_language": "th",
       "providers": {
-        "streaming": [],
         "rent": [],
-        "buy": []
+        "buy": [],
+        "streaming": [
+          "Rakuten Viki"
+        ]
       },
       "intaked_at": "2026-03-14T09:30:12.602381",
       "networks": [
         "GMM 25"
       ],
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-04-08"
     },
     "tv_316181": {
       "title": "French Soldiers of the Third Reich",
@@ -201790,7 +201837,7 @@
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-04-07"
+      "enrichment_date": "2026-04-08"
     },
     "tv_316452": {
       "title": "Gina Lollobrigida: Diva Contesa",
@@ -202074,7 +202121,7 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "enriched": true,
-      "enrichment_date": "2026-04-07"
+      "enrichment_date": "2026-04-08"
     },
     "1663739": {
       "title": "UFO Hunters II: Tales from the Universe",
@@ -202108,7 +202155,7 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "enriched": true,
-      "enrichment_date": "2026-04-07"
+      "enrichment_date": "2026-04-08"
     },
     "1462146": {
       "title": "S4: The Bob Lazar Story",
@@ -202445,7 +202492,7 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "enriched": true,
-      "enrichment_date": "2026-04-07"
+      "enrichment_date": "2026-04-08"
     },
     "1647508": {
       "title": "Winter: Battleground",
@@ -202462,7 +202509,7 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "enriched": true,
-      "enrichment_date": "2026-04-07"
+      "enrichment_date": "2026-04-08"
     },
     "1641319": {
       "title": "Sniper: No Nation",
@@ -202479,7 +202526,7 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "enriched": true,
-      "enrichment_date": "2026-04-07"
+      "enrichment_date": "2026-04-08"
     },
     "1625383": {
       "title": "Orgy of the Dead 2",
@@ -202496,7 +202543,7 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "enriched": true,
-      "enrichment_date": "2026-04-07"
+      "enrichment_date": "2026-04-08"
     },
     "1426912": {
       "title": "The Space Rodent",
@@ -202513,17 +202560,24 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "enriched": true,
-      "enrichment_date": "2026-04-07"
+      "enrichment_date": "2026-04-08"
     },
     "1665224": {
       "title": "Sheng Wang: Purple",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-04-07",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-04-07",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "tmdb_type4",
+      "enriched": true,
+      "enrichment_date": "2026-04-08"
     },
     "1663169": {
       "title": "Ram\u00f3n y Cajal: drawings on the retina",
@@ -202738,6 +202792,254 @@
       "intaked_at": "2026-04-07T10:09:09.339368",
       "networks": [
         "DramaBox"
+      ],
+      "has_providers": false
+    },
+    "1665874": {
+      "title": "Pushing Boulder: A Mark-umentary",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A",
+      "has_providers": false
+    },
+    "1665571": {
+      "title": "Ucpanej syst\u00e9m",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1663691": {
+      "title": "Bialiatski / Unbroken",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1659482": {
+      "title": "Sur le sentier",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1658349": {
+      "title": "Hands Up Who'd Like a Hug?",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1627914": {
+      "title": "MUSIK",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1562230": {
+      "title": "The Dating Menu",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1461254": {
+      "title": "Salmokji: Whispering Water",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1443572": {
+      "title": "L'\u0152uvre invisible",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1437939": {
+      "title": "Cocorico 2",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1318043": {
+      "title": "The Vanished Girl",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1266800": {
+      "title": "The Desert Child",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1180793": {
+      "title": "Frames of Alicia",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1095024": {
+      "title": "An Evening Song (for Three Voices)",
+      "year": 2026,
+      "status": "available",
+      "first_seen": "2026-04-08",
+      "digital_date": "2026-04-08",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": [
+          "Fandor Amazon Channel"
+        ]
+      },
+      "intake_pass": "B",
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-04-08"
+    },
+    "1000990": {
+      "title": "Mrs.",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "564056": {
+      "title": "The World Is Full of Secrets",
+      "year": 2026,
+      "status": "available",
+      "first_seen": "2026-04-08",
+      "digital_date": "2026-04-08",
+      "providers": {
+        "rent": [
+          "Amazon Video",
+          "Apple TV Store",
+          "Google Play Movies",
+          "YouTube"
+        ],
+        "buy": [
+          "Amazon Video",
+          "Apple TV Store",
+          "Google Play Movies",
+          "YouTube"
+        ],
+        "streaming": []
+      },
+      "intake_pass": "B",
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-04-08"
+    },
+    "1664894": {
+      "title": "Samay Raina: Still Alive",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1657467": {
+      "title": "Sports Heaven: The Birth of ESPN",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1049471": {
+      "title": "Outcome",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-08",
+      "digital_date": "2026-04-09",
+      "providers": {},
+      "intake_pass": "B",
+      "_discovery_source": "tmdb_type4",
+      "_type4_pending": true
+    },
+    "tv_316898": {
+      "title": "Trust Me: The False Prophet",
+      "content_type": "limited_series",
+      "tmdb_id": 316898,
+      "status": "tracking",
+      "first_air_date": "2026-04-08",
+      "digital_date": "2026-04-08",
+      "episode_count": 4,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/rAUbR5dHpDgYUrhAofAHYT9f1vr.jpg",
+      "synopsis": "Chronicles the rise of Samuel Bateman, the self-proclaimed heir to Warren Jeffs\u2019 Fundamentalist Church of Jesus Christ of Latter-Day Saints (FLDS), through the eyes of one couple who infiltrated his inner circle.",
+      "genres": [
+        "Documentary",
+        "Crime"
+      ],
+      "original_language": "en",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-04-08T10:15:38.701548",
+      "networks": [
+        "Netflix"
       ],
       "has_providers": false
     }
