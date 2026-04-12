@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-04-11T11:29:00.351304",
-  "duration_seconds": 6655.144697,
+  "timestamp": "2026-04-12T11:26:16.922767",
+  "duration_seconds": 6207.494756,
   "overall_success": true,
   "failure_count": 0,
   "warning_count": 0,
@@ -8,37 +8,37 @@
     {
       "name": "Intake new premieres from TMDB",
       "success": true,
-      "duration_seconds": 12.084986,
+      "duration_seconds": 12.376728,
       "error": null,
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-04-09 to 2026-04-11 (incremental mode, 29 intaked)\n\u2705 Movie intake complete: 29 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-03-12 to 2026-04-11\n   \ud83d\udccb Kaakee Circus (7 eps)\n   \ud83d\udccb Batti Gul (3"
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-04-10 to 2026-04-12 (incremental mode, 20 intaked)\n\u2705 Movie intake complete: 20 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-03-13 to 2026-04-12\n   \ud83d\udccb Eva Longoria: Searching for France (8 e"
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 4428.924349,
+      "duration_seconds": 4822.430515,
       "error": null,
-      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 15759 total movies\n\ud83d\udd0d Raw tracking filter: 12547 movies\n\ud83d\udd0d Assigned tracking_movies list: 12547\n\ud83d\udd0d Found 12547 movies in tracking status\n  Priority queue (last 180 days): 690 movies\n  Older movies: 11857 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 12547 movies for digital availability...\n\n  \u2713 Bandi now on Netflix!\n   \u2705 Added Bandi to site immediately (discovery-driven)\n  \ud83d\udcca Discover"
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 15785 total movies\n\ud83d\udd0d Raw tracking filter: 12565 movies\n\ud83d\udd0d Assigned tracking_movies list: 12565\n\ud83d\udd0d Found 12565 movies in tracking status\n  Priority queue (last 180 days): 681 movies\n  Older movies: 11884 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 12565 movies for digital availability...\n\n  \u2713 Malcolm in the Middle: Life's Still Unfair now on Hulu!\n   \u2705 Added Malcolm in the Middle: "
     },
     {
       "name": "Resolve pre-order movie dates",
       "success": true,
-      "duration_seconds": 0.343432,
+      "duration_seconds": 0.318874,
       "error": null,
       "output_preview": "\n\ud83d\udcc5 Resolving pre-order movie dates...\n\n\ud83d\udcc5 Resolving pre-order dates...\n  No pre-order movies to resolve\n\u2705 Pre-order resolution complete: 0 resolved\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Enrich newly available movies with metadata",
       "success": true,
-      "duration_seconds": 2212.648315,
+      "duration_seconds": 1371.497505,
       "error": null,
-      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n  \ud83d\udce6 Retired 3 movies older than 90 days from enrichment\n\ud83c\udfaf Enrichment queue: 8 new + 18 catch-up = 26 total\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n[YouTubeTrailerScraper] Initializin"
+      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n  \ud83d\udce6 Retired 9 movies older than 90 days from enrichment\n\ud83c\udfaf Enrichment queue: 8 new + 11 catch-up = 19 total\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n  \u26a1 Malcolm in the Middle: Life's S"
     },
     {
       "name": "Stamp hosted trailer URLs into data.json",
       "success": true,
-      "duration_seconds": 1.007036,
+      "duration_seconds": 0.745179,
       "error": null,
-      "output_preview": "=== Trailer Pipeline: stamp ===\n\nConnecting to B2...\nFound 338 trailers in B2 bucket\n\nStamp results:\n  Stamped:          0\n  Already had URL:  337\n  Stale cleaned:    0\n  Not in B2:        562\n"
+      "output_preview": "=== Trailer Pipeline: stamp ===\n\nConnecting to B2...\nFound 394 trailers in B2 bucket\nSaved data.json: 56 stamped, 0 stale cleaned\n\nStamp results:\n  Stamped:          56\n  Already had URL:  337\n  Stale cleaned:    0\n  Not in B2:        514\n"
     }
   ],
   "health_issues": [],
@@ -49,20 +49,20 @@
   "failures": [],
   "warnings": [],
   "data_quality": {
-    "total": 15759,
-    "tracking": 12539,
-    "available": 3218,
-    "data_movies": 899,
-    "movies_with_links": 261,
-    "movies_with_rt": 581,
-    "movies_with_wikipedia": 408,
-    "movies_with_trailers": 770
+    "total": 15785,
+    "tracking": 12557,
+    "available": 3226,
+    "data_movies": 907,
+    "movies_with_links": 264,
+    "movies_with_rt": 586,
+    "movies_with_wikipedia": 412,
+    "movies_with_trailers": 777
   },
   "enrichment_metrics": {
-    "timestamp": "2026-04-11T11:28:58.815521",
-    "movies_requested": 26,
-    "movies_enriched": 25,
-    "movies_deferred": 1,
-    "enrichment_duration_seconds": 2211.93
+    "timestamp": "2026-04-12T11:26:15.581991",
+    "movies_requested": 19,
+    "movies_enriched": 19,
+    "movies_deferred": 0,
+    "enrichment_duration_seconds": 1370.75
   }
 }

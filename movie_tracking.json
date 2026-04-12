@@ -30244,7 +30244,7 @@
       "year": 2025,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-04-11"
+      "enrichment_date": "2026-04-12"
     },
     "1141934": {
       "title": "Barobabu",
@@ -101941,14 +101941,21 @@
     },
     "1386004": {
       "title": "October Rhapsody",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-04",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2025-11-06",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "backfill",
-      "has_providers": false,
+      "has_providers": true,
       "year": 2025,
-      "premiere_date": "2025-06-05"
+      "premiere_date": "2025-06-05",
+      "_discovery_source": "tmdb_type4",
+      "enriched": true,
+      "enrichment_date": "2026-04-12"
     },
     "1367947": {
       "title": "Gowok: Javanese Kamasutra",
@@ -103660,7 +103667,7 @@
       "premiere_date": "2025-05-30",
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-04-11"
+      "enrichment_date": "2026-04-12"
     },
     "1188839": {
       "title": "Dilli Dark",
@@ -106959,14 +106966,27 @@
     },
     "1436210": {
       "title": "Amityverse",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-04",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-04-12",
+      "providers": {
+        "rent": [
+          "Google Play Movies",
+          "YouTube"
+        ],
+        "buy": [
+          "Google Play Movies",
+          "YouTube"
+        ],
+        "streaming": []
+      },
       "intake_pass": "backfill",
-      "has_providers": false,
+      "has_providers": true,
       "year": 2025,
-      "premiere_date": "2025-08-05"
+      "premiere_date": "2025-08-05",
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-04-12"
     },
     "1242005": {
       "title": "The Last Mixtape",
@@ -119754,13 +119774,25 @@
     "1432605": {
       "title": "My Father's Shadow",
       "year": 2025,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-04-12",
+      "providers": {
+        "rent": [],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": [
+          "MUBI",
+          "MUBI Amazon Channel"
+        ]
+      },
       "intake_pass": "C",
       "festival": "Cannes",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-04-12"
     },
     "1313229": {
       "title": "Nino",
@@ -133176,7 +133208,7 @@
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-04-11"
+      "enrichment_date": "2026-04-12"
     },
     "1440676": {
       "title": "From Here Where We Stand - 80 years with Niels Skousen",
@@ -176622,7 +176654,7 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "enriched": true,
-      "enrichment_date": "2026-04-11"
+      "enrichment_date": "2026-04-12"
     },
     "1178620": {
       "title": "Montreal, My Beautiful",
@@ -187980,12 +188012,23 @@
     "1572073": {
       "title": "The Deadly Little Mermaid",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-03-07",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-04-12",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-04-12"
     },
     "1262748": {
       "title": "Father's Day",
@@ -203716,7 +203759,7 @@
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-04-11"
+      "enrichment_date": "2026-04-12"
     },
     "tv_319088": {
       "title": "\u653e\u9001\u5c40\u306b\u5c4a\u3044\u305f\u3042\u308b\u6620\u50cf",
@@ -203760,7 +203803,7 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "enriched": true,
-      "enrichment_date": "2026-04-11"
+      "enrichment_date": "2026-04-12"
     },
     "1637133": {
       "title": "Sasquatch Within",
@@ -203777,7 +203820,7 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "enriched": true,
-      "enrichment_date": "2026-04-11"
+      "enrichment_date": "2026-04-12"
     },
     "1472951": {
       "title": "Infiltrate",
@@ -203794,7 +203837,7 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "enriched": true,
-      "enrichment_date": "2026-04-11"
+      "enrichment_date": "2026-04-12"
     },
     "1290417": {
       "title": "Thrash",
@@ -204264,7 +204307,7 @@
       "title": "Malcolm in the Middle: Life's Still Unfair",
       "content_type": "limited_series",
       "tmdb_id": 279471,
-      "status": "tracking",
+      "status": "available",
       "first_air_date": "2026-04-10",
       "digital_date": "2026-04-10",
       "episode_count": 4,
@@ -204277,15 +204320,20 @@
       ],
       "original_language": "en",
       "providers": {
-        "streaming": [],
         "rent": [],
-        "buy": []
+        "buy": [],
+        "streaming": [
+          "Hulu"
+        ]
       },
       "intaked_at": "2026-04-10T10:07:04.326461",
       "networks": [
         "Hulu"
       ],
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-04-12"
     },
     "tv_316807": {
       "title": "\u523a\u6fc0\u30b5\u30d6\u30b9\u30af",
@@ -204328,7 +204376,7 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "enriched": true,
-      "enrichment_date": "2026-04-11"
+      "enrichment_date": "2026-04-12"
     },
     "1667643": {
       "title": "The Unknown",
@@ -204345,7 +204393,7 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "enriched": true,
-      "enrichment_date": "2026-04-11"
+      "enrichment_date": "2026-04-12"
     },
     "1613330": {
       "title": "Painted Sharks",
@@ -204362,7 +204410,7 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "enriched": true,
-      "enrichment_date": "2026-04-11"
+      "enrichment_date": "2026-04-12"
     },
     "1667862": {
       "title": "The Perfect Match",
@@ -204679,6 +204727,383 @@
         "Facebook",
         "Instagram"
       ],
+      "has_providers": false
+    },
+    "1604975": {
+      "title": "AEW Dynasty 2026",
+      "year": 2026,
+      "status": "available",
+      "first_seen": "2026-04-12",
+      "digital_date": "2026-04-12",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "intake_pass": "A",
+      "has_providers": true,
+      "_discovery_source": "tmdb_type4",
+      "enriched": true,
+      "enrichment_date": "2026-04-12"
+    },
+    "1668396": {
+      "title": "Sabrina Carpenter live at Coachella",
+      "year": 2026,
+      "status": "available",
+      "first_seen": "2026-04-12",
+      "digital_date": "2026-04-10",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "intake_pass": "A",
+      "has_providers": true,
+      "_discovery_source": "tmdb_type4",
+      "enriched": true,
+      "enrichment_date": "2026-04-12"
+    },
+    "1663789": {
+      "title": "Les Empires contre-attaquent",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-12",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1662955": {
+      "title": "Animals of the Land",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-12",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1659035": {
+      "title": "Mestre Zu",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-12",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1657397": {
+      "title": "Retiro - A Casa dos Artistas",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-12",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1657207": {
+      "title": "Apopcalipse Segundo Baby",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-12",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1656486": {
+      "title": "The Farm",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-12",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1655204": {
+      "title": "GetAway",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-12",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1636981": {
+      "title": "Ten Thousand Reasons for Revenge",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-12",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1582296": {
+      "title": "Legends of the Lost Ark",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-12",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1560994": {
+      "title": "Winter Hymns",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-12",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1668581": {
+      "title": "TJPW Warm Spring Pro Wrestling in Ueno",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-12",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1668524": {
+      "title": "TJPW Vancouver Premiere DAY 1",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-12",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1668512": {
+      "title": "Sendai Girls Pro Wrestling in Korakuen Hall\uff5c2026.04.12",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-12",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1667622": {
+      "title": "K3 Originals, The Reunion",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-12",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1651889": {
+      "title": "Mystery Wrestling #24",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-12",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1668374": {
+      "title": "Mainabi Presents: The Performance 2026",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-12",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1668178": {
+      "title": "Ram Naam Satya",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-12",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1668153": {
+      "title": "Sabrina Carpenter - Live from Coachella",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-12",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "tv_291518": {
+      "title": "Eva Longoria: Searching for France",
+      "content_type": "limited_series",
+      "tmdb_id": 291518,
+      "status": "tracking",
+      "first_air_date": "2026-04-12",
+      "digital_date": "2026-04-12",
+      "episode_count": 8,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/pWPyWuHKQCE7Hn6rL8gVQMKlotl.jpg",
+      "synopsis": "Eva Longoria explores French cuisine and culture.",
+      "genres": [
+        "Documentary",
+        "Reality"
+      ],
+      "original_language": "en",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-04-12T09:42:55.089460",
+      "networks": [
+        "CNN"
+      ],
+      "has_providers": false
+    },
+    "tv_319035": {
+      "title": "\ud53c\uc9c0\uceec \ub7ec\ube0c\ucea0\ud504",
+      "content_type": "limited_series",
+      "tmdb_id": 319035,
+      "status": "tracking",
+      "first_air_date": "2026-04-11",
+      "digital_date": "2026-04-11",
+      "episode_count": 2,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/4haGYnqFzbToALc3RYcLYW43IED.jpg",
+      "synopsis": "",
+      "genres": [
+        "Drama",
+        "Reality"
+      ],
+      "original_language": "ko",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-04-12T09:42:55.429504",
+      "networks": [
+        "ReelShort"
+      ],
+      "has_providers": false
+    },
+    "tv_318920": {
+      "title": "D-100: Marry My Ex To My Bestie",
+      "content_type": "limited_series",
+      "tmdb_id": 318920,
+      "status": "tracking",
+      "first_air_date": "2026-04-04",
+      "digital_date": "2026-04-04",
+      "episode_count": 2,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/sBEvMTrR6yL3yfVWqnaX9afVTkb.jpg",
+      "synopsis": "On her wedding day, Yerin is betrayed by her fianc\u00e9 and best friend and loses her life. In her final moments, she realizes the only man who truly loved her was the one she once rejected. When she wakes up at the moment of the proposal, she chooses revenge\u2014bringing the two together and leading them toward ruin. But as she grows closer to the man she once turned away, her feelings begin to change. Caught between revenge and love, can Yerin reclaim everything and find true love?",
+      "genres": [
+        "Drama",
+        "Sci-Fi & Fantasy"
+      ],
+      "original_language": "ko",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-04-12T09:42:56.008811",
+      "networks": [
+        "iQIYI International",
+        "Vigloo"
+      ],
+      "has_providers": false
+    },
+    "tv_318335": {
+      "title": "K1",
+      "content_type": "limited_series",
+      "tmdb_id": 318335,
+      "status": "tracking",
+      "first_air_date": "2026-03-31",
+      "digital_date": "2026-03-31",
+      "episode_count": 8,
+      "runtime": 59,
+      "poster": "https://image.tmdb.org/t/p/w500/tEwl98rRx5Qo4Sg19YXSTeuWEBH.jpg",
+      "synopsis": "Follows an elite police unit traveling across Morocco to pursue organized crime while confronting personal struggles that shape them into deeply human and empathetic characters.",
+      "genres": [
+        "Crime",
+        "Mystery"
+      ],
+      "original_language": "ar",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-04-12T09:42:56.808086",
+      "networks": [
+        "2M"
+      ],
+      "has_providers": false
+    },
+    "tv_241860": {
+      "title": "Climax",
+      "content_type": "limited_series",
+      "tmdb_id": 241860,
+      "status": "available",
+      "first_air_date": "2026-03-16",
+      "digital_date": "2026-03-16",
+      "episode_count": 10,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/znQD6puGiyMpNXPLs172Vv1h0GK.jpg",
+      "synopsis": "An ambitious prosecutor rises through Korea\u2019s elite by marrying a famous actress, only to be pulled into a ruthless power cartel where hidden informants, corporate heirs, and political players collide in a brutal struggle for survival and control.",
+      "genres": [
+        "Mystery",
+        "Drama"
+      ],
+      "original_language": "ko",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Rakuten Viki"
+        ]
+      },
+      "intaked_at": "2026-04-12T09:43:00.836197",
+      "networks": [
+        "ENA"
+      ],
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-04-12"
+    },
+    "tv_316609": {
+      "title": "\u6eba\u4e8e\u4ed6\u5fc3\u8df3",
+      "content_type": "limited_series",
+      "tmdb_id": 316609,
+      "status": "tracking",
+      "first_air_date": "2026-03-15",
+      "digital_date": "2026-03-15",
+      "episode_count": 66,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/eapr4y63oX5vYccjrd3QjnrEX5y.jpg",
+      "synopsis": "",
+      "genres": [],
+      "original_language": "zh",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-04-12T09:43:01.107348",
+      "networks": [],
       "has_providers": false
     }
   }
