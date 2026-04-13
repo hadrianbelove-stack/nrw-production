@@ -30244,7 +30244,7 @@
       "year": 2025,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-04-12"
+      "enrichment_date": "2026-04-13"
     },
     "1141934": {
       "title": "Barobabu",
@@ -103667,7 +103667,7 @@
       "premiere_date": "2025-05-30",
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-04-12"
+      "enrichment_date": "2026-04-13"
     },
     "1188839": {
       "title": "Dilli Dark",
@@ -106986,7 +106986,7 @@
       "premiere_date": "2025-08-05",
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-04-12"
+      "enrichment_date": "2026-04-13"
     },
     "1242005": {
       "title": "The Last Mixtape",
@@ -130752,13 +130752,22 @@
     "1426968": {
       "title": "The Gentleman",
       "year": 2025,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-04-13",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "San Sebastian",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-04-13"
     },
     "1141970": {
       "title": "Morte Cucina",
@@ -131828,11 +131837,13 @@
       "year": 2025,
       "status": "tracking",
       "first_seen": "2026-01-06",
-      "digital_date": null,
+      "digital_date": "2026-04-14",
       "providers": {},
       "intake_pass": "C",
       "festival": "NYFF",
-      "has_providers": false
+      "has_providers": false,
+      "_discovery_source": "tmdb_type4",
+      "_type4_pending": true
     },
     "1401433": {
       "title": "Appofeniacs",
@@ -132454,13 +132465,24 @@
     "1468488": {
       "title": "The Long Shot",
       "year": 2025,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-04-13",
+      "providers": {
+        "rent": [
+          "Apple TV Store"
+        ],
+        "buy": [
+          "Apple TV Store"
+        ],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "AFI Fest",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-04-13"
     },
     "1458322": {
       "title": "Two Sleepy People",
@@ -133208,7 +133230,7 @@
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-04-12"
+      "enrichment_date": "2026-04-13"
     },
     "1440676": {
       "title": "From Here Where We Stand - 80 years with Niels Skousen",
@@ -188028,7 +188050,7 @@
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-04-12"
+      "enrichment_date": "2026-04-13"
     },
     "1262748": {
       "title": "Father's Day",
@@ -190715,7 +190737,7 @@
     "1492341": {
       "title": "Noah Kahan: Out of Body",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-03-10",
       "digital_date": "2026-04-13",
       "providers": {
@@ -190728,8 +190750,7 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "enriched": true,
-      "enrichment_date": "2026-03-31",
-      "_type4_pending": true
+      "enrichment_date": "2026-04-13"
     },
     "1450527": {
       "title": "Forbidden Fruits",
@@ -203759,7 +203780,7 @@
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-04-12"
+      "enrichment_date": "2026-04-13"
     },
     "tv_319088": {
       "title": "\u653e\u9001\u5c40\u306b\u5c4a\u3044\u305f\u3042\u308b\u6620\u50cf",
@@ -204376,7 +204397,7 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "enriched": true,
-      "enrichment_date": "2026-04-12"
+      "enrichment_date": "2026-04-13"
     },
     "1667643": {
       "title": "The Unknown",
@@ -204393,7 +204414,7 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "enriched": true,
-      "enrichment_date": "2026-04-12"
+      "enrichment_date": "2026-04-13"
     },
     "1613330": {
       "title": "Painted Sharks",
@@ -204410,7 +204431,7 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "enriched": true,
-      "enrichment_date": "2026-04-12"
+      "enrichment_date": "2026-04-13"
     },
     "1667862": {
       "title": "The Perfect Match",
@@ -204435,12 +204456,21 @@
     "1665830": {
       "title": "I Have to Kill My Neighbor",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-04-11",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-04-13",
+      "providers": {
+        "rent": [
+          "Plex"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-04-13"
     },
     "1660162": {
       "title": "See You When I Get Back",
@@ -204744,7 +204774,7 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "enriched": true,
-      "enrichment_date": "2026-04-12"
+      "enrichment_date": "2026-04-13"
     },
     "1668396": {
       "title": "Sabrina Carpenter live at Coachella",
@@ -204836,12 +204866,21 @@
     "1636981": {
       "title": "Ten Thousand Reasons for Revenge",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-04-12",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-04-13",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-04-13"
     },
     "1582296": {
       "title": "Legends of the Lost Ark",
@@ -205104,6 +205143,123 @@
       },
       "intaked_at": "2026-04-12T09:43:01.107348",
       "networks": [],
+      "has_providers": false
+    },
+    "1668950": {
+      "title": "AEW Dynasty 2026: Zero Hour",
+      "year": 2026,
+      "status": "available",
+      "first_seen": "2026-04-13",
+      "digital_date": "2026-04-12",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "intake_pass": "A",
+      "has_providers": true,
+      "_discovery_source": "tmdb_type4",
+      "enriched": true,
+      "enrichment_date": "2026-04-13"
+    },
+    "1669320": {
+      "title": "My Letter to the South",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-13",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1667537": {
+      "title": "Dolvia 2026",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-13",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1664422": {
+      "title": "Le royaume des nuages",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-13",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1624022": {
+      "title": "Jo dz\u012bve ir batls",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-13",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1571583": {
+      "title": "Henry",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-13",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1559961": {
+      "title": "Pontifex - Un ponte tra la misericordia e la speranza",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-13",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1442075": {
+      "title": "Seaper Powers: The Rescue",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-13",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1377081": {
+      "title": "Slowburn Shoot: An Indie Wrestling Story",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-13",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1647381": {
+      "title": "Unfinished Work",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-13",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1668776": {
+      "title": "RADIOHEART: The Drive & Times of DJ Kevin Cole",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-13",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
       "has_providers": false
     }
   }
