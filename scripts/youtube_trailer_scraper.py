@@ -269,6 +269,17 @@ class YouTubeTrailerScraper:
                     if 'trailer' not in video_title and 'preview' not in video_title:
                         continue
 
+                    # Filter: video title must contain at least half the movie title words
+                    # Prevents matching wrong movie's trailer (e.g., "Is This Thing On" for "You Need This")
+                    stop_words = {'the', 'a', 'an', 'of', 'in', 'on', 'at', 'to', 'for', 'is', 'it', 'and'}
+                    movie_words = [w for w in title.lower().split() if w not in stop_words]
+                    if not movie_words:
+                        movie_words = title.lower().split()  # fallback for very short titles
+                    matching = sum(1 for w in movie_words if w in video_title)
+                    if matching / len(movie_words) < 0.5:
+                        print(f"  ✗ Broad search title mismatch: '{video_title[:60]}' for '{title}'")
+                        continue
+
                     if video_url.startswith('/watch'):
                         video_url = f"https://www.youtube.com{video_url}"
                     if '&' in video_url:

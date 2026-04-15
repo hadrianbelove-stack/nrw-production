@@ -67,6 +67,11 @@ const SERVICE_CONFIG = {
     color: '#FA382F',
     textColor: '#ffffff',
   },
+  fawesome: {
+    name: 'Fawesome',
+    color: '#1a1a2e',
+    textColor: '#ffffff',
+  },
   plex: {
     name: 'Plex',
     color: '#E5A00D',

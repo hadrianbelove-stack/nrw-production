@@ -263,6 +263,7 @@ const SERVICE_NAME_MAP = {
   'shudder': 'shudder',
   'strand releasing amazon channel': 'strand_releasing',
   'eventive': 'eventive',
+  'fawesome': 'fawesome',
 };
 
 /**

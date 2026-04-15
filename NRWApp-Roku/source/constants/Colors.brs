@@ -72,6 +72,7 @@ Function GetServiceColors() as Object
         paramount_plus: "0x0064FFFF"
         apple_tv: "0xAAAAAAFF"
         tubi: "0xFA382FFF"
+        fawesome: "0x1A1A2EFF"
         plex: "0xE5A00DFF"
         mubi: "0xDA2128FF"
         shudder: "0x8B0000FF"

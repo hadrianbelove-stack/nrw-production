@@ -80,7 +80,8 @@ private val StreamingColors = mapOf(
     "shudder" to Color(0xFF8B0000),  // Synced with CSS
     "criterion" to Color(0xFF000000),
     "tubi" to Color(0xFFFA382F),
-    "plex" to Color(0xFFE5A00D)
+    "plex" to Color(0xFFE5A00D),
+    "fawesome" to Color(0xFF1A1A2E)
 )
 
 /**
@@ -274,6 +275,7 @@ private fun StreamingBadge(
         "criterion" -> "CRITERION"
         "tubi" -> "TUBI"
         "plex" -> "PLEX"
+        "fawesome" -> "FAWESOME"
         else -> serviceName.uppercase().take(6)
     }
 

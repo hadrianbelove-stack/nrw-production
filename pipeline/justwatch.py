@@ -41,7 +41,7 @@ class JustWatchClient:
         'Hulu', 'Apple TV Plus', 'Paramount Plus', 'Peacock',
         # Tier 2: Free ad-supported services
         'Tubi', 'Tubi TV', 'Pluto TV', 'Plex', 'The Roku Channel',
-        'Crackle', 'Vudu Free',
+        'Crackle', 'Vudu Free', 'Fawesome',
         # Tier 3: Library-based free services
         'Kanopy', 'Hoopla',
         # Tier 4: Niche paid subscriptions
@@ -303,7 +303,7 @@ class JustWatchClient:
                 'price': price
             }
 
-            if mtype == 'FLATRATE':
+            if mtype in ('FLATRATE', 'ADS', 'FREE'):
                 streaming_offers.append(offer_data)
             elif mtype == 'RENT':
                 rent_offers.append(offer_data)
@@ -426,7 +426,7 @@ class JustWatchClient:
 
             offer_data = {'service': service, 'link': url, 'price': price}
 
-            if mtype == 'FLATRATE':
+            if mtype in ('FLATRATE', 'ADS', 'FREE'):
                 streaming_offers.append(offer_data)
                 if service not in streaming_names:
                     streaming_names.append(service)

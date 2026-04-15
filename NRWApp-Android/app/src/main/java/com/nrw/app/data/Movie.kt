@@ -428,7 +428,8 @@ private val SERVICE_NAME_MAP = mapOf(
     "vudu" to "fandango",
     "vix" to "vix",
     "shudder" to "shudder",
-    "plex" to "plex"
+    "plex" to "plex",
+    "fawesome" to "fawesome"
 )
 
 private fun isEventiveLink(service: String?, url: String?): Boolean {

@@ -33,6 +33,7 @@ const NRWMobile = {
         pluto:     { class: 'pluto',     name: 'PLUTO',     btnName: 'Pluto TV',  bg: '#00B4E4', text: '#fff',  matches: ['pluto'] },
         crackle:   { class: 'crackle',   name: 'CRACKLE',   btnName: 'Crackle',   bg: '#FF6600', text: '#fff',  matches: ['crackle'] },
         plex:      { class: 'plex',      name: 'PLEX',      btnName: 'Plex',      bg: '#E5A00D', text: '#000',  matches: ['plex'] },
+        fawesome:  { class: 'fawesome',  name: 'FAWESOME',  btnName: 'Fawesome',  bg: '#1a1a2e', text: '#fff',  matches: ['fawesome'] },
     },
 
     resolveService(rawName) {

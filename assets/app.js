@@ -59,6 +59,7 @@ const NRW = {
         pluto:     { class: 'pluto',     name: 'PLUTO TV',     badgeName: 'PLUTO',     matches: ['pluto'] },
         crackle:   { class: 'crackle',   name: 'CRACKLE',      badgeName: 'CRACKLE',   matches: ['crackle'] },
         plex:      { class: 'plex',      name: 'PLEX',         badgeName: 'PLEX',      matches: ['plex'] },
+        fawesome:  { class: 'fawesome',  name: 'FAWESOME',     badgeName: 'FAWESOME',  matches: ['fawesome'] },
     },
 
     // Filter descriptions — shown when a single filter is active
