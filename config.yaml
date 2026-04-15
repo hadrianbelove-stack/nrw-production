@@ -38,6 +38,27 @@ tracking:
   compaction_batch_size: 50  # Maximum entries to move per compaction run
   compaction_recent_days: null  # Only compact entries from last N days (null = no age limit)
   excluded_services: ['fuboTV', 'Philo', 'Sun Nxt', 'Fandango']  # Services to exclude from watch provider results
+  blocked_companies:  # Wrestling promotions (not film studios) — safe to block, won't affect real movies about wrestling
+    - 146598   # WWE
+    - 10339    # WWE Studios
+    - 20586    # NJPW (New Japan Pro-Wrestling)
+    - 13927    # TNA (Total Nonstop Action)
+    - 118180   # Stardom
+    - 119828   # AEW (All Elite Wrestling)
+    - 146674   # DDT Pro-Wrestling
+    - 116675   # TJPW (Tokyo Joshi Pro-Wrestling)
+    - 170188   # HOG (House of Glory)
+    - 232651   # CMLL (Consejo Mundial De Lucha Libre)
+    - 110728   # Lucha Libre AAA
+    - 265635   # Lucha Libre AAA Worldwide
+    - 291384   # Sareee-ISM
+    - 103501   # ROH (Ring of Honor)
+    - 88761    # Impact Wrestling
+    - 141961   # Pro Wrestling NOAH
+    - 241364   # Major League Wrestling
+    - 116902   # GCW (Game Changer Wrestling)
+    - 124609   # GCW (alternate)
+  blocked_title_keywords: ['WWE', 'NXT', 'WrestleMania', 'NJPW', 'AEW', 'Ring of Honor', 'ROH', 'Sareee-ISM', 'TNA Sacrifice', 'TNA Slammiversary', 'TNA Emergence', 'TNA Hard to Kill', 'TNA Rebellion', 'ISU World Championships', 'ISU Grand Prix', 'Mystery Wrestling']
 
 # JustWatch configuration (enrichment only)
 # NOTE: JustWatch verification removed from discovery phase (Mar 2026).

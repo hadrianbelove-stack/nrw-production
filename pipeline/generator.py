@@ -542,7 +542,8 @@ class DataGenerator:
                     'intaked': new_movies_added,  # Single field, no dual-write
                     'pages_fetched': self.intake_stats['pages_fetched'],
                     'total_results': self.intake_stats['total_results'],
-                    'duplicates_skipped': self.intake_stats['duplicates_skipped']
+                    'duplicates_skipped': self.intake_stats['duplicates_skipped'],
+                    'blocked_by_filter': self.intake_stats.get('blocked_by_filter', 0)
                 }
             }
 
@@ -851,12 +852,23 @@ class DataGenerator:
                     remaining = (total_to_check - checked) / rate if rate > 0 else 0
                     print(f"  📊 Discovery: {checked}/{total_to_check} ({progress_pct:.1f}%) | {newly_digital} found | {int(elapsed//60)}m elapsed | ~{int(remaining//60)}m remaining")
 
+                # False-positive awareness: if this movie was reverted from available,
+                # skip the discovery source that caused the false positive.
+                skip_type4 = False
+                skip_provider = False
+                if movie.get('_reverted_from_available'):
+                    fp_source = movie.get('_false_positive_source', '')
+                    if fp_source == 'tmdb_type4':
+                        skip_type4 = True
+                    elif fp_source == 'provider_availability_check':
+                        skip_provider = True
+
                 # PRIMARY: Type 4 digital release check (authoritative, gives accurate date)
                 # Type 4 is checked first — it provides the real digital release date
                 # and has fewer false positives than provider availability.
                 # Future dates are stored as pending — no transition until the date arrives.
                 type4_found = False
-                if movie['status'] == 'tracking':
+                if movie['status'] == 'tracking' and not skip_type4:
                     today_dt = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
 
                     if movie.get('_type4_pending'):
@@ -873,6 +885,8 @@ class DataGenerator:
                                     movie['enrichment_date'] = None
                                     movie['providers'] = {'rent': [], 'buy': [], 'streaming': []}
                                     del movie['_type4_pending']
+                                    movie.pop('_reverted_from_available', None)
+                                    movie.pop('_false_positive_source', None)
                                     newly_digital += 1
                                     newly_available_ids.append(movie_id)
                                     self.add_movie_to_site_immediately(movie_id, movie)
@@ -900,6 +914,8 @@ class DataGenerator:
                                     movie['enriched'] = False
                                     movie['enrichment_date'] = None
                                     movie['providers'] = {'rent': [], 'buy': [], 'streaming': []}
+                                    movie.pop('_reverted_from_available', None)
+                                    movie.pop('_false_positive_source', None)
                                     newly_digital += 1
                                     newly_available_ids.append(movie_id)
                                     self.add_movie_to_site_immediately(movie_id, movie)
@@ -920,7 +936,7 @@ class DataGenerator:
 
                 # SECONDARY: Provider availability check (for ~44% of movies without Type 4)
                 # Only runs when Type 4 didn't find a digital release date.
-                if not type4_found and movie['status'] == 'tracking':
+                if not type4_found and movie['status'] == 'tracking' and not movie.get('_skip_provider_discovery') and not skip_provider:
                     if str(movie_id).startswith('tv_'):
                         numeric_id = str(movie_id).replace('tv_', '')
                         url = f"https://api.themoviedb.org/3/tv/{numeric_id}/watch/providers"
@@ -1020,6 +1036,8 @@ class DataGenerator:
                             }
                             movie['enriched'] = False
                             movie['enrichment_date'] = None
+                            movie.pop('_reverted_from_available', None)
+                            movie.pop('_false_positive_source', None)
                             newly_digital += 1
 
                             first_service = stream_names[0] if stream_names else rent_names[0] if rent_names else buy_names[0] if buy_names else '?'
@@ -1370,6 +1388,15 @@ class DataGenerator:
                         page_duplicate_count += 1
                         continue
 
+                    # Skip blocked title keywords (wrestling events, sports broadcasts)
+                    blocked_keywords = self.config.get('tracking', {}).get('blocked_title_keywords', [])
+                    if blocked_keywords and any(kw.lower() in title.lower() for kw in blocked_keywords):
+                        self.intake_stats.setdefault('blocked_by_filter', 0)
+                        self.intake_stats['blocked_by_filter'] += 1
+                        if debug:
+                            self.logger.info(f"  Blocked by title filter: {title}")
+                        continue
+
                     # Add new movie with tracking status
                     # Note: digital_date is intentionally None here - monitoring will set it when providers are detected
                     # Extract year from release_date (YYYY-MM-DD format)
@@ -1427,6 +1454,9 @@ class DataGenerator:
         url = "https://api.themoviedb.org/3/discover/movie"
 
         # Build parameters based on pass type
+        blocked_companies = self.config.get('tracking', {}).get('blocked_companies', [])
+        without_companies = '|'.join(str(c) for c in blocked_companies) if blocked_companies else None
+
         if pass_type == 'digital':
             # Pass A: Direct-to-digital releases
             params = {
@@ -1454,6 +1484,9 @@ class DataGenerator:
                 'sort_by': 'primary_release_date.desc',
                 'page': page
             }
+
+        if without_companies:
+            params['without_companies'] = without_companies
 
         self.intake_stats['api_calls'] += 1
 
@@ -1716,6 +1749,8 @@ class DataGenerator:
 
         url = "https://api.themoviedb.org/3/discover/movie"
         fest_new_count = 0
+        blocked_companies = self.config.get('tracking', {}).get('blocked_companies', [])
+        without_companies = '|'.join(str(c) for c in blocked_companies) if blocked_companies else None
 
         for page in range(1, max_pages + 1):
             params = {
@@ -1730,6 +1765,8 @@ class DataGenerator:
                 'sort_by': 'release_date.asc',
                 'page': page
             }
+            if without_companies:
+                params['without_companies'] = without_companies
 
             try:
                 self.intake_stats['api_calls'] += 1
@@ -1755,12 +1792,20 @@ class DataGenerator:
                         self.intake_stats['duplicates_skipped'] += 1
                         continue
 
+                    # Skip blocked title keywords (wrestling events, sports broadcasts)
+                    title = movie.get('title', 'Unknown')
+                    blocked_keywords = self.config.get('tracking', {}).get('blocked_title_keywords', [])
+                    if blocked_keywords and any(kw.lower() in title.lower() for kw in blocked_keywords):
+                        self.intake_stats.setdefault('blocked_by_filter', 0)
+                        self.intake_stats['blocked_by_filter'] += 1
+                        continue
+
                     # Extract year from release_date
                     release_date = movie.get('release_date', '')
                     year = int(release_date[:4]) if release_date and len(release_date) >= 4 else None
 
                     intaked_movies[movie_id] = {
-                        'title': movie.get('title', 'Unknown'),
+                        'title': title,
                         'year': year,
                         'status': 'tracking',
                         'first_seen': datetime.now().strftime('%Y-%m-%d'),
@@ -3777,8 +3822,10 @@ class DataGenerator:
                 continue
 
         # Sync enriched flag to movie_tracking.json
+        # Also revert false positives (available + zero watch_links) back to tracking
         try:
             tracking_updated = 0
+            reverted_count = 0
             for mid in movie_ids_to_enrich:
                 mid = str(mid)
                 if mid in movie_lookup:
@@ -3787,9 +3834,23 @@ class DataGenerator:
                         tracking_data['movies'][mid]['enriched'] = True
                         tracking_data['movies'][mid]['enrichment_date'] = datetime.now().strftime('%Y-%m-%d')
                         tracking_updated += 1
-            if tracking_updated > 0:
+
+                        # Check for false positive: enriched successfully but zero watch links
+                        wl = movie.get('watch_links', {})
+                        wl_count = sum(len(v) for v in wl.values()) if isinstance(wl, dict) else 0
+                        if wl_count == 0 and tracking_data['movies'][mid].get('status') == 'available':
+                            old_source = tracking_data['movies'][mid].get('_discovery_source', 'unknown')
+                            tracking_data['movies'][mid]['status'] = 'tracking'
+                            tracking_data['movies'][mid]['digital_date'] = None
+                            tracking_data['movies'][mid]['_reverted_from_available'] = True
+                            tracking_data['movies'][mid]['_false_positive_source'] = old_source
+                            reverted_count += 1
+                            print(f"  ↩ {movie.get('title')} — reverted to tracking (zero watch links, was: {old_source})")
+            if tracking_updated > 0 or reverted_count > 0:
                 self.storage.atomic_write_json(tracking_data, 'movie_tracking.json', backup=True)
                 print(f"📝 Updated movie_tracking.json: {tracking_updated} movies marked enriched")
+                if reverted_count > 0:
+                    print(f"↩ Reverted {reverted_count} false-positive movies back to tracking")
         except Exception as e:
             print(f"⚠️ Could not update movie_tracking.json: {e}")
 
@@ -4389,6 +4450,24 @@ class DataGenerator:
         # Apply cached watch links to movies with empty watch_links
         self._apply_cached_watch_links(all_movies)
 
+        # Filter out movies with zero watch links (likely false-positive discoveries)
+        pre_filter_count = len(all_movies)
+        filtered_out = []
+        filtered_movies = []
+        for m in all_movies:
+            wl = m.get('watch_links', {})
+            wl_count = sum(len(v) for v in wl.values()) if isinstance(wl, dict) else 0
+            if wl_count == 0:
+                filtered_out.append(m.get('title', m.get('id', '?')))
+            else:
+                filtered_movies.append(m)
+        if filtered_out:
+            print(f"🚫 Filtered {len(filtered_out)} movies with zero watch links:")
+            for title in filtered_out:
+                print(f"   - {title}")
+            self.logger.info(f"Filtered {len(filtered_out)} zero-watch-link movies from display: {filtered_out}")
+        all_movies = filtered_movies
+
         # Apply admin overrides to ALL movies (not just recent ones)
         print(f"🔧 Applying admin overrides to {len(all_movies)} movies...")
 
@@ -4573,6 +4652,9 @@ class DataGenerator:
             print(f"  Total results: {self.intake_stats['total_results']}")
             print(f"  New movies added: {self.intake_stats['new_movies_added']}")
             print(f"  Duplicates skipped: {self.intake_stats['duplicates_skipped']}")
+            blocked = self.intake_stats.get('blocked_by_filter', 0)
+            if blocked > 0:
+                print(f"  Blocked by content filter: {blocked}")
             if self.intake_stats['pages_fetched'] > 0:
                 avg_results_per_page = self.intake_stats['total_results'] / self.intake_stats['pages_fetched']
                 print(f"  Average results per page: {avg_results_per_page:.1f}")
