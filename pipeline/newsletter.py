@@ -268,15 +268,23 @@ class NewsletterDataQuery:
             if isinstance(vod, list):
                 for item in vod:
                     if isinstance(item, dict) and item.get('service') and item.get('link'):
+                        svc = item.get('service', '').lower()
+                        lnk = item.get('link', '')
+                        is_screening = 'eventive' in svc or 'eventive.org' in lnk or 'festivalplayer' in lnk or 'shift72.com' in lnk
                         metadata['vod_services'].append({
-                            'name': item['service'],
-                            'url': item['link']
+                            'name': 'Buy Ticket' if is_screening else item['service'],
+                            'url': item['link'],
+                            'is_screening': is_screening
                         })
             # Handle single dict format (backward compatibility)
             elif isinstance(vod, dict) and vod.get('service') and vod.get('link'):
+                svc = vod.get('service', '').lower()
+                lnk = vod.get('link', '')
+                is_screening = 'eventive' in svc or 'eventive.org' in lnk or 'festivalplayer' in lnk or 'shift72.com' in lnk
                 metadata['vod_services'].append({
-                    'name': vod['service'],
-                    'url': vod['link']
+                    'name': 'Buy Ticket' if is_screening else vod['service'],
+                    'url': vod['link'],
+                    'is_screening': is_screening
                 })
 
         # Extract trailer link

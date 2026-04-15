@@ -48,6 +48,12 @@ End Sub
 Sub onLabelChanged()
     m.buttonLabel.text = m.top.label
 
+    ' Override color for screening/festival buttons
+    if LCase(m.top.label) = "buy ticket"
+        m.serviceColor = "0xFFD700FF"
+        UpdateButtonStyle()
+    end if
+
     ' Adjust button width based on label length
     labelLen = Len(m.top.label)
     if labelLen > 12

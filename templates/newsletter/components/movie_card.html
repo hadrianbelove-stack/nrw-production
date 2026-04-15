@@ -151,9 +151,15 @@
                     {% if movie.vod_services %}
                     {% for service in movie.vod_services %}
                     <td style="padding-right: 10px; padding-bottom: 8px;">
+                        {% if service.is_screening %}
+                        <a href="{{ service.url }}" class="watch-button" style="background-color: transparent; color: #FFD700; border: 2px solid #FFD700; padding: 8px 16px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold; font-size: 12px;">
+                            {{ service.name }}
+                        </a>
+                        {% else %}
                         <a href="{{ service.url }}" class="watch-button" style="background-color: #ff8c00; color: #000000; padding: 8px 16px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold; font-size: 12px;">
                             {{ service.name }}
                         </a>
+                        {% endif %}
                     </td>
                     {% endfor %}
                     {% endif %}

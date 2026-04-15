@@ -48,6 +48,9 @@ Function GetColors() as Object
         borderSubtle: "0xFFFFFF33"
         borderFocus: "0x00D4AAFF"
 
+        ' Screening / Festival
+        screeningGold: "0xFFD700FF"
+
         ' Rotten Tomatoes
         rtFresh: "0x34C759FF"
         rtRotten: "0xFF3B30FF"
@@ -81,6 +84,7 @@ Function GetServiceColors() as Object
         vudu: "0x3399FFFF"
         google_play: "0x34A853FF"
         vod: "0xFF9500FF"
+        eventive: "0xFFD700FF"
     }
 End Function
 
