@@ -494,7 +494,7 @@
       "premiere_date": "2025-09-01",
       "digital_date": "2026-02-11",
       "has_providers": true,
-      "status": "available",
+      "status": "tracking",
       "added": "2025-09-06T16:47:36.406165",
       "year": 2026,
       "providers": {
@@ -506,7 +506,10 @@
       },
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt34973241"
+      "imdb_id": "tt34973241",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1539438": {
       "title": "Endometriose - Hoffnung auf neue Therapien",
@@ -7854,7 +7857,7 @@
       "premiere_date": "2025-09-12",
       "digital_date": "2026-03-02",
       "has_providers": true,
-      "status": "available",
+      "status": "tracking",
       "added": "2025-09-13T22:15:43.321620",
       "year": 2025,
       "providers": {
@@ -7866,7 +7869,10 @@
       },
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt37532179"
+      "imdb_id": "tt37532179",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1469141": {
       "title": "Dear Stranger",
@@ -9768,7 +9774,7 @@
       "premiere_date": "2025-10-15",
       "digital_date": "2026-03-12",
       "has_providers": true,
-      "status": "available",
+      "status": "tracking",
       "added": "2025-10-20T23:50:21.695956",
       "year": 2025,
       "providers": {
@@ -9780,7 +9786,10 @@
       },
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt8667404"
+      "imdb_id": "tt8667404",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1565170": {
       "title": "A ti, \u00bfqui\u00e9n te espera?",
@@ -16426,7 +16435,7 @@
     },
     "1564603": {
       "title": "Kin Keeping 101",
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2025-10-24",
       "digital_date": "2025-07-13",
       "providers": {
@@ -16439,7 +16448,10 @@
       "year": 2025,
       "_discovery_source": "tmdb_type4",
       "enriched": true,
-      "enrichment_date": "2026-04-10"
+      "enrichment_date": "2026-04-10",
+      "_type4_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "tmdb_type4"
     },
     "1564602": {
       "title": "Touch Grass",
@@ -22876,7 +22888,7 @@
     },
     "1571460": {
       "title": "INFORMED ENGAGED SAFE",
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2025-11-05",
       "discovery_pass": "A",
       "has_providers": true,
@@ -22889,7 +22901,10 @@
         "streaming": []
       },
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_type4_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "tmdb_type4"
     },
     "1571367": {
       "title": "Beer... Run!",
@@ -22910,7 +22925,7 @@
     },
     "1571066": {
       "title": "Against All Odds",
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2025-11-05",
       "digital_date": "2026-01-19",
       "providers": {
@@ -22925,7 +22940,10 @@
       "has_providers": true,
       "year": 2025,
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1570556": {
       "title": "Soaked In Tears",
@@ -28058,7 +28076,7 @@
     },
     "1147411": {
       "title": "Miraculous World: Tokyo, Stellar Force",
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2025-11-05",
       "digital_date": "2026-02-06",
       "providers": {
@@ -28072,7 +28090,10 @@
       "has_providers": true,
       "year": 2025,
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1019051": {
       "title": "What If the Future Never Happened?",
@@ -30103,7 +30124,7 @@
     },
     "1329189": {
       "title": "Leo & Lou",
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2025-11-07",
       "discovery_pass": "B",
       "has_providers": true,
@@ -30116,7 +30137,10 @@
         "streaming": []
       },
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_type4_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "tmdb_type4"
     },
     "1322787": {
       "title": "We Will Find Happiness",
@@ -38118,7 +38142,7 @@
     },
     "1580070": {
       "title": "Snake Infestation",
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2025-11-28",
       "digital_date": "2026-01-16",
       "providers": {
@@ -38134,7 +38158,10 @@
       "has_providers": true,
       "year": 2025,
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1578940": {
       "title": "The Day After Halloween",
@@ -44316,7 +44343,7 @@
     },
     "1187431": {
       "title": "Where to Land",
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2025-12-03",
       "digital_date": "2025-11-28",
       "providers": {
@@ -44331,7 +44358,10 @@
       "_discovery_source": "tmdb_type4",
       "_type4_date": "2025-11-28",
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_type4_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "tmdb_type4"
     },
     "1400791": {
       "title": "Coexistence, My Ass!",
@@ -47097,7 +47127,7 @@
     },
     "1365165": {
       "title": "The Final Party",
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2025-12-03",
       "digital_date": "2026-03-02",
       "providers": {
@@ -47114,7 +47144,10 @@
       "year": 2025,
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt33539361"
+      "imdb_id": "tt33539361",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1330029": {
       "title": "Shared Bodies",
@@ -48083,7 +48116,7 @@
     },
     "1466397": {
       "title": "The Return of the Lifeblood",
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2025-12-03",
       "digital_date": "2026-01-30",
       "providers": {
@@ -48098,7 +48131,10 @@
       "year": 2025,
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt0167260"
+      "imdb_id": "tt0167260",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1465762": {
       "title": "Ch\u00e2teau",
@@ -48635,7 +48671,7 @@
     },
     "1554293": {
       "title": "Christmas at the Inn",
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2025-12-04",
       "digital_date": "2026-01-04",
       "providers": {
@@ -48649,7 +48685,10 @@
       "has_providers": true,
       "year": 2025,
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1547050": {
       "title": "Lali: Time To Step Up",
@@ -50604,7 +50643,7 @@
     },
     "1522547": {
       "title": "Merry Heistmas",
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2025-12-06",
       "digital_date": "2026-01-17",
       "providers": {
@@ -50620,7 +50659,10 @@
       "has_providers": true,
       "year": 2025,
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1496815": {
       "title": "Universal",
@@ -52985,7 +53027,10 @@
       "year": 2025,
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt37799214"
+      "imdb_id": "tt37799214",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1569728": {
       "title": "K-15: On the Other Side",
@@ -55988,7 +56033,7 @@
     },
     "1595875": {
       "title": "The Girl in the Woods",
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2025-12-12",
       "digital_date": "2026-01-06",
       "providers": {
@@ -56004,7 +56049,10 @@
       "has_providers": true,
       "year": 2025,
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1595750": {
       "title": "ALMOST, JIMMY",
@@ -56483,7 +56531,7 @@
     },
     "1589401": {
       "title": "Gifts of Disposition",
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2025-12-12",
       "digital_date": "2026-01-21",
       "providers": {
@@ -56499,7 +56547,10 @@
       "has_providers": true,
       "year": 2025,
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1586820": {
       "title": "Elmo and Mark Rober's Merry Giftmas",
@@ -57519,7 +57570,7 @@
     },
     "1573153": {
       "title": "Fall Dies",
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2025-12-12",
       "discovery_pass": "B",
       "has_providers": true,
@@ -57534,7 +57585,10 @@
       },
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt31015089"
+      "imdb_id": "tt31015089",
+      "_type4_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "tmdb_type4"
     },
     "1572532": {
       "title": "Kono koi wa kakuch\u014d genjitsu?",
@@ -65804,7 +65858,7 @@
     },
     "1488195": {
       "title": "Teenage Mutant Ninja Turtles: Chrome Alone 2- Lost in New Jersey",
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2025-12-19",
       "digital_date": "2026-01-31",
       "providers": {
@@ -65817,7 +65871,10 @@
       "year": 2025,
       "_discovery_source": "tmdb_type4",
       "enriched": true,
-      "enrichment_date": "2026-04-01"
+      "enrichment_date": "2026-04-01",
+      "_type4_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "tmdb_type4"
     },
     "1481412": {
       "title": "New Interpretation of the End of Edo Period",
@@ -69481,7 +69538,7 @@
     },
     "1473354": {
       "title": "Sarvam Maya",
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2025-12-26",
       "digital_date": "2026-03-02",
       "providers": {
@@ -69500,7 +69557,10 @@
       "year": 2025,
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt32362695"
+      "imdb_id": "tt32362695",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1472638": {
       "title": "Buen camino",
@@ -69811,7 +69871,7 @@
     },
     "911244": {
       "title": "Mindiyum Paranjum",
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2025-12-26",
       "digital_date": "2026-02-06",
       "providers": {
@@ -69824,7 +69884,10 @@
       "year": 2025,
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt21379570"
+      "imdb_id": "tt21379570",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1603907": {
       "title": "Roombound",
@@ -70316,7 +70379,7 @@
     },
     "1466115": {
       "title": "Even if This Love Disappears from the World Tonight",
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2025-12-26",
       "digital_date": "2026-02-06",
       "providers": {
@@ -70331,7 +70394,10 @@
       "has_providers": true,
       "year": 2025,
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1437156": {
       "title": "Last Man -FIRST LOVE-",
@@ -70404,7 +70470,7 @@
     },
     "1601826": {
       "title": "K.G.N",
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2025-12-26",
       "digital_date": "2026-03-14",
       "providers": {
@@ -70421,7 +70487,10 @@
       "year": 2025,
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt37792342"
+      "imdb_id": "tt37792342",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1604207": {
       "title": "Tonight in Turin",
@@ -72978,7 +73047,7 @@
     "1600578": {
       "title": "Apple Music Live: Fred again..",
       "year": 2025,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2025-12-31",
       "digital_date": "2026-01-02",
       "providers": {
@@ -72991,7 +73060,10 @@
       "intake_pass": "A",
       "has_providers": true,
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1600549": {
       "title": "Refractions in Green",
@@ -73064,7 +73136,7 @@
     "1295026": {
       "title": "100 METERS",
       "year": 2025,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2025-12-31",
       "digital_date": "2026-01-02",
       "providers": {
@@ -73078,7 +73150,10 @@
       "intake_pass": "A",
       "has_providers": true,
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1242011": {
       "title": "Together",
@@ -73142,7 +73217,7 @@
     "972445": {
       "title": "CMXXIV",
       "year": 2025,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2025-12-31",
       "digital_date": "2026-01-02",
       "providers": {
@@ -73156,7 +73231,10 @@
       "intake_pass": "A",
       "has_providers": true,
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "881580": {
       "title": "This City Is a Battlefield",
@@ -74542,7 +74620,7 @@
     "1597608": {
       "title": "Ainsley McGregor Mysteries: A Case For the Watchmaker",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-01",
       "digital_date": "2026-01-01",
       "providers": {
@@ -74555,7 +74633,10 @@
       "intake_pass": "A",
       "has_providers": true,
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1587106": {
       "title": "Me and My Little Tasks",
@@ -74577,7 +74658,7 @@
     "1585089": {
       "title": "Trap 48",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-01",
       "digital_date": "2026-01-18",
       "providers": {
@@ -74592,7 +74673,10 @@
       "intake_pass": "A",
       "has_providers": true,
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1569557": {
       "title": "The Cringy Life Of A Replaceable Kid",
@@ -76294,7 +76378,7 @@
     "1131786": {
       "title": "Nobody Wants to Shoot a Woman",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-02",
       "digital_date": "2026-01-02",
       "providers": {
@@ -76307,7 +76391,10 @@
       "intake_pass": "A",
       "has_providers": true,
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1608121": {
       "title": "The Mean One",
@@ -76443,7 +76530,7 @@
     "1070186": {
       "title": "Ek\u014d",
       "year": 2025,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-02",
       "digital_date": "2026-01-03",
       "providers": {
@@ -76457,7 +76544,10 @@
       "intake_pass": "A",
       "has_providers": true,
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1608230": {
       "title": "Broken Bonds",
@@ -77115,7 +77205,7 @@
     "1608579": {
       "title": "Anantha",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-03",
       "digital_date": "2026-02-02",
       "providers": {
@@ -77133,7 +77223,10 @@
       "has_providers": true,
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt38854883"
+      "imdb_id": "tt38854883",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1607910": {
       "title": "Sans Jour",
@@ -81200,7 +81293,7 @@
     },
     "1300229": {
       "title": "Darbie's Scream House",
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-04",
       "digital_date": "2026-01-25",
       "providers": {
@@ -81220,7 +81313,10 @@
       "premiere_date": "2024-10-01",
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt31896676"
+      "imdb_id": "tt31896676",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1300043": {
       "title": "Untitled Footage",
@@ -83034,7 +83130,7 @@
     },
     "1260781": {
       "title": "Mother of Snow Cranes",
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-04",
       "digital_date": "2026-03-10",
       "providers": {
@@ -83050,7 +83146,10 @@
       "premiere_date": "2024-09-27",
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt33455925"
+      "imdb_id": "tt33455925",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1255586": {
       "title": "After the Snowmelt",
@@ -83085,7 +83184,7 @@
     },
     "1242744": {
       "title": "The Stickman's Hollow",
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-04",
       "digital_date": "2026-01-22",
       "providers": {
@@ -83106,7 +83205,10 @@
       "year": 2024,
       "premiere_date": "2024-09-27",
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1235922": {
       "title": "I Am Nevenka",
@@ -92670,7 +92772,10 @@
       "premiere_date": "2025-01-29",
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt32843985"
+      "imdb_id": "tt32843985",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1155281": {
       "title": "Creation of the Gods II: Demon Force",
@@ -93764,7 +93869,7 @@
     },
     "1412169": {
       "title": "Trail Cam Sasquatch",
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-04",
       "digital_date": "2026-01-17",
       "providers": {
@@ -93779,7 +93884,10 @@
       "year": 2025,
       "premiere_date": "2025-03-02",
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1306439": {
       "title": "Jellyfish",
@@ -102009,7 +102117,7 @@
     },
     "1386004": {
       "title": "October Rhapsody",
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-04",
       "digital_date": "2025-11-06",
       "providers": {
@@ -102023,7 +102131,10 @@
       "premiere_date": "2025-06-05",
       "_discovery_source": "tmdb_type4",
       "enriched": true,
-      "enrichment_date": "2026-04-12"
+      "enrichment_date": "2026-04-12",
+      "_type4_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "tmdb_type4"
     },
     "1367947": {
       "title": "Gowok: Javanese Kamasutra",
@@ -106005,7 +106116,10 @@
       "premiere_date": "2025-06-29",
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt30486139"
+      "imdb_id": "tt30486139",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1365614": {
       "title": "No Choice",
@@ -107810,7 +107924,7 @@
     },
     "1523326": {
       "title": "Kothalavadi",
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-04",
       "digital_date": "2026-01-31",
       "providers": {
@@ -107828,7 +107942,10 @@
       "premiere_date": "2025-08-01",
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt36997822"
+      "imdb_id": "tt36997822",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1522391": {
       "title": "Sama",
@@ -109434,7 +109551,7 @@
     },
     "1473332": {
       "title": "Nadie va a escuchar tu grito",
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-04",
       "digital_date": "2026-02-26",
       "providers": {
@@ -109450,7 +109567,10 @@
       "premiere_date": "2025-09-05",
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt36460652"
+      "imdb_id": "tt36460652",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1466164": {
       "title": "Laundry",
@@ -109770,7 +109890,7 @@
     },
     "1567140": {
       "title": "The Installation",
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-04",
       "digital_date": "2026-02-06",
       "providers": {
@@ -109785,7 +109905,10 @@
       "year": 2025,
       "premiere_date": "2025-09-04",
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1547093": {
       "title": "Holy Hustle",
@@ -110438,7 +110561,7 @@
     },
     "1485163": {
       "title": "N\u00e9nuphar",
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-04",
       "digital_date": "2026-03-15",
       "providers": {
@@ -110456,7 +110579,10 @@
       "premiere_date": "2025-09-03",
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt32421438"
+      "imdb_id": "tt32421438",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1425485": {
       "title": "3670",
@@ -113326,7 +113452,7 @@
     "1229895": {
       "title": "Dickweed",
       "year": 2024,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-06",
       "digital_date": "2026-02-06",
       "providers": {
@@ -113340,7 +113466,10 @@
       "festival": "SXSW",
       "has_providers": true,
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1229882": {
       "title": "Roleplay",
@@ -114299,7 +114428,10 @@
       "has_providers": false,
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt10462154"
+      "imdb_id": "tt10462154",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1337659": {
       "title": "Champions Rire 2",
@@ -115397,7 +115529,7 @@
     "1012601": {
       "title": "The Mohican",
       "year": 2024,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-06",
       "digital_date": "2026-01-16",
       "providers": {
@@ -115412,7 +115544,10 @@
       "has_providers": true,
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt33030107"
+      "imdb_id": "tt33030107",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1341000": {
       "title": "Seydou - Dreams Have No Color",
@@ -115932,7 +116067,10 @@
       "has_providers": false,
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt32525008"
+      "imdb_id": "tt32525008",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1285834": {
       "title": "Sad Jokes",
@@ -116221,7 +116359,7 @@
     "972232": {
       "title": "K-Pops!",
       "year": 2024,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-06",
       "digital_date": "2026-03-02",
       "providers": {
@@ -116236,7 +116374,10 @@
       "has_providers": true,
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt19896510"
+      "imdb_id": "tt19896510",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1326036": {
       "title": "Addition",
@@ -116868,7 +117009,7 @@
     "1288748": {
       "title": "Cactus Pears",
       "year": 2025,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-06",
       "digital_date": "2026-02-19",
       "providers": {
@@ -116885,12 +117026,15 @@
       "has_providers": true,
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt29310002"
+      "imdb_id": "tt29310002",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1211442": {
       "title": "Rebuilding",
       "year": 2025,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-06",
       "digital_date": "2026-01-13",
       "providers": {
@@ -116904,7 +117048,10 @@
       "festival": "Sundance",
       "has_providers": true,
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1182952": {
       "title": "How to Build a Library",
@@ -117015,7 +117162,7 @@
     "1421184": {
       "title": "A Letter to David",
       "year": 2025,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-06",
       "digital_date": "2026-01-19",
       "providers": {
@@ -117030,7 +117177,10 @@
       "has_providers": true,
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt35503372"
+      "imdb_id": "tt35503372",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1418637": {
       "title": "Eighty Plus",
@@ -117538,7 +117688,10 @@
       "has_providers": false,
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt35439283"
+      "imdb_id": "tt35439283",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1418523": {
       "title": "2024 [2023]",
@@ -118815,7 +118968,7 @@
     "1297446": {
       "title": "Slanted",
       "year": 2025,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-06",
       "digital_date": "2026-03-15",
       "providers": {
@@ -118830,7 +118983,10 @@
       "has_providers": true,
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt32490110"
+      "imdb_id": "tt32490110",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1288229": {
       "title": "Forge",
@@ -119925,7 +120081,7 @@
     "1287141": {
       "title": "Pillion",
       "year": 2025,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-06",
       "digital_date": "2026-03-02",
       "providers": {
@@ -119940,7 +120096,10 @@
       "has_providers": true,
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt32321317"
+      "imdb_id": "tt32321317",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1283671": {
       "title": "Peak Everything",
@@ -120424,7 +120583,7 @@
     "1254135": {
       "title": "13 Days, 13 Nights: In the Hell of Kabul",
       "year": 2025,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-06",
       "digital_date": "2026-03-02",
       "providers": {
@@ -120439,7 +120598,10 @@
       "has_providers": true,
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt28291010"
+      "imdb_id": "tt28291010",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1242015": {
       "title": "Young Mothers",
@@ -120890,7 +121052,10 @@
       "has_providers": false,
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt36591399"
+      "imdb_id": "tt36591399",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1465810": {
       "title": "Charliebird",
@@ -121380,7 +121545,7 @@
     "1404641": {
       "title": "Salt of the Earth",
       "year": 2025,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-06",
       "digital_date": "2026-01-13",
       "providers": {
@@ -121396,7 +121561,10 @@
       "festival": "Tribeca",
       "has_providers": true,
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "527832": {
       "title": "Gonzo Girl",
@@ -121551,7 +121719,7 @@
     "1465585": {
       "title": "Yanuni",
       "year": 2025,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-06",
       "digital_date": "2026-02-28",
       "providers": {
@@ -121566,7 +121734,10 @@
       "has_providers": true,
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt36590218"
+      "imdb_id": "tt36590218",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1221946": {
       "title": "Bloodstained Ivory",
@@ -122318,7 +122489,10 @@
       "has_providers": false,
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt37816123"
+      "imdb_id": "tt37816123",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1526214": {
       "title": "Canceled: The Paula Deen Story",
@@ -122967,7 +123141,7 @@
     "1529481": {
       "title": "The Road Between Us: The Ultimate Rescue",
       "year": 2025,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-06",
       "digital_date": "2026-03-18",
       "providers": {
@@ -122982,7 +123156,10 @@
       "has_providers": true,
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt33350479"
+      "imdb_id": "tt33350479",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1526222": {
       "title": "There Are No Words",
@@ -123012,7 +123189,10 @@
       "has_providers": false,
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt37816024"
+      "imdb_id": "tt37816024",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1418736": {
       "title": "Karmadonna",
@@ -127429,7 +127609,10 @@
       "has_providers": false,
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt32259705"
+      "imdb_id": "tt32259705",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1287061": {
       "title": "Stone Mountain",
@@ -128911,7 +129094,7 @@
     "1288998": {
       "title": "1978",
       "year": 2024,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-06",
       "digital_date": "2026-01-13",
       "providers": {
@@ -128925,7 +129108,10 @@
       "festival": "Sitges",
       "has_providers": true,
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1366941": {
       "title": "El Mago Pop Lands in USA",
@@ -132275,7 +132461,10 @@
       "has_providers": false,
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt9023804"
+      "imdb_id": "tt9023804",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1562565": {
       "title": "Love New York",
@@ -133729,7 +133918,10 @@
       "has_providers": false,
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt29870528"
+      "imdb_id": "tt29870528",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1454103": {
       "title": "Widow Champion",
@@ -136841,7 +137033,7 @@
     "1311415": {
       "title": "The Property",
       "year": 2025,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-06",
       "digital_date": "2026-01-17",
       "providers": {
@@ -136856,18 +137048,24 @@
       "has_providers": true,
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt32799295"
+      "imdb_id": "tt32799295",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1107215": {
       "title": "Once Upon My Mother",
       "year": 2025,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-06",
       "intake_pass": "C",
       "festival": "SXSW Sydney",
       "imdb_id": "tt29927144",
       "digital_date": "2026-03-25",
-      "enriched": false
+      "enriched": false,
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1340497": {
       "title": "The Extraordinary Miss Flower",
@@ -136897,7 +137095,10 @@
       "has_providers": false,
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt32516053"
+      "imdb_id": "tt32516053",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1609329": {
       "title": "Eight II",
@@ -158282,7 +158483,7 @@
     "1612923": {
       "title": "Demon Hunters",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-09",
       "digital_date": "2026-02-22",
       "providers": {
@@ -158298,12 +158499,15 @@
       "has_providers": true,
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt14205554"
+      "imdb_id": "tt14205554",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1612522": {
       "title": "Give Me Back My Body!",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-09",
       "digital_date": "2026-01-15",
       "providers": {
@@ -158316,7 +158520,10 @@
       "intake_pass": "A",
       "has_providers": true,
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1612376": {
       "title": "The Bosk",
@@ -158342,7 +158549,7 @@
     "1612291": {
       "title": "Blood Totem",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-09",
       "digital_date": "2026-01-21",
       "providers": {
@@ -158357,12 +158564,15 @@
       "intake_pass": "A",
       "has_providers": true,
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1611977": {
       "title": "Housemaid",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-09",
       "digital_date": "2026-01-18",
       "providers": {
@@ -158377,7 +158587,10 @@
       "intake_pass": "A",
       "has_providers": true,
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1485629": {
       "title": "Self-Help",
@@ -159171,7 +159384,7 @@
     "1610413": {
       "title": "One Last Adventure: The Making of Stranger Things 5",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-11",
       "digital_date": "2026-01-15",
       "providers": {
@@ -159185,7 +159398,10 @@
       "intake_pass": "B",
       "has_providers": true,
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1610176": {
       "title": "Les tableaux d'\u00c9dith",
@@ -159367,7 +159583,7 @@
     "1320756": {
       "title": "Doctor Plague",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-12",
       "digital_date": "2026-01-17",
       "providers": {
@@ -159384,7 +159600,10 @@
       "intake_pass": "B",
       "has_providers": true,
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1614105": {
       "title": "La vida entre cortes",
@@ -159429,7 +159648,7 @@
     "1591916": {
       "title": "A Melbourne Match",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-12",
       "digital_date": "2026-01-13",
       "providers": {
@@ -159444,12 +159663,15 @@
       "intake_pass": "B",
       "has_providers": true,
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1612424": {
       "title": "Repay It in Blood",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-13",
       "digital_date": "2026-01-13",
       "providers": {
@@ -159462,7 +159684,10 @@
       "intake_pass": "A",
       "has_providers": true,
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1075655": {
       "title": "Intrusive Thoughts",
@@ -159491,7 +159716,7 @@
     "1611487": {
       "title": "Kill Tony: Once Upon a Time in Texas",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-13",
       "digital_date": "2026-01-15",
       "providers": {
@@ -159505,7 +159730,10 @@
       "intake_pass": "A",
       "has_providers": true,
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1614921": {
       "title": "Kayla",
@@ -159527,7 +159755,7 @@
     "1614901": {
       "title": "The Legacy",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-13",
       "digital_date": "2026-01-15",
       "providers": {
@@ -159542,7 +159770,10 @@
       "intake_pass": "A",
       "has_providers": true,
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1613721": {
       "title": "\u5224\u5996\u90aa",
@@ -159712,7 +159943,7 @@
     "1584215": {
       "title": "The Internship",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-14",
       "digital_date": "2026-01-15",
       "providers": {
@@ -159728,7 +159959,10 @@
       "intake_pass": "A",
       "has_providers": true,
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1615840": {
       "title": "\u5927\u52ab\u6848",
@@ -159946,7 +160180,7 @@
     "1199193": {
       "title": "Pose",
       "year": 2025,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-14",
       "digital_date": "2026-01-14",
       "providers": {
@@ -159970,7 +160204,10 @@
       "intake_pass": "B",
       "has_providers": true,
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "960051": {
       "title": "Furcy, n\u00e9 libre",
@@ -160502,7 +160739,7 @@
     "1298893": {
       "title": "The Strange Dark",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-16",
       "digital_date": "2026-01-16",
       "providers": {
@@ -160516,7 +160753,10 @@
       "has_providers": true,
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt32330904"
+      "imdb_id": "tt32330904",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1252356": {
       "title": "Shaka: A Story of Aloha",
@@ -160852,7 +161092,7 @@
     "1241921": {
       "title": "A Big Bold Beautiful Journey",
       "year": 2025,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-17",
       "digital_date": "2026-01-17",
       "providers": {
@@ -160875,7 +161115,10 @@
       "intake_pass": "A",
       "has_providers": true,
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1618086": {
       "title": "The Knock Knock Man",
@@ -160901,7 +161144,7 @@
     "1583220": {
       "title": "Molt",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-17",
       "digital_date": "2026-01-21",
       "providers": {
@@ -160916,12 +161159,15 @@
       "intake_pass": "A",
       "has_providers": true,
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1617433": {
       "title": "I Am Mary Jo Buttafuoco",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-17",
       "digital_date": "2026-01-22",
       "providers": {
@@ -160938,7 +161184,10 @@
       "intake_pass": "B",
       "has_providers": true,
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1616931": {
       "title": "TJPW The 6th \"Futari wa Princess\" Max Heart Tournament ~ Day 1",
@@ -161111,7 +161360,7 @@
     "1480025": {
       "title": "How to Lose a Popularity Contest",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-17",
       "digital_date": "2026-01-16",
       "providers": {},
@@ -161119,7 +161368,10 @@
       "has_providers": true,
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt36934619"
+      "imdb_id": "tt36934619",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1618354": {
       "title": "\ub3c4\uc2dc\uc911\ub3c5\uc790\ub4e4",
@@ -161512,7 +161764,7 @@
     "1613175": {
       "title": "He Killed My Sister",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-20",
       "digital_date": "2026-02-22",
       "providers": {
@@ -161528,7 +161780,10 @@
       "has_providers": true,
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt28119167"
+      "imdb_id": "tt28119167",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1612977": {
       "title": "The Forsaken",
@@ -161775,7 +162030,7 @@
     "1361436": {
       "title": "Opportunity",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-20",
       "digital_date": "2026-01-22",
       "providers": {
@@ -161791,7 +162046,10 @@
       "has_providers": true,
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt15003944"
+      "imdb_id": "tt15003944",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1299049": {
       "title": "What should we dream of",
@@ -162533,7 +162791,10 @@
       "has_providers": false,
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt36981462"
+      "imdb_id": "tt36981462",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1476682": {
       "title": "Gail Daughtry and the Celebrity Sex Pass",
@@ -162618,7 +162879,10 @@
       "has_providers": false,
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt39150051"
+      "imdb_id": "tt39150051",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1596315": {
       "title": "Ghost in the Machine",
@@ -163749,7 +164013,7 @@
     "1053592": {
       "title": "All the Names of God",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-23",
       "digital_date": "2026-01-23",
       "providers": {
@@ -163763,12 +164027,15 @@
       "has_providers": true,
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt20420538"
+      "imdb_id": "tt20420538",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1044878": {
       "title": "Dooba Dooba",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-23",
       "digital_date": "2026-02-22",
       "providers": {
@@ -163782,7 +164049,10 @@
       "has_providers": true,
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt18226544"
+      "imdb_id": "tt18226544",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1621386": {
       "title": "Saucers, Spooks and Kooks",
@@ -165057,7 +165327,7 @@
       "title": "Handsome Devil: Charming Killer",
       "content_type": "limited_series",
       "tmdb_id": 308767,
-      "status": "available",
+      "status": "tracking",
       "first_air_date": "2026-01-20",
       "digital_date": "2026-01-20",
       "episode_count": 3,
@@ -165083,13 +165353,16 @@
       "intaked_at": "2026-01-26T13:58:15.204930",
       "networks": [
         "Paramount+"
-      ]
+      ],
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "tv_304806": {
       "title": "The Hillside Strangler",
       "content_type": "limited_series",
       "tmdb_id": 304806,
-      "status": "available",
+      "status": "tracking",
       "first_air_date": "2026-01-18",
       "digital_date": "2026-01-18",
       "episode_count": 4,
@@ -165111,13 +165384,16 @@
       "intaked_at": "2026-01-26T14:27:29.715194",
       "networks": [
         "MGM+"
-      ]
+      ],
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "tv_296009": {
       "title": "Positively Yours",
       "content_type": "limited_series",
       "tmdb_id": 296009,
-      "status": "available",
+      "status": "tracking",
       "first_air_date": "2026-01-17",
       "digital_date": "2026-01-17",
       "episode_count": 12,
@@ -165140,13 +165416,16 @@
       "intaked_at": "2026-01-26T14:27:30.111554",
       "networks": [
         "Channel A"
-      ]
+      ],
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "tv_250505": {
       "title": "Agatha Christie's Seven Dials",
       "content_type": "limited_series",
       "tmdb_id": 250505,
-      "status": "available",
+      "status": "tracking",
       "first_air_date": "2026-01-15",
       "digital_date": "2026-01-15",
       "episode_count": 3,
@@ -165169,13 +165448,16 @@
       "intaked_at": "2026-01-26T14:27:30.522935",
       "networks": [
         "Netflix"
-      ]
+      ],
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "tv_308606": {
       "title": "Pelayo: M\u00e1s All\u00e1 Del L\u00edmite",
       "content_type": "limited_series",
       "tmdb_id": 308606,
-      "status": "available",
+      "status": "tracking",
       "first_air_date": "2026-01-09",
       "digital_date": "2026-01-09",
       "episode_count": 3,
@@ -165198,13 +165480,16 @@
       "intaked_at": "2026-01-26T14:27:30.789575",
       "networks": [
         "Prime Video"
-      ]
+      ],
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "tv_308558": {
       "title": "Paparazzi King",
       "content_type": "limited_series",
       "tmdb_id": 308558,
-      "status": "available",
+      "status": "tracking",
       "first_air_date": "2026-01-09",
       "digital_date": "2026-01-09",
       "episode_count": 5,
@@ -165226,7 +165511,10 @@
       "intaked_at": "2026-01-26T14:27:31.184258",
       "networks": [
         "Netflix"
-      ]
+      ],
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "tv_296523": {
       "title": "Girl Taken",
@@ -168842,7 +169130,7 @@
       "title": "Toros Neza",
       "content_type": "limited_series",
       "tmdb_id": 310920,
-      "status": "available",
+      "status": "tracking",
       "first_air_date": "2026-01-09",
       "digital_date": "2026-03-03",
       "episode_count": 2,
@@ -168865,7 +169153,10 @@
       "has_providers": true,
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt39370418"
+      "imdb_id": "tt39370418",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "tv_308275": {
       "title": "If Only You Weren't the One",
@@ -172671,7 +172962,7 @@
     "1127065": {
       "title": "This Time",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-02-09",
       "digital_date": "2026-02-11",
       "providers": {
@@ -172685,7 +172976,10 @@
       "has_providers": true,
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt21524066"
+      "imdb_id": "tt21524066",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1000520": {
       "title": "Midnight Sun",
@@ -172792,7 +173086,7 @@
     "1631302": {
       "title": "Fantasy Rising",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-02-09",
       "digital_date": "2026-03-15",
       "providers": {
@@ -172812,7 +173106,10 @@
       "has_providers": true,
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt39467240"
+      "imdb_id": "tt39467240",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1630767": {
       "title": "Hunks of Junk",
@@ -177842,7 +178139,10 @@
       "has_providers": false,
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt39956957"
+      "imdb_id": "tt39956957",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1632402": {
       "title": "TJPW club eX: Chapter Pause",
@@ -182416,7 +182716,7 @@
     "1642290": {
       "title": "bodystigmata",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-02-25",
       "intake_pass": "A",
       "has_providers": true,
@@ -182428,12 +182728,15 @@
         "streaming": []
       },
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_type4_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "tmdb_type4"
     },
     "1564476": {
       "title": "Mark Vigeant: The Best Man Show",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-02-25",
       "intake_pass": "A",
       "has_providers": true,
@@ -182445,7 +182748,10 @@
         "streaming": []
       },
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_type4_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "tmdb_type4"
     },
     "799882": {
       "title": "The Bluff",
@@ -183339,7 +183645,7 @@
     "1642656": {
       "title": "Desight",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-02-27",
       "intake_pass": "A",
       "has_providers": true,
@@ -183351,12 +183657,15 @@
         "streaming": []
       },
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_type4_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "tmdb_type4"
     },
     "1642649": {
       "title": "The Fulgid Ordeal",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-02-27",
       "intake_pass": "A",
       "has_providers": true,
@@ -183368,12 +183677,15 @@
         "streaming": []
       },
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_type4_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "tmdb_type4"
     },
     "1636669": {
       "title": "One Hour Girlfriend",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-02-27",
       "digital_date": "2026-02-27",
       "providers": {
@@ -183386,7 +183698,10 @@
       "_discovery_source": "tmdb_type4",
       "_type4_date": "2026-02-27",
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_type4_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "tmdb_type4"
     },
     "1405748": {
       "title": "The Big Johnson",
@@ -184026,7 +184341,7 @@
     "1635172": {
       "title": "A Film By Cool Jake",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-02-28",
       "intake_pass": "A",
       "has_providers": true,
@@ -184038,7 +184353,10 @@
         "streaming": []
       },
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_type4_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "tmdb_type4"
     },
     "1632879": {
       "title": "Chris Fleming: Live at The Palace",
@@ -184108,7 +184426,7 @@
     "1247729": {
       "title": "Amityvillenado",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-02-28",
       "digital_date": "2026-03-02",
       "providers": {
@@ -184124,7 +184442,10 @@
       "has_providers": true,
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt26776720"
+      "imdb_id": "tt26776720",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "1642210": {
       "title": "Pushed Off A Plane and Survived",
@@ -184563,7 +184884,7 @@
     "1584692": {
       "title": "Castration Movie Expansion Pack i. You're Weird, But I Love You!",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-03-01",
       "intake_pass": "B",
       "has_providers": true,
@@ -184575,7 +184896,10 @@
         "streaming": []
       },
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_type4_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "tmdb_type4"
     },
     "1557606": {
       "title": "Molly vs. THE MACHINES",
@@ -187017,7 +187341,7 @@
     "918785": {
       "title": "Jab Khuli Kitaab",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-03-06",
       "intake_pass": "A",
       "has_providers": true,
@@ -187029,12 +187353,15 @@
         "streaming": []
       },
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_type4_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "tmdb_type4"
     },
     "1647144": {
       "title": "Natalie and the Gila Monster",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-03-06",
       "intake_pass": "A",
       "has_providers": true,
@@ -187046,7 +187373,10 @@
         "streaming": []
       },
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_type4_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "tmdb_type4"
     },
     "1647142": {
       "title": "Mension House Mallesh",
@@ -187922,7 +188252,7 @@
     "1647656": {
       "title": "An Evening with PinkPantheress Begins ... (Live At The Wiltern)",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-03-07",
       "intake_pass": "A",
       "has_providers": true,
@@ -187934,7 +188264,10 @@
         "streaming": []
       },
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_type4_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "tmdb_type4"
     },
     "1647560": {
       "title": "CMLL: The Night of The Amazonas 2026",
@@ -187973,7 +188306,7 @@
     "1646522": {
       "title": "Come In From the Cold",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-03-07",
       "intake_pass": "A",
       "has_providers": true,
@@ -187985,7 +188318,10 @@
         "streaming": []
       },
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_type4_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "tmdb_type4"
     },
     "1647348": {
       "title": "Les couleurs de l'Antiquit\u00e9",
@@ -189670,7 +190006,7 @@
       "title": "The Dinosaurs",
       "content_type": "limited_series",
       "tmdb_id": 313298,
-      "status": "available",
+      "status": "tracking",
       "first_air_date": "2026-03-06",
       "digital_date": "2026-03-06",
       "episode_count": 4,
@@ -189692,7 +190028,10 @@
       "intaked_at": "2026-03-09T09:47:43.048780",
       "networks": [
         "Netflix"
-      ]
+      ],
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "tv_316019": {
       "title": "Heartstrings",
@@ -191404,7 +191743,7 @@
     "1649221": {
       "title": "Out Of Character",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-03-11",
       "intake_pass": "A",
       "has_providers": true,
@@ -191416,7 +191755,10 @@
         "streaming": []
       },
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_type4_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "tmdb_type4"
     },
     "1635182": {
       "title": "NJPW New Japan Cup 2026 - Day 5",
@@ -191506,7 +191848,7 @@
     "1649587": {
       "title": "David Cross: The End of the Beginning of the End",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-03-11",
       "intake_pass": "A",
       "has_providers": true,
@@ -191518,7 +191860,10 @@
         "streaming": []
       },
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_type4_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "tmdb_type4"
     },
     "1649068": {
       "title": "Tiny Gods",
@@ -191948,7 +192293,7 @@
     "1645343": {
       "title": "Dimension 20 Live: Viva M\u00e1s Vegas",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-03-12",
       "intake_pass": "A",
       "has_providers": true,
@@ -191960,7 +192305,10 @@
         "streaming": []
       },
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "_type4_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "tmdb_type4"
     },
     "1649711": {
       "title": "M\u00e1fia De Pel\u00facia",
@@ -192520,7 +192868,7 @@
     "1642891": {
       "title": "Boy Of Your Dreams 2",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-03-13",
       "intake_pass": "A",
       "has_providers": true,
@@ -192534,12 +192882,15 @@
       },
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt40142495"
+      "imdb_id": "tt40142495",
+      "_type4_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "tmdb_type4"
     },
     "1642887": {
       "title": "Maid Robot",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-03-13",
       "intake_pass": "A",
       "has_providers": true,
@@ -192553,12 +192904,15 @@
       },
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt40141085"
+      "imdb_id": "tt40141085",
+      "_type4_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "tmdb_type4"
     },
     "1636674": {
       "title": "Beyond Sasquatch",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-03-13",
       "intake_pass": "A",
       "has_providers": true,
@@ -192572,7 +192926,10 @@
       },
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt39328330"
+      "imdb_id": "tt39328330",
+      "_type4_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "tmdb_type4"
     },
     "1250629": {
       "title": "Bank of Dave 2: The Loan Ranger",
@@ -192596,7 +192953,7 @@
     "1635183": {
       "title": "NJPW New Japan Cup 2026 - Day 6",
       "year": 2026,
-      "status": "available",
+      "status": "blocked",
       "first_seen": "2026-03-13",
       "intake_pass": "A",
       "has_providers": true,
@@ -192610,7 +192967,9 @@
       },
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt31172446"
+      "imdb_id": "tt31172446",
+      "_blocked_reason": "wrestling_event",
+      "_blocked_date": "2026-04-17"
     },
     "1650558": {
       "title": "Abot Langit",
@@ -193336,7 +193695,7 @@
     "1635184": {
       "title": "NJPW New Japan Cup 2026 - Day 7",
       "year": 2026,
-      "status": "available",
+      "status": "blocked",
       "first_seen": "2026-03-14",
       "intake_pass": "A",
       "has_providers": true,
@@ -193350,12 +193709,14 @@
       },
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt31172446"
+      "imdb_id": "tt31172446",
+      "_blocked_reason": "wrestling_event",
+      "_blocked_date": "2026-04-17"
     },
     "1497197": {
       "title": "Quarter Life Crisis",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-03-14",
       "intake_pass": "A",
       "has_providers": true,
@@ -193369,7 +193730,10 @@
       },
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt31172446"
+      "imdb_id": "tt31172446",
+      "_type4_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "tmdb_type4"
     },
     "1650824": {
       "title": "BAILA TEO",
@@ -193917,7 +194281,7 @@
     "1651880": {
       "title": "Mystery Wrestling #22",
       "year": 2026,
-      "status": "available",
+      "status": "blocked",
       "first_seen": "2026-03-15",
       "intake_pass": "A",
       "has_providers": true,
@@ -193931,12 +194295,14 @@
       },
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt39182438"
+      "imdb_id": "tt39182438",
+      "_blocked_reason": "wrestling_event",
+      "_blocked_date": "2026-04-17"
     },
     "1635185": {
       "title": "NJPW New Japan Cup 2026 - Day 8",
       "year": 2026,
-      "status": "available",
+      "status": "blocked",
       "first_seen": "2026-03-15",
       "intake_pass": "A",
       "has_providers": true,
@@ -193950,12 +194316,14 @@
       },
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt39182438"
+      "imdb_id": "tt39182438",
+      "_blocked_reason": "wrestling_event",
+      "_blocked_date": "2026-04-17"
     },
     "1622288": {
       "title": "100 Hours with Jo Shimoda",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-03-15",
       "intake_pass": "A",
       "has_providers": true,
@@ -193969,7 +194337,10 @@
       },
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt39182438"
+      "imdb_id": "tt39182438",
+      "_type4_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "tmdb_type4"
     },
     "1651671": {
       "title": "Women Out of Order",
@@ -194279,7 +194650,7 @@
     "1652624": {
       "title": "Anywhere but Here as Long as I Don't Have to Leave the Comfort of Home",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-03-16",
       "intake_pass": "A",
       "has_providers": true,
@@ -194293,12 +194664,15 @@
       },
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt39182438"
+      "imdb_id": "tt39182438",
+      "_type4_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "tmdb_type4"
     },
     "1635186": {
       "title": "NJPW New Japan Cup 2026 - Day 9",
       "year": 2026,
-      "status": "available",
+      "status": "blocked",
       "first_seen": "2026-03-16",
       "intake_pass": "A",
       "has_providers": true,
@@ -194312,12 +194686,14 @@
       },
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt39182438"
+      "imdb_id": "tt39182438",
+      "_blocked_reason": "wrestling_event",
+      "_blocked_date": "2026-04-17"
     },
     "1604970": {
       "title": "AEW Revolution 2026",
       "year": 2026,
-      "status": "available",
+      "status": "blocked",
       "first_seen": "2026-03-16",
       "intake_pass": "A",
       "has_providers": true,
@@ -194331,12 +194707,14 @@
       },
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt39182438"
+      "imdb_id": "tt39182438",
+      "_blocked_reason": "wrestling_event",
+      "_blocked_date": "2026-04-17"
     },
     "1652307": {
       "title": "AAA Rey De Reyes 2026",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-03-16",
       "intake_pass": "A",
       "has_providers": true,
@@ -194350,7 +194728,10 @@
       },
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt35474066"
+      "imdb_id": "tt35474066",
+      "_type4_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "tmdb_type4"
     },
     "1560067": {
       "title": "The Pink Pill: Sex, Drugs and Who Has Control",
@@ -194545,7 +194926,7 @@
     "1646335": {
       "title": "Teodor Currentzis conducts Brahms and Mahler",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-03-17",
       "intake_pass": "A",
       "has_providers": true,
@@ -194559,7 +194940,10 @@
       },
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt35474066"
+      "imdb_id": "tt35474066",
+      "_type4_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "tmdb_type4"
     },
     "1440049": {
       "title": "Preschool",
@@ -194841,7 +195225,7 @@
       "title": "Twisted Yoga",
       "content_type": "limited_series",
       "tmdb_id": 315800,
-      "status": "available",
+      "status": "tracking",
       "first_air_date": "2026-03-13",
       "digital_date": "2026-03-13",
       "episode_count": 3,
@@ -194863,7 +195247,10 @@
       "intaked_at": "2026-03-17T09:54:27.399348",
       "networks": [
         "Apple TV"
-      ]
+      ],
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown"
     },
     "tv_316738": {
       "title": "\u593a\u537f\u6b22",
@@ -194934,7 +195321,7 @@
     "1649533": {
       "title": "TJPW Texas Stampede: Austin ~ Day 1",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-03-18",
       "intake_pass": "A",
       "has_providers": true,
@@ -194948,12 +195335,15 @@
       },
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt35474066"
+      "imdb_id": "tt35474066",
+      "_type4_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "tmdb_type4"
     },
     "1635187": {
       "title": "NJPW New Japan Cup 2026 - Day 10",
       "year": 2026,
-      "status": "available",
+      "status": "blocked",
       "first_seen": "2026-03-18",
       "intake_pass": "A",
       "has_providers": true,
@@ -194967,7 +195357,9 @@
       },
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt35474066"
+      "imdb_id": "tt35474066",
+      "_blocked_reason": "wrestling_event",
+      "_blocked_date": "2026-04-17"
     },
     "1653712": {
       "title": "Graduation Day",
@@ -195419,7 +195811,7 @@
     "1654380": {
       "title": "Weird Valley",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-03-19",
       "intake_pass": "A",
       "has_providers": true,
@@ -195433,12 +195825,15 @@
       },
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt35474066"
+      "imdb_id": "tt35474066",
+      "_type4_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "tmdb_type4"
     },
     "1649548": {
       "title": "TJPW Texas Stampede: Austin ~ Day 2",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-03-19",
       "intake_pass": "A",
       "has_providers": true,
@@ -195452,12 +195847,15 @@
       },
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt40823596"
+      "imdb_id": "tt40823596",
+      "_type4_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "tmdb_type4"
     },
     "1654038": {
       "title": "Jordi Fern\u00e1dez's Coaching Journey: From Badalona to Brooklyn",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-03-19",
       "intake_pass": "A",
       "has_providers": true,
@@ -195471,12 +195869,15 @@
       },
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt40823596"
+      "imdb_id": "tt40823596",
+      "_type4_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "tmdb_type4"
     },
     "1653944": {
       "title": "Forged in Foxborough - Warriors",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-03-19",
       "intake_pass": "A",
       "has_providers": true,
@@ -195490,7 +195891,10 @@
       },
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt40823596"
+      "imdb_id": "tt40823596",
+      "_type4_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "tmdb_type4"
     },
     "1653469": {
       "title": "Meeting G\u00f6tz",
@@ -196136,7 +196540,7 @@
     "1654803": {
       "title": "Channel 9 FM",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-03-20",
       "intake_pass": "A",
       "has_providers": true,
@@ -196150,7 +196554,10 @@
       },
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt31364595"
+      "imdb_id": "tt31364595",
+      "_type4_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "tmdb_type4"
     },
     "1654559": {
       "title": "Die Drei von der M\u00fcllabfuhr - Hand in Hand",
@@ -196738,7 +197145,7 @@
     "1635189": {
       "title": "NJPW New Japan Cup 2026 - Day 12 (Final)",
       "year": 2026,
-      "status": "available",
+      "status": "blocked",
       "first_seen": "2026-03-21",
       "intake_pass": "A",
       "has_providers": true,
@@ -196752,7 +197159,9 @@
       },
       "enriched": true,
       "enrichment_date": "2026-03-28",
-      "imdb_id": "tt31364595"
+      "imdb_id": "tt31364595",
+      "_blocked_reason": "wrestling_event",
+      "_blocked_date": "2026-04-17"
     },
     "1655097": {
       "title": "CMLL Homenaje a 2 Leyendas 2026",
@@ -196796,7 +197205,7 @@
     "1635188": {
       "title": "NJPW New Japan Cup 2026 - Day 11",
       "year": 2026,
-      "status": "available",
+      "status": "blocked",
       "first_seen": "2026-03-21",
       "intake_pass": "A",
       "has_providers": true,
@@ -196810,7 +197219,9 @@
       },
       "enriched": true,
       "enrichment_date": "2026-03-26",
-      "imdb_id": "tt31364595"
+      "imdb_id": "tt31364595",
+      "_blocked_reason": "wrestling_event",
+      "_blocked_date": "2026-04-17"
     },
     "1246619": {
       "title": "Pops",
@@ -197730,7 +198141,7 @@
     "1651891": {
       "title": "Mystery Wrestling x Baka Gaijin",
       "year": 2026,
-      "status": "available",
+      "status": "blocked",
       "first_seen": "2026-03-23",
       "intake_pass": "A",
       "has_providers": true,
@@ -197744,7 +198155,9 @@
       },
       "enriched": true,
       "enrichment_date": "2026-03-28",
-      "imdb_id": "tt22503222"
+      "imdb_id": "tt22503222",
+      "_blocked_reason": "wrestling_event",
+      "_blocked_date": "2026-04-17"
     },
     "1649557": {
       "title": "TJPW Texas Stampede in Houston",
@@ -200359,7 +200772,7 @@
     "1651868": {
       "title": "NJPW Road to Sakura Genesis 2026 - Day 1",
       "year": 2026,
-      "status": "available",
+      "status": "blocked",
       "first_seen": "2026-03-29",
       "digital_date": "2026-03-28",
       "providers": {
@@ -200371,7 +200784,9 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "enriched": true,
-      "enrichment_date": "2026-03-31"
+      "enrichment_date": "2026-03-31",
+      "_blocked_reason": "wrestling_event",
+      "_blocked_date": "2026-04-17"
     },
     "1659399": {
       "title": "The Lost Documentary About An Impossible House",
@@ -201997,7 +202412,7 @@
     "1651876": {
       "title": "NJPW Road to Sakura Genesis 2026 - Day 5",
       "year": 2026,
-      "status": "available",
+      "status": "blocked",
       "first_seen": "2026-04-03",
       "digital_date": "2026-04-02",
       "providers": {
@@ -202009,7 +202424,9 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "enriched": true,
-      "enrichment_date": "2026-04-07"
+      "enrichment_date": "2026-04-07",
+      "_blocked_reason": "wrestling_event",
+      "_blocked_date": "2026-04-17"
     },
     "1532053": {
       "title": "Samhain",
@@ -202387,7 +202804,7 @@
     "1661753": {
       "title": "WWE NXT Countdown To Stand & Deliver 2026",
       "year": 2026,
-      "status": "available",
+      "status": "blocked",
       "first_seen": "2026-04-04",
       "digital_date": "2026-04-04",
       "providers": {
@@ -202399,7 +202816,9 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "enriched": true,
-      "enrichment_date": "2026-04-07"
+      "enrichment_date": "2026-04-07",
+      "_blocked_reason": "wrestling_event",
+      "_blocked_date": "2026-04-17"
     },
     "1657686": {
       "title": "NXT Stand & Deliver 2026",
@@ -202600,7 +203019,7 @@
     "1643335": {
       "title": "NJPW Sakura Genesis 2026",
       "year": 2026,
-      "status": "available",
+      "status": "blocked",
       "first_seen": "2026-04-05",
       "digital_date": "2026-04-04",
       "providers": {
@@ -202612,7 +203031,9 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "enriched": true,
-      "enrichment_date": "2026-04-08"
+      "enrichment_date": "2026-04-08",
+      "_blocked_reason": "wrestling_event",
+      "_blocked_date": "2026-04-17"
     },
     "1663739": {
       "title": "UFO Hunters II: Tales from the Universe",
@@ -205041,7 +205462,7 @@
     "1604975": {
       "title": "AEW Dynasty 2026",
       "year": 2026,
-      "status": "available",
+      "status": "blocked",
       "first_seen": "2026-04-12",
       "digital_date": "2026-04-12",
       "providers": {
@@ -205053,7 +205474,9 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "enriched": true,
-      "enrichment_date": "2026-04-14"
+      "enrichment_date": "2026-04-14",
+      "_blocked_reason": "wrestling_event",
+      "_blocked_date": "2026-04-17"
     },
     "1668396": {
       "title": "Sabrina Carpenter live at Coachella",
@@ -205436,7 +205859,7 @@
     "1668950": {
       "title": "AEW Dynasty 2026: Zero Hour",
       "year": 2026,
-      "status": "available",
+      "status": "blocked",
       "first_seen": "2026-04-13",
       "digital_date": "2026-04-12",
       "providers": {
@@ -205448,7 +205871,9 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "enriched": true,
-      "enrichment_date": "2026-04-15"
+      "enrichment_date": "2026-04-15",
+      "_blocked_reason": "wrestling_event",
+      "_blocked_date": "2026-04-17"
     },
     "1669320": {
       "title": "My Letter to the South",
@@ -205638,7 +206063,7 @@
     "1460572": {
       "title": "Blessed: Live, Laugh,Run!",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-04-14",
       "digital_date": "2026-01-14",
       "providers": {
@@ -205650,7 +206075,10 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "enriched": true,
-      "enrichment_date": "2026-04-14"
+      "enrichment_date": "2026-04-14",
+      "_type4_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "tmdb_type4"
     },
     "1670189": {
       "title": "Cha Garam",
@@ -206868,7 +207296,7 @@
     "1656152": {
       "title": "WrestleCon: Mark Hitchcock Memorial Supershow 2026",
       "year": 2026,
-      "status": "tracking",
+      "status": "blocked",
       "first_seen": "2026-04-17",
       "digital_date": "2026-04-16",
       "providers": {
@@ -206883,7 +207311,9 @@
       "enrichment_date": "2026-04-17",
       "_type4_false_positive": true,
       "_reverted_from_available": true,
-      "_false_positive_source": "tmdb_type4"
+      "_false_positive_source": "tmdb_type4",
+      "_blocked_reason": "wrestling_event",
+      "_blocked_date": "2026-04-17"
     },
     "1674784": {
       "title": "La foudre, un \u00e9clair de g\u00e9nie",
@@ -207904,6 +208334,14 @@
       "_discovery_source": "provider_availability_check",
       "enriched": true,
       "enrichment_date": "2026-04-17"
+    },
+    "manual_the_man_with_the_hat": {
+      "title": "The Man With the Hat",
+      "status": "tracking",
+      "_providers_false_positive": true,
+      "_reverted_from_available": true,
+      "_false_positive_source": "unknown",
+      "digital_date": "2026-01-20"
     }
   }
 }
