@@ -479,7 +479,7 @@ const NRWMobile = {
                 } else if (svc.includes('apple') || svc.includes('itunes')) {
                     label = 'Apple TV';
                     style = 'background:#000;color:#fff';
-                } else if (svc.includes('youtube') || svc.includes('google play')) {
+                } else if (svc.includes('youtube')) {
                     label = 'YouTube';
                     style = 'background:#FF0000;color:#fff';
                 } else if (svc.includes('eventive') || (vod.link && (vod.link.includes('eventive.org') || vod.link.includes('festivalplayer') || vod.link.includes('shift72.com')))) {

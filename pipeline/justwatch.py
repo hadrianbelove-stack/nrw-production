@@ -7,7 +7,7 @@ which aggregates streaming availability across all major platforms.
 
 Returns direct deep links to:
 - Streaming services (Netflix, HBO Max, Prime Video, Disney+, etc.)
-- Rent options (Amazon, Apple TV, Google Play, etc.)
+- Rent options (Amazon, Apple TV, YouTube, etc.)
 - Buy options (Amazon, Apple TV, etc.)
 
 Usage:
@@ -49,8 +49,8 @@ class JustWatchClient:
     ]
 
     VOD_PRIORITY = [
-        'Amazon Video', 'Apple TV', 'Google Play Movies', 'Fandango At Home',
-        'YouTube', 'Microsoft Store'
+        'Amazon Video', 'Apple TV', 'YouTube', 'Fandango At Home',
+        'Microsoft Store'
     ]
 
     def __init__(self, country: str = "US", logger: Optional[logging.Logger] = None):

@@ -906,6 +906,11 @@ class DataGenerator:
                             try:
                                 type4_dt = datetime.strptime(type4_date, '%Y-%m-%d')
                                 if type4_dt <= today_dt:
+                                    # Skip if Type 4 was already a false positive — wait for provider discovery instead
+                                    if movie.get('_type4_false_positive'):
+                                        self.logger.info(f"Skipping Type 4 re-discovery for {movie['title']} (previously false positive)")
+                                        type4_found = True
+                                        continue
                                     # Past or today — immediate transition
                                     movie['has_providers'] = True
                                     movie['_discovery_source'] = 'tmdb_type4'
@@ -916,6 +921,7 @@ class DataGenerator:
                                     movie['providers'] = {'rent': [], 'buy': [], 'streaming': []}
                                     movie.pop('_reverted_from_available', None)
                                     movie.pop('_false_positive_source', None)
+                                    movie.pop('_providers_false_positive', None)  # Clear other source's flag
                                     newly_digital += 1
                                     newly_available_ids.append(movie_id)
                                     self.add_movie_to_site_immediately(movie_id, movie)
@@ -1026,6 +1032,10 @@ class DataGenerator:
 
                         # Transition provider-discovered movie
                         if has_providers and movie['status'] == 'tracking':
+                            # Skip if providers were already a false positive — wait for Type 4 instead
+                            if movie.get('_providers_false_positive'):
+                                self.logger.info(f"Skipping provider re-discovery for {movie['title']} (previously false positive)")
+                                continue
                             movie['status'] = 'available'
                             if not movie.get('digital_date'):
                                 movie['digital_date'] = datetime.now().strftime('%Y-%m-%d')
@@ -1038,6 +1048,7 @@ class DataGenerator:
                             movie['enrichment_date'] = None
                             movie.pop('_reverted_from_available', None)
                             movie.pop('_false_positive_source', None)
+                            movie.pop('_type4_false_positive', None)  # Clear other source's flag
                             newly_digital += 1
 
                             first_service = stream_names[0] if stream_names else rent_names[0] if rent_names else buy_names[0] if buy_names else '?'
@@ -1866,7 +1877,6 @@ class DataGenerator:
             ('mubi', 'MUBI'),
             ('criterion', 'Criterion'),
             ('vudu', 'Vudu'),
-            ('google play', 'Google Play'),
             ('youtube', 'YouTube'),
             ('fandango', 'Fandango'),
         ]
@@ -3840,12 +3850,24 @@ class DataGenerator:
                         wl_count = sum(len(v) for v in wl.values()) if isinstance(wl, dict) else 0
                         if wl_count == 0 and tracking_data['movies'][mid].get('status') == 'available':
                             old_source = tracking_data['movies'][mid].get('_discovery_source', 'unknown')
+                            # Mark which discovery source was false positive (so the OTHER can still try)
+                            if old_source == 'tmdb_type4':
+                                tracking_data['movies'][mid]['_type4_false_positive'] = True
+                            else:
+                                tracking_data['movies'][mid]['_providers_false_positive'] = True
                             tracking_data['movies'][mid]['status'] = 'tracking'
-                            tracking_data['movies'][mid]['digital_date'] = None
                             tracking_data['movies'][mid]['_reverted_from_available'] = True
                             tracking_data['movies'][mid]['_false_positive_source'] = old_source
+                            # Keep digital_date as evidence (don't null it)
                             reverted_count += 1
-                            print(f"  ↩ {movie.get('title')} — reverted to tracking (zero watch links, was: {old_source})")
+                            # Also remove from data.json so it doesn't stay on the wall
+                            if mid in movie_lookup:
+                                existing_movies[movie_lookup[mid]] = None
+                            print(f"  ↩ {movie.get('title')} — reverted to tracking, removed from wall (zero watch links, was: {old_source})")
+            # Clean up any false-positive removals before saving
+            if reverted_count > 0:
+                existing_movies = [m for m in existing_movies if m is not None]
+                movie_lookup = {str(m.get('id', m.get('tmdb_id', ''))): i for i, m in enumerate(existing_movies)}
             if tracking_updated > 0 or reverted_count > 0:
                 self.storage.atomic_write_json(tracking_data, 'movie_tracking.json', backup=True)
                 print(f"📝 Updated movie_tracking.json: {tracking_updated} movies marked enriched")

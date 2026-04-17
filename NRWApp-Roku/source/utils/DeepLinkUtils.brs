@@ -22,7 +22,6 @@ Function GetChannelIds() as Object
         plex: "27707"
         youtube: "837"
         vudu: "13842"
-        google_play: "50025"
         tubi: "41468"
         pluto: "74519"
         freevee: "551013"
@@ -340,7 +339,6 @@ Function GetServiceDisplayName(service as String) as String
         plex: "Plex"
         youtube: "YouTube"
         vudu: "Vudu"
-        google_play: "Google Play"
         tubi: "Tubi"
         pluto: "Pluto TV"
     }

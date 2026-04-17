@@ -577,7 +577,7 @@ const NRW = {
                             buttonsHtml += `<a href="${vodLink}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-amazon" aria-label="Rent/Buy on Amazon"><img src="logos%20and%20images/pngimg.com%20-%20amazon_PNG17.png" alt="Amazon" class="btn-logo"></a>`;
                         } else if (svc.includes('apple') || svc.includes('itunes')) {
                             buttonsHtml += `<a href="${vodLink}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-apple" aria-label="Rent/Buy on Apple TV"><img src="logos%20and%20images/apple%20logo.png" alt="Apple TV" class="btn-logo"></a>`;
-                        } else if (svc.includes('youtube') || svc.includes('google play')) {
+                        } else if (svc.includes('youtube')) {
                             buttonsHtml += `<a href="${vodLink}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-youtube" aria-label="Rent/Buy on YouTube">YOUTUBE</a>`;
                         } else if (svc.includes('eventive') || vodLink.includes('eventive.org') || vodLink.includes('festivalplayer') || vodLink.includes('shift72.com')) {
                             buttonsHtml += `<a href="${vodLink}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-screening" aria-label="Buy Ticket">BUY TICKET</a>`;
@@ -1178,7 +1178,7 @@ const NRW = {
                 } else if (svc.includes('apple') || svc.includes('itunes')) {
                     btnClass = 'apple';
                     label = this.getPurchaseLabel(vod.service);
-                } else if (svc.includes('youtube') || svc.includes('google play')) {
+                } else if (svc.includes('youtube')) {
                     btnClass = 'youtube';
                     label = this.getPurchaseLabel(vod.service);
                 } else if (svc.includes('eventive') || vodLink.includes('eventive.org') || vodLink.includes('festivalplayer') || vodLink.includes('shift72.com')) {

@@ -82,7 +82,6 @@ Function GetServiceColors() as Object
         criterion: "0x000000FF"
         youtube: "0xFF0000FF"
         vudu: "0x3399FFFF"
-        google_play: "0x34A853FF"
         vod: "0xFF9500FF"
         eventive: "0xFFD700FF"
     }

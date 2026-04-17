@@ -37,8 +37,8 @@ tracking:
   archive_available_on_detect: false  # Archive available movies to separate file (experimental)
   compaction_batch_size: 50  # Maximum entries to move per compaction run
   compaction_recent_days: null  # Only compact entries from last N days (null = no age limit)
-  excluded_services: ['fuboTV', 'Philo', 'Sun Nxt', 'Fandango']  # Services to exclude from watch provider results
-  blocked_companies:  # Wrestling promotions (not film studios) — safe to block, won't affect real movies about wrestling
+  excluded_services: ['fuboTV', 'Philo', 'Sun Nxt', 'Fandango', 'Google Play Movies', 'Google Play', 'Shahid VIP']  # Services to exclude from watch provider results
+  blocked_companies:  # Non-film content producers — safe to block
     - 146598   # WWE
     - 10339    # WWE Studios
     - 20586    # NJPW (New Japan Pro-Wrestling)
@@ -550,6 +550,7 @@ vod_scraper:
   platforms:
     amazon: true  # Enable Amazon Prime Video scraping
     apple_tv: true  # Enable Apple TV scraping
+    youtube: true  # Enable YouTube movie scraping
   maintenance:
     last_selector_update: "2025-10-25"  # Track when selectors were last verified
     expected_update_frequency: "quarterly"  # How often selectors typically need updates
@@ -684,5 +685,6 @@ trailer_hosting:
   enabled: true                      # Master toggle for trailer hosting pipeline
   bucket_url: "https://f004.backblazeb2.com/file/NRW-TRAILERS"  # Public URL base (change when CloudFlare is set up)
   max_hosted: 200                    # Only the 200 most recent movies get trailers; oldest rotate out
+  cookies_browser: chrome            # Browser for yt-dlp cookies (safari blocked by macOS sandbox in LaunchAgent)
   clean_local_after_upload: true     # Auto-delete local MP4 after confirmed B2 upload
   pipeline_integration: true         # Auto-host trailers for new movies during daily enrichment
