@@ -735,6 +735,7 @@ class EnrichmentService:
         'Criterion': ['criterionchannel.com'],
         'MUBI': ['mubi.com'],
         'Eventive': ['eventive.org', 'watch.eventive.org'],
+        'YouTube': ['youtube.com', 'www.youtube.com'],
     }
 
     def _validate_link_domain(self, link_url, service):
@@ -910,8 +911,9 @@ class EnrichmentService:
         platforms_config = vod_config.get('platforms', {})
         amazon_enabled = platforms_config.get('amazon', True)
         apple_tv_enabled = platforms_config.get('apple_tv', True)
+        youtube_enabled = platforms_config.get('youtube', True)
 
-        if not amazon_enabled and not apple_tv_enabled:
+        if not amazon_enabled and not apple_tv_enabled and not youtube_enabled:
             self.logger.debug(f"No platforms enabled in config, skipping {title}")
             return
 
@@ -941,6 +943,8 @@ class EnrichmentService:
                     should_try_provider = True
                 elif apple_tv_enabled and self.is_actual_apple_service(provider):
                     should_try_provider = True
+                elif youtube_enabled and 'youtube' in provider.lower():
+                    should_try_provider = True
 
                 if should_try_provider:
                     try:
@@ -967,6 +971,8 @@ class EnrichmentService:
                 if amazon_enabled and self.is_actual_amazon_service(provider):
                     should_try_provider = True
                 elif apple_tv_enabled and self.is_actual_apple_service(provider):
+                    should_try_provider = True
+                elif youtube_enabled and 'youtube' in provider.lower():
                     should_try_provider = True
 
                 if should_try_provider:
@@ -995,6 +1001,8 @@ class EnrichmentService:
                     should_try_provider = True
                 elif apple_tv_enabled and self.is_actual_apple_service(provider):
                     should_try_provider = True
+                elif youtube_enabled and 'youtube' in provider.lower():
+                    should_try_provider = True
 
                 if should_try_provider:
                     try:
@@ -1013,9 +1021,9 @@ class EnrichmentService:
                 else:
                     self.logger.debug(f"Platform {provider} disabled in config, skipping")
 
-        # --- Speculative scraping: try Amazon/Apple for ALL movies ---
+        # --- Speculative scraping: try Amazon/Apple/YouTube for ALL movies ---
         # TMDB provider data is often incomplete. Many movies are available on
-        # Amazon/Apple but TMDB doesn't list them. Try both platforms regardless.
+        # Amazon/Apple/YouTube but TMDB doesn't list them. Try all platforms regardless.
         vod_config = self.config.get('vod_scraper', {})
         if not vod_config.get('speculative_scraping', True):
             return
@@ -1027,6 +1035,10 @@ class EnrichmentService:
         already_has_apple = any(
             self.is_actual_apple_service(s.get('service', ''))
             for s in (tmdb_rent + tmdb_buy + tmdb_streaming) if s.get('link')
+        )
+        already_has_youtube = any(
+            'youtube' in s.get('service', '').lower()
+            for s in (tmdb_rent + tmdb_buy) if s.get('link')
         )
 
         # Reduce retries for speculative scraping (mostly misses, don't waste time)
@@ -1060,6 +1072,20 @@ class EnrichmentService:
                         self.stats['vod_speculative_misses'] = self.stats.get('vod_speculative_misses', 0) + 1
                 except Exception as e:
                     self.logger.error(f"Error in speculative Apple TV scrape for {title}: {e}")
+                    self.stats['vod_failures'] = self.stats.get('vod_failures', 0) + 1
+
+            if youtube_enabled and not already_has_youtube and not skip_rent:
+                try:
+                    self.logger.debug(f"Speculative YouTube scrape for {title} (not in TMDB providers)")
+                    deep_link = self.get_platform_deep_link_with_cache(title, year, 'YouTube')
+                    if deep_link:
+                        self.logger.info(f"Speculative scrape found YouTube link for {title}")
+                        tmdb_rent.append({'service': 'YouTube', 'link': deep_link})
+                        self.stats['vod_successes'] = self.stats.get('vod_successes', 0) + 1
+                    else:
+                        self.stats['vod_speculative_misses'] = self.stats.get('vod_speculative_misses', 0) + 1
+                except Exception as e:
+                    self.logger.error(f"Error in speculative YouTube scrape for {title}: {e}")
                     self.stats['vod_failures'] = self.stats.get('vod_failures', 0) + 1
         finally:
             self.vod_scraper.max_retries = original_retries

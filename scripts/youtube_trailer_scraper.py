@@ -8,6 +8,7 @@ from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeo
 import time
 import json
 import os
+import re
 import sys
 
 # Add parent directory to path for playwright_manager import
@@ -177,31 +178,46 @@ class YouTubeTrailerScraper:
                 except PlaywrightTimeoutError:
                     continue
 
-                # Try to find the first video link
+                # Try to find a matching video link from top results
                 # YouTube uses <a> tags with /watch?v= in the href
                 video_links = self.page.locator('a#video-title').all()
 
-                if video_links:
-                    # Get the href of the first video
-                    first_video = video_links[0]
-                    video_url = first_video.get_attribute('href')
+                # Title verification: check video title contains the movie's words
+                stop_words = {'the', 'a', 'an', 'of', 'in', 'on', 'at', 'to', 'for', 'is', 'it', 'and'}
+                cleaned_title = re.sub(r'[^\w\s]', ' ', title.lower())
+                movie_words = [w for w in cleaned_title.split() if w not in stop_words]
+                if not movie_words:
+                    movie_words = cleaned_title.split()
 
-                    if video_url and '/watch?v=' in video_url:
-                        # Normalize relative URLs to absolute URLs
-                        if video_url.startswith('/watch'):
-                            video_url = f"https://www.youtube.com{video_url}"
+                for video_link in video_links[:5]:
+                    video_url = video_link.get_attribute('href')
 
-                        # Clean up URL (remove any extra parameters after video ID)
-                        if '&' in video_url:
-                            video_url = video_url.split('&')[0]
+                    if not video_url or '/watch?v=' not in video_url:
+                        continue
 
-                        print(f"  ✓ Found: {video_url}")
+                    # Verify the video title matches the movie
+                    video_title_text = (video_link.get_attribute('title') or '').lower()
+                    video_words = set(re.sub(r'[^\w\s]', ' ', video_title_text).split())
+                    matching = sum(1 for w in movie_words if w in video_words)
+                    if movie_words and matching / len(movie_words) < 0.75:
+                        print(f"  ✗ Title mismatch: '{video_title_text[:60]}' for '{title}'")
+                        continue
 
-                        # Cache the result
-                        self.cache[cache_key] = video_url
-                        self._save_cache()
+                    # Normalize relative URLs to absolute URLs
+                    if video_url.startswith('/watch'):
+                        video_url = f"https://www.youtube.com{video_url}"
 
-                        return video_url
+                    # Clean up URL (remove any extra parameters after video ID)
+                    if '&' in video_url:
+                        video_url = video_url.split('&')[0]
+
+                    print(f"  ✓ Found: {video_url}")
+
+                    # Cache the result
+                    self.cache[cache_key] = video_url
+                    self._save_cache()
+
+                    return video_url
 
             except Exception as e:
                 print(f"  ✗ Error scraping {title} with '{search_query}': {e}")
@@ -269,14 +285,17 @@ class YouTubeTrailerScraper:
                     if 'trailer' not in video_title and 'preview' not in video_title:
                         continue
 
-                    # Filter: video title must contain at least half the movie title words
-                    # Prevents matching wrong movie's trailer (e.g., "Is This Thing On" for "You Need This")
+                    # Filter: video title must contain the movie title words as whole words
+                    # Prevents matching wrong movie (e.g., "BODYCAM" for "Cat Cam")
                     stop_words = {'the', 'a', 'an', 'of', 'in', 'on', 'at', 'to', 'for', 'is', 'it', 'and'}
-                    movie_words = [w for w in title.lower().split() if w not in stop_words]
+                    cleaned_title = re.sub(r'[^\w\s]', ' ', title.lower())
+                    movie_words = [w for w in cleaned_title.split() if w not in stop_words]
                     if not movie_words:
-                        movie_words = title.lower().split()  # fallback for very short titles
-                    matching = sum(1 for w in movie_words if w in video_title)
-                    if matching / len(movie_words) < 0.5:
+                        movie_words = cleaned_title.split()  # fallback for very short titles
+                    # Whole-word matching (handles punctuation like "Cat-Cam" vs "Cat Cam")
+                    video_words_set = set(re.sub(r'[^\w\s]', ' ', video_title).split())
+                    matching = sum(1 for w in movie_words if w in video_words_set)
+                    if matching / len(movie_words) < 0.75:
                         print(f"  ✗ Broad search title mismatch: '{video_title[:60]}' for '{title}'")
                         continue
 

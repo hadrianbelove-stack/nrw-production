@@ -909,7 +909,6 @@ class DataGenerator:
                                     # Skip if Type 4 was already a false positive — wait for provider discovery instead
                                     if movie.get('_type4_false_positive'):
                                         self.logger.info(f"Skipping Type 4 re-discovery for {movie['title']} (previously false positive)")
-                                        type4_found = True
                                         continue
                                     # Past or today — immediate transition
                                     movie['has_providers'] = True
@@ -2135,9 +2134,12 @@ class DataGenerator:
                         disk_data = json.load(f)
                     disk_movies = disk_data.get('movies', [])
                     in_memory_ids = {str(m.get('id', '')) for m in existing_movies if m.get('id')}
+                    removed_ids = getattr(self, '_false_positive_removed_ids', set())
                     for dm in disk_movies:
                         dm_id = str(dm.get('id', ''))
                         if dm_id and dm_id not in in_memory_ids:
+                            if dm_id in removed_ids:
+                                continue  # Intentionally removed (false positive)
                             existing_movies.append(dm)
                             rescued.append(f"{dm.get('title', dm_id)} ({dm_id})")
                 except Exception as reload_err:
@@ -3866,6 +3868,11 @@ class DataGenerator:
                             print(f"  ↩ {movie.get('title')} — reverted to tracking, removed from wall (zero watch links, was: {old_source})")
             # Clean up any false-positive removals before saving
             if reverted_count > 0:
+                # Track removed IDs so _safe_save_data_json won't rescue them from disk
+                self._false_positive_removed_ids = {
+                    str(m.get('id', m.get('tmdb_id', '')))
+                    for i, m in enumerate(existing_movies) if m is None
+                }
                 existing_movies = [m for m in existing_movies if m is not None]
                 movie_lookup = {str(m.get('id', m.get('tmdb_id', ''))): i for i, m in enumerate(existing_movies)}
             if tracking_updated > 0 or reverted_count > 0:

@@ -295,9 +295,10 @@ def host_new_trailers(movie_ids=None, limit=0, dry_run=False, cookies_browser=No
     config = load_config()
     bucket_url = config.get('bucket_url', '')
     max_hosted = config.get('max_hosted', 200)
-    # Default to Safari cookies for age-restricted content (overridable via CLI --cookies)
+    # Default to Chrome cookies for age-restricted content (overridable via CLI --cookies)
+    # Safari cookies are blocked by macOS sandboxing when run from LaunchAgent
     if cookies_browser is None:
-        cookies_browser = config.get('cookies_browser', 'safari')
+        cookies_browser = config.get('cookies_browser', 'chrome')
 
     # Load data.json
     with open(DATA_JSON, 'r') as f:

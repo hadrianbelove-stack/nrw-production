@@ -449,17 +449,11 @@ class HybridYouTubeFinder:
         result = self.gemini_finder.find_trailer(title, year, director, cast)
 
         if result is not None:
-            # Found via Gemini (including explicit None for "no trailer exists")
             self.stats['gemini_resolved'] += 1
             return result
 
-        # Check if this was a cache hit that returned None (no trailer exists)
-        cache_key = f"{title}_{year}"
-        if cache_key in self.gemini_finder.cache:
-            # Cached as None = confirmed no trailer
-            return None
-
-        # Gemini failed - try Playwright fallback if enabled
+        # Gemini returned None — always try Playwright fallback
+        # (Gemini's NO_TRAILER_EXISTS is unreliable for small/indie films)
         if use_fallback:
             self.stats['fallback_attempts'] += 1
             logger.info(f"Falling back to Playwright for {title} ({year})")

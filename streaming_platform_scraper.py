@@ -430,6 +430,125 @@ class StreamingPlatformScraper(PlaywrightScraperBase):
             logger.error(f"  Error searching Apple TV for {title}: {e}")
             return None
 
+    def find_youtube_link(self, title, year):
+        """Find YouTube movie purchase page using YouTube Data API.
+
+        Uses duration filtering (>60 min) to reliably distinguish
+        full movies from trailers. Returns direct watch URL.
+
+        Args:
+            title: Movie title
+            year: Release year
+
+        Returns:
+            Deep link URL (https://www.youtube.com/watch?v=...) or None
+        """
+        start_time = time.time()
+        try:
+            import pickle
+            import unicodedata
+
+            try:
+                from googleapiclient.discovery import build
+            except ImportError:
+                logger.warning("  googleapiclient not installed, cannot search YouTube")
+                return None
+
+            # Load YouTube API credentials
+            credentials_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'youtube_credentials')
+            token_file = os.path.join(credentials_dir, 'token.pickle')
+
+            if not os.path.exists(token_file):
+                logger.warning("  YouTube API token not found, cannot search")
+                return None
+
+            with open(token_file, 'rb') as f:
+                credentials = pickle.load(f)
+            youtube = build('youtube', 'v3', credentials=credentials)
+
+            # 1. Search for the movie (videoDuration='long' pre-filters to >20 min)
+            search_query = f"{title} {year}"
+            logger.debug(f"  YouTube API search for: {search_query}")
+
+            search_response = youtube.search().list(
+                q=search_query,
+                type='video',
+                part='snippet',
+                videoDuration='long',
+                maxResults=10
+            ).execute()
+
+            video_ids = [item['id']['videoId'] for item in search_response.get('items', [])]
+            if not video_ids:
+                elapsed = time.time() - start_time
+                logger.warning(f"  No YouTube results for {title} ({year}) after {elapsed:.1f}s")
+                return None
+
+            # 2. Get exact durations
+            videos_response = youtube.videos().list(
+                id=','.join(video_ids),
+                part='contentDetails,snippet'
+            ).execute()
+
+            # Duration parser (ISO 8601: PT1H45M30S → minutes)
+            def parse_duration_minutes(iso_duration):
+                match = re.match(r'PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?', iso_duration)
+                if not match:
+                    return 0
+                hours = int(match.group(1) or 0)
+                minutes = int(match.group(2) or 0)
+                seconds = int(match.group(3) or 0)
+                return hours * 60 + minutes + seconds / 60
+
+            # Title matching
+            stopwords = {'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by'}
+
+            def normalize_text(text):
+                normalized = unicodedata.normalize('NFD', text)
+                ascii_text = ''.join(c for c in normalized if unicodedata.category(c) != 'Mn')
+                return re.sub(r'[^a-zA-Z0-9\s]', ' ', ascii_text)
+
+            normalized_title = normalize_text(title.lower())
+            title_words = {word for word in normalized_title.split() if word and word not in stopwords and len(word) > 1}
+
+            # 3. Find the movie: duration >= 60 min + title match
+            for video in videos_response.get('items', []):
+                duration_iso = video.get('contentDetails', {}).get('duration', 'PT0S')
+                runtime = parse_duration_minutes(duration_iso)
+
+                # Must be >= 60 min (eliminates all trailers)
+                if runtime < 60:
+                    continue
+
+                video_title = video.get('snippet', {}).get('title', '')
+                normalized_video = normalize_text(video_title.lower())
+
+                matching_words = sum(1 for word in title_words if word in normalized_video)
+                overlap = matching_words / len(title_words) if title_words else 0
+                has_exact = normalized_title in normalized_video
+
+                if len(title_words) <= 2:
+                    threshold = 0.5 if has_exact else 1.0
+                else:
+                    threshold = 0.6 if has_exact else 0.7
+
+                if overlap < threshold:
+                    continue
+
+                url = f"https://www.youtube.com/watch?v={video['id']}"
+                elapsed = time.time() - start_time
+                logger.info(f"  Found YouTube link: {url} (runtime={round(runtime)}min, title='{video_title}')")
+                return url
+
+            elapsed = time.time() - start_time
+            logger.warning(f"  No YouTube purchase page found for {title} ({year}) after {elapsed:.1f}s")
+            return None
+
+        except Exception as e:
+            elapsed = time.time() - start_time
+            logger.error(f"  Error searching YouTube API for {title} after {elapsed:.1f}s: {e}")
+            return None
+
     def get_platform_deep_link(self, title, year, service_name):
         """Orchestrate platform-specific search based on service name.
 
@@ -455,6 +574,8 @@ class StreamingPlatformScraper(PlaywrightScraperBase):
                 if result:
                     return urllib.parse.urljoin('https://tv.apple.com', result)
                 return result
+            elif 'YouTube' in service_name:
+                return self.find_youtube_link(title, year)
             else:
                 logger.warning(f"  Platform '{service_name}' not supported by agent search")
                 return None
