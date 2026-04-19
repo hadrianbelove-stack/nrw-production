@@ -1,13 +1,14 @@
 #!/bin/bash
 # NRW Local Daily Script
-# Runs via launchd every 30 min; sentinel file ensures it only runs once per day.
+# Runs via launchd every 30 min; keeps retrying until today's CI data is pulled.
 # 1. Pulls latest data from GitHub
 # 2. Uploads new trailers to B2 (CI stamps URLs into data.json next morning)
+# Sentinel is only created after we confirm CI has run today (via run_diagnostics.json).
 
 PROJECT_DIR="/Users/hadrianbelove/Downloads/nrw-production"
 LOG="$PROJECT_DIR/logs/launchagent.log"
 
-# Already ran today? Skip.
+# Already pulled today's CI data? Done.
 SENTINEL="/var/tmp/nrw_daily_$(date +%Y%m%d)"
 if [ -f "$SENTINEL" ]; then
     exit 0
@@ -48,5 +49,13 @@ fi
 echo "Hosting new trailers..." >> "$LOG"
 /opt/homebrew/bin/python3.11 scripts/trailer_pipeline.py host >> "$LOG" 2> >(grep -v "Cookies.binarycookies" >> "$LOG")
 
-touch "$SENTINEL"
+# Only create sentinel if we have today's CI data
+CI_DATE=$(/usr/bin/python3 -c "import json; print(json.load(open('metrics/run_diagnostics.json'))['timestamp'][:10])" 2>/dev/null)
+TODAY=$(date +%Y-%m-%d)
+if [ "$CI_DATE" = "$TODAY" ]; then
+    touch "$SENTINEL"
+    echo "  CI data is current ($CI_DATE) — sentinel created, done for today" >> "$LOG"
+else
+    echo "  CI data is stale ($CI_DATE) — will retry next cycle" >> "$LOG"
+fi
 echo "=== Done: $(date) ===" >> "$LOG"
