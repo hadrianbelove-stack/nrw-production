@@ -51781,23 +51781,24 @@
     },
     "1243741": {
       "title": "Ballistic",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2025-12-06",
       "digital_date": "2026-04-17",
       "providers": {
-        "rent": [],
-        "buy": [],
+        "rent": [
+          "Apple TV Store"
+        ],
+        "buy": [
+          "Apple TV Store"
+        ],
         "streaming": []
       },
       "discovery_pass": "B",
-      "has_providers": false,
+      "has_providers": true,
       "year": 2025,
-      "_discovery_source": "tmdb_type4",
-      "enriched": true,
-      "enrichment_date": "2026-04-17",
-      "_type4_false_positive": true,
-      "_reverted_from_available": true,
-      "_false_positive_source": "tmdb_type4"
+      "_discovery_source": "provider_availability_check",
+      "enriched": false,
+      "enrichment_date": null
     },
     "797716": {
       "title": "The Magnificent Raiders of Dimension War One",
@@ -109938,14 +109939,24 @@
     },
     "1525446": {
       "title": "Agape: The Unconditional Love",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-04",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-04-19",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
+      },
       "intake_pass": "backfill",
-      "has_providers": false,
+      "has_providers": true,
       "year": 2025,
-      "premiere_date": "2025-09-04"
+      "premiere_date": "2025-09-04",
+      "_discovery_source": "provider_availability_check",
+      "enriched": false,
+      "enrichment_date": null
     },
     "1523118": {
       "title": "Tevere Corsaro",
@@ -122943,11 +122954,13 @@
       "year": 2025,
       "status": "tracking",
       "first_seen": "2026-01-06",
-      "digital_date": null,
+      "digital_date": "2026-05-19",
       "providers": {},
       "intake_pass": "C",
       "festival": "Toronto/TIFF",
-      "has_providers": false
+      "has_providers": false,
+      "_discovery_source": "tmdb_type4",
+      "_type4_pending": true
     },
     "1235286": {
       "title": "Nomad Shadow",
@@ -180918,22 +180931,22 @@
     "1241693": {
       "title": "Do Deewane Seher Mein",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-02-20",
       "digital_date": "2026-04-16",
       "providers": {
         "rent": [],
         "buy": [],
-        "streaming": []
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
       },
       "intake_pass": "B",
-      "has_providers": false,
-      "_discovery_source": "tmdb_type4",
-      "enriched": true,
-      "enrichment_date": "2026-04-17",
-      "_type4_false_positive": true,
-      "_reverted_from_available": true,
-      "_false_positive_source": "tmdb_type4"
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": false,
+      "enrichment_date": null
     },
     "1125701": {
       "title": "Midwinter Break",
@@ -195461,12 +195474,22 @@
     "868668": {
       "title": "Ustaad Bhagat Singh",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-03-18",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-04-19",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": false,
+      "enrichment_date": null
     },
     "662723": {
       "title": "Danur: The Last Chapter",
@@ -204763,10 +204786,12 @@
       "year": 2026,
       "status": "tracking",
       "first_seen": "2026-04-10",
-      "digital_date": null,
+      "digital_date": "2026-05-12",
       "providers": {},
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": false,
+      "_discovery_source": "tmdb_type4",
+      "_type4_pending": true
     },
     "1280623": {
       "title": "Death Always Craves",
@@ -204813,10 +204838,12 @@
       "year": 2026,
       "status": "tracking",
       "first_seen": "2026-04-10",
-      "digital_date": null,
+      "digital_date": "2026-05-12",
       "providers": {},
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": false,
+      "_discovery_source": "tmdb_type4",
+      "_type4_pending": true
     },
     "787844": {
       "title": "Newborn",
@@ -208771,7 +208798,568 @@
         "tabii"
       ],
       "has_providers": false
+    },
+    "986097": {
+      "title": "HIM",
+      "year": 2025,
+      "status": "available",
+      "first_seen": "2026-04-19",
+      "digital_date": "2025-10-07",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "intake_pass": "A",
+      "has_providers": true,
+      "_discovery_source": "tmdb_type4",
+      "enriched": false,
+      "enrichment_date": null
+    },
+    "1657502": {
+      "title": "Ramy Youssef: In Love",
+      "year": 2026,
+      "status": "available",
+      "first_seen": "2026-04-19",
+      "digital_date": "2026-04-17",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "intake_pass": "A",
+      "has_providers": true,
+      "_discovery_source": "tmdb_type4",
+      "enriched": false,
+      "enrichment_date": null
+    },
+    "1533820": {
+      "title": "Return of The Mack",
+      "year": 2026,
+      "status": "available",
+      "first_seen": "2026-04-19",
+      "digital_date": "2026-04-17",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "intake_pass": "A",
+      "has_providers": true,
+      "_discovery_source": "tmdb_type4",
+      "enriched": false,
+      "enrichment_date": null
+    },
+    "1675928": {
+      "title": "Arsenal Vs Man City",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1675095": {
+      "title": "Billy Luck",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1673956": {
+      "title": "Murder at the Merriweather",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1672668": {
+      "title": "Cities of Ghosts and Angels",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1671104": {
+      "title": "Laura Laune : Glory Alleluia",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1668364": {
+      "title": "Desire",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1667371": {
+      "title": "Becoming",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1666364": {
+      "title": "How It Is",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1666323": {
+      "title": "The Song of Life",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1666219": {
+      "title": "The Red Lightning",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1666192": {
+      "title": "Angel Pardalos",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1661525": {
+      "title": "Eva",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1661475": {
+      "title": "My Awards",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1661460": {
+      "title": "Cyrano in My Head",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1661434": {
+      "title": "Lu & Pau",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1661399": {
+      "title": "The Birth of the Crypto Child",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1661362": {
+      "title": "Death Is Something That Happens to Others",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1660345": {
+      "title": "2026 NCT WISH 1st CONCERT TOUR \u2018INTO THE WISH : Our WISH\u2019 ENCORE IN SEOUL in CINEMAS",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1659146": {
+      "title": "Intoxicated Rain",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1658251": {
+      "title": "Tricontinental, Letter to Open in Case Of",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1658243": {
+      "title": "The Roots of Madness",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1658212": {
+      "title": "Nicole Nicole",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1658210": {
+      "title": "Meanwhile in Namibia",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1658174": {
+      "title": "Fracture",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1658141": {
+      "title": "Dentro",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1658133": {
+      "title": "Common Ground",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1658120": {
+      "title": "Alea Jacarandas",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1657630": {
+      "title": "The Awakening",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1651224": {
+      "title": "Dear Fatima",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1632655": {
+      "title": "Magilligan",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1616513": {
+      "title": "Why We Love Dolphins",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1612447": {
+      "title": "Snail Hunters",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1529395": {
+      "title": "After the Ashes",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1488778": {
+      "title": "Crossing A Dawn",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1480109": {
+      "title": "Home Where...",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1476000": {
+      "title": "Summer Lost",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1471981": {
+      "title": "Missing",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1418816": {
+      "title": "Baby Jackfruit Baby Guava",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1409470": {
+      "title": "Embers",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1397062": {
+      "title": "Maybe Tomorrow",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1676138": {
+      "title": "JCW Strangle-Mania: Viva Las Violence 2026",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1656864": {
+      "title": "Effy's Big Gay Brunch 11",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1656511": {
+      "title": "The Annesi Ninja",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1301469": {
+      "title": "Frogtown",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1676089": {
+      "title": "Sabrina Carpenter: Live at Coachella 2026 (Week 2)",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1676084": {
+      "title": "B\u00e1rbara Tinoco - A Curta Vida de uma Popstar, Ao Vivo na MEO Arena",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-19",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "tv_317555": {
+      "title": "Michael Jackson: An American Tragedy",
+      "content_type": "limited_series",
+      "tmdb_id": 317555,
+      "status": "tracking",
+      "first_air_date": "2026-04-08",
+      "digital_date": "2026-04-08",
+      "episode_count": 3,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/vSdcBSnBRDY29Tz4We4TlKmjtLA.jpg",
+      "synopsis": "Charting Michael Jackson\u2019s journey from child prodigy to global icon, examining the genius, controversy, trials and tragedy that shaped and continue to divide his legacy.",
+      "genres": [
+        "Documentary"
+      ],
+      "original_language": "en",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-04-19T09:44:45.398823",
+      "networks": [
+        "BBC Two"
+      ],
+      "has_providers": false
+    },
+    "tv_320008": {
+      "title": "Icons Unearthed: Transformers",
+      "content_type": "limited_series",
+      "tmdb_id": 320008,
+      "status": "tracking",
+      "first_air_date": "2026-04-04",
+      "digital_date": "2026-04-04",
+      "episode_count": 6,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/sBWXHZAHDPyIDUG2RwQMoGxcmcd.jpg",
+      "synopsis": "The team look at the history of the Transformers, which began as a modest import toy and became a multi-billion dollar merchandise line that would inspire a multi-billion dollar film franchise.",
+      "genres": [],
+      "original_language": "en",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-04-19T09:44:45.673407",
+      "networks": [
+        "SBS Viceland"
+      ],
+      "has_providers": false
     }
   },
-  "last_update": "2026-04-18T09:44:54.970490"
+  "last_update": "2026-04-19T09:44:44.107042"
 }
