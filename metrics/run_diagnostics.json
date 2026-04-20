@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-04-19T11:29:21.965142",
-  "duration_seconds": 6282.813393,
+  "timestamp": "2026-04-20T12:37:45.758362",
+  "duration_seconds": 6715.833097,
   "overall_success": false,
   "failure_count": 1,
   "warning_count": 0,
@@ -8,37 +8,37 @@
     {
       "name": "Intake new premieres from TMDB",
       "success": true,
-      "duration_seconds": 9.467842,
+      "duration_seconds": 7.984119,
       "error": null,
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-04-17 to 2026-04-19 (incremental mode, 49 intaked)\n\u2705 Movie intake complete: 49 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-03-20 to 2026-04-19\n   \ud83d\udccb Michael Jackson: An American Tragedy (3"
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-04-18 to 2026-04-20 (incremental mode, 31 intaked)\n\u2705 Movie intake complete: 31 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-03-21 to 2026-04-20\n   \ud83d\udccb Azure Spring (6 eps)\n   \ud83d\udccb Egypt with Da"
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 3700.280483,
+      "duration_seconds": 3632.469903,
       "error": null,
-      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 16087 total movies\n\ud83d\udd0d Raw tracking filter: 12863 movies\n\ud83d\udd0d Assigned tracking_movies list: 12863\n\ud83d\udd0d Found 12863 movies in tracking status\n  Priority queue (last 180 days): 692 movies\n  Older movies: 12171 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 12863 movies for digital availability...\n\n  \u2713 Ballistic now on Apple TV Store!\n   \ud83d\udcdd Movie Ballistic already in data.json - skipping imme"
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 16121 total movies\n\ud83d\udd0d Raw tracking filter: 12891 movies\n\ud83d\udd0d Assigned tracking_movies list: 12891\n\ud83d\udd0d Found 12891 movies in tracking status\n  Priority queue (last 180 days): 565 movies\n  Older movies: 12326 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 12891 movies for digital availability...\n\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event lo"
     },
     {
       "name": "Resolve pre-order movie dates",
       "success": true,
-      "duration_seconds": 0.390919,
+      "duration_seconds": 0.354354,
       "error": null,
       "output_preview": "\n\ud83d\udcc5 Resolving pre-order movie dates...\n\n\ud83d\udcc5 Resolving pre-order dates...\n  No pre-order movies to resolve\n\u2705 Pre-order resolution complete: 0 resolved\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Enrich newly available movies with metadata",
       "success": false,
-      "duration_seconds": 2571.377041,
-      "error": "2026-04-19 10:46:29 [INFO] EnrichmentService initialized with enrichment_enabled=True\n2026-04-19 10:46:29 [INFO] Enrichment loaded data.json: 861 movies\n2026-04-19 10:46:29 [INFO] Retired 35 movies older than 90 days from enrichment\n2026-04-19 10:46:29 [INFO] Downloading IMDb ratings dataset (~5MB)...\n2026-04-19 10:46:31 [INFO] IMDb dataset loaded: 1662373 ratings\n2026-04-19 10:46:31 [INFO] Initialized with cache_file=cache/wikipedia_cache.json\n2026-04-19 10:46:31 [INFO] Cache loaded: 0 entries\n2026-04-19 10:46:31 [INFO] Screenshots: enabled\n2026-04-19 10:46:31 [INFO] Wikipedia Scraper initialized with cache_file=cache/wikipedia_cache.json\n2026-04-19 10:46:31 [INFO] Trailer for Ballistic (2026): tier=tmdb_official, url=https://www.youtube.com/watch?v=bxvgiEFR774\n2026-04-19 10:46:31 [INFO] RT scraper initialized (Gemini + Playwright fallback)\n2026-04-19 10:46:44 [INFO] Initialized with cache_file=cache/rt_cache.json\n2026-04-19 10:46:44 [INFO] Cache loaded: 1 entries\n2026-04-19 10:46:44 ",
-      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n  \ud83d\udce6 Retired 35 movies older than 90 days from enrichment\n\ud83c\udfaf Enrichment queue: 7 new + 32 catch-up = 39 total\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n  \u26a1 Ballistic (43.1s) - Wiki:\u2713 Tra"
+      "duration_seconds": 3073.729044,
+      "error": "2026-04-20 11:46:31 [INFO] EnrichmentService initialized with enrichment_enabled=True\n2026-04-20 11:46:31 [INFO] Enrichment loaded data.json: 870 movies\n2026-04-20 11:46:31 [INFO] Retired 39 movies older than 90 days from enrichment\n2026-04-20 11:46:31 [INFO] Downloading IMDb ratings dataset (~5MB)...\n2026-04-20 11:46:32 [INFO] IMDb dataset loaded: 1662915 ratings\n2026-04-20 11:46:32 [INFO] Initialized with cache_file=cache/wikipedia_cache.json\n2026-04-20 11:46:32 [INFO] Cache loaded: 0 entries\n2026-04-20 11:46:32 [INFO] Screenshots: enabled\n2026-04-20 11:46:32 [INFO] Wikipedia Scraper initialized with cache_file=cache/wikipedia_cache.json\n2026-04-20 11:46:32 [INFO] Trailer for The Wolves Always Come at Night (2025): tier=tmdb_official, url=https://www.youtube.com/watch?v=goInp93kzF8\n2026-04-20 11:46:32 [INFO] RT scraper initialized (Gemini + Playwright fallback)\n2026-04-20 11:46:51 [INFO] Initialized with cache_file=cache/rt_cache.json\n2026-04-20 11:46:51 [INFO] Cache loaded: 0 entrie",
+      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n  \ud83d\udce6 Retired 39 movies older than 90 days from enrichment\n\ud83c\udfaf Enrichment queue: 10 new + 38 catch-up = 48 total\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n  \u26a1 The Wolves Always Come at Nig"
     },
     {
       "name": "Stamp hosted trailer URLs into data.json",
       "success": true,
-      "duration_seconds": 1.254796,
+      "duration_seconds": 1.252553,
       "error": null,
-      "output_preview": "=== Trailer Pipeline: stamp ===\n\nConnecting to B2...\nFound 444 trailers in B2 bucket\n\nStamp results:\n  Stamped:          0\n  Already had URL:  419\n  Stale cleaned:    0\n  Not in B2:        442\n"
+      "output_preview": "=== Trailer Pipeline: stamp ===\n\nConnecting to B2...\nFound 444 trailers in B2 bucket\n\nStamp results:\n  Stamped:          0\n  Already had URL:  418\n  Stale cleaned:    0\n  Not in B2:        452\n"
     }
   ],
   "health_issues": [],
@@ -51,20 +51,20 @@
       "phase": "Enrich newly available movies with metadata",
       "severity": "error",
       "message": "Phase failed with exit code 1",
-      "context": "2026-04-19 10:46:29 [INFO] EnrichmentService initialized with enrichment_enabled=True\n2026-04-19 10:46:29 [INFO] Enrichment loaded data.json: 861 movies\n2026-04-19 10:46:29 [INFO] Retired 35 movies older than 90 days from enrichment\n2026-04-19 10:46:29 [INFO] Downloading IMDb ratings dataset (~5MB)...\n2026-04-19 10:46:31 [INFO] IMDb dataset loaded: 1662373 ratings\n2026-04-19 10:46:31 [INFO] Initialized with cache_file=cache/wikipedia_cache.json\n2026-04-19 10:46:31 [INFO] Cache loaded: 0 entries\n",
-      "stdout_preview": "\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n  \ud83d\udce6 Retired 35 movies older than 90 days from enrichment\n\ud83c\udfaf Enrichment queue: 7 new + 32 catch-up = 39 total\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n  \u26a1 Ballistic (43.1s) - Wiki:\u2713 Trai"
+      "context": "2026-04-20 11:46:31 [INFO] EnrichmentService initialized with enrichment_enabled=True\n2026-04-20 11:46:31 [INFO] Enrichment loaded data.json: 870 movies\n2026-04-20 11:46:31 [INFO] Retired 39 movies older than 90 days from enrichment\n2026-04-20 11:46:31 [INFO] Downloading IMDb ratings dataset (~5MB)...\n2026-04-20 11:46:32 [INFO] IMDb dataset loaded: 1662915 ratings\n2026-04-20 11:46:32 [INFO] Initialized with cache_file=cache/wikipedia_cache.json\n2026-04-20 11:46:32 [INFO] Cache loaded: 0 entries\n",
+      "stdout_preview": "\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n  \ud83d\udce6 Retired 39 movies older than 90 days from enrichment\n\ud83c\udfaf Enrichment queue: 10 new + 38 catch-up = 48 total\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n  \u26a1 The Wolves Always Come at Nigh"
     }
   ],
   "warnings": [],
   "data_quality": {
-    "total": 16087,
-    "tracking": 12856,
-    "available": 3212,
-    "data_movies": 861,
+    "total": 16121,
+    "tracking": 12881,
+    "available": 3221,
+    "data_movies": 870,
     "movies_with_links": 281,
     "movies_with_rt": 565,
     "movies_with_wikipedia": 393,
-    "movies_with_trailers": 712
+    "movies_with_trailers": 711
   },
   "enrichment_metrics": {
     "timestamp": "2026-04-17T11:57:46.836240",
