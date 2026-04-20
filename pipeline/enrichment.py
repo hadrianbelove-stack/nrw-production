@@ -1074,19 +1074,9 @@ class EnrichmentService:
                     self.logger.error(f"Error in speculative Apple TV scrape for {title}: {e}")
                     self.stats['vod_failures'] = self.stats.get('vod_failures', 0) + 1
 
-            if youtube_enabled and not already_has_youtube and not skip_rent:
-                try:
-                    self.logger.debug(f"Speculative YouTube scrape for {title} (not in TMDB providers)")
-                    deep_link = self.get_platform_deep_link_with_cache(title, year, 'YouTube')
-                    if deep_link:
-                        self.logger.info(f"Speculative scrape found YouTube link for {title}")
-                        tmdb_rent.append({'service': 'YouTube', 'link': deep_link})
-                        self.stats['vod_successes'] = self.stats.get('vod_successes', 0) + 1
-                    else:
-                        self.stats['vod_speculative_misses'] = self.stats.get('vod_speculative_misses', 0) + 1
-                except Exception as e:
-                    self.logger.error(f"Error in speculative YouTube scrape for {title}: {e}")
-                    self.stats['vod_failures'] = self.stats.get('vod_failures', 0) + 1
+            # YouTube: NO speculative scraping — only search when JustWatch
+            # confirms YouTube availability (via provider-based scraping above).
+            # Speculative YouTube searches produce false positives (podcasts, etc).
         finally:
             self.vod_scraper.max_retries = original_retries
 

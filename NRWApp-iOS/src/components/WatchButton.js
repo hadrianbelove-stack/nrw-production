@@ -69,7 +69,7 @@ const SERVICE_CONFIG = {
   },
   fawesome: {
     name: 'Fawesome',
-    color: '#1a1a2e',
+    color: '#5B8DEF',
     textColor: '#ffffff',
   },
   plex: {

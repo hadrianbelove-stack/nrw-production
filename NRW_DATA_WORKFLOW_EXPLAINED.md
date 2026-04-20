@@ -209,6 +209,33 @@ The orchestrator records all failures and warnings in `metrics/run_diagnostics.j
 
 ---
 
+## **🛡️ Pipeline Safeguards**
+
+Several automated safeguards protect data quality. If you're debugging "why did a movie disappear from the wall?" — check these first.
+
+### Content Blocklist (Intake Phase)
+Non-film content (wrestling events, sports broadcasts) is blocked at intake via two mechanisms in `config.yaml`:
+- **`blocked_companies`**: TMDB production company IDs (WWE, AEW, NJPW, etc.) excluded at the TMDB API level via `without_companies` parameter
+- **`blocked_title_keywords`**: Title-based filter catches anything that slips past company blocking (e.g., "WrestleMania", "ISU Grand Prix")
+- Blocked items are counted in `intake_stats['blocked_by_filter']` and logged when running with debug
+
+### Service Exclusion List (Enrichment Phase)
+`config.yaml > excluded_services` prevents unwanted VOD/streaming services from appearing in watch links. Current exclusions: fuboTV, Philo, Sun Nxt, Fandango, Google Play Movies, Google Play, Shahid VIP. Only Amazon, Apple TV, and YouTube are whitelisted for VOD buttons.
+
+### False Positive Revert (Post-Enrichment)
+After enrichment, movies with `status=available` but **zero watch links** are automatically reverted to `status=tracking`. This catches false-positive discoveries — movies that TMDB flagged as available but have no actual streaming/VOD links.
+
+How it works:
+- Sets `_reverted_from_available: true` and `_false_positive_source` (either `tmdb_type4` or `provider_availability_check`)
+- Blocks re-discovery via the SAME source (e.g., if Type 4 was the false positive, only provider discovery can re-trigger)
+- The OTHER discovery source can still find the movie, preventing permanent blocking
+- Reverted movies are removed from `data.json` (the wall) immediately
+
+### Zero-Watch-Links Display Filter (Display Phase)
+As a final safety net, the display generation phase (`generate_data.py`) filters out any movie with zero watch links before writing to `data.json`. This prevents "empty" movies from appearing on the wall even if they weren't caught by the revert logic.
+
+---
+
 ## **🎯 Why This Architecture Works**
 
 1. **No Data Loss:** Old movies preserved in data_archive.json, recent movies in data.json

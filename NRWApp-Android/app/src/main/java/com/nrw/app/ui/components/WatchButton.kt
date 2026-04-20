@@ -207,7 +207,7 @@ private fun getServiceColor(service: String): Color {
         "peacock" -> PeacockBlue
         "paramount_plus" -> ParamountBlue
         "tubi" -> TubiOrangeRed
-        "fawesome" -> Color(0xFF1A1A2E)
+        "fawesome" -> Color(0xFF5B8DEF)
         else -> BackgroundSecondary
     }
 }

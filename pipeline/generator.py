@@ -3797,7 +3797,13 @@ class DataGenerator:
 
                     # Track enrichment gaps (all meaningful fields, not just watch_links/rt)
                     gaps = []
-                    if not enrichment_fields.get('watch_links'):
+                    # Check for actual watch link content, not just dict truthiness
+                    # (get_watch_links returns {"streaming": [], "vod": []} when empty)
+                    wl = enrichment_fields.get('watch_links', {})
+                    has_real_links = any(
+                        isinstance(v, list) and len(v) > 0 for v in wl.values()
+                    ) if isinstance(wl, dict) else bool(wl)
+                    if not has_real_links:
                         gaps.append('watch_links')
                     if enrichment_fields.get('links', {}).get('rt') is None and enrichment_fields.get('rt_score') is None:
                         gaps.append('rt_score')

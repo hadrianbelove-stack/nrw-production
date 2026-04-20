@@ -37,7 +37,12 @@ tracking:
   archive_available_on_detect: false  # Archive available movies to separate file (experimental)
   compaction_batch_size: 50  # Maximum entries to move per compaction run
   compaction_recent_days: null  # Only compact entries from last N days (null = no age limit)
-  excluded_services: ['fuboTV', 'Philo', 'Sun Nxt', 'Fandango', 'Google Play Movies', 'Google Play', 'Shahid VIP']  # Services to exclude from watch provider results
+  excluded_services: ['fuboTV', 'Philo', 'Sun Nxt', 'Fandango', 'Google Play Movies', 'Google Play', 'Shahid VIP']  # VOD whitelist is Amazon, Apple, YouTube only. All others excluded.
+  # Metadata fields set by false-positive revert logic (generator.py post-enrichment):
+  #   _reverted_from_available: true = movie was reverted from available→tracking (zero watch links)
+  #   _false_positive_source: 'tmdb_type4' or 'provider_availability_check' = which discovery triggered the false positive
+  #   _type4_false_positive: true = Type 4 discovery was false positive (blocks Type 4 re-discovery)
+  #   _providers_false_positive: true = provider discovery was false positive (blocks provider re-discovery)
   blocked_companies:  # Non-film content producers — safe to block
     - 146598   # WWE
     - 10339    # WWE Studios
@@ -58,7 +63,7 @@ tracking:
     - 241364   # Major League Wrestling
     - 116902   # GCW (Game Changer Wrestling)
     - 124609   # GCW (alternate)
-  blocked_title_keywords: ['WWE', 'NXT', 'WrestleMania', 'NJPW', 'AEW', 'Ring of Honor', 'ROH', 'Sareee-ISM', 'TNA Sacrifice', 'TNA Slammiversary', 'TNA Emergence', 'TNA Hard to Kill', 'TNA Rebellion', 'ISU World Championships', 'ISU Grand Prix', 'Mystery Wrestling']
+  blocked_title_keywords: ['WWE', 'NXT', 'WrestleMania', 'NJPW', 'AEW', 'Ring of Honor', 'ROH', 'Sareee-ISM', 'TNA Sacrifice', 'TNA Slammiversary', 'TNA Emergence', 'TNA Hard to Kill', 'TNA Rebellion', 'ISU World Championships', 'ISU Grand Prix', 'Mystery Wrestling', 'TJPW', 'DDT Judgement', 'CMLL', 'HOG:', 'HOGxBIG', 'PWU:', 'Stardom', 'GCW']
 
 # JustWatch configuration (enrichment only)
 # NOTE: JustWatch verification removed from discovery phase (Mar 2026).

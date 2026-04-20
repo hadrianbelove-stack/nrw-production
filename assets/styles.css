@@ -513,13 +513,7 @@ header h1 {
     letter-spacing: 0.5px;
 }
 
-/* Virtual screening "Buy Ticket" button in lightbox (outlined gold) */
-.watch-btn-lb.screening {
-    background: transparent;
-    color: #FFD700;
-    border: 2px solid #FFD700;
-    font-weight: 700;
-}
+/* Virtual screening "Buy Ticket" button — styled via .lightbox-buttons rule below (line ~1508) */
 
 .movie-info {
     margin-top: 0.4rem;
@@ -1504,6 +1498,7 @@ header h1 {
 .watch-btn-lb.pluto { background: #00B4E4; color: #fff; }
 .watch-btn-lb.crackle { background: #FF6600; color: #fff; }
 .watch-btn-lb.plex { background: #E5A00D; color: #000; }
+.watch-btn-lb.fawesome { background: #5B8DEF; color: #fff; }
 .lightbox-buttons .watch-btn-lb.screening { background: transparent; color: #FFD700; border: 2px solid #FFD700; font-weight: 700; }
 
 /* Info row: horizontal, equal-width */

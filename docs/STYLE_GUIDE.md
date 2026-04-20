@@ -42,6 +42,7 @@ This is the authoritative style guide for all NRW visual design. All UI work (ne
 | Peacock | `#000000` |
 | Purchase/Rent | `#ff9500` |
 | Plex | `#E5A00D` |
+| Fawesome | `#5B8DEF` |
 | Apple TV | `#aaaaaa` |
 
 ### Gray Guidelines
@@ -253,6 +254,9 @@ Use **light theme** for better email compatibility:
 ---
 
 ## Changelog
+
+### 2026-04-17 - Added Fawesome Service Color
+- Added Fawesome (`#5B8DEF`) to Service Colors table
 
 ### 2026-02-24 - Navigation Arrows Standard
 - Added Navigation Arrows section for movie detail screens

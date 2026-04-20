@@ -520,6 +520,11 @@ class StreamingPlatformScraper(PlaywrightScraperBase):
                 if runtime < 60:
                     continue
 
+                # Prefer Movies category (30), but don't hard-reject others —
+                # many indie VOD titles aren't properly categorized on YouTube
+                category_id = video.get('snippet', {}).get('categoryId', '')
+                is_movies_category = category_id == '30'
+
                 video_title = video.get('snippet', {}).get('title', '')
                 normalized_video = normalize_text(video_title.lower())
 
@@ -527,16 +532,26 @@ class StreamingPlatformScraper(PlaywrightScraperBase):
                 overlap = matching_words / len(title_words) if title_words else 0
                 has_exact = normalized_title in normalized_video
 
-                if len(title_words) <= 2:
-                    threshold = 0.5 if has_exact else 1.0
+                if is_movies_category:
+                    # Movies category: standard thresholds
+                    if len(title_words) <= 2:
+                        threshold = 0.5 if has_exact else 1.0
+                    else:
+                        threshold = 0.6 if has_exact else 0.7
                 else:
-                    threshold = 0.6 if has_exact else 0.7
+                    # Non-Movies category: require exact title match in video title
+                    # to avoid false positives from podcasts, compilations, etc.
+                    if not has_exact:
+                        continue
+                    threshold = 0.5 if len(title_words) <= 2 else 0.6
 
                 if overlap < threshold:
                     continue
 
                 url = f"https://www.youtube.com/watch?v={video['id']}"
                 elapsed = time.time() - start_time
+                if not is_movies_category:
+                    logger.warning(f"  YouTube match in non-Movies category ({category_id}): {url} (title='{video_title}')")
                 logger.info(f"  Found YouTube link: {url} (runtime={round(runtime)}min, title='{video_title}')")
                 return url
 
