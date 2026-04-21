@@ -3841,6 +3841,7 @@ class DataGenerator:
 
         # Sync enriched flag to movie_tracking.json
         # Also revert false positives (available + zero watch_links) back to tracking
+        false_positive_ids = set()
         try:
             tracking_updated = 0
             reverted_count = 0
@@ -3871,16 +3872,8 @@ class DataGenerator:
                             # Also remove from data.json so it doesn't stay on the wall
                             if mid in movie_lookup:
                                 existing_movies[movie_lookup[mid]] = None
+                                false_positive_ids.add(mid)
                             print(f"  ↩ {movie.get('title')} — reverted to tracking, removed from wall (zero watch links, was: {old_source})")
-            # Clean up any false-positive removals before saving
-            if reverted_count > 0:
-                # Track removed IDs so _safe_save_data_json won't rescue them from disk
-                self._false_positive_removed_ids = {
-                    str(m.get('id', m.get('tmdb_id', '')))
-                    for i, m in enumerate(existing_movies) if m is None
-                }
-                existing_movies = [m for m in existing_movies if m is not None]
-                movie_lookup = {str(m.get('id', m.get('tmdb_id', ''))): i for i, m in enumerate(existing_movies)}
             if tracking_updated > 0 or reverted_count > 0:
                 self.storage.atomic_write_json(tracking_data, 'movie_tracking.json', backup=True)
                 print(f"📝 Updated movie_tracking.json: {tracking_updated} movies marked enriched")
@@ -3888,6 +3881,13 @@ class DataGenerator:
                     print(f"↩ Reverted {reverted_count} false-positive movies back to tracking")
         except Exception as e:
             print(f"⚠️ Could not update movie_tracking.json: {e}")
+
+        # Clean up any false-positive None entries OUTSIDE try/except so it always runs
+        # This prevents NoneType crashes in apply_admin_overrides() when the try block fails
+        if false_positive_ids:
+            self._false_positive_removed_ids = false_positive_ids
+            existing_movies = [m for m in existing_movies if m is not None]
+            movie_lookup = {str(m.get('id', m.get('tmdb_id', ''))): i for i, m in enumerate(existing_movies)}
 
         # Categorize all movies (backfills any missing categories from prior runs)
         existing_movies, _ = self.apply_admin_overrides(existing_movies)
