@@ -2116,12 +2116,9 @@ class DataGenerator:
                         disk_data = json.load(f)
                     disk_movies = disk_data.get('movies', [])
                     in_memory_ids = {str(m.get('id', '')) for m in existing_movies if m.get('id')}
-                    removed_ids = getattr(self, '_false_positive_removed_ids', set())
                     for dm in disk_movies:
                         dm_id = str(dm.get('id', ''))
                         if dm_id and dm_id not in in_memory_ids:
-                            if dm_id in removed_ids:
-                                continue  # Intentionally removed (false positive)
                             existing_movies.append(dm)
                             rescued.append(f"{dm.get('title', dm_id)} ({dm_id})")
                 except Exception as reload_err:
