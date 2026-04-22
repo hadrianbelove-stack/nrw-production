@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-04-21T12:20:38.151467",
-  "duration_seconds": 7390.953331,
+  "timestamp": "2026-04-22T12:14:54.408968",
+  "duration_seconds": 7038.776472,
   "overall_success": true,
   "failure_count": 0,
   "warning_count": 0,
@@ -8,37 +8,37 @@
     {
       "name": "Intake new premieres from TMDB",
       "success": true,
-      "duration_seconds": 5.747185,
+      "duration_seconds": 10.627466,
       "error": null,
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-04-19 to 2026-04-21 (incremental mode, 53 intaked)\n\u2705 Movie intake complete: 53 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-03-22 to 2026-04-21\n   \ud83d\udccb Magic Move (10 eps)\n\n\ud83d\udcca Miniseries intak"
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-04-20 to 2026-04-22 (incremental mode, 34 intaked)\n\u2705 Movie intake complete: 34 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-03-23 to 2026-04-22\n   \ud83d\udccb Hulk Hogan: Real American (4 eps)\n   \ud83d\udccb "
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 2577.252536,
+      "duration_seconds": 4547.802266,
       "error": null,
-      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 16175 total movies\n\ud83d\udd0d Raw tracking filter: 12935 movies\n\ud83d\udd0d Assigned tracking_movies list: 12935\n\ud83d\udd0d Found 12935 movies in tracking status\n  Priority queue (last 180 days): 567 movies\n  Older movies: 12368 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 12935 movies for digital availability...\n\n   \u2705 Added The Serpent's Skin to site immediately (discovery-driven)\n  \ud83d\udcc5 The Serpent's Skin \u2014 "
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 16218 total movies\n\ud83d\udd0d Raw tracking filter: 12983 movies\n\ud83d\udd0d Assigned tracking_movies list: 12983\n\ud83d\udd0d Found 12983 movies in tracking status\n  Priority queue (last 180 days): 585 movies\n  Older movies: 12398 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 12983 movies for digital availability...\n\n   \u2705 Added We Are Guardians to site immediately (discovery-driven)\n  \ud83d\udcc5 We Are Guardians \u2014 pend"
     },
     {
       "name": "Resolve pre-order movie dates",
       "success": true,
-      "duration_seconds": 0.346215,
+      "duration_seconds": 0.354607,
       "error": null,
       "output_preview": "\n\ud83d\udcc5 Resolving pre-order movie dates...\n\n\ud83d\udcc5 Resolving pre-order dates...\n  No pre-order movies to resolve\n\u2705 Pre-order resolution complete: 0 resolved\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Enrich newly available movies with metadata",
       "success": true,
-      "duration_seconds": 4806.142313,
+      "duration_seconds": 2478.971579,
       "error": null,
-      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n  \ud83d\udce6 Retired 55 movies older than 90 days from enrichment\n\ud83c\udfaf Enrichment queue: 8 new + 48 catch-up = 56 total\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n  \u26a1 The Serpent's Skin (136.2s) - "
+      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n  \ud83d\udce6 Retired 2 movies older than 90 days from enrichment\n\ud83c\udfaf Enrichment queue: 7 new + 29 catch-up = 36 total\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n  \u26a1 We Are Guardians (43.4s) - Wiki"
     },
     {
       "name": "Stamp hosted trailer URLs into data.json",
       "success": true,
-      "duration_seconds": 1.331993,
+      "duration_seconds": 0.870289,
       "error": null,
-      "output_preview": "=== Trailer Pipeline: stamp ===\n\nConnecting to B2...\nFound 444 trailers in B2 bucket\n\nStamp results:\n  Stamped:          0\n  Already had URL:  414\n  Stale cleaned:    0\n  Not in B2:        451\n"
+      "output_preview": "=== Trailer Pipeline: stamp ===\n\nConnecting to B2...\nFound 472 trailers in B2 bucket\nSaved data.json: 28 stamped, 0 stale cleaned\n\nStamp results:\n  Stamped:          28\n  Already had URL:  414\n  Stale cleaned:    0\n  Not in B2:        427\n"
     }
   ],
   "health_issues": [],
@@ -49,20 +49,20 @@
   "failures": [],
   "warnings": [],
   "data_quality": {
-    "total": 16175,
-    "tracking": 12940,
-    "available": 3216,
-    "data_movies": 865,
-    "movies_with_links": 298,
-    "movies_with_rt": 590,
-    "movies_with_wikipedia": 414,
-    "movies_with_trailers": 737
+    "total": 16218,
+    "tracking": 12979,
+    "available": 3220,
+    "data_movies": 869,
+    "movies_with_links": 301,
+    "movies_with_rt": 594,
+    "movies_with_wikipedia": 417,
+    "movies_with_trailers": 741
   },
   "enrichment_metrics": {
-    "timestamp": "2026-04-21T12:20:35.780366",
-    "movies_requested": 56,
-    "movies_enriched": 56,
-    "movies_deferred": 0,
-    "enrichment_duration_seconds": 4804.93
+    "timestamp": "2026-04-22T12:14:52.804147",
+    "movies_requested": 36,
+    "movies_enriched": 35,
+    "movies_deferred": 1,
+    "enrichment_duration_seconds": 2478.06
   }
 }
