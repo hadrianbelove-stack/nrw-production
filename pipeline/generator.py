@@ -17,6 +17,7 @@ import time
 import re
 from urllib.parse import quote
 import logging
+import signal
 from logging.handlers import RotatingFileHandler
 # NOTE: Scraper imports are LAZY (inside methods) to protect intake/discovery phases
 # If a scraper import fails, only enrichment breaks - not the whole pipeline
@@ -852,23 +853,12 @@ class DataGenerator:
                     remaining = (total_to_check - checked) / rate if rate > 0 else 0
                     print(f"  📊 Discovery: {checked}/{total_to_check} ({progress_pct:.1f}%) | {newly_digital} found | {int(elapsed//60)}m elapsed | ~{int(remaining//60)}m remaining")
 
-                # False-positive awareness: if this movie was reverted from available,
-                # skip the discovery source that caused the false positive.
-                skip_type4 = False
-                skip_provider = False
-                if movie.get('_reverted_from_available'):
-                    fp_source = movie.get('_false_positive_source', '')
-                    if fp_source == 'tmdb_type4':
-                        skip_type4 = True
-                    elif fp_source == 'provider_availability_check':
-                        skip_provider = True
-
                 # PRIMARY: Type 4 digital release check (authoritative, gives accurate date)
                 # Type 4 is checked first — it provides the real digital release date
                 # and has fewer false positives than provider availability.
                 # Future dates are stored as pending — no transition until the date arrives.
                 type4_found = False
-                if movie['status'] == 'tracking' and not skip_type4:
+                if movie['status'] == 'tracking':
                     today_dt = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
 
                     if movie.get('_type4_pending'):
@@ -906,10 +896,6 @@ class DataGenerator:
                             try:
                                 type4_dt = datetime.strptime(type4_date, '%Y-%m-%d')
                                 if type4_dt <= today_dt:
-                                    # Skip if Type 4 was already a false positive — wait for provider discovery instead
-                                    if movie.get('_type4_false_positive'):
-                                        self.logger.info(f"Skipping Type 4 re-discovery for {movie['title']} (previously false positive)")
-                                        continue
                                     # Past or today — immediate transition
                                     movie['has_providers'] = True
                                     movie['_discovery_source'] = 'tmdb_type4'
@@ -941,7 +927,7 @@ class DataGenerator:
 
                 # SECONDARY: Provider availability check (for ~44% of movies without Type 4)
                 # Only runs when Type 4 didn't find a digital release date.
-                if not type4_found and movie['status'] == 'tracking' and not movie.get('_skip_provider_discovery') and not skip_provider:
+                if not type4_found and movie['status'] == 'tracking' and not movie.get('_skip_provider_discovery'):
                     if str(movie_id).startswith('tv_'):
                         numeric_id = str(movie_id).replace('tv_', '')
                         url = f"https://api.themoviedb.org/3/tv/{numeric_id}/watch/providers"
@@ -1031,10 +1017,6 @@ class DataGenerator:
 
                         # Transition provider-discovered movie
                         if has_providers and movie['status'] == 'tracking':
-                            # Skip if providers were already a false positive — wait for Type 4 instead
-                            if movie.get('_providers_false_positive'):
-                                self.logger.info(f"Skipping provider re-discovery for {movie['title']} (previously false positive)")
-                                continue
                             movie['status'] = 'available'
                             if not movie.get('digital_date'):
                                 movie['digital_date'] = datetime.now().strftime('%Y-%m-%d')
@@ -3741,6 +3723,16 @@ class DataGenerator:
         _loop_start = time.time()
         _loop_timeout = ENRICHMENT_LOOP_TIMEOUT_MINUTES * 60
 
+        # Per-movie timeout: prevents a single stalled Playwright scrape from hanging the whole loop.
+        # The loop-level timeout (ENRICHMENT_LOOP_TIMEOUT_MINUTES) is checked between movies only,
+        # so a hung page.goto() inside one movie would block it from ever firing.
+        _PER_MOVIE_TIMEOUT_S = 300  # 5 minutes per movie
+
+        def _per_movie_timeout_handler(signum, frame):
+            raise TimeoutError(f"Movie enrichment exceeded {_PER_MOVIE_TIMEOUT_S}s")
+
+        signal.signal(signal.SIGALRM, _per_movie_timeout_handler)
+
         for movie_id in movie_ids_to_enrich:
             # Safety net: bail out if enrichment has been running too long
             if (time.time() - _loop_start) > _loop_timeout:
@@ -3759,6 +3751,7 @@ class DataGenerator:
             movie_data = tracking_data['movies'][movie_id]
             movie_index = movie_lookup[movie_id]
 
+            signal.alarm(_PER_MOVIE_TIMEOUT_S)
             try:
                 # Track enrichment attempts for catch-up retry limiting
                 existing_movies[movie_index]['_enrichment_attempts'] = \
@@ -3832,19 +3825,30 @@ class DataGenerator:
                     existing_movies[movie_index]['_enrichment_status'] = 'failed'
                     print(f"  ✗ Enrichment failed for {movie_data.get('title')}")
 
+            except TimeoutError:
+                print(f"  ⏰ {movie_data.get('title', movie_id)} timed out after {_PER_MOVIE_TIMEOUT_S}s — will retry next run")
+                if movie_index < len(existing_movies):
+                    existing_movies[movie_index]['_enrichment_status'] = 'timeout'
+                # Reset Playwright singleton so next movie gets a clean browser
+                try:
+                    from playwright_manager import PlaywrightManager
+                    PlaywrightManager().cleanup()
+                    PlaywrightManager._instance = None
+                except Exception:
+                    pass
+                for _attr in ('streaming_scraper', 'rt_scraper', 'vod_scraper', 'trailer_finder'):
+                    setattr(self, _attr, None)
             except Exception as e:
                 # Mark enrichment status as error but keep movie in data.json
                 if movie_index < len(existing_movies):
                     existing_movies[movie_index]['_enrichment_status'] = 'error'
                 print(f"  ✗ Error enriching {movie_data.get('title', movie_id)}: {e}")
-                continue
+            finally:
+                signal.alarm(0)  # Always cancel the per-movie alarm
 
         # Sync enriched flag to movie_tracking.json
-        # Also revert false positives (available + zero watch_links) back to tracking
-        false_positive_ids = set()
         try:
             tracking_updated = 0
-            reverted_count = 0
             for mid in movie_ids_to_enrich:
                 mid = str(mid)
                 if mid in movie_lookup:
@@ -3854,40 +3858,16 @@ class DataGenerator:
                         tracking_data['movies'][mid]['enrichment_date'] = datetime.now().strftime('%Y-%m-%d')
                         tracking_updated += 1
 
-                        # Check for false positive: enriched successfully but zero watch links
+                        # Report zero watch links (warning only — status stays 'available', display filter handles wall)
                         wl = movie.get('watch_links', {})
                         wl_count = sum(len(v) for v in wl.values()) if isinstance(wl, dict) else 0
                         if wl_count == 0 and tracking_data['movies'][mid].get('status') == 'available':
-                            old_source = tracking_data['movies'][mid].get('_discovery_source', 'unknown')
-                            # Mark which discovery source was false positive (so the OTHER can still try)
-                            if old_source == 'tmdb_type4':
-                                tracking_data['movies'][mid]['_type4_false_positive'] = True
-                            else:
-                                tracking_data['movies'][mid]['_providers_false_positive'] = True
-                            tracking_data['movies'][mid]['status'] = 'tracking'
-                            tracking_data['movies'][mid]['_reverted_from_available'] = True
-                            tracking_data['movies'][mid]['_false_positive_source'] = old_source
-                            # Keep digital_date as evidence (don't null it)
-                            reverted_count += 1
-                            # Also remove from data.json so it doesn't stay on the wall
-                            if mid in movie_lookup:
-                                existing_movies[movie_lookup[mid]] = None
-                                false_positive_ids.add(mid)
-                            print(f"  ↩ {movie.get('title')} — reverted to tracking, removed from wall (zero watch links, was: {old_source})")
-            if tracking_updated > 0 or reverted_count > 0:
+                            print(f"  ⚠ {movie.get('title')} — zero watch links after enrichment")
+            if tracking_updated > 0:
                 self.storage.atomic_write_json(tracking_data, 'movie_tracking.json', backup=True)
                 print(f"📝 Updated movie_tracking.json: {tracking_updated} movies marked enriched")
-                if reverted_count > 0:
-                    print(f"↩ Reverted {reverted_count} false-positive movies back to tracking")
         except Exception as e:
             print(f"⚠️ Could not update movie_tracking.json: {e}")
-
-        # Clean up any false-positive None entries OUTSIDE try/except so it always runs
-        # This prevents NoneType crashes in apply_admin_overrides() when the try block fails
-        if false_positive_ids:
-            self._false_positive_removed_ids = false_positive_ids
-            existing_movies = [m for m in existing_movies if m is not None]
-            movie_lookup = {str(m.get('id', m.get('tmdb_id', ''))): i for i, m in enumerate(existing_movies)}
 
         # Categorize all movies (backfills any missing categories from prior runs)
         existing_movies, _ = self.apply_admin_overrides(existing_movies)
