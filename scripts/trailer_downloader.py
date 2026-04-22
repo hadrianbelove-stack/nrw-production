@@ -14,6 +14,7 @@ Requires Python 3.10+ (yt-dlp dropped 3.9 support).
 """
 
 import argparse
+import concurrent.futures
 import json
 import os
 import re
@@ -32,6 +33,7 @@ OUTPUT_DIR = os.path.join(PROJECT_ROOT, 'media', 'trailers')
 MAX_DURATION_SECONDS = 300  # 5 minutes — skip anything longer
 RATE_LIMIT_SECONDS = 2     # Pause between downloads
 DOWNLOAD_TIMEOUT = 60       # Seconds before giving up on a single download
+MOVIE_TIMEOUT = 480         # 8 minutes overall per movie (normal runs ~3-4 min)
 
 
 def extract_youtube_id(url):
@@ -125,7 +127,12 @@ def download_trailer(movie, dry_run=False, cookies_browser=None):
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            info = ydl.extract_info(movie['trailer_url'], download=True)
+            with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+                future = executor.submit(ydl.extract_info, movie['trailer_url'], download=True)
+                try:
+                    info = future.result(timeout=MOVIE_TIMEOUT)
+                except concurrent.futures.TimeoutError:
+                    return {'status': 'failed', 'detail': f'Timed out after {MOVIE_TIMEOUT}s'}
 
             if info is None:
                 return {'status': 'skipped_too_long', 'detail': 'Exceeded 5 min duration cap'}

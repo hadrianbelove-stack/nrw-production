@@ -21,7 +21,7 @@ Run the local launchagent script manually. Use this when the scheduled run was m
 
 4. Run the script:
    ```bash
-   bash /Users/hadrianbelove/Downloads/nrw-production/scripts/local_daily.sh
+   bash scripts/local_daily.sh
    ```
 
 5. Then run `/launchagentreport` to summarize the results.
