@@ -974,10 +974,13 @@ class DataGenerator:
                         buy_providers = us.get('buy', [])
                         stream_providers = us.get('flatrate', [])
 
-                        # Extract provider names (using centralized excluded services helper)
-                        rent_names = [p.get('provider_name', '') for p in rent_providers if not self.enrichment.is_excluded_service(p.get('provider_name', ''))]
-                        buy_names = [p.get('provider_name', '') for p in buy_providers if not self.enrichment.is_excluded_service(p.get('provider_name', ''))]
-                        stream_names = [p.get('provider_name', '') for p in stream_providers if not self.enrichment.is_excluded_service(p.get('provider_name', ''))]
+                        # Extract provider names — NO exclusion filter here.
+                        # Discovery is binary: does TMDB show ANY provider? Yes = discovered.
+                        # excluded_services filtering happens in enrichment (JustWatch verification),
+                        # not in discovery. See NRW_DATA_WORKFLOW_EXPLAINED.md.
+                        rent_names = [p.get('provider_name', '') for p in rent_providers]
+                        buy_names = [p.get('provider_name', '') for p in buy_providers]
+                        stream_names = [p.get('provider_name', '') for p in stream_providers]
 
                         has_providers = bool(rent_names or buy_names or stream_names)
                         movie['has_providers'] = has_providers
@@ -3763,6 +3766,64 @@ class DataGenerator:
                 if not movie_details:
                     existing_movies[movie_index]['_enrichment_status'] = 'failed'
                     print(f"  ✗ Could not fetch TMDB details for {movie_data.get('title', movie_id)} — marked failed for retry")
+                    continue
+
+                # JustWatch pre-verification: confirm the movie is on our target platforms
+                # BEFORE investing time in full enrichment (RT, Wiki, trailers, etc.).
+                # Discovery is binary (any TMDB provider = discovered); this step handles
+                # platform filtering. If JustWatch can't confirm valid platforms → revert
+                # to tracking with a note for the daily launch report.
+                _title = existing_movies[movie_index].get('title', movie_data.get('title', ''))
+                _year = movie_data.get('year')
+                _content_type_jw = 'tv' if str(movie_id).startswith('tv_') else 'movie'
+                _jw_verified = True
+                _revert_reason = None
+                try:
+                    if not hasattr(self.enrichment, '_justwatch_client') or self.enrichment._justwatch_client is None:
+                        from pipeline.justwatch import JustWatchClient
+                        self.enrichment._justwatch_client = JustWatchClient(logger=self.logger)
+                    _jw_node = self.enrichment._justwatch_client.search_movie(_title, _year, content_type=_content_type_jw)
+                    _excl_lower = [s.lower() for s in self.enrichment.config.get('tracking', {}).get('excluded_services', ['fuboTV', 'Philo'])]
+                    if _jw_node:
+                        _offers = _jw_node.get('offers', [])
+                        _valid_offers = []
+                        _excl_svcs_found = set()
+                        for _o in _offers:
+                            _mtype = _o.get('monetizationType')
+                            _svc = _o.get('package', {}).get('clearName', '')
+                            _url = _o.get('standardWebURL', '')
+                            if not _url or not _svc:
+                                continue
+                            if any(_ex in _svc.lower() for _ex in _excl_lower):
+                                if _mtype in ('RENT', 'BUY'):
+                                    _excl_svcs_found.add(_svc)
+                            else:
+                                _valid_offers.append(_o)
+                        if not _valid_offers:
+                            _jw_verified = False
+                            if _excl_svcs_found:
+                                _revert_reason = f"excluded_platforms_only: {', '.join(sorted(_excl_svcs_found))}"
+                            elif _offers:
+                                _revert_reason = "justwatch_no_valid_offers"
+                            else:
+                                _revert_reason = "justwatch_no_match"
+                    else:
+                        _jw_verified = False
+                        _revert_reason = "justwatch_no_match"
+                except Exception as _jw_err:
+                    self.logger.warning(f"JustWatch pre-check error for {_title}: {_jw_err} — proceeding with enrichment")
+
+                if not _jw_verified:
+                    _today_iso = datetime.now().strftime('%Y-%m-%d')
+                    tracking_data['movies'][movie_id]['status'] = 'tracking'
+                    tracking_data['movies'][movie_id]['_jw_revert_reason'] = _revert_reason
+                    tracking_data['movies'][movie_id]['_jw_reverted_at'] = _today_iso
+                    existing_movies[movie_index]['_jw_reverted'] = True
+                    existing_movies[movie_index]['_jw_revert_reason'] = _revert_reason
+                    existing_movies[movie_index]['_enrichment_status'] = 'reverted'
+                    existing_movies[movie_index]['status'] = 'tracking'
+                    print(f"  🔄 {_title} — JustWatch pre-check: {_revert_reason} → reverted to tracking")
+                    signal.alarm(0)
                     continue
 
                 # Get enrichment fields only

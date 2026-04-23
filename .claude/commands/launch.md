@@ -55,6 +55,16 @@ for m in movies:
 
 pct = round(len(zero_broken) / total * 100, 1) if total else 0
 
+# JustWatch-reverted movies (last 7 days)
+jw_reverted = []
+try:
+    t = json.load(open('movie_tracking.json'))
+    for mid, m in t.get('movies', {}).items():
+        rev_at = m.get('_jw_reverted_at', '')
+        if rev_at >= week_ago and m.get('_jw_revert_reason'):
+            jw_reverted.append((rev_at, m.get('title', mid), m['_jw_revert_reason']))
+except: pass
+
 # Pipeline health
 try:
     diag = json.load(open('metrics/run_diagnostics.json'))
@@ -79,7 +89,14 @@ elif pct > 5:
 else:
     print(f'⚠ WARNING: {len(zero_broken)} movies have zero watch links ({pct}%)')
     for t in sorted(zero_broken): print(f'  ⚠ {t}')
+if jw_reverted:
+    print(f'🔄 JW REVERTED ({len(jw_reverted)}) — discovered but not on our platforms (last 7 days):')
+    for rev_at, title, reason in sorted(jw_reverted): print(f'  {rev_at}  {title} — {reason}')
+else:
+    print(f'✅ JW REVERTED: 0 — All discovered movies confirmed on our platforms')
 "
 ```
 
 Present the output as a formatted report. The **ZERO WATCH LINKS** section is the most critical — zero watch links on a wall movie is NEVER normal. It signals enrichment failure. A 🚨 CRITICAL alert means the pipeline is likely broken and needs immediate investigation.
+
+The **JW REVERTED** section shows movies discovered by TMDB but sent back to tracking after JustWatch couldn't confirm them on our platforms. This is expected and healthy — it means the pipeline correctly filtered out movies only available on excluded services (Fandango, Google Play, etc.) or with no JustWatch match at all.
