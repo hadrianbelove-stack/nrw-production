@@ -1296,6 +1296,15 @@ class NRWOrchestrator:
             else:
                 print("📝 Skipping trailer hosting (disabled in config)")
 
+            # Phase 3.7: Check virtual screening expirations (Eventive, Shift72, etc.)
+            # Detects expired screenings, hides from wall, resets to tracking for VOD re-discovery
+            print("\n🎪 Phase 3.7: Virtual Screening Expiration Check")
+            self.run_command(
+                "python3 generate_data.py --check_screenings",
+                "Check virtual screening link expirations",
+                critical=False  # Network-dependent, don't fail pipeline on HTTP errors
+            )
+
             # Log data quality info (report-only, no enforcement)
             if success:
                 print("\n🔍 Validating RT data...")
