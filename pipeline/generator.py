@@ -10,6 +10,7 @@ import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import load_env  # Load .env into os.environ
 import json
+import random
 import requests
 import yaml
 from datetime import datetime, timedelta, timezone
@@ -4671,11 +4672,6 @@ class DataGenerator:
         if platform_attempts > 0:
             platform_success_rate = (platform_successes / platform_attempts * 100)
             print(f"  VOD scraper success rate: {platform_success_rate:.1f}%")
-
-            # Show overall success comparison
-            if success_rate > 0:
-                comparison = "higher" if platform_success_rate > success_rate else "lower"
-                print(f"  Success rate vs cache: {platform_success_rate:.1f}% ({comparison} than {success_rate:.1f}%)")
         else:
             print(f"  ⚠️  VOD scraper was never called (check if movies have Amazon/Apple TV providers)")
 

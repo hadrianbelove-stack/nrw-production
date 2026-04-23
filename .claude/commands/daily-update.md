@@ -6,7 +6,7 @@ Run the full daily NRW pipeline with verification:
 
 1. Run intake phase: `python3 generate_data.py --intake`
 2. Run discovery phase: `python3 generate_data.py --discover`
-3. Run enrichment phase: `python3 generate_data.py`
+3. Run enrichment phase: `python3 generate_data.py --enrich`
 4. Run health check: `python3 ops/health_check.py`
 
 After each phase, report:
