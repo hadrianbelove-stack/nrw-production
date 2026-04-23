@@ -163,11 +163,11 @@ body {
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
     border-radius: 15px;
-    overflow: hidden;
 }
 
 .flip-front {
     background: #1a1a2e;
+    overflow: hidden;
 }
 
 .flip-back {
@@ -176,6 +176,8 @@ body {
     padding: 20px;
     display: flex;
     flex-direction: column;
+    overflow-y: auto;
+    touch-action: pan-y;
 }
 
 /* === FRONT OF CARD === */
@@ -341,10 +343,7 @@ body {
     font-size: 14px;
     color: #f0f0f0;
     line-height: 1.6;
-    flex: 1;
-    overflow-y: auto;
     margin-bottom: 12px;
-    min-height: 40px;
 }
 
 .back-pull-quotes {
