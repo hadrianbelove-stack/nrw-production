@@ -125,6 +125,7 @@ body {
     margin-bottom: 20px;
     perspective: 1000px;
     cursor: pointer;
+    touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
 }
 
@@ -401,6 +402,32 @@ body {
 
 .buttons-row:last-child {
     margin-bottom: 0;
+}
+
+.nav-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+.btn-nav {
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.45);
+    font-size: 22px;
+    padding: 4px 14px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    transition: color 0.15s;
+    line-height: 1;
+}
+
+.btn-nav:active {
+    color: #00d4aa;
 }
 
 .btn-equal {

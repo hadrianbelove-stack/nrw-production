@@ -295,6 +295,19 @@ const NRWMobile = {
         return header;
     },
 
+    navigateCard(card, direction) {
+        const allCards = Array.from(document.querySelectorAll('#movie-feed .flip-card'));
+        const idx = allCards.indexOf(card);
+        const targetIdx = idx + direction;
+        if (targetIdx < 0 || targetIdx >= allCards.length) return;
+        const targetCard = allCards[targetIdx];
+        card.classList.remove('flipped');
+        setTimeout(() => {
+            targetCard.classList.add('flipped');
+            targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 150);
+    },
+
     createFlipCard(movie) {
         const isStaffPick = movie.categories?.is_staff_pick || this.staffPicks.includes(movie.id);
 
@@ -353,6 +366,10 @@ const NRWMobile = {
                         ${this.getIMDbButton(movie)}
                         ${this.getWikiButton(movie)}
                     </div>
+                    <div class="nav-row">
+                        <button class="btn-nav btn-nav-prev" aria-label="Previous">&#8592;</button>
+                        <button class="btn-nav btn-nav-next" aria-label="Next">&#8594;</button>
+                    </div>
                 </div>
             </div>
         `;
@@ -393,12 +410,36 @@ const NRWMobile = {
             }
         }
 
-        // Add flip handler
+        // Swipe state
+        let swipeTouchStartX = 0, swipeTouchStartY = 0, justSwiped = false;
+
+        const backEl = card.querySelector('.flip-back');
+
+        backEl.addEventListener('touchstart', (e) => {
+            swipeTouchStartX = e.touches[0].clientX;
+            swipeTouchStartY = e.touches[0].clientY;
+        }, { passive: true });
+
+        backEl.addEventListener('touchend', (e) => {
+            const deltaX = e.changedTouches[0].clientX - swipeTouchStartX;
+            const deltaY = e.changedTouches[0].clientY - swipeTouchStartY;
+            if (Math.abs(deltaX) > 50 && Math.abs(deltaX) > Math.abs(deltaY) * 1.5) {
+                justSwiped = true;
+                setTimeout(() => { justSwiped = false; }, 300);
+                this.navigateCard(card, deltaX > 0 ? -1 : 1);
+            }
+        }, { passive: true });
+
+        // Flip on tap (whole card, but skip buttons/links and swipes)
         card.addEventListener('click', (e) => {
-            // Don't flip if clicking a button/link
+            if (justSwiped) return;
             if (e.target.closest('a, button')) return;
             card.classList.toggle('flipped');
         });
+
+        // Nav arrow buttons
+        card.querySelector('.btn-nav-prev').addEventListener('click', () => this.navigateCard(card, -1));
+        card.querySelector('.btn-nav-next').addEventListener('click', () => this.navigateCard(card, 1));
 
         return card;
     },
