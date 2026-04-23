@@ -1300,7 +1300,7 @@ class NRWOrchestrator:
             # Detects expired screenings, hides from wall, resets to tracking for VOD re-discovery
             print("\n🎪 Phase 3.7: Virtual Screening Expiration Check")
             self.run_command(
-                "python3 generate_data.py --check_screenings",
+                "python3 generate_data.py --check-screenings",
                 "Check virtual screening link expirations",
                 critical=False  # Network-dependent, don't fail pipeline on HTTP errors
             )
