@@ -339,6 +339,7 @@ const NRWMobile = {
                     </div>
                 </div>
                 <div class="flip-back">
+                    <div class="back-content">
                     <div class="back-title-row">
                         <h2 class="back-title">${movie.title || 'Untitled'}</h2>
                         ${movie.year ? `<span class="back-year">(${movie.year})</span>` : ''}
@@ -369,6 +370,7 @@ const NRWMobile = {
                     <div class="nav-row">
                         <button class="btn-nav btn-nav-prev" aria-label="Previous">&#8592;</button>
                         <button class="btn-nav btn-nav-next" aria-label="Next">&#8594;</button>
+                    </div>
                     </div>
                 </div>
             </div>
@@ -431,19 +433,24 @@ const NRWMobile = {
         }, { passive: true });
 
         // Tap-to-flip via touchend — fires instantly, no 300ms iOS delay
+        // Uses a flag instead of e.preventDefault() — iOS ignores preventDefault
+        // on touchend inside transform-style: preserve-3d contexts
+        let touchFlipped = false;
         card.addEventListener('touchend', (e) => {
             if (e.target.closest('a, button')) return;
             const dx = e.changedTouches[0].clientX - swipeTouchStartX;
             const dy = e.changedTouches[0].clientY - swipeTouchStartY;
             if (Math.abs(dx) < 15 && Math.abs(dy) < 15) {
                 if (justSwiped) return;
-                e.preventDefault(); // suppress synthesized click
+                touchFlipped = true;
+                setTimeout(() => { touchFlipped = false; }, 500);
                 card.classList.toggle('flipped');
             }
-        }, { passive: false });
+        }, { passive: true });
 
         // Click fallback for desktop (mouse) users
         card.addEventListener('click', (e) => {
+            if (touchFlipped) { touchFlipped = false; return; }
             if (justSwiped) return;
             if (e.target.closest('a, button')) return;
             card.classList.toggle('flipped');

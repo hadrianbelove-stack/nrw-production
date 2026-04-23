@@ -173,11 +173,20 @@ body {
 .flip-back {
     transform: rotateY(180deg);
     background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    overflow: hidden;
+}
+
+/* Scrollable inner wrapper — grandchild of preserve-3d, scrolls correctly on iOS */
+.back-content {
+    height: 100%;
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+    touch-action: pan-y;
     padding: 20px;
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
-    touch-action: pan-y;
 }
 
 /* === FRONT OF CARD === */
