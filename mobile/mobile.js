@@ -410,27 +410,39 @@ const NRWMobile = {
             }
         }
 
-        // Swipe state
+        // Touch / swipe state — tracked at card level so both front and back work
         let swipeTouchStartX = 0, swipeTouchStartY = 0, justSwiped = false;
 
-        const backEl = card.querySelector('.flip-back');
-
-        backEl.addEventListener('touchstart', (e) => {
+        card.addEventListener('touchstart', (e) => {
             swipeTouchStartX = e.touches[0].clientX;
             swipeTouchStartY = e.touches[0].clientY;
         }, { passive: true });
 
+        // Horizontal swipe on the back → navigate prev/next
+        const backEl = card.querySelector('.flip-back');
         backEl.addEventListener('touchend', (e) => {
             const deltaX = e.changedTouches[0].clientX - swipeTouchStartX;
             const deltaY = e.changedTouches[0].clientY - swipeTouchStartY;
-            if (Math.abs(deltaX) > 50 && Math.abs(deltaX) > Math.abs(deltaY) * 1.5) {
+            if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY) * 1.5) {
                 justSwiped = true;
-                setTimeout(() => { justSwiped = false; }, 300);
+                setTimeout(() => { justSwiped = false; }, 400);
                 this.navigateCard(card, deltaX > 0 ? -1 : 1);
             }
         }, { passive: true });
 
-        // Flip on tap (whole card, but skip buttons/links and swipes)
+        // Tap-to-flip via touchend — fires instantly, no 300ms iOS delay
+        card.addEventListener('touchend', (e) => {
+            if (e.target.closest('a, button')) return;
+            const dx = e.changedTouches[0].clientX - swipeTouchStartX;
+            const dy = e.changedTouches[0].clientY - swipeTouchStartY;
+            if (Math.abs(dx) < 15 && Math.abs(dy) < 15) {
+                if (justSwiped) return;
+                e.preventDefault(); // suppress synthesized click
+                card.classList.toggle('flipped');
+            }
+        }, { passive: false });
+
+        // Click fallback for desktop (mouse) users
         card.addEventListener('click', (e) => {
             if (justSwiped) return;
             if (e.target.closest('a, button')) return;

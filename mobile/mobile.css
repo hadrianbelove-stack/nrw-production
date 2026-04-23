@@ -344,6 +344,7 @@ body {
     flex: 1;
     overflow-y: auto;
     margin-bottom: 12px;
+    min-height: 40px;
 }
 
 .back-pull-quotes {
@@ -408,8 +409,8 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 6px;
-    padding-top: 6px;
+    margin-top: 4px;
+    padding-top: 4px;
     border-top: 1px solid rgba(255,255,255,0.08);
 }
 
@@ -417,8 +418,8 @@ body {
     background: none;
     border: none;
     color: rgba(255,255,255,0.45);
-    font-size: 22px;
-    padding: 4px 14px;
+    font-size: 18px;
+    padding: 2px 10px;
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
