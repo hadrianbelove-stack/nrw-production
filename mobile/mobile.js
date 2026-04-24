@@ -562,22 +562,18 @@ const NRWMobile = {
 
     getTrailerButton(movie) {
         const trailerUrl = movie.links?.trailer_hosted || movie.links?.trailer;
-        if (trailerUrl) {
-            const isMP4 = (() => { try { return new URL(trailerUrl).pathname.endsWith('.mp4'); } catch { return trailerUrl.endsWith('.mp4'); } })();
-            if (isMP4) {
-                return `<a href="#" onclick="NRWMobile.showTrailer('${trailerUrl}');return false;" class="btn-equal btn-trailer">Trailer</a>`;
-            }
-            return `<a href="${trailerUrl}" target="_blank" rel="noopener" class="btn-equal btn-trailer">Trailer</a>`;
+        if (!trailerUrl) return '';
+        const isMP4 = (() => { try { return new URL(trailerUrl).pathname.endsWith('.mp4'); } catch { return trailerUrl.endsWith('.mp4'); } })();
+        if (isMP4) {
+            return `<a href="#" onclick="NRWMobile.showTrailer('${movie.id}');return false;" class="btn-equal btn-trailer">Trailer</a>`;
         }
-        return '<span class="btn-equal btn-trailer" style="opacity:0.5">Trailer</span>';
+        return `<a href="${trailerUrl}" target="_blank" rel="noopener" class="btn-equal btn-trailer">Trailer</a>`;
     },
 
     getRTButton(movie) {
+        if (!movie.links?.rt) return '';
         const rtText = movie.rt_score ? `RT ${movie.rt_score}` : 'RT';
-        if (movie.links?.rt) {
-            return `<a href="${movie.links.rt}" target="_blank" rel="noopener" class="btn-equal btn-rt">${rtText}</a>`;
-        }
-        return `<span class="btn-equal btn-rt" style="opacity:0.5">${rtText}</span>`;
+        return `<a href="${movie.links.rt}" target="_blank" rel="noopener" class="btn-equal btn-rt">${rtText}</a>`;
     },
 
     getIMDbButton(movie) {
@@ -608,36 +604,76 @@ const NRWMobile = {
     },
 
     getWikiButton(movie) {
-        if (movie.links?.wikipedia) {
-            return `<a href="${movie.links.wikipedia}" target="_blank" rel="noopener" class="btn-equal btn-wiki">Wiki</a>`;
-        }
-        return '<span class="btn-equal btn-wiki" style="opacity:0.5">Wiki</span>';
+        if (!movie.links?.wikipedia) return '';
+        return `<a href="${movie.links.wikipedia}" target="_blank" rel="noopener" class="btn-equal btn-wiki">Wiki</a>`;
     },
 
-    // Inline trailer player for self-hosted MP4s
-    showTrailer(url) {
-        // Remove existing overlay if any
+    // Build swipable trailer list and open at the given movie id
+    showTrailer(movieId) {
+        const isMP4 = url => { try { return new URL(url).pathname.endsWith('.mp4'); } catch { return url.endsWith('.mp4'); } };
+        const trailerMovies = this.filteredMovies.filter(m => {
+            const url = m.links?.trailer_hosted || m.links?.trailer;
+            return url && isMP4(url);
+        });
+        const idx = trailerMovies.findIndex(m => String(m.id) === String(movieId));
+        if (idx === -1) return;
+        this._showTrailerAt(trailerMovies, idx);
+    },
+
+    _showTrailerAt(trailerMovies, idx) {
         const existing = document.getElementById('trailer-overlay');
         if (existing) existing.remove();
 
+        const movie = trailerMovies[idx];
+        const url = movie.links.trailer_hosted || movie.links.trailer;
+        const hasPrev = idx > 0;
+        const hasNext = idx < trailerMovies.length - 1;
+
         const overlay = document.createElement('div');
         overlay.id = 'trailer-overlay';
-        overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);z-index:10000;display:flex;align-items:center;justify-content:center;flex-direction:column;';
+        overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);z-index:10000;display:flex;align-items:center;justify-content:center;';
+
         overlay.innerHTML = `
-            <button id="trailer-close" style="position:absolute;top:12px;right:16px;background:none;border:none;color:#fff;font-size:32px;cursor:pointer;z-index:1;">&times;</button>
-            <video controls autoplay playsinline style="max-width:100%;max-height:85vh;background:#000;">
-                <source src="${url}" type="video/mp4">
-            </video>
+            <div id="trailer-video-wrap" style="position:relative;max-width:calc(100% - 60px);">
+                <button id="trailer-close" style="position:absolute;top:-14px;right:-14px;background:rgba(0,0,0,0.8);border:1px solid rgba(255,255,255,0.3);color:#fff;font-size:18px;line-height:1;width:30px;height:30px;border-radius:50%;cursor:pointer;z-index:1;display:flex;align-items:center;justify-content:center;">&times;</button>
+                ${hasPrev ? `<button id="trailer-prev" style="position:absolute;left:-28px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,0.6);font-size:32px;cursor:pointer;padding:8px;line-height:1;">&#8592;</button>` : ''}
+                ${hasNext ? `<button id="trailer-next" style="position:absolute;right:-28px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,0.6);font-size:32px;cursor:pointer;padding:8px;line-height:1;">&#8594;</button>` : ''}
+                <video controls autoplay playsinline style="display:block;width:100%;background:#000;">
+                    <source src="${url}" type="video/mp4">
+                </video>
+                <div style="text-align:center;color:#888;font-size:12px;letter-spacing:0.05em;padding-top:8px;">${movie.title || ''}</div>
+            </div>
         `;
+
         document.body.appendChild(overlay);
         document.body.style.overflow = 'hidden';
 
-        const onKeydown = (e) => { if (e.key === 'Escape') close(); };
         const close = () => { overlay.remove(); document.body.style.overflow = ''; document.removeEventListener('keydown', onKeydown); };
+        const onKeydown = e => { if (e.key === 'Escape') close(); };
         document.addEventListener('keydown', onKeydown);
+
         overlay.querySelector('#trailer-close').addEventListener('click', close);
-        overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
+
+        // Tap outside the video box (above/below) closes the overlay
+        overlay.addEventListener('click', e => {
+            if (!overlay.querySelector('#trailer-video-wrap').contains(e.target)) close();
+        });
+
         overlay.querySelector('video').addEventListener('ended', close);
+
+        if (hasPrev) overlay.querySelector('#trailer-prev').addEventListener('click', () => { close(); this._showTrailerAt(trailerMovies, idx - 1); });
+        if (hasNext) overlay.querySelector('#trailer-next').addEventListener('click', () => { close(); this._showTrailerAt(trailerMovies, idx + 1); });
+
+        // Swipe left/right to navigate trailers
+        let swipeStartX = 0;
+        overlay.addEventListener('touchstart', e => { swipeStartX = e.touches[0].clientX; }, { passive: true });
+        overlay.addEventListener('touchend', e => {
+            const dx = e.changedTouches[0].clientX - swipeStartX;
+            if (Math.abs(dx) > 50) {
+                if (dx > 0 && hasPrev) { close(); this._showTrailerAt(trailerMovies, idx - 1); }
+                else if (dx < 0 && hasNext) { close(); this._showTrailerAt(trailerMovies, idx + 1); }
+            }
+        }, { passive: true });
     }
 };
 
