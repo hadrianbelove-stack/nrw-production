@@ -1009,6 +1009,18 @@ class DataGenerator:
                                     'buy': buy_names,
                                     'streaming': stream_names
                                 }
+                                # Capture pre-order deeplinks for display on all platforms
+                                movie['pre_order_links'] = {}
+                                if self._amazon_detector.last_url:
+                                    movie['pre_order_links']['amazon'] = self._amazon_detector.last_url
+                                try:
+                                    from streaming_platform_scraper import StreamingPlatformScraper
+                                    scraper = StreamingPlatformScraper()
+                                    apple_url = scraper.find_apple_tv_link(movie['title'], movie.get('year'))
+                                    if apple_url:
+                                        movie['pre_order_links']['apple_tv'] = apple_url
+                                except Exception as _e:
+                                    self.logger.warning(f"Apple TV pre-order link failed for {movie['title']}: {_e}")
                                 preorder_detected += 1
                                 print(f"  ⏳ {movie['title']} is a pre-order on {buy_names[0]} — tracking for VOD date")
                                 self.logger.info(f"Pre-order detected: {movie['title']} ({movie_id}) on {buy_names[0]}")
@@ -2176,6 +2188,7 @@ class DataGenerator:
             'providers': movie_data.get('providers', {'rent': [], 'buy': [], 'streaming': []}),
             'links': {'wikipedia': None, 'trailer': None, 'rt': None},
             'watch_links': {},
+            'pre_order_links': movie_data.get('pre_order_links', {}),
             '_enrichment_status': 'pending',
             '_discovered_at': datetime.now().isoformat(),  # ISO timestamp when we found it
             '_tmdb_fetch_failed': True,
@@ -2217,6 +2230,7 @@ class DataGenerator:
             'providers': movie_data.get('providers', {'rent': [], 'buy': [], 'streaming': []}),
             'links': {'wikipedia': None, 'trailer': None, 'rt': None},
             'watch_links': {},
+            'pre_order_links': movie_data.get('pre_order_links', {}),
             '_enrichment_status': 'pending',
             '_discovered_at': datetime.now().isoformat(),  # ISO timestamp when we found it
             '_tmdb_fetch_failed': False,
@@ -3606,7 +3620,7 @@ class DataGenerator:
 
         return movie_dict
     
-    def enrich_newly_available_movies(self) -> int:
+    def enrich_newly_available_movies(self, target_id=None) -> int:
         """
         Enrich movies listed in metrics/newly_available.json.
 
@@ -3642,62 +3656,73 @@ class DataGenerator:
         _initial_movie_count = len(existing_movies)
         self.logger.info(f"Enrichment loaded data.json: {_initial_movie_count} movies")
 
-        # Find movies to enrich from newly_available.json
-        newly_available_file = 'metrics/newly_available.json'
-        movie_ids_to_enrich = []
-        if os.path.exists(newly_available_file):
-            try:
-                with open(newly_available_file, 'r') as f:
-                    newly_available = json.load(f)
-                movie_ids_to_enrich = [str(mid) for mid in newly_available.get('movie_ids', [])]
-                state_date = newly_available.get('date', 'unknown')
+        # Single-movie mode: skip queue building, enrich just this one
+        if target_id:
+            target_id = str(target_id)
+            if target_id not in movie_lookup:
+                print(f"❌ Movie {target_id} not found in data.json - add it first")
+                return 0
+            movie_ids_to_enrich = [target_id]
+            newly_count = 1
+            print(f"🎯 Single-movie enrichment: targeting {target_id}")
+        else:
 
-                today = datetime.now().strftime('%Y-%m-%d')
-                if state_date != today:
-                    print(f"⚠️ State file date ({state_date}) is not today ({today}) - may be stale")
-            except Exception as e:
-                print(f"⚠️ Could not load {newly_available_file}: {e}")
+            # Find movies to enrich from newly_available.json
+            newly_available_file = 'metrics/newly_available.json'
+            movie_ids_to_enrich = []
+            if os.path.exists(newly_available_file):
+                try:
+                    with open(newly_available_file, 'r') as f:
+                        newly_available = json.load(f)
+                    movie_ids_to_enrich = [str(mid) for mid in newly_available.get('movie_ids', [])]
+                    state_date = newly_available.get('date', 'unknown')
 
-        newly_count = len(movie_ids_to_enrich)
+                    today = datetime.now().strftime('%Y-%m-%d')
+                    if state_date != today:
+                        print(f"⚠️ State file date ({state_date}) is not today ({today}) - may be stale")
+                except Exception as e:
+                    print(f"⚠️ Could not load {newly_available_file}: {e}")
 
-        # Catch-up: retry movies with incomplete enrichment
-        seen_ids = set(movie_ids_to_enrich)
-        catchup_ids = []
-        retry_cutoff = (datetime.now() - timedelta(days=7)).strftime('%Y-%m-%d')
-        orphan_cutoff = (datetime.now() - timedelta(days=30)).strftime('%Y-%m-%d')
-        for movie in existing_movies:
-            movie_id = str(movie.get('id', ''))
-            if not movie_id or movie_id in seen_ids:
-                continue
-            digital_date = movie.get('digital_date', '')
-            status = movie.get('_enrichment_status', '')
-            gaps = movie.get('_enrichment_gaps')
-            attempts = movie.get('_enrichment_attempts', 0)
-            if attempts >= MAX_ENRICHMENT_ATTEMPTS:
-                continue
-            # Never attempted — wider 30-day window since these were missed entirely
-            if not status and not movie.get('enriched', True):
-                if digital_date >= orphan_cutoff:
-                    catchup_ids.append(movie_id)
-            # Retry failed/pending — 7-day window
-            elif digital_date >= retry_cutoff:
-                if status in ('pending', 'failed', 'error', 'timeout'):
-                    catchup_ids.append(movie_id)
-                elif status == 'completed' and gaps:
-                    catchup_ids.append(movie_id)
+            newly_count = len(movie_ids_to_enrich)
 
-        movie_ids_to_enrich.extend(catchup_ids)
+            # Catch-up: retry movies with incomplete enrichment
+            seen_ids = set(movie_ids_to_enrich)
+            catchup_ids = []
+            retry_cutoff = (datetime.now() - timedelta(days=7)).strftime('%Y-%m-%d')
+            orphan_cutoff = (datetime.now() - timedelta(days=30)).strftime('%Y-%m-%d')
+            for movie in existing_movies:
+                movie_id = str(movie.get('id', ''))
+                if not movie_id or movie_id in seen_ids:
+                    continue
+                digital_date = movie.get('digital_date', '')
+                status = movie.get('_enrichment_status', '')
+                gaps = movie.get('_enrichment_gaps')
+                attempts = movie.get('_enrichment_attempts', 0)
+                if attempts >= MAX_ENRICHMENT_ATTEMPTS:
+                    continue
+                # Never attempted — wider 30-day window since these were missed entirely
+                if not status and not movie.get('enriched', True):
+                    if digital_date >= orphan_cutoff:
+                        catchup_ids.append(movie_id)
+                # Retry failed/pending — 7-day window
+                elif digital_date >= retry_cutoff:
+                    if status in ('pending', 'failed', 'error', 'timeout'):
+                        catchup_ids.append(movie_id)
+                    elif status == 'completed' and gaps:
+                        catchup_ids.append(movie_id)
 
-        # Enforce batch limit
-        if len(movie_ids_to_enrich) > MAX_ENRICHMENT_BATCH:
-            movie_ids_to_enrich = movie_ids_to_enrich[:MAX_ENRICHMENT_BATCH]
+            movie_ids_to_enrich.extend(catchup_ids)
 
-        if not movie_ids_to_enrich:
-            print("✅ No movies to enrich (no new arrivals, no catch-up needed)")
-            return 0
+            # Enforce batch limit
+            if len(movie_ids_to_enrich) > MAX_ENRICHMENT_BATCH:
+                movie_ids_to_enrich = movie_ids_to_enrich[:MAX_ENRICHMENT_BATCH]
 
-        catchup_count = len(catchup_ids)
-        print(f"🎯 Enrichment queue: {newly_count} new + {catchup_count} catch-up = {len(movie_ids_to_enrich)} total")
+            if not movie_ids_to_enrich:
+                print("✅ No movies to enrich (no new arrivals, no catch-up needed)")
+                return 0
+
+            catchup_count = len(catchup_ids)
+            print(f"🎯 Enrichment queue: {newly_count} new + {catchup_count} catch-up = {len(movie_ids_to_enrich)} total")
 
         # Preload IMDb dataset so first movie isn't penalized
         self._load_imdb_dataset()
@@ -4364,6 +4389,70 @@ class DataGenerator:
         print(f"   data.json: {len(keep)} movies | archive: {len(archive_movies)} total")
         self.logger.info(f"Archived {len(to_archive)} movies older than {days} days")
 
+    def purge_removed_movies(self):
+        """Remove movies with status='removed' in movie_tracking.json from data.json.
+
+        Mirrors archive_old_movies() pattern: archive first, then trim data.json.
+        Called during display generation so CI picks up manual removals.
+        """
+        if not os.path.exists('data.json') or not os.path.exists('movie_tracking.json'):
+            return
+
+        with open('movie_tracking.json', 'r') as f:
+            tracking = json.load(f)
+
+        removed_ids = {str(mid) for mid, entry in tracking.items()
+                       if isinstance(entry, dict) and entry.get('status') == 'removed'}
+        if not removed_ids:
+            return
+
+        with open('data.json', 'r') as f:
+            data = json.load(f)
+
+        movies = data.get('movies', [])
+        keep = []
+        to_purge = []
+        for m in movies:
+            if str(m.get('id')) in removed_ids:
+                to_purge.append(m)
+            else:
+                keep.append(m)
+
+        if not to_purge:
+            return
+
+        # Archive purged movies (same pattern as archive_old_movies)
+        archive_path = 'data_archive.json'
+        archive_movies = []
+        if os.path.exists(archive_path):
+            try:
+                with open(archive_path, 'r') as f:
+                    archive_data = json.load(f)
+                archive_movies = archive_data.get('movies', [])
+            except Exception:
+                archive_movies = []
+
+        existing_ids = {str(m.get('id')) for m in archive_movies}
+        new_archived = [m for m in to_purge if str(m.get('id')) not in existing_ids]
+        archive_movies.extend(new_archived)
+
+        archive_data = {
+            'archived_at': datetime.now().isoformat(),
+            'count': len(archive_movies),
+            'movies': archive_movies
+        }
+        self.storage.atomic_write_json(archive_data, archive_path, backup=False)
+
+        data['movies'] = keep
+        data['count'] = len(keep)
+        self.storage.atomic_write_json(data, 'data.json', backup=False)
+
+        titles = [m.get('title', '?') for m in to_purge]
+        print(f"🗑️ Purged {len(to_purge)} manually removed movies → data_archive.json")
+        for t in titles:
+            print(f"   - {t}")
+        self.logger.info(f"Purged {len(to_purge)} removed movies: {titles}")
+
     def _inject_selected_pull_quotes(self, movies_list):
         """Add selected pull quotes from cache to movies for data.json output."""
         combined_path = 'cache/pull_quotes_combined.json'
@@ -4552,6 +4641,9 @@ class DataGenerator:
 
         # Archive movies older than 90 days to data_archive.json
         self.archive_old_movies(days=90)
+
+        # Purge manually removed movies (status='removed' in movie_tracking.json)
+        self.purge_removed_movies()
 
         # Cleanup agent scraper if initialized
         if self.streaming_scraper and self.streaming_scraper != False:

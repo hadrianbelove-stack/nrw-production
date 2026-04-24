@@ -94,6 +94,24 @@
           color="0x000000FF"
           visible="false" />
 
+        <!-- Pre-order badge (top of poster) -->
+        <Rectangle id="preOrderBadge"
+          width="600"
+          height="40"
+          translation="[3, 8]"
+          color="0x7C3AEDFF"
+          visible="false" />
+        <Label id="preOrderLabel"
+          text="PRE-ORDER"
+          width="600"
+          height="40"
+          translation="[3, 8]"
+          horizAlign="center"
+          vertAlign="center"
+          font="font:SmallBoldSystemFont"
+          color="0xFFFFFFFF"
+          visible="false" />
+
         <!-- Virtual screening name banner (gold bar) -->
         <Rectangle id="screeningBadge"
           width="600"

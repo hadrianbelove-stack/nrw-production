@@ -69,6 +69,14 @@ export default function MovieCard({movie, onPress, isFeatured = false}) {
           </View>
         )}
 
+        {/* Pre-order badge */}
+        {movie.pre_order_links && Object.keys(movie.pre_order_links).length > 0 &&
+         movie.digital_date > new Date().toISOString().split('T')[0] && (
+          <View style={styles.preOrderBadge}>
+            <Text style={styles.preOrderBadgeText}>PRE-ORDER</Text>
+          </View>
+        )}
+
         {/* Virtual screening ribbon - shows actual screening name */}
         {movie.categories?.is_virtual_screening && (
           <View style={styles.screeningRibbon}>
@@ -166,6 +174,21 @@ const styles = StyleSheet.create({
   },
   restorationText: {
     color: Colors.restorationText,
+    fontSize: 9,
+    fontWeight: '700',
+    letterSpacing: 0.5,
+  },
+  preOrderBadge: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    backgroundColor: '#7c3aed',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  preOrderBadgeText: {
+    color: '#fff',
     fontSize: 9,
     fontWeight: '700',
     letterSpacing: 0.5,

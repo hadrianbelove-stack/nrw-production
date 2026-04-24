@@ -62,6 +62,9 @@ data class Movie(
     @SerializedName("watch_links")
     val watchLinks: WatchLinks? = null,
 
+    @SerializedName("pre_order_links")
+    val preOrderLinks: PreOrderLinks? = null,
+
     val plex: PlexInfo? = null,
 
     @SerializedName("pull_quotes")
@@ -127,6 +130,12 @@ data class WatchLinks(
     val streaming: ServiceLink? = null,  // Single object, not array
     @com.google.gson.annotations.JsonAdapter(VodLinksAdapter::class)
     val vod: List<ServiceLink>? = null  // Array of VOD services (Amazon, Apple TV)
+)
+
+data class PreOrderLinks(
+    val amazon: String? = null,
+    @SerializedName("apple_tv")
+    val appleTV: String? = null
 )
 
 /**
@@ -218,7 +227,8 @@ data class WatchOption(
 
 enum class WatchType {
     PURCHASE,
-    STREAMING
+    STREAMING,
+    PREORDER
 }
 
 /**
@@ -319,6 +329,18 @@ fun Movie.getDirector(): String? {
  */
 fun Movie.getWatchOptions(): List<WatchOption> {
     val options = mutableListOf<WatchOption>()
+
+    // Pre-order links (future release — no real watch links yet)
+    val todayStr = java.time.LocalDate.now().toString()
+    if (digitalDate != null && digitalDate > todayStr && preOrderLinks != null) {
+        preOrderLinks.amazon?.let { url ->
+            options.add(WatchOption(service = "amazon", label = "Pre-Order", url = url, type = WatchType.PREORDER, icon = "amazon"))
+        }
+        preOrderLinks.appleTV?.let { url ->
+            options.add(WatchOption(service = "apple_tv", label = "Pre-Order", url = url, type = WatchType.PREORDER, icon = "apple_tv"))
+        }
+        return options // pre-order links only; no real watch links should exist yet
+    }
 
     // Add VOD options (purchase/rent) — Amazon + Apple TV + Eventive
     watchLinks?.vod?.forEach { link ->

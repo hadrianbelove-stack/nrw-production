@@ -81,12 +81,9 @@ const NRWMobile = {
             // Load staff picks
             this.staffPicks = data.staff_picks || data.featured || [];
 
-            // Filter to only show movies with digital_date in the past
-            const today = new Date();
             this.allMovies = (data.movies || []).filter(m => {
                 if (m.hidden) return false;
-                if (!m.digital_date) return false;
-                return new Date(m.digital_date) <= today;
+                return !!m.digital_date;
             });
 
             // Sort by date descending, staff picks first within each date
@@ -557,6 +554,15 @@ const NRWMobile = {
                 }
                 return `<a href="${vod.link}" target="_blank" rel="noopener" class="btn-equal btn-watch" style="${style}">${label}</a>`;
             }).join('');
+        }
+
+        // Pre-order links (future release — no streaming/VOD links found)
+        const preOrderLinks = movie.pre_order_links || {};
+        if (preOrderLinks.amazon) {
+            return `<a href="${preOrderLinks.amazon}" target="_blank" rel="noopener" class="btn-equal btn-watch" style="background:#ff9900;color:#000">Pre-Order</a>`;
+        }
+        if (preOrderLinks.apple_tv) {
+            return `<a href="${preOrderLinks.apple_tv}" target="_blank" rel="noopener" class="btn-equal btn-watch" style="background:#000;color:#fff">Pre-Order</a>`;
         }
 
         return '';

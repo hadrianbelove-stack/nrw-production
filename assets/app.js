@@ -142,11 +142,9 @@ const NRW = {
             this.latestPlaylistUrl = data.latest_playlist_url || null;
 
             if (data.movies && data.movies.length > 0) {
-                const today = new Date();
                 this.allMovies = data.movies.filter(m => {
                     if (m.hidden) return false;
-                    if (!m.digital_date) return false;
-                    return new Date(m.digital_date) <= today;
+                    return !!m.digital_date;
                 });
 
                 this.setupFilterEventListeners();
@@ -559,7 +557,18 @@ const NRW = {
                     }
                 });
 
-                // If no valid links at all, show disabled placeholder
+                // Pre-order links (future release — no streaming/VOD links yet)
+                if (!buttonsHtml) {
+                    const preOrderLinks = movie.pre_order_links || {};
+                    if (preOrderLinks.amazon) {
+                        buttonsHtml += `<a href="${preOrderLinks.amazon}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-amazon" aria-label="Pre-Order on Amazon"><img src="logos%20and%20images/pngimg.com%20-%20amazon_PNG17.png" alt="Amazon" class="btn-logo"> PRE-ORDER</a>`;
+                    }
+                    if (preOrderLinks.apple_tv) {
+                        buttonsHtml += `<a href="${preOrderLinks.apple_tv}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-apple" aria-label="Pre-Order on Apple TV"><img src="logos%20and%20images/apple%20logo.png" alt="Apple TV" class="btn-logo"> PRE-ORDER</a>`;
+                    }
+                }
+
+                // If still no valid links, show disabled placeholder
                 if (!buttonsHtml) {
                     buttonsHtml = '<span class="watch-btn watch-btn-disabled" aria-disabled="true" title="Link not available">NOT AVAILABLE</span>';
                 }
@@ -606,6 +615,15 @@ const NRW = {
             const getStreamingBadge = (movie) => {
                 const watchLinks = movie.watch_links || {};
                 const providers = movie.providers || {};
+
+                // Pre-order: future release date with no watch links yet
+                const today = new Date().toISOString().split('T')[0];
+                if (movie.digital_date > today) {
+                    const vodArr = Array.isArray(watchLinks.vod) ? watchLinks.vod
+                        : (watchLinks.vod?.service ? [watchLinks.vod] : []);
+                    const hasAnyLink = watchLinks.streaming?.link || vodArr.some(v => v.link);
+                    if (!hasAnyLink) return '<div class="streaming-badge badge-preorder">PRE-ORDER</div>';
+                }
 
                 // Get streaming service name
                 let service = watchLinks.streaming?.service;

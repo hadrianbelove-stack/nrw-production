@@ -35,6 +35,7 @@ class AmazonPreorderDetector(PlaywrightScraperBase):
             screenshot_subdir='amazon_preorder'
         )
         self.timeout_seconds = self.scraper_config.get('timeout', 15)
+        self.last_url = None  # Product URL from last check_preorder() call; caller reads this
 
     def _init_browser_shared(self):
         """Override to add Amazon-specific stealth scripts."""
@@ -156,6 +157,7 @@ class AmazonPreorderDetector(PlaywrightScraperBase):
 
             # Find first movie result link
             product_url = self._find_product_link(title)
+            self.last_url = product_url  # Save for caller
             if not product_url:
                 self._log(f"No Amazon product found for {title}", level='warning')
                 return None

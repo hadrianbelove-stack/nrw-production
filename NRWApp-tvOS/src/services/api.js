@@ -333,6 +333,19 @@ export function getWatchLinks(movie) {
 
   const links = [];
 
+  // Pre-order links (future release — no real watch links yet)
+  const preOrderLinks = movie.pre_order_links || {};
+  const todayStr = new Date().toISOString().split('T')[0];
+  if (movie.digital_date > todayStr && Object.keys(preOrderLinks).length > 0) {
+    if (preOrderLinks.amazon) {
+      links.push({service: 'amazon', label: 'Pre-Order', url: preOrderLinks.amazon, type: 'preorder', icon: 'amazon'});
+    }
+    if (preOrderLinks.apple_tv) {
+      links.push({service: 'apple_tv', label: 'Pre-Order', url: preOrderLinks.apple_tv, type: 'preorder', icon: 'apple_tv'});
+    }
+    return links; // pre-order links only; no real watch links should exist yet
+  }
+
   // Add Plex link first if available (personal library takes priority)
   if (movie.plex && movie.plex.deep_link) {
     links.push({

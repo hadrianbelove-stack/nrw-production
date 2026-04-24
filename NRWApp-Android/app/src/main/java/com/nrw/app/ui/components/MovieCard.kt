@@ -191,6 +191,26 @@ fun MovieCard(
                     }
                 }
 
+                // Pre-order badge (top right) — shown when release is in the future
+                val todayStr = java.time.LocalDate.now().toString()
+                if (movie.digitalDate != null && movie.digitalDate > todayStr && movie.preOrderLinks != null) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(4.dp)
+                            .background(Color(0xFF7C3AED), RoundedCornerShape(4.dp))
+                            .padding(horizontal = 4.dp, vertical = 2.dp)
+                    ) {
+                        Text(
+                            text = "PRE-ORDER",
+                            color = Color.White,
+                            fontSize = 7.sp,
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = 0.5.sp
+                        )
+                    }
+                }
+
                 // Staff pick strip at bottom (like tvOS)
                 if (isStaffPick) {
                     Box(

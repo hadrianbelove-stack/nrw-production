@@ -117,6 +117,13 @@ const MovieCard = forwardRef(({
     const watchLinks = movie.watch_links || {};
     const providers = movie.providers || {};
 
+    // Pre-order: future release date with pre-order links
+    const preOrderLinks = movie.pre_order_links || {};
+    const todayStr = new Date().toISOString().split('T')[0];
+    if (movie.digital_date > todayStr && Object.keys(preOrderLinks).length > 0) {
+      return { name: 'PRE-ORDER', color: '#7c3aed' };
+    }
+
     let service = watchLinks.streaming?.service;
     if (!service && providers.streaming?.length > 0) {
       service = providers.streaming.find(p => !p.includes('with Ads')) || providers.streaming[0];
