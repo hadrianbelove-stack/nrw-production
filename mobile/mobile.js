@@ -463,6 +463,17 @@ const NRWMobile = {
         const watchLinks = movie.watch_links || {};
         const providers = movie.providers || {};
 
+        // Pre-order: future release date with no watch links yet
+        const today = new Date().toISOString().split('T')[0];
+        if (movie.digital_date > today) {
+            const vodArr = Array.isArray(watchLinks.vod) ? watchLinks.vod
+                : (watchLinks.vod?.service ? [watchLinks.vod] : []);
+            const hasAnyLink = watchLinks.streaming?.link || vodArr.some(v => v.link);
+            if (!hasAnyLink) {
+                return '<span class="poster-badge badge-preorder">PRE-ORDER</span>';
+            }
+        }
+
         // Get streaming service name
         let service = watchLinks.streaming?.service;
         if (!service && providers.streaming?.length > 0) {
@@ -548,7 +559,7 @@ const NRWMobile = {
             }).join('');
         }
 
-        return '<span class="btn-equal btn-watch" style="opacity:0.5">Watch</span>';
+        return '';
     },
 
     getTrailerButton(movie) {
