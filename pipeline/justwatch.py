@@ -383,17 +383,20 @@ class JustWatchClient:
         elif titles_match:
             confidence = 'title_only'
         elif year and jw_year == year:
-            # Year matches but title doesn't — risky, downgrade
-            confidence = 'first_result'
-            self.logger.warning(
+            # Year matches but title doesn't — common for international films
+            # (e.g. English search title vs foreign-language JW title).
+            # Year match is a strong signal since search_movie Pass 4 already
+            # trusts year-only matches from JW's relevance-ranked results.
+            confidence = 'close_year'
+            self.logger.info(
                 f"JustWatch title mismatch: searched '{title}' but matched "
-                f"'{jw_title}' (year {jw_year}). Downgrading confidence."
+                f"'{jw_title}' (year {jw_year}). Accepting with close_year confidence."
             )
         elif year and jw_year and abs(jw_year - year) <= 1:
-            confidence = 'first_result'
-            self.logger.warning(
+            confidence = 'close_year'
+            self.logger.info(
                 f"JustWatch title mismatch: searched '{title}' but matched "
-                f"'{jw_title}' (year {jw_year}). Downgrading confidence."
+                f"'{jw_title}' (year {jw_year}). Accepting with close_year confidence."
             )
         else:
             confidence = 'first_result'

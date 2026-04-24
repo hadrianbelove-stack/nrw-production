@@ -30,9 +30,33 @@ Then report these sections:
 ### Stall Detection
 - From run_diagnostics.json `stall_status`: is the pipeline stalled? How many days without transitions?
 
-### Data Quality Snapshot (from run_diagnostics.json `data_quality`)
-- Total movies on site (`data_movies`)
-- Movies with watch links / without watch links (compute `data_movies - movies_with_links`). Flag if >50% lack links.
+### Data Quality Snapshot (LIVE from data.json)
+Compute this LIVE by running the following Python snippet (do NOT read from run_diagnostics.json for these numbers):
+
+```bash
+/usr/bin/python3 -c "
+import json, sys
+sys.path.insert(0, '.')
+from daily_orchestrator import has_real_watch_link
+data = json.load(open('data.json'))
+movies = data['movies']
+total = len(movies)
+with_links = sum(1 for m in movies if has_real_watch_link(m))
+with_rt = sum(1 for m in movies if m.get('links', {}).get('rt'))
+with_wiki = sum(1 for m in movies if m.get('links', {}).get('wikipedia'))
+with_trailers = sum(1 for m in movies if m.get('links', {}).get('trailer'))
+print(f'total={total}')
+print(f'with_links={with_links}')
+print(f'without_links={total - with_links}')
+print(f'with_rt={with_rt}')
+print(f'with_wiki={with_wiki}')
+print(f'with_trailers={with_trailers}')
+"
+```
+
+Report these numbers:
+- Total movies on site
+- Movies with watch links / without watch links. Flag if >50% lack links.
 - Movies with RT scores
 - Movies with Wikipedia summaries
 - Movies with trailers (and percentage of total)

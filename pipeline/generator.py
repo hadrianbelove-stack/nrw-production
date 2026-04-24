@@ -3796,34 +3796,27 @@ class DataGenerator:
                     if not hasattr(self.enrichment, '_justwatch_client') or self.enrichment._justwatch_client is None:
                         from pipeline.justwatch import JustWatchClient
                         self.enrichment._justwatch_client = JustWatchClient(logger=self.logger)
-                    _jw_node = self.enrichment._justwatch_client.search_movie(_title, _year, content_type=_content_type_jw)
-                    _excl_lower = [s.lower() for s in self.enrichment.config.get('tracking', {}).get('excluded_services', ['fuboTV', 'Philo'])]
-                    if _jw_node:
-                        _offers = _jw_node.get('offers', [])
-                        _valid_offers = []
-                        _excl_svcs_found = set()
-                        for _o in _offers:
-                            _mtype = _o.get('monetizationType')
-                            _svc = _o.get('package', {}).get('clearName', '')
-                            _url = _o.get('standardWebURL', '')
-                            if not _url or not _svc:
-                                continue
-                            if any(_ex in _svc.lower() for _ex in _excl_lower):
-                                if _mtype in ('RENT', 'BUY'):
-                                    _excl_svcs_found.add(_svc)
-                            else:
-                                _valid_offers.append(_o)
-                        if not _valid_offers:
-                            _jw_verified = False
-                            if _excl_svcs_found:
-                                _revert_reason = f"excluded_platforms_only: {', '.join(sorted(_excl_svcs_found))}"
-                            elif _offers:
-                                _revert_reason = "justwatch_no_valid_offers"
-                            else:
-                                _revert_reason = "justwatch_no_match"
-                    else:
+                    _amazon_tag = self.enrichment._get_amazon_affiliate_tag()
+                    _excl_list = self.enrichment.config.get('tracking', {}).get('excluded_services', ['fuboTV', 'Philo'])
+                    _jw_result = self.enrichment._justwatch_client.verify_availability(
+                        _title, _year, excluded_services=_excl_list,
+                        affiliate_tag=_amazon_tag, content_type=_content_type_jw
+                    )
+                    if _jw_result is None:
                         _jw_verified = False
                         _revert_reason = "justwatch_no_match"
+                    elif not _jw_result['verified']:
+                        _jw_verified = False
+                        _revert_reason = "justwatch_no_valid_offers"
+                    else:
+                        # Cache pre-verified watch_links so enrichment skips redundant JW search
+                        _wl = _jw_result.get('watch_links', {})
+                        if _wl:
+                            self.enrichment.watch_links_cache[str(movie_id)] = {
+                                'links': _wl,
+                                'cached_at': datetime.now().isoformat(),
+                                'source': 'justwatch_pre_verification'
+                            }
                 except Exception as _jw_err:
                     self.logger.warning(f"JustWatch pre-check error for {_title}: {_jw_err} — proceeding with enrichment")
 
