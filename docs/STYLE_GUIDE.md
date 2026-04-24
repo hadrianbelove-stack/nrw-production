@@ -222,6 +222,8 @@ Use **light theme** for better email compatibility:
 - Use system fonts only
 - Keep the dark, premium aesthetic
 - Use teal `#00d4aa` as the primary accent everywhere
+- Abbreviate "International" → "Intl." in festival/screening names
+- Abbreviate "Film Festival" → "Film Fest" when space is tight
 
 ### DON'T
 - Add new colors without approval
@@ -229,6 +231,7 @@ Use **light theme** for better email compatibility:
 - Use pure black `#000` for backgrounds (use `#0a0a0a`)
 - Use pure white `#fff` for large background areas (use gradients)
 - Add decorative elements, borders, or effects not in this guide
+- Use cryptic abbreviations for festival names (e.g. "EBIJFF" is bad; "East Bay Intl. Jewish Film Fest" is good)
 
 ---
 
@@ -254,6 +257,10 @@ Use **light theme** for better email compatibility:
 ---
 
 ## Changelog
+
+### 2026-04-24 - Naming Conventions
+- Added DO: abbreviate "International" → "Intl.", "Film Festival" → "Film Fest"
+- Added DON'T: no cryptic abbreviations for festival names
 
 ### 2026-04-17 - Added Fawesome Service Color
 - Added Fawesome (`#5B8DEF`) to Service Colors table
