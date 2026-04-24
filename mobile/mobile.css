@@ -179,17 +179,23 @@ body {
     pointer-events: auto;
 }
 
-/* Scrollable inner wrapper — grandchild of preserve-3d, scrolls correctly on iOS */
+/* Back content: NOT scrollable until card is flipped.
+   overflow-y:scroll + overscroll-behavior-y:contain on the hidden back face
+   was intercepting page scroll on iOS even with pointer-events:none */
 .back-content {
     height: 100%;
-    overflow-y: scroll;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior-y: contain;
-    touch-action: pan-y;
+    overflow-y: hidden;
     padding: 20px;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
+}
+
+.flip-card.flipped .back-content {
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+    touch-action: pan-y;
 }
 
 /* === FRONT OF CARD === */
