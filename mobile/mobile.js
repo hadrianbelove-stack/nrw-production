@@ -62,6 +62,25 @@ const NRWMobile = {
         return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     },
 
+    getScreeningRibbon(movie) {
+        const info = movie.virtual_screening_info || {};
+        const name = info.screening_name || 'Virtual Screening';
+        const startDate = movie.digital_date;
+        const endDate = info.available_end;
+        let dateRange = '';
+        if (startDate && endDate) {
+            dateRange = `Virtual Screening ${this.formatShortDate(startDate)} – ${this.formatShortDate(endDate)}`;
+        } else if (endDate) {
+            dateRange = `Virtual Screening thru ${this.formatShortDate(endDate)}`;
+        } else {
+            dateRange = 'Virtual Screening';
+        }
+        return `<div class="screening-ribbon-top">`
+            + `<div class="sr-name">${name}</div>`
+            + `<div class="sr-dates">${dateRange}</div>`
+            + `</div>`;
+    },
+
     abbreviateCountry(country) {
         if (!country) return null;
         const shortened = this.countryAbbrev[country.toLowerCase()];
@@ -324,7 +343,7 @@ const NRWMobile = {
                         ${streamingBadge}
                         ${movie.categories?.is_restoration ? '<span class="poster-badge badge-restoration">RESTORED</span>' : ''}
                         ${movie.categories?.is_virtual_screening
-                            ? '<div class="badge-bar gold">\u2605 VIRTUAL SCREENING \u2605</div>'
+                            ? this.getScreeningRibbon(movie)
                             : isStaffPick
                             ? '<div class="badge-bar red">\u2605 STAFF PICK \u2605</div>'
                             : ''}
