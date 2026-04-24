@@ -107,16 +107,15 @@ body {
 }
 
 .date-badge {
-    background: rgba(0,212,170,0.15);
-    border: 1px solid rgba(0,212,170,0.4);
-    padding: 8px 18px;
+    background: #00d4aa;
+    padding: 8px 20px;
     border-radius: 20px;
 }
 
 .date-badge-text {
-    color: #00d4aa;
-    font-size: 12px;
-    font-weight: 600;
+    color: #000;
+    font-size: 13px;
+    font-weight: 700;
     letter-spacing: 0.05em;
 }
 
@@ -125,7 +124,6 @@ body {
     margin-bottom: 20px;
     perspective: 1000px;
     cursor: pointer;
-    touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
     -webkit-touch-callout: none;
     user-select: none;
