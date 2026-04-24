@@ -76,7 +76,6 @@ Function GetServiceColors() as Object
         apple_tv: "0xAAAAAAFF"
         tubi: "0xFA382FFF"
         fawesome: "0x5B8DEFFF"
-        plex: "0xE5A00DFF"
         mubi: "0xDA2128FF"
         shudder: "0x8B0000FF"
         criterion: "0x000000FF"

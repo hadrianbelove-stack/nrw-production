@@ -23,7 +23,6 @@ val AmazonOrange = Color(0xFFFF9900)
 val AppleGray = Color(0xFFAAAAAA)  // Lighter gray per style guide
 val NetflixRed = Color(0xFFE50914)
 val TubiOrangeRed = Color(0xFFFA382F)
-val PlexYellow = Color(0xFFE5A00D)
 val HuluGreen = Color(0xFF1CE783)
 val MaxPurple = Color(0xFFB537F2)  // Fixed: was 0xFF741DDA, synced with CSS
 val DisneyBlue = Color(0xFF113CCF)

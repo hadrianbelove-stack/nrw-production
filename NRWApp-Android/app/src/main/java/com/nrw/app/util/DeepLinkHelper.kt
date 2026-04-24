@@ -15,7 +15,6 @@ private const val TAG = "DeepLinkHelper"
 object ServicePackages {
     const val NETFLIX = "com.netflix.ninja"  // Netflix for Android TV
     const val AMAZON = "com.amazon.avod.thirdpartyclient"
-    const val PLEX = "com.plexapp.android"
     const val YOUTUBE = "com.google.android.youtube.tv"
     const val YOUTUBE_MOBILE = "com.google.android.youtube"
     const val HULU = "com.hulu.livingroomplus"
@@ -33,7 +32,6 @@ object ServicePackages {
 object ServiceSchemes {
     const val NETFLIX = "nflx://"
     const val AMAZON = "amzn://"
-    const val PLEX = "plex://"
     const val YOUTUBE = "vnd.youtube://"
     const val HULU = "hulu://"
     const val MAX = "hbomax://"
@@ -77,7 +75,6 @@ object DeepLinkHelper {
      */
     private fun handleServiceDeepLink(context: Context, url: String, service: String): Boolean {
         return when (service.lowercase()) {
-            "plex" -> openPlex(context, url)
             "netflix" -> openNetflix(context, url)
             "amazon", "amazon_video", "prime_video" -> openAmazon(context, url)
             "youtube" -> openYouTube(context, url)
@@ -87,29 +84,6 @@ object DeepLinkHelper {
             "peacock" -> openPeacock(context, url)
             "paramount_plus" -> openParamountPlus(context, url)
             else -> false
-        }
-    }
-
-    /**
-     * Open Plex with deep link
-     */
-    fun openPlex(context: Context, deepLink: String): Boolean {
-        return try {
-            // Plex deep links are already in plex:// format
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(deepLink))
-            intent.setPackage(ServicePackages.PLEX)
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-
-            if (isPackageInstalled(context, ServicePackages.PLEX)) {
-                context.startActivity(intent)
-                true
-            } else {
-                // Fall back to opening Plex app without specific content
-                openApp(context, ServicePackages.PLEX)
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error opening Plex", e)
-            false
         }
     }
 

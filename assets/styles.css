@@ -462,7 +462,6 @@ header h1 {
 .badge-roku { background: #6C3A97; color: white; }
 .badge-pluto { background: #00B4E4; color: white; }
 .badge-crackle { background: #FF6600; color: white; }
-.badge-plex { background: #E5A00D; color: black; }
 .badge-other { background: #444; color: white; }
 
 /* Restoration/reissue badge on poster (top-left, opposite streaming badge) */
@@ -678,28 +677,6 @@ header h1 {
     background: #333;
     transform: translateY(-2px);
     box-shadow: 0 5px 20px rgba(0,0,0,0.5);
-}
-
-/* Plex button - personal library */
-.actions .watch-btn-plex {
-    background: #E5A00D;
-    color: #000;
-    flex: 0 0 auto;
-    width: 44px;
-    padding: 0.4rem;
-}
-
-.actions .watch-btn-plex:hover {
-    background: #f5b82e;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 20px rgba(229,160,13,0.5);
-}
-
-.watch-btn-plex .btn-logo {
-    filter: none;
-    max-height: 24px;
-    max-width: 32px;
-    object-fit: contain;
 }
 
 /* YouTube VOD button */
@@ -1497,7 +1474,6 @@ header h1 {
 .watch-btn-lb.roku { background: #6C3A97; color: #fff; }
 .watch-btn-lb.pluto { background: #00B4E4; color: #fff; }
 .watch-btn-lb.crackle { background: #FF6600; color: #fff; }
-.watch-btn-lb.plex { background: #E5A00D; color: #000; }
 .watch-btn-lb.fawesome { background: #5B8DEF; color: #fff; }
 .lightbox-buttons .watch-btn-lb.screening { background: transparent; color: #FFD700; border: 2px solid #FFD700; font-weight: 700; }
 

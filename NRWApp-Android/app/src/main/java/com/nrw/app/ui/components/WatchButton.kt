@@ -25,7 +25,6 @@ import com.nrw.app.ui.theme.MaxPurple
 import com.nrw.app.ui.theme.NetflixRed
 import com.nrw.app.ui.theme.ParamountBlue
 import com.nrw.app.ui.theme.PeacockBlue
-import com.nrw.app.ui.theme.PlexYellow
 import com.nrw.app.ui.theme.TubiOrangeRed
 import com.nrw.app.ui.theme.Primary
 import com.nrw.app.ui.theme.TextPrimary
@@ -177,7 +176,6 @@ fun TrailerButton(
  */
 private fun getSimplifiedLabel(service: String): String {
     return when (service.lowercase()) {
-        "plex" -> "Plex"
         "amazon", "amazon_video", "prime_video" -> "Amazon"
         "apple_tv" -> "Apple TV"
         "netflix" -> "Netflix"
@@ -197,7 +195,6 @@ private fun getSimplifiedLabel(service: String): String {
  */
 private fun getServiceColor(service: String): Color {
     return when (service.lowercase()) {
-        "plex" -> PlexYellow
         "amazon", "amazon_video", "prime_video" -> AmazonOrange
         "apple_tv" -> AppleGray
         "netflix" -> NetflixRed

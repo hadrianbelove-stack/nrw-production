@@ -72,11 +72,6 @@ const SERVICE_CONFIG = {
     color: '#5B8DEF',
     textColor: '#ffffff',
   },
-  plex: {
-    name: 'Plex',
-    color: '#E5A00D',
-    textColor: '#000000',
-  },
   fandango: {
     name: 'Fandango',
     color: '#ff6600',

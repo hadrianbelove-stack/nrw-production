@@ -76,14 +76,6 @@
           font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
       </Group>
 
-      <!-- Plex -->
-      <Group id="chip_plex">
-        <Rectangle id="chipBg_plex" width="60" height="36" color="0x333333FF" />
-        <Label id="chipLabel_plex" text="Plex" width="60" height="36"
-          horizAlign="center" vertAlign="center"
-          font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
-      </Group>
-
       <!-- Restorations -->
       <Group id="chip_restorations">
         <Rectangle id="chipBg_restorations" width="130" height="36" color="0x333333FF" />

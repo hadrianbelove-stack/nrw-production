@@ -32,7 +32,6 @@ const NRWMobile = {
         roku:      { class: 'roku',      name: 'ROKU',      btnName: 'Roku Ch.',  bg: '#6C3A97', text: '#fff',  matches: ['roku'] },
         pluto:     { class: 'pluto',     name: 'PLUTO',     btnName: 'Pluto TV',  bg: '#00B4E4', text: '#fff',  matches: ['pluto'] },
         crackle:   { class: 'crackle',   name: 'CRACKLE',   btnName: 'Crackle',   bg: '#FF6600', text: '#fff',  matches: ['crackle'] },
-        plex:      { class: 'plex',      name: 'PLEX',      btnName: 'Plex',      bg: '#E5A00D', text: '#000',  matches: ['plex'] },
         fawesome:  { class: 'fawesome',  name: 'FAWESOME',  btnName: 'Fawesome',  bg: '#5B8DEF', text: '#fff',  matches: ['fawesome'] },
     },
 
@@ -205,9 +204,6 @@ const NRWMobile = {
                         break;
                     case 'series':
                         if (movie.content_type === 'limited_series') return true;
-                        break;
-                    case 'plex':
-                        if (movie.plex && movie.plex.deep_link) return true;
                         break;
                     case 'restorations':
                         if (movie.categories?.is_restoration === true) return true;
@@ -550,11 +546,6 @@ const NRWMobile = {
                 }
                 return `<a href="${vod.link}" target="_blank" rel="noopener" class="btn-equal btn-watch" style="${style}">${label}</a>`;
             }).join('');
-        }
-
-        // Check for Plex
-        if (movie.plex?.web_url) {
-            return `<a href="${movie.plex.web_url}" target="_blank" rel="noopener" class="btn-equal btn-watch" style="background:#E5A00D;color:#000">Plex</a>`;
         }
 
         return '<span class="btn-equal btn-watch" style="opacity:0.5">Watch</span>';

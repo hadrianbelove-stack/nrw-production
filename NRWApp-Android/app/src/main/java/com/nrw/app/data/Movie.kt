@@ -217,7 +217,6 @@ data class WatchOption(
 )
 
 enum class WatchType {
-    PLEX,
     PURCHASE,
     STREAMING
 }
@@ -241,7 +240,6 @@ enum class FilterCategory(val id: String, val displayName: String) {
     STAFF_PICKS("staff-picks", "Staff Picks"),
     FOREIGN("foreign", "Foreign"),
     SERIES("series", "Limited Series"),
-    PLEX("plex", "Plex"),
     RESTORATIONS("restorations", "Restorations & Reissues"),
     DOCUMENTARY("documentary", "Documentary"),
     VIRTUAL_SCREENINGS("virtual-screenings", "Virtual Screenings")
@@ -321,17 +319,6 @@ fun Movie.getDirector(): String? {
  */
 fun Movie.getWatchOptions(): List<WatchOption> {
     val options = mutableListOf<WatchOption>()
-
-    // Add Plex first if available
-    plex?.deepLink?.let { url ->
-        options.add(WatchOption(
-            service = "plex",
-            label = "Play on Plex",
-            url = url,
-            type = WatchType.PLEX,
-            icon = "plex"
-        ))
-    }
 
     // Add VOD options (purchase/rent) — Amazon + Apple TV + Eventive
     watchLinks?.vod?.forEach { link ->
@@ -428,7 +415,6 @@ private val SERVICE_NAME_MAP = mapOf(
     "vudu" to "fandango",
     "vix" to "vix",
     "shudder" to "shudder",
-    "plex" to "plex",
     "fawesome" to "fawesome"
 )
 

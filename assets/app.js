@@ -9,7 +9,6 @@ const NRW = {
     filteredMovies: [],
     staffPicks: [],  // Renamed from featuredMovies
     latestPlaylistUrl: null,  // YouTube trailers playlist URL
-    plexLibrary: {},  // TMDB ID -> Plex URLs mapping (personal, local only)
     activeFilters: new Set(),  // Multi-select: Set of active filter IDs
     searchQuery: '',     // Current search query
     displayedCount: CONFIG.moviesPerPage,  // How many movies currently shown
@@ -58,7 +57,6 @@ const NRW = {
         roku:      { class: 'roku',      name: 'ROKU CH.',     badgeName: 'ROKU',      matches: ['roku'] },
         pluto:     { class: 'pluto',     name: 'PLUTO TV',     badgeName: 'PLUTO',     matches: ['pluto'] },
         crackle:   { class: 'crackle',   name: 'CRACKLE',      badgeName: 'CRACKLE',   matches: ['crackle'] },
-        plex:      { class: 'plex',      name: 'PLEX',         badgeName: 'PLEX',      matches: ['plex'] },
         fawesome:  { class: 'fawesome',  name: 'FAWESOME',     badgeName: 'FAWESOME',  matches: ['fawesome'] },
     },
 
@@ -84,10 +82,6 @@ const NRW = {
         'series': {
             title: 'Limited Series',
             text: 'Not movies — limited series. The kind you can finish in a weekend. Prestige mini-series and limited runs that landed on streaming and deserve the same attention as a good film.'
-        },
-        'plex': {
-            title: 'Plex',
-            text: 'Movies from the wall that are also in your personal Plex library. Why stream it when you already own it?'
         },
         'restorations': {
             title: 'Restorations & Reissues',
@@ -146,18 +140,6 @@ const NRW = {
 
             // Load YouTube trailers playlist URL
             this.latestPlaylistUrl = data.latest_playlist_url || null;
-
-            // Build Plex library from movies that have plex data embedded
-            if (data.movies) {
-                data.movies.forEach(movie => {
-                    if (movie.plex) {
-                        this.plexLibrary[String(movie.id)] = movie.plex;
-                    }
-                });
-                if (Object.keys(this.plexLibrary).length > 0) {
-                    console.log(`Plex library loaded: ${Object.keys(this.plexLibrary).length} movies`);
-                }
-            }
 
             if (data.movies && data.movies.length > 0) {
                 const today = new Date();
@@ -338,9 +320,6 @@ const NRW = {
                         case 'series':
                             if (movie.content_type === 'limited_series') matchesAny = true;
                             break;
-                        case 'plex':
-                            if (movie.plex && movie.plex.deep_link) matchesAny = true;
-                            break;
                         case 'restorations':
                             if (movie.categories?.is_restoration) matchesAny = true;
                             break;
@@ -505,12 +484,6 @@ const NRW = {
                 const watchLinks = movie.watch_links || {};
                 const providers = movie.providers || {};
                 let buttonsHtml = '';
-
-                // Check for Plex availability (personal library)
-                const plexInfo = this.plexLibrary[String(movie.id)];
-                if (plexInfo && plexInfo.web_url) {
-                    buttonsHtml += `<a href="${plexInfo.web_url}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-plex" aria-label="Play on Plex" title="Play on your Plex server"><img src="logos%20and%20images/plex-logo.png" alt="Plex" class="btn-logo" onerror="this.parentElement.innerHTML='PLEX'"></a>`;
-                }
 
                 // Helper to get display name for a service
                 const getDisplayName = (service) => {
@@ -1191,12 +1164,6 @@ const NRW = {
             }
         });
         if (vodHtml) watchHtml += `<div class="vod-row">${vodHtml}</div>`;
-
-        // Plex button
-        const plexInfo = this.plexLibrary[String(movie.id)];
-        if (plexInfo?.web_url) {
-            watchHtml += `<a href="${plexInfo.web_url}" target="_blank" rel="noopener noreferrer" class="watch-btn-lb plex">PLEX</a>`;
-        }
 
         let buttonsHtml = '';
         if (watchHtml) buttonsHtml += `<div class="watch-stack">${watchHtml}</div>`;
