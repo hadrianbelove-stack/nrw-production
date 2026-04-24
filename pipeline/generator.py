@@ -3642,18 +3642,6 @@ class DataGenerator:
         _initial_movie_count = len(existing_movies)
         self.logger.info(f"Enrichment loaded data.json: {_initial_movie_count} movies")
 
-        # Auto-retire movies whose digital_date is older than 90 days
-        retire_cutoff = (datetime.now() - timedelta(days=90)).strftime('%Y-%m-%d')
-        retired_count = 0
-        for movie in existing_movies:
-            dd = movie.get('digital_date') or ''
-            if dd and dd < retire_cutoff and movie.get('_enrichment_status') != 'retired':
-                movie['_enrichment_status'] = 'retired'
-                retired_count += 1
-        if retired_count:
-            print(f"  📦 Retired {retired_count} movies older than 90 days from enrichment")
-            self.logger.info(f"Retired {retired_count} movies older than 90 days from enrichment")
-
         # Find movies to enrich from newly_available.json
         newly_available_file = 'metrics/newly_available.json'
         movie_ids_to_enrich = []
@@ -4524,23 +4512,18 @@ class DataGenerator:
         # Apply cached watch links to movies with empty watch_links
         self._apply_cached_watch_links(all_movies)
 
-        # Filter out movies with zero watch links (likely false-positive discoveries)
-        pre_filter_count = len(all_movies)
-        filtered_out = []
-        filtered_movies = []
+        # Report movies with zero watch links (report-only, no removal)
+        zero_link_titles = []
         for m in all_movies:
             wl = m.get('watch_links', {})
             wl_count = sum(len(v) for v in wl.values()) if isinstance(wl, dict) else 0
             if wl_count == 0:
-                filtered_out.append(m.get('title', m.get('id', '?')))
-            else:
-                filtered_movies.append(m)
-        if filtered_out:
-            print(f"🚫 Filtered {len(filtered_out)} movies with zero watch links:")
-            for title in filtered_out:
+                zero_link_titles.append(m.get('title', m.get('id', '?')))
+        if zero_link_titles:
+            print(f"⚠️  {len(zero_link_titles)} movies have zero watch links (kept on wall):")
+            for title in zero_link_titles:
                 print(f"   - {title}")
-            self.logger.info(f"Filtered {len(filtered_out)} zero-watch-link movies from display: {filtered_out}")
-        all_movies = filtered_movies
+            self.logger.info(f"Zero-watch-link movies on wall: {zero_link_titles}")
 
         # Apply admin overrides to ALL movies (not just recent ones)
         print(f"🔧 Applying admin overrides to {len(all_movies)} movies...")

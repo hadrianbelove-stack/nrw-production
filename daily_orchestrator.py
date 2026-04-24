@@ -1305,6 +1305,14 @@ class NRWOrchestrator:
                 critical=False  # Network-dependent, don't fail pipeline on HTTP errors
             )
 
+            # Phase 4: Archive old movies (90-day cleanup)
+            print("\n📦 Phase 4: Archive Old Movies")
+            self.run_command(
+                "python3 generate_data.py --archive",
+                "Archive movies older than 90 days",
+                critical=False
+            )
+
             # Log data quality info (report-only, no enforcement)
             if success:
                 print("\n🔍 Validating RT data...")

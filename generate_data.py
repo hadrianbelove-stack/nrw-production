@@ -85,6 +85,11 @@ def main():
         action='store_true',
         help='Check virtual screening links for expiration (dead links get hidden, movies return to tracking)'
     )
+    parser.add_argument(
+        '--archive',
+        action='store_true',
+        help='Archive movies older than 90 days from data.json to data_archive.json'
+    )
 
     args = parser.parse_args()
     incremental = not args.full
@@ -180,9 +185,15 @@ def main():
         generator.check_virtual_screening_expirations()
         print(f"✅ Virtual screening check complete")
 
+    # Archive old movies (90-day cleanup)
+    if args.archive:
+        print("\n📦 Archiving movies older than 90 days...")
+        generator.archive_old_movies(days=90)
+        print("✅ Archive complete")
+
     # Generate the final display data (only for final generation phase, not intake/discovery/enrich/festival)
     festival_backfill = getattr(args, 'festival_backfill', False)
-    if not args.intake and not args.discover and not args.enrich and not festival_backfill and not args.reenrich_gaps and not args.resolve_preorders and not args.check_screenings:
+    if not args.intake and not args.discover and not args.enrich and not festival_backfill and not args.reenrich_gaps and not args.resolve_preorders and not args.check_screenings and not args.archive:
         print("\n🎬 Generating final display data...")
         generator.generate_display_data(incremental=incremental, force_refresh=force_refresh)
     else:

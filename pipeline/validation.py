@@ -409,7 +409,7 @@ class ValidationService:
         # _enrichment_status: Allowed values validation
         if '_enrichment_status' in movie:
             enrichment_status = movie['_enrichment_status']
-            allowed_statuses = {'pending', 'completed', 'failed', 'error'}
+            allowed_statuses = {'pending', 'completed', 'failed', 'error', 'reverted', 'timeout'}
             if not isinstance(enrichment_status, str) or enrichment_status not in allowed_statuses:
                 self.logger.error(f"{file_path} {movie_context} _enrichment_status must be one of {allowed_statuses}, got '{enrichment_status}'")
                 return False
