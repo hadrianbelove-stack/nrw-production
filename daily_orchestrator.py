@@ -290,20 +290,8 @@ class NRWOrchestrator:
             elif len(movies) < 150:
                 print(f"⚠️  Warning: Movie count is low ({len(movies)}) - expected 150+, but continuing")
 
-            # 3b. Check for stale movies that should have been archived
-            from datetime import timedelta
-            archive_cutoff = (datetime.now() - timedelta(days=95)).strftime('%Y-%m-%d')
-            today_str = datetime.now().strftime('%Y-%m-%d')
-            stale_movies = [m for m in movies if m.get('digital_date', '') and m['digital_date'] <= today_str and m['digital_date'] < archive_cutoff]
-            if stale_movies:
-                oldest = min(m['digital_date'] for m in stale_movies)
-                self.warnings.append({
-                    'phase': 'Data Quality',
-                    'message': f'{len(stale_movies)} movies older than 95 days in data.json (oldest: {oldest}). Archive phase may not be running.'
-                })
-                print(f"⚠️  Warning: {len(stale_movies)} stale movies (>95 days) still in data.json. Oldest: {oldest}")
-
             # 4. Check for recent movies - strict 7-day window per charter
+            from datetime import timedelta
             import yaml
 
             # Load validation configuration
@@ -439,18 +427,6 @@ class NRWOrchestrator:
             stats['movies_with_rt'] = len([m for m in data_movies if m.get('links', {}).get('rt')])
             stats['movies_with_wikipedia'] = len([m for m in data_movies if m.get('links', {}).get('wikipedia')])
             stats['movies_with_trailers'] = len([m for m in data_movies if m.get('links', {}).get('trailer')])
-
-            # Archive health: detect stale movies that should have been archived
-            from datetime import timedelta
-            archive_cutoff = (datetime.now() - timedelta(days=90)).strftime('%Y-%m-%d')
-            today_str = datetime.now().strftime('%Y-%m-%d')
-            stale = [m for m in data_movies if m.get('digital_date', '') and m['digital_date'] <= today_str and m['digital_date'] < archive_cutoff]
-            stats['stale_movie_count'] = len(stale)
-            if stale:
-                oldest = min(m['digital_date'] for m in stale)
-                stats['oldest_movie_days'] = (datetime.now() - datetime.strptime(oldest, '%Y-%m-%d')).days
-            else:
-                stats['oldest_movie_days'] = 0
 
         except Exception as e:
             stats['data_error'] = str(e)
