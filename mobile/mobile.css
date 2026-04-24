@@ -175,6 +175,15 @@ body {
     transform: rotateY(180deg);
     background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
     overflow: hidden;
+    pointer-events: none;
+}
+
+.flip-card.flipped .flip-front {
+    pointer-events: none;
+}
+
+.flip-card.flipped .flip-back {
+    pointer-events: auto;
 }
 
 /* Scrollable inner wrapper — grandchild of preserve-3d, scrolls correctly on iOS */
