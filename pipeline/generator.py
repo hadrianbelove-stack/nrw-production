@@ -4401,7 +4401,7 @@ class DataGenerator:
         with open('movie_tracking.json', 'r') as f:
             tracking = json.load(f)
 
-        removed_ids = {str(mid) for mid, entry in tracking.items()
+        removed_ids = {str(mid) for mid, entry in tracking.get('movies', {}).items()
                        if isinstance(entry, dict) and entry.get('status') == 'removed'}
         if not removed_ids:
             return

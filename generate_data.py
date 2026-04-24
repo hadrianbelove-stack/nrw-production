@@ -90,6 +90,11 @@ def main():
         action='store_true',
         help='Archive movies older than 90 days from data.json to data_archive.json'
     )
+    parser.add_argument(
+        '--enrich-id',
+        type=str,
+        help='Enrich a single movie by TMDB ID (skips queue, enriches just this one)'
+    )
 
     args = parser.parse_args()
     incremental = not args.full
@@ -102,7 +107,7 @@ def main():
 
     # Initialize data generator from pipeline module
     # Enrichment (YouTube scraper, etc.) enabled only when --enrich flag is passed
-    generator = DataGenerator(enrichment_enabled=args.enrich)
+    generator = DataGenerator(enrichment_enabled=args.enrich or bool(args.enrich_id))
 
     if args.debug:
         generator.logger.setLevel(logging.DEBUG)
@@ -172,6 +177,12 @@ def main():
         print("\n🎨 Running enrichment for newly available movies...")
         enriched_count = generator.enrich_newly_available_movies()
         print(f"✅ Enrichment complete: {enriched_count} movies enriched")
+
+    # Single-movie enrichment if requested
+    if args.enrich_id:
+        print(f"\n🎯 Running single-movie enrichment for TMDB ID {args.enrich_id}...")
+        enriched_count = generator.enrich_newly_available_movies(target_id=args.enrich_id)
+        print(f"✅ Single-movie enrichment complete: {enriched_count} enriched")
 
     # Re-enrich watch link gaps if requested
     if args.reenrich_gaps:
