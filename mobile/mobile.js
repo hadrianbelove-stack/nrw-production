@@ -350,6 +350,10 @@ const NRWMobile = {
                         ${this.getScoreBadges(movie)}
                     </div>
                 </div>
+                <div class="card-caption">
+                    <div class="card-caption-title">${movie.title || 'Untitled'}</div>
+                    <div class="card-caption-meta">${movie.crew?.director || ''}${this.abbreviateCountry(movie.country) ? ` \u2022 ${this.abbreviateCountry(movie.country)}` : ''}</div>
+                </div>
                 <div class="flip-back">
                     <div class="back-content">
                     <div class="back-title-row">
