@@ -3108,6 +3108,13 @@ class DataGenerator:
             self.logger.error(f"Movie details missing for movie_id {movie_id}")
             return None
 
+        # Skip short films that bypassed intake's runtime filter (TMDB had null runtime at intake)
+        _runtime = movie_details.get('runtime')
+        _min_runtime = self.config.get('intake', {}).get('min_runtime', 60)
+        if _runtime and _runtime < _min_runtime:
+            self.logger.info(f"Skipping {movie_details.get('title', movie_id)}: runtime {_runtime}min < {_min_runtime}min minimum")
+            return None
+
         # Safely extract basic info with fallbacks (TV series use different TMDB field names)
         is_tv = movie_data.get('content_type') == 'limited_series'
         title = movie_details.get('name' if is_tv else 'title', f'Unknown Movie {movie_id}')
@@ -4659,6 +4666,14 @@ class DataGenerator:
                 self.logger.debug("RT scraper closed")
             except Exception as e:
                 self.logger.warning(f"Failed to close RT scraper: {e}")
+
+        # Cleanup Gemini watch link finder if initialized
+        if hasattr(self.enrichment, '_gemini_watch_link_finder') and self.enrichment._gemini_watch_link_finder and self.enrichment._gemini_watch_link_finder is not False:
+            try:
+                self.enrichment._gemini_watch_link_finder._save_cache()
+                self.logger.debug("Gemini watch link finder cache saved")
+            except Exception as e:
+                self.logger.warning(f"Failed to save Gemini watch link finder cache: {e}")
 
         # Cleanup trailer finder if initialized (Gemini + Playwright fallback)
         if self.trailer_finder:

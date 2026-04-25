@@ -3571,7 +3571,7 @@
       "premiere_date": "2025-08-10",
       "digital_date": "2026-04-04",
       "has_providers": true,
-      "status": "available",
+      "status": "removed",
       "added": "2025-09-06T16:47:52.886561",
       "year": 2025,
       "_discovery_source": "provider_availability_check",
@@ -3583,7 +3583,9 @@
         ]
       },
       "enriched": true,
-      "enrichment_date": "2026-04-07"
+      "enrichment_date": "2026-04-07",
+      "removed_date": "2026-04-24",
+      "removed_reason": "short_film_under_60min"
     },
     "1541524": {
       "title": "Safe.",
@@ -27106,7 +27108,7 @@
     },
     "1571123": {
       "title": "Night Flight",
-      "status": "available",
+      "status": "removed",
       "first_seen": "2025-11-05",
       "digital_date": "2026-03-15",
       "providers": {
@@ -27121,7 +27123,9 @@
       "year": 2025,
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt32421438"
+      "imdb_id": "tt32421438",
+      "removed_date": "2026-04-24",
+      "removed_reason": "short_film_under_60min"
     },
     "1570993": {
       "title": "My Own Rebellion",
@@ -32883,7 +32887,7 @@
     },
     "1577767": {
       "title": "Same Time Next Year",
-      "status": "available",
+      "status": "removed",
       "first_seen": "2025-11-10",
       "digital_date": "2026-03-13",
       "providers": {
@@ -32911,7 +32915,9 @@
       "year": 2025,
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt0078199"
+      "imdb_id": "tt0078199",
+      "removed_date": "2026-04-24",
+      "removed_reason": "short_film_under_60min"
     },
     "1577704": {
       "title": "Donnez-Nous la Paix",
@@ -65727,7 +65733,7 @@
     },
     "1488195": {
       "title": "Teenage Mutant Ninja Turtles: Chrome Alone 2- Lost in New Jersey",
-      "status": "available",
+      "status": "removed",
       "first_seen": "2025-12-19",
       "digital_date": "2026-01-31",
       "providers": {
@@ -65740,7 +65746,9 @@
       "year": 2025,
       "_discovery_source": "tmdb_type4",
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "removed_date": "2026-04-24",
+      "removed_reason": "short_film_under_60min"
     },
     "1481412": {
       "title": "New Interpretation of the End of Edo Period",
@@ -207279,7 +207287,7 @@
       "title": "Candy Caries",
       "content_type": "limited_series",
       "tmdb_id": 312383,
-      "status": "available",
+      "status": "removed",
       "first_air_date": "2026-04-15",
       "digital_date": "2026-04-15",
       "episode_count": 6,
@@ -207307,7 +207315,9 @@
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-04-22"
+      "enrichment_date": "2026-04-22",
+      "removed_date": "2026-04-24",
+      "removed_reason": "short_film_under_60min"
     },
     "manual_the_man_with_the_hat": {
       "title": "The Man With the Hat",
