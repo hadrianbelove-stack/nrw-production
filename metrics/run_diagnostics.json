@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-04-24T13:11:00.940786",
-  "duration_seconds": 10287.465663,
+  "timestamp": "2026-04-25T10:38:27.201614",
+  "duration_seconds": 2863.376579,
   "overall_success": true,
   "failure_count": 0,
   "warning_count": 0,
@@ -8,44 +8,51 @@
     {
       "name": "Intake new premieres from TMDB",
       "success": true,
-      "duration_seconds": 40.233295,
+      "duration_seconds": 5.243324,
       "error": null,
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-04-22 to 2026-04-24 (incremental mode, 83 intaked)\n\u2705 Movie intake complete: 83 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-03-25 to 2026-04-24\n   \ud83d\udccb Ganteng-Ganteng Genteng: Kontes Otot Pa"
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-04-23 to 2026-04-25 (incremental mode, 23 intaked)\n\u2705 Movie intake complete: 23 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-03-26 to 2026-04-25\n   \ud83d\udccb Flower Boy (8 eps)\n   \ud83d\udccb El Fransawy (2 "
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 7767.79188,
+      "duration_seconds": 2523.504682,
       "error": null,
-      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 16253 total movies\n\ud83d\udd0d Raw tracking filter: 12987 movies\n\ud83d\udd0d Assigned tracking_movies list: 12987\n\ud83d\udd0d Found 12987 movies in tracking status\n  Priority queue (last 180 days): 510 movies\n  Older movies: 12477 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 12987 movies for digital availability...\n\n   \ud83d\udcdd Movie Saturnalia already in data.json - skipping immediate add\n  \ud83d\udcc5 Saturnalia \u2014 pending T"
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 16280 total movies\n\ud83d\udd0d Raw tracking filter: 12958 movies\n\ud83d\udd0d Assigned tracking_movies list: 12958\n\ud83d\udd0d Found 12958 movies in tracking status\n  Priority queue (last 180 days): 510 movies\n  Older movies: 12448 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 12958 movies for digital availability...\n\n  \u2713 Identity now on fuboTV!\n   \ud83d\udcdd Movie Identity already in data.json - skipping immediate add\n"
     },
     {
       "name": "Resolve pre-order movie dates",
       "success": true,
-      "duration_seconds": 0.353117,
+      "duration_seconds": 0.351156,
       "error": null,
       "output_preview": "\n\ud83d\udcc5 Resolving pre-order movie dates...\n\n\ud83d\udcc5 Resolving pre-order dates...\n  No pre-order movies to resolve\n\u2705 Pre-order resolution complete: 0 resolved\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Enrich newly available movies with metadata",
       "success": true,
-      "duration_seconds": 2474.74208,
+      "duration_seconds": 330.076107,
       "error": null,
-      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n  \ud83d\udce6 Retired 11 movies older than 90 days from enrichment\n\ud83c\udfaf Enrichment queue: 20 new + 18 catch-up = 38 total\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n  \u26a1 Saturnalia (45.5s) - Wiki:\u25cb T"
+      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\ud83c\udfaf Enrichment queue: 11 new + 0 catch-up = 11 total\n  \ud83d\udd04 Identity \u2014 JustWatch pre-check: justwatch_no_valid_offers \u2192 reverted to tracking\n  \ud83d\udd04 Yiya Murano: Death at Tea Time \u2014 JustWatch pre-check: justwatch_no_valid_offers \u2192 reverted to tracking\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[P"
     },
     {
       "name": "Stamp hosted trailer URLs into data.json",
       "success": true,
-      "duration_seconds": 1.080686,
+      "duration_seconds": 1.329402,
       "error": null,
-      "output_preview": "=== Trailer Pipeline: stamp ===\n\nConnecting to B2...\nFound 491 trailers in B2 bucket\nSaved data.json: 19 stamped, 0 stale cleaned\n\nStamp results:\n  Stamped:          19\n  Already had URL:  442\n  Stale cleaned:    0\n  Not in B2:        427\n"
+      "output_preview": "=== Trailer Pipeline: stamp ===\n\nConnecting to B2...\nFound 506 trailers in B2 bucket\nSaved data.json: 18 stamped, 0 stale cleaned\n\nStamp results:\n  Stamped:          18\n  Already had URL:  447\n  Stale cleaned:    0\n  Not in B2:        295\n"
     },
     {
       "name": "Check virtual screening link expirations",
       "success": true,
-      "duration_seconds": 3.13392,
+      "duration_seconds": 2.345937,
       "error": null,
-      "output_preview": "\n\ud83c\udfaa Checking virtual screening links...\n  Checking 22 virtual screening movies...\n  \ud83d\udcbe Updated data.json\n  \ud83d\udcca Results: 6 active, 0 expired\n\u2705 Virtual screening check complete\n\ud83d\udccb Phase complete\n"
+      "output_preview": "\n\ud83c\udfaa Checking virtual screening links...\n  Checking 15 virtual screening movies...\n  \ud83d\udcbe Updated data.json\n  \ud83d\udcca Results: 5 active, 0 expired\n\u2705 Virtual screening check complete\n\ud83d\udccb Phase complete\n"
+    },
+    {
+      "name": "Archive movies older than 90 days",
+      "success": true,
+      "duration_seconds": 0.391693,
+      "error": null,
+      "output_preview": "\n\ud83d\udce6 Archiving movies older than 90 days...\n\ud83d\udce6 Archived 5 movies (>90 days old) \u2192 data_archive.json\n   data.json: 755 movies | archive: 182 total\n\u2705 Archive complete\n\ud83d\udccb Phase complete\n"
     }
   ],
   "health_issues": [],
@@ -56,20 +63,20 @@
   "failures": [],
   "warnings": [],
   "data_quality": {
-    "total": 16253,
-    "tracking": 12973,
-    "available": 3261,
-    "data_movies": 888,
-    "movies_with_links": 301,
-    "movies_with_rt": 612,
-    "movies_with_wikipedia": 431,
-    "movies_with_trailers": 778
+    "total": 16280,
+    "tracking": 12951,
+    "available": 3132,
+    "data_movies": 755,
+    "movies_with_links": 681,
+    "movies_with_rt": 513,
+    "movies_with_wikipedia": 382,
+    "movies_with_trailers": 663
   },
   "enrichment_metrics": {
-    "timestamp": "2026-04-24T13:10:56.045477",
-    "movies_requested": 38,
-    "movies_enriched": 32,
-    "movies_deferred": 6,
-    "enrichment_duration_seconds": 2473.88
+    "timestamp": "2026-04-25T10:38:22.655002",
+    "movies_requested": 11,
+    "movies_enriched": 7,
+    "movies_deferred": 4,
+    "enrichment_duration_seconds": 329.41
   }
 }
