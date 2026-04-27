@@ -33483,7 +33483,14 @@
         "imdb": "https://www.imdb.com/title/tt39301936/",
         "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1617427.mp4"
       },
-      "watch_links": {},
+      "watch_links": {
+        "streaming": [
+          {
+            "service": "Fawesome",
+            "link": "https://fawesome.tv/movies/10756099/the-staff?utm_source=justwatch&utm_medium=feed"
+          }
+        ]
+      },
       "_enrichment_status": "completed",
       "_discovered_at": "2026-04-01T10:50:25.512291",
       "_tmdb_fetch_failed": false,
@@ -33510,12 +33517,6 @@
       "_trailer_source": "tmdb_official",
       "_digital_date_source": "tmdb_type4",
       "_needs_review": false,
-      "_enrichment_gaps": [
-        "watch_links",
-        "rt_score",
-        "wikipedia",
-        "imdb_rating"
-      ],
       "categories": {
         "tier": null,
         "is_big_time": false,
