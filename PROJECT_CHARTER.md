@@ -24,7 +24,7 @@ The New Release Wall is a **Blockbuster wall for the streaming age**. It exists 
 ## Core Rules
 1. **Immutable Charter** — `PROJECT_CHARTER.md` in repo root is the sacrosanct source. Updated only via amendments.
 2. **No Unauthorized Coding** — Assistant must never write, modify, or create code without explicit user approval. All unspecified changes must be presented as suggestions with clear explanations of what the code does and why it's needed. User approval required before any implementation.
-3. **Tactical Planning** — `IMPLEMENTATION_ROADMAP.md` serves as the canonical tactical plan for prioritized implementation work
+3. **Tactical Planning** — Tactical implementation decisions are tracked per-session (IMPLEMENTATION_ROADMAP.md was retired)
 
 ## Current System State
 - **Runtime entry:** `index.html` loads `assets/styles.css` and `assets/app.js`, then initializes the wall
@@ -55,7 +55,7 @@ The New Release Wall is a **Blockbuster wall for the streaming age**. It exists 
 | 016 | Process | Source first discipline | Prevents assumption mistakes | Applied to all references |
 | 017 | Governance | Charter vs implementation separation | Keeps charter clean | PROJECT_CHARTER.md vs IMPLEMENTATION_ROADMAP.md |
 
-**Note:** Former tactical amendments (022-031) moved to IMPLEMENTATION_ROADMAP.md as completed implementation decisions, not governance principles.
+**Note:** Former tactical amendments (022-031) were completed implementation decisions, not governance principles (IMPLEMENTATION_ROADMAP.md retired).
 
 ## Active Amendments
 
@@ -111,9 +111,9 @@ The New Release Wall is a **Blockbuster wall for the streaming age**. It exists 
 **Spec:** Applied to all architectural and operational decisions
 
 ### 011: Implementation Roadmap Discipline
-**Decision:** `IMPLEMENTATION_ROADMAP.md` as canonical plan, priority categorization, session integration, roadmap ID references in commits.
-**Status:** ✅ Active - complements PROJECT_CHARTER.md governance
-**Spec:** IMPLEMENTATION_ROADMAP.md
+**Decision:** Canonical tactical planning with priority categorization and session integration.
+**Status:** ✅ Active (IMPLEMENTATION_ROADMAP.md retired; tactical decisions tracked per-session)
+**Spec:** Per-session planning
 
 ### 012: Database Update Cadence
 **Decision:** `generate_data.py` handles both `intake` (new premiere ingestion from TMDB) and `discovery` (provider availability detection for tracked titles). Single source of truth for both which titles are tracked and when they become digitally available.
@@ -192,10 +192,10 @@ The New Release Wall is a **Blockbuster wall for the streaming age**. It exists 
 **Spec:** Must use Read tool before claiming what documents say
 
 ### 017: Charter vs Implementation Separation
-**Decision:** Charter contains only timeless governance principles. All tactical decisions belong in IMPLEMENTATION_ROADMAP.md.
-**Scope:** Test: "Is this how to work (charter) or what to build (roadmap)?"
+**Decision:** Charter contains only timeless governance principles. Tactical decisions are tracked separately.
+**Scope:** Test: "Is this how to work (charter) or what to build (tactical)?"
 **Status:** ✅ Active - keeps charter focused on governance
-**Spec:** PROJECT_CHARTER.md vs IMPLEMENTATION_ROADMAP.md
+**Spec:** PROJECT_CHARTER.md (governance) vs per-session tactical planning
 
 # PART 3: CURRENT CONFIGURATION
 

@@ -27,12 +27,9 @@ workflow:
   
 display:
   days_back: 90  # Show movies from last N days
-  min_movies: 20  # Minimum movies to display
-  max_movies: 100  # Maximum movies to display
 
 tracking:
   bootstrap_days: 7  # Look back N days for new releases
-  check_interval_hours: 24  # How often to check
   poll_all_tracking: true  # Poll all tracking movies (production requirement)
   archive_available_on_detect: false  # Archive available movies to separate file (experimental)
   compaction_batch_size: 50  # Maximum entries to move per compaction run
@@ -499,7 +496,7 @@ screening_end_dates:
   menafilmfestival: "2026-01-30"
   bsdff: "2026-02-22"
   pjff2026: "2026-03-01"
-  sundance: "2021-02-03"
+  sundance: "2026-01-23"
 
 api:
   # API keys now loaded from .env file (see load_env.py)
@@ -525,6 +522,14 @@ gemini_scraper:
   rate_limit: 1.0                  # Seconds between API calls
   cache_ttl_days: 90               # How long to cache results
   max_retries: 3                   # Retry attempts with exponential backoff
+
+# Gemini-based watch link finder: uses Google Search grounding to find direct watch URLs
+# Tries Gemini first for all platforms, falls back to Playwright agent scraper
+# Tested: Netflix 7/7, Paramount+ 1/1, Film Movement Plus 1/1, Angel Studios 1/1
+gemini_watch_link_finder:
+  enabled: true                    # Master toggle
+  validate_urls: true              # HTTP-validate Gemini URLs before accepting
+  # Rate limit, cache TTL, retries inherited from gemini_scraper section above
 
 # Streaming scraper (Playwright): For Netflix/Disney+/HBO Max/Hulu - DISABLED due to authentication barriers
 # Uses playwright for stealth browsing but blocked by login requirements
@@ -641,16 +646,12 @@ letterboxd_scraper:
 
 validation:
   recent_days: 7  # Strict recent movie validation window (days) - per PROJECT_CHARTER.md
-  min_recall: 0.75  # Minimum intake recall - how well intake finds recent premieres from TMDB (75%)
-  min_precision: 0.70  # Minimum intake precision - how well intake filters recent premieres (70%)
   min_provider_coverage_count: 10  # Minimum number of movies with non-search watch links per week
-  approval_ttl_hours: 6  # Approval freshness grace window (6 hours default)
   fail_on_no_recent: false  # When true, fail validation if no recent movies found. When false (default), warn and continue.
 
 orchestrator:
   discovery_retries: 2  # Additional retry attempts for provider-availability discovery (total attempts = 1 + retries)
   discovery_retry_delays: [30, 45]  # Retry delays for provider-availability discovery in seconds (exponential backoff)
-  skip_approval: true  # Default to bypass approval gate during development (NRW_SKIP_APPROVAL override)
   health:
     min_polled: 1000  # Threshold for logging (report-only, no enforcement)
 
