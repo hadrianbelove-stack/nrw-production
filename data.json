@@ -19362,7 +19362,14 @@
         "imdb": "https://www.imdb.com/title/tt13282742/",
         "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1630401.mp4"
       },
-      "watch_links": {},
+      "watch_links": {
+        "streaming": [
+          {
+            "service": "YouTube",
+            "link": "https://www.youtube.com/watch?v=6kNqw7UdENg"
+          }
+        ]
+      },
       "_enrichment_status": "completed",
       "_discovered_at": "2026-04-23T06:48:24.445724",
       "_tmdb_fetch_failed": false,
@@ -19389,10 +19396,6 @@
       "_trailer_source": "tmdb_official",
       "_digital_date_source": "tmdb_type4",
       "_needs_review": false,
-      "_enrichment_gaps": [
-        "watch_links",
-        "rt_score"
-      ],
       "categories": {
         "tier": null,
         "is_big_time": false,
@@ -19793,7 +19796,7 @@
     },
     {
       "id": "1678081",
-      "title": "The Inheritace",
+      "title": "The Inheritance (A Found Footage Horror Film)",
       "digital_date": "2026-04-21",
       "bootstrap_date": false,
       "manually_corrected": false,
@@ -19812,9 +19815,17 @@
       "links": {
         "wikipedia": "https://en.wikipedia.org/wiki/Inheritance_(2025_film)",
         "trailer": null,
-        "rt": null
+        "rt": "https://www.rottentomatoes.com/m/urban_nightmares_a_found_footage_anthology",
+        "imdb": "https://www.imdb.com/title/tt39289960/"
       },
-      "watch_links": {},
+      "watch_links": {
+        "streaming": [
+          {
+            "service": "Netflix",
+            "link": "https://www.netflix.com/title/81500431"
+          }
+        ]
+      },
       "_enrichment_status": "completed",
       "_discovered_at": "2026-04-23T10:20:49.009183",
       "_tmdb_fetch_failed": false,
@@ -19837,15 +19848,9 @@
       },
       "_discovery_source": "provider_availability_check",
       "_enrichment_attempts": 3,
-      "imdb_rating": null,
+      "imdb_rating": "3.8",
       "_digital_date_source": "tmdb_type4",
-      "_needs_review": false,
-      "_enrichment_gaps": [
-        "watch_links",
-        "rt_score",
-        "trailer",
-        "imdb_rating"
-      ],
+      "_needs_review": true,
       "categories": {
         "tier": null,
         "is_big_time": false,
@@ -19859,7 +19864,10 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "_quality_warnings": [
+        "Title changed from tracking: 'The Inheritace' -> 'The Inheritance (A Found Footage Horror Film)'"
+      ]
     },
     {
       "id": "1407278",
