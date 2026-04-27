@@ -20718,7 +20718,14 @@
         "rt": null,
         "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1678238.mp4"
       },
-      "watch_links": {},
+      "watch_links": {
+        "streaming": [
+          {
+            "service": "YouTube",
+            "link": "https://www.youtube.com/watch?v=r5KRnstXYUg"
+          }
+        ]
+      },
       "_enrichment_status": "completed",
       "_discovered_at": "2026-04-23T10:20:52.118247",
       "_tmdb_fetch_failed": false,
@@ -20743,12 +20750,6 @@
       "_trailer_source": "tmdb_official",
       "_digital_date_source": "tmdb_type4",
       "_needs_review": false,
-      "_enrichment_gaps": [
-        "watch_links",
-        "rt_score",
-        "wikipedia",
-        "imdb_rating"
-      ],
       "categories": {
         "tier": null,
         "is_big_time": false,
