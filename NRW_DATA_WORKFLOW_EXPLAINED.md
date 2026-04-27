@@ -231,7 +231,7 @@ Non-film content (wrestling events, sports broadcasts) is blocked at intake via 
 - Blocked items are counted in `intake_stats['blocked_by_filter']` and logged when running with debug
 
 ### Service Exclusion List (Enrichment Phase — NOT Discovery)
-`config.yaml > excluded_services` prevents unwanted VOD/streaming services from appearing in watch links. Current exclusions: fuboTV, Philo, Sun Nxt, Google Play Movies, Google Play, Shahid VIP, Viki. **Fandango is NOT excluded** — it is a valid VOD platform. Always check `config.yaml` for the authoritative list.
+`config.yaml > excluded_services` prevents unwanted VOD/streaming services from appearing in watch links. Current exclusions: fuboTV, Philo, Sun Nxt, Google Play Movies, Google Play, Shahid VIP, Viki. Always check `config.yaml` for the authoritative list.
 
 **Important:** This filter is applied during enrichment (via JustWatch pre-verification), NOT during discovery. Discovery is binary — any TMDB provider signal means "discovered." If a movie is only available on excluded services, it gets discovered, then JustWatch pre-check reverts it to tracking with a note (see above). This prevents movies from being silently stuck in tracking because their only TMDB provider was an excluded service like fuboTV.
 
