@@ -115,10 +115,41 @@ intake:
 
 # Film Festival Configuration
 # Used by intake Pass C to discover films premiering at major festivals
-# Dates shift slightly each year - these are historical/confirmed dates with wiggle room
-# For future years, add new entries or run backfill with estimated dates
+# festival_templates: defines each festival once with typical timing — code auto-generates
+# dates for any year that doesn't have an explicit editions_YYYY section.
+# Explicit editions_YYYY entries override templates when exact dates are confirmed.
 festivals:
   wiggle_days: 2  # Extra days before/after festival dates to catch edge cases
+
+  # Festival templates — typical_start: [month, day], duration_days: length
+  # These are averaged from 2024-2026 confirmed dates. ±5 days is normal year-to-year.
+  festival_templates:
+    # Major Prestige Festivals
+    sundance:       { name: "Sundance",           region: "US", typical_start: [1, 22],  duration_days: 11 }
+    rotterdam:      { name: "Rotterdam/IFFR",     region: "NL", typical_start: [1, 29],  duration_days: 11 }
+    berlin:         { name: "Berlin/Berlinale",   region: "DE", typical_start: [2, 12],  duration_days: 11 }
+    sxsw:           { name: "SXSW",              region: "US", typical_start: [3, 9],   duration_days: 8 }
+    cannes:         { name: "Cannes",             region: "FR", typical_start: [5, 12],  duration_days: 12 }
+    tribeca:        { name: "Tribeca",            region: "US", typical_start: [6, 4],   duration_days: 12 }
+    locarno:        { name: "Locarno",            region: "CH", typical_start: [8, 5],   duration_days: 11 }
+    venice:         { name: "Venice",             region: "IT", typical_start: [8, 29],  duration_days: 11 }
+    toronto:        { name: "Toronto/TIFF",       region: "CA", typical_start: [9, 6],   duration_days: 11 }
+    busan:          { name: "Busan",              region: "KR", typical_start: [9, 16],  duration_days: 10 }
+    san_sebastian:  { name: "San Sebastian",      region: "ES", typical_start: [9, 18],  duration_days: 9 }
+    nyff:           { name: "NYFF",               region: "US", typical_start: [9, 26],  duration_days: 18 }
+    afi_fest:       { name: "AFI Fest",           region: "US", typical_start: [10, 22], duration_days: 5 }
+    # Documentary Festivals
+    cph_dox:        { name: "CPH:DOX",            region: "DK", typical_start: [3, 15],  duration_days: 12 }
+    hot_docs:       { name: "Hot Docs",           region: "CA", typical_start: [4, 23],  duration_days: 11 }
+    sheffield_docfest: { name: "Sheffield DocFest", region: "GB", typical_start: [6, 13], duration_days: 6 }
+    idfa:           { name: "IDFA",               region: "NL", typical_start: [11, 12], duration_days: 11 }
+    # Animation Festival
+    annecy:         { name: "Annecy",             region: "FR", typical_start: [6, 14],  duration_days: 7 }
+    # Genre/Horror Festivals
+    fantasia:       { name: "Fantasia",           region: "CA", typical_start: [7, 16],  duration_days: 18 }
+    fantastic_fest:  { name: "Fantastic Fest",     region: "US", typical_start: [9, 17],  duration_days: 8 }
+    sitges:         { name: "Sitges",             region: "ES", typical_start: [10, 8],  duration_days: 11 }
+    sxsw_sydney:    { name: "SXSW Sydney",        region: "AU", typical_start: [10, 13], duration_days: 7 }
 
   # 2024 Festivals (completed - for backfill)
   editions_2024:

@@ -13,7 +13,7 @@ import json
 import random
 import requests
 import yaml
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 import time
 import re
 from urllib.parse import quote
@@ -1530,6 +1530,40 @@ class DataGenerator:
     # Festival intake methods (2026-01-06 - added for festival premiere discovery)
     # ============================================================================
 
+    def _generate_editions_from_templates(self, year):
+        """Auto-generate festival editions for a year from festival_templates config.
+
+        Used as fallback when no explicit editions_YYYY section exists.
+        Templates define typical_start [month, day] and duration_days for each festival.
+
+        Returns:
+            dict: Festival editions in the same format as editions_YYYY config sections,
+                  or empty dict if no templates defined.
+        """
+        templates = self.config.get('festivals', {}).get('festival_templates', {})
+        if not templates:
+            return {}
+
+        editions = {}
+        for fest_key, tmpl in templates.items():
+            try:
+                month, day = tmpl['typical_start']
+                start = date(year, month, day)
+                end = start + timedelta(days=tmpl['duration_days'])
+                editions[fest_key] = {
+                    'name': tmpl['name'],
+                    'region': tmpl['region'],
+                    'start': start.strftime('%Y-%m-%d'),
+                    'end': end.strftime('%Y-%m-%d'),
+                }
+            except (KeyError, ValueError, TypeError) as e:
+                self.logger.warning(f"Bad festival template '{fest_key}': {e}")
+                continue
+
+        if editions:
+            self.logger.info(f"Auto-generated {len(editions)} festival editions for {year} from templates")
+        return editions
+
     def _run_festival_intake_current(self, intaked_movies, existing_ids, debug, min_runtime=60):
         """Run festival intake for current/recent festivals only.
 
@@ -1556,9 +1590,12 @@ class DataGenerator:
 
         total_new = 0
 
-        # Check current year's festivals
+        # Check current year's festivals (explicit editions override templates)
         editions_key = f'editions_{current_year}'
         editions = festivals_config.get(editions_key, {})
+
+        if not editions:
+            editions = self._generate_editions_from_templates(current_year)
 
         if not editions:
             if debug:
@@ -1657,6 +1694,9 @@ class DataGenerator:
         for year in years:
             editions_key = f'editions_{year}'
             editions = festivals_config.get(editions_key, {})
+
+            if not editions:
+                editions = self._generate_editions_from_templates(year)
 
             if not editions:
                 self.logger.warning(f"No festival editions found for {year}")
