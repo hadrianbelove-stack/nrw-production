@@ -81,7 +81,7 @@ An ongoing, accumulating database of digital release dates that no one else trac
 Before any expensive enrichment (Wikipedia, RT, trailers), each newly discovered movie is verified against JustWatch:
 - JustWatch is queried for the movie's current availability
 - If the movie has valid offers on our target platforms (Amazon, Apple TV, YouTube) → proceed with full enrichment
-- If the movie is only available on excluded services (Fandango, Google Play, etc.) → **reverted to tracking** with reason `"excluded_platforms_only: Fandango At Home"` stored in `_jw_revert_reason`
+- If the movie is only available on excluded services (Google Play, fuboTV, Philo, etc.) → **reverted to tracking** with reason stored in `_jw_revert_reason`
 - If JustWatch finds nothing → **reverted to tracking** with reason `"justwatch_no_match"`
 - On pre-check error → proceed with enrichment anyway (fail open, not fail closed)
 
@@ -231,14 +231,14 @@ Non-film content (wrestling events, sports broadcasts) is blocked at intake via 
 - Blocked items are counted in `intake_stats['blocked_by_filter']` and logged when running with debug
 
 ### Service Exclusion List (Enrichment Phase — NOT Discovery)
-`config.yaml > excluded_services` prevents unwanted VOD/streaming services from appearing in watch links. Current exclusions: fuboTV, Philo, Sun Nxt, Fandango, Google Play Movies, Google Play, Shahid VIP. Only Amazon, Apple TV, and YouTube are whitelisted for VOD buttons.
+`config.yaml > excluded_services` prevents unwanted VOD/streaming services from appearing in watch links. Current exclusions: fuboTV, Philo, Sun Nxt, Google Play Movies, Google Play, Shahid VIP, Viki. **Fandango is NOT excluded** — it is a valid VOD platform. Always check `config.yaml` for the authoritative list.
 
-**Important:** This filter is applied during enrichment (via JustWatch pre-verification), NOT during discovery. Discovery is binary — any TMDB provider signal means "discovered." If a movie is only available on excluded services, it gets discovered, then JustWatch pre-check reverts it to tracking with a note (see above). This prevents movies from being silently stuck in tracking because their only TMDB provider was Fandango.
+**Important:** This filter is applied during enrichment (via JustWatch pre-verification), NOT during discovery. Discovery is binary — any TMDB provider signal means "discovered." If a movie is only available on excluded services, it gets discovered, then JustWatch pre-check reverts it to tracking with a note (see above). This prevents movies from being silently stuck in tracking because their only TMDB provider was an excluded service like fuboTV.
 
 ### False Positive Revert (Two stages)
 
 **Stage 1 — JustWatch Pre-Verification (Pre-Enrichment, proactive):**
-Before full enrichment, a JustWatch pre-check verifies each newly-discovered movie is available on our target platforms. If not, the movie is immediately reverted to tracking with a specific reason stored in `_jw_revert_reason` and `_jw_reverted_at`. The launch report shows these reverted movies so you know: "discovered, but only on Fandango — sent back to tracking."
+Before full enrichment, a JustWatch pre-check verifies each newly-discovered movie is available on our target platforms. If not, the movie is immediately reverted to tracking with a specific reason stored in `_jw_revert_reason` and `_jw_reverted_at`. The launch report shows these reverted movies so you know: "discovered, but only on excluded services — sent back to tracking."
 
 **Stage 2 — Zero-Link Revert (Post-Enrichment, safety net):**
 After enrichment, movies with `status=available` but **zero watch links** are automatically reverted to `status=tracking`. This catches any remaining false-positive discoveries — movies that passed JustWatch pre-check but still ended up with no usable links.

@@ -99,4 +99,4 @@ else:
 
 Present the output as a formatted report. The **ZERO WATCH LINKS** section is the most critical — zero watch links on a wall movie is NEVER normal. It signals enrichment failure. A 🚨 CRITICAL alert means the pipeline is likely broken and needs immediate investigation.
 
-The **JW REVERTED** section shows movies discovered by TMDB but sent back to tracking after JustWatch couldn't confirm them on our platforms. This is expected and healthy — it means the pipeline correctly filtered out movies only available on excluded services (Fandango, Google Play, etc.) or with no JustWatch match at all.
+The **JW REVERTED** section shows movies discovered by TMDB but sent back to tracking after JustWatch couldn't confirm them on our platforms. This is expected and healthy — it means the pipeline correctly filtered out movies only available on excluded services (Google Play, fuboTV, Philo, etc.) or with no JustWatch match at all. Note: Fandango is NOT excluded — it is a valid VOD platform.
