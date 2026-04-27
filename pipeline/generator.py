@@ -3594,7 +3594,7 @@ class DataGenerator:
                         from pipeline.justwatch import JustWatchClient
                         self.enrichment._justwatch_client = JustWatchClient(logger=self.logger)
                     _amazon_tag = self.enrichment._get_amazon_affiliate_tag()
-                    _excl_list = self.enrichment.config.get('tracking', {}).get('excluded_services', ['fuboTV', 'Philo'])
+                    _excl_list = self.enrichment.config.get('tracking', {}).get('excluded_services', ['fuboTV', 'Philo', 'Sun Nxt', 'Google Play Movies', 'Google Play', 'Shahid VIP', 'Viki', 'Futo'])
                     _jw_result = self.enrichment._justwatch_client.verify_availability(
                         _title, _year, excluded_services=_excl_list,
                         affiliate_tag=_amazon_tag, content_type=_content_type_jw

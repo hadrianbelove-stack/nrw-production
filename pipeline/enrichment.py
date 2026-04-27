@@ -388,7 +388,7 @@ class EnrichmentService:
             amazon_tag = self._get_amazon_affiliate_tag()
 
             # Get excluded services from config (e.g. Philo, fuboTV)
-            excluded_services = self.config.get('tracking', {}).get('excluded_services', ['fuboTV', 'Philo'])
+            excluded_services = self.config.get('tracking', {}).get('excluded_services', ['fuboTV', 'Philo', 'Sun Nxt', 'Google Play Movies', 'Google Play', 'Shahid VIP', 'Viki', 'Futo'])
 
             # Initialize JustWatch client (lazy)
             if not hasattr(self, '_justwatch_client'):
@@ -1501,7 +1501,7 @@ class EnrichmentService:
         if not service_name:
             return False
         service_lower = service_name.lower()
-        excluded_services = self.config.get('tracking', {}).get('excluded_services', ['fuboTV', 'Philo'])
+        excluded_services = self.config.get('tracking', {}).get('excluded_services', ['fuboTV', 'Philo', 'Sun Nxt', 'Google Play Movies', 'Google Play', 'Shahid VIP', 'Viki', 'Futo'])
         return any(excluded.lower() in service_lower for excluded in excluded_services)
 
     def is_actual_amazon_service(self, provider):
