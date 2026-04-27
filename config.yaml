@@ -357,26 +357,8 @@ festivals:
   # 2026 Festivals (future - scheduled/estimated dates)
   editions_2026:
     # Major Prestige Festivals
-    sundance:
-      name: "Sundance"
-      region: "US"
-      start: "2026-01-22"
-      end: "2026-02-01"
-    berlin:
-      name: "Berlin/Berlinale"
-      region: "DE"
-      start: "2026-02-12"
-      end: "2026-02-22"
-    rotterdam:
-      name: "Rotterdam/IFFR"
-      region: "NL"
-      start: "2026-01-29"
-      end: "2026-02-08"
-    sxsw:
-      name: "SXSW"
-      region: "US"
-      start: "2026-03-12"
-      end: "2026-03-18"
+    # Past festivals removed: Sundance (Jan 22–Feb 1), Rotterdam (Jan 29–Feb 8),
+    # Berlin (Feb 12–22), SXSW (Mar 12–18), CPH:DOX (Mar 11–22)
     cannes:
       name: "Cannes"
       region: "FR"
@@ -423,11 +405,6 @@ festivals:
       start: "2026-10-21"
       end: "2026-10-25"
     # Documentary Festivals
-    cph_dox:
-      name: "CPH:DOX"
-      region: "DK"
-      start: "2026-03-11"
-      end: "2026-03-22"
     hot_docs:
       name: "Hot Docs"
       region: "CA"
