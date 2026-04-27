@@ -72,6 +72,9 @@ if MOVIE_ID in movies:
     movies[MOVIE_ID]['status'] = 'removed'
     movies[MOVIE_ID]['removed_date'] = today
     movies[MOVIE_ID]['removed_reason'] = 'manual_removal'
+    # Clean diagnostic tags so movie doesn't linger on revert/fail reports
+    for tag in ['_jw_revert_reason', '_jw_reverted_at', '_enrichment_error', '_enrichment_failed_at']:
+        movies[MOVIE_ID].pop(tag, None)
 else:
     # Not in tracking — create minimal entry so it can never be re-discovered
     movies[MOVIE_ID] = {
