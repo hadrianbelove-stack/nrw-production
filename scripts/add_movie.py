@@ -155,67 +155,83 @@ def main():
     else:
         tracking_data['movies'][tmdb_id] = tracking_entry
 
-    storage.save_all_movies(tracking_data)
+    storage.atomic_write_json(tracking_data, 'movie_tracking.json', backup=True)
     print(f"   ✅ Saved to tracking")
 
-    # Write minimal entry to data.json via add_movie_to_site_immediately
-    print(f"\n📺 Adding to data.json...")
-    movie_data_for_site = tracking_data['movies'][tmdb_id].copy()
-    movie_data_for_site['id'] = tmdb_id
+    # Write to data.json: update existing entry or add new one
+    print(f"\n📺 Updating data.json...")
+    with open('data.json') as f:
+        data = json.load(f)
 
-    success = gen.add_movie_to_site_immediately(tmdb_id, movie_data_for_site)
-    if success:
-        print(f"   ✅ Added to data.json")
+    # Check if movie already exists in data.json
+    existing_index = None
+    for i, m in enumerate(data['movies']):
+        if str(m.get('id')) == str(tmdb_id):
+            existing_index = i
+            break
+
+    if existing_index is not None:
+        # Movie exists — clean revert flags and reset for re-enrichment
+        movie = data['movies'][existing_index]
+        revert_keys = ['_jw_reverted', '_jw_revert_reason', '_enrichment_status',
+                        '_jw_reverted_at', '_reverted_from_available']
+        for key in revert_keys:
+            if key in movie:
+                print(f"   Cleared {key}")
+                del movie[key]
+        # Remove status=tracking (available movies shouldn't have this)
+        if movie.get('status') == 'tracking':
+            del movie['status']
+            print(f"   Cleared status=tracking")
+        movie['_added_manually'] = True
+        movie['_enrichment_attempts'] = 0
+        print(f"   ✅ Existing entry cleaned for re-enrichment")
     else:
-        # Fallback: write minimal entry directly
-        print(f"   ⚠️  add_movie_to_site_immediately failed, writing minimal entry directly...")
-        with open('data.json') as f:
-            data = json.load(f)
+        # New movie — add minimal entry
+        from datetime import datetime
+        minimal = {
+            'id': tmdb_id,
+            'title': title,
+            'digital_date': digital_date,
+            'year': year,
+            'poster': poster,
+            'genres': genres,
+            'synopsis': overview or None,
+            'providers': providers,
+            'watch_links': {},
+            'links': {'wikipedia': None, 'trailer': None, 'rt': None},
+            'bootstrap_date': False,
+            'manually_corrected': False,
+            'runtime': None,
+            'rt_score': None,
+            'studio': None,
+            'budget': 0,
+            'country': None,
+            'original_language': None,
+            'original_title': title,
+            'crew': {'director': None, 'cast': []},
+            '_enrichment_status': 'pending',
+            '_minimal_entry': True,
+            '_added_manually': True,
+            '_discovered_at': datetime.utcnow().isoformat(),
+            '_discovery_source': 'manual_add',
+            '_tmdb_fetch_failed': False,
+            'categories': {
+                'tier': None, 'is_big_time': False, 'is_indie': False,
+                'is_foreign': False, 'is_staff_pick': False, 'is_restoration': False,
+                'is_virtual_screening': False, 'is_series': is_series,
+                'is_documentary': False, 'auto_categorized': True, 'manual_override': None
+            },
+            'featured': False,
+        }
+        if is_series:
+            minimal['content_type'] = 'limited_series'
 
-        existing_ids = {str(m['id']) for m in data['movies']}
-        if str(tmdb_id) not in existing_ids:
-            from datetime import datetime
-            minimal = {
-                'id': tmdb_id,
-                'title': title,
-                'digital_date': digital_date,
-                'year': year,
-                'poster': poster,
-                'genres': genres,
-                'synopsis': overview or None,
-                'providers': providers,
-                'watch_links': {},
-                'links': {'wikipedia': None, 'trailer': None, 'rt': None},
-                'bootstrap_date': False,
-                'manually_corrected': False,
-                'runtime': None,
-                'rt_score': None,
-                'studio': None,
-                'budget': 0,
-                'country': None,
-                'original_language': None,
-                'original_title': title,
-                'crew': {'director': None, 'cast': []},
-                '_enrichment_status': 'pending',
-                '_minimal_entry': True,
-                '_discovered_at': datetime.utcnow().isoformat(),
-                '_discovery_source': 'manual_add',
-                '_tmdb_fetch_failed': False,
-                'categories': {
-                    'tier': None, 'is_big_time': False, 'is_indie': False,
-                    'is_foreign': False, 'is_staff_pick': False, 'is_restoration': False,
-                    'is_virtual_screening': False, 'is_series': is_series,
-                    'is_documentary': False, 'auto_categorized': True, 'manual_override': None
-                },
-                'featured': False,
-            }
-            if is_series:
-                minimal['content_type'] = 'limited_series'
+        data['movies'].append(minimal)
+        print(f"   ✅ New entry added to data.json")
 
-            data['movies'].append(minimal)
-            with open('data.json', 'w') as f:
-                json.dump(data, f, indent=2, ensure_ascii=False)
-            print(f"   ✅ Minimal entry written directly")
+    with open('data.json', 'w') as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
 
     print(f"\n✅ Done! Next steps:")
     print(f"   Run:  /usr/bin/python3 generate_data.py --enrich-id {tmdb_id}")

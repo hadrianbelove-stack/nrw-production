@@ -3794,9 +3794,15 @@ class DataGenerator:
                 # Discovery is binary (any TMDB provider = discovered); this step handles
                 # platform filtering. If JustWatch can't confirm valid platforms → revert
                 # to tracking with a note for the daily launch report.
+                #
+                # Manually-added movies and movies with watch link overrides skip JW
+                # pre-check entirely — curator decision overrides JustWatch verification.
                 _title = existing_movies[movie_index].get('title', movie_data.get('title', ''))
                 _year = movie_data.get('year')
                 _content_type_jw = 'tv' if str(movie_id).startswith('tv_') else 'movie'
+                _is_manual = (movie_data.get('_added_manually')
+                              or existing_movies[movie_index].get('_added_manually'))
+                _has_override = str(movie_id) in self.watch_links_overrides
                 _jw_verified = True
                 _revert_reason = None
                 try:
@@ -3827,7 +3833,7 @@ class DataGenerator:
                 except Exception as _jw_err:
                     self.logger.warning(f"JustWatch pre-check error for {_title}: {_jw_err} — proceeding with enrichment")
 
-                if not _jw_verified:
+                if not _jw_verified and not _is_manual and not _has_override:
                     _today_iso = datetime.now().strftime('%Y-%m-%d')
                     tracking_data['movies'][movie_id]['status'] = 'tracking'
                     tracking_data['movies'][movie_id]['_jw_revert_reason'] = _revert_reason
@@ -3839,6 +3845,9 @@ class DataGenerator:
                     print(f"  🔄 {_title} — JustWatch pre-check: {_revert_reason} → reverted to tracking")
                     signal.alarm(0)
                     continue
+                elif not _jw_verified:
+                    _skip_reason = 'manual add' if _is_manual else 'watch link override'
+                    print(f"  ⏭️  {_title} — JW pre-check failed but skipping revert ({_skip_reason})")
 
                 # Get enrichment fields only
                 _movie_start = time.time()
