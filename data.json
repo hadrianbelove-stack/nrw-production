@@ -19854,7 +19854,7 @@
         ],
         "streaming": []
       },
-      "_enrichment_status": "pending",
+      "_enrichment_status": "completed",
       "_discovered_at": "2026-04-23T06:53:21.272363",
       "_discovery_source": "provider_availability_check",
       "_enrichment_attempts": 5,
@@ -19892,7 +19892,7 @@
           }
         ]
       },
-      "_trailer_source": "tmdb_fallback",
+      "_trailer_source": "cache",
       "crew": {
         "director": "Gille Klabin",
         "cast": [
@@ -22715,12 +22715,36 @@
       },
       "links": {
         "wikipedia": null,
-        "trailer": null,
+        "trailer": "https://www.youtube.com/watch?v=i6uYYq41vWU",
         "rt": null,
-        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1280300.mp4"
+        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1280300.mp4",
+        "imdb": "https://www.imdb.com/title/tt1776340/"
       },
-      "watch_links": {},
-      "_enrichment_status": "pending",
+      "watch_links": {
+        "streaming": {
+          "service": "AMC+",
+          "link": "https://tv.apple.com"
+        },
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.b425c70b-52ba-41f4-96ec-34f281f49fc8&tag=nrw04-20"
+          },
+          {
+            "service": "Apple TV",
+            "link": "https://tv.apple.com/us/movie/the-whistler/umc.cmc.6tlkn521lk1hb1nfyfdo17wy5?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1879910480"
+          },
+          {
+            "service": "Fandango",
+            "link": "https://athome.fandango.com/content/browse/details/The-Whistler/4904720"
+          },
+          {
+            "service": "Plex",
+            "link": "https://watch.plex.tv/movie/the-whistler-2026?utm_content=5f40a8c6537293003d43aa95&utm_medium=deeplink&utm_source=justWatch-v2-catalog"
+          }
+        ]
+      },
+      "_enrichment_status": "completed",
       "_discovered_at": "2026-04-23T10:20:53.744561",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
@@ -22757,7 +22781,11 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "imdb_rating": "4.4",
+      "_trailer_source": "tmdb_official",
+      "_digital_date_source": "tmdb_type4",
+      "_needs_review": false
     },
     {
       "id": "1499488",
@@ -30798,7 +30826,7 @@
           }
         ]
       },
-      "_enrichment_status": "pending",
+      "_enrichment_status": "completed",
       "_discovered_at": "2026-04-04T10:48:20.174033",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
