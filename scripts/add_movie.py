@@ -12,9 +12,10 @@ Arguments:
 
 What this does:
   1. Fetches full TMDB metadata (title, poster, genres, cast/crew, etc.)
-  2. Writes entry to movie_tracking.json with status=available
-  3. Writes minimal entry to data.json via add_movie_to_site_immediately()
-  4. Exits successfully so the caller can run --enrich-id next
+  2. Writes entry to movie_tracking.json with status=available (clears any revert flags)
+  3. Updates data.json: cleans existing entry for re-enrichment, or adds new minimal entry
+  4. Sets _added_manually=True so enrichment skips JW pre-check revert
+  5. Exits successfully so the caller can run --enrich-id next
 
 Does NOT:
   - Run enrichment (caller must run: python3 generate_data.py --enrich-id <id>)
