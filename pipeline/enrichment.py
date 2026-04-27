@@ -948,9 +948,19 @@ class EnrichmentService:
             return url
 
     def _try_gemini_for_service(self, service, title, year):
-        """Try Gemini to find a watch link for a single service. Returns URL or None."""
+        """Try Gemini to find a watch link for a single service. Returns URL or None.
+
+        Only calls Gemini API for services in the SUPPORTED_SERVICES whitelist
+        (Netflix, Paramount+, Film Movement Plus, Angel Studios, MUBI).
+        All other services (Criterion, Disney+, Hulu, Amazon, etc.) return None
+        immediately without an API call.
+        """
         self._init_gemini_watch_link_finder()
         if not self._gemini_watch_link_finder or self._gemini_watch_link_finder is False:
+            return None
+
+        # Early exit: don't call Gemini for services it can't find
+        if service not in self._gemini_watch_link_finder.SUPPORTED_SERVICES:
             return None
 
         try:
