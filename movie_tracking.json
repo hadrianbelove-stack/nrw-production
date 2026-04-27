@@ -18980,7 +18980,7 @@
       "year": 2025,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-04-26"
+      "enrichment_date": "2026-04-27"
     },
     "1551378": {
       "title": "yer smackin",
@@ -70389,7 +70389,7 @@
       "imdb_id": "tt37792342",
       "_discovery_source": "provider_availability_check",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-04-26"
+      "_jw_reverted_at": "2026-04-27"
     },
     "1604207": {
       "title": "Tonight in Turin",
@@ -102060,7 +102060,7 @@
       "premiere_date": "2025-06-04",
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-04-26"
+      "enrichment_date": "2026-04-27"
     },
     "1525739": {
       "title": "Psychic Documentary: Demonic Curse Phenomena That Shouldn't Exist!!",
@@ -103968,7 +103968,7 @@
       "premiere_date": "2025-07-05",
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-04-26"
+      "enrichment_date": "2026-04-27"
     },
     "1490334": {
       "title": "Yorushika LIVE 2024 [ZENSE]",
@@ -106692,7 +106692,7 @@
     },
     "1485025": {
       "title": "CONTENT",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-04",
       "digital_date": "2026-04-27",
       "providers": {
@@ -106706,8 +106706,7 @@
       "premiere_date": "2025-08-06",
       "_discovery_source": "tmdb_type4",
       "enriched": true,
-      "enrichment_date": "2026-03-31",
-      "_type4_pending": true
+      "enrichment_date": "2026-04-27"
     },
     "1404538": {
       "title": "Nate and Moriah in Venice",
@@ -109535,7 +109534,7 @@
       "digital_date": null,
       "providers": {},
       "intake_pass": "backfill",
-      "has_providers": true,
+      "has_providers": false,
       "year": 2025,
       "premiere_date": "2025-09-05",
       "_discovery_source": "provider_availability_check"
@@ -110310,7 +110309,7 @@
       "imdb_id": "tt32421438",
       "_discovery_source": "provider_availability_check",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-04-26"
+      "_jw_reverted_at": "2026-04-27"
     },
     "1425485": {
       "title": "3670",
@@ -113686,13 +113685,24 @@
     "1273051": {
       "title": "The Invasion",
       "year": 2024,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-04-27",
+      "providers": {
+        "rent": [
+          "DocAlliance Films"
+        ],
+        "buy": [],
+        "streaming": [
+          "DocAlliance Films"
+        ]
+      },
       "intake_pass": "C",
       "festival": "Cannes",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-04-27"
     },
     "1164363": {
       "title": "Women from Rote Island",
@@ -128583,13 +128593,22 @@
     "1174891": {
       "title": "The Life and Deaths of Christopher Lee",
       "year": 2024,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-04-27",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Night Flight Plus"
+        ]
+      },
       "intake_pass": "C",
       "festival": "Fantastic Fest",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-04-27"
     },
     "1430868": {
       "title": "Katanga: The Dance of the Scorpions",
@@ -166341,7 +166360,7 @@
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-04-26"
+      "enrichment_date": "2026-04-27"
     },
     "1563282": {
       "title": "Land van Johan",
@@ -182413,7 +182432,7 @@
     "1613798": {
       "title": "Venganza",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-02-26",
       "digital_date": "2026-04-17",
       "providers": {
@@ -182424,8 +182443,8 @@
       "intake_pass": "B",
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
-      "enriched": false,
-      "enrichment_date": null,
+      "enriched": true,
+      "enrichment_date": "2026-04-27",
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-04-26"
     },
@@ -194210,7 +194229,7 @@
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-04-26"
+      "enrichment_date": "2026-04-27"
     },
     "1483089": {
       "title": "Harvest",
@@ -197370,12 +197389,21 @@
     "1516501": {
       "title": "Prathichaya",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-03-23",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-04-27",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Hulu"
+        ]
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-04-27"
     },
     "1377281": {
       "title": "Leaving Eden",
@@ -199060,7 +199088,7 @@
       "enriched": false,
       "enrichment_date": null,
       "_jw_revert_reason": "justwatch_no_valid_offers",
-      "_jw_reverted_at": "2026-04-26"
+      "_jw_reverted_at": "2026-04-27"
     },
     "1624916": {
       "title": "Lustiges Pettersson und Findus Mitmachkino 2",
@@ -199172,7 +199200,7 @@
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-04-26"
+      "enrichment_date": "2026-04-27"
     },
     "1657512": {
       "title": "Spain is not different",
@@ -199449,7 +199477,7 @@
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-04-26"
+      "enrichment_date": "2026-04-27"
     },
     "1255582": {
       "title": "I Am Going to Miss You",
@@ -211615,12 +211643,23 @@
     "1680417": {
       "title": "A House Built on Lies",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-04-25",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-04-27",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-04-27"
     },
     "1680402": {
       "title": "Hijacked",
@@ -211780,12 +211819,19 @@
     "1681695": {
       "title": "Pirates Gold 3",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-04-26",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-04-26",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "A",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "tmdb_type4",
+      "enriched": true,
+      "enrichment_date": "2026-04-27"
     },
     "701387": {
       "title": "Bugonia",
@@ -211819,7 +211865,7 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "enriched": true,
-      "enrichment_date": "2026-04-26"
+      "enrichment_date": "2026-04-27"
     },
     "1681418": {
       "title": "LE CID",
@@ -211996,7 +212042,7 @@
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-04-26"
+      "enrichment_date": "2026-04-27"
     },
     "tv_320733": {
       "title": "\uc624\ube60\uc758 \ub77c\uc774\ubc8c\uc774 \ub0b4\uac8c \ube60\uc838\ubc84\ub838\ub2e4",
@@ -212072,6 +212118,190 @@
       "intaked_at": "2026-04-26T09:53:06.416035",
       "networks": [
         "iQiyi"
+      ],
+      "has_providers": false
+    },
+    "1682425": {
+      "title": "Vampe di memoria e resistenza",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-27",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1666362": {
+      "title": "Figaro Up Figaro Down",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-27",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1665464": {
+      "title": "Whispers Next Door",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-27",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1654620": {
+      "title": "Varkiza",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-27",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1641454": {
+      "title": "Live At The Void",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-27",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1636634": {
+      "title": "La Sobriet\u00e0",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-27",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1605125": {
+      "title": "Mythos",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-27",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1682598": {
+      "title": "Lajf",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-27",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1677690": {
+      "title": "The Journey of Weather-Exposed Bones",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-27",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1669960": {
+      "title": "An Evening with Nicole Scherzinger: Live at Royal Albert Hall",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-27",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1682697": {
+      "title": "\u9c81\u897f\u513f\u5973",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-27",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1682587": {
+      "title": "Zu Kino Sag Ich Nie No",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-27",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1073591": {
+      "title": "Ka\u00efros",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-27",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Hot Docs",
+      "has_providers": false
+    },
+    "tv_318905": {
+      "title": "The Trials of Winnie Mandela",
+      "content_type": "limited_series",
+      "tmdb_id": 318905,
+      "status": "tracking",
+      "first_air_date": "2026-04-23",
+      "digital_date": "2026-04-23",
+      "episode_count": 7,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/iWAiAnxlNUDIr5nSwDHkgU6bQ40.jpg",
+      "synopsis": "Directed by the late, two-time Emmy Award\u00ae-winning documentary filmmaker Mandy Jacobson, the series unfolds from the perspective of Madikizela-Mandela\u2019s granddaughters, HRH Princess Zaziwe Manaway (n\u00e9e Dlamini) and HRH Princess Swati Mandela-Dlamini, who is also credited as a producer, as they set out to find the essence of their iconic grandmother, affectionately known to them as \u2018Big Mommy\u2019. Through their journey, the story pieces together a portrait shaped by personal accounts, family memory, and public record.",
+      "genres": [
+        "Documentary"
+      ],
+      "original_language": "en",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-04-27T11:01:33.331014",
+      "networks": [
+        "Netflix"
+      ],
+      "has_providers": false
+    },
+    "tv_315438": {
+      "title": "LOVED ONE",
+      "content_type": "limited_series",
+      "tmdb_id": 315438,
+      "status": "tracking",
+      "first_air_date": "2026-04-08",
+      "digital_date": "2026-04-08",
+      "episode_count": 4,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/5HTYaVD7UGo2YAvDOnsFgfqQX4i.jpg",
+      "synopsis": "\"Goodbye\" is something that could happen to anyone tomorrow. And the feelings that remain afterwards. Through the serious subject of \"forensic medicine,\" it carefully captures the feelings of love for others and the time they lived, quietly shedding light on the darkness of a \"society where the cause of death is unknown\".",
+      "genres": [
+        "Drama",
+        "Mystery"
+      ],
+      "original_language": "ja",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-04-27T11:01:35.344112",
+      "networks": [
+        "Fuji TV"
       ],
       "has_providers": false
     }
