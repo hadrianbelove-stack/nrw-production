@@ -34,7 +34,7 @@ tracking:
   archive_available_on_detect: false  # Archive available movies to separate file (experimental)
   compaction_batch_size: 50  # Maximum entries to move per compaction run
   compaction_recent_days: null  # Only compact entries from last N days (null = no age limit)
-  excluded_services: ['fuboTV', 'Philo', 'Sun Nxt', 'Google Play Movies', 'Google Play', 'Shahid VIP', 'Viki']  # Fandango allowed for VOD. Google Play excluded (YouTube is separate).
+  excluded_services: ['fuboTV', 'Philo', 'Sun Nxt', 'Google Play Movies', 'Google Play', 'Shahid VIP', 'Viki', 'Futo']  # Fandango allowed for VOD. Google Play excluded (YouTube is separate).
   # Metadata fields set by false-positive revert logic (generator.py post-enrichment):
   #   _reverted_from_available: true = movie was reverted from available→tracking (zero watch links)
   #   _false_positive_source: 'tmdb_type4' or 'provider_availability_check' = which discovery triggered the false positive
