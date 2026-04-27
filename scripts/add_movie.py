@@ -230,8 +230,7 @@ def main():
         data['movies'].append(minimal)
         print(f"   ✅ New entry added to data.json")
 
-    with open('data.json', 'w') as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
+    storage.atomic_write_json(data, 'data.json', backup=True)
 
     print(f"\n✅ Done! Next steps:")
     print(f"   Run:  /usr/bin/python3 generate_data.py --enrich-id {tmdb_id}")
