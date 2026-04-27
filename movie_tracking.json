@@ -101631,14 +101631,23 @@
     },
     "1465751": {
       "title": "She Dances",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-04",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-04-27",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "backfill",
-      "has_providers": false,
+      "has_providers": true,
       "year": 2025,
-      "premiere_date": "2025-06-05"
+      "premiere_date": "2025-06-05",
+      "_discovery_source": "provider_availability_check",
+      "enriched": false,
+      "enrichment_date": null
     },
     "1465568": {
       "title": "She Runs the World",
@@ -212383,7 +212392,7 @@
       "title": "LOVED ONE",
       "content_type": "limited_series",
       "tmdb_id": 315438,
-      "status": "tracking",
+      "status": "available",
       "first_air_date": "2026-04-08",
       "digital_date": "2026-04-08",
       "episode_count": 4,
@@ -212396,15 +212405,21 @@
       ],
       "original_language": "ja",
       "providers": {
-        "streaming": [],
         "rent": [],
-        "buy": []
+        "buy": [],
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
       },
       "intaked_at": "2026-04-27T11:01:35.344112",
       "networks": [
         "Fuji TV"
       ],
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": false,
+      "enrichment_date": null
     },
     "1303439": {
       "title": "Captain Tsunami",
