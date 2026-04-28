@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-27T18:16:10.897690",
+  "generated_at": "2026-04-27T20:01:08.364792",
   "count": 717,
   "movies": [
     {
@@ -350,7 +350,7 @@
       },
       "watch_links": {},
       "pre_order_links": {},
-      "_enrichment_status": "pending",
+      "_enrichment_status": "reverted",
       "_discovered_at": "2026-04-27T17:20:41.211299",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
@@ -384,7 +384,11 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "_enrichment_attempts": 1,
+      "_jw_reverted": true,
+      "_jw_revert_reason": "justwatch_no_valid_offers",
+      "status": "tracking"
     },
     {
       "id": "1212461",
@@ -15060,13 +15064,25 @@
         "streaming": []
       },
       "links": {
-        "wikipedia": null,
-        "trailer": null,
-        "rt": null
+        "wikipedia": "https://en.wikipedia.org/wiki/Dirty_Hands_(2026_film)",
+        "trailer": "https://www.youtube.com/watch?v=Dl1FZPEmapc",
+        "rt": null,
+        "imdb": "https://www.imdb.com/title/tt31689648/"
       },
-      "watch_links": {},
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.bdaacc3d-77b4-451a-b537-8746da4f527a&tag=nrw04-20"
+          },
+          {
+            "service": "Apple TV",
+            "link": "https://tv.apple.com/us/movie/dirty-hands/umc.cmc.2kk9ycm1j8q0xdtu9p6pj4xzh?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1885719774"
+          }
+        ]
+      },
       "pre_order_links": {},
-      "_enrichment_status": "pending",
+      "_enrichment_status": "completed",
       "_discovered_at": "2026-04-27T18:00:00.299966",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
@@ -15100,7 +15116,15 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "_enrichment_attempts": 1,
+      "imdb_rating": "5.8",
+      "_trailer_source": "tmdb_official",
+      "_digital_date_source": "detection",
+      "_needs_review": false,
+      "_enrichment_gaps": [
+        "rt_score"
+      ]
     },
     {
       "id": "898704",
@@ -15116,7 +15140,7 @@
       ],
       "runtime": 126,
       "year": 2026,
-      "rt_score": null,
+      "rt_score": "27%",
       "providers": {
         "rent": [],
         "buy": [
@@ -15125,13 +15149,21 @@
         "streaming": []
       },
       "links": {
-        "wikipedia": null,
-        "trailer": null,
-        "rt": null
+        "wikipedia": "https://en.wikipedia.org/wiki/Desert_Warrior_(2025_film)",
+        "trailer": "https://www.youtube.com/watch?v=fraAGOuT3sA",
+        "rt": "https://www.rottentomatoes.com/m/desert_warrior_2025",
+        "imdb": "https://www.imdb.com/title/tt13570066/"
       },
-      "watch_links": {},
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Fandango",
+            "link": "https://athome.fandango.com/content/browse/details/Desert-Warrior/4952235"
+          }
+        ]
+      },
       "pre_order_links": {},
-      "_enrichment_status": "pending",
+      "_enrichment_status": "completed",
       "_discovered_at": "2026-04-27T17:59:41.670847",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
@@ -15165,7 +15197,12 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "_enrichment_attempts": 1,
+      "imdb_rating": "1.9",
+      "_trailer_source": "tmdb_official",
+      "_digital_date_source": "detection",
+      "_needs_review": false
     },
     {
       "id": "1390300",
@@ -15181,7 +15218,7 @@
       ],
       "runtime": 105,
       "year": 2026,
-      "rt_score": null,
+      "rt_score": "69%",
       "providers": {
         "rent": [],
         "buy": [
@@ -15190,13 +15227,21 @@
         "streaming": []
       },
       "links": {
-        "wikipedia": null,
-        "trailer": null,
-        "rt": null
+        "wikipedia": "https://en.wikipedia.org/wiki/Over_Your_Dead_Body_(2026_film)",
+        "trailer": "https://www.youtube.com/watch?v=pGxKTIegUZ4",
+        "rt": "https://www.rottentomatoes.com/m/over_your_dead_body_2026",
+        "imdb": "https://www.imdb.com/title/tt34685692/"
       },
-      "watch_links": {},
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Fandango",
+            "link": "https://athome.fandango.com/content/browse/details/Over-Your-Dead-Body/4932591"
+          }
+        ]
+      },
       "pre_order_links": {},
-      "_enrichment_status": "pending",
+      "_enrichment_status": "completed",
       "_discovered_at": "2026-04-27T17:49:26.633739",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
@@ -15230,7 +15275,12 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "_enrichment_attempts": 1,
+      "imdb_rating": "7.2",
+      "_trailer_source": "tmdb_official",
+      "_digital_date_source": "detection",
+      "_needs_review": false
     },
     {
       "id": "1463432",
@@ -15254,19 +15304,27 @@
       },
       "links": {
         "wikipedia": null,
-        "trailer": null,
-        "rt": null
+        "trailer": "https://www.youtube.com/watch?v=_If4lFH0u4U",
+        "rt": null,
+        "imdb": "https://www.imdb.com/title/tt38353859/"
       },
-      "watch_links": {},
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.3e1fe990-bc21-47df-8674-e76286bcd23c&tag=nrw04-20"
+          }
+        ]
+      },
       "pre_order_links": {},
-      "_enrichment_status": "pending",
+      "_enrichment_status": "completed",
       "_discovered_at": "2026-04-27T17:32:17.058427",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
       "poster": "https://image.tmdb.org/t/p/w500/5A3Tnbx7759QiC0j2NXCw9jLPTv.jpg",
-      "studio": "Unknown",
+      "studio": null,
       "budget": 0,
-      "country": "Unknown",
+      "country": null,
       "original_language": "en",
       "original_title": "Steve Schapiro: Being Everywhere",
       "crew": {
@@ -15289,7 +15347,16 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "_enrichment_attempts": 1,
+      "imdb_rating": "9.0",
+      "_trailer_source": "tmdb_official",
+      "_digital_date_source": "detection",
+      "_needs_review": false,
+      "_enrichment_gaps": [
+        "rt_score",
+        "wikipedia"
+      ]
     },
     {
       "id": "1267844",
@@ -15312,13 +15379,21 @@
         "streaming": []
       },
       "links": {
-        "wikipedia": null,
-        "trailer": null,
-        "rt": null
+        "wikipedia": "https://en.wikipedia.org/wiki/Wrong_Husband",
+        "trailer": "https://www.youtube.com/watch?v=hSglkRPbvFU",
+        "rt": null,
+        "imdb": "https://www.imdb.com/title/tt35449355/"
       },
-      "watch_links": {},
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Apple TV",
+            "link": "https://tv.apple.com/us/movie/uiksaringitara/umc.cmc.3wzwtwfljkha1dvct85tztagl?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1886247316"
+          }
+        ]
+      },
       "pre_order_links": {},
-      "_enrichment_status": "pending",
+      "_enrichment_status": "completed",
       "_discovered_at": "2026-04-27T17:22:11.108034",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
@@ -15352,7 +15427,15 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "_enrichment_attempts": 1,
+      "imdb_rating": "6.8",
+      "_trailer_source": "tmdb_official",
+      "_digital_date_source": "detection",
+      "_needs_review": false,
+      "_enrichment_gaps": [
+        "rt_score"
+      ]
     },
     {
       "id": "1073588",
@@ -15366,7 +15449,7 @@
       ],
       "runtime": 100,
       "year": 2025,
-      "rt_score": null,
+      "rt_score": "76%",
       "providers": {
         "rent": [],
         "buy": [
@@ -15375,13 +15458,21 @@
         "streaming": []
       },
       "links": {
-        "wikipedia": null,
-        "trailer": null,
-        "rt": null
+        "wikipedia": "https://en.wikipedia.org/wiki/Two_Women_(2025_film)",
+        "trailer": "https://www.youtube.com/watch?v=6lSKLcBNbMw",
+        "rt": "https://www.rottentomatoes.com/m/two_women_2025",
+        "imdb": "https://www.imdb.com/title/tt31066723/"
       },
-      "watch_links": {},
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Fandango",
+            "link": "https://athome.fandango.com/content/browse/details/Two-Women/4947884"
+          }
+        ]
+      },
       "pre_order_links": {},
-      "_enrichment_status": "pending",
+      "_enrichment_status": "completed",
       "_discovered_at": "2026-04-27T17:21:38.717223",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
@@ -15415,7 +15506,12 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "_enrichment_attempts": 1,
+      "imdb_rating": "6.5",
+      "_trailer_source": "tmdb_official",
+      "_digital_date_source": "detection",
+      "_needs_review": false
     },
     {
       "id": "1233655",
@@ -15430,7 +15526,7 @@
       ],
       "runtime": 83,
       "year": 2025,
-      "rt_score": null,
+      "rt_score": "89%",
       "providers": {
         "rent": [],
         "buy": [
@@ -15439,13 +15535,21 @@
         "streaming": []
       },
       "links": {
-        "wikipedia": null,
-        "trailer": null,
-        "rt": null
+        "wikipedia": "https://en.wikipedia.org/wiki/Omaha_(film)",
+        "trailer": "https://www.youtube.com/watch?v=M2OTVoxpetU",
+        "rt": "https://www.rottentomatoes.com/m/omaha_2025",
+        "imdb": "https://www.imdb.com/title/tt29253299/"
       },
-      "watch_links": {},
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Fandango",
+            "link": "https://athome.fandango.com/content/browse/details/Omaha/4924032"
+          }
+        ]
+      },
       "pre_order_links": {},
-      "_enrichment_status": "pending",
+      "_enrichment_status": "completed",
       "_discovered_at": "2026-04-27T17:21:30.999619",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
@@ -15479,7 +15583,12 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "_enrichment_attempts": 1,
+      "imdb_rating": "7.3",
+      "_trailer_source": "tmdb_official",
+      "_digital_date_source": "detection",
+      "_needs_review": false
     },
     {
       "id": "1578306",
@@ -15507,12 +15616,26 @@
       },
       "links": {
         "wikipedia": null,
-        "trailer": null,
-        "rt": null
+        "trailer": "https://www.youtube.com/watch?v=xdnD7mt8rag",
+        "rt": null,
+        "imdb": "https://www.imdb.com/title/tt38778631/"
       },
-      "watch_links": {},
+      "watch_links": {
+        "streaming": [
+          {
+            "service": "Tubi TV",
+            "link": "https://tubitv.com/movies/100055673"
+          }
+        ],
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.e93c0aed-3451-452f-a864-82220b4cc0b4&tag=nrw04-20"
+          }
+        ]
+      },
       "pre_order_links": {},
-      "_enrichment_status": "pending",
+      "_enrichment_status": "completed",
       "_discovered_at": "2026-04-27T16:59:02.935120",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
@@ -15546,7 +15669,20 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "_enrichment_attempts": 1,
+      "imdb_rating": "8.1",
+      "_trailer_source": "tmdb_official",
+      "_digital_date_source": "detection",
+      "_needs_review": true,
+      "_quality_warnings": [
+        "Service 'Tubi TV' not in TMDB providers for this title (TMDB has: ['amazon video'])",
+        "Title matches original foreign title (language: tr): '12 Warriors'"
+      ],
+      "_enrichment_gaps": [
+        "rt_score",
+        "wikipedia"
+      ]
     },
     {
       "id": "1576012",
@@ -15576,7 +15712,7 @@
       },
       "watch_links": {},
       "pre_order_links": {},
-      "_enrichment_status": "pending",
+      "_enrichment_status": "reverted",
       "_discovered_at": "2026-04-27T16:52:53.549026",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
@@ -15610,7 +15746,11 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "_enrichment_attempts": 1,
+      "_jw_reverted": true,
+      "_jw_revert_reason": "justwatch_no_valid_offers",
+      "status": "tracking"
     },
     {
       "id": "1378756",
@@ -15634,13 +15774,21 @@
         ]
       },
       "links": {
-        "wikipedia": null,
-        "trailer": null,
-        "rt": null
+        "wikipedia": "https://en.wikipedia.org/wiki/On_Your_Lap",
+        "trailer": "https://www.youtube.com/watch?v=mL5htYG4zjI",
+        "rt": null,
+        "imdb": "https://www.imdb.com/title/tt34375730/"
       },
-      "watch_links": {},
+      "watch_links": {
+        "streaming": [
+          {
+            "service": "Netflix",
+            "link": "https://www.netflix.com/title/82680386"
+          }
+        ]
+      },
       "pre_order_links": {},
-      "_enrichment_status": "pending",
+      "_enrichment_status": "completed",
       "_discovered_at": "2026-04-27T16:49:39.834375",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
@@ -15674,7 +15822,15 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "_enrichment_attempts": 1,
+      "imdb_rating": "7.8",
+      "_trailer_source": "tmdb_official",
+      "_digital_date_source": "detection",
+      "_needs_review": false,
+      "_enrichment_gaps": [
+        "rt_score"
+      ]
     },
     {
       "id": "1565509",
@@ -15688,7 +15844,7 @@
       ],
       "runtime": 0,
       "year": 2025,
-      "rt_score": null,
+      "rt_score": "36%",
       "providers": {
         "rent": [],
         "buy": [
@@ -15697,18 +15853,26 @@
         "streaming": []
       },
       "links": {
-        "wikipedia": null,
+        "wikipedia": "https://en.wikipedia.org/wiki/Jungle_Pocket?wprov=srpw1_0",
         "trailer": null,
-        "rt": null
+        "rt": "https://www.rottentomatoes.com/m/gods_pocket",
+        "imdb": "https://www.imdb.com/title/tt37510694/"
       },
-      "watch_links": {},
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Apple TV",
+            "link": "https://tv.apple.com/us/movie/pocket/umc.cmc.4oy40ilo9jsl6aoxvtssh5y0h?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1890130062"
+          }
+        ]
+      },
       "pre_order_links": {},
-      "_enrichment_status": "pending",
+      "_enrichment_status": "completed",
       "_discovered_at": "2026-04-27T16:46:00.370040",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
       "poster": "https://image.tmdb.org/t/p/w500/wyHvrLkxieAT3xUU0V0IlEAY8e3.jpg",
-      "studio": "Unknown",
+      "studio": null,
       "budget": 0,
       "country": "Taiwan",
       "original_language": "zh",
@@ -15735,7 +15899,17 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "_enrichment_attempts": 1,
+      "imdb_rating": "5.3",
+      "_digital_date_source": "detection",
+      "_needs_review": true,
+      "_quality_warnings": [
+        "Title matches original foreign title (language: zh): 'POCKET'"
+      ],
+      "_enrichment_gaps": [
+        "trailer"
+      ]
     },
     {
       "id": "1465751",
@@ -15750,7 +15924,7 @@
       ],
       "runtime": 93,
       "year": 2026,
-      "rt_score": null,
+      "rt_score": "89%",
       "providers": {
         "rent": [
           "Amazon Video"
@@ -15759,17 +15933,25 @@
         "streaming": []
       },
       "links": {
-        "wikipedia": null,
-        "trailer": null,
-        "rt": null
+        "wikipedia": "https://en.wikipedia.org/wiki/She_Dances",
+        "trailer": "https://www.youtube.com/watch?v=eKDjgj0UUNg",
+        "rt": "https://www.rottentomatoes.com/m/she_dances",
+        "imdb": "https://www.imdb.com/title/tt31193382/"
       },
-      "watch_links": {},
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.afc149dd-7470-4214-9317-9327f3105f5d&tag=nrw04-20"
+          }
+        ]
+      },
       "pre_order_links": {},
-      "_enrichment_status": "pending",
+      "_enrichment_status": "completed",
       "_discovered_at": "2026-04-27T16:20:48.551409",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/kpOYat22eigfYzsf39lEyGGvvlv.jpg",
+      "poster": "https://image.tmdb.org/t/p/w500/iYbmHCOneli0JjhYqcQS9CVtUSs.jpg",
       "studio": "Macaroni Art Productions",
       "budget": 0,
       "country": "United States of America",
@@ -15799,7 +15981,12 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "_enrichment_attempts": 1,
+      "imdb_rating": "6.9",
+      "_trailer_source": "tmdb_official",
+      "_digital_date_source": "detection",
+      "_needs_review": false
     },
     {
       "id": "1680417",
@@ -15858,8 +16045,8 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
-      "imdb_rating": "5.0",
+      "_enrichment_attempts": 2,
+      "imdb_rating": "4.8",
       "_trailer_source": "gemini_playwright",
       "_digital_date_source": "detection",
       "_needs_review": false,
@@ -15916,7 +16103,7 @@
         ]
       },
       "pre_order_links": {},
-      "_enrichment_status": "completed",
+      "_enrichment_status": "reverted",
       "_discovered_at": "2026-04-27T12:12:02.357260",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
@@ -15937,7 +16124,7 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "imdb_rating": "5.7",
       "_digital_date_source": "detection",
       "_needs_review": false,
@@ -15958,7 +16145,10 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "_jw_reverted": true,
+      "_jw_revert_reason": "justwatch_no_valid_offers",
+      "status": "tracking"
     },
     {
       "id": "1174891",
@@ -16274,7 +16464,7 @@
           },
           {
             "service": "Amazon",
-            "link": "https://www.amazon.com/dp/B0FZYBBZD4?tag=justwatch09-20&linkCode=osi&th=1&psc=1"
+            "link": "https://www.amazon.com/dp/B0FZY4RTB2?tag=justwatch09-20&linkCode=osi&th=1&psc=1"
           }
         ]
       },
@@ -16297,7 +16487,7 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "imdb_rating": null,
       "_trailer_source": "tmdb_official",
       "_digital_date_source": "tmdb_type4",
@@ -16383,7 +16573,7 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 2,
+      "_enrichment_attempts": 3,
       "imdb_rating": "5.4",
       "_trailer_source": "tmdb_official",
       "_digital_date_source": "detection",
@@ -16546,7 +16736,7 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 2,
+      "_enrichment_attempts": 3,
       "imdb_rating": null,
       "_trailer_source": "tmdb_official",
       "_digital_date_source": "detection",
@@ -16596,7 +16786,8 @@
         "wikipedia": null,
         "trailer": "https://www.youtube.com/watch?v=iEgl9jN5n_U",
         "rt": "https://www.rottentomatoes.com/m/bouya_rage_bomb",
-        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1533154.mp4"
+        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1533154.mp4",
+        "imdb": "https://www.imdb.com/title/tt37044688/"
       },
       "watch_links": {
         "streaming": [
@@ -16642,8 +16833,8 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 2,
-      "imdb_rating": null,
+      "_enrichment_attempts": 3,
+      "imdb_rating": "9.4",
       "_trailer_source": "tmdb_official",
       "_digital_date_source": "detection",
       "_needs_review": true,
@@ -16653,8 +16844,7 @@
         "Service 'Apple TV' not in TMDB providers for this title (TMDB has: ['amazon video'])"
       ],
       "_enrichment_gaps": [
-        "wikipedia",
-        "imdb_rating"
+        "wikipedia"
       ],
       "categories": {
         "tier": null,
@@ -17154,8 +17344,8 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 2,
-      "imdb_rating": "8.0",
+      "_enrichment_attempts": 3,
+      "imdb_rating": "8.1",
       "_trailer_source": "tmdb_official",
       "_digital_date_source": "tmdb_type4",
       "_needs_review": false,
@@ -18052,7 +18242,7 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "categories": {
         "tier": null,
         "is_big_time": false,
@@ -18309,7 +18499,7 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 2,
+      "_enrichment_attempts": 3,
       "imdb_rating": "7.2",
       "_trailer_source": "tmdb_official",
       "_digital_date_source": "first_air_date",
@@ -19327,10 +19517,10 @@
         "manual_override": null
       },
       "featured": false,
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "imdb_rating": "8.2",
       "_trailer_source": "tmdb_official",
-      "_digital_date_source": "tmdb_type4",
+      "_digital_date_source": "manual_override",
       "_needs_review": false,
       "_enrichment_gaps": [
         "wikipedia"

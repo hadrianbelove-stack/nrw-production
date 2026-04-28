@@ -3393,7 +3393,7 @@ class DataGenerator:
                     if (mdata.get('status') == 'available'
                             and not mdata.get('enriched')
                             and mid not in data_json_ids
-                            and (mdata.get('digital_date', '') >= orphan_cutoff_date)):
+                            and ((mdata.get('digital_date') or '') >= orphan_cutoff_date)):
                         orphan_movies.append({
                             'id': mid,
                             'title': mdata.get('title', f'Movie {mid}'),
