@@ -3227,6 +3227,11 @@ class DataGenerator:
         if is_tv:
             result['_digital_date_source'] = 'first_air_date'
             enrichment_results['digital_date'] = 'not_attempted'
+        elif movie_data.get('_added_manually') and movie_data.get('digital_date'):
+            # Manually-added movies keep their curator-chosen date
+            result['_digital_date_source'] = 'manual_override'
+            enrichment_results['digital_date'] = 'skipped_manual'
+            self.logger.info(f"Digital Date: Preserved manual date {movie_data['digital_date']} for {title}")
         else:
             try:
                 type4_date = self.fetch_tmdb_type4_date(movie_id)
@@ -3375,6 +3380,43 @@ class DataGenerator:
 
             movie_ids_to_enrich.extend(catchup_ids)
 
+            # Orphan detection: find movies that are available in tracking but missing from data.json.
+            # These are movies that were discovered, then lost (e.g., bulk cleanup, data conflict).
+            # We report them to metrics/orphan_movies.json for manual review — not auto-rescued.
+            orphan_tracking = self.storage.load_all_movies()
+            if orphan_tracking:
+                data_json_ids = set(movie_lookup.keys())
+                orphan_cutoff_date = (datetime.now() - timedelta(days=90)).strftime('%Y-%m-%d')
+                orphan_movies = []
+                for mid, mdata in orphan_tracking.get('movies', {}).items():
+                    mid = str(mid)
+                    if (mdata.get('status') == 'available'
+                            and not mdata.get('enriched')
+                            and mid not in data_json_ids
+                            and (mdata.get('digital_date', '') >= orphan_cutoff_date)):
+                        orphan_movies.append({
+                            'id': mid,
+                            'title': mdata.get('title', f'Movie {mid}'),
+                            'digital_date': mdata.get('digital_date'),
+                            'providers': mdata.get('providers', {}),
+                            'first_seen': mdata.get('first_seen')
+                        })
+                if orphan_movies:
+                    print(f"  ⚠️ Orphan detection: {len(orphan_movies)} movies available in tracking but missing from wall")
+                    for om in orphan_movies:
+                        print(f"    → {om['title']} (ID {om['id']}, digital_date {om['digital_date']})")
+                # Always write the file (empty list = no orphans, keeps report clean)
+                try:
+                    orphan_report = {
+                        'date': datetime.now().strftime('%Y-%m-%d'),
+                        'count': len(orphan_movies),
+                        'movies': orphan_movies
+                    }
+                    with open('metrics/orphan_movies.json', 'w') as f:
+                        json.dump(orphan_report, f, indent=2)
+                except Exception as e:
+                    print(f"  ⚠️ Could not write orphan report: {e}")
+
             # Enforce batch limit
             if len(movie_ids_to_enrich) > MAX_ENRICHMENT_BATCH:
                 movie_ids_to_enrich = movie_ids_to_enrich[:MAX_ENRICHMENT_BATCH]
@@ -3503,6 +3545,11 @@ class DataGenerator:
                 elif not _jw_verified:
                     _skip_reason = 'manual add' if _is_manual else 'watch link override'
                     print(f"  ⏭️  {_title} — JW pre-check failed but skipping revert ({_skip_reason})")
+
+                # Propagate _added_manually from data.json entry to movie_data so
+                # get_enrichment_only_fields can see it (tracking save may lose the flag)
+                if existing_movies[movie_index].get('_added_manually'):
+                    movie_data['_added_manually'] = True
 
                 # Get enrichment fields only
                 _movie_start = time.time()

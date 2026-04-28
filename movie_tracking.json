@@ -56326,7 +56326,7 @@
       "title": "Die My Love",
       "status": "available",
       "first_seen": "2025-12-12",
-      "digital_date": "2025-12-12",
+      "digital_date": "2026-04-21",
       "providers": {
         "rent": [
           "Amazon Video",
@@ -56342,9 +56342,10 @@
       },
       "discovery_pass": "A",
       "has_providers": true,
-      "enriched": false,
-      "enrichment_date": null,
-      "year": 2025
+      "enriched": true,
+      "enrichment_date": "2026-04-27",
+      "year": 2025,
+      "_added_manually": true
     },
     "1595120": {
       "title": "Straight Line",
@@ -115309,7 +115310,7 @@
     "1012601": {
       "title": "The Mohican",
       "year": 2024,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
       "providers": {
         "rent": [],
@@ -115320,12 +115321,12 @@
       },
       "intake_pass": "C",
       "festival": "Venice",
-      "has_providers": false,
+      "has_providers": true,
       "enriched": false,
       "enrichment_date": null,
       "imdb_id": "tt33030107",
       "_discovery_source": "provider_availability_check",
-      "digital_date": null
+      "digital_date": "2026-04-27"
     },
     "1341000": {
       "title": "Seydou - Dreams Have No Color",
@@ -116535,14 +116536,22 @@
     "1233655": {
       "title": "Omaha",
       "year": 2025,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-04-27",
+      "providers": {
+        "rent": [],
+        "buy": [
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "Sundance",
       "has_providers": true,
-      "_discovery_source": "provider_availability_check"
+      "_discovery_source": "provider_availability_check",
+      "enriched": false,
+      "enrichment_date": null
     },
     "575476": {
       "title": "Luz",
@@ -116730,14 +116739,22 @@
     "1073588": {
       "title": "Two Women",
       "year": 2025,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-04-27",
+      "providers": {
+        "rent": [],
+        "buy": [
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "Sundance",
       "has_providers": true,
-      "_discovery_source": "provider_availability_check"
+      "_discovery_source": "provider_availability_check",
+      "enriched": false,
+      "enrichment_date": null
     },
     "1400787": {
       "title": "Third Act",
