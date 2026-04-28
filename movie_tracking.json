@@ -26601,14 +26601,22 @@
     },
     "1565509": {
       "title": "POCKET",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2025-11-05",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-04-27",
+      "providers": {
+        "rent": [],
+        "buy": [
+          "Apple TV Store"
+        ],
+        "streaming": []
+      },
       "discovery_pass": "B",
       "has_providers": true,
       "year": 2025,
-      "_discovery_source": "provider_availability_check"
+      "_discovery_source": "provider_availability_check",
+      "enriched": false,
+      "enrichment_date": null
     },
     "1563190": {
       "title": "LA FORZA DEL DESTINO",
@@ -31461,13 +31469,23 @@
     },
     "1378756": {
       "title": "On Your Lap",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2025-11-07",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-04-27",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
+      },
       "discovery_pass": "B",
-      "has_providers": false,
-      "year": 2025
+      "has_providers": true,
+      "year": 2025,
+      "_discovery_source": "provider_availability_check",
+      "enriched": false,
+      "enrichment_date": null
     },
     "1373104": {
       "title": "Maysoon",
@@ -35569,9 +35587,9 @@
     },
     "1576012": {
       "title": "The Golden Girls: 40 Years of Laughter and Friendship",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2025-11-11",
-      "digital_date": null,
+      "digital_date": "2026-04-27",
       "providers": {
         "rent": [],
         "buy": [],
@@ -35580,7 +35598,7 @@
         ]
       },
       "discovery_pass": "B",
-      "has_providers": false,
+      "has_providers": true,
       "year": 2025,
       "_discovery_source": "provider_availability_check",
       "enriched": false,
@@ -46615,13 +46633,24 @@
     },
     "1578306": {
       "title": "12 Warriors",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2025-12-03",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-04-27",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
       "discovery_pass": "B",
-      "has_providers": false,
-      "year": 2025
+      "has_providers": true,
+      "year": 2025,
+      "_discovery_source": "provider_availability_check",
+      "enriched": false,
+      "enrichment_date": null
     },
     "1577764": {
       "title": "Out of Shadows",
