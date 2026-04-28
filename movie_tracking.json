@@ -7893,13 +7893,10 @@
         ],
         "streaming": []
       },
-      "enriched": true,
-      "enrichment_date": "2026-04-27",
+      "enriched": false,
+      "enrichment_date": null,
       "imdb_id": "tt37532179",
-      "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 0,
-      "_added_manually": true,
-      "_added_at": "2026-04-27"
+      "_discovery_source": "provider_availability_check"
     },
     "1469141": {
       "title": "Dear Stranger",
@@ -190597,14 +190594,22 @@
     "1390300": {
       "title": "Over Your Dead Body",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-03-10",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-04-27",
+      "providers": {
+        "rent": [],
+        "buy": [
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "SXSW",
       "has_providers": true,
-      "_discovery_source": "provider_availability_check"
+      "_discovery_source": "provider_availability_check",
+      "enriched": false,
+      "enrichment_date": null
     },
     "1328501": {
       "title": "The Peril at Pincer Point",
@@ -211372,13 +211377,21 @@
     "898704": {
       "title": "Desert Warrior",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-04-24",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-04-27",
+      "providers": {
+        "rent": [],
+        "buy": [
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
       "intake_pass": "B",
       "has_providers": true,
-      "_discovery_source": "provider_availability_check"
+      "_discovery_source": "provider_availability_check",
+      "enriched": false,
+      "enrichment_date": null
     },
     "697094": {
       "title": "No Return Possible",
@@ -212162,12 +212175,25 @@
     "1364137": {
       "title": "Dirty Hands",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-04-26",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-04-27",
+      "providers": {
+        "rent": [
+          "Amazon Video",
+          "Apple TV Store"
+        ],
+        "buy": [
+          "Amazon Video",
+          "Apple TV Store"
+        ],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": false,
+      "enrichment_date": null
     },
     "tv_311694": {
       "title": "One Year",
