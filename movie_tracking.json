@@ -26616,7 +26616,7 @@
       "year": 2025,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-04-27"
+      "enrichment_date": "2026-04-28"
     },
     "1563190": {
       "title": "LA FORZA DEL DESTINO",
@@ -29068,11 +29068,22 @@
       "title": "The Great Pre Wedding Show",
       "status": "tracking",
       "first_seen": "2025-11-07",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-04-28",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "fuboTV"
+        ]
+      },
       "discovery_pass": "B",
-      "has_providers": false,
-      "year": 2025
+      "has_providers": true,
+      "year": 2025,
+      "_discovery_source": "provider_availability_check",
+      "enriched": false,
+      "enrichment_date": null,
+      "_jw_revert_reason": "justwatch_no_valid_offers",
+      "_jw_reverted_at": "2026-04-28"
     },
     "1572866": {
       "title": "Vaanam Neenthum Kudai",
@@ -31485,7 +31496,7 @@
       "year": 2025,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-04-27"
+      "enrichment_date": "2026-04-28"
     },
     "1373104": {
       "title": "Maysoon",
@@ -35604,7 +35615,7 @@
       "enriched": false,
       "enrichment_date": null,
       "_jw_revert_reason": "justwatch_no_valid_offers",
-      "_jw_reverted_at": "2026-04-27"
+      "_jw_reverted_at": "2026-04-28"
     },
     "1575735": {
       "title": "Shutter : The Final Chapter",
@@ -46652,7 +46663,7 @@
       "year": 2025,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-04-27"
+      "enrichment_date": "2026-04-28"
     },
     "1577764": {
       "title": "Out of Shadows",
@@ -87826,7 +87837,7 @@
       "premiere_date": "2025-01-02",
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-04-27",
+      "enrichment_date": "2026-04-28",
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-04-25",
       "_added_manually": true
@@ -92768,7 +92779,7 @@
     },
     "1400761": {
       "title": "Didn't Die",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-04",
       "digital_date": "2026-04-28",
       "providers": {
@@ -92781,9 +92792,8 @@
       "year": 2025,
       "premiere_date": "2025-01-28",
       "_discovery_source": "tmdb_type4",
-      "enriched": false,
-      "enrichment_date": null,
-      "_type4_pending": true
+      "enriched": true,
+      "enrichment_date": "2026-04-28"
     },
     "1394721": {
       "title": "Queen of Mahjong",
@@ -109612,14 +109622,25 @@
     },
     "1220349": {
       "title": "Fortis Femina",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-04",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-04-28",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
       "intake_pass": "backfill",
-      "has_providers": false,
+      "has_providers": true,
       "year": 2025,
-      "premiere_date": "2025-09-05"
+      "premiere_date": "2025-09-05",
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-04-28"
     },
     "1218644": {
       "title": "Ahana",
@@ -115330,7 +115351,7 @@
       "_discovery_source": "provider_availability_check",
       "digital_date": "2026-04-27",
       "_jw_revert_reason": "justwatch_no_valid_offers",
-      "_jw_reverted_at": "2026-04-27"
+      "_jw_reverted_at": "2026-04-28"
     },
     "1341000": {
       "title": "Seydou - Dreams Have No Color",
@@ -116977,13 +116998,20 @@
     "1418512": {
       "title": "The Good Sister",
       "year": 2025,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-04-26",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "Berlin/Berlinale",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "tmdb_type4",
+      "enriched": true,
+      "enrichment_date": "2026-04-28"
     },
     "1404175": {
       "title": "Home Sweet Home",
@@ -117597,7 +117625,7 @@
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-04-27"
+      "enrichment_date": "2026-04-28"
     },
     "1212934": {
       "title": "Olmo",
@@ -131955,7 +131983,7 @@
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-04-27"
+      "enrichment_date": "2026-04-28"
     },
     "1451983": {
       "title": "One Night Only",
@@ -181264,7 +181292,7 @@
     "1624961": {
       "title": "No Ordinary Heist",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-02-22",
       "digital_date": "2026-04-28",
       "providers": {
@@ -181276,8 +181304,7 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "enriched": true,
-      "enrichment_date": "2026-03-31",
-      "_type4_pending": true
+      "enrichment_date": "2026-04-28"
     },
     "1618201": {
       "title": "You Look Fine",
@@ -190767,15 +190794,20 @@
     "1292695": {
       "title": "They Will Kill You",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-03-10",
       "digital_date": "2026-04-28",
-      "providers": {},
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "SXSW",
-      "has_providers": false,
+      "has_providers": true,
       "_discovery_source": "tmdb_type4",
-      "_type4_pending": true
+      "enriched": true,
+      "enrichment_date": "2026-04-28"
     },
     "1263532": {
       "title": "Beast Race",
@@ -197559,10 +197591,10 @@
       "intake_pass": "B",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "enriched": true,
-      "enrichment_date": "2026-04-27",
+      "enriched": false,
+      "enrichment_date": null,
       "_jw_revert_reason": "justwatch_no_valid_offers",
-      "_jw_reverted_at": "2026-04-27"
+      "_jw_reverted_at": "2026-04-28"
     },
     "1377281": {
       "title": "Leaving Eden",
@@ -211861,7 +211893,7 @@
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-04-27"
+      "enrichment_date": "2026-04-28"
     },
     "1680402": {
       "title": "Hijacked",
@@ -212033,7 +212065,7 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "enriched": true,
-      "enrichment_date": "2026-04-27"
+      "enrichment_date": "2026-04-28"
     },
     "701387": {
       "title": "Bugonia",
@@ -212200,7 +212232,7 @@
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-04-27"
+      "enrichment_date": "2026-04-28"
     },
     "tv_311694": {
       "title": "One Year",
@@ -212531,7 +212563,7 @@
       "status": "available",
       "digital_date": "2026-04-27",
       "enriched": true,
-      "enrichment_date": "2026-04-27",
+      "enrichment_date": "2026-04-28",
       "has_providers": true,
       "providers": {
         "rent": [
@@ -212556,6 +212588,234 @@
       "_discovery_source": "manual_add",
       "_added_manually": true,
       "_added_at": "2026-04-27"
+    },
+    "1674994": {
+      "title": "From the Beyond: High Strangeness in the Bennington Triangle",
+      "year": 2026,
+      "status": "available",
+      "first_seen": "2026-04-28",
+      "digital_date": "2026-04-28",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "intake_pass": "A",
+      "has_providers": true,
+      "_discovery_source": "tmdb_type4",
+      "enriched": true,
+      "enrichment_date": "2026-04-28"
+    },
+    "1369410": {
+      "title": "ROLLING",
+      "year": 2026,
+      "status": "available",
+      "first_seen": "2026-04-28",
+      "digital_date": "2026-04-28",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "intake_pass": "A",
+      "has_providers": true,
+      "_discovery_source": "tmdb_type4",
+      "enriched": true,
+      "enrichment_date": "2026-04-28"
+    },
+    "1323712": {
+      "title": "Ketchup on Waffles",
+      "year": 2026,
+      "status": "available",
+      "first_seen": "2026-04-28",
+      "digital_date": "2026-04-28",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "intake_pass": "A",
+      "has_providers": true,
+      "_discovery_source": "tmdb_type4",
+      "enriched": true,
+      "enrichment_date": "2026-04-28"
+    },
+    "1683444": {
+      "title": "Nick Fuentes and Keith Woods visit Rome",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-28",
+      "digital_date": "2026-04-27",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "intake_pass": "A",
+      "has_providers": true,
+      "_discovery_source": "tmdb_type4",
+      "enriched": false,
+      "enrichment_date": null,
+      "_jw_revert_reason": "justwatch_no_valid_offers",
+      "_jw_reverted_at": "2026-04-28"
+    },
+    "1683106": {
+      "title": "I Can't Write",
+      "year": 2026,
+      "status": "available",
+      "first_seen": "2026-04-28",
+      "digital_date": "2026-04-27",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "intake_pass": "A",
+      "has_providers": true,
+      "_discovery_source": "tmdb_type4",
+      "enriched": true,
+      "enrichment_date": "2026-04-28"
+    },
+    "1682640": {
+      "title": "Ko\u015f Yolda\u015f! Arkanda Eski D\u00fcnya Var",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-28",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1679742": {
+      "title": "Mast Mahila Mandali",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-28",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1669055": {
+      "title": "Barurot 2",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-28",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1663337": {
+      "title": "That Half Barbaric Twang",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-28",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1658087": {
+      "title": "Mosquito Halo",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-28",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1541612": {
+      "title": "Perto do Sol \u00e9 Mais Claro",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-28",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1683551": {
+      "title": "Contact in the Woods: The Dr. Johnathan Reed Story",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-28",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1683250": {
+      "title": "Golden Earring - One Last Night",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-28",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1683401": {
+      "title": "Small Town Girl",
+      "year": 2026,
+      "status": "tracking",
+      "first_seen": "2026-04-28",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "tv_320579": {
+      "title": "The Cult of NatureBoy",
+      "content_type": "limited_series",
+      "tmdb_id": 320579,
+      "status": "tracking",
+      "first_air_date": "2026-04-28",
+      "digital_date": "2026-04-28",
+      "episode_count": 4,
+      "runtime": null,
+      "poster": null,
+      "synopsis": "In 2016, a rising social media star named Eligio Bishop, also known as \u201cNatureBoy,\u201d used his platforms to recruit followers into a group he called Carbon Nation, encouraging them to abandon their families and join his vision of a self-proclaimed Black utopia. What began as an alternative lifestyle community quickly evolved into something far more sinister.",
+      "genres": [
+        "Documentary"
+      ],
+      "original_language": "en",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-04-28T11:02:51.710707",
+      "networks": [
+        "Hulu"
+      ],
+      "has_providers": false
+    },
+    "tv_257166": {
+      "title": "Paris Police 1910",
+      "content_type": "limited_series",
+      "tmdb_id": 257166,
+      "status": "tracking",
+      "first_air_date": "2026-04-27",
+      "digital_date": "2026-04-27",
+      "episode_count": 6,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/5MihppAMwyZsgUgl2ET4KhFWsqM.jpg",
+      "synopsis": "",
+      "genres": [
+        "Drama",
+        "Crime"
+      ],
+      "original_language": "fr",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intaked_at": "2026-04-28T11:02:51.813232",
+      "networks": [],
+      "has_providers": false
     }
   }
 }
