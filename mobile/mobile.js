@@ -351,13 +351,13 @@ const NRWMobile = {
                     </div>
                 </div>
                 <div class="card-caption">
-                    <div class="card-caption-title">${movie.title || 'Untitled'}</div>
+                    <div class="card-caption-title">${movie.display_title || movie.title || 'Untitled'}</div>
                     <div class="card-caption-meta">${movie.crew?.director || ''}${this.abbreviateCountry(movie.country) ? ` \u2022 ${this.abbreviateCountry(movie.country)}` : ''}</div>
                 </div>
                 <div class="flip-back">
                     <div class="back-content">
                     <div class="back-title-row">
-                        <h2 class="back-title">${movie.title || 'Untitled'}</h2>
+                        <h2 class="back-title">${movie.display_title || movie.title || 'Untitled'}</h2>
                         ${movie.year ? `<span class="back-year">(${movie.year})</span>` : ''}
                         ${isStaffPick ? '<span class="back-staff-badge">STAFF PICK</span>' : ''}
                         ${movie.digital_date ? `<span class="back-date">${this.formatShortDate(movie.digital_date)}</span>` : ''}
@@ -672,7 +672,7 @@ const NRWMobile = {
                 <video controls autoplay playsinline style="display:block;width:100%;background:#000;">
                     <source src="${url}" type="video/mp4">
                 </video>
-                <div style="text-align:center;color:#888;font-size:12px;letter-spacing:0.05em;padding-top:8px;">${movie.title || ''}</div>
+                <div style="text-align:center;color:#888;font-size:12px;letter-spacing:0.05em;padding-top:8px;">${movie.display_title || movie.title || ''}</div>
             </div>
         `;
 

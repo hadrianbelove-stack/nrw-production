@@ -314,10 +314,10 @@ class JustWatchClient:
         if streaming_offers:
             best_streaming = self._select_best_offer(streaming_offers, self.STREAMING_PRIORITY)
             if best_streaming:
-                result['streaming'] = [{
+                result['streaming'] = {
                     'service': best_streaming['service'],
                     'link': best_streaming['link']
-                }]
+                }
 
         # Select VOD options — return both Amazon and Apple TV when available
         vod_offers = rent_offers + buy_offers
@@ -459,10 +459,10 @@ class JustWatchClient:
         if streaming_offers:
             best_streaming = self._select_best_offer(streaming_offers, self.STREAMING_PRIORITY)
             if best_streaming:
-                watch_links['streaming'] = [{
+                watch_links['streaming'] = {
                     'service': best_streaming['service'],
                     'link': best_streaming['link']
-                }]
+                }
 
         vod_offers = rent_offers + buy_offers
         if vod_offers:

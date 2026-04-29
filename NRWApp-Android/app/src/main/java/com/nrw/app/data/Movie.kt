@@ -8,6 +8,8 @@ import com.google.gson.annotations.SerializedName
 data class Movie(
     val id: String,
     val title: String,
+    @SerializedName("display_title")
+    val displayTitle: String? = null,
     val year: Int? = null,
     val rating: String? = null,
     val runtime: Int? = null,
@@ -127,7 +129,7 @@ data class MovieLinks(
 )
 
 data class WatchLinks(
-    val streaming: ServiceLink? = null,  // Single object, not array
+    val streaming: ServiceLink? = null,
     @com.google.gson.annotations.JsonAdapter(VodLinksAdapter::class)
     val vod: List<ServiceLink>? = null  // Array of VOD services (Amazon, Apple TV)
 )

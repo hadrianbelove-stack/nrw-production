@@ -700,7 +700,7 @@ const NRW = {
                     </div>
                 </div>
                 <div class="movie-info">
-                    <div class="movie-title">${movie.title}</div>
+                    <div class="movie-title">${movie.display_title || movie.title}</div>
                     <span class="director">${movie.crew?.director || 'Unknown Director'}</span> • <span class="country">${NRW.abbreviateCountry(movie.country) || 'Unknown Country'}</span>
                 </div>
                 ${badgeBar}

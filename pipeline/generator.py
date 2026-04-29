@@ -3589,7 +3589,8 @@ class DataGenerator:
                     # (get_watch_links returns {"streaming": [], "vod": []} when empty)
                     wl = enrichment_fields.get('watch_links', {})
                     has_real_links = any(
-                        isinstance(v, list) and len(v) > 0 for v in wl.values()
+                        (isinstance(v, list) and len(v) > 0) or (isinstance(v, dict) and v.get('link'))
+                        for v in wl.values()
                     ) if isinstance(wl, dict) else bool(wl)
                     if not has_real_links:
                         gaps.append('watch_links')
@@ -3655,7 +3656,10 @@ class DataGenerator:
 
                         # Report zero watch links (warning only — status stays 'available', display filter handles wall)
                         wl = movie.get('watch_links', {})
-                        wl_count = sum(len(v) for v in wl.values()) if isinstance(wl, dict) else 0
+                        wl_count = sum(
+                            len(v) if isinstance(v, list) else (1 if isinstance(v, dict) and v.get('service') else 0)
+                            for v in wl.values()
+                        ) if isinstance(wl, dict) else 0
                         if wl_count == 0 and tracking_data['movies'][mid].get('status') == 'available':
                             print(f"  ⚠ {movie.get('title')} — zero watch links after enrichment")
             if tracking_updated > 0:
@@ -4317,6 +4321,15 @@ class DataGenerator:
             print(f"❌ Error loading data.json for display: {e} - aborting to preserve data")
             self.logger.error(f"Error loading data.json for display: {e}")
             return
+
+        # Compute display_title: "English Title (Foreign Title)" for non-English films
+        for m in all_movies:
+            orig = m.get('original_title')
+            lang = m.get('original_language', 'en')
+            if orig and orig != m.get('title') and lang != 'en':
+                m['display_title'] = f"{m['title']} ({orig})"
+            else:
+                m['display_title'] = m.get('title', '')
 
         # Inject selected pull quotes from cache into movie data
         self._inject_selected_pull_quotes(all_movies)

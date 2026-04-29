@@ -568,10 +568,12 @@ class EnrichmentService:
 
         # Build streaming links
         if not skip_streaming:
-            watch_links['streaming'] = self._build_streaming_links(
+            streaming = self._build_streaming_links(
                 movie_id, title, year, providers, tmdb_streaming, tmdb_rent, tmdb_buy,
                 title_variants=title_variants
             )
+            if streaming:
+                watch_links['streaming'] = streaming
 
         # Build VOD links
         if not (skip_rent and skip_buy):
@@ -596,7 +598,7 @@ class EnrichmentService:
 
     def _build_streaming_links(self, movie_id, title, year, providers, tmdb_streaming, tmdb_rent, tmdb_buy,
                                title_variants=None):
-        """Build streaming services array from available sources."""
+        """Build best streaming service dict from available sources."""
         streaming_services = []
 
         if tmdb_streaming:
@@ -618,12 +620,13 @@ class EnrichmentService:
                                                               title_variants=title_variants)
                     streaming_services.append(agent_result)
 
-        # Filter to services with links, or keep all if none have links
-        result = [s for s in streaming_services if s.get('link')]
-        if not result and streaming_services:
-            result = streaming_services
-
-        return result
+        # Return best streaming option as a dict (first with a link, or first overall)
+        with_links = [s for s in streaming_services if s.get('link')]
+        if with_links:
+            return with_links[0]
+        if streaming_services:
+            return streaming_services[0]
+        return None
 
     def _find_amazon_link(self, tmdb_rent, tmdb_buy):
         """Find an Amazon link from rent or buy sources."""
