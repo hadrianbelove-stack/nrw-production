@@ -55,14 +55,17 @@ for m in movies:
 
 pct = round(len(zero_broken) / total * 100, 1) if total else 0
 
-# JustWatch-reverted movies (last 7 days)
+# JustWatch-reverted movies (last 3 days)
+three_days_ago = (date.today() - timedelta(days=3)).isoformat()
 jw_reverted = []
 try:
     t = json.load(open('movie_tracking.json'))
     for mid, m in t.get('movies', {}).items():
         rev_at = m.get('_jw_reverted_at', '')
-        if rev_at >= week_ago and m.get('_jw_revert_reason'):
-            jw_reverted.append((rev_at, m.get('title', mid), m['_jw_revert_reason']))
+        if rev_at >= three_days_ago and m.get('_jw_revert_reason'):
+            provs = m.get('providers', {})
+            plats = [p for cat in ['rent','buy','streaming'] for p in provs.get(cat, [])]
+            jw_reverted.append((rev_at, m.get('title', mid), m['_jw_revert_reason'], plats))
 except: pass
 
 # Pipeline health
@@ -90,10 +93,18 @@ else:
     print(f'⚠ WARNING: {len(zero_broken)} movies have zero watch links ({pct}%)')
     for t in sorted(zero_broken): print(f'  ⚠ {t}')
 if jw_reverted:
-    print(f'🔄 JW REVERTED ({len(jw_reverted)}) — discovered but not on our platforms (last 7 days):')
-    for rev_at, title, reason in sorted(jw_reverted): print(f'  {rev_at}  {title} — {reason}')
+    print(f'🔄 JW REVERTED ({len(jw_reverted)}) — discovered but sent back to tracking (last 3 days):')
+    by_reason = {}
+    for rev_at, title, reason, plats in sorted(jw_reverted):
+        by_reason.setdefault(reason, []).append((rev_at, title, plats))
+    for reason, items in by_reason.items():
+        label = {'justwatch_no_valid_offers': 'Only on excluded platforms', 'justwatch_no_match': 'No JustWatch match found'}.get(reason, reason)
+        print(f'  [{label}]')
+        for rev_at, title, plats in items:
+            plat_str = f' ({", ".join(plats)})' if plats else ''
+            print(f'    {rev_at}  {title}{plat_str}')
 else:
-    print(f'✅ JW REVERTED: 0 — All discovered movies confirmed on our platforms')
+    print(f'✅ JW REVERTED: 0 — no reversions in last 3 days')
 "
 ```
 

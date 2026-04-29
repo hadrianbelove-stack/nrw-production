@@ -80,4 +80,42 @@ Report these numbers:
 - Movies with Wikipedia summaries
 - Movies with trailers (and percentage of total)
 
+### JW Reversions (last 3 days)
+Compute this LIVE by running:
+
+```bash
+/usr/bin/python3 -c "
+import json
+from datetime import date, timedelta
+three_days_ago = (date.today() - timedelta(days=3)).isoformat()
+t = json.load(open('movie_tracking.json'))
+jw_reverted = []
+for mid, m in t.get('movies', {}).items():
+    rev_at = m.get('_jw_reverted_at', '')
+    if rev_at >= three_days_ago and m.get('_jw_revert_reason'):
+        provs = m.get('providers', {})
+        plats = [p for cat in ['rent','buy','streaming'] for p in provs.get(cat, [])]
+        jw_reverted.append((rev_at, m.get('title', mid), m['_jw_revert_reason'], plats))
+if jw_reverted:
+    print(f'JW REVERTED: {len(jw_reverted)} movies discovered but sent back to tracking')
+    by_reason = {}
+    for rev_at, title, reason, plats in sorted(jw_reverted):
+        by_reason.setdefault(reason, []).append((rev_at, title, plats))
+    for reason, items in by_reason.items():
+        label = {'justwatch_no_valid_offers': 'Only on excluded platforms', 'justwatch_no_match': 'No JustWatch match found'}.get(reason, reason)
+        print(f'  [{label}]')
+        for rev_at, title, plats in items:
+            plat_str = f' ({\", \".join(plats)})' if plats else ''
+            print(f'    {rev_at}  {title}{plat_str}')
+else:
+    print('JW REVERTED: 0 — no reversions in last 3 days')
+"
+```
+
+Report these numbers:
+- Total JW reversions in the last 3 days (first-revert date is preserved, so movies only appear for 3 days after initial reversion)
+- Each movie listed with its reversion date, grouped by reason
+- Explain that `justwatch_no_valid_offers` means the movie was only on excluded platforms, and `justwatch_no_match` means JustWatch couldn't find it at all
+- Note that reversions are healthy — they prevent the wall from showing movies without working links
+
 Format as a short summary (not raw log). Flag any failures or concerns clearly.

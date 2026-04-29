@@ -877,6 +877,9 @@ class DataGenerator:
                                     del movie['_type4_pending']
                                     movie.pop('_reverted_from_available', None)
                                     movie.pop('_false_positive_source', None)
+                                    movie.pop('_jw_revert_reason', None)
+                                    movie.pop('_jw_reverted_at', None)
+                                    movie.pop('_jw_reverted', None)
                                     newly_digital += 1
                                     newly_available_ids.append(movie_id)
                                     self.add_movie_to_site_immediately(movie_id, movie)
@@ -907,6 +910,9 @@ class DataGenerator:
                                     movie.pop('_reverted_from_available', None)
                                     movie.pop('_false_positive_source', None)
                                     movie.pop('_providers_false_positive', None)  # Clear other source's flag
+                                    movie.pop('_jw_revert_reason', None)
+                                    movie.pop('_jw_reverted_at', None)
+                                    movie.pop('_jw_reverted', None)
                                     newly_digital += 1
                                     newly_available_ids.append(movie_id)
                                     self.add_movie_to_site_immediately(movie_id, movie)
@@ -1007,6 +1013,9 @@ class DataGenerator:
                             movie.pop('_reverted_from_available', None)
                             movie.pop('_false_positive_source', None)
                             movie.pop('_type4_false_positive', None)  # Clear other source's flag
+                            movie.pop('_jw_revert_reason', None)
+                            movie.pop('_jw_reverted_at', None)
+                            movie.pop('_jw_reverted', None)
                             newly_digital += 1
 
                             first_service = stream_names[0] if stream_names else rent_names[0] if rent_names else buy_names[0] if buy_names else '?'
@@ -3527,6 +3536,9 @@ class DataGenerator:
                                 'cached_at': datetime.now().isoformat(),
                                 'source': 'justwatch_pre_verification'
                             }
+                        # Clear revert history — movie now has valid providers
+                        tracking_data['movies'][movie_id].pop('_jw_reverted_at', None)
+                        tracking_data['movies'][movie_id].pop('_jw_revert_reason', None)
                 except Exception as _jw_err:
                     self.logger.warning(f"JustWatch pre-check error for {_title}: {_jw_err} — proceeding with enrichment")
 
@@ -3534,7 +3546,7 @@ class DataGenerator:
                     _today_iso = datetime.now().strftime('%Y-%m-%d')
                     tracking_data['movies'][movie_id]['status'] = 'tracking'
                     tracking_data['movies'][movie_id]['_jw_revert_reason'] = _revert_reason
-                    tracking_data['movies'][movie_id]['_jw_reverted_at'] = _today_iso
+                    tracking_data['movies'][movie_id].setdefault('_jw_reverted_at', _today_iso)
                     existing_movies[movie_index]['_jw_reverted'] = True
                     existing_movies[movie_index]['_jw_revert_reason'] = _revert_reason
                     existing_movies[movie_index]['_enrichment_status'] = 'reverted'
