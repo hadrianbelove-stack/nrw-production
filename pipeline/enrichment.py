@@ -116,7 +116,8 @@ class EnrichmentService:
         self.watch_links_overrides = watch_links_overrides
 
     def get_watch_links(self, movie_id, title, year, providers, force_refresh=False,
-                        tracking_data=None, original_title=None, alternative_titles=None):
+                        tracking_data=None, original_title=None, alternative_titles=None,
+                        director=None):
         """
         Get deep links with canonical streaming/vod structure.
 
@@ -179,7 +180,8 @@ class EnrichmentService:
 
         # 4. Try JustWatch API (primary source for rent/buy deep links)
         justwatch_result, jw_provider_names = self._try_justwatch_api(
-            title, year, cache_key, validated_overrides, providers=providers
+            title, year, cache_key, validated_overrides, providers=providers,
+            original_title=original_title, director=director
         )
         if justwatch_result:
             # 4.5 Gemini enhancement: find URLs for services JustWatch identified but has no deeplink for
@@ -269,6 +271,19 @@ class EnrichmentService:
 
         override_data = self.watch_links_overrides[cache_key]
         try:
+            # Intentionally-empty override: all categories are empty arrays.
+            # This means "this movie should have NO links" (e.g., clearing bad
+            # JustWatch matches). Return empty-but-valid structure to stop the
+            # waterfall from falling through to cache/JustWatch.
+            all_empty = override_data and all(
+                isinstance(v, list) and len(v) == 0
+                for v in override_data.values()
+            )
+            if all_empty:
+                self.logger.info(f"Using empty override for {title} (clearing bad links)")
+                self.stats['override_hits'] = self.stats.get('override_hits', 0) + 1
+                return {'streaming': [], 'vod': []}
+
             # Normalize single-dict vod to array format
             if isinstance(override_data.get('vod'), dict):
                 override_data['vod'] = [override_data['vod']]
@@ -359,7 +374,8 @@ class EnrichmentService:
             return category_data.get('link') is not None
         return False
 
-    def _try_justwatch_api(self, title, year, cache_key, validated_overrides, providers=None):
+    def _try_justwatch_api(self, title, year, cache_key, validated_overrides, providers=None,
+                           original_title=None, director=None):
         """
         Try to get links from JustWatch API with confidence checking.
 
@@ -373,6 +389,8 @@ class EnrichmentService:
             cache_key: Cache key for storing result
             validated_overrides: Dict of admin overrides to apply
             providers: TMDB provider dict for cross-validation
+            original_title: Original language title (for JustWatch title matching)
+            director: Director name (for disambiguation of same-title movies)
 
         Returns:
             Tuple of (validated_links or None, provider_names dict or None).
@@ -400,7 +418,7 @@ class EnrichmentService:
             # Use verify_availability for confidence-checked search
             result = self._justwatch_client.verify_availability(
                 title, year, excluded_services=excluded_services, affiliate_tag=amazon_tag,
-                content_type=content_type
+                content_type=content_type, original_title=original_title, director=director
             )
 
             if result is None:

@@ -20,6 +20,8 @@ Usage:
 
 import requests
 import logging
+import re
+import unicodedata
 from typing import Dict, Optional, List, Any
 from datetime import datetime
 
@@ -81,7 +83,46 @@ class JustWatchClient:
         # Simple in-memory cache
         self._cache: Dict[str, Dict] = {}
 
-    def search_movie(self, title: str, year: Optional[int] = None, content_type: str = 'movie') -> Optional[Dict]:
+    @staticmethod
+    def _normalize_title(title: str) -> str:
+        """Normalize title for comparison.
+
+        Handles: case, diacritics (Sirāt→sirat), punctuation (Spider-Man→spider man),
+        and leading English articles (the/a/an).
+        """
+        if not title:
+            return ''
+        # Strip diacritics (é→e, ā→a, ü→u)
+        t = unicodedata.normalize('NFD', title)
+        t = ''.join(c for c in t if unicodedata.category(c) != 'Mn')
+        # Lowercase and strip punctuation (hyphens, colons, apostrophes, etc.)
+        t = re.sub(r'[^\w\s]', '', t.lower())
+        # Collapse whitespace
+        t = ' '.join(t.split())
+        # Strip leading English articles
+        for article in ('the ', 'a ', 'an '):
+            if t.startswith(article):
+                t = t[len(article):]
+                break
+        return t
+
+    def _titles_match(self, jw_title: str, title: str, original_title: Optional[str] = None) -> bool:
+        """Check if JustWatch title matches either title or original_title."""
+        jw_norm = self._normalize_title(jw_title)
+        if jw_norm == self._normalize_title(title):
+            return True
+        if original_title and jw_norm == self._normalize_title(original_title):
+            return True
+        return False
+
+    def search_movie(
+        self,
+        title: str,
+        year: Optional[int] = None,
+        content_type: str = 'movie',
+        original_title: Optional[str] = None,
+        director: Optional[str] = None
+    ) -> Optional[Dict]:
         """
         Search for a movie or TV show by title and optional year.
 
@@ -89,6 +130,8 @@ class JustWatchClient:
             title: Movie title
             year: Release year (helps disambiguate)
             content_type: 'movie' or 'tv' — determines JustWatch objectTypes filter
+            original_title: Original language title (checked alongside title)
+            director: Director name for disambiguation when multiple titles match
 
         Returns:
             Movie data with offers, or None if not found
@@ -125,6 +168,10 @@ class JustWatchClient:
                   title
                   originalReleaseYear
                   fullPath
+                  credits {{
+                    role
+                    name
+                  }}
                 }}
                 offers(country: $country, platform: WEB) {{
                   monetizationType
@@ -172,53 +219,78 @@ class JustWatchClient:
                 self.stats['failures'] += 1
                 return None
 
-            # Find best match: prefer title match + year over year alone.
-            # JustWatch search already ranks by relevance, so result #1 with a
-            # matching title is almost always correct. Prioritizing year alone
-            # can pick a completely wrong movie that happens to share the year.
-            title_lower = title.lower()
+            # Find best match: require title match (against title OR original_title).
+            # Never accept a result based on year alone — that picks wrong movies.
+            titles_to_match = {self._normalize_title(title)}
+            if original_title and original_title.lower() != title.lower():
+                norm_orig = self._normalize_title(original_title)
+                if norm_orig:
+                    titles_to_match.add(norm_orig)
+
             best_match = None
 
-            # Pass 1: exact title + exact year (strongest signal)
+            # Pass 1: title match + exact year (strongest signal)
             for edge in edges:
                 node = edge['node']
                 content = node.get('content', {})
-                if content.get('title', '').lower() == title_lower and year and content.get('originalReleaseYear') == year:
+                node_title_norm = self._normalize_title(content.get('title', ''))
+                if node_title_norm in titles_to_match and year and content.get('originalReleaseYear') == year:
                     best_match = node
                     break
 
-            # Pass 2: exact title + close year (within 1 year — common for foreign films)
+            # Pass 2: title match + close year (within 1 year — common for foreign films)
             if not best_match:
                 for edge in edges:
                     node = edge['node']
                     content = node.get('content', {})
+                    node_title_norm = self._normalize_title(content.get('title', ''))
                     node_year = content.get('originalReleaseYear')
-                    if content.get('title', '').lower() == title_lower and year and node_year and abs(node_year - year) <= 1:
+                    if node_title_norm in titles_to_match and year and node_year and abs(node_year - year) <= 1:
                         best_match = node
                         break
 
-            # Pass 3: exact title, any year
+            # Pass 3: title match, any year — disambiguate by director first, then closest year
             if not best_match:
+                title_matches = []
                 for edge in edges:
                     node = edge['node']
                     content = node.get('content', {})
-                    if content.get('title', '').lower() == title_lower:
-                        best_match = node
-                        break
+                    node_title_norm = self._normalize_title(content.get('title', ''))
+                    if node_title_norm in titles_to_match:
+                        title_matches.append(node)
 
-            # Pass 4: close year match without title check (original fallback)
-            if not best_match and year:
-                for edge in edges:
-                    node = edge['node']
-                    content = node.get('content', {})
-                    node_year = content.get('originalReleaseYear')
-                    if node_year and abs(node_year - year) <= 1:
-                        best_match = node
-                        break
+                if title_matches:
+                    # Try director match first (strongest disambiguation signal)
+                    if director and len(title_matches) > 1:
+                        director_lower = director.lower()
+                        for node in title_matches:
+                            credits = node.get('content', {}).get('credits', [])
+                            for credit in credits:
+                                if credit.get('role') == 'DIRECTOR' and credit.get('name', '').lower() == director_lower:
+                                    best_match = node
+                                    break
+                            if best_match:
+                                break
 
-            # Pass 5: fall back to first result
+                    # Fall back to closest year
+                    if not best_match and year:
+                        title_matches.sort(key=lambda n: abs((n.get('content', {}).get('originalReleaseYear') or 9999) - year))
+                        best_match = title_matches[0]
+                    elif not best_match:
+                        best_match = title_matches[0]
+
+            # Pass 4 REMOVED: previously accepted any result with a matching year
+            # regardless of title. This caused "Ketchup on Waffles" to match
+            # "House on Eden" — completely different films.
+
+            # Pass 5 REMOVED: previously fell back to first result regardless
+            # of title. Now if no title match is found, the movie isn't in
+            # JustWatch — return None rather than a wrong movie's data.
+
             if not best_match:
-                best_match = edges[0]['node']
+                self.logger.debug(f"No title match for '{title}' in JustWatch results")
+                self.stats['failures'] += 1
+                return None
 
             self.stats['successes'] += 1
             self._cache[cache_key] = best_match
@@ -239,7 +311,9 @@ class JustWatchClient:
         year: Optional[int] = None,
         affiliate_tag: Optional[str] = None,
         excluded_services: Optional[List[str]] = None,
-        content_type: str = 'movie'
+        content_type: str = 'movie',
+        original_title: Optional[str] = None,
+        director: Optional[str] = None
     ) -> Dict[str, Any]:
         """
         Get watch links in canonical NRW schema.
@@ -250,6 +324,8 @@ class JustWatchClient:
             affiliate_tag: Optional Amazon affiliate tag to append
             excluded_services: Optional list of service names to exclude (e.g. ['Philo', 'fuboTV'])
             content_type: 'movie' or 'tv' — determines JustWatch objectTypes filter
+            original_title: Original language title (checked alongside title)
+            director: Director name for disambiguation when multiple titles match
 
         Returns:
             Dict with 'streaming' and 'vod' categories:
@@ -258,7 +334,8 @@ class JustWatchClient:
                 'vod': {'service': 'Amazon Video', 'link': 'https://...', 'price': '$4.99'}
             }
         """
-        movie = self.search_movie(title, year, content_type=content_type)
+        movie = self.search_movie(title, year, content_type=content_type,
+                                  original_title=original_title, director=director)
 
         if not movie:
             return {}
@@ -334,7 +411,9 @@ class JustWatchClient:
         year: Optional[int] = None,
         excluded_services: Optional[List[str]] = None,
         affiliate_tag: Optional[str] = None,
-        content_type: str = 'movie'
+        content_type: str = 'movie',
+        original_title: Optional[str] = None,
+        director: Optional[str] = None
     ) -> Optional[Dict[str, Any]]:
         """
         Verify a movie's availability for the discovery phase.
@@ -356,7 +435,8 @@ class JustWatchClient:
               'watch_links': dict in NRW schema (ready to store)
             None if search fails entirely.
         """
-        movie = self.search_movie(title, year, content_type=content_type)
+        movie = self.search_movie(title, year, content_type=content_type,
+                                  original_title=original_title, director=director)
         if not movie:
             return None
 
@@ -371,10 +451,11 @@ class JustWatchClient:
             except (ValueError, TypeError):
                 year = None
 
-        # Title similarity check: ensure we matched the right movie, not just
-        # a movie with the right year. Without this, "Lupin" can match "Peaky
-        # Blinders" if Peaky Blinders has the exact year we're looking for.
-        titles_match = jw_title.lower() == title.lower()
+        # Title check: JustWatch result must match either our title or original_title.
+        # Normalized comparison (lowercase, strip leading articles like "the/a/an").
+        # If neither matches, reject — prevents wrong-movie links like
+        # "Ketchup on Waffles" getting "House on Eden" links.
+        titles_match = self._titles_match(jw_title, title, original_title)
 
         if titles_match and year and jw_year == year:
             confidence = 'exact_year'
@@ -382,24 +463,27 @@ class JustWatchClient:
             confidence = 'close_year'
         elif titles_match:
             confidence = 'title_only'
-        elif year and jw_year == year:
-            # Year matches but title doesn't — common for international films
-            # (e.g. English search title vs foreign-language JW title).
-            # Year match is a strong signal since search_movie Pass 4 already
-            # trusts year-only matches from JW's relevance-ranked results.
-            confidence = 'close_year'
-            self.logger.info(
-                f"JustWatch title mismatch: searched '{title}' but matched "
-                f"'{jw_title}' (year {jw_year}). Accepting with close_year confidence."
-            )
-        elif year and jw_year and abs(jw_year - year) <= 1:
-            confidence = 'close_year'
-            self.logger.info(
-                f"JustWatch title mismatch: searched '{title}' but matched "
-                f"'{jw_title}' (year {jw_year}). Accepting with close_year confidence."
-            )
         else:
+            # Title doesn't match either our title or original_title → reject.
+            # Set verified=False so discovery pre-check also rejects (it only
+            # checks verified, not match_confidence).
             confidence = 'first_result'
+            alt_info = f" / '{original_title}'" if original_title and original_title.lower() != title.lower() else ''
+            self.logger.warning(
+                f"JustWatch title mismatch: searched '{title}'{alt_info} but matched "
+                f"'{jw_title}' (year {jw_year}). Rejecting (no title match)."
+            )
+            return {
+                'verified': False,
+                'match_confidence': confidence,
+                'jw_title': jw_title,
+                'jw_year': jw_year,
+                'has_streaming': False,
+                'has_rent': False,
+                'has_buy': False,
+                'provider_names': {'streaming': [], 'rent': [], 'buy': []},
+                'watch_links': {}
+            }
 
         offers = movie.get('offers', [])
         excluded_lower = [s.lower() for s in (excluded_services or [])]

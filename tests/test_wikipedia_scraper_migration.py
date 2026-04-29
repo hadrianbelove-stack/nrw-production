@@ -15,6 +15,7 @@ This is a WALLED GARDEN test - no production files are touched.
 import os
 import sys
 import json
+import re
 import tempfile
 import time
 from datetime import datetime
@@ -104,22 +105,23 @@ class WikipediaScraperMigrated(PlaywrightScraperBase):
             return ' '.join(s.split())
 
         norm_title = normalize(title)
-        norm_result = normalize(result_text)
 
-        # Direct substring check
-        if norm_title in norm_result or norm_result in norm_title:
+        # Strip parenthetical disambiguation before normalizing result
+        result_core = re.sub(r'\s*\([^)]*\)\s*$', '', result_text).strip()
+        norm_result = normalize(result_core)
+
+        if norm_title == norm_result:
             return True
 
-        # Word-based matching
-        title_words = set(norm_title.split())
-        result_words = set(norm_result.split())
-        stopwords = {'the', 'a', 'an', 'of', 'and', 'in', 'on', 'at', 'to', 'for', 'film', 'movie'}
-        title_words = title_words - stopwords
+        # Word-based: significant words must match bidirectionally
+        stopwords = {'the', 'a', 'an', 'of', 'and', 'in', 'on', 'at', 'to', 'for'}
+        title_sig = set(norm_title.split()) - stopwords
+        result_sig = set(norm_result.split()) - stopwords
 
-        if not title_words:
+        if not title_sig:
             return norm_title == norm_result
 
-        return title_words.issubset(result_words)
+        return title_sig == result_sig
 
     def _cache_result(self, cache_key, url, title, source):
         """Cache the Wikipedia article URL."""
@@ -253,21 +255,48 @@ def test_wikipedia_specific_title_matching():
         cache_file = os.path.join(temp_dir, 'test_cache.json')
         scraper = WikipediaScraperMigrated(cache_file=cache_file)
 
-        # Test exact match
+        # --- Must match ---
         assert scraper._title_matches("The Matrix", "The Matrix"), "Exact match should work"
-        print("  [PASS] Exact match works")
+        print("  [PASS] Exact match")
 
-        # Test with film suffix
         assert scraper._title_matches("Dune", "Dune (film)"), "Film suffix match should work"
-        print("  [PASS] Film suffix match works")
+        print("  [PASS] Film suffix (parenthetical stripped)")
 
-        # Test with year suffix
         assert scraper._title_matches("Dune", "Dune (2021 film)"), "Year suffix match should work"
-        print("  [PASS] Year suffix match works")
+        print("  [PASS] Year suffix (parenthetical stripped)")
 
-        # Test non-match
+        assert scraper._title_matches("Crash", "Crash (2004 American film)"), "Country qualifier"
+        print("  [PASS] Country qualifier (parenthetical stripped)")
+
+        assert scraper._title_matches("Inception", "inception"), "Case insensitive"
+        print("  [PASS] Case insensitive")
+
+        assert scraper._title_matches("Bonnie & Clyde", "Bonnie and Clyde"), "Ampersand normalization"
+        print("  [PASS] Ampersand normalization")
+
+        # --- Must reject: the actual bug ---
+        assert not scraper._title_matches("Heresy", "The Burnt Orange Heresy"), \
+            "Short title should not match longer title containing it"
+        print("  [PASS] Rejects 'Heresy' → 'The Burnt Orange Heresy'")
+
+        # --- Must reject: character-level substring ---
+        assert not scraper._title_matches("Bomb", "Bombshell"), \
+            "Character substring should not match"
+        print("  [PASS] Rejects 'Bomb' → 'Bombshell'")
+
+        # --- Must reject: extra words beyond title ---
+        assert not scraper._title_matches("Love Me Love Me", "Love Me, Love Me Not (manga)"), \
+            "Extra words should cause rejection"
+        print("  [PASS] Rejects 'Love Me Love Me' → 'Love Me, Love Me Not (manga)'")
+
+        # --- Must reject: completely different ---
         assert not scraper._title_matches("Avatar", "Titanic"), "Non-match should return False"
         print("  [PASS] Non-match correctly returns False")
+
+        # --- Must reject: different sequel ---
+        assert not scraper._title_matches("The Godfather", "The Godfather Part II"), \
+            "Should not match different sequel"
+        print("  [PASS] Rejects 'The Godfather' → 'The Godfather Part II'")
 
     print("  === Title Matching: ALL PASSED ===")
     return True

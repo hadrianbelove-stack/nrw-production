@@ -227,6 +227,10 @@ class WikipediaScraperPlaywright(PlaywrightScraperBase):
     def _title_matches(self, title, result_text):
         """Check if search result likely matches the film title.
 
+        Strips parenthetical disambiguation from result first
+        (e.g. "Dune (2024 film)" → "Dune"), then requires the core
+        titles to match exactly or as identical significant-word sets.
+
         Args:
             title: Original movie title
             result_text: Text from search result link
@@ -243,22 +247,25 @@ class WikipediaScraperPlaywright(PlaywrightScraperBase):
             return ' '.join(s.split())
 
         norm_title = normalize(title)
-        norm_result = normalize(result_text)
 
-        # Direct substring check (either direction)
-        if norm_title in norm_result or norm_result in norm_title:
+        # Strip parenthetical disambiguation before normalizing result
+        # "The Matrix (1999 film)" → "The Matrix"
+        result_core = re.sub(r'\s*\([^)]*\)\s*$', '', result_text).strip()
+        norm_result = normalize(result_core)
+
+        # Exact core match
+        if norm_title == norm_result:
             return True
 
-        # Word-based: ALL significant title words must appear in result
-        title_words = set(norm_title.split())
-        result_words = set(norm_result.split())
-        stopwords = {'the', 'a', 'an', 'of', 'and', 'in', 'on', 'at', 'to', 'for', 'film', 'movie'}
-        title_words = title_words - stopwords
+        # Word-based: significant words must match bidirectionally
+        stopwords = {'the', 'a', 'an', 'of', 'and', 'in', 'on', 'at', 'to', 'for'}
+        title_sig = set(norm_title.split()) - stopwords
+        result_sig = set(norm_result.split()) - stopwords
 
-        if not title_words:
+        if not title_sig:
             return norm_title == norm_result
 
-        return title_words.issubset(result_words)
+        return title_sig == result_sig
 
     def _scrape_wikipedia_page(self, title, year):
         """Find Wikipedia article using Playwright browser.
@@ -345,6 +352,16 @@ class WikipediaScraperPlaywright(PlaywrightScraperBase):
 
                     final_url = self.page.url
                     self._log(f"Clicked through to: {final_url}", level='debug')
+
+                    # Post-click year verification: reject if article is about a different year's film
+                    if year:
+                        first_para = self.page.query_selector('#mw-content-text p')
+                        if first_para:
+                            para_text = first_para.text_content()
+                            if str(year) not in para_text:
+                                self._log(f"Year {year} not found in article for {title}, rejecting {final_url}", level='debug')
+                                return None
+
                     return final_url
                 else:
                     self._log(f"First result '{result_text}' doesn't match '{title}'", level='debug')
@@ -362,14 +379,17 @@ class WikipediaScraperPlaywright(PlaywrightScraperBase):
             self._capture_failure_diagnostics(title, year, str(e))
             return None
 
-    def find_wikipedia_url(self, title, year, imdb_id=None, use_api=True, use_wikidata=True):
+    def find_wikipedia_url(self, title, year, imdb_id=None, use_api=True, use_wikidata=True,
+                           director=None, original_title=None):
         """Find Wikipedia URL with waterfall approach.
 
         Priority waterfall:
         1. Cache check (valid article URLs only)
         2. Wikidata SPARQL (if IMDb ID available and enabled)
+        2.5. Gemini with Google Search grounding (uses director for disambiguation)
         3. Wikipedia REST API (if enabled) - now includes plain title fallback
         4. Playwright scraper with click-through
+        5. If all fail and original_title differs, retry waterfall with original_title
 
         IMPORTANT: Never returns a search URL. Returns None if no article found.
 
@@ -379,6 +399,8 @@ class WikipediaScraperPlaywright(PlaywrightScraperBase):
             imdb_id: IMDb ID for Wikidata lookup (optional)
             use_api: Whether to use Wikipedia REST API (default: True)
             use_wikidata: Whether to use Wikidata SPARQL (default: True)
+            director: Director name for Gemini disambiguation (optional)
+            original_title: Original-language title for fallback search (optional)
 
         Returns:
             str: Wikipedia article URL or None if not found
@@ -420,7 +442,7 @@ class WikipediaScraperPlaywright(PlaywrightScraperBase):
         # 2.5. Try Gemini with Google Search grounding (faster than REST API)
         gemini_finder = self._get_gemini_finder()
         if gemini_finder:
-            wiki_url = gemini_finder.find_wikipedia_url(title, year)
+            wiki_url = gemini_finder.find_wikipedia_url(title, year, director=director)
             # Sync stats from child finder (single source of truth)
             gemini_stats = gemini_finder.get_stats()
             self.stats['gemini_attempts'] = gemini_stats.get('gemini_attempts', 0)
@@ -446,6 +468,13 @@ class WikipediaScraperPlaywright(PlaywrightScraperBase):
             self.stats['scraper_successes'] += 1
             self.stats['successes'] += 1
             return wiki_url
+
+        # 5. If original_title differs from title, retry waterfall with it
+        if original_title and original_title != title:
+            self._log(f"Retrying with original title: {original_title}", level='debug')
+            return self.find_wikipedia_url(original_title, year, imdb_id,
+                                           use_api=use_api, use_wikidata=False,
+                                           director=director, original_title=None)
 
         # No article found - return None (never return a search URL)
         self._log(f"No Wikipedia article found for {title} ({year})", level='warning')

@@ -2397,7 +2397,7 @@ class DataGenerator:
 
         return None
 
-    def find_wikipedia_url(self, title, year, imdb_id, movie_id=None):
+    def find_wikipedia_url(self, title, year, imdb_id, movie_id=None, director=None, original_title=None):
         """Find Wikipedia URL using Playwright-based scraper with waterfall approach
 
         Priority waterfall:
@@ -2410,6 +2410,8 @@ class DataGenerator:
             year: Release year
             imdb_id: IMDb ID from TMDB external_ids (e.g., 'tt35076553')
             movie_id: TMDB ID for logging purposes
+            director: Director name for disambiguation (optional)
+            original_title: Original-language title for alternate searching (optional)
 
         Returns:
             Wikipedia URL string or None if not found
@@ -2440,7 +2442,9 @@ class DataGenerator:
                 year=year,
                 imdb_id=imdb_id,
                 use_api=True,
-                use_wikidata=True
+                use_wikidata=True,
+                director=director,
+                original_title=original_title
             )
 
             # Update our local cache reference to match scraper's cache
@@ -3041,7 +3045,10 @@ class DataGenerator:
 
         # Wikipedia link (isolated failure handling)
         try:
-            wiki_url = self.find_wikipedia_url(title, year, imdb_id, movie_id)
+            wiki_director = movie_details.get('crew', {}).get('director') if movie_details else None
+            wiki_orig_title = movie_details.get('original_name' if is_tv else 'original_title') if movie_details else None
+            wiki_url = self.find_wikipedia_url(title, year, imdb_id, movie_id,
+                                               director=wiki_director, original_title=wiki_orig_title)
             if wiki_url:
                 result['links']['wikipedia'] = wiki_url
                 enrichment_results['wikipedia'] = 'success'
@@ -3133,11 +3140,13 @@ class DataGenerator:
             original_title = movie_details.get(orig_title_key) if movie_details else None
             alt_titles_raw = movie_details.get('alternative_titles', {}).get('results', []) if movie_details else []
 
+            enrich_director = result.get('crew', {}).get('director') if result.get('crew') else None
             watch_links_raw = self.enrichment.get_watch_links(
                 movie_id, title, year, movie_data.get('providers', {}), force_refresh,
                 tracking_data=movie_data,
                 original_title=original_title,
-                alternative_titles=alt_titles_raw
+                alternative_titles=alt_titles_raw,
+                director=enrich_director
             )
 
             # Simplify provider names in watch links (handle both array and dict formats)
@@ -3505,6 +3514,8 @@ class DataGenerator:
                 # pre-check entirely — curator decision overrides JustWatch verification.
                 _title = existing_movies[movie_index].get('title', movie_data.get('title', ''))
                 _year = movie_data.get('year')
+                _original_title = existing_movies[movie_index].get('original_title')
+                _director = existing_movies[movie_index].get('crew', {}).get('director') if existing_movies[movie_index].get('crew') else None
                 _content_type_jw = 'tv' if str(movie_id).startswith('tv_') else 'movie'
                 _is_manual = (movie_data.get('_added_manually')
                               or existing_movies[movie_index].get('_added_manually'))
@@ -3519,7 +3530,8 @@ class DataGenerator:
                     _excl_list = self.enrichment.config.get('tracking', {}).get('excluded_services', ['fuboTV', 'Philo', 'Sun Nxt', 'Google Play Movies', 'Google Play', 'Shahid VIP', 'Viki', 'Futo'])
                     _jw_result = self.enrichment._justwatch_client.verify_availability(
                         _title, _year, excluded_services=_excl_list,
-                        affiliate_tag=_amazon_tag, content_type=_content_type_jw
+                        affiliate_tag=_amazon_tag, content_type=_content_type_jw,
+                        original_title=_original_title, director=_director
                     )
                     if _jw_result is None:
                         _jw_verified = False
@@ -3998,9 +4010,12 @@ class DataGenerator:
 
                 tracking_movie = tracking_data.get('movies', {}).get(movie_id, movie)
 
+                catchup_original_title = existing_movies[movie_index].get('original_title')
+                catchup_director = existing_movies[movie_index].get('crew', {}).get('director') if existing_movies[movie_index].get('crew') else None
                 watch_links = self.enrichment.get_watch_links(
                     movie_id, title, year, providers,
-                    force_refresh=True, tracking_data=tracking_movie
+                    force_refresh=True, tracking_data=tracking_movie,
+                    original_title=catchup_original_title, director=catchup_director
                 )
 
                 vod = watch_links.get('vod', []) if watch_links else []
