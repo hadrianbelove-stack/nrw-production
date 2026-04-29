@@ -116,7 +116,7 @@ def safe_write_json(filepath, data):
     if os.path.exists(filepath):
         shutil.copy2(filepath, backup_path)
     with open(filepath, 'w') as f:
-        json.dump(data, f, indent=2)
+        json.dump(data, f, indent=2, ensure_ascii=False)
     # Clean up backup on success
     if os.path.exists(backup_path):
         os.remove(backup_path)
