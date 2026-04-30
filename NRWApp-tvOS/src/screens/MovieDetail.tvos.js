@@ -391,28 +391,6 @@ const MovieDetailTvOS = () => {
             </View>
           )}
 
-          {/* RT Score badge */}
-          {rtScore && (
-            <View
-              style={[
-                styles.rtBadge,
-                { backgroundColor: 'rgba(250, 50, 50, 0.85)' },
-              ]}
-            >
-              <Text style={styles.rtScore}>{rtScore.label}</Text>
-              <Text style={styles.rtLabel}>
-                {rtScore.isFresh ? 'Fresh' : 'Rotten'}
-              </Text>
-            </View>
-          )}
-
-          {/* IMDB Score badge */}
-          {imdbScore && (
-            <View style={[styles.rtBadge, { backgroundColor: '#F5C518' }]}>
-              <Text style={[styles.rtScore, { color: '#000' }]}>{imdbScore.label}</Text>
-              <Text style={[styles.rtLabel, { color: '#000' }]}>IMDb</Text>
-            </View>
-          )}
         </View>
 
         {/* Right side - Details */}
@@ -556,6 +534,31 @@ const MovieDetailTvOS = () => {
               </View>
             )}
 
+            {/* RT & IMDb Scores — below action buttons */}
+            {(rtScore || imdbScore) && (
+              <View style={styles.scoreRow}>
+                {rtScore && (
+                  <View
+                    style={[
+                      styles.scoreBadge,
+                      { backgroundColor: 'rgba(250, 50, 50, 0.85)' },
+                    ]}
+                  >
+                    <Text style={styles.scoreBadgeText}>{rtScore.label}</Text>
+                    <Text style={styles.scoreBadgeLabel}>
+                      {rtScore.isFresh ? 'Fresh' : 'Rotten'}
+                    </Text>
+                  </View>
+                )}
+                {imdbScore && (
+                  <View style={[styles.scoreBadge, { backgroundColor: '#F5C518' }]}>
+                    <Text style={[styles.scoreBadgeText, { color: '#000' }]}>{imdbScore.label}</Text>
+                    <Text style={[styles.scoreBadgeLabel, { color: '#000' }]}>IMDb</Text>
+                  </View>
+                )}
+              </View>
+            )}
+
             {/* Synopsis — tap to expand/collapse */}
             {movie.synopsis && (
               <TouchableOpacity
@@ -690,21 +693,24 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     letterSpacing: 1,
   },
-  rtBadge: {
-    position: 'absolute',
-    bottom: Spacing.tvos.md,
-    right: Spacing.tvos.md,
+  scoreRow: {
+    flexDirection: 'row',
+    gap: Spacing.tvos.md,
+    marginTop: Spacing.tvos.sm,
+    marginBottom: Spacing.tvos.sm,
+  },
+  scoreBadge: {
     paddingHorizontal: Spacing.tvos.md,
     paddingVertical: Spacing.tvos.sm,
     borderRadius: 8,
     alignItems: 'center',
   },
-  rtScore: {
+  scoreBadgeText: {
     color: Colors.textPrimary,
     fontSize: Typography.tvos.body,
     fontWeight: '800',
   },
-  rtLabel: {
+  scoreBadgeLabel: {
     color: Colors.textPrimary,
     fontSize: Typography.tvos.caption - 2,
     fontWeight: '500',

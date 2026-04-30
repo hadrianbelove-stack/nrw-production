@@ -271,13 +271,14 @@ class EnrichmentService:
 
         override_data = self.watch_links_overrides[cache_key]
         try:
-            # Intentionally-empty override: all categories are empty arrays.
+            # Intentionally-empty override: streaming and vod are both empty arrays.
             # This means "this movie should have NO links" (e.g., clearing bad
             # JustWatch matches). Return empty-but-valid structure to stop the
             # waterfall from falling through to cache/JustWatch.
+            # Only check streaming/vod keys — ignore metadata like "notes".
             all_empty = override_data and all(
-                isinstance(v, list) and len(v) == 0
-                for v in override_data.values()
+                isinstance(override_data.get(k), list) and len(override_data[k]) == 0
+                for k in ('streaming', 'vod') if k in override_data
             )
             if all_empty:
                 self.logger.info(f"Using empty override for {title} (clearing bad links)")

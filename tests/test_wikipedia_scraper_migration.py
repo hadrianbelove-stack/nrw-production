@@ -15,7 +15,6 @@ This is a WALLED GARDEN test - no production files are touched.
 import os
 import sys
 import json
-import re
 import tempfile
 import time
 from datetime import datetime
@@ -27,6 +26,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from scraper_base import PlaywrightScraperBase
+from wikipedia_scraper_playwright import WikipediaScraperPlaywright
 
 
 class WikipediaScraperMigrated(PlaywrightScraperBase):
@@ -95,33 +95,8 @@ class WikipediaScraperMigrated(PlaywrightScraperBase):
 
         self.counters['stop_count'] += 1
 
-    def _title_matches(self, title, result_text):
-        """Check if search result likely matches the film title."""
-        def normalize(s):
-            s = s.lower()
-            s = s.replace('&', 'and').replace('&amp;', 'and')
-            for c in '.,!?:;\'"()-':
-                s = s.replace(c, '')
-            return ' '.join(s.split())
-
-        norm_title = normalize(title)
-
-        # Strip parenthetical disambiguation before normalizing result
-        result_core = re.sub(r'\s*\([^)]*\)\s*$', '', result_text).strip()
-        norm_result = normalize(result_core)
-
-        if norm_title == norm_result:
-            return True
-
-        # Word-based: significant words must match bidirectionally
-        stopwords = {'the', 'a', 'an', 'of', 'and', 'in', 'on', 'at', 'to', 'for'}
-        title_sig = set(norm_title.split()) - stopwords
-        result_sig = set(norm_result.split()) - stopwords
-
-        if not title_sig:
-            return norm_title == norm_result
-
-        return title_sig == result_sig
+    # Use production _title_matches directly — no copy-paste drift
+    _title_matches = WikipediaScraperPlaywright._title_matches
 
     def _cache_result(self, cache_key, url, title, source):
         """Cache the Wikipedia article URL."""

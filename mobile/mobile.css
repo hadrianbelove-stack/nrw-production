@@ -323,38 +323,6 @@ body {
     font-style: italic;
 }
 
-/* Score badges on card front (RT + IMDb, bottom-left) */
-.card-score-overlay {
-    position: absolute;
-    bottom: 8px;
-    left: 8px;
-    display: flex;
-    gap: 4px;
-    z-index: 5;
-}
-.card-score-overlay:empty { display: none; }
-.card-score-badge {
-    padding: 3px 6px;
-    border-radius: 3px;
-    font-size: 9px;
-    font-weight: 800;
-    text-decoration: none;
-    line-height: 1;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.5);
-}
-.card-score-badge.rt {
-    background: rgba(250, 50, 50, 0.85);
-    color: #fff;
-}
-.card-score-badge.imdb {
-    background: rgba(245, 197, 24, 0.9);
-    color: #000;
-}
-.badge-bar ~ .card-score-overlay {
-    bottom: 35px;
-}
-
-
 /* Tap hint */
 .tap-hint {
     position: absolute;
@@ -538,7 +506,25 @@ body {
     color: #000;
 }
 
-.btn-rt {
+.score-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.score-row .btn-equal.btn-rt {
+    background: rgba(250, 50, 50, 0.75);
+    color: #fff;
+    border: none;
+}
+
+.score-row .btn-equal.btn-imdb {
+    background: rgba(245, 197, 24, 0.8);
+    color: #000;
+    border: none;
+}
+
+.btn-rt, .btn-imdb {
     background: rgba(255,255,255,0.1);
     color: #fff;
     border: 1px solid rgba(255,255,255,0.3);

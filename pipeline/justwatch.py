@@ -88,12 +88,14 @@ class JustWatchClient:
         """Normalize title for comparison.
 
         Handles: case, diacritics (Sirāt→sirat), punctuation (Spider-Man→spider man),
-        and leading English articles (the/a/an).
+        trailing parentheticals like "(2005)", and leading English articles (the/a/an).
         """
         if not title:
             return ''
+        # Strip trailing parentheticals — e.g. "Crash (2005)" → "Crash"
+        t = re.sub(r'\s*\([^)]*\)\s*$', '', title)
         # Strip diacritics (é→e, ā→a, ü→u)
-        t = unicodedata.normalize('NFD', title)
+        t = unicodedata.normalize('NFD', t)
         t = ''.join(c for c in t if unicodedata.category(c) != 'Mn')
         # Lowercase and replace punctuation with spaces (so "Spider-Man" → "spider man")
         t = re.sub(r'[^\w\s]', ' ', t.lower())
@@ -145,7 +147,8 @@ class JustWatchClient:
 
         object_type = 'SHOW' if content_type == 'tv' else 'MOVIE'
         orig_suffix = f"_{original_title}" if original_title and original_title.lower() != title.lower() else ''
-        cache_key = f"{title}_{year or 'any'}_{object_type}{orig_suffix}"
+        dir_suffix = f"_{director}" if director else ''
+        cache_key = f"{title}_{year or 'any'}_{object_type}{orig_suffix}{dir_suffix}"
         if cache_key in self._cache:
             self.stats['cache_hits'] += 1
             return self._cache[cache_key]
@@ -169,7 +172,7 @@ class JustWatchClient:
                   title
                   originalReleaseYear
                   fullPath
-                  credits {{
+                  credits(role: DIRECTOR) {{
                     role
                     name
                   }}
@@ -250,7 +253,9 @@ class JustWatchClient:
                         best_match = node
                         break
 
-            # Pass 3: title match, any year — disambiguate by director first, then closest year
+            # Pass 3: title match, any year — disambiguate by director first, then closest year.
+            # JustWatch returns results ordered by popularity, so if all else fails,
+            # first title match = most popular version of that title.
             if not best_match:
                 title_matches = []
                 for edge in edges:
@@ -279,6 +284,14 @@ class JustWatchClient:
                         best_match = title_matches[0]
                     elif not best_match:
                         best_match = title_matches[0]
+
+                if best_match:
+                    matched_content = best_match.get('content', {})
+                    self.logger.info(
+                        f"JustWatch Pass 3 match for '{title}': "
+                        f"'{matched_content.get('title')}' ({matched_content.get('originalReleaseYear')}) "
+                        f"[wanted year {year}]"
+                    )
 
             # Pass 4 REMOVED: previously accepted any result with a matching year
             # regardless of title. This caused "Ketchup on Waffles" to match
@@ -637,38 +650,102 @@ class JustWatchClient:
 
 
 def test_client():
-    """Test the JustWatch client."""
+    """Test the JustWatch client with positive, negative, and disambiguation cases."""
     client = JustWatchClient()
+    passed = 0
+    failed = 0
 
-    test_movies = [
-        ("Conclave", 2024),
-        ("Heretic", 2024),
-        ("The Brutalist", 2024),
-        ("Anora", 2024),
-    ]
+    def check(label, condition, detail=""):
+        nonlocal passed, failed
+        status = "PASS" if condition else "FAIL"
+        if condition:
+            passed += 1
+        else:
+            failed += 1
+        print(f"  [{status}] {label}")
+        if detail:
+            print(f"         {detail}")
 
-    for title, year in test_movies:
-        print(f"\n{'='*60}")
-        print(f"Testing: {title} ({year})")
-        print('='*60)
+    # --- Positive tests: known movies that should return links ---
+    print(f"\n{'='*60}")
+    print("POSITIVE TESTS (should find links)")
+    print('='*60)
 
+    for title, year in [("Conclave", 2024), ("Anora", 2024)]:
         links = client.get_watch_links(title, year, affiliate_tag="nrw-20")
+        check(f"{title} ({year}) returns links", bool(links),
+              f"streaming={bool(links.get('streaming'))}, vod={bool(links.get('vod'))}")
 
-        if links.get('streaming'):
-            s = links['streaming']
-            print(f"  STREAMING: {s['service']}")
-            print(f"    {s['link'][:80]}...")
+    # --- Negative tests: movies not in JustWatch should return empty, not wrong data ---
+    print(f"\n{'='*60}")
+    print("NEGATIVE TESTS (should return empty, NOT wrong movie)")
+    print('='*60)
 
-        if links.get('vod'):
-            v = links['vod']
-            price = v.get('price', 'N/A')
-            print(f"  VOD: {v['service']} ({price})")
-            print(f"    {v['link'][:80]}...")
+    result = client.search_movie("Ketchup on Waffles", 2025)
+    check("'Ketchup on Waffles' returns None (not House on Eden)", result is None,
+          f"got: {result.get('content', {}).get('title') if result else 'None'}")
 
-        if not links:
-            print("  No links found")
+    result = client.search_movie("Pirates Gold 3", 2025)
+    check("'Pirates Gold 3' returns None (not Code 3)", result is None,
+          f"got: {result.get('content', {}).get('title') if result else 'None'}")
 
-    print(f"\n\nStats: {client.get_stats()}")
+    result = client.search_movie("Bouya Rage Bomb", 2024)
+    check("'Bouya Rage Bomb' returns None (not Big Rage)", result is None,
+          f"got: {result.get('content', {}).get('title') if result else 'None'}")
+
+    # --- original_title tests: foreign films should match via original title ---
+    print(f"\n{'='*60}")
+    print("ORIGINAL TITLE TESTS (should match via foreign title)")
+    print('='*60)
+
+    # Search by English title, verify it finds the movie
+    result = client.search_movie("Conclave", 2024, original_title="Konklave")
+    check("'Conclave' with original_title='Konklave' still matches",
+          result is not None and result.get('content', {}).get('title') == 'Conclave')
+
+    # --- Director disambiguation tests ---
+    print(f"\n{'='*60}")
+    print("DIRECTOR DISAMBIGUATION TESTS")
+    print('='*60)
+
+    # "Crash" without director — should return something (either version)
+    result = client.search_movie("Crash", director=None)
+    crash_title = result.get('content', {}).get('title', '') if result else ''
+    crash_year = result.get('content', {}).get('originalReleaseYear') if result else None
+    check("'Crash' without director returns a result", result is not None, f"got: {crash_title} ({crash_year})")
+
+    # "Crash" with Cronenberg → should get 1996
+    result = client.search_movie("Crash", director="David Cronenberg")
+    if result:
+        got_year = result.get('content', {}).get('originalReleaseYear')
+        check("'Crash' + director Cronenberg → 1996", got_year == 1996, f"got year: {got_year}")
+    else:
+        check("'Crash' + director Cronenberg → 1996", False, "got: None")
+
+    # "Crash" with Haggis → should get 2005
+    result = client.search_movie("Crash", director="Paul Haggis")
+    if result:
+        got_year = result.get('content', {}).get('originalReleaseYear')
+        check("'Crash' + director Haggis → 2005", got_year == 2005, f"got year: {got_year}")
+    else:
+        check("'Crash' + director Haggis → 2005", False, "got: None")
+
+    # --- verify_availability title mismatch rejection ---
+    print(f"\n{'='*60}")
+    print("VERIFY_AVAILABILITY REJECTION TESTS")
+    print('='*60)
+
+    va_result = client.verify_availability("Ketchup on Waffles", 2025)
+    check("verify_availability('Ketchup on Waffles') → None or verified=False",
+          va_result is None or va_result.get('verified') == False,
+          f"got: {va_result}")
+
+    # --- Summary ---
+    print(f"\n{'='*60}")
+    total = passed + failed
+    print(f"Results: {passed}/{total} passed, {failed} failed")
+    print(f"API stats: {client.get_stats()}")
+    print('='*60)
 
 
 if __name__ == "__main__":

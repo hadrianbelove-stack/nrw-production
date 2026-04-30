@@ -262,35 +262,6 @@ export default function MovieDetail({route}) {
             )}
           </View>
 
-          {/* RT Score */}
-          {movie.rt_score && (
-            <TouchableOpacity
-              style={styles.rtContainer}
-              onPress={handleRTPress}
-              disabled={!movie.links?.rotten_tomatoes}>
-              <View
-                style={[
-                  styles.rtBadge,
-                  {
-                    backgroundColor: 'rgba(250, 50, 50, 0.85)',
-                  },
-                ]}>
-                <Text style={styles.rtScore}>{movie.rt_score}</Text>
-              </View>
-              <Text style={styles.rtLabel}>Rotten Tomatoes</Text>
-            </TouchableOpacity>
-          )}
-
-          {/* IMDB Rating */}
-          {movie.imdb_rating && (
-            <View style={styles.rtContainer}>
-              <View style={[styles.rtBadge, { backgroundColor: '#F5C518' }]}>
-                <Text style={[styles.rtScore, { color: '#000' }]}>{movie.imdb_rating}</Text>
-              </View>
-              <Text style={styles.rtLabel}>IMDb</Text>
-            </View>
-          )}
-
           {/* Genres */}
           {genres.length > 0 && (
             <View style={styles.genresContainer}>
@@ -316,6 +287,37 @@ export default function MovieDetail({route}) {
           <TouchableOpacity style={styles.infoButton} onPress={handleTrailerPress}>
             <Text style={styles.infoButtonText}>▶ Watch Trailer</Text>
           </TouchableOpacity>
+        </View>
+      )}
+
+      {/* RT & IMDb Scores — below info links */}
+      {(movie.rt_score || movie.imdb_rating) && (
+        <View style={styles.section}>
+          <View style={styles.scoreRow}>
+            {movie.rt_score && (
+              <TouchableOpacity
+                style={styles.rtContainer}
+                onPress={handleRTPress}
+                disabled={!movie.links?.rotten_tomatoes}>
+                <View
+                  style={[
+                    styles.rtBadge,
+                    { backgroundColor: 'rgba(250, 50, 50, 0.85)' },
+                  ]}>
+                  <Text style={styles.rtScore}>{movie.rt_score}</Text>
+                </View>
+                <Text style={styles.rtLabel}>Rotten Tomatoes</Text>
+              </TouchableOpacity>
+            )}
+            {movie.imdb_rating && (
+              <View style={styles.rtContainer}>
+                <View style={[styles.rtBadge, { backgroundColor: '#F5C518' }]}>
+                  <Text style={[styles.rtScore, { color: '#000' }]}>{movie.imdb_rating}</Text>
+                </View>
+                <Text style={styles.rtLabel}>IMDb</Text>
+              </View>
+            )}
+          </View>
         </View>
       )}
 
@@ -569,10 +571,13 @@ const styles = StyleSheet.create({
     fontSize: Typography.caption,
     fontWeight: '600',
   },
+  scoreRow: {
+    flexDirection: 'row',
+    gap: Spacing.md,
+  },
   rtContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: Spacing.sm,
   },
   rtBadge: {
     paddingHorizontal: 8,

@@ -32,6 +32,9 @@ Sub Init()
     m.vodButton1 = m.top.FindNode("vodButton1")
     m.vodButton2 = m.top.FindNode("vodButton2")
     m.plexButton = m.top.FindNode("plexButton")
+    m.scoreRow = m.top.FindNode("scoreRow")
+    m.rtScoreLabel = m.top.FindNode("rtScoreLabel")
+    m.imdbScoreLabel = m.top.FindNode("imdbScoreLabel")
 
     m.leftChevron = m.top.FindNode("leftChevron")
     m.rightChevron = m.top.FindNode("rightChevron")
@@ -125,23 +128,6 @@ Sub LoadMovie(index as Integer)
 
     if movie.runtime <> invalid
         metaParts.Push(FormatRuntime(movie.runtime))
-    end if
-
-    if movie.rt_score <> invalid
-        scoreStr = movie.rt_score.ToStr()
-        scoreStr = scoreStr.Replace("%", "")
-        scoreNum = Val(scoreStr)
-        if scoreNum > 0
-            metaParts.Push(Int(scoreNum).ToStr() + "% RT")
-        end if
-    end if
-
-    if movie.imdb_rating <> invalid
-        ratingStr = movie.imdb_rating.ToStr()
-        ratingNum = Val(ratingStr)
-        if ratingNum > 0
-            metaParts.Push("IMDb " + ratingStr)
-        end if
     end if
 
     m.metadataLabel.text = metaParts.Join(" • ")
@@ -264,6 +250,40 @@ Sub LoadMovie(index as Integer)
 
     ' Setup watch buttons
     SetupWatchButtons(movie)
+
+    ' Score badges (RT + IMDb) — below buttons
+    hasScore = false
+
+    if movie.rt_score <> invalid
+        scoreStr = movie.rt_score.ToStr()
+        scoreStr = scoreStr.Replace("%", "")
+        scoreNum = Val(scoreStr)
+        if scoreNum > 0
+            m.rtScoreLabel.text = "RT " + Int(scoreNum).ToStr() + "%"
+            m.rtScoreLabel.visible = true
+            hasScore = true
+        else
+            m.rtScoreLabel.visible = false
+        end if
+    else
+        m.rtScoreLabel.visible = false
+    end if
+
+    if movie.imdb_rating <> invalid
+        ratingStr = movie.imdb_rating.ToStr()
+        ratingNum = Val(ratingStr)
+        if ratingNum > 0
+            m.imdbScoreLabel.text = "IMDb " + ratingStr
+            m.imdbScoreLabel.visible = true
+            hasScore = true
+        else
+            m.imdbScoreLabel.visible = false
+        end if
+    else
+        m.imdbScoreLabel.visible = false
+    end if
+
+    m.scoreRow.visible = hasScore
 End Sub
 
 ' ============================================================================

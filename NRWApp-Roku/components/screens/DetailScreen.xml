@@ -233,6 +233,24 @@
             label="Plex"
             visible="false" />
         </LayoutGroup>
+
+        <!-- Score badges row (RT + IMDb) -->
+        <LayoutGroup id="scoreRow"
+          layoutDirection="horiz"
+          itemSpacings="[16]"
+          translation="[0, 10]"
+          visible="false">
+
+          <Label id="rtScoreLabel"
+            font="font:MediumBoldSystemFont"
+            color="0xFA3232DD"
+            visible="false" />
+
+          <Label id="imdbScoreLabel"
+            font="font:MediumBoldSystemFont"
+            color="0xF5C518CC"
+            visible="false" />
+        </LayoutGroup>
       </LayoutGroup>
     </LayoutGroup>
 

@@ -50,6 +50,7 @@ const NRW = {
         shudder:   { class: 'shudder',   name: 'SHUDDER',      badgeName: 'SHUDDER',   matches: ['shudder'],    logo: 'shudder%20logo.jpg' },
         criterion: { class: 'criterion', name: 'CRITERION',    badgeName: 'CRITERION', matches: ['criterion'],  logo: 'criterion%20logo%20sqaure.png' },
         tubi:      { class: 'tubi',      name: 'TUBI',         badgeName: 'TUBI',      matches: ['tubi'],       logo: 'tubi.png' },
+        amc:       { class: 'amc',       name: 'AMC+',         badgeName: 'AMC+',      matches: ['amc'] },
         youtube:   { class: 'youtube',   name: 'YOUTUBE',      badgeName: 'YOUTUBE',   matches: ['youtube'] },
         paramount: { class: 'paramount', name: 'PARAMOUNT+',   badgeName: 'P+',        matches: ['paramount'],  logo: 'paramoung%20plus%20logo.png' },
         kanopy:    { class: 'kanopy',    name: 'KANOPY',       badgeName: 'KANOPY',    matches: ['kanopy'],     logo: 'kanopy.png' },
@@ -104,6 +105,14 @@ const NRW = {
         for (const entry of Object.values(this.SERVICE_MAP)) {
             if (entry.matches.some(m => s.includes(m))) return entry;
         }
+        return null;
+    },
+
+    // Normalize streaming to {service, link} — handles both array and dict formats
+    getStreaming(wl) {
+        const s = wl?.streaming;
+        if (Array.isArray(s) && s.length > 0) return s[0];
+        if (s?.service) return s;
         return null;
     },
 
@@ -502,8 +511,9 @@ const NRW = {
 
                 // 1. SVOD Streaming Button
                 // Check watch_links first, then fall back to providers
-                let streamingService = watchLinks.streaming?.service;
-                let streamingLink = watchLinks.streaming?.link;
+                const streamData = NRW.getStreaming(watchLinks);
+                let streamingService = streamData?.service;
+                let streamingLink = streamData?.link;
 
                 // If no watch_links.streaming but providers.streaming exists, use first provider
                 if (!streamingService && providers.streaming?.length > 0) {
@@ -560,7 +570,7 @@ const NRW = {
 
             const platformButtons = buildPlatformButtons(movie);
 
-            // Info links - Only Trailer, RT, Wiki
+            // Info links (Trailer + Wiki)
             let infoLinks = [];
 
             const cardTrailerUrl = movie.links?.trailer_hosted || movie.links?.trailer;
@@ -568,23 +578,25 @@ const NRW = {
                 infoLinks.push(`<a href="#" data-trailer="${cardTrailerUrl}" class="info-btn">Trailer</a>`);
             }
 
+            if (movie.links?.wikipedia) {
+                infoLinks.push(`<a href="${movie.links.wikipedia}" target="_blank" rel="noopener noreferrer" class="info-btn">Wiki</a>`);
+            }
+
+            // Score badges (RT + IMDb) — separate row below info links
+            let scoreBadges = [];
+
             if (movie.links?.rt) {
                 const rtText = movie.rt_score ? `RT ${movie.rt_score}` : 'RT';
-                const rtClass = movie.rt_score ? 'info-btn' : 'info-btn info-btn-neutral';
-                infoLinks.push(`<a href="${movie.links.rt}" target="_blank" rel="noopener noreferrer" class="${rtClass}">${rtText}</a>`);
+                scoreBadges.push(`<a href="${movie.links.rt}" target="_blank" rel="noopener noreferrer" class="score-badge rt">${rtText}</a>`);
             }
 
             if (movie.imdb_rating) {
                 const imdbUrl = movie.links?.imdb;
                 if (imdbUrl) {
-                    infoLinks.push(`<a href="${imdbUrl}" target="_blank" rel="noopener noreferrer" class="info-btn">IMDb ${movie.imdb_rating}</a>`);
+                    scoreBadges.push(`<a href="${imdbUrl}" target="_blank" rel="noopener noreferrer" class="score-badge imdb">IMDb ${movie.imdb_rating}</a>`);
                 } else {
-                    infoLinks.push(`<span class="info-btn info-btn-neutral">IMDb ${movie.imdb_rating}</span>`);
+                    scoreBadges.push(`<span class="score-badge imdb">IMDb ${movie.imdb_rating}</span>`);
                 }
-            }
-
-            if (movie.links?.wikipedia) {
-                infoLinks.push(`<a href="${movie.links.wikipedia}" target="_blank" rel="noopener noreferrer" class="info-btn">Wiki</a>`);
             }
 
             const isStaffPick = movie.categories?.is_staff_pick || this.staffPicks.includes(movie.id);
@@ -602,12 +614,12 @@ const NRW = {
                 if (movie.digital_date > today) {
                     const vodArr = Array.isArray(watchLinks.vod) ? watchLinks.vod
                         : (watchLinks.vod?.service ? [watchLinks.vod] : []);
-                    const hasAnyLink = watchLinks.streaming?.link || vodArr.some(v => v.link);
+                    const hasAnyLink = NRW.getStreaming(watchLinks)?.link || vodArr.some(v => v.link);
                     if (!hasAnyLink) return '<div class="streaming-badge badge-preorder">PRE-ORDER</div>';
                 }
 
                 // Get streaming service name
-                let service = watchLinks.streaming?.service;
+                let service = NRW.getStreaming(watchLinks)?.service;
                 if (!service && providers.streaming?.length > 0) {
                     service = providers.streaming.find(p => !p.includes('with Ads')) || providers.streaming[0];
                 }
@@ -639,20 +651,7 @@ const NRW = {
                 ? '<div class="badge-bar red">\u2605 STAFF PICK \u2605</div>'
                 : '';
 
-            // Score badges for card front (bottom-left overlay)
-            let cardScoreBadges = '';
-            if (movie.rt_score && movie.links?.rt) {
-                cardScoreBadges += `<a href="${movie.links.rt}" target="_blank" rel="noopener noreferrer" class="card-score-badge rt">RT ${movie.rt_score}</a>`;
-            }
-            if (movie.imdb_rating) {
-                const imdbUrl = movie.links?.imdb;
-                if (imdbUrl) {
-                    cardScoreBadges += `<a href="${imdbUrl}" target="_blank" rel="noopener noreferrer" class="card-score-badge imdb">${movie.imdb_rating}</a>`;
-                } else {
-                    cardScoreBadges += `<span class="card-score-badge imdb">${movie.imdb_rating}</span>`;
-                }
-            }
-            const cardScoreHtml = cardScoreBadges ? `<div class="card-score-overlay">${cardScoreBadges}</div>` : '';
+            const scoreRowHtml = scoreBadges.length ? `<div class="score-row">${scoreBadges.join('')}</div>` : '';
 
             html += `
             <div class="movie-container${staffPickClass}${screeningClass}">
@@ -665,7 +664,6 @@ const NRW = {
                             <img src="${movie.poster || ''}"
                                  onerror="this.style.display='none';"
                                  ${movie.poster ? '' : 'style="display:none"'}>
-                            ${cardScoreHtml}
                             <button class="expand-btn" data-movie-id="${movie.id}" aria-label="View fullscreen">&#x26F6;</button>
                         </div>
                         <div class="card-back">
@@ -675,6 +673,7 @@ const NRW = {
                                 <div class="info-links">
                                     ${infoLinks.join('')}
                                 </div>
+                                ${scoreRowHtml}
                             </div>
                             <div class="bottom-meta">${bottomInfo}</div>
                         </div>
@@ -806,7 +805,7 @@ const NRW = {
         const trailerUrl = movie.links?.trailer_hosted || movie.links?.trailer;
 
         const titleEl = document.getElementById('trailer-movie-title');
-        if (titleEl) titleEl.textContent = movie.title;
+        if (titleEl) titleEl.textContent = movie.display_title || movie.title;
 
         this.updateTrailerNavVisibility();
         this.loadTrailerVideo(trailerUrl);
@@ -1002,10 +1001,10 @@ const NRW = {
         document.getElementById('lightbox-poster').src = movie.poster || '';
         document.getElementById('lightbox-poster').style.display = movie.poster ? '' : 'none';
         document.getElementById('lightbox-poster-fallback').style.display = movie.poster ? 'none' : 'flex';
-        document.getElementById('lightbox-poster-fallback-title').textContent = movie.title;
+        document.getElementById('lightbox-poster-fallback-title').textContent = movie.display_title || movie.title;
 
         // Update title
-        document.getElementById('lightbox-title').textContent = movie.title;
+        document.getElementById('lightbox-title').textContent = movie.display_title || movie.title;
 
         // Update release date
         const dateEl = document.getElementById('lightbox-date');
@@ -1117,8 +1116,9 @@ const NRW = {
         const providers = movie.providers || {};
 
         // Streaming button
-        let streamSvc = watchLinks.streaming?.service;
-        let streamLink = watchLinks.streaming?.link;
+        const lbStreamData = this.getStreaming(watchLinks);
+        let streamSvc = lbStreamData?.service;
+        let streamLink = lbStreamData?.link;
         if (!streamSvc && providers.streaming?.length) {
             streamSvc = providers.streaming.find(p => !p.includes('with Ads')) || providers.streaming[0];
         }
@@ -1167,21 +1167,8 @@ const NRW = {
         let buttonsHtml = '';
         if (watchHtml) buttonsHtml += `<div class="watch-stack">${watchHtml}</div>`;
 
-        // === Score badges on poster overlay ===
-        let scoreHtml = '';
-        if (movie.links?.rt) {
-            const score = movie.rt_score ? ` ${movie.rt_score}` : '';
-            scoreHtml += `<a href="${movie.links.rt}" target="_blank" rel="noopener noreferrer" class="lightbox-score-badge rt">RT${score}</a>`;
-        }
-        if (movie.imdb_rating) {
-            const imdbUrl = movie.links?.imdb;
-            if (imdbUrl) {
-                scoreHtml += `<a href="${imdbUrl}" target="_blank" rel="noopener noreferrer" class="lightbox-score-badge imdb">IMDb ${movie.imdb_rating}</a>`;
-            } else {
-                scoreHtml += `<span class="lightbox-score-badge imdb">IMDb ${movie.imdb_rating}</span>`;
-            }
-        }
-        document.getElementById('lightbox-score-overlay').innerHTML = scoreHtml;
+        // Clear poster score overlay (scores now in info panel)
+        document.getElementById('lightbox-score-overlay').innerHTML = '';
 
         // === Info row (horizontal: Trailer, Wiki) ===
         let infoHtml = '';
@@ -1193,6 +1180,22 @@ const NRW = {
             infoHtml += `<a href="${movie.links.wikipedia}" target="_blank" rel="noopener noreferrer" class="info-btn-lb glass">Wiki</a>`;
         }
         if (infoHtml) buttonsHtml += `<div class="info-row">${infoHtml}</div>`;
+
+        // === Score badges below info links ===
+        let lbScoreHtml = '';
+        if (movie.links?.rt) {
+            const score = movie.rt_score ? ` ${movie.rt_score}` : '';
+            lbScoreHtml += `<a href="${movie.links.rt}" target="_blank" rel="noopener noreferrer" class="score-badge rt">RT${score}</a>`;
+        }
+        if (movie.imdb_rating) {
+            const imdbUrl = movie.links?.imdb;
+            if (imdbUrl) {
+                lbScoreHtml += `<a href="${imdbUrl}" target="_blank" rel="noopener noreferrer" class="score-badge imdb">IMDb ${movie.imdb_rating}</a>`;
+            } else {
+                lbScoreHtml += `<span class="score-badge imdb">IMDb ${movie.imdb_rating}</span>`;
+            }
+        }
+        if (lbScoreHtml) buttonsHtml += `<div class="score-row">${lbScoreHtml}</div>`;
 
         document.getElementById('lightbox-buttons').innerHTML = buttonsHtml;
     },

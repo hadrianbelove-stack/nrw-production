@@ -394,40 +394,6 @@ private fun MovieDetail(
                             )
                         }
                     }
-                    // RT Score badge inline
-                    rtInfo?.let { (score, isFresh) ->
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(4.dp))
-                                .background(Color(0xFFFA3232).copy(alpha = 0.85f))
-                                .padding(horizontal = 6.dp, vertical = 2.dp)
-                        ) {
-                            Text(
-                                text = "RT $score%",
-                                color = TextPrimary,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 11.sp
-                            )
-                        }
-                    }
-                    // IMDB Rating badge inline
-                    movie.imdbRating?.toFloatOrNull()?.let { rating ->
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(4.dp))
-                                .background(Color(0xFFF5C518))
-                                .padding(horizontal = 6.dp, vertical = 2.dp)
-                        ) {
-                            Text(
-                                text = "IMDb ${"%.1f".format(rating)}",
-                                color = Color.Black,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 11.sp
-                            )
-                        }
-                    }
                 }
 
                 // Genres as chips
@@ -577,6 +543,45 @@ private fun MovieDetail(
                             onClick = { onWatchClick(option) },
                             compact = true
                         )
+                    }
+                }
+
+                // RT & IMDb Scores — below action buttons
+                if (rtInfo != null || movie.imdbRating?.toFloatOrNull() != null) {
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        rtInfo?.let { (score, _) ->
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(6.dp))
+                                    .background(Color(0xFFFA3232).copy(alpha = 0.75f))
+                                    .padding(horizontal = 10.dp, vertical = 6.dp)
+                            ) {
+                                Text(
+                                    text = "RT $score%",
+                                    color = TextPrimary,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 12.sp
+                                )
+                            }
+                        }
+                        movie.imdbRating?.toFloatOrNull()?.let { rating ->
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(6.dp))
+                                    .background(Color(0xFFF5C518).copy(alpha = 0.8f))
+                                    .padding(horizontal = 10.dp, vertical = 6.dp)
+                            ) {
+                                Text(
+                                    text = "IMDb ${"%.1f".format(rating)}",
+                                    color = Color.Black,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 12.sp
+                                )
+                            }
+                        }
                     }
                 }
 

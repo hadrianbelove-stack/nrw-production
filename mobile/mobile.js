@@ -347,7 +347,6 @@ const NRWMobile = {
                             : isStaffPick
                             ? '<div class="badge-bar red">\u2605 STAFF PICK \u2605</div>'
                             : ''}
-                        ${this.getScoreBadges(movie)}
                     </div>
                 </div>
                 <div class="card-caption">
@@ -377,11 +376,11 @@ const NRWMobile = {
                     <div class="buttons-row">
                         ${this.getTrailerButton(movie)}
                         ${watchButton}
+                        ${this.getWikiButton(movie)}
                     </div>
-                    <div class="buttons-row">
+                    <div class="score-row">
                         ${this.getRTButton(movie)}
                         ${this.getIMDbButton(movie)}
-                        ${this.getWikiButton(movie)}
                     </div>
                     <div class="nav-row">
                         <button class="btn-nav btn-nav-prev" aria-label="Previous">&#8592;</button>
@@ -611,27 +610,11 @@ const NRWMobile = {
         if (movie.imdb_rating) {
             const imdbUrl = movie.links?.imdb;
             if (imdbUrl) {
-                return `<a href="${imdbUrl}" target="_blank" rel="noopener" class="btn-equal btn-rt">IMDb ${movie.imdb_rating}</a>`;
+                return `<a href="${imdbUrl}" target="_blank" rel="noopener" class="btn-equal btn-imdb">IMDb ${movie.imdb_rating}</a>`;
             }
-            return `<span class="btn-equal btn-rt" style="opacity:0.5">IMDb ${movie.imdb_rating}</span>`;
+            return `<span class="btn-equal btn-imdb" style="opacity:0.5">IMDb ${movie.imdb_rating}</span>`;
         }
         return '';
-    },
-
-    getScoreBadges(movie) {
-        let badges = '';
-        if (movie.rt_score && movie.links?.rt) {
-            badges += `<a href="${movie.links.rt}" target="_blank" rel="noopener" class="card-score-badge rt">RT ${movie.rt_score}</a>`;
-        }
-        if (movie.imdb_rating) {
-            const imdbUrl = movie.links?.imdb;
-            if (imdbUrl) {
-                badges += `<a href="${imdbUrl}" target="_blank" rel="noopener" class="card-score-badge imdb">${movie.imdb_rating}</a>`;
-            } else {
-                badges += `<span class="card-score-badge imdb">${movie.imdb_rating}</span>`;
-            }
-        }
-        return badges ? `<div class="card-score-overlay">${badges}</div>` : '';
     },
 
     getWikiButton(movie) {

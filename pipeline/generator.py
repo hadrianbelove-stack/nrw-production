@@ -2156,6 +2156,12 @@ class DataGenerator:
         entry['original_language'] = movie_details.get('original_language')
         entry['original_title'] = movie_details.get(original_title_field)
 
+        # Generate display_title for foreign films: "English Title (Original Title)"
+        original_title = entry.get('original_title')
+        orig_lang = entry.get('original_language', 'en')
+        if original_title and original_title != entry.get('title') and orig_lang != 'en':
+            entry['display_title'] = f"{entry['title']} ({original_title})"
+
         # Add cast/crew with error handling
         entry['crew'] = {'director': 'Unknown', 'cast': []}
         if is_tv:
