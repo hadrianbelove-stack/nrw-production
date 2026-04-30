@@ -230,7 +230,7 @@ export default function MovieDetail({route}) {
 
         <View style={styles.heroInfo}>
           <View style={styles.titleRow}>
-            <Text style={styles.title}>{movie.title}</Text>
+            <Text style={styles.title}>{movie.display_title || movie.title}</Text>
             {movie.digital_date && (
               <Text style={styles.titleDate}>{formatShortDate(movie.digital_date)}</Text>
             )}

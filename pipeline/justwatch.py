@@ -95,8 +95,8 @@ class JustWatchClient:
         # Strip diacritics (é→e, ā→a, ü→u)
         t = unicodedata.normalize('NFD', title)
         t = ''.join(c for c in t if unicodedata.category(c) != 'Mn')
-        # Lowercase and strip punctuation (hyphens, colons, apostrophes, etc.)
-        t = re.sub(r'[^\w\s]', '', t.lower())
+        # Lowercase and replace punctuation with spaces (so "Spider-Man" → "spider man")
+        t = re.sub(r'[^\w\s]', ' ', t.lower())
         # Collapse whitespace
         t = ' '.join(t.split())
         # Strip leading English articles
@@ -144,7 +144,8 @@ class JustWatchClient:
                 year = None
 
         object_type = 'SHOW' if content_type == 'tv' else 'MOVIE'
-        cache_key = f"{title}_{year or 'any'}_{object_type}"
+        orig_suffix = f"_{original_title}" if original_title and original_title.lower() != title.lower() else ''
+        cache_key = f"{title}_{year or 'any'}_{object_type}{orig_suffix}"
         if cache_key in self._cache:
             self.stats['cache_hits'] += 1
             return self._cache[cache_key]

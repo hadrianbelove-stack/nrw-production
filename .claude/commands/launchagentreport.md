@@ -66,6 +66,33 @@ if missing:
     print('MISSING_LINKS:')
     for m in sorted(missing, key=lambda x: x.get('digital_date','')):
         print(f'  {m[\"title\"]} — date {m.get(\"digital_date\")}')
+today_str = date.today().isoformat()
+arrivals = [m for m in movies if m.get('digital_date') == today_str]
+gaps_found = []
+for a in arrivals:
+    mg = []
+    lnk = a.get('links', {})
+    crw = a.get('crew', {})
+    wl = a.get('watch_links', {})
+    wl_n = sum(len(v) for v in wl.values()) if isinstance(wl, dict) else 0
+    if not lnk.get('trailer') and not lnk.get('trailer_hosted'): mg.append('trailer')
+    if not lnk.get('wikipedia'): mg.append('wikipedia')
+    if wl_n == 0: mg.append('watch_links')
+    if not a.get('rt_score'): mg.append('rt_score')
+    if not a.get('imdb_rating'): mg.append('imdb_rating')
+    dn = crw.get('director', '')
+    if not dn or dn == 'Unknown': mg.append('director')
+    if not a.get('country'): mg.append('country')
+    if not a.get('year'): mg.append('year')
+    if not a.get('runtime'): mg.append('runtime')
+    if mg:
+        gaps_found.append((a['title'], mg))
+if gaps_found:
+    print('ENRICHMENT_GAPS (%d of %d arrivals):' % (len(gaps_found), len(arrivals)))
+    for t, mg in gaps_found:
+        print('  %s — missing: %s' % (t, ', '.join(mg)))
+elif arrivals:
+    print('ENRICHMENT_GAPS: 0 — all %d arrivals fully enriched' % len(arrivals))
 "
 ```
 

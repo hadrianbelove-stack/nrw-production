@@ -94,10 +94,14 @@ Sub LoadMovie(index as Integer)
         m.moviePoster.uri = movie.poster_url
     end if
 
-    ' Set title
-    m.titleLabel.text = movie.title
+    ' Set title (use display_title for dual-language titles)
+    displayTitle = movie.display_title
+    if displayTitle = invalid OR displayTitle = ""
+        displayTitle = movie.title
+    end if
+    m.titleLabel.text = displayTitle
     if movie.year <> invalid
-        m.titleLabel.text = movie.title + " (" + movie.year.ToStr() + ")"
+        m.titleLabel.text = displayTitle + " (" + movie.year.ToStr() + ")"
     end if
 
     ' Set release date

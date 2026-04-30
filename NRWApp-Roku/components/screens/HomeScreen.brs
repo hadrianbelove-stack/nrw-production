@@ -113,10 +113,14 @@ Sub BuildGridContent(groupedData as Object)
         ' (In a full implementation, you'd use a custom item renderer)
 
         for each movie in movies
+            cardTitle = movie.title
+            if movie.display_title <> invalid AND movie.display_title <> ""
+                cardTitle = movie.display_title
+            end if
             item = content.CreateChild("ContentNode")
             item.AddFields({
                 movie: movie
-                title: movie.title
+                title: cardTitle
                 posterUrl: movie.poster
             })
         end for

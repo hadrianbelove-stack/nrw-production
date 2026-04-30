@@ -78,6 +78,34 @@ print(f'WALL: {total} movies')
 print(f'PIPELINE: {health}')
 print(f'TODAY ({today}): {len(arrivals)} new arrivals')
 for a in arrivals: print(f'  - {a[\"title\"]}')
+
+# Enrichment gaps for today's arrivals
+gaps_found = []
+for a in arrivals:
+    missing = []
+    links = a.get('links', {})
+    crew = a.get('crew', {})
+    wl = a.get('watch_links', {})
+    wl_count = sum(len(v) for v in wl.values()) if isinstance(wl, dict) else 0
+    if not links.get('trailer') and not links.get('trailer_hosted'): missing.append('trailer')
+    if not links.get('wikipedia'): missing.append('wikipedia')
+    if wl_count == 0: missing.append('watch_links')
+    if not a.get('rt_score'): missing.append('rt_score')
+    if not a.get('imdb_rating'): missing.append('imdb_rating')
+    d_name = crew.get('director', '')
+    if not d_name or d_name == 'Unknown': missing.append('director')
+    if not a.get('country'): missing.append('country')
+    if not a.get('year'): missing.append('year')
+    if not a.get('runtime'): missing.append('runtime')
+    if missing:
+        gaps_found.append((a['title'], missing))
+if gaps_found:
+    print('ENRICHMENT GAPS (%d of %d arrivals):' % (len(gaps_found), len(arrivals)))
+    for title, missing in gaps_found:
+        print('  %s — missing: %s' % (title, ', '.join(missing)))
+elif arrivals:
+    print('ENRICHMENT GAPS: 0 — all %d arrivals fully enriched' % len(arrivals))
+
 print(f'LAST 7 DAYS:')
 for dt in sorted(by_date): print(f'  {dt}: {by_date[dt]} titles')
 if zero_future:

@@ -231,14 +231,14 @@ const FullscreenPosterModal = ({
               />
             ) : (
               <View style={styles.posterPlaceholder}>
-                <Text style={styles.placeholderText}>{movie.title}</Text>
+                <Text style={styles.placeholderText}>{movie.display_title || movie.title}</Text>
               </View>
             )}
           </View>
 
           {/* Info panel */}
           <View style={styles.infoPanel}>
-            <Text style={styles.title}>{movie.title}</Text>
+            <Text style={styles.title}>{movie.display_title || movie.title}</Text>
             <Text style={styles.meta}>{buildMeta()}</Text>
 
             <ScrollView style={styles.synopsisContainer} showsVerticalScrollIndicator={false}>

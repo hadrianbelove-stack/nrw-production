@@ -16,7 +16,7 @@
     <tr>
         <td style="padding: 15px 15px 5px 15px;">
             <h3 class="movie-title" style="margin: 0; color: #ffffff; font-size: 22px; font-weight: bold;">
-                {{ movie.title }}
+                {{ movie.display_title or movie.title }}
                 {% if movie.year %}
                 <span style="color: #999999; font-size: 16px; font-weight: normal;">({{ movie.year }})</span>
                 {% endif %}

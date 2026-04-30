@@ -252,7 +252,7 @@ private fun MovieDetail(
             // Left side - Large Poster (Option E: biggest poster)
             AsyncImage(
                 model = movie.getPosterUrl("w780"),
-                contentDescription = movie.title,
+                contentDescription = movie.displayTitle ?: movie.title,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxHeight(0.92f)
@@ -281,7 +281,7 @@ private fun MovieDetail(
                             modifier = Modifier.weight(1f)
                         ) {
                             Text(
-                                text = movie.title,
+                                text = movie.displayTitle ?: movie.title,
                                 color = TextPrimary,
                                 fontSize = 28.sp,
                                 fontWeight = FontWeight.Bold,

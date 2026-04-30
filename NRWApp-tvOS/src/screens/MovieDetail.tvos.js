@@ -431,7 +431,7 @@ const MovieDetailTvOS = () => {
                 accessibilityLabel={accessibilityLabel}
                 accessibilityRole="header"
               >
-                {movie.title}
+                {movie.display_title || movie.title}
               </Text>
               {movie.digital_date && (
                 <Text style={styles.titleDate}>{formatShortDate(movie.digital_date)}</Text>

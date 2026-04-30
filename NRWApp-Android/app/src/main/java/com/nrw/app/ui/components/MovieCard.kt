@@ -172,7 +172,7 @@ fun MovieCard(
             Box(modifier = Modifier.fillMaxSize()) {
                 AsyncImage(
                     model = movie.getPosterUrl(),
-                    contentDescription = movie.title,
+                    contentDescription = movie.displayTitle ?: movie.title,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .fillMaxSize()

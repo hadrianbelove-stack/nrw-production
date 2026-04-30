@@ -237,7 +237,7 @@ const MovieCard = forwardRef(({
           ) : (
             <View style={styles.posterPlaceholder}>
               <Text style={styles.placeholderText} numberOfLines={3}>
-                {movie.title}
+                {movie.display_title || movie.title}
               </Text>
             </View>
           )}

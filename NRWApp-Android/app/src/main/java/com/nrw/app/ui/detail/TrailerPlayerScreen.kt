@@ -120,7 +120,7 @@ fun TrailerPlayerOverlay(
 
         // Title overlay
         Text(
-            text = currentMovie.title ?: "",
+            text = currentMovie.displayTitle ?: currentMovie.title ?: "",
             color = Color.White,
             fontSize = 28.sp,
             fontWeight = FontWeight.SemiBold,

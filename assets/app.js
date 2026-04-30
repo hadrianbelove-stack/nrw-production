@@ -40,24 +40,24 @@ const NRW = {
     // Service config — single source of truth for web
     // Sync with: assets/service-colors.json, assets/styles.css
     SERVICE_MAP: {
-        netflix:   { class: 'netflix',   name: 'NETFLIX',      badgeName: 'NETFLIX',   matches: ['netflix'] },
-        max:       { class: 'max',       name: 'MAX',          badgeName: 'MAX',       matches: ['max', 'hbo'] },
-        disney:    { class: 'disney',    name: 'DISNEY+',      badgeName: 'DISNEY+',   matches: ['disney'] },
-        prime:     { class: 'prime',     name: 'PRIME VIDEO',  badgeName: 'PRIME',     matches: ['amazon', 'prime'] },
-        hulu:      { class: 'hulu',      name: 'HULU',         badgeName: 'HULU',      matches: ['hulu'] },
-        peacock:   { class: 'peacock',   name: 'PEACOCK',      badgeName: 'PEACOCK',   matches: ['peacock'] },
-        mubi:      { class: 'mubi',      name: 'MUBI',         badgeName: 'MUBI',      matches: ['mubi'] },
-        shudder:   { class: 'shudder',   name: 'SHUDDER',      badgeName: 'SHUDDER',   matches: ['shudder'] },
-        criterion: { class: 'criterion', name: 'CRITERION',    badgeName: 'CRITERION', matches: ['criterion'] },
-        tubi:      { class: 'tubi',      name: 'TUBI',         badgeName: 'TUBI',      matches: ['tubi'] },
+        netflix:   { class: 'netflix',   name: 'NETFLIX',      badgeName: 'NETFLIX',   matches: ['netflix'],    logo: 'netflix%20square%20logo.png' },
+        max:       { class: 'max',       name: 'MAX',          badgeName: 'MAX',       matches: ['max', 'hbo'], logo: 'max%20logo.jpeg' },
+        disney:    { class: 'disney',    name: 'DISNEY+',      badgeName: 'DISNEY+',   matches: ['disney'],     logo: 'disney%20plus%20logo%20sqaure.jpg' },
+        prime:     { class: 'prime',     name: 'PRIME VIDEO',  badgeName: 'PRIME',     matches: ['amazon', 'prime'], logo: 'primevideo.png' },
+        hulu:      { class: 'hulu',      name: 'HULU',         badgeName: 'HULU',      matches: ['hulu'],       logo: 'hulu%20sqaure%20logo.png' },
+        peacock:   { class: 'peacock',   name: 'PEACOCK',      badgeName: 'PEACOCK',   matches: ['peacock'],    logo: 'peaccok%20logo.png' },
+        mubi:      { class: 'mubi',      name: 'MUBI',         badgeName: 'MUBI',      matches: ['mubi'],       logo: 'mubi%20logo.png' },
+        shudder:   { class: 'shudder',   name: 'SHUDDER',      badgeName: 'SHUDDER',   matches: ['shudder'],    logo: 'shudder%20logo.jpg' },
+        criterion: { class: 'criterion', name: 'CRITERION',    badgeName: 'CRITERION', matches: ['criterion'],  logo: 'criterion%20logo%20sqaure.png' },
+        tubi:      { class: 'tubi',      name: 'TUBI',         badgeName: 'TUBI',      matches: ['tubi'],       logo: 'tubi.png' },
         youtube:   { class: 'youtube',   name: 'YOUTUBE',      badgeName: 'YOUTUBE',   matches: ['youtube'] },
-        paramount: { class: 'paramount', name: 'PARAMOUNT+',   badgeName: 'P+',        matches: ['paramount'] },
-        kanopy:    { class: 'kanopy',    name: 'KANOPY',       badgeName: 'KANOPY',    matches: ['kanopy'] },
-        hoopla:    { class: 'hoopla',    name: 'HOOPLA',       badgeName: 'HOOPLA',    matches: ['hoopla'] },
-        roku:      { class: 'roku',      name: 'ROKU CH.',     badgeName: 'ROKU',      matches: ['roku'] },
-        pluto:     { class: 'pluto',     name: 'PLUTO TV',     badgeName: 'PLUTO',     matches: ['pluto'] },
-        crackle:   { class: 'crackle',   name: 'CRACKLE',      badgeName: 'CRACKLE',   matches: ['crackle'] },
-        fawesome:  { class: 'fawesome',  name: 'FAWESOME',     badgeName: 'FAWESOME',  matches: ['fawesome'] },
+        paramount: { class: 'paramount', name: 'PARAMOUNT+',   badgeName: 'P+',        matches: ['paramount'],  logo: 'paramoung%20plus%20logo.png' },
+        kanopy:    { class: 'kanopy',    name: 'KANOPY',       badgeName: 'KANOPY',    matches: ['kanopy'],     logo: 'kanopy.png' },
+        hoopla:    { class: 'hoopla',    name: 'HOOPLA',       badgeName: 'HOOPLA',    matches: ['hoopla'],     logo: 'hoopla.png' },
+        roku:      { class: 'roku',      name: 'ROKU CH.',     badgeName: 'ROKU',      matches: ['roku'],       logo: 'roku.png' },
+        pluto:     { class: 'pluto',     name: 'PLUTO TV',     badgeName: 'PLUTO',     matches: ['pluto'],      logo: 'Pluto_TV_2020_logo.png' },
+        crackle:   { class: 'crackle',   name: 'CRACKLE',      badgeName: 'CRACKLE',   matches: ['crackle'],    logo: 'Crackle-Symbol.png' },
+        fawesome:  { class: 'fawesome',  name: 'FAWESOME',     badgeName: 'FAWESOME',  matches: ['fawesome'],   logo: 'fawesome.png' },
     },
 
     // Filter descriptions — shown when a single filter is active
@@ -483,39 +483,20 @@ const NRW = {
                 const providers = movie.providers || {};
                 let buttonsHtml = '';
 
-                // Helper to get display name for a service
-                const getDisplayName = (service) => {
-                    const s = service.toLowerCase();
-                    if (s.includes('amazon') || s.includes('prime')) return 'PRIME';
-                    if (s.includes('disney')) return 'DISNEY+';
-                    if (s.includes('hbo') || s.includes('max')) return 'MAX';
-                    if (s.includes('netflix')) return 'NETFLIX';
-                    if (s.includes('hulu')) return 'HULU';
-                    if (s.includes('peacock')) return 'PEACOCK';
-                    return service.toUpperCase();
-                };
-
                 // Helper to render streaming button (active or disabled)
+                // Uses SERVICE_MAP logos when available, falls back to text
                 const renderStreamButton = (service, link) => {
-                    const displayName = getDisplayName(service);
+                    const resolved = NRW.resolveService(service);
+                    const displayName = resolved?.name || service.toUpperCase();
+                    const logoFile = resolved?.logo;
+                    const content = logoFile
+                        ? `<img src="logos%20and%20images/${logoFile}" alt="${displayName}" class="btn-logo">`
+                        : displayName;
+
                     if (link) {
-                        // Active button with link
-                        if (displayName === 'PRIME') {
-                            return `<a href="${link}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-stream" aria-label="Watch on Prime Video"><img src="logos%20and%20images/amazon%20prime.png" alt="Prime Video" class="btn-logo"></a>`;
-                        } else if (displayName === 'NETFLIX') {
-                            return `<a href="${link}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-stream" aria-label="Watch on Netflix"><img src="logos%20and%20images/netflix%20square%20logo.png" alt="Netflix" class="btn-logo"></a>`;
-                        } else {
-                            return `<a href="${link}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-stream" aria-label="Watch on ${service}">${displayName}</a>`;
-                        }
+                        return `<a href="${link}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-stream" aria-label="Watch on ${displayName}">${content}</a>`;
                     } else {
-                        // Disabled button - service known but no link (needs admin correction)
-                        if (displayName === 'NETFLIX') {
-                            return `<span class="watch-btn watch-btn-stream watch-btn-disabled" aria-disabled="true" title="On Netflix - link pending"><img src="logos%20and%20images/netflix%20square%20logo.png" alt="Netflix" class="btn-logo"></span>`;
-                        } else if (displayName === 'PRIME') {
-                            return `<span class="watch-btn watch-btn-stream watch-btn-disabled" aria-disabled="true" title="On Prime - link pending"><img src="logos%20and%20images/amazon%20prime.png" alt="Prime Video" class="btn-logo"></span>`;
-                        } else {
-                            return `<span class="watch-btn watch-btn-stream watch-btn-disabled" aria-disabled="true" title="On ${service} - link pending">${displayName}</span>`;
-                        }
+                        return `<span class="watch-btn watch-btn-stream watch-btn-disabled" aria-disabled="true" title="On ${displayName} - link pending">${content}</span>`;
                     }
                 };
 

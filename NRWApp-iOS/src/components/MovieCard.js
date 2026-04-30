@@ -105,7 +105,7 @@ export default function MovieCard({movie, onPress, isFeatured = false}) {
 
       <View style={styles.info}>
         <Text style={styles.title} numberOfLines={2}>
-          {movie.title}
+          {movie.display_title || movie.title}
         </Text>
         {director && (
           <Text style={styles.director} numberOfLines={1}>
