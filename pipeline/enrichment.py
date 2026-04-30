@@ -117,7 +117,7 @@ class EnrichmentService:
 
     def get_watch_links(self, movie_id, title, year, providers, force_refresh=False,
                         tracking_data=None, original_title=None, alternative_titles=None,
-                        director=None):
+                        director=None, tmdb_id=None):
         """
         Get deep links with canonical streaming/vod structure.
 
@@ -181,7 +181,7 @@ class EnrichmentService:
         # 4. Try JustWatch API (primary source for rent/buy deep links)
         justwatch_result, jw_provider_names = self._try_justwatch_api(
             title, year, cache_key, validated_overrides, providers=providers,
-            original_title=original_title, director=director
+            original_title=original_title, director=director, tmdb_id=tmdb_id
         )
         if justwatch_result:
             # 4.5 Gemini enhancement: find URLs for services JustWatch identified but has no deeplink for
@@ -376,7 +376,7 @@ class EnrichmentService:
         return False
 
     def _try_justwatch_api(self, title, year, cache_key, validated_overrides, providers=None,
-                           original_title=None, director=None):
+                           original_title=None, director=None, tmdb_id=None):
         """
         Try to get links from JustWatch API with confidence checking.
 
@@ -392,6 +392,7 @@ class EnrichmentService:
             providers: TMDB provider dict for cross-validation
             original_title: Original language title (for JustWatch title matching)
             director: Director name (for disambiguation of same-title movies)
+            tmdb_id: TMDB ID for fallback matching when titles differ
 
         Returns:
             Tuple of (validated_links or None, provider_names dict or None).
@@ -419,7 +420,8 @@ class EnrichmentService:
             # Use verify_availability for confidence-checked search
             result = self._justwatch_client.verify_availability(
                 title, year, excluded_services=excluded_services, affiliate_tag=amazon_tag,
-                content_type=content_type, original_title=original_title, director=director
+                content_type=content_type, original_title=original_title, director=director,
+                tmdb_id=tmdb_id
             )
 
             if result is None:
@@ -431,7 +433,7 @@ class EnrichmentService:
             confidence = result.get('match_confidence', 'first_result')
             jw_config = self.config.get('justwatch_verification', {})
             min_confidence = jw_config.get('min_confidence', 'close_year')
-            confidence_levels = ['exact_year', 'close_year', 'title_only', 'first_result']
+            confidence_levels = ['exact_year', 'tmdb_id', 'close_year', 'title_only', 'first_result']
             min_idx = confidence_levels.index(min_confidence) if min_confidence in confidence_levels else 1
             result_idx = confidence_levels.index(confidence) if confidence in confidence_levels else 3
 

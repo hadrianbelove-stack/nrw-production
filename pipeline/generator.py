@@ -2156,11 +2156,18 @@ class DataGenerator:
         entry['original_language'] = movie_details.get('original_language')
         entry['original_title'] = movie_details.get(original_title_field)
 
-        # Generate display_title for foreign films: "English Title (Original Title)"
+        # Generate display_title for foreign films
+        # Latin-script originals: "Original (English)" — e.g. "Nukkad Naatak (A Street Play)"
+        # Non-Latin originals: "English (Original)" — e.g. "The Adventure (奇遇)"
+        import re
         original_title = entry.get('original_title')
         orig_lang = entry.get('original_language', 'en')
         if original_title and original_title != entry.get('title') and orig_lang != 'en':
-            entry['display_title'] = f"{entry['title']} ({original_title})"
+            _is_latin = bool(re.match(r'^[\u0000-\u024F\u1E00-\u1EFF\s\d\W]+$', original_title))
+            if _is_latin:
+                entry['display_title'] = f"{original_title} ({entry['title']})"
+            else:
+                entry['display_title'] = f"{entry['title']} ({original_title})"
 
         # Add cast/crew with error handling
         entry['crew'] = {'director': 'Unknown', 'cast': []}
@@ -3152,7 +3159,8 @@ class DataGenerator:
                 tracking_data=movie_data,
                 original_title=original_title,
                 alternative_titles=alt_titles_raw,
-                director=enrich_director
+                director=enrich_director,
+                tmdb_id=str(movie_id)
             )
 
             # Simplify provider names in watch links (handle both array and dict formats)
@@ -3537,7 +3545,8 @@ class DataGenerator:
                     _jw_result = self.enrichment._justwatch_client.verify_availability(
                         _title, _year, excluded_services=_excl_list,
                         affiliate_tag=_amazon_tag, content_type=_content_type_jw,
-                        original_title=_original_title, director=_director
+                        original_title=_original_title, director=_director,
+                        tmdb_id=str(movie_id)
                     )
                     if _jw_result is None:
                         _jw_verified = False
@@ -3557,6 +3566,13 @@ class DataGenerator:
                         # Clear revert history — movie now has valid providers
                         tracking_data['movies'][movie_id].pop('_jw_reverted_at', None)
                         tracking_data['movies'][movie_id].pop('_jw_revert_reason', None)
+                        # Record JW-discovered English title when it differs from ours
+                        _jw_title = _jw_result.get('jw_title', '')
+                        if _jw_title and _jw_title.lower() != _title.lower():
+                            _cur_orig = existing_movies[movie_index].get('original_title', '')
+                            if not _cur_orig or _cur_orig.lower() == _title.lower():
+                                existing_movies[movie_index]['title'] = _jw_title
+                                self.logger.info(f"JustWatch revealed English title for {_title}: '{_jw_title}'")
                 except Exception as _jw_err:
                     self.logger.warning(f"JustWatch pre-check error for {_title}: {_jw_err} — proceeding with enrichment")
 
@@ -4021,7 +4037,8 @@ class DataGenerator:
                 watch_links = self.enrichment.get_watch_links(
                     movie_id, title, year, providers,
                     force_refresh=True, tracking_data=tracking_movie,
-                    original_title=catchup_original_title, director=catchup_director
+                    original_title=catchup_original_title, director=catchup_director,
+                    tmdb_id=str(movie_id)
                 )
 
                 vod = watch_links.get('vod', []) if watch_links else []
@@ -4343,12 +4360,19 @@ class DataGenerator:
             self.logger.error(f"Error loading data.json for display: {e}")
             return
 
-        # Compute display_title: "English Title (Foreign Title)" for non-English films
+        # Compute display_title for non-English films
+        # Latin-script originals: "Original (English)" — e.g. "Nukkad Naatak (A Street Play)"
+        # Non-Latin originals: "English (Original)" — e.g. "The Adventure (奇遇)"
+        import re
         for m in all_movies:
             orig = m.get('original_title')
             lang = m.get('original_language', 'en')
             if orig and orig != m.get('title') and lang != 'en':
-                m['display_title'] = f"{m['title']} ({orig})"
+                _is_latin = bool(re.match(r'^[\u0000-\u024F\u1E00-\u1EFF\s\d\W]+$', orig))
+                if _is_latin:
+                    m['display_title'] = f"{orig} ({m['title']})"
+                else:
+                    m['display_title'] = f"{m['title']} ({orig})"
             else:
                 m['display_title'] = m.get('title', '')
 

@@ -123,7 +123,8 @@ class JustWatchClient:
         year: Optional[int] = None,
         content_type: str = 'movie',
         original_title: Optional[str] = None,
-        director: Optional[str] = None
+        director: Optional[str] = None,
+        tmdb_id: Optional[str] = None
     ) -> Optional[Dict]:
         """
         Search for a movie or TV show by title and optional year.
@@ -172,6 +173,9 @@ class JustWatchClient:
                   title
                   originalReleaseYear
                   fullPath
+                  externalIds {{
+                    tmdbId
+                  }}
                   credits(role: DIRECTOR) {{
                     role
                     name
@@ -293,12 +297,26 @@ class JustWatchClient:
                         f"[wanted year {year}]"
                     )
 
-            # Pass 4 REMOVED: previously accepted any result with a matching year
-            # regardless of title. This caused "Ketchup on Waffles" to match
-            # "House on Eden" — completely different films.
+            # Pass 4: TMDB ID match — title doesn't match but same movie confirmed by ID.
+            # Safer than old Pass 4 (year-only) because TMDB IDs are unique identifiers.
+            if not best_match and tmdb_id:
+                tmdb_id_str = str(tmdb_id)
+                for edge in edges:
+                    node = edge['node']
+                    ext_ids = node.get('content', {}).get('externalIds', {})
+                    if ext_ids and str(ext_ids.get('tmdbId', '')) == tmdb_id_str:
+                        best_match = node
+                        matched_content = node.get('content', {})
+                        self.logger.info(
+                            f"JustWatch TMDB ID match: searched '{title}' → "
+                            f"matched '{matched_content.get('title')}' "
+                            f"({matched_content.get('originalReleaseYear')}) "
+                            f"by TMDB ID {tmdb_id}"
+                        )
+                        break
 
             # Pass 5 REMOVED: previously fell back to first result regardless
-            # of title. Now if no title match is found, the movie isn't in
+            # of title. Now if no title or ID match is found, the movie isn't in
             # JustWatch — return None rather than a wrong movie's data.
 
             if not best_match:
@@ -427,7 +445,8 @@ class JustWatchClient:
         affiliate_tag: Optional[str] = None,
         content_type: str = 'movie',
         original_title: Optional[str] = None,
-        director: Optional[str] = None
+        director: Optional[str] = None,
+        tmdb_id: Optional[str] = None
     ) -> Optional[Dict[str, Any]]:
         """
         Verify a movie's availability for the discovery phase.
@@ -439,7 +458,7 @@ class JustWatchClient:
         Returns:
             Dict with:
               'verified': True, False, or 'buy_only'
-              'match_confidence': 'exact_year', 'close_year', 'title_only', 'first_result'
+              'match_confidence': 'exact_year', 'close_year', 'tmdb_id', 'title_only', 'first_result'
               'jw_title': str - title JustWatch matched
               'jw_year': int or None - year JustWatch matched
               'has_streaming': bool
@@ -450,7 +469,8 @@ class JustWatchClient:
             None if search fails entirely.
         """
         movie = self.search_movie(title, year, content_type=content_type,
-                                  original_title=original_title, director=director)
+                                  original_title=original_title, director=director,
+                                  tmdb_id=tmdb_id)
         if not movie:
             return None
 
@@ -467,18 +487,31 @@ class JustWatchClient:
 
         # Title check: JustWatch result must match either our title or original_title.
         # Normalized comparison (lowercase, strip leading articles like "the/a/an").
-        # If neither matches, reject — prevents wrong-movie links like
-        # "Ketchup on Waffles" getting "House on Eden" links.
+        # If neither matches, check TMDB ID as fallback before rejecting.
         titles_match = self._titles_match(jw_title, title, original_title)
+
+        # TMDB ID fallback: when titles differ but same movie confirmed by ID.
+        # Handles cases like TMDB "Nukkad Naatak" → JW "A Street Play".
+        tmdb_match = False
+        if tmdb_id and not titles_match:
+            ext_ids = content.get('externalIds', {})
+            if ext_ids and str(ext_ids.get('tmdbId', '')) == str(tmdb_id):
+                tmdb_match = True
+                self.logger.info(
+                    f"JustWatch TMDB ID match: searched '{title}' → "
+                    f"matched '{jw_title}' by TMDB ID {tmdb_id}"
+                )
 
         if titles_match and year and jw_year == year:
             confidence = 'exact_year'
+        elif tmdb_match:
+            confidence = 'tmdb_id'
         elif titles_match and year and jw_year and abs(jw_year - year) <= 1:
             confidence = 'close_year'
         elif titles_match:
             confidence = 'title_only'
         else:
-            # Title doesn't match either our title or original_title → reject.
+            # Title doesn't match and no TMDB ID match → reject.
             # Set verified=False so discovery pre-check also rejects (it only
             # checks verified, not match_confidence).
             confidence = 'first_result'
