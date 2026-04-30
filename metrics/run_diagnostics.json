@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-04-29T12:09:19.469778",
-  "duration_seconds": 4542.310056,
+  "timestamp": "2026-04-30T12:23:10.077878",
+  "duration_seconds": 5397.34284,
   "overall_success": true,
   "failure_count": 0,
   "warning_count": 0,
@@ -8,44 +8,44 @@
     {
       "name": "Intake new premieres from TMDB",
       "success": true,
-      "duration_seconds": 6.161295,
+      "duration_seconds": 8.674667,
       "error": null,
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-04-27 to 2026-04-29 (incremental mode, 19 intaked)\n\u2705 Movie intake complete: 19 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-03-30 to 2026-04-29\n   \ud83d\udccb Salisbury Poisonings: The Untold Story "
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-04-28 to 2026-04-30 (incremental mode, 48 intaked)\n\u2705 Movie intake complete: 48 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-03-31 to 2026-04-30\n   \ud83d\udccb Millennium Love (12 eps)\n   \ud83d\udccb Private G"
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 3659.811526,
+      "duration_seconds": 4819.164998,
       "error": null,
-      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 16353 total movies\n\ud83d\udd0d Raw tracking filter: 12982 movies\n\ud83d\udd0d Assigned tracking_movies list: 12982\n\ud83d\udd0d Found 12982 movies in tracking status\n  Priority queue (last 180 days): 489 movies\n  Older movies: 12493 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 12982 movies for digital availability...\n\n  \u2713 The Mohican now on fuboTV!\n   \ud83d\udcdd Movie The Mohican already in data.json - skipping immediat"
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 16405 total movies\n\ud83d\udd0d Raw tracking filter: 13024 movies\n\ud83d\udd0d Assigned tracking_movies list: 13024\n\ud83d\udd0d Found 13024 movies in tracking status\n  Priority queue (last 180 days): 495 movies\n  Older movies: 12529 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 13024 movies for digital availability...\n\n  \u2713 The Mohican now on fuboTV!\n   \ud83d\udcdd Movie The Mohican already in data.json - skipping immediat"
     },
     {
       "name": "Enrich newly available movies with metadata",
       "success": true,
-      "duration_seconds": 873.231871,
+      "duration_seconds": 567.15423,
       "error": null,
-      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n  \u26a0\ufe0f Orphan detection: 72 movies available in tracking but missing from wall\n    \u2192 Hey, Missy! (ID 1529520, digital_date 2026-02-06)\n    \u2192 BAKA's Identity (ID 1466302, digital_date 2026-01-30)\n    \u2192 Real Korean Cooking Stories (ID 1573667, digital_date 2026-03-25)\n    \u2192 Andre (ID 1569967, digital_date 2026-02-01)\n    \u2192 The Traveler (ID 1421005, digital_date 2026-03-27)\n    \u2192 The End of The Punchline (ID 1402249, d"
+      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n  \u26a0\ufe0f Orphan detection: 28 movies available in tracking but missing from wall\n    \u2192 BAKA's Identity (ID 1466302, digital_date 2026-01-30)\n    \u2192 The End of The Punchline (ID 1402249, digital_date 2026-01-30)\n    \u2192 Mean Boys (ID 1575352, digital_date 2026-01-30)\n    \u2192 Zootopia 2 (ID 1084242, digital_date 2026-01-30)\n    \u2192 Monkeying Around (ID 1443662, digital_date 2026-01-30)\n    \u2192 Ella McCay (ID 1206008, digital_dat"
     },
     {
       "name": "Stamp hosted trailer URLs into data.json",
       "success": true,
-      "duration_seconds": 1.098139,
+      "duration_seconds": 0.795847,
       "error": null,
-      "output_preview": "=== Trailer Pipeline: stamp ===\n\nConnecting to B2...\nFound 545 trailers in B2 bucket\nSaved data.json: 9 stamped, 0 stale cleaned\n\nStamp results:\n  Stamped:          9\n  Already had URL:  462\n  Stale cleaned:    0\n  Not in B2:        253\n"
+      "output_preview": "=== Trailer Pipeline: stamp ===\n\nConnecting to B2...\nFound 551 trailers in B2 bucket\n\nStamp results:\n  Stamped:          0\n  Already had URL:  477\n  Stale cleaned:    0\n  Not in B2:        247\n"
     },
     {
       "name": "Check virtual screening link expirations",
       "success": true,
-      "duration_seconds": 1.460866,
+      "duration_seconds": 0.965126,
       "error": null,
       "output_preview": "\n\ud83c\udfaa Checking virtual screening links...\n  Checking 15 virtual screening movies...\n  \ud83d\udcbe Updated data.json\n  \ud83d\udcca Results: 2 active, 0 expired\n\u2705 Virtual screening check complete\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Archive movies older than 90 days",
       "success": true,
-      "duration_seconds": 0.397057,
+      "duration_seconds": 0.426698,
       "error": null,
-      "output_preview": "\n\ud83d\udce6 Archiving movies older than 90 days...\n\ud83d\udce6 Archived 5 movies (>90 days old) \u2192 data_archive.json\n   data.json: 719 movies | archive: 204 total\n\u2705 Archive complete\n\ud83d\udccb Phase complete\n"
+      "output_preview": "\n\ud83d\udce6 Archiving movies older than 90 days...\n\ud83d\udce6 Archived 6 movies (>90 days old) \u2192 data_archive.json\n   data.json: 718 movies | archive: 210 total\n\u2705 Archive complete\n\ud83d\udccb Phase complete\n"
     }
   ],
   "health_issues": [],
@@ -56,20 +56,20 @@
   "failures": [],
   "warnings": [],
   "data_quality": {
-    "total": 16353,
-    "tracking": 12975,
-    "available": 3083,
-    "data_movies": 719,
+    "total": 16405,
+    "tracking": 13022,
+    "available": 3038,
+    "data_movies": 718,
     "movies_with_links": 712,
-    "movies_with_rt": 512,
-    "movies_with_wikipedia": 386,
-    "movies_with_trailers": 646
+    "movies_with_rt": 509,
+    "movies_with_wikipedia": 360,
+    "movies_with_trailers": 644
   },
   "enrichment_metrics": {
-    "timestamp": "2026-04-29T12:09:15.979468",
-    "movies_requested": 22,
-    "movies_enriched": 18,
-    "movies_deferred": 4,
-    "enrichment_duration_seconds": 872.51
+    "timestamp": "2026-04-30T12:23:07.329346",
+    "movies_requested": 16,
+    "movies_enriched": 9,
+    "movies_deferred": 7,
+    "enrichment_duration_seconds": 566.4
   }
 }
