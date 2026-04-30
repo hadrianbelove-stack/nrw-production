@@ -50,7 +50,7 @@ const NRW = {
         shudder:   { class: 'shudder',   name: 'SHUDDER',      badgeName: 'SHUDDER',   matches: ['shudder'],    logo: 'shudder%20logo.jpg' },
         criterion: { class: 'criterion', name: 'CRITERION',    badgeName: 'CRITERION', matches: ['criterion'],  logo: 'criterion%20logo%20sqaure.png' },
         tubi:      { class: 'tubi',      name: 'TUBI',         badgeName: 'TUBI',      matches: ['tubi'],       logo: 'tubi.png' },
-        amc:       { class: 'amc',       name: 'AMC+',         badgeName: 'AMC+',      matches: ['amc'] },
+        amc:       { class: 'amc',       name: 'AMC+',         badgeName: 'AMC+',      matches: ['amc'],      logo: 'amc-plus-logo-png_seeklogo-483819.png' },
         youtube:   { class: 'youtube',   name: 'YOUTUBE',      badgeName: 'YOUTUBE',   matches: ['youtube'] },
         paramount: { class: 'paramount', name: 'PARAMOUNT+',   badgeName: 'P+',        matches: ['paramount'],  logo: 'paramoung%20plus%20logo.png' },
         kanopy:    { class: 'kanopy',    name: 'KANOPY',       badgeName: 'KANOPY',    matches: ['kanopy'],     logo: 'kanopy.png' },
