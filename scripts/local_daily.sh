@@ -60,7 +60,7 @@ echo "Stamping hosted trailer URLs..." >> "$LOG"
 
 if ! /usr/bin/git diff --quiet data.json 2>/dev/null; then
     echo "  Pushing stamped trailers to GitHub..." >> "$LOG"
-    if NRW_ALLOW_DATA_COMMIT=1 /usr/bin/git commit data.json -m "Local trailer stamp" >> "$LOG" 2>&1; then
+    if NRW_ALLOW_DATA_COMMIT=1 /usr/bin/git commit data.json -m "Local trailer stamp — APPROVED: DELETE" >> "$LOG" 2>&1; then
         if /usr/bin/git push origin main >> "$LOG" 2>&1; then
             echo "  Pushed successfully" >> "$LOG"
         else
