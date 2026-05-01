@@ -14,64 +14,10 @@ const NRW = {
     displayedCount: CONFIG.moviesPerPage,  // How many movies currently shown
     loadIncrement: CONFIG.moviesPerPage,   // How many to add when clicking "More"
 
-    // Country display names per STYLE_GUIDE.md
-    // Only shorten long/formal names; keep short names as-is
-    countryAbbrev: {
-        'united states of america': 'USA', 'united states': 'USA', 'usa': 'USA',
-        'united kingdom': 'UK', 'great britain': 'UK',
-        'south korea': 'S. Korea',
-        'south africa': 'S. Africa',
-        'new zealand': 'N. Zealand',
-        'bosnia and herzegovina': 'Bosnia',
-        'saudi arabia': 'S. Arabia'
-    },
-
-    abbreviateCountry(country) {
-        if (!country) return null;
-        const shortened = this.countryAbbrev[country.toLowerCase()];
-        if (shortened) return shortened;
-        // Fix all-caps or all-lowercase entries (e.g. "SWEDEN" → "Sweden")
-        if (country !== country[0].toUpperCase() + country.slice(1).toLowerCase()) {
-            return country[0].toUpperCase() + country.slice(1).toLowerCase();
-        }
-        return country;
-    },
-
-    // Service config — single source of truth for web
-    // Sync with: assets/service-colors.json, assets/styles.css
-    SERVICE_MAP: {
-        netflix:   { class: 'netflix',   name: 'NETFLIX',      badgeName: 'NETFLIX',   matches: ['netflix'],    logo: 'netflix%20square%20logo.png' },
-        max:       { class: 'max',       name: 'MAX',          badgeName: 'MAX',       matches: ['max', 'hbo'], logo: 'max%20logo.jpeg' },
-        disney:    { class: 'disney',    name: 'DISNEY+',      badgeName: 'DISNEY+',   matches: ['disney'],     logo: 'disney%20plus%20logo%20sqaure.jpg' },
-        prime:     { class: 'prime',     name: 'PRIME VIDEO',  badgeName: 'PRIME',     matches: ['amazon', 'prime'], logo: 'primevideo.png' },
-        hulu:      { class: 'hulu',      name: 'HULU',         badgeName: 'HULU',      matches: ['hulu'],       logo: 'hulu%20sqaure%20logo.png' },
-        peacock:   { class: 'peacock',   name: 'PEACOCK',      badgeName: 'PEACOCK',   matches: ['peacock'],    logo: 'peaccok%20logo.png' },
-        mubi:      { class: 'mubi',      name: 'MUBI',         badgeName: 'MUBI',      matches: ['mubi'],       logo: 'mubi%20logo.png' },
-        shudder:   { class: 'shudder',   name: 'SHUDDER',      badgeName: 'SHUDDER',   matches: ['shudder'],    logo: 'shudder%20logo.jpg' },
-        criterion: { class: 'criterion', name: 'CRITERION',    badgeName: 'CRITERION', matches: ['criterion'],  logo: 'criterion%20logo%20sqaure.png' },
-        tubi:      { class: 'tubi',      name: 'TUBI',         badgeName: 'TUBI',      matches: ['tubi'],       logo: 'tubi.png' },
-        amc:       { class: 'amc',       name: 'AMC+',         badgeName: 'AMC+',      matches: ['amc'],      logo: 'amc-plus-logo-png_seeklogo-483819.png' },
-        youtube:   { class: 'youtube',   name: 'YOUTUBE',      badgeName: 'YOUTUBE',   matches: ['youtube'] },
-        paramount: { class: 'paramount', name: 'PARAMOUNT+',   badgeName: 'P+',        matches: ['paramount'],  logo: 'paramoung%20plus%20logo.png' },
-        kanopy:    { class: 'kanopy',    name: 'KANOPY',       badgeName: 'KANOPY',    matches: ['kanopy'],     logo: 'kanopy.png' },
-        hoopla:    { class: 'hoopla',    name: 'HOOPLA',       badgeName: 'HOOPLA',    matches: ['hoopla'],     logo: 'hoopla.png' },
-        roku:      { class: 'roku',      name: 'ROKU CH.',     badgeName: 'ROKU',      matches: ['roku'],       logo: 'roku.png' },
-        pluto:     { class: 'pluto',     name: 'PLUTO TV',     badgeName: 'PLUTO',     matches: ['pluto'],      logo: 'Pluto_TV_2020_logo.png' },
-        crackle:   { class: 'crackle',   name: 'CRACKLE',      badgeName: 'CRACKLE',   matches: ['crackle'],    logo: 'Crackle-Symbol.png' },
-        fawesome:  { class: 'fawesome',  name: 'FAWESOME',     badgeName: 'FAWESOME',  matches: ['fawesome'],   logo: 'fawesome.png' },
-        fandango:  { class: 'fandango',  name: 'FANDANGO',     badgeName: 'FANDANGO',  matches: ['fandango'],   logo: 'fandangoathome.png' },
-    },
-
-    // VOD service config — single source of truth for purchase/rental buttons
-    // To add a new VOD service: add it here, then add CSS for .watch-btn-{key} and .watch-btn-lb.{key}
-    VOD_SERVICE_MAP: {
-        amazon:    { key: 'amazon',    matches: ['amazon', 'prime'],  label: 'AMAZON',     logo: 'pngimg.com%20-%20amazon_PNG17.png' },
-        apple:     { key: 'apple',     matches: ['apple', 'itunes'],  label: 'APPLE TV',   logo: 'apple%20logo.png' },
-        fandango:  { key: 'fandango',  matches: ['fandango'],         label: 'FANDANGO',   logo: 'fandangoathome.png' },
-        youtube:   { key: 'youtube',   matches: ['youtube'],          label: 'YOUTUBE',    logo: null },
-        screening: { key: 'screening', matches: ['eventive'],         label: 'BUY TICKET', logo: null,
-                     linkMatches: ['eventive.org', 'festivalplayer', 'shift72.com'] },
-    },
+    // Shared config — loaded from assets/shared-config.js
+    SERVICE_MAP: NRWConfig.SERVICE_MAP,
+    VOD_SERVICE_MAP: NRWConfig.VOD_SERVICE_MAP,
+    abbreviateCountry: NRWConfig.abbreviateCountry.bind(NRWConfig),
 
     // Filter descriptions — shown when a single filter is active
     // User will rewrite all of these; placeholder text for now
@@ -110,31 +56,8 @@ const NRW = {
         }
     },
 
-    // Resolve a raw service string (e.g. "Netflix basic with Ads") to its config entry
-    resolveService(rawName) {
-        if (!rawName) return null;
-        const s = rawName.toLowerCase();
-        for (const entry of Object.values(this.SERVICE_MAP)) {
-            if (entry.matches.some(m => s.includes(m))) return entry;
-        }
-        return null;
-    },
-
-    // Resolve a VOD service string to its VOD_SERVICE_MAP entry
-    // Returns null for unrecognized services (acts as whitelist)
-    resolveVODService(serviceName, link) {
-        if (!serviceName) return null;
-        const s = serviceName.toLowerCase();
-        for (const entry of Object.values(this.VOD_SERVICE_MAP)) {
-            if (entry.matches.some(m => s.includes(m))) return entry;
-        }
-        if (link) {
-            for (const entry of Object.values(this.VOD_SERVICE_MAP)) {
-                if (entry.linkMatches && entry.linkMatches.some(m => link.includes(m))) return entry;
-            }
-        }
-        return null;
-    },
+    resolveService: NRWConfig.resolveService.bind(NRWConfig),
+    resolveVODService: NRWConfig.resolveVODService.bind(NRWConfig),
 
     // Normalize streaming to {service, link} — handles both array and dict formats
     getStreaming(wl) {
@@ -883,28 +806,26 @@ const NRW = {
         this.updateLightbox();
     },
 
-    // Update lightbox content
-    updateLightbox() {
-        const movie = this.lightboxMovies[this.lightboxIndex];
-        if (!movie) return;
+    // --- Lightbox sub-renderers (extracted from updateLightbox) ---
 
-        // Update poster (with fallback for missing posters)
+    _updateLightboxPoster(movie) {
         document.getElementById('lightbox-poster').src = movie.poster || '';
         document.getElementById('lightbox-poster').style.display = movie.poster ? '' : 'none';
         document.getElementById('lightbox-poster-fallback').style.display = movie.poster ? 'none' : 'flex';
         document.getElementById('lightbox-poster-fallback-title').textContent = movie.display_title || movie.title;
+        document.getElementById('lightbox-score-overlay').innerHTML = '';
+    },
 
-        // Update title
+    _updateLightboxHeader(movie) {
         document.getElementById('lightbox-title').textContent = movie.display_title || movie.title;
 
-        // Update release date
+        // Release date (with screening date range for virtual screenings)
         const dateEl = document.getElementById('lightbox-date');
         if (dateEl) {
             if (movie.digital_date) {
                 const [y, m, d] = movie.digital_date.split('-');
                 const dt = new Date(y, m - 1, d);
                 let dateText = dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                // For virtual screenings, show date range (e.g. "Mar 22–26" or "Mar 22–Apr 10")
                 if (movie.categories?.is_virtual_screening && movie.virtual_screening_info?.available_end) {
                     const [ey, em, ed] = movie.virtual_screening_info.available_end.split('-');
                     if (em === m) {
@@ -920,17 +841,13 @@ const NRW = {
             }
         }
 
-        // Update Staff Pick badge
+        // Staff Pick badge
         const staffPickBadge = document.getElementById('lightbox-staff-pick');
         if (staffPickBadge) {
-            if (movie.categories?.is_staff_pick) {
-                staffPickBadge.style.display = 'inline-block';
-            } else {
-                staffPickBadge.style.display = 'none';
-            }
+            staffPickBadge.style.display = movie.categories?.is_staff_pick ? 'inline-block' : 'none';
         }
 
-        // Update screening name in lightbox
+        // Screening name banner
         const screeningNameEl = document.getElementById('lightbox-screening-name');
         if (screeningNameEl) {
             if (movie.categories?.is_virtual_screening && movie.virtual_screening_info?.screening_name) {
@@ -940,8 +857,10 @@ const NRW = {
                 screeningNameEl.style.display = 'none';
             }
         }
+    },
 
-        // Build meta info (now includes studio)
+    _updateLightboxSynopsis(movie) {
+        // Meta line
         const metaParts = [];
         if (movie.year) metaParts.push(movie.year);
         if (movie.genres?.length) metaParts.push(movie.genres.slice(0, 2).join(', '));
@@ -949,26 +868,26 @@ const NRW = {
         if (movie.crew?.director) metaParts.push(`Dir: ${movie.crew.director}`);
         if (movie.country) metaParts.push(this.abbreviateCountry(movie.country));
         if (movie.studio) metaParts.push(movie.studio);
-        document.getElementById('lightbox-meta').textContent = metaParts.join(' • ');
+        document.getElementById('lightbox-meta').textContent = metaParts.join(' \u2022 ');
 
-        // Update synopsis
+        // Synopsis text
         const synopsisEl = document.getElementById('lightbox-synopsis');
         synopsisEl.textContent = movie.synopsis || 'Synopsis coming soon.';
-        // Append screening availability callout for virtual screenings
+
+        // Screening callout appended to synopsis
         if (movie.categories?.is_virtual_screening && movie.virtual_screening_info?.screening_name) {
             const festName = movie.virtual_screening_info.screening_name;
             const endDate = movie.virtual_screening_info?.available_end;
             const callout = document.createElement('span');
             callout.className = 'screening-callout';
-            if (endDate) {
-                callout.textContent = ` Virtual screening available as part of the ${festName}. Ends ${NRW.formatScreeningDate(endDate)}.`;
-            } else {
-                callout.textContent = ` Virtual screening available as part of the ${festName}.`;
-            }
+            callout.textContent = endDate
+                ? ` Virtual screening available as part of the ${festName}. Ends ${NRW.formatScreeningDate(endDate)}.`
+                : ` Virtual screening available as part of the ${festName}.`;
             synopsisEl.appendChild(callout);
         }
+    },
 
-        // Pull quotes (built via DOM to prevent XSS)
+    _updateLightboxPullQuotes(movie) {
         const pqContainer = document.getElementById('lightbox-pull-quotes');
         pqContainer.innerHTML = '';
         if (movie.pull_quotes && movie.pull_quotes.length > 0) {
@@ -993,20 +912,21 @@ const NRW = {
                     cite.textContent = attribution;
                     card.appendChild(cite);
                 }
-
                 pqContainer.appendChild(card);
             }
             pqContainer.style.display = '';
         } else {
             pqContainer.style.display = 'none';
         }
+    },
 
-        // === Watch stack (full-width, stacked, service-colored) ===
-        let watchHtml = '';
+    _buildLightboxButtons(movie) {
+        let buttonsHtml = '';
         const watchLinks = movie.watch_links || {};
         const providers = movie.providers || {};
 
-        // Streaming button
+        // Watch stack (streaming + VOD)
+        let watchHtml = '';
         const lbStreamData = this.getStreaming(watchLinks);
         let streamSvc = lbStreamData?.service;
         let streamLink = lbStreamData?.link;
@@ -1024,10 +944,8 @@ const NRW = {
             }
         }
 
-        // Purchase (VOD) buttons — separate Amazon + Apple TV (side-by-side)
         const lbVodEntries = Array.isArray(watchLinks.vod) ? watchLinks.vod
             : (watchLinks.vod?.service ? [watchLinks.vod] : []);
-
         let vodHtml = '';
         lbVodEntries.forEach(vod => {
             const vodLink = vod.link || vod.url;
@@ -1038,14 +956,9 @@ const NRW = {
             }
         });
         if (vodHtml) watchHtml += `<div class="vod-row">${vodHtml}</div>`;
-
-        let buttonsHtml = '';
         if (watchHtml) buttonsHtml += `<div class="watch-stack">${watchHtml}</div>`;
 
-        // Clear poster score overlay (scores now in info panel)
-        document.getElementById('lightbox-score-overlay').innerHTML = '';
-
-        // === Info row (horizontal: Trailer, Wiki) ===
+        // Info row (Trailer, Wiki)
         let infoHtml = '';
         const lbTrailerUrl = movie.links?.trailer_hosted || movie.links?.trailer;
         if (lbTrailerUrl) {
@@ -1056,7 +969,7 @@ const NRW = {
         }
         if (infoHtml) buttonsHtml += `<div class="info-row">${infoHtml}</div>`;
 
-        // === Score badges below info links ===
+        // Score badges
         let lbScoreHtml = '';
         if (movie.links?.rt) {
             const score = movie.rt_score ? ` ${movie.rt_score}` : '';
@@ -1073,6 +986,18 @@ const NRW = {
         if (lbScoreHtml) buttonsHtml += `<div class="score-row">${lbScoreHtml}</div>`;
 
         document.getElementById('lightbox-buttons').innerHTML = buttonsHtml;
+    },
+
+    // Update lightbox content — delegates to sub-renderers
+    updateLightbox() {
+        const movie = this.lightboxMovies[this.lightboxIndex];
+        if (!movie) return;
+
+        this._updateLightboxPoster(movie);
+        this._updateLightboxHeader(movie);
+        this._updateLightboxSynopsis(movie);
+        this._updateLightboxPullQuotes(movie);
+        this._buildLightboxButtons(movie);
     },
 
     // Setup lightbox + trailer keyboard navigation

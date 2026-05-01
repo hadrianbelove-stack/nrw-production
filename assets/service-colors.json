@@ -1,106 +1,37 @@
 {
-  "_comment": "Single source of truth for streaming service colors. When adding or changing colors, update this file first, then sync to: assets/styles.css (badge classes), NRWApp-Android Color.kt and MovieCard.kt",
-  "services": {
-    "netflix": {
-      "background": "#E50914",
-      "text": "#FFFFFF",
-      "name": "Netflix"
+    "_comment": "Single source of truth for service colors across ALL platforms. Sync to: assets/styles.css (:root vars), shared-config.js, NRWApp-iOS WatchButton.js, NRWApp-tvOS WatchButton.tvos.js, NRWApp-Android Color.kt/WatchButton.kt, mobile/mobile.css",
+    "streaming": {
+        "netflix":   { "bg": "#E50914", "text": "#FFFFFF", "name": "Netflix",     "badgeName": "NETFLIX" },
+        "max":       { "bg": "#B537F2", "text": "#FFFFFF", "name": "Max",         "badgeName": "MAX",     "matches": ["max", "hbo"] },
+        "disney":    { "bg": "#113CCF", "text": "#FFFFFF", "name": "Disney+",     "badgeName": "DISNEY+", "matches": ["disney"] },
+        "prime":     { "bg": "#00A8E1", "text": "#FFFFFF", "name": "Prime Video", "badgeName": "PRIME",   "matches": ["amazon", "prime"] },
+        "hulu":      { "bg": "#1CE783", "text": "#000000", "name": "Hulu",        "badgeName": "HULU" },
+        "peacock":   { "bg": "#000000", "text": "#FFFFFF", "name": "Peacock",     "badgeName": "PEACOCK" },
+        "mubi":      { "bg": "#DA2128", "text": "#FFFFFF", "name": "MUBI",        "badgeName": "MUBI" },
+        "shudder":   { "bg": "#8B0000", "text": "#FFFFFF", "name": "Shudder",     "badgeName": "SHUDDER" },
+        "criterion": { "bg": "#000000", "text": "#FFFFFF", "name": "Criterion",   "badgeName": "CRITERION", "border": "#444444" },
+        "tubi":      { "bg": "#FA382F", "text": "#FFFFFF", "name": "Tubi",        "badgeName": "TUBI" },
+        "amc":       { "bg": "#1B6FE0", "text": "#FFFFFF", "name": "AMC+",        "badgeName": "AMC+" },
+        "youtube":   { "bg": "#FF0000", "text": "#FFFFFF", "name": "YouTube",     "badgeName": "YOUTUBE" },
+        "paramount": { "bg": "#0064FF", "text": "#FFFFFF", "name": "Paramount+",  "badgeName": "P+" },
+        "kanopy":    { "bg": "#1B7A43", "text": "#FFFFFF", "name": "Kanopy",      "badgeName": "KANOPY" },
+        "hoopla":    { "bg": "#FC4F08", "text": "#FFFFFF", "name": "Hoopla",      "badgeName": "HOOPLA" },
+        "roku":      { "bg": "#6C3A97", "text": "#FFFFFF", "name": "Roku Ch.",    "badgeName": "ROKU" },
+        "pluto":     { "bg": "#00B4E4", "text": "#FFFFFF", "name": "Pluto TV",    "badgeName": "PLUTO" },
+        "crackle":   { "bg": "#FF6600", "text": "#FFFFFF", "name": "Crackle",     "badgeName": "CRACKLE" },
+        "fawesome":  { "bg": "#5B8DEF", "text": "#FFFFFF", "name": "Fawesome",    "badgeName": "FAWESOME" },
+        "fandango":  { "bg": "#FF6600", "text": "#FFFFFF", "name": "Fandango",    "badgeName": "FANDANGO" },
+        "plex":      { "bg": "#E5A00D", "text": "#000000", "name": "Plex",        "badgeName": "PLEX" }
     },
-    "disney_plus": {
-      "background": "#113CCF",
-      "text": "#FFFFFF",
-      "name": "Disney+"
+    "vod": {
+        "amazon":   { "bg": "#FF9900", "text": "#000000", "name": "Amazon",    "label": "Rent Amazon" },
+        "apple":    { "bg": "#000000", "text": "#FFFFFF", "name": "Apple TV",  "label": "Rent Apple TV", "border": "#444444" },
+        "fandango": { "bg": "#FF6600", "text": "#FFFFFF", "name": "Fandango",  "label": "Rent Fandango" },
+        "youtube":  { "bg": "#FF0000", "text": "#FFFFFF", "name": "YouTube",   "label": "Rent YouTube" }
     },
-    "max": {
-      "background": "#B537F2",
-      "text": "#FFFFFF",
-      "name": "Max"
-    },
-    "prime": {
-      "background": "#00A8E1",
-      "text": "#FFFFFF",
-      "name": "Prime Video"
-    },
-    "hulu": {
-      "background": "#1CE783",
-      "text": "#000000",
-      "name": "Hulu"
-    },
-    "peacock": {
-      "background": "#000000",
-      "text": "#FFFFFF",
-      "name": "Peacock"
-    },
-    "paramount_plus": {
-      "background": "#0064FF",
-      "text": "#FFFFFF",
-      "name": "Paramount+"
-    },
-    "apple_tv": {
-      "background": "#000000",
-      "text": "#FFFFFF",
-      "name": "Apple TV"
-    },
-    "amazon": {
-      "background": "#FF9900",
-      "text": "#000000",
-      "name": "Amazon"
-    },
-    "tubi": {
-      "background": "#FA382F",
-      "text": "#FFFFFF",
-      "name": "Tubi"
-    },
-    "youtube": {
-      "background": "#FF0000",
-      "text": "#FFFFFF",
-      "name": "YouTube"
-    },
-    "kanopy": {
-      "background": "#1B7A43",
-      "text": "#FFFFFF",
-      "name": "Kanopy"
-    },
-    "hoopla": {
-      "background": "#FC4F08",
-      "text": "#FFFFFF",
-      "name": "Hoopla"
-    },
-    "roku": {
-      "background": "#6C3A97",
-      "text": "#FFFFFF",
-      "name": "Roku Channel"
-    },
-    "pluto": {
-      "background": "#00B4E4",
-      "text": "#FFFFFF",
-      "name": "Pluto TV"
-    },
-    "crackle": {
-      "background": "#FF6600",
-      "text": "#FFFFFF",
-      "name": "Crackle"
-    },
-    "mubi": {
-      "background": "#DA2128",
-      "text": "#FFFFFF",
-      "name": "MUBI"
-    },
-    "shudder": {
-      "background": "#8B0000",
-      "text": "#FFFFFF",
-      "name": "Shudder"
-    },
-    "criterion": {
-      "background": "#000000",
-      "text": "#FFFFFF",
-      "border": "#444444",
-      "name": "Criterion"
-    },
-    "fandango": {
-      "background": "#FF6600",
-      "text": "#FFFFFF",
-      "name": "Fandango"
+    "special": {
+        "preorder":    { "bg": "#7C3AED", "text": "#FFFFFF", "name": "Pre-Order" },
+        "restoration": { "bg": "#C8A951", "text": "#000000", "name": "Restored" },
+        "screening":   { "bg": "transparent", "text": "#FFD700", "name": "Buy Ticket", "border": "#FFD700" }
     }
-  }
 }

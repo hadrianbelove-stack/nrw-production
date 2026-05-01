@@ -14,6 +14,32 @@
     --screening-gold: #FFD700;
     --screening-glow: rgba(255, 215, 0, 0.3);
     --screening-subtle: rgba(255, 215, 0, 0.05);
+
+    /* Service colors — single source of truth for badges + buttons */
+    --svc-netflix: #E50914;
+    --svc-disney: #113CCF;
+    --svc-max: #B537F2;
+    --svc-prime: #00A8E1;
+    --svc-hulu: #1CE783;
+    --svc-peacock: #000;
+    --svc-mubi: #DA2128;
+    --svc-shudder: #8B0000;
+    --svc-criterion: #000;
+    --svc-tubi: #FA382F;
+    --svc-youtube: #FF0000;
+    --svc-paramount: #0064FF;
+    --svc-kanopy: #1B7A43;
+    --svc-hoopla: #FC4F08;
+    --svc-roku: #6C3A97;
+    --svc-pluto: #00B4E4;
+    --svc-crackle: #FF6600;
+    --svc-amc: #1B6FE0;
+    --svc-fawesome: #5B8DEF;
+    --svc-fandango: #FF6600;
+    --svc-amazon: #ff9900;
+    --svc-apple: #000;
+    --svc-preorder: #7c3aed;
+    --svc-restoration: #C8A951;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -248,24 +274,6 @@ header h1 {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Removed diagonal stripes - clean design */
-.trailers-card::before {
-    display: none;
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: repeating-linear-gradient(
-        45deg,
-        transparent,
-        transparent 10px,
-        rgba(0,212,170,0.05) 10px,
-        rgba(0,212,170,0.05) 20px
-    );
-}
-
 .trailers-card:hover {
     transform: scale(1.05);
     box-shadow: 0 12px 40px rgba(0,0,0,0.5),
@@ -304,7 +312,7 @@ header h1 {
     justify-content: center;
     width: 50px;
     height: 50px;
-    background: #E50914;
+    background: var(--svc-netflix);
     border-radius: 50%;
     font-size: 1.2rem;
     color: #ffffff;
@@ -407,29 +415,29 @@ header h1 {
     z-index: 5;
 }
 
-/* Service badge colors - source of truth: assets/service-colors.json */
-.badge-netflix { background: #E50914; color: white; }
-.badge-disney { background: #113CCF; color: white; }
-.badge-max { background: #B537F2; color: white; }
-.badge-prime { background: #00A8E1; color: white; }
-.badge-hulu { background: #1CE783; color: black; }
-.badge-peacock { background: #000; color: white; }
-.badge-mubi { background: #DA2128; color: white; }
-.badge-shudder { background: #8B0000; color: white; }
-.badge-criterion { background: #000; color: white; border: 1px solid #444; }
-.badge-tubi { background: #FA382F; color: white; }
-.badge-youtube { background: #FF0000; color: white; }
-.badge-paramount { background: #0064FF; color: white; }
-.badge-kanopy { background: #1B7A43; color: white; }
-.badge-hoopla { background: #FC4F08; color: white; }
-.badge-roku { background: #6C3A97; color: white; }
-.badge-pluto { background: #00B4E4; color: white; }
-.badge-crackle { background: #FF6600; color: white; }
-.badge-amc { background: #1B6FE0; color: white; }
-.badge-fawesome { background: #2D2D2D; color: white; }
-.badge-fandango { background: #FF6600; color: white; }
+/* Service badge colors — uses :root service color variables */
+.badge-netflix { background: var(--svc-netflix); color: white; }
+.badge-disney { background: var(--svc-disney); color: white; }
+.badge-max { background: var(--svc-max); color: white; }
+.badge-prime { background: var(--svc-prime); color: white; }
+.badge-hulu { background: var(--svc-hulu); color: black; }
+.badge-peacock { background: var(--svc-peacock); color: white; }
+.badge-mubi { background: var(--svc-mubi); color: white; }
+.badge-shudder { background: var(--svc-shudder); color: white; }
+.badge-criterion { background: var(--svc-criterion); color: white; border: 1px solid #444; }
+.badge-tubi { background: var(--svc-tubi); color: white; }
+.badge-youtube { background: var(--svc-youtube); color: white; }
+.badge-paramount { background: var(--svc-paramount); color: white; }
+.badge-kanopy { background: var(--svc-kanopy); color: white; }
+.badge-hoopla { background: var(--svc-hoopla); color: white; }
+.badge-roku { background: var(--svc-roku); color: white; }
+.badge-pluto { background: var(--svc-pluto); color: white; }
+.badge-crackle { background: var(--svc-crackle); color: white; }
+.badge-amc { background: var(--svc-amc); color: white; }
+.badge-fawesome { background: var(--svc-fawesome); color: white; }
+.badge-fandango { background: var(--svc-fandango); color: white; }
 .badge-other { background: #444; color: white; }
-.badge-preorder { background: #7c3aed; color: white; }
+.badge-preorder { background: var(--svc-preorder); color: white; }
 
 /* Restoration/reissue badge on poster (top-left, opposite streaming badge) */
 .restoration-badge {
@@ -443,7 +451,7 @@ header h1 {
     letter-spacing: 0.5px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.5);
     z-index: 5;
-    background: #C8A951;
+    background: var(--svc-restoration);
     color: #000;
 }
 
@@ -1134,30 +1142,30 @@ header h1 {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-/* Service colors */
-.watch-btn-lb.stream { background: #00d4aa; color: #000; }
-.watch-btn-lb.netflix { background: #E50914; color: #fff; }
-.watch-btn-lb.max { background: #B537F2; color: #fff; }
-.watch-btn-lb.disney { background: #113CCF; color: #fff; }
-.watch-btn-lb.hulu { background: #1CE783; color: #000; }
-.watch-btn-lb.prime { background: #00A8E1; color: #fff; }
-.watch-btn-lb.mubi { background: #DA2128; color: #fff; }
-.watch-btn-lb.peacock { background: #000; color: #fff; border: 1px solid #444; }
-.watch-btn-lb.shudder { background: #8B0000; color: #fff; }
-.watch-btn-lb.criterion { background: #000; color: #fff; border: 1px solid #444; }
-.watch-btn-lb.purchase { background: #ff9500; color: #000; }
-.watch-btn-lb.amazon { background: #ff9900; color: #000; }
-.watch-btn-lb.apple { background: #000; color: #fff; border: 1px solid #444; }
-.watch-btn-lb.tubi { background: #FA382F; color: #fff; }
-.watch-btn-lb.youtube { background: #FF0000; color: #fff; }
-.watch-btn-lb.paramount { background: #0064FF; color: #fff; }
-.watch-btn-lb.kanopy { background: #1B7A43; color: #fff; }
-.watch-btn-lb.hoopla { background: #FC4F08; color: #fff; }
-.watch-btn-lb.roku { background: #6C3A97; color: #fff; }
-.watch-btn-lb.pluto { background: #00B4E4; color: #fff; }
-.watch-btn-lb.crackle { background: #FF6600; color: #fff; }
-.watch-btn-lb.fawesome { background: #5B8DEF; color: #fff; }
-.watch-btn-lb.fandango { background: #FF6600; color: #fff; }
+/* Service colors — references :root variables */
+.watch-btn-lb.stream { background: var(--accent-primary); color: #000; }
+.watch-btn-lb.netflix { background: var(--svc-netflix); color: #fff; }
+.watch-btn-lb.max { background: var(--svc-max); color: #fff; }
+.watch-btn-lb.disney { background: var(--svc-disney); color: #fff; }
+.watch-btn-lb.hulu { background: var(--svc-hulu); color: #000; }
+.watch-btn-lb.prime { background: var(--svc-prime); color: #fff; }
+.watch-btn-lb.mubi { background: var(--svc-mubi); color: #fff; }
+.watch-btn-lb.peacock { background: var(--svc-peacock); color: #fff; border: 1px solid #444; }
+.watch-btn-lb.shudder { background: var(--svc-shudder); color: #fff; }
+.watch-btn-lb.criterion { background: var(--svc-criterion); color: #fff; border: 1px solid #444; }
+.watch-btn-lb.purchase { background: var(--svc-amazon); color: #000; }
+.watch-btn-lb.amazon { background: var(--svc-amazon); color: #000; }
+.watch-btn-lb.apple { background: var(--svc-apple); color: #fff; border: 1px solid #444; }
+.watch-btn-lb.tubi { background: var(--svc-tubi); color: #fff; }
+.watch-btn-lb.youtube { background: var(--svc-youtube); color: #fff; }
+.watch-btn-lb.paramount { background: var(--svc-paramount); color: #fff; }
+.watch-btn-lb.kanopy { background: var(--svc-kanopy); color: #fff; }
+.watch-btn-lb.hoopla { background: var(--svc-hoopla); color: #fff; }
+.watch-btn-lb.roku { background: var(--svc-roku); color: #fff; }
+.watch-btn-lb.pluto { background: var(--svc-pluto); color: #fff; }
+.watch-btn-lb.crackle { background: var(--svc-crackle); color: #fff; }
+.watch-btn-lb.fawesome { background: var(--svc-fawesome); color: #fff; }
+.watch-btn-lb.fandango { background: var(--svc-fandango); color: #fff; }
 .lightbox-buttons .watch-btn-lb.screening { background: transparent; color: #FFD700; border: 2px solid #FFD700; font-weight: 700; }
 
 /* Info row: horizontal, equal-width */

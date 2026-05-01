@@ -283,36 +283,49 @@ export function getWatchLinks(movie) {
   const links = [];
   const watchLinks = movie.watch_links || {};
 
+  // Plex link (personal library — highest priority)
+  if (movie.plex && movie.plex.deep_link) {
+    links.push({
+      service: 'plex',
+      label: 'Play on Plex',
+      url: movie.plex.deep_link,
+      type: 'plex',
+      icon: 'plex',
+    });
+  }
+
   // Pre-order links (future release — no real watch links yet)
   const preOrderLinks = movie.pre_order_links || {};
   const todayStr = new Date().toISOString().split('T')[0];
   if (movie.digital_date > todayStr && Object.keys(preOrderLinks).length > 0) {
     if (preOrderLinks.amazon) {
-      links.push({service: 'amazon', label: 'Pre-Order', url: preOrderLinks.amazon, type: 'preorder'});
+      links.push({service: 'amazon', label: 'Pre-Order', url: preOrderLinks.amazon, type: 'preorder', icon: 'amazon'});
     }
     if (preOrderLinks.apple_tv) {
-      links.push({service: 'apple_tv', label: 'Pre-Order', url: preOrderLinks.apple_tv, type: 'preorder'});
+      links.push({service: 'apple_tv', label: 'Pre-Order', url: preOrderLinks.apple_tv, type: 'preorder', icon: 'apple_tv'});
     }
     return links; // pre-order links only; no real watch links should exist yet
   }
 
-  // Handle VOD (purchase/rent)
+  // Handle VOD (purchase/rent) — only recognized services
   const vod = watchLinks.vod;
   if (Array.isArray(vod)) {
     vod.forEach(item => {
-      if (item && item.link) {
+      if (item && item.link && isValidVodService(item.service)) {
+        const isEventive = isEventiveLink(item.service, item.link);
         links.push({
           service: normalizeServiceId(item.service),
-          label: `Rent on ${item.service || 'VOD'}`,
+          label: isEventive ? 'Buy Ticket' : `Rent on ${item.service || 'VOD'}`,
           url: item.link,
           type: 'purchase',
         });
       }
     });
-  } else if (vod && vod.link) {
+  } else if (vod && vod.link && isValidVodService(vod.service)) {
+    const isEventive = isEventiveLink(vod.service, vod.link);
     links.push({
       service: normalizeServiceId(vod.service),
-      label: `Rent on ${vod.service || 'VOD'}`,
+      label: isEventive ? 'Buy Ticket' : `Rent on ${vod.service || 'VOD'}`,
       url: vod.link,
       type: 'purchase',
     });
@@ -344,6 +357,33 @@ export function getWatchLinks(movie) {
 }
 
 /**
+ * Check if a VOD service is one we want to display
+ */
+function isValidVodService(serviceName) {
+  if (!serviceName) return false;
+  const lower = serviceName.toLowerCase();
+  return lower.includes('amazon') ||
+         lower.includes('apple') ||
+         lower.includes('itunes') ||
+         lower.includes('fandango') ||
+         lower.includes('youtube') ||
+         lower.includes('vudu') ||
+         lower.includes('eventive');
+}
+
+/**
+ * Check if a link is an Eventive/festival screening link
+ */
+function isEventiveLink(serviceName, link) {
+  const s = (serviceName || '').toLowerCase();
+  const l = link || '';
+  return s.includes('eventive') ||
+         l.includes('eventive.org') ||
+         l.includes('festivalplayer') ||
+         l.includes('shift72.com');
+}
+
+/**
  * Normalize service name to ID
  */
 function normalizeServiceId(serviceName) {
@@ -359,6 +399,18 @@ function normalizeServiceId(serviceName) {
   if (lower.includes('paramount')) return 'paramount_plus';
   if (lower.includes('mubi')) return 'mubi';
   if (lower.includes('criterion')) return 'criterion';
+  if (lower.includes('tubi')) return 'tubi';
+  if (lower.includes('kanopy')) return 'kanopy';
+  if (lower.includes('hoopla')) return 'hoopla';
+  if (lower.includes('roku')) return 'roku';
+  if (lower.includes('pluto')) return 'pluto';
+  if (lower.includes('crackle')) return 'crackle';
+  if (lower.includes('shudder')) return 'shudder';
+  if (lower.includes('fandango')) return 'fandango';
+  if (lower.includes('youtube')) return 'youtube';
+  if (lower.includes('plex')) return 'plex';
+  if (lower.includes('fawesome')) return 'fawesome';
+  if (lower.includes('eventive')) return 'eventive';
   return serviceName.toLowerCase().replace(/\s+/g, '_');
 }
 

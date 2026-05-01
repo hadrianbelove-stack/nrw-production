@@ -3,6 +3,14 @@
  * Fetches data.json and renders movies as flip cards with infinite scroll
  */
 
+// Touch/swipe thresholds
+const SWIPE_MIN_DISTANCE = 40;       // Minimum px for a horizontal swipe
+const SWIPE_DIRECTION_RATIO = 1.5;   // deltaX must exceed deltaY * this to count as horizontal
+const TAP_MAX_DISTANCE = 15;         // Max px movement to still count as a tap (not a drag)
+const SWIPE_DEBOUNCE_MS = 400;       // Cooldown after a swipe before another gesture fires
+const TAP_DEBOUNCE_MS = 500;         // Cooldown after a tap-flip before click handler fires
+const TRAILER_SWIPE_MIN = 50;        // Min px for trailer overlay swipe navigation
+
 const NRWMobile = {
     allMovies: [],
     filteredMovies: [],
@@ -12,75 +20,12 @@ const NRWMobile = {
     loadIncrement: 15,
     isLoading: false,
 
-    // Service config — single source of truth for mobile web
-    // Sync with: assets/service-colors.json, mobile/mobile.css
-    SERVICE_MAP: {
-        netflix:   { class: 'netflix',   name: 'NETFLIX',   btnName: 'Netflix',   bg: '#E50914', text: '#fff',  matches: ['netflix'] },
-        max:       { class: 'max',       name: 'MAX',       btnName: 'Max',       bg: '#B537F2', text: '#fff',  matches: ['max', 'hbo'] },
-        disney:    { class: 'disney',    name: 'DISNEY+',   btnName: 'Disney+',   bg: '#113CCF', text: '#fff',  matches: ['disney'] },
-        prime:     { class: 'prime',     name: 'PRIME',     btnName: 'Prime',     bg: '#00A8E1', text: '#fff',  matches: ['amazon', 'prime'] },
-        hulu:      { class: 'hulu',      name: 'HULU',      btnName: 'Hulu',      bg: '#1CE783', text: '#000',  matches: ['hulu'] },
-        peacock:   { class: 'peacock',   name: 'PEACOCK',   btnName: 'Peacock',   bg: '#000',    text: '#fff',  matches: ['peacock'] },
-        mubi:      { class: 'mubi',      name: 'MUBI',      btnName: 'MUBI',      bg: '#DA2128', text: '#fff',  matches: ['mubi'] },
-        shudder:   { class: 'shudder',   name: 'SHUDDER',   btnName: 'Shudder',   bg: '#8B0000', text: '#fff',  matches: ['shudder'] },
-        criterion: { class: 'criterion', name: 'CRITERION', btnName: 'Criterion', bg: '#000',    text: '#fff',  matches: ['criterion'] },
-        tubi:      { class: 'tubi',      name: 'TUBI',      btnName: 'Tubi',      bg: '#FA382F', text: '#fff',  matches: ['tubi'] },
-        youtube:   { class: 'youtube',   name: 'YOUTUBE',   btnName: 'YouTube',   bg: '#FF0000', text: '#fff',  matches: ['youtube'] },
-        paramount: { class: 'paramount', name: 'P+',        btnName: 'Paramount+',bg: '#0064FF', text: '#fff',  matches: ['paramount'] },
-        kanopy:    { class: 'kanopy',    name: 'KANOPY',    btnName: 'Kanopy',    bg: '#1B7A43', text: '#fff',  matches: ['kanopy'] },
-        hoopla:    { class: 'hoopla',    name: 'HOOPLA',    btnName: 'Hoopla',    bg: '#FC4F08', text: '#fff',  matches: ['hoopla'] },
-        roku:      { class: 'roku',      name: 'ROKU',      btnName: 'Roku Ch.',  bg: '#6C3A97', text: '#fff',  matches: ['roku'] },
-        pluto:     { class: 'pluto',     name: 'PLUTO',     btnName: 'Pluto TV',  bg: '#00B4E4', text: '#fff',  matches: ['pluto'] },
-        crackle:   { class: 'crackle',   name: 'CRACKLE',   btnName: 'Crackle',   bg: '#FF6600', text: '#fff',  matches: ['crackle'] },
-        fawesome:  { class: 'fawesome',  name: 'FAWESOME',  btnName: 'Fawesome',  bg: '#5B8DEF', text: '#fff',  matches: ['fawesome'] },
-        fandango:  { class: 'fandango',  name: 'FANDANGO',  btnName: 'Fandango',  bg: '#FF6600', text: '#fff',  matches: ['fandango'] },
-    },
-
-    // VOD service config — single source of truth for purchase/rental buttons
-    // To add a new VOD service: add it here + add corresponding entry in assets/app.js VOD_SERVICE_MAP
-    VOD_SERVICE_MAP: {
-        amazon:    { key: 'amazon',    matches: ['amazon', 'prime'],  label: 'Rent Amazon',    style: 'background:#ff9900;color:#000' },
-        apple:     { key: 'apple',     matches: ['apple', 'itunes'],  label: 'Rent Apple TV',  style: 'background:#000;color:#fff' },
-        fandango:  { key: 'fandango',  matches: ['fandango'],         label: 'Rent Fandango',  style: 'background:#FF6600;color:#fff' },
-        youtube:   { key: 'youtube',   matches: ['youtube'],          label: 'Rent YouTube',   style: 'background:#FF0000;color:#fff' },
-        screening: { key: 'screening', matches: ['eventive'],         label: 'Buy Ticket',     style: 'background:transparent;color:#FFD700;border:2px solid #FFD700',
-                     linkMatches: ['eventive.org', 'festivalplayer', 'shift72.com'] },
-    },
-
-    resolveService(rawName) {
-        if (!rawName) return null;
-        const s = rawName.toLowerCase();
-        for (const entry of Object.values(this.SERVICE_MAP)) {
-            if (entry.matches.some(m => s.includes(m))) return entry;
-        }
-        return null;
-    },
-
-    resolveVODService(serviceName, link) {
-        if (!serviceName) return null;
-        const s = serviceName.toLowerCase();
-        for (const entry of Object.values(this.VOD_SERVICE_MAP)) {
-            if (entry.matches.some(m => s.includes(m))) return entry;
-        }
-        if (link) {
-            for (const entry of Object.values(this.VOD_SERVICE_MAP)) {
-                if (entry.linkMatches && entry.linkMatches.some(m => link.includes(m))) return entry;
-            }
-        }
-        return null;
-    },
-
-    // Country display names per STYLE_GUIDE.md
-    // Only shorten long/formal names; keep short names as-is
-    countryAbbrev: {
-        'united states of america': 'USA', 'united states': 'USA', 'usa': 'USA',
-        'united kingdom': 'UK', 'great britain': 'UK',
-        'south korea': 'S. Korea',
-        'south africa': 'S. Africa',
-        'new zealand': 'N. Zealand',
-        'bosnia and herzegovina': 'Bosnia',
-        'saudi arabia': 'S. Arabia'
-    },
+    // Shared config — loaded from assets/shared-config.js
+    SERVICE_MAP: NRWConfig.SERVICE_MAP,
+    VOD_SERVICE_MAP: NRWConfig.VOD_SERVICE_MAP,
+    resolveService: NRWConfig.resolveService.bind(NRWConfig),
+    resolveVODService: NRWConfig.resolveVODService.bind(NRWConfig),
+    abbreviateCountry: NRWConfig.abbreviateCountry.bind(NRWConfig),
 
     formatShortDate(dateStr) {
         const [y, m, d] = dateStr.split('-');
@@ -107,15 +52,6 @@ const NRWMobile = {
             + `</div>`;
     },
 
-    abbreviateCountry(country) {
-        if (!country) return null;
-        const shortened = this.countryAbbrev[country.toLowerCase()];
-        if (shortened) return shortened;
-        if (country !== country[0].toUpperCase() + country.slice(1).toLowerCase()) {
-            return country[0].toUpperCase() + country.slice(1).toLowerCase();
-        }
-        return country;
-    },
 
     async init() {
         try {
@@ -469,9 +405,9 @@ const NRWMobile = {
         backEl.addEventListener('touchend', (e) => {
             const deltaX = e.changedTouches[0].clientX - swipeTouchStartX;
             const deltaY = e.changedTouches[0].clientY - swipeTouchStartY;
-            if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY) * 1.5) {
+            if (Math.abs(deltaX) > SWIPE_MIN_DISTANCE && Math.abs(deltaX) > Math.abs(deltaY) * SWIPE_DIRECTION_RATIO) {
                 justSwiped = true;
-                setTimeout(() => { justSwiped = false; }, 400);
+                setTimeout(() => { justSwiped = false; }, SWIPE_DEBOUNCE_MS);
                 this.navigateCard(card, deltaX > 0 ? -1 : 1);
             }
         }, { passive: true });
@@ -484,10 +420,10 @@ const NRWMobile = {
             if (e.target.closest('a, button')) return;
             const dx = e.changedTouches[0].clientX - swipeTouchStartX;
             const dy = e.changedTouches[0].clientY - swipeTouchStartY;
-            if (Math.abs(dx) < 15 && Math.abs(dy) < 15) {
+            if (Math.abs(dx) < TAP_MAX_DISTANCE && Math.abs(dy) < TAP_MAX_DISTANCE) {
                 if (justSwiped) return;
                 touchFlipped = true;
-                setTimeout(() => { touchFlipped = false; }, 500);
+                setTimeout(() => { touchFlipped = false; }, TAP_DEBOUNCE_MS);
                 card.classList.toggle('flipped');
             }
         }, { passive: true });
@@ -677,17 +613,17 @@ const NRWMobile = {
 
         const overlay = document.createElement('div');
         overlay.id = 'trailer-overlay';
-        overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);z-index:10000;display:flex;align-items:center;justify-content:center;';
+        overlay.className = 'trailer-overlay';
 
         overlay.innerHTML = `
-            <div id="trailer-video-wrap" style="position:relative;max-width:calc(100% - 60px);">
-                <button id="trailer-close" style="position:absolute;top:-14px;right:-14px;background:rgba(0,0,0,0.8);border:1px solid rgba(255,255,255,0.3);color:#fff;font-size:18px;line-height:1;width:30px;height:30px;border-radius:50%;cursor:pointer;z-index:1;display:flex;align-items:center;justify-content:center;">&times;</button>
-                ${hasPrev ? `<button id="trailer-prev" style="position:absolute;left:-28px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,0.6);font-size:32px;cursor:pointer;padding:8px;line-height:1;">&#8592;</button>` : ''}
-                ${hasNext ? `<button id="trailer-next" style="position:absolute;right:-28px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,0.6);font-size:32px;cursor:pointer;padding:8px;line-height:1;">&#8594;</button>` : ''}
-                <video controls autoplay playsinline style="display:block;width:100%;background:#000;">
+            <div id="trailer-video-wrap" class="trailer-video-wrap">
+                <button id="trailer-close" class="trailer-close-btn">&times;</button>
+                ${hasPrev ? '<button id="trailer-prev" class="trailer-nav-btn prev">&#8592;</button>' : ''}
+                ${hasNext ? '<button id="trailer-next" class="trailer-nav-btn next">&#8594;</button>' : ''}
+                <video controls autoplay playsinline>
                     <source src="${url}" type="video/mp4">
                 </video>
-                <div style="text-align:center;color:#888;font-size:12px;letter-spacing:0.05em;padding-top:8px;">${movie.display_title || movie.title || ''}</div>
+                <div class="trailer-video-title">${movie.display_title || movie.title || ''}</div>
             </div>
         `;
 
@@ -715,7 +651,7 @@ const NRWMobile = {
         overlay.addEventListener('touchstart', e => { swipeStartX = e.touches[0].clientX; }, { passive: true });
         overlay.addEventListener('touchend', e => {
             const dx = e.changedTouches[0].clientX - swipeStartX;
-            if (Math.abs(dx) > 50) {
+            if (Math.abs(dx) > TRAILER_SWIPE_MIN) {
                 if (dx > 0 && hasPrev) { close(); this._showTrailerAt(trailerMovies, idx - 1); }
                 else if (dx < 0 && hasNext) { close(); this._showTrailerAt(trailerMovies, idx + 1); }
             }

@@ -230,7 +230,8 @@ data class WatchOption(
 enum class WatchType {
     PURCHASE,
     STREAMING,
-    PREORDER
+    PREORDER,
+    PLEX
 }
 
 /**
@@ -331,6 +332,17 @@ fun Movie.getDirector(): String? {
  */
 fun Movie.getWatchOptions(): List<WatchOption> {
     val options = mutableListOf<WatchOption>()
+
+    // Plex link (personal library — highest priority)
+    plex?.deepLink?.let { url ->
+        options.add(WatchOption(
+            service = "plex",
+            label = "Play on Plex",
+            url = url,
+            type = WatchType.PLEX,
+            icon = "plex"
+        ))
+    }
 
     // Pre-order links (future release — no real watch links yet)
     val todayStr = java.time.LocalDate.now().toString()

@@ -6,6 +6,31 @@
     --staff-pick-glow: rgba(220, 20, 60, 0.3);
     --screening-gold: #FFD700;
     --screening-glow: rgba(255, 215, 0, 0.3);
+
+    /* Service colors — shared with assets/styles.css */
+    --svc-netflix: #E50914;
+    --svc-disney: #113CCF;
+    --svc-max: #B537F2;
+    --svc-prime: #00A8E1;
+    --svc-hulu: #1CE783;
+    --svc-peacock: #000;
+    --svc-mubi: #DA2128;
+    --svc-shudder: #8B0000;
+    --svc-criterion: #000;
+    --svc-tubi: #FA382F;
+    --svc-youtube: #FF0000;
+    --svc-paramount: #0064FF;
+    --svc-kanopy: #1B7A43;
+    --svc-hoopla: #FC4F08;
+    --svc-roku: #6C3A97;
+    --svc-pluto: #00B4E4;
+    --svc-crackle: #FF6600;
+    --svc-fawesome: #5B8DEF;
+    --svc-fandango: #FF6600;
+    --svc-amazon: #ff9900;
+    --svc-apple: #000;
+    --svc-preorder: #7c3aed;
+    --svc-restoration: #C8A951;
 }
 
 * {
@@ -255,21 +280,21 @@ body {
     text-transform: uppercase;
 }
 
-/* Service badge colors */
-.badge-netflix { background: #E50914; color: #fff; }
-.badge-disney { background: #113CCF; color: #fff; }
-.badge-max { background: #B537F2; color: #fff; }
-.badge-prime { background: #00A8E1; color: #fff; }
-.badge-hulu { background: #1CE783; color: #000; }
-.badge-peacock { background: #000; color: #fff; border: 1px solid #fff; }
-.badge-mubi { background: #DA2128; color: #fff; }
-.badge-shudder { background: #8B0000; color: #fff; }
-.badge-criterion { background: #000; color: #fff; border: 1px solid #fff; }
-.badge-tubi { background: #FA382F; color: #fff; }
-.badge-vod { background: #ff9500; color: #000; }
-.badge-preorder { background: #7c3aed; color: #fff; }
-.badge-screening { background: transparent; color: #FFD700; border: 1px solid #FFD700; }
-.badge-restoration { background: #C8A951; color: #000; left: 10px; right: auto; }
+/* Service badge colors — uses :root service color variables */
+.badge-netflix { background: var(--svc-netflix); color: #fff; }
+.badge-disney { background: var(--svc-disney); color: #fff; }
+.badge-max { background: var(--svc-max); color: #fff; }
+.badge-prime { background: var(--svc-prime); color: #fff; }
+.badge-hulu { background: var(--svc-hulu); color: #000; }
+.badge-peacock { background: var(--svc-peacock); color: #fff; border: 1px solid #fff; }
+.badge-mubi { background: var(--svc-mubi); color: #fff; }
+.badge-shudder { background: var(--svc-shudder); color: #fff; }
+.badge-criterion { background: var(--svc-criterion); color: #fff; border: 1px solid #fff; }
+.badge-tubi { background: var(--svc-tubi); color: #fff; }
+.badge-vod { background: var(--svc-amazon); color: #000; }
+.badge-preorder { background: var(--svc-preorder); color: #fff; }
+.badge-screening { background: transparent; color: var(--screening-gold); border: 1px solid var(--screening-gold); }
+.badge-restoration { background: var(--svc-restoration); color: #000; left: 10px; right: auto; }
 
 /* Design K badge bar (bottom of poster, replaces old screening ribbon) */
 .badge-bar {
@@ -650,6 +675,74 @@ body {
     text-align: center;
     padding: 60px 20px;
     color: #E50914;
+}
+
+/* === TRAILER OVERLAY === */
+.trailer-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.95);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.trailer-video-wrap {
+    position: relative;
+    max-width: calc(100% - 60px);
+}
+
+.trailer-close-btn {
+    position: absolute;
+    top: -14px;
+    right: -14px;
+    background: rgba(0,0,0,0.8);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: #fff;
+    font-size: 18px;
+    line-height: 1;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.trailer-nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.6);
+    font-size: 32px;
+    cursor: pointer;
+    padding: 8px;
+    line-height: 1;
+}
+
+.trailer-nav-btn.prev { left: -28px; }
+.trailer-nav-btn.next { right: -28px; }
+
+.trailer-video-wrap video {
+    display: block;
+    width: 100%;
+    background: #000;
+}
+
+.trailer-video-title {
+    text-align: center;
+    color: #888;
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    padding-top: 8px;
 }
 
 /* === RESPONSIVE ADJUSTMENTS === */
