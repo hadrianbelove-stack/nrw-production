@@ -237,16 +237,27 @@ class JustWatchClient:
 
             best_match = None
 
-            # Pass 1: title match + exact year (strongest signal)
-            for edge in edges:
-                node = edge['node']
-                content = node.get('content', {})
-                node_title_norm = self._normalize_title(content.get('title', ''))
-                if node_title_norm in titles_to_match and year and content.get('originalReleaseYear') == year:
-                    best_match = node
-                    break
+            # Pass 1: TMDB ID match (strongest — unique identifier, zero false positives)
+            if tmdb_id:
+                tmdb_id_str = str(tmdb_id)
+                for edge in edges:
+                    node = edge['node']
+                    ext_ids = node.get('content', {}).get('externalIds', {})
+                    if ext_ids and str(ext_ids.get('tmdbId', '')) == tmdb_id_str:
+                        best_match = node
+                        break
 
-            # Pass 2: title + director (very strong — same title + same director = same film)
+            # Pass 2: title + exact year
+            if not best_match:
+                for edge in edges:
+                    node = edge['node']
+                    content = node.get('content', {})
+                    node_title_norm = self._normalize_title(content.get('title', ''))
+                    if node_title_norm in titles_to_match and year and content.get('originalReleaseYear') == year:
+                        best_match = node
+                        break
+
+            # Pass 3: title + director (same title + same director = same film)
             if not best_match and director:
                 director_lower = director.lower()
                 for edge in edges:
@@ -261,39 +272,6 @@ class JustWatchClient:
                                 break
                         if best_match:
                             break
-
-            # Pass 3: title + close year (within 1 year — common for foreign films)
-            if not best_match:
-                for edge in edges:
-                    node = edge['node']
-                    content = node.get('content', {})
-                    node_title_norm = self._normalize_title(content.get('title', ''))
-                    node_year = content.get('originalReleaseYear')
-                    if node_title_norm in titles_to_match and year and node_year and abs(node_year - year) <= 1:
-                        best_match = node
-                        break
-
-            # Pass 4: TMDB ID match — title doesn't match but same movie confirmed by ID.
-            # Safer than old Pass 4 (year-only) because TMDB IDs are unique identifiers.
-            if not best_match and tmdb_id:
-                tmdb_id_str = str(tmdb_id)
-                for edge in edges:
-                    node = edge['node']
-                    ext_ids = node.get('content', {}).get('externalIds', {})
-                    if ext_ids and str(ext_ids.get('tmdbId', '')) == tmdb_id_str:
-                        best_match = node
-                        matched_content = node.get('content', {})
-                        self.logger.info(
-                            f"JustWatch TMDB ID match: searched '{title}' → "
-                            f"matched '{matched_content.get('title')}' "
-                            f"({matched_content.get('originalReleaseYear')}) "
-                            f"by TMDB ID {tmdb_id}"
-                        )
-                        break
-
-            # Pass 5 REMOVED: previously fell back to first result regardless
-            # of title. Now if no title or ID match is found, the movie isn't in
-            # JustWatch — return None rather than a wrong movie's data.
 
             if not best_match:
                 self.logger.debug(f"No title match for '{title}' in JustWatch results")
