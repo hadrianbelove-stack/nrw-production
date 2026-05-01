@@ -589,6 +589,31 @@ body {
     transform: scale(0.95);
 }
 
+/* Full-width button (trailer on top) */
+.btn-full {
+    width: 100%;
+    padding: 14px 8px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-align: center;
+    letter-spacing: 0.5px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.1s;
+    margin-bottom: 8px;
+}
+
+.btn-full:active {
+    transform: scale(0.95);
+}
+
 .btn-trailer {
     background: #E50914;
     color: #fff;
@@ -599,28 +624,24 @@ body {
     color: #000;
 }
 
-.score-row {
+/* Info row: Wiki + RT + IMDb shared */
+.info-row {
     display: flex;
     gap: 8px;
     margin-bottom: 8px;
 }
 
-.score-row .btn-equal.btn-rt {
+.btn-rt {
     background: rgba(250, 50, 50, 0.75);
     color: #fff;
     border: none;
 }
 
-.score-row .btn-equal.btn-imdb {
+.btn-imdb {
     background: rgba(245, 197, 24, 0.8);
     color: #000;
+    font-weight: 800;
     border: none;
-}
-
-.btn-rt, .btn-imdb {
-    background: rgba(255,255,255,0.1);
-    color: #fff;
-    border: 1px solid rgba(255,255,255,0.3);
 }
 
 .btn-wiki {

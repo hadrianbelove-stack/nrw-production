@@ -1168,10 +1168,14 @@ header h1 {
 .watch-btn-lb.fandango { background: var(--svc-fandango); color: #fff; }
 .lightbox-buttons .watch-btn-lb.screening { background: transparent; color: #FFD700; border: 2px solid #FFD700; font-weight: 700; }
 
-/* Info row: horizontal, equal-width */
+/* Trailer — full-width red button on top */
+.watch-btn-lb.trailer-top { background: #E50914; color: #fff; margin-bottom: 0.5rem; }
+
+/* Info row: Wiki + RT + IMDb shared, horizontal, equal-width */
 .lightbox-buttons .info-row {
     display: flex;
     gap: 0.5rem;
+    margin-top: 0.5rem;
 }
 
 .lightbox-buttons .info-btn-lb {
@@ -1190,8 +1194,9 @@ header h1 {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
-.info-btn-lb.trailer { background: #E50914; color: #fff; }
 .info-btn-lb.glass { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.3); }
+.info-btn-lb.rt { background: rgba(250, 50, 50, 0.85); color: #fff; }
+.info-btn-lb.imdb { background: rgba(245, 197, 24, 0.9); color: #000; font-weight: 800; }
 
 /* Navigation arrows - inline with content */
 .lightbox-nav {

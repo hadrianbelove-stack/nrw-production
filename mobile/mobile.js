@@ -336,14 +336,12 @@ const NRWMobile = {
                         ${movie.crew?.cast?.length ? ` &bull; Starring: ${movie.crew.cast.slice(0, 2).join(', ')}` : ''}
                         ${movie.original_language && movie.original_language !== 'en' ? ` &bull; Lang: ${movie.original_language.toUpperCase()}` : ''}
                     </p>
+                    ${this.getTrailerButtonFull(movie)}
                     <div class="watch-stack">
                         ${watchButton}
                     </div>
-                    <div class="buttons-row">
-                        ${this.getTrailerButton(movie)}
+                    <div class="info-row">
                         ${this.getWikiButton(movie)}
-                    </div>
-                    <div class="score-row">
                         ${this.getRTButton(movie)}
                         ${this.getIMDbButton(movie)}
                     </div>
@@ -550,6 +548,16 @@ const NRWMobile = {
             return `<a href="#" onclick="NRWMobile.showTrailer('${movie.id}');return false;" class="btn-equal btn-trailer">Trailer</a>`;
         }
         return `<a href="${trailerUrl}" target="_blank" rel="noopener" class="btn-equal btn-trailer">Trailer</a>`;
+    },
+
+    getTrailerButtonFull(movie) {
+        const trailerUrl = movie.links?.trailer_hosted || movie.links?.trailer;
+        if (!trailerUrl) return '';
+        const isMP4 = (() => { try { return new URL(trailerUrl).pathname.endsWith('.mp4'); } catch { return trailerUrl.endsWith('.mp4'); } })();
+        if (isMP4) {
+            return `<a href="#" onclick="NRWMobile.showTrailer('${movie.id}');return false;" class="btn-full btn-trailer">Trailer</a>`;
+        }
+        return `<a href="${trailerUrl}" target="_blank" rel="noopener" class="btn-full btn-trailer">Trailer</a>`;
     },
 
     getRTButton(movie) {

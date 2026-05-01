@@ -925,7 +925,13 @@ const NRW = {
         const watchLinks = movie.watch_links || {};
         const providers = movie.providers || {};
 
-        // Watch stack (streaming + VOD)
+        // 1. Trailer — full-width on top
+        const lbTrailerUrl = movie.links?.trailer_hosted || movie.links?.trailer;
+        if (lbTrailerUrl) {
+            buttonsHtml += `<button class="watch-btn-lb trailer-top" data-trailer="${lbTrailerUrl}">Trailer</button>`;
+        }
+
+        // 2. Watch stack (streaming + VOD)
         let watchHtml = '';
         const lbStreamData = this.getStreaming(watchLinks);
         let streamSvc = lbStreamData?.service;
@@ -958,32 +964,24 @@ const NRW = {
         if (vodHtml) watchHtml += `<div class="vod-row">${vodHtml}</div>`;
         if (watchHtml) buttonsHtml += `<div class="watch-stack">${watchHtml}</div>`;
 
-        // Info row (Trailer, Wiki)
+        // 3. Info row — Wiki + RT + IMDb shared row
         let infoHtml = '';
-        const lbTrailerUrl = movie.links?.trailer_hosted || movie.links?.trailer;
-        if (lbTrailerUrl) {
-            infoHtml += `<button class="info-btn-lb trailer" data-trailer="${lbTrailerUrl}">Trailer</button>`;
-        }
         if (movie.links?.wikipedia) {
             infoHtml += `<a href="${movie.links.wikipedia}" target="_blank" rel="noopener noreferrer" class="info-btn-lb glass">Wiki</a>`;
         }
-        if (infoHtml) buttonsHtml += `<div class="info-row">${infoHtml}</div>`;
-
-        // Score badges
-        let lbScoreHtml = '';
         if (movie.links?.rt) {
             const score = movie.rt_score ? ` ${movie.rt_score}` : '';
-            lbScoreHtml += `<a href="${movie.links.rt}" target="_blank" rel="noopener noreferrer" class="score-badge rt">RT${score}</a>`;
+            infoHtml += `<a href="${movie.links.rt}" target="_blank" rel="noopener noreferrer" class="info-btn-lb rt">RT${score}</a>`;
         }
         if (movie.imdb_rating) {
             const imdbUrl = movie.links?.imdb;
             if (imdbUrl) {
-                lbScoreHtml += `<a href="${imdbUrl}" target="_blank" rel="noopener noreferrer" class="score-badge imdb">IMDb ${movie.imdb_rating}</a>`;
+                infoHtml += `<a href="${imdbUrl}" target="_blank" rel="noopener noreferrer" class="info-btn-lb imdb">IMDb ${movie.imdb_rating}</a>`;
             } else {
-                lbScoreHtml += `<span class="score-badge imdb">IMDb ${movie.imdb_rating}</span>`;
+                infoHtml += `<span class="info-btn-lb imdb">IMDb ${movie.imdb_rating}</span>`;
             }
         }
-        if (lbScoreHtml) buttonsHtml += `<div class="score-row">${lbScoreHtml}</div>`;
+        if (infoHtml) buttonsHtml += `<div class="info-row">${infoHtml}</div>`;
 
         document.getElementById('lightbox-buttons').innerHTML = buttonsHtml;
     },
