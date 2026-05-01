@@ -121,3 +121,15 @@ media/trailers/
 
 # Hidden gems scraper output (working files)
 hidden_gems_output/
+
+# Root cleanliness - prevent one-off report outputs from being committed
+/*.xlsx
+/*.csv
+/*.jpg
+/*.png
+/hidden_gems*
+!/hidden_gems_scraper.py
+/december_hidden_gems*
+/letterboxd_vod_*.json
+/backlog_transitions.json
+/movie_tracking.json.backup.*
