@@ -327,48 +327,22 @@ header h1 {
 .card-inner {
     width: 100%;
     height: 100%;
-    transition: transform 0.8s;
-    transform-style: preserve-3d;
-    -webkit-transform-style: preserve-3d;
     position: relative;
 }
 
-.movie-card.flipped .card-inner {
-    -webkit-transform: rotateY(180deg);
-    transform: rotateY(180deg);
-}
-
-.movie-card.flipped .streaming-badge,
-.movie-card.flipped .restoration-badge {
-    display: none;
-}
-
-.card-front, .card-back {
+.card-front {
     position: absolute;
     width: 100%;
     height: 100%;
-    -webkit-backface-visibility: hidden;
-    backface-visibility: hidden;
-    -webkit-transform-style: preserve-3d;
-    transform-style: preserve-3d;
     border-radius: 15px;
     overflow: hidden;
     box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-}
-
-.card-front, .card-back {
     padding: 0;
     display: flex;
     flex-direction: column;
-}
-
-.card-front {
     background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1a 100%);
-    display: flex;
     align-items: center;
     justify-content: center;
-    -webkit-transform: rotateY(0deg);
-    transform: rotateY(0deg);
 }
 
 /* Fallback title shown when poster is missing */
@@ -419,16 +393,6 @@ header h1 {
     object-fit: cover;
 }
 
-.card-back {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    -webkit-transform: rotateY(180deg);
-    transform: rotateY(180deg);
-    pointer-events: none;
-    padding: 0.8rem;
-    box-sizing: border-box;
-    border-radius: 15px;
-}
-
 /* Streaming service pill badge on poster */
 .streaming-badge {
     position: absolute;
@@ -441,7 +405,6 @@ header h1 {
     letter-spacing: 0.5px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.5);
     z-index: 5;
-    backface-visibility: hidden;
 }
 
 /* Service badge colors - source of truth: assets/service-colors.json */
@@ -480,7 +443,6 @@ header h1 {
     letter-spacing: 0.5px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.5);
     z-index: 5;
-    backface-visibility: hidden;
     background: #C8A951;
     color: #000;
 }
@@ -506,17 +468,7 @@ header h1 {
     font-style: italic;
 }
 
-/* Virtual screening "Buy Ticket" button on cards (outlined gold) */
-.watch-btn-screening {
-    background: transparent !important;
-    color: #FFD700 !important;
-    border: 2px solid #FFD700 !important;
-    font-weight: 700;
-    font-size: 10px;
-    letter-spacing: 0.5px;
-}
-
-/* Virtual screening "Buy Ticket" button — styled via .lightbox-buttons rule below (line ~1508) */
+/* Virtual screening "Buy Ticket" button — styled via .lightbox-buttons rule below */
 
 .movie-info {
     margin-top: 0.4rem;
@@ -544,272 +496,7 @@ header h1 {
     color: var(--accent-primary);
 }
 
-.card-back h3 {
-    color: var(--accent-primary);
-    margin-bottom: 0.8rem;
-    font-size: 0.95rem;
-    text-align: center;
-    border-bottom: 1px solid var(--accent-primary);
-    padding-bottom: 0.3rem;
-}
-
-.card-back h3 .title-link {
-    color: var(--accent-primary);
-    text-decoration: none;
-    font-size: 0.95rem;
-    transition: color 0.3s ease;
-}
-
-.card-back h3 .title-link:hover {
-    color: var(--accent-hover);
-    text-decoration: underline;
-}
-
-.synopsis {
-    flex: 1;
-    font-size: 0.85rem;
-    line-height: 1.4;
-    color: #f0f0f0;
-    margin-bottom: 0.8rem;
-    overflow-y: auto;
-}
-
-.metadata {
-    margin-bottom: 1rem;
-    font-size: 0.9rem;
-}
-
-.metadata div {
-    margin-bottom: 0.3rem;
-    color: #bbb;
-}
-
-.metadata strong {
-    color: var(--accent-primary);
-}
-
-.actions {
-    margin-top: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.watch-buttons {
-    display: flex;
-    gap: 0.4rem;
-    align-items: stretch;
-}
-
-.actions .watch-btn {
-    padding: 0.5rem;
-    background: var(--accent-primary);
-    color: #000;
-    text-decoration: none;
-    border-radius: 8px;
-    text-align: center;
-    font-weight: bold;
-    font-size: 0.75rem;
-    transition: all 0.3s ease;
-    display: block;
-    text-transform: uppercase;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-
-.actions .watch-btn:focus {
-    outline: 2px solid var(--accent-primary);
-    outline-offset: 2px;
-}
-
-.actions .watch-btn-stream {
-    background: var(--accent-primary);
-    color: #000;
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.actions .watch-btn-stream:hover {
-    background: var(--accent-hover);
-    transform: translateY(-2px);
-    box-shadow: 0 5px 20px rgba(0,212,170,0.5);
-}
-
-.actions .watch-btn-purchase {
-    background: #ff9500;
-    color: #000;
-    flex: 0 0 auto;
-    width: 44px;
-    padding: 0.4rem;
-}
-
-.actions .watch-btn-purchase:hover {
-    background: #ffad33;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 20px rgba(255,149,0,0.5);
-}
-
-/* Amazon VOD button */
-.actions .watch-btn-amazon {
-    background: #ff9900;
-    color: #000;
-    flex: 0 0 auto;
-    width: 44px;
-    padding: 0.4rem;
-}
-
-.actions .watch-btn-amazon:hover {
-    background: #ffad33;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 20px rgba(255,153,0,0.5);
-}
-
-/* Apple TV VOD button */
-.actions .watch-btn-apple {
-    background: #000;
-    color: #fff;
-    flex: 0 0 auto;
-    width: 44px;
-    padding: 0.4rem;
-}
-
-.actions .watch-btn-apple:hover {
-    background: #333;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 20px rgba(0,0,0,0.5);
-}
-
-/* YouTube VOD button */
-.actions .watch-btn-youtube {
-    background: #FF0000;
-    color: #fff;
-    flex: 0 0 auto;
-    min-width: 44px;
-    padding: 0.4rem 0.6rem;
-    font-weight: 700;
-    font-size: 0.65rem;
-}
-
-.actions .watch-btn-youtube:hover {
-    background: #cc0000;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 20px rgba(255,0,0,0.5);
-}
-
-.actions .watch-btn-fandango {
-    background: #FF6600;
-    color: #fff;
-    flex: 0 0 auto;
-    width: 44px;
-    padding: 0.4rem;
-}
-
-.actions .watch-btn-fandango:hover {
-    background: #ff8533;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 20px rgba(255,102,0,0.5);
-}
-
-.actions .watch-btn-apple .btn-logo {
-    filter: brightness(0) invert(1);
-}
-
-
-.btn-logo {
-    max-width: 100%;
-    max-height: 24px;
-    display: block;
-}
-
-/* Streaming logos - keep original colors (Netflix red, etc) */
-.watch-btn-stream .btn-logo {
-    filter: none;
-    max-height: 20px;
-    max-width: 60px;
-    object-fit: contain;
-}
-
-/* Purchase logos (Amazon/Apple) - make dark for contrast on orange */
-.watch-btn-purchase .btn-logo {
-    filter: brightness(0);
-    max-height: 28px;
-}
-
-
-.actions .watch-btn-disabled {
-    background: #333;
-    color: #999;
-    cursor: default;
-    pointer-events: none;
-    opacity: 0.4;
-    border: 1px solid #444;
-    filter: grayscale(100%);
-}
-
-.actions .watch-btn-error {
-    background: #cc6600;
-    color: #fff;
-    border: 2px dashed #ff9500;
-    cursor: not-allowed;
-    pointer-events: none;
-    opacity: 0.8;
-}
-
-.info-links {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
-    gap: 0.5rem;
-}
-
-.info-links .info-btn {
-    padding: 0.5rem;
-    background: rgba(255,255,255,0.1);
-    color: #fff;
-    text-decoration: none;
-    border-radius: 5px;
-    text-align: center;
-    font-size: 0.85rem;
-    border: 1px solid rgba(255,255,255,0.2);
-    transition: all 0.3s ease;
-}
-
-.info-links .info-btn:hover {
-    background: var(--accent-glow);
-    border-color: var(--accent-primary);
-    color: var(--accent-primary);
-}
-
-.info-links .info-btn-neutral {
-    background: rgba(255,255,255,0.05);
-    color: #ccc;
-    border-color: rgba(255,255,255,0.1);
-}
-
-.info-links .info-btn-neutral:hover {
-    background: rgba(255,255,255,0.1);
-    border-color: rgba(255,255,255,0.3);
-    color: #fff;
-}
-
-.info-links .info-btn-disabled {
-    background: #333;
-    color: #999;
-    cursor: default;
-    pointer-events: none;
-    opacity: 0.5;
-}
-
-.info-links .info-btn-disabled:hover {
-    background: #333;
-    color: #999;
-    border-color: rgba(255,255,255,0.2);
-}
-
-/* Score badges row (card back + lightbox — shared) */
+/* Score badges row (lightbox) */
 .score-row {
     display: flex;
     gap: 0.5rem;
@@ -837,15 +524,6 @@ header h1 {
 .score-badge.imdb {
     background: rgba(245, 197, 24, 0.9);
     color: #000;
-}
-
-.bottom-meta {
-    padding-top: 0.5rem;
-    margin-top: 0.5rem;
-    border-top: 1px solid rgba(255,255,255,0.1);
-    font-size: 0.42rem;
-    color: #fff;
-    text-align: center;
 }
 
 /* Filter Description (slide-down when single filter active) */
@@ -920,9 +598,6 @@ header h1 {
         gap: 1.5rem;
     }
 
-    .actions {
-        gap: 0.4rem;
-    }
 }
 
 @media (max-width: 480px) {
@@ -965,18 +640,6 @@ header h1 {
         font-size: 1rem;
     }
 
-    .info-links {
-        grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
-    }
-
-    .actions {
-        gap: 0.4rem;
-    }
-
-    .actions .watch-btn {
-        font-size: 0.65rem;
-        padding: 0.4rem;
-    }
 }
 
 /* Bootstrap date indicator - shows approximate dates */
@@ -1261,7 +924,6 @@ header h1 {
     display: flex;
     gap: 4px;
     z-index: 5;
-    backface-visibility: hidden;
 }
 .card-score-overlay:empty { display: none; }
 .card-score-badge {
@@ -1495,6 +1157,7 @@ header h1 {
 .watch-btn-lb.pluto { background: #00B4E4; color: #fff; }
 .watch-btn-lb.crackle { background: #FF6600; color: #fff; }
 .watch-btn-lb.fawesome { background: #5B8DEF; color: #fff; }
+.watch-btn-lb.fandango { background: #FF6600; color: #fff; }
 .lightbox-buttons .watch-btn-lb.screening { background: transparent; color: #FFD700; border: 2px solid #FFD700; font-weight: 700; }
 
 /* Info row: horizontal, equal-width */

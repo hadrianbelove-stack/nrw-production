@@ -36,11 +36,36 @@ const NRWMobile = {
         fandango:  { class: 'fandango',  name: 'FANDANGO',  btnName: 'Fandango',  bg: '#FF6600', text: '#fff',  matches: ['fandango'] },
     },
 
+    // VOD service config — single source of truth for purchase/rental buttons
+    // To add a new VOD service: add it here + add corresponding entry in assets/app.js VOD_SERVICE_MAP
+    VOD_SERVICE_MAP: {
+        amazon:    { key: 'amazon',    matches: ['amazon', 'prime'],  label: 'Rent Amazon',    style: 'background:#ff9900;color:#000' },
+        apple:     { key: 'apple',     matches: ['apple', 'itunes'],  label: 'Rent Apple TV',  style: 'background:#000;color:#fff' },
+        fandango:  { key: 'fandango',  matches: ['fandango'],         label: 'Rent Fandango',  style: 'background:#FF6600;color:#fff' },
+        youtube:   { key: 'youtube',   matches: ['youtube'],          label: 'Rent YouTube',   style: 'background:#FF0000;color:#fff' },
+        screening: { key: 'screening', matches: ['eventive'],         label: 'Buy Ticket',     style: 'background:transparent;color:#FFD700;border:2px solid #FFD700',
+                     linkMatches: ['eventive.org', 'festivalplayer', 'shift72.com'] },
+    },
+
     resolveService(rawName) {
         if (!rawName) return null;
         const s = rawName.toLowerCase();
         for (const entry of Object.values(this.SERVICE_MAP)) {
             if (entry.matches.some(m => s.includes(m))) return entry;
+        }
+        return null;
+    },
+
+    resolveVODService(serviceName, link) {
+        if (!serviceName) return null;
+        const s = serviceName.toLowerCase();
+        for (const entry of Object.values(this.VOD_SERVICE_MAP)) {
+            if (entry.matches.some(m => s.includes(m))) return entry;
+        }
+        if (link) {
+            for (const entry of Object.values(this.VOD_SERVICE_MAP)) {
+                if (entry.linkMatches && entry.linkMatches.some(m => link.includes(m))) return entry;
+            }
         }
         return null;
     },
@@ -561,27 +586,9 @@ const NRWMobile = {
         const vodWithLinks = vodEntries.filter(v => v.link);
         if (vodWithLinks.length > 0) {
             const vodBtns = vodWithLinks.map(vod => {
-                const svc = vod.service.toLowerCase();
-                let label, style;
-                if (svc.includes('amazon') || svc.includes('prime')) {
-                    label = 'Rent Amazon';
-                    style = 'background:#ff9900;color:#000';
-                } else if (svc.includes('apple') || svc.includes('itunes')) {
-                    label = 'Rent Apple TV';
-                    style = 'background:#000;color:#fff';
-                } else if (svc.includes('fandango')) {
-                    label = 'Rent Fandango';
-                    style = 'background:#FF6600;color:#fff';
-                } else if (svc.includes('youtube')) {
-                    label = 'Rent YouTube';
-                    style = 'background:#FF0000;color:#fff';
-                } else if (svc.includes('eventive') || (vod.link && (vod.link.includes('eventive.org') || vod.link.includes('festivalplayer') || vod.link.includes('shift72.com')))) {
-                    label = 'Buy Ticket';
-                    style = 'background:transparent;color:#FFD700;border:2px solid #FFD700';
-                } else {
-                    return '';
-                }
-                return `<a href="${vod.link}" target="_blank" rel="noopener" class="btn-watch-vod" style="${style}">${label}</a>`;
+                const vodType = NRWMobile.resolveVODService(vod.service, vod.link);
+                if (!vodType) return '';
+                return `<a href="${vod.link}" target="_blank" rel="noopener" class="btn-watch-vod" style="${vodType.style}">${vodType.label}</a>`;
             }).filter(Boolean);
             if (vodBtns.length === 1) return vodBtns[0].replace('btn-watch-vod', 'btn-watch-full');
             return `<div class="vod-row">${vodBtns.join('')}</div>`;

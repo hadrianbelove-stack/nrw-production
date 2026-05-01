@@ -62,6 +62,17 @@ const NRW = {
         fandango:  { class: 'fandango',  name: 'FANDANGO',     badgeName: 'FANDANGO',  matches: ['fandango'],   logo: 'fandangoathome.png' },
     },
 
+    // VOD service config — single source of truth for purchase/rental buttons
+    // To add a new VOD service: add it here, then add CSS for .watch-btn-{key} and .watch-btn-lb.{key}
+    VOD_SERVICE_MAP: {
+        amazon:    { key: 'amazon',    matches: ['amazon', 'prime'],  label: 'AMAZON',     logo: 'pngimg.com%20-%20amazon_PNG17.png' },
+        apple:     { key: 'apple',     matches: ['apple', 'itunes'],  label: 'APPLE TV',   logo: 'apple%20logo.png' },
+        fandango:  { key: 'fandango',  matches: ['fandango'],         label: 'FANDANGO',   logo: 'fandangoathome.png' },
+        youtube:   { key: 'youtube',   matches: ['youtube'],          label: 'YOUTUBE',    logo: null },
+        screening: { key: 'screening', matches: ['eventive'],         label: 'BUY TICKET', logo: null,
+                     linkMatches: ['eventive.org', 'festivalplayer', 'shift72.com'] },
+    },
+
     // Filter descriptions — shown when a single filter is active
     // User will rewrite all of these; placeholder text for now
     FILTER_DESCRIPTIONS: {
@@ -109,6 +120,22 @@ const NRW = {
         return null;
     },
 
+    // Resolve a VOD service string to its VOD_SERVICE_MAP entry
+    // Returns null for unrecognized services (acts as whitelist)
+    resolveVODService(serviceName, link) {
+        if (!serviceName) return null;
+        const s = serviceName.toLowerCase();
+        for (const entry of Object.values(this.VOD_SERVICE_MAP)) {
+            if (entry.matches.some(m => s.includes(m))) return entry;
+        }
+        if (link) {
+            for (const entry of Object.values(this.VOD_SERVICE_MAP)) {
+                if (entry.linkMatches && entry.linkMatches.some(m => link.includes(m))) return entry;
+            }
+        }
+        return null;
+    },
+
     // Normalize streaming to {service, link} — handles both array and dict formats
     getStreaming(wl) {
         const s = wl?.streaming;
@@ -117,12 +144,6 @@ const NRW = {
         return null;
     },
 
-    getPurchaseLabel(service) {
-        const s = service.toLowerCase();
-        if (s.includes('amazon') || s.includes('prime')) return 'AMAZON';
-        if (s.includes('apple') || s.includes('itunes')) return 'APPLE TV';
-        return service.toUpperCase();
-    },
 
     // Lightbox state
     lightboxMovies: [],  // Movies currently in the lightbox (filtered/displayed)
@@ -466,142 +487,6 @@ const NRW = {
             const title = movie.title || 'Untitled';
             const year = movie.year || new Date(movie.digital_date).getFullYear();
             
-            // Build metadata for bottom of card
-            let bottomMetadata = [];
-            if (movie.genres && movie.genres.length > 0) {
-                bottomMetadata.push(movie.genres.slice(0, 2).join(' • '));
-            }
-            if (movie.studio) {
-                bottomMetadata.push(movie.studio);
-            }
-            // For limited series: show episode count + runtime
-            // For movies: just show runtime
-            if (movie.content_type === 'limited_series' && movie.episode_count) {
-                let seriesInfo = `${movie.episode_count} eps`;
-                if (movie.runtime) {
-                    seriesInfo += ` • ${movie.runtime} min/ep`;
-                }
-                bottomMetadata.push(seriesInfo);
-            } else if (movie.runtime) {
-                bottomMetadata.push(`${movie.runtime} min`);
-            }
-            const bottomInfo = bottomMetadata.join(' | ');
-
-            // Build platform-based watch buttons (SVOD, Amazon, Apple, YouTube, Plex)
-            const buildPlatformButtons = (movie) => {
-                const watchLinks = movie.watch_links || {};
-                const providers = movie.providers || {};
-                let buttonsHtml = '';
-
-                // Helper to render streaming button (active or disabled)
-                // Uses SERVICE_MAP logos when available, falls back to text
-                const renderStreamButton = (service, link) => {
-                    const resolved = NRW.resolveService(service);
-                    const displayName = resolved?.name || service.toUpperCase();
-                    const logoFile = resolved?.logo;
-                    const content = logoFile
-                        ? `<img src="logos%20and%20images/${logoFile}" alt="${displayName}" class="btn-logo">`
-                        : displayName;
-
-                    if (link) {
-                        return `<a href="${link}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-stream" aria-label="Watch on ${displayName}">${content}</a>`;
-                    } else {
-                        return `<span class="watch-btn watch-btn-stream watch-btn-disabled" aria-disabled="true" title="On ${displayName} - link pending">${content}</span>`;
-                    }
-                };
-
-                // 1. SVOD Streaming Button
-                // Check watch_links first, then fall back to providers
-                const streamData = NRW.getStreaming(watchLinks);
-                let streamingService = streamData?.service;
-                let streamingLink = streamData?.link;
-
-                // If no watch_links.streaming but providers.streaming exists, use first provider
-                if (!streamingService && providers.streaming?.length > 0) {
-                    // Filter out "with Ads" variants to get primary service
-                    const primaryProvider = providers.streaming.find(p => !p.includes('with Ads')) || providers.streaming[0];
-                    streamingService = primaryProvider;
-                    streamingLink = null; // No link available
-                }
-
-                if (streamingService) {
-                    buttonsHtml += renderStreamButton(streamingService, streamingLink);
-                }
-
-                // 2. Purchase Buttons (VOD: separate Amazon + Apple TV buttons)
-                const vodEntries = Array.isArray(watchLinks.vod) ? watchLinks.vod
-                    : (watchLinks.vod?.service ? [watchLinks.vod] : []);
-
-                vodEntries.forEach(vod => {
-                    const vodLink = vod.link || vod.url;
-                    if (vod.service && vodLink) {
-                        const svc = vod.service.toLowerCase();
-                        if (svc.includes('amazon') || svc.includes('prime')) {
-                            buttonsHtml += `<a href="${vodLink}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-amazon" aria-label="Rent/Buy on Amazon"><img src="logos%20and%20images/pngimg.com%20-%20amazon_PNG17.png" alt="Amazon" class="btn-logo"></a>`;
-                        } else if (svc.includes('apple') || svc.includes('itunes')) {
-                            buttonsHtml += `<a href="${vodLink}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-apple" aria-label="Rent/Buy on Apple TV"><img src="logos%20and%20images/apple%20logo.png" alt="Apple TV" class="btn-logo"></a>`;
-                        } else if (svc.includes('fandango')) {
-                            buttonsHtml += `<a href="${vodLink}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-fandango" aria-label="Rent/Buy on Fandango"><img src="logos%20and%20images/fandangoathome.png" alt="Fandango" class="btn-logo"></a>`;
-                        } else if (svc.includes('youtube')) {
-                            buttonsHtml += `<a href="${vodLink}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-youtube" aria-label="Rent/Buy on YouTube">YOUTUBE</a>`;
-                        } else if (svc.includes('eventive') || vodLink.includes('eventive.org') || vodLink.includes('festivalplayer') || vodLink.includes('shift72.com')) {
-                            buttonsHtml += `<a href="${vodLink}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-screening" aria-label="Buy Ticket">BUY TICKET</a>`;
-                        }
-                        // VOD whitelist: only Amazon, Apple, YouTube, and festival tickets
-                    }
-                });
-
-                // Pre-order links (future release — no streaming/VOD links yet)
-                if (!buttonsHtml) {
-                    const preOrderLinks = movie.pre_order_links || {};
-                    if (preOrderLinks.amazon) {
-                        buttonsHtml += `<a href="${preOrderLinks.amazon}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-amazon" aria-label="Pre-Order on Amazon"><img src="logos%20and%20images/pngimg.com%20-%20amazon_PNG17.png" alt="Amazon" class="btn-logo"> PRE-ORDER</a>`;
-                    }
-                    if (preOrderLinks.apple_tv) {
-                        buttonsHtml += `<a href="${preOrderLinks.apple_tv}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-apple" aria-label="Pre-Order on Apple TV"><img src="logos%20and%20images/apple%20logo.png" alt="Apple TV" class="btn-logo"> PRE-ORDER</a>`;
-                    }
-                }
-
-                // If still no valid links, show disabled placeholder
-                if (!buttonsHtml) {
-                    buttonsHtml = '<span class="watch-btn watch-btn-disabled" aria-disabled="true" title="Link not available">NOT AVAILABLE</span>';
-                }
-
-                // Wrap all buttons in a single container
-                return `<div class="watch-buttons">${buttonsHtml}</div>`;
-            };
-
-            const platformButtons = buildPlatformButtons(movie);
-
-            // Info links (Trailer + Wiki)
-            let infoLinks = [];
-
-            const cardTrailerUrl = movie.links?.trailer_hosted || movie.links?.trailer;
-            if (cardTrailerUrl) {
-                infoLinks.push(`<a href="#" data-trailer="${cardTrailerUrl}" class="info-btn">Trailer</a>`);
-            }
-
-            if (movie.links?.wikipedia) {
-                infoLinks.push(`<a href="${movie.links.wikipedia}" target="_blank" rel="noopener noreferrer" class="info-btn">Wiki</a>`);
-            }
-
-            // Score badges (RT + IMDb) — separate row below info links
-            let scoreBadges = [];
-
-            if (movie.links?.rt) {
-                const rtText = movie.rt_score ? `RT ${movie.rt_score}` : 'RT';
-                scoreBadges.push(`<a href="${movie.links.rt}" target="_blank" rel="noopener noreferrer" class="score-badge rt">${rtText}</a>`);
-            }
-
-            if (movie.imdb_rating) {
-                const imdbUrl = movie.links?.imdb;
-                if (imdbUrl) {
-                    scoreBadges.push(`<a href="${imdbUrl}" target="_blank" rel="noopener noreferrer" class="score-badge imdb">IMDb ${movie.imdb_rating}</a>`);
-                } else {
-                    scoreBadges.push(`<span class="score-badge imdb">IMDb ${movie.imdb_rating}</span>`);
-                }
-            }
-
             const isStaffPick = movie.categories?.is_staff_pick || this.staffPicks.includes(movie.id);
             const staffPickClass = isStaffPick ? ' staff-pick-movie' : '';
 
@@ -654,8 +539,6 @@ const NRW = {
                 ? '<div class="badge-bar red">\u2605 STAFF PICK \u2605</div>'
                 : '';
 
-            const scoreRowHtml = scoreBadges.length ? `<div class="score-row">${scoreBadges.join('')}</div>` : '';
-
             // Score badges for card front (bottom-left overlay)
             let cardScoreBadges = '';
             if (movie.rt_score && movie.links?.rt) {
@@ -684,17 +567,6 @@ const NRW = {
                                  ${movie.poster ? '' : 'style="display:none"'}>
                             ${cardScoreHtml}
                             <button class="expand-btn" data-movie-id="${movie.id}" aria-label="View fullscreen">&#x26F6;</button>
-                        </div>
-                        <div class="card-back">
-                            <div class="synopsis">${movie.synopsis || 'Synopsis coming soon'}</div>
-                            <div class="actions">
-                                ${platformButtons}
-                                <div class="info-links">
-                                    ${infoLinks.join('')}
-                                </div>
-                                ${scoreRowHtml}
-                            </div>
-                            <div class="bottom-meta">${bottomInfo}</div>
                         </div>
                     </div>
                 </div>
@@ -1160,25 +1032,9 @@ const NRW = {
         lbVodEntries.forEach(vod => {
             const vodLink = vod.link || vod.url;
             if (vod.service && vodLink) {
-                const svc = vod.service.toLowerCase();
-                let btnClass = 'purchase';
-                let label;
-                if (svc.includes('amazon') || svc.includes('prime')) {
-                    btnClass = 'amazon';
-                    label = this.getPurchaseLabel(vod.service);
-                } else if (svc.includes('apple') || svc.includes('itunes')) {
-                    btnClass = 'apple';
-                    label = this.getPurchaseLabel(vod.service);
-                } else if (svc.includes('youtube')) {
-                    btnClass = 'youtube';
-                    label = this.getPurchaseLabel(vod.service);
-                } else if (svc.includes('eventive') || vodLink.includes('eventive.org') || vodLink.includes('festivalplayer') || vodLink.includes('shift72.com')) {
-                    btnClass = 'screening';
-                    label = 'BUY TICKET';
-                } else {
-                    return; // VOD whitelist: only Amazon, Apple, YouTube, and festival tickets
-                }
-                vodHtml += `<a href="${vodLink}" target="_blank" rel="noopener noreferrer" class="watch-btn-lb ${btnClass}">${label}</a>`;
+                const vodType = this.resolveVODService(vod.service, vodLink);
+                if (!vodType) return;
+                vodHtml += `<a href="${vodLink}" target="_blank" rel="noopener noreferrer" class="watch-btn-lb ${vodType.key}">${vodType.label}</a>`;
             }
         });
         if (vodHtml) watchHtml += `<div class="vod-row">${vodHtml}</div>`;
