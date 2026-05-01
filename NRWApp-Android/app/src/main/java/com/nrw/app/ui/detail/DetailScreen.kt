@@ -4,6 +4,7 @@ import android.app.Activity
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -523,20 +524,20 @@ private fun MovieDetail(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Action buttons - compact row
+                // Trailer — full-width on top
+                trailerOption?.let { option ->
+                    TrailerButton(
+                        onClick = { onTrailerClick(option.url) },
+                        compact = false
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+                }
+
+                // Watch buttons row
                 FlowRow(
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    // Trailer button first (if available)
-                    trailerOption?.let { option ->
-                        TrailerButton(
-                            onClick = { onTrailerClick(option.url) },
-                            compact = true
-                        )
-                    }
-
-                    // Watch buttons - all in one row
                     watchOptions.forEach { option ->
                         WatchButton(
                             option = option,
@@ -546,18 +547,41 @@ private fun MovieDetail(
                     }
                 }
 
-                // RT & IMDb Scores — below action buttons
-                if (rtInfo != null || movie.imdbRating?.toFloatOrNull() != null) {
+                // Info row — Wiki + RT + IMDb shared
+                val hasWiki = movie.links?.wikipedia != null
+                if (hasWiki || rtInfo != null || movie.imdbRating?.toFloatOrNull() != null) {
                     Spacer(modifier = Modifier.height(10.dp))
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
+                        movie.links?.wikipedia?.let { wikiUrl ->
+                            val context = androidx.compose.ui.platform.LocalContext.current
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .clip(RoundedCornerShape(6.dp))
+                                    .background(Color.White.copy(alpha = 0.1f))
+                                    .border(1.dp, Color.White.copy(alpha = 0.3f), RoundedCornerShape(6.dp))
+                                    .clickable { com.nrw.app.utils.DeepLinkHelper.openUrl(context, wikiUrl, "wikipedia") }
+                                    .padding(horizontal = 10.dp, vertical = 6.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "Wiki",
+                                    color = TextPrimary,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 12.sp
+                                )
+                            }
+                        }
                         rtInfo?.let { (score, _) ->
                             Box(
                                 modifier = Modifier
+                                    .weight(1f)
                                     .clip(RoundedCornerShape(6.dp))
                                     .background(Color(0xFFFA3232).copy(alpha = 0.75f))
-                                    .padding(horizontal = 10.dp, vertical = 6.dp)
+                                    .padding(horizontal = 10.dp, vertical = 6.dp),
+                                contentAlignment = Alignment.Center
                             ) {
                                 Text(
                                     text = "RT $score%",
@@ -570,9 +594,11 @@ private fun MovieDetail(
                         movie.imdbRating?.toFloatOrNull()?.let { rating ->
                             Box(
                                 modifier = Modifier
+                                    .weight(1f)
                                     .clip(RoundedCornerShape(6.dp))
                                     .background(Color(0xFFF5C518).copy(alpha = 0.8f))
-                                    .padding(horizontal = 10.dp, vertical = 6.dp)
+                                    .padding(horizontal = 10.dp, vertical = 6.dp),
+                                contentAlignment = Alignment.Center
                             ) {
                                 Text(
                                     text = "IMDb ${"%.1f".format(rating)}",

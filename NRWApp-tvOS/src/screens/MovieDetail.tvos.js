@@ -33,6 +33,7 @@ import {
   openURL,
   openTrailer,
   openPlex,
+  openWikipedia,
   showLinkError,
 } from '../utils/links.tvos';
 import { fetchMovies } from '../services/api';
@@ -481,6 +482,19 @@ const MovieDetailTvOS = () => {
               </View>
             )}
 
+            {/* Trailer — full-width on top */}
+            {movie?.links?.trailer_hosted && (
+              <View style={styles.watchButtonRow}>
+                <ActionButton
+                  label="TRAILER"
+                  color="#E50914"
+                  onPress={() => setTrailerVisible(true)}
+                  hasTVPreferredFocus={true}
+                  testID="action-btn-trailer"
+                />
+              </View>
+            )}
+
             {/* Watch buttons row (streaming + VOD) */}
             {hasWatchOptions && (
               <View style={styles.watchButtonRow}>
@@ -490,7 +504,7 @@ const MovieDetailTvOS = () => {
                     label={streamingLinks[0].service.toUpperCase()}
                     color={getServiceColor(streamingLinks[0].service)}
                     onPress={() => handleWatchPress(streamingLinks[0])}
-                    hasTVPreferredFocus={true}
+                    hasTVPreferredFocus={!movie?.links?.trailer_hosted}
                     testID="action-btn-stream"
                   />
                 )}
@@ -505,7 +519,7 @@ const MovieDetailTvOS = () => {
                       borderColor={isVirtualScreening ? Colors.screeningGold : undefined}
                       textColor={isVirtualScreening ? Colors.screeningGold : undefined}
                       onPress={() => handleWatchPress(purchaseLinks[0])}
-                      hasTVPreferredFocus={streamingLinks.length === 0}
+                      hasTVPreferredFocus={!movie?.links?.trailer_hosted && streamingLinks.length === 0}
                       testID="action-btn-purchase"
                     />
                   );
@@ -523,40 +537,35 @@ const MovieDetailTvOS = () => {
               </View>
             )}
 
-            {/* Info buttons row (Trailer) */}
-            {movie?.links?.trailer_hosted && (
+            {/* Info row — Wiki + RT + IMDb shared */}
+            {(movie?.links?.wikipedia || rtScore || imdbScore) && (
               <View style={styles.infoButtonRow}>
-                <ActionButton
-                  label="TRAILER"
-                  color="#E50914"
-                  onPress={() => setTrailerVisible(true)}
-                  hasTVPreferredFocus={!hasWatchOptions}
-                  testID="action-btn-trailer"
-                />
-              </View>
-            )}
-
-            {/* RT & IMDb Scores — below action buttons */}
-            {(rtScore || imdbScore) && (
-              <View style={styles.scoreRow}>
+                {movie?.links?.wikipedia && (
+                  <ActionButton
+                    label="WIKI"
+                    color="transparent"
+                    borderColor="rgba(255,255,255,0.3)"
+                    textColor="#fff"
+                    onPress={() => openWikipedia(movie.links.wikipedia)}
+                    testID="action-btn-wiki"
+                  />
+                )}
                 {rtScore && (
-                  <View
-                    style={[
-                      styles.scoreBadge,
-                      { backgroundColor: 'rgba(250, 50, 50, 0.85)' },
-                    ]}
-                  >
-                    <Text style={styles.scoreBadgeText}>{rtScore.label}</Text>
-                    <Text style={styles.scoreBadgeLabel}>
-                      {rtScore.isFresh ? 'Fresh' : 'Rotten'}
-                    </Text>
-                  </View>
+                  <ActionButton
+                    label={`RT ${rtScore.label}`}
+                    color="rgba(250, 50, 50, 0.85)"
+                    onPress={() => movie?.links?.rt && openURL(movie.links.rt)}
+                    testID="action-btn-rt"
+                  />
                 )}
                 {imdbScore && (
-                  <View style={[styles.scoreBadge, { backgroundColor: '#F5C518' }]}>
-                    <Text style={[styles.scoreBadgeText, { color: '#000' }]}>{imdbScore.label}</Text>
-                    <Text style={[styles.scoreBadgeLabel, { color: '#000' }]}>IMDb</Text>
-                  </View>
+                  <ActionButton
+                    label={`IMDb ${imdbScore.label}`}
+                    color="#F5C518"
+                    textColor="#000"
+                    onPress={() => movie?.links?.imdb && openURL(movie.links.imdb)}
+                    testID="action-btn-imdb"
+                  />
                 )}
               </View>
             )}

@@ -32,7 +32,8 @@ Sub Init()
     m.vodButton1 = m.top.FindNode("vodButton1")
     m.vodButton2 = m.top.FindNode("vodButton2")
     m.plexButton = m.top.FindNode("plexButton")
-    m.scoreRow = m.top.FindNode("scoreRow")
+    m.infoRow = m.top.FindNode("infoRow")
+    m.wikiLabel = m.top.FindNode("wikiLabel")
     m.rtScoreLabel = m.top.FindNode("rtScoreLabel")
     m.imdbScoreLabel = m.top.FindNode("imdbScoreLabel")
 
@@ -251,8 +252,16 @@ Sub LoadMovie(index as Integer)
     ' Setup watch buttons
     SetupWatchButtons(movie)
 
-    ' Score badges (RT + IMDb) — below buttons
-    hasScore = false
+    ' Info row: Wiki + RT + IMDb — below buttons
+    hasInfo = false
+
+    ' Wiki link
+    if movie.links <> invalid AND movie.links.wikipedia <> invalid AND movie.links.wikipedia <> ""
+        m.wikiLabel.visible = true
+        hasInfo = true
+    else
+        m.wikiLabel.visible = false
+    end if
 
     if movie.rt_score <> invalid
         scoreStr = movie.rt_score.ToStr()
@@ -261,7 +270,7 @@ Sub LoadMovie(index as Integer)
         if scoreNum > 0
             m.rtScoreLabel.text = "RT " + Int(scoreNum).ToStr() + "%"
             m.rtScoreLabel.visible = true
-            hasScore = true
+            hasInfo = true
         else
             m.rtScoreLabel.visible = false
         end if
@@ -275,7 +284,7 @@ Sub LoadMovie(index as Integer)
         if ratingNum > 0
             m.imdbScoreLabel.text = "IMDb " + ratingStr
             m.imdbScoreLabel.visible = true
-            hasScore = true
+            hasInfo = true
         else
             m.imdbScoreLabel.visible = false
         end if
@@ -283,7 +292,7 @@ Sub LoadMovie(index as Integer)
         m.imdbScoreLabel.visible = false
     end if
 
-    m.scoreRow.visible = hasScore
+    m.infoRow.visible = hasInfo
 End Sub
 
 ' ============================================================================

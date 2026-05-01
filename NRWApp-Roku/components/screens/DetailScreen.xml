@@ -234,12 +234,18 @@
             visible="false" />
         </LayoutGroup>
 
-        <!-- Score badges row (RT + IMDb) -->
-        <LayoutGroup id="scoreRow"
+        <!-- Info row: Wiki + RT + IMDb -->
+        <LayoutGroup id="infoRow"
           layoutDirection="horiz"
           itemSpacings="[16]"
           translation="[0, 10]"
           visible="false">
+
+          <Label id="wikiLabel"
+            text="Wiki"
+            font="font:MediumBoldSystemFont"
+            color="0xFFFFFF99"
+            visible="false" />
 
           <Label id="rtScoreLabel"
             font="font:MediumBoldSystemFont"

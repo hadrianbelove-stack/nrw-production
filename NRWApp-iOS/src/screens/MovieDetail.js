@@ -21,7 +21,7 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {WatchButtonGroup} from '../components/WatchButton';
 import {Colors, Typography, Spacing} from '../constants/colors';
 import {getWatchLinks} from '../services/api';
-import {openWatchLink, openRottenTomatoes} from '../utils/links';
+import {openWatchLink, openRottenTomatoes, openWikipedia} from '../utils/links';
 import {trackMovieView, trackWatchButtonTap} from '../services/analytics';
 import TrailerPlayer from '../components/TrailerPlayer';
 
@@ -162,6 +162,12 @@ export default function MovieDetail({route}) {
     }
   }, [movie]);
 
+  const handleWikiPress = useCallback(() => {
+    if (movie.links?.wikipedia) {
+      openWikipedia(movie.links.wikipedia);
+    }
+  }, [movie]);
+
   const posterUrl = movie.poster_url || movie.poster;
   const director = movie.director || movie.crew?.director;
   const cast = movie.cast || movie.crew?.cast || [];
@@ -275,46 +281,41 @@ export default function MovieDetail({route}) {
         </View>
       </View>
 
+      {/* Trailer — full-width on top */}
+      {(movie.links?.trailer_hosted || movie.links?.trailer) && (
+        <View style={styles.section}>
+          <TouchableOpacity style={styles.trailerButton} onPress={handleTrailerPress}>
+            <Text style={styles.trailerButtonText}>▶ TRAILER</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
       {/* Watch buttons section */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Watch Now</Text>
         <WatchButtonGroup links={watchLinks} onPress={handleWatchPress} maxButtons={4} />
       </View>
 
-      {/* Info buttons */}
-      {(movie.links?.trailer_hosted || movie.links?.trailer) && (
+      {/* Info row — Wiki + RT + IMDb shared */}
+      {(movie.links?.wikipedia || movie.rt_score || movie.imdb_rating) && (
         <View style={styles.section}>
-          <TouchableOpacity style={styles.infoButton} onPress={handleTrailerPress}>
-            <Text style={styles.infoButtonText}>▶ Watch Trailer</Text>
-          </TouchableOpacity>
-        </View>
-      )}
-
-      {/* RT & IMDb Scores — below info links */}
-      {(movie.rt_score || movie.imdb_rating) && (
-        <View style={styles.section}>
-          <View style={styles.scoreRow}>
+          <View style={styles.infoRow}>
+            {movie.links?.wikipedia && (
+              <TouchableOpacity style={styles.infoBtnGlass} onPress={handleWikiPress}>
+                <Text style={styles.infoBtnGlassText}>Wiki</Text>
+              </TouchableOpacity>
+            )}
             {movie.rt_score && (
               <TouchableOpacity
-                style={styles.rtContainer}
+                style={[styles.infoBtnColored, { backgroundColor: 'rgba(250, 50, 50, 0.85)' }]}
                 onPress={handleRTPress}
                 disabled={!movie.links?.rotten_tomatoes}>
-                <View
-                  style={[
-                    styles.rtBadge,
-                    { backgroundColor: 'rgba(250, 50, 50, 0.85)' },
-                  ]}>
-                  <Text style={styles.rtScore}>{movie.rt_score}</Text>
-                </View>
-                <Text style={styles.rtLabel}>Rotten Tomatoes</Text>
+                <Text style={styles.infoBtnColoredText}>RT {movie.rt_score}</Text>
               </TouchableOpacity>
             )}
             {movie.imdb_rating && (
-              <View style={styles.rtContainer}>
-                <View style={[styles.rtBadge, { backgroundColor: '#F5C518' }]}>
-                  <Text style={[styles.rtScore, { color: '#000' }]}>{movie.imdb_rating}</Text>
-                </View>
-                <Text style={styles.rtLabel}>IMDb</Text>
+              <View style={[styles.infoBtnColored, { backgroundColor: '#F5C518' }]}>
+                <Text style={[styles.infoBtnColoredText, { color: '#000' }]}>IMDb {movie.imdb_rating}</Text>
               </View>
             )}
           </View>
@@ -571,28 +572,47 @@ const styles = StyleSheet.create({
     fontSize: Typography.caption,
     fontWeight: '600',
   },
-  scoreRow: {
-    flexDirection: 'row',
-    gap: Spacing.md,
-  },
-  rtContainer: {
-    flexDirection: 'row',
+  trailerButton: {
+    backgroundColor: '#E50914',
+    paddingVertical: Spacing.sm + 2,
+    paddingHorizontal: Spacing.md,
+    borderRadius: 8,
     alignItems: 'center',
   },
-  rtBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 4,
+  trailerButtonText: {
+    color: '#fff',
+    fontSize: Typography.button,
+    fontWeight: '700',
+    letterSpacing: 0.5,
   },
-  rtScore: {
-    color: Colors.textPrimary,
+  infoRow: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+  },
+  infoBtnGlass: {
+    flex: 1,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.3)',
+    paddingVertical: Spacing.sm,
+    borderRadius: 6,
+    alignItems: 'center',
+  },
+  infoBtnGlassText: {
+    color: '#fff',
+    fontSize: Typography.caption,
+    fontWeight: '600',
+  },
+  infoBtnColored: {
+    flex: 1,
+    paddingVertical: Spacing.sm,
+    borderRadius: 6,
+    alignItems: 'center',
+  },
+  infoBtnColoredText: {
+    color: '#fff',
     fontSize: Typography.caption,
     fontWeight: '700',
-  },
-  rtLabel: {
-    color: Colors.textMuted,
-    fontSize: Typography.caption - 1,
-    marginLeft: Spacing.xs,
   },
   genresContainer: {
     flexDirection: 'row',
