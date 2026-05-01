@@ -246,7 +246,23 @@ class JustWatchClient:
                     best_match = node
                     break
 
-            # Pass 2: title match + close year (within 1 year — common for foreign films)
+            # Pass 2: title + director (very strong — same title + same director = same film)
+            if not best_match and director:
+                director_lower = director.lower()
+                for edge in edges:
+                    node = edge['node']
+                    content = node.get('content', {})
+                    node_title_norm = self._normalize_title(content.get('title', ''))
+                    if node_title_norm in titles_to_match:
+                        credits = content.get('credits', [])
+                        for credit in credits:
+                            if credit.get('role') == 'DIRECTOR' and credit.get('name', '').lower() == director_lower:
+                                best_match = node
+                                break
+                        if best_match:
+                            break
+
+            # Pass 3: title + close year (within 1 year — common for foreign films)
             if not best_match:
                 for edge in edges:
                     node = edge['node']
@@ -256,46 +272,6 @@ class JustWatchClient:
                     if node_title_norm in titles_to_match and year and node_year and abs(node_year - year) <= 1:
                         best_match = node
                         break
-
-            # Pass 3: title match, any year — disambiguate by director first, then closest year.
-            # JustWatch returns results ordered by popularity, so if all else fails,
-            # first title match = most popular version of that title.
-            if not best_match:
-                title_matches = []
-                for edge in edges:
-                    node = edge['node']
-                    content = node.get('content', {})
-                    node_title_norm = self._normalize_title(content.get('title', ''))
-                    if node_title_norm in titles_to_match:
-                        title_matches.append(node)
-
-                if title_matches:
-                    # Try director match first (strongest disambiguation signal)
-                    if director and len(title_matches) > 1:
-                        director_lower = director.lower()
-                        for node in title_matches:
-                            credits = node.get('content', {}).get('credits', [])
-                            for credit in credits:
-                                if credit.get('role') == 'DIRECTOR' and credit.get('name', '').lower() == director_lower:
-                                    best_match = node
-                                    break
-                            if best_match:
-                                break
-
-                    # Fall back to closest year
-                    if not best_match and year:
-                        title_matches.sort(key=lambda n: abs((n.get('content', {}).get('originalReleaseYear') or 9999) - year))
-                        best_match = title_matches[0]
-                    elif not best_match:
-                        best_match = title_matches[0]
-
-                if best_match:
-                    matched_content = best_match.get('content', {})
-                    self.logger.info(
-                        f"JustWatch Pass 3 match for '{title}': "
-                        f"'{matched_content.get('title')}' ({matched_content.get('originalReleaseYear')}) "
-                        f"[wanted year {year}]"
-                    )
 
             # Pass 4: TMDB ID match — title doesn't match but same movie confirmed by ID.
             # Safer than old Pass 4 (year-only) because TMDB IDs are unique identifiers.

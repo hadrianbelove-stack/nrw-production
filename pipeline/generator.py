@@ -3566,6 +3566,7 @@ class DataGenerator:
                         # Clear revert history — movie now has valid providers
                         tracking_data['movies'][movie_id].pop('_jw_reverted_at', None)
                         tracking_data['movies'][movie_id].pop('_jw_revert_reason', None)
+                        tracking_data['movies'][movie_id].pop('_jw_revert_count', None)
                         # Record JW-discovered English title when it differs from ours
                         _jw_title = _jw_result.get('jw_title', '')
                         if _jw_title and _jw_title.lower() != _title.lower():
@@ -3581,11 +3582,14 @@ class DataGenerator:
                     tracking_data['movies'][movie_id]['status'] = 'tracking'
                     tracking_data['movies'][movie_id]['_jw_revert_reason'] = _revert_reason
                     tracking_data['movies'][movie_id].setdefault('_jw_reverted_at', _today_iso)
+                    _revert_count = tracking_data['movies'][movie_id].get('_jw_revert_count', 0) + 1
+                    tracking_data['movies'][movie_id]['_jw_revert_count'] = _revert_count
                     existing_movies[movie_index]['_jw_reverted'] = True
                     existing_movies[movie_index]['_jw_revert_reason'] = _revert_reason
                     existing_movies[movie_index]['_enrichment_status'] = 'reverted'
                     existing_movies[movie_index]['status'] = 'tracking'
-                    print(f"  🔄 {_title} — JustWatch pre-check: {_revert_reason} → reverted to tracking")
+                    if _revert_count == 1:
+                        print(f"  🔄 {_title} — JustWatch pre-check: {_revert_reason} → reverted to tracking")
                     signal.alarm(0)
                     continue
                 elif not _jw_verified:
@@ -3616,6 +3620,10 @@ class DataGenerator:
                     existing_movies[movie_index].update(enrichment_fields)
                     # Mark enrichment status as completed
                     existing_movies[movie_index]['_enrichment_status'] = 'completed'
+                    # Ensure status is available (may be stale 'tracking' from a prior revert)
+                    existing_movies[movie_index]['status'] = 'available'
+                    existing_movies[movie_index].pop('_jw_reverted', None)
+                    existing_movies[movie_index].pop('_jw_revert_reason', None)
 
                     # Track enrichment gaps (all meaningful fields, not just watch_links/rt)
                     gaps = []
@@ -4155,35 +4163,44 @@ class DataGenerator:
         self.logger.info(f"Archived {len(to_archive)} movies older than {days} days")
 
     def purge_removed_movies(self):
-        """Remove movies with status='removed' in movie_tracking.json from data.json.
+        """Remove movies with status='removed' or _enrichment_status='reverted' from data.json.
+
+        Handles two cases:
+        1. Manually removed movies (status='removed' in movie_tracking.json)
+        2. JW-reverted movies (_enrichment_status='reverted' in data.json) — discovered
+           but only available on excluded platforms, shouldn't be on the wall
 
         Mirrors archive_old_movies() pattern: archive first, then trim data.json.
-        Called during display generation so CI picks up manual removals.
+        Called during display generation so CI picks up removals.
         """
-        if not os.path.exists('data.json') or not os.path.exists('movie_tracking.json'):
+        if not os.path.exists('data.json'):
             return
 
-        with open('movie_tracking.json', 'r') as f:
-            tracking = json.load(f)
-
-        removed_ids = {str(mid) for mid, entry in tracking.get('movies', {}).items()
-                       if isinstance(entry, dict) and entry.get('status') == 'removed'}
-        if not removed_ids:
-            return
+        # Get manually removed IDs from tracking
+        removed_ids = set()
+        if os.path.exists('movie_tracking.json'):
+            with open('movie_tracking.json', 'r') as f:
+                tracking = json.load(f)
+            removed_ids = {str(mid) for mid, entry in tracking.get('movies', {}).items()
+                           if isinstance(entry, dict) and entry.get('status') == 'removed'}
 
         with open('data.json', 'r') as f:
             data = json.load(f)
 
         movies = data.get('movies', [])
         keep = []
-        to_purge = []
+        to_purge_removed = []
+        to_purge_reverted = []
         for m in movies:
             if str(m.get('id')) in removed_ids:
-                to_purge.append(m)
+                to_purge_removed.append(m)
+            elif m.get('_enrichment_status') == 'reverted':
+                to_purge_reverted.append(m)
             else:
                 keep.append(m)
 
-        if not to_purge:
+        all_purged = to_purge_removed + to_purge_reverted
+        if not all_purged:
             return
 
         # Archive purged movies (same pattern as archive_old_movies)
@@ -4198,7 +4215,7 @@ class DataGenerator:
                 archive_movies = []
 
         existing_ids = {str(m.get('id')) for m in archive_movies}
-        new_archived = [m for m in to_purge if str(m.get('id')) not in existing_ids]
+        new_archived = [m for m in all_purged if str(m.get('id')) not in existing_ids]
         archive_movies.extend(new_archived)
 
         archive_data = {
@@ -4212,11 +4229,19 @@ class DataGenerator:
         data['count'] = len(keep)
         self.storage.atomic_write_json(data, 'data.json', backup=False)
 
-        titles = [m.get('title', '?') for m in to_purge]
-        print(f"🗑️ Purged {len(to_purge)} manually removed movies → data_archive.json")
-        for t in titles:
-            print(f"   - {t}")
-        self.logger.info(f"Purged {len(to_purge)} removed movies: {titles}")
+        if to_purge_removed:
+            titles = [m.get('title', '?') for m in to_purge_removed]
+            print(f"🗑️ Purged {len(to_purge_removed)} manually removed movies → data_archive.json")
+            for t in titles:
+                print(f"   - {t}")
+            self.logger.info(f"Purged {len(to_purge_removed)} removed movies: {titles}")
+
+        if to_purge_reverted:
+            titles = [m.get('title', '?') for m in to_purge_reverted]
+            print(f"🔄 Purged {len(to_purge_reverted)} JW-reverted movies from wall → data_archive.json")
+            for t in titles:
+                print(f"   - {t}")
+            self.logger.info(f"Purged {len(to_purge_reverted)} reverted movies from wall: {titles}")
 
     def _inject_selected_pull_quotes(self, movies_list):
         """Add selected pull quotes from cache to movies for data.json output."""
