@@ -511,6 +511,8 @@ body {
     text-decoration: none;
     letter-spacing: 0.5px;
     -webkit-tap-highlight-color: transparent;
+    background: #00d4aa;
+    color: #000;
 }
 .vod-row {
     display: flex;
@@ -527,7 +529,37 @@ body {
     text-decoration: none;
     letter-spacing: 0.5px;
     -webkit-tap-highlight-color: transparent;
+    background: #444;
+    color: #fff;
 }
+
+/* Service colors — streaming buttons */
+.btn-watch-full.netflix { background: var(--svc-netflix); color: #fff; }
+.btn-watch-full.max { background: var(--svc-max); color: #fff; }
+.btn-watch-full.disney { background: var(--svc-disney); color: #fff; }
+.btn-watch-full.prime { background: var(--svc-prime); color: #fff; }
+.btn-watch-full.hulu { background: var(--svc-hulu); color: #000; }
+.btn-watch-full.peacock { background: var(--svc-peacock); color: #fff; border: 1px solid #444; }
+.btn-watch-full.mubi { background: var(--svc-mubi); color: #fff; }
+.btn-watch-full.shudder { background: var(--svc-shudder); color: #fff; }
+.btn-watch-full.criterion { background: var(--svc-criterion); color: #fff; border: 1px solid #444; }
+.btn-watch-full.tubi { background: var(--svc-tubi); color: #fff; }
+.btn-watch-full.youtube { background: var(--svc-youtube); color: #fff; }
+.btn-watch-full.paramount { background: var(--svc-paramount); color: #fff; }
+.btn-watch-full.kanopy { background: var(--svc-kanopy); color: #fff; }
+.btn-watch-full.hoopla { background: var(--svc-hoopla); color: #fff; }
+.btn-watch-full.roku { background: var(--svc-roku); color: #fff; }
+.btn-watch-full.pluto { background: var(--svc-pluto); color: #fff; }
+.btn-watch-full.crackle { background: var(--svc-crackle); color: #fff; }
+.btn-watch-full.amc { background: var(--svc-amc); color: #fff; }
+.btn-watch-full.fawesome { background: var(--svc-fawesome); color: #fff; }
+.btn-watch-full.fandango { background: var(--svc-fandango); color: #fff; }
+/* VOD — used on both btn-watch-full (single-VOD promotion) and btn-watch-vod */
+.btn-watch-full.amazon, .btn-watch-vod.amazon { background: var(--svc-amazon); color: #000; }
+.btn-watch-full.apple, .btn-watch-vod.apple { background: var(--svc-apple); color: #fff; border: 1px solid #444; }
+.btn-watch-vod.fandango { background: var(--svc-fandango); color: #fff; }
+.btn-watch-vod.youtube { background: var(--svc-youtube); color: #fff; }
+.btn-watch-full.screening, .btn-watch-vod.screening { background: transparent; color: #FFD700; border: 2px solid #FFD700; }
 
 /* === BUTTON ROWS === */
 .buttons-row {

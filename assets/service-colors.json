@@ -1,5 +1,5 @@
 {
-    "_comment": "Single source of truth for service colors across ALL platforms. Sync to: assets/styles.css (:root vars), shared-config.js, NRWApp-iOS WatchButton.js, NRWApp-tvOS WatchButton.tvos.js, NRWApp-Android Color.kt/WatchButton.kt, mobile/mobile.css",
+    "_comment": "REFERENCE ONLY — not loaded at runtime. CSS :root variables in styles.css and mobile.css are the single source of truth for web. Native apps (iOS/tvOS/Android/Roku) sync their hardcoded hex values from this file.",
     "streaming": {
         "netflix":   { "bg": "#E50914", "text": "#FFFFFF", "name": "Netflix",     "badgeName": "NETFLIX" },
         "max":       { "bg": "#B537F2", "text": "#FFFFFF", "name": "Max",         "badgeName": "MAX",     "matches": ["max", "hbo"] },
