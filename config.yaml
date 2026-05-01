@@ -534,6 +534,7 @@ gemini_scraper:
   enabled: true                    # Master kill switch - set false to use Playwright-only for all
   youtube_enabled: true            # YouTube-specific toggle - set false for Playwright-only trailers
   rt_enabled: true                 # RT-specific toggle - set false for Playwright-only RT
+  rt_search_enabled: false         # Gemini URL search for RT (disabled — 0% success on indie films, Playwright-primary now)
   wikipedia_enabled: true          # Wikipedia-specific toggle - set false for Playwright-only Wikipedia
   pull_quotes_enabled: true        # Pull quotes - find critic/Letterboxd quotes per movie
   pull_quotes_count: 8             # Number of critic quotes to request per movie

@@ -560,6 +560,32 @@ class RTScraperPlaywright(PlaywrightScraperBase):
 
             rt_score = self._extract_score_from_rt_page(rt_link)
 
+            # Year verification: reject wrong-year matches (e.g. "30 Minutes" 2025 → "30 Minutes or Less" 2011)
+            try:
+                page_title = self.page.title() or ""
+                year_match = re.search(r'\((\d{4})\)', page_title)
+                if year_match:
+                    page_year = int(year_match.group(1))
+                    if abs(page_year - year) > 1:
+                        self._log(f"Year mismatch: page has ({page_year}), expected ({year}) — rejecting {rt_link}", level='warning')
+                        rt_link = None
+                        rt_score = None
+            except Exception:
+                pass  # If title check fails, proceed with the result
+
+            if not rt_link:
+                self._log(f"No RT link found for {title} ({year})", level='warning')
+                cache_key = f"{title}_{year}"
+                self.cache[cache_key] = {
+                    'url': None,
+                    'score': None,
+                    'title': title,
+                    'scraped_at': datetime.now().isoformat()
+                }
+                self._save_cache()
+                self.stats['failures'] += 1
+                return None
+
             result = {
                 'url': rt_link,
                 'score': rt_score
