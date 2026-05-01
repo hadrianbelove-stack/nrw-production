@@ -924,6 +924,18 @@ class HybridRTFinder:
 
             # Extract movie title from page title
             movie_part = page_title.split('|')[0].strip() if '|' in page_title else page_title.strip()
+
+            # Validate year from page title before accepting match
+            page_year_match = re.search(r'\((\d{4})\)', movie_part)
+            if page_year_match and year:
+                page_year = int(page_year_match.group(1))
+                if abs(page_year - int(year)) > 1:  # Allow ±1 year for release date differences
+                    logger.warning(
+                        f"Playwright validation FAILED: page year {page_year} doesn't match "
+                        f"expected ~{year} for '{title}' (page: '{movie_part}')"
+                    )
+                    return None
+
             page_movie_title = re.sub(r'\s*\(\d{4}\)\s*$', '', movie_part).strip()
 
             # Compare titles (check both stored title and original_title)
@@ -968,7 +980,8 @@ class HybridRTFinder:
     def _page_title_matches(self, page_title: str, expected_title: str) -> bool:
         """Check if an RT page title matches the expected movie title.
 
-        Uses word overlap comparison, similar to URL slug validation.
+        Uses word overlap comparison with minimum threshold to prevent
+        false matches on common words.
         """
         if not page_title or not expected_title:
             return False
@@ -979,7 +992,8 @@ class HybridRTFinder:
             s = re.sub(r'[^a-z0-9\s]', '', s)
             words = set(s.split())
             words -= {'the', 'a', 'an', 'of', 'in', 'on', 'at', 'to', 'and', 'or', 'is', 'it'}
-            return {w for w in words if len(w) > 2}
+            # Keep numeric tokens (e.g. "30", "8") as they're distinctive in titles
+            return {w for w in words if len(w) > 2 or w.isdigit()}
 
         page_words = normalize(page_title)
         expected_words = normalize(expected_title)
@@ -988,14 +1002,25 @@ class HybridRTFinder:
             return True
 
         overlap = page_words & expected_words
-        # Need at least one significant word overlap
-        if overlap:
+
+        # For single-word titles, require the word to be present
+        if len(expected_words) == 1:
+            return expected_words <= page_words
+
+        # Guard: if expected is a strict subset of page (page has extra words),
+        # it's likely a different, longer-titled movie (e.g. "30 Minutes" vs "30 Minutes or Less")
+        if overlap == expected_words and len(page_words) > len(expected_words):
+            return False
+
+        # For multi-word titles, require majority overlap (>= 50% of expected words)
+        overlap_ratio = len(overlap) / len(expected_words)
+        if overlap_ratio >= 0.5:
             return True
 
-        # Also check substring match for single-word or transliterated titles
+        # Exact full-string match only (prevents partial containment false positives)
         page_flat = re.sub(r'[^a-z0-9]', '', page_title.lower())
         expected_flat = re.sub(r'[^a-z0-9]', '', expected_title.lower())
-        if page_flat in expected_flat or expected_flat in page_flat:
+        if expected_flat == page_flat:
             return True
 
         return False
@@ -1089,19 +1114,19 @@ class HybridRTFinder:
         original_title: str = None
     ) -> Optional[Dict[str, str]]:
         """
-        Find RT score using Gemini, validated by Playwright, with Playwright fallback.
+        Find RT score using Playwright-primary search, Gemini score-only fallback.
 
         Flow:
-        1. Gemini finds URL + score
-        2. Playwright visits the URL to verify it's the right movie
-        3. If validation passes, return result (with Playwright's score if available)
-        4. If validation fails or Gemini fails, fall back to Playwright search
+        1. Check cache (existing entries preserved)
+        2. PRIMARY: Playwright searches RT directly for URL + score
+        3. If URL found but no score: Gemini reads the known URL for score
+        4. OPTIONAL: Gemini search as last resort (disabled by default via config)
 
         Args:
             title: Movie title
             year: Release year
             director: Optional director for disambiguation
-            use_fallback: Whether to try Playwright if Gemini fails
+            use_fallback: Whether to try Gemini search as last resort
             original_language: ISO 639-1 language code (e.g. 'es', 'fr')
             original_title: Original-language title from TMDB (if different from title)
 
@@ -1111,58 +1136,63 @@ class HybridRTFinder:
         self.stats['total_requests'] += 1
         cache_key = f"{title}_{year}"
 
-        # Try Gemini first
-        result = self.gemini_finder.find_rt_score(title, year, director, original_language=original_language, original_title=original_title)
-
-        if result is not None:
-            # Check if already Playwright-validated (cached validation)
-            cached = self.gemini_finder.cache.get(cache_key, {})
-            if isinstance(cached, dict) and cached.get('_playwright_validated'):
-                self.stats['gemini_resolved'] += 1
-                return result
-
-            # Validate with Playwright
-            validated = self._validate_with_playwright(result, title, year,
-                                                       original_language=original_language,
-                                                       original_title=original_title)
-            if validated:
-                # Mark as validated in cache
-                if cache_key in self.gemini_finder.cache:
-                    self.gemini_finder.cache[cache_key]['_playwright_validated'] = True
-                    # Update score if Playwright found one
-                    if validated.get('score'):
-                        self.gemini_finder.cache[cache_key]['score'] = validated['score']
-                    self.gemini_finder._save_cache()
-                self.stats['gemini_resolved'] += 1
-                return validated
-            else:
-                # Validation failed — clear bad entry from cache
-                logger.warning(f"Clearing bad Gemini cache entry for '{title}' ({year})")
-                if cache_key in self.gemini_finder.cache:
-                    del self.gemini_finder.cache[cache_key]
-                    self.gemini_finder._save_cache()
-                # Fall through to Playwright fallback
-
-        # Check if this was a cache hit that returned None (no RT page exists)
-        if cache_key in self.gemini_finder.cache:
-            cached = self.gemini_finder.cache[cache_key]
-            if isinstance(cached, dict) and cached.get('url') is None:
+        # --- Cache check ---
+        cached = self.gemini_finder.cache.get(cache_key)
+        if isinstance(cached, dict):
+            if cached.get('url') and cached.get('score') and cached.get('_playwright_validated'):
+                self.stats['playwright_resolved'] += 1
+                return {'url': cached['url'], 'score': cached['score']}
+            if cached.get('url') is None and cached.get('score') is None:
+                # Previously confirmed: no RT page exists
                 return None
 
-        # Gemini failed or was rejected — try Playwright fallback if enabled
-        if use_fallback:
-            self.stats['fallback_attempts'] += 1
-            logger.info(f"Falling back to Playwright RT for {title} ({year})")
+        # --- PRIMARY: Playwright searches RT directly ---
+        playwright = self._get_playwright_scraper()
+        if playwright:
+            try:
+                result = playwright.scrape_rt_score(title, year)
+                if result and result.get('url'):
+                    # Playwright found the page — check if score was extracted
+                    if not result.get('score'):
+                        # URL found but no score: try Gemini on the known URL
+                        logger.info(f"Playwright found RT URL but no score for {title} ({year}), trying Gemini score extraction")
+                        gemini_score = self.gemini_finder.find_score_for_url(
+                            result['url'], title, year)
+                        if gemini_score:
+                            result['score'] = gemini_score
 
-            playwright = self._get_playwright_scraper()
-            if playwright:
-                try:
-                    result = playwright.scrape_rt_score(title, year)
-                    if result:
-                        self.stats['playwright_resolved'] += 1
-                        return result
-                except Exception as e:
-                    logger.error(f"Playwright RT fallback error: {e}")
+                    # Cache the result
+                    self.gemini_finder.cache[cache_key] = {
+                        'url': result['url'],
+                        'score': result.get('score'),
+                        'title': title,
+                        'scraped_at': time.strftime('%Y-%m-%dT%H:%M:%S'),
+                        '_playwright_validated': True
+                    }
+                    self.gemini_finder._save_cache()
+                    self.stats['playwright_resolved'] += 1
+                    return result
+            except Exception as e:
+                logger.error(f"Playwright RT search error for {title} ({year}): {e}")
+
+        # --- OPTIONAL: Gemini search as last resort (disabled by default) ---
+        rt_search_enabled = self.config.get('gemini_scraper', {}).get('rt_search_enabled', False)
+        if rt_search_enabled and use_fallback:
+            logger.info(f"Trying Gemini RT search for {title} ({year})")
+            result = self.gemini_finder.find_rt_score(title, year, director,
+                        original_language=original_language, original_title=original_title)
+            if result is not None:
+                validated = self._validate_with_playwright(result, title, year,
+                                original_language=original_language,
+                                original_title=original_title)
+                if validated:
+                    if cache_key in self.gemini_finder.cache:
+                        self.gemini_finder.cache[cache_key]['_playwright_validated'] = True
+                        if validated.get('score'):
+                            self.gemini_finder.cache[cache_key]['score'] = validated['score']
+                        self.gemini_finder._save_cache()
+                    self.stats['gemini_resolved'] += 1
+                    return validated
 
         self.stats['total_failures'] += 1
         return None

@@ -3098,8 +3098,12 @@ class DataGenerator:
                     result['rt_score'] = rt_data.get('score')
                 else:
                     result['links']['rt'] = rt_data
-                enrichment_results['rt_score'] = 'success'
-                self.logger.debug(f"RT: Found data for {title} ({year}) - Score: {result['rt_score']}")
+                # Only mark success if we actually got a score value
+                if result.get('rt_score'):
+                    enrichment_results['rt_score'] = 'success'
+                else:
+                    enrichment_results['rt_score'] = 'not_found'
+                self.logger.debug(f"RT: Found data for {title} ({year}) - Score: {result.get('rt_score', 'None')}")
             else:
                 enrichment_results['rt_score'] = 'not_found'
                 self.logger.debug(f"RT: No data found for {title} ({year})")
@@ -3625,7 +3629,7 @@ class DataGenerator:
                     ) if isinstance(wl, dict) else bool(wl)
                     if not has_real_links:
                         gaps.append('watch_links')
-                    if enrichment_fields.get('links', {}).get('rt') is None and enrichment_fields.get('rt_score') is None:
+                    if enrichment_fields.get('rt_score') is None:
                         gaps.append('rt_score')
                     if not enrichment_fields.get('links', {}).get('trailer'):
                         gaps.append('trailer')
