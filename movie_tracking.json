@@ -183662,7 +183662,7 @@
     "1390575": {
       "title": "Nukkad Naatak",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-02-27",
       "digital_date": "2026-04-29",
       "providers": {
@@ -183677,9 +183677,7 @@
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-04-29",
-      "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-04-30"
+      "enrichment_date": "2026-04-29"
     },
     "1381697": {
       "title": "The Spin",
@@ -212752,7 +212750,7 @@
       "title": "LOVED ONE",
       "content_type": "limited_series",
       "tmdb_id": 315438,
-      "status": "available",
+      "status": "removed",
       "first_air_date": "2026-04-08",
       "digital_date": "2026-04-08",
       "episode_count": 4,
@@ -212779,7 +212777,9 @@
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
       "enriched": false,
-      "enrichment_date": null
+      "enrichment_date": null,
+      "removed_date": "2026-04-30",
+      "removed_reason": "manual_removal"
     },
     "1303439": {
       "title": "Captain Tsunami",
