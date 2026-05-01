@@ -347,6 +347,7 @@ const NRWMobile = {
                             : isStaffPick
                             ? '<div class="badge-bar red">\u2605 STAFF PICK \u2605</div>'
                             : ''}
+                        ${this.getScoreBadges(movie)}
                     </div>
                 </div>
                 <div class="card-caption">
@@ -373,9 +374,11 @@ const NRWMobile = {
                         ${movie.crew?.cast?.length ? ` &bull; Starring: ${movie.crew.cast.slice(0, 2).join(', ')}` : ''}
                         ${movie.original_language && movie.original_language !== 'en' ? ` &bull; Lang: ${movie.original_language.toUpperCase()}` : ''}
                     </p>
+                    <div class="watch-stack">
+                        ${watchButton}
+                    </div>
                     <div class="buttons-row">
                         ${this.getTrailerButton(movie)}
-                        ${watchButton}
                         ${this.getWikiButton(movie)}
                     </div>
                     <div class="score-row">
@@ -548,7 +551,7 @@ const NRWMobile = {
             const displayName = resolved?.btnName || service;
             const style = resolved ? `background:${resolved.bg};color:${resolved.text}` : 'background:#00d4aa;color:#000';
 
-            return `<a href="${link}" target="_blank" rel="noopener" class="btn-equal btn-watch" style="${style}">${displayName}</a>`;
+            return `<a href="${link}" target="_blank" rel="noopener" class="btn-watch-full" style="${style}">${displayName}</a>`;
         }
 
         // Fall back to VOD — separate Amazon + Apple TV buttons
@@ -556,35 +559,37 @@ const NRWMobile = {
             : (watchLinks.vod?.service ? [watchLinks.vod] : []);
         const vodWithLinks = vodEntries.filter(v => v.link);
         if (vodWithLinks.length > 0) {
-            return vodWithLinks.map(vod => {
+            const vodBtns = vodWithLinks.map(vod => {
                 const svc = vod.service.toLowerCase();
                 let label, style;
                 if (svc.includes('amazon') || svc.includes('prime')) {
-                    label = 'Amazon';
+                    label = 'Rent Amazon';
                     style = 'background:#ff9900;color:#000';
                 } else if (svc.includes('apple') || svc.includes('itunes')) {
-                    label = 'Apple TV';
+                    label = 'Rent Apple TV';
                     style = 'background:#000;color:#fff';
                 } else if (svc.includes('youtube')) {
-                    label = 'YouTube';
+                    label = 'Rent YouTube';
                     style = 'background:#FF0000;color:#fff';
                 } else if (svc.includes('eventive') || (vod.link && (vod.link.includes('eventive.org') || vod.link.includes('festivalplayer') || vod.link.includes('shift72.com')))) {
                     label = 'Buy Ticket';
                     style = 'background:transparent;color:#FFD700;border:2px solid #FFD700';
                 } else {
-                    return ''; // VOD whitelist: only Amazon, Apple, YouTube, and festival tickets
+                    return '';
                 }
-                return `<a href="${vod.link}" target="_blank" rel="noopener" class="btn-equal btn-watch" style="${style}">${label}</a>`;
-            }).join('');
+                return `<a href="${vod.link}" target="_blank" rel="noopener" class="btn-watch-vod" style="${style}">${label}</a>`;
+            }).filter(Boolean);
+            if (vodBtns.length === 1) return vodBtns[0].replace('btn-watch-vod', 'btn-watch-full');
+            return `<div class="vod-row">${vodBtns.join('')}</div>`;
         }
 
         // Pre-order links (future release — no streaming/VOD links found)
         const preOrderLinks = movie.pre_order_links || {};
         if (preOrderLinks.amazon) {
-            return `<a href="${preOrderLinks.amazon}" target="_blank" rel="noopener" class="btn-equal btn-watch" style="background:#ff9900;color:#000">Pre-Order</a>`;
+            return `<a href="${preOrderLinks.amazon}" target="_blank" rel="noopener" class="btn-watch-full" style="background:#ff9900;color:#000">Pre-Order</a>`;
         }
         if (preOrderLinks.apple_tv) {
-            return `<a href="${preOrderLinks.apple_tv}" target="_blank" rel="noopener" class="btn-equal btn-watch" style="background:#000;color:#fff">Pre-Order</a>`;
+            return `<a href="${preOrderLinks.apple_tv}" target="_blank" rel="noopener" class="btn-watch-full" style="background:#000;color:#fff">Pre-Order</a>`;
         }
 
         return '';
@@ -615,6 +620,22 @@ const NRWMobile = {
             return `<span class="btn-equal btn-imdb" style="opacity:0.5">IMDb ${movie.imdb_rating}</span>`;
         }
         return '';
+    },
+
+    getScoreBadges(movie) {
+        let badges = '';
+        if (movie.rt_score && movie.links?.rt) {
+            badges += `<a href="${movie.links.rt}" target="_blank" rel="noopener" class="card-score-badge rt">RT ${movie.rt_score}</a>`;
+        }
+        if (movie.imdb_rating) {
+            const imdbUrl = movie.links?.imdb;
+            if (imdbUrl) {
+                badges += `<a href="${imdbUrl}" target="_blank" rel="noopener" class="card-score-badge imdb">${movie.imdb_rating}</a>`;
+            } else {
+                badges += `<span class="card-score-badge imdb">${movie.imdb_rating}</span>`;
+            }
+        }
+        return badges ? `<div class="card-score-overlay">${badges}</div>` : '';
     },
 
     getWikiButton(movie) {

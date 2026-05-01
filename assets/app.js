@@ -653,6 +653,21 @@ const NRW = {
 
             const scoreRowHtml = scoreBadges.length ? `<div class="score-row">${scoreBadges.join('')}</div>` : '';
 
+            // Score badges for card front (bottom-left overlay)
+            let cardScoreBadges = '';
+            if (movie.rt_score && movie.links?.rt) {
+                cardScoreBadges += `<a href="${movie.links.rt}" target="_blank" rel="noopener noreferrer" class="card-score-badge rt">RT ${movie.rt_score}</a>`;
+            }
+            if (movie.imdb_rating) {
+                const imdbUrl = movie.links?.imdb;
+                if (imdbUrl) {
+                    cardScoreBadges += `<a href="${imdbUrl}" target="_blank" rel="noopener noreferrer" class="card-score-badge imdb">${movie.imdb_rating}</a>`;
+                } else {
+                    cardScoreBadges += `<span class="card-score-badge imdb">${movie.imdb_rating}</span>`;
+                }
+            }
+            const cardScoreHtml = cardScoreBadges ? `<div class="card-score-overlay">${cardScoreBadges}</div>` : '';
+
             html += `
             <div class="movie-container${staffPickClass}${screeningClass}">
                 <div class="movie-card">
@@ -664,6 +679,7 @@ const NRW = {
                             <img src="${movie.poster || ''}"
                                  onerror="this.style.display='none';"
                                  ${movie.poster ? '' : 'style="display:none"'}>
+                            ${cardScoreHtml}
                             <button class="expand-btn" data-movie-id="${movie.id}" aria-label="View fullscreen">&#x26F6;</button>
                         </div>
                         <div class="card-back">

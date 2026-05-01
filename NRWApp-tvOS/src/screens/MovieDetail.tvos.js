@@ -481,17 +481,17 @@ const MovieDetailTvOS = () => {
               </View>
             )}
 
-            {/* Action buttons - single row, equal sizing (above synopsis) */}
-            {(hasWatchOptions || hasInfoLinks) && (
-              <View style={styles.actionButtonRow}>
-                {/* TRAILER button — MP4 hosted trailers only (no WebView on tvOS) */}
-                {movie?.links?.trailer_hosted && (
+            {/* Watch buttons row (streaming + VOD) */}
+            {hasWatchOptions && (
+              <View style={styles.watchButtonRow}>
+                {/* STREAM button - first streaming option, shows service name */}
+                {streamingLinks.length > 0 && (
                   <ActionButton
-                    label="TRAILER"
-                    color="#E50914"
-                    onPress={() => setTrailerVisible(true)}
+                    label={streamingLinks[0].service.toUpperCase()}
+                    color={getServiceColor(streamingLinks[0].service)}
+                    onPress={() => handleWatchPress(streamingLinks[0])}
                     hasTVPreferredFocus={true}
-                    testID="action-btn-trailer"
+                    testID="action-btn-stream"
                   />
                 )}
 
@@ -505,22 +505,11 @@ const MovieDetailTvOS = () => {
                       borderColor={isVirtualScreening ? Colors.screeningGold : undefined}
                       textColor={isVirtualScreening ? Colors.screeningGold : undefined}
                       onPress={() => handleWatchPress(purchaseLinks[0])}
-                      hasTVPreferredFocus={!infoLinks.find(l => l.type === 'trailer')}
+                      hasTVPreferredFocus={streamingLinks.length === 0}
                       testID="action-btn-purchase"
                     />
                   );
                 })()}
-
-                {/* STREAM button - first streaming option, shows service name */}
-                {streamingLinks.length > 0 && (
-                  <ActionButton
-                    label={streamingLinks[0].service.toUpperCase()}
-                    color={getServiceColor(streamingLinks[0].service)}
-                    onPress={() => handleWatchPress(streamingLinks[0])}
-                    hasTVPreferredFocus={!infoLinks.find(l => l.type === 'trailer') && purchaseLinks.length === 0}
-                    testID="action-btn-stream"
-                  />
-                )}
 
                 {/* PLEX button if available */}
                 {plexLinks.length > 0 && (
@@ -531,6 +520,19 @@ const MovieDetailTvOS = () => {
                     testID="action-btn-plex"
                   />
                 )}
+              </View>
+            )}
+
+            {/* Info buttons row (Trailer) */}
+            {movie?.links?.trailer_hosted && (
+              <View style={styles.infoButtonRow}>
+                <ActionButton
+                  label="TRAILER"
+                  color="#E50914"
+                  onPress={() => setTrailerVisible(true)}
+                  hasTVPreferredFocus={!hasWatchOptions}
+                  testID="action-btn-trailer"
+                />
               </View>
             )}
 
@@ -818,11 +820,17 @@ const styles = StyleSheet.create({
     fontSize: Typography.tvos.body,
     lineHeight: Typography.tvos.body * 1.5,
   },
-  actionButtonRow: {
+  watchButtonRow: {
     flexDirection: 'row',
     marginTop: Spacing.tvos.lg,
     alignItems: 'center',
-    paddingLeft: Spacing.tvos.md,  // Add clearance from poster edge
+    paddingLeft: Spacing.tvos.md,
+  },
+  infoButtonRow: {
+    flexDirection: 'row',
+    marginTop: Spacing.tvos.sm,
+    alignItems: 'center',
+    paddingLeft: Spacing.tvos.md,
   },
   navArrowLeft: {
     position: 'absolute',
