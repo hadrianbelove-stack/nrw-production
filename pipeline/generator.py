@@ -718,6 +718,28 @@ class DataGenerator:
 
         return new_series_added
 
+    def _transition_movie_to_available(self, movie_id, movie, source, newly_available_ids):
+        """Transition a movie from tracking to available status.
+
+        Shared logic for both Type 4 and provider discovery paths.
+        Clears all revert/false-positive flags and queues the movie for enrichment.
+        """
+        movie['has_providers'] = True
+        movie['status'] = 'available'
+        movie['enriched'] = False
+        movie['enrichment_date'] = None
+        movie['_discovery_source'] = source
+        if 'providers' not in movie or not movie['providers']:
+            movie['providers'] = {'rent': [], 'buy': [], 'streaming': []}
+        # Clear ALL revert/false-positive flags from any prior state
+        for flag in ['_reverted_from_available', '_false_positive_source',
+                     '_jw_revert_reason', '_jw_reverted_at', '_jw_reverted',
+                     '_type4_false_positive', '_providers_false_positive',
+                     '_type4_pending']:
+            movie.pop(flag, None)
+        newly_available_ids.append(movie_id)
+        self.add_movie_to_site_immediately(movie_id, movie)
+
     def check_tracking_movies(self, max_to_check=None, priority_days=180):
         """
         PHASE 2: Discovery - Check tracking movies for provider availability.
@@ -869,20 +891,9 @@ class DataGenerator:
                                 pending_dt = datetime.strptime(pending_date, '%Y-%m-%d')
                                 if pending_dt <= today_dt:
                                     # Date arrived — transition to available
-                                    movie['has_providers'] = True
-                                    movie['status'] = 'available'
-                                    movie['enriched'] = False
-                                    movie['enrichment_date'] = None
-                                    movie['providers'] = {'rent': [], 'buy': [], 'streaming': []}
-                                    del movie['_type4_pending']
-                                    movie.pop('_reverted_from_available', None)
-                                    movie.pop('_false_positive_source', None)
-                                    movie.pop('_jw_revert_reason', None)
-                                    movie.pop('_jw_reverted_at', None)
-                                    movie.pop('_jw_reverted', None)
+                                    self._transition_movie_to_available(
+                                        movie_id, movie, 'tmdb_type4', newly_available_ids)
                                     newly_digital += 1
-                                    newly_available_ids.append(movie_id)
-                                    self.add_movie_to_site_immediately(movie_id, movie)
                                     self.logger.info(f"Type 4 pending released: {movie['title']} — {pending_date}")
                                     print(f"  📅 {movie['title']} — pending Type 4 arrived ({pending_date})")
                                 else:
@@ -900,22 +911,10 @@ class DataGenerator:
                                 type4_dt = datetime.strptime(type4_date, '%Y-%m-%d')
                                 if type4_dt <= today_dt:
                                     # Past or today — immediate transition
-                                    movie['has_providers'] = True
-                                    movie['_discovery_source'] = 'tmdb_type4'
                                     movie['digital_date'] = type4_date
-                                    movie['status'] = 'available'
-                                    movie['enriched'] = False
-                                    movie['enrichment_date'] = None
-                                    movie['providers'] = {'rent': [], 'buy': [], 'streaming': []}
-                                    movie.pop('_reverted_from_available', None)
-                                    movie.pop('_false_positive_source', None)
-                                    movie.pop('_providers_false_positive', None)  # Clear other source's flag
-                                    movie.pop('_jw_revert_reason', None)
-                                    movie.pop('_jw_reverted_at', None)
-                                    movie.pop('_jw_reverted', None)
+                                    self._transition_movie_to_available(
+                                        movie_id, movie, 'tmdb_type4', newly_available_ids)
                                     newly_digital += 1
-                                    newly_available_ids.append(movie_id)
-                                    self.add_movie_to_site_immediately(movie_id, movie)
                                     type4_found = True
                                     self.logger.info(f"Type 4 discovery: {movie['title']} — digital release {type4_date}")
                                     print(f"  📅 {movie['title']} — digital release {type4_date}")
@@ -1000,7 +999,6 @@ class DataGenerator:
 
                         # Transition provider-discovered movie
                         if has_providers and movie['status'] == 'tracking':
-                            movie['status'] = 'available'
                             if not movie.get('digital_date'):
                                 movie['digital_date'] = datetime.now().strftime('%Y-%m-%d')
                             movie['providers'] = {
@@ -1008,21 +1006,12 @@ class DataGenerator:
                                 'buy': buy_names,
                                 'streaming': stream_names
                             }
-                            movie['enriched'] = False
-                            movie['enrichment_date'] = None
-                            movie.pop('_reverted_from_available', None)
-                            movie.pop('_false_positive_source', None)
-                            movie.pop('_type4_false_positive', None)  # Clear other source's flag
-                            movie.pop('_jw_revert_reason', None)
-                            movie.pop('_jw_reverted_at', None)
-                            movie.pop('_jw_reverted', None)
+                            self._transition_movie_to_available(
+                                movie_id, movie, 'provider_availability_check', newly_available_ids)
                             newly_digital += 1
 
                             first_service = stream_names[0] if stream_names else rent_names[0] if rent_names else buy_names[0] if buy_names else '?'
                             print(f"  ✓ {movie['title']} now on {first_service}!")
-
-                            newly_available_ids.append(movie_id)
-                            self.add_movie_to_site_immediately(movie_id, movie)
 
                 # Incremental save every 100 movies
                 if checked % 100 == 0:
@@ -2991,6 +2980,26 @@ class DataGenerator:
 
         return warnings
 
+    def _run_enrichment_source(self, source_name, fn, enrichment_results, title, year):
+        """Run a single enrichment source with isolated failure handling.
+
+        Wraps the source function in try/except, logs success/failure/error,
+        and returns the result (or None on failure).
+        """
+        try:
+            result = fn()
+            if result:
+                enrichment_results[source_name] = 'success'
+                self.logger.debug(f"{source_name}: Found for {title} ({year})")
+            else:
+                enrichment_results[source_name] = 'not_found'
+                self.logger.debug(f"{source_name}: Not found for {title} ({year})")
+            return result
+        except Exception as e:
+            enrichment_results[source_name] = 'error'
+            self.logger.warning(f"{source_name}: Error for {title} ({year}): {type(e).__name__}: {str(e)[:100]}")
+            return None
+
     def get_enrichment_only_fields(self, movie_id, movie_data, movie_details, force_refresh=False):
         """Extract enrichment-only fields with graceful partial failure handling
 
@@ -3056,38 +3065,25 @@ class DataGenerator:
             'digital_date': 'not_attempted'
         }
 
-        # Wikipedia link (isolated failure handling)
-        try:
-            wiki_director = movie_details.get('crew', {}).get('director') if movie_details else None
-            wiki_orig_title = movie_details.get('original_name' if is_tv else 'original_title') if movie_details else None
-            wiki_url = self.find_wikipedia_url(title, year, imdb_id, movie_id,
-                                               director=wiki_director, original_title=wiki_orig_title)
-            if wiki_url:
-                result['links']['wikipedia'] = wiki_url
-                enrichment_results['wikipedia'] = 'success'
-                self.logger.debug(f"Wikipedia: Found page for {title} ({year})")
-            else:
-                enrichment_results['wikipedia'] = 'not_found'
-                self.logger.debug(f"Wikipedia: No page found for {title} ({year})")
-        except Exception as e:
-            enrichment_results['wikipedia'] = 'error'
-            self.logger.warning(f"Wikipedia: Error for {title} ({year}): {type(e).__name__}: {str(e)[:100]}")
+        # Wikipedia link
+        wiki_director = movie_details.get('crew', {}).get('director') if movie_details else None
+        wiki_orig_title = movie_details.get('original_name' if is_tv else 'original_title') if movie_details else None
+        wiki_url = self._run_enrichment_source(
+            'wikipedia',
+            lambda: self.find_wikipedia_url(title, year, imdb_id, movie_id,
+                                            director=wiki_director, original_title=wiki_orig_title),
+            enrichment_results, title, year)
+        if wiki_url:
+            result['links']['wikipedia'] = wiki_url
 
-        # Trailer link (isolated failure handling)
-        try:
-            trailer_result = self.find_trailer_url(movie_details)
-            if trailer_result:
-                trailer_url, trailer_source = trailer_result
-                result['links']['trailer'] = trailer_url
-                result['_trailer_source'] = trailer_source
-                enrichment_results['trailer'] = 'success'
-                self.logger.debug(f"Trailer: Found for {title} ({year})")
-            else:
-                enrichment_results['trailer'] = 'not_found'
-                self.logger.debug(f"Trailer: Not found for {title} ({year})")
-        except Exception as e:
-            enrichment_results['trailer'] = 'error'
-            self.logger.warning(f"Trailer: Error for {title} ({year}): {type(e).__name__}: {str(e)[:100]}")
+        # Trailer link
+        trailer_result = self._run_enrichment_source(
+            'trailer', lambda: self.find_trailer_url(movie_details),
+            enrichment_results, title, year)
+        if trailer_result:
+            trailer_url, trailer_source = trailer_result
+            result['links']['trailer'] = trailer_url
+            result['_trailer_source'] = trailer_source
 
         # RT score and link (isolated failure handling)
         try:
@@ -3111,21 +3107,14 @@ class DataGenerator:
             enrichment_results['rt_score'] = 'error'
             self.logger.warning(f"RT: Error for {title} ({year}): {type(e).__name__}: {str(e)[:100]}")
 
-        # IMDB rating (isolated failure handling)
-        try:
-            imdb_rating = self.get_imdb_rating(imdb_id, title, year)
-            if imdb_rating:
-                result['imdb_rating'] = imdb_rating
-                enrichment_results['imdb_rating'] = 'success'
-                self.logger.debug(f"IMDB: Rating {imdb_rating} for {title} ({year})")
-            else:
-                enrichment_results['imdb_rating'] = 'not_found'
-                self.logger.debug(f"IMDB: No rating found for {title} ({year})")
-            if imdb_id:
-                result['links']['imdb'] = f"https://www.imdb.com/title/{imdb_id}/"
-        except Exception as e:
-            enrichment_results['imdb_rating'] = 'error'
-            self.logger.warning(f"IMDB: Error for {title} ({year}): {type(e).__name__}: {str(e)[:100]}")
+        # IMDB rating
+        imdb_rating = self._run_enrichment_source(
+            'imdb_rating', lambda: self.get_imdb_rating(imdb_id, title, year),
+            enrichment_results, title, year)
+        if imdb_rating:
+            result['imdb_rating'] = imdb_rating
+        if imdb_id:
+            result['links']['imdb'] = f"https://www.imdb.com/title/{imdb_id}/"
 
         # Pull quotes (isolated failure handling)
         pull_quotes_enabled = self.config.get('gemini_scraper', {}).get('pull_quotes_enabled', False)

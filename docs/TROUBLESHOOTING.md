@@ -2,10 +2,7 @@
 
 **Purpose:** Common failure modes for NRW automation workflows and how to fix them.
 
-**Related Docs:**
-- [museum_legacy/troubleshooting/](../museum_legacy/troubleshooting/) - Historical post-mortems with detailed debugging
-
-**Last Updated:** 2025-11-06
+**Last Updated:** 2026-04-30
 
 ---
 
@@ -127,10 +124,6 @@ python3 -u youtube_playlist_manager.py auth
 - Verify OAuth app credentials in Google Cloud Console
 - Don't manually revoke tokens in Google account settings
 
-**See Also:**
-- [Post-mortem: Oct 28, 2025](../museum_legacy/troubleshooting/2025-10-28-workflow-failures.md#issue-1-youtube-playlist-workflow-failure)
-- [Post-mortem: Nov 3, 2025](../museum_legacy/troubleshooting/2025-11-03-workflow-status.md#1-youtube-playlist-workflow)
-
 ---
 
 ## Daily Update Workflow Failures
@@ -230,9 +223,6 @@ git diff movie_tracking.json
 - Consider loosening validation temporarily during debugging
 - Add alerting for extended validation failures
 
-**See Also:**
-- [Post-mortem: Nov 3, 2025](../museum_legacy/troubleshooting/2025-11-03-workflow-status.md#2-daily-update-workflow)
-
 ---
 
 ### 3. Workflow Timeout / 2+ Hour Runtimes
@@ -252,15 +242,7 @@ git diff movie_tracking.json
 **Solutions:**
 
 ```bash
-# Legacy commands (no longer needed with single-branch workflow):
-# git fetch origin
-# git log main..automation-updates --oneline
-# git log automation-updates..main --oneline
-# git checkout automation-updates
-# git merge origin/main --no-edit
-# git push origin automation-updates
-
-# 3. Check enrichment stats in movie_tracking.json
+# Check enrichment stats in movie_tracking.json
 python3 -c "
 import json
 with open('movie_tracking.json') as f:
@@ -434,9 +416,6 @@ else:
 - Startup consistency checks detect corruption early
 - Monitor for workflows taking > 10 minutes (indicates re-enrichment)
 
-**Background:**
-The enrichment system tracks which movies have been processed with additional metadata (watch links, RT scores, etc.). When enriched flags are corrupted, the system re-processes all movies, causing 2+ hour runtimes and excessive API usage.
-
 ---
 
 ### 4. Watch Links Missing (Low Provider Coverage)
@@ -471,48 +450,6 @@ Add to `overrides/watch_links_overrides.json`:
   }
 }
 ```
-
----
-
-### 5. Legacy: Branch Divergence (No Longer Applicable)
-
-> **⚠️ LEGACY ISSUE**: This section describes problems that occurred with the deprecated two-branch workflow. Single-branch workflow eliminates these issues entirely.
-
-**Historical Symptoms:**
-- Automation runs on old code
-- Features you added aren't being used by the bot
-- Merge conflicts when trying to sync branches
-- automation-updates branch behind main
-
-**Historical Root Causes:**
-- Manual intervention breaking sync cycle
-- Workflow checkout logic issues
-
-**Current Solution:**
-Single-branch quick fix for any divergence issues:
-```bash
-git pull origin main
-python3 generate_data.py
-```
-
-<details>
-<summary>Legacy Commands (no longer needed with single-branch workflow)</summary>
-
-```bash
-# git log main..automation-updates --oneline
-# git log automation-updates..main --oneline
-# git checkout automation-updates
-# git merge origin/main --no-edit
-# git push origin automation-updates
-```
-</details>
-
-For current workflow, see [docs/NRW_FULL_WORKFLOW.md](NRW_FULL_WORKFLOW.md).
-
-**Prevention:**
-- Automatic sync now built into workflows (Nov 5, 2025)
-- Daily automation now runs directly on main branch (no sync required)
-- Both directions stay in sync automatically
 
 ---
 
@@ -575,9 +512,10 @@ python3 -c "
 import json
 with open('movie_tracking.json') as f:
     db = json.load(f)
-    total = len(db)
-    available = sum(1 for m in db.values() if m.get('status') == 'available')
-    enriched = sum(1 for m in db.values() if m.get('enriched'))
+    movies = db.get('movies', db)
+    total = len(movies)
+    available = sum(1 for m in movies.values() if m.get('status') == 'available')
+    enriched = sum(1 for m in movies.values() if m.get('enriched'))
     print(f'Total in tracking: {total}')
     print(f'Available: {available}')
     print(f'Enriched: {enriched}')
@@ -590,38 +528,9 @@ with open('movie_tracking.json') as f:
 
 If troubleshooting doesn't resolve the issue:
 
-1. **Check historical post-mortems** in [museum_legacy/troubleshooting/](../museum_legacy/troubleshooting/)
-2. **Review architecture docs** in [SYSTEM_ARCHITECTURE.md](../SYSTEM_ARCHITECTURE.md)
-3. **Check recent code changes** - `git log --oneline -20`
-4. **Run workflows with debug logging** (if available)
-5. **File a GitHub issue** with detailed logs and symptoms
-
----
-
-## Emergency Commands & Performance Monitoring
-
-### Emergency Commands
-
-```bash
-# Fix branch divergence (single-branch workflow eliminates this issue)
-git pull origin main
-
-# Check processing load (Normal: 1-10 movies, Warning: 50+, Critical: 100+)
-grep "Processing.*movies" logs/
-
-# Restore from data corruption
-cp movie_tracking.json.backup movie_tracking.json
-
-# Check enrichment stats for watch link issues
-grep -i "watch_links\|scraper" logs/admin.log | tail -20
-```
-
-### Performance Monitoring
-- **Normal operation**: 1-10 movies enriched daily, 30-second runtime
-- **Warning threshold**: 50+ movies (possible corruption)
-- **Critical threshold**: 100+ movies (definite corruption, 2+ hour runtime)
-
-See sections above for detailed troubleshooting when performance thresholds are exceeded.
+1. **Review architecture docs** in [SYSTEM_ARCHITECTURE.md](../SYSTEM_ARCHITECTURE.md)
+2. **Check recent code changes** - `git log --oneline -20`
+3. **Check mistakes log** - `docs/MISTAKES_LOG.md`
 
 ---
 
@@ -684,18 +593,3 @@ jq '[.movies[] | select(.links.rt)] | length' data.json
 | Discovery transitions | 2-5/day | 0 for 3+ days | 0 for 7+ days |
 | Enrichment | 1-10/day | 50+/day | 100+/day |
 | Runtime | 30-60s | 5+ min | 30+ min |
-
----
-
-## Historical Post-Mortems
-
-Detailed debugging sessions with timestamps:
-
-- [2025-11-03: YouTube + Daily Update Failures](../museum_legacy/troubleshooting/2025-11-03-workflow-status.md)
-- [2025-10-28: Workflow Failures Fix](../museum_legacy/troubleshooting/2025-10-28-workflow-failures.md)
-
-These documents contain:
-- Specific error messages and stack traces
-- Step-by-step debugging process
-- Exact commands used to diagnose and fix
-- Lessons learned and prevention strategies

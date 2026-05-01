@@ -294,42 +294,55 @@ class RTScraperPlaywright(PlaywrightScraperBase):
             except Exception as e:
                 self._log(f"JSON-LD extraction error: {e}", level='debug')
 
-            # 2. CSS selectors
+            # 2. media-scorecard (current RT layout since ~2025)
+            try:
+                scorecard = self.page.query_selector('media-scorecard')
+                if scorecard:
+                    text = (scorecard.text_content() or "").strip()
+                    score_match = re.search(r'(\d{1,3})%', text)
+                    if score_match:
+                        score = int(score_match.group(1))
+                        if 0 <= score <= 100:
+                            self._log(f"Found score via media-scorecard: {score}%", level='debug')
+                            return f"{score}%"
+            except Exception:
+                pass
+
+            # 3. CSS selectors (legacy layouts)
             score_selectors = [
+                '[slot="criticsScore"]',
+                'rt-text[slot="criticsScore"]',
                 '[data-testid="critic-score"] .percentage',
                 '[data-testid="critics-score"] .percentage',
                 '[class*="criticsScore"]',
+                'score-board',
                 '.scoreboard__critic .percentage',
                 '.mop-ratings-wrap__percentage',
                 '.meter-value',
                 '.critic-score .percentage',
                 '[class*="percentage"]',
-                '[class*="score"] [class*="percentage"]'
             ]
 
             for selector in score_selectors:
                 try:
                     elements = self.page.query_selector_all(selector)
                     for element in elements:
-                        text = element.text_content() or ""
-                        text = text.strip()
-
+                        text = (element.text_content() or "").strip()
                         score_match = re.search(r'(\d+)%?', text)
                         if score_match:
-                            score = score_match.group(1)
-                            self._log(f"Found score on RT page: {score}% (selector: {selector})", level='debug')
-                            return f"{score}%"
-
+                            self._log(f"Found score on RT page: {score_match.group(1)}% (selector: {selector})", level='debug')
+                            return f"{score_match.group(1)}%"
                 except Exception as e:
                     self._log(f"Error with selector {selector}: {e}", level='debug')
                     continue
 
-            # 3. Text regex patterns (fallback)
+            # 4. Text regex patterns (fallback)
             try:
                 body_element = self.page.query_selector('body')
                 if body_element:
                     page_text = body_element.text_content()
                     score_patterns = [
+                        r'(\d+)%\s*Tomatometer',
                         r'(\d+)%\s*(?:Critics|Critic)',
                         r'(?:Fresh|Rotten)\s*(\d+)%',
                         r'Tomatometer.*?(\d+)%',

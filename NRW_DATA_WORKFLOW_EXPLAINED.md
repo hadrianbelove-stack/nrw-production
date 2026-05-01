@@ -4,17 +4,17 @@
 
 ---
 
-## **🎯 What This System Does**
+## **What This System Does**
 
-**The New Release Wall is a well-stocked video store for the streaming age.** It finds every cool movie that has debuted online — for streaming, rental, or purchase — and puts them on a wall where people can shop, watch trailers, and click through to rent, buy, or stream on the right platforms.
+NRW tracks when movies become digitally available (streaming, rental, purchase) and displays them on a curated wall with trailers, scores, and watch links.
 
-### The Video Store Design Principle
-Discovery uses a **wide net**. If TMDB providers OR Type 4 digital dates indicate a movie is available, it transitions to the wall. The pipeline stocks the shelves; the admin curates (hides low-quality titles, features highlights). We want to find EVERY movie that's newly available digitally — curation happens after, not before.
+### Design Principle
+Discovery uses a **wide net**. If TMDB providers OR Type 4 digital dates indicate a movie is available, it transitions to the wall. Curation happens after discovery, not before.
 
-### The Core Problem
-When a movie leaves theaters, there's no API that says "this movie became available on Netflix today." TMDB's provider API only shows what's *currently* available, not *when* it became available. We solve this by polling daily and detecting transitions ourselves.
+### Core Problem
+No API provides "when" a movie became available — only "what" is currently available. NRW polls daily and detects transitions.
 
-### Our Solution
+### Pipeline Overview
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
 │                        NRW DATA PIPELINE                            │
@@ -36,31 +36,28 @@ When a movie leaves theaters, there's no API that says "this movie became availa
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
-### The Result
-An ongoing, accumulating database of digital release dates that no one else tracks. A "Blockbuster wall for the streaming age."
-
 ---
 
-## **📊 The Data Journey: From API to Your Screen**
+## **The Data Journey**
 
 ### **Phase 1: Intake & Discovery Overview**
 **What happens:** We intake new movies to track AND discover when tracked movies become available for digital (streaming/VOD (rental/purchase)).
 
-**🔧 `generate_data.py --intake`** - *Intake: New Premiere Ingestion*
+**`generate_data.py --intake`** - *Intake: New Premiere Ingestion*
 - **Intake:** Searches TMDB API for movies released in past 7 days (festival, limited theatrical, theatrical, direct to streaming, etc.)
 - **Adds to database:** New movies get status = "tracking", digital_date = null
 
-**🔧 `generate_data.py --discover`** - *Discovery: Detecting Digital Transitions*
+**`generate_data.py --discover`** - *Discovery: Detecting Digital Transitions*
 - **Monitoring:** Checks ALL movies in database with status = "tracking" for digital availability
 - **Two co-equal discovery signals:**
   1. **TMDB /watch/providers** — Detects streaming providers (Netflix, Disney+, etc.) and rent/buy availability (Amazon, Apple TV, etc.)
   2. **TMDB Type 4 digital release dates** — Detects when a movie's digital release date has arrived. Many movies have Type 4 dates before provider lists are populated, making this a primary discovery mechanism.
-- **Magic moment:** When either signal fires, sets `digital_date` = today (or Type 4 date), status = "available"
+- **Transition:** When either signal fires, sets `digital_date` = today (or Type 4 date), status = "available"
 - **Pre-order detection:** Buy-only + single-provider movies are checked against Amazon to catch pre-orders (not yet available for viewing)
 - **JustWatch:** NOT used in discovery. JustWatch provides actual rent/buy deep links (Amazon/Apple TV URLs) during enrichment, not during discovery.
 - **State file:** Writes list of newly available movie IDs to `metrics/newly_available.json`
 
-**📄 `movie_tracking.json`** - *The Master Database*
+**`movie_tracking.json`** - *The Master Database*
 - **What it is:** Complete database of all movies we're monitoring (~15,000+ movies)
 - **Contains:** Movie details, tracking status ("tracking" vs "available"), provider info
 - **Example:** `{"1404864": {"title": "Inspector Zende", "status": "tracking", "digital_date": null}}`
@@ -68,7 +65,7 @@ An ongoing, accumulating database of digital release dates that no one else trac
 ### **Phase 2: Database Enrichment & Link Resolution**
 **What happens:** We take movies that JUST BECAME digitally available (from today's discovery) and add rich metadata - trailers, Wikipedia pages, RT scores, watch links.
 
-**🔧 `generate_data.py`** - *The Enrichment Overlay*
+**`generate_data.py`** - *The Enrichment Overlay*
 - **Reads today's queue:** `metrics/newly_available.json` contains movie IDs that transitioned TODAY
 - **Self-healing retries:** If enrichment fails or is incomplete, movies are automatically retried on subsequent runs (up to 3 attempts). Newly available movies are always prioritized over catch-up retries.
 - **Batch cap:** Maximum 100 movies per enrichment run (new arrivals + catch-up combined)
@@ -76,7 +73,7 @@ An ongoing, accumulating database of digital release dates that no one else trac
 - **Performance:** 95%+ cost reduction by only enriching new arrivals (1-10 per day)
 - **Link resolution:** Multi-tier waterfall: manual → overrides → cache → JustWatch API → VOD scraper → null (see `docs/features/WATCH_LINK_ARCHITECTURE.md`)
 
-**📂 Enrichment Step 0: JustWatch Pre-Verification (FIRST)**
+**Enrichment Step 0: JustWatch Pre-Verification (FIRST)**
 
 Before any expensive enrichment (Wikipedia, RT, trailers), each newly discovered movie is verified against JustWatch:
 - JustWatch is queried for the movie's current availability
@@ -87,7 +84,7 @@ Before any expensive enrichment (Wikipedia, RT, trailers), each newly discovered
 
 This is the correct place for `excluded_services` filtering: enrichment phase verification, not discovery.
 
-**📂 Link Resolution System** - *Multi-Tier Intelligent Lookup*
+**Link Resolution System** - *Multi-Tier Intelligent Lookup*
 
 **Watch Links (Streaming/VOD)** — see `docs/features/WATCH_LINK_ARCHITECTURE.md`:
 - **Tier 1:** Manual watch links (`movie_tracking.json`) — hand-set by curator (highest priority)
@@ -130,7 +127,7 @@ Daily Intake & Discovery → movie_tracking.json → OPTIONAL REVIEW → data.js
 ### **Phase 4: Display Generation**
 **What happens:** data.json accumulates discovered movies and gets enhanced with enrichment data.
 
-**📄 `data.json`** - *The Website Database* (Updated 2025-12-29)
+**`data.json`** - *The Website Database* (Updated 2025-12-29)
 - **Rolling window:** Movies are ADDED during discovery. After 90 days, auto-archived to data_archive.json
 - **Two write sources:**
   1. **Discovery phase:** Writes minimal entry immediately when movie transitions to available
@@ -140,18 +137,17 @@ Daily Intake & Discovery → movie_tracking.json → OPTIONAL REVIEW → data.js
 - **Admin integration:** Applies `admin/hidden_movies.json` (hides from display) and `admin/staff_picks.json` (marks as staff picks)
 
 ### **Phase 5: User Display**
-**What happens:** User visits the website and sees the beautiful movie wall.
+**What happens:** Frontend renders data.json as the movie wall.
 
-**🌐 Frontend Files**
-- **`index.html`:** Basic HTML structure, loads CSS and JavaScript
-- **`assets/styles.css`:** Netflix-quality visual design - card layouts, animations, colors
-- **`assets/app.js`:** Interactive engine - fetches data.json, renders cards, handles three-button watch UI
+**Frontend Files:**
+- `index.html` → loads `assets/styles.css` + `assets/app.js`
+- `app.js` fetches data.json, renders cards, handles watch UI
 
 ---
 
-## **🔄 Daily Automation Loop**
+## **Daily Automation Loop**
 
-**🔧 `daily_orchestrator.py`** - *The Daily Pipeline*
+**`daily_orchestrator.py`** - *The Daily Pipeline*
 ```bash
 1. python3 generate_data.py --intake       # Intake: Add new theatrical releases to tracking database
                                            # → Updates movie_tracking.json
@@ -187,7 +183,7 @@ CI stamps YouTube URLs into data.json; the local script downloads and re-hosts t
 
 **Note:** Daily automation runs without admin approval by default. Optional admin review can be enabled when editorial curation is desired.
 
-## **🏥 Current Health Model & Status Indicators**
+## **Health Model & Status Indicators**
 
 The orchestrator provides comprehensive health monitoring with nuanced status reporting:
 
@@ -220,7 +216,7 @@ The orchestrator records all failures and warnings in `metrics/run_diagnostics.j
 
 ---
 
-## **🛡️ Pipeline Safeguards**
+## **Pipeline Safeguards**
 
 Several automated safeguards protect data quality. If you're debugging "why did a movie disappear from the wall?" — check these first.
 
@@ -254,16 +250,9 @@ As a final safety net, the display generation phase (`generate_data.py`) filters
 
 ---
 
-## **🎯 Why This Architecture Works**
+## **Key Principles**
 
-1. **No Data Loss:** Old movies preserved in data_archive.json, recent movies in data.json
-2. **Immediate Visibility:** Movies appear the moment they're discovered, not after enrichment
-3. **Graceful Degradation:** Enrichment failures don't hide movies - they just have less metadata
-4. **Simple Mental Model:** Discovery adds, enrichment enhances, nothing deletes
-5. **Speed:** Website loads fast (only reads 1 JSON file)
-6. **Reliability:** Links verified via multi-tier fallbacks (overrides → cache → API → scraper → null)
-7. **Scalability:** Can track 15,000+ movies, display ~670 most recent
-8. **Automation:** Runs itself daily, commits changes to git
-9. **Editorial Control:** Admin panel allows curation and manual fixes
-
-**The Result:** An ongoing database of digital release dates that no one else tracks, displayed as a professional movie wall that updates itself daily.
+- Discovery adds, enrichment enhances, nothing deletes
+- Enrichment failures don't hide movies — they just have less metadata
+- data.json is append-only with 90-day auto-archive
+- Links resolve via multi-tier fallback (overrides → cache → API → scraper → null)

@@ -15,11 +15,7 @@ The assistant behaves like a **detail-oriented engineer**:
   - Clarity and safety take priority over brevity
 
 ## Vision
-The New Release Wall is a **Blockbuster wall for the streaming age**. It exists to:
-- Celebrate and track digital releases across major platforms
-- Provide a VHS-style immersive discovery experience
-- Serve as a creative campaign vehicle — a canvas for surfacing films, amplifying under-seen work, and anchoring cultural conversation
-- Function as an evolving constitution: equal parts production system and manifesto
+NRW is an automated movie discovery wall for new digital/VOD releases. It tracks when movies become available, enriches them with metadata, and displays them on a curated wall.
 
 ## Core Rules
 1. **Immutable Charter** — `PROJECT_CHARTER.md` in repo root is the sacrosanct source. Updated only via amendments.
@@ -51,9 +47,9 @@ The New Release Wall is a **Blockbuster wall for the streaming age**. It exists 
 |--------|----------|---------|--------|----------|
 | 001-011 | Process | AI/ops discipline (numbering, assumptions, run semantics, scripts, safeguards, idle time, summary, mode awareness, operational safeguards, multiple solutions, roadmap discipline) | AI behavior & operator workflow | Ops: README.md §Daily Workflow |
 | 014 | Governance | Documentation discipline & root cleanliness | Repo hygiene | Ops: README.md §Docs |
-| 015 | Process | Minimal implementation principle | Prevents scope creep | Applied to all changes |
-| 016 | Process | Source first discipline | Prevents assumption mistakes | Applied to all references |
-| 017 | Governance | Charter vs implementation separation | Keeps charter clean | PROJECT_CHARTER.md vs IMPLEMENTATION_ROADMAP.md |
+| 022 | Process | Minimal implementation principle | Prevents scope creep | Applied to all changes |
+| 023 | Process | Source first discipline | Prevents assumption mistakes | Applied to all references |
+| 024 | Governance | Charter vs implementation separation | Keeps charter clean | PROJECT_CHARTER.md vs per-session planning |
 
 **Note:** Former tactical amendments (022-031) were completed implementation decisions, not governance principles (IMPLEMENTATION_ROADMAP.md retired).
 
@@ -179,95 +175,23 @@ The New Release Wall is a **Blockbuster wall for the streaming age**. It exists 
 **Status:** ✅ Active - PROJECT_CHARTER.md under 1000 lines, never create root .md without approval
 **Spec:** README.md §Docs
 
-### 015: Minimal Implementation Principle
+### 022: Minimal Implementation Principle
 **Decision:** Implement only what is explicitly requested. No feature additions, improvements, or anticipatory work without explicit approval.
 **Scope:** Covers both code changes and file creation. Default to simplest possible implementation.
 **Status:** ✅ Active - prevents over-engineering and scope creep
-**Spec:** Applied to all implementation decisions
 
-### 016: Source First Discipline
+### 023: Source First Discipline
 **Decision:** Never reference or implement based on documents, requirements, or specifications without reading them first using available tools.
 **Scope:** Applies to amendments, configs, existing code, and external requirements.
 **Status:** ✅ Active - prevents building wrong solutions based on assumptions
-**Spec:** Must use Read tool before claiming what documents say
 
-### 017: Charter vs Implementation Separation
+### 024: Charter vs Implementation Separation
 **Decision:** Charter contains only timeless governance principles. Tactical decisions are tracked separately.
 **Scope:** Test: "Is this how to work (charter) or what to build (tactical)?"
 **Status:** ✅ Active - keeps charter focused on governance
-**Spec:** PROJECT_CHARTER.md (governance) vs per-session tactical planning
 
-# PART 3: CURRENT CONFIGURATION
+# PART 3: TECHNICAL REFERENCE
 
-## Data Contracts (Essentials)
+For data contracts, file hierarchy, configuration, native app architecture, and performance thresholds, see **SYSTEM_ARCHITECTURE.md**.
 
-### What NRW Does
-NRW tracks when theatrical movies become available for digital streaming/rental. Since no API provides "when" a movie became available (only "what" is currently available), we poll daily to detect transitions and record them.
-
-### Core Data Invariants
-- **movie_tracking.json**: Master tracking database (~6,700 records), status = "tracking" or "available"
-- **data.json**: Frontend display data (~230 records), **append-only** - movies added on discovery, never deleted
-- **metrics/newly_available.json**: Today's enrichment queue - contains IDs of movies that transitioned today
-- **Required fields**: tmdb_id, title, digital_date, poster, crew, synopsis, runtime, links
-- **Data flow**: Intake → Discovery (writes to data.json) → Enrichment (overlays data) → Display
-
-### File Hierarchy
-
-#### Runtime (Repository Root)
-- `index.html`, `data.json`, `assets/` - User-facing interface
-- **Size**: ~2MB total, updated daily via automation
-
-#### Pipeline (Non-Runtime)
-- `movie_tracking.json`, `config.yaml` - Core data and configuration
-- `generate_data.py`, `daily_orchestrator.py`, `admin.py` - Processing engines
-- `cache/`, `overrides/`, `ops/` - Support infrastructure
-
-#### Archives
-- `diary/` - Session snapshots (immutable), `museum_legacy/` - Deprecated code
-
-#### Native Apps
-- `NRWApp-tvOS/` - Apple TV app (React Native tvOS, implemented)
-- `NRWApp-Android/` - Android TV app (placeholder, planned)
-- All platforms consume `data.json` via GitHub raw URL
-- Platform-specific docs in `docs/features/NATIVE_APPS.md`
-
-## Native App Architecture
-
-### Multi-Platform Strategy
-NRW supports multiple client applications consuming the same data pipeline:
-- **Web** (`index.html`) - Primary browser interface
-- **Apple TV** (`NRWApp-tvOS/`) - React Native tvOS app (implemented)
-- **Android TV** (`NRWApp-Android/`) - Planned
-- **iOS/Android mobile** - Planned
-
-### Shared Data Contract
-All platforms consume `data.json` via the schema defined in Amendment 016.
-Native apps fetch from: `https://raw.githubusercontent.com/{repo}/main/data.json`
-
-Native app development follows the same governance (this charter) and Amendment 015 (Minimal Implementation).
-
-## Configuration Sources
-
-**Configuration priorities**: Environment variables (production) → config.yaml (development) → fail fast
-For full details, see `SYSTEM_ARCHITECTURE.md §4 (Configuration & Secrets)`.
-
-## Quick Reference
-
-
-### Configuration & Performance
-- **Config sources**: Environment variables (production) → config.yaml (development) → fail fast
-- **Normal operation**: 1-10 movies/day, 30s runtime
-- **Critical thresholds**: 50+ movies (warning), 100+ movies (corruption), 2+ hour runtime
-
-**Detailed specifications**: SYSTEM_ARCHITECTURE.md §4 (Configuration & Secrets)
-**Daily operations**: README.md §Daily Workflow
-
----
-
-## Historical Footer
-
-**Archived Amendments:** See museum_legacy/charter_history/AMENDMENT-HISTORICAL-ARCHIVE.md
-**Historical Archives:**
-- [Pre-compression charter](museum_legacy/charter_history/PROJECT_CHARTER_20251107-PRE-COMPRESSION.md) - Full charter before compression
-- [Amendment archives](museum_legacy/charter_history/AMENDMENT-HISTORICAL-ARCHIVE.md) - Historical amendment versions
-**This charter maintained under 400 lines per 032: Documentation discipline.**
+For pipeline phases and data flow, see **NRW_DATA_WORKFLOW_EXPLAINED.md**.

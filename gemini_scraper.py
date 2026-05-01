@@ -1024,11 +1024,29 @@ class HybridRTFinder:
         except Exception:
             pass
 
-        # 2. CSS selectors
+        # 2. media-scorecard (current RT layout since ~2025)
+        try:
+            scorecard = page.query_selector('media-scorecard')
+            if scorecard:
+                text = (scorecard.text_content() or "").strip()
+                # First percentage in scorecard is the critics score
+                score_match = re.search(r'(\d{1,3})%', text)
+                if score_match:
+                    score = int(score_match.group(1))
+                    if 0 <= score <= 100:
+                        logger.debug(f"Found score via media-scorecard: {score}%")
+                        return f"{score}%"
+        except Exception:
+            pass
+
+        # 3. CSS selectors (legacy layouts)
         score_selectors = [
+            '[slot="criticsScore"]',
+            'rt-text[slot="criticsScore"]',
             '[data-testid="critic-score"] .percentage',
             '[data-testid="critics-score"] .percentage',
             '[class*="criticsScore"]',
+            'score-board',
             '.scoreboard__critic .percentage',
             '.mop-ratings-wrap__percentage',
             '.meter-value',
@@ -1047,12 +1065,12 @@ class HybridRTFinder:
             except Exception:
                 continue
 
-        # 3. Text regex patterns (fallback)
+        # 4. Text regex patterns (fallback)
         try:
             body = page.query_selector('body')
             if body:
                 page_text = body.text_content() or ""
-                for pattern in [r'(\d+)%\s*(?:Critics|Critic)', r'Tomatometer.*?(\d+)%']:
+                for pattern in [r'(\d+)%\s*Tomatometer', r'(\d+)%\s*(?:Critics|Critic)', r'Tomatometer.*?(\d+)%']:
                     match = re.search(pattern, page_text, re.IGNORECASE)
                     if match:
                         return f"{match.group(1)}%"
