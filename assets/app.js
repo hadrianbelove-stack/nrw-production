@@ -17,7 +17,7 @@ const NRW = {
     // Shared config — loaded from assets/shared-config.js
     SERVICE_MAP: NRWConfig.SERVICE_MAP,
     VOD_SERVICE_MAP: NRWConfig.VOD_SERVICE_MAP,
-    abbreviateCountry: NRWConfig.abbreviateCountry.bind(NRWConfig),
+    abbreviateCountry: NRWConfig.abbreviateCountry,
 
     // Filter descriptions — shown when a single filter is active
     // User will rewrite all of these; placeholder text for now
@@ -56,8 +56,8 @@ const NRW = {
         }
     },
 
-    resolveService: NRWConfig.resolveService.bind(NRWConfig),
-    resolveVODService: NRWConfig.resolveVODService.bind(NRWConfig),
+    resolveService: NRWConfig.resolveService,
+    resolveVODService: NRWConfig.resolveVODService,
 
     // Normalize streaming to {service, link} — handles both array and dict formats
     getStreaming(wl) {
@@ -921,18 +921,37 @@ const NRW = {
     },
 
     _buildLightboxButtons(movie) {
-        let buttonsHtml = '';
+        const container = document.getElementById('lightbox-buttons');
+        container.innerHTML = '';
         const watchLinks = movie.watch_links || {};
         const providers = movie.providers || {};
 
+        // Helper: create an <a> with safe href + target
+        const makeLink = (url, className, text) => {
+            const a = document.createElement('a');
+            a.setAttribute('href', url);
+            a.setAttribute('target', '_blank');
+            a.setAttribute('rel', 'noopener noreferrer');
+            a.className = className;
+            a.textContent = text;
+            return a;
+        };
+
         // 1. Trailer — full-width on top
-        const lbTrailerUrl = movie.links?.trailer_hosted || movie.links?.trailer;
-        if (lbTrailerUrl) {
-            buttonsHtml += `<button class="watch-btn-lb trailer-top" data-trailer="${lbTrailerUrl}">Trailer</button>`;
+        const trailerUrl = movie.links?.trailer_hosted || movie.links?.trailer;
+        if (trailerUrl) {
+            const btn = document.createElement('button');
+            btn.className = 'watch-btn-lb trailer-top';
+            btn.dataset.trailer = trailerUrl;
+            btn.textContent = 'Trailer';
+            container.appendChild(btn);
         }
 
         // 2. Watch stack (streaming + VOD)
-        let watchHtml = '';
+        const watchStack = document.createElement('div');
+        watchStack.className = 'watch-stack';
+        let hasWatch = false;
+
         const lbStreamData = this.getStreaming(watchLinks);
         let streamSvc = lbStreamData?.service;
         let streamLink = lbStreamData?.link;
@@ -944,46 +963,61 @@ const NRW = {
             const cls = resolved?.class || '';
             const name = resolved?.name || streamSvc.toUpperCase();
             if (streamLink) {
-                watchHtml += `<a href="${streamLink}" target="_blank" rel="noopener noreferrer" class="watch-btn-lb stream ${cls}">${name}</a>`;
+                watchStack.appendChild(makeLink(streamLink, `watch-btn-lb stream ${cls}`, name));
             } else {
-                watchHtml += `<span class="watch-btn-lb stream ${cls}" style="opacity:0.6;cursor:default">${name}</span>`;
+                const span = document.createElement('span');
+                span.className = `watch-btn-lb stream ${cls}`;
+                span.style.opacity = '0.6';
+                span.style.cursor = 'default';
+                span.textContent = name;
+                watchStack.appendChild(span);
             }
+            hasWatch = true;
         }
 
         const lbVodEntries = Array.isArray(watchLinks.vod) ? watchLinks.vod
             : (watchLinks.vod?.service ? [watchLinks.vod] : []);
-        let vodHtml = '';
+        const vodRow = document.createElement('div');
+        vodRow.className = 'vod-row';
+        let hasVod = false;
         lbVodEntries.forEach(vod => {
             const vodLink = vod.link || vod.url;
             if (vod.service && vodLink) {
                 const vodType = this.resolveVODService(vod.service, vodLink);
                 if (!vodType) return;
-                vodHtml += `<a href="${vodLink}" target="_blank" rel="noopener noreferrer" class="watch-btn-lb ${vodType.key}">${vodType.label}</a>`;
+                vodRow.appendChild(makeLink(vodLink, `watch-btn-lb ${vodType.key}`, vodType.label));
+                hasVod = true;
             }
         });
-        if (vodHtml) watchHtml += `<div class="vod-row">${vodHtml}</div>`;
-        if (watchHtml) buttonsHtml += `<div class="watch-stack">${watchHtml}</div>`;
+        if (hasVod) { watchStack.appendChild(vodRow); hasWatch = true; }
+        if (hasWatch) container.appendChild(watchStack);
 
-        // 3. Info row — Wiki + RT + IMDb shared row
-        let infoHtml = '';
+        // 3. Info row — Wiki + RT + IMDb
+        const infoRow = document.createElement('div');
+        infoRow.className = 'info-row';
+        let hasInfo = false;
+
         if (movie.links?.wikipedia) {
-            infoHtml += `<a href="${movie.links.wikipedia}" target="_blank" rel="noopener noreferrer" class="info-btn-lb glass">Wiki</a>`;
+            infoRow.appendChild(makeLink(movie.links.wikipedia, 'info-btn-lb glass', 'Wiki'));
+            hasInfo = true;
         }
-        if (movie.links?.rt) {
-            const score = movie.rt_score ? ` ${movie.rt_score}` : '';
-            infoHtml += `<a href="${movie.links.rt}" target="_blank" rel="noopener noreferrer" class="info-btn-lb rt">RT${score}</a>`;
+        if (movie.rt_score && movie.links?.rt) {
+            infoRow.appendChild(makeLink(movie.links.rt, 'info-btn-lb rt', 'RT ' + movie.rt_score));
+            hasInfo = true;
         }
         if (movie.imdb_rating) {
             const imdbUrl = movie.links?.imdb;
             if (imdbUrl) {
-                infoHtml += `<a href="${imdbUrl}" target="_blank" rel="noopener noreferrer" class="info-btn-lb imdb">IMDb ${movie.imdb_rating}</a>`;
+                infoRow.appendChild(makeLink(imdbUrl, 'info-btn-lb imdb', 'IMDb ' + movie.imdb_rating));
             } else {
-                infoHtml += `<span class="info-btn-lb imdb">IMDb ${movie.imdb_rating}</span>`;
+                const span = document.createElement('span');
+                span.className = 'info-btn-lb imdb';
+                span.textContent = 'IMDb ' + movie.imdb_rating;
+                infoRow.appendChild(span);
             }
+            hasInfo = true;
         }
-        if (infoHtml) buttonsHtml += `<div class="info-row">${infoHtml}</div>`;
-
-        document.getElementById('lightbox-buttons').innerHTML = buttonsHtml;
+        if (hasInfo) container.appendChild(infoRow);
     },
 
     // Update lightbox content — delegates to sub-renderers

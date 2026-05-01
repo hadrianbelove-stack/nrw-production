@@ -23,9 +23,9 @@ const NRWMobile = {
     // Shared config — loaded from assets/shared-config.js
     SERVICE_MAP: NRWConfig.SERVICE_MAP,
     VOD_SERVICE_MAP: NRWConfig.VOD_SERVICE_MAP,
-    resolveService: NRWConfig.resolveService.bind(NRWConfig),
-    resolveVODService: NRWConfig.resolveVODService.bind(NRWConfig),
-    abbreviateCountry: NRWConfig.abbreviateCountry.bind(NRWConfig),
+    resolveService: NRWConfig.resolveService,
+    resolveVODService: NRWConfig.resolveVODService,
+    abbreviateCountry: NRWConfig.abbreviateCountry,
 
     formatShortDate(dateStr) {
         const [y, m, d] = dateStr.split('-');
@@ -509,9 +509,9 @@ const NRWMobile = {
         if (service && link) {
             const resolved = this.resolveService(service);
             const displayName = resolved?.btnName || service;
-            const style = resolved ? `background:${resolved.bg};color:${resolved.text}` : 'background:#00d4aa;color:#000';
+            const cls = resolved?.class || '';
 
-            return `<a href="${link}" target="_blank" rel="noopener" class="btn-watch-full" style="${style}">${displayName}</a>`;
+            return `<a href="${link}" target="_blank" rel="noopener" class="btn-watch-full ${cls}">${displayName}</a>`;
         }
 
         // Fall back to VOD — separate Amazon + Apple TV buttons
@@ -522,7 +522,7 @@ const NRWMobile = {
             const vodBtns = vodWithLinks.map(vod => {
                 const vodType = NRWMobile.resolveVODService(vod.service, vod.link);
                 if (!vodType) return '';
-                return `<a href="${vod.link}" target="_blank" rel="noopener" class="btn-watch-vod" style="${vodType.style}">${vodType.label}</a>`;
+                return `<a href="${vod.link}" target="_blank" rel="noopener" class="btn-watch-vod ${vodType.key}">${vodType.label}</a>`;
             }).filter(Boolean);
             if (vodBtns.length === 1) return vodBtns[0].replace('btn-watch-vod', 'btn-watch-full');
             return `<div class="vod-row">${vodBtns.join('')}</div>`;
@@ -531,10 +531,10 @@ const NRWMobile = {
         // Pre-order links (future release — no streaming/VOD links found)
         const preOrderLinks = movie.pre_order_links || {};
         if (preOrderLinks.amazon) {
-            return `<a href="${preOrderLinks.amazon}" target="_blank" rel="noopener" class="btn-watch-full" style="background:#ff9900;color:#000">Pre-Order</a>`;
+            return `<a href="${preOrderLinks.amazon}" target="_blank" rel="noopener" class="btn-watch-full amazon">Pre-Order</a>`;
         }
         if (preOrderLinks.apple_tv) {
-            return `<a href="${preOrderLinks.apple_tv}" target="_blank" rel="noopener" class="btn-watch-full" style="background:#000;color:#fff">Pre-Order</a>`;
+            return `<a href="${preOrderLinks.apple_tv}" target="_blank" rel="noopener" class="btn-watch-full apple">Pre-Order</a>`;
         }
 
         return '';
@@ -561,7 +561,7 @@ const NRWMobile = {
     },
 
     getRTButton(movie) {
-        if (!movie.links?.rt) return '';
+        if (!movie.rt_score || !movie.links?.rt) return '';
         const rtText = movie.rt_score ? `RT ${movie.rt_score}` : 'RT';
         return `<a href="${movie.links.rt}" target="_blank" rel="noopener" class="btn-equal btn-rt">${rtText}</a>`;
     },
