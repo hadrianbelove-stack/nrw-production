@@ -59,6 +59,7 @@ const NRW = {
         pluto:     { class: 'pluto',     name: 'PLUTO TV',     badgeName: 'PLUTO',     matches: ['pluto'],      logo: 'Pluto_TV_2020_logo.png' },
         crackle:   { class: 'crackle',   name: 'CRACKLE',      badgeName: 'CRACKLE',   matches: ['crackle'],    logo: 'Crackle-Symbol.png' },
         fawesome:  { class: 'fawesome',  name: 'FAWESOME',     badgeName: 'FAWESOME',  matches: ['fawesome'],   logo: 'fawesome.png' },
+        fandango:  { class: 'fandango',  name: 'FANDANGO',     badgeName: 'FANDANGO',  matches: ['fandango'],   logo: 'fandangoathome.png' },
     },
 
     // Filter descriptions — shown when a single filter is active
@@ -539,6 +540,8 @@ const NRW = {
                             buttonsHtml += `<a href="${vodLink}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-amazon" aria-label="Rent/Buy on Amazon"><img src="logos%20and%20images/pngimg.com%20-%20amazon_PNG17.png" alt="Amazon" class="btn-logo"></a>`;
                         } else if (svc.includes('apple') || svc.includes('itunes')) {
                             buttonsHtml += `<a href="${vodLink}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-apple" aria-label="Rent/Buy on Apple TV"><img src="logos%20and%20images/apple%20logo.png" alt="Apple TV" class="btn-logo"></a>`;
+                        } else if (svc.includes('fandango')) {
+                            buttonsHtml += `<a href="${vodLink}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-fandango" aria-label="Rent/Buy on Fandango"><img src="logos%20and%20images/fandangoathome.png" alt="Fandango" class="btn-logo"></a>`;
                         } else if (svc.includes('youtube')) {
                             buttonsHtml += `<a href="${vodLink}" target="_blank" rel="noopener noreferrer" class="watch-btn watch-btn-youtube" aria-label="Rent/Buy on YouTube">YOUTUBE</a>`;
                         } else if (svc.includes('eventive') || vodLink.includes('eventive.org') || vodLink.includes('festivalplayer') || vodLink.includes('shift72.com')) {

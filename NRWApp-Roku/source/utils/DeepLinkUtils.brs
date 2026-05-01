@@ -22,6 +22,7 @@ Function GetChannelIds() as Object
         plex: "27707"
         youtube: "837"
         vudu: "13842"
+        fandango: "13842"
         tubi: "41468"
         pluto: "74519"
         freevee: "551013"
@@ -341,6 +342,7 @@ Function GetServiceDisplayName(service as String) as String
         vudu: "Vudu"
         tubi: "Tubi"
         pluto: "Pluto TV"
+        fandango: "Fandango"
     }
 
     normalized = NormalizeServiceName(service)

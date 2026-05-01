@@ -33,6 +33,7 @@ const NRWMobile = {
         pluto:     { class: 'pluto',     name: 'PLUTO',     btnName: 'Pluto TV',  bg: '#00B4E4', text: '#fff',  matches: ['pluto'] },
         crackle:   { class: 'crackle',   name: 'CRACKLE',   btnName: 'Crackle',   bg: '#FF6600', text: '#fff',  matches: ['crackle'] },
         fawesome:  { class: 'fawesome',  name: 'FAWESOME',  btnName: 'Fawesome',  bg: '#5B8DEF', text: '#fff',  matches: ['fawesome'] },
+        fandango:  { class: 'fandango',  name: 'FANDANGO',  btnName: 'Fandango',  bg: '#FF6600', text: '#fff',  matches: ['fandango'] },
     },
 
     resolveService(rawName) {
@@ -568,6 +569,9 @@ const NRWMobile = {
                 } else if (svc.includes('apple') || svc.includes('itunes')) {
                     label = 'Rent Apple TV';
                     style = 'background:#000;color:#fff';
+                } else if (svc.includes('fandango')) {
+                    label = 'Rent Fandango';
+                    style = 'background:#FF6600;color:#fff';
                 } else if (svc.includes('youtube')) {
                     label = 'Rent YouTube';
                     style = 'background:#FF0000;color:#fff';

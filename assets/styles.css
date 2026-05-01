@@ -464,6 +464,7 @@ header h1 {
 .badge-crackle { background: #FF6600; color: white; }
 .badge-amc { background: #1B6FE0; color: white; }
 .badge-fawesome { background: #2D2D2D; color: white; }
+.badge-fandango { background: #FF6600; color: white; }
 .badge-other { background: #444; color: white; }
 .badge-preorder { background: #7c3aed; color: white; }
 
@@ -697,6 +698,20 @@ header h1 {
     background: #cc0000;
     transform: translateY(-2px);
     box-shadow: 0 5px 20px rgba(255,0,0,0.5);
+}
+
+.actions .watch-btn-fandango {
+    background: #FF6600;
+    color: #fff;
+    flex: 0 0 auto;
+    width: 44px;
+    padding: 0.4rem;
+}
+
+.actions .watch-btn-fandango:hover {
+    background: #ff8533;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(255,102,0,0.5);
 }
 
 .actions .watch-btn-apple .btn-logo {

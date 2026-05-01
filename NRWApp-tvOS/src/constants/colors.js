@@ -74,6 +74,7 @@ export const getServiceColor = (service) => {
     appletv: '#000000',
     paramount: '#0064FF',
     plex: '#E5A00D',
+    fandango: '#FF6600',
   };
   const key = service.toLowerCase().replace(/[^a-z0-9]/g, '');
   return colors[key] || '#00d4aa';

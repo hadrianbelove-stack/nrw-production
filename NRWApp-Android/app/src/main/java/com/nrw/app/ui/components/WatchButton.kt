@@ -186,6 +186,7 @@ private fun getSimplifiedLabel(service: String): String {
         "paramount_plus" -> "Paramount+"
         "tubi" -> "Tubi"
         "fawesome" -> "Fawesome"
+        "fandango" -> "Fandango"
         else -> service.replaceFirstChar { it.uppercase() }
     }
 }
@@ -205,6 +206,7 @@ private fun getServiceColor(service: String): Color {
         "paramount_plus" -> ParamountBlue
         "tubi" -> TubiOrangeRed
         "fawesome" -> Color(0xFF5B8DEF)
+        "fandango" -> Color(0xFFFF6600)
         else -> BackgroundSecondary
     }
 }
