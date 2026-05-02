@@ -135,41 +135,38 @@ if zero_future:
 if len(zero_broken) == 0:
     print('ZERO WATCH LINKS: 0 — All enriched OK')
 else:
-    if pct > 5:
-        print('CRITICAL ENRICHMENT FAILURE: %d movies have zero watch links (%s%% of wall)' % (len(zero_broken), pct))
-        print('   This is NOT normal. Enrichment pipeline likely broken.')
-    else:
-        print('ZERO WATCH LINKS: %d movies (%s%%)' % (len(zero_broken), pct))
-
-    # Build detailed rows
+    # Build detailed rows (JW reverts age out after 3 days; real failures always show)
     rows = []
+    three_days_ago = (date.today() - timedelta(days=3)).isoformat()
+    aged_out = 0
     for m in zero_broken:
         title = m['title']
         mid = str(m.get('id', ''))
         dd = m.get('digital_date') or '?'
 
-        # Calculate days on wall
         try:
             dd_date = date.fromisoformat(dd)
             days = (today_dt - dd_date).days
         except:
             days = '?'
 
-        # Cross-reference tracking for revert info
         tk = tracking.get(title) or tracking.get(mid) or {}
         reason = tk.get('_jw_revert_reason', '')
         rev_at = tk.get('_jw_reverted_at', '')
         rev_count = tk.get('_jw_revert_count', 0)
         discovery_src = tk.get('_discovery_source', '')
 
-        # Get platforms from tracking (what TMDB saw)
+        # JW reverts age out of report after 3 days
+        if reason and rev_at and rev_at < three_days_ago:
+            aged_out += 1
+            continue
+
         provs = tk.get('providers', {})
         plats = []
         for cat in ['rent', 'buy', 'streaming']:
             for p in provs.get(cat, []):
                 plats.append(p + ' (' + cat + ')')
 
-        # Build status string
         if reason == 'justwatch_no_valid_offers':
             if plats:
                 status = 'Excluded platforms: ' + ', '.join(plats)
@@ -185,28 +182,37 @@ else:
         else:
             status = 'No tracking revert — possible enrichment gap'
 
-        # Add discovery source if available
         if discovery_src:
             src_label = {'tmdb_type4': 'Type 4', 'provider_availability_check': 'providers'}.get(discovery_src, discovery_src)
             status += ' [discovered via %s]' % src_label
 
-        # Add revert count if > 1
         if rev_count > 1:
             status += ' [reverted %dx]' % rev_count
 
         rows.append((title, dd, days, status))
 
-    # Sort by days on wall descending (oldest first)
     def sort_key(r):
         d = r[2]
         return -d if isinstance(d, int) else 0
     rows.sort(key=sort_key)
 
-    # Print table
+    # Print header with filtered count
+    shown = len(rows)
+    if pct > 5:
+        print('CRITICAL ENRICHMENT FAILURE: %d movies have zero watch links (%s%% of wall)' % (len(zero_broken), pct))
+        print('   This is NOT normal. Enrichment pipeline likely broken.')
+    header = 'ZERO WATCH LINKS: %d shown' % shown
+    if aged_out:
+        header += ' (+%d aged out >3d)' % aged_out
+    header += ' of %d total (%s%%)' % (len(zero_broken), pct)
+    print(header)
+
     for title, dd, days, status in rows:
         t_display = title[:45]
         days_str = str(days) + 'd' if isinstance(days, int) else '?'
         print('  %-45s  %s  %4s  %s' % (t_display, dd, days_str, status))
+    if not rows:
+        print('  (all reverts aged out — no action items)')
 
 # JW reverted movies NOT on the wall (in tracking only, not in data.json — last 3 days)
 three_days_ago = (date.today() - timedelta(days=3)).isoformat()
