@@ -3585,6 +3585,11 @@ class DataGenerator:
                             if _is_preorder:
                                 existing_movies[movie_index]['_is_preorder'] = True
                                 print(f"  🏷️  {_title} — flagged as pre-order (buy-only on JustWatch)")
+                        else:
+                            # Not buy-only anymore — clear pre-order flag if previously set
+                            if existing_movies[movie_index].get('_is_preorder'):
+                                existing_movies[movie_index].pop('_is_preorder', None)
+                                print(f"  🏷️  {_title} — pre-order flag cleared (no longer buy-only on JustWatch)")
 
                 except Exception as _jw_err:
                     self.logger.warning(f"JustWatch pre-check error for {_title}: {_jw_err} — proceeding with enrichment")
@@ -3646,6 +3651,12 @@ class DataGenerator:
                         (isinstance(v, list) and len(v) > 0) or (isinstance(v, dict) and v.get('link'))
                         for v in wl.values()
                     ) if isinstance(wl, dict) else bool(wl)
+                    # Clear pre-order flag if movie now has real watch links
+                    # (means it transitioned from pre-order to actually available)
+                    if has_real_links and existing_movies[movie_index].get('_is_preorder'):
+                        existing_movies[movie_index].pop('_is_preorder', None)
+                        print(f"  🏷️  {_title} — pre-order flag cleared (has real watch links now)")
+
                     if not has_real_links:
                         gaps.append('watch_links')
                     if enrichment_fields.get('rt_score') is None:

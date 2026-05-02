@@ -255,8 +255,19 @@ Function GroupMoviesByDate(movies as Object) as Object
     ' Get sorted date keys (descending)
     sortedDates = SortDatesDescending(groups.Keys())
 
-    ' Append pre-orders section at the end
+    ' Append pre-orders section at the end (sorted alphabetically by title)
     if preorderMovies.Count() > 0
+        ' Simple insertion sort by title
+        for i = 1 to preorderMovies.Count() - 1
+            key = preorderMovies[i]
+            keyTitle = LCase(key.title)
+            j = i - 1
+            while j >= 0 AND LCase(preorderMovies[j].title) > keyTitle
+                preorderMovies[j + 1] = preorderMovies[j]
+                j = j - 1
+            end while
+            preorderMovies[j + 1] = key
+        end for
         groups["PRE-ORDER"] = preorderMovies
         sortedDates.Push("PRE-ORDER")
     end if

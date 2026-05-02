@@ -232,10 +232,8 @@ Sub LoadMovie(index as Integer)
         m.restorationLabel.visible = false
     end if
 
-    ' Pre-order badge: explicit pipeline flag (primary) or future date heuristic (fallback)
-    dt = CreateObject("roDateTime")
-    todayStr = dt.AsISO8601String().Left(10)
-    isPreOrder = (movie._is_preorder <> invalid AND movie._is_preorder = true) OR (movie.digital_date <> invalid AND movie.digital_date <> "" AND movie.digital_date > todayStr AND movie.pre_order_links <> invalid)
+    ' Pre-order badge: pipeline sets _is_preorder flag
+    isPreOrder = (movie._is_preorder <> invalid AND movie._is_preorder = true)
     m.preOrderBadge.visible = isPreOrder
     m.preOrderLabel.visible = isPreOrder
 

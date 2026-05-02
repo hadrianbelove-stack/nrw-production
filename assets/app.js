@@ -383,9 +383,9 @@ const NRW = {
                 if (!preorderSectionStarted) {
                     preorderSectionStarted = true;
                     html += `<div class="date-divider-card">
-                        <div class="date-content" style="background: #7c3aed;">
-                            <div class="date-day" style="font-size: 9px;">PRE-</div>
-                            <div class="date-number" style="font-size: 20px; line-height: 1;">ORDER</div>
+                        <div class="date-content date-content-preorder">
+                            <div class="date-day">PRE-</div>
+                            <div class="date-number">ORDER</div>
                         </div>
                     </div>`;
                 }
@@ -442,16 +442,9 @@ const NRW = {
                 const watchLinks = movie.watch_links || {};
                 const providers = movie.providers || {};
 
-                // Pre-order: explicit pipeline flag (primary) or future date heuristic (fallback)
+                // Pre-order: pipeline sets _is_preorder flag during enrichment
                 if (movie._is_preorder) {
                     return '<div class="streaming-badge badge-preorder">PRE-ORDER</div>';
-                }
-                const today = new Date().toISOString().split('T')[0];
-                if (movie.digital_date > today) {
-                    const vodArr = Array.isArray(watchLinks.vod) ? watchLinks.vod
-                        : (watchLinks.vod?.service ? [watchLinks.vod] : []);
-                    const hasAnyLink = NRW.getStreaming(watchLinks)?.link || vodArr.some(v => v.link);
-                    if (!hasAnyLink) return '<div class="streaming-badge badge-preorder">PRE-ORDER</div>';
                 }
 
                 // Get streaming service name
