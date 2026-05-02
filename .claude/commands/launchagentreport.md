@@ -34,115 +34,218 @@ Then report these sections:
 Compute this LIVE by running the following Python snippet (do NOT read from run_diagnostics.json for these numbers):
 
 ```bash
-/usr/bin/python3 -c "
-import json, sys
-from datetime import date
-sys.path.insert(0, '.')
-from daily_orchestrator import has_real_watch_link
-data = json.load(open('data.json'))
-movies = data['movies']
+python3 -c "
+import json
+from collections import Counter
+from datetime import date, timedelta
+
+d = json.load(open('data.json'))
+movies = d['movies']
 total = len(movies)
+
 today = date.today().isoformat()
-with_links = sum(1 for m in movies if has_real_watch_link(m))
-no_links = [m for m in movies if not has_real_watch_link(m)]
-preorders = [m for m in no_links if (m.get('digital_date') or '') > today]
-missing = [m for m in no_links if (m.get('digital_date') or '') <= today]
+today_dt = date.today()
+arrivals = [m for m in movies if m.get('digital_date') == today]
+
+week_ago = (date.today() - timedelta(days=7)).isoformat()
+recent = [m for m in movies if (m.get('digital_date') or '') >= week_ago]
+by_date = Counter(m.get('digital_date') for m in recent)
+
+# Load tracking data for cross-referencing
+tracking = {}
+try:
+    t = json.load(open('movie_tracking.json'))
+    for mid, m in t.get('movies', {}).items():
+        title = m.get('title', '')
+        if title:
+            tracking[title] = m
+        tracking[str(mid)] = m
+except: pass
+
+# Zero watch links — split future releases from actual failures
+zero_future = []
+zero_broken = []
+for m in movies:
+    wl = m.get('watch_links', {})
+    wl_count = sum(len(v) for v in wl.values()) if isinstance(wl, dict) else 0
+    if wl_count == 0:
+        dd = m.get('digital_date') or ''
+        if dd > today:
+            zero_future.append((dd, m['title'], m.get('id')))
+        else:
+            zero_broken.append(m)
+
+pct = round(len(zero_broken) / total * 100, 1) if total else 0
+
+# Coverage stats
 with_rt = sum(1 for m in movies if m.get('links', {}).get('rt'))
 with_wiki = sum(1 for m in movies if m.get('links', {}).get('wikipedia'))
-with_trailers = sum(1 for m in movies if m.get('links', {}).get('trailer'))
-print(f'total={total}')
-print(f'with_links={with_links}')
-print(f'without_links={len(no_links)}')
-print(f'preorders={len(preorders)}')
-print(f'missing_links={len(missing)}')
-print(f'with_rt={with_rt}')
-print(f'with_wiki={with_wiki}')
-print(f'with_trailers={with_trailers}')
-if preorders:
-    print('PREORDERS:')
-    for m in sorted(preorders, key=lambda x: x.get('digital_date','')):
-        print(f'  {m[\"title\"]} — releasing {m.get(\"digital_date\")}')
-if missing:
-    print('MISSING_LINKS:')
-    for m in sorted(missing, key=lambda x: x.get('digital_date','')):
-        print(f'  {m[\"title\"]} — date {m.get(\"digital_date\")}')
-today_str = date.today().isoformat()
-arrivals = [m for m in movies if m.get('digital_date') == today_str]
+with_trailers = sum(1 for m in movies if m.get('links', {}).get('trailer') or m.get('links', {}).get('trailer_hosted'))
+
+# Pipeline health
+try:
+    diag = json.load(open('metrics/run_diagnostics.json'))
+    health = diag.get('timestamp', '?') + ' — ' + ('SUCCESS' if diag.get('overall_success') else 'FAILURE')
+except: health = 'unknown'
+
+print('WALL: %d movies' % total)
+print('PIPELINE: %s' % health)
+print('COVERAGE: RT=%d  Wiki=%d  Trailers=%d (%d%%)' % (with_rt, with_wiki, with_trailers, round(with_trailers/total*100) if total else 0))
+print('TODAY (%s): %d new arrivals' % (today, len(arrivals)))
+for a in arrivals:
+    print('  - ' + a['title'])
+
+# Enrichment gaps for today's arrivals
 gaps_found = []
 for a in arrivals:
-    mg = []
-    lnk = a.get('links', {})
-    crw = a.get('crew', {})
+    missing = []
+    links = a.get('links', {})
+    crew = a.get('crew', {})
     wl = a.get('watch_links', {})
-    wl_n = sum(len(v) for v in wl.values()) if isinstance(wl, dict) else 0
-    if not lnk.get('trailer') and not lnk.get('trailer_hosted'): mg.append('trailer')
-    if not lnk.get('wikipedia'): mg.append('wikipedia')
-    if wl_n == 0: mg.append('watch_links')
-    if not a.get('rt_score'): mg.append('rt_score')
-    if not a.get('imdb_rating'): mg.append('imdb_rating')
-    dn = crw.get('director', '')
-    if not dn or dn == 'Unknown': mg.append('director')
-    if not a.get('country'): mg.append('country')
-    if not a.get('year'): mg.append('year')
-    if not a.get('runtime'): mg.append('runtime')
-    if mg:
-        gaps_found.append((a['title'], mg))
+    wl_count = sum(len(v) for v in wl.values()) if isinstance(wl, dict) else 0
+    if not links.get('trailer') and not links.get('trailer_hosted'): missing.append('trailer')
+    if not links.get('wikipedia'): missing.append('wikipedia')
+    if wl_count == 0: missing.append('watch_links')
+    if not a.get('rt_score'): missing.append('rt_score')
+    if not a.get('imdb_rating'): missing.append('imdb_rating')
+    d_name = crew.get('director', '')
+    if not d_name or d_name == 'Unknown': missing.append('director')
+    if not a.get('country'): missing.append('country')
+    if not a.get('year'): missing.append('year')
+    if not a.get('runtime'): missing.append('runtime')
+    if missing:
+        gaps_found.append((a['title'], missing))
 if gaps_found:
-    print('ENRICHMENT_GAPS (%d of %d arrivals):' % (len(gaps_found), len(arrivals)))
-    for t, mg in gaps_found:
-        print('  %s — missing: %s' % (t, ', '.join(mg)))
+    print('ENRICHMENT GAPS (%d of %d arrivals):' % (len(gaps_found), len(arrivals)))
+    for title, missing in gaps_found:
+        print('  %s — missing: %s' % (title, ', '.join(missing)))
 elif arrivals:
-    print('ENRICHMENT_GAPS: 0 — all %d arrivals fully enriched' % len(arrivals))
-"
-```
+    print('ENRICHMENT GAPS: 0 — all %d arrivals fully enriched' % len(arrivals))
 
-Report these numbers:
-- Total movies on site
-- Movies with watch links
-- Movies without links, split into:
-  - **Pre-orders** (digital_date in the future) — list each title + release date. These are expected to have no links yet.
-  - **Missing links** (digital_date in the past) — list each title. These are the ones to investigate/fix.
-- Flag if missing_links > 20 as a concern.
-- Movies with RT scores
-- Movies with Wikipedia summaries
-- Movies with trailers (and percentage of total)
+print('LAST 7 DAYS:')
+for dt in sorted(by_date):
+    print('  %s: %d titles' % (str(dt), by_date[dt]))
 
-### JW Reversions (last 3 days)
-Compute this LIVE by running:
+if zero_future:
+    print('UPCOMING (%d) — no links yet, not released:' % len(zero_future))
+    for dd, t, mid in sorted(zero_future):
+        print('  %s  %s' % (dd, t))
 
-```bash
-/usr/bin/python3 -c "
-import json
-from datetime import date, timedelta
+# Detailed zero watch links table (cross-referenced with tracking)
+if len(zero_broken) == 0:
+    print('ZERO WATCH LINKS: 0 — All enriched OK')
+else:
+    if pct > 5:
+        print('CRITICAL ENRICHMENT FAILURE: %d movies have zero watch links (%s%% of wall)' % (len(zero_broken), pct))
+        print('   This is NOT normal. Enrichment pipeline likely broken.')
+    else:
+        print('ZERO WATCH LINKS: %d movies (%s%%)' % (len(zero_broken), pct))
+
+    # Build detailed rows
+    rows = []
+    for m in zero_broken:
+        title = m['title']
+        mid = str(m.get('id', ''))
+        dd = m.get('digital_date') or '?'
+
+        # Calculate days on wall
+        try:
+            dd_date = date.fromisoformat(dd)
+            days = (today_dt - dd_date).days
+        except:
+            days = '?'
+
+        # Cross-reference tracking for revert info
+        tk = tracking.get(title) or tracking.get(mid) or {}
+        reason = tk.get('_jw_revert_reason', '')
+        rev_at = tk.get('_jw_reverted_at', '')
+        rev_count = tk.get('_jw_revert_count', 0)
+        discovery_src = tk.get('_discovery_source', '')
+
+        # Get platforms from tracking (what TMDB saw)
+        provs = tk.get('providers', {})
+        plats = []
+        for cat in ['rent', 'buy', 'streaming']:
+            for p in provs.get(cat, []):
+                plats.append(p + ' (' + cat + ')')
+
+        # Build status string
+        if reason == 'justwatch_no_valid_offers':
+            if plats:
+                status = 'Excluded platforms: ' + ', '.join(plats)
+            else:
+                status = 'Excluded platforms (names not recorded in tracking)'
+        elif reason == 'justwatch_no_match':
+            if plats:
+                status = 'No JW match (TMDB saw: ' + ', '.join(p.split(' (')[0] for p in plats) + ')'
+            else:
+                status = 'No JW match found'
+        elif reason:
+            status = 'JW revert: ' + reason
+        else:
+            status = 'No tracking revert — possible enrichment gap'
+
+        # Add discovery source if available
+        if discovery_src:
+            src_label = {'tmdb_type4': 'Type 4', 'provider_availability_check': 'providers'}.get(discovery_src, discovery_src)
+            status += ' [discovered via %s]' % src_label
+
+        # Add revert count if > 1
+        if rev_count > 1:
+            status += ' [reverted %dx]' % rev_count
+
+        rows.append((title, dd, days, status))
+
+    # Sort by days on wall descending (oldest first)
+    def sort_key(r):
+        d = r[2]
+        return -d if isinstance(d, int) else 0
+    rows.sort(key=sort_key)
+
+    # Print table
+    for title, dd, days, status in rows:
+        t_display = title[:45]
+        days_str = str(days) + 'd' if isinstance(days, int) else '?'
+        print('  %-45s  %s  %4s  %s' % (t_display, dd, days_str, status))
+
+# JW reverted movies NOT on the wall (in tracking only, not in data.json — last 3 days)
 three_days_ago = (date.today() - timedelta(days=3)).isoformat()
-t = json.load(open('movie_tracking.json'))
-jw_reverted = []
-for mid, m in t.get('movies', {}).items():
+wall_titles = set(m['title'] for m in movies)
+jw_tracking_only = []
+for mid, m in (json.load(open('movie_tracking.json')).get('movies', {}) if tracking else {}).items():
     rev_at = m.get('_jw_reverted_at', '')
     if rev_at >= three_days_ago and m.get('_jw_revert_reason'):
-        provs = m.get('providers', {})
-        plats = [p for cat in ['rent','buy','streaming'] for p in provs.get(cat, [])]
-        jw_reverted.append((rev_at, m.get('title', mid), m['_jw_revert_reason'], plats))
-if jw_reverted:
-    print(f'JW REVERTED: {len(jw_reverted)} movies discovered but sent back to tracking')
-    by_reason = {}
-    for rev_at, title, reason, plats in sorted(jw_reverted):
-        by_reason.setdefault(reason, []).append((rev_at, title, plats))
-    for reason, items in by_reason.items():
-        label = {'justwatch_no_valid_offers': 'Only on excluded platforms', 'justwatch_no_match': 'No JustWatch match found'}.get(reason, reason)
-        print(f'  [{label}]')
-        for rev_at, title, plats in items:
-            plat_str = f' ({\", \".join(plats)})' if plats else ''
-            print(f'    {rev_at}  {title}{plat_str}')
-else:
-    print('JW REVERTED: 0 — no reversions in last 3 days')
+        title = m.get('title', str(mid))
+        if title not in wall_titles:
+            provs = m.get('providers', {})
+            plats = []
+            for cat in ['rent', 'buy', 'streaming']:
+                for p in provs.get(cat, []):
+                    plats.append(p + ' (' + cat + ')')
+            reason = m['_jw_revert_reason']
+            if reason == 'justwatch_no_valid_offers':
+                label = 'excluded: ' + (', '.join(p.split(' (')[0] for p in plats) if plats else 'names not recorded')
+            elif reason == 'justwatch_no_match':
+                label = 'no JW match' + (' (TMDB: ' + ', '.join(p.split(' (')[0] for p in plats) + ')' if plats else '')
+            else:
+                label = reason
+            jw_tracking_only.append((rev_at, title, label))
+
+if jw_tracking_only:
+    print('JW REVERTED (tracking only, not on wall) — %d in last 3 days:' % len(jw_tracking_only))
+    for rev_at, title, label in sorted(jw_tracking_only):
+        print('  %s  %-40s  %s' % (rev_at, title, label))
 "
 ```
 
-Report these numbers:
-- Total JW reversions in the last 3 days (first-revert date is preserved, so movies only appear for 3 days after initial reversion)
-- Each movie listed with its reversion date, grouped by reason
-- Explain that `justwatch_no_valid_offers` means the movie was only on excluded platforms, and `justwatch_no_match` means JustWatch couldn't find it at all
-- Note that reversions are healthy — they prevent the wall from showing movies without working links
+Report these numbers in a formatted summary:
+
+- **Coverage**: RT scores, Wikipedia, Trailers (count + percentage)
+- **Today's arrivals**: list with enrichment gaps
+- **Last 7 days**: daily arrival counts
+- **Upcoming**: pre-orders with no links yet (expected)
+- **Zero watch links**: The most critical section. Each movie shows its digital date, days on wall, and a detailed status explaining WHY it has no links (JW revert reason, which excluded platform, TMDB platform info, revert count). A CRITICAL alert (>5%) means the pipeline is likely broken.
+- **JW REVERTED (tracking only)**: movies discovered and reverted but NOT on the wall — safely in tracking, just FYI.
+- Movies reverted for "excluded platforms" should always name which platform (fuboTV, Philo, etc.). If not recorded, the report says so explicitly.
 
 Format as a short summary (not raw log). Flag any failures or concerns clearly.
