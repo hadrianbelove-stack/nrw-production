@@ -486,6 +486,20 @@ class RTScraperPlaywright(PlaywrightScraperBase):
 
             for url, context, word_matches, slug_normalized in candidates:
                 if is_good_match(word_matches, slug_normalized):
+                    # Reject if context shows a year that's clearly wrong
+                    context_years = re.findall(r'\b(19\d{2}|20\d{2})\b', context)
+                    if context_years:
+                        best_year = min(context_years, key=lambda y: abs(int(y) - year))
+                        if abs(int(best_year) - year) > 1:
+                            self._log(f"RT search skipping year mismatch: {url} (context year {best_year}, expected {year})", level='debug')
+                            continue
+                    # Reject substring matches where slug has extra non-year content
+                    # e.g. "30minutes" in "30minutesorless" — the "orless" means different movie
+                    if title_slug in slug_normalized and title_slug != slug_normalized:
+                        extra = slug_normalized.replace(title_slug, '', 1)
+                        if not re.match(r'^\d{4}$', extra):
+                            self._log(f"RT search skipping partial slug match: {url} (extra content: '{extra}')", level='debug')
+                            continue
                     self._log(f"RT search found title match: {url}", level='debug')
                     return url
 
@@ -562,16 +576,40 @@ class RTScraperPlaywright(PlaywrightScraperBase):
 
             # Year verification: reject wrong-year matches (e.g. "30 Minutes" 2025 → "30 Minutes or Less" 2011)
             try:
+                page_year = None
+                # Try 1: Page title often has "(YYYY)" for newer movies
                 page_title = self.page.title() or ""
                 year_match = re.search(r'\((\d{4})\)', page_title)
                 if year_match:
                     page_year = int(year_match.group(1))
-                    if abs(page_year - year) > 1:
-                        self._log(f"Year mismatch: page has ({page_year}), expected ({year}) — rejecting {rt_link}", level='warning')
-                        rt_link = None
-                        rt_score = None
+                # Try 2: JSON-LD releasedEvent or year from page content
+                # NOTE: dateCreated is unreliable — it's the RT page creation date,
+                # not the movie release year (e.g. Son-In-Law 1993 shows dateCreated: 2026-05-01)
+                if page_year is None:
+                    try:
+                        json_ld_scripts = self.page.query_selector_all('script[type="application/ld+json"]')
+                        for script in json_ld_scripts:
+                            try:
+                                data = json.loads(script.text_content() or '{}')
+                                # Check releasedEvent.startDate if present
+                                released = data.get('releasedEvent', {})
+                                if isinstance(released, dict):
+                                    start_date = released.get('startDate', '')
+                                    if start_date:
+                                        ym = re.search(r'(\d{4})', str(start_date))
+                                        if ym:
+                                            page_year = int(ym.group(1))
+                                            break
+                            except (json.JSONDecodeError, ValueError):
+                                continue
+                    except Exception:
+                        pass
+                if page_year is not None and abs(page_year - year) > 1:
+                    self._log(f"Year mismatch: page has {page_year}, expected {year} — rejecting {rt_link}", level='warning')
+                    rt_link = None
+                    rt_score = None
             except Exception:
-                pass  # If title check fails, proceed with the result
+                pass  # If year check fails, proceed with the result
 
             if not rt_link:
                 self._log(f"No RT link found for {title} ({year})", level='warning')
