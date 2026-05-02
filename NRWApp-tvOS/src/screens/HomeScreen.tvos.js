@@ -370,12 +370,19 @@ const HomeScreenTvOS = () => {
   const listData = useMemo(() => {
     if (!displayMovies || displayMovies.length === 0) return [];
 
-    // Sort movies by digital_date descending (newest first)
-    const sorted = [...displayMovies].sort((a, b) => {
+    // Separate pre-orders from regular movies
+    const regularMovies = displayMovies.filter(m => !m._is_preorder);
+    const preorderMovies = displayMovies.filter(m => m._is_preorder);
+
+    // Sort regular movies by digital_date descending (newest first)
+    const sorted = [...regularMovies].sort((a, b) => {
       const dateA = a.digital_date || '0000-00-00';
       const dateB = b.digital_date || '0000-00-00';
       return dateB.localeCompare(dateA);
     });
+
+    // Sort pre-orders alphabetically
+    preorderMovies.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
 
     const items = [];
     let currentDate = null;
@@ -411,6 +418,22 @@ const HomeScreenTvOS = () => {
         movie: movie,
       });
     });
+
+    // Add pre-orders section at the end
+    if (preorderMovies.length > 0) {
+      items.push({
+        type: 'date',
+        id: 'date-preorder',
+        date: 'PRE-ORDER',
+      });
+      preorderMovies.forEach((movie, index) => {
+        items.push({
+          type: 'movie',
+          id: movie.tmdb_id || movie.id || `preorder-${index}`,
+          movie: movie,
+        });
+      });
+    }
 
     return items;
   }, [displayMovies, latestPlaylistUrl]);
@@ -460,6 +483,9 @@ const HomeScreenTvOS = () => {
   const formatDateParts = useCallback((dateString) => {
     if (!dateString || dateString === 'Unknown') {
       return { day: '?', dayName: '', month: 'Unknown' };
+    }
+    if (dateString === 'PRE-ORDER') {
+      return { dayName: 'PRE-', day: 'ORDER', month: '' };
     }
     try {
       const date = new Date(dateString + 'T12:00:00'); // Noon to avoid timezone issues

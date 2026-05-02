@@ -361,10 +361,12 @@ fun DateDividerCard(
     dateString: String,
     modifier: Modifier = Modifier
 ) {
-    val parts = dateString.split("-")
-    val month = parts.getOrNull(1)?.toIntOrNull()?.let { getMonthName(it) } ?: ""
-    val day = parts.getOrNull(2) ?: ""
-    val dayOfWeek = getDayOfWeek(dateString)
+    val isPreOrder = dateString == "PRE-ORDER"
+    val parts = if (isPreOrder) emptyList() else dateString.split("-")
+    val month = if (isPreOrder) "" else parts.getOrNull(1)?.toIntOrNull()?.let { getMonthName(it) } ?: ""
+    val day = if (isPreOrder) "ORDER" else parts.getOrNull(2) ?: ""
+    val dayOfWeek = if (isPreOrder) "PRE-" else getDayOfWeek(dateString)
+    val borderColor = if (isPreOrder) Color(0xFF7C3AED) else Primary
 
     Box(
         modifier = modifier
@@ -376,38 +378,40 @@ fun DateDividerCard(
                     colors = listOf(Background, BackgroundSecondary)
                 )
             )
-            .border(2.dp, Primary, RoundedCornerShape(8.dp)),
+            .border(2.dp, borderColor, RoundedCornerShape(8.dp)),
         contentAlignment = Alignment.Center
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Day of week (3-letter abbrev)
+            // Day of week (3-letter abbrev) or "PRE-"
             Text(
-                text = dayOfWeek.take(3),
-                color = TextSecondary,
+                text = dayOfWeek.take(4),
+                color = if (isPreOrder) Color(0xFF7C3AED) else TextSecondary,
                 fontSize = 10.sp,
                 letterSpacing = 1.sp
             )
 
-            // Day number (large)
+            // Day number (large) or "ORDER"
             Text(
-                text = day.trimStart('0'),
-                color = Primary,
-                fontSize = 36.sp,
+                text = if (isPreOrder) day else day.trimStart('0'),
+                color = if (isPreOrder) Color(0xFF7C3AED) else Primary,
+                fontSize = if (isPreOrder) 24.sp else 36.sp,
                 fontWeight = FontWeight.Bold,
                 lineHeight = 40.sp
             )
 
-            // Month
-            Text(
-                text = month,
-                color = Primary,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold,
-                letterSpacing = 2.sp
-            )
+            // Month (empty for pre-order)
+            if (month.isNotEmpty()) {
+                Text(
+                    text = month,
+                    color = Primary,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = 2.sp
+                )
+            }
         }
     }
 }

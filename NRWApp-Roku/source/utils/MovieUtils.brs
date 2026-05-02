@@ -232,22 +232,34 @@ End Function
 ' ============================================================================
 Function GroupMoviesByDate(movies as Object) as Object
     groups = CreateObject("roAssociativeArray")
+    preorderMovies = []
 
     for each movie in movies
-        dateStr = GetDisplayDate(movie)
-        if dateStr = invalid OR dateStr = ""
-            dateStr = "Unknown"
-        end if
+        ' Separate pre-orders into their own group
+        if movie._is_preorder <> invalid AND movie._is_preorder = true
+            preorderMovies.Push(movie)
+        else
+            dateStr = GetDisplayDate(movie)
+            if dateStr = invalid OR dateStr = ""
+                dateStr = "Unknown"
+            end if
 
-        if NOT groups.DoesExist(dateStr)
-            groups[dateStr] = []
-        end if
+            if NOT groups.DoesExist(dateStr)
+                groups[dateStr] = []
+            end if
 
-        groups[dateStr].Push(movie)
+            groups[dateStr].Push(movie)
+        end if
     end for
 
     ' Get sorted date keys (descending)
     sortedDates = SortDatesDescending(groups.Keys())
+
+    ' Append pre-orders section at the end
+    if preorderMovies.Count() > 0
+        groups["PRE-ORDER"] = preorderMovies
+        sortedDates.Push("PRE-ORDER")
+    end if
 
     return {
         dates: sortedDates

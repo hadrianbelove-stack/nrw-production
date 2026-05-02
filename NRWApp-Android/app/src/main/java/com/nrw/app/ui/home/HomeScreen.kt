@@ -159,8 +159,12 @@ private fun createGridItems(movies: List<Movie>, playlistUrl: String?): List<Gri
     var currentDate: String? = null
     var addedTrailers = false
 
-    // Sort movies by date (newest first)
-    val sortedMovies = movies.sortedByDescending { it.getDisplayDate() ?: "0000-00-00" }
+    // Separate pre-orders from regular movies
+    val regularMovies = movies.filter { !it.isPreorder }
+    val preorderMovies = movies.filter { it.isPreorder }.sortedBy { it.title ?: "" }
+
+    // Sort regular movies by date (newest first)
+    val sortedMovies = regularMovies.sortedByDescending { it.getDisplayDate() ?: "0000-00-00" }
 
     for (movie in sortedMovies) {
         val movieDate = movie.getDisplayDate()
@@ -175,6 +179,14 @@ private fun createGridItems(movies: List<Movie>, playlistUrl: String?): List<Gri
             currentDate = movieDate
         }
         items.add(GridItem.MovieItem(movie))
+    }
+
+    // Add pre-orders section at the end
+    if (preorderMovies.isNotEmpty()) {
+        items.add(GridItem.DateItem("PRE-ORDER"))
+        for (movie in preorderMovies) {
+            items.add(GridItem.MovieItem(movie))
+        }
     }
 
     return items

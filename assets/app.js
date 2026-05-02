@@ -345,8 +345,12 @@ const NRW = {
     renderWall(movies) {
         const wall = document.getElementById('wall');
 
-        // Sort by date descending, then staff picks first within each date
-        movies.sort((a, b) => {
+        // Separate pre-orders from regular movies
+        const regularMovies = movies.filter(m => !m._is_preorder);
+        const preorderMovies = movies.filter(m => m._is_preorder);
+
+        // Sort regular movies by date descending, then staff picks first within each date
+        regularMovies.sort((a, b) => {
             const dateA = new Date(a.digital_date);
             const dateB = new Date(b.digital_date);
             if (dateB.getTime() !== dateA.getTime()) {
@@ -360,15 +364,33 @@ const NRW = {
             return 0;
         });
 
+        // Sort pre-orders alphabetically by title
+        preorderMovies.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+
+        // Combine: regular movies first, then pre-orders at the bottom
+        const orderedMovies = [...regularMovies, ...preorderMovies];
+
         let html = '';
         let lastDate = '';
         let isFirstDate = true;
+        let preorderSectionStarted = false;
 
-        movies.forEach(movie => {
+        orderedMovies.forEach(movie => {
             const date = movie.digital_date.substring(0, 10);
 
-            // Add inline date divider card when date changes
-            if (date !== lastDate) {
+            // Pre-order movies: show section header once, no date dividers
+            if (movie._is_preorder) {
+                if (!preorderSectionStarted) {
+                    preorderSectionStarted = true;
+                    html += `<div class="date-divider-card">
+                        <div class="date-content" style="background: #7c3aed;">
+                            <div class="date-day" style="font-size: 9px;">PRE-</div>
+                            <div class="date-number" style="font-size: 20px; line-height: 1;">ORDER</div>
+                        </div>
+                    </div>`;
+                }
+            // Regular movies: date divider when date changes
+            } else if (date !== lastDate) {
                 // Add NEW TRAILERS button before the first date marker
                 if (isFirstDate) {
                     const now = new Date();

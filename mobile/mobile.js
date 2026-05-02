@@ -91,6 +91,11 @@ const NRWMobile = {
 
     sortMovies() {
         this.allMovies.sort((a, b) => {
+            // Pre-orders always sort to the end
+            if (a._is_preorder && !b._is_preorder) return 1;
+            if (!a._is_preorder && b._is_preorder) return -1;
+            if (a._is_preorder && b._is_preorder) return (a.title || '').localeCompare(b.title || '');
+
             const dateA = new Date(a.digital_date);
             const dateB = new Date(b.digital_date);
             if (dateB.getTime() !== dateA.getTime()) {
@@ -230,14 +235,31 @@ const NRWMobile = {
     appendMovies(movies, isFirstBatch) {
         const feed = document.getElementById('movie-feed');
         let lastDate = isFirstBatch ? '' : this.getLastRenderedDate();
+        let preorderSectionStarted = false;
 
         movies.forEach(movie => {
-            const date = movie.digital_date.substring(0, 10);
+            // Pre-order movies: show section header once, no date headers
+            if (movie._is_preorder) {
+                if (!preorderSectionStarted) {
+                    preorderSectionStarted = true;
+                    const header = document.createElement('div');
+                    header.className = 'date-header';
+                    header.dataset.date = 'preorder';
+                    header.innerHTML = `
+                        <div class="date-badge" style="background: #7c3aed;">
+                            <span class="date-badge-text">PRE-ORDER</span>
+                        </div>
+                    `;
+                    feed.appendChild(header);
+                }
+            } else {
+                const date = movie.digital_date.substring(0, 10);
 
-            // Add date header when date changes
-            if (date !== lastDate) {
-                feed.appendChild(this.createDateHeader(date));
-                lastDate = date;
+                // Add date header when date changes
+                if (date !== lastDate) {
+                    feed.appendChild(this.createDateHeader(date));
+                    lastDate = date;
+                }
             }
 
             // Add movie card

@@ -512,6 +512,7 @@ screening_names:
 # true = force pre-order badge, false = override to NOT pre-order
 preorder_overrides:
   "1408208": true   # Exit 8
+  "1495044": true   # BORN SEXY YESTERDAY: Decoding the Enigma of Beauty
 
 # Manual end dates for festivals where Eventive page doesn't embed dates
 # Used as fallback when auto-detection fails. Format: YYYY-MM-DD
@@ -525,10 +526,11 @@ screening_end_dates:
 
 api:
   # API keys now loaded from .env file (see load_env.py)
-  # Environment variables: TMDB_API_KEY, OMDB_API_KEY, GEMINI_API_KEY
+  # Environment variables: TMDB_API_KEY, OMDB_API_KEY, GEMINI_API_KEY, WATCHMODE_API_KEY
   tmdb_api_key: ""
   omdb_api_key: ""
   gemini_api_key: ""
+  watchmode_api_key: ""  # Free tier: 2,500 calls/mo, web deeplinks included, no native app deeplinks
   tmdb_rate_limit: 0.1  # Seconds between API calls
   max_retries: 3
   max_pages_bootstrap: 49  # Maximum pages to fetch for bootstrap operation
