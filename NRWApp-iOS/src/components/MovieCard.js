@@ -70,8 +70,9 @@ export default function MovieCard({movie, onPress, isFeatured = false}) {
         )}
 
         {/* Pre-order badge */}
-        {movie.pre_order_links && Object.keys(movie.pre_order_links).length > 0 &&
-         movie.digital_date > new Date().toISOString().split('T')[0] && (
+        {(movie._is_preorder ||
+          (movie.pre_order_links && Object.keys(movie.pre_order_links).length > 0 &&
+           movie.digital_date > new Date().toISOString().split('T')[0])) && (
           <View style={styles.preOrderBadge}>
             <Text style={styles.preOrderBadgeText}>PRE-ORDER</Text>
           </View>

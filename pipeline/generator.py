@@ -3551,6 +3551,41 @@ class DataGenerator:
                             if not _cur_orig or _cur_orig.lower() == _title.lower():
                                 existing_movies[movie_index]['title'] = _jw_title
                                 self.logger.info(f"JustWatch revealed English title for {_title}: '{_jw_title}'")
+
+                        # Pre-order detection: buy-only on JustWatch is a pre-order signal.
+                        # Check manual overrides first, then automated detection.
+                        _preorder_overrides = self.config.get('preorder_overrides', {})
+                        _preorder_override = _preorder_overrides.get(str(movie_id))
+                        if _preorder_override is True:
+                            existing_movies[movie_index]['_is_preorder'] = True
+                            print(f"  🏷️  {_title} — flagged as pre-order (manual override)")
+                        elif _preorder_override is False:
+                            existing_movies[movie_index].pop('_is_preorder', None)
+                        elif _jw_result.get('buy_only'):
+                            # JustWatch has only BUY offers (no rent, no streaming) — suspicious
+                            # Confirm with Gemini VOD finder
+                            _is_preorder = False
+                            try:
+                                from gemini_scraper import GeminiVODDateFinder
+                                _vod_finder = GeminiVODDateFinder()
+                                _vod_result = _vod_finder.find_vod_date(_title, _year)
+                                if _vod_result == 'PREORDER_ONLY':
+                                    _is_preorder = True
+                                    self.logger.info(f"Pre-order confirmed: {_title} — JustWatch buy-only + Gemini PREORDER_ONLY")
+                                elif _vod_result and _vod_result != 'PREORDER_ONLY':
+                                    self.logger.info(f"Not pre-order: {_title} — Gemini found VOD date {_vod_result}")
+                                else:
+                                    # Gemini inconclusive — trust buy-only signal
+                                    _is_preorder = True
+                                    self.logger.info(f"Pre-order likely: {_title} — JustWatch buy-only, Gemini inconclusive")
+                            except Exception as _gem_err:
+                                _is_preorder = True
+                                self.logger.warning(f"Gemini check failed for {_title}, flagging as pre-order based on buy-only: {_gem_err}")
+
+                            if _is_preorder:
+                                existing_movies[movie_index]['_is_preorder'] = True
+                                print(f"  🏷️  {_title} — flagged as pre-order (buy-only on JustWatch)")
+
                 except Exception as _jw_err:
                     self.logger.warning(f"JustWatch pre-check error for {_title}: {_jw_err} — proceeding with enrichment")
 

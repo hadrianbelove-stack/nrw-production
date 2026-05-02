@@ -67,6 +67,9 @@ data class Movie(
     @SerializedName("pre_order_links")
     val preOrderLinks: PreOrderLinks? = null,
 
+    @SerializedName("_is_preorder")
+    val isPreorder: Boolean = false,
+
     val plex: PlexInfo? = null,
 
     @SerializedName("pull_quotes")

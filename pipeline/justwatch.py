@@ -44,8 +44,8 @@ class JustWatchClient:
         # Tier 2: Free ad-supported services
         'Tubi', 'Tubi TV', 'Pluto TV', 'Plex', 'The Roku Channel',
         'Crackle', 'Vudu Free', 'Fawesome',
-        # Tier 3: Library-based free services
-        'Kanopy', 'Hoopla',
+        # Tier 3: Library/public broadcasting free services
+        'Kanopy', 'Hoopla', 'PBS', 'PBS Documentaries',
         # Tier 4: Niche paid subscriptions
         'MUBI', 'Criterion Channel', 'Shudder', 'AMC Plus', 'Bloodstream'
     ]
@@ -497,11 +497,17 @@ class JustWatchClient:
         rent_names = []
         buy_names = []
 
+        presentation_types = set()
+
         for offer in offers:
             mtype = offer.get('monetizationType')
+            ptype = offer.get('presentationType')
             url = offer.get('standardWebURL')
             service = offer.get('package', {}).get('clearName', '')
             price = offer.get('retailPrice')
+
+            if ptype:
+                presentation_types.add(ptype)
 
             if not url or not service:
                 continue
@@ -555,6 +561,11 @@ class JustWatchClient:
             if vod_entries:
                 watch_links['vod'] = vod_entries
 
+        buy_only = has_buy and not has_rent and not has_streaming
+
+        if presentation_types:
+            self.logger.debug(f"JustWatch presentationTypes for {title}: {presentation_types}")
+
         return {
             'verified': verified,
             'match_confidence': confidence,
@@ -563,6 +574,8 @@ class JustWatchClient:
             'has_streaming': has_streaming,
             'has_rent': has_rent,
             'has_buy': has_buy,
+            'buy_only': buy_only,
+            '_presentation_types': sorted(presentation_types),
             'provider_names': {
                 'streaming': streaming_names,
                 'rent': rent_names,

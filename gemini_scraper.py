@@ -1152,14 +1152,11 @@ class HybridRTFinder:
             try:
                 result = playwright.scrape_rt_score(title, year)
                 if result and result.get('url'):
-                    # Playwright found the page — check if score was extracted
-                    if not result.get('score'):
-                        # URL found but no score: try Gemini on the known URL
-                        logger.info(f"Playwright found RT URL but no score for {title} ({year}), trying Gemini score extraction")
-                        gemini_score = self.gemini_finder.find_score_for_url(
-                            result['url'], title, year)
-                        if gemini_score:
-                            result['score'] = gemini_score
+                    # Playwright found the page — score extraction uses JSON-LD,
+                    # media-scorecard, CSS selectors, and text regex. If all four
+                    # methods found no score, the page genuinely has no Tomatometer
+                    # score yet (e.g. new release with insufficient reviews).
+                    # Do NOT fall back to Gemini — it returns stale/wrong scores.
 
                     # Cache the result
                     self.gemini_finder.cache[cache_key] = {
@@ -1508,8 +1505,8 @@ Response:"""
 
             if 'PREORDER_ONLY' in result_text:
                 logger.info(f"Pre-order only confirmed for {title} ({year}), no date yet")
-                self.stats['gemini_failures'] += 1
-                return None
+                self.stats['preorder_detected'] = self.stats.get('preorder_detected', 0) + 1
+                return 'PREORDER_ONLY'
 
             # Extract date from response
             date_match = re.search(r'DATE:\s*(\d{4}-\d{2}-\d{2})', result_text)

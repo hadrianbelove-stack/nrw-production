@@ -117,7 +117,10 @@ const MovieCard = forwardRef(({
     const watchLinks = movie.watch_links || {};
     const providers = movie.providers || {};
 
-    // Pre-order: future release date with pre-order links
+    // Pre-order: explicit pipeline flag (primary) or future date heuristic (fallback)
+    if (movie._is_preorder) {
+      return { name: 'PRE-ORDER', color: '#7c3aed' };
+    }
     const preOrderLinks = movie.pre_order_links || {};
     const todayStr = new Date().toISOString().split('T')[0];
     if (movie.digital_date > todayStr && Object.keys(preOrderLinks).length > 0) {

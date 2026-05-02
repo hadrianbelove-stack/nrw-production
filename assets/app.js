@@ -420,7 +420,10 @@ const NRW = {
                 const watchLinks = movie.watch_links || {};
                 const providers = movie.providers || {};
 
-                // Pre-order: future release date with no watch links yet
+                // Pre-order: explicit pipeline flag (primary) or future date heuristic (fallback)
+                if (movie._is_preorder) {
+                    return '<div class="streaming-badge badge-preorder">PRE-ORDER</div>';
+                }
                 const today = new Date().toISOString().split('T')[0];
                 if (movie.digital_date > today) {
                     const vodArr = Array.isArray(watchLinks.vod) ? watchLinks.vod

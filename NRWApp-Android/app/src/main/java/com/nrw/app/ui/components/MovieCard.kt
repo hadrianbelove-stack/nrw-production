@@ -191,9 +191,9 @@ fun MovieCard(
                     }
                 }
 
-                // Pre-order badge (top right) — shown when release is in the future
+                // Pre-order badge (top right) — explicit pipeline flag or future date heuristic
                 val todayStr = java.time.LocalDate.now().toString()
-                if (movie.digitalDate != null && movie.digitalDate > todayStr && movie.preOrderLinks != null) {
+                if (movie.isPreorder || (movie.digitalDate != null && movie.digitalDate > todayStr && movie.preOrderLinks != null)) {
                     Box(
                         modifier = Modifier
                             .align(Alignment.TopEnd)

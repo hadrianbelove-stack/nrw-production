@@ -305,6 +305,7 @@ class NewsletterDataQuery:
         categories = movie.get('categories', {})
         metadata['is_staff_pick'] = bool(categories.get('is_staff_pick'))
         metadata['is_restoration'] = bool(categories.get('is_restoration'))
+        metadata['is_preorder'] = bool(movie.get('_is_preorder'))
 
         # Cast
         crew = movie.get('crew', {})

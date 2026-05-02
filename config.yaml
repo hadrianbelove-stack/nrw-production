@@ -508,6 +508,11 @@ screening_names:
   jfilmboca2026: "Boca Intl. Jewish Film Fest"
   2026biff: "Boulder Intl. Film Fest"
 
+# Manual pre-order overrides: force-flag or un-flag movies as pre-orders.
+# true = force pre-order badge, false = override to NOT pre-order
+preorder_overrides:
+  "1408208": true   # Exit 8
+
 # Manual end dates for festivals where Eventive page doesn't embed dates
 # Used as fallback when auto-detection fails. Format: YYYY-MM-DD
 screening_end_dates:
@@ -551,6 +556,17 @@ gemini_watch_link_finder:
   enabled: true                    # Master toggle
   validate_urls: true              # HTTP-validate Gemini URLs before accepting
   # Rate limit, cache TTL, retries inherited from gemini_scraper section above
+
+# Metacritic scraper (Playwright): Finds Metascores for movies
+metacritic_scraper:
+  enabled: true
+  headless: true
+  rate_limit: 3.0              # Slightly slower than RT (Cloudflare)
+  timeout: 15
+  max_retries: 3
+  cache_ttl_days: 90
+  screenshots_enabled: true
+  screenshot_retention_days: 7
 
 # Streaming scraper (Playwright): For Netflix/Disney+/HBO Max/Hulu - DISABLED due to authentication barriers
 # Uses playwright for stealth browsing but blocked by login requirements
