@@ -221,7 +221,7 @@ class DataGenerator:
             'wikidata_successes': 0
         }
 
-        # Discovery statistics
+        # Intake statistics
         self.intake_stats = {
             'pages_fetched': 0,
             'total_results': 0,
@@ -372,8 +372,7 @@ class DataGenerator:
         self.intake_stats['debug_enabled'] = debug
 
         # Get intake configuration with CI optimizations
-        # Support legacy 'discovery' key fallback - prefer 'intake' key
-        intake_config = self.config.get('intake', self.config.get('discovery', {}))
+        intake_config = self.config.get('intake', {})
 
         # Use CI-optimized values if running in CI environment
         if os.getenv('CI') or os.getenv('GITHUB_ACTIONS'):
@@ -1157,19 +1156,6 @@ class DataGenerator:
 
         return newly_digital
 
-    # resolve_preorder_dates DELETED (2026-04-27) — Amazon pre-order detector never worked,
-    # removed along with is_buy_only check in discovery. See museum_legacy/amazon_preorder_detector.py.
-
-    # validate_enrichment_consistency DELETED (2025-12-05) - was causing loop bug
-
-    # atomic_write_json moved to pipeline/storage.py (2025-11-10)
-
-    # atomic_move_to_archive moved to pipeline/storage.py (2025-11-10)
-
-    # load_all_movies moved to pipeline/storage.py (2025-11-10)
-
-    # validate_data_json_schema moved to pipeline/validation.py (2025-11-10)
-
     def _run_intake_pass(self, pass_name, pass_type, start_date, end_date, max_pages, intaked_movies, existing_ids, debug, min_runtime=60):
         """Run a single intake pass (A or B)
 
@@ -1273,7 +1259,6 @@ class DataGenerator:
 
     def _fetch_tmdb_page_with_retry(self, page, start_date, end_date, debug=False, pass_type='digital', max_retries=3, min_runtime=60):
         """Fetch TMDB discover page with bounded timeout and retry logic"""
-        import requests
         from requests.adapters import HTTPAdapter
         from urllib3.util.retry import Retry
 
@@ -1609,7 +1594,6 @@ class DataGenerator:
         Returns:
             Number of new movies intaked from this festival
         """
-        import requests
         from requests.adapters import HTTPAdapter
         from urllib3.util.retry import Retry
 

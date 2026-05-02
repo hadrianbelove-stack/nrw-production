@@ -108,7 +108,7 @@ def main():
         generator.logger.setLevel(logging.DEBUG)
         generator.logger.debug("Debug mode enabled - verbose logging active")
 
-    # Run discovery if requested
+    # Run intake if requested
     intaked_count = 0
     miniseries_count = 0
     if args.intake:
@@ -152,12 +152,9 @@ def main():
         print(f"✅ Festival backfill complete: {festival_count} new movies added")
 
     # Check tracking movies for digital availability if requested
-    newly_digital_count = 0
     if args.discover:
         print("\n🔍 Discovering provider availability for tracking movies...")
-        newly_digital_count = generator.check_tracking_movies()
-
-    # CLI metrics handling removed - orchestrator now handles metrics consolidation from discovery_run.json
+        generator.check_tracking_movies()
 
     # Run enrichment if requested
     enriched_count = 0
