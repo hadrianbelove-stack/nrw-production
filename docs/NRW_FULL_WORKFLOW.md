@@ -19,7 +19,7 @@ This document provides a high-level overview of the complete NRW workflow, combi
 - **Performance**: 99.4% cache efficiency, 30-second runtime
 
 ### Phase 3: Quality Assurance & Manual Correction
-**Manual** - Admin panel interface (`admin.py` on port 5555)
+**Manual** - Admin panel interface (`admin.py` on port 5556)
 
 #### Admin Approval Gate
 **Current Behavior**: Publish-first with post-publication curation

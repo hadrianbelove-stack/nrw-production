@@ -96,7 +96,7 @@ Currently TMDB-only for primary discovery (3 passes: direct-to-digital, theatric
 | Feature | Date | Notes |
 |---------|------|-------|
 | Festival system | Feb 2026 | Badges, ribbons, filter — all 7 platforms |
-| Pre-order detection | Feb 2026 | Amazon button checks + VOD date resolution |
+| ~~Pre-order detection~~ | Feb 2026 | Removed Apr 2026 — Amazon pre-order detector never worked reliably |
 | Self-hosted trailers | Feb 2026 | B2 infrastructure built, CI fix applied Mar 10 |
 | Gemini enrichment | Feb 2026 | AI-powered RT scores, Wikipedia, trailers |
 | Lightbox redesign | Feb 2026 | Service colors, streaming hierarchy |

@@ -76,12 +76,10 @@ The current provider discovery system (integrated into `generate_data.py --disco
 5. When providers appear, use the earliest known date (not detection date)
 
 **Code Reference:**
-- `generate_data.py` lines 1200-1350: Intake logic with TMDB release_date integration
-- `generate_data.py` lines 450-550: Provider monitoring without date override
+- `pipeline/generator.py` — `intake_new_premieres()` and `_run_intake_pass()` handle TMDB release_date integration
+- `pipeline/generator.py` — `check_tracking_movies()` handles provider monitoring without date override
 
 ## Related Documentation
 
-- [README.md](README.md) - Quick start and overview
-- [IMPLEMENTATION_ROADMAP.md](IMPLEMENTATION_ROADMAP.md) - CRITICAL-001 tracking
+- [IMPLEMENTATION_ROADMAP.md](IMPLEMENTATION_ROADMAP.md) - Tactical roadmap
 - [PROJECT_CHARTER.md](PROJECT_CHARTER.md) - AMENDMENT-049 governance
-- [ADMIN_WORKFLOW.md](ADMIN_WORKFLOW.md) - Admin panel usage guide

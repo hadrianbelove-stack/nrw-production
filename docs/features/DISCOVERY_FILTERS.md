@@ -73,16 +73,18 @@ The system uses **provider availability** as the main quality filter rather than
 ## Current Implementation
 
 ### Discovery Architecture
-The discovery system was consolidated into `generate_data.py` as part of AMENDMENT-047:
+The discovery system lives in `pipeline/generator.py`, invoked via `generate_data.py`:
 
 ```
 daily_orchestrator.py
   ↓
-generate_data.py --intake    (intake new premieres from TMDB into tracking database)
+python3 generate_data.py --intake    (intake new premieres from TMDB into tracking database)
   ↓
-generate_data.py --discover  (discover provider availability for tracking movies)
+python3 generate_data.py --discover  (discover provider availability for tracking movies)
   ↓
-generate_data.py             (generate enriched display data)
+python3 generate_data.py --enrich    (enrich newly available movies with metadata/links)
+  ↓
+python3 generate_data.py             (generate final display data)
 ```
 
 ### Legacy System Status
@@ -91,18 +93,17 @@ generate_data.py             (generate enriched display data)
 - **NEVER use in production pipeline**
 
 ### Configuration
-Intake settings are controlled via `config.yaml` (discovery key name preserved for backward compatibility):
+Intake settings are controlled via `config.yaml`:
 
 ```yaml
-discovery:
-  max_pages: 10  # Maximum TMDB pages to process during intake
-  days_back: 30  # Look back N days for releases during intake
-  min_movies: 5  # Minimum movies to intake per run
-  timeout: 30    # API timeout in seconds
+intake:
+  days_back: 7       # Intake window for finding new premieres
+  max_pages: 20      # Maximum TMDB pages to process during intake
+  min_runtime: 60    # Minimum runtime in minutes (features only)
+  enable_pass_a: true  # Direct-to-digital releases
+  enable_pass_b: true  # Theatrical releases
+  enable_pass_c: true  # Festival premieres
 ```
-
-**Deprecated:**
-- `api.max_pages_daily` (use `discovery.max_pages`)
 
 ## Performance Metrics
 
@@ -113,8 +114,7 @@ discovery:
 - **Wall display:** 250-350 movies (limited by 90-day window)
 
 ### Monitoring
-- **Baseline script:** `scripts/baseline_metrics.py`
-- **Daily tracking:** Intake count, newly-digital count, total tracking/available
+- **Daily metrics:** `metrics/daily.jsonl` — intake count, newly-digital count, total tracking/available
 - **Metrics storage:** `metrics/daily.jsonl` for 3-day baselining
 
 ### Success Criteria
