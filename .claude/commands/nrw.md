@@ -182,10 +182,9 @@ else:
     if pct > 5:
         print('CRITICAL ENRICHMENT FAILURE: %d movies have zero watch links (%s%% of wall)' % (len(zero_broken), pct))
         print('   This is NOT normal. Enrichment pipeline likely broken.')
-    header = 'ZERO WATCH LINKS: %d shown' % shown
+    header = 'NEW ZERO WATCH LINKS: %d' % shown
     if aged_out:
         header += ' (+%d aged out >3d)' % aged_out
-    header += ' of %d total (%s%%)' % (len(zero_broken), pct)
     print(header)
 
     for title, dd, days, status in rows:
