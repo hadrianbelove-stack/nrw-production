@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-05-01T11:45:47.194367",
-  "duration_seconds": 5077.270218,
+  "timestamp": "2026-05-02T10:42:59.528533",
+  "duration_seconds": 2750.072387,
   "overall_success": true,
   "failure_count": 0,
   "warning_count": 0,
@@ -8,44 +8,44 @@
     {
       "name": "Intake new premieres from TMDB",
       "success": true,
-      "duration_seconds": 9.023749,
+      "duration_seconds": 6.201502,
       "error": null,
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-04-29 to 2026-05-01 (incremental mode, 51 intaked)\n\u2705 Movie intake complete: 51 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-04-01 to 2026-05-01\n   \ud83d\udccb Travis Japan Summer Vacation!! in the U"
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-04-30 to 2026-05-02 (incremental mode, 30 intaked)\n\u2705 Movie intake complete: 30 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-04-02 to 2026-05-02\n   \ud83d\udccb Pay (8 eps)\n   \ud83d\udccb Golden Boys (4 eps)\n  "
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 4432.54896,
+      "duration_seconds": 2551.020107,
       "error": null,
-      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 16461 total movies\n\ud83d\udd0d Raw tracking filter: 13077 movies\n\ud83d\udd0d Assigned tracking_movies list: 13077\n\ud83d\udd0d Found 13077 movies in tracking status\n  Priority queue (last 180 days): 507 movies\n  Older movies: 12570 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 13077 movies for digital availability...\n\n   \u2705 Added Mars to site immediately (discovery-driven)\n  \ud83d\udcc5 Mars \u2014 pending Type 4 arrived (2026"
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 16495 total movies\n\ud83d\udd0d Raw tracking filter: 13101 movies\n\ud83d\udd0d Assigned tracking_movies list: 13101\n\ud83d\udd0d Found 13101 movies in tracking status\n  Priority queue (last 180 days): 509 movies\n  Older movies: 12592 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 13101 movies for digital availability...\n\n   \u2705 Added Mars to site immediately (discovery-driven)\n  \ud83d\udcc5 Mars \u2014 digital release 2026-05-01\n "
     },
     {
       "name": "Enrich newly available movies with metadata",
       "success": true,
-      "duration_seconds": 633.36141,
+      "duration_seconds": 189.805687,
       "error": null,
-      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n  \u26a0\ufe0f Orphan detection: 6 movies available in tracking but missing from wall\n    \u2192 Dhurandhar (ID 1291608, digital_date 2026-02-01)\n    \u2192 Kothalavadi (ID 1523326, digital_date 2026-01-31)\n    \u2192 A Letter to My Youth (ID 1602705, digital_date 2026-01-31)\n    \u2192 Deaw\u200b Still\u200b Alive\u200b (ID 1623070, digital_date 2026-01-31)\n    \u2192 Countdown to Royal Rumble 2026 (ID 1626620, digital_date 2026-01-31)\n    \u2192 A Year in The Life a"
+      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n  \u26a0\ufe0f Orphan detection: 3 movies available in tracking but missing from wall\n    \u2192 Dhurandhar (ID 1291608, digital_date 2026-02-01)\n    \u2192 Dinner to Die For (ID 1532406, digital_date 2026-02-01)\n    \u2192 Miracle: The Boys of '80 (ID 1613335, digital_date 2026-02-01)\n\ud83c\udfaf Enrichment queue: 20 new + 1 catch-up = 21 total\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detecte"
     },
     {
       "name": "Stamp hosted trailer URLs into data.json",
       "success": true,
-      "duration_seconds": 0.805264,
+      "duration_seconds": 1.320281,
       "error": null,
-      "output_preview": "=== Trailer Pipeline: stamp ===\n\nConnecting to B2...\nFound 554 trailers in B2 bucket\nSaved data.json: 1 stamped, 0 stale cleaned\n\nStamp results:\n  Stamped:          1\n  Already had URL:  479\n  Stale cleaned:    0\n  Not in B2:        255\n"
+      "output_preview": "=== Trailer Pipeline: stamp ===\n\nConnecting to B2...\nFound 562 trailers in B2 bucket\nSaved data.json: 1 stamped, 0 stale cleaned\n\nStamp results:\n  Stamped:          1\n  Already had URL:  486\n  Stale cleaned:    0\n  Not in B2:        239\n"
     },
     {
       "name": "Check virtual screening link expirations",
       "success": true,
-      "duration_seconds": 0.95865,
+      "duration_seconds": 1.14669,
       "error": null,
       "output_preview": "\n\ud83c\udfaa Checking virtual screening links...\n  Checking 15 virtual screening movies...\n  \ud83d\udcbe Updated data.json\n  \ud83d\udcca Results: 2 active, 0 expired\n\u2705 Virtual screening check complete\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Archive movies older than 90 days",
       "success": true,
-      "duration_seconds": 0.410779,
+      "duration_seconds": 0.415579,
       "error": null,
-      "output_preview": "\n\ud83d\udce6 Archiving movies older than 90 days...\n\ud83d\udce6 Archived 13 movies (>90 days old) \u2192 data_archive.json\n   data.json: 722 movies | archive: 223 total\n\u2705 Archive complete\n\ud83d\udccb Phase complete\n"
+      "output_preview": "\n\ud83d\udce6 Archiving movies older than 90 days...\n\ud83d\udce6 Archived 3 movies (>90 days old) \u2192 data_archive.json\n   data.json: 723 movies | archive: 241 total\n\u2705 Archive complete\n\ud83d\udccb Phase complete\n"
     }
   ],
   "health_issues": [],
@@ -56,20 +56,20 @@
   "failures": [],
   "warnings": [],
   "data_quality": {
-    "total": 16461,
-    "tracking": 13068,
-    "available": 3046,
-    "data_movies": 722,
+    "total": 16495,
+    "tracking": 13098,
+    "available": 3049,
+    "data_movies": 723,
     "movies_with_links": 705,
-    "movies_with_rt": 502,
-    "movies_with_wikipedia": 362,
-    "movies_with_trailers": 637
+    "movies_with_rt": 506,
+    "movies_with_wikipedia": 360,
+    "movies_with_trailers": 636
   },
   "enrichment_metrics": {
-    "timestamp": "2026-05-01T11:45:44.469460",
-    "movies_requested": 27,
-    "movies_enriched": 11,
-    "movies_deferred": 16,
-    "enrichment_duration_seconds": 632.62
+    "timestamp": "2026-05-02T10:42:56.142681",
+    "movies_requested": 21,
+    "movies_enriched": 4,
+    "movies_deferred": 17,
+    "enrichment_duration_seconds": 189.11
   }
 }
