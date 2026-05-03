@@ -506,6 +506,21 @@ Function GetTrailerUrl(movie as Object) as String
     return ""
 End Function
 
+' Get pre-order links as array (JustWatch buy offers for pre-order movies)
+Function GetPreOrderLinks(movie as Object) as Object
+    if movie.pre_order_links = invalid
+        return []
+    end if
+    pol = movie.pre_order_links
+    if Type(pol) = "roArray"
+        return pol
+    end if
+    if Type(pol) = "roAssociativeArray"
+        return [pol]
+    end if
+    return []
+End Function
+
 ' Get Plex deep link
 Function GetPlexDeepLink(movie as Object) as String
     if movie.plex <> invalid AND movie.plex.deep_link <> invalid

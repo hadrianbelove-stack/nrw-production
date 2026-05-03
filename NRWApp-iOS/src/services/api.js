@@ -340,6 +340,21 @@ export function getWatchLinks(movie) {
     });
   }
 
+  // Pre-order links (JustWatch buy offers for pre-order movies)
+  if (links.length === 0) {
+    const preOrderLinks = Array.isArray(movie.pre_order_links) ? movie.pre_order_links : [];
+    preOrderLinks.forEach(pl => {
+      if (pl && pl.link) {
+        links.push({
+          service: normalizeServiceId(pl.service),
+          label: `Pre-Order on ${pl.service || 'VOD'}`,
+          url: pl.link,
+          type: 'purchase',
+        });
+      }
+    });
+  }
+
   return links;
 }
 

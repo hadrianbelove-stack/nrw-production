@@ -545,6 +545,17 @@ const NRWMobile = {
             return `<div class="vod-row">${vodBtns.join('')}</div>`;
         }
 
+        // Pre-order links (JustWatch buy offers for pre-order movies)
+        const preOrderLinks = Array.isArray(movie.pre_order_links) ? movie.pre_order_links : [];
+        if (preOrderLinks.length > 0) {
+            const poBtns = preOrderLinks.map(pl => {
+                const vodType = NRWMobile.resolveVODService(pl.service, pl.link);
+                if (!vodType) return '';
+                return `<a href="${pl.link}" target="_blank" rel="noopener" class="btn-watch-full ${vodType.key}">Pre-Order</a>`;
+            }).filter(Boolean);
+            if (poBtns.length > 0) return poBtns[0];
+        }
+
         return '';
     },
 

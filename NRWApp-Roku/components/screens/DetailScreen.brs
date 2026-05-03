@@ -355,6 +355,21 @@ Sub SetupWatchButtons(movie as Object)
         end if
     end for
 
+    ' Pre-order buttons (JustWatch buy offers for pre-order movies)
+    preOrderLinks = GetPreOrderLinks(movie)
+    if m.buttons.Count() = 0 OR (m.buttons.Count() = 1 AND trailerUrl <> "")
+        preOrderButtons = [m.vodButton1, m.vodButton2]
+        for i = 0 to 1
+            if i < preOrderLinks.Count() AND preOrderLinks[i].service <> invalid
+                preOrderButtons[i].service = preOrderLinks[i].service
+                preOrderButtons[i].url = preOrderLinks[i].link
+                preOrderButtons[i].label = "Pre-Order"
+                preOrderButtons[i].visible = true
+                m.buttons.Push(preOrderButtons[i])
+            end if
+        end for
+    end if
+
     ' Plex button
     plexLink = GetPlexDeepLink(movie)
     if plexLink <> ""

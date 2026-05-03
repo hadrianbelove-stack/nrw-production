@@ -886,7 +886,6 @@ class DataGenerator:
                                     # Ensure pending movie is on wall as pre-order (migrates existing pending movies)
                                     if not movie.get('_is_preorder'):
                                         movie['_is_preorder'] = True
-                                        movie['_preorder_source'] = 'tmdb_type4'
                                         self.add_movie_to_site_immediately(movie_id, movie)
                                         print(f"  🏷️ {movie['title']} — added to wall as pre-order ({pending_date})")
                                     self.logger.debug(f"Type 4 still pending: {movie['title']} — {days_until}d until {pending_date}")
@@ -916,7 +915,6 @@ class DataGenerator:
                                     movie['_discovery_source'] = 'tmdb_type4'
                                     movie['_type4_pending'] = True
                                     movie['_is_preorder'] = True
-                                    movie['_preorder_source'] = 'tmdb_type4'
                                     type4_found = True  # Skip provider check
                                     self.add_movie_to_site_immediately(movie_id, movie)
                                     self.logger.info(f"Type 4 future: {movie['title']} — {days_until}d until {type4_date} [pre-order on wall]")
@@ -1901,8 +1899,6 @@ class DataGenerator:
             # Copy pre-order flag if set (Type 4 pending movies surfaced on wall)
             if movie_data.get('_is_preorder'):
                 basic_entry['_is_preorder'] = True
-                if movie_data.get('_preorder_source'):
-                    basic_entry['_preorder_source'] = movie_data['_preorder_source']
 
             # Add to beginning of movies list (newest first)
             data_movies.insert(0, basic_entry)
@@ -2042,6 +2038,7 @@ class DataGenerator:
             'providers': movie_data.get('providers', {'rent': [], 'buy': [], 'streaming': []}),
             'links': {'wikipedia': None, 'trailer': None, 'rt': None},
             'watch_links': {},
+            'pre_order_links': movie_data.get('pre_order_links', []),
             '_enrichment_status': 'pending',
             '_discovered_at': datetime.now().isoformat(),  # ISO timestamp when we found it
             '_tmdb_fetch_failed': True,
@@ -2083,6 +2080,7 @@ class DataGenerator:
             'providers': movie_data.get('providers', {'rent': [], 'buy': [], 'streaming': []}),
             'links': {'wikipedia': None, 'trailer': None, 'rt': None},
             'watch_links': {},
+            'pre_order_links': movie_data.get('pre_order_links', []),
             '_enrichment_status': 'pending',
             '_discovered_at': datetime.now().isoformat(),  # ISO timestamp when we found it
             '_tmdb_fetch_failed': False,
@@ -3422,80 +3420,6 @@ class DataGenerator:
 
             newly_count = len(movie_ids_to_enrich)
 
-            # Pre-order link scout: fetch buy links for pre-orders approaching release.
-            # Movies within 14 days of their digital_date usually have storefront listings
-            # (87.5% hit rate from testing). This makes pre-order badges clickable.
-            _scout_days = self.config.get('preorder', {}).get('scout_days', 14)
-            _scout_cutoff = (datetime.now() + timedelta(days=_scout_days)).strftime('%Y-%m-%d')
-            _today_scout = datetime.now().strftime('%Y-%m-%d')
-            _scout_candidates = []
-            for _m in existing_movies:
-                if not _m.get('_is_preorder'):
-                    continue
-                _dd = _m.get('digital_date', '')
-                if not _dd or _dd > _scout_cutoff:
-                    continue  # Too far out — storefronts won't have links yet
-                if _m.get('pre_order_links'):
-                    continue  # Already scouted
-                _scout_candidates.append(_m)
-
-            if _scout_candidates:
-                print(f"\n  🔍 Pre-order link scout: {len(_scout_candidates)} movies within {_scout_days}d window")
-                # Initialize JustWatch client
-                if not hasattr(self.enrichment, '_justwatch_client') or self.enrichment._justwatch_client is None:
-                    from pipeline.justwatch import JustWatchClient
-                    self.enrichment._justwatch_client = JustWatchClient(logger=self.logger)
-                _amazon_tag = self.enrichment._get_amazon_affiliate_tag()
-                _excl_list = self.enrichment.config.get('tracking', {}).get('excluded_services', ['fuboTV', 'Philo', 'Sun Nxt', 'Google Play Movies', 'Google Play', 'Shahid VIP', 'Viki', 'Futo'])
-                _scout_found = 0
-                _scout_graduated = 0
-
-                for _sm in _scout_candidates:
-                    _sm_id = str(_sm.get('id', ''))
-                    _sm_title = _sm.get('title', '')
-                    _sm_year = _sm.get('year')
-                    _sm_orig = _sm.get('original_title')
-                    _sm_director = _sm.get('crew', {}).get('director') if _sm.get('crew') else None
-                    _sm_type = 'tv' if _sm_id.startswith('tv_') else 'movie'
-
-                    try:
-                        _sr = self.enrichment._justwatch_client.verify_availability(
-                            _sm_title, _sm_year, excluded_services=_excl_list,
-                            affiliate_tag=_amazon_tag, content_type=_sm_type,
-                            original_title=_sm_orig, director=_sm_director,
-                            tmdb_id=_sm_id
-                        )
-                    except Exception as _scout_err:
-                        self.logger.warning(f"Scout JW error for {_sm_title}: {_scout_err}")
-                        continue
-
-                    if _sr is None:
-                        continue  # No match — try again tomorrow
-
-                    if _sr.get('buy_only'):
-                        # Pre-order confirmed — store buy links
-                        _sr_links = _sr.get('watch_links', {})
-                        if _sr_links.get('vod'):
-                            _sm['pre_order_links'] = _sr_links['vod']
-                            _scout_found += 1
-                            print(f"    🔗 {_sm_title} — pre-order links found ({len(_sr_links['vod'])} offers)")
-                    elif _sr['verified']:
-                        # Rent/stream available — early graduation!
-                        _sm.pop('_is_preorder', None)
-                        _sm.pop('_preorder_source', None)
-                        _sr_links = _sr.get('watch_links', {})
-                        if _sr_links:
-                            _sm['watch_links'] = _sr_links
-                        # Queue for full enrichment (RT, wiki, trailers)
-                        if _sm_id not in movie_ids_to_enrich:
-                            movie_ids_to_enrich.append(_sm_id)
-                        _scout_graduated += 1
-                        print(f"    🎬 {_sm_title} — graduated early (available before Type 4 date)")
-                    # else: verified=False — no valid platforms, skip
-
-                if _scout_found or _scout_graduated:
-                    print(f"  🔍 Scout results: {_scout_found} links found, {_scout_graduated} graduated early")
-
             # Catch-up: retry movies with incomplete enrichment
             seen_ids = set(movie_ids_to_enrich)
             catchup_ids = []
@@ -3724,39 +3648,18 @@ class DataGenerator:
                         _preorder_override = _preorder_overrides.get(str(movie_id))
                         if _preorder_override is True:
                             existing_movies[movie_index]['_is_preorder'] = True
-                            existing_movies[movie_index]['_preorder_source'] = 'manual_override'
                             print(f"  🏷️  {_title} — flagged as pre-order (manual override)")
                         elif _preorder_override is False:
                             existing_movies[movie_index].pop('_is_preorder', None)
                         elif _jw_result.get('buy_only'):
-                            # JustWatch has only BUY offers (no rent, no streaming) — suspicious
-                            # Confirm with Gemini VOD finder
-                            _is_preorder = False
-                            try:
-                                from gemini_scraper import GeminiVODDateFinder
-                                _vod_finder = GeminiVODDateFinder()
-                                _vod_result = _vod_finder.find_vod_date(_title, _year)
-                                if _vod_result == 'PREORDER_ONLY':
-                                    _is_preorder = True
-                                    self.logger.info(f"Pre-order confirmed: {_title} — JustWatch buy-only + Gemini PREORDER_ONLY")
-                                elif _vod_result and _vod_result != 'PREORDER_ONLY':
-                                    self.logger.info(f"Not pre-order: {_title} — Gemini found VOD date {_vod_result}")
-                                else:
-                                    # Gemini inconclusive — trust buy-only signal
-                                    _is_preorder = True
-                                    self.logger.info(f"Pre-order likely: {_title} — JustWatch buy-only, Gemini inconclusive")
-                            except Exception as _gem_err:
-                                _is_preorder = True
-                                self.logger.warning(f"Gemini check failed for {_title}, flagging as pre-order based on buy-only: {_gem_err}")
-
-                            if _is_preorder:
-                                existing_movies[movie_index]['_is_preorder'] = True
-                                existing_movies[movie_index]['_preorder_source'] = 'justwatch_buy_only'
-                                # Store buy links as pre-order links (clickable on iOS/tvOS)
-                                _jw_links = _jw_result.get('watch_links', {})
-                                if _jw_links.get('vod'):
-                                    existing_movies[movie_index]['pre_order_links'] = _jw_links['vod']
-                                print(f"  🏷️  {_title} — flagged as pre-order (buy-only on JustWatch)")
+                            # Buy-only on JustWatch = pre-order signal. Auto-flag.
+                            # Stale cleanup (14d) catches false positives; manual override can clear.
+                            existing_movies[movie_index]['_is_preorder'] = True
+                            # Store JW buy links as pre-order links (clickable on all platforms)
+                            _jw_links = _jw_result.get('watch_links', {})
+                            if _jw_links.get('vod'):
+                                existing_movies[movie_index]['pre_order_links'] = _jw_links['vod']
+                            print(f"  🏷️  {_title} — flagged as pre-order (buy-only on JustWatch)")
                         else:
                             # Not buy-only anymore — clear pre-order flag if previously set
                             if existing_movies[movie_index].get('_is_preorder'):
@@ -3767,36 +3670,6 @@ class DataGenerator:
                     self.logger.warning(f"JustWatch pre-check error for {_title}: {_jw_err} — proceeding with enrichment")
 
                 if not _jw_verified and not _is_manual and not _has_override:
-                    # Pre-order rescue: before reverting, ask Gemini if this is a pre-order.
-                    # Only for "no JW match" — excluded-platform movies are genuinely wrong platforms.
-                    _rescued = False
-                    if _revert_reason == 'justwatch_no_match':
-                        try:
-                            from gemini_scraper import GeminiVODDateFinder
-                            _vod_finder = GeminiVODDateFinder()
-                            _vod_result = _vod_finder.find_vod_date(_title, _year)
-                            if _vod_result == 'PREORDER_ONLY':
-                                _rescued = True
-                                print(f"  🏷️  {_title} — rescued as pre-order (Gemini: PREORDER_ONLY, JW had no match)")
-                            elif _vod_result and _vod_result not in ('NOT_FOUND', None):
-                                # Gemini returned a date string — check if it's in the future
-                                try:
-                                    _vod_dt = datetime.strptime(_vod_result, '%Y-%m-%d')
-                                    if _vod_dt > datetime.now():
-                                        _rescued = True
-                                        existing_movies[movie_index]['digital_date'] = _vod_result
-                                        print(f"  🏷️  {_title} — rescued as pre-order (Gemini: VOD date {_vod_result})")
-                                except ValueError:
-                                    pass
-                        except Exception as _gem_err:
-                            self.logger.warning(f"Gemini pre-order check failed for {_title}: {_gem_err}")
-
-                    if _rescued:
-                        existing_movies[movie_index]['_is_preorder'] = True
-                        existing_movies[movie_index]['_preorder_source'] = 'gemini_rescue'
-                        signal.alarm(0)
-                        continue
-
                     _today_iso = datetime.now().strftime('%Y-%m-%d')
                     tracking_data['movies'][movie_id]['status'] = 'tracking'
                     tracking_data['movies'][movie_id]['_jw_revert_reason'] = _revert_reason

@@ -1011,6 +1011,21 @@ const NRW = {
             }
         });
         if (hasVod) { watchStack.appendChild(vodRow); hasWatch = true; }
+
+        // Pre-order links (JustWatch buy offers for pre-order movies)
+        if (!hasWatch) {
+            const preOrderLinks = Array.isArray(movie.pre_order_links) ? movie.pre_order_links : [];
+            preOrderLinks.forEach(pl => {
+                const plLink = pl.link || pl.url;
+                if (pl.service && plLink) {
+                    const vodType = this.resolveVODService(pl.service, plLink);
+                    if (!vodType) return;
+                    watchStack.appendChild(makeLink(plLink, `watch-btn-lb ${vodType.key}`, `Pre-Order`));
+                    hasWatch = true;
+                }
+            });
+        }
+
         if (hasWatch) container.appendChild(watchStack);
 
         // 3. Info row — Wiki + RT + IMDb

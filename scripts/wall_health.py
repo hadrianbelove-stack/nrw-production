@@ -55,6 +55,7 @@ pct = round(len(zero_broken) / total * 100, 1) if total else 0
 
 # Coverage stats
 with_rt = sum(1 for m in movies if m.get('links', {}).get('rt'))
+with_mc = sum(1 for m in movies if m.get('metacritic_score'))
 with_wiki = sum(1 for m in movies if m.get('links', {}).get('wikipedia'))
 with_trailers = sum(1 for m in movies if m.get('links', {}).get('trailer') or m.get('links', {}).get('trailer_hosted'))
 
@@ -67,7 +68,7 @@ except:
 
 print('WALL: %d movies' % total)
 print('PIPELINE: %s' % health)
-print('COVERAGE: RT=%d  Wiki=%d  Trailers=%d (%d%%)' % (with_rt, with_wiki, with_trailers, round(with_trailers / total * 100) if total else 0))
+print('COVERAGE: RT=%d  MC=%d  Wiki=%d  Trailers=%d (%d%%)' % (with_rt, with_mc, with_wiki, with_trailers, round(with_trailers / total * 100) if total else 0))
 print('TODAY (%s): %d new arrivals' % (today, len(arrivals)))
 for a in arrivals:
     print('  - ' + a['title'])
@@ -90,6 +91,8 @@ for a in arrivals:
         missing.append('rt_score')
     if not a.get('imdb_rating'):
         missing.append('imdb_rating')
+    if not a.get('metacritic_score'):
+        missing.append('mc_score')
     d_name = crew.get('director', '')
     if not d_name or d_name == 'Unknown':
         missing.append('director')
@@ -226,3 +229,15 @@ if jw_tracking_only:
     print('JW REVERTED (tracking only, not on wall) — %d in last 3 days:' % len(jw_tracking_only))
     for rev_at, title, label in sorted(jw_tracking_only):
         print('  %s  %-40s  %s' % (rev_at, title, label))
+
+# Pre-order / buy-only movies on the wall
+preorder_movies = [m for m in movies if m.get('_is_preorder')]
+if preorder_movies:
+    print('PRE-ORDER (buy-only flagged): %d movies' % len(preorder_movies))
+    for m in preorder_movies:
+        title = m['title'][:45]
+        dd = m.get('digital_date', '?')
+        pol = m.get('pre_order_links', [])
+        n_links = len(pol) if isinstance(pol, list) else 0
+        services = ', '.join(p.get('service', '?') for p in pol) if n_links else 'no links'
+        print('  %-45s  %s  %s' % (title, dd, services))

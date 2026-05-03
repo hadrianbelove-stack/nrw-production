@@ -70,6 +70,10 @@ data class Movie(
     @SerializedName("_is_preorder")
     val isPreorder: Boolean = false,
 
+    @SerializedName("pre_order_links")
+    @com.google.gson.annotations.JsonAdapter(VodLinksAdapter::class)
+    val preOrderLinks: List<ServiceLink>? = null,
+
     val plex: PlexInfo? = null,
 
     @SerializedName("pull_quotes")
@@ -365,6 +369,21 @@ fun Movie.getWatchOptions(): List<WatchOption> {
                 type = WatchType.STREAMING,
                 icon = normalizeServiceId(link.service) ?: "streaming"
             ))
+        }
+    }
+
+    // Pre-order links (JustWatch buy offers for pre-order movies)
+    if (options.isEmpty()) {
+        preOrderLinks?.forEach { link ->
+            if (link.link != null) {
+                options.add(WatchOption(
+                    service = normalizeServiceId(link.service) ?: "vod",
+                    label = "Pre-Order on ${link.service ?: "VOD"}",
+                    url = link.link,
+                    type = WatchType.PURCHASE,
+                    icon = normalizeServiceId(link.service) ?: "vod"
+                ))
+            }
         }
     }
 
