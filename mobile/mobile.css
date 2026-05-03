@@ -371,6 +371,10 @@ body {
     background: rgba(250, 50, 50, 0.85);
     color: #fff;
 }
+.card-score-badge.mc {
+    background: rgba(102, 204, 51, 0.85);
+    color: #fff;
+}
 .card-score-badge.imdb {
     background: rgba(245, 197, 24, 0.9);
     color: #000;
@@ -665,6 +669,12 @@ body {
 
 .btn-rt {
     background: rgba(250, 50, 50, 0.75);
+    color: #fff;
+    border: none;
+}
+
+.btn-mc {
+    background: rgba(102, 204, 51, 0.75);
     color: #fff;
     border: none;
 }

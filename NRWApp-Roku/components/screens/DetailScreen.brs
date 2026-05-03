@@ -276,6 +276,20 @@ Sub LoadMovie(index as Integer)
         m.rtScoreLabel.visible = false
     end if
 
+    if movie.metacritic_score <> invalid
+        mcStr = movie.metacritic_score.ToStr()
+        mcNum = Val(mcStr)
+        if mcNum > 0
+            m.mcScoreLabel.text = "MC " + Int(mcNum).ToStr()
+            m.mcScoreLabel.visible = true
+            hasInfo = true
+        else
+            m.mcScoreLabel.visible = false
+        end if
+    else
+        m.mcScoreLabel.visible = false
+    end if
+
     if movie.imdb_rating <> invalid
         ratingStr = movie.imdb_rating.ToStr()
         ratingNum = Val(ratingStr)

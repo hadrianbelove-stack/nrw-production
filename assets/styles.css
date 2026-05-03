@@ -548,6 +548,10 @@ header h1 {
     background: rgba(250, 50, 50, 0.85);
     color: #fff;
 }
+.score-badge.mc {
+    background: rgba(102, 204, 51, 0.85);
+    color: #fff;
+}
 .score-badge.imdb {
     background: rgba(245, 197, 24, 0.9);
     color: #000;
@@ -967,6 +971,10 @@ header h1 {
     background: rgba(250, 50, 50, 0.85);
     color: #fff;
 }
+.card-score-badge.mc {
+    background: rgba(102, 204, 51, 0.85);
+    color: #fff;
+}
 .card-score-badge.imdb {
     background: rgba(245, 197, 24, 0.9);
     color: #000;
@@ -1216,6 +1224,7 @@ header h1 {
 }
 .info-btn-lb.glass { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.3); }
 .info-btn-lb.rt { background: rgba(250, 50, 50, 0.85); color: #fff; }
+.info-btn-lb.mc { background: rgba(102, 204, 51, 0.85); color: #fff; }
 .info-btn-lb.imdb { background: rgba(245, 197, 24, 0.9); color: #000; font-weight: 800; }
 
 /* Navigation arrows - inline with content */

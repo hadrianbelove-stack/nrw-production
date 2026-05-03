@@ -365,6 +365,7 @@ const NRWMobile = {
                     <div class="info-row">
                         ${this.getWikiButton(movie)}
                         ${this.getRTButton(movie)}
+                        ${this.getMCButton(movie)}
                         ${this.getIMDbButton(movie)}
                     </div>
                     <div class="nav-row">
@@ -573,6 +574,11 @@ const NRWMobile = {
         return `<a href="${movie.links.rt}" target="_blank" rel="noopener" class="btn-equal btn-rt">${rtText}</a>`;
     },
 
+    getMCButton(movie) {
+        if (!movie.metacritic_score || !movie.links?.metacritic) return '';
+        return `<a href="${movie.links.metacritic}" target="_blank" rel="noopener" class="btn-equal btn-mc">MC ${movie.metacritic_score}</a>`;
+    },
+
     getIMDbButton(movie) {
         if (movie.imdb_rating) {
             const imdbUrl = movie.links?.imdb;
@@ -588,6 +594,9 @@ const NRWMobile = {
         let badges = '';
         if (movie.rt_score && movie.links?.rt) {
             badges += `<a href="${movie.links.rt}" target="_blank" rel="noopener" class="card-score-badge rt">RT ${movie.rt_score}</a>`;
+        }
+        if (movie.metacritic_score && movie.links?.metacritic) {
+            badges += `<a href="${movie.links.metacritic}" target="_blank" rel="noopener" class="card-score-badge mc">MC ${movie.metacritic_score}</a>`;
         }
         if (movie.imdb_rating) {
             const imdbUrl = movie.links?.imdb;

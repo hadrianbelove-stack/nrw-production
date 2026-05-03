@@ -85,12 +85,17 @@ export default function MovieCard({movie, onPress, isFeatured = false}) {
           </View>
         )}
 
-        {/* Score badges (RT + IMDb) */}
-        {(movie.rt_score || movie.imdb_rating) && (
+        {/* Score badges (RT + MC + IMDb) */}
+        {(movie.rt_score || movie.metacritic_score || movie.imdb_rating) && (
           <View style={styles.scoreBadgeRow}>
             {movie.rt_score && (
               <View style={[styles.scoreBadge, styles.rtScoreBadge]}>
                 <Text style={styles.rtScoreText}>RT {movie.rt_score}</Text>
+              </View>
+            )}
+            {movie.metacritic_score && (
+              <View style={[styles.scoreBadge, styles.mcScoreBadge]}>
+                <Text style={styles.mcScoreText}>MC {movie.metacritic_score}</Text>
               </View>
             )}
             {movie.imdb_rating && (
@@ -226,6 +231,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(250, 50, 50, 0.85)',
   },
   rtScoreText: {
+    color: '#fff',
+    fontSize: 9,
+    fontWeight: '800',
+  },
+  mcScoreBadge: {
+    backgroundColor: 'rgba(102, 204, 51, 0.85)',
+  },
+  mcScoreText: {
     color: '#fff',
     fontSize: 9,
     fontWeight: '800',

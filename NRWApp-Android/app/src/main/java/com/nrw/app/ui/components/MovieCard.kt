@@ -232,7 +232,8 @@ fun MovieCard(
 
                 // Score badges (bottom right, above staff pick if present)
                 val rtScore = movie.rtScore?.replace("%", "")?.trim()?.toIntOrNull()
-                val hasScores = rtScore != null || movie.imdbRating != null
+                val mcScore = movie.metacriticScore?.toIntOrNull()
+                val hasScores = rtScore != null || mcScore != null || movie.imdbRating != null
                 if (hasScores) {
                     Row(
                         modifier = Modifier
@@ -245,6 +246,9 @@ fun MovieCard(
                     ) {
                         if (rtScore != null) {
                             RtBadge(score = rtScore)
+                        }
+                        if (mcScore != null) {
+                            McBadge(score = mcScore)
                         }
                         movie.imdbRating?.let { rating ->
                             ImdbBadge(rating = rating)
@@ -325,6 +329,26 @@ private fun RtBadge(
     ) {
         Text(
             text = "RT $score%",
+            color = Color.White,
+            fontSize = 7.sp,
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+@Composable
+private fun McBadge(
+    score: Int,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(3.dp))
+            .background(Color(0xFF66CC33).copy(alpha = 0.85f))
+            .padding(horizontal = 4.dp, vertical = 2.dp)
+    ) {
+        Text(
+            text = "MC $score",
             color = Color.White,
             fontSize = 7.sp,
             fontWeight = FontWeight.Bold

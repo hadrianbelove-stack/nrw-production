@@ -56,6 +56,9 @@ data class Movie(
     @SerializedName("rt_score")
     val rtScore: String? = null,
 
+    @SerializedName("metacritic_score")
+    val metacriticScore: String? = null,
+
     @SerializedName("imdb_rating")
     val imdbRating: String? = null,
 

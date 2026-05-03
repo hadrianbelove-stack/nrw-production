@@ -182,6 +182,7 @@ class NewsletterDataQuery:
             'year': movie.get('year'),
             'synopsis': movie.get('synopsis'),
             'rt_score': self._parse_rt_score(movie.get('rt_score')),
+            'metacritic_score': movie.get('metacritic_score'),
             'imdb_rating': movie.get('imdb_rating'),
             'runtime': movie.get('runtime'),
             'poster': movie.get('poster'),
@@ -292,12 +293,14 @@ class NewsletterDataQuery:
         if isinstance(links, dict):
             metadata['trailer'] = links.get('trailer')
             metadata['rt_url'] = links.get('rt')
+            metadata['metacritic_url'] = links.get('metacritic')
             metadata['wikipedia_url'] = links.get('wikipedia')
             # Template-compatible alias for trailer
             metadata['trailer_url'] = links.get('trailer')
         else:
             metadata['trailer'] = None
             metadata['rt_url'] = None
+            metadata['metacritic_url'] = None
             metadata['wikipedia_url'] = None
             metadata['trailer_url'] = None
 
