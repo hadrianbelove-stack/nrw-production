@@ -1001,7 +1001,7 @@
         "streaming": []
       },
       "enriched": true,
-      "enrichment_date": "2026-04-30"
+      "enrichment_date": "2026-05-03"
     },
     "1325795": {
       "title": "The Perfect Club",
@@ -41643,11 +41643,15 @@
       "title": "Smothered",
       "status": "tracking",
       "first_seen": "2025-11-28",
-      "digital_date": null,
+      "digital_date": "2026-05-29",
       "providers": {},
       "discovery_pass": "B",
       "has_providers": false,
-      "year": 2025
+      "year": 2025,
+      "_discovery_source": "tmdb_type4",
+      "_type4_pending": true,
+      "_is_preorder": true,
+      "_preorder_source": "tmdb_type4"
     },
     "1358275": {
       "title": "Strike - Figli di un\u2019era sbagliata",
@@ -46910,11 +46914,31 @@
       "title": "Bravery & Betrayal",
       "status": "tracking",
       "first_seen": "2025-12-03",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-05-03",
+      "providers": {
+        "rent": [
+          "Amazon Video",
+          "Apple TV Store",
+          "Google Play Movies",
+          "YouTube"
+        ],
+        "buy": [
+          "Amazon Video",
+          "Apple TV Store",
+          "Google Play Movies",
+          "YouTube"
+        ],
+        "streaming": []
+      },
       "discovery_pass": "B",
-      "has_providers": false,
-      "year": 2025
+      "has_providers": true,
+      "year": 2025,
+      "_discovery_source": "provider_availability_check",
+      "enriched": false,
+      "enrichment_date": null,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-05-03",
+      "_jw_revert_count": 1
     },
     "1565213": {
       "title": "A D*** Love",
@@ -76589,7 +76613,7 @@
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-05-02"
+      "enrichment_date": "2026-05-03"
     },
     "1603131": {
       "title": "2025: The Year from Space",
@@ -86078,14 +86102,23 @@
     },
     "1242491": {
       "title": "LARRY (they/them)",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-04",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-05-03",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "True Story"
+        ]
+      },
       "intake_pass": "backfill",
-      "has_providers": false,
+      "has_providers": true,
       "year": 2024,
-      "premiere_date": "2024-12-01"
+      "premiere_date": "2024-12-01",
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-05-03"
     },
     "1228609": {
       "title": "Cambodian people's party, L'ex-terra nova di Polpot",
@@ -114889,13 +114922,22 @@
     "1275983": {
       "title": "Sabbath Queen",
       "year": 2024,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-05-03",
+      "providers": {
+        "rent": [
+          "Eventive"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "Tribeca",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-05-03"
     },
     "1275982": {
       "title": "Hacking Hate",
@@ -118843,7 +118885,10 @@
       "digital_date": "2026-05-08",
       "_discovery_source": "tmdb_type4",
       "_type4_pending": true,
-      "_is_preorder": true
+      "_is_preorder": true,
+      "_jw_revert_reason": "justwatch_no_valid_offers",
+      "_jw_reverted_at": "2026-05-03",
+      "_jw_revert_count": 1
     },
     "1417675": {
       "title": "Brother Verses Brother",
@@ -185845,10 +185890,22 @@
       "year": 2026,
       "status": "tracking",
       "first_seen": "2026-03-04",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-05-03",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Marquee TV Amazon Channel"
+        ]
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": false,
+      "enrichment_date": null,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-05-03",
+      "_jw_revert_count": 1
     },
     "1404346": {
       "title": "Sisa",
@@ -190802,11 +190859,17 @@
       "year": 2026,
       "status": "tracking",
       "first_seen": "2026-03-10",
-      "digital_date": null,
+      "digital_date": "2026-05-05",
       "providers": {},
       "intake_pass": "C",
       "festival": "SXSW",
-      "has_providers": false
+      "has_providers": false,
+      "_discovery_source": "tmdb_type4",
+      "_type4_pending": true,
+      "_is_preorder": true,
+      "_preorder_source": "tmdb_type4",
+      "enriched": true,
+      "enrichment_date": "2026-05-03"
     },
     "1084187": {
       "title": "Pretty Lethal",
@@ -201504,10 +201567,14 @@
       "year": 2026,
       "status": "tracking",
       "first_seen": "2026-04-01",
-      "digital_date": null,
+      "digital_date": "2026-05-05",
       "providers": {},
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": false,
+      "_discovery_source": "tmdb_type4",
+      "_type4_pending": true,
+      "_is_preorder": true,
+      "_preorder_source": "tmdb_type4"
     },
     "1046699": {
       "title": "Behind the Palm Trees",
@@ -204547,7 +204614,9 @@
       "intake_pass": "B",
       "_discovery_source": "tmdb_type4",
       "_type4_pending": true,
-      "_is_preorder": true
+      "_is_preorder": true,
+      "enriched": true,
+      "enrichment_date": "2026-05-03"
     },
     "1308388": {
       "title": "Hunting Matthew Nichols",
@@ -204570,7 +204639,9 @@
       "has_providers": false,
       "_discovery_source": "tmdb_type4",
       "_type4_pending": true,
-      "_is_preorder": true
+      "_is_preorder": true,
+      "enriched": true,
+      "enrichment_date": "2026-05-03"
     },
     "1280623": {
       "title": "Death Always Craves",
@@ -213339,7 +213410,7 @@
       "_discovery_source": "tmdb_type4",
       "has_providers": true,
       "enriched": true,
-      "enrichment_date": "2026-05-02",
+      "enrichment_date": "2026-05-03",
       "_jw_revert_reason": null,
       "_jw_reverted_at": "2026-05-01",
       "_jw_revert_count": 1,
@@ -214767,10 +214838,20 @@
       "year": 2026,
       "status": "tracking",
       "first_seen": "2026-05-02",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-05-01",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "A",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null,
+      "_discovery_source": "tmdb_type4",
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-05-03",
+      "_jw_revert_count": 1
     },
     "1400923": {
       "title": "You, Always",
@@ -214786,7 +214867,7 @@
       "intake_pass": "A",
       "has_providers": true,
       "enriched": true,
-      "enrichment_date": "2026-05-02",
+      "enrichment_date": "2026-05-03",
       "_discovery_source": "tmdb_type4"
     },
     "1025835": {
@@ -215175,6 +215256,133 @@
       "intaked_at": "2026-05-02T09:57:13.338694",
       "networks": [
         "Prime Video"
+      ],
+      "has_providers": false
+    },
+    "1686985": {
+      "title": "Bi-Coastal",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-03",
+      "digital_date": "2026-05-01",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "intake_pass": "A",
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null,
+      "_discovery_source": "tmdb_type4",
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-05-03",
+      "_jw_revert_count": 1
+    },
+    "1685471": {
+      "title": "Somebody's Watching Me",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-03",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1671407": {
+      "title": "Don't Look Away",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-03",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1578703": {
+      "title": "Moscow",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-03",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1520813": {
+      "title": "Wanted",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-03",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1462276": {
+      "title": "Isaiah's phone",
+      "year": 2025,
+      "status": "tracking",
+      "intake_date": "2026-05-03",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1418821": {
+      "title": "Becoming Kim",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-03",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1686578": {
+      "title": "Gio Love",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-03",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1634845": {
+      "title": "Shakira: Todo Mundo no Rio",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-03",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "tv_307432": {
+      "title": "Enemies With Benefits",
+      "content_type": "limited_series",
+      "tmdb_id": 307432,
+      "status": "tracking",
+      "first_air_date": "2026-05-03",
+      "digital_date": "2026-05-03",
+      "episode_count": 10,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/fZfi91LR6vx68OhLAJKuScYAhRU.jpg",
+      "synopsis": "Head of Sales Lal is determined to triumph over Head of Accounting Wine. Wine is her polar opposite and known for her mercilessness. When a wild night leads them to a friends with benefits relationship, they'll do anything to keep it a secret, pretending to be enemies so that absolutely no one at work finds out. Without realising it, however, their newfound closeness begins to give way to love.",
+      "genres": [
+        "Drama",
+        "Comedy"
+      ],
+      "original_language": "th",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-05-03",
+      "networks": [
+        "OneD"
       ],
       "has_providers": false
     }
