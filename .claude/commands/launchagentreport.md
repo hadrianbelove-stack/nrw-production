@@ -28,10 +28,17 @@ Then report these sections:
   - Duplicates skipped: `results.duplicates_skipped`, blocked: `results.blocked_by_filter`
 - Discovery: how many movies polled, how many transitions (from discovery_run.json)
 - Enrichment: movies requested / enriched / deferred and duration (from enrichment_run.json)
+  - **Deferred breakdown**: from `deferred_details` in enrichment_run.json, list each movie title and reason (e.g. "jw_revert:justwatch_no_match", "zero_watch_links", "timeout")
 - Any failures or warnings (from run_diagnostics.json `failures` and `warnings`)
 
 ### Stall Detection
 - From run_diagnostics.json `stall_status`: is the pipeline stalled? How many days without transitions?
+
+### Concerns
+- Aggregate any failures or warnings from run_diagnostics.json
+- Note any enrichment gaps for today's arrivals
+- Flag trailer hosting failures
+- If no concerns, say "No concerns."
 
 ### Data Quality Snapshot (LIVE from data.json)
 Run the shared wall health script (do NOT read from run_diagnostics.json for these numbers):
@@ -42,11 +49,11 @@ python3 scripts/wall_health.py
 
 Report these numbers in a formatted summary:
 
-- **Coverage**: RT scores, Wikipedia, Trailers (count + percentage)
+- **Coverage**: RT scores, MC scores, Wikipedia, Trailers (count + percentage)
 - **Today's arrivals**: list with enrichment gaps
 - **Last 7 days**: daily arrival counts
 - **Upcoming**: pre-orders with no links yet (expected)
-- **Zero watch links**: The most critical section. Each movie shows its digital date, days on wall, and a detailed status explaining WHY it has no links (JW revert reason, which excluded platform, TMDB platform info, revert count). A CRITICAL alert (>5%) means the pipeline is likely broken.
+- **Zero watch links**: Each movie shows its digital date, days on wall, and a detailed status explaining WHY it has no links (JW revert reason, which excluded platform, TMDB platform info, revert count). A CRITICAL alert (>5%) means the pipeline is likely broken. Movies age out of this section after 3 days — only new/recent zero-link movies are shown.
 - **JW REVERTED (tracking only)**: movies discovered and reverted but NOT on the wall — safely in tracking, just FYI.
 - Movies reverted for "excluded platforms" should always name which platform (fuboTV, Philo, etc.). If not recorded, the report says so explicitly.
 

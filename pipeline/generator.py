@@ -3600,11 +3600,16 @@ PRICE: [price or UNKNOWN]
                 movie_id = str(movie.get('id', ''))
                 if not movie_id or movie_id in seen_ids:
                     continue
-                # Skip pre-orders waiting for their release date
+                # Pre-order handling in catch-up
                 if movie.get('_is_preorder'):
                     dd = movie.get('digital_date', '')
                     if dd > today_catchup:
-                        continue
+                        continue  # Future — skip enrichment (link scan handles these)
+                    # Date arrived — no longer a pre-order
+                    movie.pop('_is_preorder', None)
+                    movie.pop('pre_order_links', None)
+                    print(f"  🏷️  {movie.get('title')} — pre-order ended (date {dd})")
+                    # Fall through to normal catch-up → enrich or revert like any movie
                 digital_date = movie.get('digital_date', '')
                 status = movie.get('_enrichment_status', '')
                 gaps = movie.get('_enrichment_gaps')
@@ -3623,31 +3628,6 @@ PRICE: [price or UNKNOWN]
                         catchup_ids.append(movie_id)
 
             movie_ids_to_enrich.extend(catchup_ids)
-
-            # Stale pre-order check: revert pre-orders whose date passed >14 days ago with no links
-            stale_cutoff = (datetime.now() - timedelta(days=14)).strftime('%Y-%m-%d')
-            stale_preorders = []
-            for movie in existing_movies:
-                if not movie.get('_is_preorder'):
-                    continue
-                dd = movie.get('digital_date', '')
-                if not dd or dd > today_catchup:
-                    continue  # Still in the future — not stale
-                if dd < stale_cutoff:
-                    # 14+ days past release date with no graduation — stale
-                    wl = movie.get('watch_links', {})
-                    has_links = any(
-                        (isinstance(v, list) and len(v) > 0)
-                        for v in wl.values()
-                    ) if isinstance(wl, dict) else bool(wl)
-                    if not has_links:
-                        stale_preorders.append(movie)
-                        movie['_enrichment_status'] = 'reverted'
-                        movie['_stale_preorder'] = True
-                        movie.pop('_is_preorder', None)
-                        print(f"  ⏰ {movie.get('title')} — stale pre-order reverted (date {dd}, no links after 14d)")
-            if stale_preorders:
-                print(f"  ⏰ Reverted {len(stale_preorders)} stale pre-orders (past date, no watch links)")
 
             # Orphan detection: find movies that are available in tracking but missing from data.json.
             # These are movies that were discovered, then lost (e.g., bulk cleanup, data conflict).
@@ -3707,6 +3687,7 @@ PRICE: [price or UNKNOWN]
             return 0
 
         enriched_count = 0
+        deferred_details = []  # Track per-movie deferred reasons for metrics
         _loop_start = time.time()
         _loop_timeout = ENRICHMENT_LOOP_TIMEOUT_MINUTES * 60
 
@@ -3723,16 +3704,20 @@ PRICE: [price or UNKNOWN]
         for movie_id in movie_ids_to_enrich:
             # Safety net: bail out if enrichment has been running too long
             if (time.time() - _loop_start) > _loop_timeout:
-                print(f"  ⏰ Enrichment loop exceeded {ENRICHMENT_LOOP_TIMEOUT_MINUTES} min — stopping. Remaining movies will be retried next run.")
+                _remaining = len(movie_ids_to_enrich) - movie_ids_to_enrich.index(movie_id)
+                print(f"  ⏰ Enrichment loop exceeded {ENRICHMENT_LOOP_TIMEOUT_MINUTES} min — stopping. {_remaining} remaining movies will be retried next run.")
+                deferred_details.append({'title': f'({_remaining} movies)', 'reason': 'loop_timeout'})
                 break
 
             movie_id = str(movie_id)  # Ensure consistent string format for lookup
             if movie_id not in movie_lookup:
                 print(f"  ⚠️ Movie {movie_id} not found in data.json - skipping")
+                deferred_details.append({'title': f'ID:{movie_id}', 'reason': 'not_in_data_json'})
                 continue
 
             if movie_id not in tracking_data.get('movies', {}):
                 print(f"  ⚠️ Movie {movie_id} not found in tracking database - skipping")
+                deferred_details.append({'title': f'ID:{movie_id}', 'reason': 'not_in_tracking'})
                 continue
 
             movie_data = tracking_data['movies'][movie_id]
@@ -3753,6 +3738,7 @@ PRICE: [price or UNKNOWN]
                 if not movie_details:
                     existing_movies[movie_index]['_enrichment_status'] = 'failed'
                     print(f"  ✗ Could not fetch TMDB details for {movie_data.get('title', movie_id)} — marked failed for retry")
+                    deferred_details.append({'title': movie_data.get('title', str(movie_id)), 'reason': 'tmdb_fetch_failed'})
                     continue
 
                 # JustWatch pre-verification: confirm the movie is on our target platforms
@@ -3822,14 +3808,20 @@ PRICE: [price or UNKNOWN]
                         elif _preorder_override is False:
                             existing_movies[movie_index].pop('_is_preorder', None)
                         elif _jw_result.get('buy_only'):
-                            # Buy-only on JustWatch = pre-order signal. Auto-flag.
-                            # Stale cleanup (14d) catches false positives; manual override can clear.
-                            existing_movies[movie_index]['_is_preorder'] = True
-                            # Store JW buy links as pre-order links (clickable on all platforms)
-                            _jw_links = _jw_result.get('watch_links', {})
-                            if _jw_links.get('vod'):
-                                existing_movies[movie_index]['pre_order_links'] = _jw_links['vod']
-                            print(f"  🏷️  {_title} — flagged as pre-order (buy-only on JustWatch)")
+                            _dd = existing_movies[movie_index].get('digital_date', '')
+                            if _dd > datetime.now().strftime('%Y-%m-%d'):
+                                # Future-dated buy-only = pre-order
+                                existing_movies[movie_index]['_is_preorder'] = True
+                                _jw_links = _jw_result.get('watch_links', {})
+                                if _jw_links.get('vod'):
+                                    existing_movies[movie_index]['pre_order_links'] = _jw_links['vod']
+                                print(f"  🏷️  {_title} — flagged as pre-order (buy-only + future date {_dd})")
+                            else:
+                                # Buy-only with today/past date = limited availability, not a pre-order
+                                if existing_movies[movie_index].get('_is_preorder'):
+                                    existing_movies[movie_index].pop('_is_preorder', None)
+                                    existing_movies[movie_index].pop('pre_order_links', None)
+                                    print(f"  🏷️  {_title} — pre-order cleared (date arrived, buy-only)")
                         else:
                             # Not buy-only anymore — clear pre-order flag if previously set
                             if existing_movies[movie_index].get('_is_preorder'):
@@ -3852,6 +3844,7 @@ PRICE: [price or UNKNOWN]
                     existing_movies[movie_index]['status'] = 'tracking'
                     if _revert_count == 1:
                         print(f"  🔄 {_title} — JustWatch pre-check: {_revert_reason} → reverted to tracking")
+                    deferred_details.append({'title': _title, 'reason': f'jw_revert:{_revert_reason}'})
                     signal.alarm(0)
                     continue
                 elif not _jw_verified:
@@ -3932,11 +3925,13 @@ PRICE: [price or UNKNOWN]
                     # Mark enrichment status as failed but keep movie in data.json
                     existing_movies[movie_index]['_enrichment_status'] = 'failed'
                     print(f"  ✗ Enrichment failed for {movie_data.get('title')}")
+                    deferred_details.append({'title': movie_data.get('title', str(movie_id)), 'reason': 'enrichment_failed'})
 
             except TimeoutError:
                 print(f"  ⏰ {movie_data.get('title', movie_id)} timed out after {_PER_MOVIE_TIMEOUT_S}s — will retry next run")
                 if movie_index < len(existing_movies):
                     existing_movies[movie_index]['_enrichment_status'] = 'timeout'
+                deferred_details.append({'title': movie_data.get('title', str(movie_id)), 'reason': 'timeout'})
                 # Reset Playwright singleton so next movie gets a clean browser
                 try:
                     from playwright_manager import PlaywrightManager
@@ -3951,6 +3946,7 @@ PRICE: [price or UNKNOWN]
                 if movie_index < len(existing_movies):
                     existing_movies[movie_index]['_enrichment_status'] = 'error'
                 print(f"  ✗ Error enriching {movie_data.get('title', movie_id)}: {e}")
+                deferred_details.append({'title': movie_data.get('title', str(movie_id)), 'reason': f'error:{type(e).__name__}'})
             finally:
                 signal.alarm(0)  # Always cancel the per-movie alarm
 
@@ -3966,14 +3962,44 @@ PRICE: [price or UNKNOWN]
                         tracking_data['movies'][mid]['enrichment_date'] = datetime.now().strftime('%Y-%m-%d')
                         tracking_updated += 1
 
-                        # Report zero watch links (warning only — status stays 'available', display filter handles wall)
+                        # Zero watch links after enrichment — revert to tracking
+                        # A movie with no links (VOD or streaming) should never be on the wall.
                         wl = movie.get('watch_links', {})
                         wl_count = sum(
                             len(v) if isinstance(v, list) else (1 if isinstance(v, dict) and v.get('service') else 0)
                             for v in wl.values()
                         ) if isinstance(wl, dict) else 0
                         if wl_count == 0 and tracking_data['movies'][mid].get('status') == 'available':
-                            print(f"  ⚠ {movie.get('title')} — zero watch links after enrichment")
+                            _title_zl = movie.get('title', '?')
+                            _dd_zl = movie.get('digital_date', '')
+                            _today_zl = datetime.now().strftime('%Y-%m-%d')
+                            # Guard: pre-orders with future dates (no links expected yet)
+                            if movie.get('_is_preorder') and _dd_zl > _today_zl:
+                                print(f"  ⏭️  {_title_zl} — zero links but pre-order (future date {_dd_zl}), keeping")
+                            # Guard: virtual screenings (own lifecycle)
+                            elif movie.get('categories', {}).get('is_virtual_screening'):
+                                print(f"  ⏭️  {_title_zl} — zero links but virtual screening, keeping")
+                            # Guard: manually-added movies (curator decision)
+                            elif movie.get('_added_manually') or tracking_data['movies'][mid].get('_added_manually'):
+                                print(f"  ⏭️  {_title_zl} — zero links but manually added, keeping")
+                            # Guard: watch link overrides
+                            elif str(mid) in self.watch_links_overrides:
+                                print(f"  ⏭️  {_title_zl} — zero links but has override, keeping")
+                            else:
+                                # Revert to tracking — movie will be purged from data.json
+                                _zl_revert_count = tracking_data['movies'][mid].get('_jw_revert_count', 0) + 1
+                                tracking_data['movies'][mid]['status'] = 'tracking'
+                                tracking_data['movies'][mid]['_jw_revert_reason'] = 'zero_watch_links'
+                                tracking_data['movies'][mid].setdefault('_jw_reverted_at', _today_zl)
+                                tracking_data['movies'][mid]['_jw_revert_count'] = _zl_revert_count
+                                tracking_data['movies'][mid]['enriched'] = False
+                                tracking_data['movies'][mid].pop('enrichment_date', None)
+                                movie['_enrichment_status'] = 'reverted'
+                                movie['_jw_revert_reason'] = 'zero_watch_links'
+                                movie['status'] = 'tracking'
+                                tracking_updated -= 1  # Undo the increment from line above
+                                print(f"  🔄 {_title_zl} — zero watch links → reverted to tracking (count: {_zl_revert_count})")
+                                deferred_details.append({'title': _title_zl, 'reason': 'zero_watch_links'})
             if tracking_updated > 0:
                 self.storage.atomic_write_json(tracking_data, 'movie_tracking.json', backup=True)
                 print(f"📝 Updated movie_tracking.json: {tracking_updated} movies marked enriched")
@@ -4027,12 +4053,17 @@ PRICE: [price or UNKNOWN]
                 "movies_requested": len(movie_ids_to_enrich),
                 "movies_enriched": enriched_count,
                 "movies_deferred": len(movie_ids_to_enrich) - enriched_count,
+                "deferred_details": deferred_details,
                 "enrichment_duration_seconds": round(time.time() - _enrich_start, 2),
             }
             with open('metrics/enrichment_run.json', 'w') as f:
                 json.dump(enrichment_metrics, f, indent=2)
         except Exception as e:
             print(f"⚠️ Could not write enrichment metrics: {e}")
+
+        # Purge reverted movies from data.json (JW pre-check reverts + zero-link reverts)
+        # This must run after data.json is saved so purge can re-read and trim it.
+        self.purge_removed_movies()
 
         return enriched_count
 

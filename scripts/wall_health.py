@@ -145,8 +145,10 @@ else:
         rev_count = tk.get('_jw_revert_count', 0)
         discovery_src = tk.get('_discovery_source', '')
 
-        # JW reverts age out of report after 3 days
-        if reason and rev_at and rev_at < three_days_ago:
+        # Age out zero-link movies after 3 days (regardless of reason)
+        # For JW reverts: use rev_at timestamp. For others: use digital_date.
+        _age_ref = rev_at or dd
+        if _age_ref and _age_ref != '?' and _age_ref < three_days_ago:
             aged_out += 1
             continue
 
