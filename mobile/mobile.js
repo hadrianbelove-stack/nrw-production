@@ -246,7 +246,7 @@ const NRWMobile = {
                     header.className = 'date-header';
                     header.dataset.date = 'preorder';
                     header.innerHTML = `
-                        <div class="date-badge" style="background: #7c3aed;">
+                        <div class="date-badge date-badge-preorder">
                             <span class="date-badge-text">PRE-ORDER</span>
                         </div>
                     `;
