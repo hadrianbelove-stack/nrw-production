@@ -18,6 +18,7 @@ Function GetFilterCategories() as Object
         RESTORATIONS: "restorations"
         DOCUMENTARY: "documentary"
         VIRTUAL_SCREENINGS: "virtual_screenings"
+        PRE_ORDERS: "pre_orders"
     }
 End Function
 
@@ -34,6 +35,7 @@ Function GetFilterDisplayName(filter as String) as String
         restorations: "Restorations"
         documentary: "Documentary"
         virtual_screenings: "Virtual Screenings"
+        pre_orders: "Pre-Orders"
     }
 
     if names.DoesExist(filter)
@@ -102,6 +104,11 @@ Function FilterMovies(movies as Object, filter as String) as Object
             if movie.categories <> invalid AND movie.categories.is_virtual_screening = true
                 include = true
             end if
+
+        else if filter = categories.PRE_ORDERS
+            if movie._is_preorder <> invalid AND movie._is_preorder = true
+                include = true
+            end if
         end if
 
         if include
@@ -163,6 +170,10 @@ Function FilterMoviesMulti(movies as Object, activeFilters as Object) as Object
                 end if
             else if filter = categories.VIRTUAL_SCREENINGS
                 if movie.categories <> invalid AND movie.categories.is_virtual_screening = true
+                    matched = true
+                end if
+            else if filter = categories.PRE_ORDERS
+                if movie._is_preorder <> invalid AND movie._is_preorder = true
                     matched = true
                 end if
             end if

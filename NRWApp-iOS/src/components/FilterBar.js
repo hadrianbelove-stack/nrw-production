@@ -16,6 +16,7 @@ const FILTERS = [
   {id: 'restorations', label: 'Restorations & Reissues'},
   {id: 'documentary', label: 'Documentary'},
   {id: 'virtual-screenings', label: 'Virtual Screenings'},
+  {id: 'pre-orders', label: 'Pre-Orders'},
 ];
 
 export default function FilterBar({activeFilters, onFilterChange}) {

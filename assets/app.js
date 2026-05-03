@@ -53,6 +53,10 @@ const NRW = {
         'virtual-screenings': {
             title: 'Virtual Screenings',
             text: 'Currently playing at film festivals. These aren\'t streaming yet — they\'re in theaters, at festivals, or doing the circuit. If you\'re near a screening, this is your heads-up.'
+        },
+        'pre-orders': {
+            title: 'Pre-Orders',
+            text: 'Coming soon. These movies have confirmed digital release dates and are available to pre-order now on storefronts like Apple TV and Amazon.'
         }
     },
 
@@ -280,6 +284,9 @@ const NRW = {
                             break;
                         case 'virtual-screenings':
                             if (movie.categories?.is_virtual_screening) matchesAny = true;
+                            break;
+                        case 'pre-orders':
+                            if (movie._is_preorder) matchesAny = true;
                             break;
                     }
                     if (matchesAny) break;

@@ -172,6 +172,9 @@ class MovieRepository(private val context: Context) {
             FilterCategory.VIRTUAL_SCREENINGS -> movies.filter {
                 it.hidden != true && it.categories?.isVirtualScreening == true
             }
+            FilterCategory.PRE_ORDERS -> movies.filter {
+                it.hidden != true && it.isPreorder
+            }
         }
     }
 
@@ -195,6 +198,7 @@ class MovieRepository(private val context: Context) {
                     FilterCategory.RESTORATIONS -> movie.categories?.isRestoration == true
                     FilterCategory.DOCUMENTARY -> movie.categories?.isDocumentary == true
                     FilterCategory.VIRTUAL_SCREENINGS -> movie.categories?.isVirtualScreening == true
+                    FilterCategory.PRE_ORDERS -> movie.isPreorder
                 }
             }
         }

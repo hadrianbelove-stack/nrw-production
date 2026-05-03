@@ -3420,6 +3420,176 @@ class DataGenerator:
 
             newly_count = len(movie_ids_to_enrich)
 
+            # Pre-order link scout: use Gemini with Google Search grounding to find
+            # Amazon and Fandango At Home pre-order URLs for movies approaching release.
+            _scout_days = self.config.get('preorder', {}).get('scout_days', 14)
+            _scout_cutoff = (datetime.now() + timedelta(days=_scout_days)).strftime('%Y-%m-%d')
+            _scout_candidates = []
+            for _m in existing_movies:
+                if not _m.get('_is_preorder'):
+                    continue
+                _dd = _m.get('digital_date', '')
+                if not _dd or _dd > _scout_cutoff:
+                    continue
+                if _m.get('pre_order_links'):
+                    continue
+                _scout_candidates.append(_m)
+
+            if _scout_candidates:
+                print(f"\n  🔍 Pre-order link scout: {len(_scout_candidates)} movies within {_scout_days}d window")
+                _scout_found = 0
+                try:
+                    from google import genai
+                    from google.genai import types as genai_types
+                    import re as _re_scout
+
+                    _gemini_key = os.environ.get('GEMINI_API_KEY') or self.config.get('gemini_api_key', '')
+                    if not _gemini_key:
+                        self.logger.warning("Pre-order scout: no GEMINI_API_KEY, skipping")
+                    else:
+                        _gclient = genai.Client(api_key=_gemini_key)
+                        _gtool = genai_types.Tool(google_search=genai_types.GoogleSearch())
+                        _gconfig = genai_types.GenerateContentConfig(tools=[_gtool])
+
+                        _movie_lines = []
+                        for _i, _sm in enumerate(_scout_candidates, 1):
+                            _sm_title = _sm.get('title', '')
+                            _sm_year = _sm.get('year', '')
+                            _extra = ''
+                            _crew = _sm.get('crew', {})
+                            if _crew and _crew.get('director') and _crew['director'] != 'Unknown':
+                                _extra = f", directed by {_crew['director']}"
+                            _movie_lines.append(f"{_i}. {_sm_title} ({_sm_year}{_extra})")
+
+                        _movies_text = '\n'.join(_movie_lines)
+                        _prompt = f'''Find digital pre-order pages for these movies in the United States.
+
+URL FORMATS:
+- Amazon Video: amazon.com/dp/[ASIN]
+- Fandango At Home: athome.fandango.com/content/browse/details/[slug]/[numeric-id]
+
+RULES:
+- Only report URLs from search results. Write NONE if not found.
+- Digital video only (NOT DVD/Blu-ray)
+- Return the actual URL string, not a redirect or reference link
+
+Movies:
+{_movies_text}
+
+Format each as (with blank line between entries):
+
+[number]. [title]
+AMAZON: [url or NONE]
+FANDANGO: [url or NONE]
+PRICE: [price or UNKNOWN]
+
+[number]. [title]
+...'''
+
+                        _response = _gclient.models.generate_content(
+                            model='gemini-2.5-flash',
+                            contents=_prompt,
+                            config=_gconfig
+                        )
+                        _resp_text = _response.text
+
+                        # Parse response: split into per-movie blocks, then extract URLs
+                        import requests as _requests_scout
+
+                        def _normalize_url(url):
+                            """Add https:// if missing — Gemini often omits the scheme."""
+                            if url and not url.startswith('http'):
+                                url = 'https://www.' + url if 'amazon.com' in url else 'https://' + url
+                            return url
+
+                        def _extract_url(text, keyword):
+                            """Extract URL after keyword (e.g. 'AMAZON:') from text block."""
+                            _idx = text.find(keyword)
+                            if _idx == -1:
+                                return None
+                            _after = text[_idx + len(keyword):].strip()
+                            _tok = _after.split()[0] if _after.split() else ''
+                            _tok = _tok.strip('[]()').split('](')[0]
+                            return _tok if _tok and _tok != 'NONE' else None
+
+                        # Split response into per-movie blocks using finditer
+                        _n = len(_scout_candidates)
+                        _nums_alt = '|'.join(str(i) for i in range(1, _n + 1))
+                        _hdr_pattern = rf'(?:^|(?<=\D))({_nums_alt})\.\s'
+                        _headers = list(_re_scout.finditer(_hdr_pattern, _resp_text))
+
+                        _movie_blocks = {}
+                        for _hi, _hm in enumerate(_headers):
+                            _midx = int(_hm.group(1)) - 1
+                            _start = _hm.end()
+                            _end = _headers[_hi + 1].start() if _hi + 1 < len(_headers) else len(_resp_text)
+                            _movie_blocks[_midx] = _resp_text[_start:_end]
+
+                        for _midx, _block in _movie_blocks.items():
+                            if _midx < 0 or _midx >= _n:
+                                continue
+                            _sm = _scout_candidates[_midx]
+                            _sm_title = _sm.get('title', '')
+
+                            _amz = _extract_url(_block, 'AMAZON:')
+                            if _amz and 'amazon.com' in _amz:
+                                _amz = _normalize_url(_amz)
+                                try:
+                                    _hr = _requests_scout.head(_amz, headers={'User-Agent': 'Mozilla/5.0'}, allow_redirects=True, timeout=8)
+                                    if _hr.status_code == 200:
+                                        if 'pre_order_links' not in _sm:
+                                            _sm['pre_order_links'] = []
+                                        _sm['pre_order_links'].append({
+                                            'service': 'Amazon',
+                                            'link': _amz,
+                                            'type': 'pre_order'
+                                        })
+                                        print(f"      ✓ {_sm_title}: Amazon verified")
+                                    else:
+                                        print(f"      ✗ {_sm_title}: Amazon {_hr.status_code}")
+                                except Exception as _e:
+                                    print(f"      ✗ {_sm_title}: Amazon error — {_e}")
+
+                            _fan = _extract_url(_block, 'FANDANGO:')
+                            if _fan and 'fandango' in _fan:
+                                _fan = _normalize_url(_fan)
+                                try:
+                                    _hr = _requests_scout.head(_fan, headers={'User-Agent': 'Mozilla/5.0'}, allow_redirects=True, timeout=8)
+                                    if _hr.status_code == 200:
+                                        if 'pre_order_links' not in _sm:
+                                            _sm['pre_order_links'] = []
+                                        _sm['pre_order_links'].append({
+                                            'service': 'Fandango At Home',
+                                            'link': _fan,
+                                            'type': 'pre_order'
+                                        })
+                                        print(f"      ✓ {_sm_title}: Fandango verified")
+                                    else:
+                                        print(f"      ✗ {_sm_title}: Fandango {_hr.status_code}")
+                                except Exception as _e:
+                                    print(f"      ✗ {_sm_title}: Fandango error — {_e}")
+
+                            _price_raw = _extract_url(_block, 'PRICE:')
+                            if _price_raw and _price_raw != 'UNKNOWN' and _sm.get('pre_order_links'):
+                                _price_match = _re_scout.search(r'\$\d+\.\d{2}', _price_raw)
+                                _price = _price_match.group(0) if _price_match else _price_raw
+                                for _pl in _sm['pre_order_links']:
+                                    if not _pl.get('price'):
+                                        _pl['price'] = _price
+
+                        for _sm in _scout_candidates:
+                            if _sm.get('pre_order_links'):
+                                _scout_found += 1
+                                _sm_title = _sm.get('title', '')
+                                _n_links = len(_sm['pre_order_links'])
+                                print(f"    🔗 {_sm_title} — {_n_links} pre-order link{'s' if _n_links > 1 else ''}")
+
+                except Exception as _scout_err:
+                    self.logger.warning(f"Pre-order link scout error: {_scout_err}")
+
+                if _scout_found:
+                    print(f"  🔍 Scout complete: {_scout_found}/{len(_scout_candidates)} movies got pre-order links")
+
             # Catch-up: retry movies with incomplete enrichment
             seen_ids = set(movie_ids_to_enrich)
             catchup_ids = []
@@ -3742,6 +3912,8 @@ class DataGenerator:
                         gaps.append('wikipedia')
                     if enrichment_fields.get('imdb_rating') is None:
                         gaps.append('imdb_rating')
+                    if enrichment_fields.get('metacritic_score') is None:
+                        gaps.append('metacritic_score')
                     if gaps:
                         existing_movies[movie_index]['_enrichment_gaps'] = gaps
                     elif '_enrichment_gaps' in existing_movies[movie_index]:

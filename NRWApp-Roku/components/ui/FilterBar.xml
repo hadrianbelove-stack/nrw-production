@@ -99,6 +99,14 @@
           horizAlign="center" vertAlign="center"
           font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
       </Group>
+
+      <!-- Pre-Orders -->
+      <Group id="chip_pre_orders">
+        <Rectangle id="chipBg_pre_orders" width="110" height="36" color="0x333333FF" />
+        <Label id="chipLabel_pre_orders" text="Pre-Orders" width="110" height="36"
+          horizAlign="center" vertAlign="center"
+          font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
+      </Group>
     </LayoutGroup>
 
     <!-- Focus indicator -->

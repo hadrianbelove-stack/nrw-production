@@ -508,6 +508,10 @@ screening_names:
   jfilmboca2026: "Boca Intl. Jewish Film Fest"
   2026biff: "Boulder Intl. Film Fest"
 
+# Pre-order settings
+preorder:
+  scout_days: 14  # Days before digital_date to start fetching buy links from storefronts
+
 # Manual pre-order overrides: force-flag or un-flag movies as pre-orders.
 # true = force pre-order badge, false = override to NOT pre-order
 preorder_overrides:

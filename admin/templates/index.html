@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The New Release Wall - Admin Panel</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}?v=86">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}?v=89">
 </head>
 <body>
     <!-- Health Status Banner -->
@@ -168,6 +168,7 @@
         <div class="col-hdr" style="text-align:center;">Links</div>
         <div class="col-hdr" style="text-align:center;">RT</div>
         <div class="col-hdr" style="text-align:center;">IMDb</div>
+        <div class="col-hdr" style="text-align:center;">MC</div>
         <div class="col-hdr">Stream</div>
         <div class="col-hdr"></div>
         <div class="col-hdr"></div>
@@ -194,7 +195,7 @@
         {% set has_synopsis = movie.get('synopsis') %}
         {% set has_rt = movie.get('links', {}).get('rt') %}
         {% set has_wiki = movie.get('links', {}).get('wikipedia') %}
-        {% set incomplete = not has_trailer or not has_poster or not has_director or not has_country or not has_synopsis or not has_rt or not has_wiki %}
+        {% set incomplete = not has_trailer or not has_poster or not has_director or not has_country or not has_synopsis or not has_wiki %}
         {% set streaming_svc = movie.get('watch_links', {}).get('streaming', {}).get('service', '') if movie.get('watch_links', {}).get('streaming') else '' %}
         {% set imdb_id = movie.get('imdb_id', '') or movie.get('external_ids', {}).get('imdb_id', '') %}
         {% set enrich_failed = movie.get('_enrichment_status') in ('failed', 'error', 'timeout') %}
@@ -239,6 +240,7 @@
                 <a class="ql {{ '' if has_wiki else 'dead' }}" {% if has_wiki %}href="{{ movie.get('links', {}).get('wikipedia') }}" target="_blank"{% endif %} title="Wikipedia">WIKI</a>
                 <a class="ql {{ '' if imdb_id else 'dead' }}" {% if imdb_id %}href="https://www.imdb.com/title/{{ imdb_id }}/" target="_blank"{% endif %} title="IMDb">IMDB</a>
                 <a class="ql {{ '' if has_rt else 'dead' }}" {% if has_rt %}href="{{ movie.get('links', {}).get('rt') }}" target="_blank"{% endif %} title="Rotten Tomatoes">RT</a>
+                <a class="ql {{ '' if movie.get('links', {}).get('metacritic') else 'dead' }}" {% if movie.get('links', {}).get('metacritic') %}href="{{ movie.get('links', {}).get('metacritic') }}" target="_blank"{% endif %} title="Metacritic">MC</a>
             </div>
             {% if movie.rt_score is not none and movie.rt_score is defined %}
             {% set rt = movie.rt_score|float(0) %}
@@ -249,6 +251,12 @@
             {% if movie.get('imdb_rating') %}
             {% set imdb = movie.imdb_rating|float(0) %}
             <div class="r-score {{ 'imdb-good' if imdb >= 7.0 else 'imdb-ok' }}">{{ movie.imdb_rating }}</div>
+            {% else %}
+            <div class="r-score score-none">—</div>
+            {% endif %}
+            {% if movie.get('metacritic_score') %}
+            {% set mc = movie.metacritic_score|int(0) %}
+            <div class="r-score {{ 'mc-high' if mc >= 70 else ('mc-mid' if mc >= 50 else 'mc-low') }}">{{ movie.metacritic_score }}</div>
             {% else %}
             <div class="r-score score-none">—</div>
             {% endif %}
@@ -435,6 +443,6 @@
         <img id="img-preview" src="">
     </div>
 
-    <script src="{{ url_for('static', filename='js/admin.js') }}?v=86"></script>
+    <script src="{{ url_for('static', filename='js/admin.js') }}?v=89"></script>
 </body>
 </html>

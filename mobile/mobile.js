@@ -197,6 +197,9 @@ const NRWMobile = {
                     case 'virtual-screenings':
                         if (movie.categories?.is_virtual_screening === true) return true;
                         break;
+                    case 'pre-orders':
+                        if (movie._is_preorder === true) return true;
+                        break;
                 }
             }
             return false;

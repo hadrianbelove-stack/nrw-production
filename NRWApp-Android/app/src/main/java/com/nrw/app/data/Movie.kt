@@ -255,7 +255,8 @@ enum class FilterCategory(val id: String, val displayName: String) {
     SERIES("series", "Limited Series"),
     RESTORATIONS("restorations", "Restorations & Reissues"),
     DOCUMENTARY("documentary", "Documentary"),
-    VIRTUAL_SCREENINGS("virtual-screenings", "Virtual Screenings")
+    VIRTUAL_SCREENINGS("virtual-screenings", "Virtual Screenings"),
+    PRE_ORDERS("pre-orders", "Pre-Orders")
 }
 
 /**

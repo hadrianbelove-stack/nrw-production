@@ -191,6 +191,9 @@ export function filterMovies(movies, filters = 'all') {
         case 'virtual-screenings':
           if (movie.categories?.is_virtual_screening) return true;
           break;
+        case 'pre-orders':
+          if (movie._is_preorder === true) return true;
+          break;
         case 'featured': {
           const isFeatured = movie.categories?.is_staff_pick || movie.featured === true;
           if (isFeatured) return true;

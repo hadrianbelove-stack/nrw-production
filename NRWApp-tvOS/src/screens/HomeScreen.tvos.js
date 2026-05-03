@@ -41,6 +41,7 @@ const FILTERS = [
   { id: 'documentary', label: 'Documentary' },
   { id: 'virtual-screenings', label: 'Virtual Screenings' },
   { id: 'restorations', label: 'Restorations' },
+  { id: 'pre-orders', label: 'Pre-Orders' },
   { id: 'plex', label: 'Plex' },
 ];
 
@@ -358,6 +359,9 @@ const HomeScreenTvOS = () => {
             break;
           case 'restorations':
             if (movie.categories?.is_restoration) return true;
+            break;
+          case 'pre-orders':
+            if (movie._is_preorder === true) return true;
             break;
         }
       }

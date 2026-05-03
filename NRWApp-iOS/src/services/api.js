@@ -159,9 +159,17 @@ export function filterMovies(movies, filter = 'all') {
       return movies.filter(
         movie => !movie.hidden && movie.categories?.is_documentary === true,
       );
+    case 'series':
+      return movies.filter(
+        movie => !movie.hidden && movie.content_type === 'limited_series',
+      );
     case 'virtual-screenings':
       return movies.filter(
         movie => !movie.hidden && movie.categories?.is_virtual_screening,
+      );
+    case 'pre-orders':
+      return movies.filter(
+        movie => !movie.hidden && movie._is_preorder === true,
       );
     case 'hidden':
       return movies.filter(movie => movie.hidden === true);
@@ -211,6 +219,9 @@ export function filterMoviesMulti(movies, activeFilters) {
           break;
         case 'virtual-screenings':
           if (movie.categories?.is_virtual_screening) return true;
+          break;
+        case 'pre-orders':
+          if (movie._is_preorder === true) return true;
           break;
       }
     }
