@@ -22,7 +22,10 @@ Then report these sections:
 
 ### CI Pipeline Summary (from run_diagnostics.json)
 - Overall success/failure and total duration
-- Intake: how many new movies intaked (from intake_run.json `results.total_intaked`)
+- Intake (from intake_run.json):
+  - Total intaked: `results.total_intaked` (films: `results.intaked`, miniseries: `results.miniseries_intaked`)
+  - Scan window: `scan_window.start_date` to `scan_window.end_date` (`scan_window.mode`)
+  - Duplicates skipped: `results.duplicates_skipped`, blocked: `results.blocked_by_filter`
 - Discovery: how many movies polled, how many transitions (from discovery_run.json)
 - Enrichment: movies requested / enriched / deferred and duration (from enrichment_run.json)
 - Any failures or warnings (from run_diagnostics.json `failures` and `warnings`)

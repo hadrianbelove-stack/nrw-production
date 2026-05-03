@@ -2042,7 +2042,7 @@ def add_movie() -> dict:
             'title': title,
             'manually_added': True,
             'source': 'admin',
-            'added_date': now,
+            'intake_date': now,
             'last_manual_edit': now,
             'manually_corrected': True
         }

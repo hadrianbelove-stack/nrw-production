@@ -688,7 +688,7 @@ class DataGenerator:
                         'rent': [p['provider_name'] for p in us_providers.get('rent', [])],
                         'buy': [p['provider_name'] for p in us_providers.get('buy', [])]
                     },
-                    'intaked_at': datetime.now().isoformat(),
+                    'intake_date': datetime.now().strftime('%Y-%m-%d'),
                     'networks': [n['name'] for n in details.get('networks', [])]
                 }
 
@@ -776,24 +776,6 @@ class DataGenerator:
             db = json.load(f)
 
         print(f'DB loaded: {len(db.get("movies", {}))} total movies')
-
-        # One-time cleanup: revert future-dated Type 4 movies incorrectly marked available
-        # Safe to remove after 2026-04-28
-        today_str = datetime.now().strftime('%Y-%m-%d')
-        reverted_count = 0
-        for mid, m in db['movies'].items():
-            if (m.get('status') == 'available' and
-                m.get('_discovery_source') == 'tmdb_type4' and
-                m.get('digital_date', '') > today_str):
-                m['status'] = 'tracking'
-                m['_type4_pending'] = True
-                m['enriched'] = False
-                m['enrichment_date'] = None
-                reverted_count += 1
-                self.logger.info(f"Reverted future Type 4: {m['title']} ({m['digital_date']})")
-                print(f"  🔧 Reverted future Type 4: {m['title']} ({m['digital_date']})")
-        if reverted_count:
-            print(f"  🔧 Reverted {reverted_count} future-dated Type 4 movies to pending")
 
         tracking_count = len([m for m in db['movies'].values() if m['status'] == 'tracking'])
         print(f"🔍 Raw tracking filter: {tracking_count} movies")
@@ -897,6 +879,11 @@ class DataGenerator:
                                     print(f"  📅 {movie['title']} — pending Type 4 arrived ({pending_date})")
                                 else:
                                     days_until = (pending_dt - today_dt).days
+                                    # Ensure pending movie is on wall as pre-order (migrates existing pending movies)
+                                    if not movie.get('_is_preorder'):
+                                        movie['_is_preorder'] = True
+                                        self.add_movie_to_site_immediately(movie_id, movie)
+                                        print(f"  🏷️ {movie['title']} — added to wall as pre-order ({pending_date})")
                                     self.logger.debug(f"Type 4 still pending: {movie['title']} — {days_until}d until {pending_date}")
                             except ValueError:
                                 pass
@@ -918,14 +905,16 @@ class DataGenerator:
                                     self.logger.info(f"Type 4 discovery: {movie['title']} — digital release {type4_date}")
                                     print(f"  📅 {movie['title']} — digital release {type4_date}")
                                 else:
-                                    # Future date — store as pending, stay tracking
+                                    # Future date — add to wall as pre-order, enrich when date arrives
                                     days_until = (type4_dt - today_dt).days
                                     movie['digital_date'] = type4_date
                                     movie['_discovery_source'] = 'tmdb_type4'
                                     movie['_type4_pending'] = True
+                                    movie['_is_preorder'] = True
                                     type4_found = True  # Skip provider check
-                                    self.logger.info(f"Type 4 future: {movie['title']} — {days_until}d until {type4_date} [pending]")
-                                    print(f"  ⏳ {movie['title']} — digital in {days_until}d ({type4_date}) [pending]")
+                                    self.add_movie_to_site_immediately(movie_id, movie)
+                                    self.logger.info(f"Type 4 future: {movie['title']} — {days_until}d until {type4_date} [pre-order on wall]")
+                                    print(f"  ⏳ {movie['title']} — digital in {days_until}d ({type4_date}) [pre-order on wall]")
                             except ValueError:
                                 pass
 
@@ -1230,7 +1219,7 @@ class DataGenerator:
                         'title': title,
                         'year': year,
                         'status': 'tracking',
-                        'first_seen': datetime.now().strftime('%Y-%m-%d'),
+                        'intake_date': datetime.now().strftime('%Y-%m-%d'),
                         'digital_date': None,
                         'providers': {},
                         'intake_pass': pass_name  # Track which pass found this movie
@@ -1669,7 +1658,7 @@ class DataGenerator:
                         'title': title,
                         'year': year,
                         'status': 'tracking',
-                        'first_seen': datetime.now().strftime('%Y-%m-%d'),
+                        'intake_date': datetime.now().strftime('%Y-%m-%d'),
                         'digital_date': None,
                         'providers': {},
                         'intake_pass': 'C',  # Festival pass
@@ -1899,9 +1888,13 @@ class DataGenerator:
             # Add discovery metadata
             basic_entry.update({
                 '_discovered_at': datetime.now().isoformat(),
-                '_discovery_source': 'provider_availability_check',
+                '_discovery_source': movie_data.get('_discovery_source', 'provider_availability_check'),
                 '_enrichment_status': 'pending'
             })
+
+            # Copy pre-order flag if set (Type 4 pending movies surfaced on wall)
+            if movie_data.get('_is_preorder'):
+                basic_entry['_is_preorder'] = True
 
             # Add to beginning of movies list (newest first)
             data_movies.insert(0, basic_entry)
@@ -3366,10 +3359,16 @@ class DataGenerator:
             catchup_ids = []
             retry_cutoff = (datetime.now() - timedelta(days=7)).strftime('%Y-%m-%d')
             orphan_cutoff = (datetime.now() - timedelta(days=30)).strftime('%Y-%m-%d')
+            today_catchup = datetime.now().strftime('%Y-%m-%d')
             for movie in existing_movies:
                 movie_id = str(movie.get('id', ''))
                 if not movie_id or movie_id in seen_ids:
                     continue
+                # Skip pre-orders waiting for their release date
+                if movie.get('_is_preorder'):
+                    dd = movie.get('digital_date', '')
+                    if dd > today_catchup:
+                        continue
                 digital_date = movie.get('digital_date', '')
                 status = movie.get('_enrichment_status', '')
                 gaps = movie.get('_enrichment_gaps')
@@ -3408,7 +3407,7 @@ class DataGenerator:
                             'title': mdata.get('title', f'Movie {mid}'),
                             'digital_date': mdata.get('digital_date'),
                             'providers': mdata.get('providers', {}),
-                            'first_seen': mdata.get('first_seen')
+                            'intake_date': mdata.get('intake_date') or mdata.get('added_date') or mdata.get('first_seen')
                         })
                 if orphan_movies:
                     print(f"  ⚠️ Orphan detection: {len(orphan_movies)} movies available in tracking but missing from wall")

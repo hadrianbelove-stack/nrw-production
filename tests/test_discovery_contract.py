@@ -118,7 +118,7 @@ discovery:
                     'status': 'tracking',  # CONTRACT: New discoveries start as tracking
                     'digital_date': None,  # CONTRACT: Discovery does not set digital_date
                     'enriched': False,     # CONTRACT: New movies are not enriched
-                    'added_date': datetime.now().strftime('%Y-%m-%d'),
+                    'intake_date': datetime.now().strftime('%Y-%m-%d'),
                     'tmdb_id': movie_data['id']
                 }
 
@@ -132,8 +132,8 @@ discovery:
                             "Discovered movies must have digital_date=None")
             self.assertEqual(discovered_movie['enriched'], False,
                            "Discovered movies must have enriched=False")
-            self.assertIn('added_date', discovered_movie,
-                        "Discovered movies must have added_date")
+            self.assertIn('intake_date', discovered_movie,
+                        "Discovered movies must have intake_date")
 
     def _setup_mock_attributes(self):
         """Set up mock attributes for DataGenerator."""
@@ -166,7 +166,7 @@ discovery:
                     'status': 'tracking',
                     'digital_date': None,
                     'enriched': False,
-                    'added_date': '2024-11-01',
+                    'intake_date': '2024-11-01',
                     'tmdb_id': 12345
                 }
             }
@@ -223,7 +223,7 @@ discovery:
             'status': 'tracking',     # Discovery contract
             'digital_date': None,     # Discovery contract
             'enriched': False,        # Discovery contract
-            'added_date': today,
+            'intake_date': today,
             'tmdb_id': discovered_movie['id']
         }
 
@@ -286,7 +286,7 @@ discovery:
                 'status': 'tracking',
                 'digital_date': None,
                 'enriched': False,
-                'added_date': datetime.now().strftime('%Y-%m-%d'),
+                'intake_date': datetime.now().strftime('%Y-%m-%d'),
                 'tmdb_id': movie_data['id']
             }
 
@@ -325,7 +325,7 @@ class TestProviderDetectionContract(unittest.TestCase):
             'status': 'tracking',
             'digital_date': None,
             'enriched': False,
-            'added_date': yesterday  # Added yesterday
+            'intake_date': yesterday  # Added yesterday
         }
 
         # Simulate provider detection finding availability today
@@ -333,13 +333,13 @@ class TestProviderDetectionContract(unittest.TestCase):
 
         if movie['status'] == 'tracking' and provider_detected_today:
             movie['status'] = 'available'
-            movie['digital_date'] = today  # Should be today, not added_date
+            movie['digital_date'] = today  # Should be today, not intake_date
 
         # Verify provider detection sets correct date
         self.assertEqual(movie['digital_date'], today,
                        "Provider detection must set digital_date to detection date, not discovery date")
-        self.assertNotEqual(movie['digital_date'], movie['added_date'],
-                          "digital_date should not equal added_date")
+        self.assertNotEqual(movie['digital_date'], movie['intake_date'],
+                          "digital_date should not equal intake_date")
 
     def test_provider_detection_preserves_tracking_metadata(self):
         """
@@ -351,7 +351,7 @@ class TestProviderDetectionContract(unittest.TestCase):
             'status': 'tracking',
             'digital_date': None,
             'enriched': False,
-            'added_date': '2024-10-15',
+            'intake_date': '2024-10-15',
             'tmdb_id': 54321,
             'year': 2024,
             'overview': 'Test overview'
@@ -366,7 +366,7 @@ class TestProviderDetectionContract(unittest.TestCase):
             movie['digital_date'] = datetime.now().strftime('%Y-%m-%d')
 
         # Verify metadata preservation
-        preserved_fields = ['id', 'title', 'added_date', 'tmdb_id', 'year', 'overview']
+        preserved_fields = ['id', 'title', 'intake_date', 'tmdb_id', 'year', 'overview']
         for field in preserved_fields:
             self.assertEqual(movie[field], original_movie[field],
                            f"Provider detection must preserve {field}")
