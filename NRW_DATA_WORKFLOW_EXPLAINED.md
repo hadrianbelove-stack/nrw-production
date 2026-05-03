@@ -51,9 +51,9 @@ No API provides "when" a movie became available — only "what" is currently ava
 - **Monitoring:** Checks ALL movies in database with status = "tracking" for digital availability
 - **Two co-equal discovery signals:**
   1. **TMDB /watch/providers** — Detects streaming providers (Netflix, Disney+, etc.) and rent/buy availability (Amazon, Apple TV, etc.)
-  2. **TMDB Type 4 digital release dates** — Detects when a movie's digital release date has arrived. Many movies have Type 4 dates before provider lists are populated, making this a primary discovery mechanism.
+  2. **TMDB Type 4 digital release dates** — Detects when a movie's digital release date has arrived. Many movies have Type 4 dates before provider lists are populated. Both signals are co-equal; neither is primary or fallback.
 - **Transition:** When either signal fires, sets `digital_date` = today (or Type 4 date), status = "available"
-- **Pre-order detection:** Buy-only + single-provider movies are checked against Amazon to catch pre-orders (not yet available for viewing)
+- **Pre-order detection:** Movies with JustWatch buy-only offers, or discovered movies that fail JW pre-check but are confirmed as pre-orders by Gemini, are flagged and displayed on the wall until released
 - **JustWatch:** NOT used in discovery. JustWatch provides actual rent/buy deep links (Amazon/Apple TV URLs) during enrichment, not during discovery.
 - **State file:** Writes list of newly available movie IDs to `metrics/newly_available.json`
 

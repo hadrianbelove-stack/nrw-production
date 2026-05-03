@@ -544,15 +544,6 @@ const NRWMobile = {
             return `<div class="vod-row">${vodBtns.join('')}</div>`;
         }
 
-        // Pre-order links (future release — no streaming/VOD links found)
-        const preOrderLinks = movie.pre_order_links || {};
-        if (preOrderLinks.amazon) {
-            return `<a href="${preOrderLinks.amazon}" target="_blank" rel="noopener" class="btn-watch-full amazon">Pre-Order</a>`;
-        }
-        if (preOrderLinks.apple_tv) {
-            return `<a href="${preOrderLinks.apple_tv}" target="_blank" rel="noopener" class="btn-watch-full apple">Pre-Order</a>`;
-        }
-
         return '';
     },
 

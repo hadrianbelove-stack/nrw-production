@@ -294,19 +294,6 @@ export function getWatchLinks(movie) {
     });
   }
 
-  // Pre-order links (future release — no real watch links yet)
-  const preOrderLinks = movie.pre_order_links || {};
-  const todayStr = new Date().toISOString().split('T')[0];
-  if (movie.digital_date > todayStr && Object.keys(preOrderLinks).length > 0) {
-    if (preOrderLinks.amazon) {
-      links.push({service: 'amazon', label: 'Pre-Order', url: preOrderLinks.amazon, type: 'preorder', icon: 'amazon'});
-    }
-    if (preOrderLinks.apple_tv) {
-      links.push({service: 'apple_tv', label: 'Pre-Order', url: preOrderLinks.apple_tv, type: 'preorder', icon: 'apple_tv'});
-    }
-    return links; // pre-order links only; no real watch links should exist yet
-  }
-
   // Handle VOD (purchase/rent) — only recognized services
   const vod = watchLinks.vod;
   if (Array.isArray(vod)) {

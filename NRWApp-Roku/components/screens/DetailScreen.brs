@@ -299,30 +299,6 @@ End Sub
 Sub SetupWatchButtons(movie as Object)
     m.buttons = []
 
-    ' Pre-order buttons (future release — show instead of streaming/VOD)
-    dt = CreateObject("roDateTime")
-    todayStr = dt.AsISO8601String().Left(10)
-    preOrderLinks = GetPreOrderLinks(movie)
-    if movie.digital_date <> invalid AND movie.digital_date > todayStr AND preOrderLinks.Count() > 0
-        vodButtons = [m.vodButton1, m.vodButton2]
-        for i = 0 to vodButtons.Count() - 1
-            if i < preOrderLinks.Count()
-                vodButtons[i].service = preOrderLinks[i].service
-                vodButtons[i].url = preOrderLinks[i].link
-                vodButtons[i].label = preOrderLinks[i].label
-                vodButtons[i].visible = true
-                m.buttons.Push(vodButtons[i])
-            else
-                vodButtons[i].visible = false
-            end if
-        end for
-        m.streamButton.visible = false
-        m.plexButton.visible = false
-        m.trailerButton.visible = false
-        UpdateButtonFocus()
-        return
-    end if
-
     ' Trailer button
     trailerUrl = GetTrailerUrl(movie)
     if trailerUrl <> ""

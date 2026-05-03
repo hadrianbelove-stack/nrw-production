@@ -478,19 +478,6 @@ Function GetStreamingService(movie as Object) as Object
     return invalid
 End Function
 
-' Get pre-order links as array (Amazon and/or Apple TV deeplinks)
-Function GetPreOrderLinks(movie as Object) as Object
-    links = []
-    if movie.pre_order_links = invalid then return links
-    if movie.pre_order_links.amazon <> invalid AND movie.pre_order_links.amazon <> ""
-        links.Push({ service: "Amazon", link: movie.pre_order_links.amazon, label: "Pre-Order on Amazon" })
-    end if
-    if movie.pre_order_links.apple_tv <> invalid AND movie.pre_order_links.apple_tv <> ""
-        links.Push({ service: "Apple TV", link: movie.pre_order_links.apple_tv, label: "Pre-Order on Apple TV" })
-    end if
-    return links
-End Function
-
 ' Get VOD services as array (handles both array and single object formats)
 Function GetVodServices(movie as Object) as Object
     if movie.watch_links = invalid OR movie.watch_links.vod = invalid

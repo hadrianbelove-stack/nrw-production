@@ -6,7 +6,7 @@ How NRW finds clickable "Watch on Amazon / Apple TV / Netflix" links for each mo
 
 **Discovery** (daily, TMDB only): Answers "is this movie available yet?"
 - Checks TMDB watch/providers endpoint → returns provider **names** only (no links)
-- Fallback: TMDB Type 4 digital release date (within last 14 days)
+- Also: TMDB Type 4 digital release date (co-equal signal, checked first)
 - Output: movie transitions from `tracking` → `available`, provider names saved
 
 **Enrichment** (after discovery): Answers "where exactly can you watch it?"

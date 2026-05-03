@@ -2034,7 +2034,6 @@ class DataGenerator:
             'providers': movie_data.get('providers', {'rent': [], 'buy': [], 'streaming': []}),
             'links': {'wikipedia': None, 'trailer': None, 'rt': None},
             'watch_links': {},
-            'pre_order_links': movie_data.get('pre_order_links', {}),
             '_enrichment_status': 'pending',
             '_discovered_at': datetime.now().isoformat(),  # ISO timestamp when we found it
             '_tmdb_fetch_failed': True,
@@ -2076,7 +2075,6 @@ class DataGenerator:
             'providers': movie_data.get('providers', {'rent': [], 'buy': [], 'streaming': []}),
             'links': {'wikipedia': None, 'trailer': None, 'rt': None},
             'watch_links': {},
-            'pre_order_links': movie_data.get('pre_order_links', {}),
             '_enrichment_status': 'pending',
             '_discovered_at': datetime.now().isoformat(),  # ISO timestamp when we found it
             '_tmdb_fetch_failed': False,
@@ -3594,6 +3592,36 @@ class DataGenerator:
                     self.logger.warning(f"JustWatch pre-check error for {_title}: {_jw_err} — proceeding with enrichment")
 
                 if not _jw_verified and not _is_manual and not _has_override:
+                    # Pre-order rescue: before reverting, ask Gemini if this is a pre-order.
+                    # Only for "no JW match" — excluded-platform movies are genuinely wrong platforms.
+                    _rescued = False
+                    if _revert_reason == 'justwatch_no_match':
+                        try:
+                            from gemini_scraper import GeminiVODDateFinder
+                            _vod_finder = GeminiVODDateFinder()
+                            _vod_result = _vod_finder.find_vod_date(_title, _year)
+                            if _vod_result == 'PREORDER_ONLY':
+                                _rescued = True
+                                print(f"  🏷️  {_title} — rescued as pre-order (Gemini: PREORDER_ONLY, JW had no match)")
+                            elif _vod_result and _vod_result not in ('NOT_FOUND', None):
+                                # Gemini returned a date string — check if it's in the future
+                                try:
+                                    _vod_dt = datetime.strptime(_vod_result, '%Y-%m-%d')
+                                    if _vod_dt > datetime.now():
+                                        _rescued = True
+                                        existing_movies[movie_index]['digital_date'] = _vod_result
+                                        print(f"  🏷️  {_title} — rescued as pre-order (Gemini: VOD date {_vod_result})")
+                                except ValueError:
+                                    pass
+                        except Exception as _gem_err:
+                            self.logger.warning(f"Gemini pre-order check failed for {_title}: {_gem_err}")
+
+                    if _rescued:
+                        existing_movies[movie_index]['_is_preorder'] = True
+                        existing_movies[movie_index]['_preorder_source'] = 'gemini_rescue'
+                        signal.alarm(0)
+                        continue
+
                     _today_iso = datetime.now().strftime('%Y-%m-%d')
                     tracking_data['movies'][movie_id]['status'] = 'tracking'
                     tracking_data['movies'][movie_id]['_jw_revert_reason'] = _revert_reason
