@@ -1,7 +1,53 @@
 {
-  "timestamp": "2026-05-03T10:54:08.162547",
-  "movies_requested": 14,
-  "movies_enriched": 9,
-  "movies_deferred": 5,
-  "enrichment_duration_seconds": 360.34
+  "timestamp": "2026-05-04T12:26:43.990880",
+  "movies_requested": 22,
+  "movies_enriched": 11,
+  "movies_deferred": 11,
+  "deferred_details": [
+    {
+      "title": "Bravery & Betrayal",
+      "reason": "jw_revert:justwatch_no_match"
+    },
+    {
+      "title": "Othello",
+      "reason": "jw_revert:justwatch_no_match"
+    },
+    {
+      "title": "Travis Japan Summer Vacation!! in the USA",
+      "reason": "jw_revert:justwatch_no_match"
+    },
+    {
+      "title": "28",
+      "reason": "jw_revert:justwatch_no_match"
+    },
+    {
+      "title": "Bi-Coastal",
+      "reason": "jw_revert:justwatch_no_match"
+    },
+    {
+      "title": "The Cult of NatureBoy",
+      "reason": "jw_revert:justwatch_no_match"
+    },
+    {
+      "title": "Before What Comes After",
+      "reason": "jw_revert:justwatch_no_valid_offers"
+    },
+    {
+      "title": "Sirai",
+      "reason": "jw_revert:justwatch_no_valid_offers"
+    },
+    {
+      "title": "Prakambanam",
+      "reason": "jw_revert:justwatch_no_valid_offers"
+    },
+    {
+      "title": "Making of Lord of the Flies",
+      "reason": "jw_revert:justwatch_no_match"
+    },
+    {
+      "title": "Star Wars: Maul - Shadow Lord",
+      "reason": "jw_revert:justwatch_no_match"
+    }
+  ],
+  "enrichment_duration_seconds": 461.63
 }
