@@ -24,7 +24,7 @@ After servers are running, you MUST generate a data quality report in the chat b
 python3 scripts/wall_health.py
 ```
 
-Present the output as a formatted report. Key sections:
+Present the output as a formatted report. The script outputs a table for today's arrivals showing enrichment coverage (RT/MC/Wiki/Trailer/IMDb/Links) — present it directly as-is. Key sections:
 
 - **ZERO WATCH LINKS** is the most critical section. Each movie shows its digital date, days on wall, and a detailed status explaining WHY it has no links (JW revert reason, which excluded platform, TMDB platform info, revert count). Zero watch links on a wall movie is NEVER normal — it signals enrichment failure. A CRITICAL alert means the pipeline is likely broken.
 

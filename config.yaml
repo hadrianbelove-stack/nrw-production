@@ -510,7 +510,7 @@ screening_names:
 
 # Pre-order settings
 preorder:
-  scout_days: 14  # Days before digital_date to start fetching buy links from storefronts
+  link_finder_days: 14  # Days before digital_date to start fetching buy links from storefronts
 
 # Manual pre-order overrides: force-flag or un-flag movies as pre-orders.
 # true = force pre-order badge, false = override to NOT pre-order

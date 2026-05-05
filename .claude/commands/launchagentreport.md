@@ -50,7 +50,7 @@ python3 scripts/wall_health.py
 Report these numbers in a formatted summary:
 
 - **Coverage**: RT scores, MC scores, Wikipedia, Trailers (count + percentage)
-- **Today's arrivals**: list with enrichment gaps
+- **Today's arrivals**: present as a table with columns: Movie | RT | MC | Wiki | Trailer | IMDb | Links (use `yes`/`--` for each field). The `wall_health.py` script outputs this format directly — present it as-is.
 - **Last 7 days**: daily arrival counts
 - **Upcoming**: pre-orders with no links yet (expected)
 - **Zero watch links**: Each movie shows its digital date, days on wall, and a detailed status explaining WHY it has no links (JW revert reason, which excluded platform, TMDB platform info, revert count). A CRITICAL alert (>5%) means the pipeline is likely broken. Movies age out of this section after 3 days — only new/recent zero-link movies are shown.

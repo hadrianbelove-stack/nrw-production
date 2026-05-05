@@ -3420,39 +3420,39 @@ class DataGenerator:
 
             newly_count = len(movie_ids_to_enrich)
 
-            # Pre-order link scout: use Gemini with Google Search grounding to find
+            # Pre-order link finder: use Gemini with Google Search grounding to find
             # Amazon and Fandango At Home pre-order URLs for movies approaching release.
-            _scout_days = self.config.get('preorder', {}).get('scout_days', 14)
-            _scout_cutoff = (datetime.now() + timedelta(days=_scout_days)).strftime('%Y-%m-%d')
-            _scout_candidates = []
+            _plf_days = self.config.get('preorder', {}).get('link_finder_days', 14)
+            _plf_cutoff = (datetime.now() + timedelta(days=_plf_days)).strftime('%Y-%m-%d')
+            _plf_candidates = []
             for _m in existing_movies:
                 if not _m.get('_is_preorder'):
                     continue
                 _dd = _m.get('digital_date', '')
-                if not _dd or _dd > _scout_cutoff:
+                if not _dd or _dd > _plf_cutoff:
                     continue
                 if _m.get('pre_order_links'):
                     continue
-                _scout_candidates.append(_m)
+                _plf_candidates.append(_m)
 
-            if _scout_candidates:
-                print(f"\n  🔍 Pre-order link scout: {len(_scout_candidates)} movies within {_scout_days}d window")
-                _scout_found = 0
+            if _plf_candidates:
+                print(f"\n  🔍 Pre-order link finder: {len(_plf_candidates)} movies within {_plf_days}d window")
+                _plf_found = 0
                 try:
                     from google import genai
                     from google.genai import types as genai_types
-                    import re as _re_scout
+                    import re as _re_plf
 
                     _gemini_key = os.environ.get('GEMINI_API_KEY') or self.config.get('gemini_api_key', '')
                     if not _gemini_key:
-                        self.logger.warning("Pre-order scout: no GEMINI_API_KEY, skipping")
+                        self.logger.warning("Pre-order link finder: no GEMINI_API_KEY, skipping")
                     else:
                         _gclient = genai.Client(api_key=_gemini_key)
                         _gtool = genai_types.Tool(google_search=genai_types.GoogleSearch())
                         _gconfig = genai_types.GenerateContentConfig(tools=[_gtool])
 
                         _movie_lines = []
-                        for _i, _sm in enumerate(_scout_candidates, 1):
+                        for _i, _sm in enumerate(_plf_candidates, 1):
                             _sm_title = _sm.get('title', '')
                             _sm_year = _sm.get('year', '')
                             _extra = ''
@@ -3494,7 +3494,7 @@ PRICE: [price or UNKNOWN]
                         _resp_text = _response.text
 
                         # Parse response: split into per-movie blocks, then extract URLs
-                        import requests as _requests_scout
+                        import requests as _requests_plf
 
                         def _normalize_url(url):
                             """Add https:// if missing — Gemini often omits the scheme."""
@@ -3513,10 +3513,10 @@ PRICE: [price or UNKNOWN]
                             return _tok if _tok and _tok != 'NONE' else None
 
                         # Split response into per-movie blocks using finditer
-                        _n = len(_scout_candidates)
+                        _n = len(_plf_candidates)
                         _nums_alt = '|'.join(str(i) for i in range(1, _n + 1))
                         _hdr_pattern = rf'(?:^|(?<=\D))({_nums_alt})\.\s'
-                        _headers = list(_re_scout.finditer(_hdr_pattern, _resp_text))
+                        _headers = list(_re_plf.finditer(_hdr_pattern, _resp_text))
 
                         _movie_blocks = {}
                         for _hi, _hm in enumerate(_headers):
@@ -3528,14 +3528,14 @@ PRICE: [price or UNKNOWN]
                         for _midx, _block in _movie_blocks.items():
                             if _midx < 0 or _midx >= _n:
                                 continue
-                            _sm = _scout_candidates[_midx]
+                            _sm = _plf_candidates[_midx]
                             _sm_title = _sm.get('title', '')
 
                             _amz = _extract_url(_block, 'AMAZON:')
                             if _amz and 'amazon.com' in _amz:
                                 _amz = _normalize_url(_amz)
                                 try:
-                                    _hr = _requests_scout.head(_amz, headers={'User-Agent': 'Mozilla/5.0'}, allow_redirects=True, timeout=8)
+                                    _hr = _requests_plf.head(_amz, headers={'User-Agent': 'Mozilla/5.0'}, allow_redirects=True, timeout=8)
                                     if _hr.status_code == 200:
                                         if 'pre_order_links' not in _sm:
                                             _sm['pre_order_links'] = []
@@ -3554,7 +3554,7 @@ PRICE: [price or UNKNOWN]
                             if _fan and 'fandango' in _fan:
                                 _fan = _normalize_url(_fan)
                                 try:
-                                    _hr = _requests_scout.head(_fan, headers={'User-Agent': 'Mozilla/5.0'}, allow_redirects=True, timeout=8)
+                                    _hr = _requests_plf.head(_fan, headers={'User-Agent': 'Mozilla/5.0'}, allow_redirects=True, timeout=8)
                                     if _hr.status_code == 200:
                                         if 'pre_order_links' not in _sm:
                                             _sm['pre_order_links'] = []
@@ -3571,24 +3571,24 @@ PRICE: [price or UNKNOWN]
 
                             _price_raw = _extract_url(_block, 'PRICE:')
                             if _price_raw and _price_raw != 'UNKNOWN' and _sm.get('pre_order_links'):
-                                _price_match = _re_scout.search(r'\$\d+\.\d{2}', _price_raw)
+                                _price_match = _re_plf.search(r'\$\d+\.\d{2}', _price_raw)
                                 _price = _price_match.group(0) if _price_match else _price_raw
                                 for _pl in _sm['pre_order_links']:
                                     if not _pl.get('price'):
                                         _pl['price'] = _price
 
-                        for _sm in _scout_candidates:
+                        for _sm in _plf_candidates:
                             if _sm.get('pre_order_links'):
-                                _scout_found += 1
+                                _plf_found += 1
                                 _sm_title = _sm.get('title', '')
                                 _n_links = len(_sm['pre_order_links'])
                                 print(f"    🔗 {_sm_title} — {_n_links} pre-order link{'s' if _n_links > 1 else ''}")
 
-                except Exception as _scout_err:
-                    self.logger.warning(f"Pre-order link scout error: {_scout_err}")
+                except Exception as _plf_err:
+                    self.logger.warning(f"Pre-order link finder error: {_plf_err}")
 
-                if _scout_found:
-                    print(f"  🔍 Scout complete: {_scout_found}/{len(_scout_candidates)} movies got pre-order links")
+                if _plf_found:
+                    print(f"  🔍 Link finder: {_plf_found}/{len(_plf_candidates)} pre-order movies got links")
 
             # Catch-up: retry movies with incomplete enrichment
             seen_ids = set(movie_ids_to_enrich)
@@ -3808,25 +3808,25 @@ PRICE: [price or UNKNOWN]
                         elif _preorder_override is False:
                             existing_movies[movie_index].pop('_is_preorder', None)
                         elif _jw_result.get('buy_only'):
-                            _dd = existing_movies[movie_index].get('digital_date', '')
-                            if _dd > datetime.now().strftime('%Y-%m-%d'):
-                                # Future-dated buy-only = pre-order
-                                existing_movies[movie_index]['_is_preorder'] = True
-                                _jw_links = _jw_result.get('watch_links', {})
-                                if _jw_links.get('vod'):
-                                    existing_movies[movie_index]['pre_order_links'] = _jw_links['vod']
-                                print(f"  🏷️  {_title} — flagged as pre-order (buy-only + future date {_dd})")
-                            else:
-                                # Buy-only with today/past date = limited availability, not a pre-order
-                                if existing_movies[movie_index].get('_is_preorder'):
-                                    existing_movies[movie_index].pop('_is_preorder', None)
-                                    existing_movies[movie_index].pop('pre_order_links', None)
-                                    print(f"  🏷️  {_title} — pre-order cleared (date arrived, buy-only)")
+                            # Buy-only on JustWatch = pre-order signal for provider-discovered movies
+                            # (no Type 4 date). Flag clears automatically when rent/stream appears
+                            # in enrichment results, or when catch-up processes it after date arrives.
+                            existing_movies[movie_index]['_is_preorder'] = True
+                            _jw_links = _jw_result.get('watch_links', {})
+                            if _jw_links.get('vod'):
+                                existing_movies[movie_index]['pre_order_links'] = _jw_links['vod']
+                            print(f"  🏷️  {_title} — flagged as pre-order (buy-only on JustWatch)")
                         else:
                             # Not buy-only anymore — clear pre-order flag if previously set
+                            # BUT only if digital_date has passed (future-dated = still a pre-order)
                             if existing_movies[movie_index].get('_is_preorder'):
-                                existing_movies[movie_index].pop('_is_preorder', None)
-                                print(f"  🏷️  {_title} — pre-order flag cleared (no longer buy-only on JustWatch)")
+                                dd = existing_movies[movie_index].get('digital_date', '')
+                                today_str = datetime.now().strftime('%Y-%m-%d')
+                                if dd <= today_str:
+                                    existing_movies[movie_index].pop('_is_preorder', None)
+                                    print(f"  🏷️  {_title} — pre-order flag cleared (date passed, no longer buy-only)")
+                                else:
+                                    print(f"  🏷️  {_title} — keeping pre-order (date {dd} still future despite JW not buy-only)")
 
                 except Exception as _jw_err:
                     self.logger.warning(f"JustWatch pre-check error for {_title}: {_jw_err} — proceeding with enrichment")
@@ -3890,10 +3890,18 @@ PRICE: [price or UNKNOWN]
                         for v in wl.values()
                     ) if isinstance(wl, dict) else bool(wl)
                     # Clear pre-order flag if movie now has real watch links
-                    # (means it transitioned from pre-order to actually available)
+                    # BUT only if digital_date has actually passed — future-dated movies
+                    # with links are still pre-orders (the links are purchase pre-order URLs)
                     if has_real_links and existing_movies[movie_index].get('_is_preorder'):
-                        existing_movies[movie_index].pop('_is_preorder', None)
-                        print(f"  🏷️  {_title} — pre-order flag cleared (has real watch links now)")
+                        dd = existing_movies[movie_index].get('digital_date', '')
+                        today_str = datetime.now().strftime('%Y-%m-%d')
+                        if dd <= today_str:
+                            existing_movies[movie_index].pop('_is_preorder', None)
+                            print(f"  🏷️  {_title} — pre-order flag cleared (date passed, has real links)")
+                        else:
+                            # Future date — links are pre-order purchase URLs, keep flag
+                            existing_movies[movie_index]['pre_order_links'] = wl.get('vod', [])
+                            print(f"  🏷️  {_title} — keeping pre-order (date {dd} still future, links stored as pre_order_links)")
 
                     if not has_real_links:
                         gaps.append('watch_links')
@@ -3950,9 +3958,12 @@ PRICE: [price or UNKNOWN]
             finally:
                 signal.alarm(0)  # Always cancel the per-movie alarm
 
-        # Sync enriched flag to movie_tracking.json
+        # Sync enriched flag to movie_tracking.json + zero-link revert
         try:
-            tracking_updated = 0
+            _enrich_success = 0
+            _enrich_reverted = 0
+            _reverted_details = []
+            tracking_changed = False
             for mid in movie_ids_to_enrich:
                 mid = str(mid)
                 if mid in movie_lookup:
@@ -3960,7 +3971,7 @@ PRICE: [price or UNKNOWN]
                     if movie.get('_enrichment_status') == 'completed' and mid in tracking_data.get('movies', {}):
                         tracking_data['movies'][mid]['enriched'] = True
                         tracking_data['movies'][mid]['enrichment_date'] = datetime.now().strftime('%Y-%m-%d')
-                        tracking_updated += 1
+                        tracking_changed = True
 
                         # Zero watch links after enrichment — revert to tracking
                         # A movie with no links (VOD or streaming) should never be on the wall.
@@ -3975,15 +3986,19 @@ PRICE: [price or UNKNOWN]
                             _today_zl = datetime.now().strftime('%Y-%m-%d')
                             # Guard: pre-orders with future dates (no links expected yet)
                             if movie.get('_is_preorder') and _dd_zl > _today_zl:
+                                _enrich_success += 1
                                 print(f"  ⏭️  {_title_zl} — zero links but pre-order (future date {_dd_zl}), keeping")
                             # Guard: virtual screenings (own lifecycle)
                             elif movie.get('categories', {}).get('is_virtual_screening'):
+                                _enrich_success += 1
                                 print(f"  ⏭️  {_title_zl} — zero links but virtual screening, keeping")
                             # Guard: manually-added movies (curator decision)
                             elif movie.get('_added_manually') or tracking_data['movies'][mid].get('_added_manually'):
+                                _enrich_success += 1
                                 print(f"  ⏭️  {_title_zl} — zero links but manually added, keeping")
                             # Guard: watch link overrides
                             elif str(mid) in self.watch_links_overrides:
+                                _enrich_success += 1
                                 print(f"  ⏭️  {_title_zl} — zero links but has override, keeping")
                             else:
                                 # Revert to tracking — movie will be purged from data.json
@@ -3997,12 +4012,24 @@ PRICE: [price or UNKNOWN]
                                 movie['_enrichment_status'] = 'reverted'
                                 movie['_jw_revert_reason'] = 'zero_watch_links'
                                 movie['status'] = 'tracking'
-                                tracking_updated -= 1  # Undo the increment from line above
+                                _enrich_reverted += 1
+                                _rv_source = movie.get('_discovery_source', 'unknown')
+                                _reverted_details.append((_title_zl, _rv_source, _zl_revert_count))
                                 print(f"  🔄 {_title_zl} — zero watch links → reverted to tracking (count: {_zl_revert_count})")
                                 deferred_details.append({'title': _title_zl, 'reason': 'zero_watch_links'})
-            if tracking_updated > 0:
+                        else:
+                            _enrich_success += 1
+            _enrich_attempted = _enrich_success + _enrich_reverted
+            if tracking_changed:
                 self.storage.atomic_write_json(tracking_data, 'movie_tracking.json', backup=True)
-                print(f"📝 Updated movie_tracking.json: {tracking_updated} movies marked enriched")
+                if _enrich_reverted:
+                    print(f"📝 Enrichment: {_enrich_attempted} attempted, {_enrich_success} succeeded, {_enrich_reverted} reverted (zero links)")
+                    for _rv_title, _rv_source, _rv_count in _reverted_details:
+                        _rv_via = 'Type 4' if _rv_source == 'tmdb_type4' else 'providers' if _rv_source == 'provider_availability_check' else _rv_source
+                        _rv_suffix = f' (attempt #{_rv_count})' if _rv_count > 1 else ''
+                        print(f"   ↳ {_rv_title} — discovered via {_rv_via}, no deeplinks found{_rv_suffix}")
+                else:
+                    print(f"📝 Enrichment: {_enrich_attempted} movies successfully enriched")
         except Exception as e:
             print(f"⚠️ Could not update movie_tracking.json: {e}")
 

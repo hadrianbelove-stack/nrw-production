@@ -70,46 +70,32 @@ print('WALL: %d movies' % total)
 print('PIPELINE: %s' % health)
 print('COVERAGE: RT=%d  MC=%d  Wiki=%d  Trailers=%d (%d%%)' % (with_rt, with_mc, with_wiki, with_trailers, round(with_trailers / total * 100) if total else 0))
 print('TODAY (%s): %d new arrivals' % (today, len(arrivals)))
-for a in arrivals:
-    print('  - ' + a['title'])
-
-# Enrichment gaps for today's arrivals
-gaps_found = []
-for a in arrivals:
-    missing = []
-    links = a.get('links', {})
-    crew = a.get('crew', {})
-    wl = a.get('watch_links', {})
-    wl_count = sum(len(v) for v in wl.values()) if isinstance(wl, dict) else 0
-    if not links.get('trailer') and not links.get('trailer_hosted'):
-        missing.append('trailer')
-    if not links.get('wikipedia'):
-        missing.append('wikipedia')
-    if wl_count == 0:
-        missing.append('watch_links')
-    if not a.get('rt_score'):
-        missing.append('rt_score')
-    if not a.get('imdb_rating'):
-        missing.append('imdb_rating')
-    if not a.get('metacritic_score'):
-        missing.append('mc_score')
-    d_name = crew.get('director', '')
-    if not d_name or d_name == 'Unknown':
-        missing.append('director')
-    if not a.get('country'):
-        missing.append('country')
-    if not a.get('year'):
-        missing.append('year')
-    if not a.get('runtime'):
-        missing.append('runtime')
-    if missing:
-        gaps_found.append((a['title'], missing))
-if gaps_found:
-    print('ENRICHMENT GAPS (%d of %d arrivals):' % (len(gaps_found), len(arrivals)))
-    for title, missing in gaps_found:
-        print('  %s — missing: %s' % (title, ', '.join(missing)))
-elif arrivals:
-    print('ENRICHMENT GAPS: 0 — all %d arrivals fully enriched' % len(arrivals))
+if arrivals:
+    # Table format: movie title + enrichment field status
+    col_w = 45
+    print('  %-*s  RT   MC   Wiki  Trailer  IMDb  Links' % (col_w, 'Movie'))
+    print('  ' + '-' * (col_w + 38))
+    gaps_count = 0
+    for a in arrivals:
+        links = a.get('links', {})
+        crew = a.get('crew', {})
+        wl = a.get('watch_links', {})
+        wl_count = sum(len(v) for v in wl.values()) if isinstance(wl, dict) else 0
+        has_rt = 'yes' if a.get('rt_score') else '--'
+        has_mc = 'yes' if a.get('metacritic_score') else '--'
+        has_wiki = 'yes' if links.get('wikipedia') else '--'
+        has_trailer = 'yes' if (links.get('trailer') or links.get('trailer_hosted')) else '--'
+        has_imdb = 'yes' if a.get('imdb_rating') else '--'
+        has_links = 'yes' if wl_count > 0 else '--'
+        title_display = a['title'][:col_w]
+        has_gap = '--' in (has_rt, has_mc, has_wiki, has_trailer, has_imdb, has_links)
+        if has_gap:
+            gaps_count += 1
+        print('  %-*s  %-3s  %-3s  %-4s  %-7s  %-4s  %s' % (col_w, title_display, has_rt, has_mc, has_wiki, has_trailer, has_imdb, has_links))
+    if gaps_count:
+        print('  Gaps: %d of %d arrivals have missing fields' % (gaps_count, len(arrivals)))
+    else:
+        print('  All %d arrivals fully enriched' % len(arrivals))
 
 print('LAST 7 DAYS:')
 for dt in sorted(by_date):
@@ -168,6 +154,11 @@ else:
                 status = 'No JW match (TMDB saw: ' + ', '.join(p.split(' (')[0] for p in plats) + ')'
             else:
                 status = 'No JW match found'
+        elif reason == 'zero_watch_links':
+            if plats:
+                status = 'Enriched but zero links (TMDB saw: ' + ', '.join(p.split(' (')[0] for p in plats) + ')'
+            else:
+                status = 'Enriched but zero links (no deeplinks found)'
         elif reason:
             status = 'JW revert: ' + reason
         else:

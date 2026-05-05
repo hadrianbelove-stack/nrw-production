@@ -237,16 +237,16 @@ Non-film content (wrestling events, sports broadcasts) is blocked at intake via 
 Before full enrichment, a JustWatch pre-check verifies each newly-discovered movie is available on our target platforms. If not, the movie is immediately reverted to tracking with a specific reason stored in `_jw_revert_reason` and `_jw_reverted_at`. The launch report shows these reverted movies so you know: "discovered, but only on excluded services — sent back to tracking."
 
 **Stage 2 — Zero-Link Revert (Post-Enrichment, safety net):**
-After enrichment, movies with `status=available` but **zero watch links** are automatically reverted to `status=tracking`. This catches any remaining false-positive discoveries — movies that passed JustWatch pre-check but still ended up with no usable links.
+After enrichment, movies with `_enrichment_status=completed` but **zero watch links** (no VOD and no streaming) are automatically reverted to `status=tracking`. This catches false-positive discoveries — movies that passed JustWatch pre-check but still ended up with no usable deeplinks (e.g., movie exists on Plex but JustWatch has no purchase/rental/streaming URLs for it).
 
 How it works:
-- Sets `_reverted_from_available: true` and `_false_positive_source` (either `tmdb_type4` or `provider_availability_check`)
-- Blocks re-discovery via the SAME source (e.g., if Type 4 was the false positive, only provider discovery can re-trigger)
-- The OTHER discovery source can still find the movie, preventing permanent blocking
-- Reverted movies are removed from `data.json` (the wall) immediately
-
-### Zero-Watch-Links Display Filter (Display Phase)
-As a final safety net, the display generation phase (`generate_data.py`) filters out any movie with zero watch links before writing to `data.json`. This prevents "empty" movies from appearing on the wall even if they weren't caught by the revert logic.
+- Sets `_jw_revert_reason: 'zero_watch_links'` in tracking and `_enrichment_status: 'reverted'` in data.json
+- Increments `_jw_revert_count` in tracking
+- `purge_removed_movies()` removes the movie from data.json (the wall) in the same pipeline run
+- Discovery can re-find the movie tomorrow — if links appear, it stays; if still zero, it reverts again
+- No max revert limit: a movie with zero links should never be on the wall
+- Exceptions: pre-orders with future dates, virtual screenings, manually-added movies, and movies with watch link overrides are NOT reverted
+- The wall health report shows reverted movies for 3 days, then stops alerting (pipeline keeps retrying silently)
 
 ---
 
