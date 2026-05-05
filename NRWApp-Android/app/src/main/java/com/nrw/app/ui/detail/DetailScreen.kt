@@ -75,19 +75,7 @@ import com.nrw.app.ui.theme.TextMuted
 import com.nrw.app.ui.theme.TextPrimary
 import com.nrw.app.ui.theme.TextSecondary
 import com.nrw.app.util.DeepLinkHelper
-
-private fun formatShortDate(dateStr: String): String {
-    val parts = dateStr.split("-")
-    if (parts.size < 3) return dateStr
-    val month = when (parts[1]) {
-        "01" -> "Jan"; "02" -> "Feb"; "03" -> "Mar"; "04" -> "Apr"
-        "05" -> "May"; "06" -> "Jun"; "07" -> "Jul"; "08" -> "Aug"
-        "09" -> "Sep"; "10" -> "Oct"; "11" -> "Nov"; "12" -> "Dec"
-        else -> parts[1]
-    }
-    val day = parts[2].trimStart('0')
-    return "$month $day"
-}
+import com.nrw.app.util.formatShortDate
 
 /**
  * Movie Detail Screen for Android TV
@@ -539,11 +527,22 @@ private fun MovieDetail(
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     watchOptions.forEach { option ->
-                        WatchButton(
-                            option = option,
-                            onClick = { onWatchClick(option) },
-                            compact = true
-                        )
+                        Column {
+                            WatchButton(
+                                option = option,
+                                onClick = { onWatchClick(option) },
+                                compact = true
+                            )
+                            if (option.sublabel != null) {
+                                Text(
+                                    text = option.sublabel,
+                                    color = Color(0xFFC4B5FD),
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    modifier = Modifier.padding(top = 2.dp)
+                                )
+                            }
+                        }
                     }
                 }
 

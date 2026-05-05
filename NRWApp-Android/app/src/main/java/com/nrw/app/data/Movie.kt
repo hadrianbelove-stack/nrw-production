@@ -1,6 +1,7 @@
 package com.nrw.app.data
 
 import com.google.gson.annotations.SerializedName
+import com.nrw.app.util.formatShortDate
 
 /**
  * Main movie data class matching data.json structure
@@ -225,7 +226,8 @@ data class WatchOption(
     val label: String,
     val url: String,
     val type: WatchType,
-    val icon: String
+    val icon: String,
+    val sublabel: String? = null
 )
 
 enum class WatchType {
@@ -248,6 +250,7 @@ data class InfoOption(
  */
 enum class FilterCategory(val id: String, val displayName: String) {
     ALL("all", "All"),
+    PRE_ORDERS("pre-orders", "Pre-Orders"),
     BIG_TIME("big-time", "Big Time Stuff"),
     INDIE("indie", "Indie"),
     STAFF_PICKS("staff-picks", "Staff Picks"),
@@ -255,8 +258,7 @@ enum class FilterCategory(val id: String, val displayName: String) {
     SERIES("series", "Limited Series"),
     RESTORATIONS("restorations", "Restorations & Reissues"),
     DOCUMENTARY("documentary", "Documentary"),
-    VIRTUAL_SCREENINGS("virtual-screenings", "Virtual Screenings"),
-    PRE_ORDERS("pre-orders", "Pre-Orders")
+    VIRTUAL_SCREENINGS("virtual-screenings", "Virtual Screenings")
 }
 
 /**
@@ -375,11 +377,13 @@ fun Movie.getWatchOptions(): List<WatchOption> {
 
     // Pre-order links (JustWatch buy offers for pre-order movies)
     if (options.isEmpty()) {
+        val poDateLabel = digitalDate?.let { "Available ${formatShortDate(it)}" } ?: "Available TBD"
         preOrderLinks?.forEach { link ->
             if (link.link != null) {
                 options.add(WatchOption(
                     service = normalizeServiceId(link.service) ?: "vod",
                     label = "Pre-Order on ${link.service ?: "VOD"}",
+                    sublabel = poDateLabel,
                     url = link.link,
                     type = WatchType.PURCHASE,
                     icon = normalizeServiceId(link.service) ?: "vod"

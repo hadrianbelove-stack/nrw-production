@@ -161,7 +161,7 @@ private fun createGridItems(movies: List<Movie>, playlistUrl: String?): List<Gri
 
     // Separate pre-orders from regular movies
     val regularMovies = movies.filter { !it.isPreorder }
-    val preorderMovies = movies.filter { it.isPreorder }.sortedBy { it.title ?: "" }
+    val preorderMovies = movies.filter { it.isPreorder }.sortedBy { it.digitalDate ?: "" }
 
     // Sort regular movies by date (newest first)
     val sortedMovies = regularMovies.sortedByDescending { it.getDisplayDate() ?: "0000-00-00" }

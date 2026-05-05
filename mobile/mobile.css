@@ -300,7 +300,31 @@ body {
 .badge-criterion { background: var(--svc-criterion); color: #fff; border: 1px solid #fff; }
 .badge-tubi { background: var(--svc-tubi); color: #fff; }
 .badge-vod { background: var(--svc-amazon); color: #000; }
-.badge-preorder { background: var(--svc-preorder); color: #fff; }
+.badge-preorder {
+    background: var(--svc-preorder);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1.2;
+    padding: 4px 8px;
+}
+.badge-preorder .po-label {
+    font-size: 8px;
+    letter-spacing: 0.5px;
+}
+.badge-preorder .po-date {
+    font-size: 10px;
+    font-weight: 600;
+}
+/* Pre-order availability date label (flip-back) */
+.po-avail-date {
+    color: #c4b5fd;
+    font-size: 12px;
+    font-weight: 500;
+    margin-left: 8px;
+    white-space: nowrap;
+}
 .badge-screening { background: transparent; color: var(--screening-gold); border: 1px solid var(--screening-gold); }
 .badge-restoration { background: var(--svc-restoration); color: #000; left: 10px; right: auto; }
 

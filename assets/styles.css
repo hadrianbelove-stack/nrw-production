@@ -456,7 +456,26 @@ header h1 {
 .badge-fawesome { background: var(--svc-fawesome); color: white; }
 .badge-fandango { background: var(--svc-fandango); color: white; }
 .badge-other { background: #444; color: white; }
-.badge-preorder { background: var(--svc-preorder); color: white; }
+.badge-preorder {
+    background: var(--svc-preorder);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1.2;
+    padding: 4px 8px;
+}
+.badge-preorder .po-label { font-size: 8px; letter-spacing: 0.8px; }
+.badge-preorder .po-date { font-size: 11px; font-weight: 600; }
+
+/* Pre-order availability date label (lightbox) */
+.po-available-date {
+    color: #c4b5fd;
+    font-size: 13px;
+    font-weight: 500;
+    margin-left: 8px;
+    white-space: nowrap;
+}
 
 /* Restoration/reissue badge on poster (top-left, opposite streaming badge) */
 .restoration-badge {

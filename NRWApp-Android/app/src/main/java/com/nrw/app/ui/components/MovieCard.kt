@@ -50,6 +50,7 @@ import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Surface
 import coil.compose.AsyncImage
 import com.nrw.app.data.Movie
+import com.nrw.app.util.formatShortDate
 import com.nrw.app.data.getDirector
 import com.nrw.app.data.getPosterUrl
 import com.nrw.app.ui.theme.Background
@@ -193,12 +194,14 @@ fun MovieCard(
 
                 // Pre-order badge (top right) — pipeline sets isPreorder flag
                 if (movie.isPreorder) {
-                    Box(
+                    val poDate = movie.digitalDate?.let { formatShortDate(it) } ?: "TBD"
+                    Column(
                         modifier = Modifier
                             .align(Alignment.TopEnd)
                             .padding(4.dp)
                             .background(Color(0xFF7C3AED), RoundedCornerShape(4.dp))
-                            .padding(horizontal = 4.dp, vertical = 2.dp)
+                            .padding(horizontal = 4.dp, vertical = 3.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
                             text = "PRE-ORDER",
@@ -206,6 +209,12 @@ fun MovieCard(
                             fontSize = 7.sp,
                             fontWeight = FontWeight.Bold,
                             letterSpacing = 0.5.sp
+                        )
+                        Text(
+                            text = poDate,
+                            color = Color.White,
+                            fontSize = 9.sp,
+                            fontWeight = FontWeight.SemiBold
                         )
                     }
                 }

@@ -33,6 +33,7 @@ import {
 // Filter options - matches web categories
 const FILTERS = [
   { id: 'all', label: 'All' },
+  { id: 'pre-orders', label: 'Pre-Orders' },
   { id: 'big-time', label: 'Big Time Stuff' },
   { id: 'indie', label: 'Indie' },
   { id: 'staff-picks', label: 'Staff Picks' },
@@ -41,7 +42,6 @@ const FILTERS = [
   { id: 'documentary', label: 'Documentary' },
   { id: 'virtual-screenings', label: 'Virtual Screenings' },
   { id: 'restorations', label: 'Restorations' },
-  { id: 'pre-orders', label: 'Pre-Orders' },
   { id: 'plex', label: 'Plex' },
 ];
 
@@ -385,8 +385,8 @@ const HomeScreenTvOS = () => {
       return dateB.localeCompare(dateA);
     });
 
-    // Sort pre-orders alphabetically
-    preorderMovies.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+    // Sort pre-orders by date ascending (nearest release first)
+    preorderMovies.sort((a, b) => (a.digital_date || '').localeCompare(b.digital_date || ''));
 
     const items = [];
     let currentDate = null;

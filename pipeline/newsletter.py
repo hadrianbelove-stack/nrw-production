@@ -309,6 +309,15 @@ class NewsletterDataQuery:
         metadata['is_staff_pick'] = bool(categories.get('is_staff_pick'))
         metadata['is_restoration'] = bool(categories.get('is_restoration'))
         metadata['is_preorder'] = bool(movie.get('_is_preorder'))
+        # Formatted pre-order date for template display
+        if metadata['is_preorder'] and movie.get('digital_date'):
+            try:
+                dd = datetime.strptime(movie['digital_date'], '%Y-%m-%d')
+                metadata['preorder_date_display'] = dd.strftime('%b ') + str(dd.day)
+            except (ValueError, TypeError):
+                metadata['preorder_date_display'] = None
+        else:
+            metadata['preorder_date_display'] = None
 
         # Cast
         crew = movie.get('crew', {})

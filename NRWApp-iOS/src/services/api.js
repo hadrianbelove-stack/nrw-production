@@ -354,11 +354,15 @@ export function getWatchLinks(movie) {
   // Pre-order links (JustWatch buy offers for pre-order movies)
   if (links.length === 0) {
     const preOrderLinks = Array.isArray(movie.pre_order_links) ? movie.pre_order_links : [];
+    const poDateStr = movie.digital_date
+      ? (() => { const [y,m,d] = movie.digital_date.split('-'); return new Date(y, m-1, d).toLocaleDateString('en-US', {month:'short', day:'numeric'}); })()
+      : null;
     preOrderLinks.forEach(pl => {
       if (pl && pl.link) {
         links.push({
           service: normalizeServiceId(pl.service),
           label: `Pre-Order on ${pl.service || 'VOD'}`,
+          sublabel: poDateStr ? `Available ${poDateStr}` : 'Available TBD',
           url: pl.link,
           type: 'purchase',
         });

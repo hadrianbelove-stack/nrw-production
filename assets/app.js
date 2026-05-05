@@ -371,8 +371,8 @@ const NRW = {
             return 0;
         });
 
-        // Sort pre-orders alphabetically by title
-        preorderMovies.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+        // Sort pre-orders by date ascending (nearest release first)
+        preorderMovies.sort((a, b) => (a.digital_date || '').localeCompare(b.digital_date || ''));
 
         // Combine: regular movies first, then pre-orders at the bottom
         const orderedMovies = [...regularMovies, ...preorderMovies];
@@ -451,7 +451,10 @@ const NRW = {
 
                 // Pre-order: pipeline sets _is_preorder flag during enrichment
                 if (movie._is_preorder) {
-                    return '<div class="streaming-badge badge-preorder">PRE-ORDER</div>';
+                    const poDate = movie.digital_date
+                        ? NRW.formatScreeningDate(movie.digital_date)
+                        : 'TBD';
+                    return '<div class="streaming-badge badge-preorder"><span class="po-label">PRE-ORDER</span><span class="po-date">' + poDate + '</span></div>';
                 }
 
                 // Get streaming service name
@@ -1031,6 +1034,16 @@ const NRW = {
                     hasWatch = true;
                 }
             });
+        }
+
+        // Pre-order availability date next to button
+        if (movie._is_preorder && hasWatch) {
+            const dateLabel = document.createElement('span');
+            dateLabel.className = 'po-available-date';
+            dateLabel.textContent = movie.digital_date
+                ? `Available ${NRW.formatScreeningDate(movie.digital_date)}`
+                : 'Available TBD';
+            watchStack.appendChild(dateLabel);
         }
 
         if (hasWatch) container.appendChild(watchStack);

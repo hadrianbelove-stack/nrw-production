@@ -119,7 +119,10 @@ const MovieCard = forwardRef(({
 
     // Pre-order: pipeline sets _is_preorder flag during enrichment
     if (movie._is_preorder) {
-      return { name: 'PRE-ORDER', color: '#7c3aed' };
+      const poDate = movie.digital_date
+        ? new Date(movie.digital_date + 'T12:00:00').toLocaleDateString('en-US', {month: 'short', day: 'numeric'})
+        : 'TBD';
+      return { name: 'PRE-ORDER', subtext: poDate, color: '#7c3aed' };
     }
 
     let service = watchLinks.streaming?.service;
@@ -242,8 +245,11 @@ const MovieCard = forwardRef(({
 
           {/* Streaming service badge - upper right */}
           {streamingBadge && (
-            <View style={[styles.streamingBadge, { backgroundColor: streamingBadge.color }]}>
+            <View style={[styles.streamingBadge, { backgroundColor: streamingBadge.color }, streamingBadge.subtext && { alignItems: 'center' }]}>
               <Text style={styles.streamingBadgeText}>{streamingBadge.name}</Text>
+              {streamingBadge.subtext && (
+                <Text style={styles.streamingBadgeSubtext}>{streamingBadge.subtext}</Text>
+              )}
             </View>
           )}
 
@@ -338,6 +344,11 @@ const styles = StyleSheet.create({
     fontSize: Typography.tvos.caption - 4,
     fontWeight: '800',
     letterSpacing: 0.3,
+  },
+  streamingBadgeSubtext: {
+    color: '#FFFFFF',
+    fontSize: Typography.tvos.caption - 2,
+    fontWeight: '600',
   },
   featuredBorder: {
     ...StyleSheet.absoluteFillObject,

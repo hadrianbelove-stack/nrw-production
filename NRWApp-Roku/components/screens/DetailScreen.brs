@@ -98,6 +98,9 @@ Sub LoadMovie(index as Integer)
         m.moviePoster.uri = movie.poster_url
     end if
 
+    ' Check pre-order flag early (needed for date label)
+    isPreOrder = (movie._is_preorder <> invalid AND movie._is_preorder = true)
+
     ' Set title (use display_title for dual-language titles)
     displayTitle = movie.display_title
     if displayTitle = invalid OR displayTitle = ""
@@ -108,11 +111,19 @@ Sub LoadMovie(index as Integer)
         m.titleLabel.text = displayTitle + " (" + movie.year.ToStr() + ")"
     end if
 
-    ' Set release date
+    ' Set release date (prefix with "Available" for pre-orders)
     if movie.digital_date <> invalid AND movie.digital_date <> ""
-        m.dateLabel.text = FormatShortDate(movie.digital_date)
+        if isPreOrder
+            m.dateLabel.text = "Available " + FormatShortDate(movie.digital_date)
+        else
+            m.dateLabel.text = FormatShortDate(movie.digital_date)
+        end if
     else
-        m.dateLabel.text = ""
+        if isPreOrder
+            m.dateLabel.text = "Available TBD"
+        else
+            m.dateLabel.text = ""
+        end if
     end if
 
     ' Build metadata line
@@ -232,10 +243,16 @@ Sub LoadMovie(index as Integer)
         m.restorationLabel.visible = false
     end if
 
-    ' Pre-order badge: pipeline sets _is_preorder flag
-    isPreOrder = (movie._is_preorder <> invalid AND movie._is_preorder = true)
+    ' Pre-order badge (isPreOrder already set above for date label)
     m.preOrderBadge.visible = isPreOrder
     m.preOrderLabel.visible = isPreOrder
+    if isPreOrder
+        if movie.digital_date <> invalid AND movie.digital_date <> ""
+            m.preOrderLabel.text = "PRE-ORDER" + chr(10) + FormatShortDate(movie.digital_date)
+        else
+            m.preOrderLabel.text = "PRE-ORDER" + chr(10) + "TBD"
+        end if
+    end if
 
     ' Virtual screening badge
     if movie.categories <> invalid AND movie.categories.is_virtual_screening = true

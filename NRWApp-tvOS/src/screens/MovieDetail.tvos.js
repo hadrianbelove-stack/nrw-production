@@ -513,15 +513,20 @@ const MovieDetailTvOS = () => {
                 {purchaseLinks.length > 0 && (() => {
                   const isVirtualScreening = isVirtualScreeningPlatform(purchaseLinks[0].service, purchaseLinks[0].url);
                   return (
-                    <ActionButton
-                      label={isVirtualScreening ? 'BUY TICKET' : 'RENT / BUY'}
-                      color={isVirtualScreening ? 'transparent' : '#ff9500'}
-                      borderColor={isVirtualScreening ? Colors.screeningGold : undefined}
-                      textColor={isVirtualScreening ? Colors.screeningGold : undefined}
-                      onPress={() => handleWatchPress(purchaseLinks[0])}
-                      hasTVPreferredFocus={!movie?.links?.trailer_hosted && streamingLinks.length === 0}
-                      testID="action-btn-purchase"
-                    />
+                    <View>
+                      <ActionButton
+                        label={isVirtualScreening ? 'BUY TICKET' : movie?._is_preorder ? 'PRE-ORDER' : 'RENT / BUY'}
+                        color={isVirtualScreening ? 'transparent' : movie?._is_preorder ? '#7c3aed' : '#ff9500'}
+                        borderColor={isVirtualScreening ? Colors.screeningGold : undefined}
+                        textColor={isVirtualScreening ? Colors.screeningGold : undefined}
+                        onPress={() => handleWatchPress(purchaseLinks[0])}
+                        hasTVPreferredFocus={!movie?.links?.trailer_hosted && streamingLinks.length === 0}
+                        testID="action-btn-purchase"
+                      />
+                      {movie?._is_preorder && purchaseLinks[0].sublabel && (
+                        <Text style={styles.preOrderDateLabel}>{purchaseLinks[0].sublabel}</Text>
+                      )}
+                    </View>
                   );
                 })()}
 
@@ -834,6 +839,13 @@ const styles = StyleSheet.create({
     marginTop: Spacing.tvos.lg,
     alignItems: 'center',
     paddingLeft: Spacing.tvos.md,
+  },
+  preOrderDateLabel: {
+    color: '#c4b5fd',
+    fontSize: Typography.tvos.caption,
+    fontWeight: '500',
+    textAlign: 'center',
+    marginTop: 4,
   },
   infoButtonRow: {
     flexDirection: 'row',

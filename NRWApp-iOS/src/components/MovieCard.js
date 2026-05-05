@@ -73,6 +73,11 @@ export default function MovieCard({movie, onPress, isFeatured = false}) {
         {movie._is_preorder && (
           <View style={styles.preOrderBadge}>
             <Text style={styles.preOrderBadgeText}>PRE-ORDER</Text>
+            <Text style={styles.preOrderDateText}>
+              {movie.digital_date
+                ? new Date(movie.digital_date + 'T12:00:00').toLocaleDateString('en-US', {month: 'short', day: 'numeric'})
+                : 'TBD'}
+            </Text>
           </View>
         )}
 
@@ -188,14 +193,20 @@ const styles = StyleSheet.create({
     right: 8,
     backgroundColor: '#7c3aed',
     paddingHorizontal: 6,
-    paddingVertical: 2,
+    paddingVertical: 3,
     borderRadius: 4,
+    alignItems: 'center',
   },
   preOrderBadgeText: {
     color: '#fff',
-    fontSize: 9,
+    fontSize: 8,
     fontWeight: '700',
     letterSpacing: 0.5,
+  },
+  preOrderDateText: {
+    color: '#fff',
+    fontSize: 11,
+    fontWeight: '600',
   },
   screeningRibbon: {
     position: 'absolute',

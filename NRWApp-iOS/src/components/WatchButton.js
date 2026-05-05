@@ -130,21 +130,26 @@ export default function WatchButton({link, onPress, size = 'medium'}) {
   }
 
   return (
-    <TouchableOpacity
-      style={buttonStyle}
-      onPress={() => onPress?.(link)}
-      activeOpacity={0.8}>
-      <View style={styles.buttonContent}>
-        <Text style={textStyle} numberOfLines={1}>
-          {label}
-        </Text>
-        {isStreaming && (
-          <View style={styles.streamBadge}>
-            <Text style={styles.streamBadgeText}>INCLUDED</Text>
-          </View>
-        )}
-      </View>
-    </TouchableOpacity>
+    <View>
+      <TouchableOpacity
+        style={buttonStyle}
+        onPress={() => onPress?.(link)}
+        activeOpacity={0.8}>
+        <View style={styles.buttonContent}>
+          <Text style={textStyle} numberOfLines={1}>
+            {label}
+          </Text>
+          {isStreaming && (
+            <View style={styles.streamBadge}>
+              <Text style={styles.streamBadgeText}>INCLUDED</Text>
+            </View>
+          )}
+        </View>
+      </TouchableOpacity>
+      {link.sublabel && (
+        <Text style={styles.sublabelText}>{link.sublabel}</Text>
+      )}
+    </View>
   );
 }
 
@@ -246,5 +251,13 @@ const styles = StyleSheet.create({
     fontSize: Typography.caption,
     alignSelf: 'center',
     marginLeft: Spacing.sm,
+  },
+  sublabelText: {
+    color: '#c4b5fd',
+    fontSize: Typography.caption,
+    fontWeight: '500',
+    marginTop: -2,
+    marginBottom: Spacing.sm,
+    textAlign: 'center',
   },
 });

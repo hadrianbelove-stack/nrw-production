@@ -94,7 +94,7 @@ const NRWMobile = {
             // Pre-orders always sort to the end
             if (a._is_preorder && !b._is_preorder) return 1;
             if (!a._is_preorder && b._is_preorder) return -1;
-            if (a._is_preorder && b._is_preorder) return (a.title || '').localeCompare(b.title || '');
+            if (a._is_preorder && b._is_preorder) return (a.digital_date || '').localeCompare(b.digital_date || '');
 
             const dateA = new Date(a.digital_date);
             const dateB = new Date(b.digital_date);
@@ -473,7 +473,8 @@ const NRWMobile = {
 
         // Pre-order: pipeline sets _is_preorder flag during enrichment
         if (movie._is_preorder) {
-            return '<span class="poster-badge badge-preorder">PRE-ORDER</span>';
+            const poDate = movie.digital_date ? this.formatShortDate(movie.digital_date) : 'TBD';
+            return '<span class="poster-badge badge-preorder"><span class="po-label">PRE-ORDER</span><span class="po-date">' + poDate + '</span></span>';
         }
 
         // Get streaming service name
@@ -556,7 +557,10 @@ const NRWMobile = {
                 if (!vodType) return '';
                 return `<a href="${pl.link}" target="_blank" rel="noopener" class="btn-watch-full ${vodType.key}">Pre-Order</a>`;
             }).filter(Boolean);
-            if (poBtns.length > 0) return poBtns[0];
+            if (poBtns.length > 0) {
+                const poDate = movie.digital_date ? this.formatShortDate(movie.digital_date) : 'TBD';
+                return `${poBtns[0]}<span class="po-avail-date">Available ${poDate}</span>`;
+            }
         }
 
         return '';
