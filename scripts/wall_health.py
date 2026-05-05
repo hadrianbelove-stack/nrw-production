@@ -223,6 +223,19 @@ if jw_tracking_only:
     for rev_at, title, label in sorted(jw_tracking_only):
         print('  %s  %-40s  %s' % (rev_at, title, label))
 
+# Trailer hosting failures (last 3 days)
+import os
+host_fail_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'cache', 'trailer_host_failures.json')
+if os.path.exists(host_fail_path):
+    hf = json.load(open(host_fail_path))
+    cutoff = (date.today() - timedelta(days=3)).isoformat()
+    recent_fails = [(v['recorded_at'][:10], v['title'], v.get('reason', '?'))
+                    for v in hf.values() if v.get('recorded_at', '') >= cutoff]
+    if recent_fails:
+        print('TRAILER HOSTING FAILURES (last 3 days): %d' % len(recent_fails))
+        for fail_date, title, reason in sorted(recent_fails):
+            print('  %s  %-40s  %s' % (fail_date, title[:40], reason))
+
 # Pre-order / buy-only movies on the wall
 preorder_movies = [m for m in movies if m.get('_is_preorder')]
 if preorder_movies:

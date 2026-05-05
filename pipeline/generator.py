@@ -2890,7 +2890,7 @@ class DataGenerator:
             # Prefer config bucket_url over B2 native URL
             config_url = trailer_config.get('bucket_url', '') or bucket_url
 
-            hosted_url, new_trailer_url = download_and_upload_trailer(movie_id, title, year, youtube_url, bucket, config_url)
+            hosted_url, new_trailer_url, _fail_reason = download_and_upload_trailer(movie_id, title, year, youtube_url, bucket, config_url)
             if hosted_url:
                 self.logger.info(f"Trailer hosted: {title} ({year}) -> {hosted_url}")
             return hosted_url

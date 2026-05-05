@@ -22,7 +22,7 @@ import os
 import shutil
 import sys
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # Paths
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -66,6 +66,40 @@ def record_bad_url(youtube_url, title, year, reason):
     os.makedirs(os.path.dirname(BAD_URLS_FILE), exist_ok=True)
     with open(BAD_URLS_FILE, 'w') as f:
         json.dump(bad_urls, f, indent=2)
+
+
+HOST_FAILURES_FILE = os.path.join(PROJECT_ROOT, 'cache', 'trailer_host_failures.json')
+HOST_FAILURE_TTL_DAYS = 3
+
+
+def load_host_failures():
+    """Load trailer hosting failures, pruning entries older than TTL."""
+    if not os.path.exists(HOST_FAILURES_FILE):
+        return {}
+    with open(HOST_FAILURES_FILE, 'r') as f:
+        failures = json.load(f)
+    cutoff = (datetime.now() - timedelta(days=HOST_FAILURE_TTL_DAYS)).isoformat()
+    pruned = {mid: v for mid, v in failures.items() if v.get('recorded_at', '') >= cutoff}
+    if len(pruned) < len(failures):
+        os.makedirs(os.path.dirname(HOST_FAILURES_FILE), exist_ok=True)
+        with open(HOST_FAILURES_FILE, 'w') as f:
+            json.dump(pruned, f, indent=2)
+    return pruned
+
+
+def record_host_failure(movie_id, title, year, reason, trailer_url=''):
+    """Record a movie that failed trailer hosting (skipped for 3 days)."""
+    failures = load_host_failures()
+    failures[str(movie_id)] = {
+        'title': title,
+        'year': str(year),
+        'reason': reason,
+        'trailer_url': trailer_url,
+        'recorded_at': datetime.now().isoformat(),
+    }
+    os.makedirs(os.path.dirname(HOST_FAILURES_FILE), exist_ok=True)
+    with open(HOST_FAILURES_FILE, 'w') as f:
+        json.dump(failures, f, indent=2)
 
 
 def rediscover_trailer_url(title, year, bad_url):
@@ -212,13 +246,13 @@ def stamp_trailer_hosted_urls(dry_run=False):
 def download_and_upload_trailer(movie_id, title, year, youtube_url, bucket, bucket_url, clean_after_upload=False, cookies_browser=None, rediscover_on_failure=True):
     """
     Download a trailer from YouTube and upload to B2.
-    Returns (hosted_url, new_trailer_url) on success, (None, None) on failure.
-    new_trailer_url is set only if re-discovery found a different URL.
+    Returns (hosted_url, new_trailer_url, fail_reason).
+    fail_reason is None on success, a string on failure.
     """
     video_id = extract_youtube_id(youtube_url)
     if not video_id:
         print(f'    Could not extract YouTube ID from {youtube_url}')
-        return None, None
+        return None, None, 'no_youtube_id'
 
     # Build the dict that download_trailer() expects
     movie_dict = {
@@ -250,23 +284,23 @@ def download_and_upload_trailer(movie_id, title, year, youtube_url, bucket, buck
             new_url = rediscover_trailer_url(title, year, youtube_url)
             if new_url:
                 print(f'    Found alternative: {new_url}')
-                hosted_url, _ = download_and_upload_trailer(
+                hosted_url, _, alt_reason = download_and_upload_trailer(
                     movie_id, title, year, new_url, bucket, bucket_url,
                     clean_after_upload=clean_after_upload,
                     cookies_browser=cookies_browser,
                     rediscover_on_failure=False,  # Prevent recursion
                 )
                 if hosted_url:
-                    return hosted_url, new_url
+                    return hosted_url, new_url, None
             else:
                 print(f'    No alternative found for {title} ({year})')
-        return None, None
+        return None, None, f'download:{status}'
 
     # Upload to B2
     local_path = os.path.join(MEDIA_DIR, f'{movie_id}.mp4')
     if not os.path.exists(local_path):
         print(f'    No local file at {local_path}')
-        return None, None
+        return None, None, 'no_local_file'
 
     remote_name = f'{movie_id}.mp4'
     try:
@@ -275,10 +309,10 @@ def download_and_upload_trailer(movie_id, title, year, youtube_url, bucket, buck
         if clean_after_upload and os.path.exists(local_path):
             os.remove(local_path)
             print(f'    Cleaned local: {local_path}')
-        return hosted_url, None
+        return hosted_url, None, None
     except Exception as e:
         print(f'    Upload failed: {str(e)[:100]}')
-        return None, None
+        return None, None, 'upload_failed'
 
 
 def host_new_trailers(movie_ids=None, limit=0, dry_run=False, cookies_browser=None):
@@ -314,6 +348,9 @@ def host_new_trailers(movie_ids=None, limit=0, dry_run=False, cookies_browser=No
         sorted_movies = sorted(all_movies, key=lambda m: m.get('digital_date', ''), reverse=True)
         scope = sorted_movies[:max_hosted]
 
+    # Load recent hosting failures (auto-prunes entries older than 3 days)
+    host_failures = load_host_failures()
+
     # Find movies needing hosting
     to_host = []
     for movie in scope:
@@ -327,6 +364,10 @@ def host_new_trailers(movie_ids=None, limit=0, dry_run=False, cookies_browser=No
 
         # Skip YouTube search URLs (not actual trailers)
         if 'search_query=' in trailer_url:
+            continue
+
+        # Skip movies that already failed hosting (retried after 3-day TTL)
+        if movie_id in host_failures:
             continue
 
         # Filter to specific IDs if provided
@@ -381,7 +422,7 @@ def host_new_trailers(movie_ids=None, limit=0, dry_run=False, cookies_browser=No
                     stats['skipped'] += 1
                     continue
 
-        hosted_url, new_trailer_url = download_and_upload_trailer(
+        hosted_url, new_trailer_url, fail_reason = download_and_upload_trailer(
             movie['id'], movie['title'], movie['year'],
             movie['trailer_url'], bucket, url_base,
             clean_after_upload=clean_after,
@@ -396,6 +437,8 @@ def host_new_trailers(movie_ids=None, limit=0, dry_run=False, cookies_browser=No
                 update_trailer_url_in_data(movie['id'], new_trailer_url)
         else:
             stats['failed'] += 1
+            record_host_failure(movie['id'], movie['title'], movie['year'],
+                                fail_reason or 'unknown', movie['trailer_url'])
 
         # Rate limit between downloads
         if i < total:
