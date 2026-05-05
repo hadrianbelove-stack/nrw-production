@@ -23,7 +23,8 @@ SCRAPER_DEFAULTS = {
 # Enrichment Safety Limits
 MAX_ENRICHMENT_BATCH = 100  # Maximum movies to enrich in a single run
 ENRICHMENT_LOOP_TIMEOUT_MINUTES = 120  # Overall timeout for enrichment loop
-MAX_ENRICHMENT_ATTEMPTS = 3  # Maximum catch-up retry attempts per movie
+MAX_ENRICHMENT_ATTEMPTS = 5  # Maximum catch-up retry attempts per movie (1 initial + 4 retries)
+RETRY_BACKOFF_DAYS = [1, 3, 7, 14]  # Days to wait after attempt 1, 2, 3, 4 before retrying
 
 def get_scraper_config(config, scraper_name):
     """

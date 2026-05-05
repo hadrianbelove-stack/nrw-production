@@ -41,7 +41,7 @@ except ImportError as e:
     from rt_scraper_playwright import RTScraperPlaywright as HybridRTFinder
     GEMINI_RT_AVAILABLE = False
 
-from constants import PLACEHOLDER_ASINS, get_scraper_config, MAX_ENRICHMENT_BATCH, ENRICHMENT_LOOP_TIMEOUT_MINUTES, MAX_ENRICHMENT_ATTEMPTS
+from constants import PLACEHOLDER_ASINS, get_scraper_config, MAX_ENRICHMENT_BATCH, ENRICHMENT_LOOP_TIMEOUT_MINUTES, MAX_ENRICHMENT_ATTEMPTS, RETRY_BACKOFF_DAYS
 try:
     from streaming_platform_scraper import StreamingPlatformScraper
 except ImportError:
@@ -3590,10 +3590,12 @@ PRICE: [price or UNKNOWN]
                 if _plf_found:
                     print(f"  🔍 Link finder: {_plf_found}/{len(_plf_candidates)} pre-order movies got links")
 
-            # Catch-up: retry movies with incomplete enrichment
+            # Catch-up: retry movies with failed/incomplete enrichment
+            # NOTE: 'completed' movies with gaps are NOT retried here — cosmetic gaps
+            # (RT, Metacritic, Wikipedia, trailer, IMDb) are often legitimately nonexistent.
+            # Watch link gaps are handled by the separate reenrich_watch_link_gaps() pass.
             seen_ids = set(movie_ids_to_enrich)
             catchup_ids = []
-            retry_cutoff = (datetime.now() - timedelta(days=7)).strftime('%Y-%m-%d')
             orphan_cutoff = (datetime.now() - timedelta(days=30)).strftime('%Y-%m-%d')
             today_catchup = datetime.now().strftime('%Y-%m-%d')
             for movie in existing_movies:
@@ -3612,7 +3614,6 @@ PRICE: [price or UNKNOWN]
                     # Fall through to normal catch-up → enrich or revert like any movie
                 digital_date = movie.get('digital_date', '')
                 status = movie.get('_enrichment_status', '')
-                gaps = movie.get('_enrichment_gaps')
                 attempts = movie.get('_enrichment_attempts', 0)
                 if attempts >= MAX_ENRICHMENT_ATTEMPTS:
                     continue
@@ -3620,12 +3621,17 @@ PRICE: [price or UNKNOWN]
                 if not status and not movie.get('enriched', True):
                     if digital_date >= orphan_cutoff:
                         catchup_ids.append(movie_id)
-                # Retry failed/pending — 7-day window
-                elif digital_date >= retry_cutoff:
-                    if status in ('pending', 'failed', 'error', 'timeout'):
+                # Retry failed/error/timeout/pending — exponential backoff
+                elif status in ('pending', 'failed', 'error', 'timeout'):
+                    last_attempt = movie.get('_last_enrichment_attempt', '')
+                    if not last_attempt:
+                        # Legacy movie with no timestamp — retry now
                         catchup_ids.append(movie_id)
-                    elif status == 'completed' and gaps:
-                        catchup_ids.append(movie_id)
+                    elif attempts > 0 and attempts - 1 < len(RETRY_BACKOFF_DAYS):
+                        wait_days = RETRY_BACKOFF_DAYS[attempts - 1]
+                        next_retry = (datetime.strptime(last_attempt, '%Y-%m-%d') + timedelta(days=wait_days)).strftime('%Y-%m-%d')
+                        if today_catchup >= next_retry:
+                            catchup_ids.append(movie_id)
 
             movie_ids_to_enrich.extend(catchup_ids)
 
@@ -3666,16 +3672,19 @@ PRICE: [price or UNKNOWN]
                 except Exception as e:
                     print(f"  ⚠️ Could not write orphan report: {e}")
 
-            # Enforce batch limit
+            # Enforce batch limit — new discoveries take priority over catch-up retries
+            new_count = len(movie_ids_to_enrich) - len(catchup_ids)
             if len(movie_ids_to_enrich) > MAX_ENRICHMENT_BATCH:
+                dropped = len(movie_ids_to_enrich) - MAX_ENRICHMENT_BATCH
                 movie_ids_to_enrich = movie_ids_to_enrich[:MAX_ENRICHMENT_BATCH]
+                print(f"  ⚠️ Batch limit: {dropped} catch-up retries deferred (new discoveries prioritized)")
 
             if not movie_ids_to_enrich:
                 print("✅ No movies to enrich (no new arrivals, no catch-up needed)")
                 return 0
 
-            catchup_count = len(catchup_ids)
-            print(f"🎯 Enrichment queue: {newly_count} new + {catchup_count} catch-up = {len(movie_ids_to_enrich)} total")
+            catchup_used = len(movie_ids_to_enrich) - new_count
+            print(f"🎯 Enrichment queue: {new_count} new + {catchup_used} catch-up = {len(movie_ids_to_enrich)} total")
 
         # Preload IMDb dataset so first movie isn't penalized
         self._load_imdb_dataset()
@@ -3725,9 +3734,10 @@ PRICE: [price or UNKNOWN]
 
             signal.alarm(_PER_MOVIE_TIMEOUT_S)
             try:
-                # Track enrichment attempts for catch-up retry limiting
+                # Track enrichment attempts and timestamp for backoff scheduling
                 existing_movies[movie_index]['_enrichment_attempts'] = \
                     existing_movies[movie_index].get('_enrichment_attempts', 0) + 1
+                existing_movies[movie_index]['_last_enrichment_attempt'] = datetime.now().strftime('%Y-%m-%d')
 
                 # Get full movie/TV details from TMDB
                 if str(movie_id).startswith('tv_'):
@@ -3872,7 +3882,12 @@ PRICE: [price or UNKNOWN]
                         enrichment_fields['links'] = existing_links
 
                     # Update the movie in place with enriched fields
-                    existing_movies[movie_index].update(enrichment_fields)
+                    # Merge guard: don't overwrite existing non-None values with None
+                    # (prevents retry from regressing data found on a previous attempt)
+                    for _ek, _ev in enrichment_fields.items():
+                        if _ev is None and existing_movies[movie_index].get(_ek) is not None:
+                            continue
+                        existing_movies[movie_index][_ek] = _ev
                     # Mark enrichment status as completed
                     existing_movies[movie_index]['_enrichment_status'] = 'completed'
                     # Ensure status is available (may be stale 'tracking' from a prior revert)
