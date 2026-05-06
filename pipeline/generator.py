@@ -891,7 +891,11 @@ class DataGenerator:
                                     self.logger.debug(f"Type 4 still pending: {movie['title']} — {days_until}d until {pending_date}")
                             except ValueError:
                                 pass
-                        type4_found = True  # Skip provider check either way
+                            type4_found = True  # Skip provider check — valid pending date
+                        else:
+                            # Bad state: pending flag with no date — clear and fall through to provider check
+                            movie.pop('_type4_pending', None)
+                            self.logger.warning(f"Cleared _type4_pending with no digital_date: {movie.get('title', movie_id)}")
 
                     else:
                         # Fresh lookup — call TMDB Type 4 API
@@ -991,6 +995,15 @@ class DataGenerator:
 
                         # Transition provider-discovered movie
                         if has_providers and movie['status'] == 'tracking':
+                            # Buy-only pre-order guard: only transition if rent/streaming appeared
+                            if movie.get('_buyonly_preorder'):
+                                if not rent_names and not stream_names:
+                                    continue  # Still buy-only — keep as pre-order on wall
+                                # Rent/streaming found — clear pre-order, fall through to transition
+                                movie.pop('_buyonly_preorder', None)
+                                movie.pop('_is_preorder', None)
+                                print(f"  ✓ {movie['title']} — buy-only pre-order graduated (rent/streaming found)")
+
                             if not movie.get('digital_date'):
                                 movie['digital_date'] = datetime.now().strftime('%Y-%m-%d')
                             movie['providers'] = {
@@ -1817,7 +1830,9 @@ class DataGenerator:
             data_movies = []
             if os.path.exists('data.json'):
                 # Try to fix schema issues (adds missing keys, never removes movies)
-                self.validator.fix_data_json_schema('data.json')
+                if not self.validator.fix_data_json_schema('data.json'):
+                    self.logger.error("data.json schema unfixable — aborting discovery to preserve data")
+                    return 0
 
                 # Load existing movies - if this fails, ABORT to preserve data
                 try:
@@ -2380,7 +2395,7 @@ class DataGenerator:
 
         return None
 
-    def find_wikipedia_url(self, title, year, imdb_id, movie_id=None, director=None, original_title=None):
+    def find_wikipedia_url(self, title, year, imdb_id, movie_id=None, director=None, original_title=None, skip_playwright=False):
         """Find Wikipedia URL using Playwright-based scraper with waterfall approach
 
         Priority waterfall:
@@ -2395,13 +2410,17 @@ class DataGenerator:
             movie_id: TMDB ID for logging purposes
             director: Director name for disambiguation (optional)
             original_title: Original-language title for alternate searching (optional)
+            skip_playwright: If True, skip the slow Playwright scraper step (for gap fill)
 
         Returns:
             Wikipedia URL string or None if not found
         """
         # 1. Check overrides first (manual curator fixes take precedence)
         if imdb_id and imdb_id in self.wikipedia_overrides:
-            return f"https://en.wikipedia.org/wiki/{self.wikipedia_overrides[imdb_id]}"
+            override_val = self.wikipedia_overrides[imdb_id]
+            if override_val is None:
+                return None
+            return f"https://en.wikipedia.org/wiki/{override_val}"
 
         # 2. Initialize Playwright scraper lazily
         if self.wikipedia_scraper is None:
@@ -2427,7 +2446,8 @@ class DataGenerator:
                 use_api=True,
                 use_wikidata=True,
                 director=director,
-                original_title=original_title
+                original_title=original_title,
+                skip_playwright=skip_playwright
             )
 
             # Update our local cache reference to match scraper's cache
@@ -3196,7 +3216,7 @@ class DataGenerator:
                 original_title=original_title,
                 alternative_titles=alt_titles_raw,
                 director=enrich_director,
-                tmdb_id=str(movie_id)
+                tmdb_id=str(movie_id).replace('tv_', '')
             )
 
             # Simplify provider names in watch links (handle both array and dict formats)
@@ -3604,6 +3624,9 @@ PRICE: [price or UNKNOWN]
                     continue
                 # Pre-order handling in catch-up
                 if movie.get('_is_preorder'):
+                    # Buy-only pre-orders wait for discovery to find rent/streaming — skip catch-up
+                    if movie.get('_buyonly_preorder'):
+                        continue
                     dd = movie.get('digital_date', '')
                     if dd > today_catchup:
                         continue  # Future — skip enrichment (link scan handles these)
@@ -3697,6 +3720,24 @@ PRICE: [price or UNKNOWN]
 
         enriched_count = 0
         deferred_details = []  # Track per-movie deferred reasons for metrics
+
+        def _deferred_entry(title, reason, movie_idx=None, tracking_movie=None):
+            """Build a deferred-details dict with all available context."""
+            entry = {'title': title, 'reason': reason}
+            if movie_idx is not None and movie_idx < len(existing_movies):
+                m = existing_movies[movie_idx]
+                entry['digital_date'] = m.get('digital_date', '')
+                entry['discovered_at'] = m.get('_discovered_at', '')
+                entry['discovery_source'] = m.get('_discovery_source', '')
+            if tracking_movie:
+                entry['revert_count'] = tracking_movie.get('_jw_revert_count', 0)
+                provs = tracking_movie.get('providers', {})
+                flat = []
+                for kind in ('streaming', 'rent', 'buy'):
+                    flat.extend(provs.get(kind, []))
+                entry['tmdb_platforms'] = list(dict.fromkeys(flat))  # dedupe, preserve order
+            return entry
+
         _loop_start = time.time()
         _loop_timeout = ENRICHMENT_LOOP_TIMEOUT_MINUTES * 60
 
@@ -3715,18 +3756,18 @@ PRICE: [price or UNKNOWN]
             if (time.time() - _loop_start) > _loop_timeout:
                 _remaining = len(movie_ids_to_enrich) - movie_ids_to_enrich.index(movie_id)
                 print(f"  ⏰ Enrichment loop exceeded {ENRICHMENT_LOOP_TIMEOUT_MINUTES} min — stopping. {_remaining} remaining movies will be retried next run.")
-                deferred_details.append({'title': f'({_remaining} movies)', 'reason': 'loop_timeout'})
+                deferred_details.append(_deferred_entry(f'({_remaining} movies)', 'loop_timeout'))
                 break
 
             movie_id = str(movie_id)  # Ensure consistent string format for lookup
             if movie_id not in movie_lookup:
                 print(f"  ⚠️ Movie {movie_id} not found in data.json - skipping")
-                deferred_details.append({'title': f'ID:{movie_id}', 'reason': 'not_in_data_json'})
+                deferred_details.append(_deferred_entry(f'ID:{movie_id}', 'not_in_data_json'))
                 continue
 
             if movie_id not in tracking_data.get('movies', {}):
                 print(f"  ⚠️ Movie {movie_id} not found in tracking database - skipping")
-                deferred_details.append({'title': f'ID:{movie_id}', 'reason': 'not_in_tracking'})
+                deferred_details.append(_deferred_entry(f'ID:{movie_id}', 'not_in_tracking'))
                 continue
 
             movie_data = tracking_data['movies'][movie_id]
@@ -3748,7 +3789,7 @@ PRICE: [price or UNKNOWN]
                 if not movie_details:
                     existing_movies[movie_index]['_enrichment_status'] = 'failed'
                     print(f"  ✗ Could not fetch TMDB details for {movie_data.get('title', movie_id)} — marked failed for retry")
-                    deferred_details.append({'title': movie_data.get('title', str(movie_id)), 'reason': 'tmdb_fetch_failed'})
+                    deferred_details.append(_deferred_entry(movie_data.get('title', str(movie_id)), 'tmdb_fetch_failed', movie_index, tracking_data['movies'].get(movie_id)))
                     continue
 
                 # JustWatch pre-verification: confirm the movie is on our target platforms
@@ -3767,8 +3808,8 @@ PRICE: [price or UNKNOWN]
                 _is_manual = (movie_data.get('_added_manually')
                               or existing_movies[movie_index].get('_added_manually'))
                 _has_override = str(movie_id) in self.watch_links_overrides
-                _jw_verified = True
-                _revert_reason = None
+                _jw_verified = False
+                _revert_reason = 'justwatch_error'
                 try:
                     if not hasattr(self.enrichment, '_justwatch_client') or self.enrichment._justwatch_client is None:
                         from pipeline.justwatch import JustWatchClient
@@ -3779,7 +3820,7 @@ PRICE: [price or UNKNOWN]
                         _title, _year, excluded_services=_excl_list,
                         affiliate_tag=_amazon_tag, content_type=_content_type_jw,
                         original_title=_original_title, director=_director,
-                        tmdb_id=str(movie_id)
+                        tmdb_id=str(movie_id).replace('tv_', '')
                     )
                     if _jw_result is None:
                         _jw_verified = False
@@ -3788,6 +3829,8 @@ PRICE: [price or UNKNOWN]
                         _jw_verified = False
                         _revert_reason = "justwatch_no_valid_offers"
                     else:
+                        _jw_verified = True
+                        _revert_reason = None
                         # Cache pre-verified watch_links so enrichment skips redundant JW search
                         _wl = _jw_result.get('watch_links', {})
                         if _wl:
@@ -3818,14 +3861,85 @@ PRICE: [price or UNKNOWN]
                         elif _preorder_override is False:
                             existing_movies[movie_index].pop('_is_preorder', None)
                         elif _jw_result.get('buy_only'):
-                            # Buy-only on JustWatch = pre-order signal for provider-discovered movies
-                            # (no Type 4 date). Flag clears automatically when rent/stream appears
-                            # in enrichment results, or when catch-up processes it after date arrives.
-                            existing_movies[movie_index]['_is_preorder'] = True
-                            _jw_links = _jw_result.get('watch_links', {})
-                            if _jw_links.get('vod'):
-                                existing_movies[movie_index]['pre_order_links'] = _jw_links['vod']
-                            print(f"  🏷️  {_title} — flagged as pre-order (buy-only on JustWatch)")
+                            # Buy-only on JustWatch — verify if genuine release or pre-order.
+                            # Step 1: Check Type 4 date (authoritative release confirmation)
+                            _bo_type4 = self.fetch_tmdb_type4_date(movie_id)
+                            _bo_genuine = False
+                            _bo_preorder_date = None
+
+                            if _bo_type4:
+                                try:
+                                    _bo_t4dt = datetime.strptime(_bo_type4, '%Y-%m-%d')
+                                    _bo_today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+                                    if _bo_t4dt <= _bo_today:
+                                        _bo_genuine = True
+                                        existing_movies[movie_index]['digital_date'] = _bo_type4
+                                        existing_movies[movie_index]['_digital_date_source'] = 'tmdb_type4'
+                                        print(f"  ✓ {_title} — buy-only, Type 4 confirms release ({_bo_type4})")
+                                    else:
+                                        _bo_preorder_date = _bo_type4
+                                except ValueError:
+                                    pass
+
+                            # Step 2: No Type 4 — verify via Gemini VOD Date Finder
+                            if not _bo_genuine and not _bo_preorder_date:
+                                try:
+                                    from gemini_scraper import GeminiVODDateFinder
+                                    _bo_vod_finder = GeminiVODDateFinder()
+                                    _bo_provider = next(iter(_jw_result.get('provider_names', {}).get('buy', [])), None)
+                                    _bo_vod = _bo_vod_finder.find_vod_date(_title, _year, provider=_bo_provider)
+
+                                    if _bo_vod and _bo_vod != 'PREORDER_ONLY':
+                                        try:
+                                            _bo_vdt = datetime.strptime(_bo_vod, '%Y-%m-%d')
+                                            _bo_today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+                                            if _bo_vdt <= _bo_today:
+                                                _bo_genuine = True
+                                                existing_movies[movie_index]['digital_date'] = _bo_vod
+                                                existing_movies[movie_index]['_digital_date_source'] = 'gemini_vod'
+                                                print(f"  ✓ {_title} — buy-only, Gemini confirms release ({_bo_vod})")
+                                            else:
+                                                _bo_preorder_date = _bo_vod
+                                        except ValueError:
+                                            pass
+                                    elif _bo_vod == 'PREORDER_ONLY':
+                                        print(f"  🏷️  {_title} — buy-only, Gemini confirms pre-order")
+                                except Exception as _bo_err:
+                                    self.logger.warning(f"VOD date finder error for {_title}: {_bo_err}")
+
+                            if _bo_genuine:
+                                # Genuine buy-only release — no pre-order flag needed
+                                pass
+                            else:
+                                # Pre-order: soft revert — on wall as pre-order, tracking continues
+                                existing_movies[movie_index]['_is_preorder'] = True
+                                existing_movies[movie_index]['_buyonly_preorder'] = True
+                                _jw_links = _jw_result.get('watch_links', {})
+                                if _jw_links.get('vod'):
+                                    existing_movies[movie_index]['pre_order_links'] = _jw_links['vod']
+
+                                if _bo_preorder_date:
+                                    existing_movies[movie_index]['digital_date'] = _bo_preorder_date
+                                    existing_movies[movie_index]['_digital_date_source'] = 'tmdb_type4'
+                                else:
+                                    existing_movies[movie_index].pop('digital_date', None)
+                                    existing_movies[movie_index].pop('_digital_date_source', None)
+
+                                # Clear cached JW links — pre-orders use pre_order_links, not watch_links
+                                self.enrichment.watch_links_cache[str(movie_id)] = {
+                                    'links': {'streaming': [], 'vod': []},
+                                    'cached_at': datetime.now().isoformat(),
+                                    'source': 'buyonly_preorder_empty'
+                                }
+
+                                # Soft revert tracking — stay in tracking for continued polling
+                                tracking_data['movies'][movie_id]['status'] = 'tracking'
+                                tracking_data['movies'][movie_id]['_buyonly_preorder'] = True
+                                tracking_data['movies'][movie_id].pop('digital_date', None)
+                                tracking_changed = True
+
+                                _bo_dd = f", date: {_bo_preorder_date}" if _bo_preorder_date else ", no date"
+                                print(f"  🏷️  {_title} — pre-order (buy-only{_bo_dd}) → tracking + wall")
                         else:
                             # Not buy-only anymore — clear pre-order flag if previously set
                             # BUT only if digital_date has passed (future-dated = still a pre-order)
@@ -3852,9 +3966,10 @@ PRICE: [price or UNKNOWN]
                     existing_movies[movie_index]['_jw_revert_reason'] = _revert_reason
                     existing_movies[movie_index]['_enrichment_status'] = 'reverted'
                     existing_movies[movie_index]['status'] = 'tracking'
+                    tracking_changed = True
                     if _revert_count == 1:
                         print(f"  🔄 {_title} — JustWatch pre-check: {_revert_reason} → reverted to tracking")
-                    deferred_details.append({'title': _title, 'reason': f'jw_revert:{_revert_reason}'})
+                    deferred_details.append(_deferred_entry(_title, f'jw_revert:{_revert_reason}', movie_index, tracking_data['movies'].get(movie_id)))
                     signal.alarm(0)
                     continue
                 elif not _jw_verified:
@@ -3907,7 +4022,8 @@ PRICE: [price or UNKNOWN]
                     # Clear pre-order flag if movie now has real watch links
                     # BUT only if digital_date has actually passed — future-dated movies
                     # with links are still pre-orders (the links are purchase pre-order URLs)
-                    if has_real_links and existing_movies[movie_index].get('_is_preorder'):
+                    # Buy-only pre-orders never clear here — they wait for discovery to find rent/streaming
+                    if has_real_links and existing_movies[movie_index].get('_is_preorder') and not existing_movies[movie_index].get('_buyonly_preorder'):
                         dd = existing_movies[movie_index].get('digital_date', '')
                         today_str = datetime.now().strftime('%Y-%m-%d')
                         if dd <= today_str:
@@ -3948,13 +4064,13 @@ PRICE: [price or UNKNOWN]
                     # Mark enrichment status as failed but keep movie in data.json
                     existing_movies[movie_index]['_enrichment_status'] = 'failed'
                     print(f"  ✗ Enrichment failed for {movie_data.get('title')}")
-                    deferred_details.append({'title': movie_data.get('title', str(movie_id)), 'reason': 'enrichment_failed'})
+                    deferred_details.append(_deferred_entry(movie_data.get('title', str(movie_id)), 'enrichment_failed', movie_index, tracking_data['movies'].get(movie_id)))
 
             except TimeoutError:
                 print(f"  ⏰ {movie_data.get('title', movie_id)} timed out after {_PER_MOVIE_TIMEOUT_S}s — will retry next run")
                 if movie_index < len(existing_movies):
                     existing_movies[movie_index]['_enrichment_status'] = 'timeout'
-                deferred_details.append({'title': movie_data.get('title', str(movie_id)), 'reason': 'timeout'})
+                deferred_details.append(_deferred_entry(movie_data.get('title', str(movie_id)), 'timeout', movie_index, tracking_data['movies'].get(movie_id)))
                 # Reset Playwright singleton so next movie gets a clean browser
                 try:
                     from playwright_manager import PlaywrightManager
@@ -3969,7 +4085,7 @@ PRICE: [price or UNKNOWN]
                 if movie_index < len(existing_movies):
                     existing_movies[movie_index]['_enrichment_status'] = 'error'
                 print(f"  ✗ Error enriching {movie_data.get('title', movie_id)}: {e}")
-                deferred_details.append({'title': movie_data.get('title', str(movie_id)), 'reason': f'error:{type(e).__name__}'})
+                deferred_details.append(_deferred_entry(movie_data.get('title', str(movie_id)), f'error:{type(e).__name__}', movie_index, tracking_data['movies'].get(movie_id)))
             finally:
                 signal.alarm(0)  # Always cancel the per-movie alarm
 
@@ -4031,7 +4147,7 @@ PRICE: [price or UNKNOWN]
                                 _rv_source = movie.get('_discovery_source', 'unknown')
                                 _reverted_details.append((_title_zl, _rv_source, _zl_revert_count))
                                 print(f"  🔄 {_title_zl} — zero watch links → reverted to tracking (count: {_zl_revert_count})")
-                                deferred_details.append({'title': _title_zl, 'reason': 'zero_watch_links'})
+                                deferred_details.append(_deferred_entry(_title_zl, 'zero_watch_links', movie_lookup.get(mid), tracking_data['movies'].get(mid)))
                         else:
                             _enrich_success += 1
             _enrich_attempted = _enrich_success + _enrich_reverted
@@ -4276,14 +4392,12 @@ PRICE: [price or UNKNOWN]
 
         # Save changes
         if modified:
-            with open(data_file, 'w') as f:
-                json.dump(data, f, indent=2)
+            self.storage.atomic_write_json(data, data_file, backup=True)
             print(f"  💾 Updated data.json")
 
             # Save tracking data if we reset any movies
             if expired_count > 0 and tracking_data:
-                with open(tracking_path, 'w') as f:
-                    json.dump(tracking_data, f, indent=2)
+                self.storage.atomic_write_json(tracking_data, tracking_path, backup=True)
                 print(f"  💾 Updated movie_tracking.json")
 
         print(f"  📊 Results: {active_count} active, {expired_count} expired")
@@ -4389,7 +4503,7 @@ PRICE: [price or UNKNOWN]
                     movie_id, title, year, providers,
                     force_refresh=True, tracking_data=tracking_movie,
                     original_title=catchup_original_title, director=catchup_director,
-                    tmdb_id=str(movie_id)
+                    tmdb_id=str(movie_id).replace('tv_', '')
                 )
 
                 vod = watch_links.get('vod', []) if watch_links else []
@@ -4440,6 +4554,245 @@ PRICE: [price or UNKNOWN]
             print(f"✅ Re-enriched {fixed_count}/{len(all_movies)} movies")
 
         return fixed_count
+
+    def daily_gap_fill(self):
+        """
+        Daily refresh of JustWatch watch links and Wikipedia for all wall movies.
+
+        For every movie on the wall:
+        - Re-queries JustWatch via verify_availability() to find late-arriving
+          VOD services (e.g., Apple TV lists 2-5 days after Amazon)
+        - MERGES new services into existing watch_links (never removes)
+        - Graduates pre-orders when rent/streaming offers appear
+        - Fills missing Wikipedia links using fast API methods (no Playwright)
+
+        Returns:
+            dict: Results summary {jw_updated, wiki_filled, preorders_graduated}
+        """
+        if not os.path.exists('data.json'):
+            print("❌ No data.json found")
+            return {'jw_updated': 0, 'wiki_filled': 0, 'preorders_graduated': 0}
+
+        with open('data.json', 'r') as f:
+            display_data = json.load(f)
+
+        existing_movies = display_data.get('movies', [])
+        if not existing_movies:
+            print("❌ No movies in data.json")
+            return {'jw_updated': 0, 'wiki_filled': 0, 'preorders_graduated': 0}
+
+        print(f"  📊 Processing {len(existing_movies)} wall movies")
+
+        # Initialize JustWatch client
+        from pipeline.justwatch import JustWatchClient
+        jw_client = JustWatchClient(logger=self.logger)
+
+        # Get config values
+        amazon_tag = self.enrichment._get_amazon_affiliate_tag() if self.enrichment else None
+        excluded_services = self.config.get('tracking', {}).get('excluded_services',
+            ['fuboTV', 'Philo', 'Sun Nxt', 'Google Play Movies', 'Google Play', 'Shahid VIP', 'Viki', 'Futo'])
+
+        # Load watch links cache
+        cache_path = 'cache/watch_links_cache.json'
+        watch_cache = {}
+        if os.path.exists(cache_path):
+            try:
+                with open(cache_path, 'r') as f:
+                    watch_cache = json.load(f)
+            except Exception:
+                watch_cache = {}
+
+        jw_updated = 0
+        wiki_filled = 0
+        preorders_graduated = 0
+        unsaved_count = 0
+        save_interval = 25
+        errors = 0
+        today_str = datetime.now().strftime('%Y-%m-%d')
+
+        for i, movie in enumerate(existing_movies):
+            movie_id = str(movie.get('id', ''))
+            title = movie.get('title', 'Unknown')
+            year = movie.get('year', '')
+            original_title = movie.get('original_title')
+            director = movie.get('crew', {}).get('director') if movie.get('crew') else None
+            is_preorder = movie.get('_is_preorder', False)
+
+            try:
+                # --- JustWatch refresh ---
+                content_type = 'tv' if movie_id.startswith('tv_') else 'movie'
+                result = jw_client.verify_availability(
+                    title, year,
+                    excluded_services=excluded_services,
+                    affiliate_tag=amazon_tag,
+                    content_type=content_type,
+                    original_title=original_title,
+                    director=director,
+                    tmdb_id=movie_id
+                )
+
+                if result and result.get('match_confidence') not in ('first_result',):
+                    new_links = result.get('watch_links', {})
+
+                    if new_links:
+                        current_links = movie.get('watch_links', {})
+                        merged = False
+
+                        # Merge VOD: add new services not already present
+                        new_vod = new_links.get('vod', [])
+                        if isinstance(new_vod, list) and new_vod:
+                            current_vod = current_links.get('vod', [])
+                            if isinstance(current_vod, dict):
+                                current_vod = [current_vod] if current_vod.get('link') else []
+
+                            # Normalize existing service names for comparison
+                            current_services = set()
+                            for v in current_vod:
+                                if isinstance(v, dict) and v.get('service'):
+                                    current_services.add(self.simplify_provider_name(v['service']).lower())
+
+                            for new_entry in new_vod:
+                                if isinstance(new_entry, dict) and new_entry.get('link'):
+                                    simplified = self.simplify_provider_name(new_entry['service'])
+                                    if simplified.lower() not in current_services:
+                                        # Add with simplified name
+                                        current_vod.append({
+                                            'service': simplified,
+                                            'link': new_entry['link'],
+                                            'price': new_entry.get('price')
+                                        })
+                                        current_services.add(simplified.lower())
+                                        merged = True
+
+                            if merged:
+                                current_links['vod'] = current_vod
+
+                        # Merge streaming: add if not already present
+                        new_streaming = new_links.get('streaming')
+                        if isinstance(new_streaming, dict) and new_streaming.get('link'):
+                            existing_streaming = current_links.get('streaming')
+                            has_existing = False
+                            if isinstance(existing_streaming, dict) and existing_streaming.get('link'):
+                                has_existing = True
+                            elif isinstance(existing_streaming, list) and any(
+                                isinstance(s, dict) and s.get('link') for s in existing_streaming
+                            ):
+                                has_existing = True
+
+                            if not has_existing:
+                                current_links['streaming'] = {
+                                    'service': self.simplify_provider_name(new_streaming['service']),
+                                    'link': new_streaming['link']
+                                }
+                                merged = True
+
+                        if merged:
+                            existing_movies[i]['watch_links'] = current_links
+                            existing_movies[i]['_watch_links_verified'] = datetime.now().isoformat()
+
+                            # Update cache
+                            cache_key = f"tv_{movie_id}" if content_type == 'tv' else movie_id
+                            watch_cache[cache_key] = {
+                                'links': current_links,
+                                'cached_at': datetime.now().isoformat(),
+                                'source': 'gap_fill'
+                            }
+
+                            jw_updated += 1
+                            unsaved_count += 1
+                            print(f"  + {title} — new services added")
+
+                    # Pre-order graduation
+                    if is_preorder and (result.get('has_rent') or result.get('has_streaming')):
+                        existing_movies[i].pop('_is_preorder', None)
+                        existing_movies[i].pop('_buyonly_preorder', None)
+                        existing_movies[i].pop('pre_order_links', None)
+                        existing_movies[i]['digital_date'] = today_str
+                        if new_links:
+                            existing_movies[i]['watch_links'] = new_links
+                        preorders_graduated += 1
+                        unsaved_count += 1
+                        print(f"  🎓 {title} — pre-order graduated (now available)")
+
+                # --- Wikipedia fill (only if missing) ---
+                links = movie.get('links', {})
+                if not links.get('wikipedia'):
+                    imdb_id = links.get('imdb', '').replace('https://www.imdb.com/title/', '').rstrip('/')
+                    if not imdb_id:
+                        imdb_id = movie.get('imdb_id', '')
+
+                    wiki_url = self.find_wikipedia_url(
+                        title=title,
+                        year=str(year),
+                        imdb_id=imdb_id,
+                        movie_id=movie_id,
+                        director=director,
+                        original_title=original_title,
+                        skip_playwright=True
+                    )
+
+                    if wiki_url:
+                        if 'links' not in existing_movies[i]:
+                            existing_movies[i]['links'] = {}
+                        existing_movies[i]['links']['wikipedia'] = wiki_url
+                        wiki_filled += 1
+                        unsaved_count += 1
+                        print(f"  📚 {title} — Wikipedia link added")
+
+                # Incremental save
+                if unsaved_count >= save_interval:
+                    self._safe_save_data_json(display_data, existing_movies, label="gap_fill_incremental")
+                    print(f"  💾 Incremental save ({jw_updated} JW + {wiki_filled} wiki so far)")
+                    unsaved_count = 0
+
+                # Rate limit for JustWatch
+                time.sleep(0.2)
+
+            except Exception as e:
+                errors += 1
+                self.logger.error(f"Gap fill error for {title} ({movie_id}): {e}")
+                if errors <= 5:
+                    print(f"  ✗ {title} — error: {e}")
+                continue
+
+        # Final save
+        if unsaved_count > 0:
+            self._safe_save_data_json(display_data, existing_movies, label="gap_fill_final")
+
+        # Save updated cache
+        try:
+            self.storage.save_cache(watch_cache, cache_path)
+        except Exception as e:
+            self.logger.error(f"Failed to save watch links cache: {e}")
+
+        # Save metrics
+        results = {
+            'jw_updated': jw_updated,
+            'wiki_filled': wiki_filled,
+            'preorders_graduated': preorders_graduated,
+            'errors': errors,
+            'total_processed': len(existing_movies)
+        }
+
+        try:
+            metrics_path = 'metrics/gap_fill_run.json'
+            os.makedirs('metrics', exist_ok=True)
+            with open(metrics_path, 'w') as f:
+                json.dump({
+                    'timestamp': datetime.now().isoformat(),
+                    'results': results
+                }, f, indent=2)
+        except Exception as e:
+            self.logger.error(f"Failed to save gap fill metrics: {e}")
+
+        print(f"\n  📊 Gap fill results:")
+        print(f"     Watch links updated: {jw_updated}")
+        print(f"     Wikipedia filled: {wiki_filled}")
+        print(f"     Pre-orders graduated: {preorders_graduated}")
+        if errors:
+            print(f"     Errors: {errors}")
+
+        return results
 
     def archive_old_movies(self, days=90):
         """
@@ -4699,7 +5052,9 @@ PRICE: [price or UNKNOWN]
         """
         # Try to fix schema issues first (adds missing keys, never removes movies)
         if os.path.exists('data.json'):
-            self.validator.fix_data_json_schema('data.json')
+            if not self.validator.fix_data_json_schema('data.json'):
+                self.logger.error("data.json schema unfixable — aborting display generation to preserve data")
+                return
 
         # Load ALL current movies from data.json (old movies already archived)
         all_movies = []
@@ -5285,7 +5640,7 @@ PRICE: [price or UNKNOWN]
                     fields_updated += 1
 
                 # Apply manual watch links
-                if tracking_movie.get('watch_links'):
+                if tracking_movie.get('manual_watch_links') and tracking_movie.get('watch_links'):
                     movie['watch_links'] = tracking_movie['watch_links']
                     fields_updated += 1
 
@@ -5335,7 +5690,7 @@ PRICE: [price or UNKNOWN]
         virtual_screening_count = 0
         documentary_count = 0
         screening_services = ['eventive']
-        screening_url_patterns = ['eventive.org', 'festivalplayer.sundance.org', 'shift72.com', 'xerb.tv', 'festivalscope.com']
+        screening_url_patterns = ['eventive.org', 'festivalplayer.sundance.org', 'shift72.com']
 
         def _check_virtual_screening_vod(entry):
             """Check if a single vod entry is from a virtual screening platform."""
@@ -5507,7 +5862,7 @@ PRICE: [price or UNKNOWN]
 
             # Add remaining movies in their original order (by digital_date desc)
             remaining_movies = list(movie_map.values())
-            remaining_movies.sort(key=lambda x: x['digital_date'], reverse=True)
+            remaining_movies.sort(key=lambda x: x.get('digital_date') or '', reverse=True)
 
             # Combine ordered + remaining
             display_movies = ordered_movies + remaining_movies

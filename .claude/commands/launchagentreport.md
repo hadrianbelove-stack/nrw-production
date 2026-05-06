@@ -28,7 +28,7 @@ Then report these sections:
   - Duplicates skipped: `results.duplicates_skipped`, blocked: `results.blocked_by_filter`
 - Discovery: how many movies polled, how many transitions (from discovery_run.json)
 - Enrichment: movies requested / enriched / deferred and duration (from enrichment_run.json)
-  - **Deferred breakdown**: from `deferred_details` in enrichment_run.json, list each movie title and reason (e.g. "jw_revert:justwatch_no_match", "zero_watch_links", "timeout")
+  - **Deferred breakdown**: from `deferred_details` in enrichment_run.json — show as a table with columns: Title | Digital Date | Discovered | Reverts | TMDB Platforms | Reason. List all titles grouped by reason. Use date-only format (strip timestamps to YYYY-MM-DD). Column notes: "Discovered" = `discovered_at`, "Reverts" = `revert_count` (how many times reverted), "TMDB Platforms" = `tmdb_platforms` (what services TMDB says have it).
 - Any failures or warnings (from run_diagnostics.json `failures` and `warnings`)
 
 ### Stall Detection
