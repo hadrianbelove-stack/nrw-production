@@ -588,22 +588,21 @@ const NRWMobile = {
 
     getRTButton(movie) {
         if (!movie.rt_score || !movie.links?.rt) return '';
-        const rtText = movie.rt_score ? `RT ${movie.rt_score}` : 'RT';
-        return `<a href="${movie.links.rt}" target="_blank" rel="noopener" class="btn-equal btn-rt">${rtText}</a>`;
+        return `<a href="${movie.links.rt}" target="_blank" rel="noopener" class="btn-equal btn-rt"><img src="../assets/logos/rt.png" class="btn-logo" alt="RT"> ${movie.rt_score}</a>`;
     },
 
     getMCButton(movie) {
         if (!movie.metacritic_score || !movie.links?.metacritic) return '';
-        return `<a href="${movie.links.metacritic}" target="_blank" rel="noopener" class="btn-equal btn-mc">MC ${movie.metacritic_score}</a>`;
+        return `<a href="${movie.links.metacritic}" target="_blank" rel="noopener" class="btn-equal btn-mc"><img src="../assets/logos/metacritic.png" class="btn-logo" alt="MC"> ${movie.metacritic_score}</a>`;
     },
 
     getIMDbButton(movie) {
         if (movie.imdb_rating) {
             const imdbUrl = movie.links?.imdb;
             if (imdbUrl) {
-                return `<a href="${imdbUrl}" target="_blank" rel="noopener" class="btn-equal btn-imdb">IMDb ${movie.imdb_rating}</a>`;
+                return `<a href="${imdbUrl}" target="_blank" rel="noopener" class="btn-equal btn-imdb"><img src="../assets/logos/imdb.png" class="btn-logo" alt="IMDb"> ${movie.imdb_rating}</a>`;
             }
-            return `<span class="btn-equal btn-imdb" style="opacity:0.5">IMDb ${movie.imdb_rating}</span>`;
+            return `<span class="btn-equal btn-imdb" style="opacity:0.5"><img src="../assets/logos/imdb.png" class="btn-logo" alt="IMDb"> ${movie.imdb_rating}</span>`;
         }
         return '';
     },
@@ -611,17 +610,17 @@ const NRWMobile = {
     getScoreBadges(movie) {
         let badges = '';
         if (movie.rt_score && movie.links?.rt) {
-            badges += `<a href="${movie.links.rt}" target="_blank" rel="noopener" class="card-score-badge rt">RT ${movie.rt_score}</a>`;
+            badges += `<a href="${movie.links.rt}" target="_blank" rel="noopener" class="card-score-badge rt"><img src="../assets/logos/rt.png" class="score-logo" alt="RT"> ${movie.rt_score}</a>`;
         }
         if (movie.metacritic_score && movie.links?.metacritic) {
-            badges += `<a href="${movie.links.metacritic}" target="_blank" rel="noopener" class="card-score-badge mc">MC ${movie.metacritic_score}</a>`;
+            badges += `<a href="${movie.links.metacritic}" target="_blank" rel="noopener" class="card-score-badge mc"><img src="../assets/logos/metacritic.png" class="score-logo" alt="MC"> ${movie.metacritic_score}</a>`;
         }
         if (movie.imdb_rating) {
             const imdbUrl = movie.links?.imdb;
             if (imdbUrl) {
-                badges += `<a href="${imdbUrl}" target="_blank" rel="noopener" class="card-score-badge imdb">${movie.imdb_rating}</a>`;
+                badges += `<a href="${imdbUrl}" target="_blank" rel="noopener" class="card-score-badge imdb"><img src="../assets/logos/imdb.png" class="score-logo" alt="IMDb"> ${movie.imdb_rating}</a>`;
             } else {
-                badges += `<span class="card-score-badge imdb">${movie.imdb_rating}</span>`;
+                badges += `<span class="card-score-badge imdb"><img src="../assets/logos/imdb.png" class="score-logo" alt="IMDb"> ${movie.imdb_rating}</span>`;
             }
         }
         return badges ? `<div class="card-score-overlay">${badges}</div>` : '';

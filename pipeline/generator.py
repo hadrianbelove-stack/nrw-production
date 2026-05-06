@@ -1811,6 +1811,100 @@ class DataGenerator:
             self.logger.debug(f"Type 4 date lookup failed for {movie_id}: {e}")
             return None
 
+    def _check_preorder_page(self, jw_result, title):
+        """
+        Visit the store URL from a buy-only JW result and scan for pre-order vs available signals.
+
+        Uses Playwright to render the actual page (needed for SPAs like Fandango and
+        bot-protected sites like Amazon). Scans rendered body text for button words.
+
+        Args:
+            jw_result: JustWatch verify_availability result dict
+            title: Movie title (for logging)
+
+        Returns:
+            str: 'pre-order', 'available', or None (could not determine)
+        """
+        # Extract the first VOD link URL from JW result
+        vod_links = jw_result.get('watch_links', {}).get('vod', [])
+        if not vod_links:
+            return None
+
+        url = None
+        for entry in vod_links:
+            if isinstance(entry, dict) and entry.get('link'):
+                url = entry['link']
+                break
+        if not url:
+            return None
+
+        preorder_signals = ['pre-order', 'preorder', 'pre order', 'coming soon']
+        available_signals = ['buy now', 'rent now', 'watch now', 'rent $', 'buy $']
+
+        try:
+            from playwright_manager import get_playwright_manager
+            manager = get_playwright_manager()
+            browser = manager.get_browser(headless=True, browser_type='chromium')
+
+            context = browser.new_context(
+                viewport={'width': 1920, 'height': 1080},
+                user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                locale='en-US',
+                extra_http_headers={'DNT': '1', 'Upgrade-Insecure-Requests': '1'}
+            )
+
+            # Stealth JS — hide automation signals
+            context.add_init_script("""
+                Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
+                Object.defineProperty(window, 'chrome', { get: () => ({ runtime: {} }) });
+                Object.defineProperty(navigator, 'plugins', { get: () => [1, 2, 3, 4, 5] });
+            """)
+
+            context.set_default_timeout(20000)
+            page = context.new_page()
+
+            try:
+                is_amazon = 'amazon.com' in url.lower()
+                is_fandango = 'fandango.com' in url.lower()
+
+                # Navigate to the store page
+                page.goto(url, wait_until='networkidle', timeout=20000)
+
+                # Extra wait for SPAs (Fandango) and anti-bot delays (Amazon)
+                if is_fandango:
+                    page.wait_for_timeout(2000)
+                elif is_amazon:
+                    page.wait_for_timeout(random.randint(1500, 2500))
+
+                body_text = (page.text_content('body') or '').lower()
+
+                # Amazon CAPTCHA detection — default to pre-order if blocked
+                if is_amazon and ('captcha' in body_text or 'robot' in body_text or 'automated access' in body_text):
+                    self.logger.info(f"Pre-order page check for {title}: Amazon CAPTCHA detected → defaulting to pre-order")
+                    return 'pre-order'
+
+                has_preorder = any(signal in body_text for signal in preorder_signals)
+                has_available = any(signal in body_text for signal in available_signals)
+
+                if has_preorder and not has_available:
+                    return 'pre-order'
+                elif has_available and not has_preorder:
+                    return 'available'
+                elif has_preorder and has_available:
+                    # Both signals — pre-order takes precedence (safer)
+                    return 'pre-order'
+                else:
+                    # Neither signal found — page may not have rendered properly
+                    return None
+
+            finally:
+                page.close()
+                context.close()
+
+        except Exception as e:
+            self.logger.warning(f"Pre-order page check failed for {title} ({url}): {e}")
+            return None
+
     def add_movie_to_site_immediately(self, movie_id, movie_data):
         """
         Write minimal movie entry to data.json for immediate display.
@@ -3881,31 +3975,17 @@ PRICE: [price or UNKNOWN]
                                 except ValueError:
                                     pass
 
-                            # Step 2: No Type 4 — verify via Gemini VOD Date Finder
+                            # Step 2: No Type 4 — verify by visiting the store page with Playwright
                             if not _bo_genuine and not _bo_preorder_date:
-                                try:
-                                    from gemini_scraper import GeminiVODDateFinder
-                                    _bo_vod_finder = GeminiVODDateFinder()
-                                    _bo_provider = next(iter(_jw_result.get('provider_names', {}).get('buy', [])), None)
-                                    _bo_vod = _bo_vod_finder.find_vod_date(_title, _year, provider=_bo_provider)
-
-                                    if _bo_vod and _bo_vod != 'PREORDER_ONLY':
-                                        try:
-                                            _bo_vdt = datetime.strptime(_bo_vod, '%Y-%m-%d')
-                                            _bo_today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-                                            if _bo_vdt <= _bo_today:
-                                                _bo_genuine = True
-                                                existing_movies[movie_index]['digital_date'] = _bo_vod
-                                                existing_movies[movie_index]['_digital_date_source'] = 'gemini_vod'
-                                                print(f"  ✓ {_title} — buy-only, Gemini confirms release ({_bo_vod})")
-                                            else:
-                                                _bo_preorder_date = _bo_vod
-                                        except ValueError:
-                                            pass
-                                    elif _bo_vod == 'PREORDER_ONLY':
-                                        print(f"  🏷️  {_title} — buy-only, Gemini confirms pre-order")
-                                except Exception as _bo_err:
-                                    self.logger.warning(f"VOD date finder error for {_title}: {_bo_err}")
+                                _bo_page_result = self._check_preorder_page(_jw_result, _title)
+                                if _bo_page_result == 'available':
+                                    _bo_genuine = True
+                                    print(f"  ✓ {_title} — buy-only, page confirms available")
+                                elif _bo_page_result == 'pre-order':
+                                    print(f"  🏷️  {_title} — buy-only, page confirms pre-order")
+                                else:
+                                    # Could not determine — default to pre-order (safer)
+                                    print(f"  🏷️  {_title} — buy-only, page check inconclusive → treating as pre-order")
 
                             if _bo_genuine:
                                 # Genuine buy-only release — no pre-order flag needed
@@ -4602,6 +4682,17 @@ PRICE: [price or UNKNOWN]
             except Exception:
                 watch_cache = {}
 
+        # Load movie_tracking.json for syncing pre-order graduations
+        tracking_path = 'movie_tracking.json'
+        tracking_data = None
+        tracking_changed = False
+        if os.path.exists(tracking_path):
+            try:
+                with open(tracking_path, 'r') as f:
+                    tracking_data = json.load(f)
+            except Exception:
+                tracking_data = None
+
         jw_updated = 0
         wiki_filled = 0
         preorders_graduated = 0
@@ -4709,10 +4800,18 @@ PRICE: [price or UNKNOWN]
                         existing_movies[i].pop('pre_order_links', None)
                         existing_movies[i]['digital_date'] = today_str
                         if new_links:
-                            existing_movies[i]['watch_links'] = new_links
+                            existing_movies[i]['watch_links'] = current_links
                         preorders_graduated += 1
                         unsaved_count += 1
                         print(f"  🎓 {title} — pre-order graduated (now available)")
+
+                        # Sync tracking — mark as available so discovery doesn't re-process
+                        if tracking_data and tracking_data.get('movies', {}).get(movie_id):
+                            tracking_data['movies'][movie_id]['status'] = 'available'
+                            tracking_data['movies'][movie_id]['digital_date'] = today_str
+                            tracking_data['movies'][movie_id]['enriched'] = True
+                            tracking_data['movies'][movie_id].pop('_buyonly_preorder', None)
+                            tracking_changed = True
 
                 # --- Wikipedia fill (only if missing) ---
                 links = movie.get('links', {})
@@ -4764,6 +4863,15 @@ PRICE: [price or UNKNOWN]
             self.storage.save_cache(watch_cache, cache_path)
         except Exception as e:
             self.logger.error(f"Failed to save watch links cache: {e}")
+
+        # Save tracking if any pre-orders were graduated
+        if tracking_changed and tracking_data:
+            try:
+                with open(tracking_path, 'w') as f:
+                    json.dump(tracking_data, f, indent=2)
+                print(f"  💾 Tracking synced ({preorders_graduated} graduation(s))")
+            except Exception as e:
+                self.logger.error(f"Failed to save tracking after gap_fill graduation: {e}")
 
         # Save metrics
         results = {

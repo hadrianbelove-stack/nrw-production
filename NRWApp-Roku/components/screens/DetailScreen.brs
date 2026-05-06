@@ -37,7 +37,11 @@ Sub Init()
     m.plexButton = m.top.FindNode("plexButton")
     m.infoRow = m.top.FindNode("infoRow")
     m.wikiLabel = m.top.FindNode("wikiLabel")
+    m.rtGroup = m.top.FindNode("rtGroup")
     m.rtScoreLabel = m.top.FindNode("rtScoreLabel")
+    m.mcGroup = m.top.FindNode("mcGroup")
+    m.mcScoreLabel = m.top.FindNode("mcScoreLabel")
+    m.imdbGroup = m.top.FindNode("imdbGroup")
     m.imdbScoreLabel = m.top.FindNode("imdbScoreLabel")
 
     m.leftChevron = m.top.FindNode("leftChevron")
@@ -287,42 +291,42 @@ Sub LoadMovie(index as Integer)
         scoreStr = scoreStr.Replace("%", "")
         scoreNum = Val(scoreStr)
         if scoreNum > 0
-            m.rtScoreLabel.text = "RT " + Int(scoreNum).ToStr() + "%"
-            m.rtScoreLabel.visible = true
+            m.rtScoreLabel.text = Int(scoreNum).ToStr() + "%"
+            m.rtGroup.visible = true
             hasInfo = true
         else
-            m.rtScoreLabel.visible = false
+            m.rtGroup.visible = false
         end if
     else
-        m.rtScoreLabel.visible = false
+        m.rtGroup.visible = false
     end if
 
     if movie.metacritic_score <> invalid
         mcStr = movie.metacritic_score.ToStr()
         mcNum = Val(mcStr)
         if mcNum > 0
-            m.mcScoreLabel.text = "MC " + Int(mcNum).ToStr()
-            m.mcScoreLabel.visible = true
+            m.mcScoreLabel.text = Int(mcNum).ToStr()
+            m.mcGroup.visible = true
             hasInfo = true
         else
-            m.mcScoreLabel.visible = false
+            m.mcGroup.visible = false
         end if
     else
-        m.mcScoreLabel.visible = false
+        m.mcGroup.visible = false
     end if
 
     if movie.imdb_rating <> invalid
         ratingStr = movie.imdb_rating.ToStr()
         ratingNum = Val(ratingStr)
         if ratingNum > 0
-            m.imdbScoreLabel.text = "IMDb " + ratingStr
-            m.imdbScoreLabel.visible = true
+            m.imdbScoreLabel.text = ratingStr
+            m.imdbGroup.visible = true
             hasInfo = true
         else
-            m.imdbScoreLabel.visible = false
+            m.imdbGroup.visible = false
         end if
     else
-        m.imdbScoreLabel.visible = false
+        m.imdbGroup.visible = false
     end if
 
     m.infoRow.visible = hasInfo

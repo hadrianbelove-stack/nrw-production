@@ -131,7 +131,7 @@ def safe_write_json_atomic(
         # Open for write (create if not exists)
         with open(temp_file, 'w') as f:
             with safe_file_lock(f, timeout=timeout, operation=f"write {filepath}"):
-                json.dump(data, f, indent=indent)
+                json.dump(data, f, indent=indent, ensure_ascii=False)
                 f.flush()
                 os.fsync(f.fileno())  # Force write to disk
 

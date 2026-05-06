@@ -87,12 +87,38 @@ class NRWOrchestrator:
         phase_start = datetime.now()
         print(f"\n📍 {description}...")
 
-        result = subprocess.run(
-            cmd,
-            shell=True,
-            capture_output=True,
-            text=True
-        )
+        try:
+            result = subprocess.run(
+                cmd,
+                shell=True,
+                capture_output=True,
+                text=True,
+                timeout=1800  # 30 minute safety net
+            )
+        except subprocess.TimeoutExpired:
+            phase_end = datetime.now()
+            phase_duration = phase_end - phase_start
+            print(f"❌ {description} timed out after 30 minutes")
+            self.results.append({
+                'step': description,
+                'success': False,
+                'output': '',
+                'error': 'Process timed out after 30 minutes',
+                'duration': phase_duration
+            })
+            self.phase_timings.append({
+                'phase': description,
+                'duration': phase_duration,
+                'success': False
+            })
+            self.failures.append({
+                'phase': description,
+                'severity': 'error',
+                'message': 'Process timed out after 30 minutes',
+                'context': None,
+                'stdout_preview': None
+            })
+            return False
 
         phase_end = datetime.now()
         phase_duration = phase_end - phase_start
@@ -1295,6 +1321,15 @@ class NRWOrchestrator:
                 )
             else:
                 print("📝 Skipping trailer hosting (disabled in config)")
+
+            # Phase 3.6: Daily gap fill — refresh watch links + Wikipedia for all wall movies
+            # Catches late-arriving VOD services (Apple TV, Fandango) and graduates pre-orders
+            print("\n🔄 Phase 3.6: Daily Gap Fill")
+            self.run_command(
+                "python3 generate_data.py --gap-fill",
+                "Refresh watch links and Wikipedia for all wall movies",
+                critical=False  # Don't fail pipeline if gap fill has issues
+            )
 
             # Phase 3.7: Check virtual screening expirations (Eventive, Shift72, etc.)
             # Detects expired screenings, hides from wall, resets to tracking for VOD re-discovery

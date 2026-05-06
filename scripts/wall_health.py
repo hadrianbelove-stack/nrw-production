@@ -54,8 +54,10 @@ def get_services(m):
         for link in cat_links:
             svc = link.get('service', '') if isinstance(link, dict) else ''
             if svc:
-                # Shorten common names
-                short = svc.replace(' At Home', '').replace(' Store', '').replace(' Video', '')
+                # Shorten common names for display
+                SHORT_NAMES = {'Fandango At Home': 'Fandango', 'Apple TV Store': 'Apple TV',
+                               'Amazon Video': 'Amazon', 'Google Play Movies': 'Google Play'}
+                short = SHORT_NAMES.get(svc, svc)
                 services.add(short)
     return sorted(services)
 
@@ -187,6 +189,8 @@ zero_future = []
 zero_broken = []
 for m in movies:
     if get_watch_link_count(m) == 0:
+        if m.get('_is_preorder'):
+            continue  # Pre-orders are expected to have no watch links
         dd = m.get('digital_date') or ''
         if dd > today:
             zero_future.append(m)

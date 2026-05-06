@@ -338,7 +338,7 @@ class StorageService:
                 temp_path = f"{filepath}.tmp"
                 try:
                     with open(temp_path, 'w') as temp_f:
-                        json.dump(data, temp_f, indent=2)
+                        json.dump(data, temp_f, indent=2, ensure_ascii=False)
                         temp_f.flush()
                         os.fsync(temp_f.fileno())
 

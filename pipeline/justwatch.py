@@ -360,6 +360,12 @@ class JustWatchClient:
             if 'youtube.com/results' in url:
                 continue
 
+            # Skip physical media offers (DVD/Blu-ray) — NRW is digital-only
+            service_lower = service.lower()
+            if 'dvd' in service_lower or 'blu-ray' in service_lower:
+                self.logger.debug(f"Skipping physical media offer '{service}' for '{title}'")
+                continue
+
             offer_data = {
                 'service': service,
                 'link': url,
@@ -516,6 +522,12 @@ class JustWatchClient:
                 continue
 
             if 'youtube.com/results' in url:
+                continue
+
+            # Skip physical media offers (DVD/Blu-ray) — NRW is digital-only
+            service_lower = service.lower()
+            if 'dvd' in service_lower or 'blu-ray' in service_lower:
+                self.logger.debug(f"Skipping physical media offer '{service}' for '{title}'")
                 continue
 
             offer_data = {'service': service, 'link': url, 'price': price}

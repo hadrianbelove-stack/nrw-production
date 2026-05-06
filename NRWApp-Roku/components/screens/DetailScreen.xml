@@ -257,20 +257,44 @@
             color="0xFFFFFF99"
             visible="false" />
 
-          <Label id="rtScoreLabel"
-            font="font:MediumBoldSystemFont"
-            color="0xFA3232DD"
-            visible="false" />
+          <LayoutGroup id="rtGroup"
+            layoutDirection="horiz"
+            itemSpacings="[6]"
+            visible="false">
+            <Poster id="rtLogoPoster"
+              width="28" height="14"
+              uri="pkg:/images/icons/logo_rt.png"
+              loadDisplayMode="scaleToFit" />
+            <Label id="rtScoreLabel"
+              font="font:MediumBoldSystemFont"
+              color="0xFA3232DD" />
+          </LayoutGroup>
 
-          <Label id="mcScoreLabel"
-            font="font:MediumBoldSystemFont"
-            color="0x66CC33DD"
-            visible="false" />
+          <LayoutGroup id="mcGroup"
+            layoutDirection="horiz"
+            itemSpacings="[6]"
+            visible="false">
+            <Poster id="mcLogoPoster"
+              width="18" height="18"
+              uri="pkg:/images/icons/logo_mc.png"
+              loadDisplayMode="scaleToFit" />
+            <Label id="mcScoreLabel"
+              font="font:MediumBoldSystemFont"
+              color="0x66CC33DD" />
+          </LayoutGroup>
 
-          <Label id="imdbScoreLabel"
-            font="font:MediumBoldSystemFont"
-            color="0xF5C518CC"
-            visible="false" />
+          <LayoutGroup id="imdbGroup"
+            layoutDirection="horiz"
+            itemSpacings="[6]"
+            visible="false">
+            <Poster id="imdbLogoPoster"
+              width="32" height="16"
+              uri="pkg:/images/icons/logo_imdb.png"
+              loadDisplayMode="scaleToFit" />
+            <Label id="imdbScoreLabel"
+              font="font:MediumBoldSystemFont"
+              color="0xF5C518CC" />
+          </LayoutGroup>
         </LayoutGroup>
       </LayoutGroup>
     </LayoutGroup>

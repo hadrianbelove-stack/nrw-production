@@ -411,6 +411,13 @@ body {
     background: rgba(245, 197, 24, 0.9);
     color: #000;
 }
+.card-score-badge .score-logo {
+    height: 10px;
+    width: auto;
+    vertical-align: middle;
+    margin-right: 2px;
+    display: inline-block;
+}
 .badge-bar ~ .card-score-overlay {
     bottom: 35px;
 }
@@ -716,6 +723,13 @@ body {
     color: #000;
     font-weight: 800;
     border: none;
+}
+.btn-equal .btn-logo {
+    height: 14px;
+    width: auto;
+    vertical-align: middle;
+    margin-right: 3px;
+    display: inline-block;
 }
 
 .btn-wiki {

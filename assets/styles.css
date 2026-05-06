@@ -998,6 +998,13 @@ header h1 {
     background: rgba(245, 197, 24, 0.9);
     color: #000;
 }
+.card-score-badge .score-logo {
+    height: 10px;
+    width: auto;
+    vertical-align: middle;
+    margin-right: 2px;
+    display: inline-block;
+}
 
 /* Poster wrapper for positioning shrink button + score overlay */
 .lightbox-poster-wrap {
@@ -1245,6 +1252,13 @@ header h1 {
 .info-btn-lb.rt { background: rgba(250, 50, 50, 0.85); color: #fff; }
 .info-btn-lb.mc { background: rgba(102, 204, 51, 0.85); color: #fff; }
 .info-btn-lb.imdb { background: rgba(245, 197, 24, 0.9); color: #000; font-weight: 800; }
+.info-btn-lb .info-logo {
+    height: 16px;
+    width: auto;
+    vertical-align: middle;
+    margin-right: 4px;
+    display: inline-block;
+}
 
 /* Navigation arrows - inline with content */
 .lightbox-nav {

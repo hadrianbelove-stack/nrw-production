@@ -54,7 +54,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.tv.material3.ExperimentalTvMaterial3Api
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
 import coil.compose.AsyncImage
+import com.nrw.app.R
 import com.nrw.app.data.Movie
 import com.nrw.app.data.WatchType
 import com.nrw.app.data.getBackdropUrl
@@ -548,7 +551,7 @@ private fun MovieDetail(
 
                 // Info row — Wiki + RT + IMDb shared
                 val hasWiki = movie.links?.wikipedia != null
-                if (hasWiki || rtInfo != null || movie.imdbRating?.toFloatOrNull() != null) {
+                if (hasWiki || rtInfo != null || movie.metacriticScore?.toIntOrNull() != null || movie.imdbRating?.toFloatOrNull() != null) {
                     Spacer(modifier = Modifier.height(10.dp))
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -582,12 +585,53 @@ private fun MovieDetail(
                                     .padding(horizontal = 10.dp, vertical = 6.dp),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Text(
-                                    text = "RT $score%",
-                                    color = TextPrimary,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 12.sp
-                                )
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Center
+                                ) {
+                                    Image(
+                                        painter = painterResource(id = R.drawable.logo_rt),
+                                        contentDescription = null,
+                                        modifier = Modifier.height(14.dp).padding(end = 4.dp),
+                                        contentScale = ContentScale.Fit
+                                    )
+                                    Text(
+                                        text = "$score%",
+                                        color = TextPrimary,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 12.sp
+                                    )
+                                }
+                            }
+                        }
+                        movie.metacriticScore?.toIntOrNull()?.let { score ->
+                            if (score > 0) {
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .clip(RoundedCornerShape(6.dp))
+                                        .background(Color(0xFF66CC33).copy(alpha = 0.75f))
+                                        .padding(horizontal = 10.dp, vertical = 6.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.Center
+                                    ) {
+                                        Image(
+                                            painter = painterResource(id = R.drawable.logo_mc),
+                                            contentDescription = null,
+                                            modifier = Modifier.height(14.dp).padding(end = 4.dp),
+                                            contentScale = ContentScale.Fit
+                                        )
+                                        Text(
+                                            text = "$score",
+                                            color = TextPrimary,
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 12.sp
+                                        )
+                                    }
+                                }
                             }
                         }
                         movie.imdbRating?.toFloatOrNull()?.let { rating ->
@@ -599,12 +643,23 @@ private fun MovieDetail(
                                     .padding(horizontal = 10.dp, vertical = 6.dp),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Text(
-                                    text = "IMDb ${"%.1f".format(rating)}",
-                                    color = Color.Black,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 12.sp
-                                )
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Center
+                                ) {
+                                    Image(
+                                        painter = painterResource(id = R.drawable.logo_imdb),
+                                        contentDescription = null,
+                                        modifier = Modifier.height(14.dp).padding(end = 4.dp),
+                                        contentScale = ContentScale.Fit
+                                    )
+                                    Text(
+                                        text = "${"%.1f".format(rating)}",
+                                        color = Color.Black,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 12.sp
+                                    )
+                                }
                             }
                         }
                     }

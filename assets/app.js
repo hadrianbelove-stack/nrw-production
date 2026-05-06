@@ -493,17 +493,17 @@ const NRW = {
             // Score badges for card front (bottom-left overlay)
             let cardScoreBadges = '';
             if (movie.rt_score && movie.links?.rt) {
-                cardScoreBadges += `<a href="${movie.links.rt}" target="_blank" rel="noopener noreferrer" class="card-score-badge rt">RT ${movie.rt_score}</a>`;
+                cardScoreBadges += `<a href="${movie.links.rt}" target="_blank" rel="noopener noreferrer" class="card-score-badge rt"><img src="assets/logos/rt.png" class="score-logo" alt="RT"> ${movie.rt_score}</a>`;
             }
             if (movie.metacritic_score && movie.links?.metacritic) {
-                cardScoreBadges += `<a href="${movie.links.metacritic}" target="_blank" rel="noopener noreferrer" class="card-score-badge mc">MC ${movie.metacritic_score}</a>`;
+                cardScoreBadges += `<a href="${movie.links.metacritic}" target="_blank" rel="noopener noreferrer" class="card-score-badge mc"><img src="assets/logos/metacritic.png" class="score-logo" alt="MC"> ${movie.metacritic_score}</a>`;
             }
             if (movie.imdb_rating) {
                 const imdbUrl = movie.links?.imdb;
                 if (imdbUrl) {
-                    cardScoreBadges += `<a href="${imdbUrl}" target="_blank" rel="noopener noreferrer" class="card-score-badge imdb">${movie.imdb_rating}</a>`;
+                    cardScoreBadges += `<a href="${imdbUrl}" target="_blank" rel="noopener noreferrer" class="card-score-badge imdb"><img src="assets/logos/imdb.png" class="score-logo" alt="IMDb"> ${movie.imdb_rating}</a>`;
                 } else {
-                    cardScoreBadges += `<span class="card-score-badge imdb">${movie.imdb_rating}</span>`;
+                    cardScoreBadges += `<span class="card-score-badge imdb"><img src="assets/logos/imdb.png" class="score-logo" alt="IMDb"> ${movie.imdb_rating}</span>`;
                 }
             }
             const cardScoreHtml = cardScoreBadges ? `<div class="card-score-overlay">${cardScoreBadges}</div>` : '';
@@ -957,14 +957,23 @@ const NRW = {
         const watchLinks = movie.watch_links || {};
         const providers = movie.providers || {};
 
-        // Helper: create an <a> with safe href + target
-        const makeLink = (url, className, text) => {
+        // Helper: create an <a> with safe href + target, optional logo icon
+        const makeLink = (url, className, text, iconSrc) => {
             const a = document.createElement('a');
             a.setAttribute('href', url);
             a.setAttribute('target', '_blank');
             a.setAttribute('rel', 'noopener noreferrer');
             a.className = className;
-            a.textContent = text;
+            if (iconSrc) {
+                const img = document.createElement('img');
+                img.src = iconSrc;
+                img.className = 'info-logo';
+                img.alt = '';
+                a.appendChild(img);
+                a.appendChild(document.createTextNode(' ' + text));
+            } else {
+                a.textContent = text;
+            }
             return a;
         };
 
@@ -1058,21 +1067,26 @@ const NRW = {
             hasInfo = true;
         }
         if (movie.rt_score && movie.links?.rt) {
-            infoRow.appendChild(makeLink(movie.links.rt, 'info-btn-lb rt', 'RT ' + movie.rt_score));
+            infoRow.appendChild(makeLink(movie.links.rt, 'info-btn-lb rt', movie.rt_score, 'assets/logos/rt.png'));
             hasInfo = true;
         }
         if (movie.metacritic_score && movie.links?.metacritic) {
-            infoRow.appendChild(makeLink(movie.links.metacritic, 'info-btn-lb mc', 'MC ' + movie.metacritic_score));
+            infoRow.appendChild(makeLink(movie.links.metacritic, 'info-btn-lb mc', movie.metacritic_score, 'assets/logos/metacritic.png'));
             hasInfo = true;
         }
         if (movie.imdb_rating) {
             const imdbUrl = movie.links?.imdb;
             if (imdbUrl) {
-                infoRow.appendChild(makeLink(imdbUrl, 'info-btn-lb imdb', 'IMDb ' + movie.imdb_rating));
+                infoRow.appendChild(makeLink(imdbUrl, 'info-btn-lb imdb', movie.imdb_rating, 'assets/logos/imdb.png'));
             } else {
                 const span = document.createElement('span');
                 span.className = 'info-btn-lb imdb';
-                span.textContent = 'IMDb ' + movie.imdb_rating;
+                const img = document.createElement('img');
+                img.src = 'assets/logos/imdb.png';
+                img.className = 'info-logo';
+                img.alt = '';
+                span.appendChild(img);
+                span.appendChild(document.createTextNode(' ' + movie.imdb_rating));
                 infoRow.appendChild(span);
             }
             hasInfo = true;

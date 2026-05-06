@@ -51,7 +51,7 @@ const formatShortDate = (dateStr) => {
 };
 
 // Simple action button with equal sizing
-const ActionButton = ({ label, color, onPress, hasTVPreferredFocus = false, testID, borderColor, textColor }) => {
+const ActionButton = ({ label, color, onPress, hasTVPreferredFocus = false, testID, borderColor, textColor, icon }) => {
   const [isFocused, setIsFocused] = useState(false);
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
@@ -92,7 +92,14 @@ const ActionButton = ({ label, color, onPress, hasTVPreferredFocus = false, test
           { transform: [{ scale: scaleAnim }] },
         ]}
       >
-        <Text style={[actionButtonStyles.label, textColor && { color: textColor }]}>{label}</Text>
+        {icon ? (
+          <View style={actionButtonStyles.buttonContent}>
+            <Image source={icon} style={actionButtonStyles.buttonIcon} />
+            <Text style={[actionButtonStyles.label, textColor && { color: textColor }]}>{label}</Text>
+          </View>
+        ) : (
+          <Text style={[actionButtonStyles.label, textColor && { color: textColor }]}>{label}</Text>
+        )}
       </Animated.View>
     </TouchableOpacity>
   );
@@ -116,6 +123,17 @@ const actionButtonStyles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '700',
     letterSpacing: 1,
+  },
+  buttonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  buttonIcon: {
+    width: 40,
+    height: 20,
+    resizeMode: 'contain',
   },
 });
 
@@ -222,6 +240,7 @@ const MovieDetailTvOS = () => {
     formattedRuntime,
     formattedGenres,
     rtScore,
+    mcScore,
     imdbScore,
     formattedCountries,
     hasWatchOptions,
@@ -542,8 +561,8 @@ const MovieDetailTvOS = () => {
               </View>
             )}
 
-            {/* Info row — Wiki + RT + IMDb shared */}
-            {(movie?.links?.wikipedia || rtScore || imdbScore) && (
+            {/* Info row — Wiki + RT + MC + IMDb shared */}
+            {(movie?.links?.wikipedia || rtScore || mcScore || imdbScore) && (
               <View style={styles.infoButtonRow}>
                 {movie?.links?.wikipedia && (
                   <ActionButton
@@ -557,17 +576,28 @@ const MovieDetailTvOS = () => {
                 )}
                 {rtScore && (
                   <ActionButton
-                    label={`RT ${rtScore.label}`}
+                    label={rtScore.label}
                     color="rgba(250, 50, 50, 0.85)"
+                    icon={require('../../assets/logos/rt.png')}
                     onPress={() => movie?.links?.rt && openURL(movie.links.rt)}
                     testID="action-btn-rt"
                   />
                 )}
+                {mcScore && (
+                  <ActionButton
+                    label={mcScore.label}
+                    color="rgba(102, 204, 51, 0.85)"
+                    icon={require('../../assets/logos/metacritic.png')}
+                    onPress={() => movie?.links?.metacritic && openURL(movie.links.metacritic)}
+                    testID="action-btn-mc"
+                  />
+                )}
                 {imdbScore && (
                   <ActionButton
-                    label={`IMDb ${imdbScore.label}`}
+                    label={imdbScore.label}
                     color="#F5C518"
                     textColor="#000"
+                    icon={require('../../assets/logos/imdb.png')}
                     onPress={() => movie?.links?.imdb && openURL(movie.links.imdb)}
                     testID="action-btn-imdb"
                   />

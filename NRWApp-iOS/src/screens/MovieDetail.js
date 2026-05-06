@@ -296,8 +296,8 @@ export default function MovieDetail({route}) {
         <WatchButtonGroup links={watchLinks} onPress={handleWatchPress} maxButtons={4} />
       </View>
 
-      {/* Info row — Wiki + RT + IMDb shared */}
-      {(movie.links?.wikipedia || movie.rt_score || movie.imdb_rating) && (
+      {/* Info row — Wiki + RT + MC + IMDb shared */}
+      {(movie.links?.wikipedia || movie.rt_score || movie.metacritic_score || movie.imdb_rating) && (
         <View style={styles.section}>
           <View style={styles.infoRow}>
             {movie.links?.wikipedia && (
@@ -310,12 +310,26 @@ export default function MovieDetail({route}) {
                 style={[styles.infoBtnColored, { backgroundColor: 'rgba(250, 50, 50, 0.85)' }]}
                 onPress={handleRTPress}
                 disabled={!movie.links?.rotten_tomatoes}>
-                <Text style={styles.infoBtnColoredText}>RT {movie.rt_score}</Text>
+                <View style={styles.infoBtnContent}>
+                  <Image source={require('../assets/logos/rt.png')} style={styles.infoBtnLogo} />
+                  <Text style={styles.infoBtnColoredText}>{movie.rt_score}</Text>
+                </View>
               </TouchableOpacity>
+            )}
+            {movie.metacritic_score && (
+              <View style={[styles.infoBtnColored, { backgroundColor: 'rgba(102, 204, 51, 0.85)' }]}>
+                <View style={styles.infoBtnContent}>
+                  <Image source={require('../assets/logos/metacritic.png')} style={styles.infoBtnLogo} />
+                  <Text style={styles.infoBtnColoredText}>{movie.metacritic_score}</Text>
+                </View>
+              </View>
             )}
             {movie.imdb_rating && (
               <View style={[styles.infoBtnColored, { backgroundColor: '#F5C518' }]}>
-                <Text style={[styles.infoBtnColoredText, { color: '#000' }]}>IMDb {movie.imdb_rating}</Text>
+                <View style={styles.infoBtnContent}>
+                  <Image source={require('../assets/logos/imdb.png')} style={styles.infoBtnLogo} />
+                  <Text style={[styles.infoBtnColoredText, { color: '#000' }]}>{movie.imdb_rating}</Text>
+                </View>
               </View>
             )}
           </View>
@@ -608,6 +622,16 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.sm,
     borderRadius: 6,
     alignItems: 'center',
+  },
+  infoBtnContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  infoBtnLogo: {
+    width: 24,
+    height: 12,
+    resizeMode: 'contain',
   },
   infoBtnColoredText: {
     color: '#fff',

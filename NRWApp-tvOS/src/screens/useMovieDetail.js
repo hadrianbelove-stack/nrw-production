@@ -77,6 +77,14 @@ export function useMovieDetail(movie) {
     };
   }, [movie]);
 
+  // Get Metacritic score display
+  const mcScore = useMemo(() => {
+    if (!movie?.metacritic_score) return null;
+    const score = parseInt(movie.metacritic_score, 10);
+    if (isNaN(score)) return null;
+    return { value: score, label: `${score}` };
+  }, [movie]);
+
   // Get IMDB rating display
   const imdbScore = useMemo(() => {
     if (!movie?.imdb_rating) return null;
@@ -124,6 +132,7 @@ export function useMovieDetail(movie) {
     formattedRuntime,
     formattedGenres,
     rtScore,
+    mcScore,
     imdbScore,
     formattedCountries,
     formattedLanguage,

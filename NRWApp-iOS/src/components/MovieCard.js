@@ -95,17 +95,26 @@ export default function MovieCard({movie, onPress, isFeatured = false}) {
           <View style={styles.scoreBadgeRow}>
             {movie.rt_score && (
               <View style={[styles.scoreBadge, styles.rtScoreBadge]}>
-                <Text style={styles.rtScoreText}>RT {movie.rt_score}</Text>
+                <View style={styles.scoreBadgeContent}>
+                  <Image source={require('../assets/logos/rt.png')} style={styles.scoreBadgeLogo} />
+                  <Text style={styles.rtScoreText}>{movie.rt_score}</Text>
+                </View>
               </View>
             )}
             {movie.metacritic_score && (
               <View style={[styles.scoreBadge, styles.mcScoreBadge]}>
-                <Text style={styles.mcScoreText}>MC {movie.metacritic_score}</Text>
+                <View style={styles.scoreBadgeContent}>
+                  <Image source={require('../assets/logos/metacritic.png')} style={styles.scoreBadgeLogo} />
+                  <Text style={styles.mcScoreText}>{movie.metacritic_score}</Text>
+                </View>
               </View>
             )}
             {movie.imdb_rating && (
               <View style={[styles.scoreBadge, styles.imdbScoreBadge]}>
-                <Text style={styles.imdbScoreText}>{movie.imdb_rating}</Text>
+                <View style={styles.scoreBadgeContent}>
+                  <Image source={require('../assets/logos/imdb.png')} style={styles.scoreBadgeLogo} />
+                  <Text style={styles.imdbScoreText}>{movie.imdb_rating}</Text>
+                </View>
               </View>
             )}
           </View>
@@ -237,6 +246,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
     paddingVertical: 2,
     borderRadius: 3,
+  },
+  scoreBadgeContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+  },
+  scoreBadgeLogo: {
+    width: 16,
+    height: 8,
+    resizeMode: 'contain',
   },
   rtScoreBadge: {
     backgroundColor: 'rgba(250, 50, 50, 0.85)',

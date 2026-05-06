@@ -380,7 +380,7 @@ class WikipediaScraperPlaywright(PlaywrightScraperBase):
             return None
 
     def find_wikipedia_url(self, title, year, imdb_id=None, use_api=True, use_wikidata=True,
-                           director=None, original_title=None):
+                           director=None, original_title=None, skip_playwright=False):
         """Find Wikipedia URL with waterfall approach.
 
         Priority waterfall:
@@ -461,20 +461,24 @@ class WikipediaScraperPlaywright(PlaywrightScraperBase):
                 self.stats['successes'] += 1
                 return wiki_url
 
-        # 4. Fallback to Playwright scraper with click-through
-        wiki_url = self._retry_with_backoff(lambda: self._scrape_wikipedia_page(title, year))
-        if wiki_url:
-            self._cache_result(cache_key, wiki_url, title, 'playwright_scraper')
-            self.stats['scraper_successes'] += 1
-            self.stats['successes'] += 1
-            return wiki_url
+        # 4. Fallback to Playwright scraper with click-through (skip in gap-fill mode)
+        if skip_playwright:
+            self._log(f"Skipping Playwright fallback for {title} (skip_playwright=True)", level='debug')
+        else:
+            wiki_url = self._retry_with_backoff(lambda: self._scrape_wikipedia_page(title, year))
+            if wiki_url:
+                self._cache_result(cache_key, wiki_url, title, 'playwright_scraper')
+                self.stats['scraper_successes'] += 1
+                self.stats['successes'] += 1
+                return wiki_url
 
         # 5. If original_title differs from title, retry waterfall with it
         if original_title and original_title != title:
             self._log(f"Retrying with original title: {original_title}", level='debug')
             return self.find_wikipedia_url(original_title, year, imdb_id,
                                            use_api=use_api, use_wikidata=False,
-                                           director=director, original_title=None)
+                                           director=director, original_title=None,
+                                           skip_playwright=skip_playwright)
 
         # No article found - return None (never return a search URL)
         self._log(f"No Wikipedia article found for {title} ({year})", level='warning')
@@ -554,23 +558,31 @@ class WikipediaScraperPlaywright(PlaywrightScraperBase):
             response = requests.get(url, headers=headers, timeout=5)
             if response.status_code == 200:
                 data = response.json()
-                wiki_url = data.get('content_urls', {}).get('desktop', {}).get('page')
-                if wiki_url:
-                    self._log(f"REST API found: {title} (film)", level='debug')
-                    return wiki_url
+                # Reject disambiguation pages (e.g., "Blackout (film)" lists multiple films)
+                if data.get('type') == 'disambiguation':
+                    self._log(f"REST API: {title} (film) is disambiguation page, skipping", level='debug')
+                else:
+                    wiki_url = data.get('content_urls', {}).get('desktop', {}).get('page')
+                    if wiki_url:
+                        self._log(f"REST API found: {title} (film)", level='debug')
+                        return wiki_url
 
             # Try plain title (no suffix) - for films with unique names
             url = f"https://en.wikipedia.org/api/rest_v1/page/summary/{quote(title)}"
             response = requests.get(url, headers=headers, timeout=5)
             if response.status_code == 200:
                 data = response.json()
-                # Verify it's actually a film article by checking extract
-                extract = data.get('extract', '').lower()
-                wiki_url = data.get('content_urls', {}).get('desktop', {}).get('page')
-                # Only accept if it mentions film/movie in the extract
-                if wiki_url and ('film' in extract or 'movie' in extract):
-                    self._log(f"REST API found: {title} (plain title)", level='debug')
-                    return wiki_url
+                # Reject disambiguation pages
+                if data.get('type') == 'disambiguation':
+                    self._log(f"REST API: {title} is disambiguation page, skipping", level='debug')
+                else:
+                    # Verify it's actually a film article by checking extract
+                    extract = data.get('extract', '').lower()
+                    wiki_url = data.get('content_urls', {}).get('desktop', {}).get('page')
+                    # Only accept if it mentions film/movie in the extract
+                    if wiki_url and ('film' in extract or 'movie' in extract):
+                        self._log(f"REST API found: {title} (plain title)", level='debug')
+                        return wiki_url
 
         except Exception as e:
             self._log(f"Wikipedia API error: {e}", level='debug')
