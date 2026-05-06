@@ -104,11 +104,21 @@
         <Label id="preOrderLabel"
           text="PRE-ORDER"
           width="600"
-          height="60"
+          height="30"
           translation="[3, 8]"
           horizAlign="center"
-          vertAlign="center"
+          vertAlign="bottom"
           font="font:SmallBoldSystemFont"
+          color="0xFFFFFFFF"
+          visible="false" />
+        <Label id="preOrderDateLabel"
+          text=""
+          width="600"
+          height="26"
+          translation="[3, 36]"
+          horizAlign="center"
+          vertAlign="top"
+          font="font:SmallSystemFont"
           color="0xFFFFFFFF"
           visible="false" />
 

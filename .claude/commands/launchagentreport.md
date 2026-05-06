@@ -47,14 +47,15 @@ Run the shared wall health script (do NOT read from run_diagnostics.json for the
 python3 scripts/wall_health.py
 ```
 
-Report these numbers in a formatted summary:
+The script outputs a full structured report — present it as-is. Key sections:
 
-- **Coverage**: RT scores, MC scores, Wikipedia, Trailers (count + percentage)
-- **Today's arrivals**: present as a table with columns: Movie | RT | MC | Wiki | Trailer | IMDb | Links (use `yes`/`--` for each field). The `wall_health.py` script outputs this format directly — present it as-is.
-- **Last 7 days**: daily arrival counts
-- **Upcoming**: pre-orders with no links yet (expected)
-- **Zero watch links**: Each movie shows its digital date, days on wall, and a detailed status explaining WHY it has no links (JW revert reason, which excluded platform, TMDB platform info, revert count). A CRITICAL alert (>5%) means the pipeline is likely broken. Movies age out of this section after 3 days — only new/recent zero-link movies are shown.
-- **JW REVERTED (tracking only)**: movies discovered and reverted but NOT on the wall — safely in tracking, just FYI.
-- Movies reverted for "excluded platforms" should always name which platform (fuboTV, Philo, etc.). If not recorded, the report says so explicitly.
+- **Coverage**: RT, MC, Wiki, Trailers, IMDb, Links (count + percentage)
+- **Pipeline Trend**: 14-day table of daily intake + transitions. Flags stall days (0 transitions) and below-average days.
+- **Today's arrivals**: table with columns: Movie | RT | MC | Wiki | Trailer | IMDb | Links | Services. Uses `yes`/`--` for enrichment fields, `NONE` for missing links, and shows which VOD services each movie links to.
+- **Zero watch links**: Each movie shows its digital date, days on wall, and a detailed status explaining WHY it has no links (JW revert reason, which excluded platform, TMDB platform info, revert count). A CRITICAL alert (>5%) means the pipeline is likely broken. Movies age out of this section after 3 days.
+- **JW REVERTS**: Grouped by reason (summary counts, excluded platform breakdown, repeat offenders reverted 2+ times), then full list with TMDB platforms. Tracking only — not on wall.
+- **Pre-orders & upcoming**: All future-dated movies sorted by date with link count and service names. Summary line shows how many have links.
+- **Orphans**: Movies that are available in tracking but NOT on the live wall — invisible to enrichment catch-up.
+- **Trailer hosting failures**: Recent failures with reasons.
 
 Format as a short summary (not raw log). Flag any failures or concerns clearly.

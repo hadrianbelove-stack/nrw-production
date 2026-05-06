@@ -231,6 +231,21 @@ Or:
 
 ---
 
+### Action Summary
+
+If the review found any suggestions or blocking issues, end with a numbered list of concrete actions and ask:
+
+> **Actions available:**
+> 1. [First actionable fix — one sentence, plain English]
+> 2. [Second actionable fix — one sentence, plain English]
+> ...
+>
+> Want me to execute any or all of these? (e.g., "do all", "do 1 and 3", "skip")
+
+If the review is clean (grade A, no suggestions), skip this section entirely.
+
+---
+
 ## ANTI-PATTERNS (past review failures — do NOT repeat these)
 
 - **The unverified claim**: Saying "this function is never called" without grepping the project. ALWAYS verify before claiming dead code or unused paths.

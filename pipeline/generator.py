@@ -5292,6 +5292,36 @@ PRICE: [price or UNKNOWN]
         if fields_updated > 0:
             print(f"📝 Applied {fields_updated} manual field edits from movie_tracking.json")
 
+        # Sync pre-order flags from tracking → data.json (recovery for stripped flags)
+        _preorder_overrides = self.config.get('preorder_overrides', {})
+        _today_sync = datetime.now().strftime('%Y-%m-%d')
+        _preorder_synced = 0
+        for movie in display_movies:
+            movie_id = str(movie.get('id'))
+            _po_override = _preorder_overrides.get(movie_id)
+            if _po_override is False:
+                # Explicit override: NOT a pre-order
+                if movie.get('_is_preorder'):
+                    movie.pop('_is_preorder', None)
+                    movie.pop('pre_order_links', None)
+                continue
+            if _po_override is True:
+                dd = movie.get('digital_date', '')
+                if dd > _today_sync and not movie.get('_is_preorder'):
+                    movie['_is_preorder'] = True
+                    _preorder_synced += 1
+                continue
+            # No override — check tracking for flag that was lost from data.json
+            if movie_id in tracking_data:
+                tracking_movie = tracking_data[movie_id]
+                if tracking_movie.get('_is_preorder') and not movie.get('_is_preorder'):
+                    dd = movie.get('digital_date', '')
+                    if dd > _today_sync:
+                        movie['_is_preorder'] = True
+                        _preorder_synced += 1
+        if _preorder_synced > 0:
+            print(f"🏷️  Synced {_preorder_synced} pre-order flag(s) from tracking → data.json")
+
         # Load screening name mapping and manual end dates from config
         screening_names_map = self.config.get('screening_names', {})
         screening_end_dates_map = self.config.get('screening_end_dates', {})

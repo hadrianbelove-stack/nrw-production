@@ -25,6 +25,9 @@ Sub Init()
     m.restorationLabel = m.top.FindNode("restorationLabel")
     m.screeningBadge = m.top.FindNode("screeningBadge")
     m.screeningLabel = m.top.FindNode("screeningLabel")
+    m.preOrderBadge = m.top.FindNode("preOrderBadge")
+    m.preOrderLabel = m.top.FindNode("preOrderLabel")
+    m.preOrderDateLabel = m.top.FindNode("preOrderDateLabel")
 
     m.buttonsRow = m.top.FindNode("buttonsRow")
     m.trailerButton = m.top.FindNode("trailerButton")
@@ -246,11 +249,12 @@ Sub LoadMovie(index as Integer)
     ' Pre-order badge (isPreOrder already set above for date label)
     m.preOrderBadge.visible = isPreOrder
     m.preOrderLabel.visible = isPreOrder
+    m.preOrderDateLabel.visible = isPreOrder
     if isPreOrder
         if movie.digital_date <> invalid AND movie.digital_date <> ""
-            m.preOrderLabel.text = "PRE-ORDER" + chr(10) + FormatShortDate(movie.digital_date)
+            m.preOrderDateLabel.text = FormatShortDate(movie.digital_date)
         else
-            m.preOrderLabel.text = "PRE-ORDER" + chr(10) + "TBD"
+            m.preOrderDateLabel.text = "TBD"
         end if
     end if
 

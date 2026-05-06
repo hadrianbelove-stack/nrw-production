@@ -80,7 +80,7 @@ const NRW = {
     isTrailerReel: false,      // true when playing the trailer reel (vs individual trailer from lightbox)
 
     // Format screening end date: "2026-03-30" → "Mar 30"
-    formatScreeningDate(dateStr) {
+    formatShortDate(dateStr) {
         if (!dateStr) return '';
         const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
         const [y, m, d] = dateStr.split('-');
@@ -442,7 +442,7 @@ const NRW = {
             const isStaffPick = movie.categories?.is_staff_pick || this.staffPicks.includes(movie.id);
             const staffPickClass = isStaffPick ? ' staff-pick-movie' : '';
 
-            const formatScreeningDate = NRW.formatScreeningDate;
+            const formatShortDate = NRW.formatShortDate;
 
             // Streaming service pill badge for card front
             const getStreamingBadge = (movie) => {
@@ -452,7 +452,7 @@ const NRW = {
                 // Pre-order: pipeline sets _is_preorder flag during enrichment
                 if (movie._is_preorder) {
                     const poDate = movie.digital_date
-                        ? NRW.formatScreeningDate(movie.digital_date)
+                        ? NRW.formatShortDate(movie.digital_date)
                         : 'TBD';
                     return '<div class="streaming-badge badge-preorder"><span class="po-label">PRE-ORDER</span><span class="po-date">' + poDate + '</span></div>';
                 }
@@ -912,7 +912,7 @@ const NRW = {
             const callout = document.createElement('span');
             callout.className = 'screening-callout';
             callout.textContent = endDate
-                ? ` Virtual screening available as part of the ${festName}. Ends ${NRW.formatScreeningDate(endDate)}.`
+                ? ` Virtual screening available as part of the ${festName}. Ends ${NRW.formatShortDate(endDate)}.`
                 : ` Virtual screening available as part of the ${festName}.`;
             synopsisEl.appendChild(callout);
         }
@@ -1041,7 +1041,7 @@ const NRW = {
             const dateLabel = document.createElement('span');
             dateLabel.className = 'po-available-date';
             dateLabel.textContent = movie.digital_date
-                ? `Available ${NRW.formatScreeningDate(movie.digital_date)}`
+                ? `Available ${NRW.formatShortDate(movie.digital_date)}`
                 : 'Available TBD';
             watchStack.appendChild(dateLabel);
         }

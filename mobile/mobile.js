@@ -559,7 +559,7 @@ const NRWMobile = {
             }).filter(Boolean);
             if (poBtns.length > 0) {
                 const poDate = movie.digital_date ? this.formatShortDate(movie.digital_date) : 'TBD';
-                return `${poBtns[0]}<span class="po-avail-date">Available ${poDate}</span>`;
+                return `${poBtns[0]}<span class="po-available-date">Available ${poDate}</span>`;
             }
         }
 

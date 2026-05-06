@@ -355,7 +355,7 @@ export function getWatchLinks(movie) {
   if (links.length === 0) {
     const preOrderLinks = Array.isArray(movie.pre_order_links) ? movie.pre_order_links : [];
     const poDateStr = movie.digital_date
-      ? (() => { const [y,m,d] = movie.digital_date.split('-'); return new Date(y, m-1, d).toLocaleDateString('en-US', {month:'short', day:'numeric'}); })()
+      ? new Date(movie.digital_date + 'T12:00:00').toLocaleDateString('en-US', {month: 'short', day: 'numeric'})
       : null;
     preOrderLinks.forEach(pl => {
       if (pl && pl.link) {
