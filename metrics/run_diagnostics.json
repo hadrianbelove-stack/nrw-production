@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-05-05T11:44:14.481963",
-  "duration_seconds": 3414.993545,
+  "timestamp": "2026-05-06T12:38:45.229342",
+  "duration_seconds": 5648.912083,
   "overall_success": true,
   "failure_count": 0,
   "warning_count": 0,
@@ -8,44 +8,44 @@
     {
       "name": "Intake new premieres from TMDB",
       "success": true,
-      "duration_seconds": 5.259075,
+      "duration_seconds": 7.701152,
       "error": null,
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-05-03 to 2026-05-05 (incremental mode, 12 intaked)\n\u2705 Movie intake complete: 12 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-04-05 to 2026-05-05\n   \ud83d\udccb This Is a Bomb: The Nevada Casino Heist"
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-05-04 to 2026-05-06 (incremental mode, 19 intaked)\n\u2705 Movie intake complete: 19 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-04-06 to 2026-05-06\n   \ud83d\udccb Flow (3 eps)\n\n\ud83d\udcca Miniseries intake compl"
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 2563.376347,
+      "duration_seconds": 4892.07531,
       "error": null,
-      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 16537 total movies\n\ud83d\udd0d Raw tracking filter: 13112 movies\n\ud83d\udd0d Assigned tracking_movies list: 13112\n\ud83d\udd0d Found 13112 movies in tracking status\n  Priority queue (last 180 days): 513 movies\n  Older movies: 12599 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 13112 movies for digital availability...\n\n   \ud83d\udcdd Movie Ready or Not 2: Here I Come already in data.json - skipping immediate add\n  \ud83d\udcc5 Ready"
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 16557 total movies\n\ud83d\udd0d Raw tracking filter: 13142 movies\n\ud83d\udd0d Assigned tracking_movies list: 13142\n\ud83d\udd0d Found 13142 movies in tracking status\n  Priority queue (last 180 days): 535 movies\n  Older movies: 12607 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 13142 movies for digital availability...\n\n   \u2705 Added Before What Comes After to site immediately (discovery-driven)\n  \u2713 Before What Come"
     },
     {
       "name": "Enrich newly available movies with metadata",
       "success": true,
-      "duration_seconds": 842.032707,
+      "duration_seconds": 744.023488,
       "error": null,
-      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\n  \ud83d\udd0d Pre-order link finder: 5 movies within 14d window\n      \u2713 Normal: Amazon verified\n    \ud83d\udd17 Normal \u2014 1 pre-order link\n  \ud83d\udd0d Link finder: 1/5 pre-order movies got links\n  \u26a0\ufe0f Orphan detection: 18 movies available in tracking but missing from wall\n    \u2192 The Adventure (ID 1399515, digital_date 2026-04-30)\n    \u2192 Lemonade Blessing (ID 1405007, digital_date 2026-04-29)\n    \u2192 Mars (ID 916588, digital_date 2026-05-01)\n    \u2192"
+      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\n  \ud83d\udd0d Pre-order link finder: 4 movies within 14d window\n  \u26a0\ufe0f Orphan detection: 21 movies available in tracking but missing from wall\n    \u2192 The Adventure (ID 1399515, digital_date 2026-04-30)\n    \u2192 Hamnet (ID 858024, digital_date 2026-02-05)\n    \u2192 The Prospect (ID 1443170, digital_date 2026-02-22)\n    \u2192 Lemonade Blessing (ID 1405007, digital_date 2026-04-29)\n    \u2192 Mars (ID 916588, digital_date 2026-05-01)\n    \u2192 The "
     },
     {
       "name": "Stamp hosted trailer URLs into data.json",
       "success": true,
-      "duration_seconds": 1.333724,
+      "duration_seconds": 0.643553,
       "error": null,
-      "output_preview": "=== Trailer Pipeline: stamp ===\n\nConnecting to B2...\nFound 579 trailers in B2 bucket\n\nStamp results:\n  Stamped:          0\n  Already had URL:  502\n  Stale cleaned:    0\n  Not in B2:        218\n"
+      "output_preview": "=== Trailer Pipeline: stamp ===\n\nConnecting to B2...\nFound 591 trailers in B2 bucket\n\nStamp results:\n  Stamped:          0\n  Already had URL:  514\n  Stale cleaned:    0\n  Not in B2:        208\n"
     },
     {
       "name": "Check virtual screening link expirations",
       "success": true,
-      "duration_seconds": 2.394081,
+      "duration_seconds": 3.933966,
       "error": null,
-      "output_preview": "\n\ud83c\udfaa Checking virtual screening links...\n  Checking 16 virtual screening movies...\n  \ud83d\udcbe Updated data.json\n  \ud83d\udcca Results: 5 active, 0 expired\n\u2705 Virtual screening check complete\n\ud83d\udccb Phase complete\n"
+      "output_preview": "\n\ud83c\udfaa Checking virtual screening links...\n  Checking 22 virtual screening movies...\n  \ud83d\udcbe Updated data.json\n  \ud83d\udcca Results: 11 active, 0 expired\n\u2705 Virtual screening check complete\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Archive movies older than 90 days",
       "success": true,
-      "duration_seconds": 0.428472,
+      "duration_seconds": 0.387888,
       "error": null,
-      "output_preview": "\n\ud83d\udce6 Archiving movies older than 90 days...\n\ud83d\udce6 Archived 12 movies (>90 days old) \u2192 data_archive.json\n   data.json: 708 movies | archive: 302 total\n\u2705 Archive complete\n\ud83d\udccb Phase complete\n"
+      "output_preview": "\n\ud83d\udce6 Archiving movies older than 90 days...\n\ud83d\udce6 Archived 4 movies (>90 days old) \u2192 data_archive.json\n   data.json: 718 movies | archive: 312 total\n\u2705 Archive complete\n\ud83d\udccb Phase complete\n"
     }
   ],
   "health_issues": [],
@@ -56,32 +56,28 @@
   "failures": [],
   "warnings": [],
   "data_quality": {
-    "total": 16537,
-    "tracking": 13123,
-    "available": 3066,
-    "data_movies": 708,
-    "movies_with_links": 685,
-    "movies_with_rt": 518,
-    "movies_with_wikipedia": 371,
-    "movies_with_trailers": 647
+    "total": 16557,
+    "tracking": 13128,
+    "available": 3081,
+    "data_movies": 718,
+    "movies_with_links": 695,
+    "movies_with_rt": 525,
+    "movies_with_wikipedia": 377,
+    "movies_with_trailers": 656
   },
   "enrichment_metrics": {
-    "timestamp": "2026-05-05T11:44:09.474849",
-    "movies_requested": 54,
-    "movies_enriched": 19,
-    "movies_deferred": 35,
+    "timestamp": "2026-05-06T12:38:39.388172",
+    "movies_requested": 52,
+    "movies_enriched": 14,
+    "movies_deferred": 38,
     "deferred_details": [
-      {
-        "title": "Sirai",
-        "reason": "jw_revert:justwatch_no_valid_offers"
-      },
       {
         "title": "Before What Comes After",
         "reason": "jw_revert:justwatch_no_valid_offers"
       },
       {
-        "title": "Prakambanam",
-        "reason": "jw_revert:justwatch_no_valid_offers"
+        "title": "Perilous Passage: Birth in America",
+        "reason": "jw_revert:justwatch_no_match"
       },
       {
         "title": "Bravery & Betrayal",
@@ -104,19 +100,11 @@
         "reason": "jw_revert:justwatch_no_match"
       },
       {
-        "title": "Strawstalker",
-        "reason": "jw_revert:justwatch_no_match"
-      },
-      {
-        "title": "Perilous Passage: Birth in America",
-        "reason": "jw_revert:justwatch_no_match"
-      },
-      {
         "title": "Rooster Fighter",
         "reason": "jw_revert:justwatch_no_match"
       },
       {
-        "title": "That Night",
+        "title": "Dynasty: The Murdochs",
         "reason": "jw_revert:justwatch_no_match"
       },
       {
@@ -124,7 +112,7 @@
         "reason": "jw_revert:justwatch_no_match"
       },
       {
-        "title": "Dynasty: The Murdochs",
+        "title": "That Night",
         "reason": "jw_revert:justwatch_no_match"
       },
       {
@@ -144,11 +132,11 @@
         "reason": "jw_revert:justwatch_no_match"
       },
       {
-        "title": "Boyfriend on Demand",
+        "title": "The TikTok Killer",
         "reason": "jw_revert:justwatch_no_match"
       },
       {
-        "title": "The TikTok Killer",
+        "title": "Boyfriend on Demand",
         "reason": "jw_revert:justwatch_no_match"
       },
       {
@@ -156,15 +144,11 @@
         "reason": "jw_revert:justwatch_no_match"
       },
       {
-        "title": "A Friend, a Murderer",
-        "reason": "jw_revert:justwatch_no_match"
-      },
-      {
         "title": "Vladimir",
         "reason": "jw_revert:justwatch_no_match"
       },
       {
-        "title": "\u7834\u4ea7\u59d0\u59b9",
+        "title": "A Friend, a Murderer",
         "reason": "jw_revert:justwatch_no_match"
       },
       {
@@ -184,15 +168,19 @@
         "reason": "jw_revert:justwatch_no_match"
       },
       {
+        "title": "\u7834\u4ea7\u59d0\u59b9",
+        "reason": "jw_revert:justwatch_no_match"
+      },
+      {
         "title": "Field Generals: History of the Black Quarterback",
         "reason": "jw_revert:justwatch_no_match"
       },
       {
-        "title": "Lead Children",
+        "title": "The Scream Murder: A True Teen Horror Story",
         "reason": "jw_revert:justwatch_no_match"
       },
       {
-        "title": "The Scream Murder: A True Teen Horror Story",
+        "title": "Lead Children",
         "reason": "jw_revert:justwatch_no_match"
       },
       {
@@ -204,14 +192,38 @@
         "reason": "jw_revert:justwatch_no_match"
       },
       {
+        "title": "Murder in Glitterball City",
+        "reason": "jw_revert:justwatch_no_match"
+      },
+      {
         "title": "Girl on the Run: The Hunt for America's Most Wanted Woman",
         "reason": "jw_revert:justwatch_no_match"
       },
       {
-        "title": "Murder in Glitterball City",
+        "title": "Seeking Persephone",
+        "reason": "jw_revert:justwatch_no_match"
+      },
+      {
+        "title": "Lord of the Flies",
+        "reason": "jw_revert:justwatch_no_match"
+      },
+      {
+        "title": "And Through the Portal We Go",
+        "reason": "jw_revert:justwatch_no_match"
+      },
+      {
+        "title": "Hey Balwanth",
+        "reason": "jw_revert:justwatch_no_valid_offers"
+      },
+      {
+        "title": "Gary",
+        "reason": "jw_revert:justwatch_no_match"
+      },
+      {
+        "title": "Gary",
         "reason": "jw_revert:justwatch_no_match"
       }
     ],
-    "enrichment_duration_seconds": 840.99
+    "enrichment_duration_seconds": 742.98
   }
 }

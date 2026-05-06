@@ -33664,13 +33664,24 @@
     },
     "1538565": {
       "title": "My Movie Starring Paul Dano",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2025-11-10",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-05-06",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
       "discovery_pass": "B",
-      "has_providers": false,
-      "year": 2025
+      "has_providers": true,
+      "year": 2025,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-05-06"
     },
     "1509523": {
       "title": "Attenuation",
@@ -46946,9 +46957,9 @@
       "_discovery_source": "provider_availability_check",
       "enriched": false,
       "enrichment_date": null,
-      "_jw_revert_count": 4,
+      "_jw_revert_count": 5,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-05"
+      "_jw_reverted_at": "2026-05-06"
     },
     "1565213": {
       "title": "A D*** Love",
@@ -69594,7 +69605,7 @@
         ]
       },
       "discovery_pass": "B",
-      "has_providers": true,
+      "has_providers": false,
       "year": 2025,
       "_discovery_source": "provider_availability_check",
       "enriched": false,
@@ -82528,12 +82539,26 @@
       "title": "And Through the Portal We Go",
       "status": "tracking",
       "first_seen": "2026-01-04",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-05-06",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
       "intake_pass": "backfill",
-      "has_providers": false,
+      "has_providers": true,
       "year": 2024,
-      "premiere_date": "2024-09-27"
+      "premiere_date": "2024-09-27",
+      "_discovery_source": "provider_availability_check",
+      "enriched": false,
+      "enrichment_date": null,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-05-06",
+      "_jw_revert_count": 1
     },
     "1381589": {
       "title": "Manele and Revolution",
@@ -91036,9 +91061,9 @@
       "_discovery_source": "provider_availability_check",
       "enriched": false,
       "enrichment_date": null,
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_valid_offers",
-      "_jw_reverted_at": "2026-05-05"
+      "_jw_reverted_at": "2026-05-06"
     },
     "1213025": {
       "title": "Transcending Dimensions",
@@ -92813,14 +92838,25 @@
     },
     "1064021": {
       "title": "April",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-04",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-05-06",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
       "intake_pass": "backfill",
-      "has_providers": false,
+      "has_providers": true,
       "year": 2025,
-      "premiere_date": "2025-01-29"
+      "premiere_date": "2025-01-29",
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-05-06"
     },
     "587391": {
       "title": "A Boat in the Garden",
@@ -110547,14 +110583,23 @@
     },
     "1517123": {
       "title": "On the Road",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-04",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-05-06",
+      "providers": {
+        "rent": [
+          "Eventive"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "backfill",
-      "has_providers": false,
+      "has_providers": true,
       "year": 2025,
-      "premiere_date": "2025-09-03"
+      "premiere_date": "2025-09-03",
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-05-06"
     },
     "1517110": {
       "title": "Memoria de Los Olvidados",
@@ -119581,13 +119626,22 @@
     "1446753": {
       "title": "To Love a Narcissist",
       "year": 2025,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-05-06",
+      "providers": {
+        "rent": [],
+        "buy": [
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "SXSW",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-05-06"
     },
     "1443302": {
       "title": "The Snare",
@@ -120628,13 +120682,22 @@
     "1149614": {
       "title": "Yes",
       "year": 2025,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-05-06",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "Cannes",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-05-06"
     },
     "1078822": {
       "title": "Heads or Tails?",
@@ -129475,13 +129538,24 @@
     "1369521": {
       "title": "Ange & the Boss: Puskas in Australia",
       "year": 2024,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-05-06",
+      "providers": {
+        "rent": [
+          "Apple TV Store"
+        ],
+        "buy": [
+          "Apple TV Store"
+        ],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "SXSW Sydney",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-05-06"
     },
     "1538145": {
       "title": "Let It Dance",
@@ -165651,8 +165725,7 @@
         "buy": [],
         "streaming": [
           "HBO Max",
-          "HBO Max Amazon Channel",
-          "Spectrum On Demand"
+          "HBO Max Amazon Channel"
         ]
       },
       "intaked_at": "2026-01-26T14:50:58.086819",
@@ -165663,9 +165736,10 @@
       "enriched": false,
       "enrichment_date": null,
       "imdb_id": "tt33035435",
+      "_jw_revert_count": 2,
+      "_discovery_source": "provider_availability_check",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-05",
-      "_jw_revert_count": 1
+      "_jw_reverted_at": "2026-05-06"
     },
     "tv_285650": {
       "title": "L'affaire Laura Stern",
@@ -166611,7 +166685,7 @@
         ]
       },
       "intake_pass": "B",
-      "has_providers": true,
+      "has_providers": false,
       "_discovery_source": "provider_availability_check",
       "enriched": false,
       "enrichment_date": null,
@@ -168436,7 +168510,8 @@
         "rent": [],
         "buy": [],
         "streaming": [
-          "Disney Plus"
+          "Disney Plus",
+          "Hulu"
         ]
       },
       "intaked_at": "2026-01-30T09:36:22.717314",
@@ -168447,9 +168522,10 @@
       "enriched": false,
       "enrichment_date": null,
       "imdb_id": "tt21066182",
+      "_jw_revert_count": 2,
+      "_discovery_source": "provider_availability_check",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-05",
-      "_jw_revert_count": 1
+      "_jw_reverted_at": "2026-05-06"
     },
     "tv_312724": {
       "title": "Thee and Thee",
@@ -169008,9 +169084,10 @@
       "enriched": false,
       "enrichment_date": null,
       "imdb_id": "tt22078202",
+      "_jw_revert_count": 2,
+      "_discovery_source": "provider_availability_check",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-05",
-      "_jw_revert_count": 1
+      "_jw_reverted_at": "2026-05-06"
     },
     "tv_309679": {
       "title": "The Roommate Contract",
@@ -170125,13 +170202,18 @@
       "original_language": "en",
       "providers": {
         "rent": [],
-        "buy": [],
+        "buy": [
+          "Amazon Video",
+          "Apple TV Store",
+          "Fandango At Home"
+        ],
         "streaming": [
           "AMC Plus Apple TV Channel ",
           "AMC+ Amazon Channel",
           "AMC+ Roku Premium Channel",
           "AMC+",
-          "AMC"
+          "Philo",
+          "Spectrum On Demand"
         ]
       },
       "intaked_at": "2026-02-01T09:28:24.018083",
@@ -170142,9 +170224,10 @@
       "enriched": false,
       "enrichment_date": null,
       "imdb_id": "tt36501923",
+      "_jw_revert_count": 2,
+      "_discovery_source": "provider_availability_check",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-05",
-      "_jw_revert_count": 1
+      "_jw_reverted_at": "2026-05-06"
     },
     "tv_278157": {
       "title": "My Romance Scammer",
@@ -170872,7 +170955,8 @@
         ],
         "streaming": [
           "PBS Documentaries Amazon Channel",
-          "Thirteen"
+          "Thirteen",
+          "WETA+"
         ]
       },
       "intaked_at": "2026-02-03T09:38:35.173537",
@@ -170883,9 +170967,10 @@
       "enriched": false,
       "enrichment_date": null,
       "imdb_id": "tt39118057",
+      "_jw_revert_count": 2,
+      "_discovery_source": "provider_availability_check",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-05",
-      "_jw_revert_count": 1
+      "_jw_reverted_at": "2026-05-06"
     },
     "tv_274320": {
       "title": "Au nom d'Emma",
@@ -171099,9 +171184,10 @@
       "enriched": false,
       "enrichment_date": null,
       "imdb_id": "tt39370418",
+      "_jw_revert_count": 2,
+      "_discovery_source": "provider_availability_check",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-05",
-      "_jw_revert_count": 1
+      "_jw_reverted_at": "2026-05-06"
     },
     "1620991": {
       "title": "The Investigation of Lucy Letby",
@@ -171866,9 +171952,10 @@
       "enriched": false,
       "enrichment_date": null,
       "imdb_id": "tt18244708",
+      "_jw_revert_count": 2,
+      "_discovery_source": "provider_availability_check",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-05",
-      "_jw_revert_count": 1
+      "_jw_reverted_at": "2026-05-06"
     },
     "tv_313201": {
       "title": "L'invisibile - La Cattura di Matteo Messina Denaro",
@@ -175034,15 +175121,24 @@
       ],
       "original_language": "en",
       "providers": {
-        "streaming": [],
         "rent": [],
-        "buy": []
+        "buy": [],
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
       },
       "intaked_at": "2026-02-10T00:57:35.026357",
       "networks": [
         "BBC One"
       ],
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": false,
+      "enrichment_date": null,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-05-06",
+      "_jw_revert_count": 1
     },
     "tv_313447": {
       "title": "The Great Icelandic Swim with Ross Edgley",
@@ -175928,9 +176024,10 @@
       "enriched": false,
       "enrichment_date": null,
       "imdb_id": "tt39676538",
+      "_jw_revert_count": 2,
+      "_discovery_source": "provider_availability_check",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-05",
-      "_jw_revert_count": 1
+      "_jw_reverted_at": "2026-05-06"
     },
     "tv_302681": {
       "title": "A Good Yesterday",
@@ -175989,9 +176086,10 @@
       "enriched": false,
       "enrichment_date": null,
       "imdb_id": "tt33322230",
+      "_jw_revert_count": 2,
+      "_discovery_source": "provider_availability_check",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-05",
-      "_jw_revert_count": 1
+      "_jw_reverted_at": "2026-05-06"
     },
     "tv_313665": {
       "title": "Max Verstappen - New Ground",
@@ -177073,12 +177171,21 @@
     "1178620": {
       "title": "Montreal, My Beautiful",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-02-13",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-05-06",
+      "providers": {
+        "rent": [
+          "Eventive"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-05-06"
     },
     "1054493": {
       "title": "Pennum Porattum",
@@ -177248,9 +177355,10 @@
       "enriched": false,
       "enrichment_date": null,
       "imdb_id": "tt34692373",
+      "_jw_revert_count": 2,
+      "_discovery_source": "provider_availability_check",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-05",
-      "_jw_revert_count": 1
+      "_jw_reverted_at": "2026-05-06"
     },
     "tv_273977": {
       "title": "The Art of Sarah",
@@ -178248,9 +178356,10 @@
       "enriched": false,
       "enrichment_date": null,
       "imdb_id": "tt39845044",
+      "_jw_revert_count": 2,
+      "_discovery_source": "provider_availability_check",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-05",
-      "_jw_revert_count": 1
+      "_jw_reverted_at": "2026-05-06"
     },
     "tv_313972": {
       "title": "\u5f52\u9a6f",
@@ -179703,9 +179812,10 @@
       "enriched": false,
       "enrichment_date": null,
       "imdb_id": "tt33241079",
+      "_jw_revert_count": 2,
+      "_discovery_source": "provider_availability_check",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-05",
-      "_jw_revert_count": 1
+      "_jw_reverted_at": "2026-05-06"
     },
     "tv_220956": {
       "title": "\u0634\u0627\u0645\u0628\u0644\u064a\u0648\u0646",
@@ -179976,10 +180086,22 @@
       "year": 2026,
       "status": "tracking",
       "first_seen": "2026-02-19",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-05-06",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "fuboTV"
+        ]
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": false,
+      "enrichment_date": null,
+      "_jw_revert_reason": "justwatch_no_valid_offers",
+      "_jw_reverted_at": "2026-05-06",
+      "_jw_revert_count": 1
     },
     "1525599": {
       "title": "Meer dan babi pangang",
@@ -180144,8 +180266,7 @@
         "buy": [],
         "streaming": [
           "HBO Max",
-          "HBO Max Amazon Channel",
-          "Spectrum On Demand"
+          "HBO Max Amazon Channel"
         ]
       },
       "intaked_at": "2026-02-19T09:42:30.047478",
@@ -180156,9 +180277,10 @@
       "enriched": false,
       "enrichment_date": null,
       "imdb_id": "tt39398776",
+      "_jw_revert_count": 2,
+      "_discovery_source": "provider_availability_check",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-05",
-      "_jw_revert_count": 1
+      "_jw_reverted_at": "2026-05-06"
     },
     "tv_312508": {
       "title": "Girl on the Run: The Hunt for America's Most Wanted Woman",
@@ -180190,9 +180312,10 @@
       "enriched": false,
       "enrichment_date": null,
       "imdb_id": "tt39847051",
+      "_jw_revert_count": 2,
+      "_discovery_source": "provider_availability_check",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-05",
-      "_jw_revert_count": 1
+      "_jw_reverted_at": "2026-05-06"
     },
     "tv_303983": {
       "title": "Dad And Mom Are Neighbors",
@@ -181125,9 +181248,10 @@
       "enriched": false,
       "enrichment_date": null,
       "imdb_id": "tt1723047",
+      "_jw_revert_count": 2,
+      "_discovery_source": "provider_availability_check",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-05",
-      "_jw_revert_count": 1
+      "_jw_reverted_at": "2026-05-06"
     },
     "tv_308199": {
       "title": "DODA",
@@ -185271,9 +185395,10 @@
       "enriched": false,
       "enrichment_date": null,
       "imdb_id": "tt8559298",
+      "_jw_revert_count": 2,
+      "_discovery_source": "provider_availability_check",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-05",
-      "_jw_revert_count": 1
+      "_jw_reverted_at": "2026-05-06"
     },
     "tv_315419": {
       "title": "Trust Me I Know Sign Language",
@@ -187030,9 +187155,10 @@
       "enriched": false,
       "enrichment_date": null,
       "imdb_id": "tt35997699",
+      "_jw_revert_count": 2,
+      "_discovery_source": "provider_availability_check",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-05",
-      "_jw_revert_count": 1
+      "_jw_reverted_at": "2026-05-06"
     },
     "tv_310935": {
       "title": "Girl from Nowhere: The Reset",
@@ -187066,9 +187192,10 @@
       "enriched": false,
       "enrichment_date": null,
       "imdb_id": "tt39366412",
+      "_jw_revert_count": 2,
+      "_discovery_source": "provider_availability_check",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-05",
-      "_jw_revert_count": 1
+      "_jw_reverted_at": "2026-05-06"
     },
     "tv_315750": {
       "title": "Nordkoreas Geheimnisse",
@@ -187911,9 +188038,10 @@
       "enriched": false,
       "enrichment_date": null,
       "imdb_id": "tt39809846",
+      "_jw_revert_count": 2,
+      "_discovery_source": "provider_availability_check",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-05",
-      "_jw_revert_count": 1
+      "_jw_reverted_at": "2026-05-06"
     },
     "tv_286702": {
       "title": "Women's Hell",
@@ -187981,9 +188109,10 @@
       "enriched": false,
       "enrichment_date": null,
       "imdb_id": "tt35848827",
+      "_jw_revert_count": 2,
+      "_discovery_source": "provider_availability_check",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-05",
-      "_jw_revert_count": 1
+      "_jw_reverted_at": "2026-05-06"
     },
     "tv_315831": {
       "title": "The Victims",
@@ -188042,9 +188171,10 @@
       "enriched": false,
       "enrichment_date": null,
       "imdb_id": "tt0396171",
+      "_jw_revert_count": 2,
+      "_discovery_source": "provider_availability_check",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-05",
-      "_jw_revert_count": 1
+      "_jw_reverted_at": "2026-05-06"
     },
     "tv_311287": {
       "title": "The Story of Nargis",
@@ -193410,9 +193540,10 @@
       "enriched": false,
       "enrichment_date": null,
       "imdb_id": "tt32432428",
+      "_jw_revert_count": 2,
+      "_discovery_source": "provider_availability_check",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-05",
-      "_jw_revert_count": 1
+      "_jw_reverted_at": "2026-05-06"
     },
     "tv_315108": {
       "title": "VivaOne Originals: Ashtine",
@@ -193497,9 +193628,10 @@
       "enriched": false,
       "enrichment_date": null,
       "imdb_id": "tt32432428",
+      "_jw_revert_count": 2,
+      "_discovery_source": "provider_availability_check",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-05",
-      "_jw_revert_count": 1
+      "_jw_reverted_at": "2026-05-06"
     },
     "tv_283673": {
       "title": "That Night",
@@ -193534,9 +193666,10 @@
       "enriched": false,
       "enrichment_date": null,
       "imdb_id": "tt32432428",
+      "_jw_revert_count": 2,
+      "_discovery_source": "provider_availability_check",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-05",
-      "_jw_revert_count": 1
+      "_jw_reverted_at": "2026-05-06"
     },
     "tv_316385": {
       "title": "Touch me if you can",
@@ -194518,7 +194651,8 @@
         "rent": [],
         "buy": [],
         "streaming": [
-          "Hulu"
+          "Hulu",
+          "Adult Swim"
         ]
       },
       "intaked_at": "2026-03-15T09:32:00.784369",
@@ -194529,9 +194663,10 @@
       "enriched": false,
       "enrichment_date": null,
       "imdb_id": "tt30795764",
+      "_jw_revert_count": 2,
+      "_discovery_source": "provider_availability_check",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-05",
-      "_jw_revert_count": 1
+      "_jw_reverted_at": "2026-05-06"
     },
     "tv_256568": {
       "title": "Quelqu\u2019un devrait interdire les dimanches apr\u00e8s-midi",
@@ -195107,12 +195242,21 @@
     "1516175": {
       "title": "Party USA",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-03-17",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-05-06",
+      "providers": {
+        "rent": [
+          "Eventive"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-05-06"
     },
     "1045968": {
       "title": "The Fox",
@@ -200976,15 +201120,24 @@
       ],
       "original_language": "en",
       "providers": {
-        "streaming": [],
         "rent": [],
-        "buy": []
+        "buy": [
+          "Amazon Video",
+          "Fandango At Home"
+        ],
+        "streaming": []
       },
       "intaked_at": "2026-03-29T09:34:43.892527",
       "networks": [
         "Prime Video"
       ],
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": false,
+      "enrichment_date": null,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-05-06",
+      "_jw_revert_count": 1
     },
     "1659138": {
       "title": "Exhibition Gala | ISU World Championships | Prague 2026",
@@ -202573,12 +202726,22 @@
     "1451078": {
       "title": "R\u0101k\u0101s\u0101",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-04-03",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-05-06",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-05-06"
     },
     "1445033": {
       "title": "Kaalidas 2",
@@ -209385,12 +209548,21 @@
     "1301469": {
       "title": "Frogtown",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-04-19",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-05-06",
+      "providers": {
+        "rent": [
+          "Eventive"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-05-06"
     },
     "1676089": {
       "title": "Sabrina Carpenter: Live at Coachella 2026 (Week 2)",
@@ -213528,9 +213700,9 @@
       "_discovery_source": "provider_availability_check",
       "enriched": false,
       "enrichment_date": null,
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-05"
+      "_jw_reverted_at": "2026-05-06"
     },
     "tv_257166": {
       "title": "Paris Police 1910",
@@ -213924,12 +214096,21 @@
     "1667876": {
       "title": "Mudville",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-04-30",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-05-06",
+      "providers": {
+        "rent": [
+          "Eventive"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-05-06"
     },
     "1666325": {
       "title": "WanTongShu",
@@ -214922,12 +215103,21 @@
     "1156806": {
       "title": "Lone Star Bull",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-05-01",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-05-06",
+      "providers": {
+        "rent": [
+          "Eventive"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-05-06"
     },
     "1685763": {
       "title": "Audra McDonald: I Am What I Am",
@@ -215011,9 +215201,9 @@
       "_discovery_source": "provider_availability_check",
       "enriched": false,
       "enrichment_date": null,
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-05"
+      "_jw_reverted_at": "2026-05-06"
     },
     "tv_241601": {
       "title": "Conbody VS Everybody",
@@ -215139,9 +215329,9 @@
       "enriched": false,
       "enrichment_date": null,
       "_discovery_source": "tmdb_type4",
-      "_jw_revert_count": 4,
+      "_jw_revert_count": 5,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-05"
+      "_jw_reverted_at": "2026-05-06"
     },
     "1400923": {
       "title": "You, Always",
@@ -215574,9 +215764,9 @@
       "enriched": false,
       "enrichment_date": null,
       "_discovery_source": "tmdb_type4",
-      "_jw_revert_count": 4,
+      "_jw_revert_count": 5,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-05"
+      "_jw_reverted_at": "2026-05-06"
     },
     "1685471": {
       "title": "Somebody's Watching Me",
@@ -215909,7 +216099,7 @@
     "1588256": {
       "title": "Strawstalker",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "intake_date": "2026-05-05",
       "digital_date": "2026-05-04",
       "providers": {
@@ -215919,12 +216109,9 @@
       },
       "intake_pass": "A",
       "has_providers": true,
-      "enriched": false,
-      "enrichment_date": null,
-      "_discovery_source": "tmdb_type4",
-      "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-05",
-      "_jw_revert_count": 1
+      "enriched": true,
+      "enrichment_date": "2026-05-06",
+      "_discovery_source": "tmdb_type4"
     },
     "1572196": {
       "title": "Perilous Passage: Birth in America",
@@ -215942,9 +216129,9 @@
       "enriched": false,
       "enrichment_date": null,
       "_discovery_source": "tmdb_type4",
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-05",
-      "_jw_revert_count": 1
+      "_jw_reverted_at": "2026-05-06"
     },
     "1687632": {
       "title": "Land of Many Waters",
@@ -216113,6 +216300,249 @@
       "intake_date": "2026-05-05",
       "networks": [
         "GMM 25"
+      ],
+      "has_providers": false
+    },
+    "1688925": {
+      "title": "Gary",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-06",
+      "digital_date": "2026-05-05",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "intake_pass": "A",
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null,
+      "_discovery_source": "tmdb_type4",
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-05-06",
+      "_jw_revert_count": 1
+    },
+    "1688652": {
+      "title": "Gary",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-06",
+      "digital_date": "2026-05-05",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "intake_pass": "A",
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null,
+      "_discovery_source": "tmdb_type4",
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-05-06",
+      "_jw_revert_count": 1
+    },
+    "1491479": {
+      "title": "Grow",
+      "year": 2026,
+      "status": "available",
+      "intake_date": "2026-05-06",
+      "digital_date": "2026-05-05",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "intake_pass": "A",
+      "has_providers": true,
+      "enriched": true,
+      "enrichment_date": "2026-05-06",
+      "_discovery_source": "tmdb_type4"
+    },
+    "1689220": {
+      "title": "Spiralbound",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-06",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1687980": {
+      "title": "My Body Feels with Me",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-06",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1682445": {
+      "title": "Vicente na Cidade Fantasma",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-06",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1671357": {
+      "title": "\"Alternative Routes\" \u2013 Viseu Garage's Rock Echoes from the 80s and 90s",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-06",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1663996": {
+      "title": "L'amore sta bene su tutto",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-06",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1663920": {
+      "title": "Under the Red Roof",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-06",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1583832": {
+      "title": "Cooking Up Democracy",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-06",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1516724": {
+      "title": "Good Vibes Only",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-06",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1515981": {
+      "title": "Halved",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-06",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1509676": {
+      "title": "The Sea",
+      "year": 2025,
+      "status": "tracking",
+      "intake_date": "2026-05-06",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1422103": {
+      "title": "Republic of Pipolipinas",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-06",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1369286": {
+      "title": "What is Love?",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-06",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "982110": {
+      "title": "Kings and Extras: Digging for a Palestinian Image",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-06",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "931285": {
+      "title": "Mortal Kombat II",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-06",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1688666": {
+      "title": "1995 - Hopes and Betrayals",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-06",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1688491": {
+      "title": "Take my youth",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-06",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "tv_320034": {
+      "title": "Flow",
+      "content_type": "limited_series",
+      "tmdb_id": 320034,
+      "status": "tracking",
+      "first_air_date": "2026-04-17",
+      "digital_date": "2026-04-17",
+      "episode_count": 3,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/vVtLkC6LDwR0mjKx3VPmK9Yqvlh.jpg",
+      "synopsis": "A man steps into a bathhouse, only to be drawn into a strange encounter that begins to flow beyond the boundaries.",
+      "genres": [
+        "Drama"
+      ],
+      "original_language": "ko",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-05-06",
+      "networks": [
+        "LIKEY"
       ],
       "has_providers": false
     }
