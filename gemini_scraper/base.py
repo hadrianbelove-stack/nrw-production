@@ -158,6 +158,19 @@ class GeminiFinderBase:
                     logger.error(f"All {max_attempts} {self._finder_name} attempts failed: {e}")
         return None
 
+    def _generate(self, contents, config=None):
+        """Call Gemini generate_content with timeout protection.
+
+        All finders should use this instead of calling
+        self.client.models.generate_content() directly.
+        """
+        return self.client.models.generate_content(
+            model=self.model_name,
+            contents=contents,
+            config=config,
+            timeout=self.timeout_seconds
+        )
+
     def _init_gemini(self) -> bool:
         """Initialize Gemini API client. Returns True if successful."""
         if self._initialized:

@@ -141,11 +141,7 @@ REVIEWS:
             def _make_request():
                 # No grounding needed — we're analyzing provided text, not searching
                 config = self.types.GenerateContentConfig()
-                response = self.client.models.generate_content(
-                    model=self.model_name,
-                    contents=prompt,
-                    config=config
-                )
+                response = self._generate(prompt, config=config)
                 return response.text.strip()
 
             response_text = self._retry_with_backoff(_make_request)

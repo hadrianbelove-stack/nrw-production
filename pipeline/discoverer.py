@@ -790,6 +790,8 @@ class ProviderDiscoverer:
         Returns:
             dict: Results summary {jw_updated, wiki_filled, preorders_graduated, preorders_flagged}
         """
+        gap_fill_start = time.time()
+
         if not os.path.exists('data.json'):
             print("❌ No data.json found")
             return {'jw_updated': 0, 'wiki_filled': 0, 'preorders_graduated': 0, 'preorders_flagged': 0}
@@ -802,7 +804,13 @@ class ProviderDiscoverer:
             print("❌ No movies in data.json")
             return {'jw_updated': 0, 'wiki_filled': 0, 'preorders_graduated': 0, 'preorders_flagged': 0}
 
-        print(f"  📊 Processing {len(existing_movies)} wall movies")
+        # Only gap-fill movies from the last 30 days — older movies have stable watch links
+        cutoff = (datetime.now() - timedelta(days=30)).strftime('%Y-%m-%d')
+        recent_movies = [
+            m for m in existing_movies
+            if (m.get('digital_date') or m.get('release_date') or '') >= cutoff
+        ]
+        print(f"  📊 Processing {len(recent_movies)} of {len(existing_movies)} wall movies (last 30 days)")
 
         # Initialize JustWatch client
         from pipeline.justwatch import JustWatchClient
@@ -843,7 +851,7 @@ class ProviderDiscoverer:
         errors = 0
         today_str = datetime.now().strftime('%Y-%m-%d')
 
-        for i, movie in enumerate(existing_movies):
+        for i, movie in enumerate(recent_movies):
             movie_id = str(movie.get('id', ''))
             title = movie.get('title', 'Unknown')
             year = movie.get('year', '')
@@ -1044,13 +1052,16 @@ class ProviderDiscoverer:
                 self.logger.error(f"Failed to save tracking after gap_fill: {e}")
 
         # Save metrics
+        duration = time.time() - gap_fill_start
         results = {
             'jw_updated': jw_updated,
             'wiki_filled': wiki_filled,
             'preorders_graduated': preorders_graduated,
             'preorders_flagged': preorders_flagged,
             'errors': errors,
-            'total_processed': len(existing_movies)
+            'total_processed': len(recent_movies),
+            'total_wall_movies': len(existing_movies),
+            'duration_seconds': round(duration, 1)
         }
 
         try:
@@ -1059,12 +1070,13 @@ class ProviderDiscoverer:
             with open(metrics_path, 'w') as f:
                 json.dump({
                     'timestamp': datetime.now().isoformat(),
+                    'duration_seconds': round(duration, 1),
                     'results': results
                 }, f, indent=2)
         except Exception as e:
             self.logger.error(f"Failed to save gap fill metrics: {e}")
 
-        print(f"\n  📊 Gap fill results:")
+        print(f"\n  📊 Gap fill results ({duration:.0f}s, {len(recent_movies)} movies):")
         print(f"     Watch links updated: {jw_updated}")
         print(f"     Wikipedia filled: {wiki_filled}")
         print(f"     Pre-orders graduated: {preorders_graduated}")

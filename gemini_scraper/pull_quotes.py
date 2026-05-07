@@ -127,11 +127,7 @@ Response:"""
         # Fetch critic quotes
         def _fetch_critic_quotes():
             api_config = self.types.GenerateContentConfig(tools=[self.grounding_tool])
-            response = self.client.models.generate_content(
-                model=self.model_name,
-                contents=critic_prompt,
-                config=api_config
-            )
+            response = self._generate(critic_prompt, config=api_config)
             return response.text.strip()
 
         try:
@@ -166,11 +162,7 @@ Response:"""
 
         def _fetch_letterboxd_quotes():
             api_config = self.types.GenerateContentConfig(tools=[self.grounding_tool])
-            response = self.client.models.generate_content(
-                model=self.model_name,
-                contents=letterboxd_prompt,
-                config=api_config
-            )
+            response = self._generate(letterboxd_prompt, config=api_config)
             return response.text.strip()
 
         try:

@@ -107,11 +107,7 @@ Response:"""
 
         def _make_api_request():
             api_config = self.types.GenerateContentConfig(tools=[self.grounding_tool])
-            response = self.client.models.generate_content(
-                model=self.model_name,
-                contents=prompt,
-                config=api_config
-            )
+            response = self._generate(prompt, config=api_config)
             return response.text.strip()
 
         try:

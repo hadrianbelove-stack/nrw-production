@@ -70,9 +70,8 @@ Response:"""
 
         def _query():
             self._enforce_rate_limit()
-            response = self.client.models.generate_content(
-                model=self.model_name,
-                contents=prompt,
+            response = self._generate(
+                prompt,
                 config=self.types.GenerateContentConfig(
                     tools=[self.grounding_tool],
                     temperature=0.0
