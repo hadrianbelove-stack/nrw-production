@@ -9,7 +9,6 @@ detailed, scannable diagnostic report with:
 - Zero watch links (cross-referenced with tracking for root cause)
 - JW revert pattern analysis (grouped by reason, excluded platforms, repeat offenders)
 - Pre-orders & upcoming (merged, sorted by date, with link status)
-- Orphan movies (available in tracking but not on wall)
 - Trailer hosting failures
 """
 

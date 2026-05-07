@@ -432,8 +432,8 @@ class MovieIntake:
             time.sleep(0.25)  # Rate limiting
 
         # Save updated tracking database
-        with open('movie_tracking.json', 'w') as f:
-            json.dump(db, f, indent=2, ensure_ascii=False)
+        if not self.storage.atomic_write_json(db, 'movie_tracking.json', backup=True):
+            self.logger.error("Failed to save movie_tracking.json after miniseries intake")
 
         print(f"\n📊 Miniseries intake complete: {new_series_added} new series added")
         self.logger.info(f"Miniseries intake: {new_series_added} new series added")
