@@ -10,15 +10,12 @@ import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import load_env  # Load .env into os.environ
 import json
-import random
 import requests
 import yaml
-from datetime import date, datetime, timedelta, timezone
+from datetime import datetime, timedelta
 import time
 import re
-from urllib.parse import quote
 import logging
-import signal
 from logging.handlers import RotatingFileHandler
 # NOTE: Scraper imports are LAZY (inside methods) to protect intake/discovery phases
 # If a scraper import fails, only enrichment breaks - not the whole pipeline
@@ -41,16 +38,10 @@ except ImportError as e:
     from rt_scraper_playwright import RTScraperPlaywright as HybridRTFinder
     GEMINI_RT_AVAILABLE = False
 
-from constants import PLACEHOLDER_ASINS, get_scraper_config, MAX_ENRICHMENT_BATCH, ENRICHMENT_LOOP_TIMEOUT_MINUTES, MAX_ENRICHMENT_ATTEMPTS, RETRY_BACKOFF_DAYS
 from pipeline.context import PipelineContext
 from pipeline.intake import MovieIntake
 from pipeline.discoverer import ProviderDiscoverer
 from pipeline.enricher import MovieEnricher
-try:
-    from streaming_platform_scraper import StreamingPlatformScraper
-except ImportError:
-    StreamingPlatformScraper = None
-
 # Watch link discovery: cache + Playwright scrapers
 
 
@@ -291,52 +282,6 @@ class DataGenerator:
     # Note: _init_streaming_scraper remains here because generator creates
     # scrapers and passes them to EnrichmentService during initialization.
     # ============================================================================
-
-
-
-    def get_3_day_baseline(self):
-        """Compute 3-day average for intake and newly-digital counts"""
-        try:
-            metrics_file = 'metrics/daily.jsonl'
-            if not os.path.exists(metrics_file):
-                return None
-
-            # Read last 3 days of metrics
-            recent_metrics = []
-            with open(metrics_file, 'r') as f:
-                for line in f:
-                    if line.strip():
-                        recent_metrics.append(json.loads(line))
-
-            # Get last 3 entries
-            if len(recent_metrics) < 3:
-                return {
-                    'days_available': len(recent_metrics),
-                    'intake_avg': None,
-                    'newly_digital_avg': None,
-                    'note': f'Need at least 3 days of data, have {len(recent_metrics)}'
-                }
-
-            last_3 = recent_metrics[-3:]
-            # Handle legacy key names: intaked_today (current) > discovered_today > discovered
-            def get_intake_count(m):
-                return m.get('intaked_today') or m.get('discovered_today') or m.get('discovered') or 0
-            # Handle legacy key names: transitions (current) > newly_digital
-            def get_transition_count(m):
-                return m.get('transitions') or m.get('newly_digital') or 0
-            intake_avg = sum(get_intake_count(m) for m in last_3) / 3
-            newly_digital_avg = sum(get_transition_count(m) for m in last_3) / 3
-
-            return {
-                'days_available': 3,
-                'intake_avg': round(intake_avg, 1),
-                'newly_digital_avg': round(newly_digital_avg, 1),
-                'dates': [m['date'] for m in last_3]
-            }
-
-        except Exception as e:
-            self.logger.error(f"Failed to compute 3-day baseline: {e}")
-            return None
 
     # ------------------------------------------------------------------
     # Intake delegation (implementation in pipeline/intake.py)
@@ -1160,7 +1105,7 @@ class DataGenerator:
             'url': url,
             'recorded_at': datetime.now().isoformat()
         }
-        self.save_cache(self.bad_trailer_urls, 'cache/bad_trailer_urls.json')
+        self.storage.save_cache(self.bad_trailer_urls, 'cache/bad_trailer_urls.json')
 
     def _init_trailer_finder(self):
         """Lazily initialize the Gemini+Playwright trailer finder."""
@@ -1514,19 +1459,6 @@ class DataGenerator:
             return None
 
 
-    def load_cache(self, filename):
-        if os.path.exists(filename):
-            with open(filename, 'r') as f:
-                return json.load(f)
-        return {}
-    
-
-    def save_cache(self, data, filename):
-        os.makedirs(os.path.dirname(filename) if '/' in filename else '.', exist_ok=True)
-        with open(filename, 'w') as f:
-            json.dump(data, f, indent=2)
-
-
     def host_trailer_for_movie(self, movie_id, title, year, youtube_url):
         """Download, upload, and return hosted trailer URL. None on failure.
 
@@ -1558,18 +1490,6 @@ class DataGenerator:
             self.logger.warning(f"Trailer hosting failed for {title}: {type(e).__name__}: {str(e)[:100]}")
             return None
 
-
-    def validate_enrichment_quality(self, result, movie_data, movie_details, movie_id, is_tv=False):
-        """Post-enrichment quality gate — delegates to pipeline/enricher.py"""
-        return self._enricher.validate_enrichment_quality(result, movie_data, movie_details, movie_id, is_tv=is_tv)
-
-    def _run_enrichment_source(self, source_name, fn, enrichment_results, title, year):
-        """Run enrichment source — delegates to pipeline/enricher.py"""
-        return self._enricher._run_enrichment_source(source_name, fn, enrichment_results, title, year)
-
-    def get_enrichment_only_fields(self, movie_id, movie_data, movie_details, force_refresh=False):
-        """Extract enrichment fields — delegates to pipeline/enricher.py"""
-        return self._enricher.get_enrichment_only_fields(movie_id, movie_data, movie_details, force_refresh=force_refresh)
 
     def enrich_newly_available_movies(self, target_id=None) -> int:
         """Enrich newly available movies — delegates to pipeline/enricher.py"""

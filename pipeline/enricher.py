@@ -51,7 +51,6 @@ class MovieEnricher:
         and other data quality issues. Sets _needs_review and _quality_warnings on
         entries that fail checks.
         """
-        from urllib.parse import urlparse
         warnings = []
 
         title = result.get('title', '')
@@ -475,7 +474,6 @@ class MovieEnricher:
         # Create enrichment summary for logging
         success_count = len([v for v in enrichment_results.values() if v == 'success'])
         error_count = len([v for v in enrichment_results.values() if v == 'error'])
-        not_found_count = len([v for v in enrichment_results.values() if v == 'not_found'])
 
         # Enhanced console output with component-level status
         status_icons = {
@@ -547,6 +545,7 @@ class MovieEnricher:
         movie_lookup = {str(m.get('id', '')): i for i, m in enumerate(existing_movies) if m.get('id')}
         _initial_movie_count = len(existing_movies)
         self.ctx.logger.info(f"Enrichment loaded data.json: {_initial_movie_count} movies")
+        tracking_changed = False  # Track whether movie_tracking.json needs saving
 
         # Single-movie mode: skip queue building, enrich just this one
         if target_id:
@@ -555,7 +554,6 @@ class MovieEnricher:
                 print(f"\u274c Movie {target_id} not found in data.json - add it first")
                 return 0
             movie_ids_to_enrich = [target_id]
-            newly_count = 1
             print(f"\U0001f3af Single-movie enrichment: targeting {target_id}")
         else:
 
@@ -574,8 +572,6 @@ class MovieEnricher:
                         print(f"\u26a0\ufe0f State file date ({state_date}) is not today ({today}) - may be stale")
                 except Exception as e:
                     print(f"\u26a0\ufe0f Could not load {newly_available_file}: {e}")
-
-            newly_count = len(movie_ids_to_enrich)
 
             # Pre-order link finder: use Gemini with Google Search grounding to find
             # Amazon and Fandango At Home pre-order URLs for movies approaching release.
