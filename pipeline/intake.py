@@ -14,6 +14,7 @@ import os
 import time
 import requests
 from datetime import date, datetime, timedelta
+from utils.datetime_utils import get_today
 
 
 class MovieIntake:
@@ -242,7 +243,7 @@ class MovieIntake:
 
             # Calculate scan window for audit trail
             start_date = since_datetime.strftime('%Y-%m-%d')
-            end_date = datetime.now().strftime('%Y-%m-%d')
+            end_date = get_today()
 
             # Determine intake mode
             if since_date:
@@ -411,7 +412,7 @@ class MovieIntake:
                         'rent': [p['provider_name'] for p in us_providers.get('rent', [])],
                         'buy': [p['provider_name'] for p in us_providers.get('buy', [])]
                     },
-                    'intake_date': datetime.now().strftime('%Y-%m-%d'),
+                    'intake_date': get_today(),
                     'networks': [n['name'] for n in details.get('networks', [])]
                 }
 
@@ -518,7 +519,7 @@ class MovieIntake:
                         'title': title,
                         'year': year,
                         'status': 'tracking',
-                        'intake_date': datetime.now().strftime('%Y-%m-%d'),
+                        'intake_date': get_today(),
                         'digital_date': None,
                         'providers': {},
                         'intake_pass': pass_name  # Track which pass found this movie
@@ -957,7 +958,7 @@ class MovieIntake:
                         'title': title,
                         'year': year,
                         'status': 'tracking',
-                        'intake_date': datetime.now().strftime('%Y-%m-%d'),
+                        'intake_date': get_today(),
                         'digital_date': None,
                         'providers': {},
                         'intake_pass': 'C',  # Festival pass

@@ -11,6 +11,7 @@ import logging
 from typing import Optional, Dict, Any
 
 from gemini_scraper.base import GeminiFinderBase
+from utils.datetime_utils import is_cache_fresh
 
 logger = logging.getLogger('gemini_scraper.vod_date')
 
@@ -57,18 +58,12 @@ class GeminiVODDateFinder(GeminiFinderBase):
             cached_data = self.cache[cache_key]
             if isinstance(cached_data, dict):
                 scraped_at = cached_data.get('scraped_at', '')
-                if scraped_at:
-                    try:
-                        from datetime import datetime, timedelta
-                        cached_dt = datetime.fromisoformat(scraped_at)
-                        if datetime.now() - cached_dt < timedelta(days=14):
-                            vod_date = cached_data.get('vod_date')
-                            if vod_date:
-                                self.stats['cache_hits'] += 1
-                                logger.debug(f"VOD date cache hit for {title} ({year}): {vod_date}")
-                                return vod_date
-                    except (ValueError, TypeError):
-                        pass
+                if scraped_at and is_cache_fresh(scraped_at, 14):
+                    vod_date = cached_data.get('vod_date')
+                    if vod_date:
+                        self.stats['cache_hits'] += 1
+                        logger.debug(f"VOD date cache hit for {title} ({year}): {vod_date}")
+                        return vod_date
 
         # Initialize Gemini
         if not self._init_gemini():
