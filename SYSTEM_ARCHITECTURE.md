@@ -169,23 +169,25 @@ git push origin main
 | `generate_data.py` | Data processing engine | 20-30s | Daily |
 | `admin.py` | Web admin interface | N/A | Via `./launch_all.sh` |
 
-### 3.3a Pipeline Modules (New - 2025-11-10)
+### 3.3a Pipeline Modules
 
 | Module | Purpose | Lines | Status |
 |--------|---------|-------|--------|
-| `pipeline/storage.py` | File I/O operations, atomic writes, backups, retention policy | 433 | ✅ Production |
-| `pipeline/validation.py` | Schema validation, consistency checks | 433 | ✅ Production |
-| `pipeline/enrichment.py` | Watch link discovery, provider enrichment | 1,086 | ✅ Production |
+| `pipeline/context.py` | Shared `PipelineContext` dataclass (config, logger, storage, enrichment, tmdb_key) | 20 | ✅ Production |
+| `pipeline/intake.py` | TMDB intake — new premieres, miniseries, festival backfill | 987 | ✅ Production |
+| `pipeline/discoverer.py` | Provider discovery — JustWatch availability, gap-fill, pre-order detection | 1,076 | ✅ Production |
+| `pipeline/enricher.py` | Metadata enrichment — scores, watch links, trailers, Wikipedia, RT | 1,291 | ✅ Production |
+| `pipeline/enrichment.py` | Watch link discovery service (JustWatch client, provider mapping) | 1,658 | ✅ Production |
+| `pipeline/storage.py` | File I/O operations, atomic writes, backups, retention policy | 657 | ✅ Production |
+| `pipeline/validation.py` | Schema validation, consistency checks | 439 | ✅ Production |
 
-**Modularization Progress:** Extracted 1,952 lines (22 methods) from generate_data.py monolith
-- **Before:** 3,350 lines in single file
-- **After:** 3,339 lines (integration) + 3 focused modules
-- **Services:** Storage, Validation, Enrichment fully integrated
-- **Method Calls:** 65 call sites updated (23 storage + 8 validation + 34 enrichment)
-- **Testing:** 22/22 extraction tests + 20/20 error handling tests (100%)
-- **Cleanup:** Dead method stubs removed (383 lines), Feb 2026
-
-**See:** [docs/pipeline_extraction_2025-11-10/](docs/pipeline_extraction_2025-11-10/) for detailed documentation
+**Modularization Progress:** Two-phase extraction from the original monolith
+- **Phase 1 (Nov 2025):** Extracted services — Storage, Validation, Enrichment (watch link client)
+- **Phase 2 (May 2026):** Extracted domain logic — Intake, Discovery, Enrichment (metadata)
+- **Before:** 6,076 lines in `generator.py`
+- **After:** 2,858 lines in `generator.py` (coordinator + display + utilities) + 7 focused modules
+- `DataGenerator` keeps thin wrapper methods that delegate to extracted modules — no caller changes needed
+- **See:** [docs/pipeline_extraction_2025-11-10/](docs/pipeline_extraction_2025-11-10/) for Phase 1 documentation
 
 ### 3.4 Scrapers
 

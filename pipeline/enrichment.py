@@ -9,7 +9,7 @@ Handles all watch link discovery across multiple sources with priority waterfall
 import os
 import time
 from datetime import datetime
-from typing import Dict, List, Optional, Union, Any
+from typing import Dict, List, Optional, Any
 import logging
 import re
 from urllib.parse import urljoin

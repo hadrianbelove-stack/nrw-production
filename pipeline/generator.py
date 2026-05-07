@@ -1527,10 +1527,6 @@ class DataGenerator:
             json.dump(data, f, indent=2)
 
 
-    # NOTE: get_watch_links, _enforce_vod_scraper_rate_limit, and _get_platform_deep_link_with_cache
-    # were removed 2026-02-04 as dead code. All watch link logic now lives in pipeline/enrichment.py
-    # and is accessed via self.enrichment.get_watch_links()
-
     def host_trailer_for_movie(self, movie_id, title, year, youtube_url):
         """Download, upload, and return hosted trailer URL. None on failure.
 

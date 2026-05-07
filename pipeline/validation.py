@@ -10,7 +10,7 @@ import os
 import json
 import re
 from datetime import datetime
-from typing import Dict, List, Optional, Union, Any, Tuple, Callable
+from typing import Dict, Optional, Any
 import logging
 from urllib.parse import urlparse
 
@@ -146,11 +146,11 @@ class ValidationService:
                         had_warnings = True
                         return None
                     if not parsed.netloc:
-                        print(f"Warning: Invalid URL netloc{index_str} in '{category}' for {movie_title}")
+                        self.logger.warning(f"Invalid URL netloc{index_str} in '{category}' for {movie_title}")
                         had_warnings = True
                         return None
                 except Exception:
-                    print(f"Warning: Malformed URL{index_str} in '{category}' for {movie_title}")
+                    self.logger.warning(f"Malformed URL{index_str} in '{category}' for {movie_title}")
                     had_warnings = True
                     return None
 
