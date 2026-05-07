@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-05-06T17:04:13.890329",
-  "count": 753,
+  "generated_at": "2026-05-06T19:01:43.755863",
+  "count": 779,
   "movies": [
     {
       "id": "1010755",
@@ -338,6 +338,45 @@
       "_watch_links_verified": "2026-03-25T17:36:18.199225",
       "_trailer_source": "override",
       "display_title": "Formas de atravesar un territorio (Ways to Traverse a Territory)"
+    },
+    {
+      "id": "1012601",
+      "title": "The Mohican",
+      "year": 2024,
+      "digital_date": "2026-04-27",
+      "overview": "",
+      "poster_path": "",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "fuboTV"
+        ]
+      },
+      "watch_links": {},
+      "enriched": false,
+      "_enrichment_status": "reverted",
+      "_enrichment_attempts": 1,
+      "_discovered_at": "",
+      "_discovery_source": "orphan_rescue",
+      "_last_enrichment_attempt": "2026-05-06",
+      "_jw_reverted": true,
+      "_jw_revert_reason": "justwatch_no_valid_offers",
+      "status": "tracking",
+      "categories": {
+        "tier": null,
+        "is_big_time": false,
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
     },
     {
       "id": "1212461",
@@ -1220,10 +1259,10 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "_last_enrichment_attempt": "2026-05-06",
       "imdb_rating": "7.4",
-      "_trailer_source": "broad_search",
+      "_trailer_source": "cache",
       "_digital_date_source": "detection",
       "_needs_review": false,
       "status": "available",
@@ -1254,7 +1293,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "display_title": "Maintenance Artist"
     },
     {
       "id": "1290432",
@@ -11592,6 +11632,419 @@
       "display_title": "Murderer Report"
     },
     {
+      "id": "1623569",
+      "title": "Jackie Fabulous: You Can Leave",
+      "year": 2026,
+      "digital_date": "2026-02-12",
+      "overview": "",
+      "poster_path": "",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Hulu"
+        ]
+      },
+      "watch_links": {},
+      "enriched": false,
+      "_enrichment_status": "failed",
+      "_enrichment_attempts": 1,
+      "_discovered_at": "",
+      "_discovery_source": "orphan_rescue",
+      "_last_enrichment_attempt": "2026-05-06",
+      "categories": {
+        "tier": null,
+        "is_big_time": false,
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
+    {
+      "id": "1443170",
+      "title": "The Prospect",
+      "year": 2025,
+      "digital_date": "2026-02-03",
+      "overview": "",
+      "poster_path": "",
+      "providers": {
+        "rent": [
+          "Fandango At Home"
+        ],
+        "buy": [
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.fac9d79f-20f1-4115-9c7b-534578ebe460&tag=nrw04-20"
+          }
+        ]
+      },
+      "enriched": false,
+      "_enrichment_status": "completed",
+      "_enrichment_attempts": 1,
+      "_discovered_at": "",
+      "_discovery_source": "orphan_rescue",
+      "_last_enrichment_attempt": "2026-05-06",
+      "poster": "https://image.tmdb.org/t/p/w500/7DgwYc5uX0Nvr4816dAS3qQNPLb.jpg",
+      "synopsis": "When high school senior Jerry Vanetti gets rejected from every college he applied to, he hatches a plan to pose as an elite baseball prospect in order to trick a school into giving him an athletic scholarship… despite the fact that he’s never played a sport in his life.",
+      "runtime": 95,
+      "rt_score": null,
+      "imdb_rating": "7.9",
+      "links": {
+        "trailer": "https://www.youtube.com/watch?v=72Od0QS68kk",
+        "rt": "https://www.rottentomatoes.com/m/the_prospect",
+        "imdb": "https://www.imdb.com/title/tt37670932/"
+      },
+      "_trailer_source": "tmdb_official",
+      "crew": {
+        "director": "Dana Donnelly",
+        "cast": [
+          "Rishi Mahesh",
+          "Dana Donnelly",
+          "Prance",
+          "Robert Schultz",
+          "Kel Cripe"
+        ]
+      },
+      "genres": [
+        "Comedy"
+      ],
+      "studio": null,
+      "country": null,
+      "_digital_date_source": "tmdb_type4",
+      "_needs_review": true,
+      "_quality_warnings": [
+        "Service 'Amazon' not in TMDB providers for this title (TMDB has: ['fandango at home'])"
+      ],
+      "status": "available",
+      "_enrichment_gaps": [
+        "rt_score",
+        "wikipedia",
+        "metacritic_score"
+      ],
+      "categories": {
+        "tier": null,
+        "is_big_time": false,
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
+    {
+      "id": "1628468",
+      "title": "Unintended Consequences",
+      "year": 2026,
+      "digital_date": "2026-02-03",
+      "overview": "",
+      "poster_path": "",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
+      "watch_links": {
+        "streaming": [
+          {
+            "service": "Tubi TV",
+            "link": "https://tubitv.com/movies/100053249"
+          }
+        ],
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.61553392-a59a-4e54-afc3-0760ad1a9c52&tag=nrw04-20"
+          }
+        ]
+      },
+      "enriched": false,
+      "_enrichment_status": "completed",
+      "_enrichment_attempts": 1,
+      "_discovered_at": "",
+      "_discovery_source": "orphan_rescue",
+      "_last_enrichment_attempt": "2026-05-06",
+      "poster": "https://image.tmdb.org/t/p/w500/zPsvobJb1x4eMRcieMcBnwSD9QN.jpg",
+      "synopsis": "A self-absorbed and ill-equipped father struggles to reconnect with his estranged and embittered son following his discovery of his affair with another woman. Wanting to defend his mother's honor, his son decides to seek revenge on the mistress.",
+      "runtime": 96,
+      "rt_score": null,
+      "imdb_rating": null,
+      "links": {
+        "trailer": "https://www.youtube.com/watch?v=ML-ZktxSHuQ",
+        "rt": "https://www.rottentomatoes.com/m/unintended_consequences",
+        "imdb": "https://www.imdb.com/title/tt37751129/"
+      },
+      "_trailer_source": "tmdb_official",
+      "crew": {
+        "director": "Richard Polite",
+        "cast": [
+          "DeWayne Owens",
+          "Atalie Hass",
+          "Hope Knight",
+          "Nancy Brook",
+          "Aaron Jennings"
+        ]
+      },
+      "genres": [
+        "Drama"
+      ],
+      "studio": null,
+      "country": null,
+      "_digital_date_source": "tmdb_type4",
+      "_needs_review": true,
+      "_quality_warnings": [
+        "Service 'Tubi TV' not in TMDB providers for this title (TMDB has: ['amazon video'])"
+      ],
+      "status": "available",
+      "_enrichment_gaps": [
+        "rt_score",
+        "wikipedia",
+        "imdb_rating",
+        "metacritic_score"
+      ],
+      "categories": {
+        "tier": null,
+        "is_big_time": false,
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
+    {
+      "id": "858024",
+      "title": "Hamnet",
+      "year": 2025,
+      "digital_date": "2026-02-03",
+      "overview": "",
+      "poster_path": "",
+      "providers": {
+        "rent": [
+          "Apple TV Store"
+        ],
+        "buy": [
+          "Apple TV Store"
+        ],
+        "streaming": []
+      },
+      "watch_links": {
+        "streaming": [
+          {
+            "service": "Peacock",
+            "link": "https://www.peacocktv.com/watch/asset/movies/hamnet/b9ada8e7-9ebd-3516-9f61-a58f239ec5e2"
+          }
+        ],
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.10635317-c01d-45b8-8386-6ee3add2f932&tag=nrw04-20"
+          },
+          {
+            "service": "Apple TV",
+            "link": "https://tv.apple.com/us/movie/hamnet/umc.cmc.p2exlu4b39urhhyqwam13q4r?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1870884516"
+          },
+          {
+            "service": "Fandango",
+            "link": "https://athome.fandango.com/content/browse/details/Hamnet/4718147"
+          },
+          {
+            "service": "FlixFling",
+            "link": "https://www.flixfling.com/justwatch/30773"
+          },
+          {
+            "service": "YouTube",
+            "link": "https://www.youtube.com/watch?v=Ucq_lKUb-dg"
+          },
+          {
+            "service": "Barnes & Noble",
+            "link": "https://www.barnesandnoble.com/w/dvd-hamnet-hamnet/1148685005"
+          },
+          {
+            "service": "GRUV",
+            "link": "https://gruv.com/products/hamnet-collectors-edition-dvd-_1000858751"
+          }
+        ]
+      },
+      "enriched": false,
+      "_enrichment_status": "completed",
+      "_enrichment_attempts": 1,
+      "_discovered_at": "",
+      "_discovery_source": "orphan_rescue",
+      "_last_enrichment_attempt": "2026-05-06",
+      "poster": "https://image.tmdb.org/t/p/w500/vbeyOZm2bvBXcbgPD3v6o94epPX.jpg",
+      "synopsis": "The powerful story of love and loss that inspired the creation of Shakespeare's timeless masterpiece, Hamlet.",
+      "runtime": 125,
+      "rt_score": "87%",
+      "imdb_rating": "8.1",
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Hamnet_(film)",
+        "trailer": "https://www.youtube.com/watch?v=xYcgQMxQwmk",
+        "rt": "https://www.rottentomatoes.com/m/hamnet",
+        "metacritic": "https://www.metacritic.com/movie/hamnet/",
+        "imdb": "https://www.imdb.com/title/tt14905854/"
+      },
+      "_trailer_source": "tmdb_official",
+      "metacritic_score": "84",
+      "crew": {
+        "director": "Chloé Zhao",
+        "cast": [
+          "Jessie Buckley",
+          "Paul Mescal",
+          "Emily Watson",
+          "Joe Alwyn",
+          "Jacobi Jupe"
+        ]
+      },
+      "genres": [
+        "Drama",
+        "Romance",
+        "History"
+      ],
+      "studio": "Hera Pictures",
+      "country": "United Kingdom",
+      "_digital_date_source": "tmdb_type4",
+      "_needs_review": true,
+      "_quality_warnings": [
+        "Service 'Peacock' not in TMDB providers for this title (TMDB has: ['apple tv store'])",
+        "Service 'Amazon' not in TMDB providers for this title (TMDB has: ['apple tv store'])",
+        "Service 'Fandango' not in TMDB providers for this title (TMDB has: ['apple tv store'])",
+        "Service 'FlixFling' not in TMDB providers for this title (TMDB has: ['apple tv store'])",
+        "Service 'YouTube' not in TMDB providers for this title (TMDB has: ['apple tv store'])",
+        "Service 'Barnes & Noble' not in TMDB providers for this title (TMDB has: ['apple tv store'])",
+        "Service 'GRUV' not in TMDB providers for this title (TMDB has: ['apple tv store'])"
+      ],
+      "status": "available",
+      "categories": {
+        "tier": null,
+        "is_big_time": false,
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
+    {
+      "id": "1520453",
+      "title": "New Jersey Devil",
+      "year": 2026,
+      "digital_date": "2026-02-02",
+      "overview": "",
+      "poster_path": "",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
+      "watch_links": {
+        "streaming": [
+          {
+            "service": "Plex",
+            "link": "https://watch.plex.tv/movie/new-jersey-devil?autoplay=1&utm_content=671e3cec7fcc3af18bee7e78&utm_medium=deeplink&utm_source=justWatch-v2-catalog"
+          }
+        ],
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.b9612d5d-03aa-4a73-aea9-e6103d5b9903&tag=nrw04-20"
+          }
+        ]
+      },
+      "enriched": false,
+      "_enrichment_status": "completed",
+      "_enrichment_attempts": 1,
+      "_discovered_at": "",
+      "_discovery_source": "orphan_rescue",
+      "_last_enrichment_attempt": "2026-05-06",
+      "poster": "https://image.tmdb.org/t/p/w500/GMu2QLJjoCsrDvqMXs7e0ZKZzS.jpg",
+      "synopsis": "16-year-old Sophie is in the process of being adopted when a sinister force out of New Jersey folklore begins to torment her new family.",
+      "runtime": 132,
+      "rt_score": "62%",
+      "imdb_rating": "4",
+      "links": {
+        "trailer": "https://www.youtube.com/watch?v=EyypVcNHEf8",
+        "rt": "https://www.rottentomatoes.com/m/new_jersey_drive",
+        "imdb": "https://www.imdb.com/title/tt34125607/"
+      },
+      "_trailer_source": "tmdb_official",
+      "crew": {
+        "director": "Ryan Callaway",
+        "cast": [
+          "Olivia Mignone",
+          "Veronika Babina",
+          "Ryan Callaway",
+          "Sasha Pearson",
+          "Clementine Benstock"
+        ]
+      },
+      "genres": [
+        "Horror",
+        "Mystery"
+      ],
+      "studio": "Shady Dawn Pictures",
+      "country": "United States of America",
+      "_digital_date_source": "tmdb_type4",
+      "_needs_review": true,
+      "_quality_warnings": [
+        "Service 'Plex' not in TMDB providers for this title (TMDB has: ['amazon video'])"
+      ],
+      "status": "available",
+      "_enrichment_gaps": [
+        "wikipedia",
+        "metacritic_score"
+      ],
+      "categories": {
+        "tier": null,
+        "is_big_time": false,
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
+    {
       "id": "1356083",
       "title": "Elie Wiesel: Soul on Fire",
       "digital_date": "2026-04-15",
@@ -11813,7 +12266,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "display_title": "Barrio Triste"
     },
     {
       "id": "1472013",
@@ -11875,7 +12329,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "display_title": "Them Bones"
     },
     {
       "id": "1616131",
@@ -11996,7 +12451,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "display_title": "Love & Other Crimes"
     },
     {
       "id": "1283636",
@@ -12054,7 +12510,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "display_title": "Find Your Friends"
     },
     {
       "id": "1119090",
@@ -12173,7 +12630,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "display_title": "Seven Snipers"
     },
     {
       "id": "1523145",
@@ -12422,7 +12880,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "display_title": "The Furious"
     },
     {
       "id": "1686326",
@@ -12477,7 +12936,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "display_title": "Emi Martínez: The Kid Who Stops Time"
     },
     {
       "id": "1174748",
@@ -12542,7 +13002,8 @@
           "type": "pre_order",
           "price": "$12.99"
         }
-      ]
+      ],
+      "display_title": "The Midway Point"
     },
     {
       "id": "1242332",
@@ -12611,7 +13072,8 @@
           "type": "pre_order",
           "price": "$24.99"
         }
-      ]
+      ],
+      "display_title": "Normal"
     },
     {
       "id": "855435",
@@ -12677,7 +13139,8 @@
         "manual_override": null
       },
       "featured": false,
-      "metacritic_score": "63"
+      "metacritic_score": "63",
+      "display_title": "Faces of Death"
     },
     {
       "id": "1630293",
@@ -12734,7 +13197,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "display_title": "They Wait in Shadows"
     },
     {
       "id": "1195044",
@@ -12801,7 +13265,8 @@
           "type": "pre_order",
           "price": "$14.99"
         }
-      ]
+      ],
+      "display_title": "Cotton Candy Bubble Gum"
     },
     {
       "id": "1257868",
@@ -12859,7 +13324,15 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "display_title": "Couples Weekend",
+      "pre_order_links": [
+        {
+          "service": "Fandango At Home",
+          "link": "https://athome.fandango.com/content/browse/details/couples-weekend-228771/228771",
+          "type": "pre_order"
+        }
+      ]
     },
     {
       "id": "1495041",
@@ -12883,14 +13356,7 @@
         "metacritic": "https://www.metacritic.com/movie/buffet-infinity/",
         "imdb": "https://www.imdb.com/title/tt37671737/"
       },
-      "watch_links": {
-        "vod": [
-          {
-            "service": "Amazon",
-            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.393a576b-d772-4d91-9186-46d820e03a4c&tag=nrw04-20"
-          }
-        ]
-      },
+      "watch_links": {},
       "_enrichment_status": "completed",
       "_discovered_at": "2026-05-02T16:53:53.778953",
       "_tmdb_fetch_failed": false,
@@ -12938,7 +13404,8 @@
       "_enrichment_gaps": [
         "metacritic_score"
       ],
-      "_is_preorder": true
+      "_is_preorder": true,
+      "display_title": "Buffet Infinity"
     },
     {
       "id": "1630423",
@@ -13057,10 +13524,10 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "_last_enrichment_attempt": "2026-05-06",
       "imdb_rating": "6.4",
-      "_trailer_source": "gemini_playwright",
+      "_trailer_source": "cache",
       "_digital_date_source": "detection",
       "_needs_review": false,
       "status": "available",
@@ -13082,7 +13549,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "display_title": "Somebody's Watching Me"
     },
     {
       "id": "1660825",
@@ -13136,10 +13604,10 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "_last_enrichment_attempt": "2026-05-06",
       "imdb_rating": null,
-      "_trailer_source": "gemini_playwright",
+      "_trailer_source": "cache",
       "_digital_date_source": "detection",
       "_needs_review": false,
       "status": "available",
@@ -13172,7 +13640,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "display_title": "Armani and the Birth of Italian Fashion"
     },
     {
       "id": "1596280",
@@ -13227,10 +13696,10 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "_last_enrichment_attempt": "2026-05-06",
       "imdb_rating": "7.9",
-      "_trailer_source": "gemini_playwright",
+      "_trailer_source": "cache",
       "_digital_date_source": "detection",
       "_needs_review": false,
       "status": "available",
@@ -13262,7 +13731,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "display_title": "TheyDream"
     },
     {
       "id": "988099",
@@ -13322,7 +13792,7 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "_last_enrichment_attempt": "2026-05-06",
       "imdb_rating": "6.0",
       "_trailer_source": "tmdb_official",
@@ -13410,10 +13880,10 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "_last_enrichment_attempt": "2026-05-06",
       "imdb_rating": "6.8",
-      "_trailer_source": "gemini_playwright",
+      "_trailer_source": "cache",
       "_digital_date_source": "detection",
       "_needs_review": false,
       "status": "available",
@@ -13493,10 +13963,10 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "_last_enrichment_attempt": "2026-05-06",
       "imdb_rating": "9.1",
-      "_trailer_source": "gemini_playwright",
+      "_trailer_source": "cache",
       "_digital_date_source": "detection",
       "_needs_review": false,
       "status": "available",
@@ -13518,7 +13988,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "display_title": "Unraveling George"
     },
     {
       "id": "1156806",
@@ -13613,7 +14084,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "display_title": "Lone Star Bull"
     },
     {
       "id": "1667876",
@@ -13707,7 +14179,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "display_title": "Mudville"
     },
     {
       "id": "1301469",
@@ -13802,7 +14275,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "display_title": "Frogtown"
     },
     {
       "id": "1451078",
@@ -13986,7 +14460,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "display_title": "Party USA"
     },
     {
       "id": "1178620",
@@ -14166,7 +14641,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "display_title": "Ange & the Boss: Puskas in Australia"
     },
     {
       "id": "1149614",
@@ -14241,97 +14717,6 @@
         "is_big_time": false,
         "is_indie": false,
         "is_foreign": true,
-        "is_staff_pick": false,
-        "is_restoration": false,
-        "is_virtual_screening": false,
-        "is_series": false,
-        "is_documentary": false,
-        "auto_categorized": true,
-        "manual_override": null
-      },
-      "featured": false
-    },
-    {
-      "id": "1446753",
-      "title": "To Love a Narcissist",
-      "digital_date": "2026-05-06",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "synopsis": "Trust is weaponised in this obsessive love story that blurs the line between love and deceit.",
-      "genres": [
-        "Drama"
-      ],
-      "runtime": 95,
-      "year": 2025,
-      "rt_score": null,
-      "providers": {
-        "rent": [],
-        "buy": [
-          "Fandango At Home"
-        ],
-        "streaming": []
-      },
-      "links": {
-        "wikipedia": null,
-        "trailer": "https://www.youtube.com/watch?v=oSlCmcC6vAY",
-        "rt": "https://www.rottentomatoes.com/m/to_love_a_narcissist",
-        "imdb": "https://www.imdb.com/title/tt29964764/",
-        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1446753.mp4"
-      },
-      "watch_links": {
-        "vod": [
-          {
-            "service": "Fandango",
-            "link": "https://athome.fandango.com/content/browse/details/To-Love-a-Narcissist/4917167"
-          }
-        ]
-      },
-      "pre_order_links": [
-        {
-          "service": "Fandango At Home",
-          "link": "https://athome.fandango.com/content/browse/details/To-Love-a-Narcissist/4917167",
-          "price": "$9.99"
-        }
-      ],
-      "_enrichment_status": "completed",
-      "_discovered_at": "2026-05-06T11:59:18.675974",
-      "_tmdb_fetch_failed": false,
-      "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/aPFeLByzqyWrywJDfZ17igaoN7K.jpg",
-      "studio": "Unknown",
-      "budget": 0,
-      "country": "United Kingdom",
-      "original_language": "en",
-      "original_title": "To Love a Narcissist",
-      "crew": {
-        "director": "Raffaello Degruttola",
-        "cast": [
-          "Lyndsey Marshal",
-          "Raffaello Degruttola",
-          "Sule Rimi",
-          "Nathalie Armin",
-          "Stephen Campbell Moore"
-        ]
-      },
-      "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
-      "_last_enrichment_attempt": "2026-05-06",
-      "imdb_rating": null,
-      "_trailer_source": "broad_search",
-      "_digital_date_source": "detection",
-      "_needs_review": false,
-      "status": "available",
-      "_enrichment_gaps": [
-        "rt_score",
-        "wikipedia",
-        "imdb_rating",
-        "metacritic_score"
-      ],
-      "categories": {
-        "tier": null,
-        "is_big_time": false,
-        "is_indie": false,
-        "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
         "is_virtual_screening": false,
@@ -14426,7 +14811,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "display_title": "My Movie Starring Paul Dano"
     },
     {
       "id": "1064021",
@@ -14677,6 +15063,316 @@
         "auto_categorized": true,
         "manual_override": null
       },
+      "featured": false,
+      "display_title": "Beast"
+    },
+    {
+      "id": "1484685",
+      "title": "Match in a Haystack",
+      "year": 2025,
+      "digital_date": "2026-05-06",
+      "overview": "",
+      "poster_path": "",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.81920796-3df7-4689-8a93-1a0856ed00d7&tag=nrw04-20"
+          }
+        ]
+      },
+      "enriched": false,
+      "_enrichment_status": "completed",
+      "_enrichment_attempts": 1,
+      "_discovered_at": "",
+      "_discovery_source": "orphan_rescue",
+      "_last_enrichment_attempt": "2026-05-06",
+      "poster": "https://image.tmdb.org/t/p/w500/2jKQeejT7Nm5U0penaPRW5WODHI.jpg",
+      "synopsis": "When Russia invaded, the women of Ukraine's leading contemporary dance group struggled to find purpose in their work. A search for new forms of resistance ultimately led them back to dance.",
+      "runtime": 85,
+      "rt_score": "74%",
+      "imdb_rating": null,
+      "links": {
+        "trailer": "https://www.youtube.com/watch?v=_dGv7o1BB9Q",
+        "rt": "https://www.rottentomatoes.com/m/match_in_a_haystack",
+        "imdb": "https://www.imdb.com/title/tt35638436/"
+      },
+      "_trailer_source": "gemini_playwright",
+      "crew": {
+        "director": "Joe Hill",
+        "cast": [
+          "Gala Pekha",
+          "Nadine Kupets",
+          "Yuliia Lupita",
+          "Katia Bysheva",
+          "Iuniia Kupets"
+        ]
+      },
+      "genres": [
+        "Documentary"
+      ],
+      "studio": "Dangerous Company",
+      "country": "United States of America",
+      "_digital_date_source": "detection",
+      "_needs_review": false,
+      "status": "available",
+      "_enrichment_gaps": [
+        "wikipedia",
+        "imdb_rating",
+        "metacritic_score"
+      ],
+      "categories": {
+        "tier": null,
+        "is_big_time": false,
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": true,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
+    {
+      "id": "1579182",
+      "title": "The Disappearance of Captain Nairac",
+      "year": 2025,
+      "digital_date": "2026-05-06",
+      "overview": "",
+      "poster_path": "",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.e181c09c-3f55-4f0e-9171-9d268f43e8c3&tag=nrw04-20"
+          }
+        ]
+      },
+      "enriched": false,
+      "_enrichment_status": "completed",
+      "_enrichment_attempts": 1,
+      "_discovered_at": "",
+      "_discovery_source": "orphan_rescue",
+      "_last_enrichment_attempt": "2026-05-06",
+      "poster": "https://image.tmdb.org/t/p/w500/hVr7H6iFJnFzgQeKENwu9KlOtSU.jpg",
+      "synopsis": "May 1977. Undercover British army Captain Robert Nairac is abducted and killed by the IRA - his body secretly buried. Decades on, a former enemy searches for his remains.",
+      "runtime": 93,
+      "rt_score": "64%",
+      "imdb_rating": "7.0",
+      "links": {
+        "trailer": "https://www.youtube.com/watch?v=nujC9lR5GnE",
+        "rt": "https://www.rottentomatoes.com/m/the_disappearance_of_eleanor_rigby_them",
+        "imdb": "https://www.imdb.com/title/tt38624854/"
+      },
+      "_trailer_source": "broad_search",
+      "crew": {
+        "director": "Alison Millar",
+        "cast": [
+          "Lalor Roddy",
+          "Martin McAllister",
+          "Luke Jennings"
+        ]
+      },
+      "genres": [
+        "Documentary"
+      ],
+      "studio": "BBC Northern Ireland",
+      "country": null,
+      "_digital_date_source": "detection",
+      "_needs_review": false,
+      "status": "available",
+      "_enrichment_gaps": [
+        "wikipedia",
+        "metacritic_score"
+      ],
+      "categories": {
+        "tier": null,
+        "is_big_time": false,
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": true,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
+    {
+      "id": "1375985",
+      "title": "Damsel of the Doomed",
+      "year": 2025,
+      "digital_date": "2026-05-06",
+      "overview": "",
+      "poster_path": "",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.4b54c4a8-862e-47e2-ad36-3cdc847a8080&tag=nrw04-20"
+          }
+        ]
+      },
+      "enriched": false,
+      "_enrichment_status": "completed",
+      "_enrichment_attempts": 1,
+      "_discovered_at": "",
+      "_discovery_source": "orphan_rescue",
+      "_last_enrichment_attempt": "2026-05-06",
+      "poster": null,
+      "synopsis": "A horror host searching for fame reluctantly comes face to face with her magical past and ends up manifesting murder.",
+      "runtime": 82,
+      "rt_score": null,
+      "imdb_rating": null,
+      "links": {
+        "trailer": "https://www.youtube.com/watch?v=Bo3OgFfk4nI",
+        "rt": "https://www.rottentomatoes.com/m/bridge_of_the_doomed",
+        "imdb": "https://www.imdb.com/title/tt33317769/"
+      },
+      "_trailer_source": "tmdb_official",
+      "crew": {
+        "director": "Corey Trahan",
+        "cast": [
+          "Sarah Webb"
+        ]
+      },
+      "genres": [
+        "Horror"
+      ],
+      "studio": "HorrorWeb Productions",
+      "country": "United States of America",
+      "_digital_date_source": "detection",
+      "_needs_review": false,
+      "status": "available",
+      "_enrichment_gaps": [
+        "rt_score",
+        "wikipedia",
+        "imdb_rating",
+        "metacritic_score"
+      ],
+      "categories": {
+        "tier": null,
+        "is_big_time": false,
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
+    {
+      "id": "1425499",
+      "title": "Dwarf Neon Mayfield",
+      "year": 2025,
+      "digital_date": "2026-05-06",
+      "overview": "",
+      "poster_path": "",
+      "providers": {
+        "rent": [
+          "Eventive"
+        ],
+        "buy": [],
+        "streaming": []
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Eventive",
+            "link": "https://watch.eventive.org/atlff26/play/69f22d81f4ca8f052a1a782f"
+          }
+        ]
+      },
+      "enriched": false,
+      "_enrichment_status": "completed",
+      "_enrichment_attempts": 1,
+      "_discovered_at": "",
+      "_discovery_source": "orphan_rescue",
+      "_last_enrichment_attempt": "2026-05-06",
+      "poster": "https://image.tmdb.org/t/p/w500/mxMqvpF6JVw1NNLGJJlxdjcpfUQ.jpg",
+      "synopsis": "Intimate and personal moments from rural Kentucky as people struggle to live in the aftermath of a cataclysmic storm, forming a stirring impression of country life in America and a startling portrait of environmental collapse within its impoverished interior.",
+      "runtime": 80,
+      "rt_score": null,
+      "imdb_rating": null,
+      "links": {
+        "trailer": "https://www.youtube.com/watch?v=CmShIkpeuNk"
+      },
+      "_trailer_source": "gemini_playwright",
+      "crew": {
+        "director": "Leland Nally",
+        "cast": []
+      },
+      "genres": [
+        "Documentary"
+      ],
+      "studio": null,
+      "country": null,
+      "_digital_date_source": "detection",
+      "_needs_review": false,
+      "status": "available",
+      "_enrichment_gaps": [
+        "rt_score",
+        "wikipedia",
+        "imdb_rating",
+        "metacritic_score"
+      ],
+      "virtual_screening_info": {
+        "platform": "Eventive",
+        "screening_slug": "atlff26",
+        "screening_name": "2026 Atlanta Film Festival",
+        "available_start": "2026-05-04",
+        "available_end": "2026-05-11",
+        "discovered": "2026-05-06",
+        "last_checked": "2026-05-06",
+        "status": "active"
+      },
+      "categories": {
+        "tier": null,
+        "is_big_time": false,
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": true,
+        "is_series": false,
+        "is_documentary": true,
+        "auto_categorized": true,
+        "manual_override": null
+      },
       "featured": false
     },
     {
@@ -14771,7 +15467,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "display_title": "Grow"
     },
     {
       "id": "1687173",
@@ -14857,7 +15554,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "display_title": "Blackout"
     },
     {
       "id": "1621342",
@@ -15030,94 +15728,6 @@
         "is_big_time": false,
         "is_indie": false,
         "is_foreign": true,
-        "is_staff_pick": false,
-        "is_restoration": false,
-        "is_virtual_screening": false,
-        "is_series": false,
-        "is_documentary": false,
-        "auto_categorized": true,
-        "manual_override": null
-      },
-      "featured": false
-    },
-    {
-      "id": "1430077",
-      "title": "Hokum",
-      "digital_date": "2026-05-05",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "synopsis": "When novelist Ohm Bauman retreats to a remote inn to scatter his parents' ashes, he is consumed by tales of a witch haunting the honeymoon suite. Disturbing visions and a shocking disappearance forces him to confront dark corners of his past.",
-      "genres": [
-        "Horror",
-        "Mystery"
-      ],
-      "runtime": 107,
-      "year": 2026,
-      "rt_score": "87%",
-      "providers": {
-        "rent": [],
-        "buy": [
-          "Fandango At Home"
-        ],
-        "streaming": []
-      },
-      "links": {
-        "wikipedia": "https://en.wikipedia.org/wiki/Hokum_(film)",
-        "trailer": "https://www.youtube.com/watch?v=qU_i5e48KzQ",
-        "rt": "https://www.rottentomatoes.com/m/hokum",
-        "metacritic": "https://www.metacritic.com/movie/hokum/",
-        "imdb": "https://www.imdb.com/title/tt35672862/",
-        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1430077.mp4"
-      },
-      "watch_links": {
-        "vod": [
-          {
-            "service": "Fandango",
-            "link": "https://athome.fandango.com/content/browse/details/Hokum/4953714"
-          }
-        ]
-      },
-      "pre_order_links": [
-        {
-          "service": "Fandango At Home",
-          "link": "https://athome.fandango.com/content/browse/details/Hokum/4953714",
-          "price": "$19.99"
-        }
-      ],
-      "_enrichment_status": "completed",
-      "_discovered_at": "2026-05-05T11:25:52.233945",
-      "_tmdb_fetch_failed": false,
-      "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/jKPWwsbAM6HKURPYQ1eG8DmKMKn.jpg",
-      "studio": "Spooky Pictures",
-      "budget": 5000000,
-      "country": "United Arab Emirates",
-      "original_language": "en",
-      "original_title": "Hokum",
-      "crew": {
-        "director": "Damian McCarthy",
-        "cast": [
-          "Adam Scott",
-          "Peter Coonan",
-          "David Wilmot",
-          "Florence Ordesh",
-          "Will O'Connell"
-        ]
-      },
-      "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
-      "_last_enrichment_attempt": "2026-05-05",
-      "imdb_rating": "7.4",
-      "_trailer_source": "tmdb_official",
-      "metacritic_score": "78",
-      "_digital_date_source": "detection",
-      "_needs_review": false,
-      "status": "available",
-      "categories": {
-        "tier": null,
-        "is_big_time": false,
-        "is_indie": false,
-        "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
         "is_virtual_screening": false,
@@ -15311,109 +15921,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
-    },
-    {
-      "id": "539745",
-      "title": "Animal Farm",
-      "digital_date": "2026-05-05",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "synopsis": "A satirical allegory of revolution and power that traces how a movement for equality is systematically corrupted. As the pigs consolidate control, truth is erased, dissent is crushed, and the farm descends into a ruthless dictatorship.",
-      "genres": [
-        "Animation",
-        "Family",
-        "Comedy",
-        "Drama"
-      ],
-      "runtime": 96,
-      "year": 2026,
-      "rt_score": "24%",
-      "providers": {
-        "rent": [],
-        "buy": [
-          "Fandango At Home"
-        ],
-        "streaming": []
-      },
-      "links": {
-        "wikipedia": "https://en.wikipedia.org/wiki/Animal_Farm_(2025_film)",
-        "trailer": "https://www.youtube.com/watch?v=NN6J7l6ulYk",
-        "rt": "https://www.rottentomatoes.com/m/animal_farm_2025",
-        "metacritic": "https://www.metacritic.com/movie/animal-farm/",
-        "imdb": "https://www.imdb.com/title/tt2467700/",
-        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/539745.mp4"
-      },
-      "watch_links": {
-        "vod": [
-          {
-            "service": "Amazon",
-            "link": "https://www.amazon.com/dp/B0GVGBQC52?tag=justwatch09-20&linkCode=osi&th=1&psc=1"
-          },
-          {
-            "service": "Fandango",
-            "link": "https://athome.fandango.com/content/browse/details/Animal-Farm/4950646"
-          }
-        ]
-      },
-      "pre_order_links": [
-        {
-          "service": "Amazon DVD / Blu-ray",
-          "link": "https://www.amazon.com/dp/B0GVGBQC52?tag=justwatch09-20&linkCode=osi&th=1&psc=1",
-          "price": "$22.98"
-        },
-        {
-          "service": "Fandango At Home",
-          "link": "https://athome.fandango.com/content/browse/details/Animal-Farm/4950646",
-          "price": "$24.99"
-        }
-      ],
-      "_enrichment_status": "completed",
-      "_discovered_at": "2026-05-05T11:19:07.557139",
-      "_tmdb_fetch_failed": false,
-      "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/6pzI1DIlxwAFffw9OZcG6cr031U.jpg",
-      "studio": "Aniventure",
-      "budget": 35000000,
-      "country": "United Kingdom",
-      "original_language": "en",
-      "original_title": "Animal Farm",
-      "crew": {
-        "director": "Andy Serkis",
-        "cast": [
-          "Seth Rogen",
-          "Gaten Matarazzo",
-          "Woody Harrelson",
-          "Kieran Culkin",
-          "Glenn Close"
-        ]
-      },
-      "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
-      "_last_enrichment_attempt": "2026-05-05",
-      "imdb_rating": "2.6",
-      "_trailer_source": "tmdb_official",
-      "metacritic_score": "28",
-      "_digital_date_source": "detection",
-      "_needs_review": true,
-      "_quality_warnings": [
-        "Service 'Amazon' not in TMDB providers for this title (TMDB has: ['fandango at home'])"
-      ],
-      "status": "available",
-      "categories": {
-        "tier": "big_time",
-        "is_big_time": true,
-        "is_indie": false,
-        "is_foreign": false,
-        "is_staff_pick": false,
-        "is_restoration": false,
-        "is_virtual_screening": false,
-        "is_series": false,
-        "is_documentary": false,
-        "auto_categorized": true,
-        "manual_override": null
-      },
-      "featured": false
+      "featured": false,
+      "display_title": "A Man Walks Down the Street"
     },
     {
       "id": "1400731",
@@ -15508,96 +16017,8 @@
         "manual_override": null
       },
       "featured": false,
-      "_watch_links_verified": "2026-05-06T14:18:47.401011"
-    },
-    {
-      "id": "1177767",
-      "title": "Mile End Kicks",
-      "digital_date": "2026-05-05",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "synopsis": "Grace Pine, a 22-year-old music critic, moves to Montreal to write a book on Alanis Morissette's Jagged Little Pill, but her plans are complicated when she becomes romantically involved with two members of an indie band she is covering and decides to become their publicist.",
-      "genres": [
-        "Comedy",
-        "Romance",
-        "Music"
-      ],
-      "runtime": 111,
-      "year": 2026,
-      "rt_score": "88%",
-      "providers": {
-        "rent": [],
-        "buy": [
-          "Fandango At Home"
-        ],
-        "streaming": []
-      },
-      "links": {
-        "wikipedia": "https://en.wikipedia.org/wiki/Mile_End_Kicks",
-        "trailer": "https://www.youtube.com/watch?v=mzaCmw_VrlI",
-        "rt": "https://www.rottentomatoes.com/m/mile_end_kicks",
-        "metacritic": "https://www.metacritic.com/movie/mile-end-kicks/",
-        "imdb": "https://www.imdb.com/title/tt33301434/",
-        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1177767.mp4"
-      },
-      "watch_links": {
-        "vod": [
-          {
-            "service": "Fandango",
-            "link": "https://athome.fandango.com/content/browse/details/Mile-End-Kicks/4969378"
-          }
-        ]
-      },
-      "pre_order_links": [
-        {
-          "service": "Fandango At Home",
-          "link": "https://athome.fandango.com/content/browse/details/Mile-End-Kicks/4969378",
-          "price": "$14.99"
-        }
-      ],
-      "_enrichment_status": "completed",
-      "_discovered_at": "2026-05-05T10:50:38.509660",
-      "_tmdb_fetch_failed": false,
-      "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/qq3Q1tsxAxMqP38YTZKl8m5zmA4.jpg",
-      "studio": "Zapruder Films",
-      "budget": 0,
-      "country": "Canada",
-      "original_language": "en",
-      "original_title": "Mile End Kicks",
-      "crew": {
-        "director": "Chandler Levack",
-        "cast": [
-          "Barbie Ferreira",
-          "Devon Bostick",
-          "Stanley Simons",
-          "Juliette Gariépy",
-          "Robert Naylor"
-        ]
-      },
-      "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
-      "_last_enrichment_attempt": "2026-05-05",
-      "imdb_rating": "6.8",
-      "_trailer_source": "tmdb_official",
-      "metacritic_score": "77",
-      "_digital_date_source": "detection",
-      "_needs_review": false,
-      "status": "available",
-      "categories": {
-        "tier": null,
-        "is_big_time": false,
-        "is_indie": false,
-        "is_foreign": false,
-        "is_staff_pick": false,
-        "is_restoration": false,
-        "is_virtual_screening": false,
-        "is_series": false,
-        "is_documentary": false,
-        "auto_categorized": true,
-        "manual_override": null
-      },
-      "featured": false
+      "_watch_links_verified": "2026-05-06T14:18:47.401011",
+      "display_title": "André Is an Idiot"
     },
     {
       "id": "1320006",
@@ -15677,93 +16098,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
-    },
-    {
-      "id": "1226863",
-      "title": "The Super Mario Galaxy Movie",
-      "digital_date": "2026-05-05",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "synopsis": "Having thwarted Bowser's previous plot to marry Princess Peach, Mario and Luigi now face a fresh threat in Bowser Jr., who is determined to liberate his father from captivity and restore the family legacy. Alongside companions new and old, the brothers travel across the stars to stop the young heir's crusade.",
-      "genres": [
-        "Family",
-        "Comedy",
-        "Adventure",
-        "Fantasy",
-        "Animation"
-      ],
-      "runtime": 98,
-      "year": 2026,
-      "rt_score": "42%",
-      "providers": {},
-      "links": {
-        "wikipedia": "https://en.wikipedia.org/wiki/The_Super_Mario_Galaxy_Movie",
-        "trailer": "https://www.youtube.com/watch?v=En5QZmL5R1s",
-        "rt": "https://www.rottentomatoes.com/m/the_super_mario_galaxy_movie",
-        "metacritic": "https://www.metacritic.com/movie/the-super-mario-galaxy-movie/",
-        "imdb": "https://www.imdb.com/title/tt28650488/",
-        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1226863.mp4"
-      },
-      "watch_links": {
-        "vod": [
-          {
-            "service": "Amazon",
-            "link": "https://www.amazon.com/dp/B0GQTCDNMK?tag=justwatch09-20&linkCode=osi&th=1&psc=1"
-          }
-        ]
-      },
-      "_enrichment_status": "completed",
-      "_discovered_at": "2026-05-03T10:45:08.470778",
-      "_tmdb_fetch_failed": false,
-      "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/eJGWx219ZcEMVQJhAgMiqo8tYY.jpg",
-      "studio": "Illumination",
-      "budget": 110000000,
-      "country": "Japan",
-      "original_language": "en",
-      "original_title": "The Super Mario Galaxy Movie",
-      "crew": {
-        "director": "Michael Jelenic",
-        "cast": [
-          "Chris Pratt",
-          "Charlie Day",
-          "Anya Taylor-Joy",
-          "Jack Black",
-          "Keegan-Michael Key"
-        ]
-      },
-      "_discovery_source": "tmdb_type4",
-      "_preorder_source": "tmdb_type4",
-      "pre_order_links": [
-        {
-          "service": "Amazon DVD / Blu-ray",
-          "link": "https://www.amazon.com/dp/B0GQTCDNMK?tag=justwatch09-20&linkCode=osi&th=1&psc=1",
-          "price": "$19.95"
-        }
-      ],
-      "categories": {
-        "tier": "big_time",
-        "is_big_time": true,
-        "is_indie": false,
-        "is_foreign": false,
-        "is_staff_pick": false,
-        "is_restoration": false,
-        "is_virtual_screening": false,
-        "is_series": false,
-        "is_documentary": false,
-        "auto_categorized": true,
-        "manual_override": null
-      },
       "featured": false,
-      "_enrichment_attempts": 1,
-      "_last_enrichment_attempt": "2026-05-05",
-      "imdb_rating": "6.4",
-      "_trailer_source": "tmdb_official",
-      "metacritic_score": "37",
-      "_digital_date_source": "detection",
-      "_needs_review": false,
-      "status": "available"
+      "display_title": "PH-1"
     },
     {
       "id": "1266127",
@@ -15796,13 +16132,11 @@
           },
           {
             "service": "Apple TV",
-            "link": "https://tv.apple.com/us/movie/ready-or-not-2-here-i-come/umc.cmc.2jbda7qxr4w5fqnmmvlydlefm?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1890035022",
-            "price": "$19.99"
+            "link": "https://tv.apple.com/us/movie/ready-or-not-2-here-i-come/umc.cmc.2jbda7qxr4w5fqnmmvlydlefm?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1890035022"
           },
           {
             "service": "Fandango",
-            "link": "https://athome.fandango.com/content/browse/details/Ready-or-Not-2-Here-I-Come/4941937",
-            "price": "$19.99"
+            "link": "https://athome.fandango.com/content/browse/details/Ready-or-Not-2-Here-I-Come/4941937"
           }
         ]
       },
@@ -15810,7 +16144,7 @@
       "_discovered_at": "2026-05-03T10:43:16.557494",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/13ZcJzSGEqVgDSqsS9U5EkQwPkV.jpg",
+      "poster": "https://image.tmdb.org/t/p/w500/oR1oiQ3YnpWjRE42I0Rb8LBd8Dg.jpg",
       "studio": "Searchlight Pictures",
       "budget": 14000000,
       "country": "United States of America",
@@ -15827,8 +16161,8 @@
         ]
       },
       "_discovery_source": "tmdb_type4",
-      "_enrichment_attempts": 2,
-      "imdb_rating": "6.6",
+      "_enrichment_attempts": 3,
+      "imdb_rating": "6.7",
       "_trailer_source": "tmdb_official",
       "metacritic_score": "58",
       "_digital_date_source": "tmdb_type4",
@@ -15849,22 +16183,9 @@
       },
       "featured": false,
       "_preorder_source": "tmdb_type4",
-      "pre_order_links": [
-        {
-          "service": "Amazon",
-          "link": "https://www.amazon.com/dp/B0CXP9G4L6",
-          "type": "pre_order",
-          "price": "$24.99"
-        },
-        {
-          "service": "Fandango At Home",
-          "link": "https://www.fandangoathome.com/content/browse/details/264645/ready-or-not-2-here-i-come",
-          "type": "pre_order",
-          "price": "$24.99"
-        }
-      ],
-      "_last_enrichment_attempt": "2026-05-05",
-      "_watch_links_verified": "2026-05-06T14:35:58.144765"
+      "_last_enrichment_attempt": "2026-05-06",
+      "_watch_links_verified": "2026-05-06T14:35:58.144765",
+      "display_title": "Ready or Not 2: Here I Come"
     },
     {
       "id": "1325734",
@@ -15897,18 +16218,16 @@
             "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.be546162-8894-4b22-963e-18eb519378bb&tag=nrw04-20"
           },
           {
-            "service": "Plex",
-            "link": "https://watch.plex.tv/movie/the-drama-2026?utm_content=66b2b37ea96123f25e363a1f&utm_medium=deeplink&utm_source=justWatch-v2-catalog"
-          },
-          {
             "service": "Apple TV",
-            "link": "https://tv.apple.com/us/movie/the-drama/umc.cmc.800hz5l60pxczajvkkkdrttx?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1888604764",
-            "price": "$19.99"
+            "link": "https://tv.apple.com/us/movie/the-drama/umc.cmc.800hz5l60pxczajvkkkdrttx?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1888604764"
           },
           {
             "service": "Fandango",
-            "link": "https://athome.fandango.com/content/browse/details/The-Drama/4925208",
-            "price": "$19.99"
+            "link": "https://athome.fandango.com/content/browse/details/The-Drama/4925208"
+          },
+          {
+            "service": "Plex",
+            "link": "https://watch.plex.tv/movie/the-drama-2026?utm_content=66b2b37ea96123f25e363a1f&utm_medium=deeplink&utm_source=justWatch-v2-catalog"
           }
         ]
       },
@@ -15947,29 +16266,277 @@
         "manual_override": null
       },
       "featured": false,
-      "pre_order_links": [
-        {
-          "service": "Amazon",
-          "link": "https://www.amazon.com/dp/B0CX2B65C5",
-          "type": "pre_order",
-          "price": "$24.99"
-        },
-        {
-          "service": "Fandango At Home",
-          "link": "https://www.fandangoathome.com/content/browse/details/264643/the-drama",
-          "type": "pre_order",
-          "price": "$24.99"
-        }
-      ],
       "metacritic_score": "59",
-      "_enrichment_attempts": 1,
-      "_last_enrichment_attempt": "2026-05-05",
-      "imdb_rating": "7.5",
+      "_enrichment_attempts": 2,
+      "_last_enrichment_attempt": "2026-05-06",
+      "imdb_rating": "7.4",
       "_trailer_source": "tmdb_official",
       "_digital_date_source": "tmdb_type4",
       "_needs_review": false,
       "status": "available",
-      "_watch_links_verified": "2026-05-06T14:35:58.557560"
+      "_watch_links_verified": "2026-05-06T14:35:58.557560",
+      "display_title": "The Drama"
+    },
+    {
+      "id": "1430077",
+      "title": "Hokum",
+      "digital_date": "2026-05-05",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "When novelist Ohm Bauman retreats to a remote inn to scatter his parents' ashes, he is consumed by tales of a witch haunting the honeymoon suite. Disturbing visions and a shocking disappearance forces him to confront dark corners of his past.",
+      "genres": [
+        "Horror",
+        "Mystery"
+      ],
+      "runtime": 107,
+      "year": 2026,
+      "rt_score": "87%",
+      "providers": {
+        "rent": [],
+        "buy": [
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Hokum_(film)",
+        "trailer": "https://www.youtube.com/watch?v=qU_i5e48KzQ",
+        "rt": "https://www.rottentomatoes.com/m/hokum",
+        "metacritic": "https://www.metacritic.com/movie/hokum/",
+        "imdb": "https://www.imdb.com/title/tt35672862/",
+        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1430077.mp4"
+      },
+      "watch_links": {},
+      "pre_order_links": [
+        {
+          "service": "Fandango At Home",
+          "link": "https://athome.fandango.com/content/browse/details/Hokum/4953714",
+          "price": "$19.99"
+        }
+      ],
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-05-05T11:25:52.233945",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/jKPWwsbAM6HKURPYQ1eG8DmKMKn.jpg",
+      "studio": "Spooky Pictures",
+      "budget": 5000000,
+      "country": "United Arab Emirates",
+      "original_language": "en",
+      "original_title": "Hokum",
+      "crew": {
+        "director": "Damian McCarthy",
+        "cast": [
+          "Adam Scott",
+          "Peter Coonan",
+          "David Wilmot",
+          "Florence Ordesh",
+          "Will O'Connell"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_enrichment_attempts": 2,
+      "_last_enrichment_attempt": "2026-05-06",
+      "imdb_rating": "7.4",
+      "_trailer_source": "tmdb_official",
+      "metacritic_score": "78",
+      "_digital_date_source": "detection",
+      "_needs_review": false,
+      "status": "available",
+      "categories": {
+        "tier": null,
+        "is_big_time": false,
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false,
+      "display_title": "Hokum",
+      "_is_preorder": true,
+      "_buyonly_preorder": true,
+      "_added_manually": true
+    },
+    {
+      "id": "539745",
+      "title": "Animal Farm",
+      "digital_date": "2026-05-05",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "A satirical allegory of revolution and power that traces how a movement for equality is systematically corrupted. As the pigs consolidate control, truth is erased, dissent is crushed, and the farm descends into a ruthless dictatorship.",
+      "genres": [
+        "Animation",
+        "Family",
+        "Comedy",
+        "Drama"
+      ],
+      "runtime": 96,
+      "year": 2026,
+      "rt_score": "24%",
+      "providers": {
+        "rent": [],
+        "buy": [
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Animal_Farm_(2025_film)",
+        "trailer": "https://www.youtube.com/watch?v=NN6J7l6ulYk",
+        "rt": "https://www.rottentomatoes.com/m/animal_farm_2025",
+        "metacritic": "https://www.metacritic.com/movie/animal-farm/",
+        "imdb": "https://www.imdb.com/title/tt2467700/",
+        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/539745.mp4"
+      },
+      "watch_links": {},
+      "pre_order_links": [
+        {
+          "service": "Fandango At Home",
+          "link": "https://athome.fandango.com/content/browse/details/Animal-Farm/4950646",
+          "price": "$24.99"
+        }
+      ],
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-05-05T11:19:07.557139",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/6pzI1DIlxwAFffw9OZcG6cr031U.jpg",
+      "studio": "Aniventure",
+      "budget": 35000000,
+      "country": "United Kingdom",
+      "original_language": "en",
+      "original_title": "Animal Farm",
+      "crew": {
+        "director": "Andy Serkis",
+        "cast": [
+          "Seth Rogen",
+          "Gaten Matarazzo",
+          "Woody Harrelson",
+          "Kieran Culkin",
+          "Glenn Close"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_enrichment_attempts": 2,
+      "_last_enrichment_attempt": "2026-05-06",
+      "imdb_rating": "2.6",
+      "_trailer_source": "tmdb_official",
+      "metacritic_score": "28",
+      "_digital_date_source": "detection",
+      "_needs_review": true,
+      "_quality_warnings": [
+        "Service 'Amazon' not in TMDB providers for this title (TMDB has: ['fandango at home'])"
+      ],
+      "status": "available",
+      "categories": {
+        "tier": "big_time",
+        "is_big_time": true,
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false,
+      "display_title": "Animal Farm",
+      "_is_preorder": true,
+      "_buyonly_preorder": true,
+      "_added_manually": true
+    },
+    {
+      "id": "1177767",
+      "title": "Mile End Kicks",
+      "digital_date": "2026-05-05",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Grace Pine, a 22-year-old music critic, moves to Montreal to write a book on Alanis Morissette's Jagged Little Pill, but her plans are complicated when she becomes romantically involved with two members of an indie band she is covering and decides to become their publicist.",
+      "genres": [
+        "Comedy",
+        "Romance",
+        "Music"
+      ],
+      "runtime": 111,
+      "year": 2026,
+      "rt_score": "88%",
+      "providers": {
+        "rent": [],
+        "buy": [
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Mile_End_Kicks",
+        "trailer": "https://www.youtube.com/watch?v=mzaCmw_VrlI",
+        "rt": "https://www.rottentomatoes.com/m/mile_end_kicks",
+        "metacritic": "https://www.metacritic.com/movie/mile-end-kicks/",
+        "imdb": "https://www.imdb.com/title/tt33301434/",
+        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1177767.mp4"
+      },
+      "watch_links": {},
+      "pre_order_links": [
+        {
+          "service": "Fandango At Home",
+          "link": "https://athome.fandango.com/content/browse/details/Mile-End-Kicks/4969378",
+          "price": "$14.99"
+        }
+      ],
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-05-05T10:50:38.509660",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/qq3Q1tsxAxMqP38YTZKl8m5zmA4.jpg",
+      "studio": "Zapruder Films",
+      "budget": 0,
+      "country": "Canada",
+      "original_language": "en",
+      "original_title": "Mile End Kicks",
+      "crew": {
+        "director": "Chandler Levack",
+        "cast": [
+          "Barbie Ferreira",
+          "Devon Bostick",
+          "Stanley Simons",
+          "Juliette Gariépy",
+          "Robert Naylor"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_enrichment_attempts": 2,
+      "_last_enrichment_attempt": "2026-05-06",
+      "imdb_rating": "6.8",
+      "_trailer_source": "tmdb_official",
+      "metacritic_score": "77",
+      "_digital_date_source": "detection",
+      "_needs_review": false,
+      "status": "available",
+      "categories": {
+        "tier": null,
+        "is_big_time": false,
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false,
+      "display_title": "Mile End Kicks",
+      "_is_preorder": true,
+      "_buyonly_preorder": true,
+      "_added_manually": true
     },
     {
       "id": "1588256",
@@ -16052,7 +16619,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "display_title": "Strawstalker"
     },
     {
       "id": "1672938",
@@ -16132,7 +16700,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "display_title": "Making of Lord of the Flies"
     },
     {
       "id": "1665152",
@@ -16236,7 +16805,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "display_title": "Kidnapped in Her Own Home: The Martha Carelli Story"
     },
     {
       "id": "1634949",
@@ -16327,7 +16897,8 @@
         "manual_override": null
       },
       "featured": false,
-      "_watch_links_verified": "2026-05-06T14:19:09.805640"
+      "_watch_links_verified": "2026-05-06T14:19:09.805640",
+      "display_title": "Lorne"
     },
     {
       "id": "1415690",
@@ -16412,7 +16983,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "display_title": "Hoagie"
     },
     {
       "id": "1593913",
@@ -16500,7 +17072,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "display_title": "Dummy"
     },
     {
       "id": "1454153",
@@ -16578,7 +17151,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "display_title": "Spare My Bones, Coyote!"
     },
     {
       "id": "1259477",
@@ -16831,7 +17405,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "display_title": "Buen Camino"
     },
     {
       "id": "1403839",
@@ -16997,7 +17572,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "display_title": "Othello"
     },
     {
       "id": "1275983",
@@ -17082,7 +17658,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "display_title": "Sabbath Queen"
     },
     {
       "id": "1242491",
@@ -17161,7 +17738,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "display_title": "LARRY (they/them)"
     },
     {
       "id": "1603231",
@@ -17325,7 +17903,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "display_title": "You, Always"
     },
     {
       "id": "1543360",
@@ -17398,7 +17977,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "display_title": "Mitski: The Land"
     },
     {
       "id": "1565864",
@@ -18240,7 +18820,7 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "_last_enrichment_attempt": "2026-05-06",
       "imdb_rating": null,
       "_digital_date_source": "first_air_date",
@@ -18266,6 +18846,191 @@
         "is_virtual_screening": false,
         "is_series": true,
         "is_documentary": true,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
+    {
+      "id": "916588",
+      "title": "Mars",
+      "year": 2024,
+      "digital_date": "2026-05-01",
+      "overview": "",
+      "poster_path": "",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "watch_links": {},
+      "enriched": false,
+      "_enrichment_status": "reverted",
+      "_enrichment_attempts": 1,
+      "_discovered_at": "",
+      "_discovery_source": "orphan_rescue",
+      "_last_enrichment_attempt": "2026-05-06",
+      "_jw_reverted": true,
+      "_jw_revert_reason": "justwatch_no_match",
+      "status": "tracking",
+      "categories": {
+        "tier": null,
+        "is_big_time": false,
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
+    {
+      "id": "1643321",
+      "title": "She Cries Murder",
+      "year": 2026,
+      "digital_date": "2026-05-01",
+      "overview": "",
+      "poster_path": "",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "watch_links": {},
+      "enriched": false,
+      "_enrichment_status": "reverted",
+      "_enrichment_attempts": 1,
+      "_discovered_at": "",
+      "_discovery_source": "orphan_rescue",
+      "_last_enrichment_attempt": "2026-05-06",
+      "_jw_reverted": true,
+      "_jw_revert_reason": "justwatch_no_match",
+      "status": "tracking",
+      "categories": {
+        "tier": null,
+        "is_big_time": false,
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
+    {
+      "id": "1685586",
+      "title": "The Border Baby",
+      "year": 2026,
+      "digital_date": "2026-05-01",
+      "overview": "",
+      "poster_path": "",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "watch_links": {},
+      "enriched": false,
+      "_enrichment_status": "reverted",
+      "_enrichment_attempts": 1,
+      "_discovered_at": "",
+      "_discovery_source": "orphan_rescue",
+      "_last_enrichment_attempt": "2026-05-06",
+      "_jw_reverted": true,
+      "_jw_revert_reason": "justwatch_no_match",
+      "status": "tracking",
+      "categories": {
+        "tier": null,
+        "is_big_time": false,
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
+    {
+      "id": "1667178",
+      "title": "To Do",
+      "year": 2026,
+      "digital_date": "2026-05-01",
+      "overview": "",
+      "poster_path": "",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "watch_links": {},
+      "enriched": false,
+      "_enrichment_status": "reverted",
+      "_enrichment_attempts": 1,
+      "_discovered_at": "",
+      "_discovery_source": "orphan_rescue",
+      "_last_enrichment_attempt": "2026-05-06",
+      "_jw_reverted": true,
+      "_jw_revert_reason": "justwatch_no_match",
+      "status": "tracking",
+      "categories": {
+        "tier": null,
+        "is_big_time": false,
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
+    {
+      "id": "1025835",
+      "title": "Prey of Wrath",
+      "year": 2026,
+      "digital_date": "2026-05-01",
+      "overview": "",
+      "poster_path": "",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "watch_links": {},
+      "enriched": false,
+      "_enrichment_status": "reverted",
+      "_enrichment_attempts": 1,
+      "_discovered_at": "",
+      "_discovery_source": "orphan_rescue",
+      "_last_enrichment_attempt": "2026-05-06",
+      "_jw_reverted": true,
+      "_jw_revert_reason": "justwatch_no_valid_offers",
+      "status": "tracking",
+      "categories": {
+        "tier": null,
+        "is_big_time": false,
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -18638,6 +19403,194 @@
       "metacritic_score": "71",
       "status": "available",
       "_watch_links_verified": "2026-05-06T14:37:06.860920"
+    },
+    {
+      "id": "1399515",
+      "title": "The Adventure",
+      "year": 2025,
+      "digital_date": "2026-04-30",
+      "overview": "",
+      "poster_path": "",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Rakuten Viki"
+        ]
+      },
+      "watch_links": {},
+      "enriched": false,
+      "_enrichment_status": "reverted",
+      "_enrichment_attempts": 1,
+      "_discovered_at": "",
+      "_discovery_source": "orphan_rescue",
+      "_last_enrichment_attempt": "2026-05-06",
+      "_jw_reverted": true,
+      "_jw_revert_reason": "justwatch_no_valid_offers",
+      "status": "tracking",
+      "categories": {
+        "tier": null,
+        "is_big_time": false,
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
+    {
+      "id": "1625582",
+      "title": "The Kerala Story 2 Goes Beyond",
+      "year": 2026,
+      "digital_date": "2026-04-30",
+      "overview": "",
+      "poster_path": "",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "watch_links": {},
+      "enriched": false,
+      "_enrichment_status": "reverted",
+      "_enrichment_attempts": 1,
+      "_discovered_at": "",
+      "_discovery_source": "orphan_rescue",
+      "_last_enrichment_attempt": "2026-05-06",
+      "_jw_reverted": true,
+      "_jw_revert_reason": "justwatch_no_valid_offers",
+      "status": "tracking",
+      "categories": {
+        "tier": null,
+        "is_big_time": false,
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
+    {
+      "id": "1669412",
+      "title": "I Love You My Narcissist",
+      "year": 2026,
+      "digital_date": "2026-04-30",
+      "overview": "",
+      "poster_path": "",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "watch_links": {},
+      "enriched": false,
+      "_enrichment_status": "reverted",
+      "_enrichment_attempts": 1,
+      "_discovered_at": "",
+      "_discovery_source": "orphan_rescue",
+      "_last_enrichment_attempt": "2026-05-06",
+      "_jw_reverted": true,
+      "_jw_revert_reason": "justwatch_no_match",
+      "status": "tracking",
+      "categories": {
+        "tier": null,
+        "is_big_time": false,
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
+    {
+      "id": "1684451",
+      "title": "Vindication: Search and Rescue",
+      "year": 2026,
+      "digital_date": "2026-04-30",
+      "overview": "",
+      "poster_path": "",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "watch_links": {
+        "streaming": [
+          {
+            "service": "Angel Studios",
+            "link": "https://www.angel.com/title/movie/8a5d0519-d42e-4170-a031-877d4acbab52?utm_source=catalog_feed"
+          }
+        ]
+      },
+      "enriched": false,
+      "_enrichment_status": "completed",
+      "_enrichment_attempts": 1,
+      "_discovered_at": "",
+      "_discovery_source": "orphan_rescue",
+      "_last_enrichment_attempt": "2026-05-06",
+      "poster": "https://image.tmdb.org/t/p/w500/8EgAVmG4gyBQis9CMrunsrZ0cqr.jpg",
+      "synopsis": "Two investigations collide, pulling Gary Travis's private investigation team into a web of digital deception and unexpected government attention.",
+      "runtime": 76,
+      "rt_score": null,
+      "imdb_rating": "9.0",
+      "links": {
+        "trailer": "https://www.youtube.com/watch?v=ue4Tvnws_M8",
+        "rt": "https://www.rottentomatoes.com/m/search_and_rescue_2014",
+        "imdb": "https://www.imdb.com/title/tt39345585/"
+      },
+      "_trailer_source": "tmdb_official",
+      "crew": {
+        "director": "Jarod O'Flaherty",
+        "cast": [
+          "Todd Terry",
+          "Venus Monique",
+          "Brett Varvel",
+          "Marianne Haaland",
+          "Matt Holmes"
+        ]
+      },
+      "genres": [
+        "Drama"
+      ],
+      "studio": "Retta Vision",
+      "country": "United States of America",
+      "_digital_date_source": "tmdb_type4",
+      "_needs_review": false,
+      "status": "available",
+      "_enrichment_gaps": [
+        "rt_score",
+        "wikipedia",
+        "metacritic_score"
+      ],
+      "categories": {
+        "tier": null,
+        "is_big_time": false,
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
     },
     {
       "id": "829487",
@@ -19167,6 +20120,238 @@
       "status": "available"
     },
     {
+      "id": "1405007",
+      "title": "Lemonade Blessing",
+      "year": 2025,
+      "digital_date": "2026-04-29",
+      "overview": "",
+      "poster_path": "",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "watch_links": {},
+      "enriched": false,
+      "_enrichment_status": "reverted",
+      "_enrichment_attempts": 1,
+      "_discovered_at": "",
+      "_discovery_source": "orphan_rescue",
+      "_last_enrichment_attempt": "2026-05-06",
+      "_jw_reverted": true,
+      "_jw_revert_reason": "justwatch_no_valid_offers",
+      "status": "tracking",
+      "categories": {
+        "tier": null,
+        "is_big_time": false,
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
+    {
+      "id": "1421993",
+      "title": "The True Beauty of Being Bitten by a Tick",
+      "year": 2025,
+      "digital_date": "2026-04-29",
+      "overview": "",
+      "poster_path": "",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "watch_links": {},
+      "enriched": false,
+      "_enrichment_status": "reverted",
+      "_enrichment_attempts": 1,
+      "_discovered_at": "",
+      "_discovery_source": "orphan_rescue",
+      "_last_enrichment_attempt": "2026-05-06",
+      "_jw_reverted": true,
+      "_jw_revert_reason": "justwatch_no_match",
+      "status": "tracking",
+      "categories": {
+        "tier": null,
+        "is_big_time": false,
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
+    {
+      "id": "1166688",
+      "title": "Amoeba",
+      "year": 2025,
+      "digital_date": "2026-04-29",
+      "overview": "",
+      "poster_path": "",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "watch_links": {},
+      "enriched": false,
+      "_enrichment_status": "reverted",
+      "_enrichment_attempts": 1,
+      "_discovered_at": "",
+      "_discovery_source": "orphan_rescue",
+      "_last_enrichment_attempt": "2026-05-06",
+      "_jw_reverted": true,
+      "_jw_revert_reason": "justwatch_no_match",
+      "status": "tracking",
+      "categories": {
+        "tier": null,
+        "is_big_time": false,
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
+    {
+      "id": "tv_278113",
+      "title": "Gold Land",
+      "year": 2026,
+      "digital_date": "2026-04-29",
+      "overview": "",
+      "poster_path": "",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Disney Plus"
+        ]
+      },
+      "watch_links": {
+        "streaming": [
+          {
+            "service": "Disney+",
+            "link": "https://disneyplus.bn5x.net/c/1206980/705874/9358?u=https%3A%2F%2Fwww.disneyplus.com%2Fplay%2F0233a10d-51ed-450d-8897-bd14ecd834b3&subId3=justappsvod"
+          }
+        ]
+      },
+      "enriched": false,
+      "_enrichment_status": "completed",
+      "_enrichment_attempts": 1,
+      "_discovered_at": "",
+      "_discovery_source": "orphan_rescue",
+      "_last_enrichment_attempt": "2026-05-06",
+      "poster": "https://image.tmdb.org/t/p/w500/ixBHQ96ryMa8Q0uIOFdUCjqRyy8.jpg",
+      "synopsis": "A young woman working as an airport security agent accidentally comes into possession of a smuggling ring’s gold bars. Caught in a chaotic whirlwind of greed and betrayal among various parties vying for the gold, she becomes consumed by the desire to claim it all for herself.",
+      "runtime": null,
+      "rt_score": null,
+      "imdb_rating": "8.5",
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Gold_Land",
+        "trailer": "https://www.youtube.com/watch?v=DvBcZSAReF0",
+        "imdb": "https://www.imdb.com/title/tt37253311/"
+      },
+      "_trailer_source": "tmdb_official",
+      "crew": {
+        "director": "Hwang Jo-yoon",
+        "cast": [
+          "Park Bo-young",
+          "Kim Sung-cheol",
+          "Lee Hyun-wook",
+          "Lee Kwang-soo",
+          "Kim Hie-won"
+        ]
+      },
+      "genres": [
+        "Drama",
+        "Crime",
+        "Mystery"
+      ],
+      "studio": "Studio Dragon",
+      "country": "KR",
+      "_digital_date_source": "first_air_date",
+      "_needs_review": true,
+      "_quality_warnings": [
+        "Service 'Disney+' not in TMDB providers for this title (TMDB has: ['disney plus'])"
+      ],
+      "status": "available",
+      "_enrichment_gaps": [
+        "rt_score",
+        "metacritic_score"
+      ],
+      "categories": {
+        "tier": null,
+        "is_big_time": false,
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
+    {
+      "id": "tv_318262",
+      "title": "Should I Marry A Murderer?",
+      "year": null,
+      "digital_date": "2026-04-29",
+      "overview": "",
+      "poster_path": "",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
+      },
+      "watch_links": {},
+      "enriched": false,
+      "_enrichment_status": "reverted",
+      "_enrichment_attempts": 1,
+      "_discovered_at": "",
+      "_discovery_source": "orphan_rescue",
+      "_last_enrichment_attempt": "2026-05-06",
+      "_jw_reverted": true,
+      "_jw_revert_reason": "justwatch_no_match",
+      "status": "tracking",
+      "categories": {
+        "tier": null,
+        "is_big_time": false,
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
+    {
       "id": "1450527",
       "title": "Forbidden Fruits",
       "digital_date": "2026-04-28",
@@ -19251,7 +20436,8 @@
       "_trailer_source": "tmdb_official",
       "_digital_date_source": "tmdb_type4",
       "_needs_review": false,
-      "status": "available"
+      "status": "available",
+      "display_title": "Forbidden Fruits"
     },
     {
       "id": "1327819",
@@ -19337,7 +20523,8 @@
       "_trailer_source": "tmdb_official",
       "_digital_date_source": "tmdb_type4",
       "_needs_review": false,
-      "status": "available"
+      "status": "available",
+      "display_title": "Hoppers"
     },
     {
       "id": "1369410",
@@ -19921,7 +21108,7 @@
         "cast": []
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "_last_enrichment_attempt": "2026-05-06",
       "imdb_rating": "6.3",
       "_trailer_source": "tmdb_official",
@@ -19942,6 +21129,44 @@
         "is_virtual_screening": false,
         "is_series": true,
         "is_documentary": true,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false,
+      "display_title": "The Cult of NatureBoy"
+    },
+    {
+      "id": "1323712",
+      "title": "Ketchup on Waffles",
+      "year": 2026,
+      "digital_date": "2026-04-28",
+      "overview": "",
+      "poster_path": "",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "watch_links": {},
+      "enriched": false,
+      "_enrichment_status": "reverted",
+      "_enrichment_attempts": 1,
+      "_discovered_at": "",
+      "_discovery_source": "orphan_rescue",
+      "_last_enrichment_attempt": "2026-05-06",
+      "_jw_reverted": true,
+      "_jw_revert_reason": "justwatch_no_match",
+      "status": "tracking",
+      "categories": {
+        "tier": null,
+        "is_big_time": false,
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
         "auto_categorized": true,
         "manual_override": null
       },
@@ -21141,6 +22366,43 @@
       },
       "featured": false,
       "display_title": "CONTENT"
+    },
+    {
+      "id": "1683106",
+      "title": "I Can't Write",
+      "year": 2026,
+      "digital_date": "2026-04-27",
+      "overview": "",
+      "poster_path": "",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "watch_links": {},
+      "enriched": false,
+      "_enrichment_status": "reverted",
+      "_enrichment_attempts": 1,
+      "_discovered_at": "",
+      "_discovery_source": "orphan_rescue",
+      "_last_enrichment_attempt": "2026-05-06",
+      "_jw_reverted": true,
+      "_jw_revert_reason": "justwatch_no_match",
+      "status": "tracking",
+      "categories": {
+        "tier": null,
+        "is_big_time": false,
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
     },
     {
       "id": "1418512",
@@ -47729,7 +48991,7 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "_last_enrichment_attempt": "2026-05-06",
       "imdb_rating": "7.2",
       "_trailer_source": "override",
@@ -47753,7 +49015,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "display_title": "Rooster Fighter"
     },
     {
       "id": "1440049",
@@ -49483,7 +50746,7 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "_last_enrichment_attempt": "2026-05-06",
       "imdb_rating": "5.5",
       "_trailer_source": "tmdb_official",
@@ -49568,7 +50831,7 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "_last_enrichment_attempt": "2026-05-06",
       "imdb_rating": "6.8",
       "_trailer_source": "tmdb_official",
@@ -49592,7 +50855,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "display_title": "Dynasty: The Murdochs"
     },
     {
       "id": "tv_278143",
@@ -50061,7 +51325,7 @@
         "cast": []
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "_last_enrichment_attempt": "2026-05-06",
       "imdb_rating": "6.4",
       "_digital_date_source": "first_air_date",
@@ -50152,7 +51416,7 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "_last_enrichment_attempt": "2026-05-06",
       "imdb_rating": "7.2",
       "_trailer_source": "tmdb_official",
@@ -50179,7 +51443,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "display_title": "Keluarga Yang Tak Dirindukan"
     },
     {
       "id": "1649887",
@@ -51933,7 +53198,7 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "_last_enrichment_attempt": "2026-05-06",
       "imdb_rating": "6.1",
       "_trailer_source": "tmdb_official",
@@ -54415,7 +55680,7 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "_last_enrichment_attempt": "2026-05-06",
       "imdb_rating": "7.4",
       "_trailer_source": "tmdb_official",
@@ -54500,7 +55765,7 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "_last_enrichment_attempt": "2026-05-06",
       "imdb_rating": "5.8",
       "_digital_date_source": "first_air_date",
@@ -55098,7 +56363,7 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "_last_enrichment_attempt": "2026-05-06",
       "imdb_rating": "6.5",
       "_trailer_source": "tmdb_official",
@@ -55187,7 +56452,7 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "_last_enrichment_attempt": "2026-05-06",
       "imdb_rating": "6.1",
       "_trailer_source": "tmdb_official",
@@ -55211,7 +56476,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "display_title": "Vladimir"
     },
     {
       "id": "tv_276582",
@@ -55277,7 +56543,7 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "_last_enrichment_attempt": "2026-05-06",
       "imdb_rating": "7.2",
       "_trailer_source": "tmdb_official",
@@ -58872,7 +60138,7 @@
         "cast": []
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "_last_enrichment_attempt": "2026-05-06",
       "imdb_rating": "6.1",
       "_trailer_source": "tmdb_official",
@@ -58896,7 +60162,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "display_title": "Girl on the Run: The Hunt for America's Most Wanted Woman"
     },
     {
       "id": "tv_312530",
@@ -58955,7 +60222,7 @@
         "cast": []
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "_last_enrichment_attempt": "2026-05-06",
       "imdb_rating": "6.1",
       "_trailer_source": "tmdb_official",
@@ -58979,7 +60246,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "display_title": "Murder in Glitterball City"
     },
     {
       "id": "tv_262273",
@@ -59039,7 +60307,7 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "_last_enrichment_attempt": "2026-05-06",
       "imdb_rating": "6.8",
       "_trailer_source": "tmdb_official",
@@ -59063,7 +60331,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "display_title": "Being Gordon Ramsay"
     },
     {
       "id": "tv_310239",
@@ -59128,7 +60397,7 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "_last_enrichment_attempt": "2026-05-06",
       "imdb_rating": "7.4",
       "_trailer_source": "tmdb_official",
@@ -59217,7 +60486,7 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "_last_enrichment_attempt": "2026-05-06",
       "imdb_rating": "7.6",
       "_trailer_source": "tmdb_official",
@@ -59299,7 +60568,7 @@
         "cast": []
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "_last_enrichment_attempt": "2026-05-06",
       "imdb_rating": "7.0",
       "_trailer_source": "tmdb_official",
@@ -59322,7 +60591,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "display_title": "The Scream Murder: A True Teen Horror Story"
     },
     {
       "id": "tv_312710",
@@ -59384,7 +60654,7 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "_last_enrichment_attempt": "2026-05-06",
       "imdb_rating": "7.2",
       "_trailer_source": "tmdb_official",
@@ -59409,7 +60679,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "display_title": "Field Generals: History of the Black Quarterback"
     },
     {
       "id": "tv_307536",
@@ -59486,7 +60757,7 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "_last_enrichment_attempt": "2026-05-06",
       "imdb_rating": "5.9",
       "_trailer_source": "tmdb_official",
@@ -59510,7 +60781,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "display_title": "Black and Jewish America: An Interwoven History"
     },
     {
       "id": "tv_288595",
@@ -59596,14 +60868,14 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "_last_enrichment_attempt": "2026-05-06",
       "imdb_rating": "8.2",
       "_trailer_source": "tmdb_official",
       "_digital_date_source": "first_air_date",
       "_needs_review": true,
       "_quality_warnings": [
-        "Service 'The Roku Channel' not in TMDB providers for this title (TMDB has: ['amc plus apple tv channel ', 'philo', 'fandango at home', 'amc+', 'amc+ amazon channel'])"
+        "Service 'The Roku Channel' not in TMDB providers for this title (TMDB has: ['spectrum on demand', 'amc+ roku premium channel', 'apple tv store', 'amc plus apple tv channel ', 'amc+ amazon channel'])"
       ],
       "status": "available",
       "_enrichment_gaps": [
@@ -59624,7 +60896,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "display_title": "Rise of the 49ers"
     },
     {
       "id": "tv_198178",
@@ -59688,7 +60961,7 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "_last_enrichment_attempt": "2026-05-06",
       "imdb_rating": "7.5",
       "_trailer_source": "tmdb_official",
@@ -59714,7 +60987,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "display_title": "Wonder Man"
     },
     {
       "id": "tv_308112",
@@ -59779,7 +61053,7 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "_last_enrichment_attempt": "2026-05-06",
       "imdb_rating": "8.3",
       "_trailer_source": "override",
@@ -59802,7 +61076,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "display_title": "Mel Brooks: The 99 Year Old Man!"
     },
     {
       "id": "1387976",
@@ -60036,7 +61311,7 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "_last_enrichment_attempt": "2026-05-06",
       "imdb_rating": "7.5",
       "_trailer_source": "tmdb_official",
@@ -60061,7 +61336,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "display_title": "Seeking Persephone"
     },
     {
       "id": "tv_287344",
@@ -61774,7 +63050,7 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "_last_enrichment_attempt": "2026-05-06",
       "imdb_rating": "6.6",
       "_trailer_source": "tmdb_official",
@@ -61797,7 +63073,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "display_title": "Lord of the Flies"
     },
     {
       "id": "1429605",
@@ -61981,6 +63258,96 @@
       "display_title": "Good Grief"
     },
     {
+      "id": "1446753",
+      "title": "To Love a Narcissist",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Trust is weaponised in this obsessive love story that blurs the line between love and deceit.",
+      "genres": [
+        "Drama"
+      ],
+      "runtime": 95,
+      "year": 2025,
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": null,
+        "trailer": "https://www.youtube.com/watch?v=oSlCmcC6vAY",
+        "rt": "https://www.rottentomatoes.com/m/to_love_a_narcissist",
+        "imdb": "https://www.imdb.com/title/tt29964764/",
+        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1446753.mp4"
+      },
+      "watch_links": {
+        "streaming": [],
+        "vod": []
+      },
+      "pre_order_links": [
+        {
+          "service": "Fandango At Home",
+          "link": "https://athome.fandango.com/content/browse/details/To-Love-a-Narcissist/4917167",
+          "price": "$9.99"
+        }
+      ],
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-05-06T11:59:18.675974",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/aPFeLByzqyWrywJDfZ17igaoN7K.jpg",
+      "studio": "Unknown",
+      "budget": 0,
+      "country": "United Kingdom",
+      "original_language": "en",
+      "original_title": "To Love a Narcissist",
+      "crew": {
+        "director": "Raffaello Degruttola",
+        "cast": [
+          "Lyndsey Marshal",
+          "Raffaello Degruttola",
+          "Sule Rimi",
+          "Nathalie Armin",
+          "Stephen Campbell Moore"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_enrichment_attempts": 2,
+      "_last_enrichment_attempt": "2026-05-06",
+      "imdb_rating": null,
+      "_trailer_source": "broad_search",
+      "_needs_review": false,
+      "status": "available",
+      "_enrichment_gaps": [
+        "watch_links",
+        "rt_score",
+        "wikipedia",
+        "imdb_rating",
+        "metacritic_score"
+      ],
+      "categories": {
+        "tier": null,
+        "is_big_time": false,
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false,
+      "_is_preorder": true,
+      "_buyonly_preorder": true,
+      "_digital_date_source": "detection",
+      "display_title": "To Love a Narcissist"
+    },
+    {
       "id": "1400736",
       "title": "Ricky",
       "bootstrap_date": false,
@@ -62006,10 +63373,7 @@
         "metacritic": "https://www.metacritic.com/movie/ricky-2025/",
         "imdb": "https://www.imdb.com/title/tt27827635/"
       },
-      "watch_links": {
-        "streaming": [],
-        "vod": []
-      },
+      "watch_links": {},
       "pre_order_links": [
         {
           "service": "Fandango At Home",
@@ -62038,14 +63402,13 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "_last_enrichment_attempt": "2026-05-06",
       "_is_preorder": true,
       "_buyonly_preorder": true,
       "imdb_rating": "6.6",
       "_trailer_source": "tmdb_fallback",
       "metacritic_score": "79",
-      "_digital_date_source": "detection",
       "_needs_review": false,
       "status": "available",
       "_enrichment_gaps": [
@@ -62064,7 +63427,90 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "display_title": "Ricky",
+      "_digital_date_source": "detection"
+    },
+    {
+      "id": "1226863",
+      "title": "The Super Mario Galaxy Movie",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Having thwarted Bowser's previous plot to marry Princess Peach, Mario and Luigi now face a fresh threat in Bowser Jr., who is determined to liberate his father from captivity and restore the family legacy. Alongside companions new and old, the brothers travel across the stars to stop the young heir's crusade.",
+      "genres": [
+        "Family",
+        "Comedy",
+        "Adventure",
+        "Fantasy",
+        "Animation"
+      ],
+      "runtime": 98,
+      "year": 2026,
+      "rt_score": "42%",
+      "providers": {},
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/The_Super_Mario_Galaxy_Movie",
+        "trailer": "https://www.youtube.com/watch?v=En5QZmL5R1s",
+        "rt": "https://www.rottentomatoes.com/m/the_super_mario_galaxy_movie",
+        "metacritic": "https://www.metacritic.com/movie/the-super-mario-galaxy-movie/",
+        "imdb": "https://www.imdb.com/title/tt28650488/",
+        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1226863.mp4"
+      },
+      "watch_links": {},
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-05-03T10:45:08.470778",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/eJGWx219ZcEMVQJhAgMiqo8tYY.jpg",
+      "studio": "Illumination",
+      "budget": 110000000,
+      "country": "Japan",
+      "original_language": "en",
+      "original_title": "The Super Mario Galaxy Movie",
+      "crew": {
+        "director": "Michael Jelenic",
+        "cast": [
+          "Chris Pratt",
+          "Charlie Day",
+          "Anya Taylor-Joy",
+          "Jack Black",
+          "Keegan-Michael Key"
+        ]
+      },
+      "_discovery_source": "tmdb_type4",
+      "_preorder_source": "tmdb_type4",
+      "pre_order_links": [
+        {
+          "service": "Amazon",
+          "link": "https://www.amazon.com/gp/video/detail/B0GRL9HMKK/ref=atv_sr_fle_c_sra5ba81_2_1_2?sr=1-2&pageTypeIdSource=ASIN&pageTypeId=B0GRL61NBM&qid=1778117922010",
+          "type": "pre_order"
+        }
+      ],
+      "categories": {
+        "tier": "big_time",
+        "is_big_time": true,
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false,
+      "_enrichment_attempts": 2,
+      "_last_enrichment_attempt": "2026-05-06",
+      "imdb_rating": "6.4",
+      "_trailer_source": "tmdb_official",
+      "metacritic_score": "37",
+      "_needs_review": false,
+      "status": "available",
+      "display_title": "The Super Mario Galaxy Movie",
+      "_is_preorder": true,
+      "_buyonly_preorder": true,
+      "_added_manually": true
     }
   ],
   "staff_picks": [
@@ -62075,10 +63521,5 @@
     "1608619",
     "1198994"
   ],
-  "latest_playlist_url": "https://www.youtube.com/playlist?list=PLFCewXXu8_tEa6asMmm_fz5R0fklDTeYY",
-  "_metadata": {
-    "last_discovery_write": "2026-05-06T16:46:08.907902",
-    "discovery_count": 764,
-    "schema_version": "2.0"
-  }
+  "latest_playlist_url": "https://www.youtube.com/playlist?list=PLFCewXXu8_tEa6asMmm_fz5R0fklDTeYY"
 }

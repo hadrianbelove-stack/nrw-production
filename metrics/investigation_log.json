@@ -1,1 +1,18 @@
-[]
+[
+  {
+    "date": "2026-05-06",
+    "question": "Why To Love a Narcissist not flagged as pre-order",
+    "scope": "code behavior",
+    "verdict_type": "confirmed",
+    "hypothesis_count": 1,
+    "tool_calls_used": 18
+  },
+  {
+    "date": "2026-05-06",
+    "question": "Why pre-orders (Animal Farm, Mile End Kicks) on wall unflagged",
+    "scope": "data question + code behavior",
+    "verdict_type": "confirmed",
+    "hypothesis_count": 2,
+    "tool_calls_used": 18
+  }
+]

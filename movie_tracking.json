@@ -3917,7 +3917,7 @@
       "premiere_date": "2025-08-08",
       "digital_date": "2026-04-30",
       "has_providers": true,
-      "status": "available",
+      "status": "tracking",
       "added": "2025-09-06T16:47:54.434429",
       "year": 2025,
       "_discovery_source": "provider_availability_check",
@@ -3930,7 +3930,9 @@
       },
       "enriched": false,
       "enrichment_date": null,
-      "_jw_revert_count": 2
+      "_jw_revert_count": 3,
+      "_jw_revert_reason": "justwatch_no_valid_offers",
+      "_jw_reverted_at": "2026-05-06"
     },
     "1305653": {
       "title": "Dongji Rescue",
@@ -5718,8 +5720,8 @@
         ],
         "streaming": []
       },
-      "enriched": false,
-      "enrichment_date": null
+      "enriched": true,
+      "enrichment_date": "2026-05-06"
     },
     "1444384": {
       "title": "Nak Loves Mak Sooo Much!",
@@ -36300,8 +36302,8 @@
       "has_providers": true,
       "year": 2025,
       "_discovery_source": "provider_availability_check",
-      "enriched": false,
-      "enrichment_date": null
+      "enriched": true,
+      "enrichment_date": "2026-05-06"
     },
     "1579145": {
       "title": "Twilight?",
@@ -42900,8 +42902,8 @@
       "discovery_pass": "B",
       "has_providers": true,
       "year": 2025,
-      "enriched": false,
-      "enrichment_date": null,
+      "enriched": true,
+      "enrichment_date": "2026-05-06",
       "imdb_id": "tt14905854"
     },
     "812583": {
@@ -90726,8 +90728,8 @@
       "has_providers": true,
       "year": 2025,
       "premiere_date": "2025-02-01",
-      "enriched": false,
-      "enrichment_date": null,
+      "enriched": true,
+      "enrichment_date": "2026-05-06",
       "imdb_id": "tt37670932"
     },
     "1441978": {
@@ -94426,8 +94428,8 @@
       "year": 2025,
       "premiere_date": "2025-03-01",
       "_discovery_source": "provider_availability_check",
-      "enriched": false,
-      "enrichment_date": null
+      "enriched": true,
+      "enrichment_date": "2026-05-06"
     },
     "1362885": {
       "title": "Lovebug",
@@ -102087,7 +102089,7 @@
     },
     "1405007": {
       "title": "Lemonade Blessing",
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-04",
       "digital_date": "2026-04-29",
       "providers": {
@@ -102102,7 +102104,9 @@
       "_discovery_source": "tmdb_type4",
       "enriched": false,
       "enrichment_date": null,
-      "_jw_revert_count": 2
+      "_jw_revert_count": 3,
+      "_jw_revert_reason": "justwatch_no_valid_offers",
+      "_jw_reverted_at": "2026-05-06"
     },
     "1403519": {
       "title": "The Scout",
@@ -103142,8 +103146,8 @@
       "year": 2025,
       "premiere_date": "2025-06-01",
       "_discovery_source": "provider_availability_check",
-      "enriched": false,
-      "enrichment_date": null
+      "enriched": true,
+      "enrichment_date": "2026-05-06"
     },
     "1378489": {
       "title": "La orquesta y el silencio",
@@ -110454,7 +110458,7 @@
     },
     "1177767": {
       "title": "Mile End Kicks",
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-04",
       "digital_date": "2026-05-05",
       "providers": {
@@ -110470,7 +110474,8 @@
       "premiere_date": "2025-09-04",
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-05-05"
+      "enrichment_date": "2026-05-05",
+      "_buyonly_preorder": true
     },
     "1011210": {
       "title": "Deep End",
@@ -114778,7 +114783,7 @@
     "916588": {
       "title": "Mars",
       "year": 2024,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-06",
       "digital_date": "2026-05-01",
       "providers": {
@@ -114792,7 +114797,9 @@
       "_discovery_source": "tmdb_type4",
       "enriched": false,
       "enrichment_date": null,
-      "_jw_revert_count": 2
+      "_jw_revert_count": 3,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-05-06"
     },
     "1301585": {
       "title": "The Faerie Queene",
@@ -115696,7 +115703,7 @@
     "1012601": {
       "title": "The Mohican",
       "year": 2024,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-06",
       "providers": {
         "rent": [],
@@ -115713,7 +115720,9 @@
       "imdb_id": "tt33030107",
       "_discovery_source": "provider_availability_check",
       "digital_date": "2026-04-27",
-      "_jw_revert_count": 2
+      "_jw_revert_count": 3,
+      "_jw_revert_reason": "justwatch_no_valid_offers",
+      "_jw_reverted_at": "2026-05-06"
     },
     "1341000": {
       "title": "Seydou - Dreams Have No Color",
@@ -118732,7 +118741,7 @@
     "1421993": {
       "title": "The True Beauty of Being Bitten by a Tick",
       "year": 2025,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-06",
       "digital_date": "2026-04-29",
       "providers": {
@@ -118746,7 +118755,9 @@
       "_discovery_source": "tmdb_type4",
       "enriched": false,
       "enrichment_date": null,
-      "_jw_revert_count": 2
+      "_jw_revert_count": 3,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-05-06"
     },
     "1421974": {
       "title": "Creede U.S.A.",
@@ -119698,9 +119709,8 @@
     "1446753": {
       "title": "To Love a Narcissist",
       "year": 2025,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-06",
-      "digital_date": "2026-05-06",
       "providers": {
         "rent": [],
         "buy": [
@@ -119713,7 +119723,8 @@
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-05-06"
+      "enrichment_date": "2026-05-06",
+      "_buyonly_preorder": true
     },
     "1443302": {
       "title": "The Snare",
@@ -123319,7 +123330,7 @@
     "1166688": {
       "title": "Amoeba",
       "year": 2025,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-06",
       "digital_date": "2026-04-29",
       "providers": {
@@ -123333,7 +123344,9 @@
       "_discovery_source": "tmdb_type4",
       "enriched": false,
       "enrichment_date": null,
-      "_jw_revert_count": 2
+      "_jw_revert_count": 3,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-05-06"
     },
     "1031084": {
       "title": "The Currents",
@@ -132188,7 +132201,7 @@
     "539745": {
       "title": "Animal Farm",
       "year": 2025,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-01-06",
       "digital_date": "2026-05-05",
       "providers": {
@@ -132203,7 +132216,8 @@
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-05-05"
+      "enrichment_date": "2026-05-05",
+      "_buyonly_preorder": true
     },
     "1547026": {
       "title": "Thoughts of Infinity",
@@ -171146,8 +171160,8 @@
       },
       "intake_pass": "A",
       "has_providers": true,
-      "enriched": false,
-      "enrichment_date": null,
+      "enriched": true,
+      "enrichment_date": "2026-05-06",
       "imdb_id": "tt37751129"
     },
     "1520453": {
@@ -171167,8 +171181,8 @@
       },
       "intake_pass": "A",
       "has_providers": true,
-      "enriched": false,
-      "enrichment_date": null,
+      "enriched": true,
+      "enrichment_date": "2026-05-06",
       "imdb_id": "tt34125607"
     },
     "1628443": {
@@ -183994,7 +184008,7 @@
     "1625582": {
       "title": "The Kerala Story 2 Goes Beyond",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-02-27",
       "digital_date": "2026-04-30",
       "providers": {
@@ -184007,7 +184021,9 @@
       "_discovery_source": "tmdb_type4",
       "enriched": false,
       "enrichment_date": null,
-      "_jw_revert_count": 2
+      "_jw_revert_count": 3,
+      "_jw_revert_reason": "justwatch_no_valid_offers",
+      "_jw_reverted_at": "2026-05-06"
     },
     "1624919": {
       "title": "Grade 10D",
@@ -191246,7 +191262,7 @@
       "_is_preorder": true,
       "_preorder_source": "tmdb_type4",
       "enriched": true,
-      "enrichment_date": "2026-05-05"
+      "enrichment_date": "2026-05-06"
     },
     "1084187": {
       "title": "Pretty Lethal",
@@ -192885,7 +192901,7 @@
     "1430077": {
       "title": "HOKUM",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-03-12",
       "digital_date": "2026-05-05",
       "providers": {
@@ -192900,7 +192916,8 @@
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-05-05"
+      "enrichment_date": "2026-05-05",
+      "_buyonly_preorder": true
     },
     "tv_316343": {
       "title": "Une Femme à Kosyam",
@@ -196309,7 +196326,7 @@
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
       "enriched": true,
-      "enrichment_date": "2026-05-05"
+      "enrichment_date": "2026-05-06"
     },
     "tv_316811": {
       "title": "Braunschlag 1986",
@@ -201984,7 +202001,7 @@
     "1226863": {
       "title": "The Super Mario Galaxy Movie",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-04-01",
       "digital_date": "2026-05-05",
       "providers": {
@@ -201998,7 +202015,8 @@
       "_is_preorder": true,
       "_preorder_source": "tmdb_type4",
       "enriched": true,
-      "enrichment_date": "2026-05-05"
+      "enrichment_date": "2026-05-05",
+      "_buyonly_preorder": true
     },
     "1046699": {
       "title": "Behind the Palm Trees",
@@ -208024,7 +208042,7 @@
     "1643321": {
       "title": "She Cries Murder",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-04-17",
       "digital_date": "2026-05-01",
       "providers": {
@@ -208037,7 +208055,9 @@
       "has_providers": true,
       "enriched": false,
       "enrichment_date": null,
-      "_jw_revert_count": 2
+      "_jw_revert_count": 3,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-05-06"
     },
     "1634949": {
       "title": "Lorne",
@@ -211896,7 +211916,7 @@
     "1669412": {
       "title": "I Love You My Narcissist",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-04-24",
       "digital_date": "2026-04-30",
       "providers": {
@@ -211909,7 +211929,9 @@
       "enriched": false,
       "enrichment_date": null,
       "_discovery_source": "tmdb_type4",
-      "_jw_revert_count": 1
+      "_jw_revert_count": 2,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-05-06"
     },
     "1668513": {
       "title": "November",
@@ -213548,7 +213570,7 @@
     "1323712": {
       "title": "Ketchup on Waffles",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-04-28",
       "digital_date": "2026-04-28",
       "providers": {
@@ -213561,7 +213583,9 @@
       "_discovery_source": "tmdb_type4",
       "enriched": false,
       "enrichment_date": null,
-      "_jw_revert_count": 2
+      "_jw_revert_count": 3,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-05-06"
     },
     "1683444": {
       "title": "Nick Fuentes and Keith Woods visit Rome",
@@ -213585,7 +213609,7 @@
     "1683106": {
       "title": "I Can't Write",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-04-28",
       "digital_date": "2026-04-27",
       "providers": {
@@ -213598,7 +213622,9 @@
       "_discovery_source": "tmdb_type4",
       "enriched": false,
       "enrichment_date": null,
-      "_jw_revert_count": 2
+      "_jw_revert_count": 3,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-05-06"
     },
     "1682640": {
       "title": "Koş Yoldaş! Arkanda Eski Dünya Var",
@@ -214041,9 +214067,8 @@
       ],
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "enriched": false,
-      "enrichment_date": null,
-      "_jw_revert_count": 2
+      "enriched": true,
+      "enrichment_date": "2026-05-06"
     },
     "1684451": {
       "title": "Vindication: Search and Rescue",
@@ -214059,9 +214084,8 @@
       "intake_pass": "A",
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
-      "enriched": false,
-      "enrichment_date": null,
-      "_jw_revert_count": 2
+      "enriched": true,
+      "enrichment_date": "2026-05-06"
     },
     "1685212": {
       "title": "1936, le Front Populaire, entre joie et colères",
@@ -214602,7 +214626,7 @@
       "title": "Should I Marry A Murderer?",
       "content_type": "limited_series",
       "tmdb_id": 318262,
-      "status": "available",
+      "status": "tracking",
       "first_air_date": "2026-04-29",
       "digital_date": "2026-04-29",
       "episode_count": 3,
@@ -214630,7 +214654,9 @@
       "_discovery_source": "provider_availability_check",
       "enriched": false,
       "enrichment_date": null,
-      "_jw_revert_count": 2
+      "_jw_revert_count": 3,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-05-06"
     },
     "tv_321127": {
       "title": "The Anchors",
@@ -214660,7 +214686,7 @@
     "1685586": {
       "title": "The Border Baby",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-05-01",
       "digital_date": "2026-05-01",
       "providers": {
@@ -214673,12 +214699,14 @@
       "_discovery_source": "tmdb_type4",
       "enriched": false,
       "enrichment_date": null,
-      "_jw_revert_count": 2
+      "_jw_revert_count": 3,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-05-06"
     },
     "1667178": {
       "title": "To Do",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-05-01",
       "digital_date": "2026-05-01",
       "providers": {
@@ -214691,7 +214719,9 @@
       "_discovery_source": "tmdb_type4",
       "enriched": false,
       "enrichment_date": null,
-      "_jw_revert_count": 2
+      "_jw_revert_count": 3,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-05-06"
     },
     "1007757": {
       "title": "Swapped",
@@ -215380,7 +215410,7 @@
     "1025835": {
       "title": "Prey of Wrath",
       "year": 2026,
-      "status": "available",
+      "status": "tracking",
       "first_seen": "2026-05-02",
       "digital_date": "2026-05-01",
       "providers": {
@@ -215393,7 +215423,9 @@
       "enriched": false,
       "enrichment_date": null,
       "_discovery_source": "tmdb_type4",
-      "_jw_revert_count": 1
+      "_jw_revert_count": 2,
+      "_jw_revert_reason": "justwatch_no_valid_offers",
+      "_jw_reverted_at": "2026-05-06"
     },
     "1683689": {
       "title": "FAT YEARS OF FATMULL",

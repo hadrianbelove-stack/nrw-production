@@ -4083,6 +4083,12 @@ PRICE: [price or UNKNOWN]
                         if _ev is None and existing_movies[movie_index].get(_ek) is not None:
                             continue
                         existing_movies[movie_index][_ek] = _ev
+                    # Buy-only pre-orders: enrichment fetched watch_links before the
+                    # buy-only detection cleared the cache — wipe them so the site
+                    # shows pre_order_links instead of regular VOD buttons.
+                    if existing_movies[movie_index].get('_buyonly_preorder'):
+                        existing_movies[movie_index]['watch_links'] = {}
+
                     # Mark enrichment status as completed
                     existing_movies[movie_index]['_enrichment_status'] = 'completed'
                     # Ensure status is available (may be stale 'tracking' from a prior revert)
@@ -4644,14 +4650,15 @@ PRICE: [price or UNKNOWN]
           VOD services (e.g., Apple TV lists 2-5 days after Amazon)
         - MERGES new services into existing watch_links (never removes)
         - Graduates pre-orders when rent/streaming offers appear
+        - Retroactively flags buy-only movies as pre-orders if missed during initial enrichment
         - Fills missing Wikipedia links using fast API methods (no Playwright)
 
         Returns:
-            dict: Results summary {jw_updated, wiki_filled, preorders_graduated}
+            dict: Results summary {jw_updated, wiki_filled, preorders_graduated, preorders_flagged}
         """
         if not os.path.exists('data.json'):
             print("❌ No data.json found")
-            return {'jw_updated': 0, 'wiki_filled': 0, 'preorders_graduated': 0}
+            return {'jw_updated': 0, 'wiki_filled': 0, 'preorders_graduated': 0, 'preorders_flagged': 0}
 
         with open('data.json', 'r') as f:
             display_data = json.load(f)
@@ -4659,7 +4666,7 @@ PRICE: [price or UNKNOWN]
         existing_movies = display_data.get('movies', [])
         if not existing_movies:
             print("❌ No movies in data.json")
-            return {'jw_updated': 0, 'wiki_filled': 0, 'preorders_graduated': 0}
+            return {'jw_updated': 0, 'wiki_filled': 0, 'preorders_graduated': 0, 'preorders_flagged': 0}
 
         print(f"  📊 Processing {len(existing_movies)} wall movies")
 
@@ -4696,6 +4703,7 @@ PRICE: [price or UNKNOWN]
         jw_updated = 0
         wiki_filled = 0
         preorders_graduated = 0
+        preorders_flagged = 0
         unsaved_count = 0
         save_interval = 25
         errors = 0
@@ -4813,6 +4821,56 @@ PRICE: [price or UNKNOWN]
                             tracking_data['movies'][movie_id].pop('_buyonly_preorder', None)
                             tracking_changed = True
 
+                    # Retroactive buy-only pre-order detection
+                    # Catches movies that were enriched before the buy-only code existed
+                    if not is_preorder and result.get('buy_only') and not (result.get('has_rent') or result.get('has_streaming')):
+                        _preorder_overrides = self.config.get('preorder_overrides', {})
+                        _po_override = _preorder_overrides.get(movie_id)
+                        if _po_override is False:
+                            pass  # Explicitly not a pre-order
+                        elif _po_override is True:
+                            existing_movies[i]['_is_preorder'] = True
+                            preorders_flagged += 1
+                            unsaved_count += 1
+                            print(f"  🏷️  {title} — flagged as pre-order (manual override, gap-fill)")
+                        else:
+                            # Type 4 date check
+                            _gf_type4 = self.fetch_tmdb_type4_date(movie_id)
+                            _gf_genuine = False
+                            _gf_preorder_date = None
+                            if _gf_type4:
+                                try:
+                                    _gf_t4dt = datetime.strptime(_gf_type4, '%Y-%m-%d')
+                                    _gf_today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+                                    if _gf_t4dt <= _gf_today:
+                                        _gf_genuine = True
+                                    else:
+                                        _gf_preorder_date = _gf_type4
+                                except ValueError:
+                                    pass
+
+                            # Page check fallback
+                            if not _gf_genuine and not _gf_preorder_date:
+                                _gf_page = self._check_preorder_page(result, title)
+                                if _gf_page == 'available':
+                                    _gf_genuine = True
+
+                            if not _gf_genuine:
+                                existing_movies[i]['_is_preorder'] = True
+                                existing_movies[i]['_buyonly_preorder'] = True
+                                _jw_vod = new_links.get('vod', []) if new_links else []
+                                if _jw_vod:
+                                    existing_movies[i]['pre_order_links'] = _jw_vod
+                                if _gf_preorder_date:
+                                    existing_movies[i]['digital_date'] = _gf_preorder_date
+                                existing_movies[i]['watch_links'] = {}
+                                if tracking_data and tracking_data.get('movies', {}).get(movie_id):
+                                    tracking_data['movies'][movie_id]['_buyonly_preorder'] = True
+                                    tracking_changed = True
+                                preorders_flagged += 1
+                                unsaved_count += 1
+                                print(f"  🏷️  {title} — retroactive pre-order (buy-only, gap-fill)")
+
                 # --- Wikipedia fill (only if missing) ---
                 links = movie.get('links', {})
                 if not links.get('wikipedia'):
@@ -4869,15 +4927,21 @@ PRICE: [price or UNKNOWN]
             try:
                 with open(tracking_path, 'w') as f:
                     json.dump(tracking_data, f, indent=2)
-                print(f"  💾 Tracking synced ({preorders_graduated} graduation(s))")
+                _sync_parts = []
+                if preorders_graduated:
+                    _sync_parts.append(f"{preorders_graduated} graduation(s)")
+                if preorders_flagged:
+                    _sync_parts.append(f"{preorders_flagged} flagged")
+                print(f"  💾 Tracking synced ({', '.join(_sync_parts) if _sync_parts else 'updated'})")
             except Exception as e:
-                self.logger.error(f"Failed to save tracking after gap_fill graduation: {e}")
+                self.logger.error(f"Failed to save tracking after gap_fill: {e}")
 
         # Save metrics
         results = {
             'jw_updated': jw_updated,
             'wiki_filled': wiki_filled,
             'preorders_graduated': preorders_graduated,
+            'preorders_flagged': preorders_flagged,
             'errors': errors,
             'total_processed': len(existing_movies)
         }
@@ -4897,6 +4961,8 @@ PRICE: [price or UNKNOWN]
         print(f"     Watch links updated: {jw_updated}")
         print(f"     Wikipedia filled: {wiki_filled}")
         print(f"     Pre-orders graduated: {preorders_graduated}")
+        if preorders_flagged:
+            print(f"     Pre-orders flagged: {preorders_flagged}")
         if errors:
             print(f"     Errors: {errors}")
 
