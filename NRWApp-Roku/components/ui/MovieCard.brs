@@ -15,9 +15,22 @@ Sub Init()
     m.serviceBadge = m.top.FindNode("serviceBadge")
     m.rtBadgeBg = m.top.FindNode("rtBadgeBg")
     m.rtBadge = m.top.FindNode("rtBadge")
+    m.mcBadgeBg = m.top.FindNode("mcBadgeBg")
+    m.mcBadge = m.top.FindNode("mcBadge")
     m.imdbBadgeBg = m.top.FindNode("imdbBadgeBg")
     m.imdbBadge = m.top.FindNode("imdbBadge")
     m.staffPickStrip = m.top.FindNode("staffPickStrip")
+    m.staffPickBorder = m.top.FindNode("staffPickBorder")
+    m.restorationBadgeBg = m.top.FindNode("restorationBadgeBg")
+    m.restorationBadgeLabel = m.top.FindNode("restorationBadgeLabel")
+    m.preOrderBadgeBg = m.top.FindNode("preOrderBadgeBg")
+    m.preOrderBadgeLabel = m.top.FindNode("preOrderBadgeLabel")
+    m.preOrderBadgeDate = m.top.FindNode("preOrderBadgeDate")
+    m.screeningBorder = m.top.FindNode("screeningBorder")
+    m.screeningTopBannerBg = m.top.FindNode("screeningTopBannerBg")
+    m.screeningTopBannerLabel = m.top.FindNode("screeningTopBannerLabel")
+    m.screeningFestivalBg = m.top.FindNode("screeningFestivalBg")
+    m.screeningFestivalLabel = m.top.FindNode("screeningFestivalLabel")
 
     ' Director label
     m.directorLabel = m.top.FindNode("directorLabel")
@@ -52,13 +65,66 @@ Sub onMovieChanged()
         m.directorLabel.visible = false
     end if
 
-    ' Set streaming service badge
+    ' Determine card state flags
+    isStaffPick = IsStaffPick(movie)
+    isScreening = (movie.categories <> invalid AND movie.categories.is_virtual_screening = true)
+    isPreOrder = (movie._is_preorder <> invalid AND movie._is_preorder = true)
+    isRestoration = (movie.categories <> invalid AND movie.categories.is_restoration = true)
+
+    ' Set streaming service badge (hidden for pre-orders — pre-order badge takes that spot)
     streaming = GetStreamingService(movie)
-    if streaming <> invalid AND streaming.service <> invalid
+    if NOT isPreOrder AND streaming <> invalid AND streaming.service <> invalid
         SetupServiceBadge(streaming.service)
     else
         m.serviceBadge.visible = false
         m.serviceBadgeBg.visible = false
+    end if
+
+    ' Pre-order badge (top-right, replaces streaming badge)
+    if isPreOrder
+        m.preOrderBadgeLabel.text = "PRE"
+        if movie.digital_date <> invalid AND movie.digital_date <> ""
+            m.preOrderBadgeDate.text = FormatShortDate(movie.digital_date)
+        else
+            m.preOrderBadgeDate.text = "TBD"
+        end if
+        m.preOrderBadgeBg.visible = true
+        m.preOrderBadgeLabel.visible = true
+        m.preOrderBadgeDate.visible = true
+    else
+        m.preOrderBadgeBg.visible = false
+        m.preOrderBadgeLabel.visible = false
+        m.preOrderBadgeDate.visible = false
+    end if
+
+    ' Restoration badge (top-left)
+    m.restorationBadgeBg.visible = isRestoration
+    m.restorationBadgeLabel.visible = isRestoration
+
+    ' Staff pick border + strip
+    m.staffPickStrip.visible = isStaffPick
+    m.staffPickBorder.visible = (isStaffPick AND NOT isScreening)
+
+    ' Virtual screening treatment
+    if isScreening AND NOT isStaffPick
+        m.screeningBorder.visible = true
+        m.screeningTopBannerBg.visible = true
+        m.screeningTopBannerLabel.visible = true
+        ' Festival name strip
+        if movie.virtual_screening_info <> invalid AND movie.virtual_screening_info.screening_name <> invalid AND movie.virtual_screening_info.screening_name <> ""
+            m.screeningFestivalLabel.text = movie.virtual_screening_info.screening_name
+            m.screeningFestivalBg.visible = true
+            m.screeningFestivalLabel.visible = true
+        else
+            m.screeningFestivalBg.visible = false
+            m.screeningFestivalLabel.visible = false
+        end if
+    else
+        m.screeningBorder.visible = false
+        m.screeningTopBannerBg.visible = false
+        m.screeningTopBannerLabel.visible = false
+        m.screeningFestivalBg.visible = false
+        m.screeningFestivalLabel.visible = false
     end if
 
     ' Set RT score badge
@@ -69,6 +135,14 @@ Sub onMovieChanged()
         m.rtBadgeBg.visible = false
     end if
 
+    ' Set Metacritic score badge
+    if movie.metacritic_score <> invalid
+        SetupMcBadge(movie.metacritic_score)
+    else
+        m.mcBadge.visible = false
+        m.mcBadgeBg.visible = false
+    end if
+
     ' Set IMDb rating badge
     if movie.imdb_rating <> invalid AND movie.imdb_rating <> ""
         SetupImdbBadge(movie.imdb_rating)
@@ -77,11 +151,38 @@ Sub onMovieChanged()
         m.imdbBadgeBg.visible = false
     end if
 
-    ' Set staff pick strip
-    if IsStaffPick(movie)
-        m.staffPickStrip.visible = true
+    ' Shift score badges up if festival strip is visible at bottom
+    if m.screeningFestivalBg.visible
+        badgeY = 250
     else
-        m.staffPickStrip.visible = false
+        badgeY = 274
+    end if
+    PositionScoreBadges(badgeY)
+End Sub
+
+' ============================================================================
+' Position score badges (RT, MC, IMDb) — right-aligned, shifted based on count
+' ============================================================================
+Sub PositionScoreBadges(baseY as Integer)
+    ' Count visible badges and position right-to-left
+    ' RT is rightmost, then IMDb, then MC
+    xPos = 152
+
+    if m.rtBadge.visible
+        m.rtBadge.translation = [xPos, baseY]
+        m.rtBadgeBg.translation = [xPos, baseY]
+        xPos = xPos - 40  ' 44 width - 4 overlap
+    end if
+
+    if m.imdbBadge.visible
+        m.imdbBadge.translation = [xPos, baseY]
+        m.imdbBadgeBg.translation = [xPos, baseY]
+        xPos = xPos - 40  ' 36 width + 4 gap
+    end if
+
+    if m.mcBadge.visible
+        m.mcBadge.translation = [xPos, baseY]
+        m.mcBadgeBg.translation = [xPos, baseY]
     end if
 End Sub
 
@@ -149,6 +250,33 @@ Sub SetupRtBadge(score as Dynamic)
 End Sub
 
 ' ============================================================================
+' Setup Metacritic Score Badge
+' ============================================================================
+Sub SetupMcBadge(score as Dynamic)
+    scoreInt = 0
+    if Type(score) = "Integer" OR Type(score) = "roInt" OR Type(score) = "Float" OR Type(score) = "roFloat"
+        scoreInt = Int(score)
+    else if Type(score) = "String" OR Type(score) = "roString"
+        scoreInt = Int(Val(score))
+    else
+        m.mcBadge.visible = false
+        m.mcBadgeBg.visible = false
+        return
+    end if
+
+    if scoreInt = 0
+        m.mcBadge.visible = false
+        m.mcBadgeBg.visible = false
+        return
+    end if
+
+    m.mcBadge.text = "MC " + scoreInt.ToStr()
+    m.mcBadge.visible = true
+    m.mcBadgeBg.color = "0x000000B3"
+    m.mcBadgeBg.visible = true
+End Sub
+
+' ============================================================================
 ' Setup IMDb Rating Badge
 ' ============================================================================
 Sub SetupImdbBadge(rating as Dynamic)
@@ -174,15 +302,6 @@ Sub SetupImdbBadge(rating as Dynamic)
     m.imdbBadge.text = ratingStr
     m.imdbBadge.visible = true
     m.imdbBadgeBg.visible = true
-
-    ' Position: shift left when RT badge is also visible
-    if m.rtBadge.visible
-        m.imdbBadge.translation = [108, 274]
-        m.imdbBadgeBg.translation = [108, 274]
-    else
-        m.imdbBadge.translation = [160, 274]
-        m.imdbBadgeBg.translation = [160, 274]
-    end if
 End Sub
 
 ' ============================================================================

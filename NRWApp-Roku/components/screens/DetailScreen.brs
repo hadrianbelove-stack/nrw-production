@@ -262,9 +262,13 @@ Sub LoadMovie(index as Integer)
         end if
     end if
 
-    ' Virtual screening badge
+    ' Virtual screening badge — show festival name if available
     if movie.categories <> invalid AND movie.categories.is_virtual_screening = true
-        m.screeningLabel.text = chr(9733) + " VIRTUAL SCREENING " + chr(9733)
+        if movie.virtual_screening_info <> invalid AND movie.virtual_screening_info.screening_name <> invalid AND movie.virtual_screening_info.screening_name <> ""
+            m.screeningLabel.text = movie.virtual_screening_info.screening_name
+        else
+            m.screeningLabel.text = "VIRTUAL SCREENING"
+        end if
         m.screeningBadge.visible = true
         m.screeningLabel.visible = true
     else

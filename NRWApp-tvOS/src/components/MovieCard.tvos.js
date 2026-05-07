@@ -263,11 +263,18 @@ const MovieCard = forwardRef(({
             </View>
           )}
 
-          {/* Virtual screening ribbon - shows actual screening name */}
+          {/* Virtual screening top banner */}
           {movie.categories?.is_virtual_screening && !movie.featured && (
+            <View style={styles.screeningTopBanner}>
+              <Text style={styles.screeningTopBannerText}>VIRTUAL SCREENING</Text>
+            </View>
+          )}
+
+          {/* Virtual screening festival name ribbon */}
+          {movie.categories?.is_virtual_screening && !movie.featured && movie.virtual_screening_info?.screening_name && (
             <View style={styles.screeningRibbon}>
               <Text style={styles.screeningRibbonText} numberOfLines={2}>
-                {movie.virtual_screening_info?.screening_name || 'VIRTUAL SCREENING'}
+                {movie.virtual_screening_info.screening_name}
               </Text>
             </View>
           )}
@@ -372,6 +379,25 @@ const styles = StyleSheet.create({
     fontSize: Typography.tvos.caption - 2,
     fontWeight: '800',
     letterSpacing: 1.5,
+  },
+  screeningTopBanner: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(255, 215, 0, 0.92)',
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
+    alignItems: 'center',
+  },
+  screeningTopBannerText: {
+    color: '#000',
+    fontSize: Typography.tvos.caption - 2,
+    fontWeight: '800',
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
   },
   screeningRibbon: {
     position: 'absolute',

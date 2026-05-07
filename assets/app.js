@@ -484,8 +484,11 @@ const NRW = {
                 ? '<div class="restoration-badge">RESTORED</div>' : '';
             const isScreening = movie.categories?.is_virtual_screening;
             const screeningClass = isScreening ? ' screening-movie' : '';
+            const screeningTopBanner = isScreening
+                ? '<div class="screening-top-banner">VIRTUAL SCREENING</div>' : '';
+            const festivalName = movie.virtual_screening_info?.screening_name;
             const badgeBar = isScreening
-                ? '<div class="badge-bar gold">\u2605 VIRTUAL SCREENING \u2605</div>'
+                ? `<div class="badge-bar gold">${festivalName || '\u2605 VIRTUAL SCREENING \u2605'}</div>`
                 : isStaffPick
                 ? '<div class="badge-bar red">\u2605 STAFF PICK \u2605</div>'
                 : '';
@@ -513,6 +516,7 @@ const NRW = {
                 <div class="movie-card">
                     <div class="card-inner">
                         <div class="card-front">
+                            ${screeningTopBanner}
                             ${streamingBadge}
                             ${restorationBadge}
                             <div class="poster-fallback"><span class="poster-fallback-title">${title}</span></div>

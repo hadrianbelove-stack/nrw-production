@@ -9,6 +9,7 @@ val BackgroundGradientEnd = Color(0xFF1A1A2E)
 val Primary = Color(0xFF00D4AA)  // Teal accent from website
 val StaffPickRed = Color(0xFFDC143C)  // Crimson for staff picks
 val RestorationGold = Color(0xFFC8A951)  // Antique gold for restorations
+val ScreeningGold = Color(0xFFFFD700)    // Gold for virtual screenings
 val TextPrimary = Color(0xFFFFFFFF)
 val TextSecondary = Color(0xFFBBBBBB)
 val TextMuted = Color(0xFF888888)

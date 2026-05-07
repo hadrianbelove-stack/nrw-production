@@ -8,7 +8,8 @@ detailed, scannable diagnostic report with:
 - Today's arrivals with enrichment coverage + service names
 - Zero watch links (cross-referenced with tracking for root cause)
 - JW revert pattern analysis (grouped by reason, excluded platforms, repeat offenders)
-- Pre-orders & upcoming (merged, sorted by date, with link status)
+- Pre-orders & upcoming (merged, sorted by date, with TMDB platforms + link status)
+- Enrichment gaps (movies missing poster, synopsis, or watch links)
 - Trailer hosting failures
 """
 
@@ -371,16 +372,38 @@ for m in movies:
     if m.get('_is_preorder'):
         preorder_set.add(m['title'])
         dd = m.get('digital_date', '?')
+        mid = str(m.get('id', ''))
         pol = m.get('pre_order_links', [])
         svcs = [p.get('service', '?') for p in pol] if isinstance(pol, list) else []
-        merged.append((dd, m['title'], len(svcs), ', '.join(svcs) if svcs else 'NONE'))
+        # Cross-reference tracking for TMDB platforms
+        tk = tracking.get(m['title']) or tracking.get(mid) or {}
+        provs = tk.get('providers', {})
+        tmdb_plats = []
+        for cat in ['rent', 'buy', 'streaming']:
+            for p in provs.get(cat, []):
+                SHORT_NAMES = {'Fandango At Home': 'Fandango', 'Apple TV Store': 'Apple TV',
+                               'Amazon Video': 'Amazon', 'Google Play Movies': 'Google Play'}
+                tmdb_plats.append(SHORT_NAMES.get(p, p))
+        tmdb_str = ', '.join(sorted(set(tmdb_plats))) if tmdb_plats else ''
+        buyonly = ' (buy-only)' if m.get('_buyonly_preorder') else ''
+        merged.append((dd, m['title'], len(svcs), ', '.join(svcs) if svcs else 'NONE', tmdb_str, buyonly))
 
 # Add future-dated zero-link movies not already in pre-order set
 for m in zero_future:
     title = m['title']
     if title not in preorder_set:
         dd = m.get('digital_date', '?')
-        merged.append((dd, title, 0, 'NONE'))
+        mid = str(m.get('id', ''))
+        tk = tracking.get(title) or tracking.get(mid) or {}
+        provs = tk.get('providers', {})
+        tmdb_plats = []
+        for cat in ['rent', 'buy', 'streaming']:
+            for p in provs.get(cat, []):
+                SHORT_NAMES = {'Fandango At Home': 'Fandango', 'Apple TV Store': 'Apple TV',
+                               'Amazon Video': 'Amazon', 'Google Play Movies': 'Google Play'}
+                tmdb_plats.append(SHORT_NAMES.get(p, p))
+        tmdb_str = ', '.join(sorted(set(tmdb_plats))) if tmdb_plats else ''
+        merged.append((dd, title, 0, 'NONE', tmdb_str, ''))
 
 merged.sort(key=lambda r: r[0] if r[0] != '?' else '9999')
 
@@ -390,22 +413,82 @@ print('PRE-ORDERS & UPCOMING — %d movies' % len(merged))
 print('─' * 78)
 
 if merged:
-    col_w = 45
-    print('  %-12s %-*s %-6s %s' % ('Date', col_w, 'Title', 'Links', 'Services'))
-    print('  ' + '─' * (col_w + 30))
+    col_w = 38
+    print('  %-12s %-*s %-6s %-20s %s' % ('Date', col_w, 'Title', 'Links', 'Pre-order Services', 'TMDB Platforms'))
+    print('  ' + '─' * (col_w + 55))
     no_link_count = 0
-    for dd, title, n_links, services in merged:
+    for dd, title, n_links, services, tmdb_str, buyonly in merged:
         link_str = str(n_links) if n_links > 0 else 'NONE'
         if n_links == 0:
             no_link_count += 1
-        print('  %-12s %-*s %-6s %s' % (dd, col_w, title[:col_w], link_str, services if n_links > 0 else ''))
-    print('  ' + '─' * (col_w + 30))
+        display_title = (title[:col_w - 10] + buyonly) if buyonly else title[:col_w]
+        svc_display = services if n_links > 0 else ''
+        print('  %-12s %-*s %-6s %-20s %s' % (dd, col_w, display_title, link_str, svc_display, tmdb_str))
+    print('  ' + '─' * (col_w + 55))
     has_links = len(merged) - no_link_count
     print('  Links found: %d of %d | No links: %d' % (has_links, len(merged), no_link_count))
 else:
     print('  None')
 
-# ── Section 7: TRAILER FAILURES ─────────────────────────────────────────────
+# ── Section 7: ENRICHMENT GAPS ──────────────────────────────────────────────
+
+gap_no_poster = []
+gap_no_synopsis = []
+gap_no_links = []
+
+for m in movies:
+    title = m.get('title', '?')
+    dd = m.get('digital_date', '?')
+    mid = str(m.get('id', ''))
+    e_status = m.get('_enrichment_status', '?')
+    if not m.get('poster'):
+        gap_no_poster.append((title, dd, e_status, mid))
+    if not m.get('synopsis'):
+        gap_no_synopsis.append((title, dd, e_status, mid))
+    # Only flag missing links on released non-preorder movies
+    if get_watch_link_count(m) == 0 and not m.get('_is_preorder') and dd <= today:
+        gap_no_links.append((title, dd, e_status, mid))
+
+total_gaps = len(set(r[0] for r in gap_no_poster + gap_no_synopsis + gap_no_links))
+
+print()
+print('─' * 78)
+print('ENRICHMENT GAPS — %d movies with missing data' % total_gaps)
+print('─' * 78)
+
+if total_gaps == 0:
+    print('  None — all movies fully enriched')
+else:
+    col_w = 42
+    if gap_no_poster:
+        print()
+        print('  NO POSTER (%d):' % len(gap_no_poster))
+        print('  %-*s %-12s %s' % (col_w, 'Title', 'Date', 'Enrichment'))
+        print('  ' + '─' * (col_w + 25))
+        for title, dd, e_status, mid in sorted(gap_no_poster, key=lambda r: r[1] or '', reverse=True):
+            print('  %-*s %-12s %s' % (col_w, title[:col_w], dd, e_status))
+
+    if gap_no_synopsis:
+        print()
+        print('  NO SYNOPSIS (%d):' % len(gap_no_synopsis))
+        print('  %-*s %-12s %s' % (col_w, 'Title', 'Date', 'Enrichment'))
+        print('  ' + '─' * (col_w + 25))
+        for title, dd, e_status, mid in sorted(gap_no_synopsis, key=lambda r: r[1] or '', reverse=True):
+            print('  %-*s %-12s %s' % (col_w, title[:col_w], dd, e_status))
+
+    if gap_no_links:
+        print()
+        print('  NO WATCH LINKS — released, non-preorder (%d):' % len(gap_no_links))
+        print('  %-*s %-12s %s' % (col_w, 'Title', 'Date', 'Enrichment'))
+        print('  ' + '─' * (col_w + 25))
+        for title, dd, e_status, mid in sorted(gap_no_links, key=lambda r: r[1] or '', reverse=True):
+            print('  %-*s %-12s %s' % (col_w, title[:col_w], dd, e_status))
+
+    print()
+    print('  Summary: %d movies (%d no poster, %d no synopsis, %d no links)' % (
+        total_gaps, len(gap_no_poster), len(gap_no_synopsis), len(gap_no_links)))
+
+# ── Section 8: TRAILER FAILURES ─────────────────────────────────────────────
 
 host_fail_path = os.path.join(BASE, 'cache', 'trailer_host_failures.json')
 if os.path.exists(host_fail_path):

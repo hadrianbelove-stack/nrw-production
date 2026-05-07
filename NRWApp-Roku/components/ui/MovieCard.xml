@@ -35,6 +35,22 @@
           visible="false"
           translation="[-3, -3]" />
 
+        <!-- Staff pick border (behind poster, red) -->
+        <Rectangle id="staffPickBorder"
+          width="206"
+          height="312"
+          color="0xDC143CFF"
+          visible="false"
+          translation="[-3, -3]" />
+
+        <!-- Virtual screening border (behind poster, gold) -->
+        <Rectangle id="screeningBorder"
+          width="206"
+          height="312"
+          color="0xFFD700FF"
+          visible="false"
+          translation="[-3, -3]" />
+
         <!-- Card background -->
         <Rectangle id="cardBackground"
           width="200"
@@ -64,6 +80,102 @@
           vertAlign="center"
           font="font:SmallBoldSystemFont"
           color="0xFFFFFFFF"
+          visible="false" />
+
+        <!-- Pre-order badge (top-right, replaces streaming badge) -->
+        <Rectangle id="preOrderBadgeBg"
+          width="56"
+          height="32"
+          translation="[140, 4]"
+          color="0x7C3AEDFF"
+          visible="false" />
+        <Label id="preOrderBadgeLabel"
+          width="56"
+          height="18"
+          translation="[140, 4]"
+          horizAlign="center"
+          vertAlign="bottom"
+          font="font:SmallBoldSystemFont"
+          color="0xFFFFFFFF"
+          visible="false" />
+        <Label id="preOrderBadgeDate"
+          width="56"
+          height="16"
+          translation="[140, 18]"
+          horizAlign="center"
+          vertAlign="top"
+          font="font:SmallSystemFont"
+          color="0xFFFFFFFF"
+          visible="false" />
+
+        <!-- Restoration badge (top-left) -->
+        <Rectangle id="restorationBadgeBg"
+          width="64"
+          height="22"
+          translation="[4, 4]"
+          color="0xC8A951FF"
+          visible="false" />
+        <Label id="restorationBadgeLabel"
+          text="RESTORED"
+          width="64"
+          height="22"
+          translation="[4, 4]"
+          horizAlign="center"
+          vertAlign="center"
+          font="font:SmallBoldSystemFont"
+          color="0x000000FF"
+          visible="false" />
+
+        <!-- Virtual screening top banner (full width, top of poster) -->
+        <Rectangle id="screeningTopBannerBg"
+          width="200"
+          height="22"
+          translation="[0, 0]"
+          color="0xFFD700EB"
+          visible="false" />
+        <Label id="screeningTopBannerLabel"
+          text="VIRTUAL SCREENING"
+          width="200"
+          height="22"
+          translation="[0, 0]"
+          horizAlign="center"
+          vertAlign="center"
+          font="font:SmallBoldSystemFont"
+          color="0x000000FF"
+          visible="false" />
+
+        <!-- Virtual screening festival name strip (bottom of poster) -->
+        <Rectangle id="screeningFestivalBg"
+          width="200"
+          height="24"
+          translation="[0, 276]"
+          color="0xFFD700FF"
+          visible="false" />
+        <Label id="screeningFestivalLabel"
+          width="196"
+          height="24"
+          translation="[2, 276]"
+          horizAlign="center"
+          vertAlign="center"
+          font="font:SmallBoldSystemFont"
+          color="0x000000FF"
+          visible="false" />
+
+        <!-- Metacritic score badge (bottom, left of IMDb) -->
+        <Rectangle id="mcBadgeBg"
+          width="40"
+          height="22"
+          translation="[72, 274]"
+          color="0x000000B3"
+          visible="false" />
+        <Label id="mcBadge"
+          width="40"
+          height="22"
+          translation="[72, 274]"
+          horizAlign="center"
+          vertAlign="center"
+          font="font:SmallSystemFont"
+          color="0x66CC33FF"
           visible="false" />
 
         <!-- IMDb rating badge (bottom-right, left of RT) -->

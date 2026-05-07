@@ -81,11 +81,18 @@ export default function MovieCard({movie, onPress, isFeatured = false}) {
           </View>
         )}
 
-        {/* Virtual screening ribbon - shows actual screening name */}
-        {movie.categories?.is_virtual_screening && (
+        {/* Virtual screening top banner */}
+        {movie.categories?.is_virtual_screening && !isFeatured && !movie.featured && (
+          <View style={styles.screeningTopBanner}>
+            <Text style={styles.screeningTopBannerText}>VIRTUAL SCREENING</Text>
+          </View>
+        )}
+
+        {/* Virtual screening festival name ribbon */}
+        {movie.categories?.is_virtual_screening && !isFeatured && !movie.featured && movie.virtual_screening_info?.screening_name && (
           <View style={styles.screeningRibbon}>
             <Text style={styles.screeningRibbonText} numberOfLines={2}>
-              {movie.virtual_screening_info?.screening_name || 'VIRTUAL SCREENING'}
+              {movie.virtual_screening_info.screening_name}
             </Text>
           </View>
         )}
@@ -216,6 +223,23 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 11,
     fontWeight: '600',
+  },
+  screeningTopBanner: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(255, 215, 0, 0.92)',
+    paddingVertical: 3,
+    paddingHorizontal: 6,
+    alignItems: 'center',
+  },
+  screeningTopBannerText: {
+    color: '#000',
+    fontSize: 8,
+    fontWeight: '800',
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
   },
   screeningRibbon: {
     position: 'absolute',

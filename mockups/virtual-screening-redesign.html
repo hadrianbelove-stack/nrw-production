@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Virtual Screening Redesign — Options A & B</title>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        background: linear-gradient(180deg, #0a0a0a 0%, #1a1a2e 100%);
+        min-height: 100vh;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        color: #fff;
+        padding: 40px 20px;
+    }
+
+    h1 {
+        text-align: center;
+        font-weight: 100;
+        letter-spacing: 0.3em;
+        font-size: 1.5rem;
+        color: #FFD700;
+        margin-bottom: 10px;
+    }
+    .subtitle {
+        text-align: center;
+        color: #888;
+        font-size: 0.85rem;
+        margin-bottom: 50px;
+    }
+
+    .section-label {
+        text-align: center;
+        font-size: 1.1rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        margin-bottom: 8px;
+        color: #fff;
+    }
+    .section-desc {
+        text-align: center;
+        color: #888;
+        font-size: 0.8rem;
+        margin-bottom: 30px;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+        line-height: 1.6;
+    }
+
+    .comparison {
+        display: flex;
+        justify-content: center;
+        gap: 60px;
+        flex-wrap: wrap;
+        margin-bottom: 60px;
+    }
+
+    /* Current (before) */
+    .before-label, .after-label {
+        text-align: center;
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        margin-bottom: 12px;
+    }
+    .before-label { color: #888; }
+    .after-label { color: #00d4aa; }
+
+    /* ========= MOVIE CARD ========= */
+    .movie-container {
+        width: 189px;
+        border: 3px solid #FFD700;
+        border-radius: 15px;
+        padding: 8px;
+        background: rgba(255, 215, 0, 0.05);
+        box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+    }
+    .movie-card {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 2/3;
+        border-radius: 10px;
+        overflow: hidden;
+        background: #1a1a2e;
+    }
+    .movie-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    /* Movie info below poster */
+    .movie-info {
+        padding: 8px 4px 4px;
+        text-align: center;
+    }
+    .movie-title {
+        font-size: 0.9rem;
+        font-weight: 700;
+        margin-bottom: 2px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .movie-meta {
+        font-size: 0.7rem;
+        color: #bbb;
+    }
+
+    /* ========= CURRENT: badge bar (gold, bottom) ========= */
+    .badge-bar {
+        width: calc(100% + 16px);
+        margin: 6px -8px -8px -8px;
+        text-align: center;
+        padding: 5px 4px;
+        font-size: 0.55rem;
+        font-weight: 900;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        border-radius: 0 0 12px 12px;
+    }
+    .badge-bar.gold { background: #FFD700; color: #000; }
+
+    /* ========= STREAMING BADGE (reference — Netflix style) ========= */
+    .streaming-badge {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        padding: 4px 8px;
+        border-radius: 10px;
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+        z-index: 5;
+        background: #E50914;
+        color: white;
+    }
+
+    /* ========= OPTION A: Pill badge on poster (top-right, like Netflix) ========= */
+    .screening-pill {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        padding: 4px 8px;
+        border-radius: 10px;
+        font-size: 7.5px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+        z-index: 5;
+        background: #FFD700;
+        color: #000;
+    }
+
+    /* Festival name bar (replaces "★ VIRTUAL SCREENING ★") */
+    .festival-bar {
+        width: calc(100% + 16px);
+        margin: 6px -8px -8px -8px;
+        text-align: center;
+        padding: 5px 4px;
+        font-size: 0.5rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        border-radius: 0 0 12px 12px;
+        background: #FFD700;
+        color: #000;
+        line-height: 1.3;
+    }
+
+    /* ========= OPTION B: Bottom banner on poster ========= */
+    .screening-banner {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 4px 6px;
+        font-size: 7px;
+        font-weight: 800;
+        letter-spacing: 0.8px;
+        text-transform: uppercase;
+        text-align: center;
+        z-index: 5;
+        background: rgba(255, 215, 0, 0.92);
+        color: #000;
+    }
+
+    /* Festival name bar B variant — no background, outlined */
+    .festival-bar-b {
+        width: calc(100% + 16px);
+        margin: 6px -8px -8px -8px;
+        text-align: center;
+        padding: 6px 4px;
+        font-size: 0.48rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        border-radius: 0 0 12px 12px;
+        background: transparent;
+        color: #FFD700;
+        border-top: 2px solid #FFD700;
+        line-height: 1.3;
+    }
+
+    /* ========= DIVIDER ========= */
+    .divider {
+        border: none;
+        border-top: 1px solid rgba(255,255,255,0.1);
+        margin: 20px 0 40px;
+    }
+
+    /* ========= NOTES ========= */
+    .notes {
+        max-width: 700px;
+        margin: 0 auto;
+        padding: 24px;
+        background: rgba(255,255,255,0.05);
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.1);
+    }
+    .notes h3 {
+        font-size: 0.9rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        margin-bottom: 12px;
+        color: #FFD700;
+    }
+    .notes ul {
+        list-style: none;
+        padding: 0;
+    }
+    .notes li {
+        font-size: 0.8rem;
+        color: #bbb;
+        padding: 4px 0;
+        line-height: 1.5;
+    }
+    .notes li::before {
+        content: "→ ";
+        color: #00d4aa;
+    }
+    .notes li strong {
+        color: #fff;
+    }
+    .tag-a { color: #00d4aa; font-weight: 700; }
+    .tag-b { color: #E0A0FF; font-weight: 700; }
+</style>
+</head>
+<body>
+
+<h1>VIRTUAL SCREENING REDESIGN</h1>
+<p class="subtitle">Two options for showing the festival name + a "Virtual Screening" badge</p>
+
+<!-- =============== CURRENT (BEFORE) =============== -->
+<div class="section-label">CURRENT DESIGN</div>
+<p class="section-desc">
+    The badge bar says "★ VIRTUAL SCREENING ★" but doesn't show which festival.<br>
+    Festival name only appears inside the lightbox.
+</p>
+
+<div class="comparison">
+    <div>
+        <div class="before-label">CURRENT — SHORT FESTIVAL NAME</div>
+        <div class="movie-container">
+            <div class="movie-card">
+                <img src="https://image.tmdb.org/t/p/w342/6v8Kb9TDCbQgFJF8POvuqFiCVRI.jpg" alt="Maintenance Artist">
+            </div>
+            <div class="movie-info">
+                <div class="movie-title">Maintenance Artist</div>
+                <div class="movie-meta">Ageliki Giannakidou • Greece</div>
+            </div>
+            <div class="badge-bar gold">★ VIRTUAL SCREENING ★</div>
+        </div>
+    </div>
+    <div>
+        <div class="before-label">CURRENT — LONG FESTIVAL NAME</div>
+        <div class="movie-container">
+            <div class="movie-card">
+                <img src="https://image.tmdb.org/t/p/w342/zQJnSVPEpVa2pWEj2wJOXdJrFGI.jpg" alt="Desire Lines">
+            </div>
+            <div class="movie-info">
+                <div class="movie-title">Desire Lines</div>
+                <div class="movie-meta">Jules Rosskam • USA</div>
+            </div>
+            <div class="badge-bar gold">★ VIRTUAL SCREENING ★</div>
+        </div>
+    </div>
+</div>
+
+<hr class="divider">
+
+<!-- =============== OPTION A =============== -->
+<div class="section-label">OPTION A — PILL BADGE ON POSTER</div>
+<p class="section-desc">
+    "SCREENING" pill badge sits on the poster (top-right, same position as Netflix/streaming badges).<br>
+    The gold bar at the bottom now shows the <strong>festival name</strong>.
+</p>
+
+<div class="comparison">
+    <div>
+        <div class="after-label">OPTION A — SHORT NAME</div>
+        <div class="movie-container">
+            <div class="movie-card">
+                <img src="https://image.tmdb.org/t/p/w342/6v8Kb9TDCbQgFJF8POvuqFiCVRI.jpg" alt="Maintenance Artist">
+                <div class="screening-pill">SCREENING</div>
+            </div>
+            <div class="movie-info">
+                <div class="movie-title">Maintenance Artist</div>
+                <div class="movie-meta">Ageliki Giannakidou • Greece</div>
+            </div>
+            <div class="festival-bar">2026 Atlanta Film Festival</div>
+        </div>
+    </div>
+    <div>
+        <div class="after-label">OPTION A — LONG NAME</div>
+        <div class="movie-container">
+            <div class="movie-card">
+                <img src="https://image.tmdb.org/t/p/w342/zQJnSVPEpVa2pWEj2wJOXdJrFGI.jpg" alt="Desire Lines">
+                <div class="screening-pill">SCREENING</div>
+            </div>
+            <div class="movie-info">
+                <div class="movie-title">Desire Lines</div>
+                <div class="movie-meta">Jules Rosskam • USA</div>
+            </div>
+            <div class="festival-bar">OUTshine LGBTQ+ Film Fest</div>
+        </div>
+    </div>
+    <div>
+        <div class="after-label">REFERENCE — NETFLIX BADGE</div>
+        <div class="movie-container" style="border-color: rgba(255,255,255,0.2); box-shadow: none; background: transparent;">
+            <div class="movie-card">
+                <img src="https://image.tmdb.org/t/p/w342/6v8Kb9TDCbQgFJF8POvuqFiCVRI.jpg" alt="Reference">
+                <div class="streaming-badge">NETFLIX</div>
+            </div>
+            <div class="movie-info">
+                <div class="movie-title">For Reference</div>
+                <div class="movie-meta">Netflix badge style</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<hr class="divider">
+
+<!-- =============== OPTION B =============== -->
+<div class="section-label">OPTION B — BOTTOM BANNER ON POSTER</div>
+<p class="section-desc">
+    "VIRTUAL SCREENING" as a full-width banner across the bottom of the poster.<br>
+    Festival name in an outlined gold bar underneath (no solid fill — lighter feel).
+</p>
+
+<div class="comparison">
+    <div>
+        <div class="after-label">OPTION B — SHORT NAME</div>
+        <div class="movie-container">
+            <div class="movie-card">
+                <img src="https://image.tmdb.org/t/p/w342/6v8Kb9TDCbQgFJF8POvuqFiCVRI.jpg" alt="Maintenance Artist">
+                <div class="screening-banner">★ VIRTUAL SCREENING ★</div>
+            </div>
+            <div class="movie-info">
+                <div class="movie-title">Maintenance Artist</div>
+                <div class="movie-meta">Ageliki Giannakidou • Greece</div>
+            </div>
+            <div class="festival-bar-b">2026 Atlanta Film Festival</div>
+        </div>
+    </div>
+    <div>
+        <div class="after-label">OPTION B — LONG NAME</div>
+        <div class="movie-container">
+            <div class="movie-card">
+                <img src="https://image.tmdb.org/t/p/w342/zQJnSVPEpVa2pWEj2wJOXdJrFGI.jpg" alt="Desire Lines">
+                <div class="screening-banner">★ VIRTUAL SCREENING ★</div>
+            </div>
+            <div class="movie-info">
+                <div class="movie-title">Desire Lines</div>
+                <div class="movie-meta">Jules Rosskam • USA</div>
+            </div>
+            <div class="festival-bar-b">OUTshine LGBTQ+ Film Fest</div>
+        </div>
+    </div>
+</div>
+
+<hr class="divider">
+
+<!-- =============== NOTES =============== -->
+<div class="notes">
+    <h3>DESIGN NOTES</h3>
+    <ul>
+        <li><span class="tag-a">Option A</span> — <strong>Pill badge</strong> on the poster says "SCREENING" (same position/style as Netflix, Hulu, etc.). Festival name fills the gold bar at the bottom. Clean, consistent with existing badge patterns. If a movie also has a streaming badge, the screening pill would replace it (screening movies are on Eventive, not streaming services).</li>
+        <li><span class="tag-b">Option B</span> — <strong>Full-width banner</strong> across the bottom of the poster says "★ VIRTUAL SCREENING ★" (more prominent, eye-catching). Festival name underneath in an outlined bar (lighter, lets the gold border do the heavy lifting). More visual emphasis on the screening status.</li>
+        <li>Both options solve the problem: you see the <strong>festival name at a glance</strong> on the card — no need to open the lightbox.</li>
+        <li>Long festival names are handled with smaller font size and abbreviations per style guide ("Intl." for International, "Film Fest" for Film Festival).</li>
+        <li>The gold border + glow stays the same on both — it already signals "this is a screening."</li>
+    </ul>
+</div>
+
+</body>
+</html>

@@ -35,20 +35,10 @@ const NRWMobile = {
 
     getScreeningRibbon(movie) {
         const info = movie.virtual_screening_info || {};
-        const name = info.screening_name || 'Virtual Screening';
-        const startDate = movie.digital_date;
-        const endDate = info.available_end;
-        let dateRange = '';
-        if (startDate && endDate) {
-            dateRange = `Virtual Screening ${this.formatShortDate(startDate)} – ${this.formatShortDate(endDate)}`;
-        } else if (endDate) {
-            dateRange = `Virtual Screening thru ${this.formatShortDate(endDate)}`;
-        } else {
-            dateRange = 'Virtual Screening';
-        }
+        const name = info.screening_name;
         return `<div class="screening-ribbon-top">`
-            + `<div class="sr-name">${name}</div>`
-            + `<div class="sr-dates">${dateRange}</div>`
+            + `<div class="sr-label">VIRTUAL SCREENING</div>`
+            + (name ? `<div class="sr-festival">${name}</div>` : '')
             + `</div>`;
     },
 

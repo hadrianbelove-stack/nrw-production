@@ -314,7 +314,7 @@ private fun MovieDetail(
                             }
                             if (movie.isVirtualScreening) {
                                 Text(
-                                    text = "★ VIRTUAL SCREENING ★",
+                                    text = movie.screeningInfo?.screeningName ?: "VIRTUAL SCREENING",
                                     color = Color.Black,
                                     fontSize = 11.sp,
                                     fontWeight = FontWeight.ExtraBold,

@@ -56,6 +56,7 @@ import com.nrw.app.data.getPosterUrl
 import com.nrw.app.ui.theme.Background
 import com.nrw.app.ui.theme.BackgroundSecondary
 import com.nrw.app.ui.theme.Primary
+import com.nrw.app.ui.theme.ScreeningGold
 import com.nrw.app.ui.theme.StaffPickRed
 import com.nrw.app.ui.theme.TextPrimary
 import com.nrw.app.ui.theme.TextSecondary
@@ -97,6 +98,7 @@ fun MovieCard(
 ) {
     var isFocused by remember { mutableStateOf(false) }
     val isStaffPick = movie.featured == true || movie.categories?.isStaffPick == true
+    val isScreening = movie.categories?.isVirtualScreening == true
 
     // Animated gradient for focus state (Option E - rotating gradient border)
     val infiniteTransition = rememberInfiniteTransition(label = "gradientRotation")
@@ -150,6 +152,11 @@ fun MovieCard(
                 border = if (isStaffPick) {
                     Border(
                         border = BorderStroke(2.dp, StaffPickRed),
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                } else if (isScreening) {
+                    Border(
+                        border = BorderStroke(2.dp, ScreeningGold),
                         shape = RoundedCornerShape(8.dp)
                     )
                 } else {
@@ -239,6 +246,49 @@ fun MovieCard(
                     }
                 }
 
+                // Virtual screening top banner
+                if (isScreening && !isStaffPick) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.TopCenter)
+                            .fillMaxWidth()
+                            .background(ScreeningGold.copy(alpha = 0.92f))
+                            .padding(vertical = 3.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "VIRTUAL SCREENING",
+                            color = Color.Black,
+                            fontSize = 6.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            letterSpacing = 0.8.sp
+                        )
+                    }
+                }
+
+                // Virtual screening festival name strip (bottom)
+                if (isScreening && !isStaffPick && movie.screeningInfo?.screeningName != null) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .fillMaxWidth()
+                            .background(ScreeningGold)
+                            .padding(vertical = 3.dp, horizontal = 4.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = movie.screeningInfo!!.screeningName!!,
+                            color = Color.Black,
+                            fontSize = 6.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            letterSpacing = 0.3.sp,
+                            textAlign = TextAlign.Center,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                }
+
                 // Score badges (bottom right, above staff pick if present)
                 val rtScore = movie.rtScore?.replace("%", "")?.trim()?.toIntOrNull()
                 val mcScore = movie.metacriticScore?.toIntOrNull()
@@ -249,7 +299,7 @@ fun MovieCard(
                             .align(Alignment.BottomEnd)
                             .padding(
                                 end = 4.dp,
-                                bottom = if (isStaffPick) 22.dp else 4.dp
+                                bottom = if (isStaffPick || isScreening) 22.dp else 4.dp
                             ),
                         horizontalArrangement = Arrangement.spacedBy(3.dp)
                     ) {

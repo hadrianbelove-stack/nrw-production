@@ -449,7 +449,7 @@ const MovieDetailTvOS = () => {
             {/* Virtual screening badge */}
             {movie.categories?.is_virtual_screening && (
               <Text style={styles.screeningName}>
-                ★ VIRTUAL SCREENING ★
+                {movie.virtual_screening_info?.screening_name || 'VIRTUAL SCREENING'}
               </Text>
             )}
 

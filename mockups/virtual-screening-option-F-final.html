@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Option F Final — VIRTUAL SCREENING</title>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        background: linear-gradient(180deg, #0a0a0a 0%, #1a1a2e 100%);
+        min-height: 100vh;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        color: #fff;
+        padding: 40px 20px;
+    }
+
+    h1 {
+        text-align: center;
+        font-weight: 100;
+        letter-spacing: 0.3em;
+        font-size: 1.5rem;
+        color: #FFD700;
+        margin-bottom: 10px;
+    }
+    .subtitle {
+        text-align: center;
+        color: #888;
+        font-size: 0.85rem;
+        margin-bottom: 50px;
+    }
+
+    .section-label {
+        text-align: center;
+        font-size: 1.1rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        margin-bottom: 8px;
+        color: #fff;
+    }
+    .section-desc {
+        text-align: center;
+        color: #888;
+        font-size: 0.8rem;
+        margin-bottom: 30px;
+        max-width: 650px;
+        margin-left: auto;
+        margin-right: auto;
+        line-height: 1.6;
+    }
+
+    .comparison {
+        display: flex;
+        justify-content: center;
+        gap: 50px;
+        flex-wrap: wrap;
+        margin-bottom: 60px;
+    }
+
+    .card-label {
+        text-align: center;
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        margin-bottom: 12px;
+    }
+    .label-before { color: #888; }
+    .label-after { color: #00d4aa; }
+
+    .divider {
+        border: none;
+        border-top: 1px solid rgba(255,255,255,0.1);
+        margin: 20px 0 40px;
+    }
+
+    /* ========= MOVIE CARD ========= */
+    .movie-container {
+        width: 189px;
+        border: 3px solid #FFD700;
+        border-radius: 15px;
+        padding: 8px;
+        background: rgba(255, 215, 0, 0.05);
+        box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+    }
+    .movie-card {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 2/3;
+        border-radius: 10px;
+        overflow: hidden;
+        background: #1a1a2e;
+    }
+    .movie-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+    .movie-info {
+        padding: 8px 4px 4px;
+        text-align: center;
+    }
+    .movie-title {
+        font-size: 0.9rem;
+        font-weight: 700;
+        margin-bottom: 2px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .movie-meta {
+        font-size: 0.7rem;
+        color: #bbb;
+    }
+
+    /* Current badge bar */
+    .badge-bar-old {
+        width: calc(100% + 16px);
+        margin: 6px -8px -8px -8px;
+        text-align: center;
+        padding: 5px 4px;
+        font-size: 0.55rem;
+        font-weight: 900;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        border-radius: 0 0 12px 12px;
+        background: #FFD700;
+        color: #000;
+    }
+
+    /* ========= NEW: Top banner on poster ========= */
+    .screening-top-banner {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        padding: 4px 6px;
+        font-size: 7px;
+        font-weight: 800;
+        letter-spacing: 0.8px;
+        text-transform: uppercase;
+        text-align: center;
+        z-index: 5;
+        background: rgba(255, 215, 0, 0.92);
+        color: #000;
+    }
+
+    /* ========= NEW: Festival name bar (bottom) ========= */
+    .festival-bar {
+        width: calc(100% + 16px);
+        margin: 6px -8px -8px -8px;
+        text-align: center;
+        padding: 5px 4px;
+        font-size: 0.5rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        border-radius: 0 0 12px 12px;
+        background: #FFD700;
+        color: #000;
+        line-height: 1.3;
+    }
+</style>
+</head>
+<body>
+
+<h1>OPTION F — FINAL</h1>
+<p class="subtitle">"VIRTUAL SCREENING" banner on poster + festival name in bottom bar</p>
+
+<!-- =============== BEFORE / AFTER =============== -->
+<div class="section-label">BEFORE → AFTER</div>
+<p class="section-desc">
+    Current card on the left. New design on the right — three examples with different festival name lengths.
+</p>
+
+<div class="comparison">
+    <!-- BEFORE -->
+    <div>
+        <div class="card-label label-before">CURRENT</div>
+        <div class="movie-container">
+            <div class="movie-card">
+                <img src="https://image.tmdb.org/t/p/w342/6v8Kb9TDCbQgFJF8POvuqFiCVRI.jpg" alt="Maintenance Artist">
+            </div>
+            <div class="movie-info">
+                <div class="movie-title">Maintenance Artist</div>
+                <div class="movie-meta">Ageliki Giannakidou • Greece</div>
+            </div>
+            <div class="badge-bar-old">★ VIRTUAL SCREENING ★</div>
+        </div>
+    </div>
+
+    <!-- AFTER: Short name -->
+    <div>
+        <div class="card-label label-after">AFTER — SHORT NAME</div>
+        <div class="movie-container">
+            <div class="movie-card">
+                <img src="https://image.tmdb.org/t/p/w342/6v8Kb9TDCbQgFJF8POvuqFiCVRI.jpg" alt="Maintenance Artist">
+                <div class="screening-top-banner">VIRTUAL SCREENING</div>
+            </div>
+            <div class="movie-info">
+                <div class="movie-title">Maintenance Artist</div>
+                <div class="movie-meta">Ageliki Giannakidou • Greece</div>
+            </div>
+            <div class="festival-bar">2026 Atlanta Film Festival</div>
+        </div>
+    </div>
+
+    <!-- AFTER: Long name -->
+    <div>
+        <div class="card-label label-after">AFTER — LONG NAME</div>
+        <div class="movie-container">
+            <div class="movie-card">
+                <img src="https://image.tmdb.org/t/p/w342/zQJnSVPEpVa2pWEj2wJOXdJrFGI.jpg" alt="Desire Lines">
+                <div class="screening-top-banner">VIRTUAL SCREENING</div>
+            </div>
+            <div class="movie-info">
+                <div class="movie-title">Desire Lines</div>
+                <div class="movie-meta">Jules Rosskam • USA</div>
+            </div>
+            <div class="festival-bar">OUTshine LGBTQ+ Film Fest</div>
+        </div>
+    </div>
+
+    <!-- AFTER: Medium name -->
+    <div>
+        <div class="card-label label-after">AFTER — MEDIUM NAME</div>
+        <div class="movie-container">
+            <div class="movie-card">
+                <img src="https://image.tmdb.org/t/p/w342/6v8Kb9TDCbQgFJF8POvuqFiCVRI.jpg" alt="Maintenance Artist">
+                <div class="screening-top-banner">VIRTUAL SCREENING</div>
+            </div>
+            <div class="movie-info">
+                <div class="movie-title">Maintenance Artist</div>
+                <div class="movie-meta">Ageliki Giannakidou • Greece</div>
+            </div>
+            <div class="festival-bar">Boulder Intl. Film Fest</div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

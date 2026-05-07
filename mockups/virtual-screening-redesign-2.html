@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Virtual Screening Redesign — Options C through G</title>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        background: linear-gradient(180deg, #0a0a0a 0%, #1a1a2e 100%);
+        min-height: 100vh;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        color: #fff;
+        padding: 40px 20px;
+    }
+
+    h1 {
+        text-align: center;
+        font-weight: 100;
+        letter-spacing: 0.3em;
+        font-size: 1.5rem;
+        color: #FFD700;
+        margin-bottom: 10px;
+    }
+    .subtitle {
+        text-align: center;
+        color: #888;
+        font-size: 0.85rem;
+        margin-bottom: 50px;
+    }
+
+    .section-label {
+        text-align: center;
+        font-size: 1.1rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        margin-bottom: 8px;
+        color: #fff;
+    }
+    .section-desc {
+        text-align: center;
+        color: #888;
+        font-size: 0.8rem;
+        margin-bottom: 30px;
+        max-width: 650px;
+        margin-left: auto;
+        margin-right: auto;
+        line-height: 1.6;
+    }
+
+    .comparison {
+        display: flex;
+        justify-content: center;
+        gap: 50px;
+        flex-wrap: wrap;
+        margin-bottom: 60px;
+    }
+
+    .after-label {
+        text-align: center;
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        margin-bottom: 12px;
+        color: #00d4aa;
+    }
+
+    /* ========= SHARED MOVIE CARD ========= */
+    .movie-container {
+        width: 189px;
+        border: 3px solid #FFD700;
+        border-radius: 15px;
+        padding: 8px;
+        background: rgba(255, 215, 0, 0.05);
+        box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+    }
+    .movie-card {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 2/3;
+        border-radius: 10px;
+        overflow: hidden;
+        background: #1a1a2e;
+    }
+    .movie-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+    .movie-info {
+        padding: 8px 4px 4px;
+        text-align: center;
+    }
+    .movie-title {
+        font-size: 0.9rem;
+        font-weight: 700;
+        margin-bottom: 2px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .movie-meta {
+        font-size: 0.7rem;
+        color: #bbb;
+    }
+    .divider {
+        border: none;
+        border-top: 1px solid rgba(255,255,255,0.1);
+        margin: 20px 0 40px;
+    }
+
+    /* ========= OPTION C: Diagonal corner ribbon ========= */
+    .ribbon-wrap {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 70px;
+        height: 70px;
+        overflow: hidden;
+        z-index: 5;
+    }
+    .ribbon {
+        position: absolute;
+        top: 14px;
+        left: -18px;
+        width: 100px;
+        padding: 3px 0;
+        background: #FFD700;
+        color: #000;
+        font-size: 6.5px;
+        font-weight: 800;
+        letter-spacing: 0.6px;
+        text-align: center;
+        text-transform: uppercase;
+        transform: rotate(-45deg);
+        box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    }
+    .festival-bar-c {
+        width: calc(100% + 16px);
+        margin: 6px -8px -8px -8px;
+        text-align: center;
+        padding: 5px 4px;
+        font-size: 0.5rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        border-radius: 0 0 12px 12px;
+        background: #FFD700;
+        color: #000;
+        line-height: 1.3;
+    }
+
+    /* ========= OPTION D: Split two-tone badge bar ========= */
+    .split-bar {
+        width: calc(100% + 16px);
+        margin: 6px -8px -8px -8px;
+        display: flex;
+        border-radius: 0 0 12px 12px;
+        overflow: hidden;
+        font-size: 0.48rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        line-height: 1.3;
+    }
+    .split-bar .split-badge {
+        background: #FFD700;
+        color: #000;
+        padding: 5px 6px;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+    .split-bar .split-festival {
+        background: rgba(255, 215, 0, 0.15);
+        color: #FFD700;
+        padding: 5px 6px;
+        flex: 1;
+        text-align: center;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    /* ========= OPTION E: Stacked double bar ========= */
+    .stacked-bars {
+        width: calc(100% + 16px);
+        margin: 6px -8px -8px -8px;
+        border-radius: 0 0 12px 12px;
+        overflow: hidden;
+    }
+    .stacked-bars .top-bar {
+        background: #FFD700;
+        color: #000;
+        text-align: center;
+        padding: 3px 4px;
+        font-size: 0.4rem;
+        font-weight: 800;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+    }
+    .stacked-bars .bottom-bar {
+        background: rgba(0,0,0,0.7);
+        color: #FFD700;
+        text-align: center;
+        padding: 4px 4px;
+        font-size: 0.48rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        line-height: 1.3;
+    }
+
+    /* ========= OPTION F: Top banner on poster ========= */
+    .top-banner {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        padding: 4px 6px;
+        font-size: 7px;
+        font-weight: 800;
+        letter-spacing: 0.8px;
+        text-transform: uppercase;
+        text-align: center;
+        z-index: 5;
+        background: rgba(255, 215, 0, 0.92);
+        color: #000;
+    }
+    .festival-bar-f {
+        width: calc(100% + 16px);
+        margin: 6px -8px -8px -8px;
+        text-align: center;
+        padding: 5px 4px;
+        font-size: 0.5rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        border-radius: 0 0 12px 12px;
+        background: #FFD700;
+        color: #000;
+        line-height: 1.3;
+    }
+
+    /* ========= OPTION G: Pill badge + festival in info area (no bar) ========= */
+    .screening-pill-g {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        padding: 4px 8px;
+        border-radius: 10px;
+        font-size: 7.5px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+        z-index: 5;
+        background: #FFD700;
+        color: #000;
+    }
+    .movie-info-g {
+        padding: 8px 4px 6px;
+        text-align: center;
+    }
+    .movie-info-g .movie-title {
+        font-size: 0.9rem;
+        font-weight: 700;
+        margin-bottom: 3px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .festival-inline {
+        font-size: 0.55rem;
+        font-weight: 700;
+        color: #FFD700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        margin-bottom: 2px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .movie-info-g .movie-meta {
+        font-size: 0.65rem;
+        color: #888;
+    }
+
+    /* ========= NOTES ========= */
+    .notes {
+        max-width: 750px;
+        margin: 0 auto;
+        padding: 24px;
+        background: rgba(255,255,255,0.05);
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.1);
+    }
+    .notes h3 {
+        font-size: 0.9rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        margin-bottom: 12px;
+        color: #FFD700;
+    }
+    .notes ul {
+        list-style: none;
+        padding: 0;
+    }
+    .notes li {
+        font-size: 0.8rem;
+        color: #bbb;
+        padding: 6px 0;
+        line-height: 1.5;
+    }
+    .notes li::before {
+        content: "→ ";
+        color: #00d4aa;
+    }
+    .notes li strong {
+        color: #fff;
+    }
+    .tag { font-weight: 700; }
+    .tag-c { color: #FF6B6B; }
+    .tag-d { color: #4ECDC4; }
+    .tag-e { color: #FFE66D; }
+    .tag-f { color: #A8E6CF; }
+    .tag-g { color: #FF8B94; }
+</style>
+</head>
+<body>
+
+<h1>VIRTUAL SCREENING REDESIGN</h1>
+<p class="subtitle">Options C through G — all badges use "V.SCREENING"</p>
+
+<!-- =============== OPTION C: Diagonal Ribbon =============== -->
+<div class="section-label">OPTION C — CORNER RIBBON</div>
+<p class="section-desc">
+    Diagonal gold ribbon in the top-left corner says "V.SCREENING".<br>
+    Festival name in the solid gold bar at the bottom. Eye-catching, premium feel.
+</p>
+
+<div class="comparison">
+    <div>
+        <div class="after-label">SHORT FESTIVAL NAME</div>
+        <div class="movie-container">
+            <div class="movie-card">
+                <img src="https://image.tmdb.org/t/p/w342/6v8Kb9TDCbQgFJF8POvuqFiCVRI.jpg" alt="Maintenance Artist">
+                <div class="ribbon-wrap"><div class="ribbon">V.SCREENING</div></div>
+            </div>
+            <div class="movie-info">
+                <div class="movie-title">Maintenance Artist</div>
+                <div class="movie-meta">Ageliki Giannakidou • Greece</div>
+            </div>
+            <div class="festival-bar-c">2026 Atlanta Film Festival</div>
+        </div>
+    </div>
+    <div>
+        <div class="after-label">LONG FESTIVAL NAME</div>
+        <div class="movie-container">
+            <div class="movie-card">
+                <img src="https://image.tmdb.org/t/p/w342/zQJnSVPEpVa2pWEj2wJOXdJrFGI.jpg" alt="Desire Lines">
+                <div class="ribbon-wrap"><div class="ribbon">V.SCREENING</div></div>
+            </div>
+            <div class="movie-info">
+                <div class="movie-title">Desire Lines</div>
+                <div class="movie-meta">Jules Rosskam • USA</div>
+            </div>
+            <div class="festival-bar-c">OUTshine LGBTQ+ Film Fest</div>
+        </div>
+    </div>
+</div>
+
+<hr class="divider">
+
+<!-- =============== OPTION D: Split Two-Tone Bar =============== -->
+<div class="section-label">OPTION D — SPLIT BAR</div>
+<p class="section-desc">
+    Single bottom bar split into two halves: solid gold "V.SCREENING" on the left,<br>
+    translucent gold festival name on the right. Compact — everything in one element.
+</p>
+
+<div class="comparison">
+    <div>
+        <div class="after-label">SHORT FESTIVAL NAME</div>
+        <div class="movie-container">
+            <div class="movie-card">
+                <img src="https://image.tmdb.org/t/p/w342/6v8Kb9TDCbQgFJF8POvuqFiCVRI.jpg" alt="Maintenance Artist">
+            </div>
+            <div class="movie-info">
+                <div class="movie-title">Maintenance Artist</div>
+                <div class="movie-meta">Ageliki Giannakidou • Greece</div>
+            </div>
+            <div class="split-bar">
+                <div class="split-badge">V.SCREENING</div>
+                <div class="split-festival">Atlanta Film Fest</div>
+            </div>
+        </div>
+    </div>
+    <div>
+        <div class="after-label">LONG FESTIVAL NAME</div>
+        <div class="movie-container">
+            <div class="movie-card">
+                <img src="https://image.tmdb.org/t/p/w342/zQJnSVPEpVa2pWEj2wJOXdJrFGI.jpg" alt="Desire Lines">
+            </div>
+            <div class="movie-info">
+                <div class="movie-title">Desire Lines</div>
+                <div class="movie-meta">Jules Rosskam • USA</div>
+            </div>
+            <div class="split-bar">
+                <div class="split-badge">V.SCREENING</div>
+                <div class="split-festival">OUTshine LGBTQ+ Film Fest</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<hr class="divider">
+
+<!-- =============== OPTION E: Stacked Double Bar =============== -->
+<div class="section-label">OPTION E — STACKED DOUBLE BAR</div>
+<p class="section-desc">
+    Two thin bars at the bottom: thin gold "V.SCREENING" strip on top,<br>
+    dark bar with gold festival name text below. Clear hierarchy — type, then name.
+</p>
+
+<div class="comparison">
+    <div>
+        <div class="after-label">SHORT FESTIVAL NAME</div>
+        <div class="movie-container">
+            <div class="movie-card">
+                <img src="https://image.tmdb.org/t/p/w342/6v8Kb9TDCbQgFJF8POvuqFiCVRI.jpg" alt="Maintenance Artist">
+            </div>
+            <div class="movie-info">
+                <div class="movie-title">Maintenance Artist</div>
+                <div class="movie-meta">Ageliki Giannakidou • Greece</div>
+            </div>
+            <div class="stacked-bars">
+                <div class="top-bar">V.SCREENING</div>
+                <div class="bottom-bar">2026 Atlanta Film Festival</div>
+            </div>
+        </div>
+    </div>
+    <div>
+        <div class="after-label">LONG FESTIVAL NAME</div>
+        <div class="movie-container">
+            <div class="movie-card">
+                <img src="https://image.tmdb.org/t/p/w342/zQJnSVPEpVa2pWEj2wJOXdJrFGI.jpg" alt="Desire Lines">
+            </div>
+            <div class="movie-info">
+                <div class="movie-title">Desire Lines</div>
+                <div class="movie-meta">Jules Rosskam • USA</div>
+            </div>
+            <div class="stacked-bars">
+                <div class="top-bar">V.SCREENING</div>
+                <div class="bottom-bar">OUTshine LGBTQ+ Film Fest</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<hr class="divider">
+
+<!-- =============== OPTION F: Top Banner on Poster =============== -->
+<div class="section-label">OPTION F — TOP BANNER ON POSTER</div>
+<p class="section-desc">
+    Full-width gold banner across the TOP of the poster says "V.SCREENING".<br>
+    Festival name in the gold bar at the bottom. Badge on the poster, info below the card.
+</p>
+
+<div class="comparison">
+    <div>
+        <div class="after-label">SHORT FESTIVAL NAME</div>
+        <div class="movie-container">
+            <div class="movie-card">
+                <img src="https://image.tmdb.org/t/p/w342/6v8Kb9TDCbQgFJF8POvuqFiCVRI.jpg" alt="Maintenance Artist">
+                <div class="top-banner">V.SCREENING</div>
+            </div>
+            <div class="movie-info">
+                <div class="movie-title">Maintenance Artist</div>
+                <div class="movie-meta">Ageliki Giannakidou • Greece</div>
+            </div>
+            <div class="festival-bar-f">2026 Atlanta Film Festival</div>
+        </div>
+    </div>
+    <div>
+        <div class="after-label">LONG FESTIVAL NAME</div>
+        <div class="movie-container">
+            <div class="movie-card">
+                <img src="https://image.tmdb.org/t/p/w342/zQJnSVPEpVa2pWEj2wJOXdJrFGI.jpg" alt="Desire Lines">
+                <div class="top-banner">V.SCREENING</div>
+            </div>
+            <div class="movie-info">
+                <div class="movie-title">Desire Lines</div>
+                <div class="movie-meta">Jules Rosskam • USA</div>
+            </div>
+            <div class="festival-bar-f">OUTshine LGBTQ+ Film Fest</div>
+        </div>
+    </div>
+</div>
+
+<hr class="divider">
+
+<!-- =============== OPTION G: Pill + Festival Inline (No Bar) =============== -->
+<div class="section-label">OPTION G — PILL BADGE + INLINE FESTIVAL NAME</div>
+<p class="section-desc">
+    "V.SCREENING" pill on the poster (like Netflix). No bar at all — the festival name<br>
+    appears as a gold text line in the info area below the title. Cleanest, most minimal.
+</p>
+
+<div class="comparison">
+    <div>
+        <div class="after-label">SHORT FESTIVAL NAME</div>
+        <div class="movie-container">
+            <div class="movie-card">
+                <img src="https://image.tmdb.org/t/p/w342/6v8Kb9TDCbQgFJF8POvuqFiCVRI.jpg" alt="Maintenance Artist">
+                <div class="screening-pill-g">V.SCREENING</div>
+            </div>
+            <div class="movie-info-g">
+                <div class="movie-title">Maintenance Artist</div>
+                <div class="festival-inline">2026 Atlanta Film Festival</div>
+                <div class="movie-meta">Ageliki Giannakidou • Greece</div>
+            </div>
+        </div>
+    </div>
+    <div>
+        <div class="after-label">LONG FESTIVAL NAME</div>
+        <div class="movie-container">
+            <div class="movie-card">
+                <img src="https://image.tmdb.org/t/p/w342/zQJnSVPEpVa2pWEj2wJOXdJrFGI.jpg" alt="Desire Lines">
+                <div class="screening-pill-g">V.SCREENING</div>
+            </div>
+            <div class="movie-info-g">
+                <div class="movie-title">Desire Lines</div>
+                <div class="festival-inline">OUTshine LGBTQ+ Film Fest</div>
+                <div class="movie-meta">Jules Rosskam • USA</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<hr class="divider">
+
+<!-- =============== NOTES =============== -->
+<div class="notes">
+    <h3>DESIGN NOTES</h3>
+    <ul>
+        <li><span class="tag tag-c">Option C</span> — <strong>Diagonal corner ribbon</strong>. Classic "special edition" feel. Doesn't compete with score badges (bottom-left) or any future streaming badge (top-right). Festival name in solid gold bar.</li>
+        <li><span class="tag tag-d">Option D</span> — <strong>Split bar</strong>. Most compact — both pieces of info in one bar. "V.SCREENING" in solid gold, festival name in translucent gold. Risk: tight space for long names, but abbreviations help.</li>
+        <li><span class="tag tag-e">Option E</span> — <strong>Stacked double bar</strong>. Clearest hierarchy. Thin gold strip labels it as a screening, dark bar below gives the festival name breathing room. Slightly taller card footprint.</li>
+        <li><span class="tag tag-f">Option F</span> — <strong>Top poster banner</strong>. "V.SCREENING" across the top of the poster image itself. Very visible — you can't miss it. Festival name in the bottom bar. Slightly covers the poster top edge.</li>
+        <li><span class="tag tag-g">Option G</span> — <strong>Pill + inline text</strong>. Most minimal. No bar at all — festival name is just a gold text line between the title and director. Clean but less prominent. Pill badge on poster matches Netflix pattern exactly.</li>
+        <li>All options use <strong>"V.SCREENING"</strong> as the badge text.</li>
+        <li>All options show the <strong>festival name on the card</strong> without opening the lightbox.</li>
+    </ul>
+</div>
+
+</body>
+</html>
