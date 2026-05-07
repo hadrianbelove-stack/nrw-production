@@ -68,6 +68,19 @@ export async function openRottenTomatoes(url) {
 }
 
 /**
+ * Open Metacritic link
+ */
+export async function openMetacritic(url) {
+  if (!url) return;
+
+  try {
+    await Linking.openURL(url);
+  } catch (error) {
+    console.error('[Links] Error opening Metacritic:', error);
+  }
+}
+
+/**
  * Open Wikipedia link
  */
 export async function openWikipedia(url) {
@@ -115,6 +128,7 @@ export default {
   openWatchLink,
   openTrailer,
   openRottenTomatoes,
+  openMetacritic,
   openWikipedia,
   shareMovie,
   extractYouTubeId,

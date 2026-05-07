@@ -977,33 +977,31 @@ header h1 {
 }
 .card-score-overlay:empty { display: none; }
 .card-score-badge {
-    padding: 2px 5px;
-    border-radius: 3px;
+    padding: 3px 6px;
+    border-radius: 6px;
     font-size: 0.55rem;
     font-weight: 800;
     text-decoration: none;
     line-height: 1;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.5);
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
 }
 .card-score-badge:hover { opacity: 0.85; }
-.card-score-badge.rt {
-    background: rgba(250, 50, 50, 0.85);
-    color: #fff;
-}
-.card-score-badge.mc {
-    background: rgba(102, 204, 51, 0.85);
-    color: #fff;
-}
-.card-score-badge.imdb {
-    background: rgba(245, 197, 24, 0.9);
-    color: #000;
-}
+.card-score-badge.rt { color: #ff6b6b; }
+.card-score-badge.mc { color: #7ddf64; }
+.card-score-badge.imdb { color: #f5c518; }
 .card-score-badge .score-logo {
-    height: 10px;
+    height: 11px;
     width: auto;
     vertical-align: middle;
     margin-right: 2px;
     display: inline-block;
+}
+.card-score-badge.mc .score-logo {
+    filter: invert(1) sepia(1) saturate(5) hue-rotate(70deg) brightness(1.1);
 }
 
 /* Poster wrapper for positioning shrink button + score overlay */
@@ -1249,15 +1247,31 @@ header h1 {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 .info-btn-lb.glass { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.3); }
-.info-btn-lb.rt { background: rgba(250, 50, 50, 0.85); color: #fff; }
-.info-btn-lb.mc { background: rgba(102, 204, 51, 0.85); color: #fff; }
-.info-btn-lb.imdb { background: rgba(245, 197, 24, 0.9); color: #000; font-weight: 800; }
+.info-btn-lb.rt,
+.info-btn-lb.mc,
+.info-btn-lb.imdb {
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+.info-btn-lb.rt:hover,
+.info-btn-lb.mc:hover,
+.info-btn-lb.imdb:hover {
+    background: rgba(255,255,255,0.12);
+}
+.info-btn-lb.rt { color: #ff6b6b; }
+.info-btn-lb.mc { color: #7ddf64; }
+.info-btn-lb.imdb { color: #f5c518; font-weight: 800; }
 .info-btn-lb .info-logo {
-    height: 16px;
+    height: 18px;
     width: auto;
     vertical-align: middle;
     margin-right: 4px;
     display: inline-block;
+}
+.info-btn-lb.mc .info-logo {
+    filter: invert(1) sepia(1) saturate(5) hue-rotate(70deg) brightness(1.1);
 }
 
 /* Navigation arrows - inline with content */

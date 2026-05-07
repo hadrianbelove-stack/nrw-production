@@ -51,7 +51,7 @@ const formatShortDate = (dateStr) => {
 };
 
 // Simple action button with equal sizing
-const ActionButton = ({ label, color, onPress, hasTVPreferredFocus = false, testID, borderColor, textColor, icon }) => {
+const ActionButton = ({ label, color, onPress, hasTVPreferredFocus = false, testID, borderColor, textColor, icon, iconTintColor }) => {
   const [isFocused, setIsFocused] = useState(false);
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
@@ -87,14 +87,14 @@ const ActionButton = ({ label, color, onPress, hasTVPreferredFocus = false, test
         style={[
           actionButtonStyles.button,
           { backgroundColor: color },
-          borderColor && { borderWidth: 2, borderColor },
+          borderColor && { borderWidth: 1, borderColor },
           isFocused && actionButtonStyles.buttonFocused,
           { transform: [{ scale: scaleAnim }] },
         ]}
       >
         {icon ? (
           <View style={actionButtonStyles.buttonContent}>
-            <Image source={icon} style={actionButtonStyles.buttonIcon} />
+            <Image source={icon} style={[actionButtonStyles.buttonIcon, iconTintColor && { tintColor: iconTintColor }]} />
             <Text style={[actionButtonStyles.label, textColor && { color: textColor }]}>{label}</Text>
           </View>
         ) : (
@@ -136,6 +136,16 @@ const actionButtonStyles = StyleSheet.create({
     resizeMode: 'contain',
   },
 });
+
+// Display-only score badge — no focus/press behavior (not useful on TV)
+const ScoreBadge = ({ label, color, icon, textColor }) => (
+  <View style={[actionButtonStyles.button, { backgroundColor: color }]}>
+    <View style={actionButtonStyles.buttonContent}>
+      <Image source={icon} style={actionButtonStyles.buttonIcon} />
+      <Text style={[actionButtonStyles.label, textColor && { color: textColor }]}>{label}</Text>
+    </View>
+  </View>
+);
 
 const MovieDetailTvOS = () => {
   const navigation = useNavigation();
@@ -575,31 +585,27 @@ const MovieDetailTvOS = () => {
                   />
                 )}
                 {rtScore && (
-                  <ActionButton
+                  <ScoreBadge
                     label={rtScore.label}
-                    color="rgba(250, 50, 50, 0.85)"
+                    color="rgba(255,255,255,0.06)"
+                    textColor="#ff6b6b"
                     icon={require('../../assets/logos/rt.png')}
-                    onPress={() => movie?.links?.rt && openURL(movie.links.rt)}
-                    testID="action-btn-rt"
                   />
                 )}
                 {mcScore && (
-                  <ActionButton
+                  <ScoreBadge
                     label={mcScore.label}
-                    color="rgba(102, 204, 51, 0.85)"
+                    color="rgba(255,255,255,0.06)"
+                    textColor="#7ddf64"
                     icon={require('../../assets/logos/metacritic.png')}
-                    onPress={() => movie?.links?.metacritic && openURL(movie.links.metacritic)}
-                    testID="action-btn-mc"
                   />
                 )}
                 {imdbScore && (
-                  <ActionButton
+                  <ScoreBadge
                     label={imdbScore.label}
-                    color="#F5C518"
-                    textColor="#000"
+                    color="rgba(255,255,255,0.06)"
+                    textColor="#f5c518"
                     icon={require('../../assets/logos/imdb.png')}
-                    onPress={() => movie?.links?.imdb && openURL(movie.links.imdb)}
-                    testID="action-btn-imdb"
                   />
                 )}
               </View>

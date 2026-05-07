@@ -42,6 +42,7 @@ import androidx.compose.ui.input.key.type
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
@@ -553,11 +554,14 @@ private fun MovieDetail(
                 val hasWiki = movie.links?.wikipedia != null
                 if (hasWiki || rtInfo != null || movie.metacriticScore?.toIntOrNull() != null || movie.imdbRating?.toFloatOrNull() != null) {
                     Spacer(modifier = Modifier.height(10.dp))
+                    val context = androidx.compose.ui.platform.LocalContext.current
+                    val rtUrl = movie.links?.rt ?: movie.links?.rottenTomatoes
+                    val mcUrl = movie.links?.metacritic
+                    val imdbUrl = movie.links?.imdb
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         movie.links?.wikipedia?.let { wikiUrl ->
-                            val context = androidx.compose.ui.platform.LocalContext.current
                             Box(
                                 modifier = Modifier
                                     .weight(1f)
@@ -581,7 +585,9 @@ private fun MovieDetail(
                                 modifier = Modifier
                                     .weight(1f)
                                     .clip(RoundedCornerShape(6.dp))
-                                    .background(Color(0xFFFA3232).copy(alpha = 0.75f))
+                                    .background(Color.White.copy(alpha = 0.06f))
+                                    .border(1.dp, Color.White.copy(alpha = 0.1f), RoundedCornerShape(6.dp))
+                                    .then(if (rtUrl != null) Modifier.clickable { com.nrw.app.utils.DeepLinkHelper.openUrl(context, rtUrl, "rt") } else Modifier)
                                     .padding(horizontal = 10.dp, vertical = 6.dp),
                                 contentAlignment = Alignment.Center
                             ) {
@@ -592,12 +598,12 @@ private fun MovieDetail(
                                     Image(
                                         painter = painterResource(id = R.drawable.logo_rt),
                                         contentDescription = null,
-                                        modifier = Modifier.height(14.dp).padding(end = 4.dp),
+                                        modifier = Modifier.height(18.dp).padding(end = 4.dp),
                                         contentScale = ContentScale.Fit
                                     )
                                     Text(
                                         text = "$score%",
-                                        color = TextPrimary,
+                                        color = Color(0xFFFF6B6B),
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 12.sp
                                     )
@@ -610,7 +616,9 @@ private fun MovieDetail(
                                     modifier = Modifier
                                         .weight(1f)
                                         .clip(RoundedCornerShape(6.dp))
-                                        .background(Color(0xFF66CC33).copy(alpha = 0.75f))
+                                        .background(Color.White.copy(alpha = 0.06f))
+                                        .border(1.dp, Color.White.copy(alpha = 0.1f), RoundedCornerShape(6.dp))
+                                        .then(if (mcUrl != null) Modifier.clickable { com.nrw.app.utils.DeepLinkHelper.openUrl(context, mcUrl, "metacritic") } else Modifier)
                                         .padding(horizontal = 10.dp, vertical = 6.dp),
                                     contentAlignment = Alignment.Center
                                 ) {
@@ -621,12 +629,13 @@ private fun MovieDetail(
                                         Image(
                                             painter = painterResource(id = R.drawable.logo_mc),
                                             contentDescription = null,
-                                            modifier = Modifier.height(14.dp).padding(end = 4.dp),
-                                            contentScale = ContentScale.Fit
+                                            modifier = Modifier.height(18.dp).padding(end = 4.dp),
+                                            contentScale = ContentScale.Fit,
+                                            colorFilter = ColorFilter.tint(Color(0xFF7DDF64))
                                         )
                                         Text(
                                             text = "$score",
-                                            color = TextPrimary,
+                                            color = Color(0xFF7DDF64),
                                             fontWeight = FontWeight.Bold,
                                             fontSize = 12.sp
                                         )
@@ -639,7 +648,9 @@ private fun MovieDetail(
                                 modifier = Modifier
                                     .weight(1f)
                                     .clip(RoundedCornerShape(6.dp))
-                                    .background(Color(0xFFF5C518).copy(alpha = 0.8f))
+                                    .background(Color.White.copy(alpha = 0.06f))
+                                    .border(1.dp, Color.White.copy(alpha = 0.1f), RoundedCornerShape(6.dp))
+                                    .then(if (imdbUrl != null) Modifier.clickable { com.nrw.app.utils.DeepLinkHelper.openUrl(context, imdbUrl, "imdb") } else Modifier)
                                     .padding(horizontal = 10.dp, vertical = 6.dp),
                                 contentAlignment = Alignment.Center
                             ) {
@@ -650,12 +661,12 @@ private fun MovieDetail(
                                     Image(
                                         painter = painterResource(id = R.drawable.logo_imdb),
                                         contentDescription = null,
-                                        modifier = Modifier.height(14.dp).padding(end = 4.dp),
+                                        modifier = Modifier.height(18.dp).padding(end = 4.dp),
                                         contentScale = ContentScale.Fit
                                     )
                                     Text(
                                         text = "${"%.1f".format(rating)}",
-                                        color = Color.Black,
+                                        color = Color(0xFFF5C518),
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 12.sp
                                     )

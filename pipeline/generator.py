@@ -1879,7 +1879,7 @@ class DataGenerator:
                 body_text = (page.text_content('body') or '').lower()
 
                 # Amazon CAPTCHA detection — default to pre-order if blocked
-                if is_amazon and ('captcha' in body_text or 'robot' in body_text or 'automated access' in body_text):
+                if is_amazon and ('captcha' in body_text or 'not a robot' in body_text or 'automated access' in body_text):
                     self.logger.info(f"Pre-order page check for {title}: Amazon CAPTCHA detected → defaulting to pre-order")
                     return 'pre-order'
 

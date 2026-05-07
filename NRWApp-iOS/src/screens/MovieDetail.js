@@ -21,7 +21,7 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {WatchButtonGroup} from '../components/WatchButton';
 import {Colors, Typography, Spacing} from '../constants/colors';
 import {getWatchLinks} from '../services/api';
-import {openWatchLink, openRottenTomatoes, openWikipedia} from '../utils/links';
+import {openWatchLink, openRottenTomatoes, openMetacritic, openWikipedia} from '../utils/links';
 import {trackMovieView, trackWatchButtonTap} from '../services/analytics';
 import TrailerPlayer from '../components/TrailerPlayer';
 
@@ -159,6 +159,12 @@ export default function MovieDetail({route}) {
   const handleRTPress = useCallback(() => {
     if (movie.links?.rotten_tomatoes) {
       openRottenTomatoes(movie.links.rotten_tomatoes);
+    }
+  }, [movie]);
+
+  const handleMCPress = useCallback(() => {
+    if (movie.links?.metacritic) {
+      openMetacritic(movie.links.metacritic);
     }
   }, [movie]);
 
@@ -307,28 +313,31 @@ export default function MovieDetail({route}) {
             )}
             {movie.rt_score && (
               <TouchableOpacity
-                style={[styles.infoBtnColored, { backgroundColor: 'rgba(250, 50, 50, 0.85)' }]}
+                style={styles.infoBtnColored}
                 onPress={handleRTPress}
                 disabled={!movie.links?.rotten_tomatoes}>
                 <View style={styles.infoBtnContent}>
                   <Image source={require('../assets/logos/rt.png')} style={styles.infoBtnLogo} />
-                  <Text style={styles.infoBtnColoredText}>{movie.rt_score}</Text>
+                  <Text style={[styles.infoBtnColoredText, { color: '#ff6b6b' }]}>{movie.rt_score}</Text>
                 </View>
               </TouchableOpacity>
             )}
             {movie.metacritic_score && (
-              <View style={[styles.infoBtnColored, { backgroundColor: 'rgba(102, 204, 51, 0.85)' }]}>
+              <TouchableOpacity
+                style={styles.infoBtnColored}
+                onPress={handleMCPress}
+                disabled={!movie.links?.metacritic}>
                 <View style={styles.infoBtnContent}>
-                  <Image source={require('../assets/logos/metacritic.png')} style={styles.infoBtnLogo} />
-                  <Text style={styles.infoBtnColoredText}>{movie.metacritic_score}</Text>
+                  <Image source={require('../assets/logos/metacritic.png')} style={[styles.infoBtnLogo, { tintColor: '#7ddf64' }]} />
+                  <Text style={[styles.infoBtnColoredText, { color: '#7ddf64' }]}>{movie.metacritic_score}</Text>
                 </View>
-              </View>
+              </TouchableOpacity>
             )}
             {movie.imdb_rating && (
-              <View style={[styles.infoBtnColored, { backgroundColor: '#F5C518' }]}>
+              <View style={styles.infoBtnColored}>
                 <View style={styles.infoBtnContent}>
                   <Image source={require('../assets/logos/imdb.png')} style={styles.infoBtnLogo} />
-                  <Text style={[styles.infoBtnColoredText, { color: '#000' }]}>{movie.imdb_rating}</Text>
+                  <Text style={[styles.infoBtnColoredText, { color: '#f5c518' }]}>{movie.imdb_rating}</Text>
                 </View>
               </View>
             )}
@@ -622,6 +631,9 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.sm,
     borderRadius: 6,
     alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
   },
   infoBtnContent: {
     flexDirection: 'row',
@@ -630,7 +642,7 @@ const styles = StyleSheet.create({
   },
   infoBtnLogo: {
     width: 24,
-    height: 12,
+    height: 18,
     resizeMode: 'contain',
   },
   infoBtnColoredText: {

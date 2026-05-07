@@ -94,7 +94,7 @@ export default function MovieCard({movie, onPress, isFeatured = false}) {
         {(movie.rt_score || movie.metacritic_score || movie.imdb_rating) && (
           <View style={styles.scoreBadgeRow}>
             {movie.rt_score && (
-              <View style={[styles.scoreBadge, styles.rtScoreBadge]}>
+              <View style={styles.scoreBadge}>
                 <View style={styles.scoreBadgeContent}>
                   <Image source={require('../assets/logos/rt.png')} style={styles.scoreBadgeLogo} />
                   <Text style={styles.rtScoreText}>{movie.rt_score}</Text>
@@ -102,15 +102,15 @@ export default function MovieCard({movie, onPress, isFeatured = false}) {
               </View>
             )}
             {movie.metacritic_score && (
-              <View style={[styles.scoreBadge, styles.mcScoreBadge]}>
+              <View style={styles.scoreBadge}>
                 <View style={styles.scoreBadgeContent}>
-                  <Image source={require('../assets/logos/metacritic.png')} style={styles.scoreBadgeLogo} />
+                  <Image source={require('../assets/logos/metacritic.png')} style={[styles.scoreBadgeLogo, { tintColor: '#7ddf64' }]} />
                   <Text style={styles.mcScoreText}>{movie.metacritic_score}</Text>
                 </View>
               </View>
             )}
             {movie.imdb_rating && (
-              <View style={[styles.scoreBadge, styles.imdbScoreBadge]}>
+              <View style={styles.scoreBadge}>
                 <View style={styles.scoreBadgeContent}>
                   <Image source={require('../assets/logos/imdb.png')} style={styles.scoreBadgeLogo} />
                   <Text style={styles.imdbScoreText}>{movie.imdb_rating}</Text>
@@ -243,9 +243,12 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   scoreBadge: {
-    paddingHorizontal: 5,
-    paddingVertical: 2,
-    borderRadius: 3,
+    paddingHorizontal: 6,
+    paddingVertical: 3,
+    borderRadius: 6,
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
   },
   scoreBadgeContent: {
     flexDirection: 'row',
@@ -254,30 +257,21 @@ const styles = StyleSheet.create({
   },
   scoreBadgeLogo: {
     width: 16,
-    height: 8,
+    height: 11,
     resizeMode: 'contain',
   },
-  rtScoreBadge: {
-    backgroundColor: 'rgba(250, 50, 50, 0.85)',
-  },
   rtScoreText: {
-    color: '#fff',
+    color: '#ff6b6b',
     fontSize: 9,
     fontWeight: '800',
-  },
-  mcScoreBadge: {
-    backgroundColor: 'rgba(102, 204, 51, 0.85)',
   },
   mcScoreText: {
-    color: '#fff',
+    color: '#7ddf64',
     fontSize: 9,
     fontWeight: '800',
   },
-  imdbScoreBadge: {
-    backgroundColor: 'rgba(245, 197, 24, 0.9)',
-  },
   imdbScoreText: {
-    color: '#000',
+    color: '#f5c518',
     fontSize: 9,
     fontWeight: '800',
   },

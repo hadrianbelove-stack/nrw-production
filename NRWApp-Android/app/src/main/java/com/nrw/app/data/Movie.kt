@@ -131,6 +131,8 @@ data class MovieLinks(
     @SerializedName("rotten_tomatoes")
     val rottenTomatoes: String? = null,
 
+    val metacritic: String? = null,
+
     val wikipedia: String? = null,
 
     val imdb: String? = null

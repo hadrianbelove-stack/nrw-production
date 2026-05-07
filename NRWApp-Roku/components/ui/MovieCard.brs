@@ -144,7 +144,7 @@ Sub SetupRtBadge(score as Dynamic)
     ' Set badge text
     m.rtBadge.text = "RT " + scoreInt.ToStr() + "%"
     m.rtBadge.visible = true
-    m.rtBadgeBg.color = "0xFA3232D9"  ' Consistent RT red
+    m.rtBadgeBg.color = "0x000000B3"  ' Dark glass background
     m.rtBadgeBg.visible = true
 End Sub
 
