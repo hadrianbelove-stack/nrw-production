@@ -35,6 +35,7 @@ const NRWConfig = {
         youtube:   { key: 'youtube',   matches: ['youtube'],         label: 'YOUTUBE',   btnLabel: 'Rent YouTube',  logo: null },
         screening: { key: 'screening', matches: ['eventive'],        label: 'BUY TICKET', btnLabel: 'Buy Ticket',  logo: null,
                      linkMatches: ['eventive.org', 'festivalplayer', 'shift72.com'] },
+        plex:      { key: 'plex',      matches: ['plex'],            label: 'PLEX',       btnLabel: 'Watch on Plex', logo: null, fallback: true },
     },
 
     // Country abbreviations per STYLE_GUIDE.md

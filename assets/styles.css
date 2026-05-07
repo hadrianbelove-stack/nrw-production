@@ -38,6 +38,7 @@
     --svc-fandango: #FF6600;
     --svc-amazon: #ff9900;
     --svc-apple: #000;
+    --svc-plex: #E5A00D;
     --svc-preorder: #7c3aed;
     --svc-restoration: #C8A951;
 }
@@ -1217,6 +1218,7 @@ header h1 {
 .watch-btn-lb.crackle { background: var(--svc-crackle); color: #fff; }
 .watch-btn-lb.fawesome { background: var(--svc-fawesome); color: #fff; }
 .watch-btn-lb.fandango { background: var(--svc-fandango); color: #fff; }
+.watch-btn-lb.plex { background: var(--svc-plex); color: #000; }
 .watch-btn-lb.amc { background: var(--svc-amc); color: #fff; }
 .lightbox-buttons .watch-btn-lb.screening { background: transparent; color: #FFD700; border: 2px solid #FFD700; font-weight: 700; }
 

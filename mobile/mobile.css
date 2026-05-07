@@ -29,6 +29,7 @@
     --svc-fandango: #FF6600;
     --svc-amazon: #ff9900;
     --svc-apple: #000;
+    --svc-plex: #E5A00D;
     --svc-preorder: #7c3aed;
     --svc-restoration: #C8A951;
 }
@@ -600,6 +601,7 @@ body {
 .btn-watch-full.apple, .btn-watch-vod.apple { background: var(--svc-apple); color: #fff; border: 1px solid #444; }
 .btn-watch-vod.fandango { background: var(--svc-fandango); color: #fff; }
 .btn-watch-vod.youtube { background: var(--svc-youtube); color: #fff; }
+.btn-watch-full.plex, .btn-watch-vod.plex { background: var(--svc-plex); color: #000; }
 .btn-watch-full.screening, .btn-watch-vod.screening { background: transparent; color: #FFD700; border: 2px solid #FFD700; }
 
 /* === BUTTON ROWS === */

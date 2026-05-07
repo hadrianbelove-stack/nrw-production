@@ -1020,14 +1020,21 @@ const NRW = {
         const vodRow = document.createElement('div');
         vodRow.className = 'vod-row';
         let hasVod = false;
+        // Resolve all VOD entries, then filter out fallback-only services (e.g. Plex)
+        // when non-fallback services are available
+        let resolvedVod = [];
         lbVodEntries.forEach(vod => {
             const vodLink = vod.link || vod.url;
             if (vod.service && vodLink) {
                 const vodType = this.resolveVODService(vod.service, vodLink);
-                if (!vodType) return;
-                vodRow.appendChild(makeLink(vodLink, `watch-btn-lb ${vodType.key}`, vodType.label));
-                hasVod = true;
+                if (vodType) resolvedVod.push({ vodType, vodLink });
             }
+        });
+        const hasNonFallback = resolvedVod.some(v => !v.vodType.fallback);
+        if (hasNonFallback) resolvedVod = resolvedVod.filter(v => !v.vodType.fallback);
+        resolvedVod.forEach(({ vodType, vodLink }) => {
+            vodRow.appendChild(makeLink(vodLink, `watch-btn-lb ${vodType.key}`, vodType.label));
+            hasVod = true;
         });
         if (hasVod) { watchStack.appendChild(vodRow); hasWatch = true; }
 

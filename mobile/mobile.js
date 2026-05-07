@@ -540,13 +540,20 @@ const NRWMobile = {
             : (watchLinks.vod?.service ? [watchLinks.vod] : []);
         const vodWithLinks = vodEntries.filter(v => v.link);
         if (vodWithLinks.length > 0) {
-            const vodBtns = vodWithLinks.map(vod => {
+            // Resolve all VOD, then filter out fallback-only services (e.g. Plex)
+            // when non-fallback services are available
+            let resolved = vodWithLinks.map(vod => {
                 const vodType = NRWMobile.resolveVODService(vod.service, vod.link);
-                if (!vodType) return '';
-                return `<a href="${vod.link}" target="_blank" rel="noopener" class="btn-watch-vod ${vodType.key}">${vodType.label}</a>`;
+                if (!vodType) return null;
+                return { vodType, link: vod.link };
             }).filter(Boolean);
+            const hasNonFallback = resolved.some(v => !v.vodType.fallback);
+            if (hasNonFallback) resolved = resolved.filter(v => !v.vodType.fallback);
+            const vodBtns = resolved.map(({ vodType, link }) =>
+                `<a href="${link}" target="_blank" rel="noopener" class="btn-watch-vod ${vodType.key}">${vodType.label}</a>`
+            );
             if (vodBtns.length === 1) return vodBtns[0].replace('btn-watch-vod', 'btn-watch-full');
-            return `<div class="vod-row">${vodBtns.join('')}</div>`;
+            if (vodBtns.length > 1) return `<div class="vod-row">${vodBtns.join('')}</div>`;
         }
 
         // Pre-order links (JustWatch buy offers for pre-order movies)
