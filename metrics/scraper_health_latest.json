@@ -1,17 +1,24 @@
 {
-  "timestamp": "2026-05-01T10:27:13.773471",
+  "timestamp": "2026-05-06T18:33:47.398020",
   "scrapers": {
     "rt_scraper": {
+      "attempts": 1,
+      "successes": 1,
+      "cache_hits": 0,
+      "success_rate": 100.0,
+      "cache_hit_rate": 0.0
+    },
+    "mc_scraper": {
       "attempts": 0,
       "successes": 0,
-      "cache_hits": 0,
+      "cache_hits": 1,
       "success_rate": null,
       "cache_hit_rate": null
     },
     "wikipedia_scraper": {
-      "wikidata_attempts": 0,
-      "wikidata_successes": 0,
-      "success_rate": null
+      "wikidata_attempts": 1,
+      "wikidata_successes": 1,
+      "success_rate": 100.0
     },
     "trailer_scraper": {
       "attempts": 0,

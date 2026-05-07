@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>NRW Rating Badge Mockups — v2</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+    color: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    min-height: 100vh;
+    padding: 3rem 2rem;
+  }
+  h1 {
+    font-weight: 100;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: #00d4aa;
+  }
+  h2 {
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+    color: #888;
+  }
+  .section {
+    max-width: 700px;
+    margin: 0 auto 4rem auto;
+  }
+  .option-label {
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    color: #00d4aa;
+    margin-bottom: 0.75rem;
+  }
+  .option-desc {
+    font-size: 0.85rem;
+    color: #888;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+  }
+  .demo-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2.5rem;
+    align-items: stretch;
+  }
+  .divider {
+    border: none;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    margin: 2rem 0;
+  }
+  a { text-decoration: none; }
+
+  /* ============================================ */
+  /* CURRENT (for comparison)                     */
+  /* ============================================ */
+  .current .badge {
+    flex: 1;
+    padding: 0.5rem;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+  }
+  .current .badge.rt { background: rgba(250, 50, 50, 0.85); color: #fff; }
+  .current .badge.mc { background: rgba(102, 204, 51, 0.85); color: #fff; }
+  .current .badge.imdb { background: rgba(245, 197, 24, 0.9); color: #000; font-weight: 800; }
+  .current .badge img { height: 16px; width: auto; }
+
+  /* ============================================ */
+  /* OPTION A: Glass + Colored Label + Score      */
+  /* ============================================ */
+  .option-a .badge {
+    flex: 1;
+    padding: 0.55rem 0.85rem;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #fff;
+    transition: all 0.25s ease;
+  }
+  .option-a .badge:hover {
+    background: rgba(255,255,255,0.12);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+  }
+  .option-a .source {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .option-a .score {
+    font-weight: 800;
+    font-size: 1.05rem;
+    margin-left: auto;
+  }
+  .option-a .badge.rt .source { color: #fa3232; }
+  .option-a .badge.rt .score { color: #ff6b6b; }
+  .option-a .badge.mc .source { color: #66cc33; }
+  .option-a .badge.mc .score { color: #7ddf64; }
+  .option-a .badge.imdb .source { color: #f5c518; }
+  .option-a .badge.imdb .score { color: #f5c518; }
+
+  /* ============================================ */
+  /* OPTION B: Accent Bar + Label + Score         */
+  /* ============================================ */
+  .option-b .badge {
+    flex: 1;
+    padding: 0.6rem 0.85rem;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.08);
+    color: #fff;
+    transition: all 0.25s ease;
+  }
+  .option-b .badge:hover {
+    background: rgba(255,255,255,0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+  }
+  .option-b .badge.rt { border-left: 3px solid #fa3232; }
+  .option-b .badge.mc { border-left: 3px solid #66cc33; }
+  .option-b .badge.imdb { border-left: 3px solid #f5c518; }
+  .option-b .source {
+    font-size: 0.6rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #888;
+    min-width: 30px;
+  }
+  .option-b .score {
+    font-weight: 800;
+    font-size: 1.1rem;
+    margin-left: auto;
+  }
+  .option-b .badge.rt .score { color: #ff6b6b; }
+  .option-b .badge.mc .score { color: #7ddf64; }
+  .option-b .badge.imdb .score { color: #f5c518; }
+
+  /* ============================================ */
+  /* OPTION C: Stacked Label + Big Score          */
+  /* ============================================ */
+  .option-c .badge {
+    flex: 1;
+    padding: 0.6rem 0.5rem;
+    border-radius: 12px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.08);
+    color: #fff;
+    transition: all 0.25s ease;
+  }
+  .option-c .badge:hover {
+    background: rgba(255,255,255,0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+  }
+  .option-c .source {
+    font-size: 0.55rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #888;
+  }
+  .option-c .score {
+    font-weight: 800;
+    font-size: 1.3rem;
+    letter-spacing: -0.02em;
+  }
+  .option-c .badge.rt .score { color: #ff6b6b; }
+  .option-c .badge.mc .score { color: #7ddf64; }
+  .option-c .badge.imdb .score { color: #f5c518; }
+
+  /* ============================================ */
+  /* OPTION D: Tinted Brand Background            */
+  /* ============================================ */
+  .option-d .badge {
+    flex: 1;
+    padding: 0.55rem 0.85rem;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #fff;
+    transition: all 0.25s ease;
+    border: 1px solid;
+  }
+  .option-d .badge:hover {
+    transform: translateY(-2px);
+  }
+  .option-d .badge.rt {
+    background: rgba(250, 50, 50, 0.12);
+    border-color: rgba(250, 50, 50, 0.25);
+  }
+  .option-d .badge.rt:hover {
+    background: rgba(250, 50, 50, 0.2);
+    box-shadow: 0 4px 16px rgba(250, 50, 50, 0.2);
+  }
+  .option-d .badge.mc {
+    background: rgba(102, 204, 51, 0.12);
+    border-color: rgba(102, 204, 51, 0.25);
+  }
+  .option-d .badge.mc:hover {
+    background: rgba(102, 204, 51, 0.2);
+    box-shadow: 0 4px 16px rgba(102, 204, 51, 0.2);
+  }
+  .option-d .badge.imdb {
+    background: rgba(245, 197, 24, 0.12);
+    border-color: rgba(245, 197, 24, 0.25);
+  }
+  .option-d .badge.imdb:hover {
+    background: rgba(245, 197, 24, 0.2);
+    box-shadow: 0 4px 16px rgba(245, 197, 24, 0.2);
+  }
+  .option-d .source {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .option-d .badge.rt .source { color: rgba(255,100,100,0.8); }
+  .option-d .badge.mc .source { color: rgba(125,223,100,0.8); }
+  .option-d .badge.imdb .source { color: rgba(245,197,24,0.8); }
+  .option-d .score { font-weight: 800; font-size: 1.05rem; margin-left: auto; }
+  .option-d .badge.rt .score { color: #ff6b6b; }
+  .option-d .badge.mc .score { color: #7ddf64; }
+  .option-d .badge.imdb .score { color: #f5c518; }
+
+  /* ============================================ */
+  /* OPTION E: Hybrid — MC + IMDb logos, RT text  */
+  /* ============================================ */
+  .option-e .badge {
+    flex: 1;
+    padding: 0.55rem 0.85rem;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #fff;
+    transition: all 0.25s ease;
+  }
+  .option-e .badge:hover {
+    background: rgba(255,255,255,0.12);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+  }
+  .option-e .badge img {
+    height: 18px;
+    width: auto;
+    border-radius: 3px;
+  }
+  /* MC logo is black — invert + tint green so it's visible on dark bg */
+  .option-e .badge.mc img {
+    filter: invert(1) sepia(1) saturate(5) hue-rotate(70deg) brightness(1.1);
+  }
+  .option-e .source {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #fa3232;
+  }
+  .option-e .score {
+    font-weight: 800;
+    font-size: 1.05rem;
+    margin-left: auto;
+  }
+  .option-e .badge.rt .score { color: #ff6b6b; }
+  .option-e .badge.mc .score { color: #7ddf64; }
+  .option-e .badge.imdb .score { color: #f5c518; }
+
+  /* ============================================ */
+  /* CARD OVERLAYS                                */
+  /* ============================================ */
+  .card-demo {
+    position: relative;
+    width: 220px;
+    height: 330px;
+    border-radius: 15px;
+    overflow: hidden;
+    background: #222;
+    margin-bottom: 2.5rem;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  }
+  .card-demo .poster-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #2a1a3e, #1a2a3e);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    color: #666;
+  }
+
+  /* Current card badges */
+  .card-overlay-current {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    display: flex;
+    gap: 4px;
+    z-index: 5;
+  }
+  .card-badge-current {
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-size: 0.55rem;
+    font-weight: 800;
+    line-height: 1;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+  .card-badge-current.rt { background: rgba(250, 50, 50, 0.85); color: #fff; }
+  .card-badge-current.mc { background: rgba(102, 204, 51, 0.85); color: #fff; }
+  .card-badge-current.imdb { background: rgba(245, 197, 24, 0.9); color: #000; }
+  .card-badge-current img { height: 10px; width: auto; }
+
+  /* Improved card badges — text labels, dark glass */
+  .card-overlay-new {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    display: flex;
+    gap: 5px;
+    z-index: 5;
+  }
+  .card-badge-new {
+    padding: 3px 7px;
+    border-radius: 6px;
+    font-size: 0.6rem;
+    font-weight: 800;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  }
+  .card-badge-new .card-src {
+    font-size: 0.45rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  .card-badge-new.rt .card-src { color: #fa3232; }
+  .card-badge-new.rt .card-val { color: #ff8888; }
+  .card-badge-new.mc .card-src { color: #66cc33; }
+  .card-badge-new.mc .card-val { color: #99ee77; }
+  .card-badge-new.imdb .card-src { color: #f5c518; }
+  .card-badge-new.imdb .card-val { color: #ffe066; }
+  .card-badge-new .card-val {
+    font-size: 0.6rem;
+    font-weight: 800;
+  }
+
+  .side-by-side {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+  }
+  .side-label {
+    font-size: 0.7rem;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.5rem;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<div class="section">
+  <h1>Rating Badge Mockups — v2</h1>
+  <h2>No more tiny logos — text labels instead</h2>
+
+  <!-- ===== CURRENT ===== -->
+  <div class="option-label">Current (for reference)</div>
+  <div class="option-desc">Solid color fills with logo images. The RT wordmark has a white box, is illegible small, and clashes with the dark theme.</div>
+  <div class="demo-row current">
+    <a class="badge rt" href="#"><img src="assets/logos/rt.png" alt="RT"> 92</a>
+    <a class="badge mc" href="#"><img src="assets/logos/metacritic.png" alt="MC"> 78</a>
+    <a class="badge imdb" href="#"><img src="assets/logos/imdb.png" alt="IMDb"> 7.8</a>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ===== OPTION A ===== -->
+  <div class="option-label">Option A — Glass + Colored Labels</div>
+  <div class="option-desc">Frosted glass. Source name in its brand color on the left, score right-aligned. Clean, uniform, readable at any size.</div>
+  <div class="demo-row option-a">
+    <a class="badge rt" href="#"><span class="source">RT</span> <span class="score">92</span></a>
+    <a class="badge mc" href="#"><span class="source">MC</span> <span class="score">78</span></a>
+    <a class="badge imdb" href="#"><span class="source">IMDb</span> <span class="score">7.8</span></a>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ===== OPTION B ===== -->
+  <div class="option-label">Option B — Accent Bar + Label + Score</div>
+  <div class="option-desc">Colored left border for instant recognition. Muted label, bold score. Structured and editorial.</div>
+  <div class="demo-row option-b">
+    <a class="badge rt" href="#"><span class="source">RT</span> <span class="score">92</span></a>
+    <a class="badge mc" href="#"><span class="source">MC</span> <span class="score">78</span></a>
+    <a class="badge imdb" href="#"><span class="source">IMDb</span> <span class="score">7.8</span></a>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ===== OPTION C ===== -->
+  <div class="option-label">Option C — Stacked Label + Big Score</div>
+  <div class="option-desc">Score is the hero. Tiny muted label on top, large colored number below. Most compact vertically.</div>
+  <div class="demo-row option-c">
+    <a class="badge rt" href="#"><span class="source">RT</span><span class="score">92</span></a>
+    <a class="badge mc" href="#"><span class="source">MC</span><span class="score">78</span></a>
+    <a class="badge imdb" href="#"><span class="source">IMDb</span><span class="score">7.8</span></a>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ===== OPTION D ===== -->
+  <div class="option-label">Option D — Tinted Brand Background</div>
+  <div class="option-desc">Faint brand-colored background and border. Warmest option — each badge has personality while staying refined.</div>
+  <div class="demo-row option-d">
+    <a class="badge rt" href="#"><span class="source">RT</span> <span class="score">92</span></a>
+    <a class="badge mc" href="#"><span class="source">MC</span> <span class="score">78</span></a>
+    <a class="badge imdb" href="#"><span class="source">IMDb</span> <span class="score">7.8</span></a>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ===== OPTION E ===== -->
+  <div class="option-label">Option E — Hybrid (all logos)</div>
+  <div class="option-desc">Tomato icon for RT, green-tinted M for Metacritic, IMDb logo as-is. All three have real logos now — clean and recognizable at any size.</div>
+  <div class="demo-row option-e">
+    <a class="badge rt" href="#"><img src="logos%20and%20images/rotten_tomato_transparent.png" alt="RT"> <span class="score">92</span></a>
+    <a class="badge mc" href="#"><img src="assets/logos/metacritic.png" alt="MC"> <span class="score">78</span></a>
+    <a class="badge imdb" href="#"><img src="assets/logos/imdb.png" alt="IMDb"> <span class="score">7.8</span></a>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ===== CARD OVERLAY COMPARISON ===== -->
+  <div class="option-label" style="margin-top: 2rem;">Card Poster Badges — Before / After</div>
+  <div class="option-desc">Small poster-overlay badges. New version: dark glass chips with color-coded text labels — no logos to get mangled at tiny sizes.</div>
+
+  <div class="side-by-side">
+    <div>
+      <div class="side-label">Current</div>
+      <div class="card-demo">
+        <div class="poster-placeholder">Movie Poster</div>
+        <div class="card-overlay-current">
+          <span class="card-badge-current rt"><img src="assets/logos/rt.png" alt="RT"> 92</span>
+          <span class="card-badge-current mc"><img src="assets/logos/metacritic.png" alt="MC"> 78</span>
+          <span class="card-badge-current imdb"><img src="assets/logos/imdb.png" alt="IMDb"> 7.8</span>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="side-label">Proposed</div>
+      <div class="card-demo">
+        <div class="poster-placeholder">Movie Poster</div>
+        <div class="card-overlay-new">
+          <span class="card-badge-new rt"><span class="card-src">RT</span> <span class="card-val">92</span></span>
+          <span class="card-badge-new mc"><span class="card-src">MC</span> <span class="card-val">78</span></span>
+          <span class="card-badge-new imdb"><span class="card-src">IMDb</span> <span class="card-val">7.8</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -57,7 +57,6 @@ The script outputs a full structured report — present it as-is. Key sections:
 - **Zero watch links**: Each movie shows its digital date, days on wall, and a detailed status explaining WHY it has no links (JW revert reason, which excluded platform, TMDB platform info, revert count). A CRITICAL alert (>5%) means the pipeline is likely broken. Movies age out of this section after 3 days.
 - **JW REVERTS**: Grouped by reason (summary counts, excluded platform breakdown, repeat offenders reverted 2+ times), then full list with TMDB platforms. Tracking only — not on wall.
 - **Pre-orders & upcoming**: All future-dated movies sorted by date with link count and service names. Summary line shows how many have links.
-- **Orphans**: Movies that are available in tracking but NOT on the live wall — invisible to enrichment catch-up.
 - **Trailer hosting failures**: Recent failures with reasons.
 
 Format as a short summary (not raw log). Flag any failures or concerns clearly.

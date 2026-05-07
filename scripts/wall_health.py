@@ -406,35 +406,7 @@ if merged:
 else:
     print('  None')
 
-# ── Section 7: ORPHANS ──────────────────────────────────────────────────────
-
-orphan_path = os.path.join(BASE, 'metrics/orphan_movies.json')
-if os.path.exists(orphan_path):
-    try:
-        orphan_data = json.load(open(orphan_path))
-        orphan_movies = orphan_data.get('movies', [])
-        if orphan_movies:
-            print()
-            print('─' * 78)
-            print('ORPHANS — %d movies (available in tracking, NOT on wall)' % len(orphan_movies))
-            print('─' * 78)
-            col_w = 42
-            print('  %-*s %-12s %s' % (col_w, 'Title', 'Digital Date', 'TMDB Platforms'))
-            print('  ' + '─' * 72)
-            for om in orphan_movies:
-                title = om.get('title', '?')[:col_w]
-                dd = om.get('digital_date', '?')
-                provs = om.get('providers', {})
-                plats = []
-                for cat in ['rent', 'buy', 'streaming']:
-                    for p in provs.get(cat, []):
-                        plats.append('%s (%s)' % (p, cat))
-                plat_str = ', '.join(plats) if plats else '(none)'
-                print('  %-*s %-12s %s' % (col_w, title, dd, plat_str))
-    except Exception:
-        pass
-
-# ── Section 8: TRAILER FAILURES ─────────────────────────────────────────────
+# ── Section 7: TRAILER FAILURES ─────────────────────────────────────────────
 
 host_fail_path = os.path.join(BASE, 'cache', 'trailer_host_failures.json')
 if os.path.exists(host_fail_path):
