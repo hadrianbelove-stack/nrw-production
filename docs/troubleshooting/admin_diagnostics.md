@@ -187,7 +187,7 @@ jq -r '.date' metrics/daily.jsonl | sort | uniq | tail -10
 
 - **[NRW_DATA_WORKFLOW_EXPLAINED.md](../../NRW_DATA_WORKFLOW_EXPLAINED.md)** - Phase 3: Manual Review & Quality Gate
 - **[ADMIN_WORKFLOW.md](../../ADMIN_WORKFLOW.md)** - Complete admin panel workflow and approval gate documentation
-- **[admin.py](../../admin.py)** - `/approve` route implementation (lines 1799-1921)
+- **[admin/routes/](../../admin/routes/)** - Route implementations (generation.py handles approve/regenerate)
 
 ## Troubleshooting Common Issues
 

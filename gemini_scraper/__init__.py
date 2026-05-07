@@ -7,7 +7,7 @@ so existing `from gemini_scraper import X` imports work unchanged.
 """
 
 from gemini_scraper.base import GeminiFinderBase
-from gemini_scraper.youtube import GeminiYouTubeFinder, HybridYouTubeFinder, find_youtube_trailer
+from gemini_scraper.youtube import GeminiYouTubeFinder, HybridYouTubeFinder
 from gemini_scraper.rotten_tomatoes import GeminiRTFinder, HybridRTFinder
 from gemini_scraper.wikipedia import GeminiWikipediaFinder
 from gemini_scraper.vod_date import GeminiVODDateFinder
@@ -20,7 +20,6 @@ __all__ = [
     'GeminiFinderBase',
     'GeminiYouTubeFinder',
     'HybridYouTubeFinder',
-    'find_youtube_trailer',
     'GeminiRTFinder',
     'HybridRTFinder',
     'GeminiWikipediaFinder',

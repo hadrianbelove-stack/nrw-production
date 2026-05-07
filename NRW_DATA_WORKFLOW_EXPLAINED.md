@@ -134,7 +134,7 @@ Daily Intake & Discovery → movie_tracking.json → OPTIONAL REVIEW → data.js
   2. **Enrichment phase:** Overlays rich data onto existing entries
 - **Structure:** Movies include basic info (title, date, poster) plus enriched data when available (synopsis, director, cast, trailer, RT link, Wikipedia link, watch_links)
 - **Reliability:** All discovered movies appear; enrichment enhances but never gates visibility
-- **Admin integration:** Applies `admin/hidden_movies.json` (hides from display) and `admin/staff_picks.json` (marks as staff picks)
+- **Admin integration:** Applies `admin/staff_picks.json` (marks as staff picks) and `admin/category_overrides.json` (category toggles, hide/show)
 
 ### **Phase 5: User Display**
 **What happens:** Frontend renders data.json as the movie wall.

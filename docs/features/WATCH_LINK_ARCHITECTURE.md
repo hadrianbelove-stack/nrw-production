@@ -75,4 +75,4 @@ If a movie has no watch links, check in waterfall order:
 - Waterfall orchestration: `pipeline/enrichment.py` → `get_watch_links()`
 - JustWatch API: `pipeline/justwatch.py` → `verify_availability()`
 - VOD scraper: `streaming_platform_scraper.py`
-- Discovery: `pipeline/generator.py` → discovery loop (inside `generate()`, ~line 830+)
+- Discovery: `pipeline/discoverer.py` → `ProviderDiscoverer.check_tracking_movies()`

@@ -95,7 +95,7 @@ def test_2_json_validation():
     print("="*60)
 
     try:
-        from admin import validate_movie_update_request
+        from admin.utils import validate_movie_update_request
 
         # Test valid request
         valid_request = {
@@ -271,7 +271,7 @@ def test_5_backwards_compatibility():
 
     try:
         # Test old import still works
-        from admin import safe_write_json
+        from file_lock import safe_write_json
         test_result("Old safe_write_json import works", True)
 
         # Test it's actually the new function

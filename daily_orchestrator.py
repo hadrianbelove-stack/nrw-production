@@ -82,10 +82,18 @@ class NRWOrchestrator:
         else:
             self.warnings.append(entry)
 
-    def run_command(self, cmd, description, critical=True):
-        """Execute command with error handling"""
+    def run_command(self, cmd, description, critical=True, timeout=600):
+        """Execute command with error handling.
+
+        Args:
+            cmd: Shell command to run
+            description: Human-readable phase name
+            critical: Whether failure should be tracked (always True in practice)
+            timeout: Per-phase timeout in seconds (default 600 = 10 min)
+        """
         phase_start = datetime.now()
-        print(f"\n📍 {description}...")
+        timeout_min = timeout / 60
+        print(f"\n📍 {description}... (timeout: {timeout_min:.0f}m)")
 
         try:
             result = subprocess.run(
@@ -93,17 +101,30 @@ class NRWOrchestrator:
                 shell=True,
                 capture_output=True,
                 text=True,
-                timeout=1800  # 30 minute safety net
+                timeout=timeout
             )
-        except subprocess.TimeoutExpired:
+        except subprocess.TimeoutExpired as e:
             phase_end = datetime.now()
             phase_duration = phase_end - phase_start
-            print(f"❌ {description} timed out after 30 minutes")
+            # Capture partial output from the killed process
+            partial_stdout = ''
+            partial_stderr = ''
+            if e.stdout:
+                partial_stdout = e.stdout if isinstance(e.stdout, str) else e.stdout.decode('utf-8', errors='replace')
+            if e.stderr:
+                partial_stderr = e.stderr if isinstance(e.stderr, str) else e.stderr.decode('utf-8', errors='replace')
+            timeout_msg = f'Process timed out after {timeout_min:.0f} minutes'
+            print(f"❌ {description} timed out after {timeout_min:.0f} minutes")
+            if partial_stdout:
+                last_lines = partial_stdout.strip().split('\n')[-5:]
+                print(f"   Last output before timeout:")
+                for line in last_lines:
+                    print(f"   {line}")
             self.results.append({
                 'step': description,
                 'success': False,
-                'output': '',
-                'error': 'Process timed out after 30 minutes',
+                'output': partial_stdout,
+                'error': f'{timeout_msg}\n{partial_stderr}' if partial_stderr else timeout_msg,
                 'duration': phase_duration
             })
             self.phase_timings.append({
@@ -114,9 +135,9 @@ class NRWOrchestrator:
             self.failures.append({
                 'phase': description,
                 'severity': 'error',
-                'message': 'Process timed out after 30 minutes',
-                'context': None,
-                'stdout_preview': None
+                'message': timeout_msg,
+                'context': partial_stderr[:500] if partial_stderr else None,
+                'stdout_preview': partial_stdout[-500:] if partial_stdout else None
             })
             return False
 
@@ -162,7 +183,7 @@ class NRWOrchestrator:
 
         return success
 
-    def run_command_with_retries(self, cmd, description, critical=True, max_retries=2, retry_delays=None):
+    def run_command_with_retries(self, cmd, description, critical=True, max_retries=2, retry_delays=None, timeout=600):
         """Execute command with retry logic and exponential backoff"""
         if retry_delays is None:
             retry_delays = [30, 45]  # Default delays in seconds
@@ -175,7 +196,7 @@ class NRWOrchestrator:
                 print(f"⏳ Retrying {description} in {delay}s (attempt {attempt + 1}/{max_retries + 1})...")
                 time.sleep(delay)
 
-            success = self.run_command(cmd, description, critical=False)  # Don't exit on failure for retries
+            success = self.run_command(cmd, description, critical=False, timeout=timeout)
 
             if success:
                 if attempt > 0:
@@ -1183,51 +1204,61 @@ class NRWOrchestrator:
             print(f"\n📋 State File: Error reading - {e}")
             self._track_error('State File', f'Error reading state file: {e}', severity='warning')
 
+    def _acquire_lock(self):
+        """Acquire exclusive lock to prevent concurrent orchestrator runs.
+
+        Returns:
+            (lock_file, locked): Tuple of lock file path and whether lock was acquired.
+            Returns (path, False) if another process holds the lock.
+        """
+        lock_file = '.nrw_orchestrator.lock'
+
+        # PID-aware stale lock cleanup (cross-platform: works on macOS and Linux)
+        if os.path.exists(lock_file):
+            try:
+                with open(lock_file, 'r') as f:
+                    lock_info = json.load(f)
+                pid = lock_info.get('pid')
+                if pid:
+                    try:
+                        os.kill(pid, 0)  # Signal 0 doesn't kill, just checks if process exists
+                        print(f'\u274c Active process {pid} holds lock')
+                        return lock_file, False
+                    except OSError:
+                        # Process doesn't exist - stale lock
+                        print(f'\u26a0\ufe0f Removing stale lock (PID {pid} not running)')
+                        os.remove(lock_file)
+                else:
+                    print(f'\u26a0\ufe0f Removing corrupted lock (no PID)')
+                    os.remove(lock_file)
+            except json.JSONDecodeError:
+                print(f'\u26a0\ufe0f Removing corrupted lock (invalid JSON)')
+                os.remove(lock_file)
+            except Exception as e:
+                print(f'\u26a0\ufe0f Removing lock file due to error: {e}')
+                os.remove(lock_file)
+
+        # Create lock file with PID and timestamp
+        try:
+            with open(lock_file, 'w') as f:
+                json.dump({
+                    'pid': os.getpid(),
+                    'started_at': datetime.now().isoformat(),
+                    'hostname': os.uname().nodename if hasattr(os, 'uname') else 'unknown'
+                }, f)
+        except Exception as e:
+            print(f"\u26a0\ufe0f  Failed to create lock file: {e}")
+
+        return lock_file, True
+
     def run(self):
         """Execute the complete daily pipeline with best-effort exception handling"""
         try:
-            # Acquire exclusive lock to prevent concurrent runs
-            # Skip lock in CI environments (fresh container each run)
-            is_ci = os.getenv('CI') == 'true' or os.getenv('GITHUB_ACTIONS') == 'true'
-            lock_file = '.nrw_orchestrator.lock'
+            lock_file, locked = self._acquire_lock()
+            if not locked:
+                return 1  # Hard lock conflict should fail
 
-            # PID-aware stale lock cleanup (cross-platform: works on macOS and Linux)
-            if os.path.exists(lock_file):
-                try:
-                    with open(lock_file, 'r') as f:
-                        lock_info = json.load(f)
-                    pid = lock_info.get('pid')
-                    if pid:
-                        try:
-                            os.kill(pid, 0)  # Signal 0 doesn't kill, just checks if process exists
-                            print(f'❌ Active process {pid} holds lock')
-                            return 1  # Hard lock conflict should fail
-                        except OSError:
-                            # Process doesn't exist - stale lock
-                            print(f'⚠️ Removing stale lock (PID {pid} not running)')
-                            os.remove(lock_file)
-                    else:
-                        print(f'⚠️ Removing corrupted lock (no PID)')
-                        os.remove(lock_file)
-                except json.JSONDecodeError:
-                    print(f'⚠️ Removing corrupted lock (invalid JSON)')
-                    os.remove(lock_file)
-                except Exception as e:
-                    print(f'⚠️ Removing lock file due to error: {e}')
-                    os.remove(lock_file)
-
-            # Create lock file with PID and timestamp
-            try:
-                with open(lock_file, 'w') as f:
-                    json.dump({
-                        'pid': os.getpid(),
-                        'started_at': datetime.now().isoformat(),
-                        'hostname': os.uname().nodename if hasattr(os, 'uname') else 'unknown'
-                    }, f)
-            except Exception as e:
-                print(f"⚠️  Failed to create lock file: {e}")
-
-            print(f"🚀 NRW Daily Update - {datetime.now().strftime('%Y-%m-%d %H:%M')}")
+            print(f"\U0001f680 NRW Daily Update - {datetime.now().strftime('%Y-%m-%d %H:%M')}")
             print("=" * 50)
 
             # Ensure we're in the right directory (handle both local and CI environments)
@@ -1255,28 +1286,25 @@ class NRWOrchestrator:
             retry_delays = orchestrator_config.get('discovery_retry_delays', [30, 45])
 
             # Pipeline steps for daily discovery and publication
+            # Format: (cmd, description, critical, use_retry, timeout_seconds)
             discovery_pipeline = [
-                # Phase 1: Intake new premieres from TMDB
+                # Phase 1: Intake new premieres from TMDB (normally ~9s, 10min safety)
                 ("python3 generate_data.py --intake",
-                 "Intake new premieres from TMDB", True, True),  # Last True indicates retry
+                 "Intake new premieres from TMDB", True, True, 600),
 
                 # Phase 2: Discovery – check tracked movies for digital availability
+                # Routinely takes 40-80 min (polls 13,000+ movies). 2hr safety net.
                 ("python3 generate_data.py --discover",
-                 "Discover provider availability for tracking movies", True, False),  # Last False indicates no retry
+                 "Discover provider availability for tracking movies", True, False, 7200),
             ]
 
             # Execute discovery and monitoring pipeline
             for step in discovery_pipeline:
-                if len(step) == 4:
-                    cmd, description, critical, use_retry = step
-                    if use_retry:
-                        self.run_command_with_retries(cmd, description, critical, discovery_retries, retry_delays)
-                    else:
-                        self.run_command(cmd, description, critical)
+                cmd, description, critical, use_retry, phase_timeout = step
+                if use_retry:
+                    self.run_command_with_retries(cmd, description, critical, discovery_retries, retry_delays, timeout=phase_timeout)
                 else:
-                    # Backward compatibility for 3-element tuples
-                    cmd, description, critical = step
-                    self.run_command(cmd, description, critical)
+                    self.run_command(cmd, description, critical, timeout=phase_timeout)
 
             # Health checks and metrics (report-only, never fail)
             self.check_discovery_health()
@@ -1296,7 +1324,8 @@ class NRWOrchestrator:
             success = self.run_command(
                 "python3 generate_data.py --enrich",
                 "Enrich newly available movies with metadata",
-                True
+                True,
+                timeout=3600  # 1 hour — normally 8-14min, extra headroom for large batches
             )
 
             # Phase 3.5: Plex enrichment (optional - only if plex_config.json exists)
@@ -1328,7 +1357,8 @@ class NRWOrchestrator:
             self.run_command(
                 "python3 generate_data.py --gap-fill",
                 "Refresh watch links and Wikipedia for all wall movies",
-                critical=False  # Don't fail pipeline if gap fill has issues
+                critical=False,  # Don't fail pipeline if gap fill has issues
+                timeout=5400  # 90 min — refreshes 700+ movies' watch links
             )
 
             # Phase 3.7: Check virtual screening expirations (Eventive, Shift72, etc.)
@@ -1406,7 +1436,6 @@ class NRWOrchestrator:
             return 0  # Best-effort: record failure but don't fail CI
         finally:
             # Always remove lock file
-            lock_file = '.nrw_orchestrator.lock'
             if os.path.exists(lock_file):
                 try:
                     os.remove(lock_file)

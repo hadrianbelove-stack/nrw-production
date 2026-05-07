@@ -249,9 +249,9 @@ If agent scraping causes issues:
 ## Reference Implementation
 
 - **File:** `agent_link_scraper.py` (Playwright-based rewrite)
-- **Integration:** `generate_data.py` lines 197-402 (modified)
+- **Integration:** `pipeline/enrichment.py` (EnrichmentService) and `pipeline/generator.py` (_init_streaming_scraper)
 - **Cache:** `cache/agent_links_cache.json`
-- **Statistics:** `generate_data.py` lines 629-640 (extended)
+- **Statistics:** `pipeline/generator.py` (_save_scraper_health_metrics)
 - **Config:** `config.yaml` lines 20-39 (enhanced settings)
 - **Test:** `test_agent_scraper.py` (adapted for Playwright)
 - **Screenshots:** `cache/screenshots/` (failure diagnostics)

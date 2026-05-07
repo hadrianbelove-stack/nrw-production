@@ -81,7 +81,7 @@ Most streaming service links (Netflix, Hulu, Disney+, Max, etc.) show `link: nul
 - Amazon/Apple purchase buttons still work
 
 **For Admin:**
-- Can manually add streaming links via admin panel (admin/watch_link_overrides.json)
+- Can manually add streaming links via admin panel (overrides/watch_links_overrides.json)
 - Manual links have highest priority (Tier 1 in waterfall)
 - Useful for high-priority/featured movies
 
@@ -240,7 +240,7 @@ For high-priority movies, add manual deep links:
 ### Manual Overrides (Final Fallback)
 - Required for: Movies not on Amazon/Apple TV
 - Use Admin Panel to add: http://localhost:5555
-- Format: `admin/watch_link_overrides.json`
+- Format: `overrides/watch_links_overrides.json`
 
 ## Validation
 

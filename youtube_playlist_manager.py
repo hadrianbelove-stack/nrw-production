@@ -21,7 +21,6 @@ from pathlib import Path
 import re
 import argparse
 import logging
-from logging.handlers import RotatingFileHandler
 
 try:
     from google.oauth2.credentials import Credentials
@@ -36,52 +35,7 @@ except ImportError:
     print("   pip install google-api-python-client google-auth-oauthlib google-auth-httplib2")
 
 
-def setup_logger(name='youtube_manager', log_file='logs/youtube_manager.log', level=logging.INFO):
-    """
-    Configure logging with file rotation and console output.
-
-    Args:
-        name (str): Logger name
-        log_file (str): Path to log file (default: 'logs/youtube_manager.log')
-        level (int): Logging level (default: logging.INFO)
-
-    Returns:
-        logging.Logger: Configured logger instance
-    """
-    # Create logs directory if it doesn't exist
-    os.makedirs('logs', exist_ok=True)
-
-    # Get or create logger
-    logger = logging.getLogger(name)
-
-    # Prevent duplicate handlers
-    if not logger.handlers:
-        logger.setLevel(level)
-
-        # Create formatter
-        formatter = logging.Formatter(
-            '%(asctime)s [%(levelname)s] %(message)s',
-            datefmt='%Y-%m-%d %H:%M:%S'
-        )
-
-        # File handler with rotation (10MB, 5 backups)
-        file_handler = RotatingFileHandler(
-            log_file,
-            maxBytes=10*1024*1024,  # 10MB
-            backupCount=5,
-            encoding='utf-8'
-        )
-        file_handler.setLevel(level)
-        file_handler.setFormatter(formatter)
-        logger.addHandler(file_handler)
-
-        # Console handler for CLI UX
-        console_handler = logging.StreamHandler()
-        console_handler.setLevel(level)
-        console_handler.setFormatter(formatter)
-        logger.addHandler(console_handler)
-
-    return logger
+from utils.logger import setup_logger
 
 
 class YouTubePlaylistManager:

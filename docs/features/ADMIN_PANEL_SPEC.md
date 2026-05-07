@@ -27,7 +27,7 @@ Daily Scraper → movie_tracking.json → data.json → Public Site
 
 ### Default Visibility Model
 
-Movies are **visible by default** (no approval required). The `apply_admin_overrides()` method in `generate_data.py` (lines 2197-2228) filters out movies in `admin/hidden_movies.json` during data generation.
+Movies are **visible by default** (no approval required). The `apply_admin_overrides()` method in `pipeline/display.py` applies admin decisions (staff picks, categories, ordering, hide/show) during data generation.
 
 **Rationale:** Publish-first model reduces friction, allows rapid discovery, and trusts automation with manual refinement.
 
@@ -116,10 +116,10 @@ Embedded JavaScript with fetch API for AJAX operations
 ## Data Files
 
 ### Admin Override Files
-- `admin/hidden_movies.json` - Movies hidden from public display
-- `admin/featured_movies.json` - Movies highlighted as important releases
+- `admin/staff_picks.json` - Staff picks highlighted with special styling
+- `admin/category_overrides.json` - Category toggles (big time, indie, restoration, etc.)
 - `admin/movie_reviews.json` - Editorial reviews written by curator
-- `admin/watch_link_overrides.json` - Manual watch link corrections
+- `overrides/watch_links_overrides.json` - Manual watch link corrections
 
 ### Interaction with movie_tracking.json
 - Manual edits save directly to main database
@@ -160,14 +160,14 @@ Embedded JavaScript with fetch API for AJAX operations
 ## Related Files
 
 ### Implementation
-- `admin.py` (lines 1-1987) - Main Flask application
+- `admin/` package - Flask application (routes in `admin/routes/`, utils in `admin/utils.py`)
 - `admin/templates/index.html` - Admin UI template
 - `admin/static/js/admin.js` - Frontend JavaScript
 - `admin/static/css/admin.css` - Admin panel styles
 
 ### Integration
-- `generate_data.py` (lines 2197-2228) - apply_admin_overrides() method
-- `youtube_playlist_manager.py` (lines 573-662) - Custom playlist creation
+- `pipeline/display.py` - apply_admin_overrides() and categorize_movie() methods
+- `youtube_playlist_manager.py` - Custom playlist creation
 
 ### Documentation
 - `docs/features/YOUTUBE_PLAYLIST_SETUP.md` - OAuth setup guide

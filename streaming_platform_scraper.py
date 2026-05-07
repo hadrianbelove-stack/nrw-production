@@ -600,10 +600,6 @@ class StreamingPlatformScraper(PlaywrightScraperBase):
             return None
 
 
-# Backward compatibility alias
-StreamingPlatformScraperV2 = StreamingPlatformScraper
-
-
 def test_scraper():
     """Test function for manual testing."""
     scraper = StreamingPlatformScraper(headless=False)

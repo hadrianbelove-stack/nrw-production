@@ -985,7 +985,3 @@ class AgentLinkScraper(PlaywrightScraperBase):
 
         self._save_cache()
         logger.info("[AgentLinkScraper] Cleanup complete")
-
-
-# Backward compatibility alias
-AgentLinkScraperV2 = AgentLinkScraper

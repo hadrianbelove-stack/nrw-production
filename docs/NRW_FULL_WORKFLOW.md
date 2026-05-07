@@ -38,9 +38,9 @@ This document provides a high-level overview of the complete NRW workflow, combi
 - Apply manual corrections with `manual_*` flags protection
 
 **Key Admin Artifacts**:
-- `admin/hidden_movies.json` - Movies excluded from public display
 - `admin/staff_picks.json` - Staff picks highlighted with special styling
-- `admin/watch_link_overrides.json` - Manual watch link corrections
+- `admin/category_overrides.json` - Category toggles (big time, indie, restoration, etc.)
+- `overrides/watch_links_overrides.json` - Manual watch link corrections
 - `manual_*` flags in `movie_tracking.json` - Field-specific corrections
 
 ### Phase 4: Display Generation

@@ -7,7 +7,7 @@ Provides pre-configured requests Sessions with automatic retry on transient fail
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
-from typing import Optional, Tuple, Set
+from typing import Optional, Set
 
 
 # Default status codes to retry on (rate limit + server errors)

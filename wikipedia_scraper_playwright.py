@@ -612,7 +612,3 @@ class WikipediaScraperPlaywright(PlaywrightScraperBase):
         """Clean up browser resources."""
         self._cleanup_browser()
         self._log("Wikipedia Scraper closed")
-
-
-# For backwards compatibility - alias the class name
-WikipediaScraperV2 = WikipediaScraperPlaywright

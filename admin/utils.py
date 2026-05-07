@@ -77,23 +77,6 @@ def load_config() -> dict:
         logger.error(f"Failed to load config.yaml: {e}")
         return {}
 
-def save_json(filepath: str, data: Union[dict, list]) -> None:
-    """Save data to JSON file.
-
-    Creates parent directories if they don't exist.
-
-    Args:
-        filepath: Path to JSON file to write
-        data: Data to serialize as JSON (dict or list)
-
-    Raises:
-        IOError: If file cannot be written
-        TypeError: If data is not JSON-serializable
-    """
-    os.makedirs(os.path.dirname(filepath) if os.path.dirname(filepath) else '.', exist_ok=True)
-    with open(filepath, 'w') as f:
-        json.dump(data, f, indent=2)
-
 def format_subprocess_output(text: Optional[str], max_chars: int = 500) -> str:
     """Format subprocess output with consistent truncation.
 

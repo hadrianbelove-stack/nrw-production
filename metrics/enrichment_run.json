@@ -1,185 +1,202 @@
 {
-  "timestamp": "2026-05-06T19:07:25.628518",
+  "timestamp": "2026-05-07T15:30:45.195450",
   "movies_requested": 71,
-  "movies_enriched": 44,
-  "movies_deferred": 27,
+  "movies_enriched": 47,
+  "movies_deferred": 24,
   "deferred_details": [
     {
-      "title": "ID:1386743",
-      "reason": "not_in_data_json"
-    },
-    {
-      "title": "ID:1531852",
-      "reason": "not_in_data_json"
-    },
-    {
-      "title": "ID:1688652",
-      "reason": "not_in_data_json"
-    },
-    {
-      "title": "ID:1271981",
-      "reason": "not_in_data_json"
-    },
-    {
-      "title": "ID:1572196",
-      "reason": "not_in_data_json"
-    },
-    {
-      "title": "ID:1565970",
-      "reason": "not_in_data_json"
-    },
-    {
-      "title": "ID:1686433",
-      "reason": "not_in_data_json"
-    },
-    {
-      "title": "ID:1686985",
-      "reason": "not_in_data_json"
-    },
-    {
-      "title": "ID:tv_307624",
-      "reason": "not_in_data_json"
-    },
-    {
-      "title": "ID:tv_308275",
-      "reason": "not_in_data_json"
-    },
-    {
-      "title": "ID:tv_313117",
-      "reason": "not_in_data_json"
-    },
-    {
-      "title": "The Adventure",
-      "reason": "jw_revert:justwatch_no_valid_offers",
-      "digital_date": "2026-04-30",
-      "discovered_at": "",
-      "discovery_source": "orphan_rescue",
+      "title": "And Through the Portal We Go",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-05-06",
+      "discovered_at": "2026-05-07T11:08:30.590406",
+      "discovery_source": "provider_availability_check",
       "revert_count": 3,
       "tmdb_platforms": [
-        "Rakuten Viki"
+        "Amazon Video"
       ]
     },
     {
-      "title": "Lemonade Blessing",
+      "title": "Hey Balwanth",
       "reason": "jw_revert:justwatch_no_valid_offers",
-      "digital_date": "2026-04-29",
-      "discovered_at": "",
-      "discovery_source": "orphan_rescue",
-      "revert_count": 3,
-      "tmdb_platforms": []
-    },
-    {
-      "title": "Mars",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-05-01",
-      "discovered_at": "",
-      "discovery_source": "orphan_rescue",
-      "revert_count": 3,
-      "tmdb_platforms": []
-    },
-    {
-      "title": "The Mohican",
-      "reason": "jw_revert:justwatch_no_valid_offers",
-      "digital_date": "2026-04-27",
-      "discovered_at": "",
-      "discovery_source": "orphan_rescue",
+      "digital_date": "2026-05-06",
+      "discovered_at": "2026-05-07T11:08:31.158655",
+      "discovery_source": "provider_availability_check",
       "revert_count": 3,
       "tmdb_platforms": [
         "fuboTV"
       ]
     },
     {
-      "title": "The True Beauty of Being Bitten by a Tick",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-04-29",
-      "discovered_at": "",
-      "discovery_source": "orphan_rescue",
-      "revert_count": 3,
-      "tmdb_platforms": []
-    },
-    {
-      "title": "Amoeba",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-04-29",
-      "discovered_at": "",
-      "discovery_source": "orphan_rescue",
-      "revert_count": 3,
-      "tmdb_platforms": []
-    },
-    {
-      "title": "Jackie Fabulous: You Can Leave",
-      "reason": "enrichment_failed",
-      "digital_date": "2026-02-12",
-      "discovered_at": "",
-      "discovery_source": "orphan_rescue",
-      "revert_count": 0,
+      "title": "Before What Comes After",
+      "reason": "jw_revert:justwatch_no_valid_offers",
+      "digital_date": "2026-05-04",
+      "discovered_at": "2026-05-07T11:08:35.146105",
+      "discovery_source": "provider_availability_check",
+      "revert_count": 5,
       "tmdb_platforms": [
-        "Hulu"
+        "fuboTV"
       ]
     },
     {
-      "title": "The Kerala Story 2 Goes Beyond",
-      "reason": "jw_revert:justwatch_no_valid_offers",
-      "digital_date": "2026-04-30",
-      "discovered_at": "",
-      "discovery_source": "orphan_rescue",
-      "revert_count": 3,
+      "title": "Perilous Passage: Birth in America",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-05-04",
+      "discovered_at": "2026-05-07T11:08:35.933717",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 4,
       "tmdb_platforms": []
     },
     {
-      "title": "She Cries Murder",
+      "title": "ID:1565970",
+      "reason": "not_in_data_json"
+    },
+    {
+      "title": "28",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-05-01",
-      "discovered_at": "",
-      "discovery_source": "orphan_rescue",
-      "revert_count": 3,
+      "discovered_at": "2026-05-07T11:08:39.528697",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 7,
       "tmdb_platforms": []
     },
     {
-      "title": "I Love You My Narcissist",
+      "title": "Bi-Coastal",
       "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-04-30",
-      "discovered_at": "",
-      "discovery_source": "orphan_rescue",
-      "revert_count": 2,
+      "digital_date": "2026-05-01",
+      "discovered_at": "2026-05-07T11:08:41.424395",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 7,
       "tmdb_platforms": []
     },
     {
-      "title": "Ketchup on Waffles",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-04-28",
-      "discovered_at": "",
-      "discovery_source": "orphan_rescue",
-      "revert_count": 3,
-      "tmdb_platforms": []
+      "title": "Sammy's Children's Day",
+      "reason": "jw_revert:justwatch_no_valid_offers",
+      "digital_date": "2026-03-15",
+      "discovered_at": "2026-05-07T11:09:22.731103",
+      "discovery_source": "provider_availability_check",
+      "revert_count": 4,
+      "tmdb_platforms": [
+        "Rakuten Viki"
+      ]
+    },
+    {
+      "title": "If Only You Weren't the One",
+      "reason": "jw_revert:justwatch_no_valid_offers",
+      "digital_date": "2026-03-08",
+      "discovered_at": "2026-05-07T11:09:31.687814",
+      "discovery_source": "provider_availability_check",
+      "revert_count": 4,
+      "tmdb_platforms": [
+        "Rakuten Viki"
+      ]
+    },
+    {
+      "title": "ID:tv_313117",
+      "reason": "not_in_data_json"
     },
     {
       "title": "I Can't Write",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-04-27",
-      "discovered_at": "",
-      "discovery_source": "orphan_rescue",
-      "revert_count": 3,
+      "discovered_at": "2026-05-07T13:10:08.297950",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 4,
+      "tmdb_platforms": []
+    },
+    {
+      "title": "The True Beauty of Being Bitten by a Tick",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-04-29",
+      "discovered_at": "2026-05-07T13:10:06.671474",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 4,
+      "tmdb_platforms": []
+    },
+    {
+      "title": "Lemonade Blessing",
+      "reason": "jw_revert:justwatch_no_valid_offers",
+      "digital_date": "2026-04-29",
+      "discovered_at": "2026-05-07T13:10:06.040697",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 4,
+      "tmdb_platforms": []
+    },
+    {
+      "title": "The Mohican",
+      "reason": "jw_revert:justwatch_no_valid_offers",
+      "digital_date": "2026-04-27",
+      "discovered_at": "2026-05-07T11:08:47.958927",
+      "discovery_source": "provider_availability_check",
+      "revert_count": 4,
+      "tmdb_platforms": [
+        "fuboTV"
+      ]
+    },
+    {
+      "title": "Ketchup on Waffles",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-04-28",
+      "discovered_at": "2026-05-07T11:08:47.393116",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 4,
       "tmdb_platforms": []
     },
     {
       "title": "Should I Marry A Murderer?",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-04-29",
-      "discovered_at": "",
-      "discovery_source": "orphan_rescue",
-      "revert_count": 3,
+      "discovered_at": "2026-05-07T11:08:46.603870",
+      "discovery_source": "provider_availability_check",
+      "revert_count": 4,
       "tmdb_platforms": [
         "Netflix",
         "Netflix Standard with Ads"
       ]
     },
     {
-      "title": "The Border Baby",
+      "title": "Amoeba",
       "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-04-29",
+      "discovered_at": "2026-05-07T11:08:45.715710",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 4,
+      "tmdb_platforms": []
+    },
+    {
+      "title": "I Love You My Narcissist",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-04-30",
+      "discovered_at": "2026-05-07T11:08:43.291021",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 3,
+      "tmdb_platforms": []
+    },
+    {
+      "title": "The Kerala Story 2 Goes Beyond",
+      "reason": "jw_revert:justwatch_no_valid_offers",
+      "digital_date": "2026-04-30",
+      "discovered_at": "2026-05-07T11:08:42.813271",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 4,
+      "tmdb_platforms": []
+    },
+    {
+      "title": "The Adventure",
+      "reason": "jw_revert:justwatch_no_valid_offers",
+      "digital_date": "2026-04-30",
+      "discovered_at": "2026-05-07T11:08:41.973966",
+      "discovery_source": "provider_availability_check",
+      "revert_count": 4,
+      "tmdb_platforms": [
+        "Rakuten Viki"
+      ]
+    },
+    {
+      "title": "Prey of Wrath",
+      "reason": "jw_revert:justwatch_no_valid_offers",
       "digital_date": "2026-05-01",
-      "discovered_at": "",
-      "discovery_source": "orphan_rescue",
+      "discovered_at": "2026-05-07T11:08:39.977782",
+      "discovery_source": "tmdb_type4",
       "revert_count": 3,
       "tmdb_platforms": []
     },
@@ -187,20 +204,29 @@
       "title": "To Do",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-05-01",
-      "discovered_at": "",
-      "discovery_source": "orphan_rescue",
-      "revert_count": 3,
+      "discovered_at": "2026-05-07T11:08:38.752012",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 4,
       "tmdb_platforms": []
     },
     {
-      "title": "Prey of Wrath",
-      "reason": "jw_revert:justwatch_no_valid_offers",
+      "title": "The Border Baby",
+      "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-05-01",
-      "discovered_at": "",
-      "discovery_source": "orphan_rescue",
-      "revert_count": 2,
+      "discovered_at": "2026-05-07T11:08:38.317900",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 4,
+      "tmdb_platforms": []
+    },
+    {
+      "title": "She Cries Murder",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-05-01",
+      "discovered_at": "2026-05-07T11:08:37.879191",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 4,
       "tmdb_platforms": []
     }
   ],
-  "enrichment_duration_seconds": 1219.13
+  "enrichment_duration_seconds": 1254.63
 }

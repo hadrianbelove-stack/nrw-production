@@ -7,20 +7,21 @@ Extracted from monolithic generate_data.py for better maintainability.
 from pipeline.storage import StorageService
 from pipeline.validation import ValidationService
 from pipeline.enrichment import EnrichmentService
-from pipeline.generator import DataGenerator, setup_logger
+from pipeline.generator import DataGenerator
 from pipeline.telemetry import TelemetryService, init_telemetry, get_telemetry
 from pipeline.justwatch import JustWatchClient
-from pipeline.newsletter import NewsletterDataQuery
+from pipeline.display import DisplayGenerator
+from pipeline.archive import ArchiveManager
 
 __all__ = [
     'StorageService',
     'ValidationService',
     'EnrichmentService',
     'DataGenerator',
-    'setup_logger',
     'TelemetryService',
     'init_telemetry',
     'get_telemetry',
     'JustWatchClient',
-    'NewsletterDataQuery'
+    'DisplayGenerator',
+    'ArchiveManager',
 ]
