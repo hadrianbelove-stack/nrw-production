@@ -15,6 +15,7 @@ import time
 import requests
 from datetime import date, datetime, timedelta
 from utils.datetime_utils import get_today
+from utils.http_client import create_retry_session
 
 
 class MovieIntake:
@@ -548,19 +549,7 @@ class MovieIntake:
 
     def _fetch_tmdb_page_with_retry(self, page, start_date, end_date, debug=False, pass_type='digital', max_retries=3, min_runtime=60):
         """Fetch TMDB discover page with bounded timeout and retry logic"""
-        from requests.adapters import HTTPAdapter
-        from urllib3.util.retry import Retry
-
-        # Configure session with retry strategy
-        session = requests.Session()
-        retry_strategy = Retry(
-            total=max_retries,
-            backoff_factor=1,
-            status_forcelist=[429, 500, 502, 503, 504],
-        )
-        adapter = HTTPAdapter(max_retries=retry_strategy)
-        session.mount("http://", adapter)
-        session.mount("https://", adapter)
+        session = create_retry_session(max_retries=max_retries)
 
         url = "https://api.themoviedb.org/3/discover/movie"
 
@@ -883,19 +872,7 @@ class MovieIntake:
         Returns:
             Number of new movies intaked from this festival
         """
-        from requests.adapters import HTTPAdapter
-        from urllib3.util.retry import Retry
-
-        # Configure session with retry strategy
-        session = requests.Session()
-        retry_strategy = Retry(
-            total=3,
-            backoff_factor=1,
-            status_forcelist=[429, 500, 502, 503, 504],
-        )
-        adapter = HTTPAdapter(max_retries=retry_strategy)
-        session.mount("http://", adapter)
-        session.mount("https://", adapter)
+        session = create_retry_session()
 
         url = "https://api.themoviedb.org/3/discover/movie"
         fest_new_count = 0
