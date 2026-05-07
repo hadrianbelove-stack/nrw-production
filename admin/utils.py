@@ -2,12 +2,12 @@
 
 import os
 import json
-import hashlib
+
 import yaml
 from datetime import datetime
 from typing import Optional, Union
 
-from file_lock import safe_write_json, safe_write_json_atomic
+from file_lock import safe_write_json
 from admin.config import PENDING_CHANGES_FLAG
 from admin.logging_setup import logger
 
@@ -218,18 +218,3 @@ def validate_movie_update_request(data: dict) -> tuple[bool, Optional[str]]:
     return True, None
 
 
-def compute_tracking_digest() -> Optional[str]:
-    """Compute SHA-256 hash of movie_tracking.json for change tracking.
-
-    Returns:
-        SHA-256 hex digest string, or None if file not found
-    """
-    try:
-        with open('movie_tracking.json', 'rb') as f:
-            return hashlib.sha256(f.read()).hexdigest()
-    except FileNotFoundError:
-        logger.warning("movie_tracking.json not found for digest computation")
-        return None
-    except Exception as e:
-        logger.error(f"Error computing tracking digest: {e}")
-        return None
