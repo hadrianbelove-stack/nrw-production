@@ -1905,6 +1905,81 @@ class DataGenerator:
             self.logger.warning(f"Pre-order page check failed for {title} ({url}): {e}")
             return None
 
+    def _detect_buyonly_preorder(self, jw_result, movie_id, title):
+        """
+        Determine if a buy-only JustWatch result is a pre-order or genuine release.
+
+        Decision logic:
+        1. Manual override in config.preorder_overrides → immediate verdict
+        2. Type 4 future date → pre-order (with that date)
+        3. Page check (Playwright visits store page):
+           - 'available' → genuine release (only way to confirm genuine)
+           - 'pre-order' or inconclusive → pre-order (safer default)
+        Type 4 past date alone does NOT confirm genuine — only page check does.
+
+        Returns:
+            dict: {
+                'is_preorder': bool,
+                'override': True|False|None (manual override value),
+                'preorder_date': str|None (future Type 4 date),
+                'type4_date': str|None (any Type 4 date found),
+                'verified_genuine': bool (page check confirmed available),
+            }
+        """
+        result = {
+            'is_preorder': True,  # default: safer to assume pre-order
+            'override': None,
+            'preorder_date': None,
+            'type4_date': None,
+            'verified_genuine': False,
+        }
+
+        # Step 0: Manual override
+        overrides = self.config.get('preorder_overrides', {})
+        override_val = overrides.get(str(movie_id))
+        if override_val is True:
+            result['override'] = True
+            result['is_preorder'] = True
+            return result
+        elif override_val is False:
+            result['override'] = False
+            result['is_preorder'] = False
+            result['verified_genuine'] = True
+            return result
+
+        # Step 1: Type 4 date — provides date info, but past date alone ≠ genuine
+        type4_date = self.fetch_tmdb_type4_date(movie_id)
+        if type4_date:
+            result['type4_date'] = type4_date
+            try:
+                t4dt = datetime.strptime(type4_date, '%Y-%m-%d')
+                today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+                if t4dt > today:
+                    # Future date — definitively a pre-order
+                    result['preorder_date'] = type4_date
+                    result['is_preorder'] = True
+                    print(f"  🏷️  {title} — buy-only, Type 4 future date ({type4_date})")
+                    return result
+                # Past date — informational only, still need page check
+            except ValueError:
+                pass
+
+        # Step 2: Page check — the ONLY way to confirm genuine release
+        page_verdict = self._check_preorder_page(jw_result, title)
+        if page_verdict == 'available':
+            result['is_preorder'] = False
+            result['verified_genuine'] = True
+            print(f"  ✓ {title} — buy-only, page confirms available")
+        elif page_verdict == 'pre-order':
+            result['is_preorder'] = True
+            print(f"  🏷️  {title} — buy-only, page confirms pre-order")
+        else:
+            # Inconclusive — default to pre-order (safer)
+            result['is_preorder'] = True
+            print(f"  🏷️  {title} — buy-only, page check inconclusive → treating as pre-order")
+
+        return result
+
     def add_movie_to_site_immediately(self, movie_id, movie_data):
         """
         Write minimal movie entry to data.json for immediate display.
@@ -3946,60 +4021,26 @@ PRICE: [price or UNKNOWN]
                                 self.logger.info(f"JustWatch revealed English title for {_title}: '{_jw_title}'")
 
                         # Pre-order detection: buy-only on JustWatch is a pre-order signal.
-                        # Check manual overrides first, then automated detection.
-                        _preorder_overrides = self.config.get('preorder_overrides', {})
-                        _preorder_override = _preorder_overrides.get(str(movie_id))
-                        if _preorder_override is True:
+                        # Manual overrides apply regardless of buy-only status.
+                        _po_overrides = self.config.get('preorder_overrides', {})
+                        _po_override = _po_overrides.get(str(movie_id))
+                        if _po_override is True:
                             existing_movies[movie_index]['_is_preorder'] = True
                             print(f"  🏷️  {_title} — flagged as pre-order (manual override)")
-                        elif _preorder_override is False:
+                        elif _po_override is False:
                             existing_movies[movie_index].pop('_is_preorder', None)
                         elif _jw_result.get('buy_only'):
-                            # Buy-only on JustWatch — verify if genuine release or pre-order.
-                            # Step 1: Check Type 4 date (authoritative release confirmation)
-                            _bo_type4 = self.fetch_tmdb_type4_date(movie_id)
-                            _bo_genuine = False
-                            _bo_preorder_date = None
+                            _bo_detect = self._detect_buyonly_preorder(_jw_result, movie_id, _title)
 
-                            if _bo_type4:
-                                try:
-                                    _bo_t4dt = datetime.strptime(_bo_type4, '%Y-%m-%d')
-                                    _bo_today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-                                    if _bo_t4dt <= _bo_today:
-                                        _bo_genuine = True
-                                        existing_movies[movie_index]['digital_date'] = _bo_type4
-                                        existing_movies[movie_index]['_digital_date_source'] = 'tmdb_type4'
-                                        print(f"  ✓ {_title} — buy-only, Type 4 confirms release ({_bo_type4})")
-                                    else:
-                                        _bo_preorder_date = _bo_type4
-                                except ValueError:
-                                    pass
-
-                            # Step 2: No Type 4 — verify by visiting the store page with Playwright
-                            if not _bo_genuine and not _bo_preorder_date:
-                                _bo_page_result = self._check_preorder_page(_jw_result, _title)
-                                if _bo_page_result == 'available':
-                                    _bo_genuine = True
-                                    print(f"  ✓ {_title} — buy-only, page confirms available")
-                                elif _bo_page_result == 'pre-order':
-                                    print(f"  🏷️  {_title} — buy-only, page confirms pre-order")
-                                else:
-                                    # Could not determine — default to pre-order (safer)
-                                    print(f"  🏷️  {_title} — buy-only, page check inconclusive → treating as pre-order")
-
-                            if _bo_genuine:
-                                # Genuine buy-only release — no pre-order flag needed
-                                pass
-                            else:
-                                # Pre-order: soft revert — on wall as pre-order, tracking continues
+                            if _bo_detect['is_preorder']:
                                 existing_movies[movie_index]['_is_preorder'] = True
                                 existing_movies[movie_index]['_buyonly_preorder'] = True
                                 _jw_links = _jw_result.get('watch_links', {})
                                 if _jw_links.get('vod'):
                                     existing_movies[movie_index]['pre_order_links'] = _jw_links['vod']
 
-                                if _bo_preorder_date:
-                                    existing_movies[movie_index]['digital_date'] = _bo_preorder_date
+                                if _bo_detect['preorder_date']:
+                                    existing_movies[movie_index]['digital_date'] = _bo_detect['preorder_date']
                                     existing_movies[movie_index]['_digital_date_source'] = 'tmdb_type4'
                                 else:
                                     existing_movies[movie_index].pop('digital_date', None)
@@ -4018,8 +4059,14 @@ PRICE: [price or UNKNOWN]
                                 tracking_data['movies'][movie_id].pop('digital_date', None)
                                 tracking_changed = True
 
-                                _bo_dd = f", date: {_bo_preorder_date}" if _bo_preorder_date else ", no date"
+                                _bo_dd = f", date: {_bo_detect['preorder_date']}" if _bo_detect['preorder_date'] else ", no date"
                                 print(f"  🏷️  {_title} — pre-order (buy-only{_bo_dd}) → tracking + wall")
+                            else:
+                                # Genuine buy-only release confirmed by page check
+                                existing_movies[movie_index]['_buyonly_verified'] = True
+                                if _bo_detect['type4_date']:
+                                    existing_movies[movie_index]['digital_date'] = _bo_detect['type4_date']
+                                    existing_movies[movie_index]['_digital_date_source'] = 'tmdb_type4'
                         else:
                             # Not buy-only anymore — clear pre-order flag if previously set
                             # BUT only if digital_date has passed (future-dated = still a pre-order)
@@ -4824,52 +4871,27 @@ PRICE: [price or UNKNOWN]
                     # Retroactive buy-only pre-order detection
                     # Catches movies that were enriched before the buy-only code existed
                     if not is_preorder and result.get('buy_only') and not (result.get('has_rent') or result.get('has_streaming')):
-                        _preorder_overrides = self.config.get('preorder_overrides', {})
-                        _po_override = _preorder_overrides.get(movie_id)
-                        if _po_override is False:
-                            pass  # Explicitly not a pre-order
-                        elif _po_override is True:
-                            existing_movies[i]['_is_preorder'] = True
-                            preorders_flagged += 1
-                            unsaved_count += 1
-                            print(f"  🏷️  {title} — flagged as pre-order (manual override, gap-fill)")
-                        else:
-                            # Type 4 date check
-                            _gf_type4 = self.fetch_tmdb_type4_date(movie_id)
-                            _gf_genuine = False
-                            _gf_preorder_date = None
-                            if _gf_type4:
-                                try:
-                                    _gf_t4dt = datetime.strptime(_gf_type4, '%Y-%m-%d')
-                                    _gf_today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-                                    if _gf_t4dt <= _gf_today:
-                                        _gf_genuine = True
-                                    else:
-                                        _gf_preorder_date = _gf_type4
-                                except ValueError:
-                                    pass
+                        # Skip if already verified as genuine buy-only release
+                        if not movie.get('_buyonly_verified'):
+                            _gf_detect = self._detect_buyonly_preorder(result, movie_id, title)
 
-                            # Page check fallback
-                            if not _gf_genuine and not _gf_preorder_date:
-                                _gf_page = self._check_preorder_page(result, title)
-                                if _gf_page == 'available':
-                                    _gf_genuine = True
-
-                            if not _gf_genuine:
+                            if _gf_detect['is_preorder']:
                                 existing_movies[i]['_is_preorder'] = True
                                 existing_movies[i]['_buyonly_preorder'] = True
                                 _jw_vod = new_links.get('vod', []) if new_links else []
                                 if _jw_vod:
                                     existing_movies[i]['pre_order_links'] = _jw_vod
-                                if _gf_preorder_date:
-                                    existing_movies[i]['digital_date'] = _gf_preorder_date
+                                if _gf_detect['preorder_date']:
+                                    existing_movies[i]['digital_date'] = _gf_detect['preorder_date']
                                 existing_movies[i]['watch_links'] = {}
                                 if tracking_data and tracking_data.get('movies', {}).get(movie_id):
                                     tracking_data['movies'][movie_id]['_buyonly_preorder'] = True
                                     tracking_changed = True
                                 preorders_flagged += 1
                                 unsaved_count += 1
-                                print(f"  🏷️  {title} — retroactive pre-order (buy-only, gap-fill)")
+                            elif _gf_detect['verified_genuine']:
+                                existing_movies[i]['_buyonly_verified'] = True
+                                unsaved_count += 1
 
                 # --- Wikipedia fill (only if missing) ---
                 links = movie.get('links', {})
