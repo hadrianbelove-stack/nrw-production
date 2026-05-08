@@ -49,6 +49,9 @@ data class Movie(
     val featured: Boolean? = null,
     val hidden: Boolean? = null,
 
+    @SerializedName("_enrichment_status")
+    val enrichmentStatus: String? = null,
+
     @SerializedName("content_type")
     val contentType: String? = null,
 

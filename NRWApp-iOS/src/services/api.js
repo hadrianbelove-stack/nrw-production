@@ -126,6 +126,9 @@ function isCacheExpired(timestamp) {
 export function filterMovies(movies, filter = 'all') {
   if (!movies || !Array.isArray(movies)) return [];
 
+  // Exclude reverted movies (failed JustWatch verification, no watch links)
+  movies = movies.filter(m => m._enrichment_status !== 'reverted');
+
   switch (filter) {
     case 'all':
       return movies.filter(movie => !movie.hidden);
@@ -183,6 +186,8 @@ export function filterMovies(movies, filter = 'all') {
  */
 export function filterMoviesMulti(movies, activeFilters) {
   if (!movies || !Array.isArray(movies)) return [];
+  // Exclude reverted movies (failed JustWatch verification, no watch links)
+  movies = movies.filter(m => m._enrichment_status !== 'reverted');
   if (!activeFilters || activeFilters.size === 0) {
     return movies.filter(movie => !movie.hidden);
   }

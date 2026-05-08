@@ -800,6 +800,8 @@ PRICE: [price or UNKNOWN]
 
             if not movie_ids_to_enrich:
                 print("\u2705 No movies to enrich (no new arrivals, no catch-up needed)")
+                # Still purge any reverted/removed movies from prior runs
+                self.host.purge_removed_movies()
                 return 0
 
             catchup_used = len(movie_ids_to_enrich) - new_count
@@ -1263,6 +1265,12 @@ PRICE: [price or UNKNOWN]
                 print("  No new trailers to host")
         else:
             print("\U0001f3ac Trailer hosting: disabled (config)")
+
+        # Disk-level purge: remove reverted/removed movies from the saved data.json.
+        # Runs AFTER all safe_save calls because the merge-rescue in safe_save can
+        # re-add reverted movies from disk. The no-argument form reads data.json,
+        # filters out reverted/removed movies, archives them, and writes back clean.
+        self.host.purge_removed_movies()
 
         # Write enrichment metrics
         try:

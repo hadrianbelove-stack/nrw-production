@@ -70,16 +70,26 @@ def record_bad_url(youtube_url, title, year, reason):
 
 HOST_FAILURES_FILE = os.path.join(PROJECT_ROOT, 'cache', 'trailer_host_failures.json')
 HOST_FAILURE_TTL_DAYS = 3
+MAX_HOST_RETRIES = 3
 
 
 def load_host_failures():
-    """Load trailer hosting failures, pruning entries older than TTL."""
+    """Load trailer hosting failures, pruning entries older than TTL.
+
+    Entries with failure_count >= MAX_HOST_RETRIES are permanently kept
+    (never pruned) — these movies have failed too many times to retry.
+    """
     if not os.path.exists(HOST_FAILURES_FILE):
         return {}
     with open(HOST_FAILURES_FILE, 'r') as f:
         failures = json.load(f)
     cutoff = (datetime.now() - timedelta(days=HOST_FAILURE_TTL_DAYS)).isoformat()
-    pruned = {mid: v for mid, v in failures.items() if v.get('recorded_at', '') >= cutoff}
+    pruned = {}
+    for mid, v in failures.items():
+        if v.get('failure_count', 1) >= MAX_HOST_RETRIES:
+            pruned[mid] = v  # Permanent — too many failures
+        elif v.get('recorded_at', '') >= cutoff:
+            pruned[mid] = v  # Still within TTL cooldown
     if len(pruned) < len(failures):
         os.makedirs(os.path.dirname(HOST_FAILURES_FILE), exist_ok=True)
         with open(HOST_FAILURES_FILE, 'w') as f:
@@ -88,14 +98,21 @@ def load_host_failures():
 
 
 def record_host_failure(movie_id, title, year, reason, trailer_url=''):
-    """Record a movie that failed trailer hosting (skipped for 3 days)."""
+    """Record a movie that failed trailer hosting.
+
+    Tracks failure_count — after MAX_HOST_RETRIES failures, the movie
+    is permanently skipped (no more TTL-based retries).
+    """
     failures = load_host_failures()
+    existing = failures.get(str(movie_id), {})
+    prev_count = existing.get('failure_count', 1) if existing else 0
     failures[str(movie_id)] = {
         'title': title,
         'year': str(year),
         'reason': reason,
         'trailer_url': trailer_url,
         'recorded_at': datetime.now().isoformat(),
+        'failure_count': prev_count + 1,
     }
     os.makedirs(os.path.dirname(HOST_FAILURES_FILE), exist_ok=True)
     with open(HOST_FAILURES_FILE, 'w') as f:

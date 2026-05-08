@@ -58,6 +58,10 @@ Function FilterMovies(movies as Object, filter as String) as Object
         if movie.hidden = true
             continue for
         end if
+        ' Skip reverted movies (failed JustWatch verification, no watch links)
+        if movie._enrichment_status <> invalid AND movie._enrichment_status = "reverted"
+            continue for
+        end if
 
         include = false
 
@@ -128,6 +132,10 @@ Function FilterMoviesMulti(movies as Object, activeFilters as Object) as Object
 
     for each movie in movies
         if movie.hidden = true
+            continue for
+        end if
+        ' Skip reverted movies (failed JustWatch verification, no watch links)
+        if movie._enrichment_status <> invalid AND movie._enrichment_status = "reverted"
             continue for
         end if
 

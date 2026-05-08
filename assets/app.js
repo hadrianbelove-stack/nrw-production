@@ -102,6 +102,7 @@ const NRW = {
             if (data.movies && data.movies.length > 0) {
                 this.allMovies = data.movies.filter(m => {
                     if (m.hidden) return false;
+                    if (m._enrichment_status === 'reverted') return false;
                     return !!m.digital_date;
                 });
 

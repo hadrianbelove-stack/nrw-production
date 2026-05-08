@@ -144,6 +144,8 @@ export function getMoviesByReleaseDate(movies) {
  */
 export function filterMovies(movies, filters = 'all') {
   if (!movies || !Array.isArray(movies)) return [];
+  // Exclude reverted movies (failed JustWatch verification, no watch links)
+  movies = movies.filter(m => m._enrichment_status !== 'reverted');
 
   // Convert string to array for backwards compatibility
   const filterArray = Array.isArray(filters) ? filters : [filters];

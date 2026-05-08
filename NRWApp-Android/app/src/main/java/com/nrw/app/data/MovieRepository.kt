@@ -147,33 +147,33 @@ class MovieRepository(private val context: Context) {
      */
     fun filterMovies(movies: List<Movie>, filter: FilterCategory): List<Movie> {
         return when (filter) {
-            FilterCategory.ALL -> movies.filter { it.hidden != true }
+            FilterCategory.ALL -> movies.filter { it.hidden != true && it.enrichmentStatus != "reverted" }
             FilterCategory.BIG_TIME -> movies.filter {
-                it.hidden != true && (it.categories?.isBigTime == true || it.categories?.tier == "big_time")
+                it.hidden != true && it.enrichmentStatus != "reverted" && (it.categories?.isBigTime == true || it.categories?.tier == "big_time")
             }
             FilterCategory.INDIE -> movies.filter {
-                it.hidden != true && (it.categories?.isIndie == true || it.categories?.tier == "indie")
+                it.hidden != true && it.enrichmentStatus != "reverted" && (it.categories?.isIndie == true || it.categories?.tier == "indie")
             }
             FilterCategory.STAFF_PICKS -> movies.filter {
-                it.hidden != true && it.isStaffPick()
+                it.hidden != true && it.enrichmentStatus != "reverted" && it.isStaffPick()
             }
             FilterCategory.FOREIGN -> movies.filter {
-                it.hidden != true && it.isForeign()
+                it.hidden != true && it.enrichmentStatus != "reverted" && it.isForeign()
             }
             FilterCategory.SERIES -> movies.filter {
-                it.hidden != true && it.contentType == "limited_series"
+                it.hidden != true && it.enrichmentStatus != "reverted" && it.contentType == "limited_series"
             }
             FilterCategory.RESTORATIONS -> movies.filter {
-                it.hidden != true && it.categories?.isRestoration == true
+                it.hidden != true && it.enrichmentStatus != "reverted" && it.categories?.isRestoration == true
             }
             FilterCategory.DOCUMENTARY -> movies.filter {
-                it.hidden != true && it.categories?.isDocumentary == true
+                it.hidden != true && it.enrichmentStatus != "reverted" && it.categories?.isDocumentary == true
             }
             FilterCategory.VIRTUAL_SCREENINGS -> movies.filter {
-                it.hidden != true && it.categories?.isVirtualScreening == true
+                it.hidden != true && it.enrichmentStatus != "reverted" && it.categories?.isVirtualScreening == true
             }
             FilterCategory.PRE_ORDERS -> movies.filter {
-                it.hidden != true && it.isPreorder
+                it.hidden != true && it.enrichmentStatus != "reverted" && it.isPreorder
             }
         }
     }
@@ -183,10 +183,10 @@ class MovieRepository(private val context: Context) {
      */
     fun filterMoviesMulti(movies: List<Movie>, activeFilters: Set<FilterCategory>): List<Movie> {
         if (activeFilters.isEmpty()) {
-            return movies.filter { it.hidden != true }
+            return movies.filter { it.hidden != true && it.enrichmentStatus != "reverted" }
         }
         return movies.filter { movie ->
-            if (movie.hidden == true) return@filter false
+            if (movie.hidden == true || movie.enrichmentStatus == "reverted") return@filter false
             activeFilters.any { filter ->
                 when (filter) {
                     FilterCategory.ALL -> true
