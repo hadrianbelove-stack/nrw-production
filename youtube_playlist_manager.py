@@ -402,6 +402,10 @@ class YouTubePlaylistManager:
             if not video_id:
                 continue
 
+            # Skip pre-orders (not yet available for digital viewing)
+            if movie.get('_is_preorder'):
+                continue
+
             # Get and validate date
             try:
                 digital_date = datetime.fromisoformat(movie['digital_date']).date()
