@@ -476,8 +476,8 @@ class ProviderDiscoverer:
         if not url:
             return None
 
-        preorder_signals = ['pre-order', 'preorder', 'pre order', 'coming soon']
-        available_signals = ['buy now', 'rent now', 'watch now', 'rent $', 'buy $']
+        preorder_signals = ['preorder', 'available for pre-order', 'available to pre-order']
+        available_signals = ['buy now', 'rent now', 'watch now']
 
         try:
             from playwright_manager import get_playwright_manager
@@ -506,7 +506,7 @@ class ProviderDiscoverer:
                 is_fandango = 'fandango.com' in url.lower()
 
                 # Navigate to the store page
-                page.goto(url, wait_until='networkidle', timeout=20000)
+                page.goto(url, wait_until='load', timeout=20000)
 
                 # Extra wait for SPAs (Fandango) and anti-bot delays (Amazon)
                 if is_fandango:
