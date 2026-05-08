@@ -1,83 +1,62 @@
 {
-  "timestamp": "2026-05-07T15:30:45.195450",
-  "movies_requested": 71,
-  "movies_enriched": 47,
-  "movies_deferred": 24,
+  "timestamp": "2026-05-08T01:53:36.784816",
+  "movies_requested": 38,
+  "movies_enriched": 13,
+  "movies_deferred": 25,
   "deferred_details": [
     {
-      "title": "And Through the Portal We Go",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-05-06",
-      "discovered_at": "2026-05-07T11:08:30.590406",
-      "discovery_source": "provider_availability_check",
-      "revert_count": 3,
-      "tmdb_platforms": [
-        "Amazon Video"
-      ]
-    },
-    {
-      "title": "Hey Balwanth",
+      "title": "Lemonade Blessing",
       "reason": "jw_revert:justwatch_no_valid_offers",
-      "digital_date": "2026-05-06",
-      "discovered_at": "2026-05-07T11:08:31.158655",
-      "discovery_source": "provider_availability_check",
-      "revert_count": 3,
-      "tmdb_platforms": [
-        "fuboTV"
-      ]
-    },
-    {
-      "title": "Before What Comes After",
-      "reason": "jw_revert:justwatch_no_valid_offers",
-      "digital_date": "2026-05-04",
-      "discovered_at": "2026-05-07T11:08:35.146105",
-      "discovery_source": "provider_availability_check",
-      "revert_count": 5,
-      "tmdb_platforms": [
-        "fuboTV"
-      ]
-    },
-    {
-      "title": "Perilous Passage: Birth in America",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-05-04",
-      "discovered_at": "2026-05-07T11:08:35.933717",
+      "digital_date": "2026-04-29",
+      "discovered_at": "2026-05-08T00:36:32.170749",
       "discovery_source": "tmdb_type4",
       "revert_count": 4,
       "tmdb_platforms": []
     },
     {
-      "title": "ID:1565970",
-      "reason": "not_in_data_json"
-    },
-    {
-      "title": "28",
+      "title": "The True Beauty of Being Bitten by a Tick",
       "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-05-01",
-      "discovered_at": "2026-05-07T11:08:39.528697",
+      "digital_date": "2026-04-29",
+      "discovered_at": "2026-05-08T00:36:32.565504",
       "discovery_source": "tmdb_type4",
-      "revert_count": 7,
-      "tmdb_platforms": []
-    },
-    {
-      "title": "Bi-Coastal",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-05-01",
-      "discovered_at": "2026-05-07T11:08:41.424395",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 7,
-      "tmdb_platforms": []
-    },
-    {
-      "title": "Sammy's Children's Day",
-      "reason": "jw_revert:justwatch_no_valid_offers",
-      "digital_date": "2026-03-15",
-      "discovered_at": "2026-05-07T11:09:22.731103",
-      "discovery_source": "provider_availability_check",
       "revert_count": 4,
-      "tmdb_platforms": [
-        "Rakuten Viki"
-      ]
+      "tmdb_platforms": []
+    },
+    {
+      "title": "I Can't Write",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-04-27",
+      "discovered_at": "2026-05-08T00:36:33.495612",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 4,
+      "tmdb_platforms": []
+    },
+    {
+      "title": "From Within",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-05-07",
+      "discovered_at": "2026-05-08T01:48:33.439406",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 1,
+      "tmdb_platforms": []
+    },
+    {
+      "title": "Give Me Back My Baby",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-05-08",
+      "discovered_at": "2026-05-08T01:48:45.779709",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 1,
+      "tmdb_platforms": []
+    },
+    {
+      "title": "Nightmare Hospital",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-05-08",
+      "discovered_at": "2026-05-08T01:48:46.573050",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 1,
+      "tmdb_platforms": []
     },
     {
       "title": "If Only You Weren't the One",
@@ -91,35 +70,15 @@
       ]
     },
     {
-      "title": "ID:tv_313117",
-      "reason": "not_in_data_json"
-    },
-    {
-      "title": "I Can't Write",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-04-27",
-      "discovered_at": "2026-05-07T13:10:08.297950",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 4,
-      "tmdb_platforms": []
-    },
-    {
-      "title": "The True Beauty of Being Bitten by a Tick",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-04-29",
-      "discovered_at": "2026-05-07T13:10:06.671474",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 4,
-      "tmdb_platforms": []
-    },
-    {
-      "title": "Lemonade Blessing",
+      "title": "Sammy's Children's Day",
       "reason": "jw_revert:justwatch_no_valid_offers",
-      "digital_date": "2026-04-29",
-      "discovered_at": "2026-05-07T13:10:06.040697",
-      "discovery_source": "tmdb_type4",
+      "digital_date": "2026-03-15",
+      "discovered_at": "2026-05-07T11:09:22.731103",
+      "discovery_source": "provider_availability_check",
       "revert_count": 4,
-      "tmdb_platforms": []
+      "tmdb_platforms": [
+        "Rakuten Viki"
+      ]
     },
     {
       "title": "The Mohican",
@@ -192,12 +151,30 @@
       ]
     },
     {
+      "title": "Bi-Coastal",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-05-01",
+      "discovered_at": "2026-05-07T11:08:41.424395",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 7,
+      "tmdb_platforms": []
+    },
+    {
       "title": "Prey of Wrath",
       "reason": "jw_revert:justwatch_no_valid_offers",
       "digital_date": "2026-05-01",
       "discovered_at": "2026-05-07T11:08:39.977782",
       "discovery_source": "tmdb_type4",
       "revert_count": 3,
+      "tmdb_platforms": []
+    },
+    {
+      "title": "28",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-05-01",
+      "discovered_at": "2026-05-07T11:08:39.528697",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 7,
       "tmdb_platforms": []
     },
     {
@@ -226,7 +203,49 @@
       "discovery_source": "tmdb_type4",
       "revert_count": 4,
       "tmdb_platforms": []
+    },
+    {
+      "title": "Perilous Passage: Birth in America",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-05-04",
+      "discovered_at": "2026-05-07T11:08:35.933717",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 4,
+      "tmdb_platforms": []
+    },
+    {
+      "title": "Before What Comes After",
+      "reason": "jw_revert:justwatch_no_valid_offers",
+      "digital_date": "2026-05-04",
+      "discovered_at": "2026-05-07T11:08:35.146105",
+      "discovery_source": "provider_availability_check",
+      "revert_count": 5,
+      "tmdb_platforms": [
+        "fuboTV"
+      ]
+    },
+    {
+      "title": "Hey Balwanth",
+      "reason": "jw_revert:justwatch_no_valid_offers",
+      "digital_date": "2026-05-06",
+      "discovered_at": "2026-05-07T11:08:31.158655",
+      "discovery_source": "provider_availability_check",
+      "revert_count": 3,
+      "tmdb_platforms": [
+        "fuboTV"
+      ]
+    },
+    {
+      "title": "And Through the Portal We Go",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-05-06",
+      "discovered_at": "2026-05-07T11:08:30.590406",
+      "discovery_source": "provider_availability_check",
+      "revert_count": 3,
+      "tmdb_platforms": [
+        "Amazon Video"
+      ]
     }
   ],
-  "enrichment_duration_seconds": 1254.63
+  "enrichment_duration_seconds": 277.04
 }

@@ -1,315 +1,334 @@
 {
-  "timestamp": "2026-05-07T12:38:33.060535",
-  "duration_seconds": 5415.741466,
+  "timestamp": "2026-05-08T03:23:44.631074",
+  "duration_seconds": 10050.514717,
   "overall_success": false,
-  "failure_count": 4,
+  "failure_count": 1,
   "warning_count": 0,
   "phases": [
     {
       "name": "Intake new premieres from TMDB",
       "success": true,
-      "duration_seconds": 8.928915,
+      "duration_seconds": 6.902903,
       "error": null,
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-05-05 to 2026-05-07 (incremental mode, 35 intaked)\n\u2705 Movie intake complete: 35 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-04-07 to 2026-05-07\n   \ud83d\udccb The Gaze (10 eps)\n   \ud83d\udccb \ud504\ub77c\uc774\ube57 \ub808\uc2a8 (3 eps)\n"
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-05-06 to 2026-05-08 (incremental mode, 39 intaked)\n\u2705 Movie intake complete: 39 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-04-08 to 2026-05-08\n   \ud83d\udccb Calculando o Amor (5 eps)\n   \ud83d\udccb Journey "
     },
     {
       "name": "Discover provider availability for tracking movies",
-      "success": false,
-      "duration_seconds": 1800.004577,
-      "error": "Process timed out after 30 minutes",
-      "output_preview": null
+      "success": true,
+      "duration_seconds": 4358.218265,
+      "error": null,
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 16641 total movies\n\ud83d\udd0d Raw tracking filter: 13171 movies\n\ud83d\udd0d Assigned tracking_movies list: 13171\n\ud83d\udd0d Found 13171 movies in tracking status\n  Priority queue (last 180 days): 515 movies\n  Older movies: 12656 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 13171 movies for digital availability...\n\n   \ud83d\udcdd Movie Buffet Infinity already in data.json - skipping immediate add\n  \ud83d\udcc5 Buffet Infinity \u2014"
     },
     {
       "name": "Enrich newly available movies with metadata",
-      "success": false,
-      "duration_seconds": 1800.011614,
-      "error": "Process timed out after 30 minutes",
-      "output_preview": null
+      "success": true,
+      "duration_seconds": 278.365324,
+      "error": null,
+      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\n  \ud83d\udd0d Pre-order link finder: 7 movies within 14d window\n  \ud83c\udff7\ufe0f  My Dearest Assassin \u2014 pre-order ended (date 2026-05-07)\n\ud83c\udfaf Enrichment queue: 16 new + 22 catch-up = 38 total\n  \ud83c\udff7\ufe0f  Buffet Infinity \u2014 pre-order flag cleared (date passed, no longer buy-only)\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance cre"
     },
     {
       "name": "Stamp hosted trailer URLs into data.json",
       "success": true,
-      "duration_seconds": 0.964182,
+      "duration_seconds": 0.901642,
       "error": null,
-      "output_preview": "=== Trailer Pipeline: stamp ===\n\nConnecting to B2...\nFound 617 trailers in B2 bucket\nSaved data.json: 1 stamped, 0 stale cleaned\n\nStamp results:\n  Stamped:          1\n  Already had URL:  541\n  Stale cleaned:    0\n  Not in B2:        242\n"
+      "output_preview": "=== Trailer Pipeline: stamp ===\n\nConnecting to B2...\nFound 617 trailers in B2 bucket\nSaved data.json: 1 stamped, 0 stale cleaned\n\nStamp results:\n  Stamped:          1\n  Already had URL:  542\n  Stale cleaned:    0\n  Not in B2:        247\n"
     },
     {
       "name": "Refresh watch links and Wikipedia for all wall movies",
       "success": false,
-      "duration_seconds": 1800.054425,
-      "error": "Process timed out after 30 minutes",
-      "output_preview": null
+      "duration_seconds": 5400.101378,
+      "error": "Process timed out after 90 minutes\n2026-05-08 01:53:38 [INFO] EnrichmentService initialized with enrichment_enabled=True\n2026-05-08 01:53:39 [INFO] Initialized with cache_file=cache/wikipedia_cache.json\n2026-05-08 01:53:39 [INFO] Cache loaded: 7 entries\n2026-05-08 01:53:39 [INFO] Screenshots: enabled\n2026-05-08 01:53:39 [INFO] Wikipedia Scraper initialized with cache_file=cache/wikipedia_cache.json\nWikipedia attempt 1 failed: Models.generate_content() got an unexpected keyword argument 'timeout', retrying in 0.5s\nWikipedia attempt 2 failed: Models.generate_content() got an unexpected keyword argument 'timeout', retrying in 1.0s\nAll 3 Wikipedia attempts failed: Models.generate_content() got an unexpected keyword argument 'timeout'\nAll retries failed for Wikipedia Nightmare Hospital (2026)\n2026-05-08 01:53:43 [WARNING] No Wikipedia article found for Nightmare Hospital (2026)\nWikipedia attempt 1 failed: Models.generate_content() got an unexpected keyword argument 'timeout', retrying in 0.",
+      "output_preview": "\n\ud83d\udd04 Running daily gap fill for all wall movies...\n  \ud83d\udcca Processing 322 of 790 wall movies (last 30 days)\n  \ud83d\udcda From Within \u2014 Wikipedia link added\n  \ud83d\udcda Wasteman \u2014 Wikipedia link added\n  \ud83d\udcda Palestine 36 \u2014 Wikipedia link added\n  \ud83d\udcda Two Prosecutors \u2014 Wikipedia link added\n  \ud83d\udcda The Stranger \u2014 Wikipedia link added\n  \ud83d\udcda The True Beauty of Being Bitten by a Tick \u2014 Wikipedia link added\n  \ud83d\udcda The Mohican \u2014 Wikipedia link added\n  + Should I Marry A Murderer? \u2014 new services added\n  \ud83d\udcda The Kerala Story 2 Goes Beyond \u2014 Wik"
     },
     {
       "name": "Check virtual screening link expirations",
       "success": true,
-      "duration_seconds": 5.342224,
+      "duration_seconds": 5.4511,
       "error": null,
-      "output_preview": "\n\ud83c\udfaa Checking virtual screening links...\n  Checking 26 virtual screening movies...\n  \ud83d\udcbe Updated data.json\n  \ud83d\udcca Results: 15 active, 0 expired\n\u2705 Virtual screening check complete\n\ud83d\udccb Phase complete\n"
+      "output_preview": "\n\ud83c\udfaa Checking virtual screening links...\n  Checking 28 virtual screening movies...\n  \ud83d\udcbe Updated data.json\n  \ud83d\udcca Results: 17 active, 0 expired\n\u2705 Virtual screening check complete\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Archive movies older than 90 days",
       "success": true,
-      "duration_seconds": 0.390495,
+      "duration_seconds": 0.396166,
       "error": null,
-      "output_preview": "\n\ud83d\udce6 Archiving movies older than 90 days...\n\ud83d\udce6 Archived 12 movies (>90 days old) \u2192 data_archive.json\n   data.json: 772 movies | archive: 320 total\n\u2705 Archive complete\n\ud83d\udccb Phase complete\n"
+      "output_preview": "\n\ud83d\udce6 Archiving movies older than 90 days...\n\ud83d\udce6 Archived 10 movies (>90 days old) \u2192 data_archive.json\n   data.json: 780 movies | archive: 333 total\n\u2705 Archive complete\n\ud83d\udccb Phase complete\n"
     }
   ],
-  "health_issues": [
-    {
-      "check": "metrics_not_updated_for_current_run",
-      "severity": "error",
-      "message": "Current run did not produce fresh discovery metrics (metrics from 16:46, run started 11:08)"
-    }
-  ],
+  "health_issues": [],
   "stall_status": {
     "stalled": false,
     "days_without_transitions": 0
   },
   "failures": [
     {
-      "phase": "Discover provider availability for tracking movies",
-      "severity": "error",
-      "message": "Process timed out after 30 minutes",
-      "context": null,
-      "stdout_preview": null
-    },
-    {
-      "phase": "Health Check",
-      "severity": "error",
-      "message": "Current run did not produce fresh discovery metrics (metrics from 16:46, run started 11:08)",
-      "context": "metrics_not_updated_for_current_run"
-    },
-    {
-      "phase": "Enrich newly available movies with metadata",
-      "severity": "error",
-      "message": "Process timed out after 30 minutes",
-      "context": null,
-      "stdout_preview": null
-    },
-    {
       "phase": "Refresh watch links and Wikipedia for all wall movies",
       "severity": "error",
-      "message": "Process timed out after 30 minutes",
-      "context": null,
-      "stdout_preview": null
+      "message": "Process timed out after 90 minutes",
+      "context": "2026-05-08 01:53:38 [INFO] EnrichmentService initialized with enrichment_enabled=True\n2026-05-08 01:53:39 [INFO] Initialized with cache_file=cache/wikipedia_cache.json\n2026-05-08 01:53:39 [INFO] Cache loaded: 7 entries\n2026-05-08 01:53:39 [INFO] Screenshots: enabled\n2026-05-08 01:53:39 [INFO] Wikipedia Scraper initialized with cache_file=cache/wikipedia_cache.json\nWikipedia attempt 1 failed: Models.generate_content() got an unexpected keyword argument 'timeout', retrying in 0.5s\nWikipedia attemp",
+      "stdout_preview": " added\n  \ud83d\udcda The Stranger \u2014 Wikipedia link added\n  \ud83d\udcda The True Beauty of Being Bitten by a Tick \u2014 Wikipedia link added\n  \ud83d\udcda The Mohican \u2014 Wikipedia link added\n  + Should I Marry A Murderer? \u2014 new services added\n  \ud83d\udcda The Kerala Story 2 Goes Beyond \u2014 Wikipedia link added\n  \ud83d\udcda Before What Comes After \u2014 Wikipedia link added\n  \ud83d\udcda Hey Balwanth \u2014 Wikipedia link added\n  + The Disappearance of Captain Nairac \u2014 new services added\n  + PH-1 \u2014 new services added\n  + Ready or Not 2: Here I Come \u2014 new services added\n"
     }
   ],
   "warnings": [],
   "data_quality": {
-    "total": 16599,
-    "tracking": 13129,
-    "available": 3120,
-    "data_movies": 772,
-    "movies_with_links": 724,
-    "movies_with_rt": 552,
-    "movies_with_wikipedia": 424,
+    "total": 16641,
+    "tracking": 13180,
+    "available": 3111,
+    "data_movies": 780,
+    "movies_with_links": 727,
+    "movies_with_rt": 554,
+    "movies_with_wikipedia": 422,
     "movies_with_trailers": 689
   },
   "enrichment_metrics": {
-    "timestamp": "2026-05-06T19:07:25.628518",
-    "movies_requested": 71,
-    "movies_enriched": 44,
-    "movies_deferred": 27,
+    "timestamp": "2026-05-08T01:53:36.784816",
+    "movies_requested": 38,
+    "movies_enriched": 13,
+    "movies_deferred": 25,
     "deferred_details": [
-      {
-        "title": "ID:1386743",
-        "reason": "not_in_data_json"
-      },
-      {
-        "title": "ID:1531852",
-        "reason": "not_in_data_json"
-      },
-      {
-        "title": "ID:1688652",
-        "reason": "not_in_data_json"
-      },
-      {
-        "title": "ID:1271981",
-        "reason": "not_in_data_json"
-      },
-      {
-        "title": "ID:1572196",
-        "reason": "not_in_data_json"
-      },
-      {
-        "title": "ID:1565970",
-        "reason": "not_in_data_json"
-      },
-      {
-        "title": "ID:1686433",
-        "reason": "not_in_data_json"
-      },
-      {
-        "title": "ID:1686985",
-        "reason": "not_in_data_json"
-      },
-      {
-        "title": "ID:tv_307624",
-        "reason": "not_in_data_json"
-      },
-      {
-        "title": "ID:tv_308275",
-        "reason": "not_in_data_json"
-      },
-      {
-        "title": "ID:tv_313117",
-        "reason": "not_in_data_json"
-      },
-      {
-        "title": "The Adventure",
-        "reason": "jw_revert:justwatch_no_valid_offers",
-        "digital_date": "2026-04-30",
-        "discovered_at": "",
-        "discovery_source": "orphan_rescue",
-        "revert_count": 3,
-        "tmdb_platforms": [
-          "Rakuten Viki"
-        ]
-      },
       {
         "title": "Lemonade Blessing",
         "reason": "jw_revert:justwatch_no_valid_offers",
         "digital_date": "2026-04-29",
-        "discovered_at": "",
-        "discovery_source": "orphan_rescue",
-        "revert_count": 3,
+        "discovered_at": "2026-05-08T00:36:32.170749",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 4,
         "tmdb_platforms": []
-      },
-      {
-        "title": "Mars",
-        "reason": "jw_revert:justwatch_no_match",
-        "digital_date": "2026-05-01",
-        "discovered_at": "",
-        "discovery_source": "orphan_rescue",
-        "revert_count": 3,
-        "tmdb_platforms": []
-      },
-      {
-        "title": "The Mohican",
-        "reason": "jw_revert:justwatch_no_valid_offers",
-        "digital_date": "2026-04-27",
-        "discovered_at": "",
-        "discovery_source": "orphan_rescue",
-        "revert_count": 3,
-        "tmdb_platforms": [
-          "fuboTV"
-        ]
       },
       {
         "title": "The True Beauty of Being Bitten by a Tick",
         "reason": "jw_revert:justwatch_no_match",
         "digital_date": "2026-04-29",
-        "discovered_at": "",
-        "discovery_source": "orphan_rescue",
-        "revert_count": 3,
-        "tmdb_platforms": []
-      },
-      {
-        "title": "Amoeba",
-        "reason": "jw_revert:justwatch_no_match",
-        "digital_date": "2026-04-29",
-        "discovered_at": "",
-        "discovery_source": "orphan_rescue",
-        "revert_count": 3,
-        "tmdb_platforms": []
-      },
-      {
-        "title": "Jackie Fabulous: You Can Leave",
-        "reason": "enrichment_failed",
-        "digital_date": "2026-02-12",
-        "discovered_at": "",
-        "discovery_source": "orphan_rescue",
-        "revert_count": 0,
-        "tmdb_platforms": [
-          "Hulu"
-        ]
-      },
-      {
-        "title": "The Kerala Story 2 Goes Beyond",
-        "reason": "jw_revert:justwatch_no_valid_offers",
-        "digital_date": "2026-04-30",
-        "discovered_at": "",
-        "discovery_source": "orphan_rescue",
-        "revert_count": 3,
-        "tmdb_platforms": []
-      },
-      {
-        "title": "She Cries Murder",
-        "reason": "jw_revert:justwatch_no_match",
-        "digital_date": "2026-05-01",
-        "discovered_at": "",
-        "discovery_source": "orphan_rescue",
-        "revert_count": 3,
-        "tmdb_platforms": []
-      },
-      {
-        "title": "I Love You My Narcissist",
-        "reason": "jw_revert:justwatch_no_match",
-        "digital_date": "2026-04-30",
-        "discovered_at": "",
-        "discovery_source": "orphan_rescue",
-        "revert_count": 2,
-        "tmdb_platforms": []
-      },
-      {
-        "title": "Ketchup on Waffles",
-        "reason": "jw_revert:justwatch_no_match",
-        "digital_date": "2026-04-28",
-        "discovered_at": "",
-        "discovery_source": "orphan_rescue",
-        "revert_count": 3,
+        "discovered_at": "2026-05-08T00:36:32.565504",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 4,
         "tmdb_platforms": []
       },
       {
         "title": "I Can't Write",
         "reason": "jw_revert:justwatch_no_match",
         "digital_date": "2026-04-27",
-        "discovered_at": "",
-        "discovery_source": "orphan_rescue",
-        "revert_count": 3,
+        "discovered_at": "2026-05-08T00:36:33.495612",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 4,
+        "tmdb_platforms": []
+      },
+      {
+        "title": "From Within",
+        "reason": "jw_revert:justwatch_no_match",
+        "digital_date": "2026-05-07",
+        "discovered_at": "2026-05-08T01:48:33.439406",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 1,
+        "tmdb_platforms": []
+      },
+      {
+        "title": "Give Me Back My Baby",
+        "reason": "jw_revert:justwatch_no_match",
+        "digital_date": "2026-05-08",
+        "discovered_at": "2026-05-08T01:48:45.779709",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 1,
+        "tmdb_platforms": []
+      },
+      {
+        "title": "Nightmare Hospital",
+        "reason": "jw_revert:justwatch_no_match",
+        "digital_date": "2026-05-08",
+        "discovered_at": "2026-05-08T01:48:46.573050",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 1,
+        "tmdb_platforms": []
+      },
+      {
+        "title": "If Only You Weren't the One",
+        "reason": "jw_revert:justwatch_no_valid_offers",
+        "digital_date": "2026-03-08",
+        "discovered_at": "2026-05-07T11:09:31.687814",
+        "discovery_source": "provider_availability_check",
+        "revert_count": 4,
+        "tmdb_platforms": [
+          "Rakuten Viki"
+        ]
+      },
+      {
+        "title": "Sammy's Children's Day",
+        "reason": "jw_revert:justwatch_no_valid_offers",
+        "digital_date": "2026-03-15",
+        "discovered_at": "2026-05-07T11:09:22.731103",
+        "discovery_source": "provider_availability_check",
+        "revert_count": 4,
+        "tmdb_platforms": [
+          "Rakuten Viki"
+        ]
+      },
+      {
+        "title": "The Mohican",
+        "reason": "jw_revert:justwatch_no_valid_offers",
+        "digital_date": "2026-04-27",
+        "discovered_at": "2026-05-07T11:08:47.958927",
+        "discovery_source": "provider_availability_check",
+        "revert_count": 4,
+        "tmdb_platforms": [
+          "fuboTV"
+        ]
+      },
+      {
+        "title": "Ketchup on Waffles",
+        "reason": "jw_revert:justwatch_no_match",
+        "digital_date": "2026-04-28",
+        "discovered_at": "2026-05-07T11:08:47.393116",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 4,
         "tmdb_platforms": []
       },
       {
         "title": "Should I Marry A Murderer?",
         "reason": "jw_revert:justwatch_no_match",
         "digital_date": "2026-04-29",
-        "discovered_at": "",
-        "discovery_source": "orphan_rescue",
-        "revert_count": 3,
+        "discovered_at": "2026-05-07T11:08:46.603870",
+        "discovery_source": "provider_availability_check",
+        "revert_count": 4,
         "tmdb_platforms": [
           "Netflix",
           "Netflix Standard with Ads"
         ]
       },
       {
-        "title": "The Border Baby",
+        "title": "Amoeba",
         "reason": "jw_revert:justwatch_no_match",
-        "digital_date": "2026-05-01",
-        "discovered_at": "",
-        "discovery_source": "orphan_rescue",
+        "digital_date": "2026-04-29",
+        "discovered_at": "2026-05-07T11:08:45.715710",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 4,
+        "tmdb_platforms": []
+      },
+      {
+        "title": "I Love You My Narcissist",
+        "reason": "jw_revert:justwatch_no_match",
+        "digital_date": "2026-04-30",
+        "discovered_at": "2026-05-07T11:08:43.291021",
+        "discovery_source": "tmdb_type4",
         "revert_count": 3,
         "tmdb_platforms": []
       },
       {
-        "title": "To Do",
+        "title": "The Kerala Story 2 Goes Beyond",
+        "reason": "jw_revert:justwatch_no_valid_offers",
+        "digital_date": "2026-04-30",
+        "discovered_at": "2026-05-07T11:08:42.813271",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 4,
+        "tmdb_platforms": []
+      },
+      {
+        "title": "The Adventure",
+        "reason": "jw_revert:justwatch_no_valid_offers",
+        "digital_date": "2026-04-30",
+        "discovered_at": "2026-05-07T11:08:41.973966",
+        "discovery_source": "provider_availability_check",
+        "revert_count": 4,
+        "tmdb_platforms": [
+          "Rakuten Viki"
+        ]
+      },
+      {
+        "title": "Bi-Coastal",
         "reason": "jw_revert:justwatch_no_match",
         "digital_date": "2026-05-01",
-        "discovered_at": "",
-        "discovery_source": "orphan_rescue",
-        "revert_count": 3,
+        "discovered_at": "2026-05-07T11:08:41.424395",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 7,
         "tmdb_platforms": []
       },
       {
         "title": "Prey of Wrath",
         "reason": "jw_revert:justwatch_no_valid_offers",
         "digital_date": "2026-05-01",
-        "discovered_at": "",
-        "discovery_source": "orphan_rescue",
-        "revert_count": 2,
+        "discovered_at": "2026-05-07T11:08:39.977782",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 3,
         "tmdb_platforms": []
+      },
+      {
+        "title": "28",
+        "reason": "jw_revert:justwatch_no_match",
+        "digital_date": "2026-05-01",
+        "discovered_at": "2026-05-07T11:08:39.528697",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 7,
+        "tmdb_platforms": []
+      },
+      {
+        "title": "To Do",
+        "reason": "jw_revert:justwatch_no_match",
+        "digital_date": "2026-05-01",
+        "discovered_at": "2026-05-07T11:08:38.752012",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 4,
+        "tmdb_platforms": []
+      },
+      {
+        "title": "The Border Baby",
+        "reason": "jw_revert:justwatch_no_match",
+        "digital_date": "2026-05-01",
+        "discovered_at": "2026-05-07T11:08:38.317900",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 4,
+        "tmdb_platforms": []
+      },
+      {
+        "title": "She Cries Murder",
+        "reason": "jw_revert:justwatch_no_match",
+        "digital_date": "2026-05-01",
+        "discovered_at": "2026-05-07T11:08:37.879191",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 4,
+        "tmdb_platforms": []
+      },
+      {
+        "title": "Perilous Passage: Birth in America",
+        "reason": "jw_revert:justwatch_no_match",
+        "digital_date": "2026-05-04",
+        "discovered_at": "2026-05-07T11:08:35.933717",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 4,
+        "tmdb_platforms": []
+      },
+      {
+        "title": "Before What Comes After",
+        "reason": "jw_revert:justwatch_no_valid_offers",
+        "digital_date": "2026-05-04",
+        "discovered_at": "2026-05-07T11:08:35.146105",
+        "discovery_source": "provider_availability_check",
+        "revert_count": 5,
+        "tmdb_platforms": [
+          "fuboTV"
+        ]
+      },
+      {
+        "title": "Hey Balwanth",
+        "reason": "jw_revert:justwatch_no_valid_offers",
+        "digital_date": "2026-05-06",
+        "discovered_at": "2026-05-07T11:08:31.158655",
+        "discovery_source": "provider_availability_check",
+        "revert_count": 3,
+        "tmdb_platforms": [
+          "fuboTV"
+        ]
+      },
+      {
+        "title": "And Through the Portal We Go",
+        "reason": "jw_revert:justwatch_no_match",
+        "digital_date": "2026-05-06",
+        "discovered_at": "2026-05-07T11:08:30.590406",
+        "discovery_source": "provider_availability_check",
+        "revert_count": 3,
+        "tmdb_platforms": [
+          "Amazon Video"
+        ]
       }
     ],
-    "enrichment_duration_seconds": 1219.13
+    "enrichment_duration_seconds": 277.04
   }
 }
