@@ -584,7 +584,11 @@ class MovieEnricher:
                 _dd = _m.get('digital_date', '')
                 if not _dd or _dd > _plf_cutoff:
                     continue
-                if _m.get('pre_order_links'):
+                # Only skip if both Amazon and Fandango already found
+                _existing_pol = _m.get('pre_order_links', [])
+                _has_amazon = any('amazon' in p.get('service', '').lower() for p in _existing_pol)
+                _has_fandango = any('fandango' in p.get('service', '').lower() for p in _existing_pol)
+                if _has_amazon and _has_fandango:
                     continue
                 _plf_candidates.append(_m)
 
@@ -966,7 +970,12 @@ PRICE: [price or UNKNOWN]
                                 existing_movies[movie_index]['_buyonly_preorder'] = True
                                 _jw_links = _jw_result.get('watch_links', {})
                                 if _jw_links.get('vod'):
-                                    existing_movies[movie_index]['pre_order_links'] = _jw_links['vod']
+                                    # Filter out physical media (DVD/Blu-ray) — NRW is digital-only
+                                    _vod_filtered = [v for v in _jw_links['vod']
+                                                     if 'dvd' not in v.get('service', '').lower()
+                                                     and 'blu-ray' not in v.get('service', '').lower()]
+                                    if _vod_filtered:
+                                        existing_movies[movie_index]['pre_order_links'] = _vod_filtered
 
                                 if _bo_detect['preorder_date']:
                                     existing_movies[movie_index]['digital_date'] = _bo_detect['preorder_date']
@@ -1093,7 +1102,12 @@ PRICE: [price or UNKNOWN]
                             print(f"  \U0001f3f7\ufe0f  {_title} \u2014 pre-order flag cleared (date passed, has real links)")
                         else:
                             # Future date -- links are pre-order purchase URLs, keep flag
-                            existing_movies[movie_index]['pre_order_links'] = wl.get('vod', [])
+                            # Filter out physical media (DVD/Blu-ray) — NRW is digital-only
+                            _vod_po = [v for v in wl.get('vod', [])
+                                       if 'dvd' not in v.get('service', '').lower()
+                                       and 'blu-ray' not in v.get('service', '').lower()]
+                            if _vod_po:
+                                existing_movies[movie_index]['pre_order_links'] = _vod_po
                             print(f"  \U0001f3f7\ufe0f  {_title} \u2014 keeping pre-order (date {dd} still future, links stored as pre_order_links)")
 
                     if not has_real_links:

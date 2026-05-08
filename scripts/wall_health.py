@@ -4,11 +4,12 @@
 Reads data.json, movie_tracking.json, and metrics files to produce a
 detailed, scannable diagnostic report with:
 - Dashboard header with coverage stats
-- 14-day pipeline trend (intake + transitions)
 - Today's arrivals with enrichment coverage + service names
 - Zero watch links (cross-referenced with tracking for root cause)
 - JW revert pattern analysis (grouped by reason, excluded platforms, repeat offenders)
+- Coverage gaps (0/5 and recent 4/5)
 - Pre-orders & upcoming (merged, sorted by date, with TMDB platforms + link status)
+- 14-day pipeline trend (intake + transitions)
 - Enrichment gaps (movies missing poster, synopsis, or watch links)
 - Trailer hosting failures
 """
@@ -95,56 +96,7 @@ print('COVERAGE: RT %d%% (%d) | MC %d%% (%d) | Wiki %d%% (%d) | Trailers %d%% (%
     pct(with_rt), with_rt, pct(with_mc), with_mc, pct(with_wiki), with_wiki,
     pct(with_trailers), with_trailers, pct(with_imdb), with_imdb, pct(with_links), with_links))
 
-# ── Section 2: PIPELINE TREND ───────────────────────────────────────────────
-
-print()
-print('─' * 78)
-print('PIPELINE TREND (14 days)')
-print('─' * 78)
-
-daily_path = os.path.join(BASE, 'metrics/daily.jsonl')
-trend_rows = []
-if os.path.exists(daily_path):
-    with open(daily_path) as f:
-        lines = f.readlines()
-    for line in lines[-14:]:
-        try:
-            entry = json.loads(line.strip())
-            trend_rows.append(entry)
-        except Exception:
-            pass
-
-if trend_rows:
-    print('  %-12s  %7s  %12s' % ('Date', 'Intake', 'Transitions'))
-    print('  ' + '─' * 35)
-    for row in trend_rows:
-        d_str = row.get('date', '?')
-        intake = row.get('intaked_today', 0)
-        trans = row.get('transitions', 0)
-        flag = '  !! STALL' if trans == 0 else ''
-        print('  %-12s  %7d  %12d%s' % (d_str, intake, trans, flag))
-    print('  ' + '─' * 35)
-    avg_intake = sum(r.get('intaked_today', 0) for r in trend_rows) / len(trend_rows)
-    avg_trans = sum(r.get('transitions', 0) for r in trend_rows) / len(trend_rows)
-    print('  %-12s  %7.0f  %12.0f' % ('14-day avg', avg_intake, avg_trans))
-    # Flag today vs average
-    if trend_rows:
-        last = trend_rows[-1]
-        t_intake = last.get('intaked_today', 0)
-        t_trans = last.get('transitions', 0)
-        notes = []
-        if avg_intake > 0 and t_intake < avg_intake * 0.3:
-            notes.append('intake well below avg')
-        if avg_trans > 0 and t_trans < avg_trans * 0.3:
-            notes.append('transitions well below avg')
-        if avg_trans > 0 and t_trans == 0:
-            notes.append('ZERO transitions today')
-        if notes:
-            print('  !! %s' % ' | '.join(notes))
-else:
-    print('  (no daily.jsonl data found)')
-
-# ── Section 3: TODAY'S ARRIVALS ──────────────────────────────────────────────
+# ── Section 2: TODAY'S ARRIVALS ──────────────────────────────────────────────
 
 arrivals = [m for m in movies if m.get('digital_date') == today]
 
@@ -183,7 +135,7 @@ if arrivals:
 else:
     print('  (no arrivals today)')
 
-# ── Section 4: ZERO WATCH LINKS ─────────────────────────────────────────────
+# ── Section 3: ZERO WATCH LINKS ─────────────────────────────────────────────
 
 zero_future = []
 zero_broken = []
@@ -273,7 +225,7 @@ else:
         else:
             print('  None')
 
-# ── Section 5: JW REVERTS (tracking only, not on wall) ──────────────────────
+# ── Section 4: JW REVERTS (tracking only, not on wall) ──────────────────────
 
 wall_titles = set(m['title'] for m in movies)
 jw_reverts = []
@@ -362,6 +314,77 @@ if repeat_offenders:
     if len(repeat_offenders) > 20:
         print('  ... and %d more' % (len(repeat_offenders) - 20))
 
+# ── Section 5: COVERAGE GAPS ────────────────────────────────────────────────
+
+# Two tiers: completely un-enriched (0/5 fields) and recent arrivals (14 days) with 4+ missing
+bare_movies = []    # 0/5 fields — totally missed by enrichment
+recent_gaps = []    # last 14 days, 4/5 missing
+fourteen_ago = (today_dt - timedelta(days=14)).isoformat()
+
+all_miss_rt = 0
+all_miss_mc = 0
+all_miss_wiki = 0
+all_miss_trailer = 0
+all_miss_imdb = 0
+
+for m in movies:
+    dd = m.get('digital_date', '?')
+    if m.get('_is_preorder') or (dd != '?' and dd > today):
+        continue
+    links = m.get('links', {})
+    has_rt = bool(m.get('rt_score'))
+    has_mc = bool(m.get('metacritic_score'))
+    has_wiki = bool(links.get('wikipedia'))
+    has_trailer = bool(links.get('trailer') or links.get('trailer_hosted'))
+    has_imdb = bool(m.get('imdb_rating'))
+    fields = [has_rt, has_mc, has_wiki, has_trailer, has_imdb]
+    missing = sum(1 for x in fields if not x)
+
+    if not has_rt: all_miss_rt += 1
+    if not has_mc: all_miss_mc += 1
+    if not has_wiki: all_miss_wiki += 1
+    if not has_trailer: all_miss_trailer += 1
+    if not has_imdb: all_miss_imdb += 1
+
+    if missing == 5:
+        bare_movies.append((m['title'], dd))
+    elif missing >= 4 and dd >= fourteen_ago:
+        recent_gaps.append((m['title'], dd, has_rt, has_mc, has_wiki, has_trailer, has_imdb))
+
+print()
+print('─' * 78)
+print('COVERAGE GAPS')
+print('─' * 78)
+print('  Wall totals missing: %d RT | %d MC | %d Wiki | %d Trailer | %d IMDb' % (
+    all_miss_rt, all_miss_mc, all_miss_wiki, all_miss_trailer, all_miss_imdb))
+
+if bare_movies:
+    print()
+    print('  ZERO ENRICHMENT — 0/5 fields (%d):' % len(bare_movies))
+    col_w = 42
+    print('  %-*s  %s' % (col_w, 'Title', 'Date'))
+    print('  ' + '─' * (col_w + 14))
+    for title, dd in sorted(bare_movies, key=lambda r: r[1] or '', reverse=True):
+        print('  %-*s  %s' % (col_w, title[:col_w], dd))
+
+if recent_gaps:
+    print()
+    print('  RECENT ARRIVALS missing 4/5 fields (last 14 days, %d):' % len(recent_gaps))
+    col_w = 38
+    print('  %-*s  %-12s %-3s %-3s %-4s %-7s %-4s' % (col_w, 'Title', 'Date', 'RT', 'MC', 'Wiki', 'Trailer', 'IMDb'))
+    print('  ' + '─' * (col_w + 40))
+    for title, dd, has_rt, has_mc, has_wiki, has_trailer, has_imdb in sorted(recent_gaps, key=lambda r: r[1] or '', reverse=True):
+        print('  %-*s  %-12s %-3s %-3s %-4s %-7s %-4s' % (
+            col_w, title[:col_w], dd,
+            'yes' if has_rt else '--',
+            'yes' if has_mc else '--',
+            'yes' if has_wiki else '--',
+            'yes' if has_trailer else '--',
+            'yes' if has_imdb else '--'))
+
+if not bare_movies and not recent_gaps:
+    print('  No critical coverage gaps')
+
 # ── Section 6: PRE-ORDERS & UPCOMING ────────────────────────────────────────
 
 # Merge: pre-order flagged movies + future-dated zero-link movies
@@ -430,7 +453,56 @@ if merged:
 else:
     print('  None')
 
-# ── Section 7: ENRICHMENT GAPS ──────────────────────────────────────────────
+# ── Section 7: PIPELINE TREND ───────────────────────────────────────────────
+
+print()
+print('─' * 78)
+print('PIPELINE TREND (14 days)')
+print('─' * 78)
+
+daily_path = os.path.join(BASE, 'metrics/daily.jsonl')
+trend_rows = []
+if os.path.exists(daily_path):
+    with open(daily_path) as f:
+        lines = f.readlines()
+    for line in lines[-14:]:
+        try:
+            entry = json.loads(line.strip())
+            trend_rows.append(entry)
+        except Exception:
+            pass
+
+if trend_rows:
+    print('  %-12s  %7s  %12s' % ('Date', 'Intake', 'Transitions'))
+    print('  ' + '─' * 35)
+    for row in trend_rows:
+        d_str = row.get('date', '?')
+        intake = row.get('intaked_today', 0)
+        trans = row.get('transitions', 0)
+        flag = '  !! STALL' if trans == 0 else ''
+        print('  %-12s  %7d  %12d%s' % (d_str, intake, trans, flag))
+    print('  ' + '─' * 35)
+    avg_intake = sum(r.get('intaked_today', 0) for r in trend_rows) / len(trend_rows)
+    avg_trans = sum(r.get('transitions', 0) for r in trend_rows) / len(trend_rows)
+    print('  %-12s  %7.0f  %12.0f' % ('14-day avg', avg_intake, avg_trans))
+    # Flag today vs average
+    if trend_rows:
+        last = trend_rows[-1]
+        t_intake = last.get('intaked_today', 0)
+        t_trans = last.get('transitions', 0)
+        notes = []
+        if avg_intake > 0 and t_intake < avg_intake * 0.3:
+            notes.append('intake well below avg')
+        if avg_trans > 0 and t_trans < avg_trans * 0.3:
+            notes.append('transitions well below avg')
+        if avg_trans > 0 and t_trans == 0:
+            notes.append('ZERO transitions today')
+        if notes:
+            print('  !! %s' % ' | '.join(notes))
+else:
+    print('  (no daily.jsonl data found)')
+
+# ── Section 8: ENRICHMENT GAPS ──────────────────────────────────────────────
 
 gap_no_poster = []
 gap_no_synopsis = []
@@ -488,7 +560,7 @@ else:
     print('  Summary: %d movies (%d no poster, %d no synopsis, %d no links)' % (
         total_gaps, len(gap_no_poster), len(gap_no_synopsis), len(gap_no_links)))
 
-# ── Section 8: TRAILER FAILURES ─────────────────────────────────────────────
+# ── Section 9: TRAILER FAILURES ─────────────────────────────────────────────
 
 host_fail_path = os.path.join(BASE, 'cache', 'trailer_host_failures.json')
 if os.path.exists(host_fail_path):
