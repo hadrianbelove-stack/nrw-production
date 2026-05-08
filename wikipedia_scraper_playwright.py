@@ -380,7 +380,8 @@ class WikipediaScraperPlaywright(PlaywrightScraperBase):
             return None
 
     def find_wikipedia_url(self, title, year, imdb_id=None, use_api=True, use_wikidata=True,
-                           director=None, original_title=None, skip_playwright=False):
+                           director=None, original_title=None, skip_playwright=False,
+                           skip_gemini=False):
         """Find Wikipedia URL with waterfall approach.
 
         Priority waterfall:
@@ -440,7 +441,7 @@ class WikipediaScraperPlaywright(PlaywrightScraperBase):
                 return wiki_url
 
         # 2.5. Try Gemini with Google Search grounding (faster than REST API)
-        gemini_finder = self._get_gemini_finder()
+        gemini_finder = self._get_gemini_finder() if not skip_gemini else None
         if gemini_finder:
             wiki_url = gemini_finder.find_wikipedia_url(title, year, director=director)
             # Sync stats from child finder (single source of truth)
@@ -478,7 +479,8 @@ class WikipediaScraperPlaywright(PlaywrightScraperBase):
             return self.find_wikipedia_url(original_title, year, imdb_id,
                                            use_api=use_api, use_wikidata=False,
                                            director=director, original_title=None,
-                                           skip_playwright=skip_playwright)
+                                           skip_playwright=skip_playwright,
+                                           skip_gemini=skip_gemini)
 
         # No article found - return None (never return a search URL)
         self._log(f"No Wikipedia article found for {title} ({year})", level='warning')

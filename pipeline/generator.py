@@ -923,7 +923,7 @@ class DataGenerator:
 
         return None
 
-    def find_wikipedia_url(self, title, year, imdb_id, movie_id=None, director=None, original_title=None, skip_playwright=False):
+    def find_wikipedia_url(self, title, year, imdb_id, movie_id=None, director=None, original_title=None, skip_playwright=False, skip_gemini=False):
         """Find Wikipedia URL using Playwright-based scraper with waterfall approach
 
         Priority waterfall:
@@ -975,7 +975,8 @@ class DataGenerator:
                 use_wikidata=True,
                 director=director,
                 original_title=original_title,
-                skip_playwright=skip_playwright
+                skip_playwright=skip_playwright,
+                skip_gemini=skip_gemini
             )
 
             # Update our local cache reference to match scraper's cache

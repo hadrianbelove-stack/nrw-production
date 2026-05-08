@@ -1000,7 +1000,8 @@ class ProviderDiscoverer:
                         movie_id=movie_id,
                         director=director,
                         original_title=original_title,
-                        skip_playwright=True
+                        skip_playwright=True,
+                        skip_gemini=True
                     )
 
                     if wiki_url:
