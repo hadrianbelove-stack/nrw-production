@@ -39,17 +39,15 @@
             background-clip: text;
             margin-bottom: 0.4rem;
         }
-        .filters-row {
+        /* Two-row filter pills */
+        .filters-wrap {
             display: flex;
-            gap: 0.35rem;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
-            padding-bottom: 0.3rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.3rem;
+            padding-bottom: 0.15rem;
         }
-        .filters-row::-webkit-scrollbar { display: none; }
         .filter-pill {
-            flex-shrink: 0;
             padding: 0.25rem 0.6rem;
             background: rgba(255,255,255,0.1);
             border: 1px solid rgba(255,255,255,0.2);
@@ -154,6 +152,25 @@
             -webkit-tap-highlight-color: transparent;
         }
         .overlay.active { display: flex; align-items: center; justify-content: center; }
+
+        /* Nav arrows */
+        .nav-arrow {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 220;
+            font-size: 2.2rem;
+            color: rgba(255,255,255,0.5);
+            cursor: pointer;
+            padding: 1rem 0.4rem;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .nav-arrow:active { color: #00d4aa; }
+        .nav-left { left: 4px; }
+        .nav-right { right: 4px; }
 
         /* Flip container */
         .flip-wrap {
@@ -326,7 +343,9 @@
             font-size: 0.7rem;
             font-weight: 800;
             color: #fff;
+            text-decoration: none;
         }
+        a.score-pill:active { opacity: 0.7; }
         .score-rt { background: #FA320A; }
         .score-mc { background: #FFCC34; color: #000 !important; }
 
@@ -343,24 +362,46 @@
             flex-shrink: 0;
         }
         .back-service::before {
-            content: '▶';
+            content: '\25B6';
             font-size: 0.5rem;
         }
 
+        /* Link buttons row */
+        .back-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-top: 0.8rem;
+            flex-shrink: 0;
+        }
+        .back-link-btn {
+            display: inline-block;
+            padding: 0.4rem 0.7rem;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #fff;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+        .back-link-btn:active { opacity: 0.7; }
+        .link-trailer { background: #00d4aa; color: #000 !important; }
+        .link-wiki { background: rgba(255,255,255,0.15); }
+        .link-rt { background: #FA320A; }
+        .link-mc { background: #FFCC34; color: #000 !important; }
+
         /* Tap hint */
         .tap-hint {
-            position: absolute;
-            bottom: 12px;
+            position: fixed;
+            bottom: max(20px, env(safe-area-inset-bottom));
             left: 0; right: 0;
             text-align: center;
             font-size: 0.6rem;
             color: rgba(255,255,255,0.35);
             letter-spacing: 0.1em;
             pointer-events: none;
-        }
-        .overlay .tap-hint {
-            position: fixed;
-            bottom: max(20px, env(safe-area-inset-bottom));
             z-index: 210;
         }
     </style>
@@ -369,7 +410,7 @@
 
 <header class="site-header">
     <h1>THE NEW RELEASE WALL</h1>
-    <div class="filters-row">
+    <div class="filters-wrap">
         <span class="filter-pill active">All</span>
         <span class="filter-pill">Big Time</span>
         <span class="filter-pill">Indie</span>
@@ -384,6 +425,8 @@
 
 <!-- Fullscreen overlay -->
 <div class="overlay" id="overlay">
+    <div class="nav-arrow nav-left" id="navLeft">&#8249;</div>
+    <div class="nav-arrow nav-right" id="navRight">&#8250;</div>
     <div class="flip-wrap">
         <div class="flip-inner" id="flipInner">
             <div class="flip-front" id="flipFront">
@@ -408,6 +451,7 @@
                     <div class="back-synopsis" id="backSynopsis"></div>
                     <div class="back-scores" id="backScores"></div>
                     <div id="backService"></div>
+                    <div class="back-links" id="backLinks"></div>
                 </div>
             </div>
         </div>
@@ -417,34 +461,62 @@
 
 <script>
 const movies = [
-  {t:"The Strangers: Chapter 3",d:"Renny Harlin",p:"yPHwX78mcwJw3I6YOJ9qh2wQBFr",y:2026,r:92,g:["Horror","Thriller"],s:"Tethered by a frightening conclusion, Maya and the Strangers are locked on an unavoidable, unforgiving collision course \u2014 a showdown that proves they\u2019re far from strangers now.",rt:"18%",mc:"19",b:"rent",sv:"Rent",sp:false},
-  {t:"Vieja loca (Crazy Old Lady)",d:"Mart\u00edn Mauregui",p:"a2EdW8sk22fNCvrpOiaHbR2hOuZ",y:2025,r:91,g:["Horror","Thriller"],s:"Pedro receives a desperate message from an ex-girlfriend asking him to look after her senile mother, Alicia. What seems like a simple mission soon becomes his worst nightmare.",rt:"77%",mc:"",b:"rent",sv:"Rent",sp:false},
-  {t:"Project Y",d:"Lee Hwan",p:"1KMG1inDAnKaGZ1W8Ac3wn6bdXu",y:2026,r:109,g:["Crime","Drama"],s:"Trapped in Gangnam\u2019s most dangerous streets, Mi-sun and Do-kyung stake everything on one last desperate gamble\u2014only to uncover a hidden stash of dirty cash and gold.",rt:"",mc:"",b:"rent",sv:"Rent",sp:false},
-  {t:"Ways to Traverse a Territory",d:"Gabriela Dom\u00ednguez Ruvalcaba",p:"2G5mioq84qAesYL8XfrQh3QrzUA",y:2024,r:73,g:["Documentary"],s:"Do we belong to a place, or does a place belong to us? Like a skein that unravels, this question unfolds the essayistic thread of the film.",rt:"",mc:"",b:"mubi",sv:"MUBI",sp:false},
-  {t:"The Voice of Hind Rajab",d:"Kaouther Ben Hania",p:"q7M8kQB46T11vmDMD6E239jsqTz",y:2025,r:89,g:["Drama","History"],s:"January 29, 2024. Red Crescent volunteers receive an emergency call. A five-year old girl is trapped in a car under fire in Gaza, pleading for rescue.",rt:"93%",mc:"81",b:"rent",sv:"Rent",sp:false},
-  {t:"Queens of Joy",d:"Olga Gibelinda",p:"6rQXCW5NK91sVnQbQFxIW16lyL4",y:2026,r:90,g:["Documentary"],s:"Monroe, Aura, Marlene: Three drag queens from the Ukrainian LGBTQ+ community raise funds for the frontlines, re-defining resilience and hope between glamorous shows and wartime life.",rt:"",mc:"",b:"rent",sv:"Rent",sp:false},
-  {t:"Noseeums",d:"Raven Deshay Carter",p:"tTk9ZAmgPzuWPs3x0y5fm45N1Ew",y:2025,r:85,g:["Horror"],s:"Fresh from her toxic relationship, a curious college student reluctantly agrees to a weekend trip with her roommate to a secluded lake house in the Florida backwoods.",rt:"",mc:"",b:"rent",sv:"Rent",sp:false},
-  {t:"The Big Johnson",d:"Lola Rock\u2019N\u2019Rolla",p:"b2N7arsRkNbleaXgZ6MnzE8mNff",y:2025,r:95,g:["Documentary"],s:"Dean Johnson, drag queen, rock star, LGBTQI activist, junkie, genius, escort then John Doe. How does someone so famous in New York die as an unknown in DC?",rt:"",mc:"",b:"rent",sv:"Rent",sp:false},
-  {t:"Snow Leopard Sisters",d:"Andrew Lynch",p:"3eT4xMPqHrLjqO5vOnfhHS8D6ml",y:2025,r:93,g:["Documentary"],s:"In Nepal\u2019s remote Dolpo region, two Indigenous women form an unlikely friendship to save one of the planet\u2019s most mysterious wild cats: the snow leopard.",rt:"",mc:"",b:"disney",sv:"Disney+",sp:false},
-  {t:"Atropia",d:"Hailey Benton Gates",p:"qurd8tG5E2T20QihO0ysaJCzAjL",y:2025,r:104,g:["Comedy","Drama"],s:"When an aspiring actress in a military role-playing facility falls in love with a soldier cast as an insurgent, their unsimulated emotions threaten to derail the performance.",rt:"41%",mc:"53",b:"rent",sv:"Rent",sp:false},
-  {t:"Off School Property",d:"Nate Lundquist",p:"w4aA1tq3aYBr0o3yCVDMp1UboC9",y:2025,r:60,g:["Documentary"],s:"Explores the historic shift that removed the Bible from public education\u2014and the lasting impact on students, schools and society.",rt:"65%",mc:"",b:"tubi",sv:"Tubi",sp:false},
-  {t:"Tin\u0101",d:"Miki Magasiva",p:"nx9DPAzainWTqPKuirLIXasbU3z",y:2025,r:125,g:["Drama","Comedy"],s:"A woman grieving her daughter\u2019s death in the Christchurch earthquakes becomes a substitute teacher at an elite private school, discovering students lacking guidance and care.",rt:"95%",mc:"",b:"criterion",sv:"Criterion",sp:false},
-  {t:"This Is Not a Test",d:"Adam MacDonald",p:"pLYiyfCYmuLDYf36AbQApadFUhN",y:2026,r:102,g:["Thriller","Horror"],s:"Sloane and four classmates take cover in Cortege High to escape a world plagued by the infected. As danger relentlessly pounds on the doors, Sloane begins to see the world through the eyes of those outside.",rt:"44%",mc:"36",b:"rent",sv:"Rent",sp:false},
-  {t:"Maintenance Artist",d:"Toby Perl Freilich",p:"VbYDDEw7RPdATftVrAboA0iuP",y:2025,r:90,g:["Documentary"],s:"What happens when art meets trash? Profiles pioneering public artist Mierle Laderman Ukeles\u2014the first artist-in-residence at NYC\u2019s Department of Sanitation.",rt:"",mc:"",b:"kanopy",sv:"Kanopy",sp:false},
-  {t:"A Private Life",d:"Rebecca Zlotowski",p:"AnZ9XzhouSSvQH337923RPFTaqK",y:2025,r:107,g:["Drama","Crime"],s:"Following the death of Paula, one of her long-time patients, psychiatrist Lilian Steiner becomes convinced that her supposed death by suicide is actually an unsolved murder.",rt:"61%",mc:"67",b:"rent",sv:"Rent",sp:false},
-  {t:"The Bluff",d:"Frank E. Flowers",p:"sojEzvfxR2DBcDSJyAisX8TWjov",y:2026,r:102,g:["Action","Thriller"],s:"When her tranquil life on a remote island is shattered by the return of her vengeful former captain, a skilled ex-pirate must confront her bloody past to save her family.",rt:"70%",mc:"61",b:"prime",sv:"Prime",sp:false},
-  {t:"Ikkis",d:"Sriram Raghavan",p:"8PWu0V10nMqG5SrA13wLRXTD2fH",y:2026,r:148,g:["History","War"],s:"Second Lieutenant Arun Khetarpal, India\u2019s youngest Param Vir Chakra recipient, gave his life fighting during the 1971 Battle of Basantar.",rt:"100%",mc:"",b:"prime",sv:"Prime",sp:false},
-  {t:"The Stars Between Us",d:"Tim Huddleston",p:"tcluKPgtUJldvLqDlincYRZwQZj",y:2026,r:84,g:["Romance"],s:"Seven years ago, Kim made a connection with a stranger during an eclipse event. Now a fledgling news reporter, Kim returns to Illinois for this year\u2019s eclipse, unaware their paths may cross again.",rt:"",mc:"",b:"rent",sv:"Rent",sp:true},
-  {t:"Flood",d:"Katy Scoggin",p:"51wG0sPe7SfehmEvVZNpRqOVbTj",y:2025,r:75,g:["Documentary"],s:"A filmmaker revisits her evangelical roots to find connection with her estranged father.",rt:"",mc:"",b:"rent",sv:"Rent",sp:false},
-  {t:"Wild Days",d:"Yohan Guignard",p:"aVYPgcuFL0iq1LLvXlqKYe8Xvzk",y:2024,r:80,g:["Documentary"],s:"4 Savoyard friends have a crazy idea: 50 days of autonomy in Alaska in the Denali massif. A quest where friendships are invented and put to the test.",rt:"",mc:"",b:"rent",sv:"Rent",sp:false},
-  {t:"The Inquisitor",d:"Angela Tucker",p:"hoEMZXOJgx0XioWcY8nuoVQ70JZ",y:2025,r:95,g:["Documentary"],s:"In 1972, Congresswoman Barbara Jordan became the first Southern Black woman to join Congress, one of many firsts in her career as a trailblazing political leader.",rt:"",mc:"",b:"rent",sv:"Rent",sp:false},
-  {t:"Nate and Moriah in Venice",d:"Austin Balke",p:"z9YUI5WWWQ0MSthLLVbG5wZn2L1",y:2025,r:100,g:["Drama"],s:"When a young and struggling couple go on vacation to rekindle their happiness, the past gets the best of them as they walk the streets of beautiful Venice, Italy.",rt:"",mc:"",b:"mubi",sv:"MUBI",sp:false},
-  {t:"Taylor Tomlinson: Prodigal Daughter",d:"Taylor Tomlinson",p:"5n85A8bspgGBhIZ2HnNfbbr6GRe",y:2026,r:69,g:["Comedy"],s:"Taylor Tomlinson takes her fans to church with hilarious confessions about dating in her 30s, her dream assistant and why she refuses to use AI.",rt:"",mc:"",b:"netflix",sv:"Netflix",sp:false},
-  {t:"Ice Skater",d:"Taavi Vartia",p:"k6NdbpdN3591xR18VAVfXYmY6P0",y:2026,r:83,g:["Drama","Thriller"],s:"A survival drama about an ice skater stranded on an ice floe at the Arctic Sea. When the ice floe starts to melt, the skater must use all means necessary to survive.",rt:"",mc:"",b:"rent",sv:"Rent",sp:false},
-  {t:"She Was Here",d:"Brian Pocrass",p:"hSNX85TNi9Zaa3Ep0Kqj271T8FM",y:2026,r:83,g:["Documentary"],s:"Heather O\u2019Rourke captured hearts as Carol-Anne in the Poltergeist films, a bright light destined for greatness. Her sudden passing at just 12 left the world stunned.",rt:"",mc:"",b:"rent",sv:"Rent",sp:false},
-  {t:"Murder in Music City",d:"Dave Thomas",p:"pJWFGI1zlSwWAtx3H0GLxwAMonD",y:2026,r:90,g:["Thriller","Mystery"],s:"When a rising young musician is found murdered at the estate of country music legend Abilene Tucker, all evidence points to the scandal-plagued diva.",rt:"",mc:"",b:"rent",sv:"Rent",sp:false},
-  {t:"Return to Silent Hill",d:"Christophe Gans",p:"fqAGFN2K2kDL0EHxvJaXzaMUkkt",y:2026,r:106,g:["Horror","Mystery"],s:"When James receives a mysterious letter from his lost love Mary, he is drawn to Silent Hill\u2014a once-familiar town now consumed by darkness.",rt:"38%",mc:"34",b:"rent",sv:"Rent",sp:false},
-  {t:"The Mother and the Bear",d:"Johnny Ma",p:"5gS0Jif1hIHhqhqLkur29tjdaOJ",y:2026,r:100,g:["Comedy","Drama"],s:"When her daughter falls into a temporary coma after an accident, Sara, an overbearing Korean mother, travels from Seoul to Canada and vows to keep her daughter safe forever.",rt:"90%",mc:"",b:"rent",sv:"Rent",sp:false}
+  {t:"The Strangers: Chapter 3",d:"Renny Harlin",p:"yPHwX78mcwJw3I6YOJ9qh2wQBFr",y:2026,r:92,g:["Horror","Thriller"],s:"Tethered by a frightening conclusion, Maya and the Strangers are locked on an unavoidable, unforgiving collision course \u2014 a showdown that proves they\u2019re far from strangers now.",rt:"18%",mc:"19",b:"rent",sv:"Rent",sp:false,
+    tr:"https://f004.backblazeb2.com/file/NRW-TRAILERS/1010755.mp4",wi:"https://en.wikipedia.org/wiki/The_Strangers_%E2%80%93_Chapter_3",rtU:"https://www.rottentomatoes.com/m/the_strangers_chapter_3",mcU:"https://www.metacritic.com/movie/the-strangers-chapter-3/"},
+  {t:"Vieja loca (Crazy Old Lady)",d:"Mart\u00edn Mauregui",p:"a2EdW8sk22fNCvrpOiaHbR2hOuZ",y:2025,r:91,g:["Horror","Thriller"],s:"Pedro receives a desperate message from an ex-girlfriend asking him to look after her senile mother, Alicia. What seems like a simple mission soon becomes his worst nightmare.",rt:"77%",mc:"",b:"rent",sv:"Rent",sp:false,
+    tr:"https://f004.backblazeb2.com/file/NRW-TRAILERS/1255674.mp4",wi:"https://en.wikipedia.org/wiki/Crazy_Old_Lady",rtU:"https://www.rottentomatoes.com/m/crazy_old_lady",mcU:"https://www.metacritic.com/movie/crazy-old-lady/"},
+  {t:"Project Y",d:"Lee Hwan",p:"1KMG1inDAnKaGZ1W8Ac3wn6bdXu",y:2026,r:109,g:["Crime","Drama"],s:"Trapped in Gangnam\u2019s most dangerous streets, Mi-sun and Do-kyung stake everything on one last desperate gamble\u2014only to uncover a hidden stash of dirty cash and gold.",rt:"",mc:"",b:"rent",sv:"Rent",sp:false,
+    tr:"https://f004.backblazeb2.com/file/NRW-TRAILERS/1401542.mp4",wi:"https://en.wikipedia.org/wiki/Project_Y_(film)",rtU:"",mcU:""},
+  {t:"Ways to Traverse a Territory",d:"Gabriela Dom\u00ednguez Ruvalcaba",p:"2G5mioq84qAesYL8XfrQh3QrzUA",y:2024,r:73,g:["Documentary"],s:"Do we belong to a place, or does a place belong to us? Like a skein that unravels, this question unfolds the essayistic thread of the film.",rt:"",mc:"",b:"mubi",sv:"MUBI",sp:false,
+    tr:"https://www.youtube.com/watch?v=JYEtsEer4dc",wi:"",rtU:"https://www.rottentomatoes.com/m/ways_to_traverse_a_territory",mcU:""},
+  {t:"The Voice of Hind Rajab",d:"Kaouther Ben Hania",p:"q7M8kQB46T11vmDMD6E239jsqTz",y:2025,r:89,g:["Drama","History"],s:"January 29, 2024. Red Crescent volunteers receive an emergency call. A five-year old girl is trapped in a car under fire in Gaza, pleading for rescue.",rt:"93%",mc:"81",b:"rent",sv:"Rent",sp:false,
+    tr:"https://f004.backblazeb2.com/file/NRW-TRAILERS/1480382.mp4",wi:"https://en.wikipedia.org/wiki/The_Voice_of_Hind_Rajab",rtU:"https://www.rottentomatoes.com/m/the_voice_of_hind_rajab",mcU:"https://www.metacritic.com/movie/the-voice-of-hind-rajab/"},
+  {t:"Queens of Joy",d:"Olga Gibelinda",p:"6rQXCW5NK91sVnQbQFxIW16lyL4",y:2026,r:90,g:["Documentary"],s:"Monroe, Aura, Marlene: Three drag queens from the Ukrainian LGBTQ+ community raise funds for the frontlines, re-defining resilience and hope between glamorous shows and wartime life.",rt:"",mc:"",b:"rent",sv:"Rent",sp:false,
+    tr:"https://f004.backblazeb2.com/file/NRW-TRAILERS/1446171.mp4",wi:"",rtU:"",mcU:""},
+  {t:"Noseeums",d:"Raven Deshay Carter",p:"tTk9ZAmgPzuWPs3x0y5fm45N1Ew",y:2025,r:85,g:["Horror"],s:"Fresh from her toxic relationship, a curious college student reluctantly agrees to a weekend trip with her roommate to a secluded lake house in the Florida backwoods.",rt:"",mc:"",b:"rent",sv:"Rent",sp:false,
+    tr:"https://f004.backblazeb2.com/file/NRW-TRAILERS/1384751.mp4",wi:"",rtU:"",mcU:"https://www.metacritic.com/movie/noseeums/"},
+  {t:"The Big Johnson",d:"Lola Rock\u2019N\u2019Rolla",p:"b2N7arsRkNbleaXgZ6MnzE8mNff",y:2025,r:95,g:["Documentary"],s:"Dean Johnson, drag queen, rock star, LGBTQI activist, junkie, genius, escort then John Doe. How does someone so famous in New York die as an unknown in DC?",rt:"",mc:"",b:"rent",sv:"Rent",sp:false,
+    tr:"https://f004.backblazeb2.com/file/NRW-TRAILERS/1405748.mp4",wi:"",rtU:"",mcU:"https://www.metacritic.com/movie/the-big-johnson/"},
+  {t:"Snow Leopard Sisters",d:"Andrew Lynch",p:"3eT4xMPqHrLjqO5vOnfhHS8D6ml",y:2025,r:93,g:["Documentary"],s:"In Nepal\u2019s remote Dolpo region, two Indigenous women form an unlikely friendship to save one of the planet\u2019s most mysterious wild cats: the snow leopard.",rt:"",mc:"",b:"disney",sv:"Disney+",sp:false,
+    tr:"https://f004.backblazeb2.com/file/NRW-TRAILERS/1422627.mp4",wi:"",rtU:"https://www.rottentomatoes.com/m/snow_leopard_sisters",mcU:""},
+  {t:"Atropia",d:"Hailey Benton Gates",p:"qurd8tG5E2T20QihO0ysaJCzAjL",y:2025,r:104,g:["Comedy","Drama"],s:"When an aspiring actress in a military role-playing facility falls in love with a soldier cast as an insurgent, their unsimulated emotions threaten to derail the performance.",rt:"41%",mc:"53",b:"rent",sv:"Rent",sp:false,
+    tr:"https://f004.backblazeb2.com/file/NRW-TRAILERS/1239288.mp4",wi:"https://en.wikipedia.org/wiki/Atropia_(film)",rtU:"https://www.rottentomatoes.com/m/atropia",mcU:"https://www.metacritic.com/movie/atropia/"},
+  {t:"Off School Property",d:"Nate Lundquist",p:"w4aA1tq3aYBr0o3yCVDMp1UboC9",y:2025,r:60,g:["Documentary"],s:"Explores the historic shift that removed the Bible from public education\u2014and the lasting impact on students, schools and society.",rt:"65%",mc:"",b:"tubi",sv:"Tubi",sp:false,
+    tr:"https://f004.backblazeb2.com/file/NRW-TRAILERS/1517594.mp4",wi:"",rtU:"https://www.rottentomatoes.com/m/middle_school_the_worst_years_of_my_life",mcU:""},
+  {t:"Tin\u0101",d:"Miki Magasiva",p:"nx9DPAzainWTqPKuirLIXasbU3z",y:2025,r:125,g:["Drama","Comedy"],s:"A woman grieving her daughter\u2019s death in the Christchurch earthquakes becomes a substitute teacher at an elite private school, discovering students lacking guidance and care.",rt:"95%",mc:"",b:"criterion",sv:"Criterion",sp:false,
+    tr:"https://f004.backblazeb2.com/file/NRW-TRAILERS/1262426.mp4",wi:"https://en.wikipedia.org/wiki/Tin\u0101",rtU:"https://www.rottentomatoes.com/m/tina_2024",mcU:"https://www.metacritic.com/movie/tina-2025/"},
+  {t:"This Is Not a Test",d:"Adam MacDonald",p:"pLYiyfCYmuLDYf36AbQApadFUhN",y:2026,r:102,g:["Thriller","Horror"],s:"Sloane and four classmates take cover in Cortege High to escape a world plagued by the infected. As danger relentlessly pounds on the doors, Sloane begins to see the world through the eyes of those outside.",rt:"44%",mc:"36",b:"rent",sv:"Rent",sp:false,
+    tr:"https://f004.backblazeb2.com/file/NRW-TRAILERS/1428990.mp4",wi:"https://en.wikipedia.org/wiki/This_Is_Not_a_Test_(2025_film)",rtU:"https://www.rottentomatoes.com/m/this_is_not_a_test_2025",mcU:"https://www.metacritic.com/movie/this-is-not-a-test/"},
+  {t:"Maintenance Artist",d:"Toby Perl Freilich",p:"VbYDDEw7RPdATftVrAboA0iuP",y:2025,r:90,g:["Documentary"],s:"What happens when art meets trash? Profiles pioneering public artist Mierle Laderman Ukeles\u2014the first artist-in-residence at NYC\u2019s Department of Sanitation.",rt:"",mc:"",b:"kanopy",sv:"Kanopy",sp:false,
+    tr:"https://f004.backblazeb2.com/file/NRW-TRAILERS/1465978.mp4",wi:"https://en.wikipedia.org/wiki/Maintenance_Artist",rtU:"https://www.rottentomatoes.com/m/maintenance_artist",mcU:""},
+  {t:"A Private Life",d:"Rebecca Zlotowski",p:"AnZ9XzhouSSvQH337923RPFTaqK",y:2025,r:107,g:["Drama","Crime"],s:"Following the death of Paula, one of her long-time patients, psychiatrist Lilian Steiner becomes convinced that her supposed death by suicide is actually an unsolved murder.",rt:"61%",mc:"67",b:"rent",sv:"Rent",sp:false,
+    tr:"https://f004.backblazeb2.com/file/NRW-TRAILERS/1290432.mp4",wi:"https://en.wikipedia.org/wiki/A_Private_Life",rtU:"https://www.rottentomatoes.com/m/a_private_life_2025",mcU:"https://www.metacritic.com/movie/a-private-life/"},
+  {t:"The Bluff",d:"Frank E. Flowers",p:"sojEzvfxR2DBcDSJyAisX8TWjov",y:2026,r:102,g:["Action","Thriller"],s:"When her tranquil life on a remote island is shattered by the return of her vengeful former captain, a skilled ex-pirate must confront her bloody past to save her family.",rt:"70%",mc:"61",b:"prime",sv:"Prime",sp:false,
+    tr:"https://f004.backblazeb2.com/file/NRW-TRAILERS/799882.mp4",wi:"https://en.wikipedia.org/wiki/The_Bluff_(2026_film)",rtU:"https://www.rottentomatoes.com/m/the_bluff_2026",mcU:"https://www.metacritic.com/movie/the-bluff/"},
+  {t:"Ikkis",d:"Sriram Raghavan",p:"8PWu0V10nMqG5SrA13wLRXTD2fH",y:2026,r:148,g:["History","War"],s:"Second Lieutenant Arun Khetarpal, India\u2019s youngest Param Vir Chakra recipient, gave his life fighting during the 1971 Battle of Basantar.",rt:"100%",mc:"",b:"prime",sv:"Prime",sp:false,
+    tr:"https://f004.backblazeb2.com/file/NRW-TRAILERS/1196946.mp4",wi:"https://en.wikipedia.org/wiki/Ikkis",rtU:"https://www.rottentomatoes.com/m/ikkis",mcU:""},
+  {t:"The Stars Between Us",d:"Tim Huddleston",p:"tcluKPgtUJldvLqDlincYRZwQZj",y:2026,r:84,g:["Romance"],s:"Seven years ago, Kim made a connection with a stranger during an eclipse event. Now a fledgling news reporter, Kim returns to Illinois for this year\u2019s eclipse, unaware their paths may cross again.",rt:"",mc:"",b:"rent",sv:"Rent",sp:true,
+    tr:"https://f004.backblazeb2.com/file/NRW-TRAILERS/1608619.mp4",wi:"",rtU:"https://www.rottentomatoes.com/m/the_stars_between_us",mcU:""},
+  {t:"Flood",d:"Katy Scoggin",p:"51wG0sPe7SfehmEvVZNpRqOVbTj",y:2025,r:75,g:["Documentary"],s:"A filmmaker revisits her evangelical roots to find connection with her estranged father.",rt:"",mc:"",b:"rent",sv:"Rent",sp:false,
+    tr:"https://f004.backblazeb2.com/file/NRW-TRAILERS/1563396.mp4",wi:"https://en.wikipedia.org/wiki/Flood_(disambiguation)",rtU:"",mcU:""},
+  {t:"Wild Days",d:"Yohan Guignard",p:"aVYPgcuFL0iq1LLvXlqKYe8Xvzk",y:2024,r:80,g:["Documentary"],s:"4 Savoyard friends have a crazy idea: 50 days of autonomy in Alaska in the Denali massif. A quest where friendships are invented and put to the test.",rt:"",mc:"",b:"rent",sv:"Rent",sp:false,
+    tr:"https://f004.backblazeb2.com/file/NRW-TRAILERS/1383984.mp4",wi:"",rtU:"",mcU:""},
+  {t:"The Inquisitor",d:"Angela Tucker",p:"hoEMZXOJgx0XioWcY8nuoVQ70JZ",y:2025,r:95,g:["Documentary"],s:"In 1972, Congresswoman Barbara Jordan became the first Southern Black woman to join Congress, one of many firsts in her career as a trailblazing political leader.",rt:"",mc:"",b:"rent",sv:"Rent",sp:false,
+    tr:"https://f004.backblazeb2.com/file/NRW-TRAILERS/1465778.mp4",wi:"",rtU:"https://www.rottentomatoes.com/m/the_inquisitor",mcU:"https://www.metacritic.com/movie/the-inquisitor/"},
+  {t:"Nate and Moriah in Venice",d:"Austin Balke",p:"z9YUI5WWWQ0MSthLLVbG5wZn2L1",y:2025,r:100,g:["Drama"],s:"When a young and struggling couple go on vacation to rekindle their happiness, the past gets the best of them as they walk the streets of beautiful Venice, Italy.",rt:"",mc:"",b:"mubi",sv:"MUBI",sp:false,
+    tr:"https://f004.backblazeb2.com/file/NRW-TRAILERS/1404538.mp4",wi:"",rtU:"",mcU:""},
+  {t:"Taylor Tomlinson: Prodigal Daughter",d:"Taylor Tomlinson",p:"5n85A8bspgGBhIZ2HnNfbbr6GRe",y:2026,r:69,g:["Comedy"],s:"Taylor Tomlinson takes her fans to church with hilarious confessions about dating in her 30s, her dream assistant and why she refuses to use AI.",rt:"",mc:"",b:"netflix",sv:"Netflix",sp:false,
+    tr:"https://f004.backblazeb2.com/file/NRW-TRAILERS/1617908.mp4",wi:"https://en.wikipedia.org/wiki/Taylor_Tomlinson?wprov=srpw1_0",rtU:"https://www.rottentomatoes.com/m/taylor_tomlinson_prodigal_daughter",mcU:""},
+  {t:"Ice Skater",d:"Taavi Vartia",p:"k6NdbpdN3591xR18VAVfXYmY6P0",y:2026,r:83,g:["Drama","Thriller"],s:"A survival drama about an ice skater stranded on an ice floe at the Arctic Sea. When the ice floe starts to melt, the skater must use all means necessary to survive.",rt:"",mc:"",b:"rent",sv:"Rent",sp:false,
+    tr:"https://f004.backblazeb2.com/file/NRW-TRAILERS/1424965.mp4",wi:"",rtU:"",mcU:""},
+  {t:"She Was Here",d:"Brian Pocrass",p:"hSNX85TNi9Zaa3Ep0Kqj271T8FM",y:2026,r:83,g:["Documentary"],s:"Heather O\u2019Rourke captured hearts as Carol-Anne in the Poltergeist films, a bright light destined for greatness. Her sudden passing at just 12 left the world stunned.",rt:"",mc:"",b:"rent",sv:"Rent",sp:false,
+    tr:"https://f004.backblazeb2.com/file/NRW-TRAILERS/1523504.mp4",wi:"",rtU:"https://www.rottentomatoes.com/m/she_was_here",mcU:"https://www.metacritic.com/movie/she-was-here/"},
+  {t:"Murder in Music City",d:"Dave Thomas",p:"pJWFGI1zlSwWAtx3H0GLxwAMonD",y:2026,r:90,g:["Thriller","Mystery"],s:"When a rising young musician is found murdered at the estate of country music legend Abilene Tucker, all evidence points to the scandal-plagued diva.",rt:"",mc:"",b:"rent",sv:"Rent",sp:false,
+    tr:"https://www.youtube.com/watch?v=xnYTxxrJ4XA",wi:"",rtU:"https://www.rottentomatoes.com/m/murder_in_music_city_2026",mcU:""},
+  {t:"Return to Silent Hill",d:"Christophe Gans",p:"fqAGFN2K2kDL0EHxvJaXzaMUkkt",y:2026,r:106,g:["Horror","Mystery"],s:"When James receives a mysterious letter from his lost love Mary, he is drawn to Silent Hill\u2014a once-familiar town now consumed by darkness.",rt:"38%",mc:"34",b:"rent",sv:"Rent",sp:false,
+    tr:"https://f004.backblazeb2.com/file/NRW-TRAILERS/680493.mp4",wi:"https://en.wikipedia.org/wiki/Return_to_Silent_Hill",rtU:"https://www.rottentomatoes.com/m/return_to_silent_hill",mcU:"https://www.metacritic.com/movie/return-to-silent-hill/"},
+  {t:"The Mother and the Bear",d:"Johnny Ma",p:"5gS0Jif1hIHhqhqLkur29tjdaOJ",y:2026,r:100,g:["Comedy","Drama"],s:"When her daughter falls into a temporary coma after an accident, Sara, an overbearing Korean mother, travels from Seoul to Canada and vows to keep her daughter safe forever.",rt:"90%",mc:"",b:"rent",sv:"Rent",sp:false,
+    tr:"https://f004.backblazeb2.com/file/NRW-TRAILERS/1192730.mp4",wi:"https://en.wikipedia.org/wiki/The_Mother_and_the_Bear",rtU:"https://www.rottentomatoes.com/m/the_mother_and_the_bear",mcU:""}
 ];
 
 const posterBase = 'https://image.tmdb.org/t/p/w300/';
@@ -456,8 +528,8 @@ movies.forEach((m, i) => {
     const div = document.createElement('div');
     div.className = 'grid-item';
     div.dataset.index = i;
-    const cardWrap = m.sp ? `<div class="staff-pick-wrap"><div class="movie-card">` : `<div class="movie-card">`;
-    const cardClose = m.sp ? `</div></div>` : `</div>`;
+    const cardWrap = m.sp ? '<div class="staff-pick-wrap"><div class="movie-card">' : '<div class="movie-card">';
+    const cardClose = m.sp ? '</div></div>' : '</div>';
     div.innerHTML = `
         ${cardWrap}
             <span class="streaming-badge badge-${m.b}">${m.sv}</span>
@@ -484,17 +556,25 @@ const backStaffBadge = document.getElementById('backStaffBadge');
 const backSynopsis = document.getElementById('backSynopsis');
 const backScores = document.getElementById('backScores');
 const backService = document.getElementById('backService');
+const backLinks = document.getElementById('backLinks');
 const tapHint = document.getElementById('tapHint');
 const flipFront = document.getElementById('flipFront');
+const navLeft = document.getElementById('navLeft');
+const navRight = document.getElementById('navRight');
 
-// State: 'grid' | 'poster' | 'details'
-let state = 'grid';
-let currentMovie = null;
+// State
+let state = 'grid'; // 'grid' | 'poster' | 'details'
+let currentIdx = -1;
 let touchHandled = false;
 
-function openPoster(idx) {
+// Swipe tracking
+let swipeStartX = 0;
+let swipeStartY = 0;
+let swiping = false;
+
+function loadMovie(idx) {
     const m = movies[idx];
-    currentMovie = m;
+    currentIdx = idx;
 
     // Front
     frontPoster.src = posterHi + m.p + '.jpg';
@@ -503,7 +583,6 @@ function openPoster(idx) {
     frontTitle.textContent = m.t;
     frontDirector.textContent = m.d;
 
-    // Staff pick glow on front
     if (m.sp) {
         flipFront.classList.add('staff-glow');
     } else {
@@ -522,26 +601,48 @@ function openPoster(idx) {
     backStaffBadge.innerHTML = m.sp ? '<span class="back-staff-badge">\u2605 STAFF PICK \u2605</span>' : '';
     backSynopsis.textContent = m.s;
 
-    // Scores
+    // Scores — make them links if URL available
     let scoreHtml = '';
-    if (m.rt && m.rt !== '0') scoreHtml += `<span class="score-pill score-rt">\ud83c\udf45 ${m.rt}</span>`;
-    if (m.mc && m.mc !== '0') scoreHtml += `<span class="score-pill score-mc">MC ${m.mc}</span>`;
+    if (m.rt && m.rt !== '0') {
+        if (m.rtU) {
+            scoreHtml += `<a href="${m.rtU}" target="_blank" rel="noopener" class="score-pill score-rt">\uD83C\uDF45 ${m.rt}</a>`;
+        } else {
+            scoreHtml += `<span class="score-pill score-rt">\uD83C\uDF45 ${m.rt}</span>`;
+        }
+    }
+    if (m.mc && m.mc !== '0') {
+        if (m.mcU) {
+            scoreHtml += `<a href="${m.mcU}" target="_blank" rel="noopener" class="score-pill score-mc">MC ${m.mc}</a>`;
+        } else {
+            scoreHtml += `<span class="score-pill score-mc">MC ${m.mc}</span>`;
+        }
+    }
     backScores.innerHTML = scoreHtml;
     backScores.style.display = scoreHtml ? 'flex' : 'none';
 
     // Service
     backService.innerHTML = `<span class="back-service badge-${m.b}">${m.sv}</span>`;
 
-    // Show overlay, reset flip
+    // Link buttons
+    let linksHtml = '';
+    if (m.tr) linksHtml += `<a href="${m.tr}" target="_blank" rel="noopener" class="back-link-btn link-trailer">\u25B6 Trailer</a>`;
+    if (m.wi) linksHtml += `<a href="${m.wi}" target="_blank" rel="noopener" class="back-link-btn link-wiki">Wiki</a>`;
+    if (m.rtU) linksHtml += `<a href="${m.rtU}" target="_blank" rel="noopener" class="back-link-btn link-rt">RT</a>`;
+    if (m.mcU) linksHtml += `<a href="${m.mcU}" target="_blank" rel="noopener" class="back-link-btn link-mc">MC</a>`;
+    backLinks.innerHTML = linksHtml;
+}
+
+function openPoster(idx) {
+    loadMovie(idx);
     flipInner.classList.remove('flipped');
     overlay.classList.add('active');
-    tapHint.textContent = 'TAP TO FLIP';
+    tapHint.textContent = 'TAP TO FLIP  \u2022  SWIPE \u2190 \u2192';
     state = 'poster';
 }
 
 function flipToDetails() {
     flipInner.classList.add('flipped');
-    tapHint.textContent = 'TAP TO CLOSE';
+    tapHint.textContent = 'TAP TO CLOSE  \u2022  SWIPE \u2190 \u2192';
     state = 'details';
 }
 
@@ -549,17 +650,58 @@ function closeOverlay() {
     overlay.classList.remove('active');
     flipInner.classList.remove('flipped');
     state = 'grid';
-    currentMovie = null;
+    currentIdx = -1;
 }
 
-// Grid tap → open poster
+function navigate(direction) {
+    if (currentIdx < 0) return;
+    let next = currentIdx + direction;
+    if (next < 0) next = movies.length - 1;
+    if (next >= movies.length) next = 0;
+
+    // Stay in current view state
+    loadMovie(next);
+    if (state === 'poster') {
+        flipInner.classList.remove('flipped');
+    } else if (state === 'details') {
+        flipInner.classList.add('flipped');
+    }
+}
+
+// Arrow taps
+navLeft.addEventListener('touchend', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    touchHandled = true;
+    navigate(-1);
+    setTimeout(function() { touchHandled = false; }, 300);
+});
+navLeft.addEventListener('click', function(e) {
+    e.stopPropagation();
+    if (touchHandled) return;
+    navigate(-1);
+});
+navRight.addEventListener('touchend', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    touchHandled = true;
+    navigate(1);
+    setTimeout(function() { touchHandled = false; }, 300);
+});
+navRight.addEventListener('click', function(e) {
+    e.stopPropagation();
+    if (touchHandled) return;
+    navigate(1);
+});
+
+// Grid tap -> open poster
 wall.addEventListener('touchend', function(e) {
     const item = e.target.closest('.grid-item');
     if (!item) return;
     e.preventDefault();
     touchHandled = true;
     openPoster(parseInt(item.dataset.index));
-    setTimeout(() => { touchHandled = false; }, 300);
+    setTimeout(function() { touchHandled = false; }, 300);
 });
 wall.addEventListener('click', function(e) {
     if (touchHandled) return;
@@ -568,9 +710,41 @@ wall.addEventListener('click', function(e) {
     openPoster(parseInt(item.dataset.index));
 });
 
-// Overlay tap → cycle states
+// Overlay: swipe detection + tap to cycle
+overlay.addEventListener('touchstart', function(e) {
+    if (e.target.closest('.nav-arrow') || e.target.closest('.back-link-btn') || e.target.closest('.score-pill')) return;
+    swipeStartX = e.touches[0].clientX;
+    swipeStartY = e.touches[0].clientY;
+    swiping = false;
+}, { passive: true });
+
+overlay.addEventListener('touchmove', function(e) {
+    if (e.target.closest('.nav-arrow') || e.target.closest('.back-link-btn') || e.target.closest('.score-pill')) return;
+    const dx = e.touches[0].clientX - swipeStartX;
+    const dy = e.touches[0].clientY - swipeStartY;
+    if (Math.abs(dx) > 30 && Math.abs(dx) > Math.abs(dy)) {
+        swiping = true;
+    }
+}, { passive: true });
+
 overlay.addEventListener('touchend', function(e) {
-    // Allow scroll on back content
+    if (e.target.closest('.nav-arrow') || e.target.closest('.back-link-btn') || e.target.closest('.score-pill')) return;
+
+    // Check for swipe first
+    if (swiping) {
+        const dx = e.changedTouches[0].clientX - swipeStartX;
+        if (Math.abs(dx) > 50) {
+            e.preventDefault();
+            touchHandled = true;
+            navigate(dx < 0 ? 1 : -1);
+            setTimeout(function() { touchHandled = false; }, 300);
+            swiping = false;
+            return;
+        }
+    }
+    swiping = false;
+
+    // Not a swipe — treat as tap
     if (state === 'details' && e.target.closest('.back-content')) {
         const bc = document.getElementById('backContent');
         if (bc.scrollHeight > bc.clientHeight) return;
@@ -579,10 +753,12 @@ overlay.addEventListener('touchend', function(e) {
     touchHandled = true;
     if (state === 'poster') flipToDetails();
     else if (state === 'details') closeOverlay();
-    setTimeout(() => { touchHandled = false; }, 300);
+    setTimeout(function() { touchHandled = false; }, 300);
 });
+
 overlay.addEventListener('click', function(e) {
     if (touchHandled) return;
+    if (e.target.closest('.nav-arrow') || e.target.closest('.back-link-btn') || e.target.closest('.score-pill')) return;
     if (state === 'poster') flipToDetails();
     else if (state === 'details') closeOverlay();
 });
