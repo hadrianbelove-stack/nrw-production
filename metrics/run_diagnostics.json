@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-05-09T21:34:03.942649",
-  "duration_seconds": 3387.119252,
+  "timestamp": "2026-05-09T23:57:52.963909",
+  "duration_seconds": 4041.718028,
   "overall_success": false,
   "failure_count": 1,
   "warning_count": 0,
@@ -8,65 +8,65 @@
     {
       "name": "Intake new premieres from TMDB",
       "success": true,
-      "duration_seconds": 5.401665,
+      "duration_seconds": 5.325738,
       "error": null,
       "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-05-08 to 2026-05-09 (incremental mode, 0 intaked)\n\u2705 Movie intake complete: 0 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-04-09 to 2026-05-09\n\n\ud83d\udcca Miniseries intake complete: 0 new series ad"
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 2833.476021,
+      "duration_seconds": 3687.526911,
       "error": null,
-      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 16683 total movies\n\ud83d\udd0d Raw tracking filter: 13194 movies\n\ud83d\udd0d Assigned tracking_movies list: 13194\n\ud83d\udd0d Found 13194 movies in tracking status\n  Priority queue (last 180 days): 521 movies\n  Older movies: 12673 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 13194 movies for digital availability...\n\n   \u2705 Added Legends to site immediately (discovery-driven)\n  \u2713 Legends now on Netflix!\n  \ud83d\udcca Disc"
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 16683 total movies\n\ud83d\udd0d Raw tracking filter: 13185 movies\n\ud83d\udd0d Assigned tracking_movies list: 13185\n\ud83d\udd0d Found 13185 movies in tracking status\n  Priority queue (last 180 days): 520 movies\n  Older movies: 12665 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 13185 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/13185 (0.8%) | 0 found | 0m elapsed | ~55m remaining\n  \ud83d\udcbe Progress saved (ba"
     },
     {
       "name": "Enrich newly available movies with metadata",
       "success": false,
-      "duration_seconds": 356.61138,
-      "error": "2026-05-09 21:24:56 [INFO] EnrichmentService initialized with enrichment_enabled=True\n2026-05-09 21:24:56 [INFO] Enrichment loaded data.json: 792 movies\n2026-05-09 21:24:56 [INFO] VOD scraper initialized (headless=True, timeout=10s)\n  Warning: Search results may not have loaded completely\n  No Amazon link found for Wasteman (2026) after 12.11 seconds\n  Attempt 1 failed, retrying in 0.6s...\n  Warning: Search results may not have loaded completely\n  No Amazon link found for Wasteman (2026) after 10.07 seconds\n  Warning: Search results may not have loaded completely\n  No Amazon link found for Wasteman (None) after 10.06 seconds\n  Attempt 1 failed, retrying in 0.5s...\n  Warning: Search results may not have loaded completely\n  No Amazon link found for Wasteman (None) after 10.07 seconds\n  No Fandango link found for Wasteman (2026) after 3.36s\n  Attempt 1 failed, retrying in 0.4s...\n  No Fandango link found for Wasteman (2026) after 2.36s\n  Warning: Search results may not have loaded complet",
-      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\n  \ud83d\udd0d Pre-order link finder: 11 movies within 14d window\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n      \u00b7 Wasteman: Amazon not found\n      \u00b7 Wasteman: Fandango not found\n      \u00b7 Palest"
+      "duration_seconds": 192.66977,
+      "error": "2026-05-09 23:52:04 [INFO] EnrichmentService initialized with enrichment_enabled=True\n2026-05-09 23:52:04 [INFO] Enrichment loaded data.json: 791 movies\n2026-05-09 23:52:04 [INFO] VOD scraper initialized (headless=True, timeout=10s)\n  Warning: Search results may not have loaded completely\n  No Amazon link found for Elie Wiesel: Soul on Fire (2024) after 11.28 seconds\n  Attempt 1 failed, retrying in 0.5s...\n  Warning: Search results may not have loaded completely\n  No Amazon link found for Elie Wiesel: Soul on Fire (2024) after 10.13 seconds\n  Warning: Search results may not have loaded completely\n  No Amazon link found for Elie Wiesel: Soul on Fire (None) after 10.12 seconds\n  Attempt 1 failed, retrying in 0.5s...\n  Warning: Search results may not have loaded completely\n  No Amazon link found for Elie Wiesel: Soul on Fire (None) after 10.13 seconds\n  No Fandango link found for Elie Wiesel: Soul on Fire (2024) after 3.59s\n  Attempt 1 failed, retrying in 0.5s...\n  No Fandango link found ",
+      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\n  \ud83d\udd0d Pre-order link finder: 12 movies within 14d window\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n      \u00b7 Elie Wiesel: Soul on Fire: Amazon not found\n      \u00b7 Elie Wiesel: Soul on Fire:"
     },
     {
       "name": "Stamp hosted trailer URLs into data.json",
       "success": true,
-      "duration_seconds": 1.556509,
+      "duration_seconds": 1.0893,
       "error": null,
-      "output_preview": "=== Trailer Pipeline: stamp ===\n\nConnecting to B2...\nFound 630 trailers in B2 bucket\n\nStamp results:\n  Stamped:          0\n  Already had URL:  556\n  Stale cleaned:    0\n  Not in B2:        236\n"
+      "output_preview": "=== Trailer Pipeline: stamp ===\n\nConnecting to B2...\nFound 630 trailers in B2 bucket\n\nStamp results:\n  Stamped:          0\n  Already had URL:  556\n  Stale cleaned:    0\n  Not in B2:        235\n"
     },
     {
       "name": "Refresh watch links and Wikipedia for all wall movies",
       "success": true,
-      "duration_seconds": 181.991421,
+      "duration_seconds": 149.1602,
       "error": null,
-      "output_preview": "\n\ud83d\udd04 Running daily gap fill for all wall movies...\n  \ud83d\udcca Processing 329 of 792 wall movies (last 30 days)\n  + Dacoit \u2014 new services added\n  \ud83d\udcda Dacoit \u2014 Wikipedia link added\n  + Who Killed These Women? (The Tinley Park 5) \u2014 new services added\n  + One Golden Summer \u2014 new services added\n  + Julian \u2014 new services added\n  \ud83d\udcda Julian \u2014 Wikipedia link added\n  + Legends \u2014 new services added\n  \ud83d\udcda The Mohican \u2014 Wikipedia link added\n  + Should I Marry A Murderer? \u2014 new services added\n  \ud83d\udcda The True Beauty of Being B"
+      "output_preview": "\n\ud83d\udd04 Running daily gap fill for all wall movies...\n  \ud83d\udcca Processing 329 of 791 wall movies (last 30 days)\n  \ud83d\udcda The Mohican \u2014 Wikipedia link added\n  \ud83d\udcda The True Beauty of Being Bitten by a Tick \u2014 Wikipedia link added\n  \ud83d\udcda The Kerala Story 2 Goes Beyond \u2014 Wikipedia link added\n  \ud83d\udcda Mixtape \u2014 Wikipedia link added\n  \ud83d\udcda From Within \u2014 Wikipedia link added\n  \ud83d\udcda Two Prosecutors \u2014 Wikipedia link added\n  \ud83d\udcda Wasteman \u2014 Wikipedia link added\n  \ud83d\udcda Palestine 36 \u2014 Wikipedia link added\n  \ud83d\udcda The Stranger \u2014 Wikipedia link added"
     },
     {
       "name": "Check virtual screening link expirations",
       "success": true,
-      "duration_seconds": 7.63802,
+      "duration_seconds": 5.603574,
       "error": null,
       "output_preview": "\n\ud83c\udfaa Checking virtual screening links...\n  Checking 28 virtual screening movies...\n  \ud83d\udcbe Updated data.json\n  \ud83d\udcca Results: 17 active, 0 expired\n\u2705 Virtual screening check complete\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Archive movies older than 90 days",
       "success": true,
-      "duration_seconds": 0.397673,
+      "duration_seconds": 0.296348,
       "error": null,
-      "output_preview": "\n\ud83d\udce6 Archiving movies older than 90 days...\n\ud83d\udce6 Archived 1 movies (>90 days old) \u2192 data_archive.json\n   data.json: 791 movies | archive: 335 total\n\u2705 Archive complete\n\ud83d\udccb Phase complete\n"
+      "output_preview": "\n\ud83d\udce6 Archiving movies older than 90 days...\n\u2705 Archive complete\n\ud83d\udccb Phase complete\n"
     }
   ],
   "health_issues": [],
   "stall_status": {
     "stalled": false,
-    "days_without_transitions": 0
+    "days_without_transitions": 1
   },
   "failures": [
     {
       "phase": "Enrich newly available movies with metadata",
       "severity": "error",
       "message": "Phase failed with exit code 1",
-      "context": "2026-05-09 21:24:56 [INFO] EnrichmentService initialized with enrichment_enabled=True\n2026-05-09 21:24:56 [INFO] Enrichment loaded data.json: 792 movies\n2026-05-09 21:24:56 [INFO] VOD scraper initialized (headless=True, timeout=10s)\n  Warning: Search results may not have loaded completely\n  No Amazon link found for Wasteman (2026) after 12.11 seconds\n  Attempt 1 failed, retrying in 0.6s...\n  Warning: Search results may not have loaded completely\n  No Amazon link found for Wasteman (2026) after 1",
-      "stdout_preview": "\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\n  \ud83d\udd0d Pre-order link finder: 11 movies within 14d window\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n      \u00b7 Wasteman: Amazon not found\n      \u00b7 Wasteman: Fandango not found\n      \u00b7 Palesti"
+      "context": "2026-05-09 23:52:04 [INFO] EnrichmentService initialized with enrichment_enabled=True\n2026-05-09 23:52:04 [INFO] Enrichment loaded data.json: 791 movies\n2026-05-09 23:52:04 [INFO] VOD scraper initialized (headless=True, timeout=10s)\n  Warning: Search results may not have loaded completely\n  No Amazon link found for Elie Wiesel: Soul on Fire (2024) after 11.28 seconds\n  Attempt 1 failed, retrying in 0.5s...\n  Warning: Search results may not have loaded completely\n  No Amazon link found for Elie W",
+      "stdout_preview": "\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\n  \ud83d\udd0d Pre-order link finder: 12 movies within 14d window\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n      \u00b7 Elie Wiesel: Soul on Fire: Amazon not found\n      \u00b7 Elie Wiesel: Soul on Fire: "
     }
   ],
   "warnings": [],
