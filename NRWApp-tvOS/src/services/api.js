@@ -247,6 +247,7 @@ const SERVICE_NAME_MAP = {
   'prime video': 'amazon',
   'apple tv': 'apple_tv',
   'apple tv+': 'apple_tv',
+  'apple tv store': 'apple_tv',
   'apple itunes': 'apple_tv',
   'itunes': 'apple_tv',
   'netflix': 'netflix',

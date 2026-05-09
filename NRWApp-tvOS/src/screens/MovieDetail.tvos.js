@@ -26,6 +26,7 @@ import {
 } from './useMovieDetail';
 import WatchButton from '../components/WatchButton.tvos';
 import { Colors, Typography, Spacing, getServiceColor, isVirtualScreeningPlatform } from '../constants/colors';
+import QRCode from 'react-native-qrcode-svg';
 import { useTVEventHandler, TV_EVENTS } from '../utils/focusManager.tvos';
 import {
   openAmazon,
@@ -328,8 +329,13 @@ const MovieDetailTvOS = () => {
 
   // Track button focus — navigate to next/prev film when pressing past the edges
   const buttonFocusCount = useRef(0);
+  const trailerFocused = useRef(false);
   const focusedButtonIndex = useRef(-1);
   const totalButtonCount = useRef(0);
+  const handleTrailerFocusChange = useCallback((focused) => {
+    buttonFocusCount.current += focused ? 1 : -1;
+    trailerFocused.current = focused;
+  }, []);
   const handleButtonFocusChange = useCallback((focused, buttonIndex) => {
     buttonFocusCount.current += focused ? 1 : -1;
     if (focused) focusedButtonIndex.current = buttonIndex;
@@ -437,10 +443,28 @@ const MovieDetailTvOS = () => {
       }
     },
     [TV_EVENTS.LEFT]: () => {
-      if (buttonFocusCount.current <= 0 || focusedButtonIndex.current === 0) navigatePrevious();
+      if (buttonFocusCount.current <= 0) { navigatePrevious(); return; }
+      // Trailer is alone in its row — LEFT always goes to previous film
+      if (trailerFocused.current) { navigatePrevious(); return; }
+      // Watch buttons: debounce to let focus engine settle
+      const before = focusedButtonIndex.current;
+      setTimeout(() => {
+        if (focusedButtonIndex.current === before && before === 0) {
+          navigatePrevious();
+        }
+      }, 50);
     },
     [TV_EVENTS.RIGHT]: () => {
-      if (buttonFocusCount.current <= 0 || focusedButtonIndex.current >= totalButtonCount.current - 1) navigateNext();
+      if (buttonFocusCount.current <= 0) { navigateNext(); return; }
+      // Trailer is alone in its row — RIGHT always goes to next film
+      if (trailerFocused.current) { navigateNext(); return; }
+      // Watch buttons: debounce to let focus engine settle
+      const before = focusedButtonIndex.current;
+      setTimeout(() => {
+        if (focusedButtonIndex.current === before && before >= totalButtonCount.current - 1) {
+          navigateNext();
+        }
+      }, 50);
     },
   });
 
@@ -664,25 +688,26 @@ const MovieDetailTvOS = () => {
               </View>
             )}
 
-            {/* Trailer — full-width on top */}
+            {/* Trailer — its own row above watch buttons */}
             {movie?.links?.trailer_hosted && (
               <View style={styles.watchButtonRow}>
                 <ActionButton
                   label="TRAILER"
                   color="#E50914"
                   onPress={() => setTrailerVisible(true)}
-                  onFocusChange={handleButtonFocusChange}
+                  onFocusChange={handleTrailerFocusChange}
                   hasTVPreferredFocus={true}
                   testID="action-btn-trailer"
                 />
               </View>
             )}
 
-            {/* Watch buttons row (streaming + VOD) */}
+            {/* Watch buttons row (streaming + VOD + plex) */}
             {hasWatchOptions && (() => {
               let btnIdx = 0;
               const streamCount = streamingLinks.length > 0 ? 1 : 0;
-              const vodCount = Math.min(purchaseLinks.length, 2);
+              const nonVsLinks = purchaseLinks.slice(0, 2).filter(l => !isVirtualScreeningPlatform(l.service, l.url));
+              const vodCount = nonVsLinks.length;
               const plexCount = plexLinks.length > 0 ? 1 : 0;
               totalButtonCount.current = streamCount + vodCount + plexCount;
               return (
@@ -706,18 +731,14 @@ const MovieDetailTvOS = () => {
                   );
                 })()}
 
-                {/* VOD buttons */}
-                {purchaseLinks.slice(0, 2).map((link, idx) => {
-                  const isVirtualScreening = isVirtualScreeningPlatform(link.service, link.url);
-                  const label = isVirtualScreening ? 'BUY TICKET'
-                    : movie?._is_preorder ? 'PRE-ORDER'
+                {/* VOD buttons (non-virtual-screening only) */}
+                {purchaseLinks.slice(0, 2).filter(link => !isVirtualScreeningPlatform(link.service, link.url)).map((link, idx) => {
+                  const label = movie?._is_preorder ? 'PRE-ORDER'
                     : getVodDisplayName(link.service);
-                  const buttonColor = isVirtualScreening ? 'transparent'
-                    : movie?._is_preorder ? '#7c3aed'
+                  const buttonColor = movie?._is_preorder ? '#7c3aed'
                     : getServiceColor(link.service);
                   const vodKey = normalizeService(link.service);
-                  const vodBorder = isVirtualScreening ? Colors.screeningGold
-                    : (!movie?._is_preorder && NEEDS_BORDER.includes(vodKey)) ? '#444'
+                  const vodBorder = (!movie?._is_preorder && NEEDS_BORDER.includes(vodKey)) ? '#444'
                     : undefined;
                   const thisIdx = btnIdx++;
                   return (
@@ -725,10 +746,9 @@ const MovieDetailTvOS = () => {
                       <ActionButton
                         label={label}
                         color={buttonColor}
-                        icon={!isVirtualScreening && !movie?._is_preorder ? getServiceLogo(link.service) : null}
+                        icon={!movie?._is_preorder ? getServiceLogo(link.service) : null}
                         iconTintColor="#ffffff"
                         borderColor={vodBorder}
-                        textColor={isVirtualScreening ? Colors.screeningGold : undefined}
                         onPress={() => handleWatchPress(link)}
                         onFocusChange={handleButtonFocusChange}
                         buttonIndex={thisIdx}
@@ -756,6 +776,25 @@ const MovieDetailTvOS = () => {
                   />
                 )}
               </View>
+              );
+            })()}
+
+            {/* Virtual screening QR code — scan to buy ticket on phone */}
+            {purchaseLinks.some(link => isVirtualScreeningPlatform(link.service, link.url)) && (() => {
+              const vsLink = purchaseLinks.find(link => isVirtualScreeningPlatform(link.service, link.url));
+              return (
+                <View style={styles.qrBlock} accessible={true} accessibilityLabel="Scan QR code with your phone to buy a virtual screening ticket">
+                  <Text style={styles.qrLabel}>BUY TICKET</Text>
+                  <View style={styles.qrCodeWrap}>
+                    <QRCode
+                      value={vsLink.url}
+                      size={160}
+                      backgroundColor="#ffffff"
+                      color="#000000"
+                    />
+                  </View>
+                  <Text style={styles.qrNote}>Virtual Screenings only available on phone or computer</Text>
+                </View>
               );
             })()}
 
