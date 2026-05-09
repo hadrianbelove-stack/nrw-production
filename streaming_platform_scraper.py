@@ -158,31 +158,46 @@ class StreamingPlatformScraper(PlaywrightScraperBase):
         except Exception as e:
             logger.error(f"  Failed to capture diagnostics: {e}")
 
-    def find_amazon_link(self, title, year):
+    def find_amazon_link(self, title, year, director=None):
         """Search Amazon Prime Video and extract movie detail page URL.
 
         Args:
             title: Movie title
             year: Release year
+            director: Director name for disambiguation (optional)
 
         Returns:
             Deep link URL (https://www.amazon.com/gp/video/detail/{ASIN}) or None
         """
         def search_attempt():
-            return self._find_amazon_link_core(title, year)
+            return self._find_amazon_link_core(title, year, director)
 
         result = self._retry_with_backoff(search_attempt)
+
+        # Fallback: retry without year — Amazon's instant-video search sometimes
+        # returns unrelated results when year is appended to indie titles
+        if result is None and year:
+            logger.debug(f"  Retrying Amazon search without year for: {title}")
+            def search_no_year():
+                return self._find_amazon_link_core(title, None, director)
+            result = self._retry_with_backoff(search_no_year)
+
         if result is None:
             self._capture_failure_diagnostics(title, year, "amazon", "No link found after retries")
         return result
 
-    def _find_amazon_link_core(self, title, year):
+    def _find_amazon_link_core(self, title, year, director=None):
         """Core Amazon search logic (wrapped by retry mechanism)."""
         start_time = time.time()
         try:
             self._init_browser()
 
-            search_query = f"{title} {year}"
+            parts = [title]
+            if director and director != 'Unknown':
+                parts.append(director)
+            if year:
+                parts.append(str(year))
+            search_query = ' '.join(parts)
             encoded_query = urllib.parse.quote(search_query)
             search_url = f"https://www.amazon.com/s?k={encoded_query}&i=instant-video"
 
@@ -430,6 +445,147 @@ class StreamingPlatformScraper(PlaywrightScraperBase):
             logger.error(f"  Error searching Apple TV for {title}: {e}")
             return None
 
+    def find_fandango_link(self, title, year, director=None):
+        """Search Fandango At Home and extract movie detail page URL.
+
+        Args:
+            title: Movie title
+            year: Release year
+            director: Director name for disambiguation (optional)
+
+        Returns:
+            Deep link URL (https://athome.fandango.com/content/browse/details/{slug}/{id}) or None
+        """
+        def search_attempt():
+            return self._find_fandango_link_core(title, year, director)
+
+        result = self._retry_with_backoff(search_attempt)
+        if result is None:
+            self._capture_failure_diagnostics(title, year, "fandango", "No link found after retries")
+        return result
+
+    def _find_fandango_link_core(self, title, year, director=None):
+        """Core Fandango At Home search logic."""
+        start_time = time.time()
+        try:
+            self._init_browser()
+
+            # Search with title only — Fandango's search works best with clean titles.
+            # Director/year in the query adds noise and returns worse results.
+            # Year disambiguation happens AFTER by checking each result's displayed year.
+            search_query = urllib.parse.quote(title)
+            search_url = f"https://athome.fandango.com/content/movies/search?searchString={search_query}"
+
+            logger.debug(f"  Searching Fandango At Home for: {title}")
+            logger.debug(f"  URL: {search_url}")
+
+            self.page.goto(search_url, wait_until='domcontentloaded', timeout=self.timeout_seconds * 1000)
+
+            # Fandango At Home is a JS SPA — wait for detail page links to render
+            try:
+                self.page.wait_for_selector(
+                    "a[href*='/browse/details/'], a[href*='/content/browse/details/']",
+                    timeout=self.timeout_seconds * 1000
+                )
+                logger.debug(f"  Search results loaded")
+            except PlaywrightTimeoutError:
+                logger.warning(f"  Warning: Fandango search results may not have loaded")
+
+            selectors = [
+                "a[href*='/content/browse/details/']",
+                "a[href*='/browse/details/']",
+            ]
+
+            stopwords = {'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by'}
+
+            def normalize_text(text):
+                import unicodedata
+                normalized = unicodedata.normalize('NFD', text)
+                ascii_text = ''.join(c for c in normalized if unicodedata.category(c) != 'Mn')
+                return re.sub(r'[^a-zA-Z0-9\s]', ' ', ascii_text)
+
+            normalized_title = normalize_text(title.lower())
+            title_words = {word for word in normalized_title.split() if word and word not in stopwords and len(word) > 1}
+
+            # Collect all title-matching candidates, then pick best by year
+            candidates = []
+
+            for selector in selectors:
+                try:
+                    elements = self.page.locator(selector).all()
+                    for element in elements:
+                        href = element.get_attribute('href')
+                        if not href or '/browse/details/' not in href:
+                            continue
+
+                        try:
+                            link_text = element.text_content().lower()
+                            # Also check parent container text for broader context
+                            try:
+                                parent = element.locator("xpath=./ancestor::div[1]").first
+                                if parent.count() > 0:
+                                    link_text = parent.text_content().lower()
+                            except Exception:
+                                pass
+
+                            if not title_words:
+                                continue
+
+                            normalized_link_text = normalize_text(link_text)
+                            matching_words = sum(1 for word in title_words if word in normalized_link_text)
+                            overlap_percentage = matching_words / len(title_words)
+                            has_exact_title = normalized_title in normalized_link_text
+
+                            if len(title_words) <= 2:
+                                threshold = 0.5 if has_exact_title else 1.0
+                            else:
+                                threshold = 0.6 if has_exact_title else 0.7
+
+                            if overlap_percentage < threshold:
+                                continue
+
+                            # Check if the result text contains our target year (±1 tolerance)
+                            year_match = False
+                            if year:
+                                for y in [int(year), int(year) - 1, int(year) + 1]:
+                                    if str(y) in link_text:
+                                        year_match = True
+                                        break
+                            canonical = urllib.parse.urljoin('https://athome.fandango.com', href)
+                            candidates.append((canonical, year_match, has_exact_title, overlap_percentage))
+
+                        except Exception:
+                            continue
+
+                except Exception:
+                    continue
+
+                if candidates:
+                    break  # Don't try fallback selectors if we have matches
+
+            if candidates:
+                # Prefer: year match > exact title > highest word overlap
+                candidates.sort(key=lambda c: (c[1], c[2], c[3]), reverse=True)
+                best_url, best_year_match, best_exact, best_overlap = candidates[0]
+                # Require year match — without it we're likely matching a wrong movie
+                if not best_year_match and year:
+                    elapsed = time.time() - start_time
+                    logger.info(f"  Fandango: {len(candidates)} title matches but none matched year {year}±1, skipping")
+                    return None
+                elapsed = time.time() - start_time
+                logger.info(f"  Found Fandango link: {best_url} (year_match={best_year_match}, {len(candidates)} candidates)")
+                logger.debug(f"  Title match: {best_overlap:.1%}, search completed in {elapsed:.2f}s")
+                return best_url
+
+            elapsed = time.time() - start_time
+            logger.warning(f"  No Fandango link found for {title} ({year}) after {elapsed:.2f}s")
+            return None
+
+        except Exception as e:
+            elapsed = time.time() - start_time
+            logger.error(f"  Error searching Fandango for {title} after {elapsed:.2f}s: {e}")
+            return None
+
     def find_youtube_link(self, title, year):
         """Find YouTube movie purchase page using YouTube Data API.
 
@@ -591,6 +747,8 @@ class StreamingPlatformScraper(PlaywrightScraperBase):
                 return result
             elif 'YouTube' in service_name:
                 return self.find_youtube_link(title, year)
+            elif 'Fandango' in service_name:
+                return self.find_fandango_link(title, year)
             else:
                 logger.warning(f"  Platform '{service_name}' not supported by agent search")
                 return None

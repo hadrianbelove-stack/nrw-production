@@ -573,7 +573,7 @@ class MovieEnricher:
                 except Exception as e:
                     print(f"\u26a0\ufe0f Could not load {newly_available_file}: {e}")
 
-            # Pre-order link finder: use Gemini with Google Search grounding to find
+            # Pre-order link finder: use Playwright scrapers to find
             # Amazon and Fandango At Home pre-order URLs for movies approaching release.
             _plf_days = self.ctx.config.get('preorder', {}).get('link_finder_days', 14)
             _plf_cutoff = (datetime.now() + timedelta(days=_plf_days)).strftime('%Y-%m-%d')
@@ -596,156 +596,60 @@ class MovieEnricher:
                 print(f"\n  \U0001f50d Pre-order link finder: {len(_plf_candidates)} movies within {_plf_days}d window")
                 _plf_found = 0
                 try:
-                    from google import genai
-                    from google.genai import types as genai_types
-                    import re as _re_plf
+                    self.ctx.enrichment_service._init_vod_scraper()
+                    _scraper = self.ctx.enrichment_service.vod_scraper
+                    if _scraper and _scraper is not False:
+                        for _m in _plf_candidates:
+                            _title = _m.get('title', '')
+                            _year = _m.get('year', '')
+                            _director = _m.get('crew', {}).get('director')
+                            _existing_pol = _m.get('pre_order_links', [])
+                            _has_amz = any('amazon' in p.get('service', '').lower() for p in _existing_pol)
+                            _has_fan = any('fandango' in p.get('service', '').lower() for p in _existing_pol)
+                            _found_any = False
 
-                    _gemini_key = os.environ.get('GEMINI_API_KEY') or self.ctx.config.get('gemini_api_key', '')
-                    if not _gemini_key:
-                        self.ctx.logger.warning("Pre-order link finder: no GEMINI_API_KEY, skipping")
-                    else:
-                        _gclient = genai.Client(api_key=_gemini_key)
-                        _gtool = genai_types.Tool(google_search=genai_types.GoogleSearch())
-                        _gconfig = genai_types.GenerateContentConfig(tools=[_gtool])
-
-                        _movie_lines = []
-                        for _i, _sm in enumerate(_plf_candidates, 1):
-                            _sm_title = _sm.get('title', '')
-                            _sm_year = _sm.get('year', '')
-                            _extra = ''
-                            _crew = _sm.get('crew', {})
-                            if _crew and _crew.get('director') and _crew['director'] != 'Unknown':
-                                _extra = f", directed by {_crew['director']}"
-                            _movie_lines.append(f"{_i}. {_sm_title} ({_sm_year}{_extra})")
-
-                        _movies_text = '\n'.join(_movie_lines)
-                        _prompt = f'''Find digital pre-order pages for these movies in the United States.
-
-URL FORMATS:
-- Amazon Video: amazon.com/dp/[ASIN]
-- Fandango At Home: athome.fandango.com/content/browse/details/[slug]/[numeric-id]
-
-RULES:
-- Only report URLs from search results. Write NONE if not found.
-- Digital video only (NOT DVD/Blu-ray)
-- Return the actual URL string, not a redirect or reference link
-
-Movies:
-{_movies_text}
-
-Format each as (with blank line between entries):
-
-[number]. [title]
-AMAZON: [url or NONE]
-FANDANGO: [url or NONE]
-PRICE: [price or UNKNOWN]
-
-[number]. [title]
-...'''
-
-                        _response = _gclient.models.generate_content(
-                            model='gemini-2.5-flash',
-                            contents=_prompt,
-                            config=_gconfig
-                        )
-                        _resp_text = _response.text
-
-                        # Parse response: split into per-movie blocks, then extract URLs
-                        import requests as _requests_plf
-
-                        def _normalize_url(url):
-                            """Add https:// if missing -- Gemini often omits the scheme."""
-                            if url and not url.startswith('http'):
-                                url = 'https://www.' + url if 'amazon.com' in url else 'https://' + url
-                            return url
-
-                        def _extract_url(text, keyword):
-                            """Extract URL after keyword (e.g. 'AMAZON:') from text block."""
-                            _idx = text.find(keyword)
-                            if _idx == -1:
-                                return None
-                            _after = text[_idx + len(keyword):].strip()
-                            _tok = _after.split()[0] if _after.split() else ''
-                            _tok = _tok.strip('[]()').split('](')[0]
-                            return _tok if _tok and _tok != 'NONE' else None
-
-                        # Split response into per-movie blocks using finditer
-                        _n = len(_plf_candidates)
-                        _nums_alt = '|'.join(str(i) for i in range(1, _n + 1))
-                        _hdr_pattern = rf'(?:^|(?<=\D))({_nums_alt})\.\s'
-                        _headers = list(_re_plf.finditer(_hdr_pattern, _resp_text))
-
-                        _movie_blocks = {}
-                        for _hi, _hm in enumerate(_headers):
-                            _midx = int(_hm.group(1)) - 1
-                            _start = _hm.end()
-                            _end = _headers[_hi + 1].start() if _hi + 1 < len(_headers) else len(_resp_text)
-                            _movie_blocks[_midx] = _resp_text[_start:_end]
-
-                        for _midx, _block in _movie_blocks.items():
-                            if _midx < 0 or _midx >= _n:
-                                continue
-                            _sm = _plf_candidates[_midx]
-                            _sm_title = _sm.get('title', '')
-
-                            _amz = _extract_url(_block, 'AMAZON:')
-                            if _amz and 'amazon.com' in _amz:
-                                _amz = _normalize_url(_amz)
+                            if not _has_amz:
                                 try:
-                                    _hr = _requests_plf.head(_amz, headers={'User-Agent': 'Mozilla/5.0'}, allow_redirects=True, timeout=8)
-                                    if _hr.status_code == 200:
-                                        if 'pre_order_links' not in _sm:
-                                            _sm['pre_order_links'] = []
-                                        _sm['pre_order_links'].append({
+                                    _amz_link = _scraper.find_amazon_link(_title, _year, _director)
+                                    if _amz_link:
+                                        _m.setdefault('pre_order_links', []).append({
                                             'service': 'Amazon',
-                                            'link': _amz,
+                                            'link': _amz_link,
                                             'type': 'pre_order'
                                         })
-                                        print(f"      \u2713 {_sm_title}: Amazon verified")
+                                        print(f"      \u2713 {_title}: Amazon found")
+                                        _found_any = True
                                     else:
-                                        print(f"      \u2717 {_sm_title}: Amazon {_hr.status_code}")
+                                        print(f"      \u00b7 {_title}: Amazon not found")
                                 except Exception as _e:
-                                    print(f"      \u2717 {_sm_title}: Amazon error \u2014 {_e}")
+                                    print(f"      \u2717 {_title}: Amazon error \u2014 {_e}")
 
-                            _fan = _extract_url(_block, 'FANDANGO:')
-                            if _fan and 'fandango' in _fan:
-                                _fan = _normalize_url(_fan)
+                            if not _has_fan:
                                 try:
-                                    _hr = _requests_plf.head(_fan, headers={'User-Agent': 'Mozilla/5.0'}, allow_redirects=True, timeout=8)
-                                    if _hr.status_code == 200:
-                                        if 'pre_order_links' not in _sm:
-                                            _sm['pre_order_links'] = []
-                                        _sm['pre_order_links'].append({
+                                    _fan_link = _scraper.find_fandango_link(_title, _year, _director)
+                                    if _fan_link:
+                                        _m.setdefault('pre_order_links', []).append({
                                             'service': 'Fandango At Home',
-                                            'link': _fan,
+                                            'link': _fan_link,
                                             'type': 'pre_order'
                                         })
-                                        print(f"      \u2713 {_sm_title}: Fandango verified")
+                                        print(f"      \u2713 {_title}: Fandango found")
+                                        _found_any = True
                                     else:
-                                        print(f"      \u2717 {_sm_title}: Fandango {_hr.status_code}")
+                                        print(f"      \u00b7 {_title}: Fandango not found")
                                 except Exception as _e:
-                                    print(f"      \u2717 {_sm_title}: Fandango error \u2014 {_e}")
+                                    print(f"      \u2717 {_title}: Fandango error \u2014 {_e}")
 
-                            _price_raw = _extract_url(_block, 'PRICE:')
-                            if _price_raw and _price_raw != 'UNKNOWN' and _sm.get('pre_order_links'):
-                                _price_match = _re_plf.search(r'\$\d+\.\d{2}', _price_raw)
-                                _price = _price_match.group(0) if _price_match else _price_raw
-                                for _pl in _sm['pre_order_links']:
-                                    if not _pl.get('price'):
-                                        _pl['price'] = _price
-
-                        for _sm in _plf_candidates:
-                            if _sm.get('pre_order_links'):
+                            if _found_any:
                                 _plf_found += 1
-                                _sm_title = _sm.get('title', '')
-                                _n_links = len(_sm['pre_order_links'])
-                                print(f"    \U0001f517 {_sm_title} \u2014 {_n_links} pre-order link{'s' if _n_links > 1 else ''}")
+                    else:
+                        self.ctx.logger.warning("Pre-order link finder: VOD scraper unavailable, skipping")
 
                 except Exception as _plf_err:
                     self.ctx.logger.warning(f"Pre-order link finder error: {_plf_err}")
 
                 if _plf_found:
-                    print(f"  \U0001f50d Link finder: {_plf_found}/{len(_plf_candidates)} pre-order movies got links")
+                    print(f"  \U0001f50d Link finder: {_plf_found}/{len(_plf_candidates)} pre-order movies got new links")
 
             # Catch-up: retry movies with failed/incomplete enrichment
             # NOTE: 'completed' movies with gaps are NOT retried here -- cosmetic gaps
@@ -761,9 +665,69 @@ PRICE: [price or UNKNOWN]
                     continue
                 # Pre-order handling in catch-up
                 if movie.get('_is_preorder'):
-                    # Buy-only pre-orders wait for discovery to find rent/streaming -- skip catch-up
                     if movie.get('_buyonly_preorder'):
-                        continue
+                        dd = movie.get('digital_date', '')
+                        if not dd or dd > today_catchup:
+                            continue  # Future or no date — skip (normal behavior)
+
+                        # Date passed — verify pre_order_links still alive
+                        pol = movie.get('pre_order_links', [])
+                        if pol:
+                            import requests as _req_po
+                            any_alive = False
+                            for _lentry in pol:
+                                _url = _lentry.get('link', '') if isinstance(_lentry, dict) else ''
+                                if not _url:
+                                    continue
+                                try:
+                                    _hr = _req_po.head(_url, headers={'User-Agent': 'Mozilla/5.0'},
+                                                       allow_redirects=True, timeout=8)
+                                    # 404/410 = gone. Anything else (200, 405, 3xx, 5xx) = alive or inconclusive
+                                    if _hr.status_code not in (404, 410):
+                                        any_alive = True
+                                        break
+                                except Exception:
+                                    any_alive = True  # Network error = inconclusive, assume alive (safer)
+                                    break
+
+                            if any_alive:
+                                # Date was wrong — clear it, keep as pre-order
+                                movie['digital_date'] = ''
+                                movie.pop('_digital_date_source', None)
+                                if tracking_data and tracking_data.get('movies', {}).get(movie_id):
+                                    tracking_data['movies'][movie_id].pop('digital_date', None)
+                                    tracking_changed = True
+                                print(f"  \U0001f3f7\ufe0f  {movie.get('title')} \u2014 date {dd} passed but links still active, clearing date")
+                                continue  # Stay as pre-order, skip catch-up
+                            else:
+                                # Links gone — possible cancellation, revert to tracking
+                                movie.pop('_is_preorder', None)
+                                movie.pop('_buyonly_preorder', None)
+                                movie.pop('pre_order_links', None)
+                                movie.pop('digital_date', None)
+                                movie.pop('_digital_date_source', None)
+                                movie['status'] = 'tracking'
+                                if tracking_data and tracking_data.get('movies', {}).get(movie_id):
+                                    tracking_data['movies'][movie_id]['status'] = 'tracking'
+                                    tracking_data['movies'][movie_id].pop('_buyonly_preorder', None)
+                                    tracking_data['movies'][movie_id].pop('digital_date', None)
+                                    tracking_changed = True
+                                print(f"  \U0001f504 {movie.get('title')} \u2014 date {dd} passed and links gone, reverting to tracking")
+                                continue  # Reverted — skip catch-up
+                        else:
+                            # No links AND date passed — revert to tracking
+                            movie.pop('_is_preorder', None)
+                            movie.pop('_buyonly_preorder', None)
+                            movie.pop('digital_date', None)
+                            movie.pop('_digital_date_source', None)
+                            movie['status'] = 'tracking'
+                            if tracking_data and tracking_data.get('movies', {}).get(movie_id):
+                                tracking_data['movies'][movie_id]['status'] = 'tracking'
+                                tracking_data['movies'][movie_id].pop('_buyonly_preorder', None)
+                                tracking_data['movies'][movie_id].pop('digital_date', None)
+                                tracking_changed = True
+                            print(f"  \U0001f504 {movie.get('title')} \u2014 date {dd} passed, no links, reverting to tracking")
+                            continue
                     dd = movie.get('digital_date', '')
                     if dd > today_catchup:
                         continue  # Future -- skip enrichment (link scan handles these)
