@@ -3,35 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>NRW Mobile Grid Mockup</title>
+    <title>NRW - 4 Column Grid</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
         body {
             background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
             background-attachment: fixed;
             color: #fff;
             font-family: -apple-system, system-ui, sans-serif;
-            line-height: 1.6;
             min-height: 100vh;
             min-height: 100dvh;
-            padding: 0;
             padding-top: env(safe-area-inset-top);
         }
-
-        /* ===== STICKY HEADER ===== */
         .site-header {
             position: sticky;
             top: 0;
             z-index: 100;
-            padding: 0.75rem 1rem 0.4rem;
+            padding: 0.75rem 1rem 0.5rem;
             text-align: center;
             border-bottom: 1px solid #333;
             background: rgba(0,0,0,0.85);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
         }
-
         .site-header h1 {
             font-weight: 100;
             letter-spacing: 0.3em;
@@ -42,7 +36,6 @@
             background-clip: text;
             margin-bottom: 0.4rem;
         }
-
         .filters-row {
             display: flex;
             gap: 0.35rem;
@@ -52,7 +45,6 @@
             padding-bottom: 0.3rem;
         }
         .filters-row::-webkit-scrollbar { display: none; }
-
         .filter-pill {
             flex-shrink: 0;
             padding: 0.25rem 0.6rem;
@@ -62,7 +54,6 @@
             border-radius: 25px;
             font-size: 0.65rem;
         }
-
         .filter-pill.active {
             background: #00d4aa;
             border-color: #00d4aa;
@@ -70,62 +61,26 @@
             font-weight: 700;
         }
 
-        /* ===== VIEW TOGGLE ===== */
-        .view-toggle {
-            display: flex;
-            justify-content: center;
-            gap: 0;
-            margin: 0.5rem auto 0;
-        }
-
-        .toggle-btn {
-            padding: 0.2rem 0.7rem;
-            font-size: 0.6rem;
-            font-weight: 700;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            border: 1px solid rgba(255,255,255,0.3);
-            background: transparent;
-            color: #888;
-            cursor: pointer;
-        }
-
-        .toggle-btn:first-child { border-radius: 15px 0 0 15px; }
-        .toggle-btn:last-child { border-radius: 0 15px 15px 0; }
-
-        .toggle-btn.active {
-            background: #00d4aa;
-            border-color: #00d4aa;
-            color: #000;
-        }
-
-        /* ===== GRID LAYOUTS ===== */
-        .grid-view { display: none; }
-        .grid-view.active { display: grid; }
-
-        /* Option A: 4 columns */
-        .grid-4 {
+        .wall {
+            display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 10px 8px;
             padding: 10px;
         }
-
-        .grid-4 .movie-card {
+        .movie-card {
             aspect-ratio: 2/3;
             border-radius: 8px;
             overflow: hidden;
             position: relative;
             box-shadow: 0 4px 16px rgba(0,0,0,0.4);
         }
-
-        .grid-4 .movie-card img {
+        .movie-card img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             display: block;
         }
-
-        .grid-4 .movie-title {
+        .movie-title {
             font-size: 0.6rem;
             font-weight: 600;
             color: #fff;
@@ -138,16 +93,14 @@
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
         }
-
-        .grid-4 .movie-director {
+        .movie-director {
             font-size: 0.5rem;
             color: #00d4aa;
             text-align: center;
             margin-top: 2px;
             font-weight: 600;
         }
-
-        .grid-4 .streaming-badge {
+        .streaming-badge {
             position: absolute;
             top: 4px;
             right: 4px;
@@ -159,85 +112,21 @@
             text-transform: uppercase;
             color: #fff;
         }
-
-        .grid-4 .staff-pick-card {
+        .staff-pick-card {
             border: 2px solid #dc143c;
             border-radius: 10px;
             padding: 3px;
             background: rgba(220,20,60,0.05);
             box-shadow: 0 0 12px rgba(220,20,60,0.3);
         }
-        .grid-4 .staff-pick-card .movie-card { border-radius: 7px; }
+        .staff-pick-card .movie-card { border-radius: 7px; }
 
-        /* Option B: 6 columns */
-        .grid-6 {
-            grid-template-columns: repeat(6, 1fr);
-            gap: 6px 5px;
-            padding: 8px;
-        }
-
-        .grid-6 .movie-card {
-            aspect-ratio: 2/3;
-            border-radius: 5px;
-            overflow: hidden;
-            position: relative;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.4);
-        }
-
-        .grid-6 .movie-card img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-
-        .grid-6 .movie-title {
-            font-size: 0.45rem;
-            font-weight: 600;
-            color: #fff;
-            text-align: center;
-            margin-top: 3px;
-            line-height: 1.15;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .grid-6 .movie-director {
-            display: none;
-        }
-
-        .grid-6 .streaming-badge {
-            position: absolute;
-            top: 2px;
-            right: 2px;
-            padding: 1.5px 3.5px;
-            border-radius: 4px;
-            font-size: 5px;
-            font-weight: 800;
-            letter-spacing: 0.3px;
-            text-transform: uppercase;
-            color: #fff;
-        }
-
-        .grid-6 .staff-pick-card {
-            border: 1.5px solid #dc143c;
-            border-radius: 7px;
-            padding: 2px;
-            background: rgba(220,20,60,0.05);
-            box-shadow: 0 0 8px rgba(220,20,60,0.3);
-        }
-        .grid-6 .staff-pick-card .movie-card { border-radius: 4px; }
-
-        /* Service badge colors */
         .badge-netflix { background: #E50914; }
         .badge-max { background: #B537F2; }
         .badge-prime { background: #00A8E1; }
         .badge-hulu { background: #1CE783; color: #000 !important; }
         .badge-disney { background: #113CCF; }
-        .badge-peacock { background: #000; border: 0.5px solid #555; }
         .badge-rent { background: #ff9500; }
-        .badge-apple { background: #000; border: 0.5px solid #555; }
         .badge-mubi { background: #DA2128; }
         .badge-tubi { background: #FA382F; }
         .badge-criterion { background: #000; border: 0.5px solid #888; }
@@ -258,15 +147,9 @@
         <span class="filter-pill">Restorations</span>
         <span class="filter-pill">Documentary</span>
     </div>
-    <div class="view-toggle">
-        <button class="toggle-btn active" onclick="showGrid(4)">4-Col</button>
-        <button class="toggle-btn" onclick="showGrid(6)">6-Col</button>
-    </div>
 </header>
 
-<!-- ===== 4-COLUMN GRID ===== -->
-<div class="grid-view grid-4 active" id="grid4">
-    <!-- Row 1 -->
+<div class="wall">
     <div>
         <div class="staff-pick-card"><div class="movie-card">
             <span class="streaming-badge badge-netflix">Netflix</span>
@@ -300,7 +183,6 @@
         <div class="movie-director">Dennis Lim</div>
     </div>
 
-    <!-- Row 2 -->
     <div>
         <div class="movie-card">
             <span class="streaming-badge badge-rent">Rent</span>
@@ -334,7 +216,6 @@
         <div class="movie-director">Adam Meeks</div>
     </div>
 
-    <!-- Row 3 -->
     <div>
         <div class="movie-card">
             <span class="streaming-badge badge-disney">Disney+</span>
@@ -368,7 +249,6 @@
         <div class="movie-director">R. Bharadwaj</div>
     </div>
 
-    <!-- Row 4 -->
     <div>
         <div class="movie-card">
             <span class="streaming-badge badge-rent">Rent</span>
@@ -402,7 +282,6 @@
         <div class="movie-director">Frank E. Flowers</div>
     </div>
 
-    <!-- Row 5 -->
     <div>
         <div class="movie-card">
             <span class="streaming-badge badge-netflix">Netflix</span>
@@ -436,7 +315,6 @@
         <div class="movie-director">Laura Carreira</div>
     </div>
 
-    <!-- Row 6 -->
     <div>
         <div class="movie-card">
             <span class="streaming-badge badge-rent">Rent</span>
@@ -470,7 +348,6 @@
         <div class="movie-director">David Koepp</div>
     </div>
 
-    <!-- Row 7 -->
     <div>
         <div class="movie-card">
             <span class="streaming-badge badge-max">Max</span>
@@ -504,239 +381,6 @@
         <div class="movie-director">Sacha Polak</div>
     </div>
 </div>
-
-<!-- ===== 6-COLUMN GRID ===== -->
-<div class="grid-view grid-6" id="grid6">
-    <!-- Row 1 -->
-    <div>
-        <div class="staff-pick-card"><div class="movie-card">
-            <span class="streaming-badge badge-netflix">Netflix</span>
-            <img src="https://image.tmdb.org/t/p/w200/yPHwX78mcwJw3I6YOJ9qh2wQBFr.jpg" alt="">
-        </div></div>
-        <div class="movie-title">Strangers 3</div>
-    </div>
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-rent">Rent</span>
-            <img src="https://image.tmdb.org/t/p/w200/a2EdW8sk22fNCvrpOiaHbR2hOuZ.jpg" alt="">
-        </div>
-        <div class="movie-title">Crazy Old Lady</div>
-    </div>
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-max">Max</span>
-            <img src="https://image.tmdb.org/t/p/w200/1KMG1inDAnKaGZ1W8Ac3wn6bdXu.jpg" alt="">
-        </div>
-        <div class="movie-title">Project Y</div>
-    </div>
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-mubi">MUBI</span>
-            <img src="https://image.tmdb.org/t/p/w200/2G5mioq84qAesYL8XfrQh3QrzUA.jpg" alt="">
-        </div>
-        <div class="movie-title">Ways to Traverse</div>
-    </div>
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-rent">Rent</span>
-            <img src="https://image.tmdb.org/t/p/w200/q7M8kQB46T11vmDMD6E239jsqTz.jpg" alt="">
-        </div>
-        <div class="movie-title">Hind Rajab</div>
-    </div>
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-hulu">Hulu</span>
-            <img src="https://image.tmdb.org/t/p/w200/6rQXCW5NK91sVnQbQFxIW16lyL4.jpg" alt="">
-        </div>
-        <div class="movie-title">Queens of Joy</div>
-    </div>
-
-    <!-- Row 2 -->
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-prime">Prime</span>
-            <img src="https://image.tmdb.org/t/p/w200/tTk9ZAmgPzuWPs3x0y5fm45N1Ew.jpg" alt="">
-        </div>
-        <div class="movie-title">Noseeums</div>
-    </div>
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-rent">Rent</span>
-            <img src="https://image.tmdb.org/t/p/w200/b2N7arsRkNbleaXgZ6MnzE8mNff.jpg" alt="">
-        </div>
-        <div class="movie-title">Big Johnson</div>
-    </div>
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-disney">Disney+</span>
-            <img src="https://image.tmdb.org/t/p/w200/3eT4xMPqHrLjqO5vOnfhHS8D6ml.jpg" alt="">
-        </div>
-        <div class="movie-title">Snow Leopard</div>
-    </div>
-    <div>
-        <div class="staff-pick-card"><div class="movie-card">
-            <span class="streaming-badge badge-rent">Rent</span>
-            <img src="https://image.tmdb.org/t/p/w200/qurd8tG5E2T20QihO0ysaJCzAjL.jpg" alt="">
-        </div></div>
-        <div class="movie-title">Atropia</div>
-    </div>
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-tubi">Tubi</span>
-            <img src="https://image.tmdb.org/t/p/w200/w4aA1tq3aYBr0o3yCVDMp1UboC9.jpg" alt="">
-        </div>
-        <div class="movie-title">Off School</div>
-    </div>
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-criterion">Criterion</span>
-            <img src="https://image.tmdb.org/t/p/w200/nx9DPAzainWTqPKuirLIXasbU3z.jpg" alt="">
-        </div>
-        <div class="movie-title">Tin&#257;</div>
-    </div>
-
-    <!-- Row 3 -->
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-rent">Rent</span>
-            <img src="https://image.tmdb.org/t/p/w200/pLYiyfCYmuLDYf36AbQApadFUhN.jpg" alt="">
-        </div>
-        <div class="movie-title">Not a Test</div>
-    </div>
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-kanopy">Kanopy</span>
-            <img src="https://image.tmdb.org/t/p/w200/VbYDDEw7RPdATftVrAboA0iuP.jpg" alt="">
-        </div>
-        <div class="movie-title">Maint. Artist</div>
-    </div>
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-max">Max</span>
-            <img src="https://image.tmdb.org/t/p/w200/AnZ9XzhouSSvQH337923RPFTaqK.jpg" alt="">
-        </div>
-        <div class="movie-title">A Private Life</div>
-    </div>
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-prime">Prime</span>
-            <img src="https://image.tmdb.org/t/p/w200/sojEzvfxR2DBcDSJyAisX8TWjov.jpg" alt="">
-        </div>
-        <div class="movie-title">The Bluff</div>
-    </div>
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-netflix">Netflix</span>
-            <img src="https://image.tmdb.org/t/p/w200/8PWu0V10nMqG5SrA13wLRXTD2fH.jpg" alt="">
-        </div>
-        <div class="movie-title">Ikkis</div>
-    </div>
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-rent">Rent</span>
-            <img src="https://image.tmdb.org/t/p/w200/tcluKPgtUJldvLqDlincYRZwQZj.jpg" alt="">
-        </div>
-        <div class="movie-title">Stars Between</div>
-    </div>
-
-    <!-- Row 4 -->
-    <div>
-        <div class="staff-pick-card"><div class="movie-card">
-            <span class="streaming-badge badge-paramount">P+</span>
-            <img src="https://image.tmdb.org/t/p/w200/51wG0sPe7SfehmEvVZNpRqOVbTj.jpg" alt="">
-        </div></div>
-        <div class="movie-title">Flood</div>
-    </div>
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-hulu">Hulu</span>
-            <img src="https://image.tmdb.org/t/p/w200/aVYPgcuFL0iq1LLvXlqKYe8Xvzk.jpg" alt="">
-        </div>
-        <div class="movie-title">Wild Days</div>
-    </div>
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-rent">Rent</span>
-            <img src="https://image.tmdb.org/t/p/w200/hoEMZXOJgx0XioWcY8nuoVQ70JZ.jpg" alt="">
-        </div>
-        <div class="movie-title">Inquisitor</div>
-    </div>
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-mubi">MUBI</span>
-            <img src="https://image.tmdb.org/t/p/w200/z9YUI5WWWQ0MSthLLVbG5wZn2L1.jpg" alt="">
-        </div>
-        <div class="movie-title">Nate & Moriah</div>
-    </div>
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-netflix">Netflix</span>
-            <img src="https://image.tmdb.org/t/p/w200/5n85A8bspgGBhIZ2HnNfbbr6GRe.jpg" alt="">
-        </div>
-        <div class="movie-title">Tomlinson</div>
-    </div>
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-rent">Rent</span>
-            <img src="https://image.tmdb.org/t/p/w200/k6NdbpdN3591xR18VAVfXYmY6P0.jpg" alt="">
-        </div>
-        <div class="movie-title">Ice Skater</div>
-    </div>
-
-    <!-- Row 5 -->
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-max">Max</span>
-            <img src="https://image.tmdb.org/t/p/w200/hSNX85TNi9Zaa3Ep0Kqj271T8FM.jpg" alt="">
-        </div>
-        <div class="movie-title">She Was Here</div>
-    </div>
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-disney">Disney+</span>
-            <img src="https://image.tmdb.org/t/p/w200/pJWFGI1zlSwWAtx3H0GLxwAMonD.jpg" alt="">
-        </div>
-        <div class="movie-title">Music City</div>
-    </div>
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-rent">Rent</span>
-            <img src="https://image.tmdb.org/t/p/w200/fqAGFN2K2kDL0EHxvJaXzaMUkkt.jpg" alt="">
-        </div>
-        <div class="movie-title">Silent Hill</div>
-    </div>
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-prime">Prime</span>
-            <img src="https://image.tmdb.org/t/p/w200/5gS0Jif1hIHhqhqLkur29tjdaOJ.jpg" alt="">
-        </div>
-        <div class="movie-title">Mother & Bear</div>
-    </div>
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-rent">Rent</span>
-            <img src="https://image.tmdb.org/t/p/w200/1eb3YebyscUmXmrrC2ZDDVR0w0P.jpg" alt="">
-        </div>
-        <div class="movie-title">Dongji Rescue</div>
-    </div>
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-tubi">Tubi</span>
-            <img src="https://image.tmdb.org/t/p/w200/hjre9SuECdBsuZ6KtKdFsnK2iRm.jpg" alt="">
-        </div>
-        <div class="movie-title">Dead Man's Wire</div>
-    </div>
-</div>
-
-<script>
-function showGrid(cols) {
-    document.getElementById('grid4').classList.toggle('active', cols === 4);
-    document.getElementById('grid6').classList.toggle('active', cols === 6);
-    document.querySelectorAll('.toggle-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.textContent.includes(cols));
-    });
-}
-</script>
 
 </body>
 </html>
