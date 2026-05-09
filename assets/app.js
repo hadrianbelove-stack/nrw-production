@@ -384,7 +384,7 @@ const NRW = {
         let preorderSectionStarted = false;
 
         orderedMovies.forEach(movie => {
-            const date = movie.digital_date.substring(0, 10);
+            const date = (movie.digital_date || '').substring(0, 10);
 
             // Pre-order movies: show section header once, no date dividers
             if (movie._is_preorder) {
@@ -499,7 +499,7 @@ const NRW = {
             if (movie.rt_score && movie.links?.rt) {
                 cardScoreBadges += `<a href="${movie.links.rt}" target="_blank" rel="noopener noreferrer" class="card-score-badge rt"><img src="assets/logos/rt.png" class="score-logo" alt="RT"> ${movie.rt_score}</a>`;
             }
-            if (movie.metacritic_score && movie.links?.metacritic) {
+            if (movie.metacritic_score && movie.metacritic_score !== "0" && movie.links?.metacritic) {
                 cardScoreBadges += `<a href="${movie.links.metacritic}" target="_blank" rel="noopener noreferrer" class="card-score-badge mc"><img src="assets/logos/metacritic.png" class="score-logo" alt="MC"> ${movie.metacritic_score}</a>`;
             }
             if (movie.imdb_rating) {
@@ -1082,7 +1082,7 @@ const NRW = {
             infoRow.appendChild(makeLink(movie.links.rt, 'info-btn-lb rt', movie.rt_score, 'assets/logos/rt.png'));
             hasInfo = true;
         }
-        if (movie.metacritic_score && movie.links?.metacritic) {
+        if (movie.metacritic_score && movie.metacritic_score !== "0" && movie.links?.metacritic) {
             infoRow.appendChild(makeLink(movie.links.metacritic, 'info-btn-lb mc', movie.metacritic_score, 'assets/logos/metacritic.png'));
             hasInfo = true;
         }
