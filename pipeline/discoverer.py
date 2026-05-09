@@ -36,6 +36,109 @@ class ProviderDiscoverer:
         self.enrichment = ctx.enrichment_service
         self.tmdb_key = ctx.tmdb_key
         self.host = host
+        self._jw_client = None  # Lazy-initialized for verification gate
+
+    # ------------------------------------------------------------------
+    # JustWatch verification gate
+    # ------------------------------------------------------------------
+
+    def _verify_before_wall(self, movie_id, movie):
+        """JustWatch pre-check before adding a movie to the wall.
+
+        Calls verify_availability() to confirm the movie has real streaming/VOD
+        links on our target platforms. Prevents movies from hitting the wall
+        with zero watch links.
+
+        Bypasses (let through without JW check):
+        - Manually-added movies (_added_manually) — curator decision
+        - Movies with watch_link overrides — curator decision
+        - Virtual screenings (Eventive, Shift72, etc.) — own link lifecycle
+
+        Returns:
+            dict: JW result with watch_links on success, or bypass marker
+            None: on failure/no match (movie stays in tracking)
+        """
+        title = movie.get('title', '')
+        year = movie.get('year')
+        content_type = 'tv' if str(movie_id).startswith('tv_') else 'movie'
+        original_title = movie.get('original_title')
+        tmdb_id = str(movie_id).replace('tv_', '')
+
+        # --- Bypass checks: these movies skip JW verification ---
+        if movie.get('_added_manually'):
+            return {'verified': True, '_bypass': 'manual_add'}
+        if hasattr(self.host, 'watch_links_overrides') and str(movie_id) in self.host.watch_links_overrides:
+            return {'verified': True, '_bypass': 'override'}
+        # Pre-orders already on wall — date arrived, let enrichment handle them.
+        # Blocking here would leave them stuck as pre-orders forever.
+        if movie.get('_type4_pending') or movie.get('_is_preorder') or movie.get('_buyonly_preorder'):
+            return {'verified': True, '_bypass': 'preorder_graduation'}
+        # Virtual screenings (Eventive, Shift72, Sundance) have their own links, not on JW
+        _vs_platforms = {'eventive', 'shift72', 'sundance'}
+        all_providers = (movie.get('providers', {}).get('streaming', [])
+                         + movie.get('providers', {}).get('rent', [])
+                         + movie.get('providers', {}).get('buy', []))
+        if any(any(vs in p.lower() for vs in _vs_platforms)
+               for p in all_providers if isinstance(p, str)):
+            return {'verified': True, '_bypass': 'virtual_screening'}
+
+        # Revert ceiling: stop wasting API calls on perpetual failures
+        revert_count = movie.get('_jw_revert_count', 0)
+        if revert_count >= 10:
+            movie['_skip_provider_discovery'] = True
+            self.logger.info(f"Revert ceiling reached for {title} ({revert_count} reverts) — skipping future discovery")
+            print(f"  ⛔ {title} — {revert_count} reverts, skipping permanently")
+            return None
+
+        # Lazy-init JustWatch client
+        if self._jw_client is None:
+            from pipeline.justwatch import JustWatchClient
+            self._jw_client = JustWatchClient(logger=self.logger)
+
+        excl_list = self.config.get('tracking', {}).get('excluded_services',
+                     ['fuboTV', 'Philo', 'Sun Nxt', 'Google Play Movies', 'Google Play',
+                      'Shahid VIP', 'Viki', 'Futo'])
+        amazon_tag = self.enrichment._get_amazon_affiliate_tag() if self.enrichment else None
+
+        try:
+            result = self._jw_client.verify_availability(
+                title, year,
+                excluded_services=excl_list,
+                affiliate_tag=amazon_tag,
+                content_type=content_type,
+                original_title=original_title,
+                tmdb_id=tmdb_id
+            )
+        except Exception as e:
+            # Fail-open: if JW is down, let the movie through to enrichment
+            self.logger.warning(f"JW verification error for {title}: {e} — allowing through")
+            return {'verified': True, '_fail_open': True}
+
+        if result is None or not result.get('verified'):
+            # Increment revert count and log — always print so blocked titles are visible
+            revert_count += 1
+            movie['_jw_revert_count'] = revert_count
+            reason = 'justwatch_no_match' if result is None else 'justwatch_no_valid_offers'
+            movie['_jw_revert_reason'] = reason
+            movie.setdefault('_jw_reverted_at', datetime.now().strftime('%Y-%m-%d'))
+            print(f"  🚫 {title} — JW verification failed ({reason}), staying in tracking (attempt #{revert_count})")
+            return None
+
+        # Cache watch_links for enrichment to reuse (avoids redundant JW call)
+        wl = result.get('watch_links', {})
+        if wl and self.enrichment:
+            self.enrichment.watch_links_cache[str(movie_id)] = {
+                'links': wl,
+                'cached_at': datetime.now().isoformat(),
+                'source': 'discovery_pre_verification'
+            }
+
+        # Clear revert history on success
+        movie.pop('_jw_revert_count', None)
+        movie.pop('_jw_revert_reason', None)
+        movie.pop('_jw_reverted_at', None)
+
+        return result
 
     # ------------------------------------------------------------------
     # Main discovery entry point
@@ -172,7 +275,11 @@ class ProviderDiscoverer:
                             try:
                                 pending_dt = datetime.strptime(pending_date, '%Y-%m-%d')
                                 if pending_dt <= today_dt:
-                                    # Date arrived — transition to available
+                                    # Date arrived — verify JW before transitioning
+                                    jw_result = self._verify_before_wall(movie_id, movie)
+                                    if jw_result is None:
+                                        type4_found = True  # Don't fall through to provider check
+                                        continue
                                     self.host._transition_movie_to_available(
                                         movie_id, movie, 'tmdb_type4', newly_available_ids)
                                     newly_digital += 1
@@ -202,8 +309,12 @@ class ProviderDiscoverer:
                             try:
                                 type4_dt = datetime.strptime(type4_date, '%Y-%m-%d')
                                 if type4_dt <= today_dt:
-                                    # Past or today — immediate transition
+                                    # Past or today — verify JW before transitioning
                                     movie['digital_date'] = type4_date
+                                    jw_result = self._verify_before_wall(movie_id, movie)
+                                    if jw_result is None:
+                                        type4_found = True  # Don't fall through to provider check
+                                        continue
                                     self.host._transition_movie_to_available(
                                         movie_id, movie, 'tmdb_type4', newly_available_ids)
                                     newly_digital += 1
@@ -307,6 +418,12 @@ class ProviderDiscoverer:
                                 'buy': buy_names,
                                 'streaming': stream_names
                             }
+
+                            # JW verification gate — confirm real links before wall
+                            jw_result = self._verify_before_wall(movie_id, movie)
+                            if jw_result is None:
+                                continue  # Stay in tracking
+
                             self.host._transition_movie_to_available(
                                 movie_id, movie, 'provider_availability_check', newly_available_ids)
                             newly_digital += 1
