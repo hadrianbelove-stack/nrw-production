@@ -411,7 +411,7 @@
             align-items: center;
             justify-content: space-between;
             width: 100%;
-            max-width: 600px;
+            max-width: 100%;
             padding: 0 1rem;
             margin-bottom: 8px;
         }
@@ -440,7 +440,7 @@
         .trailer-body {
             position: relative;
             width: 100%;
-            max-width: 600px;
+            max-width: 100%;
             padding: 0 1rem;
         }
         .trailer-video-wrap {
@@ -450,6 +450,21 @@
             background: #000;
             border-radius: 8px;
             overflow: hidden;
+        }
+        /* Landscape: fill screen height, size video from that */
+        @media (orientation: landscape) {
+            .trailer-modal.active {
+                padding: 0.5rem;
+            }
+            .trailer-body {
+                max-height: calc(100vh - 3rem);
+                max-width: calc((100vh - 3rem) * 16 / 9);
+                padding: 0;
+            }
+            .trailer-header {
+                max-width: calc((100vh - 3rem) * 16 / 9);
+                padding: 0;
+            }
         }
         .trailer-video-wrap video,
         .trailer-video-wrap iframe {
