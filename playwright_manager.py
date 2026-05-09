@@ -36,7 +36,7 @@ class PlaywrightManager:
         self.playwright = None
         self.browser = None
         self.reference_count = 0
-        self._lock = threading.Lock()
+        self._lock = threading.RLock()
         self._initialized = True
         
         # Register cleanup on exit
