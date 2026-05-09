@@ -43,6 +43,7 @@ output/
 # Cache files (ephemeral data) - now organized under cache/
 *_cache.json
 cache/*.json
+!cache/wikipedia_cache.json
 cache/screenshots/*.png
 cache/screenshots/*.html
 # Legacy cache file locations (for backwards compatibility)

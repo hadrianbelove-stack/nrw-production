@@ -73,6 +73,19 @@ class GeminiWikipediaFinder(GeminiFinderBase):
                 # Skip old search fallback entries
                 if source == 'search_fallback' or cached_data.get('is_search_fallback'):
                     pass  # Don't return, let Gemini try
+                # Negative cache: no Wikipedia article exists (expires after 30 days)
+                elif cached_data.get('negative') and source == 'no_article':
+                    cached_at = cached_data.get('cached_at', '')
+                    if cached_at:
+                        try:
+                            from datetime import datetime as dt
+                            cache_age = (dt.now() - dt.fromisoformat(cached_at)).days
+                            if cache_age < 30:
+                                self.stats['cache_hits'] += 1
+                                logger.debug(f"Negative cache hit for {title} ({year}): no article ({cache_age}d old)")
+                                return None
+                        except (ValueError, TypeError):
+                            pass
                 elif url and '/wiki/' in url and 'index.php?search=' not in url:
                     self.stats['cache_hits'] += 1
                     logger.debug(f"Wikipedia cache hit for {title} ({year})")
@@ -124,7 +137,14 @@ Response:"""
             # Handle explicit "no article" responses
             if 'NO_ARTICLE_EXISTS' in result_text:
                 logger.info(f"No Wikipedia article exists for {title} ({year})")
-                # Don't cache this - let other methods try
+                self.cache[cache_key] = {
+                    'url': None,
+                    'title': title,
+                    'cached_at': time.strftime('%Y-%m-%dT%H:%M:%S'),
+                    'source': 'no_article',
+                    'negative': True
+                }
+                self._save_cache()
                 self.stats['gemini_successes'] += 1
                 return None
 

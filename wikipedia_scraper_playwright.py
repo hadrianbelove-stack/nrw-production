@@ -421,6 +421,20 @@ class WikipediaScraperPlaywright(PlaywrightScraperBase):
                 # Skip any URL that looks like a search page
                 elif url and 'index.php?search=' in url:
                     self._log(f"Skipping search URL in cache for {title}, will re-scrape", level='debug')
+                # Negative cache: no Wikipedia article exists (expires after 30 days)
+                elif cached_data.get('negative') and source == 'no_article':
+                    cached_at = cached_data.get('cached_at', '')
+                    if cached_at:
+                        try:
+                            cache_age = (datetime.now() - datetime.fromisoformat(cached_at)).days
+                            if cache_age < 30:
+                                self.stats['cache_hits'] += 1
+                                self._log(f"Negative cache hit for {title} ({year}): no article ({cache_age}d old)", level='debug')
+                                return None
+                            else:
+                                self._log(f"Negative cache expired for {title} ({year}): {cache_age}d old, retrying", level='debug')
+                        except (ValueError, TypeError):
+                            pass
                 # Valid article URL - return it
                 elif url and '/wiki/' in url:
                     self.stats['cache_hits'] += 1
@@ -482,9 +496,17 @@ class WikipediaScraperPlaywright(PlaywrightScraperBase):
                                            skip_playwright=skip_playwright,
                                            skip_gemini=skip_gemini)
 
-        # No article found - return None (never return a search URL)
+        # No article found - cache negative result to avoid re-querying daily
         self._log(f"No Wikipedia article found for {title} ({year})", level='warning')
         self.stats['failures'] += 1
+        self.cache[cache_key] = {
+            'url': None,
+            'title': title,
+            'cached_at': datetime.now().isoformat(),
+            'source': 'no_article',
+            'negative': True
+        }
+        self._save_cache()
         return None
 
     def _query_wikidata(self, imdb_id):
