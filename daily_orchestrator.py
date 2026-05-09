@@ -1358,7 +1358,7 @@ class NRWOrchestrator:
                 "python3 generate_data.py --gap-fill",
                 "Refresh watch links and Wikipedia for all wall movies",
                 critical=False,  # Don't fail pipeline if gap fill has issues
-                timeout=5400  # 90 min — refreshes 700+ movies' watch links
+                timeout=900  # 15 min — locally completes in ~2 min
             )
 
             # Phase 3.7: Check virtual screening expirations (Eventive, Shift72, etc.)
