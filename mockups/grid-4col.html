@@ -402,18 +402,18 @@
         }
         .trailer-modal.active {
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
         }
         .trailer-header {
+            position: absolute;
+            top: 0; left: 0; right: 0;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            width: 100%;
-            max-width: 100%;
-            padding: 0 1rem;
-            margin-bottom: 8px;
+            padding: 0.5rem 0.8rem;
+            background: linear-gradient(rgba(0,0,0,0.7), transparent);
+            z-index: 2;
         }
         .trailer-title {
             font-size: 0.85rem;
@@ -428,7 +428,7 @@
         .trailer-close {
             background: none;
             border: none;
-            color: rgba(255,255,255,0.6);
+            color: rgba(255,255,255,0.8);
             font-size: 2rem;
             cursor: pointer;
             padding: 0 0.3rem;
@@ -440,30 +440,22 @@
         .trailer-body {
             position: relative;
             width: 100%;
-            max-width: 100%;
-            padding: 0 1rem;
         }
         .trailer-video-wrap {
             position: relative;
             width: 100%;
             padding-bottom: 56.25%;
             background: #000;
-            border-radius: 8px;
-            overflow: hidden;
         }
-        /* Landscape: fill screen height, size video from that */
         @media (orientation: landscape) {
-            .trailer-modal.active {
-                padding: 0.5rem;
-            }
             .trailer-body {
-                max-height: calc(100vh - 3rem);
-                max-width: calc((100vh - 3rem) * 16 / 9);
-                padding: 0;
+                height: 100vh;
+                width: calc(100vh * 16 / 9);
+                max-width: 100vw;
             }
-            .trailer-header {
-                max-width: calc((100vh - 3rem) * 16 / 9);
-                padding: 0;
+            .trailer-video-wrap {
+                padding-bottom: 0;
+                height: 100%;
             }
         }
         .trailer-video-wrap video,
@@ -602,11 +594,11 @@
 <div class="trailer-modal" id="trailerModal">
     <div class="trailer-nav-arrow trailer-nav-left" id="trailerNavLeft">&#8249;</div>
     <div class="trailer-nav-arrow trailer-nav-right" id="trailerNavRight">&#8250;</div>
-    <div class="trailer-header">
-        <span class="trailer-title" id="trailerTitle"></span>
-        <button class="trailer-close" id="trailerClose">&times;</button>
-    </div>
     <div class="trailer-body" id="trailerBody">
+        <div class="trailer-header">
+            <span class="trailer-title" id="trailerTitle"></span>
+            <button class="trailer-close" id="trailerClose">&times;</button>
+        </div>
         <div class="trailer-video-wrap" id="trailerVideoWrap"></div>
     </div>
     <div class="trailer-hint">SWIPE &#8592; &#8594;  &#8226;  AUTO-ADVANCES</div>
