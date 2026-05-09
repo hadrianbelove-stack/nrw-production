@@ -765,8 +765,8 @@ function loadMovie(idx) {
     let linksHtml = '';
     if (m.tr) linksHtml += `<button class="back-link-btn link-trailer" type="button">\u25B6 Trailer</button>`;
     if (m.wi) linksHtml += `<a href="${m.wi}" target="_blank" rel="noopener" class="back-link-btn link-wiki">Wiki</a>`;
-    if (m.rtU) linksHtml += `<a href="${m.rtU}" target="_blank" rel="noopener" class="back-link-btn link-rt">RT</a>`;
-    if (m.mcU) linksHtml += `<a href="${m.mcU}" target="_blank" rel="noopener" class="back-link-btn link-mc">MC</a>`;
+    if (m.rt && m.rt !== '0' && m.rtU) linksHtml += `<a href="${m.rtU}" target="_blank" rel="noopener" class="back-link-btn link-rt">RT</a>`;
+    if (m.mc && m.mc !== '0' && m.mcU) linksHtml += `<a href="${m.mcU}" target="_blank" rel="noopener" class="back-link-btn link-mc">MC</a>`;
     backLinks.innerHTML = linksHtml;
 }
 
