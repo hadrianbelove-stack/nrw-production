@@ -448,13 +448,16 @@
             background: #000;
         }
         @media (orientation: landscape) {
+            .trailer-modal.active {
+                padding: 0;
+            }
             .trailer-body {
+                width: 100vw;
                 height: 100vh;
-                width: calc(100vh * 16 / 9);
-                max-width: 100vw;
             }
             .trailer-video-wrap {
                 padding-bottom: 0;
+                width: 100%;
                 height: 100%;
             }
         }
@@ -1052,17 +1055,17 @@ trailerNavRight.addEventListener('click', function(e) { e.stopPropagation(); tra
 
 // Trailer swipe
 trailerModal.addEventListener('touchstart', function(e) {
-    if (e.target.closest('.trailer-nav-arrow') || e.target.closest('.trailer-close') || e.target.closest('video') || e.target.closest('iframe')) return;
+    if (e.target.closest('.trailer-nav-arrow') || e.target.closest('.trailer-close') || e.target.closest('iframe')) return;
     trailerSwipeStartX = e.touches[0].clientX;
     trailerSwiping = false;
 }, { passive: true });
 trailerModal.addEventListener('touchmove', function(e) {
-    if (e.target.closest('.trailer-nav-arrow') || e.target.closest('.trailer-close') || e.target.closest('video') || e.target.closest('iframe')) return;
+    if (e.target.closest('.trailer-nav-arrow') || e.target.closest('.trailer-close') || e.target.closest('iframe')) return;
     const dx = e.touches[0].clientX - trailerSwipeStartX;
     if (Math.abs(dx) > 30) trailerSwiping = true;
 }, { passive: true });
 trailerModal.addEventListener('touchend', function(e) {
-    if (e.target.closest('.trailer-nav-arrow') || e.target.closest('.trailer-close') || e.target.closest('video') || e.target.closest('iframe')) return;
+    if (e.target.closest('.trailer-nav-arrow') || e.target.closest('.trailer-close') || e.target.closest('iframe')) return;
     if (trailerSwiping) {
         const dx = e.changedTouches[0].clientX - trailerSwipeStartX;
         if (Math.abs(dx) > 50) {
