@@ -952,7 +952,7 @@ function loadTrailer(idx) {
                 <span>Loading trailer...</span>
             </div>
             <div class="trailer-error" id="tError">Trailer unavailable</div>
-            <video id="tVideo" src="${m.tr}" controls autoplay playsinline preload="auto" style="background:#000;">
+            <video id="tVideo" controls playsinline preload="auto" style="background:#000;">
                 Your browser does not support video playback.
             </video>
         `;
@@ -963,12 +963,16 @@ function loadTrailer(idx) {
         video.addEventListener('error', function() {
             loading.style.display = 'none';
             error.style.display = 'flex';
-            // Auto-advance after error
-            setTimeout(function() { trailerNav(1); }, 1500);
         }, { once: true });
         video.addEventListener('ended', function() {
             trailerNav(1);
         }, { once: true });
+        // Set src then try to play — mobile Safari needs user gesture
+        video.src = m.tr;
+        video.play().catch(function() {
+            // Autoplay blocked — user can tap play via native controls
+            loading.style.display = 'none';
+        });
     } else {
         const ytId = extractYouTubeId(m.tr);
         if (ytId) {
