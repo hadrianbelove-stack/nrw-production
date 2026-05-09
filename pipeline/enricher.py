@@ -670,50 +670,17 @@ class MovieEnricher:
                         if not dd or dd > today_catchup:
                             continue  # Future or no date — skip (normal behavior)
 
-                        # Date passed — verify pre_order_links still alive
+                        # Date passed — check if pre_order_links exist
                         pol = movie.get('pre_order_links', [])
                         if pol:
-                            import requests as _req_po
-                            any_alive = False
-                            for _lentry in pol:
-                                _url = _lentry.get('link', '') if isinstance(_lentry, dict) else ''
-                                if not _url:
-                                    continue
-                                try:
-                                    _hr = _req_po.head(_url, headers={'User-Agent': 'Mozilla/5.0'},
-                                                       allow_redirects=True, timeout=8)
-                                    # 404/410 = gone. Anything else (200, 405, 3xx, 5xx) = alive or inconclusive
-                                    if _hr.status_code not in (404, 410):
-                                        any_alive = True
-                                        break
-                                except Exception:
-                                    any_alive = True  # Network error = inconclusive, assume alive (safer)
-                                    break
-
-                            if any_alive:
-                                # Date was wrong — clear it, keep as pre-order
-                                movie['digital_date'] = ''
-                                movie.pop('_digital_date_source', None)
-                                if tracking_data and tracking_data.get('movies', {}).get(movie_id):
-                                    tracking_data['movies'][movie_id].pop('digital_date', None)
-                                    tracking_changed = True
-                                print(f"  \U0001f3f7\ufe0f  {movie.get('title')} \u2014 date {dd} passed but links still active, clearing date")
-                                continue  # Stay as pre-order, skip catch-up
-                            else:
-                                # Links gone — possible cancellation, revert to tracking
-                                movie.pop('_is_preorder', None)
-                                movie.pop('_buyonly_preorder', None)
-                                movie.pop('pre_order_links', None)
-                                movie.pop('digital_date', None)
-                                movie.pop('_digital_date_source', None)
-                                movie['status'] = 'tracking'
-                                if tracking_data and tracking_data.get('movies', {}).get(movie_id):
-                                    tracking_data['movies'][movie_id]['status'] = 'tracking'
-                                    tracking_data['movies'][movie_id].pop('_buyonly_preorder', None)
-                                    tracking_data['movies'][movie_id].pop('digital_date', None)
-                                    tracking_changed = True
-                                print(f"  \U0001f504 {movie.get('title')} \u2014 date {dd} passed and links gone, reverting to tracking")
-                                continue  # Reverted — skip catch-up
+                            # Links exist — date was wrong, clear it, keep as pre-order
+                            movie['digital_date'] = ''
+                            movie.pop('_digital_date_source', None)
+                            if tracking_data and tracking_data.get('movies', {}).get(movie_id):
+                                tracking_data['movies'][movie_id].pop('digital_date', None)
+                                tracking_changed = True
+                            print(f"  \U0001f3f7\ufe0f  {movie.get('title')} \u2014 date {dd} passed but links exist, clearing date")
+                            continue  # Stay as pre-order, skip catch-up
                         else:
                             # No links AND date passed — revert to tracking
                             movie.pop('_is_preorder', None)
