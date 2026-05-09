@@ -81,7 +81,7 @@ export function useMovieDetail(movie) {
   const mcScore = useMemo(() => {
     if (!movie?.metacritic_score) return null;
     const score = parseInt(movie.metacritic_score, 10);
-    if (isNaN(score)) return null;
+    if (isNaN(score) || score === 0) return null;
     return { value: score, label: `${score}` };
   }, [movie]);
 

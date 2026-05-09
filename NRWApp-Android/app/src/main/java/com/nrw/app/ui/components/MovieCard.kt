@@ -291,7 +291,7 @@ fun MovieCard(
 
                 // Score badges (bottom right, above staff pick if present)
                 val rtScore = movie.rtScore?.replace("%", "")?.trim()?.toIntOrNull()
-                val mcScore = movie.metacriticScore?.toIntOrNull()
+                val mcScore = movie.metacriticScore?.toIntOrNull()?.takeIf { it > 0 }
                 val hasScores = rtScore != null || mcScore != null || movie.imdbRating != null
                 if (hasScores) {
                     Row(

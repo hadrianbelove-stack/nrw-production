@@ -71,7 +71,7 @@ export const getServiceColor = (service) => {
     amazon: '#00A8E1',
     hulu: '#1CE783',
     peacock: '#000000',
-    appletv: '#000000',
+    appletv: '#5B9BD5',
     paramount: '#0064FF',
     plex: '#E5A00D',
     fandango: '#FF6600',

@@ -356,7 +356,7 @@ fun Movie.getWatchOptions(): List<WatchOption> {
     watchLinks?.vod?.forEach { link ->
         if (link.link != null && isValidVodService(link.service)) {
             val isEventive = isEventiveLink(link.service, link.link)
-            val vodLabel = if (isEventive) "Buy Ticket" else "Rent on ${link.service ?: "VOD"}"
+            val vodLabel = if (isEventive) "Buy Ticket" else getVodDisplayName(link.service)
             options.add(WatchOption(
                 service = normalizeServiceId(link.service) ?: "vod",
                 label = vodLabel,
@@ -372,7 +372,7 @@ fun Movie.getWatchOptions(): List<WatchOption> {
         if (link.link != null) {
             options.add(WatchOption(
                 service = normalizeServiceId(link.service) ?: "streaming",
-                label = "Watch on ${link.service ?: "Streaming"}",
+                label = getStreamDisplayName(link.service),
                 url = link.link,
                 type = WatchType.STREAMING,
                 icon = normalizeServiceId(link.service) ?: "streaming"
@@ -387,7 +387,7 @@ fun Movie.getWatchOptions(): List<WatchOption> {
             if (link.link != null) {
                 options.add(WatchOption(
                     service = normalizeServiceId(link.service) ?: "vod",
-                    label = "Pre-Order on ${link.service ?: "VOD"}",
+                    label = "Pre-Order",
                     sublabel = poDateLabel,
                     url = link.link,
                     type = WatchType.PURCHASE,
@@ -480,4 +480,35 @@ private fun normalizeServiceId(serviceName: String?): String? {
     if (serviceName == null) return null
     val normalized = serviceName.lowercase().trim()
     return SERVICE_NAME_MAP[normalized] ?: normalized.replace(" ", "_")
+}
+
+private val VOD_DISPLAY_NAMES = mapOf(
+    "amazon" to "AMAZON",
+    "apple_tv" to "APPLE TV",
+    "fandango" to "FANDANGO",
+    "youtube" to "YOUTUBE"
+)
+
+private val STREAM_DISPLAY_NAMES = mapOf(
+    "amazon" to "PRIME",
+    "prime" to "PRIME",
+    "apple_tv" to "APPLE TV+",
+    "disney_plus" to "DISNEY+",
+    "paramount_plus" to "PARAMOUNT+",
+    "netflix" to "NETFLIX",
+    "max" to "MAX",
+    "hulu" to "HULU",
+    "peacock" to "PEACOCK",
+    "mubi" to "MUBI",
+    "criterion" to "CRITERION"
+)
+
+private fun getVodDisplayName(service: String?): String {
+    val normalized = normalizeServiceId(service) ?: return "VOD"
+    return VOD_DISPLAY_NAMES[normalized] ?: normalized.uppercase()
+}
+
+private fun getStreamDisplayName(service: String?): String {
+    val normalized = normalizeServiceId(service) ?: return "STREAMING"
+    return STREAM_DISPLAY_NAMES[normalized] ?: normalized.uppercase()
 }

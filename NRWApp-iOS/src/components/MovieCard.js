@@ -98,7 +98,7 @@ export default function MovieCard({movie, onPress, isFeatured = false}) {
         )}
 
         {/* Score badges (RT + MC + IMDb) */}
-        {(movie.rt_score || movie.metacritic_score || movie.imdb_rating) && (
+        {(movie.rt_score || (movie.metacritic_score && movie.metacritic_score !== "0") || movie.imdb_rating) && (
           <View style={styles.scoreBadgeRow}>
             {movie.rt_score && (
               <View style={styles.scoreBadge}>
@@ -108,7 +108,7 @@ export default function MovieCard({movie, onPress, isFeatured = false}) {
                 </View>
               </View>
             )}
-            {movie.metacritic_score && (
+            {movie.metacritic_score && movie.metacritic_score !== "0" && (
               <View style={styles.scoreBadge}>
                 <View style={styles.scoreBadgeContent}>
                   <Image source={require('../assets/logos/metacritic.png')} style={[styles.scoreBadgeLogo, { tintColor: '#7ddf64' }]} />

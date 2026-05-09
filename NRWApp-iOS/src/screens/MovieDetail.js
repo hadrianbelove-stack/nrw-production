@@ -303,7 +303,7 @@ export default function MovieDetail({route}) {
       </View>
 
       {/* Info row — Wiki + RT + MC + IMDb shared */}
-      {(movie.links?.wikipedia || movie.rt_score || movie.metacritic_score || movie.imdb_rating) && (
+      {(movie.links?.wikipedia || movie.rt_score || (movie.metacritic_score && movie.metacritic_score !== "0") || movie.imdb_rating) && (
         <View style={styles.section}>
           <View style={styles.infoRow}>
             {movie.links?.wikipedia && (
@@ -322,7 +322,7 @@ export default function MovieDetail({route}) {
                 </View>
               </TouchableOpacity>
             )}
-            {movie.metacritic_score && (
+            {movie.metacritic_score && movie.metacritic_score !== "0" && (
               <TouchableOpacity
                 style={styles.infoBtnColored}
                 onPress={handleMCPress}

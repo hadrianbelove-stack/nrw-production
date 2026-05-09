@@ -244,51 +244,71 @@
             visible="false" />
         </LayoutGroup>
 
-        <!-- Info row: Wiki + RT + IMDb -->
+        <!-- Scores row: RT + MC + IMDb (display-only, no Wiki on TV) -->
         <LayoutGroup id="infoRow"
           layoutDirection="horiz"
-          itemSpacings="[16]"
+          itemSpacings="[24]"
           translation="[0, 10]"
           visible="false">
 
-          <Label id="wikiLabel"
-            text="Wiki"
-            font="font:MediumBoldSystemFont"
-            color="0xFFFFFF99"
-            visible="false" />
-
+          <!-- RT: tomato icon + score + freshness label -->
           <LayoutGroup id="rtGroup"
             layoutDirection="horiz"
-            itemSpacings="[6]"
+            itemSpacings="[8]"
             visible="false">
             <Poster id="rtLogoPoster"
-              width="28" height="14"
+              width="32" height="32"
               uri="pkg:/images/icons/logo_rt.png"
               loadDisplayMode="scaleToFit" />
-            <Label id="rtScoreLabel"
-              font="font:MediumBoldSystemFont"
-              color="0xFF6B6BFF" />
+            <LayoutGroup id="rtScoreCol"
+              layoutDirection="vert"
+              itemSpacings="[0]">
+              <Label id="rtScoreLabel"
+                font="font:MediumBoldSystemFont"
+                color="0xFFFFFFFF" />
+              <Label id="rtFreshnessLabel"
+                font="font:SmallBoldSystemFont"
+                color="0xFA3232FF" />
+            </LayoutGroup>
           </LayoutGroup>
 
+          <!-- MC: colored score box + M logo + wordmark -->
           <LayoutGroup id="mcGroup"
             layoutDirection="horiz"
-            itemSpacings="[6]"
+            itemSpacings="[8]"
             visible="false">
-            <Poster id="mcLogoPoster"
-              width="18" height="18"
-              uri="pkg:/images/icons/logo_mc.png"
-              loadDisplayMode="scaleToFit" />
-            <Label id="mcScoreLabel"
-              font="font:MediumBoldSystemFont"
-              color="0x7DDF64FF" />
+            <Group id="mcScoreBoxGroup">
+              <Rectangle id="mcScoreBox"
+                width="44" height="44"
+                color="0x66CC33FF" />
+              <Label id="mcScoreLabel"
+                width="44" height="44"
+                horizAlign="center"
+                vertAlign="center"
+                font="font:MediumBoldSystemFont"
+                color="0xFFFFFFFF" />
+            </Group>
+            <LayoutGroup id="mcLabelCol"
+              layoutDirection="vert"
+              itemSpacings="[2]">
+              <Poster id="mcLogoPoster"
+                width="20" height="20"
+                uri="pkg:/images/icons/logo_mc.png"
+                loadDisplayMode="scaleToFit" />
+              <Label id="mcWordLabel"
+                text="METACRITIC"
+                font="font:SmallSystemFont"
+                color="0xFFFFFF80" />
+            </LayoutGroup>
           </LayoutGroup>
 
+          <!-- IMDb: logo + score -->
           <LayoutGroup id="imdbGroup"
             layoutDirection="horiz"
-            itemSpacings="[6]"
+            itemSpacings="[8]"
             visible="false">
             <Poster id="imdbLogoPoster"
-              width="32" height="16"
+              width="40" height="20"
               uri="pkg:/images/icons/logo_imdb.png"
               loadDisplayMode="scaleToFit" />
             <Label id="imdbScoreLabel"

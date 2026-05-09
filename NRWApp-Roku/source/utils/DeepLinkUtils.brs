@@ -352,3 +352,49 @@ Function GetServiceDisplayName(service as String) as String
 
     return service
 End Function
+
+' ============================================================================
+' Get VOD Display Name (rent/buy buttons — just the store name)
+' ============================================================================
+Function GetVodDisplayName(service as String) as String
+    names = {
+        amazon: "AMAZON"
+        apple_tv: "APPLE TV"
+        fandango: "FANDANGO"
+        vudu: "FANDANGO"
+        youtube: "YOUTUBE"
+    }
+
+    normalized = NormalizeServiceName(service)
+    if names.DoesExist(normalized)
+        return names[normalized]
+    end if
+
+    return UCase(service)
+End Function
+
+' ============================================================================
+' Get Stream Display Name (streaming buttons — service brand name)
+' ============================================================================
+Function GetStreamDisplayName(service as String) as String
+    names = {
+        amazon: "PRIME"
+        prime: "PRIME"
+        apple_tv: "APPLE TV+"
+        disney_plus: "DISNEY+"
+        paramount_plus: "PARAMOUNT+"
+        netflix: "NETFLIX"
+        max: "MAX"
+        hulu: "HULU"
+        peacock: "PEACOCK"
+        mubi: "MUBI"
+        criterion: "CRITERION"
+    }
+
+    normalized = NormalizeServiceName(service)
+    if names.DoesExist(normalized)
+        return names[normalized]
+    end if
+
+    return UCase(service)
+End Function

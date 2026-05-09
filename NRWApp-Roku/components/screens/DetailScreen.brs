@@ -36,11 +36,14 @@ Sub Init()
     m.vodButton2 = m.top.FindNode("vodButton2")
     m.plexButton = m.top.FindNode("plexButton")
     m.infoRow = m.top.FindNode("infoRow")
-    m.wikiLabel = m.top.FindNode("wikiLabel")
     m.rtGroup = m.top.FindNode("rtGroup")
     m.rtScoreLabel = m.top.FindNode("rtScoreLabel")
+    m.rtFreshnessLabel = m.top.FindNode("rtFreshnessLabel")
+    m.rtLogoPoster = m.top.FindNode("rtLogoPoster")
     m.mcGroup = m.top.FindNode("mcGroup")
     m.mcScoreLabel = m.top.FindNode("mcScoreLabel")
+    m.mcScoreBox = m.top.FindNode("mcScoreBox")
+    m.mcWordLabel = m.top.FindNode("mcWordLabel")
     m.imdbGroup = m.top.FindNode("imdbGroup")
     m.imdbScoreLabel = m.top.FindNode("imdbScoreLabel")
 
@@ -279,23 +282,28 @@ Sub LoadMovie(index as Integer)
     ' Setup watch buttons
     SetupWatchButtons(movie)
 
-    ' Info row: Wiki + RT + IMDb — below buttons
+    ' Scores row: RT + MC + IMDb display-only (no Wiki on TV)
     hasInfo = false
 
-    ' Wiki link
-    if movie.links <> invalid AND movie.links.wikipedia <> invalid AND movie.links.wikipedia <> ""
-        m.wikiLabel.visible = true
-        hasInfo = true
-    else
-        m.wikiLabel.visible = false
-    end if
-
+    ' RT score with freshness indicator
     if movie.rt_score <> invalid
         scoreStr = movie.rt_score.ToStr()
         scoreStr = scoreStr.Replace("%", "")
         scoreNum = Val(scoreStr)
         if scoreNum > 0
-            m.rtScoreLabel.text = Int(scoreNum).ToStr() + "%"
+            rtInt = Int(scoreNum)
+            m.rtScoreLabel.text = rtInt.ToStr() + "%"
+            if rtInt >= 75
+                m.rtFreshnessLabel.text = "CERTIFIED FRESH"
+                m.rtFreshnessLabel.color = "0xFFD700FF"
+            else if rtInt >= 60
+                m.rtFreshnessLabel.text = "FRESH"
+                m.rtFreshnessLabel.color = "0xFA3232FF"
+            else
+                m.rtFreshnessLabel.text = "ROTTEN"
+                m.rtFreshnessLabel.color = "0x77B900FF"
+                m.rtLogoPoster.blendColor = "0x77B900FF"
+            end if
             m.rtGroup.visible = true
             hasInfo = true
         else
@@ -305,11 +313,20 @@ Sub LoadMovie(index as Integer)
         m.rtGroup.visible = false
     end if
 
+    ' MC score with colored box (green 61+, yellow 40-60, red 0-39)
     if movie.metacritic_score <> invalid
         mcStr = movie.metacritic_score.ToStr()
         mcNum = Val(mcStr)
         if mcNum > 0
-            m.mcScoreLabel.text = Int(mcNum).ToStr()
+            mcInt = Int(mcNum)
+            m.mcScoreLabel.text = mcInt.ToStr()
+            if mcInt >= 61
+                m.mcScoreBox.color = "0x66CC33FF"
+            else if mcInt >= 40
+                m.mcScoreBox.color = "0xFFCC33FF"
+            else
+                m.mcScoreBox.color = "0xFF0000FF"
+            end if
             m.mcGroup.visible = true
             hasInfo = true
         else
@@ -319,6 +336,7 @@ Sub LoadMovie(index as Integer)
         m.mcGroup.visible = false
     end if
 
+    ' IMDb rating
     if movie.imdb_rating <> invalid
         ratingStr = movie.imdb_rating.ToStr()
         ratingNum = Val(ratingStr)
@@ -356,7 +374,7 @@ Sub SetupWatchButtons(movie as Object)
     streaming = GetStreamingService(movie)
     if streaming <> invalid AND streaming.service <> invalid
         m.streamButton.service = streaming.service
-        m.streamButton.label = GetServiceDisplayName(streaming.service)
+        m.streamButton.label = GetStreamDisplayName(streaming.service)
         m.streamButton.url = streaming.link
         m.streamButton.visible = true
         m.buttons.Push(m.streamButton)
@@ -375,7 +393,7 @@ Sub SetupWatchButtons(movie as Object)
             if IsEventiveLink(vodServices[i].service, vodServices[i].link)
                 vodButtons[i].label = "Buy Ticket"
             else
-                vodButtons[i].label = "Rent on " + GetServiceDisplayName(vodServices[i].service)
+                vodButtons[i].label = GetVodDisplayName(vodServices[i].service)
             end if
             vodButtons[i].visible = true
             m.buttons.Push(vodButtons[i])

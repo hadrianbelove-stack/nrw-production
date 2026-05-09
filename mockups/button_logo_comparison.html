@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Button Logo Styles — Comparison</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0a0a; color: #fff; font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; padding: 60px; }
+  h1 { font-size: 28px; font-weight: 300; margin-bottom: 10px; color: #ccc; }
+  h2 { font-size: 18px; font-weight: 600; margin-bottom: 16px; color: #00d4aa; text-transform: uppercase; letter-spacing: 2px; }
+  p.desc { font-size: 14px; color: #888; margin-bottom: 40px; line-height: 1.5; max-width: 800px; }
+  .section { margin-bottom: 60px; }
+  .row { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+
+  /* Shared button base */
+  .btn, .btn-logo-fill {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 220px;
+    height: 60px;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    padding: 0 16px;
+  }
+  .btn img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+  }
+  .btn-amazon { background: #00A8E1; }
+  .btn-apple  { background: #5B9BD5; }
+  .btn-fandango { background: #FF6600; }
+  .btn-prime  { background: #00A8E1; }
+  .btn-netflix { background: #E50914; }
+  .btn-trailer { background: #E50914; }
+  .btn-plex { background: #E5A00D; }
+
+  /* === Logo-fill buttons: logo IS the content === */
+  .btn-logo-fill {
+    padding: 8px 20px;
+    overflow: hidden;
+  }
+  .btn-logo-fill img {
+    max-width: 170px;
+    max-height: 40px;
+    object-fit: contain;
+  }
+
+  /* Focus ring simulation */
+  .btn:hover, .btn-logo-fill:hover {
+    outline: 4px solid #00ffcc;
+    transform: scale(1.05);
+    transition: all 0.15s ease;
+  }
+
+  .label { font-size: 12px; color: #666; text-align: center; margin-top: 6px; width: 220px; }
+
+  .verdict {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 24px;
+    margin-top: 30px;
+    max-width: 800px;
+  }
+  .verdict h3 { color: #00d4aa; margin-bottom: 8px; }
+  .verdict p { color: #aaa; font-size: 14px; line-height: 1.6; }
+  .verdict strong { color: #fff; }
+
+  .detail-sim {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid #222;
+    border-radius: 16px;
+    padding: 30px;
+    margin-top: 20px;
+  }
+  .detail-sim h3 {
+    font-size: 24px;
+    font-weight: 300;
+    color: #eee;
+    margin-bottom: 6px;
+  }
+  .detail-sim .meta {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 20px;
+  }
+</style>
+</head>
+<body>
+
+<h1>Watch Button Logo Styles</h1>
+<p class="desc">Comparing approaches for tvOS watch buttons. The new wide logos with transparent backgrounds fill the buttons properly.</p>
+
+<!-- ============================================ -->
+<div class="section">
+  <h2>Current — Text Labels on Brand Colors</h2>
+  <p class="desc">What's implemented now. Apple gets its silhouette icon, others are text-only.</p>
+  <div class="row">
+    <div>
+      <button class="btn btn-trailer">TRAILER</button>
+      <div class="label">trailer</div>
+    </div>
+    <div>
+      <button class="btn btn-apple">
+        <img src="../logos_and_images/apple logo.png" alt=""> APPLE TV
+      </button>
+      <div class="label">apple silhouette + text</div>
+    </div>
+    <div>
+      <button class="btn btn-amazon">AMAZON</button>
+      <div class="label">text only</div>
+    </div>
+    <div>
+      <button class="btn btn-prime">PRIME</button>
+      <div class="label">text only</div>
+    </div>
+    <div>
+      <button class="btn btn-netflix">NETFLIX</button>
+      <div class="label">text only</div>
+    </div>
+    <div>
+      <button class="btn btn-fandango">FANDANGO</button>
+      <div class="label">text only</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<div class="section">
+  <h2>New — Wide Logos Fill the Button</h2>
+  <p class="desc">Your new wide logos with transparent backgrounds. The logo fills the button — no text needed. Instantly recognizable from 10 feet.</p>
+  <div class="row">
+    <div>
+      <button class="btn btn-trailer">TRAILER</button>
+      <div class="label">trailer (stays text)</div>
+    </div>
+    <div>
+      <button class="btn-logo-fill btn-apple">
+        <img src="../logos_and_images/apple logo.png" style="filter: brightness(0) invert(1); max-height: 28px;" alt="">
+      </button>
+      <div class="label">apple silhouette (white tint)</div>
+    </div>
+    <div>
+      <button class="btn-logo-fill" style="background: #1a1a1a;">
+        <img src="../assets/logos/Amazon_Prime_Video_logo clear background.svg.png" alt="">
+      </button>
+      <div class="label">prime_video_wide.png</div>
+    </div>
+    <div>
+      <button class="btn-logo-fill" style="background: #1a1a1a;">
+        <img src="../assets/logos/Netflix_2015_logo.svg.png" alt="">
+      </button>
+      <div class="label">netflix_wide.png</div>
+    </div>
+    <div>
+      <button class="btn-logo-fill" style="background: #1a1a1a;">
+        <img src="../assets/logos/fandango at homve clear background.png" alt="">
+      </button>
+      <div class="label">fandango_wide.png</div>
+    </div>
+    <div>
+      <button class="btn-logo-fill btn-plex">PLEX</button>
+      <div class="label">text (no wide logo yet)</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<div class="section">
+  <h2>In Context — Simulated Detail Screen</h2>
+
+  <div class="detail-sim">
+    <h3>The Brutalist (2024)</h3>
+    <div class="meta">Brady Corbet &bull; Hungary, USA &bull; 3h 35m</div>
+    <div class="row" style="margin-bottom: 20px;">
+      <button class="btn btn-trailer">TRAILER</button>
+      <button class="btn-logo-fill btn-apple">
+        <img src="../logos_and_images/apple logo.png" style="filter: brightness(0) invert(1); max-height: 28px;" alt="">
+      </button>
+      <button class="btn-logo-fill" style="background: #1a1a1a;">
+        <img src="../assets/logos/Amazon_Prime_Video_logo clear background.svg.png" alt="">
+      </button>
+    </div>
+  </div>
+
+  <div class="detail-sim" style="margin-top: 20px;">
+    <h3>Anora (2024)</h3>
+    <div class="meta">Sean Baker &bull; USA &bull; 2h 19m</div>
+    <div class="row" style="margin-bottom: 20px;">
+      <button class="btn btn-trailer">TRAILER</button>
+      <button class="btn-logo-fill" style="background: #1a1a1a;">
+        <img src="../assets/logos/Netflix_2015_logo.svg.png" alt="">
+      </button>
+    </div>
+  </div>
+
+  <div class="detail-sim" style="margin-top: 20px;">
+    <h3>Nosferatu (2024)</h3>
+    <div class="meta">Robert Eggers &bull; USA &bull; 2h 12m</div>
+    <div class="row" style="margin-bottom: 20px;">
+      <button class="btn btn-trailer">TRAILER</button>
+      <button class="btn-logo-fill btn-apple">
+        <img src="../logos_and_images/apple logo.png" style="filter: brightness(0) invert(1); max-height: 28px;" alt="">
+      </button>
+      <button class="btn-logo-fill" style="background: #1a1a1a;">
+        <img src="../assets/logos/fandango at homve clear background.png" alt="">
+      </button>
+    </div>
+  </div>
+
+  <div class="verdict">
+    <h3>What We Need to Decide</h3>
+    <p>
+      <strong>Apple TV</strong> — the silhouette tinted white on blue works great. Or we could do it on dark like the others?<br>
+      <strong>Amazon / Netflix / Fandango</strong> — the wide logos on dark backgrounds look clean. They're self-colored so no tinting needed.<br>
+      <strong>Plex</strong> — no wide logo sourced yet, stays text for now.<br>
+    </p>
+    <p style="margin-top:12px;">
+      If you like this direction, I can implement it in the tvOS code. The buttons would show the logo image instead of text when a wide logo is available, and fall back to text labels for services without one.
+    </p>
+  </div>
+</div>
+
+</body>
+</html>

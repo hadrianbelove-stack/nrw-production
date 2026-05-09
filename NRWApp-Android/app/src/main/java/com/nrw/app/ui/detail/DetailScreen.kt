@@ -550,127 +550,103 @@ private fun MovieDetail(
                     }
                 }
 
-                // Info row — Wiki + RT + IMDb shared
-                val hasWiki = movie.links?.wikipedia != null
-                if (hasWiki || rtInfo != null || movie.metacriticScore?.toIntOrNull() != null || movie.imdbRating?.toFloatOrNull() != null) {
-                    Spacer(modifier = Modifier.height(10.dp))
-                    val context = androidx.compose.ui.platform.LocalContext.current
-                    val rtUrl = movie.links?.rt ?: movie.links?.rottenTomatoes
-                    val mcUrl = movie.links?.metacritic
-                    val imdbUrl = movie.links?.imdb
+                // Scores row — RT + MC + IMDb display-only (no Wiki on TV)
+                val mcScore = movie.metacriticScore?.toIntOrNull()?.takeIf { it > 0 }
+                if (rtInfo != null || mcScore != null || movie.imdbRating?.toFloatOrNull() != null) {
+                    Spacer(modifier = Modifier.height(14.dp))
                     Row(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        horizontalArrangement = Arrangement.spacedBy(24.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        movie.links?.wikipedia?.let { wikiUrl ->
-                            Box(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .clip(RoundedCornerShape(6.dp))
-                                    .background(Color.White.copy(alpha = 0.1f))
-                                    .border(1.dp, Color.White.copy(alpha = 0.3f), RoundedCornerShape(6.dp))
-                                    .clickable { com.nrw.app.utils.DeepLinkHelper.openUrl(context, wikiUrl, "wikipedia") }
-                                    .padding(horizontal = 10.dp, vertical = 6.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = "Wiki",
-                                    color = TextPrimary,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 12.sp
-                                )
-                            }
-                        }
+                        // RT: tomato icon + score + freshness label
                         rtInfo?.let { (score, _) ->
-                            Box(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .clip(RoundedCornerShape(6.dp))
-                                    .background(Color.White.copy(alpha = 0.06f))
-                                    .border(1.dp, Color.White.copy(alpha = 0.1f), RoundedCornerShape(6.dp))
-                                    .then(if (rtUrl != null) Modifier.clickable { com.nrw.app.utils.DeepLinkHelper.openUrl(context, rtUrl, "rt") } else Modifier)
-                                    .padding(horizontal = 10.dp, vertical = 6.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.Center
-                                ) {
-                                    Image(
-                                        painter = painterResource(id = R.drawable.logo_rt),
-                                        contentDescription = null,
-                                        modifier = Modifier.height(18.dp).padding(end = 4.dp),
-                                        contentScale = ContentScale.Fit
-                                    )
+                            val isCertifiedFresh = score >= 75
+                            val isFresh = score >= 60
+                            val freshnessLabel = if (isCertifiedFresh) "CERTIFIED FRESH" else if (isFresh) "FRESH" else "ROTTEN"
+                            val freshnessColor = if (isCertifiedFresh) Color(0xFFFFD700) else if (isFresh) Color(0xFFFA3232) else Color(0xFF77B900)
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.logo_rt),
+                                    contentDescription = "Rotten Tomatoes",
+                                    modifier = Modifier.height(32.dp).padding(end = 8.dp),
+                                    contentScale = ContentScale.Fit,
+                                    colorFilter = if (!isFresh) ColorFilter.tint(Color(0xFF77B900)) else null
+                                )
+                                Column {
                                     Text(
                                         text = "$score%",
-                                        color = Color(0xFFFF6B6B),
+                                        color = TextPrimary,
+                                        fontWeight = FontWeight.ExtraBold,
+                                        fontSize = 18.sp
+                                    )
+                                    Text(
+                                        text = freshnessLabel,
+                                        color = freshnessColor,
                                         fontWeight = FontWeight.Bold,
-                                        fontSize = 12.sp
+                                        fontSize = 9.sp,
+                                        letterSpacing = 0.5.sp
                                     )
                                 }
                             }
                         }
-                        movie.metacriticScore?.toIntOrNull()?.let { score ->
-                            if (score > 0) {
+                        // MC: colored score box + M logo + wordmark
+                        mcScore?.let { score ->
+                            val mcColor = when {
+                                score >= 61 -> Color(0xFF66CC33)
+                                score >= 40 -> Color(0xFFFFCC33)
+                                else -> Color(0xFFFF0000)
+                            }
+                            Row(verticalAlignment = Alignment.CenterVertically) {
                                 Box(
                                     modifier = Modifier
-                                        .weight(1f)
-                                        .clip(RoundedCornerShape(6.dp))
-                                        .background(Color.White.copy(alpha = 0.06f))
-                                        .border(1.dp, Color.White.copy(alpha = 0.1f), RoundedCornerShape(6.dp))
-                                        .then(if (mcUrl != null) Modifier.clickable { com.nrw.app.utils.DeepLinkHelper.openUrl(context, mcUrl, "metacritic") } else Modifier)
-                                        .padding(horizontal = 10.dp, vertical = 6.dp),
+                                        .width(40.dp)
+                                        .height(40.dp)
+                                        .clip(RoundedCornerShape(4.dp))
+                                        .background(mcColor),
                                     contentAlignment = Alignment.Center
                                 ) {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.Center
-                                    ) {
-                                        Image(
-                                            painter = painterResource(id = R.drawable.logo_mc),
-                                            contentDescription = null,
-                                            modifier = Modifier.height(18.dp).padding(end = 4.dp),
-                                            contentScale = ContentScale.Fit,
-                                            colorFilter = ColorFilter.tint(Color(0xFF7DDF64))
-                                        )
-                                        Text(
-                                            text = "$score",
-                                            color = Color(0xFF7DDF64),
-                                            fontWeight = FontWeight.Bold,
-                                            fontSize = 12.sp
-                                        )
-                                    }
+                                    Text(
+                                        text = "$score",
+                                        color = Color.White,
+                                        fontWeight = FontWeight.ExtraBold,
+                                        fontSize = 20.sp
+                                    )
                                 }
-                            }
-                        }
-                        movie.imdbRating?.toFloatOrNull()?.let { rating ->
-                            Box(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .clip(RoundedCornerShape(6.dp))
-                                    .background(Color.White.copy(alpha = 0.06f))
-                                    .border(1.dp, Color.White.copy(alpha = 0.1f), RoundedCornerShape(6.dp))
-                                    .then(if (imdbUrl != null) Modifier.clickable { com.nrw.app.utils.DeepLinkHelper.openUrl(context, imdbUrl, "imdb") } else Modifier)
-                                    .padding(horizontal = 10.dp, vertical = 6.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.Center
+                                Column(
+                                    modifier = Modifier.padding(start = 8.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
                                     Image(
-                                        painter = painterResource(id = R.drawable.logo_imdb),
-                                        contentDescription = null,
-                                        modifier = Modifier.height(18.dp).padding(end = 4.dp),
+                                        painter = painterResource(id = R.drawable.logo_mc),
+                                        contentDescription = "Metacritic",
+                                        modifier = Modifier.height(18.dp),
                                         contentScale = ContentScale.Fit
                                     )
                                     Text(
-                                        text = "${"%.1f".format(rating)}",
-                                        color = Color(0xFFF5C518),
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 12.sp
+                                        text = "METACRITIC",
+                                        color = Color.White.copy(alpha = 0.5f),
+                                        fontSize = 7.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        letterSpacing = 1.sp
                                     )
                                 }
+                            }
+                        }
+                        // IMDb: logo + score (display-only)
+                        movie.imdbRating?.toFloatOrNull()?.let { rating ->
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.logo_imdb),
+                                    contentDescription = "IMDb",
+                                    modifier = Modifier.height(20.dp).padding(end = 8.dp),
+                                    contentScale = ContentScale.Fit
+                                )
+                                Text(
+                                    text = "${"%.1f".format(rating)}",
+                                    color = Color(0xFFF5C518),
+                                    fontWeight = FontWeight.ExtraBold,
+                                    fontSize = 18.sp
+                                )
                             }
                         }
                     }

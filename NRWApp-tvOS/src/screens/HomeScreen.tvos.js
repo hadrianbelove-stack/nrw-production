@@ -106,9 +106,9 @@ const FilterButton = forwardRef(({ filter, isActive, onPress, onFocus }, ref) =>
 const DateCard = ({ dateParts }) => {
   return (
     <View
-      accessible={true}
-      accessibilityLabel={`${dateParts.dayName} ${dateParts.month} ${dateParts.day}`}
-      accessibilityRole="text"
+      accessible={false}
+      focusable={false}
+      isTVSelectable={false}
     >
       <View style={styles.dateCard}>
         <View style={styles.dateCardInner}>
@@ -321,9 +321,9 @@ const HomeScreenTvOS = () => {
 
   // Get movies based on active filters (multi-select with OR logic - cumulative)
   const displayMovies = useMemo(() => {
-    // If no filters selected, show all
+    // If no filters selected, show all (pre-orders only shown when explicitly filtered)
     if (activeFilters.size === 0) {
-      return filteredMovies;
+      return filteredMovies.filter(m => !m._is_preorder);
     }
 
     // Filter movies - must pass ANY selected filter (OR logic)
@@ -536,9 +536,18 @@ const HomeScreenTvOS = () => {
       const isRowEnd = columnIndex === NUM_COLUMNS - 1;
       const isRowStart = columnIndex === 0;
 
-      // Get node handles for wrap-around targets
-      const nextFocusRight = isRowEnd ? itemNodeHandles.get(index + 1) : undefined;
-      const nextFocusLeft = isRowStart && index > 0 ? itemNodeHandles.get(index - 1) : undefined;
+      // Find nearest focusable node handle, scanning past non-focusable date markers
+      const findNearestHandle = (start, step) => {
+        for (let i = start; i >= 0 && i < listData.length; i += step) {
+          const handle = itemNodeHandles.get(i);
+          if (handle) return handle;
+        }
+        return undefined;
+      };
+
+      // Get node handles for wrap-around targets (skips date cards)
+      const nextFocusRight = isRowEnd ? findNearestHandle(index + 1, 1) : undefined;
+      const nextFocusLeft = isRowStart && index > 0 ? findNearestHandle(index - 1, -1) : undefined;
 
       // Movie card
       return (
@@ -558,7 +567,7 @@ const HomeScreenTvOS = () => {
         </View>
       );
     },
-    [formatDateParts, handleMovieSelect, handleMovieFocus, handleOpenFullscreen, headerNodeHandle, itemNodeHandles, registerItemRef]
+    [formatDateParts, handleMovieSelect, handleMovieFocus, handleOpenFullscreen, headerNodeHandle, itemNodeHandles, listData, registerItemRef]
   );
 
   // Key extractor
