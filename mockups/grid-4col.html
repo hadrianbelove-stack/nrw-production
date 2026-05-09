@@ -14,7 +14,10 @@
             min-height: 100vh;
             min-height: 100dvh;
             padding-top: env(safe-area-inset-top);
+            -webkit-tap-highlight-color: transparent;
         }
+
+        /* ===== HEADER ===== */
         .site-header {
             position: sticky;
             top: 0;
@@ -61,11 +64,16 @@
             font-weight: 700;
         }
 
+        /* ===== GRID ===== */
         .wall {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 10px 8px;
             padding: 10px;
+        }
+        .grid-item {
+            touch-action: manipulation;
+            cursor: pointer;
         }
         .movie-card {
             aspect-ratio: 2/3;
@@ -112,15 +120,16 @@
             text-transform: uppercase;
             color: #fff;
         }
-        .staff-pick-card {
+        .staff-pick-wrap {
             border: 2px solid #dc143c;
             border-radius: 10px;
             padding: 3px;
             background: rgba(220,20,60,0.05);
             box-shadow: 0 0 12px rgba(220,20,60,0.3);
         }
-        .staff-pick-card .movie-card { border-radius: 7px; }
+        .staff-pick-wrap .movie-card { border-radius: 7px; }
 
+        /* ===== SERVICE BADGES ===== */
         .badge-netflix { background: #E50914; }
         .badge-max { background: #B537F2; }
         .badge-prime { background: #00A8E1; }
@@ -132,6 +141,228 @@
         .badge-criterion { background: #000; border: 0.5px solid #888; }
         .badge-kanopy { background: #1B7A43; }
         .badge-paramount { background: #0064FF; }
+        .badge-apple { background: #000; border: 0.5px solid #555; }
+
+        /* ===== FULLSCREEN OVERLAY ===== */
+        .overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            background: rgba(0,0,0,0.95);
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .overlay.active { display: flex; align-items: center; justify-content: center; }
+
+        /* Flip container */
+        .flip-wrap {
+            width: 85vw;
+            max-width: 380px;
+            perspective: 1200px;
+        }
+        .flip-inner {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 2/3;
+            transition: transform 0.6s ease;
+            transform-style: preserve-3d;
+        }
+        .flip-inner.flipped {
+            transform: rotateY(180deg);
+        }
+
+        /* Both faces */
+        .flip-front, .flip-back {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        /* ===== FRONT: POSTER ===== */
+        .flip-front {
+            background: #111;
+            box-shadow: 0 12px 48px rgba(0,0,0,0.6);
+        }
+        .flip-front img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .flip-front .poster-info {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            padding: 2.5rem 1rem 1rem;
+            background: linear-gradient(transparent, rgba(0,0,0,0.85));
+        }
+        .flip-front .poster-info h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 0.2rem;
+        }
+        .flip-front .poster-info .poster-director {
+            font-size: 0.8rem;
+            color: #00d4aa;
+            font-weight: 600;
+        }
+        .flip-front .poster-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: #fff;
+        }
+        .flip-front .staff-glow {
+            box-shadow: 0 0 20px rgba(220,20,60,0.4);
+            border: 2px solid #dc143c;
+        }
+
+        /* ===== BACK: DETAILS ===== */
+        .flip-back {
+            transform: rotateY(180deg);
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            box-shadow: 0 12px 48px rgba(0,0,0,0.6);
+            display: flex;
+            flex-direction: column;
+        }
+        .back-content {
+            padding: 1.2rem;
+            overflow-y: hidden;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .flip-inner.flipped .back-content {
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior-y: contain;
+            touch-action: pan-y;
+        }
+
+        /* Back header */
+        .back-header {
+            display: flex;
+            gap: 0.8rem;
+            margin-bottom: 0.8rem;
+        }
+        .back-thumb {
+            width: 70px;
+            flex-shrink: 0;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+        }
+        .back-thumb img {
+            width: 100%;
+            aspect-ratio: 2/3;
+            object-fit: cover;
+            display: block;
+        }
+        .back-title-area {
+            flex: 1;
+            min-width: 0;
+        }
+        .back-title {
+            font-size: 1rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 0.15rem;
+        }
+        .back-director {
+            font-size: 0.8rem;
+            color: #00d4aa;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+        }
+        .back-meta {
+            font-size: 0.7rem;
+            color: #888;
+            line-height: 1.4;
+        }
+        .back-staff-badge {
+            display: inline-block;
+            background: #dc143c;
+            color: #fff;
+            font-size: 0.55rem;
+            font-weight: 800;
+            letter-spacing: 0.1em;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-top: 0.3rem;
+            text-transform: uppercase;
+        }
+
+        /* Synopsis */
+        .back-synopsis {
+            font-size: 0.8rem;
+            color: #bbb;
+            line-height: 1.5;
+            margin-bottom: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        /* Scores */
+        .back-scores {
+            display: flex;
+            gap: 0.4rem;
+            margin-bottom: 0.8rem;
+            flex-shrink: 0;
+        }
+        .score-pill {
+            padding: 0.3rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: #fff;
+        }
+        .score-rt { background: #FA320A; }
+        .score-mc { background: #FFCC34; color: #000 !important; }
+
+        /* Service pill */
+        .back-service {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.35rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #fff;
+            flex-shrink: 0;
+        }
+        .back-service::before {
+            content: '▶';
+            font-size: 0.5rem;
+        }
+
+        /* Tap hint */
+        .tap-hint {
+            position: absolute;
+            bottom: 12px;
+            left: 0; right: 0;
+            text-align: center;
+            font-size: 0.6rem;
+            color: rgba(255,255,255,0.35);
+            letter-spacing: 0.1em;
+            pointer-events: none;
+        }
+        .overlay .tap-hint {
+            position: fixed;
+            bottom: max(20px, env(safe-area-inset-bottom));
+            z-index: 210;
+        }
     </style>
 </head>
 <body>
@@ -149,238 +380,213 @@
     </div>
 </header>
 
-<div class="wall">
-    <div>
-        <div class="staff-pick-card"><div class="movie-card">
-            <span class="streaming-badge badge-netflix">Netflix</span>
-            <img src="https://image.tmdb.org/t/p/w300/yPHwX78mcwJw3I6YOJ9qh2wQBFr.jpg" alt="">
-        </div></div>
-        <div class="movie-title">The Strangers: Chapter 3</div>
-        <div class="movie-director">Renny Harlin</div>
-    </div>
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-rent">Rent</span>
-            <img src="https://image.tmdb.org/t/p/w300/a2EdW8sk22fNCvrpOiaHbR2hOuZ.jpg" alt="">
-        </div>
-        <div class="movie-title">Crazy Old Lady</div>
-        <div class="movie-director">Tyler Perry</div>
-    </div>
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-max">Max</span>
-            <img src="https://image.tmdb.org/t/p/w300/1KMG1inDAnKaGZ1W8Ac3wn6bdXu.jpg" alt="">
-        </div>
-        <div class="movie-title">Project Y</div>
-        <div class="movie-director">Sander Burger</div>
-    </div>
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-mubi">MUBI</span>
-            <img src="https://image.tmdb.org/t/p/w300/2G5mioq84qAesYL8XfrQh3QrzUA.jpg" alt="">
-        </div>
-        <div class="movie-title">Ways to Traverse a Territory</div>
-        <div class="movie-director">Dennis Lim</div>
-    </div>
+<div class="wall" id="wall"></div>
 
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-rent">Rent</span>
-            <img src="https://image.tmdb.org/t/p/w300/q7M8kQB46T11vmDMD6E239jsqTz.jpg" alt="">
+<!-- Fullscreen overlay -->
+<div class="overlay" id="overlay">
+    <div class="flip-wrap">
+        <div class="flip-inner" id="flipInner">
+            <div class="flip-front" id="flipFront">
+                <img id="frontPoster" src="" alt="">
+                <span class="poster-badge" id="frontBadge"></span>
+                <div class="poster-info">
+                    <h2 id="frontTitle"></h2>
+                    <div class="poster-director" id="frontDirector"></div>
+                </div>
+            </div>
+            <div class="flip-back" id="flipBack">
+                <div class="back-content" id="backContent">
+                    <div class="back-header">
+                        <div class="back-thumb"><img id="backThumb" src="" alt=""></div>
+                        <div class="back-title-area">
+                            <div class="back-title" id="backTitle"></div>
+                            <div class="back-director" id="backDirector"></div>
+                            <div class="back-meta" id="backMeta"></div>
+                            <div id="backStaffBadge"></div>
+                        </div>
+                    </div>
+                    <div class="back-synopsis" id="backSynopsis"></div>
+                    <div class="back-scores" id="backScores"></div>
+                    <div id="backService"></div>
+                </div>
+            </div>
         </div>
-        <div class="movie-title">The Voice of Hind Rajab</div>
-        <div class="movie-director">Udi Nir</div>
     </div>
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-hulu">Hulu</span>
-            <img src="https://image.tmdb.org/t/p/w300/6rQXCW5NK91sVnQbQFxIW16lyL4.jpg" alt="">
-        </div>
-        <div class="movie-title">Queens of Joy</div>
-        <div class="movie-director">Henrika Kull</div>
-    </div>
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-prime">Prime</span>
-            <img src="https://image.tmdb.org/t/p/w300/tTk9ZAmgPzuWPs3x0y5fm45N1Ew.jpg" alt="">
-        </div>
-        <div class="movie-title">Noseeums</div>
-        <div class="movie-director">J.T. Mollner</div>
-    </div>
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-rent">Rent</span>
-            <img src="https://image.tmdb.org/t/p/w300/b2N7arsRkNbleaXgZ6MnzE8mNff.jpg" alt="">
-        </div>
-        <div class="movie-title">The Big Johnson</div>
-        <div class="movie-director">Adam Meeks</div>
-    </div>
-
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-disney">Disney+</span>
-            <img src="https://image.tmdb.org/t/p/w300/3eT4xMPqHrLjqO5vOnfhHS8D6ml.jpg" alt="">
-        </div>
-        <div class="movie-title">Snow Leopard Sisters</div>
-        <div class="movie-director">Keith Scholey</div>
-    </div>
-    <div>
-        <div class="staff-pick-card"><div class="movie-card">
-            <span class="streaming-badge badge-rent">Rent</span>
-            <img src="https://image.tmdb.org/t/p/w300/qurd8tG5E2T20QihO0ysaJCzAjL.jpg" alt="">
-        </div></div>
-        <div class="movie-title">Atropia</div>
-        <div class="movie-director">Hailey Gates</div>
-    </div>
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-tubi">Tubi</span>
-            <img src="https://image.tmdb.org/t/p/w300/w4aA1tq3aYBr0o3yCVDMp1UboC9.jpg" alt="">
-        </div>
-        <div class="movie-title">Off School Property</div>
-        <div class="movie-director">John Lawson</div>
-    </div>
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-criterion">Criterion</span>
-            <img src="https://image.tmdb.org/t/p/w300/nx9DPAzainWTqPKuirLIXasbU3z.jpg" alt="">
-        </div>
-        <div class="movie-title">Tin&#257;</div>
-        <div class="movie-director">R. Bharadwaj</div>
-    </div>
-
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-rent">Rent</span>
-            <img src="https://image.tmdb.org/t/p/w300/pLYiyfCYmuLDYf36AbQApadFUhN.jpg" alt="">
-        </div>
-        <div class="movie-title">This Is Not a Test</div>
-        <div class="movie-director">Brian Bress</div>
-    </div>
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-kanopy">Kanopy</span>
-            <img src="https://image.tmdb.org/t/p/w300/VbYDDEw7RPdATftVrAboA0iuP.jpg" alt="">
-        </div>
-        <div class="movie-title">Maintenance Artist</div>
-        <div class="movie-director">Merle Laderman</div>
-    </div>
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-max">Max</span>
-            <img src="https://image.tmdb.org/t/p/w300/AnZ9XzhouSSvQH337923RPFTaqK.jpg" alt="">
-        </div>
-        <div class="movie-title">A Private Life</div>
-        <div class="movie-director">Mike Leigh</div>
-    </div>
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-prime">Prime</span>
-            <img src="https://image.tmdb.org/t/p/w300/sojEzvfxR2DBcDSJyAisX8TWjov.jpg" alt="">
-        </div>
-        <div class="movie-title">The Bluff</div>
-        <div class="movie-director">Frank E. Flowers</div>
-    </div>
-
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-netflix">Netflix</span>
-            <img src="https://image.tmdb.org/t/p/w300/8PWu0V10nMqG5SrA13wLRXTD2fH.jpg" alt="">
-        </div>
-        <div class="movie-title">Ikkis</div>
-        <div class="movie-director">Amar Kaushik</div>
-    </div>
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-rent">Rent</span>
-            <img src="https://image.tmdb.org/t/p/w300/tcluKPgtUJldvLqDlincYRZwQZj.jpg" alt="">
-        </div>
-        <div class="movie-title">The Stars Between Us</div>
-        <div class="movie-director">P. Westerling</div>
-    </div>
-    <div>
-        <div class="staff-pick-card"><div class="movie-card">
-            <span class="streaming-badge badge-paramount">Paramount+</span>
-            <img src="https://image.tmdb.org/t/p/w300/51wG0sPe7SfehmEvVZNpRqOVbTj.jpg" alt="">
-        </div></div>
-        <div class="movie-title">Flood</div>
-        <div class="movie-director">Anthony Chen</div>
-    </div>
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-hulu">Hulu</span>
-            <img src="https://image.tmdb.org/t/p/w300/aVYPgcuFL0iq1LLvXlqKYe8Xvzk.jpg" alt="">
-        </div>
-        <div class="movie-title">Wild Days</div>
-        <div class="movie-director">Laura Carreira</div>
-    </div>
-
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-rent">Rent</span>
-            <img src="https://image.tmdb.org/t/p/w300/hoEMZXOJgx0XioWcY8nuoVQ70JZ.jpg" alt="">
-        </div>
-        <div class="movie-title">The Inquisitor</div>
-        <div class="movie-director">Roman Polanski</div>
-    </div>
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-mubi">MUBI</span>
-            <img src="https://image.tmdb.org/t/p/w300/z9YUI5WWWQ0MSthLLVbG5wZn2L1.jpg" alt="">
-        </div>
-        <div class="movie-title">Nate and Moriah in Venice</div>
-        <div class="movie-director">Nathan Silver</div>
-    </div>
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-netflix">Netflix</span>
-            <img src="https://image.tmdb.org/t/p/w300/5n85A8bspgGBhIZ2HnNfbbr6GRe.jpg" alt="">
-        </div>
-        <div class="movie-title">Taylor Tomlinson: Prodigal Daughter</div>
-        <div class="movie-director">Marcus Raboy</div>
-    </div>
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-rent">Rent</span>
-            <img src="https://image.tmdb.org/t/p/w300/k6NdbpdN3591xR18VAVfXYmY6P0.jpg" alt="">
-        </div>
-        <div class="movie-title">Ice Skater</div>
-        <div class="movie-director">David Koepp</div>
-    </div>
-
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-max">Max</span>
-            <img src="https://image.tmdb.org/t/p/w300/hSNX85TNi9Zaa3Ep0Kqj271T8FM.jpg" alt="">
-        </div>
-        <div class="movie-title">She Was Here</div>
-        <div class="movie-director">Lee Cronin</div>
-    </div>
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-disney">Disney+</span>
-            <img src="https://image.tmdb.org/t/p/w300/pJWFGI1zlSwWAtx3H0GLxwAMonD.jpg" alt="">
-        </div>
-        <div class="movie-title">Murder in Music City</div>
-        <div class="movie-director">Andrew Jarecki</div>
-    </div>
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-rent">Rent</span>
-            <img src="https://image.tmdb.org/t/p/w300/fqAGFN2K2kDL0EHxvJaXzaMUkkt.jpg" alt="">
-        </div>
-        <div class="movie-title">Return to Silent Hill</div>
-        <div class="movie-director">Christophe Gans</div>
-    </div>
-    <div>
-        <div class="movie-card">
-            <span class="streaming-badge badge-prime">Prime</span>
-            <img src="https://image.tmdb.org/t/p/w300/5gS0Jif1hIHhqhqLkur29tjdaOJ.jpg" alt="">
-        </div>
-        <div class="movie-title">The Mother and the Bear</div>
-        <div class="movie-director">Sacha Polak</div>
-    </div>
+    <div class="tap-hint" id="tapHint">TAP TO FLIP</div>
 </div>
+
+<script>
+const movies = [
+  {t:"The Strangers: Chapter 3",d:"Renny Harlin",p:"yPHwX78mcwJw3I6YOJ9qh2wQBFr",y:2026,r:92,g:["Horror","Thriller"],s:"Tethered by a frightening conclusion, Maya and the Strangers are locked on an unavoidable, unforgiving collision course \u2014 a showdown that proves they\u2019re far from strangers now.",rt:"18%",mc:"19",b:"rent",sv:"Rent",sp:false},
+  {t:"Vieja loca (Crazy Old Lady)",d:"Mart\u00edn Mauregui",p:"a2EdW8sk22fNCvrpOiaHbR2hOuZ",y:2025,r:91,g:["Horror","Thriller"],s:"Pedro receives a desperate message from an ex-girlfriend asking him to look after her senile mother, Alicia. What seems like a simple mission soon becomes his worst nightmare.",rt:"77%",mc:"",b:"rent",sv:"Rent",sp:false},
+  {t:"Project Y",d:"Lee Hwan",p:"1KMG1inDAnKaGZ1W8Ac3wn6bdXu",y:2026,r:109,g:["Crime","Drama"],s:"Trapped in Gangnam\u2019s most dangerous streets, Mi-sun and Do-kyung stake everything on one last desperate gamble\u2014only to uncover a hidden stash of dirty cash and gold.",rt:"",mc:"",b:"rent",sv:"Rent",sp:false},
+  {t:"Ways to Traverse a Territory",d:"Gabriela Dom\u00ednguez Ruvalcaba",p:"2G5mioq84qAesYL8XfrQh3QrzUA",y:2024,r:73,g:["Documentary"],s:"Do we belong to a place, or does a place belong to us? Like a skein that unravels, this question unfolds the essayistic thread of the film.",rt:"",mc:"",b:"mubi",sv:"MUBI",sp:false},
+  {t:"The Voice of Hind Rajab",d:"Kaouther Ben Hania",p:"q7M8kQB46T11vmDMD6E239jsqTz",y:2025,r:89,g:["Drama","History"],s:"January 29, 2024. Red Crescent volunteers receive an emergency call. A five-year old girl is trapped in a car under fire in Gaza, pleading for rescue.",rt:"93%",mc:"81",b:"rent",sv:"Rent",sp:false},
+  {t:"Queens of Joy",d:"Olga Gibelinda",p:"6rQXCW5NK91sVnQbQFxIW16lyL4",y:2026,r:90,g:["Documentary"],s:"Monroe, Aura, Marlene: Three drag queens from the Ukrainian LGBTQ+ community raise funds for the frontlines, re-defining resilience and hope between glamorous shows and wartime life.",rt:"",mc:"",b:"rent",sv:"Rent",sp:false},
+  {t:"Noseeums",d:"Raven Deshay Carter",p:"tTk9ZAmgPzuWPs3x0y5fm45N1Ew",y:2025,r:85,g:["Horror"],s:"Fresh from her toxic relationship, a curious college student reluctantly agrees to a weekend trip with her roommate to a secluded lake house in the Florida backwoods.",rt:"",mc:"",b:"rent",sv:"Rent",sp:false},
+  {t:"The Big Johnson",d:"Lola Rock\u2019N\u2019Rolla",p:"b2N7arsRkNbleaXgZ6MnzE8mNff",y:2025,r:95,g:["Documentary"],s:"Dean Johnson, drag queen, rock star, LGBTQI activist, junkie, genius, escort then John Doe. How does someone so famous in New York die as an unknown in DC?",rt:"",mc:"",b:"rent",sv:"Rent",sp:false},
+  {t:"Snow Leopard Sisters",d:"Andrew Lynch",p:"3eT4xMPqHrLjqO5vOnfhHS8D6ml",y:2025,r:93,g:["Documentary"],s:"In Nepal\u2019s remote Dolpo region, two Indigenous women form an unlikely friendship to save one of the planet\u2019s most mysterious wild cats: the snow leopard.",rt:"",mc:"",b:"disney",sv:"Disney+",sp:false},
+  {t:"Atropia",d:"Hailey Benton Gates",p:"qurd8tG5E2T20QihO0ysaJCzAjL",y:2025,r:104,g:["Comedy","Drama"],s:"When an aspiring actress in a military role-playing facility falls in love with a soldier cast as an insurgent, their unsimulated emotions threaten to derail the performance.",rt:"41%",mc:"53",b:"rent",sv:"Rent",sp:false},
+  {t:"Off School Property",d:"Nate Lundquist",p:"w4aA1tq3aYBr0o3yCVDMp1UboC9",y:2025,r:60,g:["Documentary"],s:"Explores the historic shift that removed the Bible from public education\u2014and the lasting impact on students, schools and society.",rt:"65%",mc:"",b:"tubi",sv:"Tubi",sp:false},
+  {t:"Tin\u0101",d:"Miki Magasiva",p:"nx9DPAzainWTqPKuirLIXasbU3z",y:2025,r:125,g:["Drama","Comedy"],s:"A woman grieving her daughter\u2019s death in the Christchurch earthquakes becomes a substitute teacher at an elite private school, discovering students lacking guidance and care.",rt:"95%",mc:"",b:"criterion",sv:"Criterion",sp:false},
+  {t:"This Is Not a Test",d:"Adam MacDonald",p:"pLYiyfCYmuLDYf36AbQApadFUhN",y:2026,r:102,g:["Thriller","Horror"],s:"Sloane and four classmates take cover in Cortege High to escape a world plagued by the infected. As danger relentlessly pounds on the doors, Sloane begins to see the world through the eyes of those outside.",rt:"44%",mc:"36",b:"rent",sv:"Rent",sp:false},
+  {t:"Maintenance Artist",d:"Toby Perl Freilich",p:"VbYDDEw7RPdATftVrAboA0iuP",y:2025,r:90,g:["Documentary"],s:"What happens when art meets trash? Profiles pioneering public artist Mierle Laderman Ukeles\u2014the first artist-in-residence at NYC\u2019s Department of Sanitation.",rt:"",mc:"",b:"kanopy",sv:"Kanopy",sp:false},
+  {t:"A Private Life",d:"Rebecca Zlotowski",p:"AnZ9XzhouSSvQH337923RPFTaqK",y:2025,r:107,g:["Drama","Crime"],s:"Following the death of Paula, one of her long-time patients, psychiatrist Lilian Steiner becomes convinced that her supposed death by suicide is actually an unsolved murder.",rt:"61%",mc:"67",b:"rent",sv:"Rent",sp:false},
+  {t:"The Bluff",d:"Frank E. Flowers",p:"sojEzvfxR2DBcDSJyAisX8TWjov",y:2026,r:102,g:["Action","Thriller"],s:"When her tranquil life on a remote island is shattered by the return of her vengeful former captain, a skilled ex-pirate must confront her bloody past to save her family.",rt:"70%",mc:"61",b:"prime",sv:"Prime",sp:false},
+  {t:"Ikkis",d:"Sriram Raghavan",p:"8PWu0V10nMqG5SrA13wLRXTD2fH",y:2026,r:148,g:["History","War"],s:"Second Lieutenant Arun Khetarpal, India\u2019s youngest Param Vir Chakra recipient, gave his life fighting during the 1971 Battle of Basantar.",rt:"100%",mc:"",b:"prime",sv:"Prime",sp:false},
+  {t:"The Stars Between Us",d:"Tim Huddleston",p:"tcluKPgtUJldvLqDlincYRZwQZj",y:2026,r:84,g:["Romance"],s:"Seven years ago, Kim made a connection with a stranger during an eclipse event. Now a fledgling news reporter, Kim returns to Illinois for this year\u2019s eclipse, unaware their paths may cross again.",rt:"",mc:"",b:"rent",sv:"Rent",sp:true},
+  {t:"Flood",d:"Katy Scoggin",p:"51wG0sPe7SfehmEvVZNpRqOVbTj",y:2025,r:75,g:["Documentary"],s:"A filmmaker revisits her evangelical roots to find connection with her estranged father.",rt:"",mc:"",b:"rent",sv:"Rent",sp:false},
+  {t:"Wild Days",d:"Yohan Guignard",p:"aVYPgcuFL0iq1LLvXlqKYe8Xvzk",y:2024,r:80,g:["Documentary"],s:"4 Savoyard friends have a crazy idea: 50 days of autonomy in Alaska in the Denali massif. A quest where friendships are invented and put to the test.",rt:"",mc:"",b:"rent",sv:"Rent",sp:false},
+  {t:"The Inquisitor",d:"Angela Tucker",p:"hoEMZXOJgx0XioWcY8nuoVQ70JZ",y:2025,r:95,g:["Documentary"],s:"In 1972, Congresswoman Barbara Jordan became the first Southern Black woman to join Congress, one of many firsts in her career as a trailblazing political leader.",rt:"",mc:"",b:"rent",sv:"Rent",sp:false},
+  {t:"Nate and Moriah in Venice",d:"Austin Balke",p:"z9YUI5WWWQ0MSthLLVbG5wZn2L1",y:2025,r:100,g:["Drama"],s:"When a young and struggling couple go on vacation to rekindle their happiness, the past gets the best of them as they walk the streets of beautiful Venice, Italy.",rt:"",mc:"",b:"mubi",sv:"MUBI",sp:false},
+  {t:"Taylor Tomlinson: Prodigal Daughter",d:"Taylor Tomlinson",p:"5n85A8bspgGBhIZ2HnNfbbr6GRe",y:2026,r:69,g:["Comedy"],s:"Taylor Tomlinson takes her fans to church with hilarious confessions about dating in her 30s, her dream assistant and why she refuses to use AI.",rt:"",mc:"",b:"netflix",sv:"Netflix",sp:false},
+  {t:"Ice Skater",d:"Taavi Vartia",p:"k6NdbpdN3591xR18VAVfXYmY6P0",y:2026,r:83,g:["Drama","Thriller"],s:"A survival drama about an ice skater stranded on an ice floe at the Arctic Sea. When the ice floe starts to melt, the skater must use all means necessary to survive.",rt:"",mc:"",b:"rent",sv:"Rent",sp:false},
+  {t:"She Was Here",d:"Brian Pocrass",p:"hSNX85TNi9Zaa3Ep0Kqj271T8FM",y:2026,r:83,g:["Documentary"],s:"Heather O\u2019Rourke captured hearts as Carol-Anne in the Poltergeist films, a bright light destined for greatness. Her sudden passing at just 12 left the world stunned.",rt:"",mc:"",b:"rent",sv:"Rent",sp:false},
+  {t:"Murder in Music City",d:"Dave Thomas",p:"pJWFGI1zlSwWAtx3H0GLxwAMonD",y:2026,r:90,g:["Thriller","Mystery"],s:"When a rising young musician is found murdered at the estate of country music legend Abilene Tucker, all evidence points to the scandal-plagued diva.",rt:"",mc:"",b:"rent",sv:"Rent",sp:false},
+  {t:"Return to Silent Hill",d:"Christophe Gans",p:"fqAGFN2K2kDL0EHxvJaXzaMUkkt",y:2026,r:106,g:["Horror","Mystery"],s:"When James receives a mysterious letter from his lost love Mary, he is drawn to Silent Hill\u2014a once-familiar town now consumed by darkness.",rt:"38%",mc:"34",b:"rent",sv:"Rent",sp:false},
+  {t:"The Mother and the Bear",d:"Johnny Ma",p:"5gS0Jif1hIHhqhqLkur29tjdaOJ",y:2026,r:100,g:["Comedy","Drama"],s:"When her daughter falls into a temporary coma after an accident, Sara, an overbearing Korean mother, travels from Seoul to Canada and vows to keep her daughter safe forever.",rt:"90%",mc:"",b:"rent",sv:"Rent",sp:false}
+];
+
+const posterBase = 'https://image.tmdb.org/t/p/w300/';
+const posterHi = 'https://image.tmdb.org/t/p/w500/';
+
+// Build grid
+const wall = document.getElementById('wall');
+movies.forEach((m, i) => {
+    const div = document.createElement('div');
+    div.className = 'grid-item';
+    div.dataset.index = i;
+    const cardWrap = m.sp ? `<div class="staff-pick-wrap"><div class="movie-card">` : `<div class="movie-card">`;
+    const cardClose = m.sp ? `</div></div>` : `</div>`;
+    div.innerHTML = `
+        ${cardWrap}
+            <span class="streaming-badge badge-${m.b}">${m.sv}</span>
+            <img src="${posterBase}${m.p}.jpg" alt="" loading="lazy">
+        ${cardClose}
+        <div class="movie-title">${m.t}</div>
+        <div class="movie-director">${m.d}</div>
+    `;
+    wall.appendChild(div);
+});
+
+// Overlay elements
+const overlay = document.getElementById('overlay');
+const flipInner = document.getElementById('flipInner');
+const frontPoster = document.getElementById('frontPoster');
+const frontBadge = document.getElementById('frontBadge');
+const frontTitle = document.getElementById('frontTitle');
+const frontDirector = document.getElementById('frontDirector');
+const backThumb = document.getElementById('backThumb');
+const backTitle = document.getElementById('backTitle');
+const backDirector = document.getElementById('backDirector');
+const backMeta = document.getElementById('backMeta');
+const backStaffBadge = document.getElementById('backStaffBadge');
+const backSynopsis = document.getElementById('backSynopsis');
+const backScores = document.getElementById('backScores');
+const backService = document.getElementById('backService');
+const tapHint = document.getElementById('tapHint');
+const flipFront = document.getElementById('flipFront');
+
+// State: 'grid' | 'poster' | 'details'
+let state = 'grid';
+let currentMovie = null;
+let touchHandled = false;
+
+function openPoster(idx) {
+    const m = movies[idx];
+    currentMovie = m;
+
+    // Front
+    frontPoster.src = posterHi + m.p + '.jpg';
+    frontBadge.textContent = m.sv;
+    frontBadge.className = 'poster-badge badge-' + m.b;
+    frontTitle.textContent = m.t;
+    frontDirector.textContent = m.d;
+
+    // Staff pick glow on front
+    if (m.sp) {
+        flipFront.classList.add('staff-glow');
+    } else {
+        flipFront.classList.remove('staff-glow');
+    }
+
+    // Back
+    backThumb.src = posterBase + m.p + '.jpg';
+    backTitle.textContent = m.t;
+    backDirector.textContent = m.d;
+    const metaParts = [];
+    if (m.y) metaParts.push(m.y);
+    if (m.r) metaParts.push(m.r + ' min');
+    if (m.g.length) metaParts.push(m.g.join(', '));
+    backMeta.textContent = metaParts.join(' \u2022 ');
+    backStaffBadge.innerHTML = m.sp ? '<span class="back-staff-badge">\u2605 STAFF PICK \u2605</span>' : '';
+    backSynopsis.textContent = m.s;
+
+    // Scores
+    let scoreHtml = '';
+    if (m.rt && m.rt !== '0') scoreHtml += `<span class="score-pill score-rt">\ud83c\udf45 ${m.rt}</span>`;
+    if (m.mc && m.mc !== '0') scoreHtml += `<span class="score-pill score-mc">MC ${m.mc}</span>`;
+    backScores.innerHTML = scoreHtml;
+    backScores.style.display = scoreHtml ? 'flex' : 'none';
+
+    // Service
+    backService.innerHTML = `<span class="back-service badge-${m.b}">${m.sv}</span>`;
+
+    // Show overlay, reset flip
+    flipInner.classList.remove('flipped');
+    overlay.classList.add('active');
+    tapHint.textContent = 'TAP TO FLIP';
+    state = 'poster';
+}
+
+function flipToDetails() {
+    flipInner.classList.add('flipped');
+    tapHint.textContent = 'TAP TO CLOSE';
+    state = 'details';
+}
+
+function closeOverlay() {
+    overlay.classList.remove('active');
+    flipInner.classList.remove('flipped');
+    state = 'grid';
+    currentMovie = null;
+}
+
+// Grid tap → open poster
+wall.addEventListener('touchend', function(e) {
+    const item = e.target.closest('.grid-item');
+    if (!item) return;
+    e.preventDefault();
+    touchHandled = true;
+    openPoster(parseInt(item.dataset.index));
+    setTimeout(() => { touchHandled = false; }, 300);
+});
+wall.addEventListener('click', function(e) {
+    if (touchHandled) return;
+    const item = e.target.closest('.grid-item');
+    if (!item) return;
+    openPoster(parseInt(item.dataset.index));
+});
+
+// Overlay tap → cycle states
+overlay.addEventListener('touchend', function(e) {
+    // Allow scroll on back content
+    if (state === 'details' && e.target.closest('.back-content')) {
+        const bc = document.getElementById('backContent');
+        if (bc.scrollHeight > bc.clientHeight) return;
+    }
+    e.preventDefault();
+    touchHandled = true;
+    if (state === 'poster') flipToDetails();
+    else if (state === 'details') closeOverlay();
+    setTimeout(() => { touchHandled = false; }, 300);
+});
+overlay.addEventListener('click', function(e) {
+    if (touchHandled) return;
+    if (state === 'poster') flipToDetails();
+    else if (state === 'details') closeOverlay();
+});
+</script>
 
 </body>
 </html>
