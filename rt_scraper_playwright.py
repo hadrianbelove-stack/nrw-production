@@ -202,6 +202,10 @@ class RTScraperPlaywright(PlaywrightScraperBase):
                 self.counters['error_count'] += 1
                 self._log_metrics("scrape_error", {"attempt": attempt + 1, "error": str(e), "error_type": type(e).__name__})
                 self._log(f"Attempt {attempt + 1} error: {e}", level='debug')
+                if isinstance(e, PlaywrightTimeoutError):
+                    self.record_error('timeout')
+                else:
+                    self.record_error(type(e).__name__)
                 if attempt < max_attempts - 1:
                     delay = min(max_delay, base_delay * (2 ** attempt))
                     jitter = random.uniform(-jitter_ratio * delay, jitter_ratio * delay)
@@ -570,6 +574,7 @@ class RTScraperPlaywright(PlaywrightScraperBase):
                 }
                 self._save_cache()
                 self.stats['failures'] += 1
+                self.record_error('not_found')
                 return None
 
             rt_score = self._extract_score_from_rt_page(rt_link)
@@ -622,6 +627,7 @@ class RTScraperPlaywright(PlaywrightScraperBase):
                 }
                 self._save_cache()
                 self.stats['failures'] += 1
+                self.record_error('year_mismatch')
                 return None
 
             result = {
@@ -655,6 +661,7 @@ class RTScraperPlaywright(PlaywrightScraperBase):
             }
             self._save_cache()
             self.stats['failures'] += 1
+            self.record_error(type(e).__name__)
             return None
 
     def scrape_rt_score(self, title, year):

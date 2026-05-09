@@ -415,6 +415,27 @@ class PlaywrightScraperBase:
         except Exception as e:
             self._log(f"Failed to take screenshot: {e}", level='warning')
 
+    def record_error(self, error_type: str):
+        """Record an error by type for diagnostic breadcrumbs.
+
+        Uses lazy initialization so subclasses that don't call this
+        still work without any __init__ dependency.
+
+        Args:
+            error_type: Classification string (e.g. 'timeout', 'not_found', 'parse_error')
+        """
+        if not hasattr(self, '_error_counts'):
+            self._error_counts = {}
+        self._error_counts[error_type] = self._error_counts.get(error_type, 0) + 1
+
+    def get_error_counts(self) -> Dict:
+        """Return error type breakdown for scraper_health metrics.
+
+        Returns:
+            Dict mapping error_type to count, e.g. {'timeout': 3, 'not_found': 2}
+        """
+        return getattr(self, '_error_counts', {})
+
     def get_stats(self) -> Dict:
         """
         Return current stats for external consumers.

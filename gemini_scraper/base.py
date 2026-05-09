@@ -81,6 +81,9 @@ class GeminiFinderBase:
         self.max_retries = scraper_config.get('max_retries', 3)
         self.last_request_time = 0
 
+        # Error log for diagnostic breadcrumbs (capped at 50)
+        self._error_log = []
+
         # Base stats - subclasses extend via _get_extra_stats()
         self.stats = {
             'gemini_attempts': 0,
@@ -136,6 +139,8 @@ class GeminiFinderBase:
         if max_attempts is None:
             max_attempts = self.max_retries
 
+        from datetime import datetime
+
         for attempt in range(max_attempts):
             try:
                 result = fn()
@@ -144,6 +149,25 @@ class GeminiFinderBase:
                 # fn returned None - still counts as "success" (no error)
                 return None
             except Exception as e:
+                # Classify error type for breadcrumbs
+                etype = type(e).__name__
+                emsg = str(e).lower()
+                if 'resourceexhausted' in etype.lower() or '429' in str(e) or 'quota' in emsg:
+                    error_type = 'rate_limit'
+                elif 'deadline' in etype.lower() or 'timeout' in emsg:
+                    error_type = 'timeout'
+                elif 'unauthenticated' in etype.lower() or 'invalid api key' in emsg:
+                    error_type = 'auth_error'
+                else:
+                    error_type = etype
+
+                if len(self._error_log) < 50:
+                    self._error_log.append({
+                        'error_type': error_type,
+                        'message': str(e)[:500],
+                        'timestamp': datetime.now().isoformat(),
+                    })
+
                 if attempt < max_attempts - 1:
                     # Exponential backoff: 0.5s, 1s, 2s, capped at 5s
                     base_delay = 0.5 * (2 ** attempt)
@@ -151,11 +175,11 @@ class GeminiFinderBase:
                     # Add jitter (±20%)
                     jitter = random.uniform(-0.2 * delay, 0.2 * delay)
                     sleep_time = delay + jitter
-                    logger.warning(f"{self._finder_name} attempt {attempt + 1} failed: {e}, retrying in {sleep_time:.1f}s")
+                    logger.warning(f"{self._finder_name} attempt {attempt + 1} failed ({error_type}): {e}, retrying in {sleep_time:.1f}s")
                     self.stats['retries'] += 1
                     time.sleep(sleep_time)
                 else:
-                    logger.error(f"All {max_attempts} {self._finder_name} attempts failed: {e}")
+                    logger.error(f"All {max_attempts} {self._finder_name} attempts failed ({error_type}): {e}")
         return None
 
     def _generate(self, contents, config=None):
@@ -164,11 +188,15 @@ class GeminiFinderBase:
         All finders should use this instead of calling
         self.client.models.generate_content() directly.
         """
+        http_opts = self.types.HttpOptions(timeout=self.timeout_seconds)
+        if config is not None:
+            config.http_options = http_opts
+        else:
+            config = self.types.GenerateContentConfig(http_options=http_opts)
         return self.client.models.generate_content(
             model=self.model_name,
             contents=contents,
             config=config,
-            timeout=self.timeout_seconds
         )
 
     def _init_gemini(self) -> bool:
@@ -201,6 +229,10 @@ class GeminiFinderBase:
         except Exception as e:
             logger.error(f"Failed to initialize Gemini for {self._finder_name}: {e}")
             return False
+
+    def get_error_log(self):
+        """Return error log for diagnostic breadcrumbs."""
+        return list(self._error_log)
 
     def get_stats(self) -> Dict[str, int]:
         """Return statistics about finder usage."""

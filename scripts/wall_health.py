@@ -576,22 +576,50 @@ else:
     print('  Summary: %d movies (%d no poster, %d no synopsis, %d no links)' % (
         total_gaps, len(gap_no_poster), len(gap_no_synopsis), len(gap_no_links)))
 
-# ── Section 9: TRAILER FAILURES ─────────────────────────────────────────────
+# ── Section 9: ENRICHMENT ERRORS (from last run) ──────────────────────────
+
+enrich_run_path = os.path.join(BASE, 'metrics', 'enrichment_run.json')
+if os.path.exists(enrich_run_path):
+    try:
+        er = json.load(open(enrich_run_path))
+        err_details = er.get('error_details', [])
+        total_errs = er.get('total_errors', len(err_details))
+        if err_details:
+            print()
+            print('─' * 78)
+            print('ENRICHMENT ERRORS — %d in last run' % total_errs)
+            print('─' * 78)
+            col_w = 38
+            for entry in err_details[:20]:
+                ts = entry.get('timestamp', '')[:10]
+                title = entry.get('title', '?')
+                source = entry.get('source', '?')
+                etype = entry.get('error_type', '?')
+                emsg = entry.get('error_message', '')[:60]
+                print('  %-16s %-*s %s: %s — %s' % (
+                    fmt_date(ts), col_w, title[:col_w], source, etype, emsg))
+            if total_errs > 20:
+                print('  ... and %d more' % (total_errs - 20))
+    except Exception:
+        pass
+
+# ── Section 10: TRAILER FAILURES ────────────────────────────────────────────
 
 host_fail_path = os.path.join(BASE, 'cache', 'trailer_host_failures.json')
 if os.path.exists(host_fail_path):
     try:
         hf = json.load(open(host_fail_path))
         cutoff = three_days_ago
-        recent_fails = [(v['recorded_at'][:10], v['title'], v.get('reason', '?'))
+        recent_fails = [(v['recorded_at'][:10], v['title'], v.get('reason', '?'), v.get('detail', ''))
                         for v in hf.values() if v.get('recorded_at', '') >= cutoff]
         if recent_fails:
             print()
             print('─' * 78)
             print('TRAILER HOSTING FAILURES — %d in last 3 days' % len(recent_fails))
             print('─' * 78)
-            for fail_date, title, reason in sorted(recent_fails):
-                print('  %-16s %-42s %s' % (fmt_date(fail_date), title[:42], reason))
+            for fail_date, title, reason, detail in sorted(recent_fails):
+                detail_str = (' — ' + detail[:60]) if detail else ''
+                print('  %-16s %-42s %s%s' % (fmt_date(fail_date), title[:42], reason, detail_str))
     except Exception:
         pass
 

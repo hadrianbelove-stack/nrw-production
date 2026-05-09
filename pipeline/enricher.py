@@ -39,6 +39,8 @@ class MovieEnricher:
         self.ctx = ctx
         self.host = host
         self.discoverer = discoverer
+        self._error_details = []
+        self._current_enrichment_step = None
 
     # ------------------------------------------------------------------
     # Quality validation
@@ -159,6 +161,7 @@ class MovieEnricher:
         Wraps the source function in try/except, logs success/failure/error,
         and returns the result (or None on failure).
         """
+        self._current_enrichment_step = source_name
         try:
             result = fn()
             if result:
@@ -170,7 +173,14 @@ class MovieEnricher:
             return result
         except Exception as e:
             enrichment_results[source_name] = 'error'
-            self.ctx.logger.warning(f"{source_name}: Error for {title} ({year}): {type(e).__name__}: {str(e)[:100]}")
+            self.ctx.logger.warning(f"{source_name}: Error for {title} ({year}): {type(e).__name__}: {str(e)[:500]}")
+            self._error_details.append({
+                'timestamp': datetime.now().isoformat(),
+                'title': title,
+                'source': source_name,
+                'error_type': type(e).__name__,
+                'error_message': str(e)[:500],
+            })
             return None
 
     # ------------------------------------------------------------------
@@ -263,6 +273,7 @@ class MovieEnricher:
             result['_trailer_source'] = trailer_source
 
         # RT score and link (isolated failure handling)
+        self._current_enrichment_step = 'rt_score'
         try:
             rt_director = movie_details.get('crew', {}).get('director') if movie_details else None
             rt_lang = movie_details.get('original_language') if movie_details else None
@@ -286,9 +297,15 @@ class MovieEnricher:
                 self.ctx.logger.debug(f"RT: No data found for {title} ({year})")
         except Exception as e:
             enrichment_results['rt_score'] = 'error'
-            self.ctx.logger.warning(f"RT: Error for {title} ({year}): {type(e).__name__}: {str(e)[:100]}")
+            self.ctx.logger.warning(f"RT: Error for {title} ({year}): {type(e).__name__}: {str(e)[:500]}")
+            self._error_details.append({
+                'timestamp': datetime.now().isoformat(),
+                'title': title, 'source': 'rt_score',
+                'error_type': type(e).__name__, 'error_message': str(e)[:500],
+            })
 
         # Metacritic score and link
+        self._current_enrichment_step = 'metacritic_score'
         try:
             mc_data = self.host.find_metacritic_score(title, year)
             if mc_data:
@@ -304,7 +321,12 @@ class MovieEnricher:
                 enrichment_results['metacritic_score'] = 'not_found'
         except Exception as e:
             enrichment_results['metacritic_score'] = 'error'
-            self.ctx.logger.warning(f"MC: Error for {title} ({year}): {type(e).__name__}: {str(e)[:100]}")
+            self.ctx.logger.warning(f"MC: Error for {title} ({year}): {type(e).__name__}: {str(e)[:500]}")
+            self._error_details.append({
+                'timestamp': datetime.now().isoformat(),
+                'title': title, 'source': 'metacritic_score',
+                'error_type': type(e).__name__, 'error_message': str(e)[:500],
+            })
 
         # IMDB rating
         imdb_rating = self._run_enrichment_source(
@@ -330,11 +352,12 @@ class MovieEnricher:
                     enrichment_results['pull_quotes'] = 'not_found'
             except Exception as e:
                 enrichment_results['pull_quotes'] = 'error'
-                self.ctx.logger.warning(f"Pull quotes: Error for {title} ({year}): {str(e)[:100]}")
+                self.ctx.logger.warning(f"Pull quotes: Error for {title} ({year}): {str(e)[:500]}")
         else:
             enrichment_results['pull_quotes'] = 'disabled'
 
         # Watch links (isolated failure handling)
+        self._current_enrichment_step = 'watch_links'
         try:
             # Extract title variants for scraper fallback (English -> original -> US alternative)
             orig_title_key = 'original_name' if is_tv else 'original_title'
@@ -383,7 +406,7 @@ class MovieEnricher:
                 self.ctx.logger.debug(f"Watch Links: No links found for {title} ({year})")
         except Exception as e:
             enrichment_results['watch_links'] = 'error'
-            self.ctx.logger.warning(f"Watch Links: Error for {title} ({year}): {type(e).__name__}: {str(e)[:100]}")
+            self.ctx.logger.warning(f"Watch Links: Error for {title} ({year}): {type(e).__name__}: {str(e)[:500]}")
 
         # Extract additional TMDB metadata (with safe fallbacks)
         try:
@@ -433,7 +456,7 @@ class MovieEnricher:
                 'country': country
             })
         except Exception as e:
-            self.ctx.logger.warning(f"TMDB Metadata: Error extracting for {title} ({year}): {type(e).__name__}: {str(e)[:100]}")
+            self.ctx.logger.warning(f"TMDB Metadata: Error extracting for {title} ({year}): {type(e).__name__}: {str(e)[:500]}")
             # Add fallback metadata
             result.update({
                 'crew': {'director': 'Unknown', 'cast': []},
@@ -466,7 +489,7 @@ class MovieEnricher:
             except Exception as e:
                 enrichment_results['digital_date'] = 'error'
                 result['_digital_date_source'] = 'detection'
-                self.ctx.logger.warning(f"Digital Date: Error for {title}: {type(e).__name__}: {str(e)[:100]}")
+                self.ctx.logger.warning(f"Digital Date: Error for {title}: {type(e).__name__}: {str(e)[:500]}")
 
         # Calculate enrichment timing and log detailed results
         movie_duration = time.time() - movie_start_time
@@ -1072,12 +1095,27 @@ class MovieEnricher:
                     existing_movies[movie_index]['_enrichment_status'] = 'failed'
                     print(f"  \u2717 Enrichment failed for {movie_data.get('title')}")
                     deferred_details.append(_deferred_entry(movie_data.get('title', str(movie_id)), 'enrichment_failed', movie_index, tracking_data['movies'].get(movie_id)))
+                    self._error_details.append({
+                        'timestamp': datetime.now().isoformat(),
+                        'title': movie_data.get('title', str(movie_id)),
+                        'source': self._current_enrichment_step or 'unknown',
+                        'error_type': 'enrichment_failed',
+                        'error_message': 'All enrichment sources returned empty',
+                    })
 
             except TimeoutError:
-                print(f"  \u23f0 {movie_data.get('title', movie_id)} timed out after {_PER_MOVIE_TIMEOUT_S}s \u2014 will retry next run")
+                _step = self._current_enrichment_step or 'unknown'
+                print(f"  \u23f0 {movie_data.get('title', movie_id)} timed out after {_PER_MOVIE_TIMEOUT_S}s at step '{_step}' \u2014 will retry next run")
                 if movie_index < len(existing_movies):
                     existing_movies[movie_index]['_enrichment_status'] = 'timeout'
-                deferred_details.append(_deferred_entry(movie_data.get('title', str(movie_id)), 'timeout', movie_index, tracking_data['movies'].get(movie_id)))
+                deferred_details.append(_deferred_entry(movie_data.get('title', str(movie_id)), f'timeout:at_{_step}', movie_index, tracking_data['movies'].get(movie_id)))
+                self._error_details.append({
+                    'timestamp': datetime.now().isoformat(),
+                    'title': movie_data.get('title', str(movie_id)),
+                    'source': _step,
+                    'error_type': 'TimeoutError',
+                    'error_message': f'Exceeded {_PER_MOVIE_TIMEOUT_S}s at step {_step}',
+                })
                 # Reset Playwright singleton so next movie gets a clean browser
                 try:
                     from playwright_manager import PlaywrightManager
@@ -1093,6 +1131,13 @@ class MovieEnricher:
                     existing_movies[movie_index]['_enrichment_status'] = 'error'
                 print(f"  \u2717 Error enriching {movie_data.get('title', movie_id)}: {e}")
                 deferred_details.append(_deferred_entry(movie_data.get('title', str(movie_id)), f'error:{type(e).__name__}', movie_index, tracking_data['movies'].get(movie_id)))
+                self._error_details.append({
+                    'timestamp': datetime.now().isoformat(),
+                    'title': movie_data.get('title', str(movie_id)),
+                    'source': self._current_enrichment_step or 'unknown',
+                    'error_type': type(e).__name__,
+                    'error_message': str(e)[:500],
+                })
             finally:
                 signal.alarm(0)  # Always cancel the per-movie alarm
 
@@ -1226,6 +1271,8 @@ class MovieEnricher:
                 "movies_deferred": len(movie_ids_to_enrich) - enriched_count,
                 "deferred_details": deferred_details,
                 "enrichment_duration_seconds": round(time.time() - _enrich_start, 2),
+                "error_details": self._error_details[:100],
+                "total_errors": len(self._error_details),
             }
             with open('metrics/enrichment_run.json', 'w') as f:
                 json.dump(enrichment_metrics, f, indent=2)

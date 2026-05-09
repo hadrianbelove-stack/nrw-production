@@ -1390,13 +1390,13 @@ class DataGenerator:
             # Prefer config bucket_url over B2 native URL
             config_url = trailer_config.get('bucket_url', '') or bucket_url
 
-            hosted_url, new_trailer_url, _fail_reason = download_and_upload_trailer(movie_id, title, year, youtube_url, bucket, config_url)
+            hosted_url, new_trailer_url, _fail_reason, _fail_detail = download_and_upload_trailer(movie_id, title, year, youtube_url, bucket, config_url)
             if hosted_url:
                 self.logger.info(f"Trailer hosted: {title} ({year}) -> {hosted_url}")
             return hosted_url
         except BaseException as e:
             # BaseException catches RuntimeError from get_b2_api() and other trailer hosting failures
-            self.logger.warning(f"Trailer hosting failed for {title}: {type(e).__name__}: {str(e)[:100]}")
+            self.logger.warning(f"Trailer hosting failed for {title}: {type(e).__name__}: {str(e)[:500]}")
             return None
 
 
@@ -1932,7 +1932,8 @@ class DataGenerator:
                     "cache_hit_rate": calc_rate(
                         self.enrichment_stats['rt_cache_hits'],
                         self.enrichment_stats['rt_attempts']
-                    )
+                    ),
+                    "error_types": self.rt_scraper.get_error_counts() if self.rt_scraper and self.rt_scraper is not False else {}
                 },
                 "mc_scraper": {
                     "attempts": self.enrichment_stats['mc_attempts'],
@@ -1945,7 +1946,8 @@ class DataGenerator:
                     "cache_hit_rate": calc_rate(
                         self.enrichment_stats['mc_cache_hits'],
                         self.enrichment_stats['mc_attempts']
-                    )
+                    ),
+                    "error_types": self.metacritic_scraper.get_error_counts() if self.metacritic_scraper and self.metacritic_scraper is not False else {}
                 },
                 "wikipedia_scraper": {
                     "wikidata_attempts": self.wikipedia_stats['wikidata_attempts'],
@@ -1953,7 +1955,8 @@ class DataGenerator:
                     "success_rate": calc_rate(
                         self.wikipedia_stats['wikidata_successes'],
                         self.wikipedia_stats['wikidata_attempts']
-                    )
+                    ),
+                    "error_types": self.wikipedia_scraper.get_error_counts() if self.wikipedia_scraper and self.wikipedia_scraper is not False else {}
                 },
                 "trailer_scraper": {
                     "attempts": self.enrichment_stats['trailer_attempts'],

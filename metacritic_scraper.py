@@ -120,6 +120,7 @@ class MetacriticScraper:
             resp = requests.get(url, params=params, headers=self.headers, timeout=self.timeout)
             if resp.status_code != 200:
                 self._log(f"API returned {resp.status_code} for '{title}'", level='warning')
+                self.record_error(f'http_{resp.status_code}')
                 return None
 
             data = resp.json()
@@ -149,9 +150,11 @@ class MetacriticScraper:
 
         except requests.exceptions.Timeout:
             self._log(f"API timeout for '{title}'", level='warning')
+            self.record_error('timeout')
             return None
         except Exception as e:
             self._log(f"API error for '{title}': {e}", level='error')
+            self.record_error(type(e).__name__)
             return None
 
     def _build_result(self, item):
@@ -226,6 +229,16 @@ class MetacriticScraper:
         """Log a message."""
         if self.logger:
             getattr(self.logger, level, self.logger.info)(f"[MetacriticScraper] {message}")
+
+    def record_error(self, error_type):
+        """Record an error by type for diagnostic breadcrumbs."""
+        if not hasattr(self, '_error_counts'):
+            self._error_counts = {}
+        self._error_counts[error_type] = self._error_counts.get(error_type, 0) + 1
+
+    def get_error_counts(self):
+        """Return error type breakdown for scraper_health metrics."""
+        return getattr(self, '_error_counts', {})
 
     def get_stats(self):
         """Return scraper stats."""

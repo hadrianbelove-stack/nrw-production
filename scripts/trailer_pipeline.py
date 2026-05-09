@@ -97,7 +97,7 @@ def load_host_failures():
     return pruned
 
 
-def record_host_failure(movie_id, title, year, reason, trailer_url=''):
+def record_host_failure(movie_id, title, year, reason, trailer_url='', detail=''):
     """Record a movie that failed trailer hosting.
 
     Tracks failure_count — after MAX_HOST_RETRIES failures, the movie
@@ -106,7 +106,7 @@ def record_host_failure(movie_id, title, year, reason, trailer_url=''):
     failures = load_host_failures()
     existing = failures.get(str(movie_id), {})
     prev_count = existing.get('failure_count', 1) if existing else 0
-    failures[str(movie_id)] = {
+    entry = {
         'title': title,
         'year': str(year),
         'reason': reason,
@@ -114,6 +114,9 @@ def record_host_failure(movie_id, title, year, reason, trailer_url=''):
         'recorded_at': datetime.now().isoformat(),
         'failure_count': prev_count + 1,
     }
+    if detail:
+        entry['detail'] = detail
+    failures[str(movie_id)] = entry
     os.makedirs(os.path.dirname(HOST_FAILURES_FILE), exist_ok=True)
     with open(HOST_FAILURES_FILE, 'w') as f:
         json.dump(failures, f, indent=2)
@@ -263,13 +266,14 @@ def stamp_trailer_hosted_urls(dry_run=False):
 def download_and_upload_trailer(movie_id, title, year, youtube_url, bucket, bucket_url, clean_after_upload=False, cookies_browser=None, rediscover_on_failure=True):
     """
     Download a trailer from YouTube and upload to B2.
-    Returns (hosted_url, new_trailer_url, fail_reason).
+    Returns (hosted_url, new_trailer_url, fail_reason, fail_detail).
     fail_reason is None on success, a string on failure.
+    fail_detail is the error message from yt-dlp or B2 on failure.
     """
     video_id = extract_youtube_id(youtube_url)
     if not video_id:
         print(f'    Could not extract YouTube ID from {youtube_url}')
-        return None, None, 'no_youtube_id'
+        return None, None, 'no_youtube_id', ''
 
     # Build the dict that download_trailer() expects
     movie_dict = {
@@ -301,23 +305,23 @@ def download_and_upload_trailer(movie_id, title, year, youtube_url, bucket, buck
             new_url = rediscover_trailer_url(title, year, youtube_url)
             if new_url:
                 print(f'    Found alternative: {new_url}')
-                hosted_url, _, alt_reason = download_and_upload_trailer(
+                hosted_url, _, alt_reason, _ = download_and_upload_trailer(
                     movie_id, title, year, new_url, bucket, bucket_url,
                     clean_after_upload=clean_after_upload,
                     cookies_browser=cookies_browser,
                     rediscover_on_failure=False,  # Prevent recursion
                 )
                 if hosted_url:
-                    return hosted_url, new_url, None
+                    return hosted_url, new_url, None, None
             else:
                 print(f'    No alternative found for {title} ({year})')
-        return None, None, f'download:{status}'
+        return None, None, f'download:{status}', result.get('detail', '')
 
     # Upload to B2
     local_path = os.path.join(MEDIA_DIR, f'{movie_id}.mp4')
     if not os.path.exists(local_path):
         print(f'    No local file at {local_path}')
-        return None, None, 'no_local_file'
+        return None, None, 'no_local_file', ''
 
     remote_name = f'{movie_id}.mp4'
     try:
@@ -326,10 +330,10 @@ def download_and_upload_trailer(movie_id, title, year, youtube_url, bucket, buck
         if clean_after_upload and os.path.exists(local_path):
             os.remove(local_path)
             print(f'    Cleaned local: {local_path}')
-        return hosted_url, None, None
+        return hosted_url, None, None, None
     except Exception as e:
         print(f'    Upload failed: {str(e)[:100]}')
-        return None, None, 'upload_failed'
+        return None, None, 'upload_failed', str(e)[:200]
 
 
 def host_new_trailers(movie_ids=None, limit=0, dry_run=False, cookies_browser=None):
@@ -421,6 +425,7 @@ def host_new_trailers(movie_ids=None, limit=0, dry_run=False, cookies_browser=No
     clean_after = config.get('clean_local_after_upload', False)
 
     stats = {'hosted': 0, 'failed': 0, 'skipped': 0}
+    failure_details = []
     total = len(to_host)
     bad_urls = load_bad_urls()
     BLACKLIST_GRACE_DAYS = 3
@@ -439,7 +444,7 @@ def host_new_trailers(movie_ids=None, limit=0, dry_run=False, cookies_browser=No
                     stats['skipped'] += 1
                     continue
 
-        hosted_url, new_trailer_url, fail_reason = download_and_upload_trailer(
+        hosted_url, new_trailer_url, fail_reason, fail_detail = download_and_upload_trailer(
             movie['id'], movie['title'], movie['year'],
             movie['trailer_url'], bucket, url_base,
             clean_after_upload=clean_after,
@@ -455,7 +460,15 @@ def host_new_trailers(movie_ids=None, limit=0, dry_run=False, cookies_browser=No
         else:
             stats['failed'] += 1
             record_host_failure(movie['id'], movie['title'], movie['year'],
-                                fail_reason or 'unknown', movie['trailer_url'])
+                                fail_reason or 'unknown', movie['trailer_url'],
+                                detail=fail_detail or '')
+            failure_details.append({
+                'title': movie['title'],
+                'movie_id': movie['id'],
+                'reason': fail_reason or 'unknown',
+                'detail': fail_detail or '',
+                'trailer_url': movie['trailer_url'],
+            })
 
         # Rate limit between downloads
         if i < total:
@@ -464,6 +477,29 @@ def host_new_trailers(movie_ids=None, limit=0, dry_run=False, cookies_browser=No
     # Note: data.json is NOT modified here. CI's `stamp` command handles
     # writing trailer_hosted URLs into data.json based on what's in B2.
     # This avoids merge conflicts when host runs locally and CI runs remotely.
+
+    # Get yt-dlp version for diagnostic breadcrumbs
+    yt_dlp_ver = 'unknown'
+    try:
+        import yt_dlp.version
+        yt_dlp_ver = yt_dlp.version.__version__
+    except Exception:
+        pass
+
+    # Write metrics
+    metrics = {
+        'timestamp': datetime.now().isoformat(),
+        'movies_attempted': total,
+        'hosted': stats['hosted'],
+        'failed': stats['failed'],
+        'skipped': stats['skipped'],
+        'failure_details': failure_details,
+        'yt_dlp_version': yt_dlp_ver,
+    }
+    metrics_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'metrics', 'trailer_hosting_run.json')
+    os.makedirs(os.path.dirname(metrics_path), exist_ok=True)
+    with open(metrics_path, 'w') as f:
+        json.dump(metrics, f, indent=2)
 
     return stats
 

@@ -171,10 +171,15 @@ class WikipediaScraperPlaywright(PlaywrightScraperBase):
 
             except WikipediaNoResults:
                 # Clean miss — retrying won't help
+                self.record_error('not_found')
                 return None
             except (PlaywrightTimeoutError, Exception) as e:
                 last_error = e
                 self._log(f"Attempt {attempt + 1} error: {e}", level='debug')
+                if isinstance(e, PlaywrightTimeoutError):
+                    self.record_error('timeout')
+                else:
+                    self.record_error(type(e).__name__)
                 if attempt < max_attempts - 1:
                     delay = min(max_delay, base_delay * (2 ** attempt))
                     jitter = random.uniform(-jitter_ratio * delay, jitter_ratio * delay)

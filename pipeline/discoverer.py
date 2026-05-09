@@ -142,6 +142,8 @@ class ProviderDiscoverer:
         failed = 0
         total_to_check = len(tracking_movies)
         newly_available_ids = []  # Track movie IDs that transition to available
+        transition_details = []  # Breadcrumb: which movies transitioned and why
+        api_errors = []  # Breadcrumb: API failures during discovery
 
         print(f"\n🎬 Checking {total_to_check} movies for digital availability...\n")
         discovery_start_time = time.time()
@@ -174,6 +176,7 @@ class ProviderDiscoverer:
                                     self.host._transition_movie_to_available(
                                         movie_id, movie, 'tmdb_type4', newly_available_ids)
                                     newly_digital += 1
+                                    transition_details.append({'movie_id': movie_id, 'title': movie.get('title', ''), 'source': 'tmdb_type4', 'timestamp': datetime.now().isoformat()})
                                     self.logger.info(f"Type 4 pending released: {movie['title']} — {pending_date}")
                                     print(f"  📅 {movie['title']} — pending Type 4 arrived ({pending_date})")
                                 else:
@@ -204,6 +207,7 @@ class ProviderDiscoverer:
                                     self.host._transition_movie_to_available(
                                         movie_id, movie, 'tmdb_type4', newly_available_ids)
                                     newly_digital += 1
+                                    transition_details.append({'movie_id': movie_id, 'title': movie.get('title', ''), 'source': 'tmdb_type4', 'timestamp': datetime.now().isoformat()})
                                     type4_found = True
                                     self.logger.info(f"Type 4 discovery: {movie['title']} — digital release {type4_date}")
                                     print(f"  📅 {movie['title']} — digital release {type4_date}")
@@ -241,10 +245,12 @@ class ProviderDiscoverer:
                             elif response.status_code == 429:  # Rate limited
                                 wait_time = (2 ** attempt) + random.uniform(0, 1)
                                 print(f"  Rate limited on {movie['title']}, waiting {wait_time:.1f}s")
+                                api_errors.append({'movie_id': movie_id, 'title': movie.get('title', ''), 'error_type': 'rate_limit', 'status_code': 429, 'timestamp': datetime.now().isoformat()})
                                 time.sleep(wait_time)
                                 continue
                             else:
                                 self.logger.warning(f"HTTP {response.status_code} for {movie['title']}")
+                                api_errors.append({'movie_id': movie_id, 'title': movie.get('title', ''), 'error_type': 'http_error', 'status_code': response.status_code, 'timestamp': datetime.now().isoformat()})
                                 break
                         except (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as e:
                             wait_time = (2 ** attempt) + random.uniform(0, 1)
@@ -254,10 +260,12 @@ class ProviderDiscoverer:
                                 continue
                             else:
                                 self.logger.warning(f"Failed after {max_retries} attempts for {movie['title']}: {type(e).__name__}")
+                                api_errors.append({'movie_id': movie_id, 'title': movie.get('title', ''), 'error_type': type(e).__name__, 'status_code': None, 'timestamp': datetime.now().isoformat()})
                                 failed += 1
                                 break
                         except requests.exceptions.RequestException as e:
                             self.logger.warning(f"Request error for {movie['title']}: {type(e).__name__}")
+                            api_errors.append({'movie_id': movie_id, 'title': movie.get('title', ''), 'error_type': type(e).__name__, 'status_code': None, 'timestamp': datetime.now().isoformat()})
                             failed += 1
                             break
 
@@ -302,6 +310,7 @@ class ProviderDiscoverer:
                             self.host._transition_movie_to_available(
                                 movie_id, movie, 'provider_availability_check', newly_available_ids)
                             newly_digital += 1
+                            transition_details.append({'movie_id': movie_id, 'title': movie.get('title', ''), 'source': 'provider_availability_check', 'timestamp': datetime.now().isoformat()})
 
                             first_service = stream_names[0] if stream_names else rent_names[0] if rent_names else buy_names[0] if buy_names else '?'
                             print(f"  ✓ {movie['title']} now on {first_service}!")
@@ -359,7 +368,11 @@ class ProviderDiscoverer:
                     'transitions': newly_digital,
                     'failed': failed,
                     'scan_tag': scan_tag.strip() if scan_tag else None
-                }
+                },
+                'transition_details': transition_details[:100],
+                'total_transitions': len(transition_details),
+                'api_errors': api_errors[:100],
+                'total_api_errors': len(api_errors),
             }
 
             with open('metrics/discovery_run.json', 'w') as f:
