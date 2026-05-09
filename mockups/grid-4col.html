@@ -392,6 +392,130 @@
         .link-rt { background: #FA320A; }
         .link-mc { background: #FFCC34; color: #000 !important; }
 
+        /* ===== TRAILER MODAL ===== */
+        .trailer-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 300;
+            background: rgba(0,0,0,0.97);
+        }
+        .trailer-modal.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .trailer-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 600px;
+            padding: 0 1rem;
+            margin-bottom: 8px;
+        }
+        .trailer-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #fff;
+            flex: 1;
+            min-width: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .trailer-close {
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.6);
+            font-size: 2rem;
+            cursor: pointer;
+            padding: 0 0.3rem;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            line-height: 1;
+        }
+        .trailer-close:active { color: #fff; }
+        .trailer-body {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            padding: 0 1rem;
+        }
+        .trailer-video-wrap {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .trailer-video-wrap video,
+        .trailer-video-wrap iframe {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            border: none;
+        }
+        .trailer-loading {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            color: #888;
+            font-size: 0.75rem;
+        }
+        .trailer-spinner {
+            width: 30px;
+            height: 30px;
+            border: 3px solid #333;
+            border-top-color: #00d4aa;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .trailer-error {
+            position: absolute;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            color: #ff6b6b;
+            font-size: 0.8rem;
+        }
+        .trailer-nav-arrow {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 310;
+            font-size: 2.2rem;
+            color: rgba(255,255,255,0.5);
+            cursor: pointer;
+            padding: 1rem 0.4rem;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .trailer-nav-arrow:active { color: #00d4aa; }
+        .trailer-nav-left { left: 4px; }
+        .trailer-nav-right { right: 4px; }
+        .trailer-hint {
+            position: fixed;
+            bottom: max(20px, env(safe-area-inset-bottom));
+            left: 0; right: 0;
+            text-align: center;
+            font-size: 0.6rem;
+            color: rgba(255,255,255,0.35);
+            letter-spacing: 0.1em;
+            pointer-events: none;
+            z-index: 310;
+        }
+
         /* Tap hint */
         .tap-hint {
             position: fixed;
@@ -457,6 +581,20 @@
         </div>
     </div>
     <div class="tap-hint" id="tapHint">TAP TO FLIP</div>
+</div>
+
+<!-- Trailer modal -->
+<div class="trailer-modal" id="trailerModal">
+    <div class="trailer-nav-arrow trailer-nav-left" id="trailerNavLeft">&#8249;</div>
+    <div class="trailer-nav-arrow trailer-nav-right" id="trailerNavRight">&#8250;</div>
+    <div class="trailer-header">
+        <span class="trailer-title" id="trailerTitle"></span>
+        <button class="trailer-close" id="trailerClose">&times;</button>
+    </div>
+    <div class="trailer-body" id="trailerBody">
+        <div class="trailer-video-wrap" id="trailerVideoWrap"></div>
+    </div>
+    <div class="trailer-hint">SWIPE &#8592; &#8594;  &#8226;  AUTO-ADVANCES</div>
 </div>
 
 <script>
@@ -625,7 +763,7 @@ function loadMovie(idx) {
 
     // Link buttons
     let linksHtml = '';
-    if (m.tr) linksHtml += `<a href="${m.tr}" target="_blank" rel="noopener" class="back-link-btn link-trailer">\u25B6 Trailer</a>`;
+    if (m.tr) linksHtml += `<button class="back-link-btn link-trailer" type="button">\u25B6 Trailer</button>`;
     if (m.wi) linksHtml += `<a href="${m.wi}" target="_blank" rel="noopener" class="back-link-btn link-wiki">Wiki</a>`;
     if (m.rtU) linksHtml += `<a href="${m.rtU}" target="_blank" rel="noopener" class="back-link-btn link-rt">RT</a>`;
     if (m.mcU) linksHtml += `<a href="${m.mcU}" target="_blank" rel="noopener" class="back-link-btn link-mc">MC</a>`;
@@ -761,6 +899,172 @@ overlay.addEventListener('click', function(e) {
     if (e.target.closest('.nav-arrow') || e.target.closest('.back-link-btn') || e.target.closest('.score-pill')) return;
     if (state === 'poster') flipToDetails();
     else if (state === 'details') closeOverlay();
+});
+
+// ===== INLINE TRAILER PLAYER =====
+const trailerModal = document.getElementById('trailerModal');
+const trailerTitle = document.getElementById('trailerTitle');
+const trailerVideoWrap = document.getElementById('trailerVideoWrap');
+const trailerClose = document.getElementById('trailerClose');
+const trailerNavLeft = document.getElementById('trailerNavLeft');
+const trailerNavRight = document.getElementById('trailerNavRight');
+const trailerBody = document.getElementById('trailerBody');
+
+let trailerIdx = -1;
+let trailerSwipeStartX = 0;
+let trailerSwiping = false;
+
+function isHostedTrailer(url) {
+    return url && (url.endsWith('.mp4') || url.includes('/file/NRW-TRAILERS/'));
+}
+
+function extractYouTubeId(url) {
+    if (!url) return null;
+    const m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&?#]+)/);
+    return m ? m[1] : null;
+}
+
+function findNextTrailerIdx(fromIdx, direction) {
+    const count = movies.length;
+    let idx = fromIdx;
+    for (let i = 0; i < count - 1; i++) {
+        idx = (idx + direction + count) % count;
+        if (movies[idx].tr) return idx;
+    }
+    return -1;
+}
+
+function loadTrailer(idx) {
+    const m = movies[idx];
+    trailerIdx = idx;
+    trailerTitle.textContent = m.t;
+
+    // Stop any existing media
+    const oldVideo = trailerVideoWrap.querySelector('video');
+    if (oldVideo) { oldVideo.pause(); oldVideo.src = ''; }
+    const oldIframe = trailerVideoWrap.querySelector('iframe');
+    if (oldIframe) { oldIframe.src = ''; }
+
+    if (isHostedTrailer(m.tr)) {
+        trailerVideoWrap.innerHTML = `
+            <div class="trailer-loading" id="tLoading">
+                <div class="trailer-spinner"></div>
+                <span>Loading trailer...</span>
+            </div>
+            <div class="trailer-error" id="tError">Trailer unavailable</div>
+            <video id="tVideo" src="${m.tr}" controls autoplay playsinline preload="auto" style="background:#000;">
+                Your browser does not support video playback.
+            </video>
+        `;
+        const video = document.getElementById('tVideo');
+        const loading = document.getElementById('tLoading');
+        const error = document.getElementById('tError');
+        video.addEventListener('canplay', function() { loading.style.display = 'none'; }, { once: true });
+        video.addEventListener('error', function() {
+            loading.style.display = 'none';
+            error.style.display = 'flex';
+            // Auto-advance after error
+            setTimeout(function() { trailerNav(1); }, 1500);
+        }, { once: true });
+        video.addEventListener('ended', function() {
+            trailerNav(1);
+        }, { once: true });
+    } else {
+        const ytId = extractYouTubeId(m.tr);
+        if (ytId) {
+            trailerVideoWrap.innerHTML = `
+                <iframe src="https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0&playsinline=1"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen></iframe>
+            `;
+        }
+    }
+
+    // Show/hide nav arrows
+    trailerNavLeft.style.display = findNextTrailerIdx(idx, -1) >= 0 ? '' : 'none';
+    trailerNavRight.style.display = findNextTrailerIdx(idx, 1) >= 0 ? '' : 'none';
+}
+
+function trailerNav(direction) {
+    const next = findNextTrailerIdx(trailerIdx, direction);
+    if (next >= 0) loadTrailer(next);
+}
+
+function openTrailer(idx) {
+    loadTrailer(idx);
+    trailerModal.classList.add('active');
+}
+
+function closeTrailer() {
+    trailerModal.classList.remove('active');
+    const video = trailerVideoWrap.querySelector('video');
+    if (video) { video.pause(); video.src = ''; }
+    const iframe = trailerVideoWrap.querySelector('iframe');
+    if (iframe) { iframe.src = ''; }
+    trailerVideoWrap.innerHTML = '';
+}
+
+// Make trailer button open inline player instead of new tab
+document.addEventListener('click', function(e) {
+    const btn = e.target.closest('.back-link-btn.link-trailer');
+    if (btn) {
+        e.preventDefault();
+        e.stopPropagation();
+        openTrailer(currentIdx);
+    }
+});
+
+// Trailer close button
+trailerClose.addEventListener('touchend', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    closeTrailer();
+});
+trailerClose.addEventListener('click', function(e) {
+    e.stopPropagation();
+    closeTrailer();
+});
+
+// Trailer nav arrows
+trailerNavLeft.addEventListener('touchend', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    trailerNav(-1);
+});
+trailerNavLeft.addEventListener('click', function(e) { e.stopPropagation(); trailerNav(-1); });
+trailerNavRight.addEventListener('touchend', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    trailerNav(1);
+});
+trailerNavRight.addEventListener('click', function(e) { e.stopPropagation(); trailerNav(1); });
+
+// Trailer swipe
+trailerModal.addEventListener('touchstart', function(e) {
+    if (e.target.closest('.trailer-nav-arrow') || e.target.closest('.trailer-close') || e.target.closest('video') || e.target.closest('iframe')) return;
+    trailerSwipeStartX = e.touches[0].clientX;
+    trailerSwiping = false;
+}, { passive: true });
+trailerModal.addEventListener('touchmove', function(e) {
+    if (e.target.closest('.trailer-nav-arrow') || e.target.closest('.trailer-close') || e.target.closest('video') || e.target.closest('iframe')) return;
+    const dx = e.touches[0].clientX - trailerSwipeStartX;
+    if (Math.abs(dx) > 30) trailerSwiping = true;
+}, { passive: true });
+trailerModal.addEventListener('touchend', function(e) {
+    if (e.target.closest('.trailer-nav-arrow') || e.target.closest('.trailer-close') || e.target.closest('video') || e.target.closest('iframe')) return;
+    if (trailerSwiping) {
+        const dx = e.changedTouches[0].clientX - trailerSwipeStartX;
+        if (Math.abs(dx) > 50) {
+            e.preventDefault();
+            trailerNav(dx < 0 ? 1 : -1);
+        }
+    }
+    trailerSwiping = false;
+});
+
+// Trailer backdrop click to close
+trailerModal.addEventListener('click', function(e) {
+    if (e.target === trailerModal) closeTrailer();
 });
 </script>
 
