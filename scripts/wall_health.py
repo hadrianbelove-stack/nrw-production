@@ -24,6 +24,19 @@ today_dt = date.today()
 today = today_dt.isoformat()
 three_days_ago = (today_dt - timedelta(days=3)).isoformat()
 
+
+def fmt_date(iso_str):
+    """Format ISO date string as 'May 5th, 2026'."""
+    if not iso_str or len(iso_str) < 10:
+        return iso_str or '?'
+    dt = date.fromisoformat(iso_str[:10])
+    day = dt.day
+    if 11 <= day <= 13:
+        suffix = 'th'
+    else:
+        suffix = {1: 'st', 2: 'nd', 3: 'rd'}.get(day % 10, 'th')
+    return dt.strftime(f'%b {day}{suffix}, %Y')
+
 # ── Load data sources ────────────────────────────────────────────────────────
 
 d = json.load(open(os.path.join(BASE, 'data.json')))
@@ -68,7 +81,7 @@ def get_watch_link_count(m):
 
 # ── Section 1: DASHBOARD ────────────────────────────────────────────────────
 
-with_rt = sum(1 for m in movies if m.get('links', {}).get('rt'))
+with_rt = sum(1 for m in movies if m.get('rt_score'))
 with_mc = sum(1 for m in movies if m.get('metacritic_score'))
 with_wiki = sum(1 for m in movies if m.get('links', {}).get('wikipedia'))
 with_trailers = sum(1 for m in movies if m.get('links', {}).get('trailer') or m.get('links', {}).get('trailer_hosted'))
@@ -88,7 +101,7 @@ except Exception:
 pct = lambda n: round(n / total * 100) if total else 0
 
 print('=' * 78)
-print('WALL HEALTH REPORT — %s' % today)
+print('WALL HEALTH REPORT — %s' % fmt_date(today))
 print('=' * 78)
 print()
 print('WALL: %d movies | PIPELINE: %s' % (total, pipeline_str))
@@ -102,7 +115,7 @@ arrivals = [m for m in movies if m.get('digital_date') == today]
 
 print()
 print('─' * 78)
-print("TODAY'S ARRIVALS: %d (%s)" % (len(arrivals), today))
+print("TODAY'S ARRIVALS: %d (%s)" % (len(arrivals), fmt_date(today)))
 print('─' * 78)
 
 if arrivals:
@@ -218,7 +231,7 @@ else:
         print()
         for title, dd, days, status in rows:
             days_str = '%dd' % days if isinstance(days, int) else '?'
-            print('  %-42s  %s  %4s  %s' % (title[:42], dd, days_str, status))
+            print('  %-42s  %-16s  %4s  %s' % (title[:42], fmt_date(dd), days_str, status))
     else:
         if aged_out:
             print('  All %d aged out (>3 days) — no action items' % aged_out)
@@ -237,6 +250,8 @@ for mid, m in tracking_raw.items():
     title = m.get('title', str(mid))
     rev_count = m.get('_jw_revert_count', 0)
 
+    year = m.get('year', '')
+
     # Repeat offenders: any movie reverted 2+ times (regardless of recency or wall status)
     if rev_count >= 2:
         provs = m.get('providers', {})
@@ -244,7 +259,7 @@ for mid, m in tracking_raw.items():
         for cat in ['rent', 'buy', 'streaming']:
             for p in provs.get(cat, []):
                 plat_names.append(p)
-        repeat_offenders.append((rev_count, title, reason, plat_names))
+        repeat_offenders.append((rev_count, title, year, reason, plat_names))
 
     # Recent reverts not on wall
     if rev_at >= three_days_ago and reason and title not in wall_titles:
@@ -253,7 +268,7 @@ for mid, m in tracking_raw.items():
         for cat in ['rent', 'buy', 'streaming']:
             for p in provs.get(cat, []):
                 plat_names.append(p)
-        jw_reverts.append((rev_at, title, reason, plat_names))
+        jw_reverts.append((rev_at, title, year, reason, plat_names))
 
 print()
 print('─' * 78)
@@ -264,7 +279,7 @@ if jw_reverts:
     # Reason summary
     reason_counts = Counter()
     excluded_platforms = Counter()
-    for rev_at, title, reason, plat_names in jw_reverts:
+    for rev_at, title, year, reason, plat_names in jw_reverts:
         if reason == 'justwatch_no_valid_offers':
             reason_counts['excluded platform'] += 1
             for p in plat_names:
@@ -288,16 +303,17 @@ if jw_reverts:
     # Full list
     print()
     print('  FULL LIST:')
-    print('  %-12s %-45s %s' % ('Date', 'Title', 'Reason / TMDB Platforms'))
-    print('  ' + '─' * 72)
-    for rev_at, title, reason, plat_names in sorted(jw_reverts):
+    print('  %-16s %-40s %-6s %s' % ('Date', 'Title', 'Year', 'Reason / TMDB Platforms'))
+    print('  ' + '─' * 90)
+    for rev_at, title, year, reason, plat_names in sorted(jw_reverts):
         if reason == 'justwatch_no_valid_offers':
             label = 'excluded: ' + (', '.join(plat_names) if plat_names else '(not recorded)')
         elif reason == 'justwatch_no_match':
             label = 'no JW match' + (' — TMDB: ' + ', '.join(plat_names) if plat_names else '')
         else:
             label = reason
-        print('  %-12s %-45s %s' % (rev_at, title[:45], label))
+        date_str = fmt_date(rev_at)
+        print('  %-16s %-40s %-6s %s' % (date_str, title[:40], year or '—', label))
 else:
     print('  None in last 3 days')
 
@@ -306,11 +322,11 @@ if repeat_offenders:
     repeat_offenders.sort(key=lambda r: -r[0])
     print()
     print('  REPEAT OFFENDERS (reverted 2+ times — investigate for pipeline fixes):')
-    print('  %-4s %-45s %s' % ('Count', 'Title', 'TMDB Platforms'))
-    print('  ' + '─' * 72)
-    for rev_count, title, reason, plat_names in repeat_offenders[:20]:  # Cap at 20
+    print('  %-4s %-40s %-6s %s' % ('Count', 'Title', 'Year', 'TMDB Platforms'))
+    print('  ' + '─' * 90)
+    for rev_count, title, year, reason, plat_names in repeat_offenders[:20]:  # Cap at 20
         plat_str = ', '.join(plat_names) if plat_names else '(none)'
-        print('  %-4s %-45s %s' % ('%dx' % rev_count, title[:45], plat_str))
+        print('  %-4s %-40s %-6s %s' % ('%dx' % rev_count, title[:40], year or '—', plat_str))
     if len(repeat_offenders) > 20:
         print('  ... and %d more' % (len(repeat_offenders) - 20))
 
@@ -365,7 +381,7 @@ if bare_movies:
     print('  %-*s  %s' % (col_w, 'Title', 'Date'))
     print('  ' + '─' * (col_w + 14))
     for title, dd in sorted(bare_movies, key=lambda r: r[1] or '', reverse=True):
-        print('  %-*s  %s' % (col_w, title[:col_w], dd))
+        print('  %-*s  %s' % (col_w, title[:col_w], fmt_date(dd)))
 
 if recent_gaps:
     print()
@@ -374,8 +390,8 @@ if recent_gaps:
     print('  %-*s  %-12s %-3s %-3s %-4s %-7s %-4s' % (col_w, 'Title', 'Date', 'RT', 'MC', 'Wiki', 'Trailer', 'IMDb'))
     print('  ' + '─' * (col_w + 40))
     for title, dd, has_rt, has_mc, has_wiki, has_trailer, has_imdb in sorted(recent_gaps, key=lambda r: r[1] or '', reverse=True):
-        print('  %-*s  %-12s %-3s %-3s %-4s %-7s %-4s' % (
-            col_w, title[:col_w], dd,
+        print('  %-*s  %-16s %-3s %-3s %-4s %-7s %-4s' % (
+            col_w, title[:col_w], fmt_date(dd),
             'yes' if has_rt else '--',
             'yes' if has_mc else '--',
             'yes' if has_wiki else '--',
@@ -437,8 +453,8 @@ print('─' * 78)
 
 if merged:
     col_w = 38
-    print('  %-12s %-*s %-6s %-20s %s' % ('Date', col_w, 'Title', 'Links', 'Pre-order Services', 'TMDB Platforms'))
-    print('  ' + '─' * (col_w + 55))
+    print('  %-16s %-*s %-6s %-20s %s' % ('Date', col_w, 'Title', 'Links', 'Pre-order Services', 'TMDB Platforms'))
+    print('  ' + '─' * (col_w + 59))
     no_link_count = 0
     for dd, title, n_links, services, tmdb_str, buyonly in merged:
         link_str = str(n_links) if n_links > 0 else 'NONE'
@@ -446,8 +462,8 @@ if merged:
             no_link_count += 1
         display_title = (title[:col_w - 10] + buyonly) if buyonly else title[:col_w]
         svc_display = services if n_links > 0 else ''
-        print('  %-12s %-*s %-6s %-20s %s' % (dd, col_w, display_title, link_str, svc_display, tmdb_str))
-    print('  ' + '─' * (col_w + 55))
+        print('  %-16s %-*s %-6s %-20s %s' % (fmt_date(dd), col_w, display_title, link_str, svc_display, tmdb_str))
+    print('  ' + '─' * (col_w + 59))
     has_links = len(merged) - no_link_count
     print('  Links found: %d of %d | No links: %d' % (has_links, len(merged), no_link_count))
 else:
@@ -473,18 +489,18 @@ if os.path.exists(daily_path):
             pass
 
 if trend_rows:
-    print('  %-12s  %7s  %12s' % ('Date', 'Intake', 'Transitions'))
-    print('  ' + '─' * 35)
+    print('  %-16s  %7s  %12s' % ('Date', 'Intake', 'Transitions'))
+    print('  ' + '─' * 39)
     for row in trend_rows:
         d_str = row.get('date', '?')
         intake = row.get('intaked_today', 0)
         trans = row.get('transitions', 0)
         flag = '  !! STALL' if trans == 0 else ''
-        print('  %-12s  %7d  %12d%s' % (d_str, intake, trans, flag))
-    print('  ' + '─' * 35)
+        print('  %-16s  %7d  %12d%s' % (fmt_date(d_str), intake, trans, flag))
+    print('  ' + '─' * 39)
     avg_intake = sum(r.get('intaked_today', 0) for r in trend_rows) / len(trend_rows)
     avg_trans = sum(r.get('transitions', 0) for r in trend_rows) / len(trend_rows)
-    print('  %-12s  %7.0f  %12.0f' % ('14-day avg', avg_intake, avg_trans))
+    print('  %-16s  %7.0f  %12.0f' % ('14-day avg', avg_intake, avg_trans))
     # Flag today vs average
     if trend_rows:
         last = trend_rows[-1]
@@ -535,26 +551,26 @@ else:
     if gap_no_poster:
         print()
         print('  NO POSTER (%d):' % len(gap_no_poster))
-        print('  %-*s %-12s %s' % (col_w, 'Title', 'Date', 'Enrichment'))
-        print('  ' + '─' * (col_w + 25))
+        print('  %-*s %-16s %s' % (col_w, 'Title', 'Date', 'Enrichment'))
+        print('  ' + '─' * (col_w + 29))
         for title, dd, e_status, mid in sorted(gap_no_poster, key=lambda r: r[1] or '', reverse=True):
-            print('  %-*s %-12s %s' % (col_w, title[:col_w], dd, e_status))
+            print('  %-*s %-16s %s' % (col_w, title[:col_w], fmt_date(dd), e_status))
 
     if gap_no_synopsis:
         print()
         print('  NO SYNOPSIS (%d):' % len(gap_no_synopsis))
-        print('  %-*s %-12s %s' % (col_w, 'Title', 'Date', 'Enrichment'))
-        print('  ' + '─' * (col_w + 25))
+        print('  %-*s %-16s %s' % (col_w, 'Title', 'Date', 'Enrichment'))
+        print('  ' + '─' * (col_w + 29))
         for title, dd, e_status, mid in sorted(gap_no_synopsis, key=lambda r: r[1] or '', reverse=True):
-            print('  %-*s %-12s %s' % (col_w, title[:col_w], dd, e_status))
+            print('  %-*s %-16s %s' % (col_w, title[:col_w], fmt_date(dd), e_status))
 
     if gap_no_links:
         print()
         print('  NO WATCH LINKS — released, non-preorder (%d):' % len(gap_no_links))
-        print('  %-*s %-12s %s' % (col_w, 'Title', 'Date', 'Enrichment'))
-        print('  ' + '─' * (col_w + 25))
+        print('  %-*s %-16s %s' % (col_w, 'Title', 'Date', 'Enrichment'))
+        print('  ' + '─' * (col_w + 29))
         for title, dd, e_status, mid in sorted(gap_no_links, key=lambda r: r[1] or '', reverse=True):
-            print('  %-*s %-12s %s' % (col_w, title[:col_w], dd, e_status))
+            print('  %-*s %-16s %s' % (col_w, title[:col_w], fmt_date(dd), e_status))
 
     print()
     print('  Summary: %d movies (%d no poster, %d no synopsis, %d no links)' % (
@@ -575,7 +591,7 @@ if os.path.exists(host_fail_path):
             print('TRAILER HOSTING FAILURES — %d in last 3 days' % len(recent_fails))
             print('─' * 78)
             for fail_date, title, reason in sorted(recent_fails):
-                print('  %-12s %-42s %s' % (fail_date, title[:42], reason))
+                print('  %-16s %-42s %s' % (fmt_date(fail_date), title[:42], reason))
     except Exception:
         pass
 
