@@ -19,6 +19,48 @@ const NRWMobile = {
     displayedCount: 0,
     loadIncrement: 15,
     isLoading: false,
+    searchQuery: '',
+    isTrailerReel: false,
+
+    // Filter descriptions — shown when a single filter is active
+    FILTER_DESCRIPTIONS: {
+        'studio': {
+            title: 'Studio',
+            text: 'The wide releases, the studio fare, the main-streamers. Not saying they\'re good, not saying they\'re bad, but these are the movies that have either entered or tried to enter the mainstream conversation. They have budgets, recognizable actors, and large-scale billboard campaigns.'
+        },
+        'indie': {
+            title: 'Indie',
+            text: 'The smaller films, the independents, the ones without a billboard campaign. These movies flew under the radar theatrically but are worth knowing about now that they\'re available to stream at home.'
+        },
+        'staff-picks': {
+            title: 'Staff Picks',
+            text: 'The ones we\'re vouching for. Out of everything on the wall, these are the movies we think are genuinely worth your time. Not a popularity contest, just honest recommendations.'
+        },
+        'foreign': {
+            title: 'Foreign',
+            text: 'Non-English language films from around the world. Some are massive in their home countries, some are intimate art-house pieces. The only thing they have in common is subtitles and the fact that they\'re streaming now.'
+        },
+        'series': {
+            title: 'Limited Series',
+            text: 'Not movies \u2014 limited series. The kind you can finish in a weekend. Prestige mini-series and limited runs that landed on streaming and deserve the same attention as a good film.'
+        },
+        'restorations': {
+            title: 'Restorations & Reissues',
+            text: 'Classic and catalog titles with new digital life. These are films that have been restored, remastered, or newly reissued on streaming platforms. Old movies, fresh transfers.'
+        },
+        'documentary': {
+            title: 'Documentary',
+            text: 'Non-fiction filmmaking. Documentaries covering real stories, real people, and real events \u2014 now available to stream at home.'
+        },
+        'virtual-screenings': {
+            title: 'Virtual Screenings',
+            text: 'Currently playing at film festivals. These aren\'t streaming yet \u2014 they\'re in theaters, at festivals, or doing the circuit. If you\'re near a screening, this is your heads-up.'
+        },
+        'pre-orders': {
+            title: 'Pre-Orders',
+            text: 'Coming soon. These movies have confirmed digital release dates and are available to pre-order now on storefronts like Apple TV and Amazon.'
+        }
+    },
 
     // Shared config — loaded from assets/shared-config.js
     SERVICE_MAP: NRWConfig.SERVICE_MAP,
@@ -54,6 +96,7 @@ const NRWMobile = {
 
             this.allMovies = (data.movies || []).filter(m => {
                 if (m.hidden) return false;
+                if (m._enrichment_status === 'reverted') return false;
                 return !!m.digital_date;
             });
 
@@ -62,6 +105,7 @@ const NRWMobile = {
 
             // Setup event listeners
             this.setupFilters();
+            this.setupSearchEventListeners();
             this.setupInfiniteScroll();
 
             // Initial render
@@ -134,11 +178,72 @@ const NRWMobile = {
 
             this.displayedCount = 0;
             this.applyFilter();
+            this.updateFilterDescription();
             this.render();
 
             // Scroll to top
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
+    },
+
+    setupSearchEventListeners() {
+        const searchInput = document.getElementById('search-input');
+        const clearBtn = document.getElementById('search-clear');
+        if (!searchInput) return;
+
+        let debounceTimer;
+        searchInput.addEventListener('input', (e) => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                this.searchQuery = e.target.value.trim().toLowerCase();
+                this.displayedCount = 0;
+                this.applyFilter();
+                this.render();
+                if (clearBtn) {
+                    clearBtn.style.display = this.searchQuery ? 'block' : 'none';
+                }
+            }, 200);
+        });
+
+        if (clearBtn) {
+            clearBtn.style.display = 'none';
+            clearBtn.addEventListener('click', () => {
+                searchInput.value = '';
+                this.searchQuery = '';
+                this.displayedCount = 0;
+                this.applyFilter();
+                this.render();
+                clearBtn.style.display = 'none';
+                searchInput.focus();
+            });
+        }
+
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                searchInput.value = '';
+                this.searchQuery = '';
+                this.displayedCount = 0;
+                this.applyFilter();
+                this.render();
+                if (clearBtn) clearBtn.style.display = 'none';
+                searchInput.blur();
+            }
+        });
+    },
+
+    updateFilterDescription() {
+        const el = document.getElementById('filter-description');
+        if (!el) return;
+
+        const filters = Array.from(this.activeFilters);
+        if (filters.length === 1 && this.FILTER_DESCRIPTIONS[filters[0]]) {
+            const desc = this.FILTER_DESCRIPTIONS[filters[0]];
+            document.getElementById('filter-description-title').textContent = desc.title;
+            document.getElementById('filter-description-text').textContent = desc.text;
+            el.classList.add('active');
+        } else {
+            el.classList.remove('active');
+        }
     },
 
     setupInfiniteScroll() {
@@ -157,42 +262,66 @@ const NRWMobile = {
 
         this.filteredMovies = this.allMovies.filter(movie => {
             // No filters selected = show all
-            if (filters.size === 0) return true;
-
-            // OR logic: movie must match ANY selected filter
-            for (const filter of filters) {
-                switch (filter) {
-                    case 'big-time':
-                        if (movie.categories?.is_big_time || movie.categories?.tier === 'big_time') return true;
-                        break;
-                    case 'indie':
-                        if (movie.categories?.is_indie || movie.categories?.tier === 'indie') return true;
-                        break;
-                    case 'staff-picks':
-                        if (movie.categories?.is_staff_pick || this.staffPicks.includes(movie.id)) return true;
-                        break;
-                    case 'foreign':
-                        if (movie.categories?.is_foreign ||
-                            (movie.original_language && movie.original_language !== 'en')) return true;
-                        break;
-                    case 'series':
-                        if (movie.content_type === 'limited_series') return true;
-                        break;
-                    case 'restorations':
-                        if (movie.categories?.is_restoration === true) return true;
-                        break;
-                    case 'documentary':
-                        if (movie.categories?.is_documentary === true) return true;
-                        break;
-                    case 'virtual-screenings':
-                        if (movie.categories?.is_virtual_screening === true) return true;
-                        break;
-                    case 'pre-orders':
-                        if (movie._is_preorder === true) return true;
-                        break;
+            if (filters.size === 0) {
+                // No category filter — show all
+            } else {
+                // OR logic: movie must match ANY selected filter
+                let matchesAny = false;
+                for (const filter of filters) {
+                    switch (filter) {
+                        case 'studio':
+                            if (movie.categories?.is_studio || movie.categories?.tier === 'studio') matchesAny = true;
+                            break;
+                        case 'indie':
+                            if (movie.categories?.is_indie || movie.categories?.tier === 'indie') matchesAny = true;
+                            break;
+                        case 'staff-picks':
+                            if (movie.categories?.is_staff_pick || movie.featured || this.staffPicks.includes(String(movie.id))) matchesAny = true;
+                            break;
+                        case 'foreign':
+                            if (movie.categories?.is_foreign ||
+                                (movie.original_language && movie.original_language !== 'en')) matchesAny = true;
+                            break;
+                        case 'series':
+                            if (movie.content_type === 'limited_series') matchesAny = true;
+                            break;
+                        case 'restorations':
+                            if (movie.categories?.is_restoration === true) matchesAny = true;
+                            break;
+                        case 'documentary':
+                            if (movie.categories?.is_documentary === true) matchesAny = true;
+                            break;
+                        case 'virtual-screenings':
+                            if (movie.categories?.is_virtual_screening === true) matchesAny = true;
+                            break;
+                        case 'pre-orders':
+                            if (movie._is_preorder === true) matchesAny = true;
+                            break;
+                    }
+                    if (matchesAny) break;
                 }
+                if (!matchesAny) return false;
             }
-            return false;
+
+            // Then apply search filter if query exists
+            if (this.searchQuery) {
+                const query = this.searchQuery;
+                const title = (movie.title || '').toLowerCase();
+                const director = (movie.director || '').toLowerCase();
+                const synopsis = (movie.synopsis || '').toLowerCase();
+                const genres = (movie.genres || []).join(' ').toLowerCase();
+                const country = (movie.country || '').toLowerCase();
+                const year = String(movie.year || '');
+
+                return title.includes(query) ||
+                       director.includes(query) ||
+                       synopsis.includes(query) ||
+                       genres.includes(query) ||
+                       country.includes(query) ||
+                       year.includes(query);
+            }
+
+            return true;
         });
     },
 
@@ -229,6 +358,26 @@ const NRWMobile = {
         const feed = document.getElementById('movie-feed');
         let lastDate = isFirstBatch ? '' : this.getLastRenderedDate();
         let preorderSectionStarted = false;
+
+        // Add trailer reel card at the top of the first batch
+        if (isFirstBatch && !this.searchQuery) {
+            const now = new Date();
+            const weekStart = new Date(now);
+            weekStart.setDate(now.getDate() - now.getDay());
+            const weekEnd = new Date(weekStart);
+            weekEnd.setDate(weekStart.getDate() + 6);
+            const dateRange = weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' \u2013 ' + weekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+            const reelCard = document.createElement('div');
+            reelCard.className = 'trailer-reel-card';
+            reelCard.innerHTML = `
+                <div class="trailer-reel-title">NEW TRAILERS</div>
+                <div class="trailer-reel-date">${dateRange}</div>
+                <div class="trailer-reel-icon">&#9654;</div>
+            `;
+            reelCard.addEventListener('click', () => this.openTrailerReel());
+            feed.appendChild(reelCard);
+        }
 
         movies.forEach(movie => {
             // Pre-order movies: show section header once, no date headers
@@ -313,10 +462,13 @@ const NRWMobile = {
             <div class="flip-inner">
                 <div class="flip-front">
                     <div class="poster-wrap">
+                        <div class="poster-fallback"><span class="poster-fallback-title">${movie.display_title || movie.title || 'Untitled'}</span></div>
                         <img class="poster"
-                             src="${movie.poster || 'https://via.placeholder.com/300x450?text=No+Poster'}"
+                             src="${movie.poster || ''}"
                              alt="${movie.title}"
-                             loading="lazy">
+                             loading="lazy"
+                             ${movie.poster ? '' : 'style="display:none"'}
+                             onerror="this.style.display='none';">
                         ${streamingBadge}
                         ${movie.categories?.is_restoration ? '<span class="poster-badge badge-restoration">RESTORED</span>' : ''}
                         ${movie.categories?.is_virtual_screening
@@ -499,7 +651,7 @@ const NRWMobile = {
             badgeClass = 'badge-' + resolved.class;
         } else {
             displayName = service.toUpperCase().substring(0, 10);
-            badgeClass = 'badge-vod';
+            badgeClass = 'badge-other';
         }
 
         return `<span class="poster-badge ${badgeClass}">${displayName}</span>`;
@@ -563,16 +715,6 @@ const NRWMobile = {
         return '';
     },
 
-    getTrailerButton(movie) {
-        const trailerUrl = movie.links?.trailer_hosted || movie.links?.trailer;
-        if (!trailerUrl) return '';
-        const isMP4 = (() => { try { return new URL(trailerUrl).pathname.endsWith('.mp4'); } catch { return trailerUrl.endsWith('.mp4'); } })();
-        if (isMP4) {
-            return `<a href="#" onclick="NRWMobile.showTrailer('${movie.id}');return false;" class="btn-equal btn-trailer">Trailer</a>`;
-        }
-        return `<a href="${trailerUrl}" target="_blank" rel="noopener" class="btn-equal btn-trailer">Trailer</a>`;
-    },
-
     getTrailerButtonFull(movie) {
         const trailerUrl = movie.links?.trailer_hosted || movie.links?.trailer;
         if (!trailerUrl) return '';
@@ -589,7 +731,7 @@ const NRWMobile = {
     },
 
     getMCButton(movie) {
-        if (!movie.metacritic_score || !movie.links?.metacritic) return '';
+        if (!movie.metacritic_score || movie.metacritic_score === "0" || !movie.links?.metacritic) return '';
         return `<a href="${movie.links.metacritic}" target="_blank" rel="noopener" class="btn-equal btn-mc"><img src="../assets/logos/metacritic.png" class="btn-logo" alt="MC"> ${movie.metacritic_score}</a>`;
     },
 
@@ -609,7 +751,7 @@ const NRWMobile = {
         if (movie.rt_score && movie.links?.rt) {
             badges += `<a href="${movie.links.rt}" target="_blank" rel="noopener" class="card-score-badge rt"><img src="../assets/logos/rt.png" class="score-logo" alt="RT"> ${movie.rt_score}</a>`;
         }
-        if (movie.metacritic_score && movie.links?.metacritic) {
+        if (movie.metacritic_score && movie.metacritic_score !== "0" && movie.links?.metacritic) {
             badges += `<a href="${movie.links.metacritic}" target="_blank" rel="noopener" class="card-score-badge mc"><img src="../assets/logos/metacritic.png" class="score-logo" alt="MC"> ${movie.metacritic_score}</a>`;
         }
         if (movie.imdb_rating) {
@@ -628,6 +770,25 @@ const NRWMobile = {
         return `<a href="${movie.links.wikipedia}" target="_blank" rel="noopener" class="btn-equal btn-wiki">Wiki</a>`;
     },
 
+    // Trailer reel — plays through hosted trailers from the last 7 days
+    openTrailerReel() {
+        const cutoff = new Date();
+        cutoff.setDate(cutoff.getDate() - 7);
+
+        const reelMovies = this.allMovies
+            .filter(m => {
+                if (!m.digital_date) return false;
+                if (new Date(m.digital_date) < cutoff) return false;
+                return m.links?.trailer_hosted;
+            })
+            .sort((a, b) => new Date(b.digital_date) - new Date(a.digital_date));
+
+        if (reelMovies.length === 0) return;
+
+        this.isTrailerReel = true;
+        this._showTrailerAt(reelMovies, 0);
+    },
+
     // Build swipable trailer list and open at the given movie id
     showTrailer(movieId) {
         const isMP4 = url => { try { return new URL(url).pathname.endsWith('.mp4'); } catch { return url.endsWith('.mp4'); } };
@@ -637,6 +798,7 @@ const NRWMobile = {
         });
         const idx = trailerMovies.findIndex(m => String(m.id) === String(movieId));
         if (idx === -1) return;
+        this.isTrailerReel = false;
         this._showTrailerAt(trailerMovies, idx);
     },
 
@@ -662,13 +824,14 @@ const NRWMobile = {
                     <source src="${url}" type="video/mp4">
                 </video>
                 <div class="trailer-video-title">${movie.display_title || movie.title || ''}</div>
+                ${trailerMovies.length > 1 ? `<div class="trailer-reel-counter">${idx + 1} of ${trailerMovies.length}</div>` : ''}
             </div>
         `;
 
         document.body.appendChild(overlay);
         document.body.style.overflow = 'hidden';
 
-        const close = () => { overlay.remove(); document.body.style.overflow = ''; document.removeEventListener('keydown', onKeydown); };
+        const close = () => { overlay.remove(); document.body.style.overflow = ''; document.removeEventListener('keydown', onKeydown); this.isTrailerReel = false; };
         const onKeydown = e => { if (e.key === 'Escape') close(); };
         document.addEventListener('keydown', onKeydown);
 
@@ -679,7 +842,15 @@ const NRWMobile = {
             if (!overlay.querySelector('#trailer-video-wrap').contains(e.target)) close();
         });
 
-        overlay.querySelector('video').addEventListener('ended', close);
+        // On video end: advance to next in reel mode, close otherwise
+        overlay.querySelector('video').addEventListener('ended', () => {
+            if (this.isTrailerReel && hasNext) {
+                close();
+                this._showTrailerAt(trailerMovies, idx + 1);
+            } else {
+                close();
+            }
+        });
 
         if (hasPrev) overlay.querySelector('#trailer-prev').addEventListener('click', () => { close(); this._showTrailerAt(trailerMovies, idx - 1); });
         if (hasNext) overlay.querySelector('#trailer-next').addEventListener('click', () => { close(); this._showTrailerAt(trailerMovies, idx + 1); });

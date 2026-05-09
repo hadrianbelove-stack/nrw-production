@@ -89,7 +89,7 @@ body { background: #1a1a1a; color: #fff; font-family: -apple-system, BlinkMacSys
 }
 .tag-pick { background: #ffd700; color: #000; }
 .tag-restore { background: #C8A951; color: #000; }
-.tag-bigtime { background: #ff6b6b; color: #fff; }
+.tag-studio { background: #ff6b6b; color: #fff; }
 .tag-niche { background: #4a90d9; color: #fff; }
 .tag-foreign { background: #9b59b6; color: #fff; }
 .tag-series { background: #17a2b8; color: #fff; }
@@ -239,41 +239,41 @@ const MOVIES = [
     { title: 'Supercars - Road to Glory', dir: 'Andrew Janson', cc: 'AU', min: 79,
       poster: 'https://image.tmdb.org/t/p/w92/n846J15sZ1CgwPrQzVnjnyNETs7.jpg',
       trlr: true, rt: false, img: true, wiki: false, pick: false, restore: false,
-      bigtime: false, niche: true, foreign: false, series: false, festival: false,
+      studio: false, niche: true, foreign: false, series: false, festival: false,
       wiki_url: '', imdb: 'tt26388498',
       syn: 'An inspiring look at Australia\'s premier touring car championship, featuring fierce rivalries and legendary circuits as drivers chase glory at over 300km/h.',
       streaming: '', vod_amazon: false, vod_apple: false, vod_vudu: false },
     { title: 'With Love', dir: 'Madhan', cc: 'IN', min: 141,
       poster: 'https://image.tmdb.org/t/p/w92/84rCbRiY7cXwDO8lAXp5MIxuok5.jpg',
       trlr: true, rt: false, img: true, wiki: true, pick: false, restore: false,
-      bigtime: false, niche: true, foreign: true, series: false, festival: false,
+      studio: false, niche: true, foreign: true, series: false, festival: false,
       wiki_url: 'https://en.wikipedia.org/wiki/With_Love_(2026_film)', imdb: 'tt31407680',
       syn: 'A love story set across multiple timelines, exploring the enduring power of human connection through decades of change in southern India.',
       streaming: '', vod_amazon: false, vod_apple: true, vod_vudu: false },
     { title: 'Dolly', dir: 'Rod Blackhurst', cc: 'US', min: 83,
       poster: 'https://image.tmdb.org/t/p/w92/sTPUg3XtdcKRAS5Vwsi1GYPFhNZ.jpg',
       trlr: true, rt: true, img: true, wiki: true, pick: false, restore: false,
-      bigtime: false, niche: true, foreign: false, series: false, festival: false,
+      studio: false, niche: true, foreign: false, series: false, festival: false,
       wiki_url: 'https://en.wikipedia.org/wiki/Dolly_(2026_film)', imdb: 'tt21372026',
       syn: 'When a couple brings home a high-tech A.I. companion doll for their daughter, they discover it has developed a sinister agenda of its own. As the doll\'s behavior grows increasingly dangerous, they must find a way to shut it down before it tears their family apart.',
       streaming: '', vod_amazon: true, vod_apple: true, vod_vudu: false },
     { title: 'Stray Bodies', dir: 'Elina Psykou', cc: 'BG', min: 109,
       poster: 'https://image.tmdb.org/t/p/w92/tmeenZDQlGlSLaFZZ36XyePiTR1.jpg',
       trlr: true, rt: true, img: true, wiki: false, pick: true, restore: false,
-      bigtime: false, niche: true, foreign: true, series: false, festival: true,
+      studio: false, niche: true, foreign: true, series: false, festival: true,
       wiki_url: '', imdb: '',
       syn: 'A surreal Greek drama exploring bodily autonomy through interconnected stories of people whose bodies become sites of political and personal struggle.',
       streaming: 'Mubi', vod_amazon: false, vod_apple: false, vod_vudu: false },
     { title: 'Theertharoopa Thandeyavarige', dir: 'Ramenahalli Jagannatha', cc: '', min: 130,
       poster: 'https://image.tmdb.org/t/p/w92/mfwcUim9bRJDsGRRXotzvj43xFD.jpg',
       trlr: true, rt: false, img: true, wiki: true, pick: false, restore: false,
-      bigtime: false, niche: false, foreign: true, series: false, festival: false,
+      studio: false, niche: false, foreign: true, series: false, festival: false,
       wiki_url: 'https://en.wikipedia.org/wiki/Theertharoopa_Thandeyavarige', imdb: 'tt33022810',
       syn: '', streaming: '', vod_amazon: false, vod_apple: false, vod_vudu: false },
     { title: 'Jellyfish', dir: 'Giles Chan', cc: 'AU', min: 109,
       poster: 'https://image.tmdb.org/t/p/w92/v380dpQhh8GR9SMfLn8dfmlMOkd.jpg',
       trlr: true, rt: false, img: true, wiki: true, pick: false, restore: false,
-      bigtime: false, niche: true, foreign: false, series: false, festival: false,
+      studio: false, niche: true, foreign: false, series: false, festival: false,
       wiki_url: 'https://en.wikipedia.org/wiki/Jellyfish_(2026_film)', imdb: 'tt28009498',
       syn: 'An intimate portrait of a young woman navigating family dysfunction and finding unexpected connection in the chaos of adolescence.',
       streaming: '', vod_amazon: false, vod_apple: false, vod_vudu: false },
@@ -282,27 +282,27 @@ const MOVIES = [
     { title: 'Hurry Up Tomorrow', dir: 'Trey Edward Shults', cc: 'US', min: 120,
       poster: 'https://image.tmdb.org/t/p/w92/jKH1JLm34XKRI6pIWdGBVbOjEpD.jpg',
       trlr: true, rt: true, img: true, wiki: true, pick: false, restore: false,
-      bigtime: true, niche: false, foreign: false, series: false, festival: false,
+      studio: true, niche: false, foreign: false, series: false, festival: false,
       wiki_url: 'https://en.wikipedia.org/wiki/Hurry_Up_Tomorrow_(film)', imdb: 'tt22085724',
       syn: 'A psychological thriller about obsession and identity starring The Weeknd and Jenna Ortega. Two strangers cross paths in a psychiatric hospital, setting off a chain of events that blur the line between reality and delusion.',
       streaming: '', vod_amazon: true, vod_apple: true, vod_vudu: true },
     { title: 'Black Bag', dir: 'Steven Soderbergh', cc: 'US', min: 93,
       poster: 'https://image.tmdb.org/t/p/w92/bYQMbiBCftswFWMvPVQFRxmSByz.jpg',
       trlr: true, rt: true, img: true, wiki: true, pick: true, restore: true,
-      bigtime: true, niche: false, foreign: false, series: false, festival: false,
+      studio: true, niche: false, foreign: false, series: false, festival: false,
       wiki_url: 'https://en.wikipedia.org/wiki/Black_Bag_(film)', imdb: 'tt27911000',
       syn: 'An intelligence operative discovers her husband may be a traitor in this taut espionage thriller from Steven Soderbergh. When loyalty clashes with duty, every conversation becomes a potential interrogation and every gesture a possible clue.',
       streaming: '', vod_amazon: true, vod_apple: true, vod_vudu: false },
     { title: 'Novocaine', dir: 'Dan Berk', cc: 'US', min: 110,
       poster: 'https://image.tmdb.org/t/p/w92/rExq0grzeByrtc4Da4CnwfpKRiQ.jpg',
       trlr: true, rt: false, img: true, wiki: true, pick: false, restore: false,
-      bigtime: true, niche: false, foreign: false, series: false, festival: false,
+      studio: true, niche: false, foreign: false, series: false, festival: false,
       wiki_url: 'https://en.wikipedia.org/wiki/Novocaine_(2025_film)', imdb: 'tt21692408',
       syn: 'A man who can\'t feel pain must rescue his kidnapped girlfriend using his unique condition as a weapon.',
       streaming: '', vod_amazon: true, vod_apple: false, vod_vudu: false },
     { title: 'Some Indie Film', dir: '', cc: '', min: 0,
       poster: '', trlr: false, rt: false, img: false, wiki: false, pick: false, restore: false,
-      bigtime: false, niche: false, foreign: false, series: false, festival: false,
+      studio: false, niche: false, foreign: false, series: false, festival: false,
       wiki_url: '', imdb: '',
       syn: '', streaming: '', vod_amazon: false, vod_apple: false, vod_vudu: false },
   ]},
@@ -310,21 +310,21 @@ const MOVIES = [
     { title: 'Strangers in the Park', dir: 'Juan José Campanella', cc: 'AR', min: 107,
       poster: 'https://image.tmdb.org/t/p/w92/mWmMIkFjBVeKLUqKxdMvb3hMN6t.jpg',
       trlr: true, rt: true, img: true, wiki: true, pick: false, restore: true,
-      bigtime: false, niche: true, foreign: true, series: false, festival: false,
+      studio: false, niche: true, foreign: true, series: false, festival: false,
       wiki_url: 'https://en.wikipedia.org/wiki/Strangers_in_the_Park', imdb: 'tt15433956',
       syn: 'A former communist militant and a "live and let live" woman confront their opposing worldviews after a chance encounter in a Buenos Aires park. As their debates grow more personal, both are forced to reconsider everything they thought they believed.',
       streaming: 'Netflix', vod_amazon: false, vod_apple: false, vod_vudu: false },
     { title: 'War Machine', dir: 'Patrick Hughes', cc: 'US', min: 100,
       poster: 'https://image.tmdb.org/t/p/w92/jcFtcauEPjQWzKggjmHjU2WUISM.jpg',
       trlr: true, rt: true, img: true, wiki: true, pick: false, restore: false,
-      bigtime: true, niche: false, foreign: false, series: false, festival: false,
+      studio: true, niche: false, foreign: false, series: false, festival: false,
       wiki_url: 'https://en.wikipedia.org/wiki/War_Machine_(2026_film)', imdb: 'tt14209916',
       syn: 'A retired Special Forces operative is drawn back into action when a global threat emerges that only he can neutralize.',
       streaming: '', vod_amazon: true, vod_apple: true, vod_vudu: true },
     { title: 'Cold Storage', dir: 'Jonny Campbell', cc: 'UK', min: 90,
       poster: 'https://image.tmdb.org/t/p/w92/8BGDQBN0g4FQIGfFJF1pHvFaN5z.jpg',
       trlr: true, rt: true, img: true, wiki: true, pick: false, restore: false,
-      bigtime: false, niche: true, foreign: false, series: false, festival: false,
+      studio: false, niche: true, foreign: false, series: false, festival: false,
       wiki_url: 'https://en.wikipedia.org/wiki/Cold_Storage_(film)', imdb: 'tt21132166',
       syn: 'A chilling thriller about secrets buried beneath a remote facility in the Scottish Highlands. When a young researcher uncovers evidence of decades-old experiments, she realizes the facility\'s most dangerous subject may still be alive.',
       streaming: '', vod_amazon: false, vod_apple: true, vod_vudu: false },
@@ -342,7 +342,7 @@ function renderRow(m, idx) {
     // Tags shown inline on collapsed row — all active filters
     let tags = '';
     if (m.pick) tags += '<span class="row-tag tag-pick">PICK</span>';
-    if (m.bigtime) tags += '<span class="row-tag tag-bigtime">BIG TIME</span>';
+    if (m.studio) tags += '<span class="row-tag tag-studio">STUDIO</span>';
     if (m.niche) tags += '<span class="row-tag tag-niche">NICHE</span>';
     if (m.foreign) tags += '<span class="row-tag tag-foreign">FOREIGN</span>';
     if (m.series) tags += '<span class="row-tag tag-series">SERIES</span>';
@@ -428,9 +428,9 @@ function renderRow(m, idx) {
                             <span class="check">${m.pick?'&#10003;':''}</span>
                             Staff Pick
                         </label>
-                        <label class="ftoggle ${m.bigtime?'on':''}" style="--tag-color: #ff6b6b;" onclick="this.classList.toggle('on')">
-                            <span class="check">${m.bigtime?'&#10003;':''}</span>
-                            Big Time
+                        <label class="ftoggle ${m.studio?'on':''}" style="--tag-color: #ff6b6b;" onclick="this.classList.toggle('on')">
+                            <span class="check">${m.studio?'&#10003;':''}</span>
+                            Studio
                         </label>
                         <label class="ftoggle ${m.niche?'on':''}" style="--tag-color: #4a90d9;" onclick="this.classList.toggle('on')">
                             <span class="check">${m.niche?'&#10003;':''}</span>

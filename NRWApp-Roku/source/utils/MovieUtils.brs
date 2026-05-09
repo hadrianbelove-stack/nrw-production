@@ -9,7 +9,7 @@
 Function GetFilterCategories() as Object
     return {
         ALL: "all"
-        BIG_TIME: "big_time"
+        STUDIO: "studio"
         INDIE: "indie"
         STAFF_PICKS: "staff_picks"
         FOREIGN: "foreign"
@@ -26,7 +26,7 @@ End Function
 Function GetFilterDisplayName(filter as String) as String
     names = {
         all: "All"
-        big_time: "Big Time Stuff"
+        studio: "Studio"
         indie: "Indie"
         staff_picks: "Staff Picks"
         foreign: "Foreign"
@@ -68,8 +68,8 @@ Function FilterMovies(movies as Object, filter as String) as Object
         if filter = categories.ALL
             include = true
 
-        else if filter = categories.BIG_TIME
-            if movie.categories <> invalid AND (movie.categories.is_big_time = true OR movie.categories.tier = "big_time")
+        else if filter = categories.STUDIO
+            if movie.categories <> invalid AND (movie.categories.is_studio = true OR movie.categories.tier = "studio")
                 include = true
             end if
 
@@ -148,8 +148,8 @@ Function FilterMoviesMulti(movies as Object, activeFilters as Object) as Object
         ' OR logic: match ANY active filter
         matched = false
         for each filter in activeFilters
-            if filter = categories.BIG_TIME
-                if movie.categories <> invalid AND (movie.categories.is_big_time = true OR movie.categories.tier = "big_time")
+            if filter = categories.STUDIO
+                if movie.categories <> invalid AND (movie.categories.is_studio = true OR movie.categories.tier = "studio")
                     matched = true
                 end if
             else if filter = categories.INDIE

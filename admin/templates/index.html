@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The New Release Wall - Admin Panel</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}?v=108">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}?v=109">
 </head>
 <body>
     <!-- Health Status Banner -->
@@ -180,7 +180,7 @@
         {% set movie_id = movie.id|string %}
         {% set cats = movie.get('categories', {}) %}
         {% set is_pick = cats.get('is_staff_pick', false) or movie_id in featured %}
-        {% set is_big = cats.get('is_big_time', false) or cats.get('tier') == 'big_time' %}
+        {% set is_big = cats.get('is_studio', false) or cats.get('tier') == 'studio' %}
         {% set is_indie = cats.get('is_indie', false) or cats.get('tier') == 'indie' %}
         {% set is_foreign = cats.get('is_foreign', false) %}
         {% set is_series = cats.get('is_series', false) %}
@@ -224,7 +224,7 @@
                 <div class="r-title" title="{{ movie.title }}">{{ movie.title }}</div>
                 <div class="row-cat-btns" onclick="event.stopPropagation()">
                     <button class="cat-btn {{ 'on' if is_pick else '' }}" style="--c:#ffd700;--ct:#000" onclick="toggleCategory('{{ movie_id }}', 'featured', {{ 'false' if is_pick else 'true' }})" title="Staff Pick">&#9733;</button>
-                    <button class="cat-btn {{ 'on' if is_big else '' }}" style="--c:#ff6b6b" onclick="toggleCategory('{{ movie_id }}', 'big_time', {{ 'false' if is_big else 'true' }})" title="Big Time">BIG</button>
+                    <button class="cat-btn {{ 'on' if is_big else '' }}" style="--c:#ff6b6b" onclick="toggleCategory('{{ movie_id }}', 'studio', {{ 'false' if is_big else 'true' }})" title="Studio">STU</button>
                     <button class="cat-btn {{ 'on' if is_indie else '' }}" style="--c:#4a90d9" onclick="toggleCategory('{{ movie_id }}', 'indie', {{ 'false' if is_indie else 'true' }})" title="Indie">INDIE</button>
                     <button class="cat-btn {{ 'on' if is_foreign else '' }}" style="--c:#9b59b6" onclick="toggleCategory('{{ movie_id }}', 'foreign', {{ 'false' if is_foreign else 'true' }})" title="Foreign">FRGN</button>
                     <button class="cat-btn {{ 'on' if is_series else '' }}" style="--c:#17a2b8" onclick="toggleCategory('{{ movie_id }}', 'series', {{ 'false' if is_series else 'true' }})" title="Series">SERIES</button>
@@ -443,6 +443,6 @@
         <img id="img-preview" src="">
     </div>
 
-    <script src="{{ url_for('static', filename='js/admin.js') }}?v=108"></script>
+    <script src="{{ url_for('static', filename='js/admin.js') }}?v=109"></script>
 </body>
 </html>

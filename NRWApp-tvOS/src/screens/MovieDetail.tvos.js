@@ -50,27 +50,27 @@ const formatShortDate = (dateStr) => {
 };
 
 // Simple action button with equal sizing
-const ActionButton = ({ label, color, onPress, hasTVPreferredFocus = false, testID, borderColor, textColor, icon, iconTintColor, onFocusChange }) => {
+const ActionButton = ({ label, color, onPress, hasTVPreferredFocus = false, testID, borderColor, textColor, icon, iconTintColor, onFocusChange, buttonIndex = 0 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
   const handleFocus = useCallback(() => {
     setIsFocused(true);
-    onFocusChange?.(true);
+    onFocusChange?.(true, buttonIndex);
     Animated.spring(scaleAnim, {
       toValue: 1.1,
       useNativeDriver: true,
     }).start();
-  }, [scaleAnim, onFocusChange]);
+  }, [scaleAnim, onFocusChange, buttonIndex]);
 
   const handleBlur = useCallback(() => {
     setIsFocused(false);
-    onFocusChange?.(false);
+    onFocusChange?.(false, buttonIndex);
     Animated.spring(scaleAnim, {
       toValue: 1,
       useNativeDriver: true,
     }).start();
-  }, [scaleAnim, onFocusChange]);
+  }, [scaleAnim, onFocusChange, buttonIndex]);
 
   return (
     <TouchableOpacity
@@ -94,10 +94,7 @@ const ActionButton = ({ label, color, onPress, hasTVPreferredFocus = false, test
         ]}
       >
         {icon ? (
-          <View style={actionButtonStyles.buttonContent}>
-            <Image source={icon} style={[actionButtonStyles.buttonIcon, iconTintColor && { tintColor: iconTintColor }]} />
-            <Text style={[actionButtonStyles.label, textColor && { color: textColor }]}>{label}</Text>
-          </View>
+          <Image source={icon} style={[actionButtonStyles.logoFull, iconTintColor && { tintColor: iconTintColor }]} />
         ) : (
           <Text style={[actionButtonStyles.label, textColor && { color: textColor }]}>{label}</Text>
         )}
@@ -125,15 +122,9 @@ const actionButtonStyles = StyleSheet.create({
     fontWeight: '700',
     letterSpacing: 1,
   },
-  buttonContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-  },
-  buttonIcon: {
-    width: 40,
-    height: 20,
+  logoFull: {
+    width: 140,
+    height: 32,
     resizeMode: 'contain',
   },
 });
@@ -178,12 +169,9 @@ const MetacriticDisplay = ({ score }) => {
 
   return (
     <View style={scoreStyles.container} accessible={true} accessibilityLabel={`Metacritic score ${score}`}>
+      <Image source={require('../../assets/logos/metacritic.png')} style={scoreStyles.mcIcon} />
       <View style={[scoreStyles.mcBox, { backgroundColor: getColor(score) }]}>
         <Text style={scoreStyles.mcScore}>{score}</Text>
-      </View>
-      <View style={scoreStyles.mcLabelCol}>
-        <Image source={require('../../assets/logos/metacritic.png')} style={scoreStyles.mcLogo} />
-        <Text style={scoreStyles.mcText}>METACRITIC</Text>
       </View>
     </View>
   );
@@ -245,20 +233,11 @@ const scoreStyles = StyleSheet.create({
     fontSize: 24,
     fontWeight: '800',
   },
-  mcLabelCol: {
-    alignItems: 'center',
-  },
-  mcLogo: {
-    width: 22,
-    height: 22,
+  mcIcon: {
+    width: 40,
+    height: 40,
     resizeMode: 'contain',
-  },
-  mcText: {
-    color: 'rgba(255,255,255,0.5)',
-    fontSize: 9,
-    fontWeight: '600',
-    letterSpacing: 1,
-    marginTop: 2,
+    marginRight: 10,
   },
   imdbLogo: {
     width: 48,
@@ -270,19 +249,46 @@ const scoreStyles = StyleSheet.create({
 
 // Service display names — matches web app's shared-config.js maps
 const getStreamDisplayName = (service) => {
-  const map = { amazon: 'PRIME', prime: 'PRIME', apple_tv: 'APPLE TV+', disney_plus: 'DISNEY+', paramount_plus: 'PARAMOUNT+', amc: 'AMC+', netflix: 'NETFLIX', max: 'MAX', hulu: 'HULU', peacock: 'PEACOCK', mubi: 'MUBI', criterion: 'CRITERION' };
-  return map[service] || service.toUpperCase();
+  const n = normalizeService(service);
+  const map = { amazon: 'PRIME', prime_video: 'PRIME', apple_tv: 'APPLE TV+', disney_plus: 'DISNEY+', paramount_plus: 'PARAMOUNT+', amc: 'AMC+', netflix: 'NETFLIX', max: 'MAX', hulu: 'HULU', peacock: 'PEACOCK', mubi: 'MUBI', criterion: 'CRITERION', plex: 'PLEX' };
+  return map[n] || service.toUpperCase();
 };
 const getVodDisplayName = (service) => {
-  const map = { amazon: 'AMAZON', apple_tv: 'APPLE TV', fandango: 'FANDANGO', youtube: 'YOUTUBE' };
-  return map[service] || service.toUpperCase();
+  const n = normalizeService(service);
+  const map = { amazon: 'AMAZON', apple_tv: 'APPLE TV', fandango: 'FANDANGO', youtube: 'YOUTUBE', plex: 'PLEX' };
+  return map[n] || service.toUpperCase();
 };
 
-// Service logo icons for watch buttons (white-tintable silhouettes)
+// Service logo images (white logos on brand-color backgrounds)
 const SERVICE_LOGOS = {
-  apple_tv: require('../../assets/logos/apple.png'),
+  amazon: require('../../assets/logos/services/amazon.png'),
+  apple_tv: require('../../assets/logos/services/apple_tv.png'),
+  netflix: require('../../assets/logos/services/netflix.png'),
+  hulu: require('../../assets/logos/services/hulu.png'),
+  max: require('../../assets/logos/services/max.png'),
+  disney_plus: require('../../assets/logos/services/disney_plus.png'),
+  peacock: require('../../assets/logos/services/peacock.png'),
+  paramount_plus: require('../../assets/logos/services/paramount_plus.png'),
+  mubi: require('../../assets/logos/services/mubi.png'),
+  criterion: require('../../assets/logos/services/criterion.png'),
+  amc: require('../../assets/logos/services/amc.png'),
+  fandango: require('../../assets/logos/services/fandango.png'),
+  plex: require('../../assets/logos/services/plex.png'),
 };
-const getServiceLogo = (service) => SERVICE_LOGOS[service] || null;
+// Normalize service names to match logo keys
+const normalizeService = (service) => {
+  if (!service) return service;
+  const s = service.toLowerCase();
+  if (s.includes('apple')) return 'apple_tv';
+  if (s === 'amazon_video' || s === 'prime_video') return 'amazon';
+  if (s === 'hbo_max') return 'max';
+  if (s === 'amc_plus') return 'amc';
+  return s;
+};
+const getServiceLogo = (service) => SERVICE_LOGOS[normalizeService(service)] || null;
+
+// Services that need a visible border on dark backgrounds (black bg buttons)
+const NEEDS_BORDER = ['apple_tv', 'peacock', 'criterion'];
 
 const MovieDetailTvOS = () => {
   const navigation = useNavigation();
@@ -320,10 +326,14 @@ const MovieDetailTvOS = () => {
   const [movieList, setMovieList] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Track button focus — prevent LEFT/RIGHT from navigating movies when a button is focused
+  // Track button focus — navigate to next/prev film when pressing past the edges
   const buttonFocusCount = useRef(0);
-  const handleButtonFocusChange = useCallback((focused) => {
+  const focusedButtonIndex = useRef(-1);
+  const totalButtonCount = useRef(0);
+  const handleButtonFocusChange = useCallback((focused, buttonIndex) => {
     buttonFocusCount.current += focused ? 1 : -1;
+    if (focused) focusedButtonIndex.current = buttonIndex;
+    else if (focusedButtonIndex.current === buttonIndex) focusedButtonIndex.current = -1;
   }, []);
 
   // Load movie from id if not passed directly (deep link case)
@@ -427,10 +437,10 @@ const MovieDetailTvOS = () => {
       }
     },
     [TV_EVENTS.LEFT]: () => {
-      if (buttonFocusCount.current <= 0) navigatePrevious();
+      if (buttonFocusCount.current <= 0 || focusedButtonIndex.current === 0) navigatePrevious();
     },
     [TV_EVENTS.RIGHT]: () => {
-      if (buttonFocusCount.current <= 0) navigateNext();
+      if (buttonFocusCount.current <= 0 || focusedButtonIndex.current >= totalButtonCount.current - 1) navigateNext();
     },
   });
 
@@ -669,23 +679,34 @@ const MovieDetailTvOS = () => {
             )}
 
             {/* Watch buttons row (streaming + VOD) */}
-            {hasWatchOptions && (
+            {hasWatchOptions && (() => {
+              let btnIdx = 0;
+              const streamCount = streamingLinks.length > 0 ? 1 : 0;
+              const vodCount = Math.min(purchaseLinks.length, 2);
+              const plexCount = plexLinks.length > 0 ? 1 : 0;
+              totalButtonCount.current = streamCount + vodCount + plexCount;
+              return (
               <View style={styles.watchButtonRow}>
-                {/* STREAM button - shows service name (PRIME, NETFLIX, etc.) */}
-                {streamingLinks.length > 0 && (
+                {/* STREAM button */}
+                {streamingLinks.length > 0 && (() => {
+                  const svcKey = normalizeService(streamingLinks[0].service);
+                  return (
                   <ActionButton
                     label={getStreamDisplayName(streamingLinks[0].service)}
                     color={getServiceColor(streamingLinks[0].service)}
                     icon={getServiceLogo(streamingLinks[0].service)}
                     iconTintColor="#ffffff"
+                    borderColor={NEEDS_BORDER.includes(svcKey) ? '#444' : undefined}
                     onPress={() => handleWatchPress(streamingLinks[0])}
                     onFocusChange={handleButtonFocusChange}
+                    buttonIndex={btnIdx++}
                     hasTVPreferredFocus={!movie?.links?.trailer_hosted}
                     testID="action-btn-stream"
                   />
-                )}
+                  );
+                })()}
 
-                {/* VOD buttons - one per service (AMAZON, APPLE TV, etc.) */}
+                {/* VOD buttons */}
                 {purchaseLinks.slice(0, 2).map((link, idx) => {
                   const isVirtualScreening = isVirtualScreeningPlatform(link.service, link.url);
                   const label = isVirtualScreening ? 'BUY TICKET'
@@ -694,17 +715,23 @@ const MovieDetailTvOS = () => {
                   const buttonColor = isVirtualScreening ? 'transparent'
                     : movie?._is_preorder ? '#7c3aed'
                     : getServiceColor(link.service);
+                  const vodKey = normalizeService(link.service);
+                  const vodBorder = isVirtualScreening ? Colors.screeningGold
+                    : (!movie?._is_preorder && NEEDS_BORDER.includes(vodKey)) ? '#444'
+                    : undefined;
+                  const thisIdx = btnIdx++;
                   return (
                     <View key={`purchase-${idx}`}>
                       <ActionButton
                         label={label}
                         color={buttonColor}
-                        icon={getServiceLogo(link.service)}
+                        icon={!isVirtualScreening && !movie?._is_preorder ? getServiceLogo(link.service) : null}
                         iconTintColor="#ffffff"
-                        borderColor={isVirtualScreening ? Colors.screeningGold : undefined}
+                        borderColor={vodBorder}
                         textColor={isVirtualScreening ? Colors.screeningGold : undefined}
                         onPress={() => handleWatchPress(link)}
                         onFocusChange={handleButtonFocusChange}
+                        buttonIndex={thisIdx}
                         hasTVPreferredFocus={!movie?.links?.trailer_hosted && streamingLinks.length === 0 && idx === 0}
                         testID={`action-btn-purchase-${idx}`}
                       />
@@ -715,18 +742,22 @@ const MovieDetailTvOS = () => {
                   );
                 })}
 
-                {/* PLEX button if available */}
+                {/* PLEX button */}
                 {plexLinks.length > 0 && (
                   <ActionButton
                     label="PLEX"
                     color="#E5A00D"
+                    icon={getServiceLogo('plex')}
+                    iconTintColor="#ffffff"
                     onPress={() => handleWatchPress(plexLinks[0])}
                     onFocusChange={handleButtonFocusChange}
+                    buttonIndex={btnIdx++}
                     testID="action-btn-plex"
                   />
                 )}
               </View>
-            )}
+              );
+            })()}
 
             {/* Scores row — RT + MC + IMDb display-only badges */}
             {(rtScore || mcScore || imdbScore) && (

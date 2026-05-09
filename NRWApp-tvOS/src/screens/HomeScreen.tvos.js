@@ -34,7 +34,7 @@ import {
 const FILTERS = [
   { id: 'all', label: 'All' },
   { id: 'pre-orders', label: 'Pre-Orders' },
-  { id: 'big-time', label: 'Big Time Stuff' },
+  { id: 'studio', label: 'Studio' },
   { id: 'indie', label: 'Indie' },
   { id: 'staff-picks', label: 'Staff Picks' },
   { id: 'foreign', label: 'Foreign' },
@@ -330,8 +330,8 @@ const HomeScreenTvOS = () => {
     return filteredMovies.filter(movie => {
       for (const filter of activeFilters) {
         switch (filter) {
-          case 'big-time':
-            if (movie.categories?.is_big_time || movie.categories?.tier === 'big_time') return true;
+          case 'studio':
+            if (movie.categories?.is_studio || movie.categories?.tier === 'studio') return true;
             break;
           case 'indie':
             if (movie.categories?.is_indie || movie.categories?.tier === 'indie') return true;

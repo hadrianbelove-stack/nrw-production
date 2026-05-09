@@ -63,20 +63,28 @@ export const Colors = {
 export const getServiceColor = (service) => {
   const colors = {
     netflix: '#E50914',
-    'disney+': '#113CCF',
-    disneyplus: '#113CCF',
+    disney_plus: '#113CCF',
     max: '#B537F2',
-    hbo: '#B537F2',
-    prime: '#00A8E1',
+    hbo_max: '#B537F2',
+    prime_video: '#00A8E1',
     amazon: '#00A8E1',
     hulu: '#1CE783',
     peacock: '#000000',
-    appletv: '#5B9BD5',
-    paramount: '#0064FF',
+    apple_tv: '#000000',
+    paramount_plus: '#0064FF',
     plex: '#E5A00D',
     fandango: '#FF6600',
+    mubi: '#DA2128',
+    criterion: '#000000',
+    amc: '#1BB74B',
+    shudder: '#8B0000',
+    tubi: '#FA382F',
   };
-  const key = service.toLowerCase().replace(/[^a-z0-9]/g, '');
+  // Normalize: apple_tv_store → apple_tv, amazon_video → amazon, etc.
+  let key = service.toLowerCase().trim();
+  if (key.includes('apple')) key = 'apple_tv';
+  else if (key === 'amazon_video') key = 'amazon';
+  else if (key === 'amc_plus') key = 'amc';
   return colors[key] || '#00d4aa';
 };
 

@@ -117,7 +117,7 @@ Embedded JavaScript with fetch API for AJAX operations
 
 ### Admin Override Files
 - `admin/staff_picks.json` - Staff picks highlighted with special styling
-- `admin/category_overrides.json` - Category toggles (big time, indie, restoration, etc.)
+- `admin/category_overrides.json` - Category toggles (studio, indie, restoration, etc.)
 - `admin/movie_reviews.json` - Editorial reviews written by curator
 - `overrides/watch_links_overrides.json` - Manual watch link corrections
 

@@ -55,7 +55,7 @@ def toggle_status() -> dict:
 
         # Status types that use category_overrides.json
         CATEGORY_OVERRIDE_TYPES = {
-            'big_time': 'is_big_time',
+            'studio': 'is_studio',
             'indie': 'is_indie',
             'foreign': 'is_foreign',
             'series': 'is_series',

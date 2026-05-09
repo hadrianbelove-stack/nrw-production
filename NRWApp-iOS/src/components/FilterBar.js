@@ -10,7 +10,7 @@ import {Colors, Typography, Spacing} from '../constants/colors';
 const FILTERS = [
   {id: 'all', label: 'All'},
   {id: 'pre-orders', label: 'Pre-Orders'},
-  {id: 'big-time', label: 'Big Time'},
+  {id: 'studio', label: 'Studio'},
   {id: 'staff-picks', label: 'Staff Picks'},
   {id: 'indie', label: 'Indie'},
   {id: 'foreign', label: 'Foreign'},

@@ -12,7 +12,7 @@ This is the iOS (iPhone/iPad) version. See also:
 ## Features
 
 - **2-column movie grid** optimized for mobile
-- **Filtering**: All, Staff Picks, Big Time, Indie, Foreign, Limited Series, Plex, Restorations, Documentary, Virtual Screenings
+- **Filtering**: All, Staff Picks, Studio, Indie, Foreign, Limited Series, Plex, Restorations, Documentary, Virtual Screenings
 - **Search** by title, director, or genre
 - **"New This Week"** featured section
 - **Movie details** with full metadata and watch buttons

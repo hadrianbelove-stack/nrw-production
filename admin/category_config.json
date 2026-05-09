@@ -1,5 +1,5 @@
 {
-  "big_time_studios": [
+  "studio_list": [
     "Netflix",
     "A24",
     "Amazon MGM Studios",
@@ -35,5 +35,5 @@
     "Peacock"
   ],
   "budget_threshold": 10000000,
-  "notes": "Studios list used for auto-categorization. Movies from these studios are tagged as 'big_time'. Budget threshold is fallback when studio doesn't match."
+  "notes": "Studios list used for auto-categorization. Movies from these studios are tagged as 'studio'. Budget threshold is fallback when studio doesn't match."
 }

@@ -101,8 +101,8 @@ data class Crew(
 data class Categories(
     val tier: String? = null,
 
-    @SerializedName("is_big_time")
-    val isBigTime: Boolean? = null,
+    @SerializedName("is_studio")
+    val isStudio: Boolean? = null,
 
     @SerializedName("is_indie")
     val isIndie: Boolean? = null,
@@ -256,7 +256,7 @@ data class InfoOption(
 enum class FilterCategory(val id: String, val displayName: String) {
     ALL("all", "All"),
     PRE_ORDERS("pre-orders", "Pre-Orders"),
-    BIG_TIME("big-time", "Big Time Stuff"),
+    STUDIO("studio", "Studio"),
     INDIE("indie", "Indie"),
     STAFF_PICKS("staff-picks", "Staff Picks"),
     FOREIGN("foreign", "Foreign"),

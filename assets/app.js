@@ -22,8 +22,8 @@ const NRW = {
     // Filter descriptions — shown when a single filter is active
     // User will rewrite all of these; placeholder text for now
     FILTER_DESCRIPTIONS: {
-        'big-time': {
-            title: 'Big Time Stuff',
+        'studio': {
+            title: 'Studio',
             text: 'The wide releases, the studio fare, the main-streamers. Not saying they\'re good, not saying they\'re bad, but these are the movies that have either entered or tried to enter the mainstream conversation. They have budgets, recognizable actors, and large-scale billboard campaigns.'
         },
         'indie': {
@@ -259,8 +259,8 @@ const NRW = {
                 let matchesAny = false;
                 for (const filter of filters) {
                     switch (filter) {
-                        case 'big-time':
-                            if (movie.categories?.is_big_time || movie.categories?.tier === 'big_time') matchesAny = true;
+                        case 'studio':
+                            if (movie.categories?.is_studio || movie.categories?.tier === 'studio') matchesAny = true;
                             break;
                         case 'indie':
                             if (movie.categories?.is_indie || movie.categories?.tier === 'indie') matchesAny = true;

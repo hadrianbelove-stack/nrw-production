@@ -24,7 +24,7 @@ This is the authoritative style guide for all NRW visual design. All UI work (ne
 | Category | Hex | Usage |
 |----------|-----|-------|
 | **Staff Picks** | `#dc143c` | Crimson - badges, borders, accents |
-| **Big Time Stuff** | `#ffffff` | White - default styling |
+| **Studio** | `#ffffff` | White - default styling |
 | **Indie** | `#00d4aa` | Teal - matches primary accent |
 | **Documentary** | `#4A90D9` | Blue - informational, non-fiction |
 | **Virtual Screenings** | `#FFD700` | Gold - festival/screening accent |

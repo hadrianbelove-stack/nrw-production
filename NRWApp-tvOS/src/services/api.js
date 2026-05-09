@@ -161,8 +161,8 @@ export function filterMovies(movies, filters = 'all') {
     // Must pass ANY selected filter (OR logic - cumulative)
     for (const filter of filterArray) {
       switch (filter) {
-        case 'big-time':
-          if (movie.categories?.is_big_time || movie.categories?.tier === 'big_time') return true;
+        case 'studio':
+          if (movie.categories?.is_studio || movie.categories?.tier === 'studio') return true;
           break;
         case 'indie':
           if (movie.categories?.is_indie || movie.categories?.tier === 'indie') return true;

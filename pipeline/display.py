@@ -127,18 +127,18 @@ class DisplayGenerator:
 
     def categorize_movie(self, movie, category_config):
         """
-        Categorize a movie as 'big_time', 'indie', or None based on studio and budget.
+        Categorize a movie as 'studio', 'indie', or None based on studio and budget.
 
         Logic:
         1. Check manual override first (admin can force tier)
-        2. Match studio against big_time_studios list
+        2. Match studio against studio_list
         3. Fallback to budget threshold ($10M default)
         4. Default to None (uncategorized) if no match
 
         Returns:
             dict: Categories object with tier, is_foreign, is_staff_pick, auto_categorized, manual_override
         """
-        big_time_studios = category_config.get('big_time_studios', [])
+        studio_list = category_config.get('studio_list', [])
         budget_threshold = category_config.get('budget_threshold', 10000000)
 
         # Get movie properties
@@ -154,11 +154,11 @@ class DisplayGenerator:
         if manual_override:
             tier = manual_override
             auto_categorized = False
-        elif studio and any(bs.lower() in studio.lower() for bs in big_time_studios):
-            tier = 'big_time'
+        elif studio and any(bs.lower() in studio.lower() for bs in studio_list):
+            tier = 'studio'
             auto_categorized = True
         elif budget >= budget_threshold:
-            tier = 'big_time'
+            tier = 'studio'
             auto_categorized = True
         else:
             tier = None
@@ -172,7 +172,7 @@ class DisplayGenerator:
 
         return {
             'tier': tier,  # Kept for backward compatibility
-            'is_big_time': tier == 'big_time',
+            'is_studio': tier == 'studio',
             'is_indie': False,  # Default; set via admin override
             'is_foreign': is_foreign,
             'is_staff_pick': False,  # Set later from staff_picks.json
@@ -338,7 +338,7 @@ class DisplayGenerator:
         screening_end_dates_map = self.ctx.config.get('screening_end_dates', {})
 
         # Apply categorization to all movies
-        big_time_count = 0
+        studio_count = 0
         indie_count = 0
         uncategorized_count = 0
         foreign_count = 0
@@ -475,22 +475,22 @@ class DisplayGenerator:
                         categories[key] = val
                         categories['auto_categorized'] = False
                 # Sync tier field for backward compatibility
-                if categories.get('is_big_time'):
-                    categories['tier'] = 'big_time'
+                if categories.get('is_studio'):
+                    categories['tier'] = 'studio'
                 elif categories.get('is_indie'):
                     categories['tier'] = 'indie'
-                elif 'is_big_time' in overrides or 'is_indie' in overrides:
+                elif 'is_studio' in overrides or 'is_indie' in overrides:
                     categories['tier'] = None
 
             # Set 'featured' field for backwards compatibility (true or false)
             movie['featured'] = categories['is_staff_pick']
 
             # Count for stats
-            if categories.get('is_big_time'):
-                big_time_count += 1
+            if categories.get('is_studio'):
+                studio_count += 1
             if categories.get('is_indie'):
                 indie_count += 1
-            if not categories.get('is_big_time') and not categories.get('is_indie'):
+            if not categories.get('is_studio') and not categories.get('is_indie'):
                 uncategorized_count += 1
             if categories['is_foreign']:
                 foreign_count += 1
@@ -527,7 +527,7 @@ class DisplayGenerator:
         ordered_count = len(ordering) if ordering else 0
 
         print(f"\U0001f4dd Admin overrides applied:")
-        print(f"  Categories: {big_time_count} Big Time, {indie_count} Indie, {uncategorized_count} Uncategorized, {foreign_count} Foreign, {restoration_count} Restorations, {virtual_screening_count} Virtual Screenings, {documentary_count} Documentaries")
+        print(f"  Categories: {studio_count} Studio, {indie_count} Indie, {uncategorized_count} Uncategorized, {foreign_count} Foreign, {restoration_count} Restorations, {virtual_screening_count} Virtual Screenings, {documentary_count} Documentaries")
         print(f"  Staff Picks: {staff_pick_count}")
         if ordered_count > 0:
             print(f"  Editorial ordering: {ordered_count} movies pinned to top")

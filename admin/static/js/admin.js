@@ -86,7 +86,7 @@ function toggleCategory(movieId, statusType, value) {
                 const title = btn.getAttribute('title');
                 const typeMap = {
                     'Staff Pick': 'featured',
-                    'Big Time': 'big_time',
+                    'Studio': 'studio',
                     'Indie': 'indie',
                     'Foreign': 'foreign',
                     'Series': 'series',

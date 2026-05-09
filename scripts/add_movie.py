@@ -218,7 +218,7 @@ def main():
             '_discovery_source': 'manual_add',
             '_tmdb_fetch_failed': False,
             'categories': {
-                'tier': None, 'is_big_time': False, 'is_indie': False,
+                'tier': None, 'is_studio': False, 'is_indie': False,
                 'is_foreign': False, 'is_staff_pick': False, 'is_restoration': False,
                 'is_virtual_screening': False, 'is_series': is_series,
                 'is_documentary': False, 'auto_categorized': True, 'manual_override': None

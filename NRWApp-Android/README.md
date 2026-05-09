@@ -5,7 +5,7 @@ Android TV / Google TV app for New Release Wall.
 ## Features
 
 - Movie poster grid with D-pad navigation
-- Category filters (All, Big Time, Indie, Staff Picks, Foreign, Limited Series, Plex, Restorations, Documentary, Virtual Screenings)
+- Category filters (All, Studio, Indie, Staff Picks, Foreign, Limited Series, Plex, Restorations, Documentary, Virtual Screenings)
 - Movie detail screen with full metadata
 - Deep linking to streaming services (Netflix, Amazon, Plex, YouTube, Hulu, Max, Disney+, etc.)
 - Trailer playback via YouTube
