@@ -5,8 +5,10 @@ __pycache__/
 config.yaml  # Keep API keys local only
 .env  # Alternative secrets storage
 config.ini  # Local configuration with secrets
-cache/
+cache/*
 !cache/.gitkeep
+!cache/screenshots/
+cache/screenshots/*
 !cache/screenshots/.gitkeep
 
 # Log files
