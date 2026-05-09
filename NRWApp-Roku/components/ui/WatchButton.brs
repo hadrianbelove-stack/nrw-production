@@ -34,6 +34,22 @@ Sub onServiceChanged()
         m.serviceColor = "0xFF9500FF"  ' Default VOD orange
     end if
 
+    ' Try to show logo image instead of text
+    logoPath = GetServiceLogoPath(normalized)
+    if logoPath <> ""
+        m.serviceIcon.uri = logoPath
+        m.serviceIcon.blendColor = "0xFFFFFFFF"
+        m.serviceIcon.width = 120
+        m.serviceIcon.height = 30
+        m.serviceIcon.translation = [10, 7]
+        m.serviceIcon.visible = true
+        m.buttonLabel.visible = false
+        SetButtonWidth(140)
+    else
+        m.serviceIcon.visible = false
+        m.buttonLabel.visible = true
+    end if
+
     UpdateButtonStyle()
 
     ' Set default label if not provided
@@ -99,47 +115,56 @@ Sub UpdateButtonStyle()
     focusPercent = m.top.focusPercent
     isFocused = focusPercent > 0.5
 
-    if buttonType = "filled"
-        ' Filled button style (for Trailer button)
-        m.buttonBg.color = m.serviceColor
-        m.buttonBorder.visible = false
-        m.buttonInner.visible = false
+    ' All buttons use filled brand-color style
+    m.buttonBg.color = m.serviceColor
+    m.buttonBorder.visible = false
+    m.buttonInner.visible = false
 
-        if isFocused
-            ' Brighten on focus
-            m.buttonLabel.color = "0x000000FF"
-        else
-            m.buttonLabel.color = "0xFFFFFFFF"
-        end if
+    ' White text on brand color (black text for hulu green)
+    normalized = NormalizeServiceName(m.top.service)
+    if normalized = "hulu"
+        m.buttonLabel.color = "0x000000FF"
     else
-        ' Outline button style (for Watch buttons)
-        m.buttonBg.color = "0x00000000"  ' Transparent
-        m.buttonBorder.color = m.serviceColor
+        m.buttonLabel.color = "0xFFFFFFFF"
+    end if
+
+    ' Black services (apple_tv, peacock, criterion) get a subtle border
+    if normalized = "apple_tv" OR normalized = "peacock" OR normalized = "criterion"
+        m.buttonBorder.color = "0x444444FF"
         m.buttonBorder.visible = true
-        m.buttonInner.visible = true
-        m.buttonInner.color = m.colors.backgroundDark
+    end if
 
-        if isFocused
-            ' Fill slightly on focus
-            m.buttonInner.color = m.serviceColor
-            m.buttonInner.opacity = 0.2
-            m.buttonLabel.color = m.serviceColor
-
-            ' Thicker border on focus
-            m.buttonInner.width = m.buttonBorder.width - 6
-            m.buttonInner.height = m.buttonBorder.height - 6
-            m.buttonInner.translation = [3, 3]
-        else
-            m.buttonInner.opacity = 1.0
-            m.buttonLabel.color = m.serviceColor
-
-            ' Normal border
-            m.buttonInner.width = m.buttonBorder.width - 4
-            m.buttonInner.height = m.buttonBorder.height - 4
-            m.buttonInner.translation = [2, 2]
-        end if
+    if isFocused
+        ' Brighten on focus — scale handles the visual feedback
+        m.buttonLabel.color = "0xFFFFFFFF"
     end if
 End Sub
+
+' ============================================================================
+' Get service logo image path (returns "" if none)
+' ============================================================================
+Function GetServiceLogoPath(service as String) as String
+    logos = {
+        "amazon": "pkg:/images/services/amazon.png"
+        "apple_tv": "pkg:/images/services/apple_tv.png"
+        "netflix": "pkg:/images/services/netflix.png"
+        "prime_video": "pkg:/images/services/prime_video.png"
+        "disney_plus": "pkg:/images/services/disney_plus.png"
+        "max": "pkg:/images/services/max.png"
+        "hulu": "pkg:/images/services/hulu.png"
+        "peacock": "pkg:/images/services/peacock.png"
+        "paramount_plus": "pkg:/images/services/paramount_plus.png"
+        "mubi": "pkg:/images/services/mubi.png"
+        "criterion": "pkg:/images/services/criterion.png"
+        "amc": "pkg:/images/services/amc.png"
+        "fandango": "pkg:/images/services/fandango.png"
+        "plex": "pkg:/images/services/plex.png"
+    }
+    if logos.DoesExist(service)
+        return logos[service]
+    end if
+    return ""
+End Function
 
 ' ============================================================================
 ' Handle Key Events

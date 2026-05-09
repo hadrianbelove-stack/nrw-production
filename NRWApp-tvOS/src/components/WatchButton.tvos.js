@@ -15,28 +15,25 @@ import {
 import { Colors, Typography, Spacing } from '../constants/colors';
 import { FOCUS_STYLES } from '../utils/focusManager.tvos';
 
-// Service logo mapping
-// Logos are optional - the component falls back to text initials when missing
-// To enable logos, add PNG files to assets/logos/ and uncomment the requires below
+// Service logo images (white logos on brand-color backgrounds)
 const SERVICE_LOGOS = {
-  // Uncomment these lines after adding the corresponding PNG files:
-  // amazon: require('../../assets/logos/amazon.png'),
-  // apple_tv: require('../../assets/logos/apple-tv.png'),
-  // netflix: require('../../assets/logos/netflix.png'),
-  // hulu: require('../../assets/logos/hulu.png'),
-  // max: require('../../assets/logos/max.png'),
-  // disney_plus: require('../../assets/logos/disney-plus.png'),
-  // peacock: require('../../assets/logos/peacock.png'),
-  // paramount_plus: require('../../assets/logos/paramount-plus.png'),
-  // mubi: require('../../assets/logos/mubi.png'),
-  // criterion: require('../../assets/logos/criterion.png'),
-  // vix: require('../../assets/logos/vix.png'),
-  // angel_studios: require('../../assets/logos/angel-studios.png'),
-  // shudder: require('../../assets/logos/shudder.png'),
-  // fandango: require('../../assets/logos/fandango.png'),
+  amazon: require('../../assets/logos/services/amazon.png'),
+  apple_tv: require('../../assets/logos/services/apple_tv.png'),
+  netflix: require('../../assets/logos/services/netflix.png'),
+  prime_video: require('../../assets/logos/services/prime_video.png'),
+  hulu: require('../../assets/logos/services/hulu.png'),
+  max: require('../../assets/logos/services/max.png'),
+  disney_plus: require('../../assets/logos/services/disney_plus.png'),
+  peacock: require('../../assets/logos/services/peacock.png'),
+  paramount_plus: require('../../assets/logos/services/paramount_plus.png'),
+  mubi: require('../../assets/logos/services/mubi.png'),
+  criterion: require('../../assets/logos/services/criterion.png'),
+  amc: require('../../assets/logos/services/amc.png'),
+  fandango: require('../../assets/logos/services/fandango.png'),
+  plex: require('../../assets/logos/services/plex.png'),
 };
 
-// Fallback service logos using text (brand colors)
+// Brand colors for filled button backgrounds
 const SERVICE_COLORS = {
   amazon: '#ff9900',
   apple_tv: '#000000',
@@ -55,7 +52,11 @@ const SERVICE_COLORS = {
   strand_releasing: '#8b0000',
   tubi: '#FA382F',
   plex: '#E5A00D',
+  amc: '#1BB74B',
 };
+
+// Services that need a visible border on dark backgrounds (black bg buttons)
+const NEEDS_BORDER = ['apple_tv', 'peacock', 'criterion'];
 
 const WatchButton = ({
   service,
@@ -64,16 +65,15 @@ const WatchButton = ({
   onPress,
   hasTVPreferredFocus = false,
   disabled = false,
-  iconOnly = false, // Show just the icon (no label) - compact square button
   testID,
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const glowAnim = useRef(new Animated.Value(0)).current;
 
-  // Determine button color based on type
-  const buttonColor = type === 'purchase' ? Colors.orange : Colors.teal;
-  const serviceColor = SERVICE_COLORS[service] || buttonColor;
+  // Use service brand color for filled button background
+  const serviceColor = SERVICE_COLORS[service] || (type === 'purchase' ? Colors.orange : Colors.teal);
+  const hasBorder = NEEDS_BORDER.includes(service);
 
   // Handle focus
   const handleFocus = useCallback(() => {
@@ -138,12 +138,13 @@ const WatchButton = ({
     >
       <Animated.View
         style={[
-          iconOnly ? styles.iconOnlyContainer : styles.container,
+          styles.container,
           {
-            backgroundColor: isFocused ? buttonColor : Colors.backgroundTertiary,
+            backgroundColor: serviceColor,
             transform: [{ scale: scaleAnim }],
             opacity: disabled ? 0.5 : 1,
           },
+          hasBorder && { borderWidth: 1, borderColor: '#444' },
         ]}
       >
         {/* Glow effect (visible when focused) */}
@@ -152,23 +153,26 @@ const WatchButton = ({
             styles.glowLayer,
             {
               opacity: glowOpacity,
-              shadowColor: buttonColor,
+              shadowColor: serviceColor,
             },
           ]}
         />
 
-        {/* Service logo or icon */}
-        <View style={iconOnly ? styles.iconOnlyIconContainer : styles.iconContainer}>
-          <ServiceIcon service={service} isFocused={isFocused} iconOnly={iconOnly} />
-        </View>
-
-        {/* Button label (hidden for iconOnly mode) */}
-        {!iconOnly && (
+        {/* Logo image or text fallback */}
+        {SERVICE_LOGOS[service] ? (
+          <Image
+            source={SERVICE_LOGOS[service]}
+            style={styles.logo}
+            tintColor="#ffffff"
+            resizeMode="contain"
+          />
+        ) : (
           <Text
             style={[
               styles.label,
               {
-                color: isFocused ? Colors.background : Colors.textPrimary,
+                color: service === 'hulu' ? '#000000' : '#ffffff',
+                textAlign: 'center',
               },
             ]}
             numberOfLines={1}
@@ -180,68 +184,6 @@ const WatchButton = ({
     </TouchableOpacity>
   );
 };
-
-// Service icon component (shows logo or fallback text)
-const ServiceIcon = ({ service, isFocused, iconOnly = false }) => {
-  // Try to use logo image, fallback to text
-  const hasLogo = SERVICE_LOGOS[service];
-  const serviceColor = SERVICE_COLORS[service] || Colors.textPrimary;
-
-  if (hasLogo) {
-    try {
-      return (
-        <Image
-          source={SERVICE_LOGOS[service]}
-          style={[
-            iconOnly ? styles.iconOnlyLogo : styles.logo,
-            { tintColor: isFocused ? Colors.background : undefined },
-          ]}
-          resizeMode="contain"
-        />
-      );
-    } catch {
-      // Fallback to text if image fails
-    }
-  }
-
-  // Text fallback
-  return (
-    <Text
-      style={[
-        iconOnly ? styles.iconOnlyText : styles.iconText,
-        {
-          color: isFocused ? Colors.background : serviceColor,
-        },
-      ]}
-    >
-      {getServiceInitial(service)}
-    </Text>
-  );
-};
-
-// Get service initial for fallback icon
-function getServiceInitial(service) {
-  const initials = {
-    amazon: 'A',
-    apple_tv: '▶',
-    netflix: 'N',
-    hulu: 'H',
-    max: 'M',
-    disney_plus: 'D+',
-    peacock: 'P',
-    paramount_plus: 'P+',
-    mubi: 'M',
-    criterion: 'C',
-    vix: 'V',
-    angel_studios: 'A',
-    shudder: 'S',
-    fandango: 'F',
-    strand_releasing: 'SR',
-    tubi: 'T',
-    plex: '▶',
-  };
-  return initials[service] || service?.charAt(0)?.toUpperCase() || '?';
-}
 
 // Get default label for service
 function getDefaultLabel(service, type) {
@@ -371,21 +313,11 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     paddingHorizontal: Spacing.tvos.lg,
     paddingVertical: Spacing.tvos.md,
     borderRadius: 12,
     minWidth: 240,
-    marginRight: Spacing.tvos.md,
-    marginBottom: Spacing.tvos.sm,
-  },
-  // Icon-only mode: compact square button
-  iconOnlyContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 72,
-    height: 72,
-    borderRadius: 12,
     marginRight: Spacing.tvos.md,
     marginBottom: Spacing.tvos.sm,
   },
@@ -396,42 +328,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 1,
     shadowRadius: 20,
   },
-  iconContainer: {
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: Spacing.tvos.md,
-  },
-  // Icon-only mode: centered icon container (no margin)
-  iconOnlyIconContainer: {
-    width: 48,
-    height: 48,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   logo: {
-    width: 32,
-    height: 32,
-  },
-  // Icon-only mode: larger logo
-  iconOnlyLogo: {
-    width: 40,
+    width: 160,
     height: 40,
-  },
-  iconText: {
-    fontSize: Typography.tvos.body,
-    fontWeight: '700',
-  },
-  // Icon-only mode: larger text icon
-  iconOnlyText: {
-    fontSize: 36,
-    fontWeight: '700',
   },
   label: {
     fontSize: Typography.tvos.button,
-    fontWeight: '600',
-    flex: 1,
+    fontWeight: '700',
+    letterSpacing: 1,
   },
   infoButton: {
     flexDirection: 'row',

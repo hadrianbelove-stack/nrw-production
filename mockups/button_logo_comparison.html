@@ -2,22 +2,21 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Button Logo Styles — Comparison</title>
+<title>Watch Button Logos — Full Set</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { background: #0a0a0a; color: #fff; font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; padding: 60px; }
   h1 { font-size: 28px; font-weight: 300; margin-bottom: 10px; color: #ccc; }
-  h2 { font-size: 18px; font-weight: 600; margin-bottom: 16px; color: #00d4aa; text-transform: uppercase; letter-spacing: 2px; }
-  p.desc { font-size: 14px; color: #888; margin-bottom: 40px; line-height: 1.5; max-width: 800px; }
-  .section { margin-bottom: 60px; }
-  .row { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+  h2 { font-size: 16px; font-weight: 600; margin-bottom: 16px; color: #00d4aa; text-transform: uppercase; letter-spacing: 2px; }
+  p.desc { font-size: 14px; color: #888; margin-bottom: 30px; line-height: 1.5; max-width: 900px; }
+  .section { margin-bottom: 50px; }
+  .row { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; margin-bottom: 10px; }
 
-  /* Shared button base */
-  .btn, .btn-logo-fill {
+  /* Logo button — NO visible box, logo IS the button */
+  .btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
     width: 220px;
     height: 60px;
     border-radius: 12px;
@@ -27,207 +26,341 @@
     color: #fff;
     border: none;
     cursor: pointer;
-    padding: 0 16px;
+    padding: 0;
+    overflow: visible;
+    background: transparent;
   }
   .btn img {
-    width: 24px;
-    height: 24px;
-    object-fit: contain;
-    filter: brightness(0) invert(1);
-  }
-  .btn-amazon { background: #00A8E1; }
-  .btn-apple  { background: #5B9BD5; }
-  .btn-fandango { background: #FF6600; }
-  .btn-prime  { background: #00A8E1; }
-  .btn-netflix { background: #E50914; }
-  .btn-trailer { background: #E50914; }
-  .btn-plex { background: #E5A00D; }
-
-  /* === Logo-fill buttons: logo IS the content === */
-  .btn-logo-fill {
-    padding: 8px 20px;
-    overflow: hidden;
-  }
-  .btn-logo-fill img {
-    max-width: 170px;
-    max-height: 40px;
+    width: 200px;
+    height: 50px;
     object-fit: contain;
   }
-
-  /* Focus ring simulation */
-  .btn:hover, .btn-logo-fill:hover {
-    outline: 4px solid #00ffcc;
-    transform: scale(1.05);
+  .btn:hover {
+    transform: scale(1.08);
     transition: all 0.15s ease;
   }
 
-  .label { font-size: 12px; color: #666; text-align: center; margin-top: 6px; width: 220px; }
+  /* Brand-colored button backgrounds with white logos */
+  .btn-netflix       { background: #E50914; }
+  .btn-prime         { background: #00A8E1; }
+  .btn-disney        { background: #0b0e4c; }
+  .btn-max           { background: #002be7; }
+  .btn-hulu          { background: #1CE783; }
+  .btn-peacock       { background: #000000; border: 1px solid #333; }
+  .btn-paramount     { background: #0064FF; }
+  .btn-amc           { background: #1BB74B; }
+  .btn-mubi          { background: #000000; border: 1px solid #333; }
+  .btn-criterion     { background: #000000; border: 1px solid #333; }
+  .btn-apple         { background: #000000; border: 1px solid #333; }
+  .btn-amazon        { background: #232F3E; }
+  .btn-fandango      { background: #FF7300; }
+  .btn-plex          { background: #E5A00D; }
 
-  .verdict {
-    background: #1a1a1a;
-    border: 1px solid #333;
-    border-radius: 12px;
-    padding: 24px;
-    margin-top: 30px;
-    max-width: 800px;
+  /* Text-only buttons (trailer) keep their background */
+  .btn-text {
+    background: #E50914;
+    padding: 0 24px;
   }
-  .verdict h3 { color: #00d4aa; margin-bottom: 8px; }
-  .verdict p { color: #aaa; font-size: 14px; line-height: 1.6; }
-  .verdict strong { color: #fff; }
+
+  .label { font-size: 11px; color: #555; text-align: center; margin-top: 4px; width: 220px; }
+  .item { display: flex; flex-direction: column; align-items: center; }
 
   .detail-sim {
     background: rgba(255,255,255,0.03);
     border: 1px solid #222;
     border-radius: 16px;
     padding: 30px;
-    margin-top: 20px;
-  }
-  .detail-sim h3 {
-    font-size: 24px;
-    font-weight: 300;
-    color: #eee;
-    margin-bottom: 6px;
-  }
-  .detail-sim .meta {
-    font-size: 13px;
-    color: #666;
     margin-bottom: 20px;
   }
+  .detail-sim h3 { font-size: 22px; font-weight: 300; color: #eee; margin-bottom: 4px; }
+  .detail-sim .meta { font-size: 13px; color: #666; margin-bottom: 16px; }
+
+  .note {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 20px;
+    max-width: 900px;
+  }
+  .note h3 { color: #00d4aa; margin-bottom: 8px; font-size: 14px; }
+  .note p { color: #aaa; font-size: 13px; line-height: 1.6; }
 </style>
 </head>
 <body>
 
-<h1>Watch Button Logo Styles</h1>
-<p class="desc">Comparing approaches for tvOS watch buttons. The new wide logos with transparent backgrounds fill the buttons properly.</p>
+<h1>Watch Button Logos — Full Set</h1>
+<p class="desc">Every service logo as a tvOS watch button. No box — logo IS the button.</p>
 
-<!-- ============================================ -->
+<!-- ===== VOD (Rent/Buy) ===== -->
 <div class="section">
-  <h2>Current — Text Labels on Brand Colors</h2>
-  <p class="desc">What's implemented now. Apple gets its silhouette icon, others are text-only.</p>
+  <h2>VOD / Rent Buttons</h2>
   <div class="row">
-    <div>
-      <button class="btn btn-trailer">TRAILER</button>
-      <div class="label">trailer</div>
+    <div class="item">
+      <button class="btn">
+        <img src="../assets/logos/services/amazon_wide.png?v=1778310760" alt="Amazon">
+      </button>
+      <div class="label">amazon</div>
     </div>
-    <div>
+    <div class="item">
+      <button class="btn">
+        <img src="../assets/logos/services/apple_tv_wide.png" style="filter: brightness(0) invert(1);" alt="Apple TV+">
+      </button>
+      <div class="label">apple_tv (white tint)</div>
+    </div>
+    <div class="item">
+      <button class="btn">
+        <img src="../assets/logos/services/fandango_wide.png" alt="Fandango">
+      </button>
+      <div class="label">fandango</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Streaming ===== -->
+<div class="section">
+  <h2>Streaming Buttons</h2>
+  <div class="row">
+    <div class="item">
+      <button class="btn">
+        <img src="../assets/logos/services/prime_video_wide.png?v=4" alt="Prime Video">
+      </button>
+      <div class="label">prime</div>
+    </div>
+    <div class="item">
+      <button class="btn">
+        <img src="../assets/logos/services/netflix_wide.png" alt="Netflix">
+      </button>
+      <div class="label">netflix</div>
+    </div>
+    <div class="item">
+      <button class="btn">
+        <img src="../assets/logos/services/disney_plus_wide.png?v=4" alt="Disney+">
+      </button>
+      <div class="label">disney_plus</div>
+    </div>
+    <div class="item">
+      <button class="btn">
+        <img src="../assets/logos/services/max_wide.png" alt="Max">
+      </button>
+      <div class="label">max</div>
+    </div>
+    <div class="item">
+      <button class="btn">
+        <img src="../assets/logos/services/hulu_wide.png" alt="Hulu">
+      </button>
+      <div class="label">hulu</div>
+    </div>
+    <div class="item">
+      <button class="btn">
+        <img src="../assets/logos/services/peacock_wide.png?v=1778311002" alt="Peacock">
+      </button>
+      <div class="label">peacock</div>
+    </div>
+    <div class="item">
+      <button class="btn">
+        <img src="../assets/logos/services/mubi_wide.png" style="filter: brightness(0) invert(1);" alt="Mubi">
+      </button>
+      <div class="label">mubi (white tint)</div>
+    </div>
+    <div class="item">
+      <button class="btn">
+        <img src="../assets/logos/services/criterion_wide.png" style="filter: brightness(0) invert(1);" alt="Criterion">
+      </button>
+      <div class="label">criterion (white tint)</div>
+    </div>
+    <div class="item">
+      <button class="btn">
+        <img src="../assets/logos/services/paramount_plus_wide.png" alt="Paramount+">
+      </button>
+      <div class="label">paramount_plus</div>
+    </div>
+    <div class="item">
+      <button class="btn">
+        <img src="../assets/logos/services/amc_plus_wide.png" alt="AMC+">
+      </button>
+      <div class="label">amc_plus</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== BRANDED COLOR BACKGROUNDS ===== -->
+<div class="section">
+  <h2>Option B — Brand Color Backgrounds + White Logos</h2>
+  <div class="row">
+    <div class="item">
+      <button class="btn btn-netflix">
+        <img src="../assets/logos/services/netflix_wide.png" style="filter: brightness(0) invert(1);" alt="Netflix">
+      </button>
+      <div class="label">netflix</div>
+    </div>
+    <div class="item">
+      <button class="btn btn-prime">
+        <img src="../assets/logos/services/prime_video_wide.png?v=4" alt="Prime Video">
+      </button>
+      <div class="label">prime</div>
+    </div>
+    <div class="item">
+      <button class="btn btn-disney">
+        <img src="../assets/logos/services/disney_plus_wide.png?v=4" alt="Disney+">
+      </button>
+      <div class="label">disney+</div>
+    </div>
+    <div class="item">
+      <button class="btn btn-max">
+        <img src="../assets/logos/services/max_wide.png" style="filter: brightness(0) invert(1);" alt="Max">
+      </button>
+      <div class="label">max</div>
+    </div>
+    <div class="item">
+      <button class="btn btn-hulu">
+        <img src="../assets/logos/services/hulu_wide.png" style="filter: brightness(0) invert(1);" alt="Hulu">
+      </button>
+      <div class="label">hulu</div>
+    </div>
+    <div class="item">
+      <button class="btn btn-peacock">
+        <img src="../assets/logos/services/peacock_wide.png?v=1778311002" alt="Peacock">
+      </button>
+      <div class="label">peacock</div>
+    </div>
+    <div class="item">
+      <button class="btn btn-mubi">
+        <img src="../assets/logos/services/mubi_wide.png" style="filter: brightness(0) invert(1);" alt="Mubi">
+      </button>
+      <div class="label">mubi</div>
+    </div>
+    <div class="item">
+      <button class="btn btn-criterion">
+        <img src="../assets/logos/services/criterion_wide.png" style="filter: brightness(0) invert(1);" alt="Criterion">
+      </button>
+      <div class="label">criterion</div>
+    </div>
+    <div class="item">
+      <button class="btn btn-paramount">
+        <img src="../assets/logos/services/paramount_plus_wide.png" style="filter: brightness(0) invert(1);" alt="Paramount+">
+      </button>
+      <div class="label">paramount+</div>
+    </div>
+    <div class="item">
+      <button class="btn btn-amc">
+        <img src="../assets/logos/services/amc_plus_wide.png" style="filter: brightness(0) invert(1);" alt="AMC+">
+      </button>
+      <div class="label">amc+</div>
+    </div>
+    <div class="item">
+      <button class="btn btn-amazon">
+        <img src="../assets/logos/services/amazon_wide.png?v=1778310760" alt="Amazon">
+      </button>
+      <div class="label">amazon</div>
+    </div>
+    <div class="item">
       <button class="btn btn-apple">
-        <img src="../logos_and_images/apple logo.png" alt=""> APPLE TV
+        <img src="../assets/logos/services/apple_tv_wide.png" style="filter: brightness(0) invert(1);" alt="Apple TV+">
       </button>
-      <div class="label">apple silhouette + text</div>
+      <div class="label">apple tv</div>
     </div>
-    <div>
-      <button class="btn btn-amazon">AMAZON</button>
-      <div class="label">text only</div>
+    <div class="item">
+      <button class="btn btn-fandango">
+        <img src="../assets/logos/services/fandango_wide.png" style="filter: brightness(0) invert(1);" alt="Fandango">
+      </button>
+      <div class="label">fandango</div>
     </div>
-    <div>
-      <button class="btn btn-prime">PRIME</button>
-      <div class="label">text only</div>
-    </div>
-    <div>
-      <button class="btn btn-netflix">NETFLIX</button>
-      <div class="label">text only</div>
-    </div>
-    <div>
-      <button class="btn btn-fandango">FANDANGO</button>
-      <div class="label">text only</div>
+    <div class="item">
+      <button class="btn btn-plex">
+        <img src="../assets/logos/Plex_logo_2022.svg.png" style="filter: brightness(0) invert(1);" alt="Plex">
+      </button>
+      <div class="label">plex</div>
     </div>
   </div>
 </div>
 
-<!-- ============================================ -->
+<!-- ===== Other ===== -->
 <div class="section">
-  <h2>New — Wide Logos Fill the Button</h2>
-  <p class="desc">Your new wide logos with transparent backgrounds. The logo fills the button — no text needed. Instantly recognizable from 10 feet.</p>
+  <h2>Other</h2>
   <div class="row">
-    <div>
-      <button class="btn btn-trailer">TRAILER</button>
-      <div class="label">trailer (stays text)</div>
+    <div class="item">
+      <button class="btn btn-text">TRAILER</button>
+      <div class="label">trailer (always text)</div>
     </div>
-    <div>
-      <button class="btn-logo-fill btn-apple">
-        <img src="../logos_and_images/apple logo.png" style="filter: brightness(0) invert(1); max-height: 28px;" alt="">
+    <div class="item">
+      <button class="btn">
+        <img src="../assets/logos/Plex_logo_2022.svg.png" style="filter: brightness(0) invert(1);" alt="Plex">
       </button>
-      <div class="label">apple silhouette (white tint)</div>
-    </div>
-    <div>
-      <button class="btn-logo-fill" style="background: #1a1a1a;">
-        <img src="../assets/logos/Amazon_Prime_Video_logo clear background.svg.png" alt="">
-      </button>
-      <div class="label">prime_video_wide.png</div>
-    </div>
-    <div>
-      <button class="btn-logo-fill" style="background: #1a1a1a;">
-        <img src="../assets/logos/Netflix_2015_logo.svg.png" alt="">
-      </button>
-      <div class="label">netflix_wide.png</div>
-    </div>
-    <div>
-      <button class="btn-logo-fill" style="background: #1a1a1a;">
-        <img src="../assets/logos/fandango at homve clear background.png" alt="">
-      </button>
-      <div class="label">fandango_wide.png</div>
-    </div>
-    <div>
-      <button class="btn-logo-fill btn-plex">PLEX</button>
-      <div class="label">text (no wide logo yet)</div>
+      <div class="label">plex (white tint)</div>
     </div>
   </div>
 </div>
 
-<!-- ============================================ -->
+<!-- ===== In Context ===== -->
 <div class="section">
-  <h2>In Context — Simulated Detail Screen</h2>
+  <h2>In Context — Simulated Detail Screens</h2>
 
   <div class="detail-sim">
     <h3>The Brutalist (2024)</h3>
     <div class="meta">Brady Corbet &bull; Hungary, USA &bull; 3h 35m</div>
-    <div class="row" style="margin-bottom: 20px;">
-      <button class="btn btn-trailer">TRAILER</button>
-      <button class="btn-logo-fill btn-apple">
-        <img src="../logos_and_images/apple logo.png" style="filter: brightness(0) invert(1); max-height: 28px;" alt="">
+    <div class="row">
+      <button class="btn btn-text">TRAILER</button>
+      <button class="btn">
+        <img src="../assets/logos/services/apple_tv_wide.png" style="filter: brightness(0) invert(1);" alt="">
       </button>
-      <button class="btn-logo-fill" style="background: #1a1a1a;">
-        <img src="../assets/logos/Amazon_Prime_Video_logo clear background.svg.png" alt="">
+      <button class="btn">
+        <img src="../assets/logos/services/amazon_wide.png?v=1778310760" alt="">
       </button>
     </div>
   </div>
 
-  <div class="detail-sim" style="margin-top: 20px;">
+  <div class="detail-sim">
     <h3>Anora (2024)</h3>
     <div class="meta">Sean Baker &bull; USA &bull; 2h 19m</div>
-    <div class="row" style="margin-bottom: 20px;">
-      <button class="btn btn-trailer">TRAILER</button>
-      <button class="btn-logo-fill" style="background: #1a1a1a;">
-        <img src="../assets/logos/Netflix_2015_logo.svg.png" alt="">
+    <div class="row">
+      <button class="btn btn-text">TRAILER</button>
+      <button class="btn">
+        <img src="../assets/logos/services/netflix_wide.png" alt="">
       </button>
     </div>
   </div>
 
-  <div class="detail-sim" style="margin-top: 20px;">
+  <div class="detail-sim">
     <h3>Nosferatu (2024)</h3>
     <div class="meta">Robert Eggers &bull; USA &bull; 2h 12m</div>
-    <div class="row" style="margin-bottom: 20px;">
-      <button class="btn btn-trailer">TRAILER</button>
-      <button class="btn-logo-fill btn-apple">
-        <img src="../logos_and_images/apple logo.png" style="filter: brightness(0) invert(1); max-height: 28px;" alt="">
+    <div class="row">
+      <button class="btn btn-text">TRAILER</button>
+      <button class="btn">
+        <img src="../assets/logos/services/prime_video_wide.png?v=4" alt="">
       </button>
-      <button class="btn-logo-fill" style="background: #1a1a1a;">
-        <img src="../assets/logos/fandango at homve clear background.png" alt="">
+      <button class="btn">
+        <img src="../assets/logos/services/fandango_wide.png" alt="">
+      </button>
+      <button class="btn">
+        <img src="../assets/logos/Plex_logo_2022.svg.png" style="filter: brightness(0) invert(1);" alt="">
       </button>
     </div>
   </div>
 
-  <div class="verdict">
-    <h3>What We Need to Decide</h3>
-    <p>
-      <strong>Apple TV</strong> — the silhouette tinted white on blue works great. Or we could do it on dark like the others?<br>
-      <strong>Amazon / Netflix / Fandango</strong> — the wide logos on dark backgrounds look clean. They're self-colored so no tinting needed.<br>
-      <strong>Plex</strong> — no wide logo sourced yet, stays text for now.<br>
-    </p>
-    <p style="margin-top:12px;">
-      If you like this direction, I can implement it in the tvOS code. The buttons would show the logo image instead of text when a wide logo is available, and fall back to text labels for services without one.
-    </p>
+  <div class="detail-sim">
+    <h3>Emilia Perez (2024)</h3>
+    <div class="meta">Jacques Audiard &bull; France &bull; 2h 12m</div>
+    <div class="row">
+      <button class="btn btn-text">TRAILER</button>
+      <button class="btn">
+        <img src="../assets/logos/services/apple_tv_wide.png" style="filter: brightness(0) invert(1);" alt="">
+      </button>
+      <button class="btn">
+        <img src="../assets/logos/services/amazon_wide.png?v=1778310760" alt="">
+      </button>
+      <button class="btn">
+        <img src="../assets/logos/services/fandango_wide.png" alt="">
+      </button>
+    </div>
   </div>
+</div>
+
+<div class="note">
+  <h3>Status</h3>
+  <p>
+    <strong>All 14 ready:</strong> Amazon, Apple TV+, Netflix, Prime Video, Fandango, Plex, Peacock, Criterion, AMC+, Hulu, Paramount+, Max, Disney+, Mubi
+  </p>
 </div>
 
 </body>

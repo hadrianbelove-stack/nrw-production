@@ -962,14 +962,20 @@ const NRW = {
         const watchLinks = movie.watch_links || {};
         const providers = movie.providers || {};
 
-        // Helper: create an <a> with safe href + target, optional logo icon
-        const makeLink = (url, className, text, iconSrc) => {
+        // Helper: create an <a> with safe href + target, optional logo icon or wide logo
+        const makeLink = (url, className, text, iconSrc, wideLogo) => {
             const a = document.createElement('a');
             a.setAttribute('href', url);
             a.setAttribute('target', '_blank');
             a.setAttribute('rel', 'noopener noreferrer');
             a.className = className;
-            if (iconSrc) {
+            if (wideLogo) {
+                const img = document.createElement('img');
+                img.src = `assets/logos/${wideLogo}`;
+                img.className = 'watch-logo';
+                img.alt = text;
+                a.appendChild(img);
+            } else if (iconSrc) {
                 const img = document.createElement('img');
                 img.src = iconSrc;
                 img.className = 'info-logo';
@@ -1008,7 +1014,7 @@ const NRW = {
             const cls = resolved?.class || '';
             const name = resolved?.name || streamSvc.toUpperCase();
             if (streamLink) {
-                watchStack.appendChild(makeLink(streamLink, `watch-btn-lb stream ${cls}`, name));
+                watchStack.appendChild(makeLink(streamLink, `watch-btn-lb stream ${cls}`, name, null, resolved?.wideLogo));
             } else {
                 const span = document.createElement('span');
                 span.className = `watch-btn-lb stream ${cls}`;
@@ -1038,7 +1044,7 @@ const NRW = {
         const hasNonFallback = resolvedVod.some(v => !v.vodType.fallback);
         if (hasNonFallback) resolvedVod = resolvedVod.filter(v => !v.vodType.fallback);
         resolvedVod.forEach(({ vodType, vodLink }) => {
-            vodRow.appendChild(makeLink(vodLink, `watch-btn-lb ${vodType.key}`, vodType.label));
+            vodRow.appendChild(makeLink(vodLink, `watch-btn-lb ${vodType.key}`, vodType.label, null, vodType.wideLogo));
             hasVod = true;
         });
         if (hasVod) { watchStack.appendChild(vodRow); hasWatch = true; }

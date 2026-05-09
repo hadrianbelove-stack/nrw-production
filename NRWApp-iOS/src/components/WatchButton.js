@@ -4,8 +4,26 @@
  */
 
 import React from 'react';
-import {Text, StyleSheet, TouchableOpacity, View} from 'react-native';
+import {Text, Image, StyleSheet, TouchableOpacity, View} from 'react-native';
 import {Colors, Typography, Spacing} from '../constants/colors';
+
+// Service logo images
+const SERVICE_LOGOS = {
+  amazon: require('../assets/logos/services/amazon.png'),
+  apple_tv: require('../assets/logos/services/apple_tv.png'),
+  netflix: require('../assets/logos/services/netflix.png'),
+  prime_video: require('../assets/logos/services/prime_video.png'),
+  hulu: require('../assets/logos/services/hulu.png'),
+  max: require('../assets/logos/services/max.png'),
+  disney_plus: require('../assets/logos/services/disney_plus.png'),
+  peacock: require('../assets/logos/services/peacock.png'),
+  paramount_plus: require('../assets/logos/services/paramount_plus.png'),
+  mubi: require('../assets/logos/services/mubi.png'),
+  criterion: require('../assets/logos/services/criterion.png'),
+  amc: require('../assets/logos/services/amc.png'),
+  fandango: require('../assets/logos/services/fandango.png'),
+  plex: require('../assets/logos/services/plex.png'),
+};
 
 // Service display names and colors
 const SERVICE_CONFIG = {
@@ -136,9 +154,18 @@ export default function WatchButton({link, onPress, size = 'medium'}) {
         onPress={() => onPress?.(link)}
         activeOpacity={0.8}>
         <View style={styles.buttonContent}>
-          <Text style={textStyle} numberOfLines={1}>
-            {label}
-          </Text>
+          {SERVICE_LOGOS[link.service] && !isScreeningButton && !link.labelOverride ? (
+            <Image
+              source={SERVICE_LOGOS[link.service]}
+              style={[styles.logo, size === 'small' && styles.logoSmall]}
+              tintColor="#ffffff"
+              resizeMode="contain"
+            />
+          ) : (
+            <Text style={textStyle} numberOfLines={1}>
+              {label}
+            </Text>
+          )}
           {isStreaming && (
             <View style={styles.streamBadge}>
               <Text style={styles.streamBadgeText}>INCLUDED</Text>
@@ -209,6 +236,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  logo: {
+    width: 100,
+    height: 24,
+  },
+  logoSmall: {
+    width: 70,
+    height: 18,
   },
   buttonText: {
     fontSize: Typography.button,

@@ -1242,6 +1242,15 @@ header h1 {
 /* Trailer — full-width red button on top */
 .watch-btn-lb.trailer-top { background: #E50914; color: #fff; margin-bottom: 0.5rem; }
 
+/* Wide service logos inside watch buttons */
+.watch-btn-lb .watch-logo {
+    height: 18px;
+    width: auto;
+    max-width: 110px;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+}
+
 /* Info row: Wiki + RT + IMDb shared, horizontal, equal-width */
 .lightbox-buttons .info-row {
     display: flex;
