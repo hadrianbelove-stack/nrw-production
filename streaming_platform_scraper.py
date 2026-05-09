@@ -547,10 +547,14 @@ class StreamingPlatformScraper(PlaywrightScraperBase):
                             # Check if the result text contains our target year (±1 tolerance)
                             year_match = False
                             if year:
-                                for y in [int(year), int(year) - 1, int(year) + 1]:
-                                    if str(y) in link_text:
-                                        year_match = True
-                                        break
+                                try:
+                                    year_int = int(year)
+                                    for y in [year_int, year_int - 1, year_int + 1]:
+                                        if str(y) in link_text:
+                                            year_match = True
+                                            break
+                                except (ValueError, TypeError):
+                                    pass  # Non-numeric year — skip year matching
                             canonical = urllib.parse.urljoin('https://athome.fandango.com', href)
                             candidates.append((canonical, year_match, has_exact_title, overlap_percentage))
 
