@@ -46,5 +46,21 @@
     "verdict_type": "confirmed",
     "hypothesis_count": 1,
     "tool_calls_used": 10
+  },
+  {
+    "date": "2026-05-10",
+    "question": "Investigate 5 wall health report flags",
+    "scope": "pipeline behavior + data question",
+    "verdict_type": "high_confidence",
+    "hypothesis_count": 7,
+    "tool_calls_used": 18
+  },
+  {
+    "date": "2026-05-10",
+    "question": "Wall health flags investigation + engineer fixes",
+    "scope": "mixed: code behavior + data quality + pipeline behavior",
+    "verdict_type": "confirmed",
+    "hypothesis_count": 5,
+    "tool_calls_used": 16
   }
 ]

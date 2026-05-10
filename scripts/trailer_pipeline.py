@@ -74,27 +74,27 @@ MAX_HOST_RETRIES = 3
 
 
 def load_host_failures():
-    """Load trailer hosting failures, pruning entries older than TTL.
+    """Load trailer hosting failures.
 
-    Entries with failure_count >= MAX_HOST_RETRIES are permanently kept
-    (never pruned) — these movies have failed too many times to retry.
+    All entries are kept permanently so failure_count accumulates across
+    TTL cycles. The TTL is used as a cooldown — movies whose TTL has
+    expired (and count < MAX_HOST_RETRIES) are removed from the returned
+    dict so they get retried, but their entries stay on disk so
+    record_host_failure can read the previous count.
     """
     if not os.path.exists(HOST_FAILURES_FILE):
         return {}
     with open(HOST_FAILURES_FILE, 'r') as f:
         failures = json.load(f)
     cutoff = (datetime.now() - timedelta(days=HOST_FAILURE_TTL_DAYS)).isoformat()
-    pruned = {}
+    # Return only entries that should be SKIPPED (still in cooldown or permanent)
+    active = {}
     for mid, v in failures.items():
         if v.get('failure_count', 1) >= MAX_HOST_RETRIES:
-            pruned[mid] = v  # Permanent — too many failures
+            active[mid] = v  # Permanent — too many failures
         elif v.get('recorded_at', '') >= cutoff:
-            pruned[mid] = v  # Still within TTL cooldown
-    if len(pruned) < len(failures):
-        os.makedirs(os.path.dirname(HOST_FAILURES_FILE), exist_ok=True)
-        with open(HOST_FAILURES_FILE, 'w') as f:
-            json.dump(pruned, f, indent=2)
-    return pruned
+            active[mid] = v  # Still within TTL cooldown
+    return active
 
 
 def record_host_failure(movie_id, title, year, reason, trailer_url='', detail=''):
@@ -102,10 +102,16 @@ def record_host_failure(movie_id, title, year, reason, trailer_url='', detail=''
 
     Tracks failure_count — after MAX_HOST_RETRIES failures, the movie
     is permanently skipped (no more TTL-based retries).
+    Reads directly from disk to preserve counts across TTL cooldowns.
     """
-    failures = load_host_failures()
+    # Read full file (not filtered load_host_failures) to preserve counts
+    if os.path.exists(HOST_FAILURES_FILE):
+        with open(HOST_FAILURES_FILE, 'r') as f:
+            failures = json.load(f)
+    else:
+        failures = {}
     existing = failures.get(str(movie_id), {})
-    prev_count = existing.get('failure_count', 1) if existing else 0
+    prev_count = existing.get('failure_count', 0)
     entry = {
         'title': title,
         'year': str(year),
