@@ -1,58 +1,58 @@
 {
-  "timestamp": "2026-05-09T23:57:52.963909",
-  "duration_seconds": 4041.718028,
-  "overall_success": false,
-  "failure_count": 1,
+  "timestamp": "2026-05-10T05:22:33.541040",
+  "duration_seconds": 5739.145128,
+  "overall_success": true,
+  "failure_count": 0,
   "warning_count": 0,
   "phases": [
     {
       "name": "Intake new premieres from TMDB",
       "success": true,
-      "duration_seconds": 5.325738,
+      "duration_seconds": 7.765912,
       "error": null,
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-05-08 to 2026-05-09 (incremental mode, 0 intaked)\n\u2705 Movie intake complete: 0 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-04-09 to 2026-05-09\n\n\ud83d\udcca Miniseries intake complete: 0 new series ad"
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-05-08 to 2026-05-10 (incremental mode, 113 intaked)\n\u2705 Movie intake complete: 113 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-04-10 to 2026-05-10\n   \ud83d\udccb Believe Me (4 eps)\n\n\ud83d\udcca Miniseries inta"
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 3687.526911,
+      "duration_seconds": 5010.141941,
       "error": null,
-      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 16683 total movies\n\ud83d\udd0d Raw tracking filter: 13185 movies\n\ud83d\udd0d Assigned tracking_movies list: 13185\n\ud83d\udd0d Found 13185 movies in tracking status\n  Priority queue (last 180 days): 520 movies\n  Older movies: 12665 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 13185 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/13185 (0.8%) | 0 found | 0m elapsed | ~55m remaining\n  \ud83d\udcbe Progress saved (ba"
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 16797 total movies\n\ud83d\udd0d Raw tracking filter: 13299 movies\n\ud83d\udd0d Assigned tracking_movies list: 13299\n\ud83d\udd0d Found 13299 movies in tracking status\n  Priority queue (last 180 days): 521 movies\n  Older movies: 12778 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 13299 movies for digital availability...\n\n  \ud83d\udcca Discovery: 100/13299 (0.8%) | 0 found | 0m elapsed | ~60m remaining\n  \ud83d\udcbe Progress saved (ba"
     },
     {
       "name": "Enrich newly available movies with metadata",
-      "success": false,
-      "duration_seconds": 192.66977,
-      "error": "2026-05-09 23:52:04 [INFO] EnrichmentService initialized with enrichment_enabled=True\n2026-05-09 23:52:04 [INFO] Enrichment loaded data.json: 791 movies\n2026-05-09 23:52:04 [INFO] VOD scraper initialized (headless=True, timeout=10s)\n  Warning: Search results may not have loaded completely\n  No Amazon link found for Elie Wiesel: Soul on Fire (2024) after 11.28 seconds\n  Attempt 1 failed, retrying in 0.5s...\n  Warning: Search results may not have loaded completely\n  No Amazon link found for Elie Wiesel: Soul on Fire (2024) after 10.13 seconds\n  Warning: Search results may not have loaded completely\n  No Amazon link found for Elie Wiesel: Soul on Fire (None) after 10.12 seconds\n  Attempt 1 failed, retrying in 0.5s...\n  Warning: Search results may not have loaded completely\n  No Amazon link found for Elie Wiesel: Soul on Fire (None) after 10.13 seconds\n  No Fandango link found for Elie Wiesel: Soul on Fire (2024) after 3.59s\n  Attempt 1 failed, retrying in 0.5s...\n  No Fandango link found ",
+      "success": true,
+      "duration_seconds": 585.461768,
+      "error": null,
       "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\n  \ud83d\udd0d Pre-order link finder: 12 movies within 14d window\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n      \u00b7 Elie Wiesel: Soul on Fire: Amazon not found\n      \u00b7 Elie Wiesel: Soul on Fire:"
     },
     {
       "name": "Stamp hosted trailer URLs into data.json",
       "success": true,
-      "duration_seconds": 1.0893,
+      "duration_seconds": 0.659996,
       "error": null,
-      "output_preview": "=== Trailer Pipeline: stamp ===\n\nConnecting to B2...\nFound 630 trailers in B2 bucket\n\nStamp results:\n  Stamped:          0\n  Already had URL:  556\n  Stale cleaned:    0\n  Not in B2:        235\n"
+      "output_preview": "=== Trailer Pipeline: stamp ===\n\nConnecting to B2...\nFound 630 trailers in B2 bucket\n\nStamp results:\n  Stamped:          0\n  Already had URL:  555\n  Stale cleaned:    0\n  Not in B2:        212\n"
     },
     {
       "name": "Refresh watch links and Wikipedia for all wall movies",
       "success": true,
-      "duration_seconds": 149.1602,
+      "duration_seconds": 127.862653,
       "error": null,
-      "output_preview": "\n\ud83d\udd04 Running daily gap fill for all wall movies...\n  \ud83d\udcca Processing 329 of 791 wall movies (last 30 days)\n  \ud83d\udcda The Mohican \u2014 Wikipedia link added\n  \ud83d\udcda The True Beauty of Being Bitten by a Tick \u2014 Wikipedia link added\n  \ud83d\udcda The Kerala Story 2 Goes Beyond \u2014 Wikipedia link added\n  \ud83d\udcda Mixtape \u2014 Wikipedia link added\n  \ud83d\udcda From Within \u2014 Wikipedia link added\n  \ud83d\udcda Two Prosecutors \u2014 Wikipedia link added\n  \ud83d\udcda Wasteman \u2014 Wikipedia link added\n  \ud83d\udcda Palestine 36 \u2014 Wikipedia link added\n  \ud83d\udcda The Stranger \u2014 Wikipedia link added"
+      "output_preview": "\n\ud83d\udd04 Running daily gap fill for all wall movies...\n  \ud83d\udcca Processing 290 of 767 wall movies (last 30 days)\n  \ud83d\udcda Propeller One-Way Night Coach \u2014 Wikipedia link added\n  \ud83d\udcda Two Prosecutors \u2014 Wikipedia link added\n  \ud83d\udcda Wasteman \u2014 Wikipedia link added\n  \ud83d\udcda Palestine 36 \u2014 Wikipedia link added\n  \ud83d\udcda The Stranger \u2014 Wikipedia link added\n  \ud83d\udcda CYCLE \u2014 Wikipedia link added\n  + Happy Raj \u2014 new services added\n  + The Bride! \u2014 new services added\n\n  \ud83d\udcca Gap fill results (128s, 290 movies):\n     Watch links updated: 2\n     Wik"
     },
     {
       "name": "Check virtual screening link expirations",
       "success": true,
-      "duration_seconds": 5.603574,
+      "duration_seconds": 6.733836,
       "error": null,
-      "output_preview": "\n\ud83c\udfaa Checking virtual screening links...\n  Checking 28 virtual screening movies...\n  \ud83d\udcbe Updated data.json\n  \ud83d\udcca Results: 17 active, 0 expired\n\u2705 Virtual screening check complete\n\ud83d\udccb Phase complete\n"
+      "output_preview": "\n\ud83c\udfaa Checking virtual screening links...\n  Checking 28 virtual screening movies...\n  \ud83d\udcbe Updated data.json\n  \ud83d\udcca Results: 18 active, 0 expired\n\u2705 Virtual screening check complete\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Archive movies older than 90 days",
       "success": true,
-      "duration_seconds": 0.296348,
+      "duration_seconds": 0.360262,
       "error": null,
-      "output_preview": "\n\ud83d\udce6 Archiving movies older than 90 days...\n\u2705 Archive complete\n\ud83d\udccb Phase complete\n"
+      "output_preview": "\n\ud83d\udce6 Archiving movies older than 90 days...\n\ud83d\udce6 Archived 2 movies (>90 days old) \u2192 data_archive.json\n   data.json: 765 movies | archive: 340 total\n\u2705 Archive complete\n\ud83d\udccb Phase complete\n"
     }
   ],
   "health_issues": [],
@@ -60,137 +60,305 @@
     "stalled": false,
     "days_without_transitions": 1
   },
-  "failures": [
-    {
-      "phase": "Enrich newly available movies with metadata",
-      "severity": "error",
-      "message": "Phase failed with exit code 1",
-      "context": "2026-05-09 23:52:04 [INFO] EnrichmentService initialized with enrichment_enabled=True\n2026-05-09 23:52:04 [INFO] Enrichment loaded data.json: 791 movies\n2026-05-09 23:52:04 [INFO] VOD scraper initialized (headless=True, timeout=10s)\n  Warning: Search results may not have loaded completely\n  No Amazon link found for Elie Wiesel: Soul on Fire (2024) after 11.28 seconds\n  Attempt 1 failed, retrying in 0.5s...\n  Warning: Search results may not have loaded completely\n  No Amazon link found for Elie W",
-      "stdout_preview": "\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\n  \ud83d\udd0d Pre-order link finder: 12 movies within 14d window\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n      \u00b7 Elie Wiesel: Soul on Fire: Amazon not found\n      \u00b7 Elie Wiesel: Soul on Fire: "
-    }
-  ],
+  "failures": [],
   "warnings": [],
   "data_quality": {
-    "total": 16683,
-    "tracking": 13185,
-    "available": 3148,
-    "data_movies": 791,
+    "total": 16797,
+    "tracking": 13325,
+    "available": 3122,
+    "data_movies": 765,
     "movies_with_links": 732,
-    "movies_with_rt": 556,
-    "movies_with_wikipedia": 431,
-    "movies_with_trailers": 692
+    "movies_with_rt": 561,
+    "movies_with_wikipedia": 427,
+    "movies_with_trailers": 697
   },
   "enrichment_metrics": {
-    "timestamp": "2026-05-08T18:48:46.602251",
-    "movies_requested": 29,
-    "movies_enriched": 3,
-    "movies_deferred": 26,
+    "timestamp": "2026-05-10T05:20:17.090150",
+    "movies_requested": 37,
+    "movies_enriched": 8,
+    "movies_deferred": 29,
     "deferred_details": [
       {
-        "title": "ID:1686924",
-        "reason": "not_in_data_json"
+        "title": "Never Fold: The 2025 Las Vegas Aces",
+        "reason": "jw_revert:justwatch_no_match",
+        "digital_date": "2026-05-07",
+        "discovered_at": "2026-05-09T21:24:50.315327",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 1,
+        "tmdb_platforms": []
       },
       {
-        "title": "ID:737885",
-        "reason": "not_in_data_json"
+        "title": "Broad Trip",
+        "reason": "jw_revert:justwatch_no_match",
+        "digital_date": "2026-05-08",
+        "discovered_at": "2026-05-09T21:24:50.010218",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 1,
+        "tmdb_platforms": []
       },
       {
-        "title": "ID:1192642",
-        "reason": "not_in_data_json"
+        "title": "The Good Assassin",
+        "reason": "jw_revert:justwatch_no_match",
+        "digital_date": "2026-05-09",
+        "discovered_at": "2026-05-09T21:24:49.712862",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 1,
+        "tmdb_platforms": []
       },
       {
-        "title": "ID:1386743",
-        "reason": "not_in_data_json"
+        "title": "Mario Lopez Presents: Chasing Christmas",
+        "reason": "jw_revert:justwatch_no_valid_offers",
+        "digital_date": "2026-05-09",
+        "discovered_at": "2026-05-09T21:04:22.239071",
+        "discovery_source": "provider_availability_check",
+        "revert_count": 1,
+        "tmdb_platforms": [
+          "Philo"
+        ]
       },
       {
-        "title": "ID:1531852",
-        "reason": "not_in_data_json"
+        "title": "If Only You Weren't the One",
+        "reason": "jw_revert:justwatch_no_valid_offers",
+        "digital_date": "2026-03-08",
+        "discovered_at": "2026-05-09T17:36:13.766711",
+        "discovery_source": "provider_availability_check",
+        "revert_count": 6,
+        "tmdb_platforms": [
+          "Rakuten Viki"
+        ]
       },
       {
-        "title": "ID:1271981",
-        "reason": "not_in_data_json"
+        "title": "Sammy's Children's Day",
+        "reason": "jw_revert:justwatch_no_valid_offers",
+        "digital_date": "2026-03-15",
+        "discovered_at": "2026-05-09T17:36:04.816654",
+        "discovery_source": "provider_availability_check",
+        "revert_count": 6,
+        "tmdb_platforms": [
+          "Rakuten Viki"
+        ]
       },
       {
-        "title": "ID:1572196",
-        "reason": "not_in_data_json"
+        "title": "I Can't Write",
+        "reason": "jw_revert:justwatch_no_match",
+        "digital_date": "2026-04-27",
+        "discovered_at": "2026-05-09T17:35:30.509411",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 6,
+        "tmdb_platforms": []
       },
       {
-        "title": "ID:1643321",
-        "reason": "not_in_data_json"
+        "title": "The Mohican",
+        "reason": "jw_revert:justwatch_no_valid_offers",
+        "digital_date": "2026-04-27",
+        "discovered_at": "2026-05-09T17:35:30.068064",
+        "discovery_source": "provider_availability_check",
+        "revert_count": 6,
+        "tmdb_platforms": [
+          "fuboTV"
+        ]
       },
       {
-        "title": "ID:1685586",
-        "reason": "not_in_data_json"
+        "title": "Ketchup on Waffles",
+        "reason": "jw_revert:justwatch_no_match",
+        "digital_date": "2026-04-28",
+        "discovered_at": "2026-05-09T17:35:29.502636",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 6,
+        "tmdb_platforms": []
       },
       {
-        "title": "ID:1667178",
-        "reason": "not_in_data_json"
+        "title": "Should I Marry A Murderer?",
+        "reason": "jw_revert:justwatch_no_match",
+        "digital_date": "2026-04-29",
+        "discovered_at": "2026-05-09T17:35:28.676133",
+        "discovery_source": "provider_availability_check",
+        "revert_count": 6,
+        "tmdb_platforms": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
       },
       {
-        "title": "ID:1686433",
-        "reason": "not_in_data_json"
+        "title": "Amoeba",
+        "reason": "jw_revert:justwatch_no_match",
+        "digital_date": "2026-04-29",
+        "discovered_at": "2026-05-09T17:35:27.732772",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 6,
+        "tmdb_platforms": []
       },
       {
-        "title": "ID:1025835",
-        "reason": "not_in_data_json"
+        "title": "The True Beauty of Being Bitten by a Tick",
+        "reason": "jw_revert:justwatch_no_match",
+        "digital_date": "2026-04-29",
+        "discovered_at": "2026-05-09T17:35:27.282616",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 6,
+        "tmdb_platforms": []
       },
       {
-        "title": "ID:1686985",
-        "reason": "not_in_data_json"
+        "title": "Lemonade Blessing",
+        "reason": "jw_revert:justwatch_no_valid_offers",
+        "digital_date": "2026-04-29",
+        "discovered_at": "2026-05-09T17:35:26.725611",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 6,
+        "tmdb_platforms": []
       },
       {
-        "title": "ID:1399515",
-        "reason": "not_in_data_json"
+        "title": "I Love You My Narcissist",
+        "reason": "jw_revert:justwatch_no_match",
+        "digital_date": "2026-04-30",
+        "discovered_at": "2026-05-09T17:35:24.948807",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 5,
+        "tmdb_platforms": []
       },
       {
-        "title": "ID:1625582",
-        "reason": "not_in_data_json"
+        "title": "The Kerala Story 2 Goes Beyond",
+        "reason": "jw_revert:justwatch_no_valid_offers",
+        "digital_date": "2026-04-30",
+        "discovered_at": "2026-05-09T17:35:24.508840",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 6,
+        "tmdb_platforms": []
       },
       {
-        "title": "ID:1669412",
-        "reason": "not_in_data_json"
+        "title": "The Adventure",
+        "reason": "jw_revert:justwatch_no_valid_offers",
+        "digital_date": "2026-04-30",
+        "discovered_at": "2026-05-09T17:35:24.022784",
+        "discovery_source": "provider_availability_check",
+        "revert_count": 6,
+        "tmdb_platforms": [
+          "Rakuten Viki"
+        ]
       },
       {
-        "title": "ID:1405007",
-        "reason": "not_in_data_json"
+        "title": "Bi-Coastal",
+        "reason": "jw_revert:justwatch_no_match",
+        "digital_date": "2026-05-01",
+        "discovered_at": "2026-05-09T17:35:23.109747",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 9,
+        "tmdb_platforms": []
       },
       {
-        "title": "ID:1421993",
-        "reason": "not_in_data_json"
+        "title": "Prey of Wrath",
+        "reason": "jw_revert:justwatch_no_valid_offers",
+        "digital_date": "2026-05-01",
+        "discovered_at": "2026-05-09T17:35:21.637016",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 5,
+        "tmdb_platforms": []
       },
       {
-        "title": "ID:1166688",
-        "reason": "not_in_data_json"
+        "title": "28",
+        "reason": "jw_revert:justwatch_no_match",
+        "digital_date": "2026-05-01",
+        "discovered_at": "2026-05-09T17:35:21.003307",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 9,
+        "tmdb_platforms": []
       },
       {
-        "title": "ID:tv_318262",
-        "reason": "not_in_data_json"
+        "title": "To Do",
+        "reason": "jw_revert:justwatch_no_match",
+        "digital_date": "2026-05-01",
+        "discovered_at": "2026-05-09T17:35:20.194903",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 6,
+        "tmdb_platforms": []
       },
       {
-        "title": "ID:1323712",
-        "reason": "not_in_data_json"
+        "title": "The Border Baby",
+        "reason": "jw_revert:justwatch_no_match",
+        "digital_date": "2026-05-01",
+        "discovered_at": "2026-05-09T17:35:19.756908",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 6,
+        "tmdb_platforms": []
       },
       {
-        "title": "ID:1012601",
-        "reason": "not_in_data_json"
+        "title": "She Cries Murder",
+        "reason": "jw_revert:justwatch_no_match",
+        "digital_date": "2026-05-01",
+        "discovered_at": "2026-05-09T17:35:19.310005",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 6,
+        "tmdb_platforms": []
       },
       {
-        "title": "ID:1683106",
-        "reason": "not_in_data_json"
+        "title": "Perilous Passage: Birth in America",
+        "reason": "jw_revert:justwatch_no_match",
+        "digital_date": "2026-05-04",
+        "discovered_at": "2026-05-09T17:35:17.757551",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 6,
+        "tmdb_platforms": []
       },
       {
-        "title": "ID:tv_307624",
-        "reason": "not_in_data_json"
+        "title": "Before What Comes After",
+        "reason": "jw_revert:justwatch_no_valid_offers",
+        "digital_date": "2026-05-04",
+        "discovered_at": "2026-05-09T17:35:16.968135",
+        "discovery_source": "provider_availability_check",
+        "revert_count": 7,
+        "tmdb_platforms": [
+          "fuboTV"
+        ]
       },
       {
-        "title": "ID:tv_308275",
-        "reason": "not_in_data_json"
+        "title": "And Through the Portal We Go",
+        "reason": "jw_revert:justwatch_no_match",
+        "digital_date": "2026-05-06",
+        "discovered_at": "2026-05-09T17:35:13.393774",
+        "discovery_source": "provider_availability_check",
+        "revert_count": 5,
+        "tmdb_platforms": [
+          "Amazon Video"
+        ]
       },
       {
-        "title": "ID:1690338",
-        "reason": "not_in_data_json"
+        "title": "Mixtape",
+        "reason": "jw_revert:justwatch_no_match",
+        "digital_date": "2026-05-07",
+        "discovered_at": "2026-05-09T17:35:12.086331",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 2,
+        "tmdb_platforms": []
+      },
+      {
+        "title": "From Within",
+        "reason": "jw_revert:justwatch_no_match",
+        "digital_date": "2026-05-07",
+        "discovered_at": "2026-05-09T17:35:10.640539",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 3,
+        "tmdb_platforms": []
+      },
+      {
+        "title": "Nightmare Hospital",
+        "reason": "jw_revert:justwatch_no_match",
+        "digital_date": "2026-05-08",
+        "discovered_at": "2026-05-09T17:35:08.464684",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 3,
+        "tmdb_platforms": []
+      },
+      {
+        "title": "Give Me Back My Baby",
+        "reason": "jw_revert:justwatch_no_match",
+        "digital_date": "2026-05-08",
+        "discovered_at": "2026-05-09T17:35:08.025200",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 3,
+        "tmdb_platforms": []
       }
     ],
-    "enrichment_duration_seconds": 136.51
+    "enrichment_duration_seconds": 584.45,
+    "error_details": [],
+    "total_errors": 0
   }
 }
