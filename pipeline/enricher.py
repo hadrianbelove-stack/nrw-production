@@ -674,6 +674,10 @@ class MovieEnricher:
                 if _plf_found:
                     print(f"  \U0001f50d Link finder: {_plf_found}/{len(_plf_candidates)} pre-order movies got new links")
 
+            # Load tracking database early — needed by pre-order catch-up below
+            tracking_data = self.ctx.storage.load_all_movies()
+            tracking_changed = False
+
             # Catch-up: retry movies with failed/incomplete enrichment
             # NOTE: 'completed' movies with gaps are NOT retried here -- cosmetic gaps
             # (RT, Metacritic, Wikipedia, trailer, IMDb) are often legitimately nonexistent.
@@ -768,8 +772,7 @@ class MovieEnricher:
         # Preload IMDb dataset so first movie isn't penalized
         self.host._load_imdb_dataset()
 
-        # Load tracking database for movie details
-        tracking_data = self.ctx.storage.load_all_movies()
+        # tracking_data already loaded above (before catch-up loop)
         if not tracking_data:
             print("\u274c Could not load movie tracking database")
             return 0

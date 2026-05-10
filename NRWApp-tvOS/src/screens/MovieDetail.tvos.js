@@ -24,7 +24,6 @@ import {
   getMetadataString,
   getAccessibilityLabel,
 } from './useMovieDetail';
-import WatchButton from '../components/WatchButton.tvos';
 import { Colors, Typography, Spacing, getServiceColor, isVirtualScreeningPlatform } from '../constants/colors';
 import QRCode from 'react-native-qrcode-svg';
 import { useTVEventHandler, TV_EVENTS } from '../utils/focusManager.tvos';
@@ -332,14 +331,19 @@ const MovieDetailTvOS = () => {
   const trailerFocused = useRef(false);
   const focusedButtonIndex = useRef(-1);
   const totalButtonCount = useRef(0);
+  const lastButtonFocusTime = useRef(0);
   const handleTrailerFocusChange = useCallback((focused) => {
     buttonFocusCount.current += focused ? 1 : -1;
     trailerFocused.current = focused;
   }, []);
   const handleButtonFocusChange = useCallback((focused, buttonIndex) => {
     buttonFocusCount.current += focused ? 1 : -1;
-    if (focused) focusedButtonIndex.current = buttonIndex;
-    else if (focusedButtonIndex.current === buttonIndex) focusedButtonIndex.current = -1;
+    if (focused) {
+      focusedButtonIndex.current = buttonIndex;
+      lastButtonFocusTime.current = Date.now();
+    } else if (focusedButtonIndex.current === buttonIndex) {
+      focusedButtonIndex.current = -1;
+    }
   }, []);
 
   // Load movie from id if not passed directly (deep link case)
@@ -446,7 +450,9 @@ const MovieDetailTvOS = () => {
       if (buttonFocusCount.current <= 0) { navigatePrevious(); return; }
       // Trailer is alone in its row — LEFT always goes to previous film
       if (trailerFocused.current) { navigatePrevious(); return; }
-      // Watch buttons: debounce to let focus engine settle
+      // If a button just received focus (from this same press), the focus engine moved it
+      if (Date.now() - lastButtonFocusTime.current < 30) return;
+      // No recent focus change — either at edge, or focus events fire after us
       const before = focusedButtonIndex.current;
       setTimeout(() => {
         if (focusedButtonIndex.current === before && before === 0) {
@@ -458,7 +464,9 @@ const MovieDetailTvOS = () => {
       if (buttonFocusCount.current <= 0) { navigateNext(); return; }
       // Trailer is alone in its row — RIGHT always goes to next film
       if (trailerFocused.current) { navigateNext(); return; }
-      // Watch buttons: debounce to let focus engine settle
+      // If a button just received focus (from this same press), the focus engine moved it
+      if (Date.now() - lastButtonFocusTime.current < 30) return;
+      // No recent focus change — either at edge, or focus events fire after us
       const before = focusedButtonIndex.current;
       setTimeout(() => {
         if (focusedButtonIndex.current === before && before >= totalButtonCount.current - 1) {
@@ -710,6 +718,7 @@ const MovieDetailTvOS = () => {
               const vodCount = nonVsLinks.length;
               const plexCount = plexLinks.length > 0 ? 1 : 0;
               totalButtonCount.current = streamCount + vodCount + plexCount;
+              if (totalButtonCount.current === 0) return null;
               return (
               <View style={styles.watchButtonRow}>
                 {/* STREAM button */}
@@ -732,7 +741,7 @@ const MovieDetailTvOS = () => {
                 })()}
 
                 {/* VOD buttons (non-virtual-screening only) */}
-                {purchaseLinks.slice(0, 2).filter(link => !isVirtualScreeningPlatform(link.service, link.url)).map((link, idx) => {
+                {nonVsLinks.map((link, idx) => {
                   const label = movie?._is_preorder ? 'PRE-ORDER'
                     : getVodDisplayName(link.service);
                   const buttonColor = movie?._is_preorder ? '#7c3aed'
@@ -782,6 +791,7 @@ const MovieDetailTvOS = () => {
             {/* Virtual screening QR code — scan to buy ticket on phone */}
             {purchaseLinks.some(link => isVirtualScreeningPlatform(link.service, link.url)) && (() => {
               const vsLink = purchaseLinks.find(link => isVirtualScreeningPlatform(link.service, link.url));
+              if (!vsLink?.url) return null;
               return (
                 <View style={styles.qrBlock} accessible={true} accessibilityLabel="Scan QR code with your phone to buy a virtual screening ticket">
                   <Text style={styles.qrLabel}>BUY TICKET</Text>
@@ -1163,6 +1173,35 @@ const styles = StyleSheet.create({
     color: Colors.textMuted,
     fontSize: Typography.tvos.caption,
     marginTop: 3,
+  },
+  qrBlock: {
+    alignItems: 'center',
+    marginTop: Spacing.tvos.lg,
+    paddingVertical: Spacing.tvos.md,
+    paddingHorizontal: Spacing.tvos.lg,
+    borderWidth: 1,
+    borderColor: Colors.screeningGold,
+    borderRadius: 16,
+    alignSelf: 'flex-start',
+  },
+  qrLabel: {
+    color: Colors.screeningGold,
+    fontSize: Typography.tvos.button,
+    fontWeight: '800',
+    letterSpacing: 1.5,
+    marginBottom: Spacing.tvos.sm,
+  },
+  qrCodeWrap: {
+    padding: 12,
+    borderRadius: 8,
+    backgroundColor: '#ffffff',
+  },
+  qrNote: {
+    color: Colors.textMuted,
+    fontSize: Typography.tvos.caption - 2,
+    marginTop: Spacing.tvos.sm,
+    textAlign: 'center',
+    maxWidth: 220,
   },
 });
 
