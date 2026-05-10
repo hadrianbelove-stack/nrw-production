@@ -1168,6 +1168,10 @@ class ProviderDiscoverer:
         except Exception as e:
             self.logger.error(f"Failed to save watch links cache: {e}")
 
+        # Apply cached watch links to older movies outside the 30-day window
+        self.host._apply_cached_watch_links(existing_movies)
+        self.host._safe_save_data_json(display_data, existing_movies, label="gap_fill_cache_apply")
+
         # Save tracking if any pre-orders were graduated
         if tracking_changed and tracking_data:
             try:
