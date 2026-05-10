@@ -1152,7 +1152,8 @@ class MovieEnricher:
             _enrich_success = 0
             _enrich_reverted = 0
             _reverted_details = []
-            tracking_changed = False
+            # NOTE: do NOT reset tracking_changed here — earlier phases (catch-up, main loop)
+            # may have already set it True. Resetting would silently discard those changes.
             for mid in movie_ids_to_enrich:
                 mid = str(mid)
                 if mid in movie_lookup:
