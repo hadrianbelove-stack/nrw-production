@@ -390,7 +390,7 @@ header h1 {
     justify-content: center;
 }
 
-/* Fallback title shown when poster is missing */
+/* Fallback gradient title card when poster is missing */
 .poster-fallback {
     position: absolute;
     inset: 0;
@@ -400,34 +400,41 @@ header h1 {
     padding: 1.5rem;
     text-align: center;
     z-index: 0;
+    background: linear-gradient(160deg, #0a0a0a 0%, #111118 50%, #0a0f14 100%);
 }
 
 .poster-fallback-title {
-    color: rgba(255, 255, 255, 0.85);
-    font-size: 1.1rem;
-    font-weight: 600;
-    line-height: 1.3;
-    letter-spacing: 0.02em;
+    color: #bbb;
+    font-size: 0.85rem;
+    font-weight: 500;
+    line-height: 1.4;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    max-width: 85%;
 }
 
-/* Lightbox fallback for missing posters */
+/* Lightbox fallback gradient title card for missing posters */
 .lightbox-poster-fallback {
-    position: absolute;
-    inset: 0;
     display: none;
     align-items: center;
     justify-content: center;
+    height: 80vh;
+    max-height: 700px;
+    aspect-ratio: 2 / 3;
     padding: 2rem;
     text-align: center;
-    background: #1a1a1a;
-    border-radius: 8px;
+    background: linear-gradient(160deg, #0a0a0a 0%, #111118 50%, #0a0f14 100%);
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
 }
 .lightbox-poster-fallback-title {
-    color: rgba(255,255,255,0.85);
-    font-size: 1.6rem;
-    font-weight: 600;
-    line-height: 1.3;
-    letter-spacing: 0.02em;
+    color: #bbb;
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.4;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    max-width: 80%;
 }
 
 .card-front img {
@@ -1400,6 +1407,11 @@ header h1 {
     }
 
     .lightbox-poster {
+        height: 50vh;
+        max-height: 400px;
+    }
+
+    .lightbox-poster-fallback {
         height: 50vh;
         max-height: 400px;
     }

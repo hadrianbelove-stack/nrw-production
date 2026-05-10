@@ -361,7 +361,7 @@ body {
     height: 100%;
 }
 
-/* Poster fallback (title shown when no poster) */
+/* Fallback gradient title card when poster is missing */
 .poster-fallback {
     position: absolute;
     inset: 0;
@@ -371,14 +371,17 @@ body {
     padding: 20px;
     text-align: center;
     z-index: 0;
+    background: linear-gradient(160deg, #0a0a0a 0%, #111118 50%, #0a0f14 100%);
 }
 
 .poster-fallback-title {
-    color: rgba(255, 255, 255, 0.85);
-    font-size: 16px;
-    font-weight: 600;
-    line-height: 1.3;
-    letter-spacing: 0.02em;
+    color: #bbb;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.4;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    max-width: 85%;
 }
 
 .poster {
