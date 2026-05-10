@@ -568,6 +568,7 @@ class MovieEnricher:
         movie_lookup = {str(m.get('id', '')): i for i, m in enumerate(existing_movies) if m.get('id')}
         _initial_movie_count = len(existing_movies)
         self.ctx.logger.info(f"Enrichment loaded data.json: {_initial_movie_count} movies")
+        tracking_data = None      # Loaded before catch-up (batch) or before main loop (single)
         tracking_changed = False  # Track whether movie_tracking.json needs saving
 
         # Single-movie mode: skip queue building, enrich just this one
@@ -772,7 +773,9 @@ class MovieEnricher:
         # Preload IMDb dataset so first movie isn't penalized
         self.host._load_imdb_dataset()
 
-        # tracking_data already loaded above (before catch-up loop)
+        # Batch path loads tracking_data before catch-up loop; single-movie path skips that
+        if tracking_data is None:
+            tracking_data = self.ctx.storage.load_all_movies()
         if not tracking_data:
             print("\u274c Could not load movie tracking database")
             return 0
