@@ -3930,7 +3930,7 @@
       },
       "enriched": false,
       "enrichment_date": null,
-      "_jw_revert_count": 7,
+      "_jw_revert_count": 8,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-05-10"
     },
@@ -14019,13 +14019,24 @@
     },
     "1241225": {
       "title": "Spacewoman",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2025-10-22",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-05-11",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
       "discovery_pass": "B",
-      "has_providers": false,
-      "year": 2025
+      "has_providers": true,
+      "year": 2025,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-05-11"
     },
     "1220936": {
       "title": "Stork of Hope",
@@ -26234,11 +26245,20 @@
       "title": "Roses on the Vine",
       "status": "tracking",
       "first_seen": "2025-11-05",
-      "digital_date": null,
-      "providers": {},
+      "providers": {
+        "rent": [],
+        "buy": [
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
       "discovery_pass": "B",
-      "has_providers": false,
-      "year": 2025
+      "has_providers": true,
+      "year": 2025,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-05-11",
+      "_buyonly_preorder": true
     },
     "1148331": {
       "title": "Amalgam",
@@ -67324,6 +67344,7 @@
         "rent": [],
         "buy": [],
         "streaming": [
+          "fuboTV",
           "Philo"
         ]
       },
@@ -67335,7 +67356,7 @@
       "enrichment_date": null,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-05-10",
-      "_jw_revert_count": 2
+      "_jw_revert_count": 3
     },
     "1524998": {
       "title": "Mother: Chapter One",
@@ -70517,13 +70538,23 @@
     },
     "1501124": {
       "title": "Comic 8 Revolution: Santet K4bin3t",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2025-12-26",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-05-11",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
+      },
       "discovery_pass": "B",
-      "has_providers": false,
-      "year": 2025
+      "has_providers": true,
+      "year": 2025,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-05-11"
     },
     "1473289": {
       "title": "The Model, The Mannequin, and Me",
@@ -76111,7 +76142,6 @@
       "year": 2026,
       "status": "available",
       "first_seen": "2026-01-01",
-      "digital_date": "2026-01-30",
       "providers": {
         "rent": [
           "Amazon Video",
@@ -82604,7 +82634,7 @@
       "_discovery_source": "provider_availability_check",
       "enriched": false,
       "enrichment_date": null,
-      "_jw_revert_count": 6,
+      "_jw_revert_count": 7,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-10"
     },
@@ -91109,7 +91139,7 @@
       "_discovery_source": "provider_availability_check",
       "enriched": false,
       "enrichment_date": null,
-      "_jw_revert_count": 8,
+      "_jw_revert_count": 9,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-05-10"
     },
@@ -102137,7 +102167,7 @@
       "_discovery_source": "tmdb_type4",
       "enriched": false,
       "enrichment_date": null,
-      "_jw_revert_count": 7,
+      "_jw_revert_count": 8,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-05-10"
     },
@@ -108602,14 +108632,25 @@
     },
     "1359497": {
       "title": "Akin's Desert",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-04",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-05-11",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
       "intake_pass": "backfill",
-      "has_providers": false,
+      "has_providers": true,
       "year": 2025,
-      "premiere_date": "2025-07-31"
+      "premiere_date": "2025-07-31",
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-05-11"
     },
     "1306461": {
       "title": "The Four Bad Boys and Me",
@@ -114289,7 +114330,7 @@
       "festival": "Cannes",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 1,
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-05-10"
     },
@@ -115767,7 +115808,7 @@
       "imdb_id": "tt33030107",
       "_discovery_source": "provider_availability_check",
       "digital_date": "2026-04-27",
-      "_jw_revert_count": 7,
+      "_jw_revert_count": 8,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-05-10"
     },
@@ -118803,7 +118844,7 @@
       "_discovery_source": "tmdb_type4",
       "enriched": false,
       "enrichment_date": null,
-      "_jw_revert_count": 7,
+      "_jw_revert_count": 8,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-10"
     },
@@ -119114,11 +119155,20 @@
       "year": 2025,
       "status": "tracking",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "providers": {
+        "rent": [],
+        "buy": [
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "SXSW",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-05-11",
+      "_buyonly_preorder": true
     },
     "1421977": {
       "title": "Fantasy Life",
@@ -123143,13 +123193,22 @@
     "1220240": {
       "title": "A Life Illuminated",
       "year": 2025,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-05-11",
+      "providers": {
+        "rent": [
+          "Eventive"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "Toronto/TIFF",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-05-11"
     },
     "1212310": {
       "title": "Winter of the Crow",
@@ -123422,7 +123481,7 @@
       "_discovery_source": "tmdb_type4",
       "enriched": false,
       "enrichment_date": null,
-      "_jw_revert_count": 7,
+      "_jw_revert_count": 8,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-10"
     },
@@ -169283,7 +169342,7 @@
       "enriched": false,
       "enrichment_date": null,
       "imdb_id": "tt22078202",
-      "_jw_revert_count": 7,
+      "_jw_revert_count": 8,
       "_discovery_source": "provider_availability_check",
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-05-10"
@@ -184129,7 +184188,7 @@
       "_discovery_source": "tmdb_type4",
       "enriched": false,
       "enrichment_date": null,
-      "_jw_revert_count": 7,
+      "_jw_revert_count": 8,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-05-10"
     },
@@ -186768,12 +186827,21 @@
     "1645499": {
       "title": "Tough Old Broads",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-03-05",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-05-11",
+      "providers": {
+        "rent": [
+          "Eventive"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-05-11"
     },
     "1644041": {
       "title": "THE VLOGGER",
@@ -186948,12 +187016,21 @@
     "1580375": {
       "title": "Tenor: My Name Is Pati",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-03-05",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-05-11",
+      "providers": {
+        "rent": [
+          "Eventive"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-05-11"
     },
     "1572100": {
       "title": "School for Defectors",
@@ -193794,7 +193871,7 @@
       "enriched": false,
       "enrichment_date": null,
       "imdb_id": "tt32432428",
-      "_jw_revert_count": 7,
+      "_jw_revert_count": 8,
       "_discovery_source": "provider_availability_check",
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-05-10"
@@ -195734,10 +195811,13 @@
       "year": 2026,
       "status": "tracking",
       "first_seen": "2026-03-18",
-      "digital_date": null,
+      "digital_date": "2026-05-15",
       "providers": {},
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": false,
+      "_discovery_source": "tmdb_type4",
+      "_type4_pending": true,
+      "_is_preorder": true
     },
     "1548475": {
       "title": "Pr\u00e9cieuse(s)",
@@ -198657,7 +198737,7 @@
       "title": "Clash of the Superpowers: America vs China",
       "content_type": "limited_series",
       "tmdb_id": 317305,
-      "status": "tracking",
+      "status": "available",
       "first_air_date": "2026-03-23",
       "digital_date": "2026-03-23",
       "episode_count": 2,
@@ -198669,15 +198749,20 @@
       ],
       "original_language": "en",
       "providers": {
-        "streaming": [],
         "rent": [],
-        "buy": []
+        "buy": [],
+        "streaming": [
+          "BBC Select Apple Tv channel"
+        ]
       },
       "intaked_at": "2026-03-23T10:00:41.580302",
       "networks": [
         "BBC Two"
       ],
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-05-11"
     },
     "1555160": {
       "title": "Jeff Ross: Take a Banana for the Ride",
@@ -205311,15 +205396,16 @@
     "855435": {
       "title": "Faces of Death",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-04-10",
-      "digital_date": "2026-05-12",
+      "digital_date": "2026-05-11",
       "providers": {},
       "intake_pass": "B",
       "has_providers": false,
       "_discovery_source": "tmdb_type4",
       "_type4_pending": true,
-      "_is_preorder": true
+      "_is_preorder": true,
+      "enriched": true
     },
     "787844": {
       "title": "Newborn",
@@ -208220,7 +208306,7 @@
       "has_providers": true,
       "enriched": false,
       "enrichment_date": null,
-      "_jw_revert_count": 7,
+      "_jw_revert_count": 8,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-10"
     },
@@ -212094,7 +212180,7 @@
       "enriched": false,
       "enrichment_date": null,
       "_discovery_source": "tmdb_type4",
-      "_jw_revert_count": 6,
+      "_jw_revert_count": 7,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-10"
     },
@@ -213748,7 +213834,7 @@
       "_discovery_source": "tmdb_type4",
       "enriched": false,
       "enrichment_date": null,
-      "_jw_revert_count": 7,
+      "_jw_revert_count": 8,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-10"
     },
@@ -213787,7 +213873,7 @@
       "_discovery_source": "tmdb_type4",
       "enriched": false,
       "enrichment_date": null,
-      "_jw_revert_count": 7,
+      "_jw_revert_count": 8,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-10"
     },
@@ -214819,7 +214905,7 @@
       "_discovery_source": "provider_availability_check",
       "enriched": false,
       "enrichment_date": null,
-      "_jw_revert_count": 7,
+      "_jw_revert_count": 8,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-10"
     },
@@ -214864,7 +214950,7 @@
       "_discovery_source": "tmdb_type4",
       "enriched": false,
       "enrichment_date": null,
-      "_jw_revert_count": 7,
+      "_jw_revert_count": 8,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-10"
     },
@@ -214884,7 +214970,7 @@
       "_discovery_source": "tmdb_type4",
       "enriched": false,
       "enrichment_date": null,
-      "_jw_revert_count": 7,
+      "_jw_revert_count": 8,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-10"
     },
@@ -215553,7 +215639,8 @@
       "_discovery_source": "tmdb_type4",
       "_jw_revert_count": 10,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-10"
+      "_jw_reverted_at": "2026-05-10",
+      "_skip_provider_discovery": true
     },
     "1400923": {
       "title": "You, Always",
@@ -215588,7 +215675,7 @@
       "enriched": false,
       "enrichment_date": null,
       "_discovery_source": "tmdb_type4",
-      "_jw_revert_count": 6,
+      "_jw_revert_count": 7,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-05-10"
     },
@@ -215990,7 +216077,8 @@
       "_discovery_source": "tmdb_type4",
       "_jw_revert_count": 10,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-10"
+      "_jw_reverted_at": "2026-05-10",
+      "_skip_provider_discovery": true
     },
     "1685471": {
       "title": "Somebody's Watching Me",
@@ -216362,7 +216450,7 @@
       "enriched": false,
       "enrichment_date": null,
       "_discovery_source": "tmdb_type4",
-      "_jw_revert_count": 7,
+      "_jw_revert_count": 8,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-10"
     },
@@ -216725,10 +216813,13 @@
       "year": 2026,
       "status": "tracking",
       "intake_date": "2026-05-06",
-      "digital_date": null,
+      "digital_date": "2026-06-09",
       "providers": {},
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": false,
+      "_discovery_source": "tmdb_type4",
+      "_type4_pending": true,
+      "_is_preorder": true
     },
     "1688666": {
       "title": "1995 - Hopes and Betrayals",
@@ -216852,7 +216943,7 @@
       "enriched": false,
       "enrichment_date": null,
       "_discovery_source": "tmdb_type4",
-      "_jw_revert_count": 4,
+      "_jw_revert_count": 5,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-10"
     },
@@ -217292,7 +217383,7 @@
       "enriched": false,
       "enrichment_date": null,
       "_discovery_source": "tmdb_type4",
-      "_jw_revert_count": 4,
+      "_jw_revert_count": 5,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-10"
     },
@@ -217329,7 +217420,7 @@
       "enriched": false,
       "enrichment_date": null,
       "_discovery_source": "tmdb_type4",
-      "_jw_revert_count": 4,
+      "_jw_revert_count": 5,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-10"
     },
@@ -217356,12 +217447,21 @@
     "1687105": {
       "title": "Secrets of the Matriarch",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "intake_date": "2026-05-08",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-05-11",
+      "providers": {
+        "rent": [
+          "Plex"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-05-11"
     },
     "1685946": {
       "title": "Shai Maestro Quartet @ Jazz sous les Pommiers 2026",
@@ -217925,7 +218025,7 @@
       "_discovery_source": "tmdb_type4",
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-10",
-      "_jw_revert_count": 2
+      "_jw_revert_count": 3
     },
     "1622764": {
       "title": "Broad Trip",
@@ -217945,7 +218045,7 @@
       "_discovery_source": "tmdb_type4",
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-10",
-      "_jw_revert_count": 2
+      "_jw_revert_count": 3
     },
     "1690861": {
       "title": "Never Fold: The 2025 Las Vegas Aces",
@@ -217965,7 +218065,7 @@
       "_discovery_source": "tmdb_type4",
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-10",
-      "_jw_revert_count": 2
+      "_jw_revert_count": 3
     },
     "1691375": {
       "title": "Riccardo Chailly dirige la 9e de Beethoven - Scala de Milan",
@@ -219713,6 +219813,207 @@
       "networks": [
         "Tencent Video"
       ],
+      "has_providers": false
+    },
+    "1669135": {
+      "title": "Hunting Party",
+      "year": 2026,
+      "status": "available",
+      "intake_date": "2026-05-11",
+      "digital_date": "2026-05-11",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "intake_pass": "A",
+      "has_providers": true,
+      "enriched": true,
+      "enrichment_date": "2026-05-11",
+      "_discovery_source": "tmdb_type4"
+    },
+    "1658982": {
+      "title": "The Roast of Kevin Hart",
+      "year": 2026,
+      "status": "available",
+      "intake_date": "2026-05-11",
+      "digital_date": "2026-05-10",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "intake_pass": "A",
+      "has_providers": true,
+      "enriched": true,
+      "enrichment_date": "2026-05-11",
+      "_discovery_source": "tmdb_type4"
+    },
+    "1692470": {
+      "title": "Airbus H\u00e9licopters : la techno secr\u00e8te du leader mondial",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1692450": {
+      "title": "Electronic Witches",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1689206": {
+      "title": "Good For Nothing",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1680407": {
+      "title": "Team JuL",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1620034": {
+      "title": "Marty, Life Is Short",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-11",
+      "digital_date": "2026-05-12",
+      "providers": {},
+      "intake_pass": "B",
+      "_discovery_source": "tmdb_type4",
+      "_type4_pending": true,
+      "_is_preorder": true
+    },
+    "1135285": {
+      "title": "Again Again",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1692487": {
+      "title": "UDO Rebell. Rockstar. Ikone.",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1692417": {
+      "title": "M\u00e1s caliente que el infierno",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1685364": {
+      "title": "SCF \u2013 The Premiere: 12 Hangry Men",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1354471": {
+      "title": "Zwei am Zug",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1205855": {
+      "title": "Bird of Paradise",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1645368": {
+      "title": "Forsaken",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Cannes",
+      "has_providers": false
+    },
+    "1671548": {
+      "title": "Dear You",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Cannes",
+      "has_providers": false
+    },
+    "1302994": {
+      "title": "Roma elastica",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-11",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Cannes",
+      "has_providers": false
+    },
+    "tv_321316": {
+      "title": "Taskmaster Adelaide",
+      "content_type": "limited_series",
+      "tmdb_id": 321316,
+      "status": "tracking",
+      "first_air_date": "2026-05-01",
+      "digital_date": "2026-05-01",
+      "episode_count": 2,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/sfJzDIZVxnTtRSARwpLgCGSih09.jpg",
+      "synopsis": "Five contestants are set tasks challenging their creativity and wit. The tasks are supervised by Luke but the Taskmaster, Sasha, always has the final word.",
+      "genres": [],
+      "original_language": "en",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-05-11",
+      "networks": [],
       "has_providers": false
     }
   }
