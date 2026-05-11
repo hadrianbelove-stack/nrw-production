@@ -389,11 +389,7 @@ const MovieDetailTvOS = () => {
 
   // Reset module-level tracking on unmount
   useEffect(() => {
-    return () => {
-      _pendingNav = null;
-      _buttonFocusCount = 0;
-      _totalButtonCount = 0;
-    };
+    return () => { _pendingNav = null; _buttonFocusCount = 0; _totalButtonCount = 0; };
   }, []);
 
   // Deep link fallback: fetch movies only if shared list is empty (e.g., deep link into app)
@@ -552,6 +548,11 @@ const MovieDetailTvOS = () => {
       }, 80);
     },
   });
+
+  // Clear short-lived timers on unmount
+  useEffect(() => {
+    return () => { clearTimeout(navTimer.current); clearTimeout(flashTimer.current); };
+  }, []);
 
   // Handle watch button press
   const handleWatchPress = useCallback(async (link) => {
