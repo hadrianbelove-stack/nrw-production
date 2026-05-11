@@ -533,6 +533,24 @@ class MovieEnricher:
     # Extracted sub-methods for enrich_newly_available_movies
     # ------------------------------------------------------------------
 
+    @staticmethod
+    def _build_deferred_entry(title, reason, existing_movies, movie_idx=None, tracking_movie=None):
+        """Build a deferred-details dict with all available context."""
+        entry = {'title': title, 'reason': reason}
+        if movie_idx is not None and movie_idx < len(existing_movies):
+            m = existing_movies[movie_idx]
+            entry['digital_date'] = m.get('digital_date', '')
+            entry['discovered_at'] = m.get('_discovered_at', '')
+            entry['discovery_source'] = m.get('_discovery_source', '')
+        if tracking_movie:
+            entry['revert_count'] = tracking_movie.get('_jw_revert_count', 0)
+            provs = tracking_movie.get('providers', {})
+            flat = []
+            for kind in ('streaming', 'rent', 'buy'):
+                flat.extend(provs.get(kind, []))
+            entry['tmdb_platforms'] = list(dict.fromkeys(flat))
+        return entry
+
     def _load_and_validate_data(self):
         """Load data.json, fix schema, build lookup index.
 
@@ -800,7 +818,7 @@ class MovieEnricher:
 
         return (_PER_MOVIE_TIMEOUT_S, _loop_timeout, _per_movie_timeout_handler)
 
-    def _enrich_single_movie(self, movie_id, existing_movies, movie_lookup, tracking_data, per_movie_timeout, deferred_entry_fn):
+    def _enrich_single_movie(self, movie_id, existing_movies, movie_lookup, tracking_data, per_movie_timeout):
         """Enrich a single movie: TMDB fetch, JustWatch pre-verification,
         enrichment field extraction, and in-place update of existing_movies.
 
@@ -820,13 +838,13 @@ class MovieEnricher:
         if movie_id not in movie_lookup:
             print(f"  \u26a0\ufe0f Movie {movie_id} not found in data.json - skipping")
             result['status'] = 'not_in_data'
-            result['deferred_entry'] = deferred_entry_fn(f'ID:{movie_id}', 'not_in_data_json')
+            result['deferred_entry'] = self._build_deferred_entry(f'ID:{movie_id}', 'not_in_data_json', existing_movies)
             return result
 
         if movie_id not in tracking_data.get('movies', {}):
             print(f"  \u26a0\ufe0f Movie {movie_id} not found in tracking database - skipping")
             result['status'] = 'not_in_tracking'
-            result['deferred_entry'] = deferred_entry_fn(f'ID:{movie_id}', 'not_in_tracking')
+            result['deferred_entry'] = self._build_deferred_entry(f'ID:{movie_id}', 'not_in_tracking', existing_movies)
             return result
 
         movie_data = tracking_data['movies'][movie_id]
@@ -849,7 +867,7 @@ class MovieEnricher:
                 existing_movies[movie_index]['_enrichment_status'] = 'failed'
                 print(f"  \u2717 Could not fetch TMDB details for {movie_data.get('title', movie_id)} \u2014 marked failed for retry")
                 result['status'] = 'failed'
-                result['deferred_entry'] = deferred_entry_fn(movie_data.get('title', str(movie_id)), 'tmdb_fetch_failed', movie_index, tracking_data['movies'].get(movie_id))
+                result['deferred_entry'] = self._build_deferred_entry(movie_data.get('title', str(movie_id)), 'tmdb_fetch_failed', existing_movies, movie_index, tracking_data['movies'].get(movie_id))
                 return result
 
             # JustWatch pre-verification: confirm the movie is on our target platforms
@@ -993,7 +1011,7 @@ class MovieEnricher:
                 if _revert_count == 1:
                     print(f"  \U0001f504 {_title} \u2014 JustWatch pre-check: {_revert_reason} \u2192 reverted to tracking")
                 result['status'] = 'reverted'
-                result['deferred_entry'] = deferred_entry_fn(_title, f'jw_revert:{_revert_reason}', movie_index, tracking_data['movies'].get(movie_id))
+                result['deferred_entry'] = self._build_deferred_entry(_title, f'jw_revert:{_revert_reason}', existing_movies, movie_index, tracking_data['movies'].get(movie_id))
                 signal.alarm(0)
                 return result
             elif not _jw_verified:
@@ -1100,7 +1118,7 @@ class MovieEnricher:
                 existing_movies[movie_index]['_enrichment_status'] = 'failed'
                 print(f"  \u2717 Enrichment failed for {movie_data.get('title')}")
                 result['status'] = 'failed'
-                result['deferred_entry'] = deferred_entry_fn(movie_data.get('title', str(movie_id)), 'enrichment_failed', movie_index, tracking_data['movies'].get(movie_id))
+                result['deferred_entry'] = self._build_deferred_entry(movie_data.get('title', str(movie_id)), 'enrichment_failed', existing_movies, movie_index, tracking_data['movies'].get(movie_id))
                 self._error_details.append({
                     'timestamp': datetime.now().isoformat(),
                     'title': movie_data.get('title', str(movie_id)),
@@ -1115,7 +1133,7 @@ class MovieEnricher:
             if movie_index < len(existing_movies):
                 existing_movies[movie_index]['_enrichment_status'] = 'timeout'
             result['status'] = 'timeout'
-            result['deferred_entry'] = deferred_entry_fn(movie_data.get('title', str(movie_id)), f'timeout:at_{_step}', movie_index, tracking_data['movies'].get(movie_id))
+            result['deferred_entry'] = self._build_deferred_entry(movie_data.get('title', str(movie_id)), f'timeout:at_{_step}', existing_movies, movie_index, tracking_data['movies'].get(movie_id))
             self._error_details.append({
                 'timestamp': datetime.now().isoformat(),
                 'title': movie_data.get('title', str(movie_id)),
@@ -1138,7 +1156,7 @@ class MovieEnricher:
                 existing_movies[movie_index]['_enrichment_status'] = 'error'
             print(f"  \u2717 Error enriching {movie_data.get('title', movie_id)}: {e}")
             result['status'] = 'error'
-            result['deferred_entry'] = deferred_entry_fn(movie_data.get('title', str(movie_id)), f'error:{type(e).__name__}', movie_index, tracking_data['movies'].get(movie_id))
+            result['deferred_entry'] = self._build_deferred_entry(movie_data.get('title', str(movie_id)), f'error:{type(e).__name__}', existing_movies, movie_index, tracking_data['movies'].get(movie_id))
             self._error_details.append({
                 'timestamp': datetime.now().isoformat(),
                 'title': movie_data.get('title', str(movie_id)),
@@ -1151,7 +1169,7 @@ class MovieEnricher:
 
         return result
 
-    def _sync_tracking_and_revert(self, movie_ids, existing_movies, movie_lookup, tracking_data, tracking_changed, deferred_entry_fn):
+    def _sync_tracking_and_revert(self, movie_ids, existing_movies, movie_lookup, tracking_data, tracking_changed):
         """Sync enriched flag to movie_tracking.json and revert zero-link movies.
 
         Returns:
@@ -1218,7 +1236,7 @@ class MovieEnricher:
                                 _rv_source = movie.get('_discovery_source', 'unknown')
                                 _reverted_details.append((_title_zl, _rv_source, _zl_revert_count))
                                 print(f"  \U0001f504 {_title_zl} \u2014 zero watch links \u2192 reverted to tracking (count: {_zl_revert_count})")
-                                deferred_entries.append(deferred_entry_fn(_title_zl, 'zero_watch_links', movie_lookup.get(mid), tracking_data['movies'].get(mid)))
+                                deferred_entries.append(self._build_deferred_entry(_title_zl, 'zero_watch_links', existing_movies, movie_lookup.get(mid), tracking_data['movies'].get(mid)))
                     else:
                         _enrich_success += 1
             _enrich_attempted = _enrich_success + _enrich_reverted
@@ -1347,34 +1365,17 @@ class MovieEnricher:
         deferred_details = []
         _loop_start = time.time()
 
-        def _deferred_entry(title, reason, movie_idx=None, tracking_movie=None):
-            """Build a deferred-details dict with all available context."""
-            entry = {'title': title, 'reason': reason}
-            if movie_idx is not None and movie_idx < len(existing_movies):
-                m = existing_movies[movie_idx]
-                entry['digital_date'] = m.get('digital_date', '')
-                entry['discovered_at'] = m.get('_discovered_at', '')
-                entry['discovery_source'] = m.get('_discovery_source', '')
-            if tracking_movie:
-                entry['revert_count'] = tracking_movie.get('_jw_revert_count', 0)
-                provs = tracking_movie.get('providers', {})
-                flat = []
-                for kind in ('streaming', 'rent', 'buy'):
-                    flat.extend(provs.get(kind, []))
-                entry['tmdb_platforms'] = list(dict.fromkeys(flat))
-            return entry
-
         for movie_id in movie_ids_to_enrich:
             # Loop timeout check
             if (time.time() - _loop_start) > loop_timeout:
                 _remaining = len(movie_ids_to_enrich) - movie_ids_to_enrich.index(movie_id)
                 print(f"  \u23f0 Enrichment loop exceeded {ENRICHMENT_LOOP_TIMEOUT_MINUTES} min \u2014 stopping. {_remaining} remaining movies will be retried next run.")
-                deferred_details.append(_deferred_entry(f'({_remaining} movies)', 'loop_timeout'))
+                deferred_details.append(self._build_deferred_entry(f'({_remaining} movies)', 'loop_timeout', existing_movies))
                 break
 
             result = self._enrich_single_movie(
                 movie_id, existing_movies, movie_lookup,
-                tracking_data, per_movie_timeout, _deferred_entry
+                tracking_data, per_movie_timeout
             )
             if result['status'] == 'enriched':
                 enriched_count += 1
@@ -1386,7 +1387,7 @@ class MovieEnricher:
         # Phase E: Sync tracking + zero-link reverts
         sync_deferred, _ = self._sync_tracking_and_revert(
             movie_ids_to_enrich, existing_movies, movie_lookup,
-            tracking_data, tracking_changed, _deferred_entry
+            tracking_data, tracking_changed
         )
         deferred_details.extend(sync_deferred)
 

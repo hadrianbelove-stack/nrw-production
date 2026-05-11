@@ -172,8 +172,8 @@ export function getBackdropUrl(movie) {
     return movie.backdrop_url || movie.backdropUrl || movie.backdrop;
   }
 
-  // Fall back to poster
-  return getPosterUrl(movie, 'original');
+  // Fall back to poster (w1280 is plenty for a blurred TV backdrop, uses far less memory than original)
+  return getPosterUrl(movie, 'w1280');
 }
 
 /**

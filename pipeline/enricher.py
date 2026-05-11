@@ -677,7 +677,6 @@ class MovieEnricher:
 
             # Load tracking database early — needed by pre-order catch-up below
             tracking_data = self.ctx.storage.load_all_movies()
-            tracking_changed = False
 
             # Catch-up: retry movies with failed/incomplete enrichment
             # NOTE: 'completed' movies with gaps are NOT retried here -- cosmetic gaps

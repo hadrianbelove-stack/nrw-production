@@ -29,6 +29,7 @@ import {
   trackMovieSelect,
   trackFilterChange,
 } from '../services/analytics.tvos';
+import { setSharedMovieList } from './sharedMovieList';
 
 // Filter options - matches web categories
 const FILTERS = [
@@ -446,9 +447,14 @@ const HomeScreenTvOS = () => {
   const handleMovieSelect = useCallback(
     (movie) => {
       trackMovieSelect(movie);
-      navigation.navigate('MovieDetail', { movie });
+      // Store sorted movie list in module-level ref (avoids 1.6MB route params serialization).
+      // DetailScreen reads from sharedMovieList instead of route params.
+      const sortedList = listData.filter(item => item.type === 'movie').map(item => item.movie);
+      setSharedMovieList(sortedList);
+      const movieIndex = sortedList.findIndex(m => String(m.id) === String(movie.id));
+      navigation.navigate('MovieDetail', { movie, movieIndex: movieIndex >= 0 ? movieIndex : 0 });
     },
-    [navigation]
+    [navigation, listData]
   );
 
   // Handle opening fullscreen poster view

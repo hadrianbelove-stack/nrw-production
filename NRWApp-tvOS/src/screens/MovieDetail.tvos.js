@@ -38,6 +38,7 @@ import {
 import { fetchMovies } from '../services/api';
 import { trackWatchButtonTap, trackInfoButtonTap } from '../services/analytics.tvos';
 import TrailerPlayer from '../components/TrailerPlayer.tvos';
+import { getSharedMovieList } from './sharedMovieList';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const POSTER_WIDTH = SCREEN_WIDTH * 0.35;
@@ -50,27 +51,25 @@ const formatShortDate = (dateStr) => {
 };
 
 // Simple action button with equal sizing
-const ActionButton = ({ label, color, onPress, hasTVPreferredFocus = false, testID, borderColor, textColor, icon, iconTintColor, onFocusChange, buttonIndex = 0 }) => {
+const ActionButton = ({ label, color, onPress, hasTVPreferredFocus = false, testID, borderColor, textColor, icon, iconTintColor }) => {
   const [isFocused, setIsFocused] = useState(false);
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
   const handleFocus = useCallback(() => {
     setIsFocused(true);
-    onFocusChange?.(true, buttonIndex);
     Animated.spring(scaleAnim, {
       toValue: 1.1,
       useNativeDriver: true,
     }).start();
-  }, [scaleAnim, onFocusChange, buttonIndex]);
+  }, [scaleAnim]);
 
   const handleBlur = useCallback(() => {
     setIsFocused(false);
-    onFocusChange?.(false, buttonIndex);
     Animated.spring(scaleAnim, {
       toValue: 1,
       useNativeDriver: true,
     }).start();
-  }, [scaleAnim, onFocusChange, buttonIndex]);
+  }, [scaleAnim]);
 
   return (
     <TouchableOpacity
@@ -238,6 +237,7 @@ const scoreStyles = StyleSheet.create({
     height: 40,
     resizeMode: 'contain',
     marginRight: 10,
+    tintColor: '#ffffff',
   },
   imdbLogo: {
     width: 48,
@@ -290,70 +290,111 @@ const getServiceLogo = (service) => SERVICE_LOGOS[normalizeService(service)] || 
 // Services that need a visible border on dark backgrounds (black bg buttons)
 const NEEDS_BORDER = ['apple_tv', 'peacock', 'criterion'];
 
+// Focusable navigation arrow at screen edge.
+// When the user presses RIGHT past the last button, Apple's focus engine
+// lands on this arrow. It auto-navigates on focus (no SELECT needed).
+// These are only rendered after a delay so they can't steal initial focus.
+const NavArrow = ({ direction, onNavigate }) => {
+  const [isFocused, setIsFocused] = useState(false);
+  const isLeft = direction === 'left';
+
+  return (
+    <TouchableOpacity
+      onPress={() => {
+        console.log(`[NavArrow] ${direction} PRESSED`);
+        onNavigate();
+      }}
+      onFocus={() => {
+        setIsFocused(true);
+        console.log(`[NavArrow] ${direction} FOCUSED — auto-navigating`);
+        onNavigate();
+      }}
+      onBlur={() => setIsFocused(false)}
+      style={[
+        navArrowStyles.arrow,
+        isLeft ? navArrowStyles.left : navArrowStyles.right,
+        isFocused && navArrowStyles.focused,
+      ]}
+      activeOpacity={1}
+    >
+      <Text style={navArrowStyles.text}>{isLeft ? '\u2039' : '\u203A'}</Text>
+    </TouchableOpacity>
+  );
+};
+
+const navArrowStyles = StyleSheet.create({
+  arrow: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    width: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 10,
+    backgroundColor: 'rgba(0, 212, 170, 0.05)',
+    borderWidth: 2,
+    borderColor: 'transparent',
+  },
+  left: {
+    left: 0,
+  },
+  right: {
+    right: 0,
+  },
+  focused: {
+    backgroundColor: 'rgba(0, 212, 170, 0.25)',
+    borderColor: Colors.focusBorderHighlight,
+  },
+  text: {
+    color: 'rgba(0, 212, 170, 0.6)',
+    fontSize: 80,
+    fontWeight: '300',
+  },
+});
+
 const MovieDetailTvOS = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const { movie: passedMovie, id: movieId } = route.params || {};
+  const { movie: passedMovie, id: movieId, movieIndex } = route.params || {};
   const scrollViewRef = useRef(null);
   const fadeAnim = useRef(new Animated.Value(0)).current;
-
-  // Arrow animation refs for navigation feedback
-  const leftArrowOpacity = useRef(new Animated.Value(0.6)).current;
-  const rightArrowOpacity = useRef(new Animated.Value(0.6)).current;
-
-  // Flash arrow when navigating
-  const flashArrow = useCallback((arrowAnim) => {
-    Animated.sequence([
-      Animated.timing(arrowAnim, {
-        toValue: 1,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-      Animated.timing(arrowAnim, {
-        toValue: 0.6,
-        duration: 200,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  }, []);
 
   // Local state for loading movie from id
   const [movie, setMovie] = useState(passedMovie || null);
   const [isLoadingMovie, setIsLoadingMovie] = useState(!passedMovie && !!movieId);
   const [loadError, setLoadError] = useState(null);
 
-  // Movie list for left/right navigation
-  const [movieList, setMovieList] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  // Track button focus — navigate to next/prev film when pressing past the edges
-  const buttonFocusCount = useRef(0);
-  const trailerFocused = useRef(false);
-  const focusedButtonIndex = useRef(-1);
-  const totalButtonCount = useRef(0);
-  const lastButtonFocusTime = useRef(0);
-  const handleTrailerFocusChange = useCallback((focused) => {
-    buttonFocusCount.current += focused ? 1 : -1;
-    trailerFocused.current = focused;
-  }, []);
-  const handleButtonFocusChange = useCallback((focused, buttonIndex) => {
-    buttonFocusCount.current += focused ? 1 : -1;
-    if (focused) {
-      focusedButtonIndex.current = buttonIndex;
-      lastButtonFocusTime.current = Date.now();
-    } else if (focusedButtonIndex.current === buttonIndex) {
-      focusedButtonIndex.current = -1;
+  // Movie list for left/right navigation — read from shared module-level store
+  // (avoids serializing 1.6MB through React Navigation route params)
+  const [movieList, setMovieList] = useState(() => getSharedMovieList());
+  const [currentIndex, setCurrentIndex] = useState(() => {
+    if (typeof movieIndex === 'number') return movieIndex;
+    const shared = getSharedMovieList();
+    if (shared.length > 0 && passedMovie) {
+      const idx = shared.findIndex(m => String(m.id) === String(passedMovie.id));
+      return idx >= 0 ? idx : 0;
     }
+    return 0;
+  });
+
+  // NavArrows hidden on mount and after navigation — prevents focus steal.
+  // Arrows only appear after 800ms, by which time buttons have claimed focus.
+  const [showArrows, setShowArrows] = useState(false);
+  const showArrowsTimer = useRef(null);
+  useEffect(() => {
+    showArrowsTimer.current = setTimeout(() => setShowArrows(true), 800);
+    return () => clearTimeout(showArrowsTimer.current);
   }, []);
 
-  // Load movie from id if not passed directly (deep link case)
+  // Deep link fallback: fetch movies only if shared list is empty (e.g., deep link into app)
   useEffect(() => {
+    if (movieList.length > 0) return;
+
     const loadMovies = async () => {
       try {
         const { movies } = await fetchMovies();
         setMovieList(movies);
 
-        // Find the current movie in the list
         const targetId = passedMovie?.id || movieId;
         const index = movies.findIndex(m => String(m.id) === String(targetId));
 
@@ -387,21 +428,31 @@ const MovieDetailTvOS = () => {
 
   // Navigate to next movie (cycles to first if at end)
   const navigateNext = useCallback(() => {
+    console.log(`[Nav] navigateNext — list=${movieList.length}, idx=${currentIndex}`);
     if (movieList.length === 0) return;
-    flashArrow(rightArrowOpacity);
     const nextIndex = (currentIndex + 1) % movieList.length;
+    console.log(`[Nav] → ${nextIndex}: ${movieList[nextIndex]?.title}`);
     setCurrentIndex(nextIndex);
     setMovie(movieList[nextIndex]);
-  }, [movieList, currentIndex, flashArrow, rightArrowOpacity]);
+    // Hide arrows briefly to force focus back to buttons
+    setShowArrows(false);
+    clearTimeout(showArrowsTimer.current);
+    showArrowsTimer.current = setTimeout(() => setShowArrows(true), 800);
+  }, [movieList, currentIndex]);
 
   // Navigate to previous movie (cycles to last if at start)
   const navigatePrevious = useCallback(() => {
+    console.log(`[Nav] navigatePrev — list=${movieList.length}, idx=${currentIndex}`);
     if (movieList.length === 0) return;
-    flashArrow(leftArrowOpacity);
     const prevIndex = currentIndex === 0 ? movieList.length - 1 : currentIndex - 1;
+    console.log(`[Nav] → ${prevIndex}: ${movieList[prevIndex]?.title}`);
     setCurrentIndex(prevIndex);
     setMovie(movieList[prevIndex]);
-  }, [movieList, currentIndex, flashArrow, leftArrowOpacity]);
+    // Hide arrows briefly to force focus back to buttons
+    setShowArrows(false);
+    clearTimeout(showArrowsTimer.current);
+    showArrowsTimer.current = setTimeout(() => setShowArrows(true), 800);
+  }, [movieList, currentIndex]);
 
   // Get shared state
   const {
@@ -423,6 +474,17 @@ const MovieDetailTvOS = () => {
   // Trailer player state
   const [trailerVisible, setTrailerVisible] = useState(false);
 
+  // Prevent MENU/Back from popping the detail screen while trailer is playing.
+  // The TrailerPlayer handles MENU internally to close itself; without this guard
+  // React Navigation's native back handler also fires and pops the whole screen.
+  React.useEffect(() => {
+    if (!trailerVisible) return;
+    const unsubscribe = navigation.addListener('beforeRemove', (e) => {
+      e.preventDefault();
+    });
+    return unsubscribe;
+  }, [navigation, trailerVisible]);
+
   // Local state
   const [synopsisExpanded, setSynopsisExpanded] = useState(false);
 
@@ -436,43 +498,15 @@ const MovieDetailTvOS = () => {
   }, [fadeAnim]);
 
   // Handle TV remote events (disabled while trailer player is active)
+  // LEFT/RIGHT navigation is handled by focusable NavArrow buttons at screen edges
   useTVEventHandler(trailerVisible ? {} : {
     [TV_EVENTS.MENU]: () => {
       navigation.goBack();
     },
     [TV_EVENTS.PLAY_PAUSE]: () => {
-      // Play trailer if MP4 hosted trailer available
       if (movie?.links?.trailer_hosted) {
         setTrailerVisible(true);
       }
-    },
-    [TV_EVENTS.LEFT]: () => {
-      if (buttonFocusCount.current <= 0) { navigatePrevious(); return; }
-      // Trailer is alone in its row — LEFT always goes to previous film
-      if (trailerFocused.current) { navigatePrevious(); return; }
-      // If a button just received focus (from this same press), the focus engine moved it
-      if (Date.now() - lastButtonFocusTime.current < 30) return;
-      // No recent focus change — either at edge, or focus events fire after us
-      const before = focusedButtonIndex.current;
-      setTimeout(() => {
-        if (focusedButtonIndex.current === before && before === 0) {
-          navigatePrevious();
-        }
-      }, 50);
-    },
-    [TV_EVENTS.RIGHT]: () => {
-      if (buttonFocusCount.current <= 0) { navigateNext(); return; }
-      // Trailer is alone in its row — RIGHT always goes to next film
-      if (trailerFocused.current) { navigateNext(); return; }
-      // If a button just received focus (from this same press), the focus engine moved it
-      if (Date.now() - lastButtonFocusTime.current < 30) return;
-      // No recent focus change — either at edge, or focus events fire after us
-      const before = focusedButtonIndex.current;
-      setTimeout(() => {
-        if (focusedButtonIndex.current === before && before >= totalButtonCount.current - 1) {
-          navigateNext();
-        }
-      }, 50);
     },
   });
 
@@ -703,7 +737,6 @@ const MovieDetailTvOS = () => {
                   label="TRAILER"
                   color="#E50914"
                   onPress={() => setTrailerVisible(true)}
-                  onFocusChange={handleTrailerFocusChange}
                   hasTVPreferredFocus={true}
                   testID="action-btn-trailer"
                 />
@@ -712,13 +745,9 @@ const MovieDetailTvOS = () => {
 
             {/* Watch buttons row (streaming + VOD + plex) */}
             {hasWatchOptions && (() => {
-              let btnIdx = 0;
-              const streamCount = streamingLinks.length > 0 ? 1 : 0;
               const nonVsLinks = purchaseLinks.slice(0, 2).filter(l => !isVirtualScreeningPlatform(l.service, l.url));
-              const vodCount = nonVsLinks.length;
-              const plexCount = plexLinks.length > 0 ? 1 : 0;
-              totalButtonCount.current = streamCount + vodCount + plexCount;
-              if (totalButtonCount.current === 0) return null;
+              const totalButtons = (streamingLinks.length > 0 ? 1 : 0) + nonVsLinks.length + (plexLinks.length > 0 ? 1 : 0);
+              if (totalButtons === 0) return null;
               return (
               <View style={styles.watchButtonRow}>
                 {/* STREAM button */}
@@ -732,8 +761,6 @@ const MovieDetailTvOS = () => {
                     iconTintColor="#ffffff"
                     borderColor={NEEDS_BORDER.includes(svcKey) ? '#444' : undefined}
                     onPress={() => handleWatchPress(streamingLinks[0])}
-                    onFocusChange={handleButtonFocusChange}
-                    buttonIndex={btnIdx++}
                     hasTVPreferredFocus={!movie?.links?.trailer_hosted}
                     testID="action-btn-stream"
                   />
@@ -749,7 +776,6 @@ const MovieDetailTvOS = () => {
                   const vodKey = normalizeService(link.service);
                   const vodBorder = (!movie?._is_preorder && NEEDS_BORDER.includes(vodKey)) ? '#444'
                     : undefined;
-                  const thisIdx = btnIdx++;
                   return (
                     <View key={`purchase-${idx}`}>
                       <ActionButton
@@ -759,8 +785,6 @@ const MovieDetailTvOS = () => {
                         iconTintColor="#ffffff"
                         borderColor={vodBorder}
                         onPress={() => handleWatchPress(link)}
-                        onFocusChange={handleButtonFocusChange}
-                        buttonIndex={thisIdx}
                         hasTVPreferredFocus={!movie?.links?.trailer_hosted && streamingLinks.length === 0 && idx === 0}
                         testID={`action-btn-purchase-${idx}`}
                       />
@@ -779,8 +803,6 @@ const MovieDetailTvOS = () => {
                     icon={getServiceLogo('plex')}
                     iconTintColor="#ffffff"
                     onPress={() => handleWatchPress(plexLinks[0])}
-                    onFocusChange={handleButtonFocusChange}
-                    buttonIndex={btnIdx++}
                     testID="action-btn-plex"
                   />
                 )}
@@ -868,14 +890,15 @@ const MovieDetailTvOS = () => {
         </View>
       </View>
 
-      {/* Navigation arrow indicators */}
-      <View style={styles.navArrowLeft}>
-        <Animated.Text style={[styles.navArrowText, { opacity: leftArrowOpacity }]}>‹</Animated.Text>
-      </View>
-      <View style={styles.navArrowRight}>
-        <Animated.Text style={[styles.navArrowText, { opacity: rightArrowOpacity }]}>›</Animated.Text>
-      </View>
-
+      {/* Navigation arrows — focusable buttons at screen edges.
+         Hidden for 800ms on mount and after each navigation so buttons claim focus first.
+         Once visible, focus landing here auto-navigates to next/prev movie. */}
+      {showArrows && movieList.length > 1 && (
+        <NavArrow direction="left" onNavigate={navigatePrevious} />
+      )}
+      {showArrows && movieList.length > 1 && (
+        <NavArrow direction="right" onNavigate={navigateNext} />
+      )}
 
       {/* Trailer player overlay */}
       {trailerVisible && movieList.length > 0 && (
@@ -1100,27 +1123,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingLeft: Spacing.tvos.md,
   },
-  navArrowLeft: {
-    position: 'absolute',
-    left: 20,
-    top: 0,
-    bottom: 0,
-    justifyContent: 'center',
-    zIndex: 10,
-  },
-  navArrowRight: {
-    position: 'absolute',
-    right: 20,
-    top: 0,
-    bottom: 0,
-    justifyContent: 'center',
-    zIndex: 10,
-  },
-  navArrowText: {
-    color: 'rgba(0, 212, 170, 0.6)',  // Teal at 60%
-    fontSize: 80,
-    fontWeight: '300',
-  },
   synopsisMore: {
     color: Colors.primary,
     fontSize: Typography.tvos.caption,
@@ -1205,4 +1207,42 @@ const styles = StyleSheet.create({
   },
 });
 
-export default MovieDetailTvOS;
+// Error boundary — catches render crashes and shows the error instead of killing the app
+class MovieDetailErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+  componentDidCatch(error, info) {
+    console.error('[MovieDetail] CRASH CAUGHT:', error.message, info.componentStack);
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <View style={{ flex: 1, backgroundColor: '#1a1a2e', justifyContent: 'center', alignItems: 'center', padding: 60 }}>
+          <Text style={{ color: '#ff4444', fontSize: 32, fontWeight: 'bold', marginBottom: 20 }}>
+            Detail Screen Error
+          </Text>
+          <Text style={{ color: '#ffffff', fontSize: 22, textAlign: 'center', marginBottom: 16 }}>
+            {this.state.error?.message || 'Unknown error'}
+          </Text>
+          <Text style={{ color: '#888888', fontSize: 16, textAlign: 'center' }}>
+            Press Menu to go back. Check Xcode console for full stack trace.
+          </Text>
+        </View>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+const MovieDetailWithErrorBoundary = () => (
+  <MovieDetailErrorBoundary>
+    <MovieDetailTvOS />
+  </MovieDetailErrorBoundary>
+);
+
+export default MovieDetailWithErrorBoundary;
