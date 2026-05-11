@@ -59,13 +59,8 @@ class DataGenerator:
         from pipeline import StorageService
         self.storage = StorageService(self.logger)
 
-        # enrichment_state removed (2025-12-29): No longer tracking retries/failures
-        # Enrichment metrics tracked in metrics/enrichment_run.json
-        # Movies get ONE enrichment attempt on the day they transition to available
-
         self.config = self.load_config()
 
-        # Note: Validation service initialization deferred until after enrichment_stats is created (line ~160)
         # Get TMDB API key from environment or config.yaml (12-factor app pattern)
         self.tmdb_key = os.environ.get('TMDB_API_KEY')
         if not self.tmdb_key:
@@ -142,9 +137,6 @@ class DataGenerator:
         self.rt_scraper = None  # Lazy initialization for RT scraping with Playwright
         self.metacritic_scraper = None  # Lazy initialization for Metacritic API scraping
         self.wikipedia_scraper = None  # Lazy initialization for Wikipedia scraping with Playwright
-
-        # ASIN cache for Amazon links to avoid repeated searches
-        self._amazon_asin_cache = {}
 
         # Initialize enrichment service (extracted 2025-11-10) - shares enrichment_stats dict
         from pipeline import EnrichmentService
@@ -1894,12 +1886,6 @@ class DataGenerator:
                 print(f"  Average results per page: {avg_results_per_page:.1f}")
             if self.intake_stats['debug_enabled']:
                 print(f"  Debug mode was enabled for this run")
-
-        # Clear ASIN cache at end of generation run to bound memory
-        cache_size = len(self._amazon_asin_cache)
-        self._amazon_asin_cache.clear()
-        if cache_size > 0:
-            print(f"\n📦 Amazon ASIN cache cleared ({cache_size} entries)")
 
         # Save scraper health metrics for operational monitoring
         self._save_scraper_health_metrics()
