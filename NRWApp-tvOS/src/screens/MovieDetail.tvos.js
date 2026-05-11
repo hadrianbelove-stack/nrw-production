@@ -50,13 +50,29 @@ const formatShortDate = (dateStr) => {
   return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 };
 
+// Module-level edge navigation tracking.
+// The TV event handler sets _pendingNav to 'left'/'right' on a directional press.
+// If focus moves to another button within 80ms, handleFocus cancels _pendingNav.
+// If nothing cancels it, the timer fires and navigates.
+let _pendingNav = null; // 'left' | 'right' | null
+let _buttonFocusCount = 0; // Number of ActionButtons currently focused (0 or 1)
+let _totalButtonCount = 0; // Total ActionButtons currently mounted on screen
+
 // Simple action button with equal sizing
 const ActionButton = ({ label, color, onPress, hasTVPreferredFocus = false, testID, borderColor, textColor, icon, iconTintColor }) => {
   const [isFocused, setIsFocused] = useState(false);
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
+  // Track total mounted ActionButtons so we know if the screen has any
+  useEffect(() => {
+    _totalButtonCount++;
+    return () => { _totalButtonCount--; };
+  }, []);
+
   const handleFocus = useCallback(() => {
     setIsFocused(true);
+    _buttonFocusCount++;
+    _pendingNav = null; // Focus moved → cancel any pending navigation
     Animated.spring(scaleAnim, {
       toValue: 1.1,
       useNativeDriver: true,
@@ -65,6 +81,7 @@ const ActionButton = ({ label, color, onPress, hasTVPreferredFocus = false, test
 
   const handleBlur = useCallback(() => {
     setIsFocused(false);
+    _buttonFocusCount = Math.max(0, _buttonFocusCount - 1);
     Animated.spring(scaleAnim, {
       toValue: 1,
       useNativeDriver: true,
@@ -290,65 +307,58 @@ const getServiceLogo = (service) => SERVICE_LOGOS[normalizeService(service)] || 
 // Services that need a visible border on dark backgrounds (black bg buttons)
 const NEEDS_BORDER = ['apple_tv', 'peacock', 'criterion'];
 
-// Focusable navigation arrow at screen edge.
-// When the user presses RIGHT past the last button, Apple's focus engine
-// lands on this arrow. It auto-navigates on focus (no SELECT needed).
-// These are only rendered after a delay so they can't steal initial focus.
-const NavArrow = ({ direction, onNavigate }) => {
-  const [isFocused, setIsFocused] = useState(false);
+// Visual-only chevron indicator at screen edges.
+// NOT focusable — purely decorative. Navigation is handled by the TV event handler
+// detecting RIGHT/LEFT when focus can't move further.
+const ChevronIndicator = ({ direction, active }) => {
   const isLeft = direction === 'left';
-
   return (
-    <TouchableOpacity
-      onPress={() => {
-        console.log(`[NavArrow] ${direction} PRESSED`);
-        onNavigate();
-      }}
-      onFocus={() => {
-        setIsFocused(true);
-        console.log(`[NavArrow] ${direction} FOCUSED — auto-navigating`);
-        onNavigate();
-      }}
-      onBlur={() => setIsFocused(false)}
-      style={[
-        navArrowStyles.arrow,
-        isLeft ? navArrowStyles.left : navArrowStyles.right,
-        isFocused && navArrowStyles.focused,
-      ]}
-      activeOpacity={1}
-    >
-      <Text style={navArrowStyles.text}>{isLeft ? '\u2039' : '\u203A'}</Text>
-    </TouchableOpacity>
+    <View style={[chevronStyles.container, isLeft ? chevronStyles.left : chevronStyles.right]}>
+      <Animated.View style={[chevronStyles.circle, active && chevronStyles.active]}>
+        <Text style={[chevronStyles.symbol, active && chevronStyles.symbolActive]}>
+          {isLeft ? '\u2039' : '\u203A'}
+        </Text>
+      </Animated.View>
+    </View>
   );
 };
 
-const navArrowStyles = StyleSheet.create({
-  arrow: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    width: 60,
+const chevronStyles = StyleSheet.create({
+  container: {
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: 10,
-    backgroundColor: 'rgba(0, 212, 170, 0.05)',
-    borderWidth: 2,
-    borderColor: 'transparent',
+    alignSelf: 'center',
   },
   left: {
-    left: 0,
+    marginLeft: -Spacing.tvos.screenPadding,
+    marginRight: Spacing.tvos.md,
   },
   right: {
-    right: 0,
+    marginRight: -Spacing.tvos.screenPadding,
+    marginLeft: Spacing.tvos.md,
   },
-  focused: {
-    backgroundColor: 'rgba(0, 212, 170, 0.25)',
+  circle: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.12)',
+  },
+  active: {
+    backgroundColor: 'rgba(0, 212, 170, 0.3)',
     borderColor: Colors.focusBorderHighlight,
   },
-  text: {
-    color: 'rgba(0, 212, 170, 0.6)',
-    fontSize: 80,
+  symbol: {
+    color: 'rgba(255, 255, 255, 0.3)',
+    fontSize: 32,
     fontWeight: '300',
+    marginTop: -2,
+  },
+  symbolActive: {
+    color: '#ffffff',
   },
 });
 
@@ -377,13 +387,13 @@ const MovieDetailTvOS = () => {
     return 0;
   });
 
-  // NavArrows hidden on mount and after navigation — prevents focus steal.
-  // Arrows only appear after 800ms, by which time buttons have claimed focus.
-  const [showArrows, setShowArrows] = useState(false);
-  const showArrowsTimer = useRef(null);
+  // Reset module-level tracking on unmount
   useEffect(() => {
-    showArrowsTimer.current = setTimeout(() => setShowArrows(true), 800);
-    return () => clearTimeout(showArrowsTimer.current);
+    return () => {
+      _pendingNav = null;
+      _buttonFocusCount = 0;
+      _totalButtonCount = 0;
+    };
   }, []);
 
   // Deep link fallback: fetch movies only if shared list is empty (e.g., deep link into app)
@@ -426,32 +436,32 @@ const MovieDetailTvOS = () => {
     loadMovies();
   }, [passedMovie, movieId]);
 
+  // Chevron flash state — briefly lights up when edge navigation fires
+  const [chevronFlash, setChevronFlash] = useState(null); // 'left' | 'right' | null
+  const flashTimer = useRef(null);
+
   // Navigate to next movie (cycles to first if at end)
   const navigateNext = useCallback(() => {
-    console.log(`[Nav] navigateNext — list=${movieList.length}, idx=${currentIndex}`);
     if (movieList.length === 0) return;
     const nextIndex = (currentIndex + 1) % movieList.length;
-    console.log(`[Nav] → ${nextIndex}: ${movieList[nextIndex]?.title}`);
     setCurrentIndex(nextIndex);
     setMovie(movieList[nextIndex]);
-    // Hide arrows briefly to force focus back to buttons
-    setShowArrows(false);
-    clearTimeout(showArrowsTimer.current);
-    showArrowsTimer.current = setTimeout(() => setShowArrows(true), 800);
+    // Flash the right chevron
+    setChevronFlash('right');
+    clearTimeout(flashTimer.current);
+    flashTimer.current = setTimeout(() => setChevronFlash(null), 300);
   }, [movieList, currentIndex]);
 
   // Navigate to previous movie (cycles to last if at start)
   const navigatePrevious = useCallback(() => {
-    console.log(`[Nav] navigatePrev — list=${movieList.length}, idx=${currentIndex}`);
     if (movieList.length === 0) return;
     const prevIndex = currentIndex === 0 ? movieList.length - 1 : currentIndex - 1;
-    console.log(`[Nav] → ${prevIndex}: ${movieList[prevIndex]?.title}`);
     setCurrentIndex(prevIndex);
     setMovie(movieList[prevIndex]);
-    // Hide arrows briefly to force focus back to buttons
-    setShowArrows(false);
-    clearTimeout(showArrowsTimer.current);
-    showArrowsTimer.current = setTimeout(() => setShowArrows(true), 800);
+    // Flash the left chevron
+    setChevronFlash('left');
+    clearTimeout(flashTimer.current);
+    flashTimer.current = setTimeout(() => setChevronFlash(null), 300);
   }, [movieList, currentIndex]);
 
   // Get shared state
@@ -485,9 +495,6 @@ const MovieDetailTvOS = () => {
     return unsubscribe;
   }, [navigation, trailerVisible]);
 
-  // Local state
-  const [synopsisExpanded, setSynopsisExpanded] = useState(false);
-
   // Fade in on mount
   React.useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -498,7 +505,9 @@ const MovieDetailTvOS = () => {
   }, [fadeAnim]);
 
   // Handle TV remote events (disabled while trailer player is active)
-  // LEFT/RIGHT navigation is handled by focusable NavArrow buttons at screen edges
+  // RIGHT/LEFT at edge: set _pendingNav, wait 80ms. If focus moves to another
+  // button within that window, handleFocus cancels _pendingNav. If not, navigate.
+  const navTimer = useRef(null);
   useTVEventHandler(trailerVisible ? {} : {
     [TV_EVENTS.MENU]: () => {
       navigation.goBack();
@@ -507,6 +516,40 @@ const MovieDetailTvOS = () => {
       if (movie?.links?.trailer_hosted) {
         setTrailerVisible(true);
       }
+    },
+    [TV_EVENTS.RIGHT]: () => {
+      if (movieList.length <= 1) return;
+      if (_totalButtonCount === 0) {
+        // No buttons on screen — navigate immediately
+        navigateNext();
+        return;
+      }
+      if (_buttonFocusCount === 0) return; // Buttons exist but none focused
+      _pendingNav = 'right';
+      clearTimeout(navTimer.current);
+      navTimer.current = setTimeout(() => {
+        if (_pendingNav === 'right') {
+          _pendingNav = null;
+          navigateNext();
+        }
+      }, 80);
+    },
+    [TV_EVENTS.LEFT]: () => {
+      if (movieList.length <= 1) return;
+      if (_totalButtonCount === 0) {
+        // No buttons on screen — navigate immediately
+        navigatePrevious();
+        return;
+      }
+      if (_buttonFocusCount === 0) return; // Buttons exist but none focused
+      _pendingNav = 'left';
+      clearTimeout(navTimer.current);
+      navTimer.current = setTimeout(() => {
+        if (_pendingNav === 'left') {
+          _pendingNav = null;
+          navigatePrevious();
+        }
+      }, 80);
     },
   });
 
@@ -567,11 +610,6 @@ const MovieDetailTvOS = () => {
     }
   }, [movie]);
 
-  // Toggle synopsis expansion
-  const toggleSynopsis = useCallback(() => {
-    setSynopsisExpanded((prev) => !prev);
-  }, []);
-
   // Show loading state when fetching movie from id
   if (isLoadingMovie) {
     return (
@@ -616,6 +654,11 @@ const MovieDetailTvOS = () => {
       <View style={styles.backdropOverlay} />
 
       <View style={styles.content}>
+        {/* Left chevron indicator — visual only */}
+        {movieList.length > 1 && (
+          <ChevronIndicator direction="left" active={chevronFlash === 'left'} />
+        )}
+
         {/* Left side - Poster */}
         <View style={styles.posterContainer}>
           <Image
@@ -743,7 +786,7 @@ const MovieDetailTvOS = () => {
               </View>
             )}
 
-            {/* Watch buttons row (streaming + VOD + plex) */}
+            {/* Watch buttons row (streaming + VOD + plex) with nav chevrons */}
             {hasWatchOptions && (() => {
               const nonVsLinks = purchaseLinks.slice(0, 2).filter(l => !isVirtualScreeningPlatform(l.service, l.url));
               const totalButtons = (streamingLinks.length > 0 ? 1 : 0) + nonVsLinks.length + (plexLinks.length > 0 ? 1 : 0);
@@ -806,6 +849,7 @@ const MovieDetailTvOS = () => {
                     testID="action-btn-plex"
                   />
                 )}
+
               </View>
               );
             })()}
@@ -844,17 +888,10 @@ const MovieDetailTvOS = () => {
               </View>
             )}
 
-            {/* Synopsis — tap to expand/collapse */}
+            {/* Synopsis — plain text, not interactive */}
             {movie.synopsis && (
-              <TouchableOpacity
-                style={styles.synopsisContainer}
-                onPress={toggleSynopsis}
-                activeOpacity={0.8}
-                accessible={true}
-                accessibilityLabel={synopsisExpanded ? 'Collapse synopsis' : 'Expand synopsis'}
-                accessibilityRole="button"
-              >
-                <Text style={styles.synopsis} numberOfLines={synopsisExpanded ? undefined : 6}>
+              <View style={styles.synopsisContainer}>
+                <Text style={styles.synopsis} numberOfLines={6}>
                   {movie.synopsis}
                   {movie.categories?.is_virtual_screening && movie.virtual_screening_info?.screening_name && (
                     <Text style={styles.screeningCallout}>
@@ -862,10 +899,7 @@ const MovieDetailTvOS = () => {
                     </Text>
                   )}
                 </Text>
-                {!synopsisExpanded && movie.synopsis.length > 300 && (
-                  <Text style={styles.synopsisMore}>Select to read more</Text>
-                )}
-              </TouchableOpacity>
+              </View>
             )}
 
             {/* Pull Quotes */}
@@ -888,17 +922,12 @@ const MovieDetailTvOS = () => {
             )}
           </ScrollView>
         </View>
-      </View>
 
-      {/* Navigation arrows — focusable buttons at screen edges.
-         Hidden for 800ms on mount and after each navigation so buttons claim focus first.
-         Once visible, focus landing here auto-navigates to next/prev movie. */}
-      {showArrows && movieList.length > 1 && (
-        <NavArrow direction="left" onNavigate={navigatePrevious} />
-      )}
-      {showArrows && movieList.length > 1 && (
-        <NavArrow direction="right" onNavigate={navigateNext} />
-      )}
+        {/* Right chevron indicator — visual only */}
+        {movieList.length > 1 && (
+          <ChevronIndicator direction="right" active={chevronFlash === 'right'} />
+        )}
+      </View>
 
       {/* Trailer player overlay */}
       {trailerVisible && movieList.length > 0 && (
@@ -1122,12 +1151,6 @@ const styles = StyleSheet.create({
     marginTop: Spacing.tvos.lg,
     alignItems: 'center',
     paddingLeft: Spacing.tvos.md,
-  },
-  synopsisMore: {
-    color: Colors.primary,
-    fontSize: Typography.tvos.caption,
-    marginTop: Spacing.tvos.xs,
-    fontWeight: '500',
   },
   errorContainer: {
     flex: 1,
