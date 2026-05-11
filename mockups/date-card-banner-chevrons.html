@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>NRW — Teal Banner + Bold Chevrons</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-dark: #0a0a0a;
+    --bg-mid: #1a1a2e;
+    --accent: #00d4aa;
+    --text-primary: #ffffff;
+    --text-secondary: #bbb;
+    --text-muted: #888;
+    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  html {
+    background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-mid) 100%);
+    background-attachment: fixed;
+  }
+  body {
+    color: var(--text-primary);
+    font-family: var(--font);
+    -webkit-font-smoothing: antialiased;
+    padding: 0 0 60px;
+  }
+
+  .page-header {
+    text-align: center;
+    padding: 14px 10px 10px;
+    border-bottom: 1px solid #333;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(10px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .page-header h1 {
+    font-weight: 100;
+    letter-spacing: 0.2em;
+    font-size: 0.85rem;
+    color: var(--accent);
+    margin-bottom: 2px;
+  }
+  .page-header .sub {
+    font-size: 0.6rem;
+    color: var(--text-muted);
+  }
+
+  .option-section { padding: 12px 0 0; }
+  .option-header { display: flex; align-items: baseline; gap: 8px; padding: 0 8px 6px; }
+  .option-num { font-size: 1.1rem; font-weight: 800; color: var(--accent); min-width: 24px; }
+  .option-name { font-size: 0.7rem; color: #fff; font-weight: 600; }
+  .option-desc { font-size: 0.55rem; color: var(--text-muted); padding: 0 8px 6px; }
+
+  .wall-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
+    padding: 0 4px;
+    max-width: 440px;
+    margin: 0 auto;
+  }
+  .poster-cell {
+    aspect-ratio: 2/3;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .poster-cell img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .section-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+    margin: 16px 0 0;
+  }
+
+  /* ===== BASE — teal banner top + left bar ===== */
+  .dc {
+    aspect-ratio: 2/3;
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    position: relative;
+    overflow: hidden;
+    padding: 0;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+    border-left: 3px solid var(--accent);
+  }
+  .dc .bar {
+    width: 100%;
+    background: var(--accent);
+    padding: 4px 8px;
+    flex-shrink: 0;
+  }
+  .dc .bar .dy {
+    font-size: 0.65rem;
+    color: #000;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+  }
+  .dc .body {
+    padding: 0 0 0 10px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+  .dc .nm {
+    font-size: 2.8rem;
+    font-weight: 800;
+    color: #fff;
+    line-height: 0.85;
+  }
+  .dc .mo {
+    font-size: 0.55rem;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+  }
+
+  /* ===== 1. Thick chevron strip across bottom ===== */
+  .dc1 .body { justify-content: center; padding-bottom: 0; }
+  .dc1 .ch-strip {
+    width: 100%;
+    background: rgba(0,212,170,0.15);
+    padding: 6px 10px;
+    margin-top: auto;
+    flex-shrink: 0;
+  }
+  .dc1 .ch-strip span {
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: var(--accent);
+    opacity: 0.7;
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+
+  /* ===== 2. Giant single chevron on right ===== */
+  .dc2 .giant-ch {
+    position: absolute;
+    right: 2px;
+    top: 50%;
+    transform: translateY(-40%);
+    font-size: 5rem;
+    font-weight: 300;
+    color: var(--accent);
+    opacity: 0.5;
+    line-height: 1;
+  }
+  .dc2 .body { z-index: 1; }
+
+  /* ===== 3. Chevron watermark behind number ===== */
+  .dc3 .ch-bg {
+    position: absolute;
+    left: 4px;
+    bottom: 8px;
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: var(--accent);
+    opacity: 0.18;
+    letter-spacing: -0.06em;
+    line-height: 1;
+    z-index: 0;
+  }
+  .dc3 .body { z-index: 1; }
+  .dc3 .ch-inline {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--accent);
+    opacity: 0.65;
+    letter-spacing: -0.06em;
+    line-height: 1;
+    margin-top: 2px;
+  }
+
+  /* ===== 4. Vertical chevron column right edge ===== */
+  .dc4 .ch-col {
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-42%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0px;
+    line-height: 0.7;
+  }
+  .dc4 .ch-col span {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--accent);
+    opacity: 0.6;
+    transform: rotate(90deg);
+  }
+  .dc4 .body { z-index: 1; padding-right: 22px; }
+
+  /* ===== 5. Fat inline chevrons after month ===== */
+  .dc5 .ch {
+    font-size: 2.4rem;
+    font-weight: 900;
+    color: var(--accent);
+    opacity: 0.7;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    margin-top: 3px;
+  }
+
+  /* ===== 6. Teal arrow block right edge ===== */
+  .dc6 .arrow-block {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-top: 22px solid transparent;
+    border-bottom: 22px solid transparent;
+    border-left: 16px solid var(--accent);
+    opacity: 0.55;
+  }
+  .dc6 .body { z-index: 1; }
+  .dc6 .ch {
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--accent);
+    opacity: 0.6;
+    letter-spacing: -0.05em;
+    line-height: 1;
+    margin-top: 2px;
+  }
+
+  /* ===== 7. Full-width chevron field fills empty space ===== */
+  .dc7 .body { justify-content: flex-start; padding-top: 6px; }
+  .dc7 .ch-field {
+    margin-top: auto;
+    padding: 4px 6px 6px;
+    width: 100%;
+    line-height: 1.1;
+  }
+  .dc7 .ch-field span {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--accent);
+    opacity: 0.35;
+    letter-spacing: -0.04em;
+  }
+  .dc7 .ch-field .row2 {
+    opacity: 0.2;
+  }
+  .dc7 .ch-field .row3 {
+    opacity: 0.12;
+  }
+
+  /* ===== 8. Thick double chevron next to number ===== */
+  .dc8 .nm-row {
+    display: flex;
+    align-items: baseline;
+    gap: 2px;
+  }
+  .dc8 .nm-row .nm {
+    font-size: 2.8rem;
+  }
+  .dc8 .nm-row .ch {
+    font-size: 2.6rem;
+    font-weight: 900;
+    color: var(--accent);
+    opacity: 0.65;
+    letter-spacing: -0.08em;
+    line-height: 1;
+  }
+
+  /* ===== 9. Gradient chevrons bright to dim ===== */
+  .dc9 .ch-gradient {
+    display: flex;
+    gap: 0px;
+    margin-top: 3px;
+    line-height: 1;
+  }
+  .dc9 .ch-gradient span {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .dc9 .ch-gradient span:nth-child(1) { opacity: 0.9; }
+  .dc9 .ch-gradient span:nth-child(2) { opacity: 0.7; }
+  .dc9 .ch-gradient span:nth-child(3) { opacity: 0.5; }
+  .dc9 .ch-gradient span:nth-child(4) { opacity: 0.3; }
+  .dc9 .ch-gradient span:nth-child(5) { opacity: 0.15; }
+
+  /* ===== 10. Bold bottom bar with thick arrow + chevrons ===== */
+  .dc10 .body { justify-content: center; }
+  .dc10 .ch-bottom {
+    width: 100%;
+    background: var(--accent);
+    padding: 4px 8px;
+    margin-top: auto;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+  .dc10 .ch-bottom span {
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: #000;
+    letter-spacing: -0.06em;
+    line-height: 1;
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>TEAL BANNER + CHEVRONS</h1>
+  <div class="sub">10 variations — bolder chevrons, different placements</div>
+</div>
+
+<div id="options"></div>
+
+<script>
+const posters = [
+  'https://image.tmdb.org/t/p/w200/xEua5z9LMILLFS8sVddyipivAfU.jpg',
+  'https://image.tmdb.org/t/p/w200/gqY0ITBgT7A82poL9jv851qdnIb.jpg',
+  'https://image.tmdb.org/t/p/w200/z7xXihu5wHuSMWymq5VAulPVuvg.jpg',
+  'https://image.tmdb.org/t/p/w200/hoEMZXOJgx0XioWcY8nuoVQ70JZ.jpg',
+  'https://image.tmdb.org/t/p/w200/lbrnJY7E0a9xxgj2cotNp6YI4dz.jpg',
+  'https://image.tmdb.org/t/p/w200/z0KEkkptc2kNHNrUdES1cZD2vRm.jpg',
+  'https://image.tmdb.org/t/p/w200/sxyRAjnkDw2E8BVsd91J6Cnv9OK.jpg',
+  'https://image.tmdb.org/t/p/w200/9HcEqn3D4J6b2Z0jK54id9nA0fr.jpg',
+  'https://image.tmdb.org/t/p/w200/9DZCHEo6lVXk0IvKA1D26jJCmPZ.jpg',
+  'https://image.tmdb.org/t/p/w200/6n95Q0HGpFnA4rlnfAKknkoy6XV.jpg',
+  'https://image.tmdb.org/t/p/w200/mAX1ujOROXtKsOuIg5MbJbotOyD.jpg',
+  'https://image.tmdb.org/t/p/w200/dXeeDRLGpTX1U97lWBAwQeeplsW.jpg',
+  'https://image.tmdb.org/t/p/w200/7SphrQbctdC8OTXVIkk9kzI9yXK.jpg',
+  'https://image.tmdb.org/t/p/w200/nedWOSKUvZf2J0oLjYCk44rob2l.jpg',
+];
+
+const dates = [
+  { day: 'SATURDAY', dayShort: 'SAT', num: 10, month: 'MAY' },
+  { day: 'FRIDAY', dayShort: 'FRI', num: 9, month: 'MAY' },
+];
+
+function posterHTML(idx) {
+  return `<div class="poster-cell"><img src="${posters[idx % posters.length]}" alt="" loading="lazy"></div>`;
+}
+
+function buildDateCard(n, d) {
+  switch(n) {
+    case 1: return `<div class="dc dc1">
+      <div class="bar"><div class="dy">${d.dayShort}</div></div>
+      <div class="body"><div class="nm">${d.num}</div><div class="mo">${d.month}</div></div>
+      <div class="ch-strip"><span>›››››</span></div>
+    </div>`;
+    case 2: return `<div class="dc dc2">
+      <div class="bar"><div class="dy">${d.dayShort}</div></div>
+      <div class="giant-ch">›</div>
+      <div class="body"><div class="nm">${d.num}</div><div class="mo">${d.month}</div></div>
+    </div>`;
+    case 3: return `<div class="dc dc3">
+      <div class="bar"><div class="dy">${d.dayShort}</div></div>
+      <div class="ch-bg">›››</div>
+      <div class="body"><div class="nm">${d.num}</div><div class="mo">${d.month}</div><div class="ch-inline">›››</div></div>
+    </div>`;
+    case 4: return `<div class="dc dc4">
+      <div class="bar"><div class="dy">${d.dayShort}</div></div>
+      <div class="ch-col"><span>›</span><span>›</span><span>›</span></div>
+      <div class="body"><div class="nm">${d.num}</div><div class="mo">${d.month}</div></div>
+    </div>`;
+    case 5: return `<div class="dc dc5">
+      <div class="bar"><div class="dy">${d.dayShort}</div></div>
+      <div class="body"><div class="nm">${d.num}</div><div class="mo">${d.month}</div><div class="ch">›››</div></div>
+    </div>`;
+    case 6: return `<div class="dc dc6">
+      <div class="bar"><div class="dy">${d.dayShort}</div></div>
+      <div class="arrow-block"></div>
+      <div class="body"><div class="nm">${d.num}</div><div class="mo">${d.month}</div><div class="ch">››</div></div>
+    </div>`;
+    case 7: return `<div class="dc dc7">
+      <div class="bar"><div class="dy">${d.dayShort}</div></div>
+      <div class="body"><div class="nm">${d.num}</div><div class="mo">${d.month}</div></div>
+      <div class="ch-field"><div><span>›››››››</span></div><div class="row2"><span>›››››››</span></div><div class="row3"><span>›››››››</span></div></div>
+    </div>`;
+    case 8: return `<div class="dc dc8">
+      <div class="bar"><div class="dy">${d.dayShort}</div></div>
+      <div class="body"><div class="nm-row"><div class="nm">${d.num}</div><div class="ch">››</div></div><div class="mo">${d.month}</div></div>
+    </div>`;
+    case 9: return `<div class="dc dc9">
+      <div class="bar"><div class="dy">${d.dayShort}</div></div>
+      <div class="body"><div class="nm">${d.num}</div><div class="mo">${d.month}</div><div class="ch-gradient"><span>›</span><span>›</span><span>›</span><span>›</span><span>›</span></div></div>
+    </div>`;
+    case 10: return `<div class="dc dc10">
+      <div class="bar"><div class="dy">${d.dayShort}</div></div>
+      <div class="body"><div class="nm">${d.num}</div><div class="mo">${d.month}</div></div>
+      <div class="ch-bottom"><span>›››››</span></div>
+    </div>`;
+  }
+}
+
+const labels = [
+  'Thick chevron strip across bottom',
+  'Giant single chevron right edge',
+  'Chevron watermark + inline bold',
+  'Vertical rotated chevrons right',
+  'Fat inline chevrons below month',
+  'Arrow block right + inline chevrons',
+  'Chevron field fills empty space',
+  'Double chevron inline with number',
+  'Gradient fade chevrons (bright→dim)',
+  'Solid teal chevron bar at bottom',
+];
+
+const descs = [
+  'Full-width teal strip at bottom with 2.2rem bold chevrons at 70% — impossible to miss',
+  'One massive 5rem chevron on the right side — clear directional cue',
+  'Huge faded chevrons fill background + crisp 1.8rem chevrons inline at 65%',
+  'Three 2rem chevrons stacked vertically on right, rotated 90° — pointing down-right',
+  'Extra fat 2.4rem chevrons at 70% opacity directly below month — bold and dense',
+  'Solid teal triangle on right edge + thick inline chevrons — double directional signal',
+  'Cascading rows of chevrons fill all empty space below text, fading out',
+  'Two thick chevrons sit right next to the number on the same baseline — integrated',
+  'Five individual chevrons fade from 90% to 15% opacity — motion/direction effect',
+  'Solid teal bar at bottom with black chevrons — mirrors the day banner at top',
+];
+
+const layouts = [
+  { pre1: 0, post1: 7, pre2: 0, post2: 3 },
+  { pre1: 2, post1: 5, pre2: 1, post2: 3 },
+  { pre1: 1, post1: 6, pre2: 3, post2: 1 },
+  { pre1: 3, post1: 4, pre2: 2, post2: 2 },
+  { pre1: 0, post1: 5, pre2: 2, post2: 2 },
+];
+
+const container = document.getElementById('options');
+
+for (let opt = 1; opt <= 10; opt++) {
+  const section = document.createElement('div');
+  section.className = 'option-section';
+
+  const header = document.createElement('div');
+  header.className = 'option-header';
+  header.innerHTML = `<span class="option-num">${opt}</span><span class="option-name">${labels[opt-1]}</span>`;
+
+  const desc = document.createElement('div');
+  desc.className = 'option-desc';
+  desc.textContent = descs[opt-1];
+
+  const grid = document.createElement('div');
+  grid.className = 'wall-grid';
+
+  const layout = layouts[(opt - 1) % layouts.length];
+  let pi = 0;
+  let cells = '';
+  for (let p = 0; p < layout.pre1; p++) cells += posterHTML(pi++);
+  cells += buildDateCard(opt, dates[0]);
+  for (let p = 0; p < layout.post1; p++) cells += posterHTML(pi++);
+  for (let p = 0; p < layout.pre2; p++) cells += posterHTML(pi++);
+  cells += buildDateCard(opt, dates[1]);
+  for (let p = 0; p < layout.post2; p++) cells += posterHTML(pi++);
+  grid.innerHTML = cells;
+
+  section.appendChild(header);
+  section.appendChild(desc);
+  section.appendChild(grid);
+
+  if (opt > 1) {
+    const div = document.createElement('div');
+    div.className = 'section-divider';
+    container.appendChild(div);
+  }
+  container.appendChild(section);
+}
+</script>
+</body>
+</html>

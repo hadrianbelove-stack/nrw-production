@@ -1,0 +1,2169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>NRW Mobile — 3-View Mockup</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-dark: #0a0a0a;
+    --bg-mid: #1a1a2e;
+    --accent: #00d4aa;
+    --accent-hover: #00ffbb;
+    --accent-glow: rgba(0,212,170,0.3);
+    --text-primary: #ffffff;
+    --text-secondary: #bbb;
+    --text-muted: #888;
+    --border-subtle: rgba(255,255,255,0.2);
+    --crimson: #dc143c;
+    --shadow-card: 0 8px 32px rgba(0,0,0,0.3);
+    --radius-card: 15px;
+    --radius-pill: 25px;
+    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --preorder-purple: #7c3aed;
+  }
+
+  html {
+    width: 100%; height: 100%;
+    background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-mid) 100%);
+    background-attachment: fixed;
+  }
+  body {
+    width: 100%; height: 100%;
+    overflow: hidden;
+    color: var(--text-primary);
+    font-family: var(--font);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ===== VIEW INDICATOR DOTS (inline in header) ===== */
+  .view-dots {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    margin-left: 8px;
+  }
+  .view-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--text-muted);
+    opacity: 0.4;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .view-dot.active {
+    opacity: 1;
+    background: var(--accent);
+    transform: scale(1.3);
+  }
+
+  /* ===== CHEVRON INDICATORS ===== */
+  .chevron {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 2.5rem;
+    color: var(--accent);
+    opacity: 0;
+    z-index: 900;
+    pointer-events: none;
+    transition: opacity 0.15s ease-out, transform 0.15s ease-out;
+    font-weight: 200;
+    text-shadow: 0 0 20px rgba(0,212,170,0.5);
+  }
+  .chevron-left { left: 8px; }
+  .chevron-right { right: 8px; }
+  .chevron.visible { opacity: 0.3; }
+  .chevron.flash {
+    opacity: 1;
+    transform: translateY(-50%) scale(1.3);
+  }
+
+  /* ===== HEADER & FILTERS (persistent across all views) ===== */
+  .site-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 950;
+    padding: 10px 10px 8px;
+    text-align: center;
+    border-bottom: 1px solid #333;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(10px);
+  }
+  .site-header h1 {
+    font-weight: 100;
+    letter-spacing: 0.25em;
+    font-size: 1.1rem;
+    background: linear-gradient(45deg, #fff, var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 6px;
+  }
+  .filters {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    flex-wrap: wrap;
+  }
+  .filter-btn {
+    padding: 4px 10px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+    cursor: pointer;
+    border-radius: 25px;
+    font-size: 0.6rem;
+    font-family: var(--font);
+    -webkit-tap-highlight-color: transparent;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+  .filter-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #000;
+    font-weight: 600;
+  }
+  .search-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .search-input {
+    padding: 4px 10px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+    border-radius: 25px;
+    font-size: 0.6rem;
+    width: 100px;
+    font-family: var(--font);
+    transition: all 0.3s ease;
+  }
+  .search-input:focus {
+    outline: none;
+    width: 140px;
+    border-color: var(--accent);
+    box-shadow: 0 0 8px var(--accent-glow);
+  }
+  .search-input::placeholder { color: rgba(255,255,255,0.4); }
+
+  /* ===== VIEW 1: GRID ===== */
+  #grid-view {
+    position: fixed;
+    inset: 0;
+    padding-top: var(--header-height, 80px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    touch-action: pan-y;
+  }
+  #grid-view.hidden {
+    opacity: 0;
+    transform: scale(0.95);
+    pointer-events: none;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+    padding: 6px 4px 40px;
+    max-width: 440px;
+    margin: 0 auto;
+  }
+
+  .grid-item {
+    aspect-ratio: 2/3;
+    border-radius: 4px;
+    overflow: hidden;
+    cursor: pointer;
+    position: relative;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.15s ease;
+  }
+  .grid-item:active { transform: scale(0.96); }
+  .grid-item img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .grid-item .staff-pick-badge {
+    position: absolute;
+    top: 3px; right: 3px;
+    background: var(--crimson);
+    color: white;
+    font-size: 0.4rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: 1px 4px;
+    border-radius: 3px;
+    text-transform: uppercase;
+  }
+
+  /* Date divider card — teal banner top + gradient chevrons */
+  .date-divider-card {
+    aspect-ratio: 2/3;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+    border-left: 3px solid var(--accent);
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .date-bar {
+    width: 100%;
+    background: var(--accent);
+    padding: 4px 8px;
+    flex-shrink: 0;
+  }
+  .date-day {
+    font-size: 0.65rem;
+    color: #000;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+  }
+  .date-body {
+    padding: 0 0 0 10px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+  }
+  .date-number {
+    font-size: 2.8rem;
+    font-weight: 800;
+    color: #fff;
+    line-height: 0.85;
+  }
+  .date-month {
+    font-size: 0.55rem;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+  }
+  .date-chevrons {
+    display: flex;
+    gap: 0px;
+    margin-top: 3px;
+    line-height: 1;
+  }
+  .date-chevrons span {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .date-chevrons span:nth-child(1) { opacity: 0.9; }
+  .date-chevrons span:nth-child(2) { opacity: 0.7; }
+  .date-chevrons span:nth-child(3) { opacity: 0.5; }
+  .date-chevrons span:nth-child(4) { opacity: 0.3; }
+  .date-chevrons span:nth-child(5) { opacity: 0.15; }
+
+  /* ===== VIEW 2: POSTER CLOSE-UP ===== */
+  #poster-view {
+    position: fixed;
+    inset: 0;
+    padding-top: var(--header-height, 80px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-bottom: 20px;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    touch-action: none;
+    background: rgba(0,0,0,0.85);
+  }
+  #poster-view.hidden {
+    opacity: 0;
+    transform: scale(1.05);
+    pointer-events: none;
+  }
+
+  .poster-container {
+    position: relative;
+    width: 92%;
+    max-width: 380px;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .poster-container img {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 10px;
+    box-shadow: 0 12px 48px rgba(0,0,0,0.6);
+    display: block;
+    object-fit: contain;
+  }
+  .poster-scores {
+    position: absolute;
+    bottom: 12px; left: 12px;
+    display: flex; gap: 6px;
+  }
+  .score-badge {
+    background: rgba(0,0,0,0.85);
+    border-radius: 6px;
+    padding: 3px 7px;
+    font-size: 0.6rem;
+    font-weight: 600;
+    display: flex; align-items: center; gap: 3px;
+    backdrop-filter: blur(4px);
+  }
+  .score-badge.rt { color: #fa6320; }
+  .score-badge.imdb { color: #f5c518; }
+  .score-badge.meta { color: #66cc33; }
+
+  .poster-info {
+    text-align: center;
+    padding: 10px 16px 0;
+    flex-shrink: 0;
+  }
+  .poster-title {
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-bottom: 3px;
+  }
+  .poster-date {
+    font-size: 0.75rem;
+    color: var(--accent);
+    font-weight: 500;
+    letter-spacing: 0.05em;
+  }
+  .poster-genres {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  /* ===== VIEW 3: BOTTOM SHEET ===== */
+  .sheet-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.3);
+    z-index: 500;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .sheet-overlay.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .bottom-sheet {
+    position: fixed;
+    left: 0; right: 0;
+    bottom: 0;
+    background: linear-gradient(180deg, #1e1e34 0%, var(--bg-mid) 100%);
+    border-radius: 20px 20px 0 0;
+    z-index: 600;
+    transform: translateY(100%);
+    transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+    max-height: calc(100vh - var(--header-height, 80px));
+    max-height: calc(100dvh - var(--header-height, 80px));
+    display: flex;
+    flex-direction: column;
+    touch-action: none;
+    box-shadow: 0 -4px 30px rgba(0,0,0,0.5);
+  }
+  .bottom-sheet.open { transform: translateY(0); }
+  .bottom-sheet.dragging { transition: none; }
+
+  .sheet-handle-area {
+    flex-shrink: 0;
+    padding: 14px 0 10px;
+    display: flex;
+    justify-content: center;
+    cursor: grab;
+    touch-action: none;
+    /* Larger tap target for easier grabbing */
+    min-height: 44px;
+  }
+  .sheet-handle {
+    width: 48px;
+    height: 5px;
+    border-radius: 3px;
+    background: var(--text-muted);
+    opacity: 0.6;
+  }
+  .sheet-handle.pulse {
+    animation: handlePulse 1.5s ease-in-out;
+  }
+  @keyframes handlePulse {
+    0%, 100% { opacity: 0.5; transform: scaleX(1); }
+    50% { opacity: 1; transform: scaleX(1.3); background: var(--accent); }
+  }
+
+  .sheet-content {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 0 20px 40px;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+  }
+
+  .sheet-header-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .sheet-thumb {
+    width: 56px;
+    height: 84px;
+    border-radius: 6px;
+    object-fit: cover;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  }
+  .sheet-header-text {
+    flex: 1;
+    min-width: 0;
+  }
+  .sheet-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 3px;
+    line-height: 1.25;
+  }
+  .sheet-date {
+    font-size: 0.8rem;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+  .sheet-meta {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+    line-height: 1.5;
+  }
+  .sheet-meta span {
+    margin-right: 10px;
+    white-space: nowrap;
+  }
+  .sheet-meta span::after {
+    content: '\00b7';
+    margin-left: 10px;
+    color: #555;
+  }
+  .sheet-meta span:last-child::after { content: ''; }
+
+  .sheet-section-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    margin-top: 18px;
+  }
+  .sheet-section-label:first-of-type { margin-top: 0; }
+  .sheet-synopsis {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    line-height: 1.65;
+    margin-bottom: 8px;
+  }
+
+  .sheet-scores {
+    display: flex;
+    gap: 16px;
+    margin: 12px 0 4px;
+  }
+  .sheet-score {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+  .sheet-score-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+  .sheet-score-value.rt { color: #fa6320; }
+  .sheet-score-value.imdb { color: #f5c518; }
+  .sheet-score-value.meta { color: #66cc33; }
+  .sheet-score-label {
+    font-size: 0.55rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .sheet-providers {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .provider-pill {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-pill);
+    padding: 6px 14px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    white-space: nowrap;
+  }
+
+  .trailer-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+    padding: 10px 20px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-pill);
+    color: var(--accent);
+    font-size: 0.8rem;
+    font-weight: 600;
+    font-family: var(--font);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .trailer-btn:active {
+    background: rgba(0,212,170,0.15);
+    transform: scale(0.97);
+  }
+  .trailer-btn .play-icon {
+    font-size: 0.9rem;
+  }
+
+  /* ===== CONTEXTUAL HINTS ===== */
+  .hint {
+    position: fixed;
+    z-index: 950;
+    font-size: 0.7rem;
+    color: var(--accent);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+    text-align: center;
+    letter-spacing: 0.05em;
+  }
+  .hint.visible {
+    opacity: 1;
+    animation: hintFade 3s ease forwards;
+  }
+  @keyframes hintFade {
+    0% { opacity: 0; }
+    15% { opacity: 1; }
+    70% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+  .hint-swipe {
+    bottom: 55px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  .hint-back {
+    bottom: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .hint-back .arrow {
+    font-size: 1.2rem;
+    animation: bounceDown 1.5s ease-in-out infinite;
+  }
+  @keyframes bounceDown {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(5px); }
+  }
+
+  /* ===== SLIDE TRANSITIONS ===== */
+  .slide-left-enter { animation: slideLeftIn 0.2s ease forwards; }
+  .slide-right-enter { animation: slideRightIn 0.2s ease forwards; }
+  @keyframes slideLeftIn {
+    from { transform: translateX(40px); opacity: 0.3; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+  @keyframes slideRightIn {
+    from { transform: translateX(-40px); opacity: 0.3; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+
+  /* ===== MOVIE COUNTER ===== */
+  .movie-counter {
+    position: fixed;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.6rem;
+    color: var(--text-muted);
+    z-index: 800;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+  .movie-counter.visible { opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- Persistent Header (visible across all views) -->
+<div class="site-header" id="site-header">
+  <h1>THE NEW RELEASE WALL</h1>
+  <div class="filters" id="header-filters">
+    <button class="filter-btn active">All</button>
+    <button class="filter-btn">Pre-Orders</button>
+    <button class="filter-btn">Studio</button>
+    <button class="filter-btn">Indie</button>
+    <button class="filter-btn">Staff Picks</button>
+    <button class="filter-btn">Foreign</button>
+    <button class="filter-btn">Series</button>
+    <button class="filter-btn">Restorations</button>
+    <button class="filter-btn">Documentary</button>
+    <div class="search-container">
+      <input type="text" class="search-input" placeholder="Search...">
+    </div>
+    <div class="view-dots" id="view-dots">
+      <button class="view-dot active" data-view="0" aria-label="Grid view"></button>
+      <button class="view-dot" data-view="1" aria-label="Poster view"></button>
+      <button class="view-dot" data-view="2" aria-label="Detail view"></button>
+    </div>
+  </div>
+</div>
+
+<!-- Chevron Indicators -->
+<div class="chevron chevron-left" id="chevron-left">&#8249;</div>
+<div class="chevron chevron-right" id="chevron-right">&#8250;</div>
+
+<!-- View 1: Grid -->
+<div id="grid-view"></div>
+
+<!-- View 2: Poster Close-Up -->
+<div id="poster-view" class="hidden">
+  <div class="poster-container">
+    <img id="poster-img" src="" alt="">
+    <div class="poster-scores" id="poster-scores"></div>
+  </div>
+  <div class="poster-info">
+    <div class="poster-title" id="poster-title"></div>
+    <div class="poster-date" id="poster-date"></div>
+    <div class="poster-genres" id="poster-genres"></div>
+  </div>
+</div>
+
+<!-- View 3: Bottom Sheet -->
+<div class="sheet-overlay" id="sheet-overlay"></div>
+<div class="bottom-sheet" id="bottom-sheet">
+  <div class="sheet-handle-area" id="sheet-handle-area">
+    <div class="sheet-handle" id="sheet-handle"></div>
+  </div>
+  <div class="sheet-content" id="sheet-content"></div>
+</div>
+
+<!-- Contextual Hints -->
+<div class="hint hint-swipe" id="hint-swipe">&#8249; swipe to browse &#8250;</div>
+<div class="hint hint-back" id="hint-back">
+  <span>swipe down for grid</span>
+  <span class="arrow">&#8595;</span>
+</div>
+
+<!-- Movie Counter -->
+<div class="movie-counter" id="movie-counter"></div>
+
+<script>
+// ===== MOVIE DATA (sorted by date descending, with long descriptions for scroll testing) =====
+const movies = [
+  {
+    "id": "1631682",
+    "title": "96 Pounds of Dynamite",
+    "date": "2026-05-10",
+    "poster": "https://image.tmdb.org/t/p/w500/xEua5z9LMILLFS8sVddyipivAfU.jpg",
+    "director": "Loren Goldfarb",
+    "runtime": 79,
+    "year": 2026,
+    "country": "",
+    "genres": [
+      "Documentary"
+    ],
+    "rt": null,
+    "imdb": "9.8",
+    "meta": null,
+    "staffPick": false,
+    "hasTrailer": false,
+    "synopsis": "Diagnosed at birth with a rare condition that was expected to kill him, Chad \"Shorty\" McDaniel embraces humor, grit, and a competitive spirit to live the life others said he would never have and shatter assumptions about disability.",
+    "streaming": [],
+    "rent": [
+      "Amazon Video"
+    ]
+  },
+  {
+    "id": "9799",
+    "title": "The Fast and the Furious",
+    "date": "2026-05-10",
+    "poster": "https://image.tmdb.org/t/p/w500/gqY0ITBgT7A82poL9jv851qdnIb.jpg",
+    "director": "Rob Cohen",
+    "runtime": 106,
+    "year": 2001,
+    "country": "",
+    "genres": [
+      "Action",
+      "Crime",
+      "Thriller"
+    ],
+    "rt": "38%",
+    "imdb": "6.8",
+    "meta": "58",
+    "staffPick": false,
+    "hasTrailer": false,
+    "synopsis": "Dominic Toretto is a Los Angeles street racer suspected of masterminding a series of big-rig hijackings. When undercover cop Brian O'Conner infiltrates Toretto's iconoclastic crew, he falls for Toretto's sister and must choose a side: the gang or the LAPD.",
+    "streaming": [],
+    "rent": [
+      "Amazon Video",
+      "Apple TV Store",
+      "Google Play Movies",
+      "YouTube",
+      "Fandango At Home"
+    ]
+  },
+  {
+    "id": "1417",
+    "title": "Pan's Labyrinth",
+    "date": "2026-05-10",
+    "poster": "https://image.tmdb.org/t/p/w500/z7xXihu5wHuSMWymq5VAulPVuvg.jpg",
+    "director": "Guillermo del Toro",
+    "runtime": 118,
+    "year": 2006,
+    "country": "",
+    "genres": [
+      "Fantasy",
+      "Drama",
+      "War"
+    ],
+    "rt": "95%",
+    "imdb": "8.2",
+    "meta": "98",
+    "staffPick": false,
+    "hasTrailer": false,
+    "synopsis": "In post\u2013civil war Spain, 10-year-old Ofelia moves with her pregnant mother to live under the control of her cruel stepfather. Drawn into a mysterious labyrinth, she meets a faun who reveals that she may be a lost princess from an underground kingdom. To return to her true father, she must complete a series of surreal and perilous tasks that blur the line between reality and fantasy.",
+    "streaming": [],
+    "rent": [
+      "Amazon Video",
+      "Apple TV Store",
+      "Google Play Movies",
+      "Fandango At Home"
+    ]
+  },
+  {
+    "id": "1465778",
+    "title": "The Inquisitor",
+    "date": "2026-05-10",
+    "poster": "https://image.tmdb.org/t/p/w500/hoEMZXOJgx0XioWcY8nuoVQ70JZ.jpg",
+    "director": "Angela Tucker",
+    "runtime": 95,
+    "year": 2025,
+    "country": "",
+    "genres": [
+      "Documentary"
+    ],
+    "rt": null,
+    "imdb": "6.6",
+    "meta": "0",
+    "staffPick": false,
+    "hasTrailer": false,
+    "synopsis": "In 1972, Congresswoman Barbara Jordan became the first Southern Black woman to join Congress, one of many firsts in her career as a trailblazing political leader. Looking at her life both in and out of the limelight, this insightful documentary explores how her voice still resonates today.",
+    "streaming": [],
+    "rent": [
+      "Amazon Video"
+    ]
+  },
+  {
+    "id": "1220522",
+    "title": "Dacoit",
+    "date": "2026-05-09",
+    "poster": "https://image.tmdb.org/t/p/w500/lbrnJY7E0a9xxgj2cotNp6YI4dz.jpg",
+    "director": "Shaneil Deo",
+    "runtime": 150,
+    "year": 2026,
+    "country": "",
+    "genres": [
+      "Action",
+      "Romance",
+      "Thriller"
+    ],
+    "rt": null,
+    "imdb": "8.2",
+    "meta": null,
+    "staffPick": false,
+    "hasTrailer": false,
+    "synopsis": "Betrayed by his better half, a man is convicted for a crime he didn't commit. Once free, he hunts her down in pursuit of vengeance, as their stories intertwine with a series of robberies.",
+    "streaming": [
+      "Amazon Prime Video",
+      "Amazon Prime Video with Ads"
+    ],
+    "rent": []
+  },
+  {
+    "id": "1635153",
+    "title": "Who Killed These Women? (The Tinley Park 5)",
+    "date": "2026-05-09",
+    "poster": null,
+    "director": "Unknown",
+    "runtime": 105,
+    "year": 2026,
+    "country": "",
+    "genres": [
+      "Documentary"
+    ],
+    "rt": "89%",
+    "imdb": null,
+    "meta": null,
+    "staffPick": false,
+    "hasTrailer": false,
+    "synopsis": "An examination into the largest unsolved mass shooting in modern day America today. On Feb 2, 2008 a killer executed 5 women inside a Lane Bryant department store in suburban Chicago.",
+    "streaming": [
+      "DocuramaFilms Amazon Channel"
+    ],
+    "rent": []
+  },
+  {
+    "id": "1541658",
+    "title": "One Golden Summer",
+    "date": "2026-05-09",
+    "poster": "https://image.tmdb.org/t/p/w500/z0KEkkptc2kNHNrUdES1cZD2vRm.jpg",
+    "director": "Kevin Shaw",
+    "runtime": 81,
+    "year": 2025,
+    "country": "",
+    "genres": [
+      "Documentary"
+    ],
+    "rt": null,
+    "imdb": null,
+    "meta": null,
+    "staffPick": false,
+    "hasTrailer": false,
+    "synopsis": "In 2014, Chicago\u2019s Jackie Robinson West Little League became the first all-Black team to win the Little League U.S. Baseball Championship. Along the way, 13 twelve-year-old athletes from the South Side turned into media superstars\u2014their faces were splashed across magazine covers and major TV networks, garnering them millions of fans around the country. They were even invited to the White House to meet President and Mrs. Obama. But it all came crashing down after a rival coach accused the team of breaking residential boundary rules.",
+    "streaming": [
+      "HBO Max",
+      "HBO Max Amazon Channel"
+    ],
+    "rent": []
+  },
+  {
+    "id": "1421539",
+    "title": "Julian",
+    "date": "2026-05-09",
+    "poster": "https://image.tmdb.org/t/p/w500/sxyRAjnkDw2E8BVsd91J6Cnv9OK.jpg",
+    "director": "Cato Kusters",
+    "runtime": 91,
+    "year": 2025,
+    "country": "",
+    "genres": [
+      "Drama"
+    ],
+    "rt": null,
+    "imdb": "6.5",
+    "meta": null,
+    "staffPick": false,
+    "hasTrailer": false,
+    "synopsis": "After an unexpected encounter, Fleur and Julian fall madly in love. Soon after Julian proposes, an ambitious, yet challenging idea starts to dawn on Fleur. Slowly but surely, she works out a plan to get married in every country where she and her wife are allowed to do so. Fueled by their love and a rising sense of urgency, they take a leap of faith. After only four marriages, their journey comes to an inevitable, painful halt.",
+    "streaming": [],
+    "rent": [
+      "Eventive"
+    ]
+  },
+  {
+    "id": "1330021",
+    "title": "Remarkably Bright Creatures",
+    "date": "2026-05-08",
+    "poster": "https://image.tmdb.org/t/p/w500/9HcEqn3D4J6b2Z0jK54id9nA0fr.jpg",
+    "director": "Olivia Newman",
+    "runtime": 0,
+    "year": 2026,
+    "country": "",
+    "genres": [
+      "Drama",
+      "Mystery"
+    ],
+    "rt": null,
+    "imdb": null,
+    "meta": "57",
+    "staffPick": true,
+    "hasTrailer": false,
+    "synopsis": "A lonely elderly widow named Tova forms an unlikely friendship with a curmudgeonly octopus named Marcellus at the aqauriam she works at. Meanwhile, a young man named Cameron\u2019s search for his birth father leads him to Tova. Unbeknownst to them both, Marcellus is on a mission to solve a mystery that will heal Tova\u2019s heart and ultimately connect their lives in a profound, life-changing discovery.",
+    "streaming": [],
+    "rent": []
+  },
+  {
+    "id": "1483055",
+    "title": "Screw Mickiewicz 3",
+    "date": "2026-05-08",
+    "poster": "https://image.tmdb.org/t/p/w500/9DZCHEo6lVXk0IvKA1D26jJCmPZ.jpg",
+    "director": "Sara Bustamante-Drozdek",
+    "runtime": 0,
+    "year": 2026,
+    "country": "",
+    "genres": [
+      "Drama",
+      "Comedy"
+    ],
+    "rt": null,
+    "imdb": null,
+    "meta": null,
+    "staffPick": false,
+    "hasTrailer": false,
+    "synopsis": "No synopsis available.",
+    "streaming": [],
+    "rent": [
+      "Amazon Video"
+    ]
+  },
+  {
+    "id": "1317448",
+    "title": "No Place to Be Single",
+    "date": "2026-05-08",
+    "poster": "https://image.tmdb.org/t/p/w500/6n95Q0HGpFnA4rlnfAKknkoy6XV.jpg",
+    "director": "Laura Chiossone",
+    "runtime": 103,
+    "year": 2026,
+    "country": "",
+    "genres": [
+      "Comedy",
+      "Romance"
+    ],
+    "rt": null,
+    "imdb": null,
+    "meta": null,
+    "staffPick": true,
+    "hasTrailer": false,
+    "synopsis": "A brilliant and intelligent love comedy that celebrates second chances and new horizons, starring a strong and determined woman who settles the score.",
+    "streaming": [],
+    "rent": []
+  },
+  {
+    "id": "1556783",
+    "title": "TN 2026",
+    "date": "2026-05-08",
+    "poster": "https://image.tmdb.org/t/p/w500/mAX1ujOROXtKsOuIg5MbJbotOyD.jpg",
+    "director": "Umapathy Ramaiah",
+    "runtime": 138,
+    "year": 2026,
+    "country": "",
+    "genres": [
+      "Comedy",
+      "Drama"
+    ],
+    "rt": null,
+    "imdb": "3.9",
+    "meta": null,
+    "staffPick": false,
+    "hasTrailer": false,
+    "synopsis": "Set in Pollachi, the story follows a powerful landlord, Sivalingam Mandradiyar, who becomes obsessed with a rising actor, Kukanth Kumar, believing he is the next M.G.R. He pours his wealth into shaping the actor's career and political future. But as ambition and fame grow, so does the risk of downfall. Will it lead to power or ruin?",
+    "streaming": [],
+    "rent": [
+      "Amazon Video"
+    ]
+  },
+  {
+    "id": "1341137",
+    "title": "A Great Awakening",
+    "date": "2026-05-08",
+    "poster": "https://image.tmdb.org/t/p/w500/dXeeDRLGpTX1U97lWBAwQeeplsW.jpg",
+    "director": "Joshua Enck",
+    "runtime": 129,
+    "year": 2026,
+    "country": "",
+    "genres": [
+      "Drama",
+      "History"
+    ],
+    "rt": "73%",
+    "imdb": "7.6",
+    "meta": "0",
+    "staffPick": false,
+    "hasTrailer": false,
+    "synopsis": "One of the most defining moments in American history is the story of an unlikely friendship between the Reverend George Whitefield and Benjamin Franklin.",
+    "streaming": [],
+    "rent": [
+      "Amazon Video",
+      "Apple TV Store",
+      "Google Play Movies",
+      "YouTube",
+      "Fandango At Home",
+      "Plex"
+    ]
+  },
+  {
+    "id": "912511",
+    "title": "Nesting",
+    "date": "2026-05-08",
+    "poster": "https://image.tmdb.org/t/p/w500/7SphrQbctdC8OTXVIkk9kzI9yXK.jpg",
+    "director": "Chlo\u00e9 Cinq-Mars",
+    "runtime": 103,
+    "year": 2025,
+    "country": "",
+    "genres": [
+      "Drama",
+      "Thriller",
+      "Horror"
+    ],
+    "rt": "30%",
+    "imdb": "6.0",
+    "meta": null,
+    "staffPick": false,
+    "hasTrailer": false,
+    "synopsis": "A young insomniac woman and her baby witness a robbery at a convenience store. The event stirs up painful memories for the mother, who gradually loses touch with reality, eventually endangering her child.",
+    "streaming": [],
+    "rent": [
+      "Amazon Video",
+      "Apple TV Store"
+    ]
+  },
+  {
+    "id": "1119537",
+    "title": "Love Letters",
+    "date": "2026-05-08",
+    "poster": "https://image.tmdb.org/t/p/w500/nedWOSKUvZf2J0oLjYCk44rob2l.jpg",
+    "director": "Alice Douard",
+    "runtime": 97,
+    "year": 2025,
+    "country": "",
+    "genres": [
+      "Drama",
+      "Comedy"
+    ],
+    "rt": "100%",
+    "imdb": "6.9",
+    "meta": null,
+    "staffPick": true,
+    "hasTrailer": false,
+    "synopsis": "C\u00e9line is expecting her firstborn. But she\u2019s not the one who\u2019s pregnant. In three months, her wife Nadia will give birth to their daughter. Under the gaze of her friends, her mother, and the law, C\u00e9line looks for her place and sense of legitimacy.",
+    "streaming": [],
+    "rent": [
+      "Apple TV Store"
+    ]
+  },
+  {
+    "id": "1448472",
+    "title": "\u00a1Quba!",
+    "date": "2026-05-08",
+    "poster": "https://image.tmdb.org/t/p/w500/mm8OZ6vJDRsLRwIqmvlsURfkIts.jpg",
+    "director": "Kim Anno",
+    "runtime": 70,
+    "year": 2025,
+    "country": "",
+    "genres": [],
+    "rt": null,
+    "imdb": null,
+    "meta": null,
+    "staffPick": false,
+    "hasTrailer": false,
+    "synopsis": "Against the backdrop of Havana's sun-drenched streets and shimmering coastline, \"\u00a1Quba!\" blazes a trail through Cuba's LGBTQ revolution. At its heart stands Adela Hernandez, a trailblazing trans politician who rose from the dark days of UMAP  imprisonment to become the first transgender person in Cuba's government.  Alongside her, the charismatic Ramon Silverio transforms his cultural haven El  Mejunje into ground zero for change, taking his rainbow-colored caravan of artists  and performers deep into the countryside to challenge prejudice through the universal language of art. As archival footage reveals how machismo and religious  bigotry cast a long shadow over the queer community but then a new generation of firebrands - Las Isabellas and Ulises Suarez - picks up the torch, and charges  toward the historic 2022 marriage equality victory that would finally let love win in  revolutionary Cuba.",
+    "streaming": [],
+    "rent": [
+      "Eventive"
+    ]
+  },
+  {
+    "id": "1465656",
+    "title": "CYCLE",
+    "date": "2026-05-08",
+    "poster": "https://image.tmdb.org/t/p/w500/asBLwUEumSQcqKyTuRUTLK3VqSf.jpg",
+    "director": "Laura Dyan Kezman",
+    "runtime": 95,
+    "year": 2025,
+    "country": "",
+    "genres": [
+      "Documentary"
+    ],
+    "rt": null,
+    "imdb": null,
+    "meta": null,
+    "staffPick": false,
+    "hasTrailer": false,
+    "synopsis": "CYCLE pierces the silence surrounding police violence in America through the killing of Ty\u2019rese West, an 18-year-old Black teenager whose death at the hands of police occurred without cameras, witnesses, or public scrutiny. In the absence of visual evidence, his case slipped quietly out of view\u2014mirroring a broader pattern in which accountability depends on what can be seen.\r The film follows the aftermath of an unseen death: closed courtrooms, shifting official narratives, and the toll of pursuing answers within opaque systems of power. Rather than relying on the virality of a moment, CYCLE examines how silence functions within institutions, and how families are left to carry truth forward when justice fails.",
+    "streaming": [],
+    "rent": [
+      "Eventive"
+    ]
+  },
+  {
+    "id": "1421977",
+    "title": "Fantasy Life",
+    "date": "2026-05-08",
+    "poster": "https://image.tmdb.org/t/p/w500/e0qtdCm7TJGRfMv0tmdP8DsOy3U.jpg",
+    "director": "Matthew Shear",
+    "runtime": 91,
+    "year": 2026,
+    "country": "",
+    "genres": [
+      "Comedy",
+      "Romance",
+      "Drama"
+    ],
+    "rt": "81%",
+    "imdb": "6.3",
+    "meta": "72",
+    "staffPick": false,
+    "hasTrailer": false,
+    "synopsis": "An anxious New York law school dropout stumbles into a job babysitting his psychiatrist's three granddaughters and falls for the girls' mother, an actress in a rocky marriage.",
+    "streaming": [],
+    "rent": [
+      "Eventive"
+    ]
+  },
+  {
+    "id": "1257868",
+    "title": "Couples Weekend",
+    "date": "2026-05-08",
+    "poster": "https://image.tmdb.org/t/p/w500/69Gf2J4XwskFHbx3ETIarQFazIx.jpg",
+    "director": "Nora Kirkpatrick",
+    "runtime": 96,
+    "year": 2026,
+    "country": "",
+    "genres": [
+      "Drama",
+      "Comedy"
+    ],
+    "rt": "57%",
+    "imdb": "6.0",
+    "meta": null,
+    "staffPick": false,
+    "hasTrailer": false,
+    "synopsis": "What happens when a tree falls in the woods and someone does hear it? Two couples are forced to deal with such a question \u2014 and their lives in general \u2014 when a New Year's Eve trip to the woods unearths simmering feelings and the secrets they carry threaten to break their seemingly perfect relationships.",
+    "streaming": [],
+    "rent": []
+  },
+  {
+    "id": "1495041",
+    "title": "Buffet Infinity",
+    "date": "2026-05-08",
+    "poster": "https://image.tmdb.org/t/p/w500/c9h2p2qBSb5ThgBtNPWZNQDqvEX.jpg",
+    "director": "Simon Glassman",
+    "runtime": 99,
+    "year": 2026,
+    "country": "",
+    "genres": [
+      "Comedy",
+      "Horror"
+    ],
+    "rt": "100%",
+    "imdb": "7.3",
+    "meta": null,
+    "staffPick": false,
+    "hasTrailer": false,
+    "synopsis": "Picking from hundreds of hours of original, low-budget TV ads, Glassman tells the sinister tale of two restaurants battling it out in the town of Westridge County.",
+    "streaming": [],
+    "rent": []
+  },
+  {
+    "id": "tv_262280",
+    "title": "Legends",
+    "date": "2026-05-07",
+    "poster": "https://image.tmdb.org/t/p/w500/dGienbU1xNZJcbY8i8ubJusjDwD.jpg",
+    "director": "Neil Forsyth",
+    "runtime": null,
+    "year": 2026,
+    "country": "",
+    "genres": [
+      "Action & Adventure",
+      "Crime",
+      "Drama"
+    ],
+    "rt": "36%",
+    "imdb": "7.8",
+    "meta": null,
+    "staffPick": false,
+    "hasTrailer": false,
+    "synopsis": "As drugs flood the streets of '90s Britain, a team of civil servants is thrust undercover to topple the gangs behind it.",
+    "streaming": [
+      "Netflix",
+      "Netflix Standard with Ads"
+    ],
+    "rent": []
+  },
+  {
+    "id": "1630423",
+    "title": "My Dearest Assassin",
+    "date": "2026-05-07",
+    "poster": "https://image.tmdb.org/t/p/w500/ul4dQcA68mtSx8J56N5gEcaCCtP.jpg",
+    "director": "Taweewat Wantha",
+    "runtime": 128,
+    "year": 2026,
+    "country": "",
+    "genres": [
+      "Action",
+      "Drama",
+      "Romance"
+    ],
+    "rt": null,
+    "imdb": null,
+    "meta": null,
+    "staffPick": false,
+    "hasTrailer": false,
+    "synopsis": "Hunted for her rare blood type, a caged woman vows to fight alongside the assassin she loves to protect their future when an old enemy resurfaces.",
+    "streaming": [],
+    "rent": []
+  },
+  {
+    "id": "1465978",
+    "title": "Maintenance Artist",
+    "date": "2026-05-06",
+    "poster": "https://image.tmdb.org/t/p/w500/VbYDDEw7RPdATftVrAboA0iuP.jpg",
+    "director": "Toby Perl Freilich",
+    "runtime": 90,
+    "year": 2025,
+    "country": "",
+    "genres": [
+      "Documentary"
+    ],
+    "rt": null,
+    "imdb": "7.4",
+    "meta": null,
+    "staffPick": false,
+    "hasTrailer": false,
+    "synopsis": "What happens when art meets trash? Maintenance Artist profiles pioneering public artist Mierle Laderman Ukeles \u2014 the first artist-in-residence at NYC\u2019s Department of Sanitation.",
+    "streaming": [],
+    "rent": [
+      "Eventive"
+    ]
+  },
+  {
+    "id": "1685471",
+    "title": "Somebody's Watching Me",
+    "date": "2026-05-06",
+    "poster": "https://image.tmdb.org/t/p/w500/4sGUziSqYRvf7QMlTD6c9YeTy1y.jpg",
+    "director": "Philippe Gagnon",
+    "runtime": 90,
+    "year": 2026,
+    "country": "",
+    "genres": [
+      "Thriller"
+    ],
+    "rt": null,
+    "imdb": "6.4",
+    "meta": null,
+    "staffPick": false,
+    "hasTrailer": false,
+    "synopsis": "After a friend's bachelorette weekend, Lori receives a flash drive with footage from a hidden camera at their Airbnb. The footage is of her sleeping and then a masked stranger entering the room and watching her.",
+    "streaming": [],
+    "rent": [
+      "Plex"
+    ]
+  },
+  {
+    "id": "1660825",
+    "title": "Armani and the Birth of Italian Fashion",
+    "date": "2026-05-06",
+    "poster": "https://image.tmdb.org/t/p/w500/ioeTnRGy3aLjuXY8OkgsxNJqO31.jpg",
+    "director": "John Maggio",
+    "runtime": 92,
+    "year": 2026,
+    "country": "",
+    "genres": [],
+    "rt": null,
+    "imdb": null,
+    "meta": null,
+    "staffPick": false,
+    "hasTrailer": false,
+    "synopsis": "In his first\u2014and final\u2014on-screen interview, Giorgio Armani reflects on a life that reshaped global fashion. Armani and the Birth of Italian Fashion traces the rise of Italy\u2019s style empires through the legendary families who defined an era, from Armani and Versace to Gucci, Valentino, Prada, and beyond. Set within Milan\u2019s most exclusive fashion sanctuaries, the film explores creative rivalries, personal stories, and the enduring romance between Hollywood and Italian design. Featuring rare insights from fashion icons, actors, and cultural tastemakers, this star-studded documentary is an intimate portrait of ambition, elegance, and the making of modern luxury.",
+    "streaming": [],
+    "rent": [
+      "Eventive"
+    ]
+  },
+  {
+    "id": "1596280",
+    "title": "TheyDream",
+    "date": "2026-05-06",
+    "poster": "https://image.tmdb.org/t/p/w500/JGeigPYsXwSoIdHKIfuAfFWSsz.jpg",
+    "director": "William D. Caballero",
+    "runtime": 91,
+    "year": 2026,
+    "country": "",
+    "genres": [
+      "Documentary",
+      "Animation"
+    ],
+    "rt": null,
+    "imdb": "7.9",
+    "meta": null,
+    "staffPick": false,
+    "hasTrailer": false,
+    "synopsis": "After 20 years of chronicling his Puerto Rican family, a director and his mother face devastating losses. Through tears and laughter, they craft animations that bring their loved ones back to life, discovering that every act of creation is also an act of letting go.",
+    "streaming": [],
+    "rent": [
+      "Eventive"
+    ]
+  },
+  {
+    "id": "988099",
+    "title": "Death Does Not Exist",
+    "date": "2026-05-06",
+    "poster": "https://image.tmdb.org/t/p/w500/4GKNTtHE0LhI1GOibVHotgC2Pc9.jpg",
+    "director": "F\u00e9lix Dufour-Laperri\u00e8re",
+    "runtime": 72,
+    "year": 2025,
+    "country": "",
+    "genres": [
+      "Animation",
+      "Drama"
+    ],
+    "rt": "79%",
+    "imdb": "6.0",
+    "meta": null,
+    "staffPick": false,
+    "hasTrailer": false,
+    "synopsis": "After a failed armed attack during which she abandons her companions, H\u00e9l\u00e8ne flees into the forest and meets Catherine, a mysterious alter ego, a carnivorous and tempting alter ego. This double will take her to a fantastic valley, where metamorphoses, poisonous powers and great upheavals will soon shake up the order of things. H\u00e9l\u00e8ne will have to revisit her choices and the moral, political and human dilemmas that circumscribe them.",
+    "streaming": [
+      "Fandor Amazon Channel"
+    ],
+    "rent": []
+  },
+  {
+    "id": "1209511",
+    "title": "Love Insurance Kompany",
+    "date": "2026-05-06",
+    "poster": "https://image.tmdb.org/t/p/w500/dTaHHJ9enIvoKeUPKA2GkhFk3OC.jpg",
+    "director": "Vignesh Shivan",
+    "runtime": 157,
+    "year": 2026,
+    "country": "",
+    "genres": [
+      "Romance",
+      "Science Fiction",
+      "Comedy"
+    ],
+    "rt": null,
+    "imdb": "6.8",
+    "meta": null,
+    "staffPick": false,
+    "hasTrailer": false,
+    "synopsis": "In 2040, an app premised on ensuring romance for all is used widely by the population. When the voice behind the app's AI realizes its misconception to true love, he embarks on a quest to prove that love does not come from a screen.",
+    "streaming": [
+      "Amazon Prime Video",
+      "Amazon Prime Video with Ads"
+    ],
+    "rent": []
+  },
+  {
+    "id": "1523374",
+    "title": "Unraveling George",
+    "date": "2026-05-06",
+    "poster": "https://sportstechie.net/wp-content/uploads/2025/07/Unraveling-George-The-Life-of-Hall-of-Fame-Coach-Entrepreneur-Civil-Rights-Leader-and-Executive-George-Raveling.png",
+    "director": "Michael Tollin",
+    "runtime": 90,
+    "year": 2025,
+    "country": "",
+    "genres": [
+      "Documentary"
+    ],
+    "rt": null,
+    "imdb": "9.1",
+    "meta": null,
+    "staffPick": false,
+    "hasTrailer": false,
+    "synopsis": "An intimate documentary about Civil Rights leader, entrepreneur and Hall of Fame Coach George Raveling.",
+    "streaming": [
+      "HBO Max",
+      "HBO Max Amazon Channel"
+    ],
+    "rent": []
+  },
+  {
+    "id": "1156806",
+    "title": "Lone Star Bull",
+    "date": "2026-05-06",
+    "poster": "https://image.tmdb.org/t/p/w500/bVg4vUWYYrS7lGdRObdtG2y8mPa.jpg",
+    "director": "David Stoddart",
+    "runtime": 90,
+    "year": 2026,
+    "country": "",
+    "genres": [
+      "Drama",
+      "Action"
+    ],
+    "rt": "75%",
+    "imdb": null,
+    "meta": null,
+    "staffPick": false,
+    "hasTrailer": false,
+    "synopsis": "Bull Jackson is a bouncer in a gay bar where Jordan performs as a drag queen by night and is a medical student by day. When Coco, their mentor and owner of the club, is shot in what appears to be a random homophobic attack, Bull and Jordan form an unlikely team to find those responsible.",
+    "streaming": [],
+    "rent": [
+      "Eventive"
+    ]
+  },
+  {
+    "id": "1667876",
+    "title": "Mudville",
+    "date": "2026-05-06",
+    "poster": "https://image.tmdb.org/t/p/w500/bBOtD7YID1dtUKZsMKir6VbB4J5.jpg",
+    "director": "Adam Pinney",
+    "runtime": 87,
+    "year": 2026,
+    "country": "",
+    "genres": [
+      "Drama"
+    ],
+    "rt": null,
+    "imdb": null,
+    "meta": null,
+    "staffPick": false,
+    "hasTrailer": false,
+    "synopsis": "Ray Patterson, a 47 year old unemployed dad, spends his days hitting baseballs at the community park in a desperate attempt to make it back onto the Atlanta Apaches, a major league baseball team he was signed to when he was younger. His struggles with drinking, which got him booted from the team in his early 20s, are still a daily problem. Ray is plagued with dreams of what he believes are Native American ghosts and supernatural forces that are attempting to bury him and his dreams in the dirt. When a metaphysical event threatens Ray's existence, his family watches hopelessly, while his wife, Holly, finds comfort in suburban witchery and the cosmic answers that the Tarot provides.",
+    "streaming": [],
+    "rent": [
+      "Eventive"
+    ]
+  },
+  {
+    "id": "1301469",
+    "title": "Frogtown",
+    "date": "2026-05-06",
+    "poster": "https://image.tmdb.org/t/p/w500/jbtcQ4zmhsH2wliqodswbm2RAsN.jpg",
+    "director": "Costa Karalis",
+    "runtime": 85,
+    "year": 2026,
+    "country": "",
+    "genres": [
+      "Documentary",
+      "Fantasy",
+      "Drama"
+    ],
+    "rt": null,
+    "imdb": null,
+    "meta": null,
+    "staffPick": false,
+    "hasTrailer": false,
+    "synopsis": "A slice-of-life exploration of the weird and wonderful residents of a small town in North Florida and what they believe in.",
+    "streaming": [],
+    "rent": [
+      "Eventive"
+    ]
+  },
+  {
+    "id": "1451078",
+    "title": "Raakaasa",
+    "date": "2026-05-06",
+    "poster": "https://image.tmdb.org/t/p/w500/x7zwiuC1HTw5XGZ5JrOwF9uFqRy.jpg",
+    "director": "Manasa Sharma",
+    "runtime": 130,
+    "year": 2026,
+    "country": "",
+    "genres": [
+      "Fantasy",
+      "Comedy"
+    ],
+    "rt": null,
+    "imdb": "7.6",
+    "meta": null,
+    "staffPick": false,
+    "hasTrailer": false,
+    "synopsis": "Returning home after a decade, an NRI chasing romance inadvertently awakens an ancient darkness long feared by his village. As the threat intensifies, love turns deadly and life hangs in the balance.",
+    "streaming": [
+      "Netflix",
+      "Netflix Standard with Ads"
+    ],
+    "rent": []
+  },
+  {
+    "id": "1516175",
+    "title": "Party USA",
+    "date": "2026-05-06",
+    "poster": "https://image.tmdb.org/t/p/w500/wsTd6RAh7n1OKiymVnQc61xnxUw.jpg",
+    "director": "Jared Sprouse",
+    "runtime": 89,
+    "year": 2026,
+    "country": "",
+    "genres": [
+      "Comedy",
+      "Crime"
+    ],
+    "rt": null,
+    "imdb": "7.7",
+    "meta": null,
+    "staffPick": false,
+    "hasTrailer": false,
+    "synopsis": "When Taylor can't get her party store shift covered after her dad dies, she makes a deadly mistake that sparks a downward spiral of red, white and blue-collared chaos.",
+    "streaming": [],
+    "rent": [
+      "Eventive"
+    ]
+  },
+  {
+    "id": "1178620",
+    "title": "Montreal, My Beautiful",
+    "date": "2026-05-06",
+    "poster": "https://image.tmdb.org/t/p/w500/7yK7d7dngyx2YTWlbyHHOZeLlUJ.jpg",
+    "director": "Xiaodan He",
+    "runtime": 117,
+    "year": 2026,
+    "country": "",
+    "genres": [
+      "Drama",
+      "Romance"
+    ],
+    "rt": "95%",
+    "imdb": "6.9",
+    "meta": null,
+    "staffPick": false,
+    "hasTrailer": false,
+    "synopsis": "At 53 years old, Feng Xia, a Chinese immigrant in Montreal, finally confronts her repressed desire for women and begins a secret affair with a young Qu\u00e9b\u00e9coise.",
+    "streaming": [],
+    "rent": [
+      "Eventive"
+    ]
+  },
+  {
+    "id": "1369521",
+    "title": "Ange & the Boss: Puskas in Australia",
+    "date": "2026-05-06",
+    "poster": "https://image.tmdb.org/t/p/w500/nSpFQIg2iyfxLFkB9fx3qTXlMWE.jpg",
+    "director": "Tony Wilson",
+    "runtime": 74,
+    "year": 2025,
+    "country": "",
+    "genres": [
+      "Documentary"
+    ],
+    "rt": null,
+    "imdb": "8.2",
+    "meta": null,
+    "staffPick": false,
+    "hasTrailer": false,
+    "synopsis": "The great Hungarian striker Ferenc Puskas storied playing and coaching career ended in the relative backwater of Middle Park in Melbourne, coaching a South Melbourne Hellas team captained by current Spurs manager Ange Postecoglou. A sporting story of a humble, football colossus in soccer's new world, full of quirky anecdotes and a ripping championship finale. And also a story of Australia's ethnic football heritage, and how it sustained new arrivals.",
+    "streaming": [],
+    "rent": [
+      "Apple TV Store"
+    ]
+  },
+  {
+    "id": "1149614",
+    "title": "Yes",
+    "date": "2026-05-06",
+    "poster": "https://image.tmdb.org/t/p/w500/vKcLVwN6gaohsZpNY9sAPEhQIgc.jpg",
+    "director": "Nadav Lapid",
+    "runtime": 152,
+    "year": 2025,
+    "country": "",
+    "genres": [
+      "Drama",
+      "Comedy"
+    ],
+    "rt": "94%",
+    "imdb": "6.3",
+    "meta": "85",
+    "staffPick": false,
+    "hasTrailer": false,
+    "synopsis": "In the days following October 7, Y., a jazz musician, and his wife Yasmin, a dancer, resolve to say yes to everything. Y. and Yasmin sell their bodies and souls to the highest bidder, surrendering themselves and their art to Israel\u2019s social, political and military elite. Soon, Y. is entrusted with a mission of the utmost importance: to compose the music for a rousing, ruthless new national anthem.",
+    "streaming": [],
+    "rent": [
+      "Amazon Video"
+    ]
+  },
+  {
+    "id": "1538565",
+    "title": "My Movie Starring Paul Dano",
+    "date": "2026-05-06",
+    "poster": "https://image.tmdb.org/t/p/w500/KqY7Jy5tUMG2xmJxpstjc8sT3R.jpg",
+    "director": "Joe Bartone",
+    "runtime": 94,
+    "year": 2025,
+    "country": "",
+    "genres": [
+      "Comedy"
+    ],
+    "rt": null,
+    "imdb": null,
+    "meta": null,
+    "staffPick": false,
+    "hasTrailer": false,
+    "synopsis": "The famous actor comes to Herman in a dream, convincing him to make his feature \"Bear Naked Amazonians from Mars.\" If he makes the deadline, the film will take Best Feature at South by Southwest, making Herman an international celebrity.",
+    "streaming": [],
+    "rent": [
+      "Amazon Video"
+    ]
+  },
+  {
+    "id": "1064021",
+    "title": "April",
+    "date": "2026-05-06",
+    "poster": "https://image.tmdb.org/t/p/w500/9DJadZoQfmSzxe3E5uB7dISfc3L.jpg",
+    "director": "Dea Kulumbegashvili",
+    "runtime": 134,
+    "year": 2025,
+    "country": "",
+    "genres": [
+      "Drama"
+    ],
+    "rt": "95%",
+    "imdb": "6.5",
+    "meta": "86",
+    "staffPick": false,
+    "hasTrailer": false,
+    "synopsis": "Nina, an OB-GYN, faces accusations after a newborn's death. Her life undergoes scrutiny during investigation. She persists in her medical duties, determined to provide care others hesitate to offer, despite the risks.",
+    "streaming": [],
+    "rent": [
+      "Amazon Video"
+    ]
+  },
+  {
+    "id": "1517123",
+    "title": "On the Road",
+    "date": "2026-05-06",
+    "poster": "https://image.tmdb.org/t/p/w500/rjXFZyoyVxQUvrZPd7v88JN2OIe.jpg",
+    "director": "David Pablos",
+    "runtime": 93,
+    "year": 2026,
+    "country": "",
+    "genres": [
+      "Drama",
+      "Thriller",
+      "Crime"
+    ],
+    "rt": "47%",
+    "imdb": "7.1",
+    "meta": null,
+    "staffPick": false,
+    "hasTrailer": false,
+    "synopsis": "Veneno, a rebellious young drifter, frequents roadside diners where he sleeps with truck drivers. Urgently needing a ride, he meets Mun\u0303eco, a hard-edged driver who keeps to himself. He convinces Mun\u0303eco to take him deep into the hyper-masculine world of long-haul trucking across the north of Mexico. As they travel together and an unexpected intimacy builds between them, shadows from Veneno\u2019s past resurface, putting both their lives at risk.",
+    "streaming": [],
+    "rent": [
+      "Eventive"
+    ]
+  }
+];
+
+// ===== STATE =====
+let currentView = 0;
+let currentMovieIndex = 0;
+// movieIndices maps grid position to movies array index (skipping date cards)
+let movieIndices = [];
+let hintsShown = { swipe: false, back: false, handle: false };
+
+try {
+  const saved = localStorage.getItem('nrw_mobile_hints_v2');
+  if (saved) hintsShown = JSON.parse(saved);
+} catch(e) {}
+function saveHints() {
+  try { localStorage.setItem('nrw_mobile_hints_v2', JSON.stringify(hintsShown)); } catch(e) {}
+}
+
+// ===== DOM REFS =====
+const gridView = document.getElementById('grid-view');
+const posterView = document.getElementById('poster-view');
+const posterImg = document.getElementById('poster-img');
+const posterTitle = document.getElementById('poster-title');
+const posterDate = document.getElementById('poster-date');
+const posterGenres = document.getElementById('poster-genres');
+const posterScores = document.getElementById('poster-scores');
+const sheetOverlay = document.getElementById('sheet-overlay');
+const bottomSheet = document.getElementById('bottom-sheet');
+const sheetContent = document.getElementById('sheet-content');
+const sheetHandle = document.getElementById('sheet-handle');
+const sheetHandleArea = document.getElementById('sheet-handle-area');
+const chevronLeft = document.getElementById('chevron-left');
+const chevronRight = document.getElementById('chevron-right');
+const hintSwipe = document.getElementById('hint-swipe');
+const hintBack = document.getElementById('hint-back');
+const movieCounter = document.getElementById('movie-counter');
+const viewDotsContainer = document.getElementById('view-dots');
+const dots = document.querySelectorAll('.view-dot');
+
+// ===== BUILD GRID =====
+function buildGrid() {
+  // Filter buttons toggle (visual only for mockup) — header is now persistent in HTML
+  const headerFilters = document.getElementById('header-filters');
+  headerFilters.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      headerFilters.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+
+  const grid = document.createElement('div');
+  grid.className = 'grid';
+
+  let lastDate = '';
+  let movieIdx = 0;
+
+  movies.forEach((movie, i) => {
+    const date = movie.date;
+
+    // Insert date divider when date changes
+    if (date !== lastDate) {
+      const d = new Date(date + 'T12:00:00');
+      const divider = document.createElement('div');
+      divider.className = 'date-divider-card';
+      divider.innerHTML = `
+          <div class="date-bar"><div class="date-day">${d.toLocaleDateString('en', {weekday: 'short'}).toUpperCase()}</div></div>
+          <div class="date-body">
+            <div class="date-number">${d.getDate()}</div>
+            <div class="date-month">${d.toLocaleDateString('en', {month: 'short'}).toUpperCase()}</div>
+            <div class="date-chevrons"><span>›</span><span>›</span><span>›</span><span>›</span><span>›</span></div>
+          </div>
+      `;
+      grid.appendChild(divider);
+      lastDate = date;
+    }
+
+    const item = document.createElement('div');
+    item.className = 'grid-item';
+    item.innerHTML = `<img src="${movie.poster}" alt="${movie.title}" loading="lazy">`;
+    if (movie.staffPick) {
+      item.innerHTML += `<span class="staff-pick-badge">Staff Pick</span>`;
+    }
+    const idx = i;
+    item.addEventListener('click', () => selectMovie(idx));
+    grid.appendChild(item);
+  });
+
+  gridView.appendChild(grid);
+}
+
+// ===== FORMAT HELPERS =====
+function formatDate(dateStr) {
+  const d = new Date(dateStr + 'T00:00:00');
+  return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+}
+function formatRuntime(min) {
+  if (!min) return null;
+  const h = Math.floor(min / 60);
+  const m = min % 60;
+  return h > 0 ? `${h}h ${m}m` : `${m}m`;
+}
+
+// ===== UPDATE POSTER VIEW =====
+function updatePosterView(movie, direction) {
+  const container = posterView.querySelector('.poster-container');
+  const info = posterView.querySelector('.poster-info');
+
+  if (direction) {
+    const cls = direction === 'left' ? 'slide-left-enter' : 'slide-right-enter';
+    container.classList.add(cls);
+    info.classList.add(cls);
+    setTimeout(() => { container.classList.remove(cls); info.classList.remove(cls); }, 250);
+  }
+
+  posterImg.src = movie.poster;
+  posterImg.alt = movie.title;
+  posterTitle.textContent = movie.title;
+  posterDate.textContent = formatDate(movie.date);
+  posterGenres.textContent = movie.genres.join(' \u00b7 ');
+
+  posterScores.innerHTML = '';
+  if (movie.rt) posterScores.innerHTML += `<span class="score-badge rt">RT ${movie.rt}</span>`;
+  if (movie.imdb) posterScores.innerHTML += `<span class="score-badge imdb">IMDb ${movie.imdb}</span>`;
+  if (movie.meta) posterScores.innerHTML += `<span class="score-badge meta">MC ${movie.meta}</span>`;
+
+  updateCounter();
+}
+
+// ===== UPDATE SHEET CONTENT =====
+// Order: title, date, meta, scores, trailer btn, providers, THEN synopsis last
+function updateSheetContent(movie, direction) {
+  if (direction) {
+    const cls = direction === 'left' ? 'slide-left-enter' : 'slide-right-enter';
+    sheetContent.classList.add(cls);
+    setTimeout(() => sheetContent.classList.remove(cls), 250);
+  }
+
+  let metaParts = '';
+  if (movie.director) metaParts += `<span>${movie.director}</span>`;
+  if (movie.runtime) metaParts += `<span>${formatRuntime(movie.runtime)}</span>`;
+  if (movie.country) metaParts += `<span>${movie.country}</span>`;
+  if (movie.year) metaParts += `<span>${movie.year}</span>`;
+
+  let html = `
+    <div class="sheet-header-row">
+      <div class="sheet-header-text">
+        <div class="sheet-title">${movie.title}</div>
+        <div class="sheet-date">${formatDate(movie.date)}</div>
+        <div class="sheet-meta">${metaParts}</div>
+      </div>
+      <img class="sheet-thumb" src="${movie.poster}" alt="${movie.title}">
+    </div>`;
+
+  // Scores
+  if (movie.rt || movie.imdb || movie.meta) {
+    html += `<div class="sheet-scores">`;
+    if (movie.rt) html += `<div class="sheet-score"><span class="sheet-score-value rt">${movie.rt}</span><span class="sheet-score-label">Rotten Tomatoes</span></div>`;
+    if (movie.imdb) html += `<div class="sheet-score"><span class="sheet-score-value imdb">${movie.imdb}</span><span class="sheet-score-label">IMDb</span></div>`;
+    if (movie.meta) html += `<div class="sheet-score"><span class="sheet-score-value meta">${movie.meta}</span><span class="sheet-score-label">Metacritic</span></div>`;
+    html += `</div>`;
+  }
+
+  // Trailer button
+  if (movie.hasTrailer) {
+    html += `<button class="trailer-btn"><span class="play-icon">&#9654;</span> Watch Trailer</button>`;
+  }
+
+  // Providers (ABOVE synopsis)
+  const allProviders = [...movie.streaming, ...movie.rent];
+  if (allProviders.length > 0) {
+    if (movie.streaming.length > 0) {
+      html += `<div class="sheet-section-label">Streaming</div>
+        <div class="sheet-providers">${movie.streaming.map(p => `<span class="provider-pill">${p}</span>`).join('')}</div>`;
+    }
+    if (movie.rent.length > 0) {
+      html += `<div class="sheet-section-label">Rent / Buy</div>
+        <div class="sheet-providers">${movie.rent.map(p => `<span class="provider-pill">${p}</span>`).join('')}</div>`;
+    }
+  } else {
+    html += `<div class="sheet-section-label">Availability</div>
+      <div class="sheet-synopsis" style="font-style:italic;">Coming soon</div>`;
+  }
+
+  // Synopsis (BELOW providers)
+  const synopsisHtml = movie.synopsis.replace(/\n\n/g, '</p><p style="margin-top:12px;">');
+  html += `
+    <div class="sheet-section-label">Synopsis</div>
+    <div class="sheet-synopsis"><p>${synopsisHtml}</p></div>`;
+
+  html += `<div style="height: 50px;"></div>`;
+
+  sheetContent.innerHTML = html;
+  sheetContent.scrollTop = 0;
+}
+
+// ===== VIEW TRANSITIONS =====
+function setView(view) {
+  currentView = view;
+
+  dots.forEach((d, i) => d.classList.toggle('active', i === view));
+
+  gridView.classList.toggle('hidden', view !== 0);
+  posterView.classList.toggle('hidden', view !== 1 && view !== 2);
+
+  // Dots always visible in header — just update active state (handled above)
+
+  if (view === 2) {
+    sheetOverlay.classList.add('visible');
+    bottomSheet.classList.add('open');
+    sheetSnapPosition = defaultSheetHeight;
+    bottomSheet.style.height = defaultSheetHeight + 'vh';
+  } else {
+    sheetOverlay.classList.remove('visible');
+    bottomSheet.classList.remove('open');
+  }
+
+  const showChevrons = view === 1 || view === 2;
+  chevronLeft.classList.toggle('visible', showChevrons);
+  chevronRight.classList.toggle('visible', showChevrons);
+
+  movieCounter.classList.toggle('visible', view === 1);
+
+  // Body scroll control
+  if (view === 0) {
+    document.body.style.overflow = '';
+    gridView.style.touchAction = 'pan-y';
+  } else {
+    document.body.style.overflow = 'hidden';
+  }
+
+  // Hints
+  if (view === 1) {
+    if (!hintsShown.swipe) {
+      hintSwipe.classList.add('visible');
+      hintsShown.swipe = true;
+      saveHints();
+      setTimeout(() => hintSwipe.classList.remove('visible'), 3500);
+    }
+    if (!hintsShown.back) {
+      setTimeout(() => {
+        hintBack.classList.add('visible');
+        hintsShown.back = true;
+        saveHints();
+        setTimeout(() => hintBack.classList.remove('visible'), 3500);
+      }, 1000);
+    }
+  }
+  if (view === 2 && !hintsShown.handle) {
+    sheetHandle.classList.add('pulse');
+    hintsShown.handle = true;
+    saveHints();
+    setTimeout(() => sheetHandle.classList.remove('pulse'), 2000);
+  }
+}
+
+function selectMovie(index) {
+  currentMovieIndex = index;
+  updatePosterView(movies[index]);
+  updateSheetContent(movies[index]);
+  setView(1);
+}
+
+function updateCounter() {
+  movieCounter.textContent = `${currentMovieIndex + 1} / ${movies.length}`;
+}
+
+// ===== NAVIGATE MOVIES =====
+function navigateMovie(dir) {
+  const newIndex = currentMovieIndex + dir;
+  if (newIndex < 0 || newIndex >= movies.length) return;
+
+  const chev = dir < 0 ? chevronLeft : chevronRight;
+  chev.classList.add('flash');
+  setTimeout(() => chev.classList.remove('flash'), 200);
+
+  currentMovieIndex = newIndex;
+  const slideDir = dir > 0 ? 'left' : 'right';
+  updatePosterView(movies[currentMovieIndex], slideDir);
+  if (currentView === 2) {
+    updateSheetContent(movies[currentMovieIndex], slideDir);
+  }
+}
+
+// ===== TOUCH / SWIPE — POSTER VIEW =====
+let touchStartX = 0, touchStartY = 0, touchStartTime = 0;
+
+posterView.addEventListener('touchstart', (e) => {
+  if (currentView !== 1) return;
+  touchStartX = e.touches[0].clientX;
+  touchStartY = e.touches[0].clientY;
+  touchStartTime = Date.now();
+}, { passive: true });
+
+posterView.addEventListener('touchend', (e) => {
+  if (currentView !== 1) return;
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  const dy = e.changedTouches[0].clientY - touchStartY;
+  const dt = Date.now() - touchStartTime;
+  const absDx = Math.abs(dx);
+  const absDy = Math.abs(dy);
+
+  if (absDx < 15 && absDy < 15 && dt < 300) {
+    setView(2);
+    return;
+  }
+  if (dt > 500) return;
+  if (absDx > absDy && absDx > 50) {
+    navigateMovie(dx < 0 ? 1 : -1);
+  } else if (absDy > absDx && absDy > 50 && dy > 0) {
+    // Swipe down → back to grid
+    setView(0);
+  } else if (absDy > absDx && absDy > 50 && dy < 0) {
+    // Swipe up → open detail sheet
+    setView(2);
+  }
+});
+
+// ===== BOTTOM SHEET DRAG =====
+const defaultSheetHeight = 92;
+let sheetSnapPosition = defaultSheetHeight;
+let sheetDragStartY = 0, sheetDragStartHeight = 0, isSheetDragging = false, sheetDragStartTime = 0;
+
+sheetHandleArea.addEventListener('touchstart', (e) => {
+  e.preventDefault();
+  isSheetDragging = true;
+  sheetDragStartY = e.touches[0].clientY;
+  sheetDragStartTime = Date.now();
+  sheetDragStartHeight = bottomSheet.getBoundingClientRect().height;
+  bottomSheet.classList.add('dragging');
+}, { passive: false });
+
+document.addEventListener('touchmove', (e) => {
+  if (!isSheetDragging) return;
+  const dy = sheetDragStartY - e.touches[0].clientY;
+  const newHeight = sheetDragStartHeight + dy;
+  const vh = window.innerHeight;
+  const heightVh = Math.max(10, Math.min(92, (newHeight / vh) * 100));
+  bottomSheet.style.height = heightVh + 'vh';
+}, { passive: true });
+
+document.addEventListener('touchend', (e) => {
+  if (!isSheetDragging) return;
+  isSheetDragging = false;
+  bottomSheet.classList.remove('dragging');
+  const currentHeight = bottomSheet.getBoundingClientRect().height;
+  const vh = window.innerHeight;
+  const heightPct = (currentHeight / vh) * 100;
+  // More forgiving dismiss — also check velocity
+  const handleDragDy = e.changedTouches[0].clientY - sheetDragStartY;
+  const handleDragDt = Date.now() - (sheetDragStartTime || Date.now());
+  const handleVelocity = handleDragDy / Math.max(handleDragDt, 1);
+  if (heightPct < 35 || handleVelocity > 0.6) {
+    setView(1);
+  } else if (heightPct > 75) {
+    sheetSnapPosition = 92;
+    bottomSheet.style.height = '92vh';
+  } else {
+    sheetSnapPosition = defaultSheetHeight;
+    bottomSheet.style.height = defaultSheetHeight + 'vh';
+  }
+});
+
+// ===== OVERSCROLL-TO-DISMISS on sheet content =====
+// When user is at scroll top and pulls down, the sheet follows their finger.
+// Release past threshold = dismiss. Otherwise snap back.
+let sheetTouchStartX = 0, sheetTouchStartY = 0, sheetTouchStartTime = 0;
+let isOverscrollDragging = false;
+let wasAtScrollTop = false;
+let overscrollOffset = 0;
+let sheetOriginalHeight = 0;
+
+sheetContent.addEventListener('touchstart', (e) => {
+  sheetTouchStartX = e.touches[0].clientX;
+  sheetTouchStartY = e.touches[0].clientY;
+  sheetTouchStartTime = Date.now();
+  wasAtScrollTop = sheetContent.scrollTop <= 1;
+  isOverscrollDragging = false;
+  overscrollOffset = 0;
+  sheetOriginalHeight = bottomSheet.getBoundingClientRect().height;
+}, { passive: true });
+
+sheetContent.addEventListener('touchmove', (e) => {
+  const dy = e.touches[0].clientY - sheetTouchStartY;
+  const dx = e.touches[0].clientX - sheetTouchStartX;
+
+  // If pulling down and we started at scroll top, enter overscroll drag mode
+  if (wasAtScrollTop && dy > 10 && Math.abs(dy) > Math.abs(dx) && sheetContent.scrollTop <= 1) {
+    if (!isOverscrollDragging) {
+      isOverscrollDragging = true;
+      bottomSheet.classList.add('dragging');
+      // Prevent content from scrolling while we drag the sheet
+      sheetContent.style.overflow = 'hidden';
+    }
+  }
+
+  if (isOverscrollDragging) {
+    e.preventDefault();
+    overscrollOffset = dy;
+    // Move sheet down following the finger (with slight resistance)
+    const resistance = 0.7;
+    const newHeight = sheetOriginalHeight - (dy * resistance);
+    const vh = window.innerHeight;
+    const heightVh = Math.max(5, Math.min(92, (newHeight / vh) * 100));
+    bottomSheet.style.height = heightVh + 'vh';
+  }
+}, { passive: false });
+
+sheetContent.addEventListener('touchend', (e) => {
+  const dx = e.changedTouches[0].clientX - sheetTouchStartX;
+  const dy = e.changedTouches[0].clientY - sheetTouchStartY;
+  const dt = Date.now() - sheetTouchStartTime;
+
+  // Restore scrolling
+  sheetContent.style.overflow = '';
+
+  if (isOverscrollDragging) {
+    isOverscrollDragging = false;
+    bottomSheet.classList.remove('dragging');
+
+    const currentHeight = bottomSheet.getBoundingClientRect().height;
+    const vh = window.innerHeight;
+    const heightPct = (currentHeight / vh) * 100;
+
+    // Dismiss if dragged past 35% of viewport OR fast flick down
+    const velocity = dy / Math.max(dt, 1);
+    if (heightPct < 40 || velocity > 0.8) {
+      setView(1);
+    } else {
+      // Snap back to current position
+      bottomSheet.style.height = sheetSnapPosition + 'vh';
+    }
+    return;
+  }
+
+  // Regular swipe detection (not overscroll)
+  const absDx = Math.abs(dx);
+  const absDy = Math.abs(dy);
+  if (dt > 600) return;
+
+  // Horizontal swipe → navigate movies
+  if (absDx > absDy && absDx > 50) {
+    navigateMovie(dx < 0 ? 1 : -1);
+  }
+});
+
+sheetOverlay.addEventListener('click', () => setView(1));
+
+// ===== VIEW DOT NAVIGATION =====
+dots.forEach(dot => {
+  dot.addEventListener('click', () => {
+    const v = parseInt(dot.dataset.view);
+    if (v === 0) { setView(0); }
+    else if (v === 1) {
+      if (currentView === 0) selectMovie(0);
+      else setView(1);
+    } else if (v === 2) {
+      if (currentView === 0) selectMovie(0);
+      setView(2);
+    }
+  });
+});
+
+// ===== KEYBOARD (desktop testing) =====
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowLeft') navigateMovie(-1);
+  if (e.key === 'ArrowRight') navigateMovie(1);
+  if (e.key === 'Escape') {
+    if (currentView === 2) setView(1);
+    else if (currentView === 1) setView(0);
+  }
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    if (currentView === 0) selectMovie(0);
+    else if (currentView === 1) setView(2);
+  }
+});
+
+// ===== MOUSE (desktop testing) =====
+let mouseDown = false, mouseStartX = 0, mouseStartY = 0;
+posterView.addEventListener('mousedown', (e) => {
+  if (currentView !== 1) return;
+  mouseDown = true;
+  mouseStartX = e.clientX;
+  mouseStartY = e.clientY;
+});
+posterView.addEventListener('mouseup', (e) => {
+  if (!mouseDown || currentView !== 1) return;
+  mouseDown = false;
+  const dx = e.clientX - mouseStartX;
+  const dy = e.clientY - mouseStartY;
+  if (Math.abs(dx) < 10 && Math.abs(dy) < 10) { setView(2); return; }
+  if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+    navigateMovie(dx < 0 ? 1 : -1);
+  } else if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 40 && dy > 0) {
+    setView(0);
+  } else if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 40 && dy < 0) {
+    setView(2);
+  }
+});
+
+// ===== INIT =====
+// Measure header height and set CSS variable for view offsets
+const siteHeader = document.getElementById('site-header');
+function updateHeaderHeight() {
+  const h = siteHeader.offsetHeight;
+  document.documentElement.style.setProperty('--header-height', h + 'px');
+}
+updateHeaderHeight();
+window.addEventListener('resize', updateHeaderHeight);
+
+buildGrid();
+setView(0);
+</script>
+</body>
+</html>
