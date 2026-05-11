@@ -1058,8 +1058,8 @@ class ProviderDiscoverer:
                                 merged = True
 
                         if merged:
-                            existing_movies[i]['watch_links'] = current_links
-                            existing_movies[i]['_watch_links_verified'] = datetime.now().isoformat()
+                            movie['watch_links'] = current_links
+                            movie['_watch_links_verified'] = datetime.now().isoformat()
 
                             # Update cache
                             cache_key = f"tv_{movie_id}" if content_type == 'tv' else movie_id
@@ -1075,12 +1075,12 @@ class ProviderDiscoverer:
 
                     # Pre-order graduation
                     if is_preorder and (result.get('has_rent') or result.get('has_streaming')):
-                        existing_movies[i].pop('_is_preorder', None)
-                        existing_movies[i].pop('_buyonly_preorder', None)
-                        existing_movies[i].pop('pre_order_links', None)
-                        existing_movies[i]['digital_date'] = today_str
+                        movie.pop('_is_preorder', None)
+                        movie.pop('_buyonly_preorder', None)
+                        movie.pop('pre_order_links', None)
+                        movie['digital_date'] = today_str
                         if new_links:
-                            existing_movies[i]['watch_links'] = current_links
+                            movie['watch_links'] = current_links
                         preorders_graduated += 1
                         unsaved_count += 1
                         print(f"  🎓 {title} — pre-order graduated (now available)")
@@ -1099,21 +1099,21 @@ class ProviderDiscoverer:
                             _gf_detect = self._detect_buyonly_preorder(result, movie_id, title)
 
                             if _gf_detect['is_preorder']:
-                                existing_movies[i]['_is_preorder'] = True
-                                existing_movies[i]['_buyonly_preorder'] = True
+                                movie['_is_preorder'] = True
+                                movie['_buyonly_preorder'] = True
                                 _jw_vod = new_links.get('vod', []) if new_links else []
                                 if _jw_vod:
-                                    existing_movies[i]['pre_order_links'] = _jw_vod
+                                    movie['pre_order_links'] = _jw_vod
                                 if _gf_detect['preorder_date']:
-                                    existing_movies[i]['digital_date'] = _gf_detect['preorder_date']
-                                existing_movies[i]['watch_links'] = {}
+                                    movie['digital_date'] = _gf_detect['preorder_date']
+                                movie['watch_links'] = {}
                                 if tracking_data and tracking_data.get('movies', {}).get(movie_id):
                                     tracking_data['movies'][movie_id]['_buyonly_preorder'] = True
                                     tracking_changed = True
                                 preorders_flagged += 1
                                 unsaved_count += 1
                             elif _gf_detect['verified_genuine']:
-                                existing_movies[i]['_buyonly_verified'] = True
+                                movie['_buyonly_verified'] = True
                                 unsaved_count += 1
 
                 # --- Wikipedia fill (only if missing) ---
@@ -1135,9 +1135,9 @@ class ProviderDiscoverer:
                     )
 
                     if wiki_url:
-                        if 'links' not in existing_movies[i]:
-                            existing_movies[i]['links'] = {}
-                        existing_movies[i]['links']['wikipedia'] = wiki_url
+                        if 'links' not in movie:
+                            movie['links'] = {}
+                        movie['links']['wikipedia'] = wiki_url
                         wiki_filled += 1
                         unsaved_count += 1
                         print(f"  📚 {title} — Wikipedia link added")
