@@ -16,6 +16,10 @@ const NRWMobile = {
     searchQuery: '',
     currentView: 0,
     currentMovieIndex: 0,
+    gridEntries: [],
+    displayedCount: 0,
+    loadIncrement: 60,
+    savedScrollTop: 0,
 
     // Shared config
     resolveService: NRWConfig.resolveService,
@@ -82,6 +86,7 @@ const NRWMobile = {
             chevronRight: document.getElementById('chevron-right'),
             viewDots: document.querySelectorAll('.view-dot'),
             siteHeader: document.getElementById('site-header'),
+            filterDesc: document.getElementById('filter-desc'),
         };
 
         this.updateHeaderHeight();
@@ -121,6 +126,7 @@ const NRWMobile = {
     updateHeaderHeight() {
         const h = this.dom.siteHeader.offsetHeight;
         document.documentElement.style.setProperty('--header-height', h + 'px');
+        this.updateGridPadding();
     },
 
     // ===== SORTING =====
@@ -173,10 +179,40 @@ const NRWMobile = {
             }
 
             this.applyFilter();
+            this.updateFilterDesc();
             this.buildGrid();
             this.setView(0);
             this.dom.gridView.scrollTop = 0;
         });
+    },
+
+    updateFilterDesc() {
+        const desc = this.dom.filterDesc;
+        if (!desc) return;
+
+        // Only show when exactly one filter is active
+        if (this.activeFilters.size === 1) {
+            const key = [...this.activeFilters][0];
+            const info = this.FILTER_DESCRIPTIONS[key];
+            if (info) {
+                desc.innerHTML = '<div class="filter-desc-inner">' + this.esc(info.text) + '</div>';
+                desc.classList.add('visible');
+                // Adjust grid padding after transition
+                setTimeout(() => this.updateGridPadding(), 320);
+                return;
+            }
+        }
+
+        desc.classList.remove('visible');
+        setTimeout(() => this.updateGridPadding(), 320);
+    },
+
+    updateGridPadding() {
+        if (!this.dom.gridView || !this.dom.siteHeader) return;
+        const desc = this.dom.filterDesc;
+        const descH = desc && desc.classList.contains('visible') ? desc.offsetHeight : 0;
+        const headerH = this.dom.siteHeader.offsetHeight;
+        this.dom.gridView.style.paddingTop = (headerH + descH) + 'px';
     },
 
     // ===== SEARCH =====
@@ -286,9 +322,10 @@ const NRWMobile = {
 
     // ===== GRID (View 0) =====
     buildGrid() {
-        const grid = document.createElement('div');
-        grid.className = 'wall-grid';
+        this.savedScrollTop = 0;
 
+        // Pre-compute grid entries (date dividers + movie items)
+        this.gridEntries = [];
         let lastDate = '';
         let preorderStarted = false;
 
@@ -296,25 +333,69 @@ const NRWMobile = {
             if (movie._is_preorder) {
                 if (!preorderStarted) {
                     preorderStarted = true;
-                    grid.appendChild(this.createDateDivider('pre-order'));
+                    this.gridEntries.push({ type: 'date', dateStr: 'pre-order' });
                 }
             } else {
                 const date = movie.digital_date.substring(0, 10);
                 if (date !== lastDate) {
-                    grid.appendChild(this.createDateDivider(date));
+                    this.gridEntries.push({ type: 'date', dateStr: date });
                     lastDate = date;
                 }
             }
-            grid.appendChild(this.createGridItem(movie, i));
+            this.gridEntries.push({ type: 'movie', movie, index: i });
         });
 
+        this.displayedCount = 0;
         this.dom.gridView.innerHTML = '';
-        if (this.filteredMovies.length === 0) {
+
+        if (this.gridEntries.length === 0) {
             this.dom.gridView.innerHTML =
                 '<div class="loading"><p>No movies found</p></div>';
-        } else {
-            this.dom.gridView.appendChild(grid);
+            return;
         }
+
+        const grid = document.createElement('div');
+        grid.className = 'wall-grid';
+        grid.id = 'wall-grid';
+        this.dom.gridView.appendChild(grid);
+
+        // Sentinel for lazy loading
+        const sentinel = document.createElement('div');
+        sentinel.id = 'grid-sentinel';
+        sentinel.style.height = '1px';
+        this.dom.gridView.appendChild(sentinel);
+
+        this.loadMoreGrid();
+        this.setupInfiniteScroll();
+    },
+
+    loadMoreGrid() {
+        const grid = document.getElementById('wall-grid');
+        if (!grid || this.displayedCount >= this.gridEntries.length) return;
+
+        const end = Math.min(this.displayedCount + this.loadIncrement, this.gridEntries.length);
+        for (let i = this.displayedCount; i < end; i++) {
+            const entry = this.gridEntries[i];
+            if (entry.type === 'date') {
+                grid.appendChild(this.createDateDivider(entry.dateStr));
+            } else {
+                grid.appendChild(this.createGridItem(entry.movie, entry.index));
+            }
+        }
+        this.displayedCount = end;
+    },
+
+    setupInfiniteScroll() {
+        if (this._gridObserver) this._gridObserver.disconnect();
+        const sentinel = document.getElementById('grid-sentinel');
+        if (!sentinel) return;
+
+        this._gridObserver = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting && this.displayedCount < this.gridEntries.length) {
+                this.loadMoreGrid();
+            }
+        }, { rootMargin: '300px', root: this.dom.gridView });
+        this._gridObserver.observe(sentinel);
     },
 
     createDateDivider(dateStr) {
@@ -420,9 +501,17 @@ const NRWMobile = {
 
         // Body scroll
         document.body.style.overflow = view === 0 ? '' : 'hidden';
+
+        // Restore grid scroll position when returning to grid
+        if (view === 0 && this.savedScrollTop > 0) {
+            requestAnimationFrame(() => {
+                this.dom.gridView.scrollTop = this.savedScrollTop;
+            });
+        }
     },
 
     selectMovie(index) {
+        this.savedScrollTop = this.dom.gridView.scrollTop;
         this.currentMovieIndex = index;
         const movie = this.filteredMovies[index];
         if (!movie) return;
@@ -459,7 +548,7 @@ const NRWMobile = {
         }
 
         this.dom.posterImg.src = movie.poster || '';
-        this.dom.posterImg.alt = movie.title || '';
+        this.dom.posterImg.alt = this.esc(movie.title || '');
 
         // Counter
         this.dom.posterCounter.textContent =
@@ -500,18 +589,18 @@ const NRWMobile = {
 
         // Teal line: D: Director · Country · Year
         const topParts = [];
-        if (movie.crew?.director) topParts.push('D: ' + movie.crew.director);
-        else if (movie.director) topParts.push('D: ' + movie.director);
+        if (movie.crew?.director) topParts.push('D: ' + this.esc(movie.crew.director));
+        else if (movie.director) topParts.push('D: ' + this.esc(movie.director));
         const country = this.abbreviateCountry(movie.country);
-        if (country) topParts.push(country);
-        if (movie.year) topParts.push(movie.year);
+        if (country) topParts.push(this.esc(country));
+        if (movie.year) topParts.push(this.esc(movie.year));
 
         // Gray line: Runtime · Cast · Genre
         let metaParts = '';
-        if (movie.runtime) metaParts += '<span>' + this.formatRuntime(movie.runtime) + '</span>';
+        if (movie.runtime) metaParts += '<span>' + this.esc(this.formatRuntime(movie.runtime)) + '</span>';
         const cast = movie.crew?.cast;
-        if (cast?.length) metaParts += '<span>' + cast.slice(0, 3).join(', ') + '</span>';
-        if (movie.genres?.length) metaParts += '<span>' + movie.genres.slice(0, 3).join(', ') + '</span>';
+        if (cast?.length) metaParts += '<span>' + this.esc(cast.slice(0, 3).join(', ')) + '</span>';
+        if (movie.genres?.length) metaParts += '<span>' + this.esc(movie.genres.slice(0, 3).join(', ')) + '</span>';
 
         // Inline scores
         let scoresHtml = '';
@@ -541,7 +630,7 @@ const NRWMobile = {
         let screeningBanner = '';
         if (isScreening && screeningInfo.screening_name) {
             screeningBanner = '<div class="sheet-screening-banner">' +
-                screeningInfo.screening_name + '</div>';
+                this.esc(screeningInfo.screening_name) + '</div>';
         }
 
         // Build HTML
@@ -549,10 +638,10 @@ const NRWMobile = {
 
         // Header row: poster thumb + text
         html += '<div class="sheet-header-row">' +
-            '<img class="sheet-thumb" src="' + (movie.poster || '') + '" alt="' +
-            (movie.title || '') + '" onerror="this.style.display=\'none\'">' +
+            '<img class="sheet-thumb" src="' + this.esc(movie.poster || '') + '" alt="' +
+            this.esc(movie.title || '') + '" onerror="this.style.display=\'none\'">' +
             '<div class="sheet-header-text">' +
-            '<div class="sheet-title">' + (movie.display_title || movie.title || 'Untitled') +
+            '<div class="sheet-title">' + this.esc(movie.display_title || movie.title || 'Untitled') +
             (isStaffPick ? ' <span style="color:var(--crimson);font-size:0.7rem">\u2605 STAFF PICK</span>' : '') +
             '</div>' +
             '<div class="sheet-date">' + topParts.join(' \u00b7 ') + '</div>' +
@@ -587,7 +676,7 @@ const NRWMobile = {
                 html += '<a href="' + screeningVod.link + '" target="_blank" rel="noopener" ' +
                     'class="sheet-screening-ticket">\uD83C\uDF9F Buy Ticket</a>';
             }
-            let callout = 'Virtual screening via ' + (screeningInfo.screening_name || 'festival');
+            let callout = 'Virtual screening via ' + this.esc(screeningInfo.screening_name || 'festival');
             if (screeningInfo.available_end) {
                 const [y, m, d] = screeningInfo.available_end.split('-');
                 const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -645,17 +734,17 @@ const NRWMobile = {
 
         // Synopsis
         html += '<div class="sheet-section-label">Synopsis</div>' +
-            '<div class="sheet-synopsis">' + (movie.synopsis || 'No synopsis available.') + '</div>';
+            '<div class="sheet-synopsis">' + this.esc(movie.synopsis || 'No synopsis available.') + '</div>';
 
         // Pull quotes
         if (movie.pull_quotes?.length) {
             html += '<div class="sheet-section-label">Critics</div>';
             movie.pull_quotes.forEach(q => {
                 html += '<div style="margin-bottom:10px;font-size:0.8rem;color:var(--text-secondary);font-style:italic">' +
-                    '&ldquo;' + (q.text || '') + '&rdquo;' +
+                    '&ldquo;' + this.esc(q.text || '') + '&rdquo;' +
                     (q.critic || q.outlet
                         ? '<div style="font-size:0.65rem;color:var(--text-muted);font-style:normal;margin-top:2px">' +
-                          [q.critic, q.outlet].filter(Boolean).join(', ') + '</div>'
+                          this.esc([q.critic, q.outlet].filter(Boolean).join(', ')) + '</div>'
                         : '') +
                     '</div>';
             });
@@ -742,7 +831,7 @@ const NRWMobile = {
             const invertClass = this.INVERT_KEYS.has(provider.serviceKey) ? ' invert' : '';
             const src = '../assets/logos/' + provider.wideLogo;
             const img = '<img class="provider-pill' + invertClass + '" src="' + src +
-                '" alt="' + provider.name + '">';
+                '" alt="' + this.esc(provider.name) + '">';
             if (provider.link) {
                 return '<a href="' + provider.link + '" target="_blank" rel="noopener" ' +
                     'style="display:inline-block">' + img + '</a>';
@@ -756,7 +845,7 @@ const NRWMobile = {
             ? ' href="' + provider.link + '" target="_blank" rel="noopener" style="text-decoration:none"'
             : '';
         return '<' + tag + ' class="provider-pill-text"' + linkAttrs + '>' +
-            provider.name + '</' + tag + '>';
+            this.esc(provider.name) + '</' + tag + '>';
     },
 
     // ===== GESTURE HANDLERS =====
@@ -977,12 +1066,12 @@ const NRWMobile = {
         overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.95);' +
             'display:flex;align-items:center;justify-content:center;flex-direction:column';
 
-        const title = movie.display_title || movie.title || '';
+        const title = this.esc(movie.display_title || movie.title || '');
         overlay.innerHTML =
             '<button style="position:absolute;top:12px;right:16px;background:none;border:none;' +
             'color:white;font-size:2rem;cursor:pointer;z-index:10">&times;</button>' +
             '<video controls autoplay playsinline style="max-width:95%;max-height:70vh;border-radius:8px">' +
-            '<source src="' + url + '" type="video/mp4"></video>' +
+            '<source src="' + this.esc(url) + '" type="video/mp4"></video>' +
             '<div style="color:#888;font-size:0.8rem;margin-top:10px">' + title + '</div>';
 
         document.body.appendChild(overlay);
@@ -996,6 +1085,13 @@ const NRWMobile = {
     },
 
     // ===== HELPERS =====
+    esc(str) {
+        if (!str) return '';
+        const d = document.createElement('div');
+        d.textContent = String(str);
+        return d.innerHTML;
+    },
+
     formatRuntime(min) {
         if (!min) return null;
         const h = Math.floor(min / 60);
