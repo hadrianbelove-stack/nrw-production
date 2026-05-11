@@ -981,7 +981,7 @@ class ProviderDiscoverer:
         errors = 0
         today_str = datetime.now().strftime('%Y-%m-%d')
 
-        for i, movie in enumerate(recent_movies):
+        for movie in recent_movies:
             movie_id = str(movie.get('id', ''))
             title = movie.get('title', 'Unknown')
             year = movie.get('year', '')
@@ -1013,8 +1013,6 @@ class ProviderDiscoverer:
                         new_vod = new_links.get('vod', [])
                         if isinstance(new_vod, list) and new_vod:
                             current_vod = current_links.get('vod', [])
-                            if isinstance(current_vod, dict):
-                                current_vod = [current_vod] if current_vod.get('link') else []
 
                             # Normalize existing service names for comparison
                             current_services = set()
@@ -1042,14 +1040,11 @@ class ProviderDiscoverer:
                         new_streaming = new_links.get('streaming')
                         if isinstance(new_streaming, dict) and new_streaming.get('link'):
                             existing_streaming = current_links.get('streaming')
-                            has_existing = False
-                            if isinstance(existing_streaming, dict) and existing_streaming.get('link'):
-                                has_existing = True
-                            elif isinstance(existing_streaming, list) and any(
-                                isinstance(s, dict) and s.get('link') for s in existing_streaming
-                            ):
-                                has_existing = True
-
+                            has_existing = (
+                                (isinstance(existing_streaming, dict) and existing_streaming.get('link'))
+                                or (isinstance(existing_streaming, list) and any(
+                                    isinstance(s, dict) and s.get('link') for s in existing_streaming))
+                            )
                             if not has_existing:
                                 current_links['streaming'] = {
                                     'service': self.host.simplify_provider_name(new_streaming['service']),
@@ -1169,8 +1164,8 @@ class ProviderDiscoverer:
             self.logger.error(f"Failed to save watch links cache: {e}")
 
         # Apply cached watch links to older movies outside the 30-day window
-        self.host._apply_cached_watch_links(existing_movies)
-        self.host._safe_save_data_json(display_data, existing_movies, label="gap_fill_cache_apply")
+        if self.host._apply_cached_watch_links(existing_movies):
+            self.host._safe_save_data_json(display_data, existing_movies, label="gap_fill_cache_apply")
 
         # Save tracking if any pre-orders were graduated
         if tracking_changed and tracking_data:

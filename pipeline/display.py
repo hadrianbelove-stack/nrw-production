@@ -124,6 +124,7 @@ class DisplayGenerator:
 
         if applied:
             print(f"\U0001f517 Applied cached watch links for {applied} movies")
+        return applied
 
     def categorize_movie(self, movie, category_config):
         """
