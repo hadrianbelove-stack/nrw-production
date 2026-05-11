@@ -75,9 +75,9 @@
     font-weight: 200;
     text-shadow: 0 0 20px rgba(0,212,170,0.5);
   }
-  .chevron-left { left: 8px; }
-  .chevron-right { right: 8px; }
-  .chevron.visible { opacity: 0.3; }
+  .chevron-left { left: -2px; }
+  .chevron-right { right: -2px; }
+  .chevron.visible { opacity: 0.5; }
   .chevron.flash {
     opacity: 1;
     transform: translateY(-50%) scale(1.3);
@@ -197,6 +197,23 @@
     object-fit: cover;
     display: block;
   }
+  .grid-item.screening-movie {
+    border: 2px solid #FFD700;
+    border-radius: 6px;
+  }
+  .grid-item .screening-banner {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    background: rgba(255, 215, 0, 0.92);
+    color: #000;
+    font-size: 0.35rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-align: center;
+    padding: 2px 4px;
+    z-index: 2;
+  }
   .grid-item .staff-pick-badge {
     position: absolute;
     top: 3px; right: 3px;
@@ -214,7 +231,7 @@
   .date-divider-card {
     aspect-ratio: 2/3;
     background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
-    border-left: 3px solid var(--accent);
+    border-left: none;
     border-radius: 0;
     display: flex;
     flex-direction: column;
@@ -428,8 +445,8 @@
     gap: 14px;
   }
   .sheet-thumb {
-    width: 56px;
-    height: 84px;
+    width: 72px;
+    height: 108px;
     border-radius: 6px;
     object-fit: cover;
     flex-shrink: 0;
@@ -452,18 +469,17 @@
     margin-bottom: 6px;
   }
   .sheet-meta {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: var(--text-muted);
-    margin-bottom: 14px;
+    margin-bottom: 6px;
     line-height: 1.5;
   }
   .sheet-meta span {
-    margin-right: 10px;
-    white-space: nowrap;
+    margin-right: 6px;
   }
   .sheet-meta span::after {
     content: '\00b7';
-    margin-left: 10px;
+    margin-left: 6px;
     color: #555;
   }
   .sheet-meta span:last-child::after { content: ''; }
@@ -487,27 +503,63 @@
 
   .sheet-scores {
     display: flex;
-    gap: 16px;
-    margin: 12px 0 4px;
+    gap: 10px;
+    margin-top: 4px;
   }
   .sheet-score {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 2px;
+    gap: 4px;
+  }
+  .sheet-score-logo {
+    height: 14px;
+    object-fit: contain;
+    opacity: 0.85;
+  }
+  .sheet-score-logo.light-bg {
+    background: rgba(255,255,255,0.15);
+    border-radius: 3px;
+    padding: 1px;
   }
   .sheet-score-value {
-    font-size: 1.1rem;
+    font-size: 0.8rem;
     font-weight: 700;
   }
   .sheet-score-value.rt { color: #fa6320; }
   .sheet-score-value.imdb { color: #f5c518; }
   .sheet-score-value.meta { color: #66cc33; }
-  .sheet-score-label {
-    font-size: 0.55rem;
-    color: var(--text-muted);
+
+  .sheet-screening-banner {
+    background: #FFD700;
+    color: #000;
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-align: center;
+    padding: 8px 12px;
+    margin: -20px -20px 14px -20px;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+  }
+  .sheet-screening-callout {
+    color: #FFD700;
+    font-weight: 700;
+    font-style: italic;
+    font-size: 0.8rem;
+    margin-top: 10px;
+  }
+  .sheet-screening-ticket {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 20px;
+    background: transparent;
+    border: 2px solid #FFD700;
+    border-radius: var(--radius-pill);
+    color: #FFD700;
+    font-size: 0.8rem;
+    font-weight: 700;
+    font-family: var(--font);
+    margin-top: 10px;
   }
 
   .sheet-providers {
@@ -517,13 +569,29 @@
     margin-top: 8px;
   }
   .provider-pill {
-    background: rgba(255,255,255,0.1);
+    height: 30px;
+    border-radius: 6px;
+    object-fit: contain;
     border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-pill);
-    padding: 6px 14px;
-    font-size: 0.75rem;
-    font-weight: 500;
-    color: var(--text-secondary);
+    background: rgba(255,255,255,0.06);
+    padding: 4px 10px;
+  }
+  .provider-pill.light-bg {
+    background: rgba(255,255,255,0.15);
+  }
+  .provider-pill.invert {
+    filter: invert(1);
+  }
+  .provider-pill-text {
+    display: inline-flex;
+    align-items: center;
+    height: 30px;
+    border-radius: 6px;
+    border: 1px solid var(--border-subtle);
+    background: rgba(255,255,255,0.06);
+    padding: 4px 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
     white-space: nowrap;
   }
 
@@ -709,11 +777,16 @@ const movies = [
     "imdb": "9.8",
     "meta": null,
     "staffPick": false,
-    "hasTrailer": false,
+    "hasTrailer": true,
     "synopsis": "Diagnosed at birth with a rare condition that was expected to kill him, Chad \"Shorty\" McDaniel embraces humor, grit, and a competitive spirit to live the life others said he would never have and shatter assumptions about disability.",
     "streaming": [],
     "rent": [
       "Amazon Video"
+    ],
+    "cast": [
+      "Chad McDaniel",
+      "Joe Tucker",
+      "Loren Goldfarb"
     ]
   },
   {
@@ -734,15 +807,22 @@ const movies = [
     "imdb": "6.8",
     "meta": "58",
     "staffPick": false,
-    "hasTrailer": false,
+    "hasTrailer": true,
     "synopsis": "Dominic Toretto is a Los Angeles street racer suspected of masterminding a series of big-rig hijackings. When undercover cop Brian O'Conner infiltrates Toretto's iconoclastic crew, he falls for Toretto's sister and must choose a side: the gang or the LAPD.",
-    "streaming": [],
+    "streaming": [
+      "Netflix"
+    ],
     "rent": [
       "Amazon Video",
       "Apple TV Store",
       "Google Play Movies",
       "YouTube",
       "Fandango At Home"
+    ],
+    "cast": [
+      "Paul Walker",
+      "Vin Diesel",
+      "Michelle Rodriguez"
     ]
   },
   {
@@ -763,14 +843,21 @@ const movies = [
     "imdb": "8.2",
     "meta": "98",
     "staffPick": false,
-    "hasTrailer": false,
-    "synopsis": "In post\u2013civil war Spain, 10-year-old Ofelia moves with her pregnant mother to live under the control of her cruel stepfather. Drawn into a mysterious labyrinth, she meets a faun who reveals that she may be a lost princess from an underground kingdom. To return to her true father, she must complete a series of surreal and perilous tasks that blur the line between reality and fantasy.",
-    "streaming": [],
+    "hasTrailer": true,
+    "synopsis": "In post–civil war Spain, 10-year-old Ofelia moves with her pregnant mother to live under the control of her cruel stepfather. Drawn into a mysterious labyrinth, she meets a faun who reveals that she may be a lost princess from an underground kingdom. To return to her true father, she must complete a series of surreal and perilous tasks that blur the line between reality and fantasy.",
+    "streaming": [
+      "Max"
+    ],
     "rent": [
       "Amazon Video",
       "Apple TV Store",
       "Google Play Movies",
       "Fandango At Home"
+    ],
+    "cast": [
+      "Ivana Baquero",
+      "Sergi López",
+      "Maribel Verdú"
     ]
   },
   {
@@ -789,11 +876,15 @@ const movies = [
     "imdb": "6.6",
     "meta": "0",
     "staffPick": false,
-    "hasTrailer": false,
+    "hasTrailer": true,
     "synopsis": "In 1972, Congresswoman Barbara Jordan became the first Southern Black woman to join Congress, one of many firsts in her career as a trailblazing political leader. Looking at her life both in and out of the limelight, this insightful documentary explores how her voice still resonates today.",
     "streaming": [],
     "rent": [
       "Amazon Video"
+    ],
+    "cast": [
+      "Barbara Jordan",
+      "Alfre Woodard"
     ]
   },
   {
@@ -814,13 +905,17 @@ const movies = [
     "imdb": "8.2",
     "meta": null,
     "staffPick": false,
-    "hasTrailer": false,
+    "hasTrailer": true,
     "synopsis": "Betrayed by his better half, a man is convicted for a crime he didn't commit. Once free, he hunts her down in pursuit of vengeance, as their stories intertwine with a series of robberies.",
     "streaming": [
-      "Amazon Prime Video",
-      "Amazon Prime Video with Ads"
+      "Prime Video"
     ],
-    "rent": []
+    "rent": [],
+    "cast": [
+      "Adivi Sesh",
+      "Mrunal Thakur",
+      "Anurag Kashyap"
+    ]
   },
   {
     "id": "1635153",
@@ -838,12 +933,13 @@ const movies = [
     "imdb": null,
     "meta": null,
     "staffPick": false,
-    "hasTrailer": false,
+    "hasTrailer": true,
     "synopsis": "An examination into the largest unsolved mass shooting in modern day America today. On Feb 2, 2008 a killer executed 5 women inside a Lane Bryant department store in suburban Chicago.",
     "streaming": [
-      "DocuramaFilms Amazon Channel"
+      "DocuramaFilms"
     ],
-    "rent": []
+    "rent": [],
+    "cast": []
   },
   {
     "id": "1541658",
@@ -861,13 +957,13 @@ const movies = [
     "imdb": null,
     "meta": null,
     "staffPick": false,
-    "hasTrailer": false,
-    "synopsis": "In 2014, Chicago\u2019s Jackie Robinson West Little League became the first all-Black team to win the Little League U.S. Baseball Championship. Along the way, 13 twelve-year-old athletes from the South Side turned into media superstars\u2014their faces were splashed across magazine covers and major TV networks, garnering them millions of fans around the country. They were even invited to the White House to meet President and Mrs. Obama. But it all came crashing down after a rival coach accused the team of breaking residential boundary rules.",
+    "hasTrailer": true,
+    "synopsis": "In 2014, Chicago’s Jackie Robinson West Little League became the first all-Black team to win the Little League U.S. Baseball Championship. Along the way, 13 twelve-year-old athletes from the South Side turned into media superstars—their faces were splashed across magazine covers and major TV networks, garnering them millions of fans around the country. They were even invited to the White House to meet President and Mrs. Obama. But it all came crashing down after a rival coach accused the team of breaking residential boundary rules.",
     "streaming": [
-      "HBO Max",
-      "HBO Max Amazon Channel"
+      "Max"
     ],
-    "rent": []
+    "rent": [],
+    "cast": []
   },
   {
     "id": "1421539",
@@ -885,12 +981,20 @@ const movies = [
     "imdb": "6.5",
     "meta": null,
     "staffPick": false,
-    "hasTrailer": false,
+    "hasTrailer": true,
     "synopsis": "After an unexpected encounter, Fleur and Julian fall madly in love. Soon after Julian proposes, an ambitious, yet challenging idea starts to dawn on Fleur. Slowly but surely, she works out a plan to get married in every country where she and her wife are allowed to do so. Fueled by their love and a rising sense of urgency, they take a leap of faith. After only four marriages, their journey comes to an inevitable, painful halt.",
     "streaming": [],
     "rent": [
       "Eventive"
-    ]
+    ],
+    "cast": [
+      "Nina Meurisse",
+      "Laurence Roothooft",
+      "Rosalia Cuevas"
+    ],
+    "isVirtualScreening": true,
+    "screeningName": "OUTshine LGBTQ+ Film Festival",
+    "screeningEnd": "2026-05-11"
   },
   {
     "id": "1330021",
@@ -909,10 +1013,17 @@ const movies = [
     "imdb": null,
     "meta": "57",
     "staffPick": true,
-    "hasTrailer": false,
-    "synopsis": "A lonely elderly widow named Tova forms an unlikely friendship with a curmudgeonly octopus named Marcellus at the aqauriam she works at. Meanwhile, a young man named Cameron\u2019s search for his birth father leads him to Tova. Unbeknownst to them both, Marcellus is on a mission to solve a mystery that will heal Tova\u2019s heart and ultimately connect their lives in a profound, life-changing discovery.",
-    "streaming": [],
-    "rent": []
+    "hasTrailer": true,
+    "synopsis": "A lonely elderly widow named Tova forms an unlikely friendship with a curmudgeonly octopus named Marcellus at the aqauriam she works at. Meanwhile, a young man named Cameron’s search for his birth father leads him to Tova. Unbeknownst to them both, Marcellus is on a mission to solve a mystery that will heal Tova’s heart and ultimately connect their lives in a profound, life-changing discovery.",
+    "streaming": [
+      "Apple TV+"
+    ],
+    "rent": [],
+    "cast": [
+      "Sally Field",
+      "Lewis Pullman",
+      "Alfred Molina"
+    ]
   },
   {
     "id": "1483055",
@@ -931,11 +1042,16 @@ const movies = [
     "imdb": null,
     "meta": null,
     "staffPick": false,
-    "hasTrailer": false,
+    "hasTrailer": true,
     "synopsis": "No synopsis available.",
     "streaming": [],
     "rent": [
       "Amazon Video"
+    ],
+    "cast": [
+      "Hugo Tarres",
+      "Wiktoria Koprowska",
+      "Karol Rot"
     ]
   },
   {
@@ -955,10 +1071,15 @@ const movies = [
     "imdb": null,
     "meta": null,
     "staffPick": true,
-    "hasTrailer": false,
+    "hasTrailer": true,
     "synopsis": "A brilliant and intelligent love comedy that celebrates second chances and new horizons, starring a strong and determined woman who settles the score.",
     "streaming": [],
-    "rent": []
+    "rent": [],
+    "cast": [
+      "Matilde Gioli",
+      "Cristiano Caccamo",
+      "Amanda Campana"
+    ]
   },
   {
     "id": "1556783",
@@ -977,11 +1098,16 @@ const movies = [
     "imdb": "3.9",
     "meta": null,
     "staffPick": false,
-    "hasTrailer": false,
+    "hasTrailer": true,
     "synopsis": "Set in Pollachi, the story follows a powerful landlord, Sivalingam Mandradiyar, who becomes obsessed with a rising actor, Kukanth Kumar, believing he is the next M.G.R. He pours his wealth into shaping the actor's career and political future. But as ambition and fame grow, so does the risk of downfall. Will it lead to power or ruin?",
     "streaming": [],
     "rent": [
       "Amazon Video"
+    ],
+    "cast": [
+      "Natarajan Subramaniam",
+      "Thambi Ramaiah",
+      "M. S. Bhaskar"
     ]
   },
   {
@@ -1001,7 +1127,7 @@ const movies = [
     "imdb": "7.6",
     "meta": "0",
     "staffPick": false,
-    "hasTrailer": false,
+    "hasTrailer": true,
     "synopsis": "One of the most defining moments in American history is the story of an unlikely friendship between the Reverend George Whitefield and Benjamin Franklin.",
     "streaming": [],
     "rent": [
@@ -1011,6 +1137,11 @@ const movies = [
       "YouTube",
       "Fandango At Home",
       "Plex"
+    ],
+    "cast": [
+      "John Paul Sneed",
+      "Jonathan Blair",
+      "JT Schaeffer"
     ]
   },
   {
@@ -1018,7 +1149,7 @@ const movies = [
     "title": "Nesting",
     "date": "2026-05-08",
     "poster": "https://image.tmdb.org/t/p/w500/7SphrQbctdC8OTXVIkk9kzI9yXK.jpg",
-    "director": "Chlo\u00e9 Cinq-Mars",
+    "director": "Chloé Cinq-Mars",
     "runtime": 103,
     "year": 2025,
     "country": "",
@@ -1031,12 +1162,17 @@ const movies = [
     "imdb": "6.0",
     "meta": null,
     "staffPick": false,
-    "hasTrailer": false,
+    "hasTrailer": true,
     "synopsis": "A young insomniac woman and her baby witness a robbery at a convenience store. The event stirs up painful memories for the mother, who gradually loses touch with reality, eventually endangering her child.",
     "streaming": [],
     "rent": [
       "Amazon Video",
       "Apple TV Store"
+    ],
+    "cast": [
+      "Rose-Marie Perreault",
+      "Simon Landry-Désy",
+      "Saladin Dellers"
     ]
   },
   {
@@ -1056,16 +1192,21 @@ const movies = [
     "imdb": "6.9",
     "meta": null,
     "staffPick": true,
-    "hasTrailer": false,
-    "synopsis": "C\u00e9line is expecting her firstborn. But she\u2019s not the one who\u2019s pregnant. In three months, her wife Nadia will give birth to their daughter. Under the gaze of her friends, her mother, and the law, C\u00e9line looks for her place and sense of legitimacy.",
+    "hasTrailer": true,
+    "synopsis": "Céline is expecting her firstborn. But she’s not the one who’s pregnant. In three months, her wife Nadia will give birth to their daughter. Under the gaze of her friends, her mother, and the law, Céline looks for her place and sense of legitimacy.",
     "streaming": [],
     "rent": [
       "Apple TV Store"
+    ],
+    "cast": [
+      "Ella Rumpf",
+      "Monia Chokri",
+      "Noémie Lvovsky"
     ]
   },
   {
     "id": "1448472",
-    "title": "\u00a1Quba!",
+    "title": "¡Quba!",
     "date": "2026-05-08",
     "poster": "https://image.tmdb.org/t/p/w500/mm8OZ6vJDRsLRwIqmvlsURfkIts.jpg",
     "director": "Kim Anno",
@@ -1077,12 +1218,20 @@ const movies = [
     "imdb": null,
     "meta": null,
     "staffPick": false,
-    "hasTrailer": false,
-    "synopsis": "Against the backdrop of Havana's sun-drenched streets and shimmering coastline, \"\u00a1Quba!\" blazes a trail through Cuba's LGBTQ revolution. At its heart stands Adela Hernandez, a trailblazing trans politician who rose from the dark days of UMAP  imprisonment to become the first transgender person in Cuba's government.  Alongside her, the charismatic Ramon Silverio transforms his cultural haven El  Mejunje into ground zero for change, taking his rainbow-colored caravan of artists  and performers deep into the countryside to challenge prejudice through the universal language of art. As archival footage reveals how machismo and religious  bigotry cast a long shadow over the queer community but then a new generation of firebrands - Las Isabellas and Ulises Suarez - picks up the torch, and charges  toward the historic 2022 marriage equality victory that would finally let love win in  revolutionary Cuba.",
+    "hasTrailer": true,
+    "synopsis": "Against the backdrop of Havana's sun-drenched streets and shimmering coastline, \"¡Quba!\" blazes a trail through Cuba's LGBTQ revolution. At its heart stands Adela Hernandez, a trailblazing trans politician who rose from the dark days of UMAP  imprisonment to become the first transgender person in Cuba's government.  Alongside her, the charismatic Ramon Silverio transforms his cultural haven El  Mejunje into ground zero for change, taking his rainbow-colored caravan of artists  and performers deep into the countryside to challenge prejudice through the universal language of art. As archival footage reveals how machismo and religious  bigotry cast a long shadow over the queer community but then a new generation of firebrands - Las Isabellas and Ulises Suarez - picks up the torch, and charges  toward the historic 2022 marriage equality victory that would finally let love win in  revolutionary Cuba.",
     "streaming": [],
     "rent": [
       "Eventive"
-    ]
+    ],
+    "cast": [
+      "Adela Hernandez",
+      "Ramon Silverio Isel Calzadilla",
+      "Ulises Padron Suarez"
+    ],
+    "isVirtualScreening": true,
+    "screeningName": "2026 Atlanta Film Festival",
+    "screeningEnd": "2026-05-11"
   },
   {
     "id": "1465656",
@@ -1100,12 +1249,16 @@ const movies = [
     "imdb": null,
     "meta": null,
     "staffPick": false,
-    "hasTrailer": false,
-    "synopsis": "CYCLE pierces the silence surrounding police violence in America through the killing of Ty\u2019rese West, an 18-year-old Black teenager whose death at the hands of police occurred without cameras, witnesses, or public scrutiny. In the absence of visual evidence, his case slipped quietly out of view\u2014mirroring a broader pattern in which accountability depends on what can be seen.\r The film follows the aftermath of an unseen death: closed courtrooms, shifting official narratives, and the toll of pursuing answers within opaque systems of power. Rather than relying on the virality of a moment, CYCLE examines how silence functions within institutions, and how families are left to carry truth forward when justice fails.",
+    "hasTrailer": true,
+    "synopsis": "CYCLE pierces the silence surrounding police violence in America through the killing of Ty’rese West, an 18-year-old Black teenager whose death at the hands of police occurred without cameras, witnesses, or public scrutiny. In the absence of visual evidence, his case slipped quietly out of view—mirroring a broader pattern in which accountability depends on what can be seen.\r The film follows the aftermath of an unseen death: closed courtrooms, shifting official narratives, and the toll of pursuing answers within opaque systems of power. Rather than relying on the virality of a moment, CYCLE examines how silence functions within institutions, and how families are left to carry truth forward when justice fails.",
     "streaming": [],
     "rent": [
       "Eventive"
-    ]
+    ],
+    "cast": [],
+    "isVirtualScreening": true,
+    "screeningName": "Seattle Black Film Festival 2026",
+    "screeningEnd": "2026-05-11"
   },
   {
     "id": "1421977",
@@ -1125,11 +1278,18 @@ const movies = [
     "imdb": "6.3",
     "meta": "72",
     "staffPick": false,
-    "hasTrailer": false,
+    "hasTrailer": true,
     "synopsis": "An anxious New York law school dropout stumbles into a job babysitting his psychiatrist's three granddaughters and falls for the girls' mother, an actress in a rocky marriage.",
-    "streaming": [],
+    "streaming": [
+      "Disney+"
+    ],
     "rent": [
       "Eventive"
+    ],
+    "cast": [
+      "Amanda Peet",
+      "Matthew Shear",
+      "Alessandro Nivola"
     ]
   },
   {
@@ -1149,10 +1309,17 @@ const movies = [
     "imdb": "6.0",
     "meta": null,
     "staffPick": false,
-    "hasTrailer": false,
-    "synopsis": "What happens when a tree falls in the woods and someone does hear it? Two couples are forced to deal with such a question \u2014 and their lives in general \u2014 when a New Year's Eve trip to the woods unearths simmering feelings and the secrets they carry threaten to break their seemingly perfect relationships.",
-    "streaming": [],
-    "rent": []
+    "hasTrailer": true,
+    "synopsis": "What happens when a tree falls in the woods and someone does hear it? Two couples are forced to deal with such a question — and their lives in general — when a New Year's Eve trip to the woods unearths simmering feelings and the secrets they carry threaten to break their seemingly perfect relationships.",
+    "streaming": [
+      "Hulu"
+    ],
+    "rent": [],
+    "cast": [
+      "Alexandra Daddario",
+      "Daveed Diggs",
+      "Josh Gad"
+    ]
   },
   {
     "id": "1495041",
@@ -1171,10 +1338,15 @@ const movies = [
     "imdb": "7.3",
     "meta": null,
     "staffPick": false,
-    "hasTrailer": false,
+    "hasTrailer": true,
     "synopsis": "Picking from hundreds of hours of original, low-budget TV ads, Glassman tells the sinister tale of two restaurants battling it out in the town of Westridge County.",
     "streaming": [],
-    "rent": []
+    "rent": [],
+    "cast": [
+      "Kevin Singh",
+      "Claire Theobald",
+      "Donovan Workun"
+    ]
   },
   {
     "id": "tv_262280",
@@ -1194,13 +1366,17 @@ const movies = [
     "imdb": "7.8",
     "meta": null,
     "staffPick": false,
-    "hasTrailer": false,
+    "hasTrailer": true,
     "synopsis": "As drugs flood the streets of '90s Britain, a team of civil servants is thrust undercover to topple the gangs behind it.",
     "streaming": [
-      "Netflix",
-      "Netflix Standard with Ads"
+      "Prime Video"
     ],
-    "rent": []
+    "rent": [],
+    "cast": [
+      "Tom Burke",
+      "Steve Coogan",
+      "Tom Hughes"
+    ]
   },
   {
     "id": "1630423",
@@ -1220,10 +1396,15 @@ const movies = [
     "imdb": null,
     "meta": null,
     "staffPick": false,
-    "hasTrailer": false,
+    "hasTrailer": true,
     "synopsis": "Hunted for her rare blood type, a caged woman vows to fight alongside the assassin she loves to protect their future when an old enemy resurfaces.",
     "streaming": [],
-    "rent": []
+    "rent": [],
+    "cast": [
+      "Pimchanok Luevisadpaibul",
+      "Thanapob Leeratanakachorn",
+      "Sivakorn Adulsuttikul"
+    ]
   },
   {
     "id": "1465978",
@@ -1241,12 +1422,18 @@ const movies = [
     "imdb": "7.4",
     "meta": null,
     "staffPick": false,
-    "hasTrailer": false,
-    "synopsis": "What happens when art meets trash? Maintenance Artist profiles pioneering public artist Mierle Laderman Ukeles \u2014 the first artist-in-residence at NYC\u2019s Department of Sanitation.",
+    "hasTrailer": true,
+    "synopsis": "What happens when art meets trash? Maintenance Artist profiles pioneering public artist Mierle Laderman Ukeles — the first artist-in-residence at NYC’s Department of Sanitation.",
     "streaming": [],
     "rent": [
       "Eventive"
-    ]
+    ],
+    "cast": [
+      "Mierle Laderman Ukeles"
+    ],
+    "isVirtualScreening": true,
+    "screeningName": "2026 Atlanta Film Festival",
+    "screeningEnd": "2026-05-11"
   },
   {
     "id": "1685471",
@@ -1264,11 +1451,16 @@ const movies = [
     "imdb": "6.4",
     "meta": null,
     "staffPick": false,
-    "hasTrailer": false,
+    "hasTrailer": true,
     "synopsis": "After a friend's bachelorette weekend, Lori receives a flash drive with footage from a hidden camera at their Airbnb. The footage is of her sleeping and then a masked stranger entering the room and watching her.",
     "streaming": [],
     "rent": [
       "Plex"
+    ],
+    "cast": [
+      "Kirsten Comerford",
+      "Jayne Heitmeyer",
+      "Kayleigh Choiniere"
     ]
   },
   {
@@ -1285,12 +1477,20 @@ const movies = [
     "imdb": null,
     "meta": null,
     "staffPick": false,
-    "hasTrailer": false,
-    "synopsis": "In his first\u2014and final\u2014on-screen interview, Giorgio Armani reflects on a life that reshaped global fashion. Armani and the Birth of Italian Fashion traces the rise of Italy\u2019s style empires through the legendary families who defined an era, from Armani and Versace to Gucci, Valentino, Prada, and beyond. Set within Milan\u2019s most exclusive fashion sanctuaries, the film explores creative rivalries, personal stories, and the enduring romance between Hollywood and Italian design. Featuring rare insights from fashion icons, actors, and cultural tastemakers, this star-studded documentary is an intimate portrait of ambition, elegance, and the making of modern luxury.",
+    "hasTrailer": true,
+    "synopsis": "In his first—and final—on-screen interview, Giorgio Armani reflects on a life that reshaped global fashion. Armani and the Birth of Italian Fashion traces the rise of Italy’s style empires through the legendary families who defined an era, from Armani and Versace to Gucci, Valentino, Prada, and beyond. Set within Milan’s most exclusive fashion sanctuaries, the film explores creative rivalries, personal stories, and the enduring romance between Hollywood and Italian design. Featuring rare insights from fashion icons, actors, and cultural tastemakers, this star-studded documentary is an intimate portrait of ambition, elegance, and the making of modern luxury.",
     "streaming": [],
     "rent": [
       "Eventive"
-    ]
+    ],
+    "cast": [
+      "Tom Ford",
+      "Frances McDormand",
+      "Helen Mirren"
+    ],
+    "isVirtualScreening": true,
+    "screeningName": "OUTshine LGBTQ+ Film Festival",
+    "screeningEnd": "2026-05-11"
   },
   {
     "id": "1596280",
@@ -1309,19 +1509,25 @@ const movies = [
     "imdb": "7.9",
     "meta": null,
     "staffPick": false,
-    "hasTrailer": false,
+    "hasTrailer": true,
     "synopsis": "After 20 years of chronicling his Puerto Rican family, a director and his mother face devastating losses. Through tears and laughter, they craft animations that bring their loved ones back to life, discovering that every act of creation is also an act of letting go.",
     "streaming": [],
     "rent": [
       "Eventive"
-    ]
+    ],
+    "cast": [
+      "William D. Caballero"
+    ],
+    "isVirtualScreening": true,
+    "screeningName": "2026 Atlanta Film Festival",
+    "screeningEnd": "2026-05-11"
   },
   {
     "id": "988099",
     "title": "Death Does Not Exist",
     "date": "2026-05-06",
     "poster": "https://image.tmdb.org/t/p/w500/4GKNTtHE0LhI1GOibVHotgC2Pc9.jpg",
-    "director": "F\u00e9lix Dufour-Laperri\u00e8re",
+    "director": "Félix Dufour-Laperrière",
     "runtime": 72,
     "year": 2025,
     "country": "",
@@ -1333,12 +1539,17 @@ const movies = [
     "imdb": "6.0",
     "meta": null,
     "staffPick": false,
-    "hasTrailer": false,
-    "synopsis": "After a failed armed attack during which she abandons her companions, H\u00e9l\u00e8ne flees into the forest and meets Catherine, a mysterious alter ego, a carnivorous and tempting alter ego. This double will take her to a fantastic valley, where metamorphoses, poisonous powers and great upheavals will soon shake up the order of things. H\u00e9l\u00e8ne will have to revisit her choices and the moral, political and human dilemmas that circumscribe them.",
+    "hasTrailer": true,
+    "synopsis": "After a failed armed attack during which she abandons her companions, Hélène flees into the forest and meets Catherine, a mysterious alter ego, a carnivorous and tempting alter ego. This double will take her to a fantastic valley, where metamorphoses, poisonous powers and great upheavals will soon shake up the order of things. Hélène will have to revisit her choices and the moral, political and human dilemmas that circumscribe them.",
     "streaming": [
-      "Fandor Amazon Channel"
+      "Fandor"
     ],
-    "rent": []
+    "rent": [],
+    "cast": [
+      "Zeneb Blanchet",
+      "Karelle Tremblay",
+      "Mattis Savard-Verhoeven"
+    ]
   },
   {
     "id": "1209511",
@@ -1358,13 +1569,17 @@ const movies = [
     "imdb": "6.8",
     "meta": null,
     "staffPick": false,
-    "hasTrailer": false,
+    "hasTrailer": true,
     "synopsis": "In 2040, an app premised on ensuring romance for all is used widely by the population. When the voice behind the app's AI realizes its misconception to true love, he embarks on a quest to prove that love does not come from a screen.",
     "streaming": [
-      "Amazon Prime Video",
-      "Amazon Prime Video with Ads"
+      "Prime Video"
     ],
-    "rent": []
+    "rent": [],
+    "cast": [
+      "Pradeep Ranganathan",
+      "Krithi Shetty",
+      "S. J. Suryah"
+    ]
   },
   {
     "id": "1523374",
@@ -1382,13 +1597,17 @@ const movies = [
     "imdb": "9.1",
     "meta": null,
     "staffPick": false,
-    "hasTrailer": false,
+    "hasTrailer": true,
     "synopsis": "An intimate documentary about Civil Rights leader, entrepreneur and Hall of Fame Coach George Raveling.",
     "streaming": [
-      "HBO Max",
-      "HBO Max Amazon Channel"
+      "Max"
     ],
-    "rent": []
+    "rent": [],
+    "cast": [
+      "Marlon Wayans",
+      "Phil Knight",
+      "Ben Affleck"
+    ]
   },
   {
     "id": "1156806",
@@ -1407,12 +1626,20 @@ const movies = [
     "imdb": null,
     "meta": null,
     "staffPick": false,
-    "hasTrailer": false,
+    "hasTrailer": true,
     "synopsis": "Bull Jackson is a bouncer in a gay bar where Jordan performs as a drag queen by night and is a medical student by day. When Coco, their mentor and owner of the club, is shot in what appears to be a random homophobic attack, Bull and Jordan form an unlikely team to find those responsible.",
     "streaming": [],
     "rent": [
       "Eventive"
-    ]
+    ],
+    "cast": [
+      "Luke Macfarlane",
+      "Sebastian Roché",
+      "Molly Bernard"
+    ],
+    "isVirtualScreening": true,
+    "screeningName": "OUTshine LGBTQ+ Film Festival",
+    "screeningEnd": "2026-05-11"
   },
   {
     "id": "1667876",
@@ -1430,12 +1657,20 @@ const movies = [
     "imdb": null,
     "meta": null,
     "staffPick": false,
-    "hasTrailer": false,
+    "hasTrailer": true,
     "synopsis": "Ray Patterson, a 47 year old unemployed dad, spends his days hitting baseballs at the community park in a desperate attempt to make it back onto the Atlanta Apaches, a major league baseball team he was signed to when he was younger. His struggles with drinking, which got him booted from the team in his early 20s, are still a daily problem. Ray is plagued with dreams of what he believes are Native American ghosts and supernatural forces that are attempting to bury him and his dreams in the dirt. When a metaphysical event threatens Ray's existence, his family watches hopelessly, while his wife, Holly, finds comfort in suburban witchery and the cosmic answers that the Tarot provides.",
     "streaming": [],
     "rent": [
       "Eventive"
-    ]
+    ],
+    "cast": [
+      "Mark Podijil",
+      "Amanda Pinney",
+      "Mark Kendall"
+    ],
+    "isVirtualScreening": true,
+    "screeningName": "2026 Atlanta Film Festival",
+    "screeningEnd": "2026-05-11"
   },
   {
     "id": "1301469",
@@ -1455,12 +1690,20 @@ const movies = [
     "imdb": null,
     "meta": null,
     "staffPick": false,
-    "hasTrailer": false,
+    "hasTrailer": true,
     "synopsis": "A slice-of-life exploration of the weird and wonderful residents of a small town in North Florida and what they believe in.",
     "streaming": [],
     "rent": [
       "Eventive"
-    ]
+    ],
+    "cast": [
+      "Laurel Collins",
+      "Ruby Bailey",
+      "Serra Naiman"
+    ],
+    "isVirtualScreening": true,
+    "screeningName": "2026 Atlanta Film Festival",
+    "screeningEnd": "2026-05-11"
   },
   {
     "id": "1451078",
@@ -1479,13 +1722,17 @@ const movies = [
     "imdb": "7.6",
     "meta": null,
     "staffPick": false,
-    "hasTrailer": false,
+    "hasTrailer": true,
     "synopsis": "Returning home after a decade, an NRI chasing romance inadvertently awakens an ancient darkness long feared by his village. As the threat intensifies, love turns deadly and life hangs in the balance.",
     "streaming": [
-      "Netflix",
-      "Netflix Standard with Ads"
+      "Netflix"
     ],
-    "rent": []
+    "rent": [],
+    "cast": [
+      "Sangeeth Shobhan",
+      "Nayan Sarika",
+      "Raadhya"
+    ]
   },
   {
     "id": "1516175",
@@ -1504,12 +1751,20 @@ const movies = [
     "imdb": "7.7",
     "meta": null,
     "staffPick": false,
-    "hasTrailer": false,
+    "hasTrailer": true,
     "synopsis": "When Taylor can't get her party store shift covered after her dad dies, she makes a deadly mistake that sparks a downward spiral of red, white and blue-collared chaos.",
     "streaming": [],
     "rent": [
       "Eventive"
-    ]
+    ],
+    "cast": [
+      "Ainsley Seiger",
+      "Phillip Andre Botello",
+      "Ben Weinswig"
+    ],
+    "isVirtualScreening": true,
+    "screeningName": "2026 Atlanta Film Festival",
+    "screeningEnd": "2026-05-11"
   },
   {
     "id": "1178620",
@@ -1528,12 +1783,20 @@ const movies = [
     "imdb": "6.9",
     "meta": null,
     "staffPick": false,
-    "hasTrailer": false,
-    "synopsis": "At 53 years old, Feng Xia, a Chinese immigrant in Montreal, finally confronts her repressed desire for women and begins a secret affair with a young Qu\u00e9b\u00e9coise.",
+    "hasTrailer": true,
+    "synopsis": "At 53 years old, Feng Xia, a Chinese immigrant in Montreal, finally confronts her repressed desire for women and begins a secret affair with a young Québécoise.",
     "streaming": [],
     "rent": [
       "Eventive"
-    ]
+    ],
+    "cast": [
+      "Joan Chen",
+      "Charlotte Aubin",
+      "John Xu"
+    ],
+    "isVirtualScreening": true,
+    "screeningName": "OUTshine LGBTQ+ Film Festival",
+    "screeningEnd": "2026-05-11"
   },
   {
     "id": "1369521",
@@ -1551,11 +1814,16 @@ const movies = [
     "imdb": "8.2",
     "meta": null,
     "staffPick": false,
-    "hasTrailer": false,
+    "hasTrailer": true,
     "synopsis": "The great Hungarian striker Ferenc Puskas storied playing and coaching career ended in the relative backwater of Middle Park in Melbourne, coaching a South Melbourne Hellas team captained by current Spurs manager Ange Postecoglou. A sporting story of a humble, football colossus in soccer's new world, full of quirky anecdotes and a ripping championship finale. And also a story of Australia's ethnic football heritage, and how it sustained new arrivals.",
     "streaming": [],
     "rent": [
       "Apple TV Store"
+    ],
+    "cast": [
+      "Ange Postecoglou",
+      "Miki Petersen",
+      "Paul Trimboli"
     ]
   },
   {
@@ -1575,11 +1843,16 @@ const movies = [
     "imdb": "6.3",
     "meta": "85",
     "staffPick": false,
-    "hasTrailer": false,
-    "synopsis": "In the days following October 7, Y., a jazz musician, and his wife Yasmin, a dancer, resolve to say yes to everything. Y. and Yasmin sell their bodies and souls to the highest bidder, surrendering themselves and their art to Israel\u2019s social, political and military elite. Soon, Y. is entrusted with a mission of the utmost importance: to compose the music for a rousing, ruthless new national anthem.",
+    "hasTrailer": true,
+    "synopsis": "In the days following October 7, Y., a jazz musician, and his wife Yasmin, a dancer, resolve to say yes to everything. Y. and Yasmin sell their bodies and souls to the highest bidder, surrendering themselves and their art to Israel’s social, political and military elite. Soon, Y. is entrusted with a mission of the utmost importance: to compose the music for a rousing, ruthless new national anthem.",
     "streaming": [],
     "rent": [
       "Amazon Video"
+    ],
+    "cast": [
+      "Ariel Bronz",
+      "Efrat Dor",
+      "Naama Preis"
     ]
   },
   {
@@ -1598,11 +1871,16 @@ const movies = [
     "imdb": null,
     "meta": null,
     "staffPick": false,
-    "hasTrailer": false,
+    "hasTrailer": true,
     "synopsis": "The famous actor comes to Herman in a dream, convincing him to make his feature \"Bear Naked Amazonians from Mars.\" If he makes the deadline, the film will take Best Feature at South by Southwest, making Herman an international celebrity.",
     "streaming": [],
     "rent": [
       "Amazon Video"
+    ],
+    "cast": [
+      "Whit Hertford",
+      "Sean O'Bryan",
+      "Chad Ridgely"
     ]
   },
   {
@@ -1621,11 +1899,18 @@ const movies = [
     "imdb": "6.5",
     "meta": "86",
     "staffPick": false,
-    "hasTrailer": false,
+    "hasTrailer": true,
     "synopsis": "Nina, an OB-GYN, faces accusations after a newborn's death. Her life undergoes scrutiny during investigation. She persists in her medical duties, determined to provide care others hesitate to offer, despite the risks.",
-    "streaming": [],
+    "streaming": [
+      "MUBI"
+    ],
     "rent": [
       "Amazon Video"
+    ],
+    "cast": [
+      "Ia Sukhitashvili",
+      "Kakha Kintsurashvili",
+      "Merab Ninidze"
     ]
   },
   {
@@ -1646,12 +1931,19 @@ const movies = [
     "imdb": "7.1",
     "meta": null,
     "staffPick": false,
-    "hasTrailer": false,
-    "synopsis": "Veneno, a rebellious young drifter, frequents roadside diners where he sleeps with truck drivers. Urgently needing a ride, he meets Mun\u0303eco, a hard-edged driver who keeps to himself. He convinces Mun\u0303eco to take him deep into the hyper-masculine world of long-haul trucking across the north of Mexico. As they travel together and an unexpected intimacy builds between them, shadows from Veneno\u2019s past resurface, putting both their lives at risk.",
+    "hasTrailer": true,
+    "synopsis": "Veneno, a rebellious young drifter, frequents roadside diners where he sleeps with truck drivers. Urgently needing a ride, he meets Muñeco, a hard-edged driver who keeps to himself. He convinces Muñeco to take him deep into the hyper-masculine world of long-haul trucking across the north of Mexico. As they travel together and an unexpected intimacy builds between them, shadows from Veneno’s past resurface, putting both their lives at risk.",
     "streaming": [],
     "rent": [
       "Eventive"
-    ]
+    ],
+    "cast": [
+      "Victor Prieto Simental",
+      "Osvaldo Sánchez"
+    ],
+    "isVirtualScreening": true,
+    "screeningName": "OUTshine LGBTQ+ Film Festival",
+    "screeningEnd": "2026-05-11"
   }
 ];
 
@@ -1729,8 +2021,11 @@ function buildGrid() {
     }
 
     const item = document.createElement('div');
-    item.className = 'grid-item';
+    item.className = 'grid-item' + (movie.isVirtualScreening ? ' screening-movie' : '');
     item.innerHTML = `<img src="${movie.poster}" alt="${movie.title}" loading="lazy">`;
+    if (movie.isVirtualScreening) {
+      item.innerHTML += `<span class="screening-banner">Virtual Screening</span>`;
+    }
     if (movie.staffPick) {
       item.innerHTML += `<span class="staff-pick-badge">Staff Pick</span>`;
     }
@@ -1789,34 +2084,97 @@ function updateSheetContent(movie, direction) {
     setTimeout(() => sheetContent.classList.remove(cls), 250);
   }
 
-  let metaParts = '';
-  if (movie.director) metaParts += `<span>${movie.director}</span>`;
-  if (movie.runtime) metaParts += `<span>${formatRuntime(movie.runtime)}</span>`;
-  if (movie.country) metaParts += `<span>${movie.country}</span>`;
-  if (movie.year) metaParts += `<span>${movie.year}</span>`;
+  // Teal line: D: Director, Nation, Year
+  let topLine = [];
+  if (movie.director) topLine.push('D: ' + movie.director);
+  if (movie.country) topLine.push(movie.country);
+  if (movie.year) topLine.push(movie.year);
 
-  let html = `
+  // Gray line: minutes, cast, genre
+  let metaParts = '';
+  if (movie.runtime) metaParts += `<span>${formatRuntime(movie.runtime)}</span>`;
+  if (movie.cast && movie.cast.length > 0) metaParts += `<span>${movie.cast.join(', ')}</span>`;
+  if (movie.genres && movie.genres.length > 0) metaParts += `<span>${movie.genres.join(', ')}</span>`;
+
+  // Scores inline
+  let scoresHtml = '';
+  if (movie.rt || movie.imdb || movie.meta) {
+    scoresHtml += `<div class="sheet-scores">`;
+    if (movie.rt) scoresHtml += `<div class="sheet-score"><img class="sheet-score-logo" src="../assets/logos/services/rt.png" alt="RT"><span class="sheet-score-value rt">${movie.rt}</span></div>`;
+    if (movie.imdb) scoresHtml += `<div class="sheet-score"><img class="sheet-score-logo" src="../assets/logos/imdb.png" alt="IMDb"><span class="sheet-score-value imdb">${movie.imdb}</span></div>`;
+    if (movie.meta) scoresHtml += `<div class="sheet-score"><img class="sheet-score-logo light-bg" src="../assets/logos/metacritic.png" alt="Metacritic"><span class="sheet-score-value meta">${movie.meta}</span></div>`;
+    scoresHtml += `</div>`;
+  }
+
+  // Virtual screening banner
+  let screeningBanner = '';
+  if (movie.isVirtualScreening && movie.screeningName) {
+    screeningBanner = `<div class="sheet-screening-banner">${movie.screeningName}</div>`;
+  }
+
+  let html = screeningBanner + `
     <div class="sheet-header-row">
+      <img class="sheet-thumb" src="${movie.poster}" alt="${movie.title}">
       <div class="sheet-header-text">
         <div class="sheet-title">${movie.title}</div>
-        <div class="sheet-date">${formatDate(movie.date)}</div>
+        <div class="sheet-date">${topLine.join(' · ')}</div>
         <div class="sheet-meta">${metaParts}</div>
+        ${scoresHtml}
       </div>
-      <img class="sheet-thumb" src="${movie.poster}" alt="${movie.title}">
     </div>`;
-
-  // Scores
-  if (movie.rt || movie.imdb || movie.meta) {
-    html += `<div class="sheet-scores">`;
-    if (movie.rt) html += `<div class="sheet-score"><span class="sheet-score-value rt">${movie.rt}</span><span class="sheet-score-label">Rotten Tomatoes</span></div>`;
-    if (movie.imdb) html += `<div class="sheet-score"><span class="sheet-score-value imdb">${movie.imdb}</span><span class="sheet-score-label">IMDb</span></div>`;
-    if (movie.meta) html += `<div class="sheet-score"><span class="sheet-score-value meta">${movie.meta}</span><span class="sheet-score-label">Metacritic</span></div>`;
-    html += `</div>`;
-  }
 
   // Trailer button
   if (movie.hasTrailer) {
     html += `<button class="trailer-btn"><span class="play-icon">&#9654;</span> Watch Trailer</button>`;
+  }
+
+  // Virtual screening ticket button + callout
+  if (movie.isVirtualScreening) {
+    html += `<button class="sheet-screening-ticket">&#127915; Buy Ticket</button>`;
+    let callout = `Virtual screening via ${movie.screeningName || 'festival'}`;
+    if (movie.screeningEnd) {
+      const ed = new Date(movie.screeningEnd + 'T12:00:00');
+      callout += `. Ends ${ed.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+    }
+    html += `<div class="sheet-screening-callout">${callout}</div>`;
+  }
+
+  // Provider logo mapping
+  const providerLogos = {
+    'Netflix': 'netflix_wide.png',
+    'Disney+': 'disney_plus_wide.png',
+    'Max': 'max_wide.png',
+    'Prime Video': 'prime_video_wide.png',
+    'Amazon Video': 'amazon_wide.png',
+    'Hulu': 'hulu_wide.png',
+    'Peacock': 'peacock_wide.png',
+    'Apple TV+': 'apple_tv_wide.png',
+    'Apple TV Store': 'apple_tv_wide.png',
+    'MUBI': 'mubi_wide.png',
+    'Plex': 'plex_wide.png',
+    'Fawesome': 'fawesome.png',
+    'Paramount+': 'paramount_plus_wide.png',
+    'YouTube': 'youtube.png',
+    'Fandango At Home': 'fandango_wide.png',
+    'Criterion': 'criterion_wide.png',
+    'AMC+': 'amc_plus_wide.png',
+  };
+  // Dark logos that need invert to show on dark bg
+  const invertProviders = ['Apple TV+', 'Apple TV Store', 'YouTube'];
+  function providerPill(name) {
+    // Eventive = gold "BUY TICKET" button
+    if (name === 'Eventive') {
+      return `<span class="provider-pill-text" style="color: #FFD700; border: 2px solid #FFD700; font-weight: 700;">&#127915; BUY TICKET</span>`;
+    }
+    const logo = providerLogos[name];
+    if (logo) {
+      const cls = invertProviders.includes(name) ? ' invert' : '';
+      return `<img class="provider-pill${cls}" src="../assets/logos/services/${logo}" alt="${name}">`;
+    }
+    // Text fallback for services without logos
+    const colors = { 'Google Play Movies': '#4285F4' };
+    const c = colors[name] || '#aaa';
+    return `<span class="provider-pill-text" style="color: ${c}; border-color: ${c};">${name}</span>`;
   }
 
   // Providers (ABOVE synopsis)
@@ -1824,11 +2182,11 @@ function updateSheetContent(movie, direction) {
   if (allProviders.length > 0) {
     if (movie.streaming.length > 0) {
       html += `<div class="sheet-section-label">Streaming</div>
-        <div class="sheet-providers">${movie.streaming.map(p => `<span class="provider-pill">${p}</span>`).join('')}</div>`;
+        <div class="sheet-providers">${movie.streaming.map(p => providerPill(p)).join('')}</div>`;
     }
     if (movie.rent.length > 0) {
       html += `<div class="sheet-section-label">Rent / Buy</div>
-        <div class="sheet-providers">${movie.rent.map(p => `<span class="provider-pill">${p}</span>`).join('')}</div>`;
+        <div class="sheet-providers">${movie.rent.map(p => providerPill(p)).join('')}</div>`;
     }
   } else {
     html += `<div class="sheet-section-label">Availability</div>

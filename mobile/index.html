@@ -7,47 +7,72 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#0a0a0a">
     <title>NRW - New Release Wall</title>
-    <link rel="stylesheet" href="mobile.css?v=51">
+    <link rel="stylesheet" href="mobile.css?v=61">
     <link rel="icon" type="image/png" href="../favicon.png">
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="../favicon.png">
 </head>
 <body>
-    <header class="nrw-header">
-        <h1 class="nrw-title">THE NEW RELEASE WALL</h1>
-        <div class="filter-row" id="filters">
-            <button class="filter-pill active" data-filter="all">All</button>
-            <button class="filter-pill" data-filter="pre-orders">Pre-Orders</button>
-            <button class="filter-pill" data-filter="studio">Studio</button>
-            <button class="filter-pill" data-filter="indie">Indie</button>
-            <button class="filter-pill" data-filter="staff-picks">Staff Picks</button>
-            <button class="filter-pill" data-filter="foreign">Foreign</button>
-            <button class="filter-pill" data-filter="series">Limited Series</button>
-            <button class="filter-pill" data-filter="restorations">Restorations & Reissues</button>
-            <button class="filter-pill" data-filter="documentary">Documentary</button>
-            <button class="filter-pill" data-filter="virtual-screenings">Virtual Screenings</button>
+    <!-- Persistent header -->
+    <header class="site-header" id="site-header">
+        <div class="header-title-row">
+            <h1>THE NEW RELEASE WALL</h1>
         </div>
-        <div class="search-container">
-            <input type="text" id="search-input" placeholder="Search title, director, genre..." autocomplete="off">
-            <button id="search-clear" class="search-clear" aria-label="Clear search">&times;</button>
+        <div class="header-controls">
+            <div class="filter-row" id="filters">
+                <button class="filter-pill active" data-filter="all">All</button>
+                <button class="filter-pill" data-filter="pre-orders">Pre-Orders</button>
+                <button class="filter-pill" data-filter="studio">Studio</button>
+                <button class="filter-pill" data-filter="indie">Indie</button>
+                <button class="filter-pill" data-filter="staff-picks">Staff Picks</button>
+                <button class="filter-pill" data-filter="foreign">Foreign</button>
+                <button class="filter-pill" data-filter="series">Limited Series</button>
+                <button class="filter-pill" data-filter="restorations">Restorations</button>
+                <button class="filter-pill" data-filter="documentary">Documentary</button>
+                <button class="filter-pill" data-filter="virtual-screenings">Virtual Screenings</button>
+            </div>
+            <div class="search-dots-row">
+                <div class="search-container">
+                    <input type="text" id="search-input" placeholder="Search..." autocomplete="off">
+                    <button id="search-clear" class="search-clear" aria-label="Clear">&times;</button>
+                </div>
+                <div class="view-dots" id="view-dots">
+                    <button class="view-dot active" data-view="0"></button>
+                    <button class="view-dot" data-view="1"></button>
+                    <button class="view-dot" data-view="2"></button>
+                </div>
+            </div>
         </div>
     </header>
 
-    <div class="filter-description" id="filter-description">
-        <div class="filter-description-title" id="filter-description-title"></div>
-        <p class="filter-description-text" id="filter-description-text"></p>
-    </div>
-
-    <main id="movie-feed">
-        <div class="loading">
+    <!-- View 1: Grid -->
+    <div id="grid-view" class="view-container">
+        <div class="loading" id="loading">
             <div class="loading-spinner"></div>
             <p>Loading movies...</p>
         </div>
-    </main>
+    </div>
 
-    <div id="load-trigger"></div>
+    <!-- View 2: Poster close-up -->
+    <div id="poster-view" class="view-container hidden">
+        <div class="poster-full" id="poster-full">
+            <img id="poster-img" src="" alt="">
+            <div class="poster-counter" id="poster-counter"></div>
+            <div class="poster-scores" id="poster-scores"></div>
+        </div>
+    </div>
 
-    <script src="../assets/shared-config.js?v=1"></script>
-    <script src="mobile.js?v=52"></script>
+    <!-- View 3: Bottom sheet -->
+    <div id="bottom-sheet" class="bottom-sheet">
+        <div class="sheet-handle"><div class="sheet-handle-bar"></div></div>
+        <div class="sheet-content" id="sheet-content"></div>
+    </div>
+
+    <!-- Nav chevrons (poster view) -->
+    <div class="chevron chevron-left" id="chevron-left">&#8249;</div>
+    <div class="chevron chevron-right" id="chevron-right">&#8250;</div>
+
+    <script src="../assets/shared-config.js?v=2"></script>
+    <script src="mobile.js?v=61"></script>
 </body>
 </html>

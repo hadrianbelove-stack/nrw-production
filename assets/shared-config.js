@@ -24,7 +24,9 @@ const NRWConfig = {
         pluto:     { class: 'pluto',     name: 'PLUTO TV',   badgeName: 'PLUTO',     btnName: 'Pluto TV',   matches: ['pluto'],             logo: 'Pluto_TV_2020_logo.png' },
         crackle:   { class: 'crackle',   name: 'CRACKLE',    badgeName: 'CRACKLE',   btnName: 'Crackle',    matches: ['crackle'],           logo: 'Crackle-Symbol.png' },
         fawesome:  { class: 'fawesome',  name: 'FAWESOME',   badgeName: 'FAWESOME',  btnName: 'Fawesome',   matches: ['fawesome'],          logo: 'fawesome.png' },
-        fandango:  { class: 'fandango',  name: 'FANDANGO',   badgeName: 'FANDANGO',  btnName: 'Fandango',   matches: ['fandango'],          logo: 'fandangoathome.png', wideLogo: 'services/fandango_wide.png' },
+        fandango:      { class: 'fandango',      name: 'FANDANGO',   badgeName: 'FANDANGO',  btnName: 'Fandango',      matches: ['fandango'],          logo: 'fandangoathome.png', wideLogo: 'services/fandango_wide.png' },
+        docuramafilms: { class: 'docuramafilms', name: 'DOCURAMA',   badgeName: 'DOCURAMA',  btnName: 'Docurama',      matches: ['docurama'],          wideLogo: 'services/docuramafilms_wide.png' },
+        fandor:        { class: 'fandor',        name: 'FANDOR',     badgeName: 'FANDOR',    btnName: 'Fandor',        matches: ['fandor'],            wideLogo: 'services/fandor_wide.png' },
     },
 
     // VOD (rent/buy) service definitions (colors in CSS :root variables)
