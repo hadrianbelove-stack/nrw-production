@@ -3,7 +3,7 @@
  * Full-screen layout optimized for 10-foot viewing
  */
 
-import React, { useCallback, useRef, useState, useEffect } from 'react';
+import React, { useCallback, useRef, useState, useEffect, forwardRef } from 'react';
 import {
   View,
   Text,
@@ -14,6 +14,7 @@ import {
   Animated,
   ActivityIndicator,
   TouchableOpacity,
+  findNodeHandle,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import {
@@ -50,50 +51,70 @@ const formatShortDate = (dateStr) => {
   return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 };
 
-// Module-level edge navigation tracking.
-// The TV event handler sets _pendingNav to 'left'/'right' on a directional press.
-// If focus moves to another button within 80ms, handleFocus cancels _pendingNav.
-// If nothing cancels it, the timer fires and navigates.
-let _pendingNav = null; // 'left' | 'right' | null
-let _buttonFocusCount = 0; // Number of ActionButtons currently focused (0 or 1)
-let _totalButtonCount = 0; // Total ActionButtons currently mounted on screen
+// Decode HTML entities (e.g. &#x27; → ')
+const decodeHtml = (str) => str.replace(/&#x27;/g, "'").replace(/&amp;/g, '&').replace(/&quot;/g, '"');
 
-// Simple action button with equal sizing
-const ActionButton = ({ label, color, onPress, hasTVPreferredFocus = false, testID, borderColor, textColor, icon, iconTintColor }) => {
+// Module-level edge navigation tracking.
+// Track which watch button is focused by index. When the user presses RIGHT
+// at the last watch button (or LEFT at the first), navigate to next/prev movie.
+// No timers — deterministic index check.
+let _totalButtonCount = 0;    // Total ActionButtons mounted (including trailer)
+let _focusedWatchIndex = -1;  // Which watch-row button is focused (-1 = none)
+let _watchButtonCount = 0;    // How many watch-row buttons are mounted
+let _lastWatchBlurTime = 0;   // Timestamp of last watch-button blur (for edge detection)
+
+// Simple action button with equal sizing — forwardRef for focus navigation wiring
+const ActionButton = forwardRef(({
+  label, color, onPress, hasTVPreferredFocus = false, testID,
+  borderColor, textColor, icon, iconTintColor,
+  nextFocusUp, nextFocusDown, nextFocusLeft, nextFocusRight,
+  buttonIndex, isWatchButton = false,
+}, ref) => {
   const [isFocused, setIsFocused] = useState(false);
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
-  // Track total mounted ActionButtons so we know if the screen has any
+  // Track mounted buttons
   useEffect(() => {
     _totalButtonCount++;
-    return () => { _totalButtonCount--; };
+    if (isWatchButton) _watchButtonCount++;
+    return () => {
+      _totalButtonCount--;
+      if (isWatchButton) _watchButtonCount--;
+    };
   }, []);
 
   const handleFocus = useCallback(() => {
     setIsFocused(true);
-    _buttonFocusCount++;
-    _pendingNav = null; // Focus moved → cancel any pending navigation
+    if (isWatchButton) _focusedWatchIndex = buttonIndex;
     Animated.spring(scaleAnim, {
       toValue: 1.1,
       useNativeDriver: true,
     }).start();
-  }, [scaleAnim]);
+  }, [scaleAnim, isWatchButton, buttonIndex]);
 
   const handleBlur = useCallback(() => {
     setIsFocused(false);
-    _buttonFocusCount = Math.max(0, _buttonFocusCount - 1);
+    if (isWatchButton) {
+      if (_focusedWatchIndex === buttonIndex) _focusedWatchIndex = -1;
+      _lastWatchBlurTime = Date.now();
+    }
     Animated.spring(scaleAnim, {
       toValue: 1,
       useNativeDriver: true,
     }).start();
-  }, [scaleAnim]);
+  }, [scaleAnim, isWatchButton, buttonIndex]);
 
   return (
     <TouchableOpacity
+      ref={ref}
       onPress={onPress}
       onFocus={handleFocus}
       onBlur={handleBlur}
       hasTVPreferredFocus={hasTVPreferredFocus}
+      nextFocusUp={nextFocusUp}
+      nextFocusDown={nextFocusDown}
+      nextFocusLeft={nextFocusLeft}
+      nextFocusRight={nextFocusRight}
       activeOpacity={0.9}
       accessible={true}
       accessibilityLabel={label}
@@ -117,7 +138,7 @@ const ActionButton = ({ label, color, onPress, hasTVPreferredFocus = false, test
       </Animated.View>
     </TouchableOpacity>
   );
-};
+});
 
 const actionButtonStyles = StyleSheet.create({
   button: {
@@ -389,7 +410,7 @@ const MovieDetailTvOS = () => {
 
   // Reset module-level tracking on unmount
   useEffect(() => {
-    return () => { _pendingNav = null; _buttonFocusCount = 0; _totalButtonCount = 0; };
+    return () => { _focusedWatchIndex = -1; _watchButtonCount = 0; _totalButtonCount = 0; _lastWatchBlurTime = 0; };
   }, []);
 
   // Deep link fallback: fetch movies only if shared list is empty (e.g., deep link into app)
@@ -440,6 +461,7 @@ const MovieDetailTvOS = () => {
   const navigateNext = useCallback(() => {
     if (movieList.length === 0) return;
     const nextIndex = (currentIndex + 1) % movieList.length;
+    setPreferWatchFocus(_focusedWatchIndex >= 0);
     setCurrentIndex(nextIndex);
     setMovie(movieList[nextIndex]);
     // Flash the right chevron
@@ -452,6 +474,7 @@ const MovieDetailTvOS = () => {
   const navigatePrevious = useCallback(() => {
     if (movieList.length === 0) return;
     const prevIndex = currentIndex === 0 ? movieList.length - 1 : currentIndex - 1;
+    setPreferWatchFocus(_focusedWatchIndex >= 0);
     setCurrentIndex(prevIndex);
     setMovie(movieList[prevIndex]);
     // Flash the left chevron
@@ -480,6 +503,16 @@ const MovieDetailTvOS = () => {
   // Trailer player state
   const [trailerVisible, setTrailerVisible] = useState(false);
 
+  // Trailer button ref → node handle for nextFocusUp on watch buttons
+  const [trailerHandle, setTrailerHandle] = useState(null);
+  const trailerRefCallback = useCallback((ref) => {
+    if (ref) setTrailerHandle(findNodeHandle(ref));
+  }, []);
+
+  // Track whether to give initial focus to watch row (instead of trailer) after movie navigation.
+  // When the user navigates LEFT/RIGHT from a watch button, focus should stay on the watch row.
+  const [preferWatchFocus, setPreferWatchFocus] = useState(false);
+
   // Prevent MENU/Back from popping the detail screen while trailer is playing.
   // The TrailerPlayer handles MENU internally to close itself; without this guard
   // React Navigation's native back handler also fires and pops the whole screen.
@@ -501,9 +534,8 @@ const MovieDetailTvOS = () => {
   }, [fadeAnim]);
 
   // Handle TV remote events (disabled while trailer player is active)
-  // RIGHT/LEFT at edge: set _pendingNav, wait 80ms. If focus moves to another
-  // button within that window, handleFocus cancels _pendingNav. If not, navigate.
-  const navTimer = useRef(null);
+  // RIGHT/LEFT edge navigation: deterministic index check, no timers.
+  // Navigate only when the focused watch button is at the edge of the row.
   useTVEventHandler(trailerVisible ? {} : {
     [TV_EVENTS.MENU]: () => {
       navigation.goBack();
@@ -516,42 +548,37 @@ const MovieDetailTvOS = () => {
     [TV_EVENTS.RIGHT]: () => {
       if (movieList.length <= 1) return;
       if (_totalButtonCount === 0) {
-        // No buttons on screen — navigate immediately
         navigateNext();
         return;
       }
-      if (_buttonFocusCount === 0) return; // Buttons exist but none focused
-      _pendingNav = 'right';
-      clearTimeout(navTimer.current);
-      navTimer.current = setTimeout(() => {
-        if (_pendingNav === 'right') {
-          _pendingNav = null;
-          navigateNext();
-        }
-      }, 80);
+      // If a watch button just blurred, focus moved between buttons — don't navigate.
+      // tvOS moves focus BEFORE delivering the TV event, so by the time this handler
+      // fires, _focusedWatchIndex already points to the NEW button. The blur timestamp
+      // tells us whether focus actually moved (blur = moved) or stayed (no blur = edge).
+      if (Date.now() - _lastWatchBlurTime < 150) return;
+      // No recent blur → focus couldn't move → at right edge → navigate
+      if (_focusedWatchIndex >= 0 && _focusedWatchIndex >= _watchButtonCount - 1) {
+        navigateNext();
+      }
     },
     [TV_EVENTS.LEFT]: () => {
       if (movieList.length <= 1) return;
       if (_totalButtonCount === 0) {
-        // No buttons on screen — navigate immediately
         navigatePrevious();
         return;
       }
-      if (_buttonFocusCount === 0) return; // Buttons exist but none focused
-      _pendingNav = 'left';
-      clearTimeout(navTimer.current);
-      navTimer.current = setTimeout(() => {
-        if (_pendingNav === 'left') {
-          _pendingNav = null;
-          navigatePrevious();
-        }
-      }, 80);
+      // Same blur-timestamp check as RIGHT (see comment above)
+      if (Date.now() - _lastWatchBlurTime < 150) return;
+      // No recent blur → focus couldn't move → at left edge → navigate
+      if (_focusedWatchIndex === 0) {
+        navigatePrevious();
+      }
     },
   });
 
-  // Clear short-lived timers on unmount
+  // Clear flash timer on unmount
   useEffect(() => {
-    return () => { clearTimeout(navTimer.current); clearTimeout(flashTimer.current); };
+    return () => { clearTimeout(flashTimer.current); };
   }, []);
 
   // Handle watch button press
@@ -705,14 +732,19 @@ const MovieDetailTvOS = () => {
                 {movie.display_title || movie.title}
               </Text>
               {movie.digital_date && (
-                <Text style={styles.titleDate}>{formatShortDate(movie.digital_date)}</Text>
+                <Text style={styles.titleDate}>
+                  {formatShortDate(movie.digital_date)}
+                  {movie.categories?.is_virtual_screening && movie.virtual_screening_info?.available_end
+                    ? '\u2013' + formatShortDate(movie.virtual_screening_info.available_end)
+                    : ''}
+                </Text>
               )}
             </View>
 
             {/* Virtual screening badge */}
             {movie.categories?.is_virtual_screening && (
               <Text style={styles.screeningName}>
-                {movie.virtual_screening_info?.screening_name || 'VIRTUAL SCREENING'}
+                {decodeHtml(movie.virtual_screening_info?.screening_name || 'VIRTUAL SCREENING')}
               </Text>
             )}
 
@@ -778,41 +810,51 @@ const MovieDetailTvOS = () => {
             {movie?.links?.trailer_hosted && (
               <View style={styles.watchButtonRow}>
                 <ActionButton
+                  ref={trailerRefCallback}
                   label="TRAILER"
                   color="#E50914"
                   onPress={() => setTrailerVisible(true)}
-                  hasTVPreferredFocus={true}
+                  hasTVPreferredFocus={!preferWatchFocus}
                   testID="action-btn-trailer"
                 />
               </View>
             )}
 
-            {/* Watch buttons row (streaming + VOD + plex) with nav chevrons */}
+            {/* Watch buttons row (streaming + VOD + plex) */}
             {hasWatchOptions && (() => {
               const nonVsLinks = purchaseLinks.slice(0, 2).filter(l => !isVirtualScreeningPlatform(l.service, l.url));
               const totalButtons = (streamingLinks.length > 0 ? 1 : 0) + nonVsLinks.length + (plexLinks.length > 0 ? 1 : 0);
               if (totalButtons === 0) return null;
+
+              // Compute sequential button indices for edge navigation tracking
+              let watchIdx = 0;
+
               return (
               <View style={styles.watchButtonRow}>
                 {/* STREAM button */}
                 {streamingLinks.length > 0 && (() => {
+                  const idx = watchIdx++;
                   const svcKey = normalizeService(streamingLinks[0].service);
                   return (
                   <ActionButton
+                    buttonIndex={idx}
+                    isWatchButton={true}
+                    nextFocusUp={trailerHandle}
                     label={getStreamDisplayName(streamingLinks[0].service)}
                     color={getServiceColor(streamingLinks[0].service)}
                     icon={getServiceLogo(streamingLinks[0].service)}
                     iconTintColor="#ffffff"
                     borderColor={NEEDS_BORDER.includes(svcKey) ? '#444' : undefined}
                     onPress={() => handleWatchPress(streamingLinks[0])}
-                    hasTVPreferredFocus={!movie?.links?.trailer_hosted}
+                    hasTVPreferredFocus={preferWatchFocus || !movie?.links?.trailer_hosted}
                     testID="action-btn-stream"
                   />
                   );
                 })()}
 
                 {/* VOD buttons (non-virtual-screening only) */}
-                {nonVsLinks.map((link, idx) => {
+                {nonVsLinks.map((link, i) => {
+                  const idx = watchIdx++;
                   const label = movie?._is_preorder ? 'PRE-ORDER'
                     : getVodDisplayName(link.service);
                   const buttonColor = movie?._is_preorder ? '#7c3aed'
@@ -821,16 +863,19 @@ const MovieDetailTvOS = () => {
                   const vodBorder = (!movie?._is_preorder && NEEDS_BORDER.includes(vodKey)) ? '#444'
                     : undefined;
                   return (
-                    <View key={`purchase-${idx}`}>
+                    <View key={`purchase-${i}`}>
                       <ActionButton
+                        buttonIndex={idx}
+                        isWatchButton={true}
+                        nextFocusUp={trailerHandle}
                         label={label}
                         color={buttonColor}
                         icon={!movie?._is_preorder ? getServiceLogo(link.service) : null}
                         iconTintColor="#ffffff"
                         borderColor={vodBorder}
                         onPress={() => handleWatchPress(link)}
-                        hasTVPreferredFocus={!movie?.links?.trailer_hosted && streamingLinks.length === 0 && idx === 0}
-                        testID={`action-btn-purchase-${idx}`}
+                        hasTVPreferredFocus={(preferWatchFocus || !movie?.links?.trailer_hosted) && streamingLinks.length === 0 && i === 0}
+                        testID={`action-btn-purchase-${i}`}
                       />
                       {movie?._is_preorder && link.sublabel && (
                         <Text style={styles.preOrderDateLabel}>{link.sublabel}</Text>
@@ -840,8 +885,13 @@ const MovieDetailTvOS = () => {
                 })}
 
                 {/* PLEX button */}
-                {plexLinks.length > 0 && (
+                {plexLinks.length > 0 && (() => {
+                  const idx = watchIdx++;
+                  return (
                   <ActionButton
+                    buttonIndex={idx}
+                    isWatchButton={true}
+                    nextFocusUp={trailerHandle}
                     label="PLEX"
                     color="#E5A00D"
                     icon={getServiceLogo('plex')}
@@ -849,7 +899,8 @@ const MovieDetailTvOS = () => {
                     onPress={() => handleWatchPress(plexLinks[0])}
                     testID="action-btn-plex"
                   />
-                )}
+                  );
+                })()}
 
               </View>
               );

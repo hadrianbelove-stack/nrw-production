@@ -16,6 +16,75 @@ import {
 import { Colors, Typography, Spacing, Dimensions } from '../constants/colors';
 import { PARALLAX_PROPERTIES, FOCUS_STYLES } from '../utils/focusManager.tvos';
 
+// Decode HTML entities (e.g. &#x27; → ')
+const decodeHtml = (str) => str.replace(/&#x27;/g, "'").replace(/&amp;/g, '&').replace(/&quot;/g, '"');
+
+// 3-letter Olympic country codes (UK stays UK)
+const COUNTRY_SHORT_NAMES = {
+  'united states of america': 'USA', 'united states': 'USA', 'usa': 'USA', 'us': 'USA',
+  'united kingdom': 'UK', 'great britain': 'UK', 'gb': 'UK',
+  'india': 'IND', 'in': 'IND',
+  'canada': 'CAN',
+  'france': 'FRA', 'fr': 'FRA',
+  'mexico': 'MEX', 'mx': 'MEX',
+  'australia': 'AUS',
+  'germany': 'GER',
+  'italy': 'ITA', 'it': 'ITA',
+  'japan': 'JPN', 'jp': 'JPN',
+  'south korea': 'KOR', 'kr': 'KOR',
+  'belgium': 'BEL',
+  'spain': 'ESP', 'es': 'ESP',
+  'indonesia': 'INA', 'id': 'INA',
+  'brazil': 'BRA',
+  'argentina': 'ARG',
+  'thailand': 'THA', 'th': 'THA',
+  'new zealand': 'NZL',
+  'austria': 'AUT',
+  'poland': 'POL', 'pl': 'POL',
+  'china': 'CHN',
+  'taiwan': 'TPE', 'tw': 'TPE',
+  'denmark': 'DEN', 'dk': 'DEN',
+  'netherlands': 'NED',
+  'ireland': 'IRL',
+  'turkey': 'TUR', 'tr': 'TUR',
+  'nigeria': 'NGR',
+  'philippines': 'PHI',
+  'finland': 'FIN',
+  'colombia': 'COL',
+  'sweden': 'SWE',
+  'russia': 'RUS',
+  'hong kong': 'HKG',
+  'ukraine': 'UKR',
+  'singapore': 'SGP',
+  'armenia': 'ARM',
+  'greece': 'GRE',
+  'palestinian territory': 'PLE',
+  'israel': 'ISR',
+  'georgia': 'GEO',
+  'united arab emirates': 'UAE',
+  'saudi arabia': 'KSA',
+  'czech republic': 'CZE',
+  'cuba': 'CUB',
+  'switzerland': 'SUI',
+  'south africa': 'RSA',
+  'venezuela': 'VEN',
+  'croatia': 'CRO',
+  'guatemala': 'GUA',
+  'kenya': 'KEN',
+  'iceland': 'ISL',
+  'bulgaria': 'BUL',
+  'bosnia and herzegovina': 'BIH',
+  'unknown': '—',
+};
+
+const formatCountry = (country) => {
+  if (!country) return null;
+  const shortened = COUNTRY_SHORT_NAMES[country.toLowerCase()];
+  if (shortened) return shortened;
+  if (country.length <= 3) return country.toUpperCase();
+  return country;
+};
+
 const MovieCard = forwardRef(({
   movie,
   onSelect,
@@ -152,71 +221,6 @@ const MovieCard = forwardRef(({
   const director = movie.crew?.director || movie.director;
 
   // Get country - can be country (string) or countries (array)
-  // 3-letter Olympic codes (UK stays UK)
-  const COUNTRY_SHORT_NAMES = {
-    'united states of america': 'USA', 'united states': 'USA', 'usa': 'USA', 'us': 'USA',
-    'united kingdom': 'UK', 'great britain': 'UK', 'gb': 'UK',
-    'india': 'IND', 'in': 'IND',
-    'canada': 'CAN',
-    'france': 'FRA', 'fr': 'FRA',
-    'mexico': 'MEX', 'mx': 'MEX',
-    'australia': 'AUS',
-    'germany': 'GER',
-    'italy': 'ITA', 'it': 'ITA',
-    'japan': 'JPN', 'jp': 'JPN',
-    'south korea': 'KOR', 'kr': 'KOR',
-    'belgium': 'BEL',
-    'spain': 'ESP', 'es': 'ESP',
-    'indonesia': 'INA', 'id': 'INA',
-    'brazil': 'BRA',
-    'argentina': 'ARG',
-    'thailand': 'THA', 'th': 'THA',
-    'new zealand': 'NZL',
-    'austria': 'AUT',
-    'poland': 'POL', 'pl': 'POL',
-    'china': 'CHN',
-    'taiwan': 'TPE', 'tw': 'TPE',
-    'denmark': 'DEN', 'dk': 'DEN',
-    'netherlands': 'NED',
-    'ireland': 'IRL',
-    'turkey': 'TUR', 'tr': 'TUR',
-    'nigeria': 'NGR',
-    'philippines': 'PHI',
-    'finland': 'FIN',
-    'colombia': 'COL',
-    'sweden': 'SWE',
-    'russia': 'RUS',
-    'hong kong': 'HKG',
-    'ukraine': 'UKR',
-    'singapore': 'SGP',
-    'armenia': 'ARM',
-    'greece': 'GRE',
-    'palestinian territory': 'PLE',
-    'israel': 'ISR',
-    'georgia': 'GEO',
-    'united arab emirates': 'UAE',
-    'saudi arabia': 'KSA',
-    'czech republic': 'CZE',
-    'cuba': 'CUB',
-    'switzerland': 'SUI',
-    'south africa': 'RSA',
-    'venezuela': 'VEN',
-    'croatia': 'CRO',
-    'guatemala': 'GUA',
-    'kenya': 'KEN',
-    'iceland': 'ISL',
-    'bulgaria': 'BUL',
-    'bosnia and herzegovina': 'BIH',
-    'unknown': '—',
-  };
-  const formatCountry = (country) => {
-    if (!country) return null;
-    const shortened = COUNTRY_SHORT_NAMES[country.toLowerCase()];
-    if (shortened) return shortened;
-    if (country.length <= 3) return country.toUpperCase();
-    return country;
-  };
-
   const getCountryText = () => {
     if (movie.country) {
       return formatCountry(movie.country);
@@ -321,7 +325,7 @@ const MovieCard = forwardRef(({
           {movie.categories?.is_virtual_screening && !movie.featured && movie.virtual_screening_info?.screening_name && (
             <View style={styles.screeningRibbon}>
               <Text style={styles.screeningRibbonText} numberOfLines={2}>
-                {movie.virtual_screening_info.screening_name}
+                {decodeHtml(movie.virtual_screening_info.screening_name)}
               </Text>
             </View>
           )}

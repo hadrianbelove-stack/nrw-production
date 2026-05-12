@@ -7,6 +7,7 @@ import React, { useState, useCallback, useRef, useEffect, useMemo, forwardRef } 
 import {
   View,
   Text,
+  TextInput,
   FlatList,
   StyleSheet,
   ActivityIndicator,
@@ -42,6 +43,7 @@ const FILTERS = [
   { id: 'restorations', label: 'Reissues' },
   { id: 'documentary', label: 'Docs' },
   { id: 'virtual-screenings', label: 'V. Screenings' },
+  { id: 'exploitation', label: 'Exploitation' },
 ];
 
 // Filter Button Component - forwardRef to allow focus navigation from grid
@@ -277,11 +279,14 @@ const HomeScreenTvOS = () => {
     error,
     refreshMovies,
     latestPlaylistUrl,
+    searchQuery,
+    updateSearchQuery,
   } = useHomeScreen();
 
   // Local state - multi-select filters (Set of active filter IDs)
   const [activeFilters, setActiveFilters] = useState(new Set());
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [searchFocused, setSearchFocused] = useState(false);
 
   // Fullscreen poster modal state
   const [fullscreenVisible, setFullscreenVisible] = useState(false);
@@ -377,6 +382,9 @@ const HomeScreenTvOS = () => {
             break;
           case 'pre-orders':
             if (movie._is_preorder === true) return true;
+            break;
+          case 'exploitation':
+            if (movie.categories?.is_exploitation === true) return true;
             break;
         }
       }
@@ -659,6 +667,26 @@ const HomeScreenTvOS = () => {
               />
             ))}
           </View>
+        <View style={[styles.searchContainer, searchFocused && styles.searchContainerFocused]}>
+          <Text style={styles.searchIcon}>⌕</Text>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search..."
+            placeholderTextColor="rgba(255,255,255,0.4)"
+            value={searchQuery}
+            onChangeText={updateSearchQuery}
+            onFocus={() => setSearchFocused(true)}
+            onBlur={() => setSearchFocused(false)}
+            autoCapitalize="none"
+            autoCorrect={false}
+            returnKeyType="search"
+          />
+          {searchQuery.length > 0 && (
+            <TouchableOpacity style={styles.searchClear} onPress={() => updateSearchQuery('')}>
+              <Text style={styles.searchClearText}>✕</Text>
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
 
       {/* Vertical scrolling grid - the wall */}
@@ -720,9 +748,38 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 12,
   },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    paddingHorizontal: 12,
+    width: 250,
+    height: 36,
+  },
+  searchContainerFocused: {
+    borderColor: Colors.primary,
+    borderWidth: 2,
+  },
   searchIcon: {
     color: 'rgba(255, 255, 255, 0.6)',
-    fontSize: 24,
+    fontSize: 18,
+    marginRight: 8,
+  },
+  searchInput: {
+    flex: 1,
+    color: Colors.textPrimary,
+    fontSize: 16,
+    padding: 0,
+  },
+  searchClear: {
+    paddingLeft: 8,
+  },
+  searchClearText: {
+    color: 'rgba(255, 255, 255, 0.6)',
+    fontSize: 16,
   },
   filterButton: {
     paddingHorizontal: 16,
