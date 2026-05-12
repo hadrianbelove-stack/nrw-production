@@ -24,7 +24,6 @@ const NRWMobile = {
     // Shared config
     resolveService: NRWConfig.resolveService,
     resolveVODService: NRWConfig.resolveVODService,
-    abbreviateCountry: NRWConfig.abbreviateCountry,
 
     // Wide logos that need CSS invert on dark backgrounds
     INVERT_KEYS: new Set(['apple', 'mubi', 'criterion', 'docuramafilms', 'fandor']),

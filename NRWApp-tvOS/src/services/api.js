@@ -147,8 +147,8 @@ export function filterMovies(movies, filters = []) {
   // Exclude reverted movies (failed JustWatch verification, no watch links)
   movies = movies.filter(m => m._enrichment_status !== 'reverted');
 
-  // Convert string to array for backwards compatibility
-  const filterArray = Array.isArray(filters) ? filters : [filters];
+  // Convert string to array for backwards compatibility (null = no filter = show all)
+  const filterArray = Array.isArray(filters) ? filters : filters ? [filters] : [];
 
   // If no filters, show all non-hidden
   if (filterArray.length === 0) {

@@ -262,8 +262,8 @@ const HomeScreenTvOS = () => {
   const flatListRef = useRef(null);
   const [headerNodeHandle, setHeaderNodeHandle] = useState(null);
 
-  // Callback ref for "All" filter button - sets node handle immediately when ref is populated
-  const setAllFilterRef = useCallback((ref) => {
+  // Callback ref for first filter button - sets node handle for focus navigation
+  const setFirstFilterRef = useCallback((ref) => {
     if (ref) {
       const handle = findNodeHandle(ref);
       setHeaderNodeHandle(handle);
@@ -652,7 +652,7 @@ const HomeScreenTvOS = () => {
             {FILTERS.map((filter, index) => (
               <FilterButton
                 key={filter.id}
-                ref={index === 0 ? setAllFilterRef : undefined}  // First button gets callback ref
+                ref={index === 0 ? setFirstFilterRef : undefined}  // First button gets callback ref
                 filter={filter}
                 isActive={activeFilters.has(filter.id)}
                 onPress={() => handleFilterChange(filter.id)}
