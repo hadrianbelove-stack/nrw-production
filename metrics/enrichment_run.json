@@ -1,10 +1,29 @@
 {
-  "timestamp": "2026-05-11T13:20:01.022175",
-  "movies_requested": 12,
-  "movies_enriched": 12,
-  "movies_deferred": 0,
-  "deferred_details": [],
-  "enrichment_duration_seconds": 442.62,
+  "timestamp": "2026-05-12T12:47:20.669755",
+  "movies_requested": 13,
+  "movies_enriched": 11,
+  "movies_deferred": 2,
+  "deferred_details": [
+    {
+      "title": "Cotton Candy Bubble Gum",
+      "reason": "jw_revert:justwatch_no_valid_offers",
+      "digital_date": "2026-05-12",
+      "discovered_at": "2026-05-02T16:53:52.061408",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 1,
+      "tmdb_platforms": []
+    },
+    {
+      "title": "They Wait in Shadows",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-05-12",
+      "discovered_at": "2026-05-02T16:53:52.506097",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 1,
+      "tmdb_platforms": []
+    }
+  ],
+  "enrichment_duration_seconds": 633.98,
   "error_details": [],
   "total_errors": 0
 }
