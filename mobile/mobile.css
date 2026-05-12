@@ -176,26 +176,52 @@ body {
 /* ===== VIEW 1: GRID ===== */
 .wall-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 3px;
-  padding: 3px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px 8px;
+  padding: 8px;
 }
 .grid-item {
-  aspect-ratio: 2/3;
-  border-radius: 3px;
-  overflow: hidden;
   cursor: pointer;
   position: relative;
   -webkit-tap-highlight-color: transparent;
   transition: transform 0.15s ease;
 }
 .grid-item:active { transform: scale(0.96); }
-.grid-item img {
+.grid-item-poster {
+  aspect-ratio: 2/3;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+.grid-item-poster img {
   width: 100%; height: 100%;
   object-fit: cover;
   display: block;
 }
-.grid-item .staff-pick-badge {
+.grid-item-info {
+  padding: 4px 2px 0;
+}
+.grid-item-title {
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1.25;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.grid-item-meta {
+  font-size: 0.5rem;
+  color: var(--accent);
+  line-height: 1.3;
+  margin-top: 1px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.grid-item-poster .staff-pick-badge {
   position: absolute;
   top: 3px; right: 3px;
   background: var(--crimson);
@@ -208,11 +234,11 @@ body {
   text-transform: uppercase;
   z-index: 2;
 }
-.grid-item.screening-movie {
+.grid-item.screening-movie .grid-item-poster {
   border: 2px solid var(--screening-gold);
   border-radius: 5px;
 }
-.grid-item .screening-banner {
+.grid-item-poster .screening-banner {
   position: absolute;
   top: 0; left: 0; right: 0;
   background: rgba(255, 215, 0, 0.92);
@@ -289,7 +315,7 @@ body {
 .date-chevrons span:nth-child(5) { opacity: 0.15; }
 
 /* Pre-order badge */
-.preorder-badge {
+.grid-item-poster .preorder-badge {
   position: absolute;
   bottom: 3px; left: 3px;
   background: #7c3aed;

@@ -430,38 +430,65 @@ const NRWMobile = {
         const item = document.createElement('div');
         item.className = 'grid-item' + (isScreening ? ' screening-movie' : '');
 
+        // Poster container
+        const posterWrap = document.createElement('div');
+        posterWrap.className = 'grid-item-poster';
+
         if (movie.poster) {
             const img = document.createElement('img');
             img.src = movie.poster;
             img.alt = movie.title || '';
             img.loading = 'lazy';
             img.onerror = function() { this.style.display = 'none'; };
-            item.appendChild(img);
+            posterWrap.appendChild(img);
         } else {
             const fallback = document.createElement('div');
             fallback.style.cssText = 'width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#1a1a2e;font-size:0.45rem;color:#888;text-align:center;padding:4px';
             fallback.textContent = movie.display_title || movie.title || '';
-            item.appendChild(fallback);
+            posterWrap.appendChild(fallback);
         }
 
         if (isScreening) {
             const banner = document.createElement('span');
             banner.className = 'screening-banner';
             banner.textContent = 'Virtual Screening';
-            item.appendChild(banner);
+            posterWrap.appendChild(banner);
         }
         if (isStaffPick) {
             const badge = document.createElement('span');
             badge.className = 'staff-pick-badge';
             badge.textContent = 'Staff Pick';
-            item.appendChild(badge);
+            posterWrap.appendChild(badge);
         }
         if (movie._is_preorder) {
             const badge = document.createElement('span');
             badge.className = 'preorder-badge';
             badge.textContent = 'Pre-Order';
-            item.appendChild(badge);
+            posterWrap.appendChild(badge);
         }
+
+        item.appendChild(posterWrap);
+
+        // Title + meta info
+        const info = document.createElement('div');
+        info.className = 'grid-item-info';
+
+        const title = document.createElement('div');
+        title.className = 'grid-item-title';
+        title.textContent = movie.display_title || movie.title || '';
+        info.appendChild(title);
+
+        const director = movie.crew?.director || movie.director || '';
+        const country = NRWConfig.abbreviateCountry(movie.country) || '';
+        const metaParts = [director, country].filter(Boolean);
+        if (metaParts.length) {
+            const meta = document.createElement('div');
+            meta.className = 'grid-item-meta';
+            meta.textContent = metaParts.join(' \u00b7 ');
+            info.appendChild(meta);
+        }
+
+        item.appendChild(info);
 
         item.addEventListener('click', () => this.selectMovie(index));
         return item;
