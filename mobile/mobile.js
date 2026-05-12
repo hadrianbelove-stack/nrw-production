@@ -65,6 +65,10 @@ const NRWMobile = {
         'pre-orders': {
             title: 'Pre-Orders',
             text: 'Coming soon. These movies have confirmed digital release dates and are available to pre-order now.'
+        },
+        'exploitation': {
+            title: 'Exploitation',
+            text: 'The genre stuff. Horror, thrillers, action \u2014 the movies that know exactly what they are and lean all the way in.'
         }
     },
 
@@ -282,6 +286,9 @@ const NRWMobile = {
                             break;
                         case 'pre-orders':
                             if (movie._is_preorder === true) matchesAny = true;
+                            break;
+                        case 'exploitation':
+                            if (movie.categories?.is_exploitation) matchesAny = true;
                             break;
                     }
                     if (matchesAny) break;
