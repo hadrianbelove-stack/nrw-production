@@ -55,11 +55,7 @@ fun FilterChips(
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         items(FilterCategory.values().toList()) { category ->
-            val isSelected = if (category == FilterCategory.ALL) {
-                activeFilters.isEmpty()
-            } else {
-                activeFilters.contains(category)
-            }
+            val isSelected = activeFilters.contains(category)
 
             FilterPill(
                 text = category.displayName,

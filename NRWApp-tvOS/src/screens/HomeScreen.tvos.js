@@ -33,17 +33,15 @@ import { setSharedMovieList } from './sharedMovieList';
 
 // Filter options - matches web categories
 const FILTERS = [
-  { id: 'all', label: 'All' },
   { id: 'pre-orders', label: 'Pre-Orders' },
   { id: 'studio', label: 'Studio' },
   { id: 'indie', label: 'Indie' },
-  { id: 'staff-picks', label: 'Staff Picks' },
+  { id: 'staff-picks', label: 'NRW Picks' },
   { id: 'foreign', label: 'Foreign' },
-  { id: 'series', label: 'Limited Series' },
-  { id: 'documentary', label: 'Documentary' },
-  { id: 'virtual-screenings', label: 'Virtual Screenings' },
-  { id: 'restorations', label: 'Restorations' },
-  { id: 'plex', label: 'Plex' },
+  { id: 'series', label: 'Miniseries' },
+  { id: 'restorations', label: 'Reissues' },
+  { id: 'documentary', label: 'Docs' },
+  { id: 'virtual-screenings', label: 'V. Screenings' },
 ];
 
 // Filter Button Component - forwardRef to allow focus navigation from grid
@@ -103,8 +101,13 @@ const FilterButton = forwardRef(({ filter, isActive, onPress, onFocus }, ref) =>
   );
 });
 
-// Date Card Component - non-focusable visual divider
+// Date Card Component - non-focusable visual divider (mobile design: teal bar + chevrons)
 const DateCard = ({ dateParts }) => {
+  const isPreOrder = dateParts.dayName === 'PRE-' || dateParts.dayName === 'PRE-ORDER';
+  const barColor = isPreOrder ? '#7c3aed' : Colors.primary;
+  const accentColor = isPreOrder ? '#7c3aed' : Colors.primary;
+  const chevronOpacities = [0.9, 0.7, 0.5, 0.3, 0.15];
+
   return (
     <View
       accessible={false}
@@ -112,10 +115,29 @@ const DateCard = ({ dateParts }) => {
       isTVSelectable={false}
     >
       <View style={styles.dateCard}>
-        <View style={styles.dateCardInner}>
-          <Text style={styles.dateDayName}>{dateParts.dayName}</Text>
-          <Text style={styles.dateNumber}>{dateParts.day}</Text>
-          <Text style={styles.dateMonth}>{dateParts.month}</Text>
+        {/* Top bar */}
+        <View style={[styles.dateBar, { backgroundColor: barColor }]}>
+          <Text style={styles.dateBarText}>
+            {isPreOrder ? 'PRE-ORDER' : dateParts.dayName}
+          </Text>
+        </View>
+
+        {/* Body */}
+        <View style={styles.dateBody}>
+          <Text style={[styles.dateNumber, { color: isPreOrder ? accentColor : '#fff' }]}>
+            {isPreOrder ? 'SOON' : dateParts.day}
+          </Text>
+          {!isPreOrder && dateParts.month ? (
+            <Text style={styles.dateMonth}>{dateParts.month}</Text>
+          ) : null}
+          {/* Cascading chevrons */}
+          <View style={styles.dateChevrons}>
+            {chevronOpacities.map((opacity, i) => (
+              <Text key={i} style={[styles.dateChevron, { color: accentColor, opacity }]}>
+                {'\u203A'}
+              </Text>
+            ))}
+          </View>
         </View>
       </View>
     </View>
@@ -303,16 +325,11 @@ const HomeScreenTvOS = () => {
     setActiveFilters(prev => {
       const newFilters = new Set(prev);
 
-      if (filterId === 'all') {
-        // "All" clears all other filters
-        newFilters.clear();
+      // Toggle this filter on/off
+      if (newFilters.has(filterId)) {
+        newFilters.delete(filterId);
       } else {
-        // Toggle this filter on/off
-        if (newFilters.has(filterId)) {
-          newFilters.delete(filterId);
-        } else {
-          newFilters.add(filterId);
-        }
+        newFilters.add(filterId);
       }
 
       trackFilterChange(filterId, Array.from(prev).join(','));
@@ -348,9 +365,6 @@ const HomeScreenTvOS = () => {
           }
           case 'series':
             if (movie.content_type === 'limited_series') return true;
-            break;
-          case 'plex':
-            if (movie.plex && movie.plex.deep_link) return true;
             break;
           case 'documentary':
             if (movie.categories?.is_documentary === true) return true;
@@ -638,9 +652,9 @@ const HomeScreenTvOS = () => {
             {FILTERS.map((filter, index) => (
               <FilterButton
                 key={filter.id}
-                ref={index === 0 ? setAllFilterRef : undefined}  // First button ("All") gets callback ref
+                ref={index === 0 ? setAllFilterRef : undefined}  // First button gets callback ref
                 filter={filter}
-                isActive={filter.id === 'all' ? activeFilters.size === 0 : activeFilters.has(filter.id)}
+                isActive={activeFilters.has(filter.id)}
                 onPress={() => handleFilterChange(filter.id)}
               />
             ))}
@@ -804,39 +818,43 @@ const styles = StyleSheet.create({
     width: CARD_WIDTH,
     height: CARD_HEIGHT,
     borderRadius: 12,
-    borderWidth: 3,
-    borderColor: Colors.primary,
-    backgroundColor: Colors.background,
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: '#0a0a0a',
     overflow: 'hidden',
   },
-  dateCardFocused: {
-    borderColor: '#00ffcc',
-    borderWidth: 4,
-    backgroundColor: 'rgba(0, 212, 170, 0.1)',
+  dateBar: {
+    paddingVertical: 6,
+    paddingHorizontal: 10,
   },
-  dateCardInner: {
-    alignItems: 'center',
+  dateBarText: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: '#000',
+    letterSpacing: 0.5,
   },
-  dateDayName: {
-    color: '#999999',
-    fontSize: 14,
-    letterSpacing: 2,
-    marginBottom: 4,
+  dateBody: {
+    flex: 1,
+    paddingLeft: 10,
+    justifyContent: 'center',
   },
   dateNumber: {
-    color: Colors.primary,
     fontSize: 64,
-    fontWeight: 'bold',
-    lineHeight: 72,
+    fontWeight: '800',
+    lineHeight: 64,
   },
   dateMonth: {
-    color: Colors.primary,
-    fontSize: 24,
-    fontWeight: 'bold',
-    letterSpacing: 4,
+    fontSize: 14,
+    color: '#888',
+    letterSpacing: 2,
+    marginTop: 4,
+  },
+  dateChevrons: {
+    flexDirection: 'row',
     marginTop: 6,
+  },
+  dateChevron: {
+    fontSize: 40,
+    fontWeight: '800',
+    lineHeight: 40,
   },
   cardWrapper: {
     marginRight: CARD_GAP,

@@ -147,7 +147,6 @@ class MovieRepository(private val context: Context) {
      */
     fun filterMovies(movies: List<Movie>, filter: FilterCategory): List<Movie> {
         return when (filter) {
-            FilterCategory.ALL -> movies.filter { it.hidden != true && it.enrichmentStatus != "reverted" }
             FilterCategory.STUDIO -> movies.filter {
                 it.hidden != true && it.enrichmentStatus != "reverted" && (it.categories?.isStudio == true || it.categories?.tier == "studio")
             }
@@ -189,7 +188,6 @@ class MovieRepository(private val context: Context) {
             if (movie.hidden == true || movie.enrichmentStatus == "reverted") return@filter false
             activeFilters.any { filter ->
                 when (filter) {
-                    FilterCategory.ALL -> true
                     FilterCategory.STUDIO -> movie.categories?.isStudio == true || movie.categories?.tier == "studio"
                     FilterCategory.INDIE -> movie.categories?.isIndie == true || movie.categories?.tier == "indie"
                     FilterCategory.STAFF_PICKS -> movie.isStaffPick()

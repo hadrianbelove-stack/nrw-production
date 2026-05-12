@@ -3,7 +3,7 @@
  * Movie grid with filters and search
  */
 
-import React, {useState, useEffect, useCallback} from 'react';
+import React, {useState, useEffect, useCallback, useMemo} from 'react';
 import {
   View,
   Text,
@@ -17,6 +17,7 @@ import {
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 import MovieCard from '../components/MovieCard';
+import DateDividerCard from '../components/DateDividerCard';
 import FilterBar from '../components/FilterBar';
 import {Colors, Typography, Spacing, Dimensions} from '../constants/colors';
 import {
@@ -61,6 +62,30 @@ export default function HomeScreen({navigation}) {
     setDisplayedMovies(result);
   }, [movies, activeFilters, searchQuery]);
 
+  // Build grid items with date dividers inserted
+  const gridItems = useMemo(() => {
+    if (searchQuery.trim()) return displayedMovies; // no dividers during search
+    const items = [];
+    const today = new Date().toISOString().split('T')[0];
+    let lastDate = null;
+    let addedPreOrder = false;
+
+    for (const movie of displayedMovies) {
+      const date = movie.digital_date || movie.premiere_date || '';
+      const isPreOrder = movie._is_preorder || date > today;
+
+      if (isPreOrder && !addedPreOrder) {
+        items.push({_type: 'date-divider', _key: 'div-preorder', dateString: 'pre-order'});
+        addedPreOrder = true;
+      } else if (!isPreOrder && date && date !== lastDate) {
+        items.push({_type: 'date-divider', _key: 'div-' + date, dateString: date});
+        lastDate = date;
+      }
+      items.push(movie);
+    }
+    return items;
+  }, [displayedMovies, searchQuery]);
+
   const loadMovies = async () => {
     try {
       setLoading(true);
@@ -93,14 +118,10 @@ export default function HomeScreen({navigation}) {
   const handleFilterChange = useCallback(filterId => {
     setActiveFilters(prev => {
       const newFilters = new Set(prev);
-      if (filterId === 'all') {
-        newFilters.clear();
+      if (newFilters.has(filterId)) {
+        newFilters.delete(filterId);
       } else {
-        if (newFilters.has(filterId)) {
-          newFilters.delete(filterId);
-        } else {
-          newFilters.add(filterId);
-        }
+        newFilters.add(filterId);
       }
       trackFilterChange(filterId);
       return newFilters;
@@ -127,15 +148,24 @@ export default function HomeScreen({navigation}) {
     [navigation, displayedMovies],
   );
 
-  const renderMovieCard = ({item}) => (
-    <View style={styles.cardWrapper}>
-      <MovieCard
-        movie={item}
-        onPress={handleMoviePress}
-        isFeatured={item.featured || item.categories?.is_staff_pick}
-      />
-    </View>
-  );
+  const renderGridItem = ({item}) => {
+    if (item._type === 'date-divider') {
+      return (
+        <View style={styles.cardWrapper}>
+          <DateDividerCard dateString={item.dateString} />
+        </View>
+      );
+    }
+    return (
+      <View style={styles.cardWrapper}>
+        <MovieCard
+          movie={item}
+          onPress={handleMoviePress}
+          isFeatured={item.featured || item.categories?.is_staff_pick}
+        />
+      </View>
+    );
+  };
 
   const renderHeader = () => (
     <View style={styles.header}>
@@ -206,9 +236,9 @@ export default function HomeScreen({navigation}) {
       <FilterBar activeFilters={activeFilters} onFilterChange={handleFilterChange} />
 
       <FlatList
-        data={displayedMovies}
-        renderItem={renderMovieCard}
-        keyExtractor={item => String(item.id)}
+        data={gridItems}
+        renderItem={renderGridItem}
+        keyExtractor={item => item._key || String(item.id)}
         numColumns={numColumns}
         contentContainerStyle={styles.listContent}
         columnWrapperStyle={styles.row}

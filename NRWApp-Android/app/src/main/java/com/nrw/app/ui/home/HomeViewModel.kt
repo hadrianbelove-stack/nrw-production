@@ -70,14 +70,10 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
      */
     fun toggleFilter(filter: FilterCategory) {
         val current = _uiState.value.activeFilters
-        val newFilters = if (filter == FilterCategory.ALL) {
-            emptySet()
+        val newFilters = if (current.contains(filter)) {
+            current - filter
         } else {
-            if (current.contains(filter)) {
-                current - filter
-            } else {
-                current + filter
-            }
+            current + filter
         }
         _uiState.value = _uiState.value.copy(activeFilters = newFilters)
         applyFilters()

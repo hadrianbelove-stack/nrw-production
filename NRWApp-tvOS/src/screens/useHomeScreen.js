@@ -32,7 +32,7 @@ export function useHomeScreen() {
   const [latestPlaylistUrl, setLatestPlaylistUrl] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeFilter, setActiveFilter] = useState('all');
+  const [activeFilter, setActiveFilter] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [lastFocusedPosition, setLastFocusedPosition] = useState(null);
 
@@ -144,7 +144,7 @@ export function useHomeScreen() {
     const shelvesArray = [];
 
     // Add featured shelf if showing all movies
-    if (activeFilter === 'all' && featuredMovies.length > 0) {
+    if (!activeFilter && featuredMovies.length > 0) {
       shelvesArray.push({
         id: 'featured',
         title: "What's New This Week",

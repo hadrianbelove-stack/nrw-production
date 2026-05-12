@@ -369,6 +369,30 @@ header h1 {
     transform: scale(1.05);
 }
 
+/* ---- Grid navigation selection glow (matches tvOS focus) ---- */
+.movie-container.grid-selected {
+    z-index: 2;
+}
+
+.movie-container.grid-selected .movie-card {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 4px;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0, 212, 170, 0.5);
+    transform: scale(1.1);
+    transition: transform 150ms ease;
+}
+
+.movie-container.staff-pick-movie.grid-selected .movie-card {
+    box-shadow: 0 0 20px rgba(0, 212, 170, 0.5),
+                0 0 20px var(--staff-pick-glow);
+}
+
+.movie-container.screening-movie.grid-selected .movie-card {
+    box-shadow: 0 0 20px rgba(0, 212, 170, 0.5),
+                0 0 20px var(--screening-glow);
+}
+
 .card-inner {
     width: 100%;
     height: 100%;
@@ -555,7 +579,7 @@ header h1 {
 .movie-info .movie-title {
     color: #fff;
     font-weight: bold;
-    font-size: 1rem;
+    font-size: 0.9rem;
     margin-bottom: 0.3rem;
     line-height: 1.3;
 }

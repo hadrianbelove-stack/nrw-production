@@ -123,7 +123,7 @@ export async function saveUserPreferences(preferences) {
  */
 export async function getUserPreferences() {
   return await getCachedData(CACHE_KEYS.USER_PREFERENCES) || {
-    filter: 'all',
+    filter: null,
     sortOrder: 'date',
   };
 }

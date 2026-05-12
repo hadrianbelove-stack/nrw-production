@@ -8,15 +8,15 @@ import {View, Text, StyleSheet, ScrollView, TouchableOpacity} from 'react-native
 import {Colors, Typography, Spacing} from '../constants/colors';
 
 const FILTERS = [
-  {id: 'all', label: 'All'},
   {id: 'pre-orders', label: 'Pre-Orders'},
   {id: 'studio', label: 'Studio'},
-  {id: 'staff-picks', label: 'Staff Picks'},
   {id: 'indie', label: 'Indie'},
+  {id: 'staff-picks', label: 'NRW Picks'},
   {id: 'foreign', label: 'Foreign'},
-  {id: 'restorations', label: 'Restorations & Reissues'},
-  {id: 'documentary', label: 'Documentary'},
-  {id: 'virtual-screenings', label: 'Virtual Screenings'},
+  {id: 'series', label: 'Miniseries'},
+  {id: 'restorations', label: 'Reissues'},
+  {id: 'documentary', label: 'Docs'},
+  {id: 'virtual-screenings', label: 'V. Screenings'},
 ];
 
 export default function FilterBar({activeFilters, onFilterChange}) {
@@ -30,7 +30,7 @@ export default function FilterBar({activeFilters, onFilterChange}) {
           <FilterButton
             key={filter.id}
             label={filter.label}
-            isSelected={filter.id === 'all' ? activeFilters.size === 0 : activeFilters.has(filter.id)}
+            isSelected={activeFilters.has(filter.id)}
             onPress={() => onFilterChange(filter.id)}
           />
         ))}

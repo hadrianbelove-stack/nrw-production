@@ -123,15 +123,15 @@ function isCacheExpired(timestamp) {
 /**
  * Filter movies by category
  */
-export function filterMovies(movies, filter = 'all') {
+export function filterMovies(movies, filter = null) {
   if (!movies || !Array.isArray(movies)) return [];
 
   // Exclude reverted movies (failed JustWatch verification, no watch links)
   movies = movies.filter(m => m._enrichment_status !== 'reverted');
 
+  if (!filter) return movies.filter(movie => !movie.hidden);
+
   switch (filter) {
-    case 'all':
-      return movies.filter(movie => !movie.hidden);
     case 'featured':
     case 'staff-picks':
       return movies.filter(

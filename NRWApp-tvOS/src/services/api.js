@@ -142,7 +142,7 @@ export function getMoviesByReleaseDate(movies) {
  * @param {Array|string} filters - Array of filter IDs or single filter string (for backwards compatibility)
  * @returns {Array} Filtered movies that match ANY selected filter
  */
-export function filterMovies(movies, filters = 'all') {
+export function filterMovies(movies, filters = []) {
   if (!movies || !Array.isArray(movies)) return [];
   // Exclude reverted movies (failed JustWatch verification, no watch links)
   movies = movies.filter(m => m._enrichment_status !== 'reverted');
@@ -150,8 +150,8 @@ export function filterMovies(movies, filters = 'all') {
   // Convert string to array for backwards compatibility
   const filterArray = Array.isArray(filters) ? filters : [filters];
 
-  // If 'all' is in filters or no filters, show all non-hidden
-  if (filterArray.includes('all') || filterArray.length === 0) {
+  // If no filters, show all non-hidden
+  if (filterArray.length === 0) {
     return movies.filter(movie => !movie.hidden);
   }
 

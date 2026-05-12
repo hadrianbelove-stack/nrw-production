@@ -254,16 +254,15 @@ data class InfoOption(
  * Filter categories for the UI
  */
 enum class FilterCategory(val id: String, val displayName: String) {
-    ALL("all", "All"),
     PRE_ORDERS("pre-orders", "Pre-Orders"),
     STUDIO("studio", "Studio"),
     INDIE("indie", "Indie"),
-    STAFF_PICKS("staff-picks", "Staff Picks"),
+    STAFF_PICKS("staff-picks", "NRW Picks"),
     FOREIGN("foreign", "Foreign"),
-    SERIES("series", "Limited Series"),
-    RESTORATIONS("restorations", "Restorations & Reissues"),
-    DOCUMENTARY("documentary", "Documentary"),
-    VIRTUAL_SCREENINGS("virtual-screenings", "Virtual Screenings")
+    SERIES("series", "Miniseries"),
+    RESTORATIONS("restorations", "Reissues"),
+    DOCUMENTARY("documentary", "Docs"),
+    VIRTUAL_SCREENINGS("virtual-screenings", "V. Screenings")
 }
 
 /**
@@ -294,23 +293,8 @@ fun Movie.getFormattedGenres(): String? {
     return genres?.joinToString(" / ")
 }
 
-private val COUNTRY_SHORT_NAMES = mapOf(
-    "united states of america" to "USA", "united states" to "USA", "usa" to "USA",
-    "united kingdom" to "UK", "great britain" to "UK",
-    "south korea" to "S. Korea", "south africa" to "S. Africa",
-    "new zealand" to "N. Zealand", "bosnia and herzegovina" to "Bosnia",
-    "saudi arabia" to "S. Arabia"
-)
-
-private fun formatCountry(country: String): String {
-    COUNTRY_SHORT_NAMES[country.lowercase()]?.let { return it }
-    val titleCase = country.substring(0, 1).uppercase() + country.substring(1).lowercase()
-    return if (country != titleCase) titleCase else country
-}
-
 fun Movie.getFormattedCountries(): String? {
-    val raw = country ?: productionCountries?.mapNotNull { it.name }?.joinToString(", ")
-    return raw?.let { formatCountry(it) }
+    return country ?: productionCountries?.mapNotNull { it.name }?.joinToString(", ")
 }
 
 fun Movie.getRtInfo(): Pair<Int, Boolean>? {

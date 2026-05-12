@@ -66,6 +66,72 @@ val CARD_WIDTH = 100.dp
 private val POSTER_ASPECT_RATIO = 2f / 3f  // Standard movie poster ratio
 private val FocusCyan = Color(0xFF00FFCC)
 
+// 3-letter Olympic country codes (UK stays UK)
+private val CountryShortNames = mapOf(
+    "united states of america" to "USA", "united states" to "USA", "usa" to "USA", "us" to "USA",
+    "united kingdom" to "UK", "great britain" to "UK", "gb" to "UK",
+    "india" to "IND", "in" to "IND",
+    "canada" to "CAN",
+    "france" to "FRA", "fr" to "FRA",
+    "mexico" to "MEX", "mx" to "MEX",
+    "australia" to "AUS",
+    "germany" to "GER",
+    "italy" to "ITA", "it" to "ITA",
+    "japan" to "JPN", "jp" to "JPN",
+    "south korea" to "KOR", "kr" to "KOR",
+    "belgium" to "BEL",
+    "spain" to "ESP", "es" to "ESP",
+    "indonesia" to "INA", "id" to "INA",
+    "brazil" to "BRA",
+    "argentina" to "ARG",
+    "thailand" to "THA", "th" to "THA",
+    "new zealand" to "NZL",
+    "austria" to "AUT",
+    "poland" to "POL", "pl" to "POL",
+    "china" to "CHN",
+    "taiwan" to "TPE", "tw" to "TPE",
+    "denmark" to "DEN", "dk" to "DEN",
+    "netherlands" to "NED",
+    "ireland" to "IRL",
+    "turkey" to "TUR", "tr" to "TUR",
+    "nigeria" to "NGR",
+    "philippines" to "PHI",
+    "finland" to "FIN",
+    "colombia" to "COL",
+    "sweden" to "SWE",
+    "russia" to "RUS",
+    "hong kong" to "HKG",
+    "ukraine" to "UKR",
+    "singapore" to "SGP",
+    "armenia" to "ARM",
+    "greece" to "GRE",
+    "palestinian territory" to "PLE",
+    "israel" to "ISR",
+    "georgia" to "GEO",
+    "united arab emirates" to "UAE",
+    "saudi arabia" to "KSA",
+    "czech republic" to "CZE",
+    "cuba" to "CUB",
+    "switzerland" to "SUI",
+    "south africa" to "RSA",
+    "venezuela" to "VEN",
+    "croatia" to "CRO",
+    "guatemala" to "GUA",
+    "kenya" to "KEN",
+    "iceland" to "ISL",
+    "bulgaria" to "BUL",
+    "bosnia and herzegovina" to "BIH",
+    "unknown" to "—"
+)
+
+private fun formatCountry(country: String?): String? {
+    if (country == null) return null
+    val shortened = CountryShortNames[country.lowercase()]
+    if (shortened != null) return shortened
+    if (country.length <= 3) return country.uppercase()
+    return country
+}
+
 // Streaming service colors - source of truth: assets/service-colors.json
 private val StreamingColors = mapOf(
     "netflix" to Color(0xFFE50914),
@@ -320,10 +386,13 @@ fun MovieCard(
         // Movie info below card (matching website)
         Spacer(modifier = Modifier.height(4.dp))
 
-        // Director below card (like tvOS - simple, just director + country)
-        movie.getDirector()?.let { director ->
+        // Director + country below card (like tvOS)
+        val director = movie.getDirector()
+        val countryText = formatCountry(movie.country)
+        val infoText = listOfNotNull(director, countryText).joinToString(" · ")
+        if (infoText.isNotEmpty()) {
             Text(
-                text = director,
+                text = infoText,
                 color = Primary,
                 fontSize = 9.sp,
                 fontWeight = FontWeight.Medium,
@@ -436,7 +505,7 @@ private fun ImdbBadge(
 }
 
 /**
- * Date divider card matching website/tvOS design
+ * Date divider card — mobile design: teal bar + day/number/month + cascading chevrons
  */
 @Composable
 fun DateDividerCard(
@@ -446,53 +515,73 @@ fun DateDividerCard(
     val isPreOrder = dateString == "PRE-ORDER"
     val parts = if (isPreOrder) emptyList() else dateString.split("-")
     val month = if (isPreOrder) "" else parts.getOrNull(1)?.toIntOrNull()?.let { getMonthName(it) } ?: ""
-    val day = if (isPreOrder) "ORDER" else parts.getOrNull(2) ?: ""
-    val dayOfWeek = if (isPreOrder) "PRE-" else getDayOfWeek(dateString)
-    val borderColor = if (isPreOrder) Color(0xFF7C3AED) else Primary
+    val day = if (isPreOrder) "SOON" else parts.getOrNull(2)?.trimStart('0') ?: ""
+    val dayOfWeek = if (isPreOrder) "PRE-ORDER" else getDayOfWeek(dateString)
+    val barColor = if (isPreOrder) Color(0xFF7C3AED) else Primary
+    val accentColor = if (isPreOrder) Color(0xFF7C3AED) else Primary
+    val chevronOpacities = listOf(0.9f, 0.7f, 0.5f, 0.3f, 0.15f)
 
-    Box(
+    Column(
         modifier = modifier
             .width(CARD_WIDTH)
             .aspectRatio(POSTER_ASPECT_RATIO)
             .clip(RoundedCornerShape(8.dp))
-            .background(
-                Brush.linearGradient(
-                    colors = listOf(Background, BackgroundSecondary)
-                )
-            )
-            .border(2.dp, borderColor, RoundedCornerShape(8.dp)),
-        contentAlignment = Alignment.Center
+            .background(Color(0xFF0A0A0A))
     ) {
+        // Top bar
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(barColor)
+                .padding(horizontal = 6.dp, vertical = 3.dp)
+        ) {
+            Text(
+                text = dayOfWeek,
+                color = Color.Black,
+                fontSize = 7.sp,
+                fontWeight = FontWeight.ExtraBold,
+                letterSpacing = 0.5.sp
+            )
+        }
+
+        // Body
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(start = 6.dp),
             verticalArrangement = Arrangement.Center
         ) {
-            // Day of week (3-letter abbrev) or "PRE-"
+            // Day number
             Text(
-                text = dayOfWeek.take(4),
-                color = if (isPreOrder) Color(0xFF7C3AED) else TextSecondary,
-                fontSize = 10.sp,
-                letterSpacing = 1.sp
+                text = day,
+                color = if (isPreOrder) accentColor else Color.White,
+                fontSize = if (isPreOrder) 18.sp else 36.sp,
+                fontWeight = FontWeight.ExtraBold,
+                lineHeight = if (isPreOrder) 20.sp else 36.sp
             )
 
-            // Day number (large) or "ORDER"
-            Text(
-                text = if (isPreOrder) day else day.trimStart('0'),
-                color = if (isPreOrder) Color(0xFF7C3AED) else Primary,
-                fontSize = if (isPreOrder) 24.sp else 36.sp,
-                fontWeight = FontWeight.Bold,
-                lineHeight = 40.sp
-            )
-
-            // Month (empty for pre-order)
+            // Month
             if (month.isNotEmpty()) {
                 Text(
                     text = month,
-                    color = Primary,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = 2.sp
+                    color = Color(0xFF888888),
+                    fontSize = 7.sp,
+                    letterSpacing = 1.sp,
+                    modifier = Modifier.padding(top = 2.dp)
                 )
+            }
+
+            // Cascading chevrons
+            Row(modifier = Modifier.padding(top = 3.dp)) {
+                chevronOpacities.forEach { opacity ->
+                    Text(
+                        text = "\u203A",
+                        color = accentColor.copy(alpha = opacity),
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        lineHeight = 22.sp
+                    )
+                }
             }
         }
     }

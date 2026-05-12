@@ -40,7 +40,7 @@ const NRWMobile = {
             text: 'The smaller films, the independents, the ones without a billboard campaign. These movies flew under the radar theatrically but are worth knowing about now that they\'re available to stream at home.'
         },
         'staff-picks': {
-            title: 'Staff Picks',
+            title: 'NRW Picks',
             text: 'The ones we\'re vouching for. Out of everything on the wall, these are the movies we think are genuinely worth your time. Not a popularity contest, just honest recommendations.'
         },
         'foreign': {
@@ -48,11 +48,11 @@ const NRWMobile = {
             text: 'Non-English language films from around the world. Some are massive in their home countries, some are intimate art-house pieces.'
         },
         'series': {
-            title: 'Limited Series',
+            title: 'Miniseries',
             text: 'Not movies \u2014 limited series. The kind you can finish in a weekend. Prestige mini-series and limited runs that deserve the same attention as a good film.'
         },
         'restorations': {
-            title: 'Restorations & Reissues',
+            title: 'Reissues',
             text: 'Classic and catalog titles with new digital life. Films that have been restored, remastered, or newly reissued on streaming platforms.'
         },
         'documentary': {
@@ -160,22 +160,12 @@ const NRWMobile = {
 
             const filter = pill.dataset.filter;
 
-            if (filter === 'all') {
-                this.activeFilters.clear();
-                filtersEl.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
-                pill.classList.add('active');
+            if (this.activeFilters.has(filter)) {
+                this.activeFilters.delete(filter);
+                pill.classList.remove('active');
             } else {
-                if (this.activeFilters.has(filter)) {
-                    this.activeFilters.delete(filter);
-                    pill.classList.remove('active');
-                } else {
-                    this.activeFilters.add(filter);
-                    pill.classList.add('active');
-                }
-
-                const allBtn = filtersEl.querySelector('.filter-pill[data-filter="all"]');
-                if (this.activeFilters.size > 0) allBtn.classList.remove('active');
-                else allBtn.classList.add('active');
+                this.activeFilters.add(filter);
+                pill.classList.add('active');
             }
 
             this.applyFilter();
@@ -591,8 +581,7 @@ const NRWMobile = {
         const topParts = [];
         if (movie.crew?.director) topParts.push('D: ' + this.esc(movie.crew.director));
         else if (movie.director) topParts.push('D: ' + this.esc(movie.director));
-        const country = this.abbreviateCountry(movie.country);
-        if (country) topParts.push(this.esc(country));
+        if (movie.country) topParts.push(this.esc(movie.country));
         if (movie.year) topParts.push(this.esc(movie.year));
 
         // Gray line: Runtime · Cast · Genre
@@ -740,12 +729,13 @@ const NRWMobile = {
         if (movie.pull_quotes?.length) {
             html += '<div class="sheet-section-label">Critics</div>';
             movie.pull_quotes.forEach(q => {
-                html += '<div style="margin-bottom:10px;font-size:0.8rem;color:var(--text-secondary);font-style:italic">' +
-                    '&ldquo;' + this.esc(q.text || '') + '&rdquo;' +
-                    (q.critic || q.outlet
-                        ? '<div style="font-size:0.65rem;color:var(--text-muted);font-style:normal;margin-top:2px">' +
-                          this.esc([q.critic, q.outlet].filter(Boolean).join(', ')) + '</div>'
-                        : '') +
+                const badgeClass = q.source === 'letterboxd' ? 'pq-badge-lb' : 'pq-badge-rt';
+                const badgeText = q.source === 'letterboxd' ? 'LB' : 'RT';
+                const attribution = [q.critic, q.outlet].filter(Boolean).join(', ');
+                html += '<div class="sheet-pq">' +
+                    '<span class="sheet-pq-badge ' + badgeClass + '">' + badgeText + '</span>' +
+                    '<q class="sheet-pq-text">' + this.esc(q.text || '') + '</q>' +
+                    (attribution ? '<cite class="sheet-pq-cite">' + this.esc(attribution) + '</cite>' : '') +
                     '</div>';
             });
         }

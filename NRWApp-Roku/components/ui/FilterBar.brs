@@ -8,19 +8,18 @@ Sub Init()
     m.focusIndicator = m.top.FindNode("focusIndicator")
 
     ' Filter chip IDs in order
-    m.filterIds = ["all", "pre_orders", "studio", "indie", "staff_picks", "foreign", "series", "restorations", "documentary", "virtual_screenings"]
+    m.filterIds = ["pre_orders", "studio", "indie", "staff_picks", "foreign", "series", "restorations", "documentary", "virtual_screenings"]
 
     ' Chip widths for focus indicator positioning
     m.chipWidths = {
-        all: 60
         studio: 80
         indie: 60
         staff_picks: 110
         foreign: 80
-        series: 130
-        restorations: 130
-        documentary: 120
-        virtual_screenings: 170
+        series: 100
+        restorations: 90
+        documentary: 60
+        virtual_screenings: 130
         pre_orders: 110
     }
 
@@ -67,20 +66,13 @@ Sub UpdateChipStyles()
         chipLabel = m.chipLabels[filterId]
 
         isActive = false
-        if filterId = "all"
-            ' "All" is active when no filters are selected
-            if activeFilters.Count() = 0
+        ' Check if this filter is in the active set
+        for each af in activeFilters
+            if af = filterId
                 isActive = true
+                exit for
             end if
-        else
-            ' Check if this filter is in the active set
-            for each af in activeFilters
-                if af = filterId
-                    isActive = true
-                    exit for
-                end if
-            end for
-        end if
+        end for
 
         if isActive
             ' Selected state: teal background, dark text
@@ -178,7 +170,7 @@ Function GetFilterIdAtIndex(index as Integer) as String
     if index >= 0 AND index < m.filterIds.Count()
         return m.filterIds[index]
     end if
-    return "all"
+    return m.filterIds[0]
 End Function
 
 ' ============================================================================

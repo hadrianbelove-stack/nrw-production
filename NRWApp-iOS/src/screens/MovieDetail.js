@@ -403,7 +403,7 @@ export default function MovieDetail({route}) {
         {movie.country && (
           <View style={styles.detailRow}>
             <Text style={styles.detailLabel}>Country</Text>
-            <Text style={styles.detailValue}>{formatCountry(movie.country)}</Text>
+            <Text style={styles.detailValue}>{movie.country}</Text>
           </View>
         )}
         {movie.original_language && (

@@ -629,6 +629,47 @@ body {
   margin-bottom: 8px;
 }
 
+/* Pull quotes */
+.sheet-pq {
+  margin-bottom: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+}
+.sheet-pq-badge {
+  font-size: 0.55rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  padding: 2px 5px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+.pq-badge-rt {
+  background: #fa3232;
+  color: #fff;
+}
+.pq-badge-lb {
+  background: #00e054;
+  color: #000;
+}
+.sheet-pq-text {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  line-height: 1.5;
+  quotes: "\201C" "\201D";
+}
+.sheet-pq-cite {
+  display: block;
+  width: 100%;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  font-style: normal;
+  margin-top: -2px;
+  padding-left: 30px;
+}
+
 /* Slide animations */
 @keyframes slideLeftEnter {
   from { transform: translateX(40px); opacity: 0; }

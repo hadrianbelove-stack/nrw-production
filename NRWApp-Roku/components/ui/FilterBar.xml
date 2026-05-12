@@ -7,7 +7,7 @@
 <component name="FilterBar" extends="Group">
   <interface>
     <!-- Current filter selection (signals which filter was just pressed) -->
-    <field id="selectedFilter" type="string" value="all" onChange="onFilterChanged" alwaysNotify="true" />
+    <field id="selectedFilter" type="string" value="" onChange="onFilterChanged" alwaysNotify="true" />
 
     <!-- Active filters array (multi-select state) -->
     <field id="activeFilters" type="array" value="[]" onChange="onFilterChanged" />
@@ -28,12 +28,12 @@
       itemSpacings="[12]"
       translation="[60, 0]">
 
-      <!-- All -->
-      <Group id="chip_all">
-        <Rectangle id="chipBg_all" width="60" height="36" color="0x00D4AAFF" />
-        <Label id="chipLabel_all" text="All" width="60" height="36"
+      <!-- Pre-Orders -->
+      <Group id="chip_pre_orders">
+        <Rectangle id="chipBg_pre_orders" width="110" height="36" color="0x333333FF" />
+        <Label id="chipLabel_pre_orders" text="Pre-Orders" width="110" height="36"
           horizAlign="center" vertAlign="center"
-          font="font:SmallBoldSystemFont" color="0x000000FF" />
+          font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
       </Group>
 
       <!-- Studio -->
@@ -52,10 +52,10 @@
           font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
       </Group>
 
-      <!-- Staff Picks -->
+      <!-- NRW Picks -->
       <Group id="chip_staff_picks">
         <Rectangle id="chipBg_staff_picks" width="110" height="36" color="0x333333FF" />
-        <Label id="chipLabel_staff_picks" text="Staff Picks" width="110" height="36"
+        <Label id="chipLabel_staff_picks" text="NRW Picks" width="110" height="36"
           horizAlign="center" vertAlign="center"
           font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
       </Group>
@@ -68,42 +68,34 @@
           font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
       </Group>
 
-      <!-- Limited Series -->
+      <!-- Miniseries -->
       <Group id="chip_series">
-        <Rectangle id="chipBg_series" width="130" height="36" color="0x333333FF" />
-        <Label id="chipLabel_series" text="Limited Series" width="130" height="36"
+        <Rectangle id="chipBg_series" width="100" height="36" color="0x333333FF" />
+        <Label id="chipLabel_series" text="Miniseries" width="100" height="36"
           horizAlign="center" vertAlign="center"
           font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
       </Group>
 
-      <!-- Restorations -->
+      <!-- Reissues -->
       <Group id="chip_restorations">
-        <Rectangle id="chipBg_restorations" width="130" height="36" color="0x333333FF" />
-        <Label id="chipLabel_restorations" text="Restorations" width="130" height="36"
+        <Rectangle id="chipBg_restorations" width="90" height="36" color="0x333333FF" />
+        <Label id="chipLabel_restorations" text="Reissues" width="90" height="36"
           horizAlign="center" vertAlign="center"
           font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
       </Group>
 
-      <!-- Documentary -->
+      <!-- Docs -->
       <Group id="chip_documentary">
-        <Rectangle id="chipBg_documentary" width="120" height="36" color="0x333333FF" />
-        <Label id="chipLabel_documentary" text="Documentary" width="120" height="36"
+        <Rectangle id="chipBg_documentary" width="60" height="36" color="0x333333FF" />
+        <Label id="chipLabel_documentary" text="Docs" width="60" height="36"
           horizAlign="center" vertAlign="center"
           font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
       </Group>
 
-      <!-- Virtual Screenings -->
+      <!-- V. Screenings -->
       <Group id="chip_virtual_screenings">
-        <Rectangle id="chipBg_virtual_screenings" width="170" height="36" color="0x333333FF" />
-        <Label id="chipLabel_virtual_screenings" text="Virtual Screenings" width="170" height="36"
-          horizAlign="center" vertAlign="center"
-          font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
-      </Group>
-
-      <!-- Pre-Orders -->
-      <Group id="chip_pre_orders">
-        <Rectangle id="chipBg_pre_orders" width="110" height="36" color="0x333333FF" />
-        <Label id="chipLabel_pre_orders" text="Pre-Orders" width="110" height="36"
+        <Rectangle id="chipBg_virtual_screenings" width="130" height="36" color="0x333333FF" />
+        <Label id="chipLabel_virtual_screenings" text="V. Screenings" width="130" height="36"
           horizAlign="center" vertAlign="center"
           font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
       </Group>

@@ -105,12 +105,18 @@ End Sub
 Sub BuildGridContent(groupedData as Object)
     content = CreateObject("roSGNode", "ContentNode")
 
-    ' Add movies to content (flattened for grid)
+    ' Add movies to content with date divider cards
     for each dateStr in groupedData.dates
         movies = groupedData.groups[dateStr]
 
-        ' Add date divider as a special item
-        ' (In a full implementation, you'd use a custom item renderer)
+        ' Insert date divider card
+        divider = content.CreateChild("ContentNode")
+        divider.AddFields({
+            movie: {
+                _type: "date-divider"
+                dateString: dateStr
+            }
+        })
 
         for each movie in movies
             cardTitle = movie.title
@@ -134,16 +140,12 @@ End Sub
 ' ============================================================================
 Sub onFilterSelected()
     filterId = m.filterBar.selectedFilter
-    if filterId = "all"
-        m.activeFilters = []
+    ' Toggle filter in array
+    index = ArrayIndexOf(m.activeFilters, filterId)
+    if index >= 0
+        m.activeFilters.Delete(index)
     else
-        ' Toggle filter in array
-        index = ArrayIndexOf(m.activeFilters, filterId)
-        if index >= 0
-            m.activeFilters.Delete(index)
-        else
-            m.activeFilters.Push(filterId)
-        end if
+        m.activeFilters.Push(filterId)
     end if
 
     ' Update filter bar visual state

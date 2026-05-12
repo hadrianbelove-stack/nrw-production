@@ -20,7 +20,6 @@ const NRW = {
     abbreviateCountry: NRWConfig.abbreviateCountry,
 
     // Filter descriptions — shown when a single filter is active
-    // User will rewrite all of these; placeholder text for now
     FILTER_DESCRIPTIONS: {
         'studio': {
             title: 'Studio',
@@ -31,7 +30,7 @@ const NRW = {
             text: 'The smaller films, the independents, the ones without a billboard campaign. These movies flew under the radar theatrically but are worth knowing about now that they\'re available to stream at home.'
         },
         'staff-picks': {
-            title: 'Staff Picks',
+            title: 'NRW Picks',
             text: 'The ones we\'re vouching for. Out of everything on the wall, these are the movies we think are genuinely worth your time. Not a popularity contest, just honest recommendations.'
         },
         'foreign': {
@@ -39,11 +38,11 @@ const NRW = {
             text: 'Non-English language films from around the world. Some are massive in their home countries, some are intimate art-house pieces. The only thing they have in common is subtitles and the fact that they\'re streaming now.'
         },
         'series': {
-            title: 'Limited Series',
+            title: 'Miniseries',
             text: 'Not movies — limited series. The kind you can finish in a weekend. Prestige mini-series and limited runs that landed on streaming and deserve the same attention as a good film.'
         },
         'restorations': {
-            title: 'Restorations & Reissues',
+            title: 'Reissues',
             text: 'Classic and catalog titles with new digital life. These are films that have been restored, remastered, or newly reissued on streaming platforms. Old movies, fresh transfers.'
         },
         'documentary': {
@@ -71,6 +70,11 @@ const NRW = {
         return null;
     },
 
+
+    // Grid navigation state
+    gridSelectedId: null,   // movie ID of selected card (string)
+    gridNavActive: false,   // true once user presses an arrow key on the wall
+    gridAnchorX: null,      // column memory: saved horizontal center for up/down nav
 
     // Lightbox state
     lightboxMovies: [],  // Movies currently in the lightbox (filtered/displayed)
@@ -110,6 +114,7 @@ const NRW = {
                 this.setupSearchEventListeners();
                 this.setupCardFlipHandler();
                 this.setupLightboxKeyboardHandler();
+                this.setupGridKeyboardHandler();
                 this.setupDelegatedClickHandlers();
                 this.applyFilter();
                 this.renderWallWithMore();
@@ -146,31 +151,16 @@ const NRW = {
             btn.addEventListener('click', (e) => {
                 const filter = e.target.dataset.filter;
 
-                if (filter === 'all') {
-                    // "All" clears all other filters
-                    this.activeFilters.clear();
-                    filterButtons.forEach(b => b.classList.remove('active'));
-                    e.target.classList.add('active');
+                // Toggle this filter on/off (multi-select)
+                if (this.activeFilters.has(filter)) {
+                    this.activeFilters.delete(filter);
+                    e.target.classList.remove('active');
                 } else {
-                    // Toggle this filter on/off (multi-select)
-                    if (this.activeFilters.has(filter)) {
-                        this.activeFilters.delete(filter);
-                        e.target.classList.remove('active');
-                    } else {
-                        this.activeFilters.add(filter);
-                        e.target.classList.add('active');
-                    }
-
-                    // Remove "All" active state when other filters are selected
-                    const allBtn = document.querySelector('.filter-btn[data-filter="all"]');
-                    if (this.activeFilters.size > 0) {
-                        allBtn.classList.remove('active');
-                    } else {
-                        // No filters selected = "All" is active
-                        allBtn.classList.add('active');
-                    }
+                    this.activeFilters.add(filter);
+                    e.target.classList.add('active');
                 }
 
+                this.gridClearSelection();
                 this.displayedCount = this.loadIncrement; // Reset when changing filters
                 this.applyFilter();
                 this.updateFilterDescription();
@@ -206,6 +196,7 @@ const NRW = {
         searchInput.addEventListener('input', (e) => {
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => {
+                this.gridClearSelection();
                 this.searchQuery = e.target.value.trim().toLowerCase();
                 this.displayedCount = this.loadIncrement; // Reset pagination
                 this.applyFilter();
@@ -347,6 +338,11 @@ const NRW = {
     loadMore() {
         this.displayedCount += this.loadIncrement;
         this.renderWallWithMore();
+        // Re-apply grid selection if the card is still in the DOM
+        if (this.gridSelectedId) {
+            const btn = document.querySelector(`#wall .expand-btn[data-movie-id="${CSS.escape(this.gridSelectedId)}"]`);
+            if (btn) btn.closest('.movie-container').classList.add('grid-selected');
+        }
     },
 
 
@@ -833,6 +829,11 @@ const NRW = {
         const lightbox = document.getElementById('poster-lightbox');
         lightbox.classList.remove('active');
         document.body.style.overflow = '';
+        // Scroll back to grid-selected card
+        if (this.gridSelectedId) {
+            const sel = document.querySelector('#wall .movie-container.grid-selected');
+            if (sel) setTimeout(() => sel.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
+        }
     },
 
     // Navigate in lightbox
@@ -902,7 +903,7 @@ const NRW = {
         if (movie.genres?.length) metaParts.push(movie.genres.slice(0, 2).join(', '));
         if (movie.runtime) metaParts.push(`${movie.runtime} min`);
         if (movie.crew?.director) metaParts.push(`Dir: ${movie.crew.director}`);
-        if (movie.country) metaParts.push(this.abbreviateCountry(movie.country));
+        if (movie.country) metaParts.push(movie.country);
         if (movie.studio) metaParts.push(movie.studio);
         document.getElementById('lightbox-meta').textContent = metaParts.join(' \u2022 ');
 
@@ -1154,6 +1155,161 @@ const NRW = {
                 this.lightboxNav(1);
             }
         }, true);  // capture phase — fires before video/iframe controls
+    },
+
+    // ---- Grid keyboard navigation (arrow keys on the wall) ----
+
+    // Build a spatial map of movie cards from their DOM positions
+    buildGridMap() {
+        const wall = document.getElementById('wall');
+        const allCards = Array.from(wall.querySelectorAll('.movie-container'));
+        if (allCards.length === 0) return { rows: [], cardToPos: new Map(), allCards: [] };
+
+        const rects = allCards.map(el => ({ el, rect: el.getBoundingClientRect() }));
+
+        // Group into rows by top position (10px tolerance)
+        const rows = [];
+        let currentRow = [rects[0]];
+        let currentRowTop = rects[0].rect.top;
+
+        for (let i = 1; i < rects.length; i++) {
+            if (Math.abs(rects[i].rect.top - currentRowTop) < 10) {
+                currentRow.push(rects[i]);
+            } else {
+                currentRow.sort((a, b) => a.rect.left - b.rect.left);
+                rows.push(currentRow);
+                currentRow = [rects[i]];
+                currentRowTop = rects[i].rect.top;
+            }
+        }
+        currentRow.sort((a, b) => a.rect.left - b.rect.left);
+        rows.push(currentRow);
+
+        const cardToPos = new Map();
+        rows.forEach((row, rowIdx) => {
+            row.forEach((item, colIdx) => {
+                cardToPos.set(item.el, { row: rowIdx, col: colIdx, rect: item.rect });
+            });
+        });
+
+        return { rows, cardToPos, allCards };
+    },
+
+    gridNavigate(direction) {
+        const { rows, cardToPos, allCards } = this.buildGridMap();
+        if (allCards.length === 0) return;
+
+        // Find current selected element
+        let currentEl = this.gridSelectedId
+            ? document.querySelector(`#wall .expand-btn[data-movie-id="${CSS.escape(this.gridSelectedId)}"]`)?.closest('.movie-container')
+            : null;
+
+        // If nothing selected, select first visible card
+        if (!currentEl || !cardToPos.has(currentEl)) {
+            this.gridSelect(allCards[0]);
+            this.gridAnchorX = null;
+            return;
+        }
+
+        const pos = cardToPos.get(currentEl);
+        let targetEl = null;
+
+        if (direction === 'left') {
+            const idx = allCards.indexOf(currentEl);
+            if (idx > 0) targetEl = allCards[idx - 1];
+        }
+        else if (direction === 'right') {
+            const idx = allCards.indexOf(currentEl);
+            if (idx < allCards.length - 1) targetEl = allCards[idx + 1];
+        }
+        else if (direction === 'up' || direction === 'down') {
+            // Set anchor on first vertical press, keep it for subsequent presses
+            const currentCenterX = pos.rect.left + pos.rect.width / 2;
+            if (this.gridAnchorX === null) {
+                this.gridAnchorX = currentCenterX;
+            }
+
+            const rowDelta = direction === 'up' ? -1 : 1;
+            let targetRow = pos.row + rowDelta;
+
+            while (targetRow >= 0 && targetRow < rows.length) {
+                const row = rows[targetRow];
+                let bestDist = Infinity;
+                let bestEl = null;
+                for (const item of row) {
+                    const itemCenterX = item.rect.left + item.rect.width / 2;
+                    const dist = Math.abs(itemCenterX - this.gridAnchorX);
+                    if (dist < bestDist) {
+                        bestDist = dist;
+                        bestEl = item.el;
+                    }
+                }
+                if (bestEl) {
+                    targetEl = bestEl;
+                    break;
+                }
+                targetRow += rowDelta;
+            }
+        }
+
+        if (targetEl) {
+            // Left/right resets column memory; up/down preserves it
+            if (direction === 'left' || direction === 'right') {
+                this.gridAnchorX = null;
+            }
+            this.gridSelect(targetEl);
+        }
+    },
+
+    gridSelect(containerEl) {
+        const prev = document.querySelector('#wall .movie-container.grid-selected');
+        if (prev) prev.classList.remove('grid-selected');
+
+        if (containerEl) {
+            containerEl.classList.add('grid-selected');
+            const expandBtn = containerEl.querySelector('.expand-btn[data-movie-id]');
+            this.gridSelectedId = expandBtn ? expandBtn.dataset.movieId : null;
+            containerEl.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
+        } else {
+            this.gridSelectedId = null;
+        }
+    },
+
+    gridClearSelection() {
+        const prev = document.querySelector('#wall .movie-container.grid-selected');
+        if (prev) prev.classList.remove('grid-selected');
+        this.gridSelectedId = null;
+        this.gridNavActive = false;
+        this.gridAnchorX = null;
+    },
+
+    setupGridKeyboardHandler() {
+        document.addEventListener('keydown', (e) => {
+            // Don't handle if typing in search
+            if (document.activeElement === document.getElementById('search-input')) return;
+
+            // Don't handle if lightbox or trailer modal is open
+            const lightbox = document.getElementById('poster-lightbox');
+            if (lightbox && lightbox.classList.contains('active')) return;
+            const trailerModal = document.getElementById('trailer-modal');
+            if (trailerModal && trailerModal.classList.contains('active')) return;
+
+            const arrowKeys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'];
+
+            if (arrowKeys.includes(e.key)) {
+                e.preventDefault();
+                this.gridNavActive = true;
+                const dirMap = { ArrowLeft: 'left', ArrowRight: 'right', ArrowUp: 'up', ArrowDown: 'down' };
+                this.gridNavigate(dirMap[e.key]);
+            }
+            else if (e.key === 'Enter' && this.gridNavActive && this.gridSelectedId) {
+                e.preventDefault();
+                this.openLightbox(this.gridSelectedId);
+            }
+            else if (e.key === 'Escape' && this.gridNavActive) {
+                this.gridClearSelection();
+            }
+        });
     },
 
     // Delegated click handlers - one listener catches clicks on dynamically created elements

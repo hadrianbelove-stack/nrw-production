@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!--
-  NRW Date Divider Component
-  Displays date header between movie groups
+  NRW Date Divider Card Component
+  Card-style date divider matching mobile web design:
+  teal bar + day number + month + cascading chevrons
 -->
 <component name="DateDivider" extends="Group">
   <interface>
@@ -9,32 +10,88 @@
   </interface>
 
   <script type="text/brightscript" uri="DateDivider.brs" />
-  <script type="text/brightscript" uri="pkg:/source/utils/MovieUtils.brs" />
 
   <children>
-    <!-- Date divider container -->
-    <LayoutGroup id="dividerContainer"
-      layoutDirection="horiz"
-      vertAlignment="center"
-      itemSpacings="[16]">
+    <!-- Card container (same size as movie cards: 200x300) -->
+    <Group id="cardContainer">
+      <!-- Card background -->
+      <Rectangle id="cardBg"
+        width="200"
+        height="300"
+        color="0x0A0A0AFF" />
 
-      <!-- Left line -->
-      <Rectangle id="leftLine"
-        width="40"
-        height="2"
+      <!-- Top bar (teal for dates, purple for pre-order) -->
+      <Rectangle id="topBar"
+        width="200"
+        height="24"
+        color="0x00D4AAFF" />
+      <Label id="topBarLabel"
+        width="196"
+        height="24"
+        translation="[4, 0]"
+        vertAlign="center"
+        font="font:SmallBoldSystemFont"
+        color="0x000000FF" />
+
+      <!-- Day number (large) -->
+      <Label id="dayNumber"
+        width="200"
+        height="80"
+        translation="[8, 80]"
+        vertAlign="center"
+        font="font:LargeBoldSystemFont"
+        color="0xFFFFFFFF" />
+
+      <!-- Month label -->
+      <Label id="monthLabel"
+        width="200"
+        height="24"
+        translation="[8, 155]"
+        vertAlign="center"
+        font="font:SmallSystemFont"
+        color="0x888888FF" />
+
+      <!-- Chevrons row -->
+      <Label id="chevron1"
+        text="›"
+        width="24"
+        height="40"
+        translation="[8, 185]"
+        vertAlign="center"
+        font="font:LargeBoldSystemFont"
+        color="0x00D4AAE6" />
+      <Label id="chevron2"
+        text="›"
+        width="24"
+        height="40"
+        translation="[28, 185]"
+        vertAlign="center"
+        font="font:LargeBoldSystemFont"
+        color="0x00D4AAB3" />
+      <Label id="chevron3"
+        text="›"
+        width="24"
+        height="40"
+        translation="[48, 185]"
+        vertAlign="center"
+        font="font:LargeBoldSystemFont"
         color="0x00D4AA80" />
-
-      <!-- Date label -->
-      <Label id="dateLabel"
-        font="font:MediumBoldSystemFont"
-        color="0x00D4AAFF"
-        horizAlign="center" />
-
-      <!-- Right line -->
-      <Rectangle id="rightLine"
-        width="40"
-        height="2"
-        color="0x00D4AA80" />
-    </LayoutGroup>
+      <Label id="chevron4"
+        text="›"
+        width="24"
+        height="40"
+        translation="[68, 185]"
+        vertAlign="center"
+        font="font:LargeBoldSystemFont"
+        color="0x00D4AA4D" />
+      <Label id="chevron5"
+        text="›"
+        width="24"
+        height="40"
+        translation="[88, 185]"
+        vertAlign="center"
+        font="font:LargeBoldSystemFont"
+        color="0x00D4AA26" />
+    </Group>
   </children>
 </component>

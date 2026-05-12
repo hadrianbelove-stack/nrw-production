@@ -145,7 +145,7 @@ Sub LoadMovie(index as Integer)
     end if
 
     if movie.country <> invalid AND movie.country <> ""
-        metaParts.Push(FormatCountry(movie.country))
+        metaParts.Push(movie.country)
     end if
 
     if movie.runtime <> invalid

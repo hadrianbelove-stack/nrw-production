@@ -8,13 +8,11 @@
 ' ============================================================================
 Function GetFilterCategories() as Object
     return {
-        ALL: "all"
         STUDIO: "studio"
         INDIE: "indie"
         STAFF_PICKS: "staff_picks"
         FOREIGN: "foreign"
         SERIES: "series"
-        PLEX: "plex"
         RESTORATIONS: "restorations"
         DOCUMENTARY: "documentary"
         VIRTUAL_SCREENINGS: "virtual_screenings"
@@ -25,16 +23,14 @@ End Function
 ' Filter display names for UI
 Function GetFilterDisplayName(filter as String) as String
     names = {
-        all: "All"
         studio: "Studio"
         indie: "Indie"
-        staff_picks: "Staff Picks"
+        staff_picks: "NRW Picks"
         foreign: "Foreign"
-        series: "Limited Series"
-        plex: "Plex"
-        restorations: "Restorations"
-        documentary: "Documentary"
-        virtual_screenings: "Virtual Screenings"
+        series: "Miniseries"
+        restorations: "Reissues"
+        documentary: "Docs"
+        virtual_screenings: "V. Screenings"
         pre_orders: "Pre-Orders"
     }
 
@@ -42,7 +38,7 @@ Function GetFilterDisplayName(filter as String) as String
         return names[filter]
     end if
 
-    return "All"
+    return ""
 End Function
 
 ' ============================================================================
@@ -65,10 +61,7 @@ Function FilterMovies(movies as Object, filter as String) as Object
 
         include = false
 
-        if filter = categories.ALL
-            include = true
-
-        else if filter = categories.STUDIO
+        if filter = categories.STUDIO
             if movie.categories <> invalid AND (movie.categories.is_studio = true OR movie.categories.tier = "studio")
                 include = true
             end if
@@ -86,11 +79,6 @@ Function FilterMovies(movies as Object, filter as String) as Object
 
         else if filter = categories.SERIES
             if movie.content_type = "limited_series"
-                include = true
-            end if
-
-        else if filter = categories.PLEX
-            if movie.plex <> invalid AND movie.plex.deep_link <> invalid
                 include = true
             end if
 
@@ -162,10 +150,6 @@ Function FilterMoviesMulti(movies as Object, activeFilters as Object) as Object
                 matched = IsForeign(movie)
             else if filter = categories.SERIES
                 if movie.content_type = "limited_series"
-                    matched = true
-                end if
-            else if filter = categories.PLEX
-                if movie.plex <> invalid AND movie.plex.deep_link <> invalid
                     matched = true
                 end if
             else if filter = categories.RESTORATIONS
@@ -397,17 +381,62 @@ Function FormatCountry(country as String) as String
         return ""
     end if
 
+    ' 3-letter Olympic codes (UK stays UK)
     shortNames = {
-        "united states of america": "USA"
-        "united states": "USA"
-        "usa": "USA"
-        "united kingdom": "UK"
-        "great britain": "UK"
-        "south korea": "S. Korea"
-        "south africa": "S. Africa"
-        "new zealand": "N. Zealand"
-        "bosnia and herzegovina": "Bosnia"
-        "saudi arabia": "S. Arabia"
+        "united states of america": "USA", "united states": "USA", "usa": "USA", "us": "USA"
+        "united kingdom": "UK", "great britain": "UK", "gb": "UK"
+        "india": "IND", "in": "IND"
+        "canada": "CAN"
+        "france": "FRA", "fr": "FRA"
+        "mexico": "MEX", "mx": "MEX"
+        "australia": "AUS"
+        "germany": "GER"
+        "italy": "ITA", "it": "ITA"
+        "japan": "JPN", "jp": "JPN"
+        "south korea": "KOR", "kr": "KOR"
+        "belgium": "BEL"
+        "spain": "ESP", "es": "ESP"
+        "indonesia": "INA", "id": "INA"
+        "brazil": "BRA"
+        "argentina": "ARG"
+        "thailand": "THA", "th": "THA"
+        "new zealand": "NZL"
+        "austria": "AUT"
+        "poland": "POL", "pl": "POL"
+        "china": "CHN"
+        "taiwan": "TPE", "tw": "TPE"
+        "denmark": "DEN", "dk": "DEN"
+        "netherlands": "NED"
+        "ireland": "IRL"
+        "turkey": "TUR", "tr": "TUR"
+        "nigeria": "NGR"
+        "philippines": "PHI"
+        "finland": "FIN"
+        "colombia": "COL"
+        "sweden": "SWE"
+        "russia": "RUS"
+        "hong kong": "HKG"
+        "ukraine": "UKR"
+        "singapore": "SGP"
+        "armenia": "ARM"
+        "greece": "GRE"
+        "palestinian territory": "PLE"
+        "israel": "ISR"
+        "georgia": "GEO"
+        "united arab emirates": "UAE"
+        "saudi arabia": "KSA"
+        "czech republic": "CZE"
+        "cuba": "CUB"
+        "switzerland": "SUI"
+        "south africa": "RSA"
+        "venezuela": "VEN"
+        "croatia": "CRO"
+        "guatemala": "GUA"
+        "kenya": "KEN"
+        "iceland": "ISL"
+        "bulgaria": "BUL"
+        "bosnia and herzegovina": "BIH"
+        "unknown": "—"
     }
 
     lowerCountry = LCase(country)
@@ -415,10 +444,9 @@ Function FormatCountry(country as String) as String
         return shortNames[lowerCountry]
     end if
 
-    ' Fix all-caps or all-lowercase (e.g. "SWEDEN" → "Sweden")
-    titleCase = UCase(Left(country, 1)) + LCase(Mid(country, 2))
-    if country <> titleCase
-        return titleCase
+    ' Short codes (<=3 chars) — uppercase as-is
+    if Len(country) <= 3
+        return UCase(country)
     end if
 
     return country

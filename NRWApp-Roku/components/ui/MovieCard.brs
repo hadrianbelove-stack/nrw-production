@@ -35,6 +35,17 @@ Sub Init()
     ' Director label
     m.directorLabel = m.top.FindNode("directorLabel")
 
+    ' Date divider elements
+    m.dateDividerGroup = m.top.FindNode("dateDividerGroup")
+    m.dateDividerBar = m.top.FindNode("dateDividerBar")
+    m.dateDividerBarLabel = m.top.FindNode("dateDividerBarLabel")
+    m.dateDividerNumber = m.top.FindNode("dateDividerNumber")
+    m.dateDividerMonth = m.top.FindNode("dateDividerMonth")
+    m.dateDividerChevrons = []
+    for i = 1 to 5
+        m.dateDividerChevrons.Push(m.top.FindNode("dateDividerChevron" + i.ToStr()))
+    end for
+
     ' Store original dimensions for scaling
     m.originalWidth = 200
     m.originalHeight = 300
@@ -49,6 +60,17 @@ Sub onMovieChanged()
         return
     end if
 
+    ' Check if this is a date divider item
+    if movie._type <> invalid AND movie._type = "date-divider"
+        ShowAsDateDivider(movie)
+        return
+    end if
+
+    ' Regular movie card — hide date divider, show card
+    m.dateDividerGroup.visible = false
+    m.cardContainer.visible = true
+    m.directorLabel.visible = true
+
     ' Set poster image
     if movie.poster <> invalid AND movie.poster <> ""
         m.poster.uri = movie.poster
@@ -56,10 +78,20 @@ Sub onMovieChanged()
         m.poster.uri = movie.poster_url
     end if
 
-    ' Set director
+    ' Set director + country
     director = GetDirector(movie)
-    if director <> ""
+    countryText = ""
+    if movie.country <> invalid AND movie.country <> ""
+        countryText = FormatCountry(movie.country)
+    end if
+    if director <> "" AND countryText <> ""
+        m.directorLabel.text = director + " · " + countryText
+        m.directorLabel.visible = true
+    else if director <> ""
         m.directorLabel.text = director
+        m.directorLabel.visible = true
+    else if countryText <> ""
+        m.directorLabel.text = countryText
         m.directorLabel.visible = true
     else
         m.directorLabel.visible = false
@@ -340,3 +372,69 @@ Function OnKeyEvent(key as String, press as Boolean) as Boolean
     end if
     return false
 End Function
+
+' ============================================================================
+' Show card as a date divider (mobile design: teal bar + chevrons)
+' ============================================================================
+Sub ShowAsDateDivider(data as Object)
+    ' Hide movie card, show date divider
+    m.cardContainer.visible = false
+    m.directorLabel.visible = false
+    m.dateDividerGroup.visible = true
+
+    dateStr = ""
+    if data.dateString <> invalid
+        dateStr = data.dateString
+    end if
+
+    isPreOrder = (dateStr = "PRE-ORDER" OR dateStr = "pre-order")
+
+    if isPreOrder
+        m.dateDividerBar.color = "0x7C3AEDFF"
+        m.dateDividerBarLabel.text = "PRE-ORDER"
+        m.dateDividerNumber.text = "SOON"
+        m.dateDividerNumber.color = "0x7C3AEDFF"
+        m.dateDividerMonth.text = ""
+        m.dateDividerMonth.visible = false
+
+        purpleColors = ["0x7C3AEDE6", "0x7C3AEDB3", "0x7C3AED80", "0x7C3AED4D", "0x7C3AED26"]
+        for i = 0 to 4
+            m.dateDividerChevrons[i].color = purpleColors[i]
+        end for
+    else
+        parts = dateStr.Split("-")
+        if parts.Count() >= 3
+            month = Val(parts[1])
+            day = Val(parts[2])
+
+            ' Get weekday
+            weekday = ""
+            try
+                dt = CreateObject("roDateTime")
+                dt.FromISO8601String(dateStr + "T12:00:00Z")
+                dow = dt.GetDayOfWeek()
+                days = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
+                weekday = days[dow]
+            catch e
+            end try
+
+            months = ["", "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"]
+            monthName = ""
+            if month >= 1 AND month <= 12
+                monthName = months[month]
+            end if
+
+            m.dateDividerBar.color = "0x00D4AAFF"
+            m.dateDividerBarLabel.text = weekday
+            m.dateDividerNumber.text = day.ToStr()
+            m.dateDividerNumber.color = "0xFFFFFFFF"
+            m.dateDividerMonth.text = monthName
+            m.dateDividerMonth.visible = true
+
+            tealColors = ["0x00D4AAE6", "0x00D4AAB3", "0x00D4AA80", "0x00D4AA4D", "0x00D4AA26"]
+            for i = 0 to 4
+                m.dateDividerChevrons[i].color = tealColors[i]
+            end for
+        end if
+    end if
+End Sub
