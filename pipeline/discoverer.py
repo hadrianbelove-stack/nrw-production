@@ -292,6 +292,7 @@ class ProviderDiscoverer:
                                     if not movie.get('_is_preorder'):
                                         movie['_is_preorder'] = True
                                         self.host.add_movie_to_site_immediately(movie_id, movie)
+                                        newly_available_ids.add(str(movie_id))  # Enrich on entry (trailers, Wiki, RT)
                                         print(f"  🏷️ {movie['title']} — added to wall as pre-order ({pending_date})")
                                     self.logger.debug(f"Type 4 still pending: {movie['title']} — {days_until}d until {pending_date}")
                             except ValueError:
@@ -323,7 +324,7 @@ class ProviderDiscoverer:
                                     self.logger.info(f"Type 4 discovery: {movie['title']} — digital release {type4_date}")
                                     print(f"  📅 {movie['title']} — digital release {type4_date}")
                                 else:
-                                    # Future date — add to wall as pre-order, enrich when date arrives
+                                    # Future date — add to wall as pre-order, enrich immediately (trailers, Wiki, RT)
                                     days_until = (type4_dt - today_dt).days
                                     movie['digital_date'] = type4_date
                                     movie['_discovery_source'] = 'tmdb_type4'
@@ -331,6 +332,7 @@ class ProviderDiscoverer:
                                     movie['_is_preorder'] = True
                                     type4_found = True  # Skip provider check
                                     self.host.add_movie_to_site_immediately(movie_id, movie)
+                                    newly_available_ids.add(str(movie_id))  # Enrich on entry (trailers, Wiki, RT)
                                     self.logger.info(f"Type 4 future: {movie['title']} — {days_until}d until {type4_date} [pre-order on wall]")
                                     print(f"  ⏳ {movie['title']} — digital in {days_until}d ({type4_date}) [pre-order on wall]")
                             except ValueError:
@@ -903,6 +905,140 @@ class ProviderDiscoverer:
                 return 0
             print(f"✅ Re-enriched {fixed_count}/{len(all_movies)} movies")
 
+        return fixed_count
+
+    def reenrich_trailer_gaps(self):
+        """
+        Re-enrich movies missing trailer links.
+
+        Finds completed movies with no links.trailer and re-runs the TMDB +
+        find_trailer_url waterfall for each. Uses retry tracking to avoid
+        hammering movies that genuinely have no trailer.
+
+        Does NOT modify _enrichment_status or _is_preorder flags.
+
+        Returns:
+            int: Number of movies that got a trailer filled in.
+        """
+        if not os.path.exists('data.json'):
+            print("❌ No data.json found")
+            return 0
+
+        with open('data.json', 'r') as f:
+            display_data = json.load(f)
+
+        existing_movies = display_data.get('movies', [])
+
+        # Config
+        trailer_config = self.config.get('trailer_hosting', {})
+        max_batch = trailer_config.get('trailer_gap_batch_size', 30)
+        max_retries = trailer_config.get('trailer_gap_max_retries', 5)
+        cooldown_days = trailer_config.get('trailer_gap_cooldown_days', 7)
+        cooldown_cutoff = (datetime.now() - timedelta(days=cooldown_days)).isoformat()
+
+        # Find movies missing links.trailer
+        gap_movies = []
+        for i, movie in enumerate(existing_movies):
+            if movie.get('links', {}).get('trailer'):
+                continue  # Already has a trailer
+
+            # Only retry completed movies (pending ones will get enriched normally)
+            status = movie.get('_enrichment_status', '')
+            if status != 'completed':
+                continue
+
+            # Check retry limits
+            retry_count = movie.get('_trailer_retry_count', 0)
+            if retry_count >= max_retries:
+                continue
+
+            # Check cooldown
+            last_retry = movie.get('_trailer_last_retry', '')
+            if last_retry and last_retry > cooldown_cutoff:
+                continue
+
+            gap_movies.append((i, movie))
+
+        if not gap_movies:
+            print("✅ No trailer gaps eligible for retry")
+            return 0
+
+        # Apply batch limit
+        if max_batch > 0 and len(gap_movies) > max_batch:
+            print(f"🎬 Found {len(gap_movies)} movies missing trailers, processing first {max_batch}:")
+            gap_movies = gap_movies[:max_batch]
+        else:
+            print(f"🎬 Found {len(gap_movies)} movies missing trailers:")
+
+        for _, movie in gap_movies:
+            print(f"  • {movie.get('title')}")
+
+        # Process each movie
+        fixed_count = 0
+        unsaved_count = 0
+        save_interval = 10
+
+        for movie_index, movie in gap_movies:
+            movie_id = str(movie.get('id', ''))
+            title = movie.get('title', 'Unknown')
+
+            try:
+                # Fetch TMDB details (handles TV shows via tv_ prefix)
+                if movie_id.startswith('tv_'):
+                    numeric_id = movie_id.replace('tv_', '')
+                    movie_details = self.host.get_tv_details(numeric_id)
+                else:
+                    movie_details = self.host.get_movie_details(movie_id)
+
+                # Update retry tracking regardless of result
+                existing_movies[movie_index]['_trailer_retry_count'] = \
+                    existing_movies[movie_index].get('_trailer_retry_count', 0) + 1
+                existing_movies[movie_index]['_trailer_last_retry'] = datetime.now().isoformat()
+                unsaved_count += 1
+
+                if not movie_details:
+                    print(f"  ✗ {title} — TMDB fetch failed")
+                    continue
+
+                # Run the existing 6-tier trailer waterfall
+                trailer_result = self.host.find_trailer_url(movie_details)
+
+                if trailer_result:
+                    trailer_url, trailer_source = trailer_result
+                    existing_movies[movie_index].setdefault('links', {})['trailer'] = trailer_url
+                    existing_movies[movie_index]['_trailer_source'] = trailer_source
+
+                    # Clear 'trailer' from _enrichment_gaps if present
+                    existing_gaps = existing_movies[movie_index].get('_enrichment_gaps', [])
+                    if 'trailer' in existing_gaps:
+                        existing_gaps.remove('trailer')
+                        if existing_gaps:
+                            existing_movies[movie_index]['_enrichment_gaps'] = existing_gaps
+                        else:
+                            existing_movies[movie_index].pop('_enrichment_gaps', None)
+
+                    print(f"  ✓ {title} — trailer found (tier={trailer_source})")
+                    fixed_count += 1
+                else:
+                    count = existing_movies[movie_index]['_trailer_retry_count']
+                    print(f"  ○ {title} — no trailer found (attempt {count}/{max_retries})")
+
+                # Incremental save
+                if unsaved_count >= save_interval:
+                    self.host._safe_save_data_json(display_data, existing_movies, label="trailer_gaps_incremental")
+                    print(f"  💾 Incremental save ({fixed_count} fixed so far)")
+                    unsaved_count = 0
+
+            except Exception as e:
+                print(f"  ✗ Error re-enriching trailer for {title}: {e}")
+                continue
+
+        # Final save
+        if unsaved_count > 0:
+            if not self.host._safe_save_data_json(display_data, existing_movies, label="trailer_gaps_final"):
+                return 0
+
+        print(f"✅ Trailer gap fill: {fixed_count}/{len(gap_movies)} movies got trailers")
         return fixed_count
 
     def daily_gap_fill(self):

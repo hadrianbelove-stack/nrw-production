@@ -1578,6 +1578,10 @@ class DataGenerator:
         """Re-enrich watch link gaps — delegates to pipeline/discoverer.py"""
         return self._discoverer.reenrich_watch_link_gaps()
 
+    def reenrich_trailer_gaps(self):
+        """Re-enrich trailer gaps — delegates to pipeline/discoverer.py"""
+        return self._discoverer.reenrich_trailer_gaps()
+
     def daily_gap_fill(self):
         """Daily gap fill — delegates to pipeline/discoverer.py"""
         return self._discoverer.daily_gap_fill()

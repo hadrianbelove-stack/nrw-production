@@ -658,3 +658,6 @@ trailer_hosting:
   cookies_browser: chrome            # Browser for yt-dlp cookies (safari blocked by macOS sandbox in LaunchAgent)
   clean_local_after_upload: true     # Auto-delete local MP4 after confirmed B2 upload
   pipeline_integration: true         # Auto-host trailers for new movies during daily enrichment
+  trailer_gap_batch_size: 30         # Max movies to retry per trailer gap fill run
+  trailer_gap_max_retries: 5         # Stop retrying after N failed attempts per movie
+  trailer_gap_cooldown_days: 7       # Days between retry attempts for the same movie

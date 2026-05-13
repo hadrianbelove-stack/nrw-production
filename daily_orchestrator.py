@@ -1361,6 +1361,18 @@ class NRWOrchestrator:
                 timeout=900  # 15 min — locally completes in ~2 min
             )
 
+            # Trailer gap fill — retry trailer discovery for completed movies missing trailers
+            # Runs after gap fill so graduated pre-orders are already re-enriched normally
+            trailer_config = config.get('trailer_hosting', {})
+            if trailer_config.get('enabled', False):
+                print("\n🎬 Trailer Gap Fill")
+                self.run_command(
+                    "python3 generate_data.py --reenrich-trailer-gaps",
+                    "Retry trailer discovery for movies missing trailers",
+                    critical=False,
+                    timeout=1800  # 30 min — Gemini/Playwright waterfall can be slow
+                )
+
             # Phase 3.7: Check virtual screening expirations (Eventive, Shift72, etc.)
             # Detects expired screenings, hides from wall, resets to tracking for VOD re-discovery
             print("\n🎪 Phase 3.7: Virtual Screening Expiration Check")

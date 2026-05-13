@@ -745,10 +745,15 @@ class MovieEnricher:
                 dd = movie.get('digital_date', '')
                 if dd > today_catchup:
                     continue  # Future -- skip enrichment (link scan handles these)
-                # Date arrived -- no longer a pre-order
+                # Date arrived -- no longer a pre-order, queue for full re-enrichment
+                # (pre-orders enriched on entry have trailers/Wiki/RT but empty watch_links;
+                # re-enrichment fills watch_links, merge guard preserves existing data)
                 movie.pop('_is_preorder', None)
                 movie.pop('pre_order_links', None)
-                print(f"  \U0001f3f7\ufe0f  {movie.get('title')} \u2014 pre-order ended (date {dd})")
+                movie['_enrichment_status'] = 'pending'
+                movie['_enrichment_attempts'] = 0
+                movie.pop('_last_enrichment_attempt', None)
+                print(f"  \U0001f3f7\ufe0f  {movie.get('title')} \u2014 pre-order ended (date {dd}), queued for re-enrichment")
                 # Fall through to normal catch-up -> enrich or revert like any movie
             digital_date = movie.get('digital_date', '')
             status = movie.get('_enrichment_status', '')

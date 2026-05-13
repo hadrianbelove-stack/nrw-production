@@ -76,6 +76,11 @@ def main():
         help='Re-enrich movies that have Amazon/Apple providers but no watch links'
     )
     parser.add_argument(
+        '--reenrich-trailer-gaps',
+        action='store_true',
+        help='Re-enrich completed movies missing trailers (retry trailer discovery waterfall)'
+    )
+    parser.add_argument(
         '--check-screenings',
         action='store_true',
         help='Check virtual screening links for expiration (dead links get hidden, movies return to tracking)'
@@ -107,7 +112,7 @@ def main():
 
     # Initialize data generator from pipeline module
     # Enrichment (scrapers, etc.) enabled when --enrich or --enrich-id is passed
-    generator = DataGenerator(enrichment_enabled=args.enrich or bool(args.enrich_id) or args.gap_fill)
+    generator = DataGenerator(enrichment_enabled=args.enrich or bool(args.enrich_id) or args.gap_fill or args.reenrich_trailer_gaps)
 
     if args.debug:
         generator.logger.setLevel(logging.DEBUG)
@@ -180,6 +185,12 @@ def main():
         gap_count = generator.reenrich_watch_link_gaps()
         print(f"✅ Re-enrichment complete: {gap_count} movies updated")
 
+    # Re-enrich trailer gaps if requested
+    if args.reenrich_trailer_gaps:
+        print("\n🎬 Re-enriching movies with missing trailers...")
+        trailer_count = generator.reenrich_trailer_gaps()
+        print(f"✅ Trailer re-enrichment complete: {trailer_count} movies updated")
+
     # Daily gap fill — refresh JustWatch + Wikipedia for all wall movies
     if args.gap_fill:
         print("\n🔄 Running daily gap fill for all wall movies...")
@@ -202,7 +213,7 @@ def main():
 
     # Generate the final display data (only for final generation phase, not intake/discovery/enrich/festival)
     festival_backfill = getattr(args, 'festival_backfill', False)
-    if not args.intake and not args.discover and not args.enrich and not festival_backfill and not args.reenrich_gaps and not args.gap_fill and not args.check_screenings and not args.archive:
+    if not args.intake and not args.discover and not args.enrich and not festival_backfill and not args.reenrich_gaps and not args.reenrich_trailer_gaps and not args.gap_fill and not args.check_screenings and not args.archive:
         print("\n🎬 Generating final display data...")
         generator.generate_display_data(incremental=incremental, force_refresh=force_refresh)
     else:
