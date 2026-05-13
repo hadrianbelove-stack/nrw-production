@@ -754,10 +754,6 @@ const NRWMobile = {
             }
         }
 
-        // Synopsis
-        html += '<div class="sheet-section-label">Synopsis</div>' +
-            '<div class="sheet-synopsis">' + this.esc(movie.synopsis || 'No synopsis available.') + '</div>';
-
         // Pull quotes
         if (movie.pull_quotes?.length) {
             html += '<div class="sheet-section-label">Critics</div>';
@@ -772,6 +768,10 @@ const NRWMobile = {
                     '</div>';
             });
         }
+
+        // Synopsis
+        html += '<div class="sheet-section-label">Synopsis</div>' +
+            '<div class="sheet-synopsis">' + this.esc(movie.synopsis || 'No synopsis available.') + '</div>';
 
         html += '<div style="height:50px"></div>';
 
