@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Lightbox — Equal-Width Panels</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    background: #0a0a0a;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Lightbox overlay */
+.lightbox {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.95);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+/* Content row: nav + poster + info + nav */
+.lightbox-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    max-width: 1400px;
+    max-height: 90vh;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* Navigation arrows */
+.lightbox-nav {
+    flex-shrink: 0;
+    width: 50px;
+    height: 50px;
+    background: rgba(0, 212, 170, 0.1);
+    border: none;
+    color: #00d4aa;
+    font-size: 1.5rem;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.3s, color 0.3s;
+}
+.lightbox-nav:hover {
+    background: rgba(0, 212, 170, 0.3);
+    color: #00ffbb;
+}
+
+/* Poster */
+.poster-wrap {
+    position: relative;
+    flex-shrink: 0;
+}
+.poster-img {
+    height: 80vh;
+    max-height: 700px;
+    width: auto;
+    border-radius: 12px;
+    object-fit: cover;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    display: block;
+}
+/* Fallback when no poster */
+.poster-fallback {
+    height: 80vh;
+    max-height: 700px;
+    aspect-ratio: 2/3;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #888;
+}
+
+/* INFO PANEL — KEY CHANGE: match poster width */
+.lightbox-info {
+    /* Match the poster's natural width: 700px tall × 2:3 ratio = ~467px */
+    width: 467px;
+    height: 80vh;
+    max-height: 700px;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+/* Title row */
+.title-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
+    border-bottom: 2px solid rgba(0, 212, 170, 0.4);
+    padding-bottom: 0.6rem;
+    margin-bottom: 0.75rem;
+}
+.title-side {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    line-height: 1;
+}
+.movie-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #fff;
+    line-height: 1.15;
+}
+.movie-date {
+    color: #00d4aa;
+    font-size: 1.2rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+.staff-pick-badge {
+    background: #dc143c;
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    text-transform: uppercase;
+    transform: translateY(2px);
+}
+
+/* Meta */
+.meta {
+    color: #888;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+.meta-label {
+    color: #00d4aa;
+    font-weight: 600;
+}
+.meta-value {
+    color: #ccc;
+}
+
+/* Score badges */
+.scores {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+.scores:empty { display: none; }
+.score-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 5px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+.score-badge.rt { color: #ff6b6b; }
+.score-badge.mc { color: #7ddf64; }
+.score-badge.imdb { color: #f5c518; }
+
+/* Pull quotes */
+.pull-quotes {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(255,255,255,0.08);
+}
+.pq-card {
+    position: relative;
+    padding: 0.6rem 0.75rem 0.6rem 2.2rem;
+    background: rgba(255,255,255,0.04);
+    border-radius: 6px;
+    border-left: 2px solid rgba(255,255,255,0.15);
+}
+.pq-text {
+    display: block;
+    font-style: italic;
+    color: #ddd;
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+.pq-cite {
+    display: block;
+    font-style: normal;
+    font-size: 0.75rem;
+    color: #888;
+    margin-top: 0.25rem;
+}
+.pq-source {
+    position: absolute;
+    left: 0.5rem;
+    top: 0.65rem;
+    font-size: 0.55rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    padding: 1px 4px;
+    border-radius: 3px;
+}
+.pq-rt { background: rgba(250,50,50,0.25); color: #ff6b6b; }
+.pq-lb { background: rgba(0,210,120,0.2); color: #00d278; }
+
+/* Synopsis */
+.synopsis {
+    color: #ccc;
+    line-height: 1.6;
+    flex: 1;
+    margin-bottom: 1rem;
+    overflow-y: auto;
+    font-size: 0.95rem;
+}
+
+/* Buttons */
+.buttons { margin-top: auto; }
+.watch-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+.vod-row {
+    display: flex;
+    gap: 0.5rem;
+}
+.vod-row > * { flex: 1; }
+.watch-btn {
+    padding: 0.6rem 0.8rem;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    letter-spacing: 0.5px;
+    gap: 0.4rem;
+    width: 100%;
+    transition: transform 0.2s, box-shadow 0.2s;
+    color: #fff;
+}
+.watch-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+.watch-btn.trailer { background: #E50914; }
+.watch-btn.netflix { background: #E50914; }
+.watch-btn.amazon { background: #00A8E1; color: #000; }
+.watch-btn.apple { background: #333; border: 1px solid #444; }
+.watch-btn.fandango { background: #FF7E00; }
+.watch-btn.hoopla { background: #E8432A; }
+.watch-btn.fawesome { background: #5B8DEF; }
+.watch-btn.lifetime { background: #8B0049; }
+.watch-btn.plex { background: #E5A00D; color: #000; }
+.watch-btn.stream { background: #00d4aa; color: #000; }
+
+/* Info row */
+.info-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+.info-btn {
+    flex: 1;
+    padding: 0.5rem;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.1);
+    transition: background 0.2s;
+}
+.info-btn:hover { background: rgba(255,255,255,0.12); }
+.info-btn.rt { color: #ff6b6b; }
+.info-btn.imdb { color: #f5c518; font-weight: 800; }
+.info-btn.mc { color: #7ddf64; }
+
+/* Close button */
+.lightbox-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    font-size: 2rem;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10001;
+    line-height: 1;
+}
+
+/* Counter */
+.lightbox-counter {
+    position: absolute;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #888;
+    font-size: 0.9rem;
+}
+
+/* Annotation callout */
+.annotation {
+    position: absolute;
+    top: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 200, 0, 0.15);
+    border: 1px solid #ffc800;
+    color: #ffc800;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    white-space: nowrap;
+    z-index: 10002;
+}
+
+/* Mobile */
+@media (max-width: 900px) {
+    .lightbox { padding: 1rem; }
+    .lightbox-content {
+        flex-direction: column;
+        align-items: center;
+    }
+    .poster-img, .poster-fallback {
+        height: 50vh;
+        max-height: 400px;
+    }
+    .lightbox-info {
+        width: 100%;
+        max-width: 467px;
+        height: auto;
+        max-height: 35vh;
+    }
+    .lightbox-nav { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="lightbox" id="lightbox">
+    <div class="annotation">INFO PANEL WIDTH: 467px (matched to poster width)</div>
+    <div class="lightbox-content">
+        <button class="lightbox-nav" id="nav-left" onclick="navigate(-1)">&#8249;</button>
+        <div class="poster-wrap" id="poster-wrap"></div>
+        <div class="lightbox-info" id="info-panel"></div>
+        <button class="lightbox-nav" id="nav-right" onclick="navigate(1)">&#8250;</button>
+    </div>
+    <div class="lightbox-counter" id="counter"></div>
+</div>
+
+<script>
+const movies = [
+    {
+        title: "The Christophers",
+        date: "May 13",
+        year: 2026,
+        runtime: 100,
+        country: "United States",
+        director: "Steven Soderbergh",
+        cast: ["Michaela Coel", "Ian McKellen", "Jessica Gunning"],
+        genres: ["Crime", "Comedy"],
+        synopsis: "The estranged children of a once-famous artist hire a forger to complete his unfinished works so they can be 'discovered' and sold after his death.",
+        rt_score: "95%",
+        imdb_rating: "7.2",
+        metacritic: "80",
+        studio: "Department M",
+        poster: "https://image.tmdb.org/t/p/w500/s6oUrGMNl8hVh7fn0O8oF2rHwrM.jpg",
+        pullQuotes: [
+            { text: "Soderbergh at his most playful and razor-sharp.", source: "rt", critic: "David Ehrlich", outlet: "IndieWire" }
+        ],
+        streaming: null,
+        vod: [
+            { service: "Amazon", cls: "amazon" },
+            { service: "Fandango", cls: "fandango" }
+        ]
+    },
+    {
+        title: "Suburban Fury",
+        date: "May 13",
+        year: 2024,
+        runtime: 118,
+        country: "United States",
+        director: "Robinson Devor",
+        cast: ["Sara Jane Moore"],
+        genres: ["Documentary"],
+        synopsis: "On September 22, 1975, 45-year-old Sara Jane Moore took a revolver out of her purse and fired two shots at President Gerald Ford on a crowded sidewalk in San Francisco's Union Square. This documentary traces the astonishing life of an unlikely would-be assassin.",
+        rt_score: "100%",
+        imdb_rating: "7.2",
+        metacritic: "74",
+        studio: "2R Productions",
+        poster: "https://image.tmdb.org/t/p/w500/hKFJ9JGHlTIWTYbgQro6JlgItHQ.jpg",
+        pullQuotes: [
+            { text: "A riveting portrait of political radicalism and personal reinvention.", source: "rt", critic: "A.O. Scott", outlet: "New York Times" }
+        ],
+        streaming: null,
+        vod: [
+            { service: "Amazon", cls: "amazon" },
+            { service: "Fandango", cls: "fandango" }
+        ]
+    },
+    {
+        title: "Among Neighbors",
+        date: "May 13",
+        year: 2024,
+        runtime: 101,
+        country: "United States",
+        director: "Yoav Potash",
+        cast: [],
+        genres: ["Documentary", "Animation"],
+        synopsis: "Combining magical realism and evocative hand-drawn animation with revelatory interviews and verité footage, 'Among Neighbors' examines the story of a small, rural town where Jews and Polish Catholics lived side by side for centuries before World War II forever changed their relationship.",
+        rt_score: "96%",
+        imdb_rating: "8.0",
+        metacritic: null,
+        studio: "Headfirst Arts & Media",
+        poster: "https://image.tmdb.org/t/p/w500/bz8toDcg1qrbeoFLwScC7ydR3Ts.jpg",
+        pullQuotes: [],
+        streaming: null,
+        vod: [{ service: "Amazon", cls: "amazon" }]
+    },
+    {
+        title: "The Bus: A French Football Mutiny",
+        date: "May 13",
+        year: 2026,
+        runtime: 79,
+        country: "France",
+        director: "Jérôme Fritel",
+        cast: ["Raymond Domenech", "Patrice Evra", "Sylvain Wiltord"],
+        genres: ["Documentary"],
+        synopsis: "This documentary revisits the French football team's controversial 2010 World Cup and the bus strike that sparked global headlines and national outrage.",
+        rt_score: null,
+        imdb_rating: null,
+        metacritic: null,
+        studio: null,
+        poster: "https://image.tmdb.org/t/p/w500/sOsS71qbsHDjGkjnOACvz4Pvfee.jpg",
+        pullQuotes: [],
+        streaming: { service: "Netflix", cls: "netflix" },
+        vod: []
+    },
+    {
+        title: "Whispers Next Door",
+        date: "May 13",
+        year: 2026,
+        runtime: 90,
+        country: "United States",
+        director: "Damián Romay",
+        cast: ["Vail Bloom", "Tatum Jennings", "Tim Bensch"],
+        genres: ["Thriller", "Drama"],
+        synopsis: "Suzanne hides her daughter's shocking secret to protect their family, but when their charismatic Pastor takes a disturbing interest in the baby, their lies ignite a chilling battle between faith, control, and truth.",
+        rt_score: null,
+        imdb_rating: "6.0",
+        metacritic: null,
+        studio: null,
+        poster: "https://image.tmdb.org/t/p/w500/bPzzOvbar1Oj8PjBL6pjjo8Wtov.jpg",
+        pullQuotes: [],
+        streaming: { service: "Lifetime", cls: "lifetime" },
+        vod: [{ service: "Amazon", cls: "amazon" }]
+    },
+    {
+        title: "Un balcon à Limoges (A Balcony in Limoges)",
+        date: "May 13",
+        year: 2026,
+        runtime: 56,
+        country: "France",
+        director: "Jérôme Reybaud",
+        cast: ["Anne-Lise Heimburger", "Fabienne Babe", "Patrice Gallet"],
+        genres: ["Comedy", "Drama"],
+        synopsis: "Gladys, a woman in her fifties, lives on the fringes of society, without a home, without a health insurance card, without a bank. Nothing matters to her, not even sex, alcohol, or dancing, which she practices with a joyful frenzy.",
+        rt_score: null,
+        imdb_rating: null,
+        metacritic: null,
+        studio: "Barberousse Films",
+        poster: "https://image.tmdb.org/t/p/w500/5JJdxmbzDAjpbncPyk3oh0T2GAT.jpg",
+        pullQuotes: [],
+        streaming: null,
+        vod: [
+            { service: "Amazon", cls: "amazon" },
+            { service: "Fandango", cls: "fandango" }
+        ]
+    },
+    {
+        title: "$POSITIONS",
+        date: "May 13",
+        year: 2025,
+        runtime: 97,
+        country: "United States",
+        director: "Brandon Daley",
+        cast: ["Michael Kunicki", "Vinny Kress", "Trevor Dawkins"],
+        genres: ["Comedy", "Thriller"],
+        synopsis: "Blue-collar Kansan Mike Alvarado attempts to save his family from the throes of poverty by investing their savings into speculative cryptocurrencies. However, as his investment strategy decays into a full-blown gambling addiction, he risks losing far more than money.",
+        rt_score: null,
+        imdb_rating: "7.4",
+        metacritic: null,
+        studio: null,
+        poster: "https://image.tmdb.org/t/p/w500/dCLWCSbqcb9bfOixZokehjimIKK.jpg",
+        pullQuotes: [],
+        streaming: null,
+        vod: [
+            { service: "Amazon", cls: "amazon" },
+            { service: "Fandango", cls: "fandango" }
+        ]
+    },
+    {
+        title: "Koutkekout (At All Kosts)",
+        date: "May 13",
+        year: 2025,
+        runtime: 84,
+        country: "Canada",
+        director: "Joseph Hillel",
+        cast: ["Guy Régis Jr", "Nathania Péricles", "Schneiderson René"],
+        genres: ["Documentary"],
+        synopsis: "An acting ensemble rehearses for an upcoming theater festival. They rig up stage scenery and practice dialogue and set pieces in the middle of a residential area. But this is no ordinary theater setting, as evidenced by the armed guards at the entrance.",
+        rt_score: "55%",
+        imdb_rating: null,
+        metacritic: null,
+        studio: "Qu4tre par Quatre",
+        poster: "https://image.tmdb.org/t/p/w500/oBnh3oy1qCq63NEFEAO6U0K15NB.jpg",
+        pullQuotes: [],
+        streaming: null,
+        vod: [{ service: "Apple TV", cls: "apple" }]
+    },
+    {
+        title: "Maid Robot 2",
+        date: "May 13",
+        year: 2026,
+        runtime: 61,
+        country: "United States",
+        director: "Jamie Grefe",
+        cast: ["Elizabeth Rath", "Viktoriia Starodubtseva", "Jamie Grefe"],
+        genres: ["Science Fiction", "Thriller"],
+        synopsis: "A ruthless tech CEO threatens to steal the Maid Robot secret plans and chaos ensues.",
+        rt_score: null,
+        imdb_rating: null,
+        metacritic: null,
+        studio: null,
+        poster: "https://image.tmdb.org/t/p/w500/8er8KxespEu2mt9xThMV0PUVAsP.jpg",
+        pullQuotes: [],
+        streaming: { service: "Fawesome", cls: "fawesome" },
+        vod: []
+    },
+    {
+        title: "100 Dates in Dallas",
+        date: "May 12",
+        year: 2026,
+        runtime: 90,
+        country: "United States",
+        director: null,
+        cast: [],
+        genres: ["Comedy"],
+        synopsis: "A forty-something former actor navigates online dating in Dallas.",
+        rt_score: null,
+        imdb_rating: null,
+        metacritic: null,
+        studio: "Freestyle Digital Media",
+        poster: null,
+        pullQuotes: [],
+        streaming: { service: "Hoopla", cls: "hoopla" },
+        vod: [{ service: "Amazon", cls: "amazon" }]
+    }
+];
+
+let currentIndex = 0;
+
+function render(index) {
+    const movie = movies[index];
+
+    // Poster
+    const posterWrap = document.getElementById('poster-wrap');
+    if (movie.poster) {
+        posterWrap.innerHTML = `<img class="poster-img" src="${movie.poster}" alt="${movie.title}">`;
+    } else {
+        posterWrap.innerHTML = `<div class="poster-fallback">${movie.title}</div>`;
+    }
+
+    // Info panel
+    const info = document.getElementById('info-panel');
+    let html = '';
+
+    // Title row
+    html += `<div class="title-row">
+        <div class="title-side">
+            <span class="movie-title">${movie.title}</span>
+        </div>
+        <span class="movie-date">${movie.date}</span>
+    </div>`;
+
+    // Meta
+    let metaLines = [];
+    if (movie.director) metaLines.push('<span class="meta-label">Dir:</span> <span class="meta-value">' + movie.director + '</span>');
+    if (movie.cast.length) metaLines.push('<span class="meta-label">Cast:</span> <span class="meta-value">' + movie.cast.join(', ') + '</span>');
+    let detailParts = [];
+    if (movie.country) detailParts.push(movie.country);
+    if (movie.year) detailParts.push(movie.year);
+    if (movie.runtime) detailParts.push(movie.runtime + ' min');
+    if (movie.studio) detailParts.push(movie.studio);
+    if (detailParts.length) metaLines.push(detailParts.join(' \u2022 '));
+    html += `<div class="meta">${metaLines.join('<br>')}</div>`;
+
+    // Scores
+    let scoreBadges = '';
+    if (movie.rt_score) scoreBadges += `<span class="score-badge rt">RT ${movie.rt_score}</span>`;
+    if (movie.imdb_rating) scoreBadges += `<span class="score-badge imdb">IMDb ${movie.imdb_rating}</span>`;
+    if (movie.metacritic) scoreBadges += `<span class="score-badge mc">MC ${movie.metacritic}</span>`;
+    if (scoreBadges) html += `<div class="scores">${scoreBadges}</div>`;
+
+    // Pull quotes
+    if (movie.pullQuotes.length) {
+        html += '<div class="pull-quotes">';
+        movie.pullQuotes.forEach(q => {
+            const srcCls = q.source === 'lb' ? 'pq-lb' : 'pq-rt';
+            const srcLabel = q.source === 'lb' ? 'LB' : 'RT';
+            html += `<div class="pq-card">
+                <span class="pq-source ${srcCls}">${srcLabel}</span>
+                <q class="pq-text">${q.text}</q>
+                <cite class="pq-cite">${[q.critic, q.outlet].filter(Boolean).join(', ')}</cite>
+            </div>`;
+        });
+        html += '</div>';
+    }
+
+    // Synopsis
+    html += `<div class="synopsis">${movie.synopsis}</div>`;
+
+    // Buttons
+    html += '<div class="buttons">';
+    html += '<div class="watch-stack">';
+
+    // Trailer placeholder
+    html += `<button class="watch-btn trailer">Trailer</button>`;
+
+    // VOD row
+    if (movie.vod.length) {
+        html += '<div class="vod-row">';
+        movie.vod.forEach(v => {
+            html += `<span class="watch-btn ${v.cls}">${v.service}</span>`;
+        });
+        html += '</div>';
+    }
+
+    // Streaming
+    if (movie.streaming) {
+        html += `<span class="watch-btn ${movie.streaming.cls}">${movie.streaming.service}</span>`;
+    }
+
+    html += '</div>'; // watch-stack
+
+    // Info buttons
+    html += '<div class="info-row">';
+    html += '<span class="info-btn rt">RT</span>';
+    html += '<span class="info-btn imdb">IMDb</span>';
+    html += '</div>';
+
+    html += '</div>'; // buttons
+
+    info.innerHTML = html;
+
+    // Counter
+    document.getElementById('counter').textContent = `${index + 1} / ${movies.length}`;
+}
+
+function navigate(dir) {
+    currentIndex = (currentIndex + dir + movies.length) % movies.length;
+    render(currentIndex);
+}
+
+// Keyboard nav
+document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowLeft') navigate(-1);
+    if (e.key === 'ArrowRight') navigate(1);
+});
+
+// Init
+render(0);
+</script>
+</body>
+</html>

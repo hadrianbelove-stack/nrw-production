@@ -1071,9 +1071,11 @@ header h1 {
     display: block;
 }
 
-/* Info panel */
+/* Info panel — width matches poster (700px tall × 2:3 = 467px) */
 .lightbox-info {
-    width: 350px;
+    width: 467px;
+    height: 80vh;
+    max-height: 700px;
     background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
     border-radius: 12px;
     padding: 1.5rem;
@@ -1131,6 +1133,41 @@ header h1 {
     color: #888;
     margin-bottom: 1rem;
     font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+/* Scores row below meta */
+.lightbox-scores {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+.lightbox-scores:empty { display: none; }
+.lightbox-scores .score-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 5px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-decoration: none;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    transition: background 0.2s;
+}
+.lightbox-scores .score-badge:hover { background: rgba(255,255,255,0.12); }
+.lightbox-scores .score-badge.rt { color: #ff6b6b; }
+.lightbox-scores .score-badge.mc { color: #7ddf64; }
+.lightbox-scores .score-badge.imdb { color: #f5c518; }
+.lightbox-scores .score-badge.wiki { color: #fff; }
+.lightbox-scores .score-badge .score-logo {
+    height: 14px;
+    width: auto;
+    vertical-align: middle;
+}
+.lightbox-scores .score-badge.mc .score-logo {
+    filter: invert(1) sepia(1) saturate(5) hue-rotate(70deg) brightness(1.1);
 }
 
 .lightbox-synopsis {
@@ -1446,7 +1483,8 @@ header h1 {
 
     .lightbox-info {
         width: 100%;
-        max-width: 400px;
+        max-width: 467px;
+        height: auto;
         max-height: 35vh;
     }
 
