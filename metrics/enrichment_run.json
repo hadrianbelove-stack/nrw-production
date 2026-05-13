@@ -1,10 +1,39 @@
 {
-  "timestamp": "2026-05-12T21:24:15.715106",
-  "movies_requested": 1,
-  "movies_enriched": 1,
-  "movies_deferred": 0,
-  "deferred_details": [],
-  "enrichment_duration_seconds": 4.33,
-  "error_details": [],
-  "total_errors": 0
+  "timestamp": "2026-05-13T12:23:57.853822",
+  "movies_requested": 14,
+  "movies_enriched": 12,
+  "movies_deferred": 2,
+  "deferred_details": [
+    {
+      "title": "They Wait in Shadows",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-05-12",
+      "discovered_at": "2026-05-13T11:32:34.263327",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 2,
+      "tmdb_platforms": []
+    },
+    {
+      "title": "A Balcony in Limoges",
+      "reason": "enrichment_failed",
+      "digital_date": "2026-05-13",
+      "discovered_at": "2026-05-13T12:01:59.671568",
+      "discovery_source": "provider_availability_check",
+      "revert_count": 0,
+      "tmdb_platforms": [
+        "Amazon Video"
+      ]
+    }
+  ],
+  "enrichment_duration_seconds": 609.93,
+  "error_details": [
+    {
+      "timestamp": "2026-05-13T12:21:00.843919",
+      "title": "A Balcony in Limoges",
+      "source": "watch_links",
+      "error_type": "enrichment_failed",
+      "error_message": "All enrichment sources returned empty"
+    }
+  ],
+  "total_errors": 1
 }
