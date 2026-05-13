@@ -171,6 +171,10 @@ class DisplayGenerator:
         # Determine documentary status from TMDB genres
         is_documentary = 'Documentary' in genres
 
+        # Determine exploitation status (Horror / Thriller / Action)
+        exploitation_genres = {'Horror', 'Thriller', 'Action'}
+        is_exploitation = bool(set(genres) & exploitation_genres)
+
         return {
             'tier': tier,  # Kept for backward compatibility
             'is_studio': tier == 'studio',
@@ -181,6 +185,7 @@ class DisplayGenerator:
             'is_virtual_screening': False,  # Set later from watch_links detection
             'is_series': False,  # Set later from content_type detection
             'is_documentary': is_documentary,
+            'is_exploitation': is_exploitation,
             'auto_categorized': auto_categorized,
             'manual_override': manual_override
         }
@@ -346,6 +351,7 @@ class DisplayGenerator:
         restoration_count = 0
         virtual_screening_count = 0
         documentary_count = 0
+        exploitation_count = 0
         screening_services = ['eventive']
         screening_url_patterns = ['eventive.org', 'festivalplayer.sundance.org', 'shift72.com']
 
@@ -501,6 +507,8 @@ class DisplayGenerator:
                 virtual_screening_count += 1
             if categories.get('is_documentary'):
                 documentary_count += 1
+            if categories.get('is_exploitation'):
+                exploitation_count += 1
 
         # Apply editorial ordering if specified
         if ordering:
@@ -528,7 +536,7 @@ class DisplayGenerator:
         ordered_count = len(ordering) if ordering else 0
 
         print(f"\U0001f4dd Admin overrides applied:")
-        print(f"  Categories: {studio_count} Studio, {indie_count} Indie, {uncategorized_count} Uncategorized, {foreign_count} Foreign, {restoration_count} Restorations, {virtual_screening_count} Virtual Screenings, {documentary_count} Documentaries")
+        print(f"  Categories: {studio_count} Studio, {indie_count} Indie, {uncategorized_count} Uncategorized, {foreign_count} Foreign, {restoration_count} Restorations, {virtual_screening_count} Virtual Screenings, {documentary_count} Documentaries, {exploitation_count} Exploitation")
         print(f"  Staff Picks: {staff_pick_count}")
         if ordered_count > 0:
             print(f"  Editorial ordering: {ordered_count} movies pinned to top")

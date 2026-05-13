@@ -55,7 +55,7 @@ Read the diff and commit messages. Then present your understanding to the user:
 
 ## PHASE 2: FULL REVIEW (only after user confirms Phase 1)
 
-Check each of the following dimensions. Skip any that are genuinely not relevant to the diff (e.g., skip "Platform Consistency" if only Python pipeline code changed).
+Check each of the following dimensions. Skip any that are genuinely not relevant to the diff (e.g., skip "Device Consistency" if only Python pipeline code changed).
 
 ### Dimension 1: Does it do what was asked?
 - Compare the changes against the confirmed goal from Phase 1
@@ -84,9 +84,9 @@ Run through this checklist for EVERY review. Mark each as PASS, FAIL, or N/A:
 | 8 | **Config.yaml consistency** | If config keys are added/removed/renamed, check that all code reading those keys is updated. |
 | 9 | **No hardcoded secrets** | No API keys, tokens, or passwords in committed code. |
 
-### Dimension 4: Platform consistency (if frontend/UI changes)
+### Dimension 4: Device consistency (if frontend/UI changes)
 
-If the diff touches any of the 7 platforms, check whether equivalent changes are needed on the others:
+If the diff touches any of the 7 devices, check whether equivalent changes are needed on the others:
 
 1. Desktop Website (`assets/`)
 2. Mobile Website (`mobile/`)
@@ -96,7 +96,7 @@ If the diff touches any of the 7 platforms, check whether equivalent changes are
 6. Roku (`NRWApp-Roku/`)
 7. Newsletter (`templates/newsletter/`)
 
-Flag any platform that was changed without its counterparts being updated. If intentionally single-platform, note it as OK.
+Flag any device that was changed without its counterparts being updated. If intentionally single-device, note it as OK.
 
 ### Dimension 5: AI bloat audit
 
@@ -252,4 +252,4 @@ If the review is clean (grade A, no suggestions), skip this section entirely.
 - **Style masquerading as substance**: Flagging variable names, comment wording, or formatting as "issues." These are NOT issues. Only flag things that affect behavior.
 - **The phantom bug**: Claiming a bug exists based on how code LOOKS without tracing the actual data flow. If you think there is a type mismatch, VERIFY the types that actually flow through that code path.
 - **Ignoring the movie ID rule**: The #1 recurring NRW bug is bare `==` on movie IDs. If the diff touches any movie ID comparison, this MUST be checked. It has caused real production failures at least 3 times.
-- **Missing platform siblings**: Reviewing a CSS change in `assets/styles.css` without checking whether `mobile/mobile.css` and the 5 native apps need the same change.
+- **Missing device siblings**: Reviewing a CSS change in `assets/styles.css` without checking whether `mobile/mobile.css` and the 5 native apps need the same change.

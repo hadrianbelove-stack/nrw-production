@@ -279,14 +279,31 @@ class DataGenerator:
     def simplify_provider_name(self, provider_name):
         """Simplify provider names for display
         Examples:
-        - 'Amazon Prime Video' → 'Amazon'
-        - 'Viaplay Amazon Channel' → 'Amazon'
+        - 'Amazon Prime Video' → 'Amazon Prime Video' (streaming — different from VOD)
+        - 'Amazon Video' → 'Amazon' (VOD rent/buy)
+        - 'DocuramaFilms Amazon Channel' → 'DocuramaFilms' (NOT 'Amazon')
+        - 'Shudder Amazon Channel' → 'Shudder'
         - 'AMC Plus Apple TV Channel' → 'AMC+'
         """
         if not provider_name:
             return provider_name
 
-        # Most specific patterns first (check AMC before Amazon)
+        # Strip platform channel suffixes FIRST — these are third-party channels
+        # hosted on Amazon/Apple, not Amazon/Apple themselves
+        provider_lower = provider_name.lower()
+        channel_suffixes = ['amazon channel', 'apple tv channel']
+        for suffix in channel_suffixes:
+            if suffix in provider_lower:
+                # Extract the actual channel name (everything before the suffix)
+                idx = provider_lower.index(suffix)
+                channel_name = provider_name[:idx].strip()
+                if channel_name:
+                    # Re-run the channel name through simplification (e.g. "AMC Plus" → "AMC+")
+                    return self.simplify_provider_name(channel_name)
+
+        # Most specific patterns first
+        # NOTE: 'amazon prime' MUST come before 'amazon' — Prime Video (streaming)
+        # is a different service from Amazon (VOD rent/buy) with different logos
         simplifications = [
             ('amc', 'AMC+'),
             ('netflix', 'Netflix'),
@@ -295,6 +312,8 @@ class DataGenerator:
             ('hbo max', 'Max'),
             ('paramount', 'Paramount+'),
             ('peacock', 'Peacock'),
+            ('amazon prime', 'Amazon Prime Video'),
+            ('prime video', 'Amazon Prime Video'),
             ('amazon', 'Amazon'),
             ('apple tv', 'Apple TV'),
             ('shudder', 'Shudder'),

@@ -1247,6 +1247,16 @@ header h1 {
     margin-bottom: 0.5rem;
 }
 
+/* Section labels above watch buttons */
+.watch-section-label {
+    color: #00d4aa;
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: -0.25rem;
+}
+
 /* VOD row: rent/buy buttons side-by-side */
 .lightbox-buttons .vod-row {
     display: flex;

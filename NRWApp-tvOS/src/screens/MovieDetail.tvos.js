@@ -748,8 +748,18 @@ const MovieDetailTvOS = () => {
               </Text>
             )}
 
-            {/* Metadata row */}
+            {/* Meta block — 3 lines */}
+            {movie.director && (
+              <Text style={styles.metadataText}>Dir: {movie.director}</Text>
+            )}
+            {movie.crew?.cast?.length > 0 && (
+              <Text style={styles.metadataText}>Cast: {movie.crew.cast.slice(0, 3).join(', ')}</Text>
+            )}
             <View style={styles.metadataRow}>
+              {formattedCountries && (
+                <Text style={styles.metadataText}>{formattedCountries}</Text>
+              )}
+              {formattedCountries && movie.year && <Text style={styles.metadataDot}>•</Text>}
               {movie.year && (
                 <Text style={styles.metadataText}>{movie.year}</Text>
               )}
@@ -759,44 +769,13 @@ const MovieDetailTvOS = () => {
                   <Text style={styles.metadataText}>{formattedRuntime}</Text>
                 </>
               )}
-              {movie.rating && (
+              {movie.studio && (
                 <>
                   <Text style={styles.metadataDot}>•</Text>
-                  <View style={styles.ratingBadge}>
-                    <Text style={styles.ratingText}>{movie.rating}</Text>
-                  </View>
+                  <Text style={styles.metadataText}>{movie.studio}</Text>
                 </>
               )}
             </View>
-
-            {/* Genres */}
-            {formattedGenres && (
-              <Text style={styles.genres}>{formattedGenres}</Text>
-            )}
-
-            {/* Director */}
-            {movie.director && (
-              <View style={styles.creditRow}>
-                <Text style={styles.creditLabel}>Directed by</Text>
-                <Text style={styles.creditValue}>{movie.director}</Text>
-              </View>
-            )}
-
-            {/* Countries */}
-            {formattedCountries && (
-              <View style={styles.creditRow}>
-                <Text style={styles.creditLabel}>Country</Text>
-                <Text style={styles.creditValue}>{formattedCountries}</Text>
-              </View>
-            )}
-
-            {/* Cast */}
-            {movie.crew?.cast?.length > 0 && (
-              <View style={styles.creditRow}>
-                <Text style={styles.creditLabel}>Starring</Text>
-                <Text style={styles.creditValue}>{movie.crew.cast.slice(0, 2).join(', ')}</Text>
-              </View>
-            )}
 
             {/* Language (only if not English) */}
             {movie.original_language && movie.original_language !== 'en' && (
@@ -820,7 +799,7 @@ const MovieDetailTvOS = () => {
               </View>
             )}
 
-            {/* Watch buttons row (streaming + VOD + plex) */}
+            {/* Watch buttons row (VOD first, then streaming) */}
             {hasWatchOptions && (() => {
               const nonVsLinks = purchaseLinks.slice(0, 2).filter(l => !isVirtualScreeningPlatform(l.service, l.url));
               const totalButtons = (streamingLinks.length > 0 ? 1 : 0) + nonVsLinks.length + (plexLinks.length > 0 ? 1 : 0);
@@ -831,28 +810,10 @@ const MovieDetailTvOS = () => {
 
               return (
               <View style={styles.watchButtonRow}>
-                {/* STREAM button */}
-                {streamingLinks.length > 0 && (() => {
-                  const idx = watchIdx++;
-                  const svcKey = normalizeService(streamingLinks[0].service);
-                  return (
-                  <ActionButton
-                    buttonIndex={idx}
-                    isWatchButton={true}
-                    nextFocusUp={trailerHandle}
-                    label={getStreamDisplayName(streamingLinks[0].service)}
-                    color={getServiceColor(streamingLinks[0].service)}
-                    icon={getServiceLogo(streamingLinks[0].service)}
-                    iconTintColor="#ffffff"
-                    borderColor={NEEDS_BORDER.includes(svcKey) ? '#444' : undefined}
-                    onPress={() => handleWatchPress(streamingLinks[0])}
-                    hasTVPreferredFocus={preferWatchFocus || !movie?.links?.trailer_hosted}
-                    testID="action-btn-stream"
-                  />
-                  );
-                })()}
-
-                {/* VOD buttons (non-virtual-screening only) */}
+                {/* VOD buttons (rent/buy) — before streaming */}
+                {nonVsLinks.length > 0 && (
+                  <Text style={styles.watchSectionLabel}>Rent/Buy:</Text>
+                )}
                 {nonVsLinks.map((link, i) => {
                   const idx = watchIdx++;
                   const label = movie?._is_preorder ? 'PRE-ORDER'
@@ -874,7 +835,7 @@ const MovieDetailTvOS = () => {
                         iconTintColor="#ffffff"
                         borderColor={vodBorder}
                         onPress={() => handleWatchPress(link)}
-                        hasTVPreferredFocus={(preferWatchFocus || !movie?.links?.trailer_hosted) && streamingLinks.length === 0 && i === 0}
+                        hasTVPreferredFocus={(preferWatchFocus || !movie?.links?.trailer_hosted) && i === 0}
                         testID={`action-btn-purchase-${i}`}
                       />
                       {movie?._is_preorder && link.sublabel && (
@@ -883,6 +844,30 @@ const MovieDetailTvOS = () => {
                     </View>
                   );
                 })}
+
+                {/* STREAM button — after VOD */}
+                {streamingLinks.length > 0 && (() => {
+                  const idx = watchIdx++;
+                  const svcKey = normalizeService(streamingLinks[0].service);
+                  return (
+                  <>
+                    <Text style={styles.watchSectionLabel}>Stream:</Text>
+                    <ActionButton
+                      buttonIndex={idx}
+                      isWatchButton={true}
+                      nextFocusUp={trailerHandle}
+                      label={getStreamDisplayName(streamingLinks[0].service)}
+                      color={getServiceColor(streamingLinks[0].service)}
+                      icon={getServiceLogo(streamingLinks[0].service)}
+                      iconTintColor="#ffffff"
+                      borderColor={NEEDS_BORDER.includes(svcKey) ? '#444' : undefined}
+                      onPress={() => handleWatchPress(streamingLinks[0])}
+                      hasTVPreferredFocus={(preferWatchFocus || !movie?.links?.trailer_hosted) && nonVsLinks.length === 0}
+                      testID="action-btn-stream"
+                    />
+                  </>
+                  );
+                })()}
 
                 {/* PLEX button */}
                 {plexLinks.length > 0 && (() => {
@@ -940,20 +925,6 @@ const MovieDetailTvOS = () => {
               </View>
             )}
 
-            {/* Synopsis — plain text, not interactive */}
-            {movie.synopsis && (
-              <View style={styles.synopsisContainer}>
-                <Text style={styles.synopsis} numberOfLines={6}>
-                  {movie.synopsis}
-                  {movie.categories?.is_virtual_screening && movie.virtual_screening_info?.screening_name && (
-                    <Text style={styles.screeningCallout}>
-                      {` Virtual screening available as part of the ${movie.virtual_screening_info.screening_name}.${movie.virtual_screening_info?.available_end ? ` Ends ${formatShortDate(movie.virtual_screening_info.available_end)}.` : ''}`}
-                    </Text>
-                  )}
-                </Text>
-              </View>
-            )}
-
             {/* Pull Quotes */}
             {movie.pull_quotes?.length > 0 && (
               <View style={styles.pullQuotesSection}>
@@ -970,6 +941,20 @@ const MovieDetailTvOS = () => {
                     </View>
                   </View>
                 ))}
+              </View>
+            )}
+
+            {/* Synopsis — plain text, not interactive */}
+            {movie.synopsis && (
+              <View style={styles.synopsisContainer}>
+                <Text style={styles.synopsis} numberOfLines={6}>
+                  {movie.synopsis}
+                  {movie.categories?.is_virtual_screening && movie.virtual_screening_info?.screening_name && (
+                    <Text style={styles.screeningCallout}>
+                      {` Virtual screening available as part of the ${movie.virtual_screening_info.screening_name}.${movie.virtual_screening_info?.available_end ? ` Ends ${formatShortDate(movie.virtual_screening_info.available_end)}.` : ''}`}
+                    </Text>
+                  )}
+                </Text>
               </View>
             )}
           </ScrollView>
@@ -1192,6 +1177,15 @@ const styles = StyleSheet.create({
     marginTop: Spacing.tvos.lg,
     alignItems: 'center',
     paddingLeft: Spacing.tvos.md,
+    flexWrap: 'wrap',
+  },
+  watchSectionLabel: {
+    color: '#00d4aa',
+    fontSize: Typography.tvos.caption,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+    marginRight: 4,
   },
   preOrderDateLabel: {
     color: '#c4b5fd',

@@ -41,8 +41,7 @@ NRWApp-Roku/
 │   └── ui/
 │       ├── MovieCard.xml/brs  # Poster card
 │       ├── FilterBar.xml/brs  # Category filters
-│       ├── WatchButton.xml/brs # Service buttons
-│       └── DateDivider.xml/brs # Date separators
+│       └── WatchButton.xml/brs # Service buttons
 ├── images/                    # App icons, service logos
 └── locale/en_US/             # Localization
 ```

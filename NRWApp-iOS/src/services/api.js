@@ -174,6 +174,10 @@ export function filterMovies(movies, filter = null) {
       return movies.filter(
         movie => !movie.hidden && movie._is_preorder === true,
       );
+    case 'exploitation':
+      return movies.filter(
+        movie => !movie.hidden && movie.categories?.is_exploitation === true,
+      );
     case 'hidden':
       return movies.filter(movie => movie.hidden === true);
     default:
@@ -227,6 +231,9 @@ export function filterMoviesMulti(movies, activeFilters) {
           break;
         case 'pre-orders':
           if (movie._is_preorder === true) return true;
+          break;
+        case 'exploitation':
+          if (movie.categories?.is_exploitation === true) return true;
           break;
       }
     }

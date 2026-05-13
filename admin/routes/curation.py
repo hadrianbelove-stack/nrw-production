@@ -60,7 +60,8 @@ def toggle_status() -> dict:
             'foreign': 'is_foreign',
             'series': 'is_series',
             'virtual_screening': 'is_virtual_screening',
-            'documentary': 'is_documentary'
+            'documentary': 'is_documentary',
+            'exploitation': 'is_exploitation'
         }
 
         ALL_TYPES = set(STATUS_FILES.keys()) | set(CATEGORY_OVERRIDE_TYPES.keys())

@@ -1,14 +1,14 @@
-# NRW Platform Registry
+# NRW Device Registry
 
-Master reference for all NRW platform versions. Use this when applying style/UX changes across platforms.
+Master reference for all NRW device targets. Use this when applying style/UX changes across devices.
 
-**Quick command:** Run `/check-platforms` to verify consistency after any change.
+**Quick command:** Run `/check-devices` to verify consistency after any change.
 
 ---
 
-## Platform Index (7 Total)
+## Device Index (7 Total)
 
-| # | Platform | Folder | Language | Build Tool |
+| # | Device | Folder | Language | Build Tool |
 |---|----------|--------|----------|------------|
 | 1 | Desktop Website | `assets/` | HTML/CSS/JS | None (static) |
 | 2 | Mobile Website | `mobile/` | HTML/CSS/JS | None (static) |
@@ -20,7 +20,7 @@ Master reference for all NRW platform versions. Use this when applying style/UX 
 
 ---
 
-## Key Files by Platform
+## Key Files by Device
 
 ### Desktop Website
 | Purpose | File |
@@ -84,9 +84,9 @@ Master reference for all NRW platform versions. Use this when applying style/UX 
 
 ## Color Format Conversion
 
-When applying a color change, convert the hex value for each platform:
+When applying a color change, convert the hex value for each device:
 
-| Platform | Format | Example: Teal `#00d4aa` |
+| Device | Format | Example: Teal `#00d4aa` |
 |----------|--------|-------------------------|
 | CSS | Hex | `#00d4aa` |
 | CSS (with alpha) | RGBA | `rgba(0, 212, 170, 0.6)` |
@@ -99,11 +99,11 @@ When applying a color change, convert the hex value for each platform:
 
 ---
 
-## Platform-Specific Constraints
+## Device-Specific Constraints
 
 ### Navigation Patterns
 
-| Platform | Detail View Navigation | Input Method |
+| Device | Detail View Navigation | Input Method |
 |----------|------------------------|--------------|
 | Desktop Web | `← →` arrow buttons + keyboard | Mouse, arrow keys |
 | Mobile Web | None (flip cards) | Touch tap |
@@ -114,7 +114,7 @@ When applying a color change, convert the hex value for each platform:
 
 ### Hover/Focus States
 
-| Platform | Has Hover? | Has Focus State? |
+| Device | Has Hover? | Has Focus State? |
 |----------|------------|------------------|
 | Desktop Web | Yes | No |
 | Mobile Web | No | No |
@@ -125,7 +125,7 @@ When applying a color change, convert the hex value for each platform:
 
 ### Sizing Considerations
 
-| Platform | Viewing Distance | Typical Font Scale |
+| Device | Viewing Distance | Typical Font Scale |
 |----------|------------------|-------------------|
 | Desktop Web | 2 feet | 1rem = 16px |
 | Mobile Web | 1 foot | 1rem = 16px |
@@ -138,7 +138,7 @@ When applying a color change, convert the hex value for each platform:
 
 ## Quick Checklist Template
 
-When applying a change to all platforms, copy this checklist:
+When applying a change to all devices, copy this checklist:
 
 ```
 [ ] Desktop Web: assets/styles.css
@@ -155,6 +155,11 @@ When applying a change to all platforms, copy this checklist:
 ## Changelog
 
 ### 2026-02-24 - Initial Version
-- Created platform registry with all 6 platforms
+- Created device registry with all 6 devices
 - Added color format conversion table
-- Documented platform-specific constraints
+- Documented device-specific constraints
+
+### 2026-05-13 - Terminology Update
+- Renamed from PLATFORM_REGISTRY to DEVICE_REGISTRY
+- "Platform" now reserved for streaming/VOD services (Netflix, Amazon, etc.)
+- "Device" = distribution target (Desktop, Mobile, iOS, tvOS, Android TV, Roku, Newsletter)

@@ -255,8 +255,12 @@ export default function MovieDetail({route}) {
             </Text>
           )}
 
-          {/* Metadata row */}
+          {/* Meta block — 3 lines */}
+          {director && <Text style={styles.metaText}>Dir: {director}</Text>}
+          {cast.length > 0 && <Text style={styles.metaText}>Cast: {Array.isArray(cast) ? cast.slice(0, 3).join(', ') : cast}</Text>}
           <View style={styles.metaRow}>
+            {movie.country && <Text style={styles.metaText}>{movie.country}</Text>}
+            {movie.country && year && <Text style={styles.metaDot}>•</Text>}
             {year && <Text style={styles.metaText}>{year}</Text>}
             {runtime && (
               <>
@@ -264,53 +268,20 @@ export default function MovieDetail({route}) {
                 <Text style={styles.metaText}>{formatRuntime(runtime)}</Text>
               </>
             )}
-            {movie.rating && (
+            {movie.studio && (
               <>
                 <Text style={styles.metaDot}>•</Text>
-                <View style={styles.ratingBadge}>
-                  <Text style={styles.ratingText}>{movie.rating}</Text>
-                </View>
+                <Text style={styles.metaText}>{movie.studio}</Text>
               </>
             )}
           </View>
-
-          {/* Genres */}
-          {genres.length > 0 && (
-            <View style={styles.genresContainer}>
-              {genres.slice(0, 3).map((genre, index) => (
-                <View key={index} style={styles.genreTag}>
-                  <Text style={styles.genreText}>{genre}</Text>
-                </View>
-              ))}
-            </View>
-          )}
         </View>
       </View>
 
-      {/* Trailer — full-width on top */}
-      {(movie.links?.trailer_hosted || movie.links?.trailer) && (
-        <View style={styles.section}>
-          <TouchableOpacity style={styles.trailerButton} onPress={handleTrailerPress}>
-            <Text style={styles.trailerButtonText}>▶ TRAILER</Text>
-          </TouchableOpacity>
-        </View>
-      )}
-
-      {/* Watch buttons section */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Watch Now</Text>
-        <WatchButtonGroup links={watchLinks} onPress={handleWatchPress} maxButtons={4} />
-      </View>
-
-      {/* Info row — Wiki + RT + MC + IMDb shared */}
+      {/* Scores row — RT + IMDb + MC + Wiki */}
       {(movie.links?.wikipedia || movie.rt_score || (movie.metacritic_score && movie.metacritic_score !== "0") || movie.imdb_rating) && (
         <View style={styles.section}>
           <View style={styles.infoRow}>
-            {movie.links?.wikipedia && (
-              <TouchableOpacity style={styles.infoBtnGlass} onPress={handleWikiPress}>
-                <Text style={styles.infoBtnGlassText}>Wiki</Text>
-              </TouchableOpacity>
-            )}
             {movie.rt_score && (
               <TouchableOpacity
                 style={styles.infoBtnColored}
@@ -321,6 +292,14 @@ export default function MovieDetail({route}) {
                   <Text style={[styles.infoBtnColoredText, { color: '#ff6b6b' }]}>{movie.rt_score}</Text>
                 </View>
               </TouchableOpacity>
+            )}
+            {movie.imdb_rating && (
+              <View style={styles.infoBtnColored}>
+                <View style={styles.infoBtnContent}>
+                  <Image source={require('../assets/logos/imdb.png')} style={styles.infoBtnLogo} />
+                  <Text style={[styles.infoBtnColoredText, { color: '#f5c518' }]}>{movie.imdb_rating}</Text>
+                </View>
+              </View>
             )}
             {movie.metacritic_score && movie.metacritic_score !== "0" && (
               <TouchableOpacity
@@ -333,30 +312,42 @@ export default function MovieDetail({route}) {
                 </View>
               </TouchableOpacity>
             )}
-            {movie.imdb_rating && (
-              <View style={styles.infoBtnColored}>
-                <View style={styles.infoBtnContent}>
-                  <Image source={require('../assets/logos/imdb.png')} style={styles.infoBtnLogo} />
-                  <Text style={[styles.infoBtnColoredText, { color: '#f5c518' }]}>{movie.imdb_rating}</Text>
-                </View>
-              </View>
+            {movie.links?.wikipedia && (
+              <TouchableOpacity style={styles.infoBtnGlass} onPress={handleWikiPress}>
+                <Text style={styles.infoBtnGlassText}>Wiki</Text>
+              </TouchableOpacity>
             )}
           </View>
         </View>
       )}
 
-      {/* Synopsis */}
-      {movie.synopsis && (
+      {/* Trailer */}
+      {(movie.links?.trailer_hosted || movie.links?.trailer) && (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Synopsis</Text>
-          <Text style={styles.synopsis}>
-            {movie.synopsis}
-            {movie.categories?.is_virtual_screening && movie.virtual_screening_info?.screening_name && (
-              <Text style={styles.screeningCallout}>
-                {` Virtual screening available as part of the ${movie.virtual_screening_info.screening_name}.${movie.virtual_screening_info?.available_end ? ` Ends ${formatShortDate(movie.virtual_screening_info.available_end)}.` : ''}`}
-              </Text>
-            )}
-          </Text>
+          <TouchableOpacity style={styles.trailerButton} onPress={handleTrailerPress}>
+            <Text style={styles.trailerButtonText}>▶ TRAILER</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {/* Watch buttons — VOD first, then streaming */}
+      {watchLinks.length > 0 && (
+        <View style={styles.section}>
+          {watchLinks.filter(l => l.type === 'purchase').length > 0 && (
+            <>
+              <Text style={styles.watchSectionLabel}>Rent/Buy:</Text>
+              <WatchButtonGroup links={watchLinks.filter(l => l.type === 'purchase')} onPress={handleWatchPress} maxButtons={3} />
+            </>
+          )}
+          {watchLinks.filter(l => l.type === 'streaming').length > 0 && (
+            <>
+              <Text style={styles.watchSectionLabel}>Stream:</Text>
+              <WatchButtonGroup links={watchLinks.filter(l => l.type === 'streaming')} onPress={handleWatchPress} maxButtons={2} />
+            </>
+          )}
+          {watchLinks.filter(l => l.type === 'plex').length > 0 && (
+            <WatchButtonGroup links={watchLinks.filter(l => l.type === 'plex')} onPress={handleWatchPress} maxButtons={1} />
+          )}
         </View>
       )}
 
@@ -379,20 +370,17 @@ export default function MovieDetail({route}) {
         </View>
       )}
 
-      {/* Director */}
-      {director && (
+      {/* Synopsis */}
+      {movie.synopsis && (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Director</Text>
-          <Text style={styles.crewText}>{director}</Text>
-        </View>
-      )}
-
-      {/* Cast */}
-      {cast.length > 0 && (
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Cast</Text>
-          <Text style={styles.crewText}>
-            {Array.isArray(cast) ? cast.slice(0, 5).join(', ') : cast}
+          <Text style={styles.sectionTitle}>Synopsis</Text>
+          <Text style={styles.synopsis}>
+            {movie.synopsis}
+            {movie.categories?.is_virtual_screening && movie.virtual_screening_info?.screening_name && (
+              <Text style={styles.screeningCallout}>
+                {` Virtual screening available as part of the ${movie.virtual_screening_info.screening_name}.${movie.virtual_screening_info?.available_end ? ` Ends ${formatShortDate(movie.virtual_screening_info.available_end)}.` : ''}`}
+              </Text>
+            )}
           </Text>
         </View>
       )}
@@ -675,6 +663,15 @@ const styles = StyleSheet.create({
     fontSize: Typography.body,
     fontWeight: '600',
     marginBottom: Spacing.sm,
+  },
+  watchSectionLabel: {
+    color: '#00d4aa',
+    fontSize: Typography.caption - 1,
+    fontWeight: '600',
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+    marginBottom: 4,
+    marginTop: 8,
   },
   infoButton: {
     backgroundColor: Colors.backgroundSecondary,

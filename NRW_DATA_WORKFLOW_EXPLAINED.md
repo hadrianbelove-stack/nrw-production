@@ -4,6 +4,12 @@
 
 ---
 
+## **Terminology**
+
+- **Platform** = streaming/VOD service (Netflix, Amazon, Apple TV). Where users watch content.
+- **Source** = where pipeline data comes from. TMDB = discovery + metadata. JustWatch = watch links. These are data sources, not platforms.
+- **Device** = distribution target (Desktop, Mobile, iOS, tvOS, Android TV, Roku, Newsletter). See `docs/DEVICE_REGISTRY.md`.
+
 ## **What This System Does**
 
 NRW tracks when movies become digitally available (streaming, rental, purchase) and displays them on a curated wall with trailers, scores, and watch links.

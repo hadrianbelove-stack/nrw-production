@@ -6,7 +6,7 @@
 ## Current State (as of 2026-03-10)
 
 - **Pipeline:** Automated daily, 14,544 movies tracked, 472 on the wall, ~7.5 arrivals/day
-- **Platforms:** 7 active (Desktop, Mobile, iOS, tvOS, Android TV, Roku, Newsletter)
+- **Devices:** 7 active (Desktop, Mobile, iOS, tvOS, Android TV, Roku, Newsletter)
 - **Core vision:** Curation as a product. The wall runs itself — now make the editorial layer shine.
 
 ---
@@ -81,7 +81,7 @@ Currently TMDB-only for primary discovery (3 passes: direct-to-digital, theatric
 
 ---
 
-## Phase 5: Platform Polish
+## Phase 5: Device Polish
 **Priority: LOWER — Ongoing**
 
 - Android TV app buildout (scaffolded, not built)
@@ -95,11 +95,11 @@ Currently TMDB-only for primary discovery (3 passes: direct-to-digital, theatric
 
 | Feature | Date | Notes |
 |---------|------|-------|
-| Festival system | Feb 2026 | Badges, ribbons, filter — all 7 platforms |
+| Festival system | Feb 2026 | Badges, ribbons, filter — all 7 devices |
 | ~~Pre-order detection~~ | Feb 2026 | Removed Apr 2026 — Amazon pre-order detector never worked reliably |
 | Self-hosted trailers | Feb 2026 | B2 infrastructure built, CI fix applied Mar 10 |
 | Gemini enrichment | Feb 2026 | AI-powered RT scores, Wikipedia, trailers |
 | Lightbox redesign | Feb 2026 | Service colors, streaming hierarchy |
-| Cross-platform metadata parity | Feb 2026 | All detail views show same info |
+| Cross-device metadata parity | Feb 2026 | All detail views show same info |
 | Filter descriptions | Mar 2026 | Slide-down explainers for each filter |
 | Enrichment metrics fix | Mar 2026 | Restored stale metrics writer |

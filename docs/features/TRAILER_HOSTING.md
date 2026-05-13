@@ -11,7 +11,7 @@ YouTube (source) → yt-dlp (download) → Backblaze B2 (storage) → HTML5 <vid
 1. **Download**: `scripts/trailer_downloader.py` uses yt-dlp to download trailers from YouTube as 1080p MP4 files
 2. **Upload**: `scripts/trailer_uploader.py` uploads MP4s to Backblaze B2 cloud storage (bucket: `NRW-TRAILERS`)
 3. **Stamp**: `scripts/trailer_pipeline.py stamp` writes the B2 URL into each movie's `links.trailer_hosted` field in data.json
-4. **Playback**: All 7 platforms use HTML5 `<video>` (or native video player) to play the MP4 directly
+4. **Playback**: All 7 devices use HTML5 `<video>` (or native video player) to play the MP4 directly
 
 YouTube is only involved as the *source* for downloading. The actual playback never touches YouTube.
 
@@ -37,11 +37,11 @@ Each movie in data.json has two trailer-related fields:
 | `links.trailer_hosted` | **Self-hosted MP4 on Backblaze B2** (primary) | `https://f004.backblazeb2.com/file/NRW-TRAILERS/1443940.mp4` | Direct video playback |
 | `links.trailer` | **YouTube URL** (fallback only) | `https://www.youtube.com/watch?v=abc123` | Backup if no hosted version exists |
 
-**All platforms check `trailer_hosted` first.** If it exists, they play the MP4 directly. Only if `trailer_hosted` is missing do they fall back to the YouTube URL.
+**All devices check `trailer_hosted` first.** If it exists, they play the MP4 directly. Only if `trailer_hosted` is missing do they fall back to the YouTube URL.
 
-## Platform Playback
+## Device Playback
 
-| Platform | Primary (trailer_hosted) | Fallback (trailer) |
+| Device | Primary (trailer_hosted) | Fallback (trailer) |
 |----------|-------------------------|-------------------|
 | Desktop Website | HTML5 `<video>` element | YouTube iframe embed |
 | Mobile Website | HTML5 `<video>` element | YouTube iframe embed |

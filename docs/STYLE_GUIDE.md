@@ -163,7 +163,7 @@ border-color: #00d4aa;
 - Scale up slightly on hover (`transform: scale(1.05)`)
 
 ### Navigation Arrows (Movie Detail)
-For navigating between movies on detail screens across all platforms:
+For navigating between movies on detail screens across all devices:
 
 | Property | Value | Notes |
 |----------|-------|-------|
@@ -173,8 +173,8 @@ For navigating between movies on detail screens across all platforms:
 | Flash Opacity | 100% | Visual feedback when navigating |
 | Position | Vertically centered on left/right edges | |
 
-**Platform-specific sizes:**
-| Platform | Size | Notes |
+**Device-specific sizes:**
+| Device | Size | Notes |
 |----------|------|-------|
 | tvOS | 80px | 10-foot viewing distance |
 | Android TV | 56sp | Material Design scaling |
@@ -182,7 +182,7 @@ For navigating between movies on detail screens across all platforms:
 | iOS Mobile | 40px | Touch device, swipe primary |
 | Desktop Web | 1.5rem | Button with background |
 
-**Platform-specific values:**
+**Device-specific values:**
 ```css
 /* Web (CSS) */
 color: #00d4aa;
@@ -267,8 +267,8 @@ Use **light theme** for better email compatibility:
 
 ### 2026-02-24 - Navigation Arrows Standard
 - Added Navigation Arrows section for movie detail screens
-- Standardized teal color (#00d4aa) at 60% opacity across all platforms
-- Documented platform-specific sizes and code values
+- Standardized teal color (#00d4aa) at 60% opacity across all devices
+- Documented device-specific sizes and code values
 
 ### 2026-02-03 - Initial Version
 - Extracted from main site styles.css

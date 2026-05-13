@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The New Release Wall - Admin Panel</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}?v=120">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}?v=123">
 </head>
 <body>
     <!-- Health Status Banner -->
@@ -187,6 +187,7 @@
         {% set is_rest = cats.get('is_restoration', false) or movie_id in restorations %}
         {% set is_vscr = cats.get('is_virtual_screening', false) %}
         {% set is_doc = cats.get('is_documentary', false) %}
+        {% set is_expl = cats.get('is_exploitation', false) %}
         {% set trailer_url = movie.get('links', {}).get('trailer_hosted', '') or movie.get('links', {}).get('trailer', '') %}
         {% set has_trailer = movie.get('links', {}).get('trailer') %}
         {% set has_poster = movie.poster_url or movie.get('poster') %}
@@ -231,6 +232,7 @@
                     <button class="cat-btn {{ 'on' if is_rest else '' }}" style="--c:#C8A951;--ct:#000" onclick="toggleCategory('{{ movie_id }}', 'restoration', {{ 'false' if is_rest else 'true' }})" title="Restoration">REST</button>
                     <button class="cat-btn {{ 'on' if is_vscr else '' }}" style="--c:#e67e22" onclick="toggleCategory('{{ movie_id }}', 'virtual_screening', {{ 'false' if is_vscr else 'true' }})" title="Virtual Screening">VSCR</button>
                     <button class="cat-btn {{ 'on' if is_doc else '' }}" style="--c:#4A90D9" onclick="toggleCategory('{{ movie_id }}', 'documentary', {{ 'false' if is_doc else 'true' }})" title="Documentary">DOC</button>
+                    <button class="cat-btn {{ 'on' if is_expl else '' }}" style="--c:#e74c3c" onclick="toggleCategory('{{ movie_id }}', 'exploitation', {{ 'false' if is_expl else 'true' }})" title="Exploitation">EXPL</button>
                 </div>
             </div>
             <div class="r-dir {{ 'bad' if not has_director else '' }}">{{ movie.director or '—' }}</div>
@@ -443,6 +445,6 @@
         <img id="img-preview" src="">
     </div>
 
-    <script src="{{ url_for('static', filename='js/admin.js') }}?v=120"></script>
+    <script src="{{ url_for('static', filename='js/admin.js') }}?v=123"></script>
 </body>
 </html>

@@ -196,6 +196,15 @@
           color="0x666666FF"
           visible="false" />
 
+        <!-- Pull Quotes -->
+        <Label id="pullQuotesLabel"
+          width="1100"
+          font="font:SmallSystemFont"
+          color="0xAAAAAAFF"
+          wrap="true"
+          maxLines="6"
+          visible="false" />
+
         <!-- Synopsis -->
         <Label id="synopsisLabel"
           width="1100"
@@ -205,15 +214,6 @@
           wrap="true"
           maxLines="8"
           ellipsisText="..." />
-
-        <!-- Pull Quotes -->
-        <Label id="pullQuotesLabel"
-          width="1100"
-          font="font:SmallSystemFont"
-          color="0xAAAAAAFF"
-          wrap="true"
-          maxLines="6"
-          visible="false" />
 
         <!-- Buttons row -->
         <LayoutGroup id="buttonsRow"
@@ -227,14 +227,24 @@
             label="Trailer"
             buttonType="filled" />
 
-          <!-- Watch/Stream button -->
-          <WatchButton id="streamButton"
+          <!-- VOD label + buttons (rent/buy — before streaming) -->
+          <Label id="vodSectionLabel"
+            text="Rent/Buy:"
+            font="font:SmallSystemFont"
+            color="0x00D4AAFF"
             visible="false" />
-
-          <!-- VOD buttons (Amazon + Apple TV) -->
           <WatchButton id="vodButton1"
             visible="false" />
           <WatchButton id="vodButton2"
+            visible="false" />
+
+          <!-- Stream label + button -->
+          <Label id="streamSectionLabel"
+            text="Stream:"
+            font="font:SmallSystemFont"
+            color="0x00D4AAFF"
+            visible="false" />
+          <WatchButton id="streamButton"
             visible="false" />
 
           <!-- Plex button -->

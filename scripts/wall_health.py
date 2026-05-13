@@ -305,7 +305,7 @@ if jw_reverts:
     print('  FULL LIST:')
     print('  %-16s %-40s %-6s %s' % ('Date', 'Title', 'Year', 'Reason / TMDB Platforms'))
     print('  ' + '─' * 90)
-    for rev_at, title, year, reason, plat_names in sorted(jw_reverts):
+    for rev_at, title, year, reason, plat_names in sorted(jw_reverts, reverse=True):
         if reason == 'justwatch_no_valid_offers':
             label = 'excluded: ' + (', '.join(plat_names) if plat_names else '(not recorded)')
         elif reason == 'justwatch_no_match':

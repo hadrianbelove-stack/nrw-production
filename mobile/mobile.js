@@ -610,19 +610,22 @@ const NRWMobile = {
         const isScreening = movie.categories?.is_virtual_screening;
         const screeningInfo = movie.virtual_screening_info || {};
 
-        // Teal line: D: Director · Country · Year
-        const topParts = [];
-        if (movie.crew?.director) topParts.push('D: ' + this.esc(movie.crew.director));
-        else if (movie.director) topParts.push('D: ' + this.esc(movie.director));
-        if (movie.country) topParts.push(this.esc(movie.country));
-        if (movie.year) topParts.push(this.esc(movie.year));
+        // Line 1 (teal): Dir: Director
+        const dirLine = movie.crew?.director
+            ? 'Dir: ' + this.esc(movie.crew.director)
+            : (movie.director ? 'Dir: ' + this.esc(movie.director) : '');
 
-        // Gray line: Runtime · Cast · Genre
-        let metaParts = '';
-        if (movie.runtime) metaParts += '<span>' + this.esc(this.formatRuntime(movie.runtime)) + '</span>';
+        // Line 2 (gray): Cast
         const cast = movie.crew?.cast;
-        if (cast?.length) metaParts += '<span>' + this.esc(cast.slice(0, 3).join(', ')) + '</span>';
-        if (movie.genres?.length) metaParts += '<span>' + this.esc(movie.genres.slice(0, 3).join(', ')) + '</span>';
+        let castLine = '';
+        if (cast?.length) castLine = 'Cast: ' + this.esc(cast.slice(0, 3).join(', '));
+
+        // Line 3 (gray): Country • Year • Runtime • Studio
+        const detailParts = [];
+        if (movie.country) detailParts.push(this.esc(movie.country));
+        if (movie.year) detailParts.push(this.esc(movie.year));
+        if (movie.runtime) detailParts.push(this.esc(this.formatRuntime(movie.runtime)));
+        if (movie.studio) detailParts.push(this.esc(movie.studio));
 
         // Inline scores
         let scoresHtml = '';
@@ -666,8 +669,9 @@ const NRWMobile = {
             '<div class="sheet-title">' + this.esc(movie.display_title || movie.title || 'Untitled') +
             (isStaffPick ? ' <span style="color:var(--crimson);font-size:0.7rem">\u2605 STAFF PICK</span>' : '') +
             '</div>' +
-            '<div class="sheet-date">' + topParts.join(' \u00b7 ') + '</div>' +
-            '<div class="sheet-meta">' + metaParts + '</div>' +
+            (dirLine ? '<div class="sheet-date">' + dirLine + '</div>' : '') +
+            (castLine ? '<div class="sheet-meta"><span>' + castLine + '</span></div>' : '') +
+            (detailParts.length ? '<div class="sheet-meta"><span>' + detailParts.join(' \u00b7 ') + '</span></div>' : '') +
             scoresHtml +
             '</div></div>';
 
@@ -712,18 +716,18 @@ const NRWMobile = {
         const vodList = this.getVODList(movie);
 
         if (streaming || vodList.length > 0) {
-            if (streaming) {
-                html += '<div class="sheet-section-label">Streaming</div>' +
-                    '<div class="sheet-providers">' + this.renderProviderBadge(streaming) + '</div>';
-            }
             // Filter out screening VODs (already shown as ticket button above)
             const rentVod = isScreening
                 ? vodList.filter(v => v.resolvedKey !== 'screening')
                 : vodList;
             if (rentVod.length > 0) {
-                html += '<div class="sheet-section-label">Rent / Buy</div>' +
+                html += '<div class="sheet-section-label">Rent/Buy:</div>' +
                     '<div class="sheet-providers">' +
                     rentVod.map(v => this.renderProviderBadge(v)).join('') + '</div>';
+            }
+            if (streaming) {
+                html += '<div class="sheet-section-label">Stream:</div>' +
+                    '<div class="sheet-providers">' + this.renderProviderBadge(streaming) + '</div>';
             }
         } else if (!isScreening) {
             // Pre-order links

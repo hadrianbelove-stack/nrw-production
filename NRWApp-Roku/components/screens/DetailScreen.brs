@@ -31,9 +31,11 @@ Sub Init()
 
     m.buttonsRow = m.top.FindNode("buttonsRow")
     m.trailerButton = m.top.FindNode("trailerButton")
-    m.streamButton = m.top.FindNode("streamButton")
+    m.vodSectionLabel = m.top.FindNode("vodSectionLabel")
     m.vodButton1 = m.top.FindNode("vodButton1")
     m.vodButton2 = m.top.FindNode("vodButton2")
+    m.streamSectionLabel = m.top.FindNode("streamSectionLabel")
+    m.streamButton = m.top.FindNode("streamButton")
     m.plexButton = m.top.FindNode("plexButton")
     m.infoRow = m.top.FindNode("infoRow")
     m.rtGroup = m.top.FindNode("rtGroup")
@@ -137,46 +139,52 @@ Sub LoadMovie(index as Integer)
     end if
 
     ' Build metadata line
-    metaParts = []
-
+    ' Meta block — 3 lines
+    ' Line 1: Dir: Director
     director = GetDirector(movie)
-    if director <> ""
-        metaParts.Push(director)
-    end if
-
-    if movie.country <> invalid AND movie.country <> ""
-        metaParts.Push(movie.country)
-    end if
-
-    if movie.runtime <> invalid
-        metaParts.Push(FormatRuntime(movie.runtime))
-    end if
-
-    m.metadataLabel.text = metaParts.Join(" • ")
-
-    ' Set genres
-    if movie.genres <> invalid AND movie.genres.Count() > 0
-        m.genresLabel.text = movie.genres.Join(", ")
-        m.genresLabel.visible = true
-    else
-        m.genresLabel.visible = false
-    end if
-
-    ' Set cast
+    ' Line 2: Cast
     castArray = GetCast(movie)
+    castNames = []
     if castArray <> invalid AND castArray.Count() > 0
-        ' Take first 2 cast members
-        castNames = []
-        for i = 0 to 1
+        for i = 0 to 2
             if i < castArray.Count()
                 castNames.Push(castArray[i])
             end if
         end for
-        m.castLabel.text = "Starring: " + castNames.Join(", ")
-        m.castLabel.visible = true
-    else
-        m.castLabel.visible = false
     end if
+
+    ' Line 3: Country • Year • Runtime • Studio
+    metaParts = []
+    if movie.country <> invalid AND movie.country <> ""
+        metaParts.Push(movie.country)
+    end if
+    if movie.year <> invalid
+        metaParts.Push(Str(movie.year).Trim())
+    end if
+    if movie.runtime <> invalid
+        metaParts.Push(FormatRuntime(movie.runtime))
+    end if
+    if movie.studio <> invalid AND movie.studio <> ""
+        metaParts.Push(movie.studio)
+    end if
+
+    metaText = ""
+    if director <> ""
+        metaText = "Dir: " + director
+    end if
+    if castNames.Count() > 0
+        if metaText <> "" then metaText = metaText + chr(10)
+        metaText = metaText + "Cast: " + castNames.Join(", ")
+    end if
+    if metaParts.Count() > 0
+        if metaText <> "" then metaText = metaText + chr(10)
+        metaText = metaText + metaParts.Join(" • ")
+    end if
+    m.metadataLabel.text = metaText
+
+    ' Hide genres and cast labels (now in metadata)
+    m.genresLabel.visible = false
+    m.castLabel.visible = false
 
     ' Set language (only if not English)
     if movie.original_language <> invalid AND movie.original_language <> "en" AND movie.original_language <> ""
@@ -184,22 +192,6 @@ Sub LoadMovie(index as Integer)
         m.languageLabel.visible = true
     else
         m.languageLabel.visible = false
-    end if
-
-    ' Set synopsis
-    if movie.synopsis <> invalid AND movie.synopsis <> ""
-        synopsisText = movie.synopsis
-        ' Append screening callout to synopsis
-        if movie.categories <> invalid AND movie.categories.is_virtual_screening = true AND movie.virtual_screening_info <> invalid AND movie.virtual_screening_info.screening_name <> invalid
-            callout = " Virtual screening available as part of the " + movie.virtual_screening_info.screening_name + "."
-            if movie.virtual_screening_info.available_end <> invalid AND movie.virtual_screening_info.available_end <> ""
-                callout = callout + " Ends " + FormatShortDate(movie.virtual_screening_info.available_end) + "."
-            end if
-            synopsisText = synopsisText + callout
-        end if
-        m.synopsisLabel.text = synopsisText
-    else
-        m.synopsisLabel.text = "No synopsis available."
     end if
 
     ' Pull quotes
@@ -231,6 +223,22 @@ Sub LoadMovie(index as Integer)
         end if
     else
         m.pullQuotesLabel.visible = false
+    end if
+
+    ' Set synopsis
+    if movie.synopsis <> invalid AND movie.synopsis <> ""
+        synopsisText = movie.synopsis
+        ' Append screening callout to synopsis
+        if movie.categories <> invalid AND movie.categories.is_virtual_screening = true AND movie.virtual_screening_info <> invalid AND movie.virtual_screening_info.screening_name <> invalid
+            callout = " Virtual screening available as part of the " + movie.virtual_screening_info.screening_name + "."
+            if movie.virtual_screening_info.available_end <> invalid AND movie.virtual_screening_info.available_end <> ""
+                callout = callout + " Ends " + FormatShortDate(movie.virtual_screening_info.available_end) + "."
+            end if
+            synopsisText = synopsisText + callout
+        end if
+        m.synopsisLabel.text = synopsisText
+    else
+        m.synopsisLabel.text = "No synopsis available."
     end if
 
     ' Staff pick badge
@@ -370,21 +378,10 @@ Sub SetupWatchButtons(movie as Object)
         m.trailerButton.visible = false
     end if
 
-    ' Streaming button
-    streaming = GetStreamingService(movie)
-    if streaming <> invalid AND streaming.service <> invalid
-        m.streamButton.service = streaming.service
-        m.streamButton.label = GetStreamDisplayName(streaming.service)
-        m.streamButton.url = streaming.link
-        m.streamButton.visible = true
-        m.buttons.Push(m.streamButton)
-    else
-        m.streamButton.visible = false
-    end if
-
-    ' VOD buttons (up to 2: Amazon + Apple TV + Eventive)
+    ' VOD buttons (rent/buy — before streaming)
     vodServices = GetVodServices(movie)
     vodButtons = [m.vodButton1, m.vodButton2]
+    hasVod = false
     for i = 0 to 1
         if i < vodServices.Count() AND vodServices[i].service <> invalid
             vodButtons[i].service = vodServices[i].service
@@ -397,10 +394,26 @@ Sub SetupWatchButtons(movie as Object)
             end if
             vodButtons[i].visible = true
             m.buttons.Push(vodButtons[i])
+            hasVod = true
         else
             vodButtons[i].visible = false
         end if
     end for
+    m.vodSectionLabel.visible = hasVod
+
+    ' Streaming button (after VOD)
+    streaming = GetStreamingService(movie)
+    if streaming <> invalid AND streaming.service <> invalid
+        m.streamSectionLabel.visible = true
+        m.streamButton.service = streaming.service
+        m.streamButton.label = GetStreamDisplayName(streaming.service)
+        m.streamButton.url = streaming.link
+        m.streamButton.visible = true
+        m.buttons.Push(m.streamButton)
+    else
+        m.streamSectionLabel.visible = false
+        m.streamButton.visible = false
+    end if
 
     ' Pre-order buttons (JustWatch buy offers for pre-order movies)
     preOrderLinks = GetPreOrderLinks(movie)

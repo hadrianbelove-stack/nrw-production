@@ -174,6 +174,9 @@ class MovieRepository(private val context: Context) {
             FilterCategory.PRE_ORDERS -> movies.filter {
                 it.hidden != true && it.enrichmentStatus != "reverted" && it.isPreorder
             }
+            FilterCategory.EXPLOITATION -> movies.filter {
+                it.hidden != true && it.enrichmentStatus != "reverted" && it.categories?.isExploitation == true
+            }
         }
     }
 
@@ -197,6 +200,7 @@ class MovieRepository(private val context: Context) {
                     FilterCategory.DOCUMENTARY -> movie.categories?.isDocumentary == true
                     FilterCategory.VIRTUAL_SCREENINGS -> movie.categories?.isVirtualScreening == true
                     FilterCategory.PRE_ORDERS -> movie.isPreorder
+                    FilterCategory.EXPLOITATION -> movie.categories?.isExploitation == true
                 }
             }
         }

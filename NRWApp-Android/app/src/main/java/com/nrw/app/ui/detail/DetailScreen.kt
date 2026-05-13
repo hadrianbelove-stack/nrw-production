@@ -347,22 +347,30 @@ private fun MovieDetail(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Meta row: Director • Country • Year • Runtime • RT Score
+                // Meta block — 3 lines
+                movie.director?.let { director ->
+                    Text(
+                        text = "Dir: $director",
+                        color = Primary,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+                movie.crew?.cast?.takeIf { it.isNotEmpty() }?.let { cast ->
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Cast: ${cast.take(3).joinToString(", ")}",
+                        color = TextMuted,
+                        fontSize = 12.sp
+                    )
+                }
+                Spacer(modifier = Modifier.height(4.dp))
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    movie.director?.let { director ->
-                        Text(
-                            text = director,
-                            color = Primary,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Medium
-                        )
-                        Text(text = "•", color = TextMuted, fontSize = 12.sp)
-                    }
                     movie.getFormattedCountries()?.let { country ->
-                        Text(text = country, color = Primary, fontSize = 12.sp)
+                        Text(text = country, color = TextSecondary, fontSize = 12.sp)
                         Text(text = "•", color = TextMuted, fontSize = 12.sp)
                     }
                     movie.year?.let { year ->
@@ -372,55 +380,10 @@ private fun MovieDetail(
                     movie.getFormattedRuntime()?.let { runtime ->
                         Text(text = runtime, color = TextSecondary, fontSize = 12.sp)
                     }
-                    movie.rating?.let { rating ->
+                    movie.studio?.let { studio ->
                         Text(text = "•", color = TextMuted, fontSize = 12.sp)
-                        Box(
-                            modifier = Modifier
-                                .border(1.dp, TextSecondary, RoundedCornerShape(3.dp))
-                                .padding(horizontal = 6.dp, vertical = 2.dp)
-                        ) {
-                            Text(
-                                text = rating,
-                                color = TextSecondary,
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.SemiBold
-                            )
-                        }
+                        Text(text = studio, color = TextSecondary, fontSize = 12.sp)
                     }
-                }
-
-                // Genres as chips
-                movie.genres?.takeIf { it.isNotEmpty() }?.let { genres ->
-                    Spacer(modifier = Modifier.height(10.dp))
-                    FlowRow(
-                        horizontalArrangement = Arrangement.spacedBy(6.dp),
-                        verticalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        genres.take(3).forEach { genre ->
-                            Box(
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(12.dp))
-                                    .background(Color.White.copy(alpha = 0.1f))
-                                    .padding(horizontal = 10.dp, vertical = 4.dp)
-                            ) {
-                                Text(
-                                    text = genre,
-                                    color = TextSecondary,
-                                    fontSize = 11.sp
-                                )
-                            }
-                        }
-                    }
-                }
-
-                // Cast - "Starring X, Y"
-                movie.crew?.cast?.takeIf { it.isNotEmpty() }?.let { cast ->
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "Starring: ${cast.take(2).joinToString(", ")}",
-                        color = TextMuted,
-                        fontSize = 12.sp
-                    )
                 }
 
                 // Language (only if not English)
@@ -435,36 +398,8 @@ private fun MovieDetail(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // Synopsis - compact
-                movie.synopsis?.let { synopsis ->
-                    val screeningCallout = if (movie.isVirtualScreening && movie.screeningInfo?.screeningName != null) {
-                        val festName = movie.screeningInfo!!.screeningName!!
-                        val endStr = movie.screeningInfo?.availableEnd?.let { " Ends ${formatShortDate(it)}." } ?: ""
-                        " Virtual screening available as part of the $festName.$endStr"
-                    } else null
-
-                    Text(
-                        text = buildAnnotatedString {
-                            append(synopsis)
-                            screeningCallout?.let {
-                                withStyle(SpanStyle(
-                                    color = Color(0xFFFFD700),
-                                    fontWeight = FontWeight.Bold,
-                                    fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
-                                )) {
-                                    append(it)
-                                }
-                            }
-                        },
-                        color = TextSecondary,
-                        fontSize = 14.sp,
-                        lineHeight = 20.sp
-                    )
-                }
-
                 // Pull quotes
                 if (!movie.pullQuotes.isNullOrEmpty()) {
-                    Spacer(modifier = Modifier.height(12.dp))
                     movie.pullQuotes!!.take(2).forEach { pq ->
                         pq.text?.let { quoteText ->
                             Column(
@@ -512,6 +447,34 @@ private fun MovieDetail(
                             }
                         }
                     }
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
+
+                // Synopsis - compact
+                movie.synopsis?.let { synopsis ->
+                    val screeningCallout = if (movie.isVirtualScreening && movie.screeningInfo?.screeningName != null) {
+                        val festName = movie.screeningInfo!!.screeningName!!
+                        val endStr = movie.screeningInfo?.availableEnd?.let { " Ends ${formatShortDate(it)}." } ?: ""
+                        " Virtual screening available as part of the $festName.$endStr"
+                    } else null
+
+                    Text(
+                        text = buildAnnotatedString {
+                            append(synopsis)
+                            screeningCallout?.let {
+                                withStyle(SpanStyle(
+                                    color = Color(0xFFFFD700),
+                                    fontWeight = FontWeight.Bold,
+                                    fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                                )) {
+                                    append(it)
+                                }
+                            }
+                        },
+                        color = TextSecondary,
+                        fontSize = 14.sp,
+                        lineHeight = 20.sp
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -525,27 +488,63 @@ private fun MovieDetail(
                     Spacer(modifier = Modifier.height(10.dp))
                 }
 
-                // Watch buttons row
-                FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(10.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    watchOptions.forEach { option ->
-                        Column {
-                            WatchButton(
-                                option = option,
-                                onClick = { onWatchClick(option) },
-                                compact = true
-                            )
-                            if (option.sublabel != null) {
-                                Text(
-                                    text = option.sublabel,
-                                    color = Color(0xFFC4B5FD),
-                                    fontSize = 11.sp,
-                                    fontWeight = FontWeight.Medium,
-                                    modifier = Modifier.padding(top = 2.dp)
-                                )
+                // Watch buttons — VOD (rent/buy) first, then streaming
+                val vodOptions = watchOptions.filter { it.type == WatchType.PURCHASE }
+                val streamOptions = watchOptions.filter { it.type == WatchType.STREAMING }
+                val plexOptions = watchOptions.filter { it.type == WatchType.PLEX }
+
+                if (vodOptions.isNotEmpty()) {
+                    Text(
+                        text = "Rent/Buy:",
+                        color = Primary,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        letterSpacing = 0.5.sp
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        vodOptions.forEach { option ->
+                            Column {
+                                WatchButton(option = option, onClick = { onWatchClick(option) }, compact = true)
+                                if (option.sublabel != null) {
+                                    Text(text = option.sublabel, color = Color(0xFFC4B5FD), fontSize = 11.sp, fontWeight = FontWeight.Medium, modifier = Modifier.padding(top = 2.dp))
+                                }
                             }
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+
+                if (streamOptions.isNotEmpty()) {
+                    Text(
+                        text = "Stream:",
+                        color = Primary,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        letterSpacing = 0.5.sp
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        streamOptions.forEach { option ->
+                            WatchButton(option = option, onClick = { onWatchClick(option) }, compact = true)
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+
+                if (plexOptions.isNotEmpty()) {
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        plexOptions.forEach { option ->
+                            WatchButton(option = option, onClick = { onWatchClick(option) }, compact = true)
                         }
                     }
                 }

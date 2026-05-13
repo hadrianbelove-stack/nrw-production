@@ -56,6 +56,10 @@ const NRW = {
         'pre-orders': {
             title: 'Pre-Orders',
             text: 'Coming soon. These movies have confirmed digital release dates and are available to pre-order now on storefronts like Apple TV and Amazon.'
+        },
+        'exploitation': {
+            title: 'Exploitation',
+            text: 'The genre stuff. Horror, thrillers, action \u2014 the movies that know exactly what they are and lean all the way in.'
         }
     },
 
@@ -279,6 +283,9 @@ const NRW = {
                             break;
                         case 'pre-orders':
                             if (movie._is_preorder) matchesAny = true;
+                            break;
+                        case 'exploitation':
+                            if (movie.categories?.is_exploitation) matchesAny = true;
                             break;
                     }
                     if (matchesAny) break;
@@ -897,15 +904,31 @@ const NRW = {
     },
 
     _updateLightboxSynopsis(movie) {
-        // Meta line
-        const metaParts = [];
-        if (movie.year) metaParts.push(movie.year);
-        if (movie.genres?.length) metaParts.push(movie.genres.slice(0, 2).join(', '));
-        if (movie.runtime) metaParts.push(`${movie.runtime} min`);
-        if (movie.crew?.director) metaParts.push(`Dir: ${movie.crew.director}`);
-        if (movie.country) metaParts.push(movie.country);
-        if (movie.studio) metaParts.push(movie.studio);
-        document.getElementById('lightbox-meta').textContent = metaParts.join(' \u2022 ');
+        // Meta block — 3 lines
+        const metaEl = document.getElementById('lightbox-meta');
+        metaEl.textContent = '';
+
+        // Line 1: Dir
+        if (movie.crew?.director) {
+            metaEl.appendChild(document.createTextNode('Dir: ' + movie.crew.director));
+        }
+
+        // Line 2: Cast
+        if (movie.crew?.cast?.length) {
+            if (metaEl.childNodes.length) metaEl.appendChild(document.createElement('br'));
+            metaEl.appendChild(document.createTextNode('Cast: ' + movie.crew.cast.slice(0, 3).join(', ')));
+        }
+
+        // Line 3: Country • Year • Runtime • Studio
+        const detailParts = [];
+        if (movie.country) detailParts.push(movie.country);
+        if (movie.year) detailParts.push(movie.year);
+        if (movie.runtime) detailParts.push(`${movie.runtime} min`);
+        if (movie.studio) detailParts.push(movie.studio);
+        if (detailParts.length) {
+            if (metaEl.childNodes.length) metaEl.appendChild(document.createElement('br'));
+            metaEl.appendChild(document.createTextNode(detailParts.join(' \u2022 ')));
+        }
 
         // Synopsis text
         const synopsisEl = document.getElementById('lightbox-synopsis');
@@ -921,6 +944,43 @@ const NRW = {
                 ? ` Virtual screening available as part of the ${festName}. Ends ${NRW.formatShortDate(endDate)}.`
                 : ` Virtual screening available as part of the ${festName}.`;
             synopsisEl.appendChild(callout);
+        }
+    },
+
+    _updateLightboxScores(movie) {
+        const container = document.getElementById('lightbox-scores');
+        container.innerHTML = '';
+
+        const makeBadge = (url, cls, text, logoSrc) => {
+            const el = url ? document.createElement('a') : document.createElement('span');
+            if (url) {
+                el.setAttribute('href', url);
+                el.setAttribute('target', '_blank');
+                el.setAttribute('rel', 'noopener noreferrer');
+            }
+            el.className = `score-badge ${cls}`;
+            if (logoSrc) {
+                const img = document.createElement('img');
+                img.src = logoSrc;
+                img.className = 'score-logo';
+                img.alt = '';
+                el.appendChild(img);
+            }
+            el.appendChild(document.createTextNode(text));
+            return el;
+        };
+
+        if (movie.rt_score && movie.links?.rt) {
+            container.appendChild(makeBadge(movie.links.rt, 'rt', movie.rt_score, 'assets/logos/rt.png'));
+        }
+        if (movie.imdb_rating) {
+            container.appendChild(makeBadge(movie.links?.imdb, 'imdb', movie.imdb_rating, 'assets/logos/imdb.png'));
+        }
+        if (movie.metacritic_score && movie.metacritic_score !== "0" && movie.links?.metacritic) {
+            container.appendChild(makeBadge(movie.links.metacritic, 'mc', movie.metacritic_score, 'assets/logos/metacritic.png'));
+        }
+        if (movie.links?.wikipedia) {
+            container.appendChild(makeBadge(movie.links.wikipedia, 'wiki', 'Wiki'));
         }
     },
 
@@ -999,41 +1059,17 @@ const NRW = {
             container.appendChild(btn);
         }
 
-        // 2. Watch stack (streaming + VOD)
+        // 2. Watch stack (VOD first, then streaming)
         const watchStack = document.createElement('div');
         watchStack.className = 'watch-stack';
         let hasWatch = false;
 
-        const lbStreamData = this.getStreaming(watchLinks);
-        let streamSvc = lbStreamData?.service;
-        let streamLink = lbStreamData?.link;
-        if (!streamSvc && providers.streaming?.length) {
-            streamSvc = providers.streaming.find(p => !p.includes('with Ads')) || providers.streaming[0];
-        }
-        if (streamSvc) {
-            const resolved = this.resolveService(streamSvc);
-            const cls = resolved?.class || '';
-            const name = resolved?.name || streamSvc.toUpperCase();
-            if (streamLink) {
-                watchStack.appendChild(makeLink(streamLink, `watch-btn-lb stream ${cls}`, name, null, resolved?.wideLogo));
-            } else {
-                const span = document.createElement('span');
-                span.className = `watch-btn-lb stream ${cls}`;
-                span.style.opacity = '0.6';
-                span.style.cursor = 'default';
-                span.textContent = name;
-                watchStack.appendChild(span);
-            }
-            hasWatch = true;
-        }
-
+        // 2a. VOD row (rent/buy) — before streaming
         const lbVodEntries = Array.isArray(watchLinks.vod) ? watchLinks.vod
             : (watchLinks.vod?.service ? [watchLinks.vod] : []);
         const vodRow = document.createElement('div');
         vodRow.className = 'vod-row';
         let hasVod = false;
-        // Resolve all VOD entries, then filter out fallback-only services (e.g. Plex)
-        // when non-fallback services are available
         let resolvedVod = [];
         lbVodEntries.forEach(vod => {
             const vodLink = vod.link || vod.url;
@@ -1048,7 +1084,42 @@ const NRW = {
             vodRow.appendChild(makeLink(vodLink, `watch-btn-lb ${vodType.key}`, vodType.label, null, vodType.wideLogo));
             hasVod = true;
         });
-        if (hasVod) { watchStack.appendChild(vodRow); hasWatch = true; }
+        if (hasVod) {
+            const vodLabel = document.createElement('div');
+            vodLabel.className = 'watch-section-label';
+            vodLabel.textContent = 'Rent/Buy:';
+            watchStack.appendChild(vodLabel);
+            watchStack.appendChild(vodRow);
+            hasWatch = true;
+        }
+
+        // 2b. Streaming service — after VOD
+        const lbStreamData = this.getStreaming(watchLinks);
+        let streamSvc = lbStreamData?.service;
+        let streamLink = lbStreamData?.link;
+        if (!streamSvc && providers.streaming?.length) {
+            streamSvc = providers.streaming.find(p => !p.includes('with Ads')) || providers.streaming[0];
+        }
+        if (streamSvc) {
+            const resolved = this.resolveService(streamSvc);
+            const cls = resolved?.class || '';
+            const name = resolved?.name || streamSvc.toUpperCase();
+            const streamLabel = document.createElement('div');
+            streamLabel.className = 'watch-section-label';
+            streamLabel.textContent = 'Stream:';
+            watchStack.appendChild(streamLabel);
+            if (streamLink) {
+                watchStack.appendChild(makeLink(streamLink, `watch-btn-lb stream ${cls}`, name, null, resolved?.wideLogo));
+            } else {
+                const span = document.createElement('span');
+                span.className = `watch-btn-lb stream ${cls}`;
+                span.style.opacity = '0.6';
+                span.style.cursor = 'default';
+                span.textContent = name;
+                watchStack.appendChild(span);
+            }
+            hasWatch = true;
+        }
 
         // Pre-order links (JustWatch buy offers for pre-order movies)
         if (!hasWatch) {
@@ -1075,42 +1146,6 @@ const NRW = {
         }
 
         if (hasWatch) container.appendChild(watchStack);
-
-        // 3. Info row — Wiki + RT + IMDb
-        const infoRow = document.createElement('div');
-        infoRow.className = 'info-row';
-        let hasInfo = false;
-
-        if (movie.links?.wikipedia) {
-            infoRow.appendChild(makeLink(movie.links.wikipedia, 'info-btn-lb glass', 'Wiki'));
-            hasInfo = true;
-        }
-        if (movie.rt_score && movie.links?.rt) {
-            infoRow.appendChild(makeLink(movie.links.rt, 'info-btn-lb rt', movie.rt_score, 'assets/logos/rt.png'));
-            hasInfo = true;
-        }
-        if (movie.metacritic_score && movie.metacritic_score !== "0" && movie.links?.metacritic) {
-            infoRow.appendChild(makeLink(movie.links.metacritic, 'info-btn-lb mc', movie.metacritic_score, 'assets/logos/metacritic.png'));
-            hasInfo = true;
-        }
-        if (movie.imdb_rating) {
-            const imdbUrl = movie.links?.imdb;
-            if (imdbUrl) {
-                infoRow.appendChild(makeLink(imdbUrl, 'info-btn-lb imdb', movie.imdb_rating, 'assets/logos/imdb.png'));
-            } else {
-                const span = document.createElement('span');
-                span.className = 'info-btn-lb imdb';
-                const img = document.createElement('img');
-                img.src = 'assets/logos/imdb.png';
-                img.className = 'info-logo';
-                img.alt = '';
-                span.appendChild(img);
-                span.appendChild(document.createTextNode(' ' + movie.imdb_rating));
-                infoRow.appendChild(span);
-            }
-            hasInfo = true;
-        }
-        if (hasInfo) container.appendChild(infoRow);
     },
 
     // Update lightbox content — delegates to sub-renderers
@@ -1121,6 +1156,7 @@ const NRW = {
         this._updateLightboxPoster(movie);
         this._updateLightboxHeader(movie);
         this._updateLightboxSynopsis(movie);
+        this._updateLightboxScores(movie);
         this._updateLightboxPullQuotes(movie);
         this._buildLightboxButtons(movie);
     },

@@ -112,10 +112,28 @@ class GeminiPullQuoteFinder(GeminiFinderBase):
 Requirements:
 - Return ONLY real quotes from published professional reviews
 - Each quote must include: the exact quote text, critic name, and publication name
-- Prefer short, punchy quotes (1-2 sentences, under 30 words ideal)
-- Include a mix of major outlets (NYT, Variety, Hollywood Reporter, The Guardian) and notable indie outlets (IndieWire, The Playlist, RogerEbert.com)
 - Do NOT fabricate or paraphrase quotes - only real published quotes
 - If fewer than 3 real quotes exist, respond with: INSUFFICIENT_QUOTES
+
+Source priority (mix these):
+- Top tier: NYT, The New Yorker, Sight & Sound, Variety, IndieWire, The Guardian, RogerEbert.com, Hollywood Reporter
+- Good indie: The Playlist, Little White Lies, Film Stage, Vulture, Associated Press
+- A quote from a lesser-known outlet must be exceptionally well-written to justify inclusion
+
+What makes a GREAT pull quote (follow these strictly):
+- TRIM to the punchiest fragment. "artistic and social negligence" is better than the full sentence it came from. Strip the movie title from the front if the quote starts with it.
+- Vivid specific adjectives over vague generic praise. "swoony, funny, panicky and sad" beats "a brilliant exploration of love and connection."
+- Quotes that tell you WHAT THE FILM IS: genre descriptions ("dark screwball comedy"), tone/feel ("intimate, awkward, and loaded with possibility"), comparisons to other films.
+- Sharp writing matters regardless of sentiment. A well-crafted negative quote is better than a bland positive one.
+- Quotes that SELL the experience of watching the movie. Create curiosity in the reader.
+- Look at the FIRST and LAST sentences of reviews — that's where the sharpest lines live (thesis + summary). The middle is usually evidence that doesn't stand alone.
+
+What to AVOID:
+- Academic jargon ("indicts the burden of proof placed upon personhood")
+- Generic superlative stacking ("a masterful, stunning, powerful achievement")
+- Sentences that don't stand alone without context
+- Quotes that just summarize plot
+- Awkward or clunky phrasing
 
 Format each quote as:
 QUOTE: "exact quote text" -- Critic Name, Publication Name
@@ -150,10 +168,16 @@ Response:"""
 
 Requirements:
 - Only reviews with significant engagement (popular/liked reviews)
-- Prefer witty, insightful, or unusually well-written reviews
 - Include the Letterboxd username (with @ prefix)
 - Do NOT fabricate reviews - only real Letterboxd reviews
 - If no notable reviews exist, respond with: NO_REVIEWS
+
+What makes a GREAT Letterboxd pull quote:
+- Genre-comparison one-liners are GOLD. Examples: "12 angry men for catholic people", "Barbie for people who listen to Charli xcx", "a cinderella story for girls on SSRIs"
+- Vibe/experience quotes that convey what it FEELS like to watch the movie. Example: "This made me want to light a cigarette and stare at a wall for two hours. Five stars."
+- Contrasting opinions in one quote — loving AND hating. Example: "i really loved the gore effects, they're all awesomely nasty. unfortunately this is the dumbest movie of the year i think."
+- Sharp humor that also describes the film, not just random jokes
+- Shorter ALWAYS wins. If a review is long, extract only the punchiest line.
 
 Format each as:
 QUOTE: "review text" -- @username, Letterboxd
