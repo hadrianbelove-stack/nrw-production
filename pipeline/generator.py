@@ -646,16 +646,20 @@ class DataGenerator:
         entry['budget'] = movie_details.get('budget', 0)
 
         # Add country with error handling
-        if is_tv:
-            # TV shows use origin_country (ISO codes like 'US', 'GB')
-            origin_countries = movie_details.get('origin_country', [])
-            entry['country'] = origin_countries[0] if origin_countries else 'Unknown'
-        else:
-            production_countries = movie_details.get('production_countries', [])
-            if production_countries and len(production_countries) > 0:
-                entry['country'] = production_countries[0].get('name', 'Unknown')
+        # Prefer origin_country (true origin) over production_countries[0] (alphabetical co-production order)
+        origin_countries = movie_details.get('origin_country', [])
+        production_countries = movie_details.get('production_countries', [])
+        if origin_countries:
+            origin_iso = origin_countries[0]
+            if is_tv:
+                entry['country'] = origin_iso
             else:
-                entry['country'] = 'Unknown'
+                match = next((pc.get('name') for pc in production_countries if pc.get('iso_3166_1') == origin_iso), None)
+                entry['country'] = match or origin_iso
+        elif production_countries:
+            entry['country'] = production_countries[0].get('name', 'Unknown') if not is_tv else production_countries[0].get('iso_3166_1', 'Unknown')
+        else:
+            entry['country'] = 'Unknown'
 
         # Add original language (ISO 639-1 code: 'en', 'es', 'fr', etc.)
         entry['original_language'] = movie_details.get('original_language')

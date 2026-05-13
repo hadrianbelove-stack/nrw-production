@@ -435,15 +435,18 @@ class MovieEnricher:
                 studio = production_companies[0]['name']
 
             country = None
-            if is_tv:
-                # TV series: origin_country is ISO codes like ['US', 'GB']
-                origin_countries = movie_details.get('origin_country', [])
-                if origin_countries:
-                    country = origin_countries[0]
-            else:
-                production_countries = movie_details.get('production_countries', [])
-                if production_countries:
-                    country = production_countries[0]['name']
+            origin_countries = movie_details.get('origin_country', [])
+            production_countries = movie_details.get('production_countries', [])
+            if origin_countries:
+                origin_iso = origin_countries[0]
+                if is_tv:
+                    country = origin_iso
+                else:
+                    # Find full country name from production_countries matching origin
+                    match = next((pc['name'] for pc in production_countries if pc.get('iso_3166_1') == origin_iso), None)
+                    country = match or origin_iso
+            elif production_countries:
+                country = production_countries[0]['name'] if not is_tv else production_countries[0].get('iso_3166_1', production_countries[0]['name'])
 
             # Add metadata to result
             result.update({

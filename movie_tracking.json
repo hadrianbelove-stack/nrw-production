@@ -113576,8 +113576,8 @@
       "intake_pass": "C",
       "festival": "SXSW",
       "has_providers": true,
-      "enriched": false,
-      "enrichment_date": null,
+      "enriched": true,
+      "enrichment_date": "2026-05-12",
       "imdb_id": "tt30829319"
     },
     "1196829": {
@@ -115752,7 +115752,10 @@
       "has_providers": false,
       "enriched": false,
       "enrichment_date": null,
-      "imdb_id": "tt33030466"
+      "imdb_id": "tt33030466",
+      "_jw_revert_reason": "justwatch_no_valid_offers",
+      "_jw_reverted_at": "2026-05-12",
+      "_jw_revert_count": 1
     },
     "1320423": {
       "title": "My Birthday",
@@ -218895,7 +218898,7 @@
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-05-10"
+      "enrichment_date": "2026-05-12"
     },
     "1670563": {
       "title": "Thanks for Coming",
@@ -220167,7 +220170,9 @@
       "has_providers": true,
       "enriched": true,
       "enrichment_date": "2026-05-12",
-      "_discovery_source": "tmdb_type4"
+      "_discovery_source": "tmdb_type4",
+      "manual_country": true,
+      "country": "United States of America"
     },
     "1691022": {
       "title": "The Hybrids",

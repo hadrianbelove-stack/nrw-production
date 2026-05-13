@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-12T14:02:57.675846",
+  "generated_at": "2026-05-12T20:55:33.563966",
   "count": 772,
   "movies": [
     {
@@ -3288,7 +3288,9 @@
       "featured": false,
       "imdb_rating": "5.9",
       "_watch_links_verified": "2026-05-06T14:20:59.926970",
-      "display_title": "Who Took My Family"
+      "display_title": "Who Took My Family",
+      "_trailer_retry_count": 1,
+      "_trailer_last_retry": "2026-05-12T17:04:38.143500"
     },
     {
       "id": "1633513",
@@ -4776,7 +4778,7 @@
         "streaming": []
       },
       "links": {
-        "trailer": null,
+        "trailer": "https://www.youtube.com/watch?v=lKJRFq8PXpk",
         "rt": "https://www.rottentomatoes.com/m/black_goat",
         "imdb": "https://www.imdb.com/title/tt36692854/",
         "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1537268.mp4"
@@ -4834,7 +4836,10 @@
       "featured": false,
       "imdb_rating": "3.6",
       "_watch_links_verified": "2026-05-06T14:28:17.689495",
-      "display_title": "Black Goat"
+      "display_title": "Black Goat",
+      "_trailer_retry_count": 1,
+      "_trailer_last_retry": "2026-05-12T17:04:47.279860",
+      "_trailer_source": "gemini_playwright"
     },
     {
       "id": "1617412",
@@ -10600,7 +10605,7 @@
       ],
       "runtime": 139,
       "year": 1999,
-      "rt_score": "81%",
+      "rt_score": "82%",
       "providers": {
         "rent": [],
         "buy": [],
@@ -10617,16 +10622,16 @@
       "watch_links": {
         "vod": [
           {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.84aa074e-d217-477f-9242-3e62c961c14b&tag=nrw04-20"
+          },
+          {
             "service": "Fandango",
             "link": "https://athome.fandango.com/content/browse/details/Fight-Club/7955"
           },
           {
             "service": "Apple TV",
             "link": "https://tv.apple.com/us/movie/fight-club/umc.cmc.70dbl3043tb6ealg0u12k1pih?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A290531770"
-          },
-          {
-            "service": "Amazon",
-            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.84aa074e-d217-477f-9242-3e62c961c14b&tag=nrw04-20"
           },
           {
             "service": "Barnes & Noble",
@@ -10642,7 +10647,7 @@
       "poster": "https://image.tmdb.org/t/p/w500/jSziioSwPVrOy9Yow3XhWIBDjq1.jpg",
       "studio": "Fox 2000 Pictures",
       "budget": 63000000,
-      "country": "Germany",
+      "country": "United States of America",
       "original_language": "en",
       "original_title": "Fight Club",
       "crew": {
@@ -10656,7 +10661,7 @@
         ]
       },
       "_discovery_source": "tmdb_type4",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "_last_enrichment_attempt": "2026-05-12",
       "imdb_rating": "8.8",
       "_trailer_source": "tmdb_official",
@@ -10857,7 +10862,15 @@
         "manual_override": null
       },
       "featured": false,
-      "display_title": "Hamlet"
+      "display_title": "Hamlet",
+      "pull_quotes": [
+        {
+          "text": "Screenwriter Michael Lesslie and director Aneil Karia have devised a stark and severe new interpretation of Shakespeare's Hamlet.",
+          "critic": "Peter Bradshaw",
+          "outlet": "The Guardian",
+          "source": "critic"
+        }
+      ]
     },
     {
       "id": "1399462",
@@ -12297,7 +12310,9 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "_trailer_retry_count": 1,
+      "_trailer_last_retry": "2026-05-12T17:04:52.587795"
     },
     {
       "id": "1658982",
@@ -12541,7 +12556,7 @@
       "poster": "https://image.tmdb.org/t/p/w500/gqY0ITBgT7A82poL9jv851qdnIb.jpg",
       "studio": "Ardustry Entertainment",
       "budget": 38000000,
-      "country": "Germany",
+      "country": "United States of America",
       "original_language": "en",
       "original_title": "The Fast and the Furious",
       "crew": {
@@ -12555,16 +12570,16 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
-      "_last_enrichment_attempt": "2026-05-10",
+      "_enrichment_attempts": 2,
+      "_last_enrichment_attempt": "2026-05-12",
       "imdb_rating": "6.8",
       "_trailer_source": "tmdb_official",
       "metacritic_score": "58",
       "_digital_date_source": "detection",
       "_needs_review": true,
       "_quality_warnings": [
-        "Service 'Barnes & Noble' not in TMDB providers for this title (TMDB has: ['google play movies', 'youtube', 'amazon video', 'apple tv store', 'fandango at home'])",
-        "Service 'GRUV' not in TMDB providers for this title (TMDB has: ['google play movies', 'youtube', 'amazon video', 'apple tv store', 'fandango at home'])"
+        "Service 'Barnes & Noble' not in TMDB providers for this title (TMDB has: ['apple tv store', 'youtube', 'fandango at home', 'google play movies', 'amazon video'])",
+        "Service 'GRUV' not in TMDB providers for this title (TMDB has: ['apple tv store', 'youtube', 'fandango at home', 'google play movies', 'amazon video'])"
       ],
       "status": "available",
       "categories": {
@@ -12859,7 +12874,9 @@
         "manual_override": null
       },
       "featured": false,
-      "display_title": "Who Killed These Women? (The Tinley Park 5)"
+      "display_title": "Who Killed These Women? (The Tinley Park 5)",
+      "_trailer_retry_count": 1,
+      "_trailer_last_retry": "2026-05-12T17:05:10.615949"
     },
     {
       "id": "1541658",
@@ -13216,7 +13233,9 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "_trailer_retry_count": 1,
+      "_trailer_last_retry": "2026-05-12T17:05:26.051712"
     },
     {
       "id": "1317448",
@@ -13809,7 +13828,9 @@
       },
       "featured": false,
       "display_title": "¡Quba!",
-      "hidden": true
+      "hidden": true,
+      "_trailer_retry_count": 1,
+      "_trailer_last_retry": "2026-05-12T17:05:26.301577"
     },
     {
       "id": "1465656",
@@ -15066,7 +15087,7 @@
       },
       "links": {
         "wikipedia": null,
-        "trailer": null,
+        "trailer": "https://www.youtube.com/watch?v=RsZNEkPLJpM",
         "rt": null,
         "imdb": "https://www.imdb.com/title/tt39828201/"
       },
@@ -15108,7 +15129,6 @@
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
-        "trailer",
         "wikipedia",
         "imdb_rating",
         "metacritic_score"
@@ -15139,7 +15159,10 @@
       },
       "featured": false,
       "display_title": "Mudville",
-      "hidden": true
+      "hidden": true,
+      "_trailer_retry_count": 1,
+      "_trailer_last_retry": "2026-05-12T17:05:31.170083",
+      "_trailer_source": "gemini_playwright"
     },
     {
       "id": "1301469",
@@ -15719,7 +15742,7 @@
       },
       "links": {
         "wikipedia": null,
-        "trailer": null,
+        "trailer": "https://www.youtube.com/watch?v=bh3EHovSNn4",
         "rt": "https://www.rottentomatoes.com/m/have_you_seen_my_movie",
         "imdb": "https://www.imdb.com/title/tt31353594/"
       },
@@ -15761,7 +15784,6 @@
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
-        "trailer",
         "wikipedia",
         "imdb_rating",
         "metacritic_score"
@@ -15781,7 +15803,10 @@
         "manual_override": null
       },
       "featured": false,
-      "display_title": "My Movie Starring Paul Dano"
+      "display_title": "My Movie Starring Paul Dano",
+      "_trailer_retry_count": 1,
+      "_trailer_last_retry": "2026-05-12T17:05:46.426342",
+      "_trailer_source": "broad_search"
     },
     {
       "id": "1064021",
@@ -17520,7 +17545,9 @@
         "manual_override": null
       },
       "featured": false,
-      "display_title": "Making of Lord of the Flies"
+      "display_title": "Making of Lord of the Flies",
+      "_trailer_retry_count": 1,
+      "_trailer_last_retry": "2026-05-12T17:05:55.197697"
     },
     {
       "id": "1665152",
@@ -19852,7 +19879,9 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "_trailer_retry_count": 1,
+      "_trailer_last_retry": "2026-05-12T17:06:10.574646"
     },
     {
       "id": "1683551",
@@ -19943,7 +19972,9 @@
       },
       "featured": false,
       "display_title": "Contact in the Woods: The Dr. Johnathan Reed Story",
-      "status": "available"
+      "status": "available",
+      "_trailer_retry_count": 1,
+      "_trailer_last_retry": "2026-05-12T17:06:15.473883"
     },
     {
       "id": "1217931",
@@ -26393,7 +26424,9 @@
         "manual_override": null
       },
       "featured": false,
-      "display_title": "Santita"
+      "display_title": "Santita",
+      "_trailer_retry_count": 1,
+      "_trailer_last_retry": "2026-05-12T17:06:15.663765"
     },
     {
       "id": "tv_304550",
@@ -27510,7 +27543,9 @@
       "_quality_warnings": [
         "Title changed from tracking: 'The Inheritace' -> 'The Inheritance (A Found Footage Horror Film)'"
       ],
-      "display_title": "The Inheritance (A Found Footage Horror Film)"
+      "display_title": "The Inheritance (A Found Footage Horror Film)",
+      "_trailer_retry_count": 1,
+      "_trailer_last_retry": "2026-05-12T17:06:22.094608"
     },
     {
       "id": "1407278",
@@ -27876,7 +27911,9 @@
       },
       "featured": false,
       "display_title": "Murder at the Merriweather",
-      "_watch_links_verified": "2026-05-06T14:43:06.930285"
+      "_watch_links_verified": "2026-05-06T14:43:06.930285",
+      "_trailer_retry_count": 1,
+      "_trailer_last_retry": "2026-05-12T17:06:22.313324"
     },
     {
       "id": "1602783",
@@ -28649,7 +28686,9 @@
         "manual_override": null
       },
       "featured": false,
-      "display_title": "KillTonyMania"
+      "display_title": "KillTonyMania",
+      "_trailer_retry_count": 1,
+      "_trailer_last_retry": "2026-05-12T17:06:22.530268"
     },
     {
       "id": "1677582",
@@ -30390,7 +30429,9 @@
       "_quality_warnings": [
         "Service 'Tubi TV' not in TMDB providers for this title (TMDB has: ['amazon video'])"
       ],
-      "display_title": "The Crossbow Murders: The Killings That Shocked Britain."
+      "display_title": "The Crossbow Murders: The Killings That Shocked Britain.",
+      "_trailer_retry_count": 1,
+      "_trailer_last_retry": "2026-05-12T17:06:22.713245"
     },
     {
       "id": "1414413",
@@ -30843,7 +30884,9 @@
         "manual_override": null
       },
       "featured": false,
-      "display_title": "Bride or Die"
+      "display_title": "Bride or Die",
+      "_trailer_retry_count": 1,
+      "_trailer_last_retry": "2026-05-12T17:06:30.428874"
     },
     {
       "id": "1656632",
@@ -33736,7 +33779,7 @@
       },
       "links": {
         "wikipedia": null,
-        "trailer": null,
+        "trailer": "https://www.youtube.com/watch?v=UyA-NslVlMo",
         "rt": "https://www.rottentomatoes.com/m/skyking",
         "imdb": "https://www.imdb.com/title/tt39368489/"
       },
@@ -33768,7 +33811,6 @@
       "_digital_date_source": "tmdb_type4",
       "_needs_review": false,
       "_enrichment_gaps": [
-        "trailer",
         "wikipedia"
       ],
       "categories": {
@@ -33786,7 +33828,10 @@
         "manual_override": null
       },
       "featured": false,
-      "display_title": "#SKYKING"
+      "display_title": "#SKYKING",
+      "_trailer_retry_count": 1,
+      "_trailer_last_retry": "2026-05-12T17:06:30.658557",
+      "_trailer_source": "tmdb_official"
     },
     {
       "id": "1663942",
@@ -43673,7 +43718,9 @@
         "manual_override": null
       },
       "featured": false,
-      "display_title": "El depredador de Sevilla (The Predator of Seville)"
+      "display_title": "El depredador de Sevilla (The Predator of Seville)",
+      "_trailer_retry_count": 1,
+      "_trailer_last_retry": "2026-05-12T17:06:31.017872"
     },
     {
       "id": "tv_302162",
@@ -43764,7 +43811,9 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "_trailer_retry_count": 1,
+      "_trailer_last_retry": "2026-05-12T17:06:31.242833"
     },
     {
       "id": "tv_317607",
@@ -46788,7 +46837,9 @@
         "manual_override": null
       },
       "featured": false,
-      "display_title": "Clash of the Superpowers: America vs China"
+      "display_title": "Clash of the Superpowers: America vs China",
+      "_trailer_retry_count": 1,
+      "_trailer_last_retry": "2026-05-12T17:06:51.459201"
     },
     {
       "id": "1574859",
@@ -46861,7 +46912,9 @@
         "manual_override": null
       },
       "featured": false,
-      "display_title": "Rubber Nose Massacre"
+      "display_title": "Rubber Nose Massacre",
+      "_trailer_retry_count": 1,
+      "_trailer_last_retry": "2026-05-12T17:07:16.088001"
     },
     {
       "id": "1636603",
@@ -47931,7 +47984,7 @@
         "streaming": []
       },
       "links": {
-        "trailer": null,
+        "trailer": "https://www.youtube.com/watch?v=nk-qt6zCTZU",
         "rt": "https://www.rottentomatoes.com/m/my_daughter_was_taken",
         "imdb": "https://www.imdb.com/title/tt38072056/"
       },
@@ -47980,7 +48033,10 @@
       "featured": false,
       "imdb_rating": "7.4",
       "_watch_links_verified": "2026-03-25T17:58:30.259139",
-      "display_title": "My Daughter Was Taken"
+      "display_title": "My Daughter Was Taken",
+      "_trailer_retry_count": 1,
+      "_trailer_last_retry": "2026-05-12T17:07:20.621034",
+      "_trailer_source": "gemini_playwright"
     },
     {
       "id": "875828",
@@ -48996,7 +49052,9 @@
       "_watch_links_verified": "2026-03-25T17:58:33.682772",
       "_enrichment_attempts": 2,
       "_needs_review": false,
-      "display_title": "Bruce Springsteen's Nebraska: A Celebration In Words and Music"
+      "display_title": "Bruce Springsteen's Nebraska: A Celebration In Words and Music",
+      "_trailer_retry_count": 1,
+      "_trailer_last_retry": "2026-05-12T17:07:33.766594"
     },
     {
       "id": "1242454",
@@ -49190,7 +49248,7 @@
       },
       "links": {
         "wikipedia": "https://en.wikipedia.org/wiki/Born_to_Bowl",
-        "trailer": null,
+        "trailer": "https://www.youtube.com/watch?v=J5rNUR6tUik",
         "imdb": "https://www.imdb.com/title/tt40151661/",
         "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/tv_314922.mp4"
       },
@@ -49247,9 +49305,11 @@
       "featured": false,
       "_enrichment_attempts": 1,
       "imdb_rating": null,
-      "_trailer_source": null,
+      "_trailer_source": "gemini_playwright",
       "_needs_review": false,
-      "display_title": "Born to Bowl"
+      "display_title": "Born to Bowl",
+      "_trailer_retry_count": 1,
+      "_trailer_last_retry": "2026-05-12T17:07:34.001161"
     },
     {
       "id": "1202549",
@@ -49825,7 +49885,7 @@
         "streaming": []
       },
       "links": {
-        "trailer": null,
+        "trailer": "https://www.youtube.com/watch?v=Ld8Atqjpf3U",
         "rt": "https://www.rottentomatoes.com/m/1_girl_infinite",
         "imdb": "https://www.imdb.com/title/tt35433280/"
       },
@@ -49879,7 +49939,10 @@
       "featured": false,
       "imdb_rating": "5.7",
       "_watch_links_verified": "2026-03-25T17:58:35.877331",
-      "display_title": "One Girl Infinite"
+      "display_title": "One Girl Infinite",
+      "_trailer_retry_count": 1,
+      "_trailer_last_retry": "2026-05-12T17:07:44.816011",
+      "_trailer_source": "broad_search"
     },
     {
       "id": "tv_259819",
@@ -50497,7 +50560,7 @@
         ]
       },
       "links": {
-        "trailer": null
+        "trailer": "https://www.youtube.com/watch?v=MRIW2NbGWBo"
       },
       "watch_links": {
         "streaming": [
@@ -50542,7 +50605,10 @@
       },
       "featured": false,
       "_watch_links_verified": "2026-03-25T17:58:37.370965",
-      "display_title": "Lexington: 250 Years"
+      "display_title": "Lexington: 250 Years",
+      "_trailer_retry_count": 1,
+      "_trailer_last_retry": "2026-05-12T17:07:55.521730",
+      "_trailer_source": "broad_search"
     },
     {
       "id": "1013052",
@@ -50648,7 +50714,7 @@
       },
       "links": {
         "wikipedia": "https://en.wikipedia.org/wiki/The_Ties_That_Bind_Us",
-        "trailer": null,
+        "trailer": "https://www.youtube.com/watch?v=idKKmHZRtRk",
         "rt": "https://www.rottentomatoes.com/m/the_lies_that_bind_us",
         "imdb": "https://www.imdb.com/title/tt33030403/"
       },
@@ -50702,7 +50768,10 @@
       "featured": false,
       "imdb_rating": "7.3",
       "_watch_links_verified": "2026-03-25T17:58:37.805385",
-      "display_title": "L'Attachement (The Ties That Bind Us)"
+      "display_title": "L'Attachement (The Ties That Bind Us)",
+      "_trailer_retry_count": 1,
+      "_trailer_last_retry": "2026-05-12T17:08:02.808819",
+      "_trailer_source": "broad_search"
     },
     {
       "id": "1308022",
@@ -51050,7 +51119,7 @@
         "streaming": []
       },
       "links": {
-        "trailer": null,
+        "trailer": "https://www.youtube.com/watch?v=tQ8cSB_aL0Q",
         "rt": "https://www.rottentomatoes.com/m/lets_murder_like_its_1999",
         "imdb": "https://www.imdb.com/title/tt37856736/"
       },
@@ -51104,7 +51173,10 @@
       "featured": false,
       "imdb_rating": "6.2",
       "_watch_links_verified": "2026-03-25T17:58:38.689928",
-      "display_title": "Let's Murder Like It's 1999!"
+      "display_title": "Let's Murder Like It's 1999!",
+      "_trailer_retry_count": 1,
+      "_trailer_last_retry": "2026-05-12T17:08:10.515702",
+      "_trailer_source": "gemini_playwright"
     },
     {
       "id": "1219620",
@@ -51910,7 +51982,9 @@
         "manual_override": null
       },
       "featured": false,
-      "display_title": "The Race for Ancient Egypt in Colour"
+      "display_title": "The Race for Ancient Egypt in Colour",
+      "_trailer_retry_count": 1,
+      "_trailer_last_retry": "2026-05-12T17:08:17.824317"
     },
     {
       "id": "tv_278143",
@@ -52404,7 +52478,9 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "_trailer_retry_count": 1,
+      "_trailer_last_retry": "2026-05-12T17:08:47.737783"
     },
     {
       "id": "tv_313969",
@@ -52524,7 +52600,7 @@
         ]
       },
       "links": {
-        "trailer": null,
+        "trailer": "https://www.youtube.com/watch?v=BjXbbiCViEc",
         "imdb": "https://www.imdb.com/title/tt40671203/"
       },
       "watch_links": {
@@ -52573,7 +52649,10 @@
       "featured": false,
       "imdb_rating": "4.8",
       "_watch_links_verified": "2026-03-25T17:58:42.658615",
-      "display_title": "Barbara – Becoming Shirin David"
+      "display_title": "Barbara – Becoming Shirin David",
+      "_trailer_retry_count": 1,
+      "_trailer_last_retry": "2026-05-12T17:08:47.997559",
+      "_trailer_source": "gemini_playwright"
     },
     {
       "id": "1510745",
@@ -53011,7 +53090,7 @@
         ]
       },
       "links": {
-        "trailer": null,
+        "trailer": "https://www.youtube.com/watch?v=IXOy2iMOtgo",
         "imdb": "https://www.imdb.com/title/tt38590166/"
       },
       "watch_links": {
@@ -53066,7 +53145,10 @@
       },
       "featured": false,
       "imdb_rating": "2.7",
-      "display_title": "You're All Doomed"
+      "display_title": "You're All Doomed",
+      "_trailer_retry_count": 1,
+      "_trailer_last_retry": "2026-05-12T17:09:02.582316",
+      "_trailer_source": "broad_search"
     },
     {
       "id": "1322692",
@@ -54958,7 +55040,7 @@
         "streaming": []
       },
       "links": {
-        "trailer": null,
+        "trailer": "https://www.youtube.com/watch?v=Q9-gQVJry7s",
         "rt": "https://www.rottentomatoes.com/m/the_couple_across_the_street",
         "imdb": "https://www.imdb.com/title/tt39368238/"
       },
@@ -55011,7 +55093,10 @@
       },
       "featured": false,
       "imdb_rating": "5",
-      "display_title": "The Couple Across the Street"
+      "display_title": "The Couple Across the Street",
+      "_trailer_retry_count": 1,
+      "_trailer_last_retry": "2026-05-12T17:09:08.995069",
+      "_trailer_source": "gemini_playwright"
     },
     {
       "id": "1125701",
@@ -55278,9 +55363,8 @@
       "watch_links": {
         "vod": [
           {
-            "service": "Apple TV Store",
-            "link": "https://tv.apple.com/us/movie/an-army-of-women/umc.cmc.36ea13lf4x6szd13ke2q9zedz?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1871580478",
-            "price": "$4.99"
+            "service": "Apple TV",
+            "link": "https://tv.apple.com/us/movie/an-army-of-women/umc.cmc.36ea13lf4x6szd13ke2q9zedz?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1871580478"
           }
         ]
       },
@@ -55291,14 +55375,15 @@
       "poster": "https://image.tmdb.org/t/p/w500/yMN8bRxzcpJftbCOj6OrpwkT4PX.jpg",
       "studio": "Differ Media",
       "budget": 0,
-      "country": "Germany",
+      "country": "Norway",
       "original_language": "en",
       "original_title": "An Army of Women",
       "crew": {
         "director": "Julie Lunde Lillesæter",
         "cast": [
           "Hanna Senko",
-          "Marina Garrett"
+          "Marina Garrett",
+          "Amy Smith"
         ]
       },
       "_discovery_source": "provider_availability_check",
@@ -55319,7 +55404,18 @@
       },
       "featured": false,
       "imdb_rating": "7.7",
-      "display_title": "An Army of Women"
+      "display_title": "An Army of Women",
+      "_enrichment_attempts": 1,
+      "_last_enrichment_attempt": "2026-05-12",
+      "_trailer_source": "tmdb_official",
+      "_needs_review": true,
+      "_quality_warnings": [
+        "Service 'Apple TV' not in TMDB providers for this title (TMDB has: ['google play movies', 'youtube'])"
+      ],
+      "status": "available",
+      "_enrichment_gaps": [
+        "metacritic_score"
+      ]
     },
     {
       "id": "1352992",
@@ -55717,7 +55813,7 @@
       },
       "links": {
         "wikipedia": null,
-        "trailer": null,
+        "trailer": "https://www.youtube.com/watch?v=zmZqP1zYV4I",
         "imdb": "https://www.imdb.com/title/tt33399641/"
       },
       "watch_links": {
@@ -55766,7 +55862,10 @@
       },
       "featured": false,
       "imdb_rating": "7.9",
-      "display_title": "Dheeram (ധീരം)"
+      "display_title": "Dheeram (ധീരം)",
+      "_trailer_retry_count": 1,
+      "_trailer_last_retry": "2026-05-12T17:09:19.998128",
+      "_trailer_source": "gemini_playwright"
     },
     {
       "id": "1442703",
@@ -55790,7 +55889,7 @@
         ]
       },
       "links": {
-        "trailer": null,
+        "trailer": "https://www.youtube.com/watch?v=_YWoMtRc_MU",
         "rt": "https://www.rottentomatoes.com/m/i_am_luke_perry",
         "imdb": "https://www.imdb.com/title/tt35890338/"
       },
@@ -55837,7 +55936,10 @@
       },
       "featured": false,
       "imdb_rating": "6.8",
-      "display_title": "I Am Luke Perry"
+      "display_title": "I Am Luke Perry",
+      "_trailer_retry_count": 1,
+      "_trailer_last_retry": "2026-05-12T17:09:40.012888",
+      "_trailer_source": "gemini_playwright"
     },
     {
       "id": "1192599",
@@ -55912,7 +56014,9 @@
       },
       "featured": false,
       "imdb_rating": "5.6",
-      "display_title": "Seven Citrus Aurantium (هفت بهار نارنج)"
+      "display_title": "Seven Citrus Aurantium (هفت بهار نارنج)",
+      "_trailer_retry_count": 1,
+      "_trailer_last_retry": "2026-05-12T17:09:46.871850"
     },
     {
       "id": "1637569",
@@ -56234,7 +56338,7 @@
       },
       "links": {
         "wikipedia": "https://en.wikipedia.org/wiki/With_Love_(2026_film)",
-        "trailer": null,
+        "trailer": "https://www.youtube.com/watch?v=09M9_khkgRw",
         "imdb": "https://www.imdb.com/title/tt38123566/"
       },
       "watch_links": {
@@ -56283,7 +56387,10 @@
       },
       "featured": false,
       "imdb_rating": "7.5",
-      "display_title": "With Love (வித் லவ்)"
+      "display_title": "With Love (வித் லவ்)",
+      "_trailer_retry_count": 1,
+      "_trailer_last_retry": "2026-05-12T17:09:57.956686",
+      "_trailer_source": "tmdb_official"
     },
     {
       "id": "1309083",
@@ -56911,7 +57018,9 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "_trailer_retry_count": 1,
+      "_trailer_last_retry": "2026-05-12T17:09:58.316344"
     },
     {
       "id": "1634159",
@@ -57006,7 +57115,7 @@
       },
       "links": {
         "wikipedia": "https://en.wikipedia.org/wiki/Starman_(film)",
-        "trailer": null,
+        "trailer": "https://www.youtube.com/watch?v=gxyZ4xh3v2A",
         "imdb": "https://www.imdb.com/title/tt21220632/"
       },
       "watch_links": {
@@ -57055,7 +57164,10 @@
       },
       "featured": false,
       "imdb_rating": "8.6",
-      "display_title": "Starman"
+      "display_title": "Starman",
+      "_trailer_retry_count": 1,
+      "_trailer_last_retry": "2026-05-12T17:09:58.520676",
+      "_trailer_source": "broad_search"
     },
     {
       "id": "1421148",
@@ -58657,7 +58769,7 @@
       },
       "links": {
         "wikipedia": "https://en.wikipedia.org/wiki/My_Weird_School",
-        "trailer": null,
+        "trailer": "https://www.youtube.com/watch?v=EfiduJGfhRA",
         "rt": "https://www.rottentomatoes.com/m/my_weird_school",
         "imdb": "https://www.imdb.com/title/tt34254116/"
       },
@@ -58704,7 +58816,10 @@
       },
       "featured": false,
       "imdb_rating": "6.7",
-      "display_title": "My Weird School"
+      "display_title": "My Weird School",
+      "_trailer_retry_count": 1,
+      "_trailer_last_retry": "2026-05-12T17:10:05.606219",
+      "_trailer_source": "gemini_playwright"
     },
     {
       "id": "1584628",
@@ -59607,7 +59722,7 @@
         "streaming": []
       },
       "links": {
-        "trailer": null,
+        "trailer": "https://www.youtube.com/watch?v=3T11gQD2uRc",
         "rt": "https://www.rottentomatoes.com/m/murder_in_the_highland_manor",
         "imdb": "https://www.imdb.com/title/tt35933035/"
       },
@@ -59669,7 +59784,10 @@
       },
       "featured": false,
       "imdb_rating": "4.9",
-      "display_title": "Murder in the Highland Manor"
+      "display_title": "Murder in the Highland Manor",
+      "_trailer_retry_count": 1,
+      "_trailer_last_retry": "2026-05-12T17:10:16.438860",
+      "_trailer_source": "tmdb_official"
     },
     {
       "id": "1422562",
@@ -60215,7 +60333,7 @@
         ]
       },
       "links": {
-        "trailer": null,
+        "trailer": "https://www.youtube.com/watch?v=Jei_mjd-dmY",
         "rt": "https://www.rottentomatoes.com/m/sinister_secret_ingredient",
         "imdb": "https://www.imdb.com/title/tt40062862/"
       },
@@ -60268,7 +60386,10 @@
       },
       "featured": false,
       "imdb_rating": "5.4",
-      "display_title": "Sinister Secret Ingredient"
+      "display_title": "Sinister Secret Ingredient",
+      "_trailer_retry_count": 1,
+      "_trailer_last_retry": "2026-05-12T17:10:16.776267",
+      "_trailer_source": "gemini_playwright"
     },
     {
       "id": "1548749",
@@ -60372,7 +60493,7 @@
       },
       "links": {
         "wikipedia": "https://en.wikipedia.org/wiki/Signing_Tony_Raymond",
-        "trailer": null,
+        "trailer": "https://www.youtube.com/watch?v=1o031cnRnAk",
         "rt": "https://www.rottentomatoes.com/m/signing_tony_raymond",
         "imdb": "https://www.imdb.com/title/tt17010696/",
         "metacritic": "https://www.metacritic.com/movie/signing-tony-raymond/"
@@ -60425,7 +60546,10 @@
       "featured": false,
       "imdb_rating": "8.1",
       "display_title": "Signing Tony Raymond",
-      "metacritic_score": "0"
+      "metacritic_score": "0",
+      "_trailer_retry_count": 1,
+      "_trailer_last_retry": "2026-05-12T17:10:25.501849",
+      "_trailer_source": "gemini_playwright"
     },
     {
       "id": "1264656",
@@ -62609,7 +62733,9 @@
         "manual_override": null
       },
       "featured": false,
-      "display_title": "The Practical Guide to Love (미혼남녀의 효율적 만남)"
+      "display_title": "The Practical Guide to Love (미혼남녀의 효율적 만남)",
+      "_trailer_retry_count": 1,
+      "_trailer_last_retry": "2026-05-12T17:10:44.406620"
     },
     {
       "id": 1464486,
@@ -63542,7 +63668,9 @@
       ],
       "date_added": "2026-03-26",
       "_enrichment_attempts": 1,
-      "display_title": "Pete Holmes: Silly Silly Fun Boy"
+      "display_title": "Pete Holmes: Silly Silly Fun Boy",
+      "_trailer_retry_count": 1,
+      "_trailer_last_retry": "2026-05-12T17:10:48.447722"
     },
     {
       "id": "tv_233833",
@@ -63568,7 +63696,7 @@
       },
       "links": {
         "wikipedia": "https://en.wikipedia.org/wiki/In_Your_Radiant_Season",
-        "trailer": null,
+        "trailer": "https://www.youtube.com/watch?v=scWRqoObKk8",
         "rt": null,
         "imdb": "https://www.imdb.com/title/tt39369595/"
       },
@@ -63607,7 +63735,7 @@
       },
       "_discovery_source": "provider_availability_check",
       "imdb_rating": "8.1",
-      "_trailer_source": null,
+      "_trailer_source": "tmdb_fallback",
       "_digital_date_source": "first_air_date",
       "_needs_review": true,
       "_quality_warnings": [
@@ -63628,7 +63756,9 @@
         "manual_override": null
       },
       "featured": false,
-      "display_title": "In Your Radiant Season (찬란한 너의 계절에)"
+      "display_title": "In Your Radiant Season (찬란한 너의 계절에)",
+      "_trailer_retry_count": 1,
+      "_trailer_last_retry": "2026-05-12T17:10:59.443378"
     },
     {
       "id": "tv_298343",
