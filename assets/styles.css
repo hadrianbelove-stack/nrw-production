@@ -1321,8 +1321,57 @@ header h1 {
 .watch-btn-lb.amc { background: var(--svc-amc); color: #fff; }
 .lightbox-buttons .watch-btn-lb.screening { background: transparent; color: #FFD700; border: 2px solid #FFD700; font-weight: 700; }
 
-/* Trailer — full-width red button on top */
-.watch-btn-lb.trailer-top { background: #E50914; color: #fff; margin-bottom: 0.5rem; }
+/* Trailer — poster overlay (#10: entire poster is the button) */
+.lightbox-poster-wrap.has-trailer {
+    cursor: pointer;
+}
+.lightbox-trailer-overlay {
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: rgba(0,0,0,0.45);
+    border: 3px solid #E50914;
+    box-shadow: inset 0 0 30px rgba(229,9,20,0.15);
+    transition: all 0.2s;
+    z-index: 5;
+}
+.lightbox-trailer-overlay:hover {
+    background: rgba(0,0,0,0.55);
+    border-color: #ff3333;
+    box-shadow: inset 0 0 40px rgba(229,9,20,0.2), 0 0 20px rgba(229,9,20,0.3);
+}
+.lightbox-trailer-circle {
+    width: 66px;
+    height: 66px;
+    border-radius: 50%;
+    background: #E50914;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 28px rgba(229,9,20,0.6);
+}
+.lightbox-trailer-circle::after {
+    content: '';
+    display: block;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 12px 0 12px 20px;
+    border-color: transparent transparent transparent #fff;
+    margin-left: 4px;
+}
+.lightbox-trailer-text {
+    font-size: 1.1rem;
+    font-weight: 800;
+    letter-spacing: 0.3em;
+    color: #fff;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.8);
+}
 
 /* Wide service logos inside watch buttons */
 .watch-btn-lb .watch-logo {

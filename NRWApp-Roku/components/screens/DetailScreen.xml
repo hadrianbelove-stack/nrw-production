@@ -58,6 +58,36 @@
           translation="[3, 3]"
           loadDisplayMode="scaleToZoom" />
 
+        <!-- Trailer overlay on poster (#10: dim + red border + circle + text) -->
+        <Rectangle id="trailerOverlayDim"
+          width="600"
+          height="900"
+          translation="[3, 3]"
+          color="0x00000073"
+          visible="false" />
+        <Poster id="trailerOverlayCircle"
+          width="80"
+          height="80"
+          translation="[263, 380]"
+          uri=""
+          visible="false" />
+        <Rectangle id="trailerCircleBg"
+          width="80"
+          height="80"
+          translation="[263, 380]"
+          color="0xE50914FF"
+          visible="false" />
+        <Label id="trailerOverlayText"
+          text="TRAILER"
+          width="600"
+          height="40"
+          translation="[3, 470]"
+          horizAlign="center"
+          vertAlign="center"
+          font="font:MediumBoldSystemFont"
+          color="0xFFFFFFFF"
+          visible="false" />
+
         <!-- Staff Pick badge -->
         <Rectangle id="staffPickBadge"
           width="600"

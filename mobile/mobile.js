@@ -573,6 +573,30 @@ const NRWMobile = {
         this.dom.posterImg.src = movie.poster || '';
         this.dom.posterImg.alt = this.esc(movie.title || '');
 
+        // Trailer overlay on poster (#5: white circle + red banner)
+        const oldOverlay = container.querySelector('.poster-trailer-overlay');
+        if (oldOverlay) oldOverlay.remove();
+        const trailerUrl = movie.links?.trailer_hosted || movie.links?.trailer;
+        if (trailerUrl) {
+            const overlay = document.createElement('div');
+            overlay.className = 'poster-trailer-overlay';
+            overlay.innerHTML = '<div class="poster-trailer-circle"></div>' +
+                '<div class="poster-trailer-banner">TRAILER</div>';
+            overlay.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isMP4 = (() => {
+                    try { return new URL(trailerUrl).pathname.endsWith('.mp4'); }
+                    catch { return trailerUrl.endsWith('.mp4'); }
+                })();
+                if (isMP4) {
+                    this.showTrailer(String(movie.id));
+                } else {
+                    window.open(trailerUrl, '_blank');
+                }
+            });
+            container.appendChild(overlay);
+        }
+
         // Counter
         this.dom.posterCounter.textContent =
             (this.currentMovieIndex + 1) + ' / ' + this.filteredMovies.length;

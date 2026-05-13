@@ -696,6 +696,25 @@ const MovieDetailTvOS = () => {
             accessibilityLabel={`Movie poster for ${movie.title}`}
           />
 
+          {/* Trailer overlay on poster (#10: thick red border, dim, circle + text) */}
+          {movie?.links?.trailer_hosted && (
+            <TouchableOpacity
+              ref={trailerRefCallback}
+              style={styles.posterTrailerOverlay}
+              onPress={() => setTrailerVisible(true)}
+              hasTVPreferredFocus={!preferWatchFocus}
+              activeOpacity={0.8}
+              accessible={true}
+              accessibilityLabel="Play trailer"
+              accessibilityRole="button"
+            >
+              <View style={styles.posterTrailerCircle}>
+                <View style={styles.posterTrailerTriangle} />
+              </View>
+              <Text style={styles.posterTrailerText}>TRAILER</Text>
+            </TouchableOpacity>
+          )}
+
           {/* Staff Pick badge */}
           {(movie.featured || movie.categories?.is_staff_pick) && (
             <View style={styles.staffPickBadge}>
@@ -784,19 +803,7 @@ const MovieDetailTvOS = () => {
               </View>
             )}
 
-            {/* Trailer — its own row above watch buttons */}
-            {movie?.links?.trailer_hosted && (
-              <View style={styles.watchButtonRow}>
-                <ActionButton
-                  ref={trailerRefCallback}
-                  label="TRAILER"
-                  color="#E50914"
-                  onPress={() => setTrailerVisible(true)}
-                  hasTVPreferredFocus={!preferWatchFocus}
-                  testID="action-btn-trailer"
-                />
-              </View>
-            )}
+            {/* Trailer is now a poster overlay (see posterContainer above) */}
 
             {/* Watch buttons row (VOD first, then streaming) */}
             {hasWatchOptions && (() => {
@@ -827,7 +834,7 @@ const MovieDetailTvOS = () => {
                       <ActionButton
                         buttonIndex={idx}
                         isWatchButton={true}
-                        nextFocusUp={trailerHandle}
+                        nextFocusUp={undefined}
                         label={label}
                         color={buttonColor}
                         icon={!movie?._is_preorder ? getServiceLogo(link.service) : null}
@@ -854,7 +861,7 @@ const MovieDetailTvOS = () => {
                     <ActionButton
                       buttonIndex={idx}
                       isWatchButton={true}
-                      nextFocusUp={trailerHandle}
+                      nextFocusUp={undefined}
                       label={getStreamDisplayName(streamingLinks[0].service)}
                       color={getServiceColor(streamingLinks[0].service)}
                       icon={getServiceLogo(streamingLinks[0].service)}
@@ -875,7 +882,7 @@ const MovieDetailTvOS = () => {
                   <ActionButton
                     buttonIndex={idx}
                     isWatchButton={true}
-                    nextFocusUp={trailerHandle}
+                    nextFocusUp={undefined}
                     label="PLEX"
                     color="#E5A00D"
                     icon={getServiceLogo('plex')}
@@ -1013,6 +1020,53 @@ const styles = StyleSheet.create({
     height: POSTER_WIDTH * 1.5,
     borderRadius: 16,
     backgroundColor: Colors.backgroundSecondary,
+  },
+  posterTrailerOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    borderRadius: 16,
+    backgroundColor: 'rgba(0,0,0,0.45)',
+    borderWidth: 3,
+    borderColor: '#E50914',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 12,
+    zIndex: 5,
+  },
+  posterTrailerCircle: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#E50914',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#E50914',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.6,
+    shadowRadius: 20,
+  },
+  posterTrailerTriangle: {
+    width: 0,
+    height: 0,
+    borderLeftWidth: 24,
+    borderTopWidth: 14,
+    borderBottomWidth: 14,
+    borderLeftColor: '#ffffff',
+    borderTopColor: 'transparent',
+    borderBottomColor: 'transparent',
+    marginLeft: 6,
+  },
+  posterTrailerText: {
+    color: '#ffffff',
+    fontSize: 22,
+    fontWeight: '800',
+    letterSpacing: 6,
+    textShadowColor: 'rgba(0,0,0,0.8)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 10,
   },
   staffPickBadge: {
     position: 'absolute',

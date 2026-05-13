@@ -57,6 +57,11 @@ Sub Init()
     m.focusedButtonIndex = 0
     m.buttons = []
 
+    ' Trailer overlay elements
+    m.trailerOverlayDim = m.top.FindNode("trailerOverlayDim")
+    m.trailerCircleBg = m.top.FindNode("trailerCircleBg")
+    m.trailerOverlayText = m.top.FindNode("trailerOverlayText")
+
     ' Set up button observers
     m.trailerButton.ObserveField("selected", "onTrailerSelected")
     m.streamButton.ObserveField("selected", "onStreamSelected")
@@ -362,14 +367,22 @@ End Sub
 Sub SetupWatchButtons(movie as Object)
     m.buttons = []
 
-    ' Trailer button
+    ' Trailer — poster overlay (#10: dim + red border + circle + text)
     trailerUrl = GetTrailerUrl(movie)
     if trailerUrl <> ""
         m.trailerButton.url = trailerUrl
-        m.trailerButton.visible = true
-        m.buttons.Push(m.trailerButton)
+        m.trailerButton.visible = false  ' Hidden — overlay is on poster instead
+        m.buttons.Push(m.trailerButton)  ' Still in button list for key handling
+        ' Show trailer overlay on poster
+        m.trailerOverlayDim.visible = true
+        m.trailerCircleBg.visible = true
+        m.trailerOverlayText.visible = true
+        m.posterBorder.color = "0xE50914FF"  ' Red border for trailer poster
     else
         m.trailerButton.visible = false
+        m.trailerOverlayDim.visible = false
+        m.trailerCircleBg.visible = false
+        m.trailerOverlayText.visible = false
     end if
 
     ' VOD buttons (rent/buy — before streaming)

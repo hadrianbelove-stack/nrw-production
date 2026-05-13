@@ -853,11 +853,29 @@ const NRW = {
     // --- Lightbox sub-renderers (extracted from updateLightbox) ---
 
     _updateLightboxPoster(movie) {
+        const posterWrap = document.querySelector('.lightbox-poster-wrap');
         document.getElementById('lightbox-poster').src = movie.poster || '';
         document.getElementById('lightbox-poster').style.display = movie.poster ? '' : 'none';
         document.getElementById('lightbox-poster-fallback').style.display = movie.poster ? 'none' : 'flex';
         document.getElementById('lightbox-poster-fallback-title').textContent = movie.display_title || movie.title;
         document.getElementById('lightbox-score-overlay').innerHTML = '';
+
+        // Remove old trailer overlay
+        const oldOverlay = posterWrap.querySelector('.lightbox-trailer-overlay');
+        if (oldOverlay) oldOverlay.remove();
+        posterWrap.classList.remove('has-trailer');
+
+        // Add trailer overlay if movie has a trailer
+        const trailerUrl = movie.links?.trailer_hosted || movie.links?.trailer;
+        if (trailerUrl && movie.poster) {
+            posterWrap.classList.add('has-trailer');
+            const overlay = document.createElement('div');
+            overlay.className = 'lightbox-trailer-overlay';
+            overlay.dataset.trailer = trailerUrl;
+            overlay.innerHTML = '<div class="lightbox-trailer-circle"></div>' +
+                '<div class="lightbox-trailer-text">TRAILER</div>';
+            posterWrap.appendChild(overlay);
+        }
     },
 
     _updateLightboxHeader(movie) {
@@ -1042,17 +1060,9 @@ const NRW = {
             return a;
         };
 
-        // 1. Trailer — full-width on top
-        const trailerUrl = movie.links?.trailer_hosted || movie.links?.trailer;
-        if (trailerUrl) {
-            const btn = document.createElement('button');
-            btn.className = 'watch-btn-lb trailer-top';
-            btn.dataset.trailer = trailerUrl;
-            btn.textContent = 'Trailer';
-            container.appendChild(btn);
-        }
+        // Trailer is now a poster overlay (see _updateLightboxPoster)
 
-        // 2. Watch stack (VOD first, then streaming)
+        // 1. Watch stack (VOD first, then streaming)
         const watchStack = document.createElement('div');
         watchStack.className = 'watch-stack';
         let hasWatch = false;
@@ -1379,7 +1389,14 @@ const NRW = {
 
         // Handle clicks on document body for lightbox buttons
         document.body.addEventListener('click', (e) => {
-            // Lightbox trailer button
+            // Lightbox trailer poster overlay
+            const trailerOverlay = e.target.closest('.lightbox-trailer-overlay[data-trailer]');
+            if (trailerOverlay) {
+                this.showTrailer(trailerOverlay.dataset.trailer);
+                return;
+            }
+
+            // Lightbox trailer button (legacy)
             const lightboxTrailer = e.target.closest('#lightbox-buttons [data-trailer]');
             if (lightboxTrailer) {
                 this.showTrailer(lightboxTrailer.dataset.trailer);

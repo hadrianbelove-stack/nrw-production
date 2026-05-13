@@ -67,7 +67,6 @@ import com.nrw.app.data.getFormattedRuntime
 import com.nrw.app.data.getPosterUrl
 import com.nrw.app.data.getRtInfo
 import com.nrw.app.data.isStaffPick
-import com.nrw.app.ui.components.TrailerButton
 import com.nrw.app.ui.components.WatchButton
 import com.nrw.app.ui.theme.Background
 import com.nrw.app.ui.theme.Green
@@ -242,16 +241,64 @@ private fun MovieDetail(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-            // Left side - Large Poster (Option E: biggest poster)
-            AsyncImage(
-                model = movie.getPosterUrl("w780"),
-                contentDescription = movie.displayTitle ?: movie.title,
-                contentScale = ContentScale.Crop,
+            // Left side - Large Poster with trailer overlay
+            Box(
                 modifier = Modifier
                     .fillMaxHeight(0.92f)
                     .aspectRatio(2f / 3f)
                     .clip(RoundedCornerShape(12.dp))
-            )
+                    .then(
+                        if (trailerOption != null) Modifier.border(3.dp, Color(0xFFE50914), RoundedCornerShape(12.dp))
+                        else Modifier
+                    )
+            ) {
+                AsyncImage(
+                    model = movie.getPosterUrl("w780"),
+                    contentDescription = movie.displayTitle ?: movie.title,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                )
+
+                // Trailer overlay (#10: dim + red circle + TRAILER text)
+                if (trailerOption != null) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Black.copy(alpha = 0.45f))
+                            .clickable { onTrailerClick(trailerOption.url) },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            // Red play circle
+                            Box(
+                                modifier = Modifier
+                                    .width(70.dp)
+                                    .height(70.dp)
+                                    .clip(RoundedCornerShape(35.dp))
+                                    .background(Color(0xFFE50914)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                // Play triangle
+                                Image(
+                                    painter = painterResource(id = android.R.drawable.ic_media_play),
+                                    contentDescription = "Play",
+                                    modifier = Modifier.height(28.dp),
+                                    contentScale = ContentScale.Fit,
+                                    colorFilter = ColorFilter.tint(Color.White)
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(10.dp))
+                            Text(
+                                text = "TRAILER",
+                                color = Color.White,
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.ExtraBold,
+                                letterSpacing = 4.sp
+                            )
+                        }
+                    }
+                }
+            }
 
             Spacer(modifier = Modifier.width(40.dp))
 
@@ -479,14 +526,7 @@ private fun MovieDetail(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Trailer — full-width on top
-                trailerOption?.let { option ->
-                    TrailerButton(
-                        onClick = { onTrailerClick(option.url) },
-                        compact = false
-                    )
-                    Spacer(modifier = Modifier.height(10.dp))
-                }
+                // Trailer is now a poster overlay (see poster Box above)
 
                 // Watch buttons — VOD (rent/buy) first, then streaming
                 val vodOptions = watchOptions.filter { it.type == WatchType.PURCHASE }

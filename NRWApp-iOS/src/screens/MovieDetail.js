@@ -225,6 +225,20 @@ export default function MovieDetail({route}) {
               <Text style={styles.placeholderText}>No Poster</Text>
             </View>
           )}
+          {/* Trailer overlay (#5: white circle + red banner) */}
+          {(movie.links?.trailer_hosted || movie.links?.trailer) && posterUrl && (
+            <TouchableOpacity
+              style={styles.trailerOverlay}
+              onPress={handleTrailerPress}
+              activeOpacity={0.8}>
+              <View style={styles.trailerOverlayCircle}>
+                <View style={styles.trailerOverlayTriangle} />
+              </View>
+              <View style={styles.trailerOverlayBanner}>
+                <Text style={styles.trailerOverlayText}>TRAILER</Text>
+              </View>
+            </TouchableOpacity>
+          )}
           {/* Staff Pick badge */}
           {(movie.featured || movie.categories?.is_staff_pick) && (
             <View style={styles.staffPickBadge}>
@@ -320,14 +334,7 @@ export default function MovieDetail({route}) {
         </View>
       )}
 
-      {/* Trailer */}
-      {(movie.links?.trailer_hosted || movie.links?.trailer) && (
-        <View style={styles.section}>
-          <TouchableOpacity style={styles.trailerButton} onPress={handleTrailerPress}>
-            <Text style={styles.trailerButtonText}>▶ TRAILER</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+      {/* Trailer is now a poster overlay (see posterContainer above) */}
 
       {/* Watch buttons — VOD first, then streaming */}
       {watchLinks.length > 0 && (
@@ -570,18 +577,52 @@ const styles = StyleSheet.create({
     color: Colors.textMuted,
     marginHorizontal: 6,
   },
-  trailerButton: {
-    backgroundColor: '#E50914',
-    paddingVertical: Spacing.sm + 2,
-    paddingHorizontal: Spacing.md,
-    borderRadius: 8,
+  trailerOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.45)',
+    justifyContent: 'center',
     alignItems: 'center',
+    zIndex: 5,
   },
-  trailerButtonText: {
+  trailerOverlayCircle: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: 'rgba(255,255,255,0.95)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 4},
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+  },
+  trailerOverlayTriangle: {
+    width: 0,
+    height: 0,
+    borderLeftWidth: 16,
+    borderTopWidth: 9,
+    borderBottomWidth: 9,
+    borderLeftColor: '#E50914',
+    borderTopColor: 'transparent',
+    borderBottomColor: 'transparent',
+    marginLeft: 4,
+  },
+  trailerOverlayBanner: {
+    width: '100%',
+    paddingVertical: 7,
+    backgroundColor: 'rgba(229,9,20,0.85)',
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  trailerOverlayText: {
     color: '#fff',
-    fontSize: Typography.button,
-    fontWeight: '700',
-    letterSpacing: 0.5,
+    fontSize: 13,
+    fontWeight: '800',
+    letterSpacing: 3,
   },
   infoRow: {
     flexDirection: 'row',
