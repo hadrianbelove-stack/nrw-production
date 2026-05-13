@@ -183,16 +183,17 @@ class GeminiFinderBase:
         return None
 
     def _generate(self, contents, config=None):
-        """Call Gemini generate_content with timeout protection.
+        """Call Gemini generate_content.
 
         All finders should use this instead of calling
         self.client.models.generate_content() directly.
+
+        Note: HttpOptions(timeout=N) is intentionally omitted — it sets an
+        aggressive connect timeout that fails on systems with older SSL libs
+        (LibreSSL 2.8.3). The SDK's own default timeout is sufficient.
         """
-        http_opts = self.types.HttpOptions(timeout=self.timeout_seconds)
-        if config is not None:
-            config.http_options = http_opts
-        else:
-            config = self.types.GenerateContentConfig(http_options=http_opts)
+        if config is None:
+            config = self.types.GenerateContentConfig()
         return self.client.models.generate_content(
             model=self.model_name,
             contents=contents,
