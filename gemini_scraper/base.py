@@ -75,7 +75,6 @@ class GeminiFinderBase:
         # Load config values from config.yaml
         config = _load_config()
         scraper_config = config.get('gemini_scraper', {})
-        self.timeout_seconds = scraper_config.get('timeout_seconds', 30)
         self.rate_limit = scraper_config.get('rate_limit', 1.0)
         self.cache_ttl_days = scraper_config.get('cache_ttl_days', 90)
         self.max_retries = scraper_config.get('max_retries', 3)

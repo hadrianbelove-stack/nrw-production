@@ -1333,57 +1333,6 @@ header h1 {
     filter: brightness(0) invert(1);
 }
 
-/* Info row: Wiki + RT + IMDb shared, horizontal, equal-width */
-.lightbox-buttons .info-row {
-    display: flex;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
-}
-
-.lightbox-buttons .info-btn-lb {
-    flex: 1;
-    padding: 0.5rem;
-    border-radius: 5px;
-    text-align: center;
-    font-size: 0.85rem;
-    font-weight: 600;
-    cursor: pointer;
-    border: none;
-    text-decoration: none;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-.lightbox-buttons .info-btn-lb:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
-.info-btn-lb.glass { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.3); }
-.info-btn-lb.rt,
-.info-btn-lb.mc,
-.info-btn-lb.imdb {
-    background: rgba(255,255,255,0.06);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255,255,255,0.1);
-}
-.info-btn-lb.rt:hover,
-.info-btn-lb.mc:hover,
-.info-btn-lb.imdb:hover {
-    background: rgba(255,255,255,0.12);
-}
-.info-btn-lb.rt { color: #ff6b6b; }
-.info-btn-lb.mc { color: #7ddf64; }
-.info-btn-lb.imdb { color: #f5c518; font-weight: 800; }
-.info-btn-lb .info-logo {
-    height: 18px;
-    width: auto;
-    vertical-align: middle;
-    margin-right: 4px;
-    display: inline-block;
-}
-.info-btn-lb.mc .info-logo {
-    filter: invert(1) sepia(1) saturate(5) hue-rotate(70deg) brightness(1.1);
-}
-
 /* Navigation arrows - inline with content */
 .lightbox-nav {
     flex-shrink: 0;

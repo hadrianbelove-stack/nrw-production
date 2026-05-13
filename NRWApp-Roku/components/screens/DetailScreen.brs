@@ -13,8 +13,6 @@ Sub Init()
     m.titleLabel = m.top.FindNode("titleLabel")
     m.dateLabel = m.top.FindNode("dateLabel")
     m.metadataLabel = m.top.FindNode("metadataLabel")
-    m.genresLabel = m.top.FindNode("genresLabel")
-    m.castLabel = m.top.FindNode("castLabel")
     m.languageLabel = m.top.FindNode("languageLabel")
     m.synopsisLabel = m.top.FindNode("synopsisLabel")
     m.pullQuotesLabel = m.top.FindNode("pullQuotesLabel")
@@ -181,10 +179,6 @@ Sub LoadMovie(index as Integer)
         metaText = metaText + metaParts.Join(" • ")
     end if
     m.metadataLabel.text = metaText
-
-    ' Hide genres and cast labels (now in metadata)
-    m.genresLabel.visible = false
-    m.castLabel.visible = false
 
     ' Set language (only if not English)
     if movie.original_language <> invalid AND movie.original_language <> "en" AND movie.original_language <> ""

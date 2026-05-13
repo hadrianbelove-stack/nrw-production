@@ -177,7 +177,6 @@ export default function MovieDetail({route}) {
   const posterUrl = movie.poster_url || movie.poster;
   const director = movie.director || movie.crew?.director;
   const cast = movie.cast || movie.crew?.cast || [];
-  const genres = movie.genres || [];
   const runtime = movie.runtime;
   const year = movie.year || (movie.release_date ? movie.release_date.split('-')[0] : null);
 
@@ -571,18 +570,6 @@ const styles = StyleSheet.create({
     color: Colors.textMuted,
     marginHorizontal: 6,
   },
-  ratingBadge: {
-    borderWidth: 1,
-    borderColor: Colors.textSecondary,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 3,
-  },
-  ratingText: {
-    color: Colors.textSecondary,
-    fontSize: Typography.caption,
-    fontWeight: '600',
-  },
   trailerButton: {
     backgroundColor: '#E50914',
     paddingVertical: Spacing.sm + 2,
@@ -637,22 +624,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: Typography.caption,
     fontWeight: '700',
-  },
-  genresContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginTop: Spacing.sm,
-    gap: Spacing.xs,
-  },
-  genreTag: {
-    backgroundColor: Colors.backgroundSecondary,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 4,
-  },
-  genreText: {
-    color: Colors.textSecondary,
-    fontSize: Typography.caption - 1,
   },
   section: {
     paddingHorizontal: Spacing.screenPadding,

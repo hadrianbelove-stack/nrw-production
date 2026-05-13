@@ -491,7 +491,6 @@ const MovieDetailTvOS = () => {
     purchaseLinks,
     streamingLinks,
     formattedRuntime,
-    formattedGenres,
     rtScore,
     mcScore,
     imdbScore,
@@ -1132,23 +1131,6 @@ const styles = StyleSheet.create({
     color: Colors.textMuted,
     fontSize: Typography.tvos.body,
     marginHorizontal: Spacing.tvos.sm,
-  },
-  ratingBadge: {
-    borderWidth: 1,
-    borderColor: Colors.textSecondary,
-    paddingHorizontal: Spacing.tvos.sm,
-    paddingVertical: 2,
-    borderRadius: 4,
-  },
-  ratingText: {
-    color: Colors.textSecondary,
-    fontSize: Typography.tvos.caption,
-    fontWeight: '600',
-  },
-  genres: {
-    color: Colors.primary,
-    fontSize: Typography.tvos.body,
-    marginBottom: Spacing.tvos.md,
   },
   creditRow: {
     flexDirection: 'row',

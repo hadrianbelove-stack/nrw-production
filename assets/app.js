@@ -1023,8 +1023,8 @@ const NRW = {
         const watchLinks = movie.watch_links || {};
         const providers = movie.providers || {};
 
-        // Helper: create an <a> with safe href + target, optional logo icon or wide logo
-        const makeLink = (url, className, text, iconSrc, wideLogo) => {
+        // Helper: create an <a> with safe href + target, optional wide logo
+        const makeLink = (url, className, text, _unused, wideLogo) => {
             const a = document.createElement('a');
             a.setAttribute('href', url);
             a.setAttribute('target', '_blank');
@@ -1036,13 +1036,6 @@ const NRW = {
                 img.className = 'watch-logo';
                 img.alt = text;
                 a.appendChild(img);
-            } else if (iconSrc) {
-                const img = document.createElement('img');
-                img.src = iconSrc;
-                img.className = 'info-logo';
-                img.alt = '';
-                a.appendChild(img);
-                a.appendChild(document.createTextNode(' ' + text));
             } else {
                 a.textContent = text;
             }
