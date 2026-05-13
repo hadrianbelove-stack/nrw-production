@@ -8,15 +8,16 @@ import {View, Text, StyleSheet, ScrollView, TouchableOpacity} from 'react-native
 import {Colors, Typography, Spacing} from '../constants/colors';
 
 const FILTERS = [
-  {id: 'pre-orders', label: 'Pre-Orders'},
+  {id: 'staff-picks', label: 'NRW Picks'},
   {id: 'studio', label: 'Studio'},
   {id: 'indie', label: 'Indie'},
-  {id: 'staff-picks', label: 'NRW Picks'},
+  {id: 'exploitation', label: 'Exploitation'},
   {id: 'foreign', label: 'Foreign'},
+  {id: 'documentary', label: 'Docs'},
   {id: 'series', label: 'Miniseries'},
   {id: 'restorations', label: 'Reissues'},
-  {id: 'documentary', label: 'Docs'},
   {id: 'virtual-screenings', label: 'V. Screenings'},
+  {id: 'pre-orders', label: 'Pre-Orders'},
 ];
 
 export default function FilterBar({activeFilters, onFilterChange}) {

@@ -120,7 +120,10 @@ data class Categories(
     val isDocumentary: Boolean? = null,
 
     @SerializedName("is_virtual_screening")
-    val isVirtualScreening: Boolean? = null
+    val isVirtualScreening: Boolean? = null,
+
+    @SerializedName("is_exploitation")
+    val isExploitation: Boolean? = null
 )
 
 data class MovieLinks(
@@ -254,15 +257,16 @@ data class InfoOption(
  * Filter categories for the UI
  */
 enum class FilterCategory(val id: String, val displayName: String) {
-    PRE_ORDERS("pre-orders", "Pre-Orders"),
+    STAFF_PICKS("staff-picks", "NRW Picks"),
     STUDIO("studio", "Studio"),
     INDIE("indie", "Indie"),
-    STAFF_PICKS("staff-picks", "NRW Picks"),
+    EXPLOITATION("exploitation", "Exploitation"),
     FOREIGN("foreign", "Foreign"),
+    DOCUMENTARY("documentary", "Docs"),
     SERIES("series", "Miniseries"),
     RESTORATIONS("restorations", "Reissues"),
-    DOCUMENTARY("documentary", "Docs"),
-    VIRTUAL_SCREENINGS("virtual-screenings", "V. Screenings")
+    VIRTUAL_SCREENINGS("virtual-screenings", "V. Screenings"),
+    PRE_ORDERS("pre-orders", "Pre-Orders")
 }
 
 /**

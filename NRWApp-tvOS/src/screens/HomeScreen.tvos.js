@@ -34,16 +34,16 @@ import { setSharedMovieList } from './sharedMovieList';
 
 // Filter options - matches web categories
 const FILTERS = [
-  { id: 'pre-orders', label: 'Pre-Orders' },
+  { id: 'staff-picks', label: 'NRW Picks' },
   { id: 'studio', label: 'Studio' },
   { id: 'indie', label: 'Indie' },
-  { id: 'staff-picks', label: 'NRW Picks' },
+  { id: 'exploitation', label: 'Exploitation' },
   { id: 'foreign', label: 'Foreign' },
+  { id: 'documentary', label: 'Docs' },
   { id: 'series', label: 'Miniseries' },
   { id: 'restorations', label: 'Reissues' },
-  { id: 'documentary', label: 'Docs' },
   { id: 'virtual-screenings', label: 'V. Screenings' },
-  { id: 'exploitation', label: 'Exploitation' },
+  { id: 'pre-orders', label: 'Pre-Orders' },
 ];
 
 // Filter Button Component - forwardRef to allow focus navigation from grid

@@ -28,10 +28,10 @@
       itemSpacings="[12]"
       translation="[60, 0]">
 
-      <!-- Pre-Orders -->
-      <Group id="chip_pre_orders">
-        <Rectangle id="chipBg_pre_orders" width="110" height="36" color="0x333333FF" />
-        <Label id="chipLabel_pre_orders" text="Pre-Orders" width="110" height="36"
+      <!-- NRW Picks -->
+      <Group id="chip_staff_picks">
+        <Rectangle id="chipBg_staff_picks" width="110" height="36" color="0x333333FF" />
+        <Label id="chipLabel_staff_picks" text="NRW Picks" width="110" height="36"
           horizAlign="center" vertAlign="center"
           font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
       </Group>
@@ -52,10 +52,10 @@
           font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
       </Group>
 
-      <!-- NRW Picks -->
-      <Group id="chip_staff_picks">
-        <Rectangle id="chipBg_staff_picks" width="110" height="36" color="0x333333FF" />
-        <Label id="chipLabel_staff_picks" text="NRW Picks" width="110" height="36"
+      <!-- Exploitation -->
+      <Group id="chip_exploitation">
+        <Rectangle id="chipBg_exploitation" width="120" height="36" color="0x333333FF" />
+        <Label id="chipLabel_exploitation" text="Exploitation" width="120" height="36"
           horizAlign="center" vertAlign="center"
           font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
       </Group>
@@ -64,6 +64,14 @@
       <Group id="chip_foreign">
         <Rectangle id="chipBg_foreign" width="80" height="36" color="0x333333FF" />
         <Label id="chipLabel_foreign" text="Foreign" width="80" height="36"
+          horizAlign="center" vertAlign="center"
+          font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
+      </Group>
+
+      <!-- Docs -->
+      <Group id="chip_documentary">
+        <Rectangle id="chipBg_documentary" width="60" height="36" color="0x333333FF" />
+        <Label id="chipLabel_documentary" text="Docs" width="60" height="36"
           horizAlign="center" vertAlign="center"
           font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
       </Group>
@@ -84,18 +92,18 @@
           font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
       </Group>
 
-      <!-- Docs -->
-      <Group id="chip_documentary">
-        <Rectangle id="chipBg_documentary" width="60" height="36" color="0x333333FF" />
-        <Label id="chipLabel_documentary" text="Docs" width="60" height="36"
-          horizAlign="center" vertAlign="center"
-          font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
-      </Group>
-
       <!-- V. Screenings -->
       <Group id="chip_virtual_screenings">
         <Rectangle id="chipBg_virtual_screenings" width="130" height="36" color="0x333333FF" />
         <Label id="chipLabel_virtual_screenings" text="V. Screenings" width="130" height="36"
+          horizAlign="center" vertAlign="center"
+          font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
+      </Group>
+
+      <!-- Pre-Orders -->
+      <Group id="chip_pre_orders">
+        <Rectangle id="chipBg_pre_orders" width="110" height="36" color="0x333333FF" />
+        <Label id="chipLabel_pre_orders" text="Pre-Orders" width="110" height="36"
           horizAlign="center" vertAlign="center"
           font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
       </Group>
