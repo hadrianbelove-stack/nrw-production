@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-05-12T20:55:33.563966",
-  "count": 772,
+  "generated_at": "2026-05-12T21:24:15.862697",
+  "count": 770,
   "movies": [
     {
       "id": "1010755",
@@ -2145,12 +2145,13 @@
       "manually_corrected": false,
       "synopsis": "When James receives a mysterious letter from his lost love Mary, he is drawn to Silent Hill—a once-familiar town now consumed by darkness. As he searches for her, James faces monstrous creatures and unravels a terrifying truth that will push him to the edge of his sanity.",
       "genres": [
-        "Horror",
-        "Mystery"
+        "Mystery",
+        "Drama",
+        "Horror"
       ],
       "runtime": 106,
       "year": 2026,
-      "rt_score": "38%",
+      "rt_score": "18%",
       "providers": {
         "rent": [
           "Amazon Video"
@@ -2169,29 +2170,24 @@
       "watch_links": {
         "vod": [
           {
-            "service": "Amazon Video",
-            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.00d6950c-2293-40c8-ba28-f310ced9fab0&tag=nrw04-20",
-            "price": "$9.99"
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.00d6950c-2293-40c8-ba28-f310ced9fab0&tag=nrw04-20"
           },
           {
-            "service": "Apple TV Store",
-            "link": "https://tv.apple.com/us/movie/return-to-silent-hill/umc.cmc.689g6g9lflnp2pviar1why00a?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1870909389",
-            "price": "$9.99"
-          },
-          {
-            "service": "Plex",
-            "link": "https://watch.plex.tv/movie/return-to-silent-hill?utm_content=6352e881c014c1d7fdbca6c2&utm_medium=deeplink&utm_source=justWatch-v2-catalog",
-            "price": "$9.99"
+            "service": "Apple TV",
+            "link": "https://tv.apple.com/us/movie/return-to-silent-hill/umc.cmc.689g6g9lflnp2pviar1why00a?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1870909389"
           },
           {
             "service": "Fandango",
-            "link": "https://athome.fandango.com/content/browse/details/Return-to-Silent-Hill/4863794",
-            "price": "$5.99"
+            "link": "https://athome.fandango.com/content/browse/details/Return-to-Silent-Hill/4863794"
+          },
+          {
+            "service": "Plex",
+            "link": "https://watch.plex.tv/movie/return-to-silent-hill?utm_content=6352e881c014c1d7fdbca6c2&utm_medium=deeplink&utm_source=justWatch-v2-catalog"
           },
           {
             "service": "Barnes & Noble",
-            "link": "https://www.barnesandnoble.com/w/dvd-return-to-silent-hill-christophe-gans/1148530331",
-            "price": "$17.96"
+            "link": "https://www.barnesandnoble.com/w/dvd-return-to-silent-hill-christophe-gans/1148530331"
           }
         ]
       },
@@ -2199,16 +2195,19 @@
       "_discovered_at": "2026-02-24T10:33:41.992263",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/fqAGFN2K2kDL0EHxvJaXzaMUkkt.jpg",
+      "poster": "https://image.tmdb.org/t/p/w500/mdw7bSnE11WpwWf3ViXtnavuqiT.jpg",
       "studio": "Konami",
       "budget": 23000000,
-      "country": "France",
+      "country": "United Kingdom",
       "original_language": "en",
       "crew": {
         "director": "Christophe Gans",
         "cast": [
           "Jeremy Irvine",
-          "Hannah Emily Anderson"
+          "Hannah Emily Anderson",
+          "Evie Templeton",
+          "Pearse Egan",
+          "Nicola Alexis"
         ]
       },
       "_discovery_source": "provider_availability_check",
@@ -2231,7 +2230,18 @@
       "imdb_rating": "4.1",
       "_watch_links_verified": "2026-05-06T14:20:42.684314",
       "display_title": "Return to Silent Hill",
-      "metacritic_score": "34"
+      "metacritic_score": "34",
+      "_enrichment_attempts": 4,
+      "_last_enrichment_attempt": "2026-05-12",
+      "_trailer_source": "tmdb_official",
+      "_needs_review": true,
+      "_quality_warnings": [
+        "Service 'Apple TV' not in TMDB providers for this title (TMDB has: ['amazon video'])",
+        "Service 'Fandango' not in TMDB providers for this title (TMDB has: ['amazon video'])",
+        "Service 'Plex' not in TMDB providers for this title (TMDB has: ['amazon video'])",
+        "Service 'Barnes & Noble' not in TMDB providers for this title (TMDB has: ['amazon video'])"
+      ],
+      "status": "available"
     },
     {
       "id": "1192730",
@@ -9828,71 +9838,6 @@
       "metacritic_score": "82"
     },
     {
-      "id": "1280738",
-      "title": "The Furious",
-      "digital_date": "2026-05-29",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "synopsis": "After the daughter of Wang Wei is kidnapped by a criminal network and he receives no help from the corrupt police, Wei sets out on a rampage to find her himself. His only ally is Navin – a relentless journalist whose wife has mysteriously disappeared. Fueled by a furious vengeance, the unlikely duo ruthlessly fights against the kidnappers in this explosive martial arts showdown.",
-      "genres": [
-        "Action",
-        "Crime",
-        "Thriller"
-      ],
-      "runtime": 114,
-      "year": 2026,
-      "rt_score": null,
-      "providers": {
-        "rent": [],
-        "buy": [],
-        "streaming": []
-      },
-      "links": {
-        "wikipedia": "https://en.wikipedia.org/wiki/The_Furious",
-        "trailer": null,
-        "rt": null
-      },
-      "watch_links": {},
-      "_enrichment_status": "pending",
-      "_discovered_at": "2026-05-02T16:53:50.391249",
-      "_tmdb_fetch_failed": false,
-      "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/zP19YO60jwEsfKd5Qf1UvA5uJu8.jpg",
-      "studio": "Edko Films",
-      "budget": 20000000,
-      "country": "Hong Kong",
-      "original_language": "en",
-      "original_title": "The Furious",
-      "crew": {
-        "director": "Kenji Tanigaki",
-        "cast": [
-          "Xie Miao",
-          "Joe Taslim",
-          "Yang Enyou",
-          "Yayan Ruhian",
-          "JeeJa Yanin"
-        ]
-      },
-      "_discovery_source": "tmdb_type4",
-      "_is_preorder": true,
-      "categories": {
-        "tier": "studio",
-        "is_studio": true,
-        "is_indie": false,
-        "is_foreign": false,
-        "is_staff_pick": false,
-        "is_restoration": false,
-        "is_virtual_screening": false,
-        "is_series": false,
-        "is_documentary": false,
-        "is_exploitation": true,
-        "auto_categorized": true,
-        "manual_override": null
-      },
-      "featured": false,
-      "display_title": "The Furious"
-    },
-    {
       "id": "1662414",
       "title": "Propeller One-Way Night Coach",
       "digital_date": "2026-05-28",
@@ -10594,7 +10539,7 @@
     },
     {
       "id": "550",
-      "title": "Fight Club",
+      "title": "Fight Club (4K Remaster)",
       "digital_date": "2026-05-12",
       "bootstrap_date": false,
       "manually_corrected": false,
@@ -10684,7 +10629,7 @@
         "manual_override": null
       },
       "featured": false,
-      "display_title": "Fight Club"
+      "display_title": "Fight Club (4K Remaster)"
     },
     {
       "id": "1609125",
@@ -12570,7 +12515,7 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 2,
+      "_enrichment_attempts": 3,
       "_last_enrichment_attempt": "2026-05-12",
       "imdb_rating": "6.8",
       "_trailer_source": "tmdb_official",
@@ -12578,8 +12523,8 @@
       "_digital_date_source": "detection",
       "_needs_review": true,
       "_quality_warnings": [
-        "Service 'Barnes & Noble' not in TMDB providers for this title (TMDB has: ['apple tv store', 'youtube', 'fandango at home', 'google play movies', 'amazon video'])",
-        "Service 'GRUV' not in TMDB providers for this title (TMDB has: ['apple tv store', 'youtube', 'fandango at home', 'google play movies', 'amazon video'])"
+        "Service 'Barnes & Noble' not in TMDB providers for this title (TMDB has: ['google play movies', 'fandango at home', 'amazon video', 'apple tv store', 'youtube'])",
+        "Service 'GRUV' not in TMDB providers for this title (TMDB has: ['google play movies', 'fandango at home', 'amazon video', 'apple tv store', 'youtube'])"
       ],
       "status": "available",
       "categories": {
@@ -26018,13 +25963,11 @@
           },
           {
             "service": "Apple TV",
-            "link": "https://tv.apple.com/us/movie/a-magnificent-life/umc.cmc.6dmtges5xtovanlqv0v3cxwaj?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1891944206",
-            "price": "$14.99"
+            "link": "https://tv.apple.com/us/movie/a-magnificent-life/umc.cmc.6dmtges5xtovanlqv0v3cxwaj?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1891944206"
           },
           {
             "service": "Fandango",
-            "link": "https://athome.fandango.com/content/browse/details/A-Magnificent-Life/4947890",
-            "price": "$14.99"
+            "link": "https://athome.fandango.com/content/browse/details/A-Magnificent-Life/4947890"
           }
         ]
       },
@@ -26035,7 +25978,7 @@
       "poster": "https://image.tmdb.org/t/p/w500/93vxPRNpEbnwmXGOc69zPw9kBvY.jpg",
       "studio": "What the Prod",
       "budget": 15000000,
-      "country": "France",
+      "country": "Belgium",
       "original_language": "en",
       "original_title": "Marcel et Monsieur Pagnol",
       "crew": {
@@ -26049,11 +25992,11 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 3,
+      "_enrichment_attempts": 5,
       "imdb_rating": "6.7",
       "_trailer_source": "tmdb_official",
       "_digital_date_source": "detection",
-      "_needs_review": false,
+      "_needs_review": true,
       "categories": {
         "tier": "studio",
         "is_studio": true,
@@ -26071,7 +26014,13 @@
       "featured": false,
       "display_title": "A Magnificent Life",
       "metacritic_score": "60",
-      "_watch_links_verified": "2026-05-06T14:41:41.564405"
+      "_watch_links_verified": "2026-05-06T14:41:41.564405",
+      "_last_enrichment_attempt": "2026-05-12",
+      "_quality_warnings": [
+        "Service 'Apple TV' not in TMDB providers for this title (TMDB has: ['amazon video'])",
+        "Service 'Fandango' not in TMDB providers for this title (TMDB has: ['amazon video'])"
+      ],
+      "status": "available"
     },
     {
       "id": "1661439",
@@ -30716,7 +30665,7 @@
         "Horror",
         "Thriller"
       ],
-      "runtime": 0,
+      "runtime": 97,
       "year": 2026,
       "rt_score": null,
       "providers": {
@@ -30765,7 +30714,7 @@
       "poster": "https://image.tmdb.org/t/p/w500/sX8tqkFR1aqZaLQ4Jgb8jEMB4RN.jpg",
       "studio": "Hideout Pictures",
       "budget": 0,
-      "country": "Venezuela",
+      "country": "Colombia",
       "original_language": "en",
       "original_title": "The Whistler",
       "crew": {
@@ -30779,7 +30728,7 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 3,
       "status": "available",
       "categories": {
         "tier": null,
@@ -30800,7 +30749,14 @@
       "_trailer_source": "tmdb_official",
       "_digital_date_source": "tmdb_type4",
       "_needs_review": false,
-      "display_title": "The Whistler"
+      "display_title": "The Whistler",
+      "_last_enrichment_attempt": "2026-05-12",
+      "metacritic_score": null,
+      "_enrichment_gaps": [
+        "rt_score",
+        "wikipedia",
+        "metacritic_score"
+      ]
     },
     {
       "id": "1499488",
@@ -55405,7 +55361,7 @@
       "featured": false,
       "imdb_rating": "7.7",
       "display_title": "An Army of Women",
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "_last_enrichment_attempt": "2026-05-12",
       "_trailer_source": "tmdb_official",
       "_needs_review": true,
@@ -59046,94 +59002,6 @@
       "featured": false,
       "imdb_rating": "5.1",
       "display_title": "Banlieusards 3 (Street Flow 3)"
-    },
-    {
-      "id": "1320482",
-      "title": "From Darkness to Light",
-      "digital_date": "2026-03-04",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "synopsis": "Explores Jerry Lewis' unreleased 1972 film \"The Day the Clown Cried,\" its mysterious disappearance, and the search for footage. Includes interviews with Lewis' associates and previously unseen production content.",
-      "genres": [
-        "Documentary"
-      ],
-      "runtime": 108,
-      "year": 2025,
-      "rt_score": null,
-      "providers": {
-        "rent": [
-          "Eventive"
-        ],
-        "buy": [],
-        "streaming": []
-      },
-      "links": {
-        "wikipedia": "https://en.wikipedia.org/wiki/From_Darkness_to_Light",
-        "trailer": "https://www.youtube.com/watch?v=ueyceKwAe80",
-        "rt": "https://www.rottentomatoes.com/m/from_darkness_to_light",
-        "imdb": "https://www.imdb.com/title/tt33030466/",
-        "metacritic": "https://www.metacritic.com/movie/from-darkness-to-light/"
-      },
-      "watch_links": {
-        "vod": [
-          {
-            "service": "Eventive",
-            "link": "https://watch.eventive.org/jfilmboca2026/play/6951ffa59aec8ae0d3a1cc69",
-            "price": "$12.00"
-          }
-        ]
-      },
-      "_enrichment_status": "completed",
-      "_discovered_at": "2026-03-04T10:13:51.636622",
-      "_tmdb_fetch_failed": false,
-      "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/9WHK2hmkFAUOttK23fi7QOMMrlY.jpg",
-      "studio": "Sugar Town Filmproduktion",
-      "budget": 0,
-      "country": "Germany",
-      "original_language": "en",
-      "original_title": "From Darkness to Light",
-      "crew": {
-        "director": "Michael Lurie",
-        "cast": [
-          "Jerry Lewis",
-          "Martin Scorsese"
-        ]
-      },
-      "_discovery_source": "provider_availability_check",
-      "_digital_date_source": "detection",
-      "_enrichment_gaps": [
-        "watch_links"
-      ],
-      "categories": {
-        "tier": null,
-        "is_studio": false,
-        "is_indie": false,
-        "is_foreign": false,
-        "is_staff_pick": false,
-        "is_restoration": false,
-        "is_virtual_screening": true,
-        "is_series": false,
-        "is_documentary": true,
-        "is_exploitation": false,
-        "auto_categorized": true,
-        "manual_override": null
-      },
-      "featured": false,
-      "imdb_rating": "7.3",
-      "virtual_screening_info": {
-        "platform": "Eventive",
-        "screening_slug": "jfilmboca2026",
-        "screening_name": "Boca Intl. Jewish Film Fest",
-        "available_start": "2026-02-02",
-        "available_end": "2026-04-12",
-        "discovered": "2026-03-30",
-        "last_checked": "2026-03-30",
-        "status": "expired"
-      },
-      "hidden": true,
-      "display_title": "From Darkness to Light",
-      "metacritic_score": "0"
     },
     {
       "id": "883126",
@@ -64515,12 +64383,11 @@
       "manually_corrected": false,
       "synopsis": "When novelist Ohm Bauman retreats to a remote inn to scatter his parents' ashes, he is consumed by tales of a witch haunting the honeymoon suite. Disturbing visions and a shocking disappearance forces him to confront dark corners of his past.",
       "genres": [
-        "Horror",
-        "Mystery"
+        "Horror"
       ],
       "runtime": 107,
       "year": 2026,
-      "rt_score": "87%",
+      "rt_score": "89%",
       "providers": {
         "rent": [],
         "buy": [
@@ -64536,7 +64403,14 @@
         "imdb": "https://www.imdb.com/title/tt35672862/",
         "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1430077.mp4"
       },
-      "watch_links": {},
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon Video",
+            "link": "https://www.amazon.com/gp/video/detail/B0GXL8TFZB?tag=nrw04-20"
+          }
+        ]
+      },
       "pre_order_links": [
         {
           "service": "Fandango At Home",
@@ -64551,7 +64425,7 @@
       "poster": "https://image.tmdb.org/t/p/w500/jKPWwsbAM6HKURPYQ1eG8DmKMKn.jpg",
       "studio": "Spooky Pictures",
       "budget": 5000000,
-      "country": "United Arab Emirates",
+      "country": "United States of America",
       "original_language": "en",
       "original_title": "Hokum",
       "crew": {
@@ -64565,12 +64439,12 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 2,
-      "_last_enrichment_attempt": "2026-05-06",
-      "imdb_rating": "7.4",
+      "_enrichment_attempts": 4,
+      "_last_enrichment_attempt": "2026-05-12",
+      "imdb_rating": "7.3",
       "_trailer_source": "tmdb_official",
-      "metacritic_score": "78",
-      "_needs_review": false,
+      "metacritic_score": "76",
+      "_needs_review": true,
       "status": "available",
       "categories": {
         "tier": null,
@@ -64590,7 +64464,11 @@
       "display_title": "Hokum",
       "_is_preorder": true,
       "_buyonly_preorder": true,
-      "_added_manually": true
+      "_added_manually": true,
+      "_digital_date_source": "detection",
+      "_quality_warnings": [
+        "Service 'Amazon' not in TMDB providers for this title (TMDB has: ['fandango at home'])"
+      ]
     },
     {
       "id": "539745",
@@ -65142,7 +65020,14 @@
         "imdb": "https://www.imdb.com/title/tt28650488/",
         "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1226863.mp4"
       },
-      "watch_links": {},
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon Video",
+            "link": "https://www.amazon.com/gp/video/detail/B0GRL9HMKK?tag=nrw04-20"
+          }
+        ]
+      },
       "_enrichment_status": "completed",
       "_discovered_at": "2026-05-03T10:45:08.470778",
       "_tmdb_fetch_failed": false,
@@ -65150,17 +65035,17 @@
       "poster": "https://image.tmdb.org/t/p/w500/eJGWx219ZcEMVQJhAgMiqo8tYY.jpg",
       "studio": "Illumination",
       "budget": 110000000,
-      "country": "Japan",
+      "country": "United States of America",
       "original_language": "en",
       "original_title": "The Super Mario Galaxy Movie",
       "crew": {
-        "director": "Michael Jelenic",
+        "director": "Aaron Horvath",
         "cast": [
           "Chris Pratt",
-          "Charlie Day",
           "Anya Taylor-Joy",
+          "Charlie Day",
           "Jack Black",
-          "Keegan-Michael Key"
+          "Donald Glover"
         ]
       },
       "_discovery_source": "tmdb_type4",
@@ -65187,9 +65072,9 @@
         "manual_override": null
       },
       "featured": false,
-      "_enrichment_attempts": 2,
-      "_last_enrichment_attempt": "2026-05-06",
-      "imdb_rating": "6.4",
+      "_enrichment_attempts": 4,
+      "_last_enrichment_attempt": "2026-05-12",
+      "imdb_rating": "6.3",
       "_trailer_source": "tmdb_official",
       "metacritic_score": "37",
       "_needs_review": false,
@@ -65197,7 +65082,8 @@
       "display_title": "The Super Mario Galaxy Movie",
       "_is_preorder": true,
       "_buyonly_preorder": true,
-      "_added_manually": true
+      "_added_manually": true,
+      "_digital_date_source": "manual_override"
     }
   ],
   "staff_picks": [
