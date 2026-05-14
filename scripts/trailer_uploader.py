@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/opt/homebrew/bin/python3.11
 """
 Trailer Uploader — Phase 2 of In-App Trailer Playback
 Uploads downloaded trailer MP4 files to Backblaze B2 for CDN delivery.

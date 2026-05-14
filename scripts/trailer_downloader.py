@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/opt/homebrew/bin/python3.11
 """
 Trailer Downloader — Phase 1 of In-App Trailer Playback
 Downloads movie trailers from YouTube as 1080p MP4 files using yt-dlp.

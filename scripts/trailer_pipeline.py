@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/opt/homebrew/bin/python3.11
 """
 Trailer Pipeline — Orchestrates trailer hosting for NRW in-app playback.
 
