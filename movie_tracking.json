@@ -82671,7 +82671,8 @@
       "enrichment_date": null,
       "_jw_revert_count": 10,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-10"
+      "_jw_reverted_at": "2026-05-10",
+      "_skip_provider_discovery": true
     },
     "1381589": {
       "title": "Manele and Revolution",
@@ -114396,7 +114397,7 @@
       "festival": "Cannes",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 5,
+      "_jw_revert_count": 6,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-05-10"
     },
@@ -136402,22 +136403,20 @@
     "1537344": {
       "title": "Projection",
       "year": 2025,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
       "digital_date": "2026-04-16",
       "providers": {
-        "rent": [
-          "Eventive"
-        ],
+        "rent": [],
         "buy": [],
         "streaming": []
       },
       "intake_pass": "C",
       "festival": "Fantastic Fest",
-      "has_providers": false,
+      "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "enriched": true,
-      "enrichment_date": "2026-04-21"
+      "enriched": false,
+      "enrichment_date": null
     },
     "1524266": {
       "title": "The House that Love Built",
@@ -169724,7 +169723,7 @@
       ],
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 1,
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-05-14"
     },
@@ -177252,7 +177251,7 @@
         ]
       },
       "intake_pass": "B",
-      "has_providers": true,
+      "has_providers": false,
       "_discovery_source": "provider_availability_check",
       "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_valid_offers",
@@ -181405,7 +181404,7 @@
     "1597306": {
       "title": "Anastacia - #NTK25 Live in Concert",
       "year": 2026,
-      "status": "available",
+      "status": "removed",
       "first_seen": "2026-02-20",
       "digital_date": "2026-05-14",
       "providers": {
@@ -181419,7 +181418,9 @@
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-05-14"
+      "enrichment_date": "2026-05-14",
+      "removed_date": "2026-05-14",
+      "removed_reason": "manual_removal"
     },
     "1576370": {
       "title": "TVXQ! 20th Anniversary Film『IDENTITY』",
@@ -188044,7 +188045,7 @@
       "intake_pass": "B",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 3,
+      "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-05-12"
     },
@@ -200816,21 +200817,19 @@
     "1609576": {
       "title": "Assets & Liabilities",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-03-28",
       "digital_date": "2026-04-18",
       "providers": {
-        "rent": [
-          "Eventive"
-        ],
+        "rent": [],
         "buy": [],
         "streaming": []
       },
       "intake_pass": "B",
-      "has_providers": false,
+      "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "enriched": true,
-      "enrichment_date": "2026-04-21"
+      "enriched": false,
+      "enrichment_date": null
     },
     "1607600": {
       "title": "Street Kingdom: Make your own sound.",
@@ -207218,21 +207217,19 @@
     "1546530": {
       "title": "Cat Cam",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-04-15",
       "digital_date": "2026-04-16",
       "providers": {
-        "rent": [
-          "Eventive"
-        ],
+        "rent": [],
         "buy": [],
         "streaming": []
       },
       "intake_pass": "B",
-      "has_providers": false,
+      "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "enriched": true,
-      "enrichment_date": "2026-04-21"
+      "enriched": false,
+      "enrichment_date": null
     },
     "tv_319493": {
       "title": "Grayson Perry Has Seen the Future",
@@ -207771,7 +207768,7 @@
       "title": "Someone Has to Know",
       "content_type": "limited_series",
       "tmdb_id": 297454,
-      "status": "tracking",
+      "status": "available",
       "first_air_date": "2026-04-15",
       "digital_date": "2026-04-15",
       "episode_count": 8,
@@ -207785,15 +207782,21 @@
       ],
       "original_language": "es",
       "providers": {
-        "streaming": [],
         "rent": [],
-        "buy": []
+        "buy": [],
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
       },
       "intaked_at": "2026-04-16T10:13:51.499406",
       "networks": [
         "Netflix"
       ],
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": false,
+      "enrichment_date": null
     },
     "tv_293940": {
       "title": "Lisbon Noir",
@@ -212427,7 +212430,8 @@
       "_discovery_source": "tmdb_type4",
       "_jw_revert_count": 10,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-10"
+      "_jw_reverted_at": "2026-05-10",
+      "_skip_provider_discovery": true
     },
     "1668513": {
       "title": "November",
@@ -215938,7 +215942,8 @@
       "_discovery_source": "tmdb_type4",
       "_jw_revert_count": 10,
       "_jw_revert_reason": "justwatch_no_valid_offers",
-      "_jw_reverted_at": "2026-05-10"
+      "_jw_reverted_at": "2026-05-10",
+      "_skip_provider_discovery": true
     },
     "1683689": {
       "title": "FAT YEARS OF FATMULL",
@@ -217211,7 +217216,7 @@
       "enriched": false,
       "enrichment_date": null,
       "_discovery_source": "tmdb_type4",
-      "_jw_revert_count": 8,
+      "_jw_revert_count": 9,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-10"
     },
@@ -217651,7 +217656,7 @@
       "enriched": false,
       "enrichment_date": null,
       "_discovery_source": "tmdb_type4",
-      "_jw_revert_count": 8,
+      "_jw_revert_count": 9,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-10"
     },
@@ -217688,7 +217693,7 @@
       "enriched": false,
       "enrichment_date": null,
       "_discovery_source": "tmdb_type4",
-      "_jw_revert_count": 8,
+      "_jw_revert_count": 9,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-10"
     },
@@ -218293,7 +218298,7 @@
       "_discovery_source": "tmdb_type4",
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-10",
-      "_jw_revert_count": 6
+      "_jw_revert_count": 7
     },
     "1622764": {
       "title": "Broad Trip",
@@ -218313,7 +218318,7 @@
       "_discovery_source": "tmdb_type4",
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-10",
-      "_jw_revert_count": 6
+      "_jw_revert_count": 7
     },
     "1690861": {
       "title": "Never Fold: The 2025 Las Vegas Aces",
@@ -218333,7 +218338,7 @@
       "_discovery_source": "tmdb_type4",
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-10",
-      "_jw_revert_count": 6
+      "_jw_revert_count": 7
     },
     "1691375": {
       "title": "Riccardo Chailly dirige la 9e de Beethoven - Scala de Milan",
@@ -220322,7 +220327,7 @@
       "digital_date": "2026-05-12",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 3,
+      "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-05-12"
     },
@@ -220476,7 +220481,7 @@
       "title": "U.S. Against the World: Four Years with the Men's National Soccer Team",
       "content_type": "limited_series",
       "tmdb_id": 318449,
-      "status": "tracking",
+      "status": "available",
       "first_air_date": "2026-05-12",
       "digital_date": "2026-05-12",
       "episode_count": 5,
@@ -220488,15 +220493,21 @@
       ],
       "original_language": "en",
       "providers": {
-        "streaming": [],
         "rent": [],
-        "buy": []
+        "buy": [],
+        "streaming": [
+          "HBO Max",
+          "HBO Max Amazon Channel"
+        ]
       },
       "intake_date": "2026-05-12",
       "networks": [
         "HBO"
       ],
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": false,
+      "enrichment_date": null
     },
     "tv_322243": {
       "title": "The Way Back to You",
@@ -220957,7 +220968,7 @@
       "digital_date": "2026-05-14",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 1,
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-14"
     },
