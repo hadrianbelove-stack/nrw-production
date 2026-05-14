@@ -3935,7 +3935,8 @@
       "enrichment_date": null,
       "_jw_revert_count": 10,
       "_jw_revert_reason": "justwatch_no_valid_offers",
-      "_jw_reverted_at": "2026-05-10"
+      "_jw_reverted_at": "2026-05-10",
+      "_skip_provider_discovery": true
     },
     "1305653": {
       "title": "Dongji Rescue",
@@ -67383,7 +67384,7 @@
         ]
       },
       "discovery_pass": "B",
-      "has_providers": true,
+      "has_providers": false,
       "year": 2025,
       "_discovery_source": "provider_availability_check",
       "enriched": false,
@@ -82668,7 +82669,7 @@
       "_discovery_source": "provider_availability_check",
       "enriched": false,
       "enrichment_date": null,
-      "_jw_revert_count": 9,
+      "_jw_revert_count": 10,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-10"
     },
@@ -102215,7 +102216,8 @@
       "enrichment_date": null,
       "_jw_revert_count": 10,
       "_jw_revert_reason": "justwatch_no_valid_offers",
-      "_jw_reverted_at": "2026-05-10"
+      "_jw_reverted_at": "2026-05-10",
+      "_skip_provider_discovery": true
     },
     "1403519": {
       "title": "The Scout",
@@ -114394,7 +114396,7 @@
       "festival": "Cannes",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 4,
+      "_jw_revert_count": 5,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-05-10"
     },
@@ -115877,7 +115879,8 @@
       "digital_date": "2026-04-27",
       "_jw_revert_count": 10,
       "_jw_revert_reason": "justwatch_no_valid_offers",
-      "_jw_reverted_at": "2026-05-10"
+      "_jw_reverted_at": "2026-05-10",
+      "_skip_provider_discovery": true
     },
     "1341000": {
       "title": "Seydou - Dreams Have No Color",
@@ -118912,7 +118915,8 @@
       "enrichment_date": null,
       "_jw_revert_count": 10,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-10"
+      "_jw_reverted_at": "2026-05-10",
+      "_skip_provider_discovery": true
     },
     "1421974": {
       "title": "Creede U.S.A.",
@@ -119230,7 +119234,7 @@
       },
       "intake_pass": "C",
       "festival": "SXSW",
-      "has_providers": true,
+      "has_providers": false,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
       "enrichment_date": "2026-05-11",
@@ -123459,13 +123463,24 @@
     "1364953": {
       "title": "Mārama",
       "year": 2025,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-05-14",
+      "providers": {
+        "rent": [
+          "Fandango At Home"
+        ],
+        "buy": [
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "Toronto/TIFF",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-05-14"
     },
     "1274757": {
       "title": "Forastera",
@@ -123599,7 +123614,8 @@
       "enrichment_date": null,
       "_jw_revert_count": 10,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-10"
+      "_jw_reverted_at": "2026-05-10",
+      "_skip_provider_discovery": true
     },
     "1031084": {
       "title": "The Currents",
@@ -125538,11 +125554,20 @@
       "year": 2024,
       "status": "tracking",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "providers": {
+        "rent": [],
+        "buy": [
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "NYFF",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-05-14",
+      "_buyonly_preorder": true
     },
     "1358124": {
       "title": "Hero Camp!",
@@ -169490,7 +169515,8 @@
       "_jw_revert_count": 10,
       "_discovery_source": "provider_availability_check",
       "_jw_revert_reason": "justwatch_no_valid_offers",
-      "_jw_reverted_at": "2026-05-10"
+      "_jw_reverted_at": "2026-05-10",
+      "_skip_provider_discovery": true
     },
     "tv_309679": {
       "title": "The Roommate Contract",
@@ -169686,15 +169712,21 @@
       ],
       "original_language": "fr",
       "providers": {
-        "streaming": [],
         "rent": [],
-        "buy": []
+        "buy": [],
+        "streaming": [
+          "fuboTV"
+        ]
       },
       "intaked_at": "2026-01-30T09:36:30.743051",
       "networks": [
         "France 2"
       ],
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "_jw_revert_count": 1,
+      "_jw_revert_reason": "justwatch_no_valid_offers",
+      "_jw_reverted_at": "2026-05-14"
     },
     "tv_308652": {
       "title": "The Million Pound Shaman Scam",
@@ -172910,10 +172942,19 @@
       "year": 2026,
       "status": "tracking",
       "first_seen": "2026-02-06",
-      "digital_date": null,
-      "providers": {},
+      "providers": {
+        "rent": [],
+        "buy": [
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-05-14",
+      "_buyonly_preorder": true
     },
     "1062545": {
       "title": "OCD",
@@ -177213,7 +177254,7 @@
       "intake_pass": "B",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-05-12"
     },
@@ -178519,7 +178560,7 @@
     "1630293": {
       "title": "They Wait In Shadows",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-02-15",
       "digital_date": "2026-05-12",
       "providers": {
@@ -178531,11 +178572,8 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
-      "enriched": false,
-      "enrichment_date": null,
-      "_jw_revert_count": 2,
-      "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-13"
+      "enriched": true,
+      "enrichment_date": "2026-05-14"
     },
     "1604121": {
       "title": "Freud and the Wolf-Man",
@@ -181367,12 +181405,21 @@
     "1597306": {
       "title": "Anastacia - #NTK25 Live in Concert",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-02-20",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-05-14",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-05-14"
     },
     "1576370": {
       "title": "TVXQ! 20th Anniversary Film『IDENTITY』",
@@ -184353,7 +184400,8 @@
       "enrichment_date": null,
       "_jw_revert_count": 10,
       "_jw_revert_reason": "justwatch_no_valid_offers",
-      "_jw_reverted_at": "2026-05-10"
+      "_jw_reverted_at": "2026-05-10",
+      "_skip_provider_discovery": true
     },
     "1624919": {
       "title": "Grade 10D",
@@ -187996,7 +188044,7 @@
       "intake_pass": "B",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-05-12"
     },
@@ -194048,7 +194096,8 @@
       "_jw_revert_count": 10,
       "_discovery_source": "provider_availability_check",
       "_jw_revert_reason": "justwatch_no_valid_offers",
-      "_jw_reverted_at": "2026-05-10"
+      "_jw_reverted_at": "2026-05-10",
+      "_skip_provider_discovery": true
     },
     "tv_283673": {
       "title": "That Night",
@@ -205353,7 +205402,7 @@
     "1576369": {
       "title": "Bharathanatyam 2 Mohiniyattam",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-04-10",
       "digital_date": "2026-05-13",
       "providers": {
@@ -205367,9 +205416,8 @@
       "intake_pass": "B",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 1,
-      "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-13"
+      "enriched": true,
+      "enrichment_date": "2026-05-14"
     },
     "1563543": {
       "title": "The Good Daughter",
@@ -208498,7 +208546,8 @@
       "enrichment_date": null,
       "_jw_revert_count": 10,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-10"
+      "_jw_reverted_at": "2026-05-10",
+      "_skip_provider_discovery": true
     },
     "1634949": {
       "title": "Lorne",
@@ -212376,7 +212425,7 @@
       "enriched": false,
       "enrichment_date": null,
       "_discovery_source": "tmdb_type4",
-      "_jw_revert_count": 9,
+      "_jw_revert_count": 10,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-10"
     },
@@ -214043,7 +214092,8 @@
       "enrichment_date": null,
       "_jw_revert_count": 10,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-10"
+      "_jw_reverted_at": "2026-05-10",
+      "_skip_provider_discovery": true
     },
     "1683444": {
       "title": "Nick Fuentes and Keith Woods visit Rome",
@@ -214082,7 +214132,8 @@
       "enrichment_date": null,
       "_jw_revert_count": 10,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-10"
+      "_jw_reverted_at": "2026-05-10",
+      "_skip_provider_discovery": true
     },
     "1682640": {
       "title": "Koş Yoldaş! Arkanda Eski Dünya Var",
@@ -215114,7 +215165,8 @@
       "enrichment_date": null,
       "_jw_revert_count": 10,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-10"
+      "_jw_reverted_at": "2026-05-10",
+      "_skip_provider_discovery": true
     },
     "tv_321127": {
       "title": "The Anchors",
@@ -215159,7 +215211,8 @@
       "enrichment_date": null,
       "_jw_revert_count": 10,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-10"
+      "_jw_reverted_at": "2026-05-10",
+      "_skip_provider_discovery": true
     },
     "1667178": {
       "title": "To Do",
@@ -215179,7 +215232,8 @@
       "enrichment_date": null,
       "_jw_revert_count": 10,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-10"
+      "_jw_reverted_at": "2026-05-10",
+      "_skip_provider_discovery": true
     },
     "1007757": {
       "title": "Swapped",
@@ -215882,7 +215936,7 @@
       "enriched": false,
       "enrichment_date": null,
       "_discovery_source": "tmdb_type4",
-      "_jw_revert_count": 9,
+      "_jw_revert_count": 10,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-05-10"
     },
@@ -216244,7 +216298,7 @@
       "title": "The Grand-ish Tour",
       "content_type": "limited_series",
       "tmdb_id": 321267,
-      "status": "tracking",
+      "status": "available",
       "first_air_date": "2026-04-30",
       "digital_date": "2026-04-30",
       "episode_count": 3,
@@ -216256,15 +216310,21 @@
       ],
       "original_language": "en",
       "providers": {
-        "streaming": [],
         "rent": [],
-        "buy": []
+        "buy": [],
+        "streaming": [
+          "Amazon Prime Video",
+          "Amazon Prime Video with Ads"
+        ]
       },
       "intaked_at": "2026-05-02T09:57:13.338694",
       "networks": [
         "Prime Video"
       ],
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-05-14"
     },
     "1686985": {
       "title": "Bi-Coastal",
@@ -216659,7 +216719,8 @@
       "_discovery_source": "tmdb_type4",
       "_jw_revert_count": 10,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-10"
+      "_jw_reverted_at": "2026-05-10",
+      "_skip_provider_discovery": true
     },
     "1687632": {
       "title": "Land of Many Waters",
@@ -217150,7 +217211,7 @@
       "enriched": false,
       "enrichment_date": null,
       "_discovery_source": "tmdb_type4",
-      "_jw_revert_count": 7,
+      "_jw_revert_count": 8,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-10"
     },
@@ -217590,7 +217651,7 @@
       "enriched": false,
       "enrichment_date": null,
       "_discovery_source": "tmdb_type4",
-      "_jw_revert_count": 7,
+      "_jw_revert_count": 8,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-10"
     },
@@ -217627,7 +217688,7 @@
       "enriched": false,
       "enrichment_date": null,
       "_discovery_source": "tmdb_type4",
-      "_jw_revert_count": 7,
+      "_jw_revert_count": 8,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-10"
     },
@@ -218232,7 +218293,7 @@
       "_discovery_source": "tmdb_type4",
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-10",
-      "_jw_revert_count": 5
+      "_jw_revert_count": 6
     },
     "1622764": {
       "title": "Broad Trip",
@@ -218252,7 +218313,7 @@
       "_discovery_source": "tmdb_type4",
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-10",
-      "_jw_revert_count": 5
+      "_jw_revert_count": 6
     },
     "1690861": {
       "title": "Never Fold: The 2025 Las Vegas Aces",
@@ -218272,7 +218333,7 @@
       "_discovery_source": "tmdb_type4",
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-10",
-      "_jw_revert_count": 5
+      "_jw_revert_count": 6
     },
     "1691375": {
       "title": "Riccardo Chailly dirige la 9e de Beethoven - Scala de Milan",
@@ -220261,7 +220322,7 @@
       "digital_date": "2026-05-12",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-05-12"
     },
@@ -220527,14 +220588,19 @@
     "1559776": {
       "title": "The A List: 15 Stories from Asian and Pacific Diasporas",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "intake_date": "2026-05-13",
       "digital_date": "2026-05-13",
-      "providers": {},
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "A",
-      "_jw_revert_count": 1,
-      "_jw_revert_reason": "justwatch_no_valid_offers",
-      "_jw_reverted_at": "2026-05-13"
+      "has_providers": true,
+      "enriched": true,
+      "enrichment_date": "2026-05-14",
+      "_discovery_source": "tmdb_type4"
     },
     "1693274": {
       "title": "100 Dates in Dallas",
@@ -220881,6 +220947,506 @@
       },
       "intake_date": "2026-05-13",
       "networks": [],
+      "has_providers": false
+    },
+    "1693346": {
+      "title": "Apple Music Live: Lady Gaga MAYHEM Requiem",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-14",
+      "digital_date": "2026-05-14",
+      "providers": {},
+      "intake_pass": "A",
+      "_jw_revert_count": 1,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-05-14"
+    },
+    "1694620": {
+      "title": "Haye Ni Bebe Meriye",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-14",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1694304": {
+      "title": "Lactar",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-14",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1694008": {
+      "title": "Аэропорт",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-14",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1691307": {
+      "title": "Der Kroatien-Krimi: Gefahr im Verzug",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-14",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1690337": {
+      "title": "Grandes Hits",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-14",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1678630": {
+      "title": "Born on the 18th of May",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-14",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1674853": {
+      "title": "Con la pioggia dentro",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-14",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1668574": {
+      "title": "A Very Unlikely Goalkeeper",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-14",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1667233": {
+      "title": "Shadow Cabinet",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-14",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1662858": {
+      "title": "EB",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-14",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1662168": {
+      "title": "Authentic Games - In the Disconnected Empire",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-14",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1660343": {
+      "title": "Ghostfluencer",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-14",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1620829": {
+      "title": "Caterpillar",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-14",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1592087": {
+      "title": "Leo and Tig. The Road to Baikal",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-14",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1579138": {
+      "title": "Siccîn 9",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-14",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1550673": {
+      "title": "The Talented Mr. F",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-14",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1541327": {
+      "title": "Eu Não Te Ouço",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-14",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1527451": {
+      "title": "Wolves",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-14",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1510767": {
+      "title": "Athiradi",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-14",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1488583": {
+      "title": "O Gênio do Crime",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-14",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1471810": {
+      "title": "Mommy Down to the Ride",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-14",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1444084": {
+      "title": "Narcisa's Will",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-14",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1422407": {
+      "title": "Conni and the Mystery of the Crane",
+      "year": 2026,
+      "status": "available",
+      "intake_date": "2026-05-14",
+      "digital_date": "2026-05-14",
+      "providers": {
+        "rent": [
+          "Amazon Video",
+          "Apple TV Store",
+          "Google Play Movies",
+          "YouTube",
+          "Fandango At Home"
+        ],
+        "buy": [
+          "Amazon Video",
+          "Apple TV Store",
+          "Google Play Movies",
+          "YouTube",
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
+      "intake_pass": "B",
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-05-14"
+    },
+    "1397390": {
+      "title": "Enquanto o Céu Não Me Espera",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-14",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1317705": {
+      "title": "A Colisão dos Destinos",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-14",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1290945": {
+      "title": "Ein Münchner im Himmel - Der Tod ist erst der Anfang",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-14",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1251318": {
+      "title": "Mambembe",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-14",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1693948": {
+      "title": "Goonslop",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-14",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "64900": {
+      "title": "I Can't Sleep",
+      "year": 1994,
+      "status": "tracking",
+      "intake_date": "2026-05-14",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Cannes",
+      "has_providers": false
+    },
+    "1544163": {
+      "title": "Words Of Love",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-14",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Cannes",
+      "has_providers": false
+    },
+    "1476532": {
+      "title": "The End of It",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-14",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Cannes",
+      "has_providers": false
+    },
+    "tv_258063": {
+      "title": "Soul Mate",
+      "content_type": "limited_series",
+      "tmdb_id": 258063,
+      "status": "tracking",
+      "first_air_date": "2026-05-14",
+      "digital_date": "2026-05-14",
+      "episode_count": 8,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/koWJdCFLPLI2VSWQhssoF91k5al.jpg",
+      "synopsis": "In a moment of despair, Ryu Narutaki finds himself saved by Korean boxer Johan Hwang. As their wounded souls draw closer, their fates cruelly intertwine.",
+      "genres": [
+        "Drama"
+      ],
+      "original_language": "ja",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-05-14",
+      "networks": [
+        "Netflix"
+      ],
+      "has_providers": false
+    },
+    "tv_322402": {
+      "title": "Dokument inifrån: Arvtagarna",
+      "content_type": "limited_series",
+      "tmdb_id": 322402,
+      "status": "tracking",
+      "first_air_date": "2026-05-13",
+      "digital_date": "2026-05-13",
+      "episode_count": 3,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/6NbkLq5S99lLuOwf4NxqE1ytvw2.jpg",
+      "synopsis": "",
+      "genres": [
+        "Documentary"
+      ],
+      "original_language": "sv",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-05-14",
+      "networks": [
+        "SVT1",
+        "SVT Play"
+      ],
+      "has_providers": false
+    },
+    "tv_322355": {
+      "title": "Pico dos Marins: O Caso do Escoteiro Marco Aurélio",
+      "content_type": "limited_series",
+      "tmdb_id": 322355,
+      "status": "tracking",
+      "first_air_date": "2026-05-12",
+      "digital_date": "2026-05-12",
+      "episode_count": 8,
+      "runtime": 288,
+      "poster": "https://image.tmdb.org/t/p/w500/mPeVFqrsLdOtVCkxMYZhQqVzMyi.jpg",
+      "synopsis": "",
+      "genres": [
+        "Documentary",
+        "Crime"
+      ],
+      "original_language": "pt",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-05-14",
+      "networks": [
+        "Globoplay"
+      ],
+      "has_providers": false
+    },
+    "tv_322413": {
+      "title": "Intro to Nietzsche",
+      "content_type": "limited_series",
+      "tmdb_id": 322413,
+      "status": "tracking",
+      "first_air_date": "2026-05-10",
+      "digital_date": "2026-05-10",
+      "episode_count": 8,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/t1sYfHEzoKukrZDR8XCw6GAhb6x.jpg",
+      "synopsis": "In Introduction to Nietzsche, an eight-hour course, Dr. Peterson embarks on a deep exploration of the life, philosophy, and enduring influence of Friedrich Nietzsche. Set against the backdrop of the late 19th century, we examine how Nietzsche's ideas challenged traditional moral and philosophical foundations, paving the way for new perspectives on the human condition. The course delves into key concepts such as the will to power, the critique of truth and morality, and the affirmation of life in the face of nihilism, while also exploring Nietzsche's complex relationship with religion, academia, and the works of other thinkers. Ultimately, we are invited to confront uncomfortable realities, embrace necessary struggles, and cultivate the courage and gratitude needed to realize our full potential.",
+      "genres": [
+        "Documentary",
+        "Talk"
+      ],
+      "original_language": "en",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-05-14",
+      "networks": [],
+      "has_providers": false
+    },
+    "tv_322421": {
+      "title": "The Philosophy of Science",
+      "content_type": "limited_series",
+      "tmdb_id": 322421,
+      "status": "tracking",
+      "first_air_date": "2026-04-30",
+      "digital_date": "2026-04-30",
+      "episode_count": 8,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/vxDANhwQAwJCqrrIN1xtBVp6kCD.jpg",
+      "synopsis": "In The Philosophy of Science, an eight-hour course, Dr. James Orr traces the development of science from ancient Greece through the Scientific Revolution to today. He examines how theological, institutional, and philosophical forces shaped science, while tackling key issues like the demarcation problem of science versus pseudoscience, Hume’s problem of induction, Kuhn’s theory of paradigm shifts, and the realism debate. The course also engages fascinating unresolved questions raised by cosmology, neuroscience, and quantum mechanics, ultimately arguing that scientific progress does not eliminate philosophical inquiry but rather deepens it, revealing new mysteries that demand philosophical analysis.",
+      "genres": [
+        "Documentary",
+        "Talk"
+      ],
+      "original_language": "en",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-05-14",
+      "networks": [],
+      "has_providers": false
+    },
+    "tv_320859": {
+      "title": "Dokument Inifrån: Tillbaka till Paradiset",
+      "content_type": "limited_series",
+      "tmdb_id": 320859,
+      "status": "tracking",
+      "first_air_date": "2026-04-26",
+      "digital_date": "2026-04-26",
+      "episode_count": 3,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/iPEior74kJa5Fh9hRD7iMZYulcG.jpg",
+      "synopsis": "",
+      "genres": [
+        "Documentary"
+      ],
+      "original_language": "sv",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-05-14",
+      "networks": [
+        "SVT"
+      ],
       "has_providers": false
     }
   }
