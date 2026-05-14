@@ -60,3 +60,28 @@ The script outputs a full structured report — present it as-is. Key sections:
 - **Trailer hosting failures**: Recent failures with reasons.
 
 Format as a short summary (not raw log). Flag any failures or concerns clearly.
+
+### Pull Quote Curation
+
+After the report, curate pull quotes for any new movies. Follow these steps:
+
+1. **Find the window**: Read `.claude/last_nrw_session.json` to get the last session timestamp. If the file doesn't exist, default to 7 days ago.
+
+2. **Find candidates**: From `data.json`, find movies where ALL of these are true:
+   - `digital_date` is after the last session timestamp
+   - Movie has an `rt_score`
+   - Movie does NOT already have a `pull_quotes` array
+   - Movie is NOT a reissue/restoration (`is_restoration` flag, or title contains "Remaster"/"Restoration"/"4K", or `year` is 10+ years before current year suggesting a classic re-release)
+
+3. **If no candidates**: Report "No new movies need pull quotes since last session." and stop.
+
+4. **If candidates exist**:
+   - Check `cache/pull_quotes_cache.json` for existing scraped quotes
+   - Scrape any uncached movies using `GeminiPullQuoteFinder` from `gemini_scraper.pull_quotes`
+   - Present each movie **one at a time, most recent first**, showing:
+     - Movie title, year, RT score, digital date
+     - All quotes numbered, with full text, critic name, and outlet
+   - Wait for user response: numbers to select, "skip", or trimmed text (an edit)
+   - **When the user shortens a quote, that trimmed text IS the final version** — they are editing
+   - For reissues/restorations: only show quotes specifically about the reissue, not original-era reviews
+   - After all movies are curated, inject selected quotes into `data.json` using the same logic as `pipeline/display.py`'s `inject_selected_pull_quotes()`

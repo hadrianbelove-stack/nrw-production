@@ -37,3 +37,13 @@ The script outputs a full structured report — present it as-is. Every section 
 9. **Trailer hosting failures**: Recent failures with title and reason.
 
 Flag any failures or concerns clearly at the end.
+
+## Session Timestamp (REQUIRED)
+
+After the post-launch report, save the current timestamp so `/launchagentreport` knows when you last opened the site:
+
+```python
+import json, time
+with open('.claude/last_nrw_session.json', 'w') as f:
+    json.dump({"timestamp": time.strftime('%Y-%m-%dT%H:%M:%S'), "note": "Last time user opened the site"}, f)
+```

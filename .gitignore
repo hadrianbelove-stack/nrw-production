@@ -57,6 +57,9 @@ watchmode_quota.json
 # Orchestrator lock file
 .nrw_orchestrator.lock
 
+# Claude session state (local-only)
+.claude/last_nrw_session.json
+
 # Scraper health metrics (generated)
 metrics/scraper_health.json
 metrics/scraper_health_history.jsonl
