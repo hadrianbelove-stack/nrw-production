@@ -195,7 +195,8 @@ class MovieEnricher:
         (Wikipedia, trailers, RT scores, watch links) is wrapped in try-catch blocks.
 
         Returns:
-            dict: Always returns a dictionary with available data, never None
+            dict or None: Enrichment fields dict, or None if movie is
+            ineligible (missing TMDB details or runtime below minimum).
         """
         if not movie_details:
             self.ctx.logger.error(f"Movie details missing for movie_id {movie_id}")
@@ -529,7 +530,6 @@ class MovieEnricher:
         else:
             enrichment_results['quality_gate'] = 'passed'
 
-        # Always return result - never None for partial failures
         return result
 
     # ------------------------------------------------------------------
@@ -1007,6 +1007,23 @@ class MovieEnricher:
                 # get_enrichment_only_fields can see it (tracking save may lose the flag)
                 if existing_movies[movie_index].get('_added_manually'):
                     movie_data['_added_manually'] = True
+
+                # Runtime gate: skip enrichment for short films that bypassed intake
+                # (TMDB had null runtime at intake, but now reports below minimum).
+                # Trust data.json runtime if it's higher than TMDB (manual correction).
+                _runtime_tmdb = movie_details.get('runtime')
+                _runtime_local = existing_movies[movie_index].get('runtime')
+                _runtimes = [r for r in [_runtime_tmdb, _runtime_local] if r]
+                _runtime = max(_runtimes) if _runtimes else None
+                if _runtime_local and _runtime_tmdb and _runtime_local > _runtime_tmdb:
+                    movie_details['runtime'] = _runtime_local  # propagate fix into enrichment
+                _min_runtime = self.ctx.config.get('intake', {}).get('min_runtime', 60)
+                if _runtime and _runtime < _min_runtime:
+                    existing_movies[movie_index]['_enrichment_status'] = 'under_60min'
+                    print(f"  ⏩ {_title} — {_runtime}min < {_min_runtime}min minimum, skipping enrichment")
+                    deferred_details.append(_deferred_entry(_title, 'under_60min', movie_index, tracking_data['movies'].get(movie_id)))
+                    signal.alarm(0)
+                    continue
 
                 # Get enrichment fields only
                 _movie_start = time.time()
