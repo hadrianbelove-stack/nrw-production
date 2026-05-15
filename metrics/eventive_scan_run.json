@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-05-15T12:32:15.359092",
-  "operation": "eventive_scan",
+  "timestamp": "2026-05-15T14:18:14.393780",
+  "operation": "eventive_scan_pipeline",
   "stats": {
     "festivals_scanned": 121,
     "festivals_with_films": 116,
@@ -10,7 +10,8 @@
     "unique_active": 1636,
     "tracking_matches": 81,
     "wall_matches": 6,
-    "unmatched": 1559
+    "new_cached": 52,
+    "skipped_undated": 29
   },
   "tracking_matches": [
     {
@@ -434,6 +435,18 @@
       "nrw_status": "tracking"
     },
     {
+      "movie_id": "1277882",
+      "nrw_title": "Out of Love",
+      "eventive_title": "Out of Love",
+      "festival": "Focus on French Cinema Festival 2026",
+      "link": "https://watch.eventive.org/focusonfrenchcinema/play/69987b9e1ab3800c3fdbb0fc",
+      "start": "2026-05-11T04:00:00.000Z",
+      "end": "2026-05-26T03:45:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
       "movie_id": "1585144",
       "nrw_title": "Connection",
       "eventive_title": "The Connection",
@@ -456,18 +469,6 @@
       "status": "active",
       "match_tier": 1,
       "nrw_status": "tracking"
-    },
-    {
-      "movie_id": "1277882",
-      "nrw_title": "Out of Love",
-      "eventive_title": "Out of Love",
-      "festival": "Focus on French Cinema Festival 2026",
-      "link": "https://watch.eventive.org/focusonfrenchcinema/play/69987b9e1ab3800c3fdbb0fc",
-      "start": "2026-05-11T04:00:00.000Z",
-      "end": "2026-05-26T03:45:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
     },
     {
       "movie_id": "1425485",
@@ -1058,408 +1059,6 @@
       "status": "upcoming",
       "match_tier": 1,
       "nrw_status": "available"
-    }
-  ],
-  "unmatched_sample": [
-    {
-      "eventive_title": "Your Attention Please (Documentary)",
-      "festival": "Movies for Grownups",
-      "link": "https://watch.eventive.org/aarpmfg/play/69c1641625d143e12526091f",
-      "start": "2026-05-16T00:00:00.000Z",
-      "end": "2026-05-16T01:45:00.000Z",
-      "status": "upcoming"
-    },
-    {
-      "eventive_title": "Is This Thing On? (Drama/Comedy)",
-      "festival": "Movies for Grownups",
-      "link": "https://watch.eventive.org/aarpmfg/play/69d4822bf8e2dd0867702d90",
-      "start": "2026-05-19T00:00:00.000Z",
-      "end": "2026-05-19T02:10:00.000Z",
-      "status": "upcoming"
-    },
-    {
-      "eventive_title": "The WASPS: Taking Flight (Documentary)",
-      "festival": "Movies for Grownups",
-      "link": "https://watch.eventive.org/aarpmfg/play/69d4854261a53b67ee70696f",
-      "start": "2026-05-27T00:00:00.000Z",
-      "end": "2026-05-27T01:10:00.000Z",
-      "status": "upcoming"
-    },
-    {
-      "eventive_title": "Tyrus (Documentary)",
-      "festival": "Movies for Grownups",
-      "link": "https://watch.eventive.org/aarpmfg/play/69d486e80844386782162b99",
-      "start": "2026-05-29T00:00:00.000Z",
-      "end": "2026-05-29T01:15:00.000Z",
-      "status": "upcoming"
-    },
-    {
-      "eventive_title": "Jimmy in Saigon (Documentary)",
-      "festival": "Movies for Grownups",
-      "link": "https://watch.eventive.org/aarpmfg/play/69f0d0906313c0c48c98b59c",
-      "start": "2026-06-02T00:00:00.000Z",
-      "end": "2026-06-02T01:40:00.000Z",
-      "status": "upcoming"
-    },
-    {
-      "eventive_title": "Andy Warhol: American Dream (Documentary)",
-      "festival": "Movies for Grownups",
-      "link": "https://watch.eventive.org/aarpmfg/play/69ea76b56b454ecb64be6bdc",
-      "start": "2026-06-13T00:00:00.000Z",
-      "end": "2026-06-13T01:50:00.000Z",
-      "status": "upcoming"
-    },
-    {
-      "eventive_title": "Jules (Sci-Fi/Comedy/Drama)",
-      "festival": "Movies for Grownups",
-      "link": "https://watch.eventive.org/aarpmfg/play/69f4dd7a0ee089b624c4b495",
-      "start": "2026-06-19T00:00:00.000Z",
-      "end": "2026-06-19T01:35:00.000Z",
-      "status": "upcoming"
-    },
-    {
-      "eventive_title": "Keys Bags Names Words: Hope in aging and dementia (Documentary)",
-      "festival": "Movies for Grownups",
-      "link": "https://watch.eventive.org/aarpmfg/play/69f3b3a000484d039515d6f2",
-      "start": "2026-07-01T00:00:00.000Z",
-      "end": "2026-07-01T01:40:00.000Z",
-      "status": "upcoming"
-    },
-    {
-      "eventive_title": "Blood & Guts",
-      "festival": "Chattanooga Film Festival 2026",
-      "link": "https://watch.eventive.org/chattfilmfest/play/6a0278ef120b59b987653043",
-      "start": "2026-06-19T04:00:00.000Z",
-      "end": "2026-06-28T03:59:00.000Z",
-      "status": "upcoming"
-    },
-    {
-      "eventive_title": "Dead Media",
-      "festival": "Chattanooga Film Festival 2026",
-      "link": "https://watch.eventive.org/chattfilmfest/play/6a0279452990e487bbd24a42",
-      "start": "2026-06-19T04:00:00.000Z",
-      "end": "2026-06-28T03:59:00.000Z",
-      "status": "upcoming"
-    },
-    {
-      "eventive_title": "Demonetize",
-      "festival": "Chattanooga Film Festival 2026",
-      "link": "https://watch.eventive.org/chattfilmfest/play/6a02796ca79e4c4338bb36c4",
-      "start": "2026-06-19T04:00:00.000Z",
-      "end": "2026-06-28T03:59:00.000Z",
-      "status": "upcoming"
-    },
-    {
-      "eventive_title": "Enduring Destiny",
-      "festival": "Chattanooga Film Festival 2026",
-      "link": "https://watch.eventive.org/chattfilmfest/play/6a02798fdf04795f59a27e83",
-      "start": "2026-06-19T23:15:00.000Z",
-      "end": "2026-06-28T03:59:00.000Z",
-      "status": "upcoming"
-    },
-    {
-      "eventive_title": "First Feature",
-      "festival": "Chattanooga Film Festival 2026",
-      "link": "https://watch.eventive.org/chattfilmfest/play/6a027345d3056339a6fc177b",
-      "start": "2026-06-19T23:15:00.000Z",
-      "end": "2026-06-28T03:59:00.000Z",
-      "status": "upcoming"
-    },
-    {
-      "eventive_title": "Jump Scare",
-      "festival": "Chattanooga Film Festival 2026",
-      "link": "https://watch.eventive.org/chattfilmfest/play/6a0273b09c493d510fb7870d",
-      "start": "2026-06-19T04:00:00.000Z",
-      "end": "2026-06-28T03:59:00.000Z",
-      "status": "upcoming"
-    },
-    {
-      "eventive_title": "The King of Black Goo",
-      "festival": "Chattanooga Film Festival 2026",
-      "link": "https://watch.eventive.org/chattfilmfest/play/6a027f0dd47b6eb7f3880360",
-      "start": "2026-06-25T21:55:00.000Z",
-      "end": "2026-06-28T03:59:00.000Z",
-      "status": "upcoming"
-    },
-    {
-      "eventive_title": "La cosa en la niebla (The Thing in the Fog)",
-      "festival": "Chattanooga Film Festival 2026",
-      "link": "https://watch.eventive.org/chattfilmfest/play/6a027f9fd11b4ff207a24b56",
-      "start": "2026-06-19T04:00:00.000Z",
-      "end": "2026-06-28T03:59:00.000Z",
-      "status": "upcoming"
-    },
-    {
-      "eventive_title": "MegaForce",
-      "festival": "Chattanooga Film Festival 2026",
-      "link": "https://watch.eventive.org/chattfilmfest/play/6a027aa265e6ec2eda6dd049",
-      "start": "2026-06-19T04:00:00.000Z",
-      "end": "2026-06-28T03:59:00.000Z",
-      "status": "upcoming"
-    },
-    {
-      "eventive_title": "The Mid-Night Driver",
-      "festival": "Chattanooga Film Festival 2026",
-      "link": "https://watch.eventive.org/chattfilmfest/play/6a027f57f38b42f15aa52162",
-      "start": "2026-06-19T04:00:00.000Z",
-      "end": "2026-06-28T03:59:00.000Z",
-      "status": "upcoming"
-    },
-    {
-      "eventive_title": "Misper",
-      "festival": "Chattanooga Film Festival 2026",
-      "link": "https://watch.eventive.org/chattfilmfest/play/6a0273e53256d6043db78997",
-      "start": "2026-06-19T04:00:00.000Z",
-      "end": "2026-06-28T03:59:00.000Z",
-      "status": "upcoming"
-    },
-    {
-      "eventive_title": "The Mothman Prophecies",
-      "festival": "Chattanooga Film Festival 2026",
-      "link": "https://watch.eventive.org/chattfilmfest/play/6a027bbe1a817375408bdf0c",
-      "start": "2026-06-19T04:00:00.000Z",
-      "end": "2026-06-28T03:59:00.000Z",
-      "status": "upcoming"
-    },
-    {
-      "eventive_title": "NOCLIP 3: The Chattanooga Syndrome",
-      "festival": "Chattanooga Film Festival 2026",
-      "link": "https://watch.eventive.org/chattfilmfest/play/6a027d0ed6283fb9741b83ad",
-      "start": "2026-06-19T04:00:00.000Z",
-      "end": "2026-06-28T03:59:00.000Z",
-      "status": "upcoming"
-    },
-    {
-      "eventive_title": "On Gallows Hill",
-      "festival": "Chattanooga Film Festival 2026",
-      "link": "https://watch.eventive.org/chattfilmfest/play/6a027e117dcf3b80e3685618",
-      "start": "2026-06-19T04:00:00.000Z",
-      "end": "2026-06-28T03:59:00.000Z",
-      "status": "upcoming"
-    },
-    {
-      "eventive_title": "Photo Negative",
-      "festival": "Chattanooga Film Festival 2026",
-      "link": "https://watch.eventive.org/chattfilmfest/play/6a027455d754cdd5f996a17a",
-      "start": "2026-06-20T23:15:00.000Z",
-      "end": "2026-06-28T03:59:00.000Z",
-      "status": "upcoming"
-    },
-    {
-      "eventive_title": "Pitfall",
-      "festival": "Chattanooga Film Festival 2026",
-      "link": "https://watch.eventive.org/chattfilmfest/play/6a027e679ea0b418685dc6b8",
-      "start": "2026-06-19T04:00:00.000Z",
-      "end": "2026-06-28T03:59:00.000Z",
-      "status": "upcoming"
-    },
-    {
-      "eventive_title": "Sunshine Girls",
-      "festival": "Chattanooga Film Festival 2026",
-      "link": "https://watch.eventive.org/chattfilmfest/play/6a027edf1bf53990fe8744fd",
-      "start": "2026-06-19T04:00:00.000Z",
-      "end": "2026-06-28T03:59:00.000Z",
-      "status": "upcoming"
-    },
-    {
-      "eventive_title": "This Is Buzz",
-      "festival": "Chattanooga Film Festival 2026",
-      "link": "https://watch.eventive.org/chattfilmfest/play/6a027fe6da061e64cdbdb063",
-      "start": "2026-06-19T04:00:00.000Z",
-      "end": "2026-06-28T03:59:00.000Z",
-      "status": "upcoming"
-    },
-    {
-      "eventive_title": "CFF SALUTES YOUR SHORTS",
-      "festival": "Chattanooga Film Festival 2026",
-      "link": "https://watch.eventive.org/chattfilmfest/play/6a0284467714d8cd6d079207",
-      "start": "2026-06-19T04:00:00.000Z",
-      "end": "2026-06-28T03:59:00.000Z",
-      "status": "upcoming"
-    },
-    {
-      "eventive_title": "CFF SALUTES YOUR SHORTS: FUNSIZE EPICS VOL. 1",
-      "festival": "Chattanooga Film Festival 2026",
-      "link": "https://watch.eventive.org/chattfilmfest/play/6a0284a82e605bee31bd53ad",
-      "start": "2026-06-19T04:00:00.000Z",
-      "end": "2026-06-28T03:59:00.000Z",
-      "status": "upcoming"
-    },
-    {
-      "eventive_title": "CFF SALUTES YOUR SHORTS: FUNSIZE EPICS VOL. 2",
-      "festival": "Chattanooga Film Festival 2026",
-      "link": "https://watch.eventive.org/chattfilmfest/play/6a0285563bf364b9cc86620a",
-      "start": "2026-06-19T04:00:00.000Z",
-      "end": "2026-06-28T03:59:00.000Z",
-      "status": "upcoming"
-    },
-    {
-      "eventive_title": "DANGEROUS VISIONS",
-      "festival": "Chattanooga Film Festival 2026",
-      "link": "https://watch.eventive.org/chattfilmfest/play/6a0285ab6b97a731faa714c1",
-      "start": "2026-06-19T04:00:00.000Z",
-      "end": "2026-06-28T03:59:00.000Z",
-      "status": "upcoming"
-    },
-    {
-      "eventive_title": "DANGEROUS VISIONS: FUNSIZE EPICS VOL. 1",
-      "festival": "Chattanooga Film Festival 2026",
-      "link": "https://watch.eventive.org/chattfilmfest/play/6a02860b2bf1a58e196476d0",
-      "start": "2026-06-19T04:00:00.000Z",
-      "end": "2026-06-28T03:59:00.000Z",
-      "status": "upcoming"
-    },
-    {
-      "eventive_title": "DANGEROUS VISIONS: FUNSIZE EPICS VOL. 2",
-      "festival": "Chattanooga Film Festival 2026",
-      "link": "https://watch.eventive.org/chattfilmfest/play/6a0286b63315f1d7cb7efafa",
-      "start": "2026-06-19T04:00:00.000Z",
-      "end": "2026-06-28T03:59:00.000Z",
-      "status": "upcoming"
-    },
-    {
-      "eventive_title": "W.T.F. (WATCH THESE FILMS)",
-      "festival": "Chattanooga Film Festival 2026",
-      "link": "https://watch.eventive.org/chattfilmfest/play/6a02875cb766328eb8e39e8c",
-      "start": "2026-06-19T04:00:00.000Z",
-      "end": "2026-06-28T03:59:00.000Z",
-      "status": "upcoming"
-    },
-    {
-      "eventive_title": "W.T.F. FUNSIZE EPICS VOL. 1",
-      "festival": "Chattanooga Film Festival 2026",
-      "link": "https://watch.eventive.org/chattfilmfest/play/6a0287ce0bf9e6bb3a5bd500",
-      "start": "2026-06-19T04:00:00.000Z",
-      "end": "2026-06-28T03:59:00.000Z",
-      "status": "upcoming"
-    },
-    {
-      "eventive_title": "W.T.F. FUNSIZE EPICS VOL. 2",
-      "festival": "Chattanooga Film Festival 2026",
-      "link": "https://watch.eventive.org/chattfilmfest/play/6a02881d0304867fe215b9dc",
-      "start": "2026-06-19T04:00:00.000Z",
-      "end": "2026-06-28T03:59:00.000Z",
-      "status": "upcoming"
-    },
-    {
-      "eventive_title": "W.T.F. FUNSIZE EPICS VOL. 3",
-      "festival": "Chattanooga Film Festival 2026",
-      "link": "https://watch.eventive.org/chattfilmfest/play/6a02889bf65cf284b2eb9684",
-      "start": "2026-06-19T04:00:00.000Z",
-      "end": "2026-06-28T03:59:00.000Z",
-      "status": "upcoming"
-    },
-    {
-      "eventive_title": "REDEYE #1",
-      "festival": "Chattanooga Film Festival 2026",
-      "link": "https://watch.eventive.org/chattfilmfest/play/6a02898a78e82633a3b6b5d1",
-      "start": "2026-06-20T03:55:00.000Z",
-      "end": "2026-06-28T03:59:00.000Z",
-      "status": "upcoming"
-    },
-    {
-      "eventive_title": "REDEYE #2",
-      "festival": "Chattanooga Film Festival 2026",
-      "link": "https://watch.eventive.org/chattfilmfest/play/6a028a4fa6a523b4401b5283",
-      "start": "2026-06-21T03:55:00.000Z",
-      "end": "2026-06-28T03:59:00.000Z",
-      "status": "upcoming"
-    },
-    {
-      "eventive_title": "REDEYE #3",
-      "festival": "Chattanooga Film Festival 2026",
-      "link": "https://watch.eventive.org/chattfilmfest/play/6a028a89b695f6f4383cac4b",
-      "start": "2026-06-22T03:55:00.000Z",
-      "end": "2026-06-28T03:59:00.000Z",
-      "status": "upcoming"
-    },
-    {
-      "eventive_title": "REDEYE #4",
-      "festival": "Chattanooga Film Festival 2026",
-      "link": "https://watch.eventive.org/chattfilmfest/play/6a028ac794846a51971f24ae",
-      "start": "2026-06-23T03:55:00.000Z",
-      "end": "2026-06-28T03:59:00.000Z",
-      "status": "upcoming"
-    },
-    {
-      "eventive_title": "REDEYE #5",
-      "festival": "Chattanooga Film Festival 2026",
-      "link": "https://watch.eventive.org/chattfilmfest/play/6a028af30ee0a99345b91e8c",
-      "start": "2026-06-24T03:55:00.000Z",
-      "end": "2026-06-28T03:59:00.000Z",
-      "status": "upcoming"
-    },
-    {
-      "eventive_title": "REDEYE #6",
-      "festival": "Chattanooga Film Festival 2026",
-      "link": "https://watch.eventive.org/chattfilmfest/play/6a028b188ca8641a905159f8",
-      "start": "2026-06-25T03:55:00.000Z",
-      "end": "2026-06-28T03:59:00.000Z",
-      "status": "upcoming"
-    },
-    {
-      "eventive_title": "REDEYE #7",
-      "festival": "Chattanooga Film Festival 2026",
-      "link": "https://watch.eventive.org/chattfilmfest/play/6a028b90493919d0bc9cfaf9",
-      "start": "2026-06-26T03:55:00.000Z",
-      "end": "2026-06-28T03:59:00.000Z",
-      "status": "upcoming"
-    },
-    {
-      "eventive_title": "REDEYE #8",
-      "festival": "Chattanooga Film Festival 2026",
-      "link": "https://watch.eventive.org/chattfilmfest/play/6a028c82267c3545f6a2f4ec",
-      "start": "2026-06-27T03:55:00.000Z",
-      "end": "2026-06-28T03:59:00.000Z",
-      "status": "upcoming"
-    },
-    {
-      "eventive_title": "Care to Laugh",
-      "festival": "Movies on Demand",
-      "link": "https://watch.eventive.org/aarpondemand/play/67378714d461d200331c802b",
-      "start": "",
-      "end": "",
-      "status": "active"
-    },
-    {
-      "eventive_title": "The Battle I\u2019ll Never Forget",
-      "festival": "Movies on Demand",
-      "link": "https://watch.eventive.org/aarpondemand/play/6737834e46d93900261f599f",
-      "start": "",
-      "end": "",
-      "status": "active"
-    },
-    {
-      "eventive_title": "The Hidden Power of Purpose",
-      "festival": "Movies on Demand",
-      "link": "https://watch.eventive.org/aarpondemand/play/6712b41699853b002cdff772",
-      "start": "",
-      "end": "",
-      "status": "active"
-    },
-    {
-      "eventive_title": "World Premiere 2026: Vancouver",
-      "festival": "Voices With Impact 2026",
-      "link": "https://watch.eventive.org/voiceswithimpact/play/69ca8252ac8f6eed3adf0e45",
-      "start": "2026-06-04T01:15:00.000Z",
-      "end": "2026-06-04T05:15:00.000Z",
-      "status": "upcoming"
-    },
-    {
-      "eventive_title": "VWI 2026 Online Premiere: Mental Health Shorts",
-      "festival": "Voices With Impact 2026",
-      "link": "https://watch.eventive.org/voiceswithimpact/play/6862baac225a989e71bc7939",
-      "start": "2026-06-10T22:10:00.000Z",
-      "end": "2026-07-10T04:00:00.000Z",
-      "status": "upcoming"
-    },
-    {
-      "eventive_title": "1-800-GOLUM with David McShane",
-      "festival": "Voices With Impact 2026",
-      "link": "https://watch.eventive.org/voiceswithimpact/play/6862baac225a989e71bc7930",
-      "start": "2026-06-17T17:00:00.000Z",
-      "end": "2026-07-03T19:00:00.000Z",
-      "status": "upcoming"
     }
   ]
 }
