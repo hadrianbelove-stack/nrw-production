@@ -36,12 +36,13 @@ class GeminiPullQuoteFinder(GeminiFinderBase):
     def _parse_quotes(self, text: str, source_type: str = 'critic') -> list:
         """Parse quote lines from Gemini response text."""
         quotes = []
-        # Match: QUOTE: "text" -- Critic Name, Publication
-        pattern = r'QUOTE:\s*["\u201c]([^"\u201d]+)["\u201d]\s*[-\u2014]{1,2}\s*([^,\n]+),\s*([^\n]+)'
-        for match in re.finditer(pattern, text):
+        # Match: QUOTE: "text" -- Critic Name, Publication | URL: https://...
+        pattern = r'QUOTE:\s*["\u201c]([^"\u201d]+)["\u201d]\s*[-\u2014]{1,2}\s*([^,\n]+),\s*([^|\n]+?)(?:\s*\|\s*URL:\s*(https?://\S+))?$'
+        for match in re.finditer(pattern, text, re.MULTILINE):
             quote_text = match.group(1).strip()
             critic = match.group(2).strip()
             outlet = match.group(3).strip()
+            review_url = (match.group(4) or '').strip()
             # Skip if quote is too short or looks like an error
             if len(quote_text) < 10:
                 continue
@@ -50,6 +51,7 @@ class GeminiPullQuoteFinder(GeminiFinderBase):
                 'critic': critic,
                 'outlet': outlet,
                 'source': source_type,
+                'review_url': review_url,
                 'selected': False,
                 'added_at': time.strftime('%Y-%m-%dT%H:%M:%S')
             })
@@ -136,7 +138,9 @@ What to AVOID:
 - Awkward or clunky phrasing
 
 Format each quote as:
-QUOTE: "exact quote text" -- Critic Name, Publication Name
+QUOTE: "exact quote text" -- Critic Name, Publication Name | URL: https://full-review-url
+
+The URL must be the direct link to the published review. This is critical for verification.
 
 Response:"""
 
@@ -180,7 +184,9 @@ What makes a GREAT Letterboxd pull quote:
 - Shorter ALWAYS wins. If a review is long, extract only the punchiest line.
 
 Format each as:
-QUOTE: "review text" -- @username, Letterboxd
+QUOTE: "review text" -- @username, Letterboxd | URL: https://letterboxd.com/username/film/...
+
+The URL must be the direct link to the Letterboxd review. This is critical for verification.
 
 Response:"""
 

@@ -61,6 +61,7 @@ def convert_to_combined_format(title, year, quotes):
             'verbatim': True,
             'selected': q.get('selected', False),
             'fresh': None,
+            'review_url': q.get('review_url', ''),
             'added_at': q.get('added_at', datetime.now().isoformat())
         }
 

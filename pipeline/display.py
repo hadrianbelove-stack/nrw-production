@@ -66,7 +66,8 @@ class DisplayGenerator:
                         'text': q.get('text') or q.get('pull_quote', ''),
                         'critic': q.get('critic', ''),
                         'outlet': q.get('outlet', ''),
-                        'source': q.get('source', '')
+                        'source': q.get('source', ''),
+                        'review_url': q.get('review_url', '')
                     })
 
             if selected:

@@ -32,6 +32,7 @@ def _promote_gemini_cache(cache_key, gemini_cache, combined_cache):
             'verbatim': True,
             'selected': q.get('selected', False),
             'fresh': None,
+            'review_url': q.get('review_url', ''),
             'added_at': q.get('added_at', datetime.now().isoformat())
         }
         if q.get('source') == 'letterboxd':
@@ -229,6 +230,7 @@ def add_pull_quote():
     text = (data.get('text') or '').strip()
     critic = (data.get('critic') or '').strip()
     outlet = (data.get('outlet') or '').strip()
+    review_url = (data.get('review_url') or '').strip()
 
     if not cache_key or not text:
         return jsonify({'success': False, 'error': 'Quote text is required'})
@@ -255,6 +257,7 @@ def add_pull_quote():
         'verbatim': True,
         'selected': False,
         'fresh': None,
+        'review_url': review_url,
         'added_at': datetime.now().isoformat()
     }
 
