@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>NRW — Left-Aligned Date Card Variations</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-dark: #0a0a0a;
+    --bg-mid: #1a1a2e;
+    --accent: #00d4aa;
+    --text-primary: #ffffff;
+    --text-secondary: #bbb;
+    --text-muted: #888;
+    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  html {
+    background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-mid) 100%);
+    background-attachment: fixed;
+  }
+  body {
+    color: var(--text-primary);
+    font-family: var(--font);
+    -webkit-font-smoothing: antialiased;
+    padding: 0 0 60px;
+  }
+
+  .page-header {
+    text-align: center;
+    padding: 14px 10px 10px;
+    border-bottom: 1px solid #333;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(10px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .page-header h1 {
+    font-weight: 100;
+    letter-spacing: 0.2em;
+    font-size: 0.85rem;
+    color: var(--accent);
+    margin-bottom: 2px;
+  }
+  .page-header .sub {
+    font-size: 0.6rem;
+    color: var(--text-muted);
+  }
+
+  .option-section { padding: 12px 0 0; }
+  .option-header { display: flex; align-items: baseline; gap: 8px; padding: 0 8px 6px; }
+  .option-num { font-size: 1.1rem; font-weight: 800; color: var(--accent); min-width: 24px; }
+  .option-name { font-size: 0.7rem; color: #fff; font-weight: 600; }
+  .option-desc { font-size: 0.55rem; color: var(--text-muted); padding: 0 8px 6px; }
+
+  .wall-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
+    padding: 0 4px;
+    max-width: 440px;
+    margin: 0 auto;
+  }
+  .poster-cell {
+    aspect-ratio: 2/3;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .poster-cell img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .section-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+    margin: 16px 0 0;
+  }
+
+  /* ===== BASE ===== */
+  .dc {
+    aspect-ratio: 2/3;
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    padding-left: 10px;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+    border-left: 3px solid var(--accent);
+  }
+
+  /* ===== 1. Bold chevrons, tight stack ===== */
+  .dc1 .dy { font-size: 0.85rem; color: var(--accent); font-weight: 700; letter-spacing: 0.06em; line-height: 1; }
+  .dc1 .nm { font-size: 2.8rem; font-weight: 800; color: #fff; line-height: 0.85; }
+  .dc1 .mo { font-size: 0.6rem; color: var(--text-muted); letter-spacing: 0.1em; line-height: 1; }
+  .dc1 .ch { font-size: 1.6rem; color: var(--accent); opacity: 0.5; margin-top: 2px; letter-spacing: -0.08em; line-height: 1; }
+
+  /* ===== 2. Ghost number bg, compact foreground ===== */
+  .dc2 .nm { font-size: 5.5rem; font-weight: 900; color: rgba(255,255,255,0.06); line-height: 0.75; position: absolute; right: -6px; top: 50%; transform: translateY(-50%); }
+  .dc2 .dy { font-size: 0.85rem; color: var(--accent); font-weight: 700; letter-spacing: 0.06em; z-index: 1; }
+  .dc2 .nm2 { font-size: 2.2rem; font-weight: 800; color: #fff; line-height: 0.85; z-index: 1; }
+  .dc2 .mo { font-size: 0.55rem; color: var(--text-muted); letter-spacing: 0.1em; z-index: 1; }
+  .dc2 .ch { font-size: 1.4rem; color: var(--accent); opacity: 0.4; z-index: 1; margin-top: 2px; letter-spacing: -0.08em; line-height: 1; }
+
+  /* ===== 3. Thick bar, big number, no chevrons ===== */
+  .dc3 { border-left-width: 5px; padding-left: 8px; }
+  .dc3 .dy { font-size: 0.9rem; color: #fff; font-weight: 800; letter-spacing: 0.04em; line-height: 1; }
+  .dc3 .nm { font-size: 3.2rem; font-weight: 800; color: var(--accent); line-height: 0.8; }
+  .dc3 .mo { font-size: 0.6rem; color: var(--text-secondary); letter-spacing: 0.1em; line-height: 1; }
+
+  /* ===== 4. Gradient bar, big chevrons ===== */
+  .dc4 { border-left: 3px solid transparent; background-image: linear-gradient(135deg, #0a0a0a, #1a1a2e), linear-gradient(180deg, var(--accent), rgba(0,212,170,0.2)); background-origin: border-box; background-clip: padding-box, border-box; }
+  .dc4 .dy { font-size: 0.85rem; color: #fff; font-weight: 700; letter-spacing: 0.06em; line-height: 1; }
+  .dc4 .nm { font-size: 2.8rem; font-weight: 800; color: var(--accent); line-height: 0.85; text-shadow: 0 0 12px rgba(0,212,170,0.3); }
+  .dc4 .mo { font-size: 0.55rem; color: var(--text-muted); letter-spacing: 0.1em; }
+  .dc4 .ch { font-size: 1.5rem; color: var(--accent); opacity: 0.35; margin-top: 2px; letter-spacing: -0.08em; line-height: 1; }
+
+  /* ===== 5. Underlined day, stacked tight ===== */
+  .dc5 .dy { font-size: 0.75rem; color: var(--accent); font-weight: 600; letter-spacing: 0.08em; border-bottom: 1px solid rgba(0,212,170,0.4); padding-bottom: 2px; margin-bottom: 2px; line-height: 1; }
+  .dc5 .nm { font-size: 2.8rem; font-weight: 800; color: #fff; line-height: 0.85; }
+  .dc5 .mo { font-size: 0.6rem; color: var(--accent); letter-spacing: 0.1em; opacity: 0.6; }
+  .dc5 .ch { font-size: 1.4rem; color: var(--accent); opacity: 0.3; margin-top: 2px; letter-spacing: -0.08em; line-height: 1; }
+
+  /* ===== 6. Inline day·month, giant number ===== */
+  .dc6 .top { font-size: 0.65rem; color: var(--text-muted); letter-spacing: 0.06em; line-height: 1; }
+  .dc6 .top b { color: var(--accent); font-weight: 700; }
+  .dc6 .nm { font-size: 3.4rem; font-weight: 900; color: #fff; line-height: 0.8; }
+  .dc6 .ch { font-size: 1.5rem; color: var(--accent); opacity: 0.35; margin-top: 2px; letter-spacing: -0.08em; line-height: 1; }
+
+  /* ===== 7. Teal banner top + left bar ===== */
+  .dc7 { border-left-width: 3px; padding: 0; justify-content: flex-start; }
+  .dc7 .bar { width: 100%; background: var(--accent); padding: 4px 8px; }
+  .dc7 .bar .dy { font-size: 0.65rem; color: #000; font-weight: 800; letter-spacing: 0.08em; }
+  .dc7 .body { padding: 0 0 0 10px; flex: 1; display: flex; flex-direction: column; justify-content: center; }
+  .dc7 .nm { font-size: 2.8rem; font-weight: 800; color: #fff; line-height: 0.85; }
+  .dc7 .mo { font-size: 0.55rem; color: var(--text-muted); letter-spacing: 0.1em; }
+  .dc7 .ch { font-size: 1.4rem; color: var(--accent); opacity: 0.35; margin-top: 2px; letter-spacing: -0.08em; line-height: 1; }
+
+  /* ===== 8. Vertical day text along bar ===== */
+  .dc8 { padding-left: 22px; }
+  .dc8 .dy-vert { position: absolute; left: 7px; top: 50%; transform: translateY(-50%) rotate(-90deg); font-size: 0.6rem; color: var(--accent); font-weight: 700; letter-spacing: 0.12em; white-space: nowrap; }
+  .dc8 .nm { font-size: 3rem; font-weight: 800; color: #fff; line-height: 0.8; }
+  .dc8 .mo { font-size: 0.55rem; color: var(--text-muted); letter-spacing: 0.1em; }
+  .dc8 .ch { font-size: 1.4rem; color: var(--accent); opacity: 0.35; margin-top: 2px; letter-spacing: -0.08em; line-height: 1; }
+
+  /* ===== 9. Day above, num+month inline ===== */
+  .dc9 .dy { font-size: 1rem; color: var(--accent); font-weight: 800; letter-spacing: 0.04em; line-height: 1; }
+  .dc9 .row { display: flex; align-items: baseline; gap: 4px; }
+  .dc9 .nm { font-size: 2.6rem; font-weight: 800; color: #fff; line-height: 0.85; }
+  .dc9 .mo { font-size: 0.75rem; color: var(--text-muted); letter-spacing: 0.06em; font-weight: 600; }
+  .dc9 .ch { font-size: 1.4rem; color: var(--accent); opacity: 0.35; margin-top: 2px; letter-spacing: -0.08em; line-height: 1; }
+
+  /* ===== 10. Bottom chevron bar ===== */
+  .dc10 { justify-content: space-between; padding: 8px 0 0 10px; }
+  .dc10 .dy { font-size: 0.85rem; color: var(--accent); font-weight: 700; letter-spacing: 0.06em; }
+  .dc10 .nm { font-size: 3rem; font-weight: 800; color: #fff; line-height: 0.8; }
+  .dc10 .mo { font-size: 0.55rem; color: var(--text-muted); letter-spacing: 0.1em; }
+  .dc10 .ch-bar { width: 100%; background: rgba(0,212,170,0.12); padding: 5px 10px; margin-top: auto; }
+  .dc10 .ch-bar span { font-size: 1.3rem; color: var(--accent); opacity: 0.5; letter-spacing: -0.05em; }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>LEFT-ALIGNED VARIATIONS</h1>
+  <div class="sub">10 designs based on left bar concept</div>
+</div>
+
+<div id="options"></div>
+
+<script>
+const posters = [
+  'https://image.tmdb.org/t/p/w200/xEua5z9LMILLFS8sVddyipivAfU.jpg',
+  'https://image.tmdb.org/t/p/w200/gqY0ITBgT7A82poL9jv851qdnIb.jpg',
+  'https://image.tmdb.org/t/p/w200/z7xXihu5wHuSMWymq5VAulPVuvg.jpg',
+  'https://image.tmdb.org/t/p/w200/hoEMZXOJgx0XioWcY8nuoVQ70JZ.jpg',
+  'https://image.tmdb.org/t/p/w200/lbrnJY7E0a9xxgj2cotNp6YI4dz.jpg',
+  'https://image.tmdb.org/t/p/w200/z0KEkkptc2kNHNrUdES1cZD2vRm.jpg',
+  'https://image.tmdb.org/t/p/w200/sxyRAjnkDw2E8BVsd91J6Cnv9OK.jpg',
+  'https://image.tmdb.org/t/p/w200/9HcEqn3D4J6b2Z0jK54id9nA0fr.jpg',
+  'https://image.tmdb.org/t/p/w200/9DZCHEo6lVXk0IvKA1D26jJCmPZ.jpg',
+  'https://image.tmdb.org/t/p/w200/6n95Q0HGpFnA4rlnfAKknkoy6XV.jpg',
+  'https://image.tmdb.org/t/p/w200/mAX1ujOROXtKsOuIg5MbJbotOyD.jpg',
+  'https://image.tmdb.org/t/p/w200/dXeeDRLGpTX1U97lWBAwQeeplsW.jpg',
+  'https://image.tmdb.org/t/p/w200/7SphrQbctdC8OTXVIkk9kzI9yXK.jpg',
+  'https://image.tmdb.org/t/p/w200/nedWOSKUvZf2J0oLjYCk44rob2l.jpg',
+];
+
+const dates = [
+  { day: 'SATURDAY', dayShort: 'SAT', num: 10, month: 'MAY' },
+  { day: 'FRIDAY', dayShort: 'FRI', num: 9, month: 'MAY' },
+];
+
+function posterHTML(idx) {
+  return `<div class="poster-cell"><img src="${posters[idx % posters.length]}" alt="" loading="lazy"></div>`;
+}
+
+function buildDateCard(n, d) {
+  switch(n) {
+    case 1: return `<div class="dc dc1"><div class="dy">${d.dayShort}</div><div class="nm">${d.num}</div><div class="mo">${d.month}</div><div class="ch">›››››</div></div>`;
+    case 2: return `<div class="dc dc2"><div class="nm">${d.num}</div><div class="dy">${d.dayShort}</div><div class="nm2">${d.num}</div><div class="mo">${d.month}</div><div class="ch">››››</div></div>`;
+    case 3: return `<div class="dc dc3"><div class="dy">${d.dayShort}</div><div class="nm">${d.num}</div><div class="mo">${d.month}</div></div>`;
+    case 4: return `<div class="dc dc4"><div class="dy">${d.dayShort}</div><div class="nm">${d.num}</div><div class="mo">${d.month}</div><div class="ch">›››››</div></div>`;
+    case 5: return `<div class="dc dc5"><div class="dy">${d.dayShort}</div><div class="nm">${d.num}</div><div class="mo">${d.month}</div><div class="ch">›››››</div></div>`;
+    case 6: return `<div class="dc dc6"><div class="top"><b>${d.dayShort}</b> · ${d.month}</div><div class="nm">${d.num}</div><div class="ch">››››</div></div>`;
+    case 7: return `<div class="dc dc7"><div class="bar"><div class="dy">${d.dayShort}</div></div><div class="body"><div class="nm">${d.num}</div><div class="mo">${d.month}</div><div class="ch">›››››</div></div></div>`;
+    case 8: return `<div class="dc dc8"><div class="dy-vert">${d.day}</div><div class="nm">${d.num}</div><div class="mo">${d.month}</div><div class="ch">›››››</div></div>`;
+    case 9: return `<div class="dc dc9"><div class="dy">${d.dayShort}</div><div class="row"><div class="nm">${d.num}</div><div class="mo">${d.month}</div></div><div class="ch">›››››</div></div>`;
+    case 10: return `<div class="dc dc10"><div class="dy">${d.dayShort}</div><div class="nm">${d.num}</div><div class="mo">${d.month}</div><div class="ch-bar"><span>›››››››››</span></div></div>`;
+  }
+}
+
+const labels = [
+  'Tighter stack, bolder chevrons',
+  'Ghost number background, compact foreground',
+  'Thick bar, compact, no chevrons',
+  'Gradient fade bar, white day, teal number',
+  'Underlined day separator',
+  'Inline day·month, giant number',
+  'Teal banner top + left bar',
+  'Vertical day text along bar',
+  'Number + month on one line',
+  'Chevron bar at bottom edge',
+];
+
+const descs = [
+  'Less padding, bigger number, visible ››› chevrons at 55% opacity',
+  'Huge faded number fills bg, readable info overlaid, no wasted space',
+  'Thick 5px bar, day in white, teal number, no extras — clean & dense',
+  'Gradient bar fades from teal to transparent, white day name, teal glow number',
+  'Day separated by thin teal underline, number fills the space below',
+  'Day and month on one compact line, number dominates, small chevrons',
+  'Left bar + solid teal strip at top with day, number below — hybrid',
+  'Full day name rotated vertically along the teal bar edge',
+  'Day big on top, then number+month on same baseline — compact',
+  'Teal chevron strip across bottom edge, everything stacked above',
+];
+
+const layouts = [
+  { pre1: 0, post1: 7, pre2: 0, post2: 3 },
+  { pre1: 2, post1: 5, pre2: 1, post2: 3 },
+  { pre1: 1, post1: 6, pre2: 3, post2: 1 },
+  { pre1: 3, post1: 4, pre2: 2, post2: 2 },
+  { pre1: 0, post1: 5, pre2: 2, post2: 2 },
+];
+
+const container = document.getElementById('options');
+
+for (let opt = 1; opt <= 10; opt++) {
+  const section = document.createElement('div');
+  section.className = 'option-section';
+
+  const header = document.createElement('div');
+  header.className = 'option-header';
+  header.innerHTML = `<span class="option-num">${opt}</span><span class="option-name">${labels[opt-1]}</span>`;
+
+  const desc = document.createElement('div');
+  desc.className = 'option-desc';
+  desc.textContent = descs[opt-1];
+
+  const grid = document.createElement('div');
+  grid.className = 'wall-grid';
+
+  const layout = layouts[(opt - 1) % layouts.length];
+  let pi = 0;
+  let cells = '';
+  for (let p = 0; p < layout.pre1; p++) cells += posterHTML(pi++);
+  cells += buildDateCard(opt, dates[0]);
+  for (let p = 0; p < layout.post1; p++) cells += posterHTML(pi++);
+  for (let p = 0; p < layout.pre2; p++) cells += posterHTML(pi++);
+  cells += buildDateCard(opt, dates[1]);
+  for (let p = 0; p < layout.post2; p++) cells += posterHTML(pi++);
+  grid.innerHTML = cells;
+
+  section.appendChild(header);
+  section.appendChild(desc);
+  section.appendChild(grid);
+
+  if (opt > 1) {
+    const div = document.createElement('div');
+    div.className = 'section-divider';
+    container.appendChild(div);
+  }
+  container.appendChild(section);
+}
+</script>
+</body>
+</html>

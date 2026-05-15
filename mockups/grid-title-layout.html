@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<title>NRW Mobile Mockup</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+    --bg: #0a0a0a;
+    --accent: #00d4aa;
+    --text: #ffffff;
+    --text-sec: #bbb;
+    --text-muted: #888;
+    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --radius-pill: 25px;
+}
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+}
+
+/* ===== HEADER ===== */
+.site-header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: var(--bg);
+    padding: env(safe-area-inset-top, 0) 8px 6px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.header-title {
+    text-align: center;
+    font-size: 0.7rem;
+    font-weight: 100;
+    letter-spacing: 0.3em;
+    padding: 8px 0 6px;
+    text-transform: uppercase;
+}
+.header-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    align-items: center;
+    padding-bottom: 2px;
+}
+.filter-pill {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: var(--radius-pill);
+    padding: 4px 10px;
+    font-size: 0.6rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    font-family: var(--font);
+    white-space: nowrap;
+    cursor: pointer;
+}
+.filter-pill.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #000;
+    font-weight: 700;
+}
+.filter-row-spacer {
+    width: 0;
+    flex-basis: 100%;
+}
+.search-container {
+    flex: 1;
+    position: relative;
+}
+.search-container input {
+    width: 100%;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: var(--radius-pill);
+    padding: 4px 10px;
+    font-size: 0.6rem;
+    color: var(--text);
+    font-family: var(--font);
+    outline: none;
+}
+.view-dots {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    padding: 0 4px;
+}
+.view-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255,255,255,0.2);
+    cursor: pointer;
+    padding: 0;
+}
+.view-dot.active {
+    background: var(--accent);
+}
+
+/* ===== TAB SWITCHER (mockup only) ===== */
+.mockup-tabs {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 200;
+    display: flex;
+    background: #111;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: env(safe-area-inset-bottom, 0);
+}
+.mockup-tab {
+    flex: 1;
+    padding: 12px 0;
+    text-align: center;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    color: var(--text-muted);
+    border: none;
+    background: none;
+    font-family: var(--font);
+    cursor: pointer;
+}
+.mockup-tab.active {
+    color: var(--accent);
+}
+
+/* ===== GRID ===== */
+.grid-view {
+    display: none;
+    padding-bottom: 60px;
+}
+.grid-view.active {
+    display: block;
+}
+.grid {
+    display: grid;
+    padding: 0 6px;
+}
+.grid.cols-3 {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px 8px;
+}
+.grid.cols-4 {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px 5px;
+}
+
+/* ===== MOVIE CARD ===== */
+.card {
+    position: relative;
+    overflow: hidden;
+}
+.card img {
+    width: 100%;
+    aspect-ratio: 2/3;
+    object-fit: cover;
+    border-radius: 6px;
+    display: block;
+}
+.card-info {
+    padding: 3px 1px 0;
+}
+.card-title {
+    font-weight: 600;
+    color: #fff;
+    line-height: 1.2;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+.card-meta {
+    color: var(--accent);
+    line-height: 1.3;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+/* 3-wide sizing */
+.cols-3 .card-title {
+    font-size: 0.68rem;
+    margin-bottom: 1px;
+}
+.cols-3 .card-meta {
+    font-size: 0.55rem;
+}
+
+/* 4-wide sizing */
+.cols-4 .card-title {
+    font-size: 0.55rem;
+    margin-bottom: 1px;
+}
+.cols-4 .card-meta {
+    font-size: 0.48rem;
+}
+
+/* ===== DATE DIVIDER ===== */
+.date-divider {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 2px 4px;
+}
+.date-divider-text {
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+    text-transform: uppercase;
+}
+.date-divider-line {
+    flex: 1;
+    height: 1px;
+    background: rgba(0,212,170,0.2);
+}
+
+/* ===== STAFF PICK BADGE ===== */
+.pick-badge {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    background: #dc143c;
+    color: #fff;
+    font-size: 0.38rem;
+    font-weight: 700;
+    padding: 2px 4px;
+    border-radius: 3px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+</style>
+</head>
+<body>
+
+<!-- Real header -->
+<header class="site-header" id="site-header">
+    <div class="header-title">THE NEW RELEASE WALL</div>
+    <div class="header-controls">
+        <div class="filter-row">
+            <button class="filter-pill">NRW Picks</button>
+            <button class="filter-pill">Studio</button>
+            <button class="filter-pill">Indie</button>
+            <button class="filter-pill">Foreign</button>
+            <button class="filter-pill">Docs</button>
+            <button class="filter-pill">Reissues</button>
+            <button class="filter-pill">Miniseries</button>
+            <button class="filter-pill">V. Screenings</button>
+            <button class="filter-pill">Pre-Orders</button>
+            <button class="filter-pill">Exploitation</button>
+            <div class="filter-row-spacer"></div>
+            <div class="search-container">
+                <input type="text" placeholder="Search..." readonly>
+            </div>
+            <div class="view-dots">
+                <button class="view-dot active"></button>
+                <button class="view-dot"></button>
+                <button class="view-dot"></button>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- 3-wide grid -->
+<div class="grid-view active" id="view-3">
+    <div class="grid cols-3" id="grid-3"></div>
+</div>
+
+<!-- 4-wide grid -->
+<div class="grid-view" id="view-4">
+    <div class="grid cols-4" id="grid-4"></div>
+</div>
+
+<!-- 4-wide no text (current) -->
+<div class="grid-view" id="view-4c">
+    <div class="grid cols-4" id="grid-4c"></div>
+</div>
+
+<!-- Bottom tab bar (mockup switcher) -->
+<div class="mockup-tabs">
+    <button class="mockup-tab active" onclick="switchView(0)">3-Wide + Info</button>
+    <button class="mockup-tab" onclick="switchView(1)">4-Wide + Info</button>
+    <button class="mockup-tab" onclick="switchView(2)">4-Wide Current</button>
+</div>
+
+<script>
+const M = [
+{"t":"The Hybrids","p":"https://image.tmdb.org/t/p/w342/iJsFiazqvfHDsT7tV4eaQA5zj38.jpg","d":"Michael Mazzola","c":"USA","dt":"2026-05-12","sp":false},
+{"t":"Fight Club","p":"https://image.tmdb.org/t/p/w342/jSziioSwPVrOy9Yow3XhWIBDjq1.jpg","d":"David Fincher","c":"Germany","dt":"2026-05-12","sp":false},
+{"t":"The Butcher's Blade","p":"https://image.tmdb.org/t/p/w342/8S3Tt4gQudJUsK9jKu5Gy1mDfvb.jpg","d":"Liu Wenpu","c":"China","dt":"2026-05-12","sp":false},
+{"t":"Hamlet","p":"https://image.tmdb.org/t/p/w342/7cBh6fWchOJY961A8F1rT98HDdA.jpg","d":"Aneil Karia","c":"UK","dt":"2026-05-12","sp":true},
+{"t":"Calle Malaga","p":"https://image.tmdb.org/t/p/w342/fWagBXNDk44UaupYtwQOAvDwGiT.jpg","d":"Maryam Touzani","c":"Morocco","dt":"2026-05-12","sp":false},
+{"t":"Out of Love","p":"https://image.tmdb.org/t/p/w342/qLEyWZUTYyeBiGvNUz9wmqT6cFd.jpg","d":"Nathan Ambrosioni","c":"France","dt":"2026-05-12","sp":false},
+{"t":"The Legend of Hei 2","p":"https://image.tmdb.org/t/p/w342/ewZaW4gXqqllOelUpS98T49z6Gl.jpg","d":"Gu Jie","c":"China","dt":"2026-05-12","sp":false},
+{"t":"Marty, Life Is Short","p":"https://image.tmdb.org/t/p/w342/vWgqvwe2MlDYXaXQ81XdgcJspMS.jpg","d":"Lawrence Kasdan","c":"USA","dt":"2026-05-12","sp":false},
+{"t":"Hunting Party","p":"https://image.tmdb.org/t/p/w342/ybuiahcYK4XbbASqyojGpMHz6kO.jpg","d":"Danny Patrick","c":"UK","dt":"2026-05-11","sp":false},
+{"t":"The Secrets of the Matriarch","p":"https://image.tmdb.org/t/p/w342/jDChix3mI1CTWE27RBcAGgkszlP.jpg","d":"Lisa France","c":"USA","dt":"2026-05-11","sp":false},
+{"t":"Tenor: My Name Is Pati","p":"https://image.tmdb.org/t/p/w342/9jrqEzz7u4fgLiljYYDnIrwIqdj.jpg","d":"Rebecca Tansley","c":"N. Zealand","dt":"2026-05-11","sp":false},
+{"t":"Tough Old Broads","p":"https://image.tmdb.org/t/p/w342/s6wPgabvDVnnbPiqzJqB8EZGqr9.jpg","d":"Stacey Tenenbaum","c":"Canada","dt":"2026-05-11","sp":false},
+{"t":"A Life Illuminated","p":"https://image.tmdb.org/t/p/w342/fvwKe8ttwNoJasZHoGIU4Nt0foC.jpg","d":"Tasha Van Zandt","c":"USA","dt":"2026-05-11","sp":false},
+{"t":"Comic 8 Revolution","p":"https://image.tmdb.org/t/p/w342/p5Rww9JrI2O3wDdQK16yPdptbKI.jpg","d":"Fajar Bustomi","c":"Indonesia","dt":"2026-05-11","sp":false},
+{"t":"Spacewoman","p":"https://image.tmdb.org/t/p/w342/ukLrLZa7Wuhvv9CKKZQu6uBWHRO.jpg","d":"Hannah Berryman","c":"USA","dt":"2026-05-11","sp":false},
+{"t":"Akin's Desert","p":"https://image.tmdb.org/t/p/w342/tW4s9OYGD6Y0QNHJ16ArjNKQXHD.jpg","d":"Bernard Lessa","c":"Brazil","dt":"2026-05-11","sp":false},
+{"t":"The Roast of Kevin Hart","p":"https://image.tmdb.org/t/p/w342/29Ydae6wXyk5z0fiJr0xlGE86Rx.jpg","d":"Beth McCarthy-Miller","c":"USA","dt":"2026-05-10","sp":false},
+{"t":"96 Pounds of Dynamite","p":"https://image.tmdb.org/t/p/w342/xEua5z9LMILLFS8sVddyipivAfU.jpg","d":"Loren Goldfarb","c":"USA","dt":"2026-05-10","sp":false},
+{"t":"The Fast and the Furious","p":"https://image.tmdb.org/t/p/w342/gqY0ITBgT7A82poL9jv851qdnIb.jpg","d":"Rob Cohen","c":"Germany","dt":"2026-05-10","sp":false},
+{"t":"Pan's Labyrinth","p":"https://image.tmdb.org/t/p/w342/z7xXihu5wHuSMWymq5VAulPVuvg.jpg","d":"Guillermo del Toro","c":"Mexico","dt":"2026-05-10","sp":true},
+{"t":"Dacoit","p":"https://image.tmdb.org/t/p/w342/lbrnJY7E0a9xxgj2cotNp6YI4dz.jpg","d":"Shaneil Deo","c":"India","dt":"2026-05-09","sp":false},
+{"t":"One Golden Summer","p":"https://image.tmdb.org/t/p/w342/z0KEkkptc2kNHNrUdES1cZD2vRm.jpg","d":"Kevin Shaw","c":"USA","dt":"2026-05-09","sp":false},
+{"t":"Julian","p":"https://image.tmdb.org/t/p/w342/sxyRAjnkDw2E8BVsd91J6Cnv9OK.jpg","d":"Cato Kusters","c":"Belgium","dt":"2026-05-09","sp":false},
+{"t":"Legends","p":"https://image.tmdb.org/t/p/w342/dGienbU1xNZJcbY8i8ubJusjDwD.jpg","d":"Neil Forsyth","c":"UK","dt":"2026-05-07","sp":false}
+];
+
+function fmtDate(d) {
+    const dt = new Date(d + 'T12:00:00');
+    const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return days[dt.getDay()] + ', ' + months[dt.getMonth()] + ' ' + dt.getDate();
+}
+
+function buildGrid(id, showInfo) {
+    const el = document.getElementById(id);
+    let last = '', html = '';
+    M.forEach(m => {
+        if (m.dt && m.dt !== last) {
+            last = m.dt;
+            html += '<div class="date-divider"><span class="date-divider-text">' + fmtDate(m.dt) + '</span><span class="date-divider-line"></span></div>';
+        }
+        html += '<div class="card">';
+        if (m.sp) html += '<div class="pick-badge">NRW Pick</div>';
+        html += '<img src="' + m.p + '" alt="" loading="lazy">';
+        if (showInfo) {
+            html += '<div class="card-info">';
+            html += '<div class="card-title">' + m.t + '</div>';
+            html += '<div class="card-meta">' + m.d + ' \u00b7 ' + m.c + '</div>';
+            html += '</div>';
+        }
+        html += '</div>';
+    });
+    el.innerHTML = html;
+}
+
+// Set grid top padding based on header height
+function setGridPadding() {
+    const h = document.getElementById('site-header').offsetHeight;
+    document.querySelectorAll('.grid-view').forEach(v => v.style.paddingTop = (h + 6) + 'px');
+}
+
+buildGrid('grid-3', true);
+buildGrid('grid-4', true);
+buildGrid('grid-4c', false);
+
+window.addEventListener('load', setGridPadding);
+window.addEventListener('resize', setGridPadding);
+setTimeout(setGridPadding, 100);
+
+function switchView(idx) {
+    const views = document.querySelectorAll('.grid-view');
+    const tabs = document.querySelectorAll('.mockup-tab');
+    views.forEach((v, i) => v.classList.toggle('active', i === idx));
+    tabs.forEach((t, i) => t.classList.toggle('active', i === idx));
+}
+</script>
+</body>
+</html>

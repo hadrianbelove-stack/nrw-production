@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NRW — VOD Price Options (A+C Hybrids)</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-dark: #0a0a0a;
+    --bg-mid: #1a1a2e;
+    --accent: #00d4aa;
+    --text-primary: #ffffff;
+    --text-secondary: #bbb;
+    --text-muted: #888;
+    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --svc-amazon: #ff9900;
+    --svc-amazon-light: #ffad33;
+    --svc-apple: #000;
+    --svc-apple-light: #1a1a1a;
+  }
+
+  html {
+    background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-mid) 100%);
+    background-attachment: fixed;
+  }
+  body {
+    color: var(--text-primary);
+    font-family: var(--font);
+    -webkit-font-smoothing: antialiased;
+    padding: 0 0 80px;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  .page-header {
+    text-align: center;
+    padding: 18px 10px 14px;
+    border-bottom: 1px solid #333;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(10px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .page-header h1 {
+    font-weight: 100;
+    letter-spacing: 0.2em;
+    font-size: 0.85rem;
+    color: var(--accent);
+    margin-bottom: 2px;
+  }
+  .page-header .sub {
+    font-size: 0.6rem;
+    color: var(--text-muted);
+  }
+
+  .section {
+    padding: 24px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .section-letter {
+    display: inline-block;
+    background: var(--accent);
+    color: #000;
+    font-weight: 800;
+    font-size: 0.7rem;
+    min-width: 22px;
+    height: 22px;
+    line-height: 22px;
+    text-align: center;
+    border-radius: 5px;
+    padding: 0 5px;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+  .section-title {
+    display: inline;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    vertical-align: middle;
+  }
+  .section-desc {
+    font-size: 0.62rem;
+    color: var(--text-muted);
+    margin: 6px 0 16px 0;
+    line-height: 1.5;
+    padding-left: 30px;
+  }
+
+  .button-area {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 14px;
+  }
+
+  .watch-section-label {
+    color: var(--accent);
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 6px;
+  }
+
+  .vod-row {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+  }
+  .vod-row > * { flex: 1; }
+
+  /* Shared logo style */
+  .watch-logo {
+    height: 18px;
+    width: auto;
+    max-width: 110px;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+  }
+  .amazon .watch-logo,
+  .amazon-top .watch-logo { filter: brightness(0); }
+
+  .current-label {
+    font-size: 0.6rem;
+    color: var(--text-muted);
+    text-align: center;
+    margin-bottom: 10px;
+    font-style: italic;
+  }
+
+  /* ======================== */
+  /* CURRENT (reference)      */
+  /* ======================== */
+  .ref .watch-btn {
+    padding: 0.6rem 0.8rem;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    letter-spacing: 0.5px;
+    gap: 0.4rem;
+    width: 100%;
+  }
+  .ref .amazon { background: var(--svc-amazon); color: #000; }
+  .ref .apple { background: var(--svc-apple); color: #fff; border: 1px solid #444; }
+
+  /* ======================== */
+  /* V1: Logo top, split bar  */
+  /* ======================== */
+  .v1 .btn-card {
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+  }
+  .v1 .btn-card.amazon .btn-top { background: var(--svc-amazon); }
+  .v1 .btn-card.apple .btn-top { background: var(--svc-apple); border-top: 1px solid #444; border-left: 1px solid #444; border-right: 1px solid #444; }
+  .v1 .btn-top {
+    padding: 0.5rem 0.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .v1 .price-bar {
+    display: flex;
+  }
+  .v1 .price-bar a {
+    flex: 1;
+    text-align: center;
+    padding: 4px 0;
+    font-size: 0.58rem;
+    font-weight: 700;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  .v1 .btn-card.amazon .price-bar a:first-child { background: var(--svc-amazon-light); color: #000; }
+  .v1 .btn-card.amazon .price-bar a:last-child { background: #e68a00; color: #000; }
+  .v1 .btn-card.apple .price-bar a:first-child { background: var(--svc-apple-light); color: #ccc; border-left: 1px solid #444; border-bottom: 1px solid #444; }
+  .v1 .btn-card.apple .price-bar a:last-child { background: #111; color: #ccc; border-right: 1px solid #444; border-bottom: 1px solid #444; }
+  .v1 .price-bar a:first-child { border-right: 1px solid rgba(255,255,255,0.1); }
+
+  /* ======================== */
+  /* V2: Logo + prices inline */
+  /* stacked vertically       */
+  /* ======================== */
+  .v2 .btn-card {
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    cursor: pointer;
+    padding: 0.45rem 0.6rem 0.4rem;
+    gap: 3px;
+    align-items: center;
+  }
+  .v2 .btn-card.amazon { background: var(--svc-amazon); color: #000; }
+  .v2 .btn-card.apple { background: var(--svc-apple); color: #fff; border: 1px solid #444; }
+  .v2 .price-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    justify-content: center;
+  }
+  .v2 .price-tag {
+    font-size: 0.58rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+  .v2 .btn-card.amazon .price-tag { color: rgba(0,0,0,0.7); }
+  .v2 .btn-card.apple .price-tag { color: #999; }
+  .v2 .price-sep {
+    font-size: 0.5rem;
+    opacity: 0.4;
+  }
+
+  /* ======================== */
+  /* V3: Split with logos     */
+  /* ======================== */
+  .v3 .btn-split {
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+  }
+  .v3 .split-half {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 0.3rem;
+    text-decoration: none;
+    gap: 3px;
+  }
+  .v3 .split-half .watch-logo { height: 14px; }
+  .v3 .split-label {
+    font-size: 0.48rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    opacity: 0.65;
+  }
+  .v3 .split-price {
+    font-size: 0.72rem;
+    font-weight: 800;
+  }
+  .v3 .btn-split.amazon .split-half:first-child { background: var(--svc-amazon-light); color: #000; border-right: 1px solid rgba(0,0,0,0.12); }
+  .v3 .btn-split.amazon .split-half:last-child { background: var(--svc-amazon); color: #000; }
+  .v3 .btn-split.apple .split-half:first-child { background: var(--svc-apple-light); color: #fff; border: 1px solid #444; border-right: none; }
+  .v3 .btn-split.apple .split-half:last-child { background: var(--svc-apple); color: #fff; border: 1px solid #444; border-left: 1px solid #333; }
+
+  /* ======================== */
+  /* V4: Logo top-left,       */
+  /* prices right-aligned     */
+  /* ======================== */
+  .v4 .btn-card {
+    border-radius: 8px;
+    padding: 0.5rem 0.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    text-decoration: none;
+    cursor: pointer;
+    gap: 6px;
+  }
+  .v4 .btn-card.amazon { background: var(--svc-amazon); color: #000; }
+  .v4 .btn-card.apple { background: var(--svc-apple); color: #fff; border: 1px solid #444; }
+  .v4 .price-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 1px;
+  }
+  .v4 .price-line {
+    font-size: 0.55rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .v4 .btn-card.amazon .price-line { color: rgba(0,0,0,0.65); }
+  .v4 .btn-card.apple .price-line { color: #888; }
+  .v4 .price-line .amt { font-weight: 800; }
+  .v4 .btn-card.amazon .price-line .amt { color: #000; }
+  .v4 .btn-card.apple .price-line .amt { color: #ccc; }
+
+  /* ======================== */
+  /* V5: Logo + single cheap  */
+  /* price, subtitle below    */
+  /* ======================== */
+  .v5 .btn-card {
+    border-radius: 8px;
+    padding: 0.45rem 0.7rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    cursor: pointer;
+    gap: 2px;
+  }
+  .v5 .btn-card.amazon { background: var(--svc-amazon); color: #000; }
+  .v5 .btn-card.apple { background: var(--svc-apple); color: #fff; border: 1px solid #444; }
+  .v5 .btn-top-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .v5 .rent-price {
+    font-size: 0.85rem;
+    font-weight: 800;
+  }
+  .v5 .btn-card.amazon .rent-price { color: #000; }
+  .v5 .btn-card.apple .rent-price { color: #fff; }
+  .v5 .buy-sub {
+    font-size: 0.52rem;
+    font-weight: 500;
+    opacity: 0.55;
+  }
+
+  /* ======================== */
+  /* V6: Accent-stripe button */
+  /* ======================== */
+  .v6 .btn-card {
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+  }
+  .v6 .btn-main {
+    padding: 0.55rem 0.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .v6 .btn-card.amazon .btn-main { background: var(--svc-amazon); color: #000; }
+  .v6 .btn-card.apple .btn-main { background: var(--svc-apple); color: #fff; border: 1px solid #444; border-bottom: none; }
+  .v6 .rent-inline {
+    font-size: 0.75rem;
+    font-weight: 800;
+  }
+  .v6 .price-stripe {
+    padding: 2.5px 0;
+    text-align: center;
+    font-size: 0.5rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .v6 .btn-card.amazon .price-stripe { background: #e68a00; color: rgba(0,0,0,0.7); }
+  .v6 .btn-card.apple .price-stripe { background: #222; color: #888; border: 1px solid #444; border-top: 1px solid #333; }
+
+  /* ======================== */
+  /* V7: Minimal — just price */
+  /* under logo, muted        */
+  /* ======================== */
+  .v7 .btn-card {
+    border-radius: 8px;
+    padding: 0.5rem 0.8rem 0.4rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    cursor: pointer;
+    gap: 4px;
+  }
+  .v7 .btn-card.amazon { background: var(--svc-amazon); color: #000; }
+  .v7 .btn-card.apple { background: var(--svc-apple); color: #fff; border: 1px solid #444; }
+  .v7 .price-simple {
+    font-size: 0.62rem;
+    font-weight: 700;
+  }
+  .v7 .btn-card.amazon .price-simple { color: rgba(0,0,0,0.6); }
+  .v7 .btn-card.apple .price-simple { color: #777; }
+
+  .nav-hint {
+    text-align: center;
+    padding: 20px;
+    font-size: 0.6rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>VOD PRICE OPTIONS</h1>
+  <div class="sub">A + C hybrids — logo with rent/buy pricing</div>
+</div>
+
+<!-- CURRENT -->
+<div class="section ref">
+  <div class="current-label">Current (no prices)</div>
+  <div class="button-area">
+    <div class="watch-section-label">Rent/Buy:</div>
+    <div class="vod-row">
+      <a class="watch-btn amazon" href="#"><img src="../assets/logos/services/amazon_wide.png" class="watch-logo" alt="Amazon"></a>
+      <a class="watch-btn apple" href="#"><img src="../assets/logos/services/apple_tv_wide.png" class="watch-logo" alt="Apple TV"></a>
+    </div>
+  </div>
+</div>
+
+<!-- V1: Logo top, split price bar below -->
+<div class="section v1">
+  <span class="section-letter">V1</span>
+  <span class="section-title">Logo + Split Price Bar</span>
+  <div class="section-desc">Logo button on top, thin rent/buy split bar underneath. Each half is its own link.</div>
+  <div class="button-area">
+    <div class="watch-section-label">Rent/Buy:</div>
+    <div class="vod-row">
+      <div class="btn-card amazon">
+        <div class="btn-top"><img src="../assets/logos/services/amazon_wide.png" class="watch-logo" alt="Amazon"></div>
+        <div class="price-bar">
+          <a href="#">Rent $5.99</a>
+          <a href="#">Buy $14.99</a>
+        </div>
+      </div>
+      <div class="btn-card apple">
+        <div class="btn-top"><img src="../assets/logos/services/apple_tv_wide.png" class="watch-logo" alt="Apple TV"></div>
+        <div class="price-bar">
+          <a href="#">Rent $5.99</a>
+          <a href="#">Buy $14.99</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- V2: Logo + centered price text below -->
+<div class="section v2">
+  <span class="section-letter">V2</span>
+  <span class="section-title">Logo + Price Row</span>
+  <div class="section-desc">Logo on top, centered "Rent $5.99 / Buy $14.99" text below. Single button, one link.</div>
+  <div class="button-area">
+    <div class="watch-section-label">Rent/Buy:</div>
+    <div class="vod-row">
+      <a class="btn-card amazon" href="#">
+        <img src="../assets/logos/services/amazon_wide.png" class="watch-logo" alt="Amazon">
+        <div class="price-row">
+          <span class="price-tag">Rent $5.99</span>
+          <span class="price-sep">&middot;</span>
+          <span class="price-tag">Buy $14.99</span>
+        </div>
+      </a>
+      <a class="btn-card apple" href="#">
+        <img src="../assets/logos/services/apple_tv_wide.png" class="watch-logo" alt="Apple TV">
+        <div class="price-row">
+          <span class="price-tag">Rent $5.99</span>
+          <span class="price-sep">&middot;</span>
+          <span class="price-tag">Buy $14.99</span>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- V3: Split with mini logos in each half -->
+<div class="section v3">
+  <span class="section-letter">V3</span>
+  <span class="section-title">Split with Logos</span>
+  <div class="section-desc">Each button split into rent/buy halves, with a smaller logo in each half.</div>
+  <div class="button-area">
+    <div class="watch-section-label">Rent/Buy:</div>
+    <div class="vod-row">
+      <div class="btn-split amazon">
+        <a class="split-half" href="#">
+          <img src="../assets/logos/services/amazon_wide.png" class="watch-logo" alt="Amazon">
+          <span class="split-label">Rent</span>
+          <span class="split-price">$5.99</span>
+        </a>
+        <a class="split-half" href="#">
+          <img src="../assets/logos/services/amazon_wide.png" class="watch-logo" alt="Amazon">
+          <span class="split-label">Buy</span>
+          <span class="split-price">$14.99</span>
+        </a>
+      </div>
+      <div class="btn-split apple">
+        <a class="split-half" href="#">
+          <img src="../assets/logos/services/apple_tv_wide.png" class="watch-logo" alt="Apple TV">
+          <span class="split-label">Rent</span>
+          <span class="split-price">$5.99</span>
+        </a>
+        <a class="split-half" href="#">
+          <img src="../assets/logos/services/apple_tv_wide.png" class="watch-logo" alt="Apple TV">
+          <span class="split-label">Buy</span>
+          <span class="split-price">$14.99</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- V4: Logo left, prices right-aligned stack -->
+<div class="section v4">
+  <span class="section-letter">V4</span>
+  <span class="section-title">Logo Left, Prices Right</span>
+  <div class="section-desc">Logo pushed left, rent/buy prices stacked on the right side of the button.</div>
+  <div class="button-area">
+    <div class="watch-section-label">Rent/Buy:</div>
+    <div class="vod-row">
+      <a class="btn-card amazon" href="#">
+        <img src="../assets/logos/services/amazon_wide.png" class="watch-logo" alt="Amazon">
+        <div class="price-stack">
+          <span class="price-line">Rent <span class="amt">$5.99</span></span>
+          <span class="price-line">Buy <span class="amt">$14.99</span></span>
+        </div>
+      </a>
+      <a class="btn-card apple" href="#">
+        <img src="../assets/logos/services/apple_tv_wide.png" class="watch-logo" alt="Apple TV">
+        <div class="price-stack">
+          <span class="price-line">Rent <span class="amt">$5.99</span></span>
+          <span class="price-line">Buy <span class="amt">$14.99</span></span>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- V5: Logo + bold rent price, small "or buy" subtitle -->
+<div class="section v5">
+  <span class="section-letter">V5</span>
+  <span class="section-title">Logo + Rent Hero</span>
+  <div class="section-desc">Logo and bold rent price on the main line. Small "or buy $14.99" underneath.</div>
+  <div class="button-area">
+    <div class="watch-section-label">Rent/Buy:</div>
+    <div class="vod-row">
+      <a class="btn-card amazon" href="#">
+        <div class="btn-top-row">
+          <img src="../assets/logos/services/amazon_wide.png" class="watch-logo" alt="Amazon">
+          <span class="rent-price">$5.99</span>
+        </div>
+        <span class="buy-sub">or buy $14.99</span>
+      </a>
+      <a class="btn-card apple" href="#">
+        <div class="btn-top-row">
+          <img src="../assets/logos/services/apple_tv_wide.png" class="watch-logo" alt="Apple TV">
+          <span class="rent-price">$5.99</span>
+        </div>
+        <span class="buy-sub">or buy $14.99</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- V6: Logo + rent price inline, accent stripe with buy -->
+<div class="section v6">
+  <span class="section-letter">V6</span>
+  <span class="section-title">Logo + Rent Inline, Buy Stripe</span>
+  <div class="section-desc">Main button has logo + rent price. Thin accent stripe below shows buy price.</div>
+  <div class="button-area">
+    <div class="watch-section-label">Rent/Buy:</div>
+    <div class="vod-row">
+      <div class="btn-card amazon">
+        <a class="btn-main" href="#">
+          <img src="../assets/logos/services/amazon_wide.png" class="watch-logo" alt="Amazon">
+          <span class="rent-inline">$5.99</span>
+        </a>
+        <a class="price-stripe" href="#">Buy $14.99</a>
+      </div>
+      <div class="btn-card apple">
+        <a class="btn-main" href="#">
+          <img src="../assets/logos/services/apple_tv_wide.png" class="watch-logo" alt="Apple TV">
+          <span class="rent-inline">$5.99</span>
+        </a>
+        <a class="price-stripe" href="#">Buy $14.99</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- V7: Logo + simple "from $5.99" below -->
+<div class="section v7">
+  <span class="section-letter">V7</span>
+  <span class="section-title">Logo + "from" Price</span>
+  <div class="section-desc">Logo on top, just "from $5.99" below. Minimal — shows cheapest price only.</div>
+  <div class="button-area">
+    <div class="watch-section-label">Rent/Buy:</div>
+    <div class="vod-row">
+      <a class="btn-card amazon" href="#">
+        <img src="../assets/logos/services/amazon_wide.png" class="watch-logo" alt="Amazon">
+        <span class="price-simple">from $5.99</span>
+      </a>
+      <a class="btn-card apple" href="#">
+        <img src="../assets/logos/services/apple_tv_wide.png" class="watch-logo" alt="Apple TV">
+        <span class="price-simple">from $5.99</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="nav-hint">
+  Sample data: Amazon rent $5.99 / buy $14.99, Apple TV rent $5.99 / buy $14.99<br>
+  All buttons link to # (non-functional in mockup)
+</div>
+
+</body>
+</html>

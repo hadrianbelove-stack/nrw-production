@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>NRW — Provider Display: Text vs Logos</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-dark: #0a0a0a;
+    --bg-mid: #1a1a2e;
+    --accent: #00d4aa;
+    --text-primary: #ffffff;
+    --text-secondary: #bbb;
+    --text-muted: #888;
+    --border-subtle: rgba(255,255,255,0.2);
+    --radius-pill: 25px;
+    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  html {
+    background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-mid) 100%);
+    background-attachment: fixed;
+  }
+  body {
+    color: var(--text-primary);
+    font-family: var(--font);
+    -webkit-font-smoothing: antialiased;
+    padding: 0 0 80px;
+    max-width: 420px;
+    margin: 0 auto;
+  }
+
+  .page-header {
+    text-align: center;
+    padding: 14px 10px 10px;
+    border-bottom: 1px solid #333;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(10px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .page-header h1 {
+    font-weight: 100;
+    letter-spacing: 0.2em;
+    font-size: 0.85rem;
+    color: var(--accent);
+    margin-bottom: 2px;
+  }
+  .page-header .sub {
+    font-size: 0.6rem;
+    color: var(--text-muted);
+  }
+
+  .section {
+    padding: 20px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .section-title {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: var(--accent);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .section-desc {
+    font-size: 0.55rem;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+  }
+
+  .label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-top: 14px;
+    margin-bottom: 8px;
+  }
+  .label:first-of-type { margin-top: 0; }
+
+  /* ===== A: Colored text pills (current) ===== */
+  .providers-text {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .pill-text {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-pill);
+    padding: 6px 14px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  /* ===== B: Logo pills ===== */
+  .providers-logos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .pill-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-pill);
+    padding: 5px 12px 5px 6px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    white-space: nowrap;
+  }
+  .pill-logo img {
+    width: 22px;
+    height: 22px;
+    border-radius: 5px;
+    object-fit: contain;
+  }
+
+  /* ===== C: Logo-only (no text) ===== */
+  .providers-icons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .icon-logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    object-fit: contain;
+    border: 1px solid var(--border-subtle);
+    background: rgba(255,255,255,0.06);
+    padding: 4px;
+  }
+
+  /* ===== D: Wide logo badges ===== */
+  .providers-wide {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .badge-wide {
+    height: 30px;
+    border-radius: 6px;
+    object-fit: contain;
+    border: 1px solid var(--border-subtle);
+    background: rgba(255,255,255,0.06);
+    padding: 4px 10px;
+  }
+
+  /* Trailer button for reference */
+  .trailer-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+    padding: 10px 20px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-pill);
+    color: var(--accent);
+    font-size: 0.8rem;
+    font-weight: 600;
+    font-family: var(--font);
+  }
+  .play-icon { font-size: 0.9rem; }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>PROVIDER DISPLAY</h1>
+  <div class="sub">4 options — text pills, logo+text, icons only, wide badges</div>
+</div>
+
+<!-- Movie context -->
+<div class="section">
+  <div style="font-size: 1.1rem; font-weight: 700; margin-bottom: 2px;">Pan's Labyrinth</div>
+  <div style="font-size: 0.8rem; color: var(--accent); margin-bottom: 4px;">D: Guillermo del Toro · Spain · 2006</div>
+  <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">1h 58m · Ivana Baquero, Sergi López, Maribel Verdú · Drama, Fantasy</div>
+  <button class="trailer-btn"><span class="play-icon">&#9654;</span> Watch Trailer</button>
+</div>
+
+<!-- OPTION A: Colored text pills -->
+<div class="section">
+  <div class="section-title">A — Colored Text Pills</div>
+  <div class="section-desc">Brand-colored borders + text, no logos</div>
+
+  <div class="label">Streaming</div>
+  <div class="providers-text">
+    <span class="pill-text" style="border-color: #B537F2; color: #B537F2;">Max</span>
+  </div>
+
+  <div class="label">Rent / Buy</div>
+  <div class="providers-text">
+    <span class="pill-text" style="border-color: #00A8E1; color: #00A8E1;">Amazon Video</span>
+    <span class="pill-text" style="border-color: #aaaaaa; color: #aaaaaa;">Apple TV Store</span>
+    <span class="pill-text" style="border-color: #4285F4; color: #4285F4;">Google Play Movies</span>
+    <span class="pill-text" style="border-color: #FF0000; color: #FF0000;">YouTube</span>
+    <span class="pill-text" style="border-color: #ff9500; color: #ff9500;">Fandango At Home</span>
+  </div>
+</div>
+
+<!-- OPTION B: Logo + text pills -->
+<div class="section">
+  <div class="section-title">B — Logo + Text Pills</div>
+  <div class="section-desc">Small logo icon inside each pill with service name</div>
+
+  <div class="label">Streaming</div>
+  <div class="providers-logos">
+    <span class="pill-logo" style="border-color: #B537F2; color: #B537F2;"><img src="../assets/logos/services/max.jpg" alt="Max"> Max</span>
+  </div>
+
+  <div class="label">Rent / Buy</div>
+  <div class="providers-logos">
+    <span class="pill-logo" style="border-color: #00A8E1; color: #00A8E1;"><img src="../assets/logos/services/amazon.png" alt="Amazon"> Amazon Video</span>
+    <span class="pill-logo" style="border-color: #aaaaaa; color: #aaaaaa;"><img src="../assets/logos/services/apple_tv.png" alt="Apple TV"> Apple TV</span>
+    <span class="pill-logo" style="border-color: #4285F4; color: #4285F4;"><img src="../assets/logos/services/youtube.png" alt="YouTube"> YouTube</span>
+    <span class="pill-logo" style="border-color: #ff9500; color: #ff9500;"><img src="../assets/logos/services/fandango.png" alt="Fandango"> Fandango</span>
+  </div>
+</div>
+
+<!-- OPTION C: Logo icons only -->
+<div class="section">
+  <div class="section-title">C — Logo Icons Only</div>
+  <div class="section-desc">Square logo tiles, no text — compact and visual</div>
+
+  <div class="label">Streaming</div>
+  <div class="providers-icons">
+    <img class="icon-logo" src="../assets/logos/services/max.jpg" alt="Max">
+  </div>
+
+  <div class="label">Rent / Buy</div>
+  <div class="providers-icons">
+    <img class="icon-logo" src="../assets/logos/services/amazon.png" alt="Amazon">
+    <img class="icon-logo" src="../assets/logos/services/apple_tv.png" alt="Apple TV">
+    <img class="icon-logo" src="../assets/logos/services/youtube.png" alt="YouTube">
+    <img class="icon-logo" src="../assets/logos/services/fandango.png" alt="Fandango">
+  </div>
+</div>
+
+<!-- OPTION D: Wide logo badges -->
+<div class="section">
+  <div class="section-title">D — Wide Logo Badges</div>
+  <div class="section-desc">Horizontal logo images in rounded badges</div>
+
+  <div class="label">Streaming</div>
+  <div class="providers-wide">
+    <img class="badge-wide" src="../assets/logos/services/max_wide.png" alt="Max">
+  </div>
+
+  <div class="label">Rent / Buy</div>
+  <div class="providers-wide">
+    <img class="badge-wide" src="../assets/logos/services/amazon_wide.png" alt="Amazon">
+    <img class="badge-wide" src="../assets/logos/services/apple_tv_wide.png" alt="Apple TV">
+    <img class="badge-wide" src="../assets/logos/services/fandango_wide.png" alt="Fandango">
+  </div>
+</div>
+
+</body>
+</html>

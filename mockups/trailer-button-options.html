@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Poster Overlay Variations — Desktop</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    background: linear-gradient(180deg, #0a0a0a 0%, #1a1a2e 100%);
+    color: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    min-height: 100vh;
+    padding: 40px 60px 80px;
+}
+h1 {
+    font-size: 1.4rem; font-weight: 100; letter-spacing: 0.2em;
+    text-align: center; color: #888; margin-bottom: 8px; text-transform: uppercase;
+}
+.subtitle { text-align: center; color: #555; font-size: 0.85rem; margin-bottom: 40px; }
+
+.option {
+    margin-bottom: 50px; padding: 24px;
+    background: rgba(255,255,255,0.02); border-radius: 15px;
+    border: 1px solid rgba(255,255,255,0.06);
+    max-width: 900px; margin-left: auto; margin-right: auto;
+}
+.option-label {
+    font-size: 0.8rem; font-weight: 700; letter-spacing: 0.15em;
+    text-transform: uppercase; color: #00d4aa; margin-bottom: 6px;
+}
+.option-desc {
+    font-size: 0.85rem; color: #888; margin-bottom: 20px; line-height: 1.5;
+}
+
+/* === LIGHTBOX === */
+.lb {
+    background: linear-gradient(135deg, #16162e 0%, #1a1a2e 100%);
+    border-radius: 15px;
+    border: 1px solid rgba(255,255,255,0.15);
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+.lb-inner {
+    display: flex;
+    gap: 30px;
+    padding: 30px;
+    align-items: flex-start;
+}
+.lb-poster-wrap {
+    flex: 1;
+    position: relative;
+}
+.lb-poster {
+    width: 100%;
+    aspect-ratio: 2/3;
+    border-radius: 10px;
+    object-fit: cover;
+    display: block;
+}
+.lb-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.lb-title { font-size: 1.5rem; font-weight: 700; line-height: 1.2; }
+.lb-date { font-size: 0.85rem; color: #00d4aa; font-weight: 600; }
+.lb-title-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.lb-meta { font-size: 0.9rem; color: #888; line-height: 1.7; }
+.lb-meta b { color: #00d4aa; font-weight: 600; }
+.lb-scores { display: flex; gap: 8px; flex-wrap: wrap; }
+.lb-score {
+    font-size: 0.75rem; font-weight: 700; padding: 4px 10px;
+    border-radius: 6px; background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+.lb-score.rt { color: #ff6b6b; }
+.lb-score.imdb { color: #f5c518; }
+.lb-score.mc { color: #7ddf64; }
+.lb-pq {
+    font-size: 0.9rem; color: #bbb; font-style: italic; line-height: 1.5;
+    border-left: 2px solid #00d4aa; padding-left: 12px;
+}
+.lb-syn { font-size: 0.9rem; color: #888; line-height: 1.6; }
+.lb-btns { display: flex; flex-direction: column; gap: 8px; }
+.lb-btn {
+    display: flex; align-items: center; justify-content: center;
+    padding: 12px 20px; border-radius: 8px; font-weight: 700;
+    font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;
+    border: none; width: 100%; cursor: pointer;
+}
+.lb-btn-vod { background: #ff9500; color: #000; }
+.lb-btn-teal { background: #00d4aa; color: #000; }
+.lb-btn-stream { background: #E50914; color: #fff; }
+.lb-close {
+    position: absolute; top: 14px; right: 18px;
+    color: #888; font-size: 1.8rem; cursor: pointer; line-height: 1;
+}
+.lb-nav {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    width: 36px; height: 36px; border-radius: 50%;
+    background: rgba(0,212,170,0.1); color: #00d4aa;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem; cursor: pointer; border: none;
+}
+.lb-nav.prev { left: 8px; }
+.lb-nav.next { right: 8px; }
+
+/* Shared */
+.tri { display: inline-block; width: 0; height: 0; border-style: solid; }
+
+/* Base overlay */
+.dim-overlay {
+    position: absolute; inset: 0; border-radius: 10px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.2s;
+}
+
+/* ===== BEFORE: current trailer button in stack ===== */
+
+/* ===== 1: Big circle + banner, centered (original #1) ===== */
+.o1 { background: rgba(0,0,0,0.5); gap: 10px; }
+.o1-circle {
+    width: 70px; height: 70px; border-radius: 50%; background: #E50914;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 6px 28px rgba(229,9,20,0.6);
+}
+.o1-circle .tri { border-width: 13px 0 13px 22px; border-color: transparent transparent transparent #fff; margin-left: 5px; }
+.o1-banner {
+    width: 100%; padding: 10px 0; background: rgba(229,9,20,0.85);
+    text-align: center; font-size: 1.1rem; font-weight: 800; letter-spacing: 0.3em; color: #fff;
+}
+
+/* ===== 2: Same but with rounded border container ===== */
+.o2 { background: rgba(0,0,0,0.5); gap: 0; }
+.o2-container {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 10px; padding: 20px 24px 0;
+    border: 2px solid rgba(229,9,20,0.6);
+    border-radius: 16px;
+    background: rgba(229,9,20,0.05);
+    width: 80%;
+    overflow: hidden;
+}
+.o2-circle {
+    width: 60px; height: 60px; border-radius: 50%; background: #E50914;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 20px rgba(229,9,20,0.5);
+}
+.o2-circle .tri { border-width: 11px 0 11px 19px; border-color: transparent transparent transparent #fff; margin-left: 4px; }
+.o2-banner {
+    width: calc(100% + 48px); padding: 10px 0; background: rgba(229,9,20,0.85);
+    text-align: center; font-size: 1rem; font-weight: 800; letter-spacing: 0.3em; color: #fff;
+    margin: 0 -24px;
+}
+
+/* ===== 3: Small circle + banner pinned to bottom third ===== */
+.o3 { background: rgba(0,0,0,0.45); justify-content: flex-end; gap: 8px; padding-bottom: 20%; }
+.o3-circle {
+    width: 50px; height: 50px; border-radius: 50%; background: #E50914;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 18px rgba(229,9,20,0.5);
+}
+.o3-circle .tri { border-width: 9px 0 9px 16px; border-color: transparent transparent transparent #fff; margin-left: 3px; }
+.o3-banner {
+    width: 100%; padding: 8px 0; background: rgba(229,9,20,0.85);
+    text-align: center; font-size: 0.95rem; font-weight: 800; letter-spacing: 0.25em; color: #fff;
+}
+
+/* ===== 4: Huge circle + banner flush bottom ===== */
+.o4 { background: rgba(0,0,0,0.5); justify-content: center; gap: 0; }
+.o4-top { flex: 1; display: flex; align-items: center; justify-content: center; }
+.o4-circle {
+    width: 90px; height: 90px; border-radius: 50%; background: #E50914;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 8px 36px rgba(229,9,20,0.6);
+}
+.o4-circle .tri { border-width: 17px 0 17px 28px; border-color: transparent transparent transparent #fff; margin-left: 6px; }
+.o4-banner {
+    width: 100%; padding: 12px 0; background: #E50914;
+    text-align: center; font-size: 1.1rem; font-weight: 800; letter-spacing: 0.3em; color: #fff;
+}
+
+/* ===== 5: Circle + banner in a pill-shaped bordered container ===== */
+.o5 { background: rgba(0,0,0,0.5); }
+.o5-pill {
+    display: flex; align-items: center; gap: 14px;
+    padding: 12px 24px 12px 14px;
+    border: 2px solid rgba(255,255,255,0.4);
+    border-radius: 50px;
+    background: rgba(0,0,0,0.4);
+    transition: all 0.2s;
+}
+.o5-pill:hover { border-color: #E50914; background: rgba(229,9,20,0.15); }
+.o5-circle {
+    width: 50px; height: 50px; border-radius: 50%; background: #E50914;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 18px rgba(229,9,20,0.5);
+    flex-shrink: 0;
+}
+.o5-circle .tri { border-width: 9px 0 9px 16px; border-color: transparent transparent transparent #fff; margin-left: 3px; }
+.o5-text {
+    font-size: 1.1rem; font-weight: 800; letter-spacing: 0.25em; color: #fff;
+    text-transform: uppercase;
+}
+
+/* ===== 6: Circle + banner, both with white border outline ===== */
+.o6 { background: rgba(0,0,0,0.5); gap: 12px; }
+.o6-circle {
+    width: 66px; height: 66px; border-radius: 50%; background: #E50914;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 6px 28px rgba(229,9,20,0.6);
+    border: 3px solid rgba(255,255,255,0.5);
+}
+.o6-circle .tri { border-width: 12px 0 12px 20px; border-color: transparent transparent transparent #fff; margin-left: 4px; }
+.o6-banner {
+    padding: 10px 30px; background: rgba(229,9,20,0.85);
+    border: 2px solid rgba(255,255,255,0.4);
+    border-radius: 8px;
+    font-size: 1.05rem; font-weight: 800; letter-spacing: 0.3em; color: #fff;
+}
+
+/* ===== 7: Rounded rect "button" with circle + text inside ===== */
+.o7 { background: rgba(0,0,0,0.5); }
+.o7-btn {
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+    padding: 20px 30px;
+    background: rgba(229,9,20,0.15);
+    border: 2px solid #E50914;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(229,9,20,0.3);
+    transition: all 0.2s;
+}
+.o7-btn:hover { background: rgba(229,9,20,0.25); box-shadow: 0 6px 32px rgba(229,9,20,0.5); }
+.o7-circle {
+    width: 56px; height: 56px; border-radius: 50%; background: #E50914;
+    display: flex; align-items: center; justify-content: center;
+}
+.o7-circle .tri { border-width: 10px 0 10px 17px; border-color: transparent transparent transparent #fff; margin-left: 3px; }
+.o7-text {
+    font-size: 1rem; font-weight: 800; letter-spacing: 0.25em; color: #fff;
+}
+
+/* ===== 8: Full-width banner (no circle), just text + tiny play icon ===== */
+.o8 { background: rgba(0,0,0,0.45); }
+.o8-banner {
+    width: 100%; padding: 14px 0;
+    background: rgba(229,9,20,0.9);
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    border-top: 2px solid rgba(255,255,255,0.3);
+    border-bottom: 2px solid rgba(255,255,255,0.3);
+    transition: all 0.2s;
+}
+.o8-banner:hover { background: #E50914; }
+.o8-banner .tri { border-width: 8px 0 8px 14px; border-color: transparent transparent transparent #fff; }
+.o8-text {
+    font-size: 1.15rem; font-weight: 800; letter-spacing: 0.3em; color: #fff;
+}
+
+/* ===== 9: Circle in top-right area, banner across middle ===== */
+.o9 { background: rgba(0,0,0,0.5); gap: 0; }
+.o9-top { position: absolute; top: 18px; right: 18px; }
+.o9-circle {
+    width: 50px; height: 50px; border-radius: 50%; background: #E50914;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 18px rgba(229,9,20,0.5);
+    border: 2px solid rgba(255,255,255,0.3);
+}
+.o9-circle .tri { border-width: 9px 0 9px 15px; border-color: transparent transparent transparent #fff; margin-left: 3px; }
+.o9-banner {
+    width: 100%; padding: 12px 0; background: rgba(229,9,20,0.85);
+    text-align: center; font-size: 1.1rem; font-weight: 800; letter-spacing: 0.3em; color: #fff;
+    border-top: 2px solid rgba(255,255,255,0.2);
+    border-bottom: 2px solid rgba(255,255,255,0.2);
+}
+
+/* ===== 10: Entire poster is the button — thick border, circle + text ===== */
+.o10 {
+    background: rgba(0,0,0,0.45); gap: 10px;
+    border: 3px solid #E50914;
+    box-shadow: inset 0 0 30px rgba(229,9,20,0.15);
+    border-radius: 10px;
+    transition: all 0.2s;
+}
+.o10:hover {
+    background: rgba(0,0,0,0.55);
+    border-color: #ff3333;
+    box-shadow: inset 0 0 40px rgba(229,9,20,0.2), 0 0 20px rgba(229,9,20,0.3);
+}
+.o10-circle {
+    width: 66px; height: 66px; border-radius: 50%; background: #E50914;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 6px 28px rgba(229,9,20,0.6);
+}
+.o10-circle .tri { border-width: 12px 0 12px 20px; border-color: transparent transparent transparent #fff; margin-left: 4px; }
+.o10-text {
+    font-size: 1.1rem; font-weight: 800; letter-spacing: 0.3em; color: #fff;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.8);
+}
+</style>
+</head>
+<body>
+
+<h1>Poster Overlay — 10 Variations</h1>
+<div class="subtitle">All based on #1 (dimmed poster + circle + banner). Different sizes, placement, and clickable borders.</div>
+
+<!-- BEFORE -->
+<div class="option" style="border-color: rgba(255,255,255,0.15);">
+    <div class="option-label" style="color: #ff6b6b;">Before — Current State</div>
+    <div class="option-desc">Trailer is a plain red button in the service stack. Looks identical to streaming buttons.</div>
+    <div class="lb">
+        <span class="lb-close">&times;</span>
+        <button class="lb-nav prev">&larr;</button>
+        <div class="lb-inner">
+            <div class="lb-poster-wrap">
+                <img class="lb-poster" src="https://image.tmdb.org/t/p/w500/yPHwX78mcwJw3I6YOJ9qh2wQBFr.jpg" alt="">
+            </div>
+            <div class="lb-info">
+                <div class="lb-title-row"><div class="lb-title">The Strangers: Chapter 3</div><div class="lb-date">May 16</div></div>
+                <div class="lb-meta"><b>Dir:</b> Renny Harlin<br><b>Cast:</b> Madelaine Petsch, Froy Gutierrez, Gabriel Basso<br>USA &bull; 2025 &bull; 91 min &bull; Lionsgate</div>
+                <div class="lb-scores"><span class="lb-score rt">RT 45%</span><span class="lb-score imdb">IMDb 5.1</span><span class="lb-score mc">MC 38</span></div>
+                <div class="lb-pq">"A relentless thrill ride that doesn't let up."</div>
+                <div class="lb-syn">After their car breaks down in a remote town, a young couple is terrorized by three masked strangers.</div>
+                <div class="lb-btns">
+                    <button class="lb-btn lb-btn-stream">Trailer</button>
+                    <button class="lb-btn lb-btn-vod">Rent / Buy</button>
+                    <button class="lb-btn lb-btn-teal">Lifetime</button>
+                </div>
+            </div>
+        </div>
+        <button class="lb-nav next">&rarr;</button>
+    </div>
+</div>
+
+<!-- 1: Original — big circle + full banner, centered -->
+<div class="option">
+    <div class="option-label">1 — Original: Big Circle + Full Banner</div>
+    <div class="option-desc">The baseline overlay. 70px circle, full-width red banner. No border treatment.</div>
+    <div class="lb">
+        <span class="lb-close">&times;</span>
+        <button class="lb-nav prev">&larr;</button>
+        <div class="lb-inner">
+            <div class="lb-poster-wrap">
+                <img class="lb-poster" src="https://image.tmdb.org/t/p/w500/yPHwX78mcwJw3I6YOJ9qh2wQBFr.jpg" alt="">
+                <div class="dim-overlay o1">
+                    <div class="o1-circle"><span class="tri"></span></div>
+                    <div class="o1-banner">TRAILER</div>
+                </div>
+            </div>
+            <div class="lb-info">
+                <div class="lb-title-row"><div class="lb-title">The Strangers: Chapter 3</div><div class="lb-date">May 16</div></div>
+                <div class="lb-meta"><b>Dir:</b> Renny Harlin<br><b>Cast:</b> Madelaine Petsch, Froy Gutierrez, Gabriel Basso<br>USA &bull; 2025 &bull; 91 min &bull; Lionsgate</div>
+                <div class="lb-scores"><span class="lb-score rt">RT 45%</span><span class="lb-score imdb">IMDb 5.1</span><span class="lb-score mc">MC 38</span></div>
+                <div class="lb-pq">"A relentless thrill ride that doesn't let up."</div>
+                <div class="lb-syn">After their car breaks down in a remote town, a young couple is terrorized by three masked strangers.</div>
+                <div class="lb-btns">
+                    <button class="lb-btn lb-btn-vod">Rent / Buy</button>
+                    <button class="lb-btn lb-btn-teal">Lifetime</button>
+                </div>
+            </div>
+        </div>
+        <button class="lb-nav next">&rarr;</button>
+    </div>
+</div>
+
+<!-- 2: Circle + banner in a bordered rounded container -->
+<div class="option">
+    <div class="option-label">2 — Bordered Rounded Container</div>
+    <div class="option-desc">Circle + banner wrapped in a red-bordered rounded box. The border makes the whole area feel clickable.</div>
+    <div class="lb">
+        <span class="lb-close">&times;</span>
+        <button class="lb-nav prev">&larr;</button>
+        <div class="lb-inner">
+            <div class="lb-poster-wrap">
+                <img class="lb-poster" src="https://image.tmdb.org/t/p/w500/yPHwX78mcwJw3I6YOJ9qh2wQBFr.jpg" alt="">
+                <div class="dim-overlay o2">
+                    <div class="o2-container">
+                        <div class="o2-circle"><span class="tri"></span></div>
+                        <div class="o2-banner">TRAILER</div>
+                    </div>
+                </div>
+            </div>
+            <div class="lb-info">
+                <div class="lb-title-row"><div class="lb-title">The Strangers: Chapter 3</div><div class="lb-date">May 16</div></div>
+                <div class="lb-meta"><b>Dir:</b> Renny Harlin<br><b>Cast:</b> Madelaine Petsch, Froy Gutierrez, Gabriel Basso<br>USA &bull; 2025 &bull; 91 min &bull; Lionsgate</div>
+                <div class="lb-scores"><span class="lb-score rt">RT 45%</span><span class="lb-score imdb">IMDb 5.1</span><span class="lb-score mc">MC 38</span></div>
+                <div class="lb-pq">"A relentless thrill ride that doesn't let up."</div>
+                <div class="lb-syn">After their car breaks down in a remote town, a young couple is terrorized by three masked strangers.</div>
+                <div class="lb-btns">
+                    <button class="lb-btn lb-btn-vod">Rent / Buy</button>
+                    <button class="lb-btn lb-btn-teal">Lifetime</button>
+                </div>
+            </div>
+        </div>
+        <button class="lb-nav next">&rarr;</button>
+    </div>
+</div>
+
+<!-- 3: Smaller circle + banner, lower third -->
+<div class="option">
+    <div class="option-label">3 — Smaller, Lower Third</div>
+    <div class="option-desc">Smaller 50px circle + banner pushed down to the lower third. Poster face/title area stays more visible.</div>
+    <div class="lb">
+        <span class="lb-close">&times;</span>
+        <button class="lb-nav prev">&larr;</button>
+        <div class="lb-inner">
+            <div class="lb-poster-wrap">
+                <img class="lb-poster" src="https://image.tmdb.org/t/p/w500/yPHwX78mcwJw3I6YOJ9qh2wQBFr.jpg" alt="">
+                <div class="dim-overlay o3">
+                    <div class="o3-circle"><span class="tri"></span></div>
+                    <div class="o3-banner">TRAILER</div>
+                </div>
+            </div>
+            <div class="lb-info">
+                <div class="lb-title-row"><div class="lb-title">The Strangers: Chapter 3</div><div class="lb-date">May 16</div></div>
+                <div class="lb-meta"><b>Dir:</b> Renny Harlin<br><b>Cast:</b> Madelaine Petsch, Froy Gutierrez, Gabriel Basso<br>USA &bull; 2025 &bull; 91 min &bull; Lionsgate</div>
+                <div class="lb-scores"><span class="lb-score rt">RT 45%</span><span class="lb-score imdb">IMDb 5.1</span><span class="lb-score mc">MC 38</span></div>
+                <div class="lb-pq">"A relentless thrill ride that doesn't let up."</div>
+                <div class="lb-syn">After their car breaks down in a remote town, a young couple is terrorized by three masked strangers.</div>
+                <div class="lb-btns">
+                    <button class="lb-btn lb-btn-vod">Rent / Buy</button>
+                    <button class="lb-btn lb-btn-teal">Lifetime</button>
+                </div>
+            </div>
+        </div>
+        <button class="lb-nav next">&rarr;</button>
+    </div>
+</div>
+
+<!-- 4: Huge circle + banner flush bottom -->
+<div class="option">
+    <div class="option-label">4 — Huge Circle + Banner Flush Bottom</div>
+    <div class="option-desc">90px circle (very prominent). Solid red banner anchored flush to poster bottom edge. Maximum impact.</div>
+    <div class="lb">
+        <span class="lb-close">&times;</span>
+        <button class="lb-nav prev">&larr;</button>
+        <div class="lb-inner">
+            <div class="lb-poster-wrap">
+                <img class="lb-poster" src="https://image.tmdb.org/t/p/w500/yPHwX78mcwJw3I6YOJ9qh2wQBFr.jpg" alt="">
+                <div class="dim-overlay o4">
+                    <div class="o4-top"><div class="o4-circle"><span class="tri"></span></div></div>
+                    <div class="o4-banner">TRAILER</div>
+                </div>
+            </div>
+            <div class="lb-info">
+                <div class="lb-title-row"><div class="lb-title">The Strangers: Chapter 3</div><div class="lb-date">May 16</div></div>
+                <div class="lb-meta"><b>Dir:</b> Renny Harlin<br><b>Cast:</b> Madelaine Petsch, Froy Gutierrez, Gabriel Basso<br>USA &bull; 2025 &bull; 91 min &bull; Lionsgate</div>
+                <div class="lb-scores"><span class="lb-score rt">RT 45%</span><span class="lb-score imdb">IMDb 5.1</span><span class="lb-score mc">MC 38</span></div>
+                <div class="lb-pq">"A relentless thrill ride that doesn't let up."</div>
+                <div class="lb-syn">After their car breaks down in a remote town, a young couple is terrorized by three masked strangers.</div>
+                <div class="lb-btns">
+                    <button class="lb-btn lb-btn-vod">Rent / Buy</button>
+                    <button class="lb-btn lb-btn-teal">Lifetime</button>
+                </div>
+            </div>
+        </div>
+        <button class="lb-nav next">&rarr;</button>
+    </div>
+</div>
+
+<!-- 5: Pill-shaped horizontal container -->
+<div class="option">
+    <div class="option-label">5 — Pill-Shaped Button (Horizontal)</div>
+    <div class="option-desc">Circle + "TRAILER" side by side in a white-bordered pill. Looks like one big clickable button. Border highlights on hover.</div>
+    <div class="lb">
+        <span class="lb-close">&times;</span>
+        <button class="lb-nav prev">&larr;</button>
+        <div class="lb-inner">
+            <div class="lb-poster-wrap">
+                <img class="lb-poster" src="https://image.tmdb.org/t/p/w500/yPHwX78mcwJw3I6YOJ9qh2wQBFr.jpg" alt="">
+                <div class="dim-overlay o5">
+                    <div class="o5-pill">
+                        <div class="o5-circle"><span class="tri"></span></div>
+                        <div class="o5-text">TRAILER</div>
+                    </div>
+                </div>
+            </div>
+            <div class="lb-info">
+                <div class="lb-title-row"><div class="lb-title">The Strangers: Chapter 3</div><div class="lb-date">May 16</div></div>
+                <div class="lb-meta"><b>Dir:</b> Renny Harlin<br><b>Cast:</b> Madelaine Petsch, Froy Gutierrez, Gabriel Basso<br>USA &bull; 2025 &bull; 91 min &bull; Lionsgate</div>
+                <div class="lb-scores"><span class="lb-score rt">RT 45%</span><span class="lb-score imdb">IMDb 5.1</span><span class="lb-score mc">MC 38</span></div>
+                <div class="lb-pq">"A relentless thrill ride that doesn't let up."</div>
+                <div class="lb-syn">After their car breaks down in a remote town, a young couple is terrorized by three masked strangers.</div>
+                <div class="lb-btns">
+                    <button class="lb-btn lb-btn-vod">Rent / Buy</button>
+                    <button class="lb-btn lb-btn-teal">Lifetime</button>
+                </div>
+            </div>
+        </div>
+        <button class="lb-nav next">&rarr;</button>
+    </div>
+</div>
+
+<!-- 6: White-bordered circle + bordered banner chip -->
+<div class="option">
+    <div class="option-label">6 — White-Bordered Circle + Bordered Banner</div>
+    <div class="option-desc">Both circle and banner have white borders. Banner is a rounded chip, not full-width. Feels like two linked UI elements.</div>
+    <div class="lb">
+        <span class="lb-close">&times;</span>
+        <button class="lb-nav prev">&larr;</button>
+        <div class="lb-inner">
+            <div class="lb-poster-wrap">
+                <img class="lb-poster" src="https://image.tmdb.org/t/p/w500/yPHwX78mcwJw3I6YOJ9qh2wQBFr.jpg" alt="">
+                <div class="dim-overlay o6">
+                    <div class="o6-circle"><span class="tri"></span></div>
+                    <div class="o6-banner">TRAILER</div>
+                </div>
+            </div>
+            <div class="lb-info">
+                <div class="lb-title-row"><div class="lb-title">The Strangers: Chapter 3</div><div class="lb-date">May 16</div></div>
+                <div class="lb-meta"><b>Dir:</b> Renny Harlin<br><b>Cast:</b> Madelaine Petsch, Froy Gutierrez, Gabriel Basso<br>USA &bull; 2025 &bull; 91 min &bull; Lionsgate</div>
+                <div class="lb-scores"><span class="lb-score rt">RT 45%</span><span class="lb-score imdb">IMDb 5.1</span><span class="lb-score mc">MC 38</span></div>
+                <div class="lb-pq">"A relentless thrill ride that doesn't let up."</div>
+                <div class="lb-syn">After their car breaks down in a remote town, a young couple is terrorized by three masked strangers.</div>
+                <div class="lb-btns">
+                    <button class="lb-btn lb-btn-vod">Rent / Buy</button>
+                    <button class="lb-btn lb-btn-teal">Lifetime</button>
+                </div>
+            </div>
+        </div>
+        <button class="lb-nav next">&rarr;</button>
+    </div>
+</div>
+
+<!-- 7: Red-bordered rounded rect "card" button -->
+<div class="option">
+    <div class="option-label">7 — Card Button (Red Border Box)</div>
+    <div class="option-desc">Circle + text inside a red-bordered rounded rectangle. The entire box looks like a clickable card. Glows on hover.</div>
+    <div class="lb">
+        <span class="lb-close">&times;</span>
+        <button class="lb-nav prev">&larr;</button>
+        <div class="lb-inner">
+            <div class="lb-poster-wrap">
+                <img class="lb-poster" src="https://image.tmdb.org/t/p/w500/yPHwX78mcwJw3I6YOJ9qh2wQBFr.jpg" alt="">
+                <div class="dim-overlay o7">
+                    <div class="o7-btn">
+                        <div class="o7-circle"><span class="tri"></span></div>
+                        <div class="o7-text">TRAILER</div>
+                    </div>
+                </div>
+            </div>
+            <div class="lb-info">
+                <div class="lb-title-row"><div class="lb-title">The Strangers: Chapter 3</div><div class="lb-date">May 16</div></div>
+                <div class="lb-meta"><b>Dir:</b> Renny Harlin<br><b>Cast:</b> Madelaine Petsch, Froy Gutierrez, Gabriel Basso<br>USA &bull; 2025 &bull; 91 min &bull; Lionsgate</div>
+                <div class="lb-scores"><span class="lb-score rt">RT 45%</span><span class="lb-score imdb">IMDb 5.1</span><span class="lb-score mc">MC 38</span></div>
+                <div class="lb-pq">"A relentless thrill ride that doesn't let up."</div>
+                <div class="lb-syn">After their car breaks down in a remote town, a young couple is terrorized by three masked strangers.</div>
+                <div class="lb-btns">
+                    <button class="lb-btn lb-btn-vod">Rent / Buy</button>
+                    <button class="lb-btn lb-btn-teal">Lifetime</button>
+                </div>
+            </div>
+        </div>
+        <button class="lb-nav next">&rarr;</button>
+    </div>
+</div>
+
+<!-- 8: Full-width banner only (no circle) with white borders -->
+<div class="option">
+    <div class="option-label">8 — Banner Only (No Circle)</div>
+    <div class="option-desc">No play circle — just a full-width red banner with small play icon + "TRAILER" text. White border lines top and bottom. Clean.</div>
+    <div class="lb">
+        <span class="lb-close">&times;</span>
+        <button class="lb-nav prev">&larr;</button>
+        <div class="lb-inner">
+            <div class="lb-poster-wrap">
+                <img class="lb-poster" src="https://image.tmdb.org/t/p/w500/yPHwX78mcwJw3I6YOJ9qh2wQBFr.jpg" alt="">
+                <div class="dim-overlay o8">
+                    <div class="o8-banner">
+                        <span class="tri"></span>
+                        <span class="o8-text">TRAILER</span>
+                    </div>
+                </div>
+            </div>
+            <div class="lb-info">
+                <div class="lb-title-row"><div class="lb-title">The Strangers: Chapter 3</div><div class="lb-date">May 16</div></div>
+                <div class="lb-meta"><b>Dir:</b> Renny Harlin<br><b>Cast:</b> Madelaine Petsch, Froy Gutierrez, Gabriel Basso<br>USA &bull; 2025 &bull; 91 min &bull; Lionsgate</div>
+                <div class="lb-scores"><span class="lb-score rt">RT 45%</span><span class="lb-score imdb">IMDb 5.1</span><span class="lb-score mc">MC 38</span></div>
+                <div class="lb-pq">"A relentless thrill ride that doesn't let up."</div>
+                <div class="lb-syn">After their car breaks down in a remote town, a young couple is terrorized by three masked strangers.</div>
+                <div class="lb-btns">
+                    <button class="lb-btn lb-btn-vod">Rent / Buy</button>
+                    <button class="lb-btn lb-btn-teal">Lifetime</button>
+                </div>
+            </div>
+        </div>
+        <button class="lb-nav next">&rarr;</button>
+    </div>
+</div>
+
+<!-- 9: Circle top-right, banner across middle -->
+<div class="option">
+    <div class="option-label">9 — Circle Top-Right + Centered Banner</div>
+    <div class="option-desc">Play circle sits in top-right corner (like a badge). Banner stripe crosses the middle. Poster still partially visible.</div>
+    <div class="lb">
+        <span class="lb-close">&times;</span>
+        <button class="lb-nav prev">&larr;</button>
+        <div class="lb-inner">
+            <div class="lb-poster-wrap">
+                <img class="lb-poster" src="https://image.tmdb.org/t/p/w500/yPHwX78mcwJw3I6YOJ9qh2wQBFr.jpg" alt="">
+                <div class="dim-overlay o9">
+                    <div class="o9-top"><div class="o9-circle"><span class="tri"></span></div></div>
+                    <div class="o9-banner">TRAILER</div>
+                </div>
+            </div>
+            <div class="lb-info">
+                <div class="lb-title-row"><div class="lb-title">The Strangers: Chapter 3</div><div class="lb-date">May 16</div></div>
+                <div class="lb-meta"><b>Dir:</b> Renny Harlin<br><b>Cast:</b> Madelaine Petsch, Froy Gutierrez, Gabriel Basso<br>USA &bull; 2025 &bull; 91 min &bull; Lionsgate</div>
+                <div class="lb-scores"><span class="lb-score rt">RT 45%</span><span class="lb-score imdb">IMDb 5.1</span><span class="lb-score mc">MC 38</span></div>
+                <div class="lb-pq">"A relentless thrill ride that doesn't let up."</div>
+                <div class="lb-syn">After their car breaks down in a remote town, a young couple is terrorized by three masked strangers.</div>
+                <div class="lb-btns">
+                    <button class="lb-btn lb-btn-vod">Rent / Buy</button>
+                    <button class="lb-btn lb-btn-teal">Lifetime</button>
+                </div>
+            </div>
+        </div>
+        <button class="lb-nav next">&rarr;</button>
+    </div>
+</div>
+
+<!-- 10: Entire poster = the button, thick red border -->
+<div class="option">
+    <div class="option-label">10 — Entire Poster is the Button</div>
+    <div class="option-desc">Thick red border around the whole poster. Circle + text centered. The entire poster reads as one big clickable area. Glows red on hover.</div>
+    <div class="lb">
+        <span class="lb-close">&times;</span>
+        <button class="lb-nav prev">&larr;</button>
+        <div class="lb-inner">
+            <div class="lb-poster-wrap">
+                <img class="lb-poster" src="https://image.tmdb.org/t/p/w500/yPHwX78mcwJw3I6YOJ9qh2wQBFr.jpg" alt="">
+                <div class="dim-overlay o10">
+                    <div class="o10-circle"><span class="tri"></span></div>
+                    <div class="o10-text">TRAILER</div>
+                </div>
+            </div>
+            <div class="lb-info">
+                <div class="lb-title-row"><div class="lb-title">The Strangers: Chapter 3</div><div class="lb-date">May 16</div></div>
+                <div class="lb-meta"><b>Dir:</b> Renny Harlin<br><b>Cast:</b> Madelaine Petsch, Froy Gutierrez, Gabriel Basso<br>USA &bull; 2025 &bull; 91 min &bull; Lionsgate</div>
+                <div class="lb-scores"><span class="lb-score rt">RT 45%</span><span class="lb-score imdb">IMDb 5.1</span><span class="lb-score mc">MC 38</span></div>
+                <div class="lb-pq">"A relentless thrill ride that doesn't let up."</div>
+                <div class="lb-syn">After their car breaks down in a remote town, a young couple is terrorized by three masked strangers.</div>
+                <div class="lb-btns">
+                    <button class="lb-btn lb-btn-vod">Rent / Buy</button>
+                    <button class="lb-btn lb-btn-teal">Lifetime</button>
+                </div>
+            </div>
+        </div>
+        <button class="lb-nav next">&rarr;</button>
+    </div>
+</div>
+
+</body>
+</html>
