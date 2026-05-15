@@ -397,17 +397,28 @@ private fun MovieDetail(
                 // Meta block — 3 lines
                 movie.director?.let { director ->
                     Text(
-                        text = "Dir: $director",
-                        color = Primary,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Medium
+                        text = buildAnnotatedString {
+                            withStyle(SpanStyle(color = Primary, fontWeight = FontWeight.Bold)) {
+                                append("Director: ")
+                            }
+                            withStyle(SpanStyle(color = TextPrimary, fontWeight = FontWeight.Bold)) {
+                                append(director)
+                            }
+                        },
+                        fontSize = 12.sp
                     )
                 }
                 movie.crew?.cast?.takeIf { it.isNotEmpty() }?.let { cast ->
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "Cast: ${cast.take(3).joinToString(", ")}",
-                        color = TextMuted,
+                        text = buildAnnotatedString {
+                            withStyle(SpanStyle(color = Primary, fontWeight = FontWeight.Bold)) {
+                                append("Cast: ")
+                            }
+                            withStyle(SpanStyle(color = TextPrimary, fontWeight = FontWeight.Bold)) {
+                                append(cast.take(3).joinToString(", "))
+                            }
+                        },
                         fontSize = 12.sp
                     )
                 }

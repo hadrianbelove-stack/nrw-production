@@ -201,7 +201,19 @@
           height="2"
           color="0x00D4AA66" />
 
-        <!-- Metadata line: Director • Country • Year • Runtime • RT -->
+        <!-- Crew lines: Director + Cast (teal label, white name) -->
+        <LayoutGroup id="crewGroup" layoutDirection="vert" itemSpacings="[4]">
+          <LayoutGroup id="directorRow" layoutDirection="horiz">
+            <Label id="directorLabel" font="font:MediumBoldSystemFont" color="0x00D4AAFF" />
+            <Label id="directorName" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" />
+          </LayoutGroup>
+          <LayoutGroup id="castRow" layoutDirection="horiz">
+            <Label id="castLabel" font="font:MediumBoldSystemFont" color="0x00D4AAFF" />
+            <Label id="castName" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" />
+          </LayoutGroup>
+        </LayoutGroup>
+
+        <!-- Metadata line: Country • Year • Runtime • Studio -->
         <Label id="metadataLabel"
           width="1100"
           font="font:MediumSystemFont"

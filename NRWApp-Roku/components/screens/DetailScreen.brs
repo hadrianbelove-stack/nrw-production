@@ -12,6 +12,12 @@ Sub Init()
 
     m.titleLabel = m.top.FindNode("titleLabel")
     m.dateLabel = m.top.FindNode("dateLabel")
+    m.directorLabel = m.top.FindNode("directorLabel")
+    m.directorName = m.top.FindNode("directorName")
+    m.directorRow = m.top.FindNode("directorRow")
+    m.castLabel = m.top.FindNode("castLabel")
+    m.castName = m.top.FindNode("castName")
+    m.castRow = m.top.FindNode("castRow")
     m.metadataLabel = m.top.FindNode("metadataLabel")
     m.languageLabel = m.top.FindNode("languageLabel")
     m.synopsisLabel = m.top.FindNode("synopsisLabel")
@@ -143,7 +149,7 @@ Sub LoadMovie(index as Integer)
 
     ' Build metadata line
     ' Meta block — 3 lines
-    ' Line 1: Dir: Director
+    ' Line 1: Director: Director
     director = GetDirector(movie)
     ' Line 2: Cast
     castArray = GetCast(movie)
@@ -171,19 +177,26 @@ Sub LoadMovie(index as Integer)
         metaParts.Push(movie.studio)
     end if
 
-    metaText = ""
     if director <> ""
-        metaText = "Dir: " + director
+        m.directorLabel.text = "Director: "
+        m.directorName.text = director
+        m.directorRow.visible = true
+    else
+        m.directorRow.visible = false
     end if
     if castNames.Count() > 0
-        if metaText <> "" then metaText = metaText + chr(10)
-        metaText = metaText + "Cast: " + castNames.Join(", ")
+        m.castLabel.text = "Cast: "
+        m.castName.text = castNames.Join(", ")
+        m.castRow.visible = true
+    else
+        m.castRow.visible = false
     end if
+
     if metaParts.Count() > 0
-        if metaText <> "" then metaText = metaText + chr(10)
-        metaText = metaText + metaParts.Join(" • ")
+        m.metadataLabel.text = metaParts.Join(" • ")
+    else
+        m.metadataLabel.text = ""
     end if
-    m.metadataLabel.text = metaText
 
     ' Set language (only if not English)
     if movie.original_language <> invalid AND movie.original_language <> "en" AND movie.original_language <> ""

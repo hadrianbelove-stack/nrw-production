@@ -768,10 +768,10 @@ const MovieDetailTvOS = () => {
 
             {/* Meta block — 3 lines */}
             {movie.director && (
-              <Text style={styles.metadataText}>Dir: {movie.director}</Text>
+              <Text style={styles.metadataCrewLine}><Text style={styles.metadataCrewLabel}>Director: </Text><Text style={styles.metadataCrewName}>{movie.director}</Text></Text>
             )}
             {movie.crew?.cast?.length > 0 && (
-              <Text style={styles.metadataText}>Cast: {movie.crew.cast.slice(0, 3).join(', ')}</Text>
+              <Text style={styles.metadataCrewLine}><Text style={styles.metadataCrewLabel}>Cast: </Text><Text style={styles.metadataCrewName}>{movie.crew.cast.slice(0, 3).join(', ')}</Text></Text>
             )}
             <View style={styles.metadataRow}>
               {formattedCountries && (
@@ -1180,6 +1180,17 @@ const styles = StyleSheet.create({
   metadataText: {
     color: Colors.textSecondary,
     fontSize: Typography.tvos.body,
+  },
+  metadataCrewLine: {
+    fontSize: Typography.tvos.body,
+  },
+  metadataCrewLabel: {
+    color: Colors.primary,
+    fontWeight: 'bold',
+  },
+  metadataCrewName: {
+    color: Colors.textPrimary,
+    fontWeight: 'bold',
   },
   metadataDot: {
     color: Colors.textMuted,

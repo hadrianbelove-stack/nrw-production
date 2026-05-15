@@ -92,7 +92,7 @@ const FullscreenPosterModal = ({
     if (movie.year) parts.push(movie.year);
     if (movie.genres?.length) parts.push(movie.genres.slice(0, 2).join(', '));
     if (movie.runtime) parts.push(`${movie.runtime} min`);
-    if (director) parts.push(`Dir: ${director}`);
+    if (director) parts.push(`Director: ${director}`);
     if (movie.country) parts.push(formatCountry(movie.country));
     return parts.join(' • ');
   };

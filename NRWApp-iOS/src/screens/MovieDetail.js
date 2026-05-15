@@ -269,8 +269,8 @@ export default function MovieDetail({route}) {
           )}
 
           {/* Meta block — 3 lines */}
-          {director && <Text style={styles.metaText}>Dir: {director}</Text>}
-          {cast.length > 0 && <Text style={styles.metaText}>Cast: {Array.isArray(cast) ? cast.slice(0, 3).join(', ') : cast}</Text>}
+          {director && <Text style={styles.metaCrewLine}><Text style={styles.metaCrewLabel}>Director: </Text><Text style={styles.metaCrewName}>{director}</Text></Text>}
+          {cast.length > 0 && <Text style={styles.metaCrewLine}><Text style={styles.metaCrewLabel}>Cast: </Text><Text style={styles.metaCrewName}>{Array.isArray(cast) ? cast.slice(0, 3).join(', ') : cast}</Text></Text>}
           <View style={styles.metaRow}>
             {movie.country && <Text style={styles.metaText}>{movie.country}</Text>}
             {movie.country && year && <Text style={styles.metaDot}>•</Text>}
@@ -572,6 +572,17 @@ const styles = StyleSheet.create({
   metaText: {
     color: Colors.textSecondary,
     fontSize: Typography.caption,
+  },
+  metaCrewLine: {
+    fontSize: Typography.caption,
+  },
+  metaCrewLabel: {
+    color: Colors.primary,
+    fontWeight: 'bold',
+  },
+  metaCrewName: {
+    color: Colors.textPrimary,
+    fontWeight: 'bold',
   },
   metaDot: {
     color: Colors.textMuted,

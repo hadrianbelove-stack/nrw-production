@@ -549,6 +549,17 @@ body {
   font-weight: 500;
   margin-bottom: 4px;
 }
+.sheet-crew {
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.crew-label {
+  color: var(--accent);
+}
+.crew-name {
+  color: #fff;
+}
 .sheet-meta {
   font-size: 0.7rem;
   color: var(--text-muted);
