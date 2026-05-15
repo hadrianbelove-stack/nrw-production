@@ -192,6 +192,10 @@ export function filterMoviesMulti(movies, activeFilters) {
   if (!movies || !Array.isArray(movies)) return [];
   // Exclude reverted movies (failed JustWatch verification, no watch links)
   movies = movies.filter(m => m._enrichment_status !== 'reverted');
+  // Pre-orders only appear when the pre-orders filter is active
+  if (!activeFilters || !activeFilters.has('pre-orders')) {
+    movies = movies.filter(m => !m._is_preorder);
+  }
   if (!activeFilters || activeFilters.size === 0) {
     return movies.filter(movie => !movie.hidden);
   }

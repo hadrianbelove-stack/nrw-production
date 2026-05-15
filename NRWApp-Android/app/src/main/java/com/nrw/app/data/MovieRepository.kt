@@ -184,10 +184,14 @@ class MovieRepository(private val context: Context) {
      * Filter movies by multiple categories (OR logic - cumulative)
      */
     fun filterMoviesMulti(movies: List<Movie>, activeFilters: Set<FilterCategory>): List<Movie> {
+        // Pre-orders only appear when the pre-orders filter is active
+        val filtered = if (FilterCategory.PRE_ORDERS !in activeFilters) {
+            movies.filter { !it.isPreorder }
+        } else movies
         if (activeFilters.isEmpty()) {
-            return movies.filter { it.hidden != true && it.enrichmentStatus != "reverted" }
+            return filtered.filter { it.hidden != true && it.enrichmentStatus != "reverted" }
         }
-        return movies.filter { movie ->
+        return filtered.filter { movie ->
             if (movie.hidden == true || movie.enrichmentStatus == "reverted") return@filter false
             activeFilters.any { filter ->
                 when (filter) {

@@ -254,6 +254,9 @@ const NRWMobile = {
         const filters = this.activeFilters;
 
         this.filteredMovies = this.allMovies.filter(movie => {
+            // Pre-orders only appear when the pre-orders filter is active
+            if (movie._is_preorder && !filters.has('pre-orders')) return false;
+
             // Category filters (OR logic)
             if (filters.size > 0) {
                 let matchesAny = false;
@@ -634,15 +637,16 @@ const NRWMobile = {
         const isScreening = movie.categories?.is_virtual_screening;
         const screeningInfo = movie.virtual_screening_info || {};
 
-        // Line 1 (teal): Dir: Director
-        const dirLine = movie.crew?.director
-            ? 'Dir: ' + this.esc(movie.crew.director)
-            : (movie.director ? 'Dir: ' + this.esc(movie.director) : '');
+        // Line 1: Director (label teal, name white)
+        const dirName = movie.crew?.director || movie.director || '';
+        const dirLine = dirName
+            ? '<span class="crew-label">Director:</span> <span class="crew-name">' + this.esc(dirName) + '</span>'
+            : '';
 
-        // Line 2 (gray): Cast
+        // Line 2: Cast (label teal, name white)
         const cast = movie.crew?.cast;
         let castLine = '';
-        if (cast?.length) castLine = 'Cast: ' + this.esc(cast.slice(0, 3).join(', '));
+        if (cast?.length) castLine = '<span class="crew-label">Cast:</span> <span class="crew-name">' + this.esc(cast.slice(0, 3).join(', ')) + '</span>';
 
         // Line 3 (gray): Country • Year • Runtime • Studio
         const detailParts = [];
@@ -693,8 +697,8 @@ const NRWMobile = {
             '<div class="sheet-title">' + this.esc(movie.display_title || movie.title || 'Untitled') +
             (isStaffPick ? ' <span style="color:var(--crimson);font-size:0.7rem">\u2605 STAFF PICK</span>' : '') +
             '</div>' +
-            (dirLine ? '<div class="sheet-date">' + dirLine + '</div>' : '') +
-            (castLine ? '<div class="sheet-meta"><span>' + castLine + '</span></div>' : '') +
+            (dirLine ? '<div class="sheet-crew">' + dirLine + '</div>' : '') +
+            (castLine ? '<div class="sheet-crew">' + castLine + '</div>' : '') +
             (detailParts.length ? '<div class="sheet-meta"><span>' + detailParts.join(' \u00b7 ') + '</span></div>' : '') +
             scoresHtml +
             '</div></div>';

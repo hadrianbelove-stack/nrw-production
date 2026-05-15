@@ -134,6 +134,19 @@ Function FilterMoviesMulti(movies as Object, activeFilters as Object) as Object
             continue for
         end if
 
+        ' Pre-orders only appear when the pre-orders filter is active
+        if movie._is_preorder <> invalid AND movie._is_preorder = true
+            hasPreOrderFilter = false
+            for each filter in activeFilters
+                if filter = categories.PRE_ORDERS
+                    hasPreOrderFilter = true
+                end if
+            end for
+            if NOT hasPreOrderFilter
+                continue for
+            end if
+        end if
+
         ' No filters = show all
         if activeFilters.Count() = 0
             result.Push(movie)

@@ -715,7 +715,24 @@ class MovieEnricher:
                 continue
             # Pre-order handling in catch-up
             if movie.get('_is_preorder'):
-                if movie.get('_buyonly_preorder'):
+                # Graduate pre-orders that already have real watch links
+                # BUT only if digital_date has actually passed — links can exist
+                # before release (pre-order purchase pages, early availability signals)
+                wl = movie.get('watch_links', {})
+                has_real_links = bool(wl.get('streaming')) or bool(wl.get('vod'))
+                dd = movie.get('digital_date', '')
+                date_has_passed = dd and dd <= today_catchup
+                if has_real_links and date_has_passed:
+                    movie.pop('_is_preorder', None)
+                    movie.pop('_buyonly_preorder', None)
+                    movie.pop('pre_order_links', None)
+                    if tracking_data and tracking_data.get('movies', {}).get(movie_id):
+                        tracking_data['movies'][movie_id].pop('_is_preorder', None)
+                        tracking_data['movies'][movie_id].pop('_buyonly_preorder', None)
+                        tracking_changed = True
+                    print(f"  \U0001f393 {movie.get('title')} \u2014 pre-order graduated (real links exist)")
+                    # Fall through to normal catch-up enrichment
+                elif movie.get('_buyonly_preorder'):
                     dd = movie.get('digital_date', '')
                     if not dd or dd > today_catchup:
                         continue  # Future or no date — skip (normal behavior)

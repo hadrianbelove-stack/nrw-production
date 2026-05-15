@@ -246,6 +246,9 @@ const NRW = {
         const query = this.searchQuery;
 
         this.filteredMovies = this.allMovies.filter(movie => {
+            // Pre-orders only appear when the pre-orders filter is active
+            if (movie._is_preorder && !filters.has('pre-orders')) return false;
+
             // If no filters selected, show all (except hidden)
             if (filters.size === 0) {
                 // No category filter - show all
@@ -926,15 +929,29 @@ const NRW = {
         const metaEl = document.getElementById('lightbox-meta');
         metaEl.textContent = '';
 
-        // Line 1: Dir
+        // Line 1: Director
         if (movie.crew?.director) {
-            metaEl.appendChild(document.createTextNode('Dir: ' + movie.crew.director));
+            const dirLabel = document.createElement('span');
+            dirLabel.className = 'lightbox-crew-label';
+            dirLabel.textContent = 'Director: ';
+            const dirName = document.createElement('span');
+            dirName.className = 'lightbox-crew-name';
+            dirName.textContent = movie.crew.director;
+            metaEl.appendChild(dirLabel);
+            metaEl.appendChild(dirName);
         }
 
         // Line 2: Cast
         if (movie.crew?.cast?.length) {
             if (metaEl.childNodes.length) metaEl.appendChild(document.createElement('br'));
-            metaEl.appendChild(document.createTextNode('Cast: ' + movie.crew.cast.slice(0, 3).join(', ')));
+            const castLabel = document.createElement('span');
+            castLabel.className = 'lightbox-crew-label';
+            castLabel.textContent = 'Cast: ';
+            const castName = document.createElement('span');
+            castName.className = 'lightbox-crew-name';
+            castName.textContent = movie.crew.cast.slice(0, 3).join(', ');
+            metaEl.appendChild(castLabel);
+            metaEl.appendChild(castName);
         }
 
         // Line 3: Country • Year • Runtime • Studio
