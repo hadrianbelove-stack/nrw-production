@@ -15,6 +15,10 @@
     <!-- Focus state -->
     <field id="focusPercent" type="float" value="0.0" onChange="onFocusChanged" />
 
+    <!-- Price data -->
+    <field id="rentPrice" type="string" value="" onChange="onPriceChanged" />
+    <field id="buyPrice" type="string" value="" onChange="onPriceChanged" />
+
     <!-- Output -->
     <field id="selected" type="boolean" value="false" alwaysNotify="true" />
   </interface>
@@ -60,6 +64,23 @@
         vertAlign="center"
         font="font:SmallBoldSystemFont"
         color="0xFFFFFFFF" />
+
+      <!-- V1 Price bar (below button) -->
+      <LayoutGroup id="priceBar"
+        layoutDirection="horiz"
+        translation="[0, 44]"
+        visible="false">
+        <Rectangle id="rentPriceBg" width="70" height="22" color="0xFFAD33FF">
+          <Label id="rentPriceLabel" width="70" height="22"
+            horizAlign="center" vertAlign="center"
+            font="font:SmallestSystemFont" color="0x000000FF" />
+        </Rectangle>
+        <Rectangle id="buyPriceBg" width="70" height="22" color="0xE68A00FF">
+          <Label id="buyPriceLabel" width="70" height="22"
+            horizAlign="center" vertAlign="center"
+            font="font:SmallestSystemFont" color="0x000000FF" />
+        </Rectangle>
+      </LayoutGroup>
     </Group>
   </children>
 </component>

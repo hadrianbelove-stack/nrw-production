@@ -107,6 +107,14 @@ const SERVICE_CONFIG = {
   },
 };
 
+function adjustBrightness(hex, factor) {
+  const h = hex.replace('#', '');
+  const r = Math.min(255, Math.round(parseInt(h.substring(0, 2), 16) * factor));
+  const g = Math.min(255, Math.round(parseInt(h.substring(2, 4), 16) * factor));
+  const b = Math.min(255, Math.round(parseInt(h.substring(4, 6), 16) * factor));
+  return `rgb(${r},${g},${b})`;
+}
+
 export default function WatchButton({link, onPress, size = 'medium'}) {
   if (!link || !link.url) return null;
 
@@ -147,32 +155,61 @@ export default function WatchButton({link, onPress, size = 'medium'}) {
     label = config.name;
   }
 
+  const hasPrice = !!(link.rentPrice || link.buyPrice);
+  const priceBarBg = config.color || Colors.orange;
+
   return (
     <View>
-      <TouchableOpacity
-        style={buttonStyle}
-        onPress={() => onPress?.(link)}
-        activeOpacity={0.8}>
-        <View style={styles.buttonContent}>
-          {SERVICE_LOGOS[link.service] && !isScreeningButton && !link.labelOverride ? (
-            <Image
-              source={SERVICE_LOGOS[link.service]}
-              style={[styles.logo, size === 'small' && styles.logoSmall]}
-              tintColor="#ffffff"
-              resizeMode="contain"
-            />
-          ) : (
-            <Text style={textStyle} numberOfLines={1}>
-              {label}
-            </Text>
-          )}
-          {isStreaming && (
-            <View style={styles.streamBadge}>
-              <Text style={styles.streamBadgeText}>INCLUDED</Text>
-            </View>
-          )}
-        </View>
-      </TouchableOpacity>
+      <View style={hasPrice ? styles.priceCardWrap : undefined}>
+        <TouchableOpacity
+          style={[buttonStyle, hasPrice && styles.buttonNoPriceRadius]}
+          onPress={() => onPress?.(link)}
+          activeOpacity={0.8}>
+          <View style={styles.buttonContent}>
+            {SERVICE_LOGOS[link.service] && !isScreeningButton && !link.labelOverride ? (
+              <Image
+                source={SERVICE_LOGOS[link.service]}
+                style={[styles.logo, size === 'small' && styles.logoSmall]}
+                tintColor="#ffffff"
+                resizeMode="contain"
+              />
+            ) : (
+              <Text style={textStyle} numberOfLines={1}>
+                {label}
+              </Text>
+            )}
+            {isStreaming && (
+              <View style={styles.streamBadge}>
+                <Text style={styles.streamBadgeText}>INCLUDED</Text>
+              </View>
+            )}
+          </View>
+        </TouchableOpacity>
+        {hasPrice && (
+          <View style={styles.priceBar}>
+            {link.rentPrice && (
+              <TouchableOpacity
+                style={[styles.priceHalf, {backgroundColor: adjustBrightness(priceBarBg, 1.15)}]}
+                onPress={() => onPress?.(link)}
+                activeOpacity={0.8}>
+                <Text style={[styles.priceHalfText, {color: config.textColor}]}>
+                  Rent {link.rentPrice}
+                </Text>
+              </TouchableOpacity>
+            )}
+            {link.buyPrice && (
+              <TouchableOpacity
+                style={[styles.priceHalf, {backgroundColor: adjustBrightness(priceBarBg, 0.85)}]}
+                onPress={() => onPress?.(link)}
+                activeOpacity={0.8}>
+                <Text style={[styles.priceHalfText, {color: config.textColor}]}>
+                  Buy {link.buyPrice}
+                </Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        )}
+      </View>
       {link.sublabel && (
         <Text style={styles.sublabelText}>{link.sublabel}</Text>
       )}
@@ -294,5 +331,29 @@ const styles = StyleSheet.create({
     marginTop: -2,
     marginBottom: Spacing.sm,
     textAlign: 'center',
+  },
+  priceCardWrap: {
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  buttonNoPriceRadius: {
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
+    marginBottom: 0,
+  },
+  priceBar: {
+    flexDirection: 'row',
+  },
+  priceHalf: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 3,
+  },
+  priceHalfText: {
+    fontSize: 10,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    letterSpacing: 0.3,
   },
 });

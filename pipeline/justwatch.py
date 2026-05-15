@@ -389,9 +389,8 @@ class JustWatchClient:
                 }
 
         # Select VOD options — return both Amazon and Apple TV when available
-        vod_offers = rent_offers + buy_offers
-        if vod_offers:
-            vod_entries = self._select_vod_offers(vod_offers, affiliate_tag)
+        if rent_offers or buy_offers:
+            vod_entries = self._merge_vod_offers(rent_offers, buy_offers, affiliate_tag)
             if vod_entries:
                 result['vod'] = vod_entries
 
@@ -567,9 +566,8 @@ class JustWatchClient:
                     'link': best_streaming['link']
                 }
 
-        vod_offers = rent_offers + buy_offers
-        if vod_offers:
-            vod_entries = self._select_vod_offers(vod_offers, affiliate_tag)
+        if rent_offers or buy_offers:
+            vod_entries = self._merge_vod_offers(rent_offers, buy_offers, affiliate_tag)
             if vod_entries:
                 watch_links['vod'] = vod_entries
 
@@ -626,6 +624,58 @@ class JustWatchClient:
             if offer.get('price'):
                 entry['price'] = offer['price']
             result.append(entry)
+
+        return result
+
+    def _merge_vod_offers(
+        self,
+        rent_offers: List[Dict],
+        buy_offers: List[Dict],
+        affiliate_tag: Optional[str] = None
+    ) -> List[Dict]:
+        """
+        Merge rent and buy offers per service, preserving both prices.
+        Returns one entry per service with rent_price and buy_price fields.
+        """
+        service_map = {}  # lowercase service -> merged entry
+
+        for offer in rent_offers:
+            svc_key = offer['service'].lower()
+            if svc_key not in service_map:
+                service_map[svc_key] = {
+                    'service': offer['service'],
+                    'link': offer['link'],
+                    'rent_price': offer.get('price'),
+                    'buy_price': None
+                }
+
+        for offer in buy_offers:
+            svc_key = offer['service'].lower()
+            if svc_key in service_map:
+                service_map[svc_key]['buy_price'] = offer.get('price')
+            else:
+                service_map[svc_key] = {
+                    'service': offer['service'],
+                    'link': offer['link'],
+                    'rent_price': None,
+                    'buy_price': offer.get('price')
+                }
+
+        result = []
+        for entry in service_map.values():
+            link = entry['link']
+            if affiliate_tag and 'amazon' in link.lower():
+                separator = '&' if '?' in link else '?'
+                if 'tag=' not in link:
+                    link = f"{link}{separator}tag={affiliate_tag}"
+            item = {'service': entry['service'], 'link': link}
+            if entry.get('rent_price'):
+                item['rent_price'] = entry['rent_price']
+            if entry.get('buy_price'):
+                item['buy_price'] = entry['buy_price']
+            # Backward compat: 'price' = cheapest available
+            item['price'] = entry.get('rent_price') or entry.get('buy_price')
+            result.append(item)
 
         return result
 

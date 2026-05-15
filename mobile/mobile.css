@@ -665,6 +665,44 @@ body {
   white-space: nowrap;
 }
 
+/* V1 VOD price cards (mobile) */
+.vod-price-card-m {
+  display: flex;
+  flex-direction: column;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.vod-price-card-m .provider-pill,
+.vod-price-card-m .provider-pill-text {
+  border-radius: 6px 6px 0 0;
+  border-bottom: none;
+}
+.vod-price-bar-m {
+  display: flex;
+}
+.vod-price-half-m {
+  flex: 1;
+  text-align: center;
+  padding: 2px 6px;
+  font-size: 0.5rem;
+  font-weight: 700;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+.vod-price-half-m.rent:not(:only-child) {
+  border-right: 1px solid rgba(255,255,255,0.1);
+}
+.vod-price-bar-m.amazon .vod-price-half-m.rent { background: #ffad33; color: #000; }
+.vod-price-bar-m.amazon .vod-price-half-m.buy { background: #e68a00; color: #000; }
+.vod-price-bar-m.apple .vod-price-half-m.rent { background: #1a1a1a; color: #ccc; }
+.vod-price-bar-m.apple .vod-price-half-m.buy { background: #111; color: #ccc; }
+.vod-price-bar-m.fandango .vod-price-half-m.rent { background: #ff7a1a; color: #fff; }
+.vod-price-bar-m.fandango .vod-price-half-m.buy { background: #cc5200; color: #fff; }
+.vod-price-bar-m.youtube .vod-price-half-m.rent { background: #cc0000; color: #fff; }
+.vod-price-bar-m.youtube .vod-price-half-m.buy { background: #990000; color: #fff; }
+
 /* Virtual screening in sheet */
 .sheet-screening-banner {
   background: var(--screening-gold);

@@ -458,48 +458,33 @@ private fun MovieDetail(
 
                 // Pull quotes
                 if (!movie.pullQuotes.isNullOrEmpty()) {
+                    val pqContext = LocalContext.current
                     movie.pullQuotes!!.take(2).forEach { pq ->
                         pq.text?.let { quoteText ->
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(bottom = 8.dp)
-                                    .border(0.dp, Color.Transparent)
-                            ) {
-                                Row {
-                                    Box(
-                                        modifier = Modifier
-                                            .background(
-                                                if (pq.source == "rotten_tomatoes") Color(0xFFFA3232)
-                                                else Color(0xFF00E054),
-                                                RoundedCornerShape(3.dp)
-                                            )
-                                            .padding(horizontal = 6.dp, vertical = 2.dp)
-                                    ) {
-                                        Text(
-                                            text = if (pq.source == "rotten_tomatoes") "RT" else "LB",
-                                            color = Color.White,
-                                            fontSize = 9.sp,
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                    }
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Text(
-                                        text = "\u201C$quoteText\u201D",
-                                        color = TextSecondary,
-                                        fontSize = 12.sp,
-                                        fontStyle = androidx.compose.ui.text.font.FontStyle.Italic,
-                                        lineHeight = 16.sp,
-                                        modifier = Modifier.weight(1f)
+                                    .then(
+                                        if (pq.reviewUrl != null) Modifier.clickable {
+                                            DeepLinkHelper.openUrl(pqContext, pq.reviewUrl, "review")
+                                        } else Modifier
                                     )
-                                }
+                            ) {
+                                Text(
+                                    text = "\u201C$quoteText\u201D",
+                                    color = TextSecondary,
+                                    fontSize = 12.sp,
+                                    fontStyle = androidx.compose.ui.text.font.FontStyle.Italic,
+                                    lineHeight = 16.sp
+                                )
                                 val attribution = listOfNotNull(pq.critic, pq.outlet).joinToString(", ")
                                 if (attribution.isNotEmpty()) {
                                     Text(
                                         text = "\u2014 $attribution",
                                         color = TextMuted,
                                         fontSize = 10.sp,
-                                        modifier = Modifier.padding(start = 32.dp, top = 2.dp)
+                                        modifier = Modifier.padding(start = 10.dp, top = 2.dp)
                                     )
                                 }
                             }
@@ -559,7 +544,35 @@ private fun MovieDetail(
                     ) {
                         vodOptions.forEach { option ->
                             Column {
-                                WatchButton(option = option, onClick = { onWatchClick(option) }, compact = true)
+                                val hasPrice = option.rentPrice != null || option.buyPrice != null
+                                if (hasPrice) {
+                                    Column(
+                                        modifier = Modifier.clip(RoundedCornerShape(6.dp))
+                                    ) {
+                                        WatchButton(option = option, onClick = { onWatchClick(option) }, compact = true)
+                                        Row {
+                                            val svcColor = getServiceColor(option.service)
+                                            if (option.rentPrice != null) {
+                                                Box(
+                                                    modifier = Modifier.weight(1f).background(svcColor.copy(alpha = 0.8f)).padding(vertical = 3.dp),
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+                                                    Text(text = "RENT ${option.rentPrice}", color = Color.White, fontSize = 9.sp, fontWeight = FontWeight.Bold, letterSpacing = 0.3.sp)
+                                                }
+                                            }
+                                            if (option.buyPrice != null) {
+                                                Box(
+                                                    modifier = Modifier.weight(1f).background(svcColor.copy(alpha = 0.6f)).padding(vertical = 3.dp),
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+                                                    Text(text = "BUY ${option.buyPrice}", color = Color.White, fontSize = 9.sp, fontWeight = FontWeight.Bold, letterSpacing = 0.3.sp)
+                                                }
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    WatchButton(option = option, onClick = { onWatchClick(option) }, compact = true)
+                                }
                                 if (option.sublabel != null) {
                                     Text(text = option.sublabel, color = Color(0xFFC4B5FD), fontSize = 11.sp, fontWeight = FontWeight.Medium, modifier = Modifier.padding(top = 2.dp))
                                 }

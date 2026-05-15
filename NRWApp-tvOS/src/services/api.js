@@ -362,6 +362,8 @@ export function getWatchLinks(movie) {
         url: vodItem.link,
         type: 'purchase',
         icon: serviceId || 'vod',
+        rentPrice: vodItem.rent_price || vodItem.price || null,
+        buyPrice: vodItem.buy_price || null,
       });
     }
   }

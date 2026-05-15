@@ -382,20 +382,28 @@ class MovieEnricher:
                     simplified_array = []
                     for item in link_obj:
                         if isinstance(item, dict) and 'service' in item:
-                            simplified_array.append({
+                            simplified = {
                                 'service': self.host.simplify_provider_name(item['service']),
                                 'link': item.get('link')
-                            })
+                            }
+                            for price_key in ('rent_price', 'buy_price', 'price'):
+                                if item.get(price_key):
+                                    simplified[price_key] = item[price_key]
+                            simplified_array.append(simplified)
                         else:
                             simplified_array.append(item)
                     result['watch_links'][category] = simplified_array
                 # Handle dict format (legacy backward compatibility)
                 elif isinstance(link_obj, dict) and 'service' in link_obj:
                     simplified_service = self.host.simplify_provider_name(link_obj['service'])
-                    result['watch_links'][category] = {
+                    simplified_dict = {
                         'service': simplified_service,
                         'link': link_obj.get('link')
                     }
+                    for price_key in ('rent_price', 'buy_price', 'price'):
+                        if link_obj.get(price_key):
+                            simplified_dict[price_key] = link_obj[price_key]
+                    result['watch_links'][category] = simplified_dict
                 else:
                     result['watch_links'][category] = link_obj
 

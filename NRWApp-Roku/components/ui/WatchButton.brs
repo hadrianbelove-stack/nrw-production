@@ -10,6 +10,11 @@ Sub Init()
     m.buttonInner = m.top.FindNode("buttonInner")
     m.buttonLabel = m.top.FindNode("buttonLabel")
     m.serviceIcon = m.top.FindNode("serviceIcon")
+    m.priceBar = m.top.FindNode("priceBar")
+    m.rentPriceBg = m.top.FindNode("rentPriceBg")
+    m.rentPriceLabel = m.top.FindNode("rentPriceLabel")
+    m.buyPriceBg = m.top.FindNode("buyPriceBg")
+    m.buyPriceLabel = m.top.FindNode("buyPriceLabel")
 
     m.serviceColor = "0xFFFFFFFF"
     m.colors = GetColors()
@@ -78,6 +83,63 @@ Sub onLabelChanged()
         SetButtonWidth(160)
     else
         SetButtonWidth(140)
+    end if
+End Sub
+
+' ============================================================================
+' Price Changed — show V1 price bar below button
+' ============================================================================
+Sub onPriceChanged()
+    rentPrice = m.top.rentPrice
+    buyPrice = m.top.buyPrice
+    hasRent = (rentPrice <> "" AND rentPrice <> invalid)
+    hasBuy = (buyPrice <> "" AND buyPrice <> invalid)
+
+    if hasRent OR hasBuy
+        m.priceBar.visible = true
+        ' Use lighter/darker shades of the service color for rent/buy
+        ' Default to Amazon orange if no service color set
+        rentColor = m.serviceColor
+        buyColor = m.serviceColor
+
+        ' Determine text color based on service
+        normalized = NormalizeServiceName(m.top.service)
+        textColor = "0xFFFFFFFF"  ' white default
+        if normalized = "amazon" OR normalized = "hulu" OR normalized = "plex"
+            textColor = "0x000000FF"
+        end if
+        m.rentPriceLabel.color = textColor
+        m.buyPriceLabel.color = textColor
+        m.rentPriceBg.color = rentColor
+        m.buyPriceBg.color = buyColor
+
+        ' Get current button width
+        btnWidth = m.buttonBg.width
+        if hasRent AND hasBuy
+            halfWidth = Int(btnWidth / 2)
+            m.rentPriceBg.width = halfWidth
+            m.rentPriceLabel.width = halfWidth
+            m.rentPriceLabel.text = "RENT " + rentPrice
+            m.rentPriceBg.visible = true
+            m.buyPriceBg.width = btnWidth - halfWidth
+            m.buyPriceLabel.width = btnWidth - halfWidth
+            m.buyPriceLabel.text = "BUY " + buyPrice
+            m.buyPriceBg.visible = true
+        else if hasRent
+            m.rentPriceBg.width = btnWidth
+            m.rentPriceLabel.width = btnWidth
+            m.rentPriceLabel.text = "RENT " + rentPrice
+            m.rentPriceBg.visible = true
+            m.buyPriceBg.visible = false
+        else
+            m.buyPriceBg.width = btnWidth
+            m.buyPriceLabel.width = btnWidth
+            m.buyPriceLabel.text = "BUY " + buyPrice
+            m.buyPriceBg.visible = true
+            m.rentPriceBg.visible = false
+        end if
+    else
+        m.priceBar.visible = false
     end if
 End Sub
 

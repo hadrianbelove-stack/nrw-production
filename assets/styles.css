@@ -1198,10 +1198,19 @@ header h1 {
 
 .pq-card {
     position: relative;
-    padding: 0.6rem 0.75rem 0.6rem 2.2rem;
+    padding: 0.6rem 0.75rem;
     background: rgba(255,255,255,0.04);
     border-radius: 6px;
     border-left: 2px solid rgba(255,255,255,0.15);
+}
+
+.pq-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.pq-link:hover .pq-text {
+    color: #fff;
 }
 
 .pq-text {
@@ -1219,27 +1228,6 @@ header h1 {
     font-size: 0.75rem;
     color: #888;
     margin-top: 0.25rem;
-}
-
-.pq-source {
-    position: absolute;
-    left: 0.5rem;
-    top: 0.65rem;
-    font-size: 0.55rem;
-    font-weight: 700;
-    letter-spacing: 0.03em;
-    padding: 1px 4px;
-    border-radius: 3px;
-}
-
-.pq-rt {
-    background: rgba(250,50,50,0.25);
-    color: #ff6b6b;
-}
-
-.pq-lb {
-    background: rgba(0,210,120,0.2);
-    color: #00d278;
 }
 
 /* Lightbox buttons container */
@@ -1380,6 +1368,54 @@ header h1 {
     color: #fff;
     text-shadow: 0 2px 12px rgba(0,0,0,0.8);
 }
+
+/* V1 VOD price cards: logo button + split price bar */
+.vod-price-card {
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+.vod-price-card .watch-btn-lb {
+    border-radius: 8px 8px 0 0;
+}
+.vod-price-bar {
+    display: flex;
+}
+.vod-price-half {
+    flex: 1;
+    text-align: center;
+    padding: 3px 0;
+    font-size: 0.58rem;
+    font-weight: 700;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    transition: filter 0.2s;
+}
+.vod-price-half:hover {
+    filter: brightness(1.15);
+}
+.vod-price-half.rent:not(:only-child) {
+    border-right: 1px solid rgba(255,255,255,0.1);
+}
+/* Amazon price bar */
+.vod-price-card.amazon .vod-price-half.rent { background: #ffad33; color: #000; }
+.vod-price-card.amazon .vod-price-half.buy { background: #e68a00; color: #000; }
+/* Apple TV price bar */
+.vod-price-card.apple .vod-price-half.rent { background: #1a1a1a; color: #ccc; border-bottom: 1px solid #444; }
+.vod-price-card.apple .vod-price-half.buy { background: #111; color: #ccc; border-bottom: 1px solid #444; }
+.vod-price-card.apple .vod-price-half.rent:not(:only-child) { border-right: 1px solid #444; border-left: 1px solid #444; }
+.vod-price-card.apple .vod-price-half.buy { border-right: 1px solid #444; }
+/* Fandango price bar */
+.vod-price-card.fandango .vod-price-half.rent { background: #ff7a1a; color: #fff; }
+.vod-price-card.fandango .vod-price-half.buy { background: #cc5200; color: #fff; }
+/* YouTube price bar */
+.vod-price-card.youtube .vod-price-half.rent { background: #cc0000; color: #fff; }
+.vod-price-card.youtube .vod-price-half.buy { background: #990000; color: #fff; }
+/* Plex price bar */
+.vod-price-card.plex .vod-price-half.rent { background: #c8900b; color: #000; }
+.vod-price-card.plex .vod-price-half.buy { background: #a07508; color: #000; }
 
 /* Wide service logos inside watch buttons */
 .watch-btn-lb .watch-logo {

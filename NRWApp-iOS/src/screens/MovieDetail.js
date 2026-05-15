@@ -360,19 +360,21 @@ export default function MovieDetail({route}) {
       {/* Pull Quotes */}
       {movie.pull_quotes?.length > 0 && (
         <View style={styles.section}>
-          {movie.pull_quotes.slice(0, 2).map((pq, i) => (
-            <View key={i} style={styles.pullQuoteRow}>
-              <View style={[styles.pqSourceBadge, { backgroundColor: pq.source === 'rotten_tomatoes' ? '#FA3232' : '#00E054' }]}>
-                <Text style={styles.pqSourceText}>{pq.source === 'rotten_tomatoes' ? 'RT' : 'LB'}</Text>
-              </View>
-              <View style={styles.pqContent}>
+          {movie.pull_quotes.slice(0, 2).map((pq, i) => {
+            const content = (
+              <View key={i} style={styles.pullQuoteCard}>
                 <Text style={styles.pqText}>{'\u201C'}{pq.text}{'\u201D'}</Text>
                 {(pq.critic || pq.outlet) && (
                   <Text style={styles.pqAttribution}>{'\u2014'} {[pq.critic, pq.outlet].filter(Boolean).join(', ')}</Text>
                 )}
               </View>
-            </View>
-          ))}
+            );
+            return pq.review_url ? (
+              <TouchableOpacity key={i} onPress={() => openWatchLink(pq.review_url)} activeOpacity={0.7}>
+                {content}
+              </TouchableOpacity>
+            ) : content;
+          })}
         </View>
       )}
 
@@ -733,24 +735,11 @@ const styles = StyleSheet.create({
     color: Colors.textSecondary,
     fontSize: Typography.body,
   },
-  pullQuoteRow: {
-    flexDirection: 'row',
+  pullQuoteCard: {
     marginBottom: Spacing.sm,
-  },
-  pqSourceBadge: {
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 3,
-    marginRight: 8,
-    marginTop: 2,
-  },
-  pqSourceText: {
-    color: '#fff',
-    fontSize: 9,
-    fontWeight: '700',
-  },
-  pqContent: {
-    flex: 1,
+    paddingLeft: 10,
+    borderLeftWidth: 2,
+    borderLeftColor: 'rgba(255,255,255,0.15)',
   },
   pqText: {
     color: Colors.textSecondary,

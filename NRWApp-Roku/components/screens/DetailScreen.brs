@@ -215,9 +215,7 @@ Sub LoadMovie(index as Integer)
             pq = movie.pull_quotes[i]
             if pq.text <> invalid AND pq.text <> ""
                 if pqText <> "" then pqText = pqText + chr(10)
-                srcTag = "LB"
-                if pq.source <> invalid AND pq.source = "rotten_tomatoes" then srcTag = "RT"
-                pqText = pqText + "[" + srcTag + "] " + chr(8220) + pq.text + chr(8221)
+                pqText = pqText + chr(8220) + pq.text + chr(8221)
                 attribution = ""
                 if pq.critic <> invalid AND pq.critic <> "" then attribution = pq.critic
                 if pq.outlet <> invalid AND pq.outlet <> ""
@@ -411,6 +409,15 @@ Sub SetupWatchButtons(movie as Object)
                 vodButtons[i].label = "Buy Ticket"
             else
                 vodButtons[i].label = GetVodDisplayName(vodServices[i].service)
+            end if
+            ' Pass price data for V1 price bar (fall back to legacy "price" field)
+            if vodServices[i].rent_price <> invalid
+                vodButtons[i].rentPrice = vodServices[i].rent_price
+            else if vodServices[i].price <> invalid
+                vodButtons[i].rentPrice = vodServices[i].price
+            end if
+            if vodServices[i].buy_price <> invalid
+                vodButtons[i].buyPrice = vodServices[i].buy_price
             end if
             vodButtons[i].visible = true
             m.buttons.Push(vodButtons[i])

@@ -186,7 +186,12 @@ class VodLinksAdapter : com.google.gson.TypeAdapter<List<ServiceLink>?>() {
 
 data class ServiceLink(
     val service: String? = null,
-    val link: String? = null
+    val link: String? = null,
+    @SerializedName("rent_price")
+    val rentPrice: String? = null,
+    @SerializedName("buy_price")
+    val buyPrice: String? = null,
+    val price: String? = null
 )
 
 data class PlexInfo(
@@ -203,7 +208,9 @@ data class PullQuote(
     val text: String? = null,
     val critic: String? = null,
     val outlet: String? = null,
-    val source: String? = null
+    val source: String? = null,
+    @SerializedName("review_url")
+    val reviewUrl: String? = null
 )
 
 data class ScreeningInfo(
@@ -235,7 +242,9 @@ data class WatchOption(
     val url: String,
     val type: WatchType,
     val icon: String,
-    val sublabel: String? = null
+    val sublabel: String? = null,
+    val rentPrice: String? = null,
+    val buyPrice: String? = null
 )
 
 enum class WatchType {
@@ -350,7 +359,9 @@ fun Movie.getWatchOptions(): List<WatchOption> {
                 label = vodLabel,
                 url = link.link,
                 type = WatchType.PURCHASE,
-                icon = normalizeServiceId(link.service) ?: "vod"
+                icon = normalizeServiceId(link.service) ?: "vod",
+                rentPrice = link.rentPrice ?: link.price,
+                buyPrice = link.buyPrice
             ))
         }
     }

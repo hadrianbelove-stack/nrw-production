@@ -1027,15 +1027,21 @@ const NRW = {
                 const card = document.createElement('div');
                 card.className = 'pq-card';
 
-                const badge = document.createElement('span');
-                badge.className = q.source === 'letterboxd' ? 'pq-source pq-lb' : 'pq-source pq-rt';
-                badge.textContent = q.source === 'letterboxd' ? 'LB' : 'RT';
-                card.appendChild(badge);
-
                 const quote = document.createElement('q');
                 quote.className = 'pq-text';
                 quote.textContent = q.text;
-                card.appendChild(quote);
+
+                if (q.review_url) {
+                    const link = document.createElement('a');
+                    link.href = q.review_url;
+                    link.target = '_blank';
+                    link.rel = 'noopener';
+                    link.className = 'pq-link';
+                    link.appendChild(quote);
+                    card.appendChild(link);
+                } else {
+                    card.appendChild(quote);
+                }
 
                 const attribution = [q.critic, q.outlet].filter(Boolean).join(', ');
                 if (attribution) {
@@ -1095,13 +1101,39 @@ const NRW = {
             const vodLink = vod.link || vod.url;
             if (vod.service && vodLink) {
                 const vodType = this.resolveVODService(vod.service, vodLink);
-                if (vodType) resolvedVod.push({ vodType, vodLink });
+                if (vodType) resolvedVod.push({ vodType, vodLink, rentPrice: vod.rent_price || vod.price || null, buyPrice: vod.buy_price || null });
             }
         });
         const hasNonFallback = resolvedVod.some(v => !v.vodType.fallback);
         if (hasNonFallback) resolvedVod = resolvedVod.filter(v => !v.vodType.fallback);
-        resolvedVod.forEach(({ vodType, vodLink }) => {
-            vodRow.appendChild(makeLink(vodLink, `watch-btn-lb ${vodType.key}`, vodType.label, null, vodType.wideLogo));
+        resolvedVod.forEach(({ vodType, vodLink, rentPrice, buyPrice }) => {
+            if (rentPrice || buyPrice) {
+                // V1: Logo button on top, split rent/buy price bar below
+                const card = document.createElement('div');
+                card.className = `vod-price-card ${vodType.key}`;
+                const btnTop = makeLink(vodLink, `watch-btn-lb ${vodType.key}`, vodType.label, null, vodType.wideLogo);
+                card.appendChild(btnTop);
+                const priceBar = document.createElement('div');
+                priceBar.className = 'vod-price-bar';
+                if (rentPrice) {
+                    const rentEl = document.createElement('a');
+                    rentEl.href = vodLink; rentEl.target = '_blank'; rentEl.rel = 'noopener noreferrer';
+                    rentEl.className = 'vod-price-half rent';
+                    rentEl.textContent = `Rent ${rentPrice}`;
+                    priceBar.appendChild(rentEl);
+                }
+                if (buyPrice) {
+                    const buyEl = document.createElement('a');
+                    buyEl.href = vodLink; buyEl.target = '_blank'; buyEl.rel = 'noopener noreferrer';
+                    buyEl.className = 'vod-price-half buy';
+                    buyEl.textContent = `Buy ${buyPrice}`;
+                    priceBar.appendChild(buyEl);
+                }
+                card.appendChild(priceBar);
+                vodRow.appendChild(card);
+            } else {
+                vodRow.appendChild(makeLink(vodLink, `watch-btn-lb ${vodType.key}`, vodType.label, null, vodType.wideLogo));
+            }
             hasVod = true;
         });
         if (hasVod) {

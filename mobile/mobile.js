@@ -751,7 +751,7 @@ const NRWMobile = {
             if (rentVod.length > 0) {
                 html += '<div class="sheet-section-label">Rent/Buy:</div>' +
                     '<div class="sheet-providers">' +
-                    rentVod.map(v => this.renderProviderBadge(v)).join('') + '</div>';
+                    rentVod.map(v => this.renderVODPriceCard(v)).join('') + '</div>';
             }
             if (streaming) {
                 html += '<div class="sheet-section-label">Stream:</div>' +
@@ -864,7 +864,9 @@ const NRWMobile = {
                 serviceKey: resolved.key,
                 link: v.link,
                 resolvedKey: resolved.key,
-                isFallback: !!resolved.fallback
+                isFallback: !!resolved.fallback,
+                rentPrice: v.rent_price || v.price || null,
+                buyPrice: v.buy_price || null
             });
         });
 
@@ -901,6 +903,24 @@ const NRWMobile = {
             : '';
         return '<' + tag + ' class="provider-pill-text"' + linkAttrs + '>' +
             this.esc(provider.name) + '</' + tag + '>';
+    },
+
+    renderVODPriceCard(provider) {
+        const badge = this.renderProviderBadge(provider);
+        if (!provider.rentPrice && !provider.buyPrice) return badge;
+        // V1: badge on top, split rent/buy price bar below
+        const svcKey = provider.serviceKey || '';
+        let barHtml = '<div class="vod-price-bar-m ' + this.esc(svcKey) + '">';
+        if (provider.rentPrice) {
+            barHtml += '<a href="' + provider.link + '" target="_blank" rel="noopener" ' +
+                'class="vod-price-half-m rent">Rent ' + this.esc(provider.rentPrice) + '</a>';
+        }
+        if (provider.buyPrice) {
+            barHtml += '<a href="' + provider.link + '" target="_blank" rel="noopener" ' +
+                'class="vod-price-half-m buy">Buy ' + this.esc(provider.buyPrice) + '</a>';
+        }
+        barHtml += '</div>';
+        return '<div class="vod-price-card-m ' + this.esc(svcKey) + '">' + badge + barHtml + '</div>';
     },
 
     // ===== GESTURE HANDLERS =====

@@ -829,6 +829,7 @@ const MovieDetailTvOS = () => {
                   const vodKey = normalizeService(link.service);
                   const vodBorder = (!movie?._is_preorder && NEEDS_BORDER.includes(vodKey)) ? '#444'
                     : undefined;
+                  const hasPrice = !!(link.rentPrice || link.buyPrice);
                   return (
                     <View key={`purchase-${i}`}>
                       <ActionButton
@@ -844,6 +845,24 @@ const MovieDetailTvOS = () => {
                         hasTVPreferredFocus={(preferWatchFocus || !movie?.links?.trailer_hosted) && i === 0}
                         testID={`action-btn-purchase-${i}`}
                       />
+                      {hasPrice && (
+                        <View style={{flexDirection: 'row', width: 200, marginTop: -8, borderBottomLeftRadius: 8, borderBottomRightRadius: 8, overflow: 'hidden'}}>
+                          {link.rentPrice && (
+                            <View style={{flex: 1, backgroundColor: buttonColor + 'CC', alignItems: 'center', paddingVertical: 5}}>
+                              <Text style={{fontSize: 13, fontWeight: '700', color: '#fff'}}>
+                                Rent {link.rentPrice}
+                              </Text>
+                            </View>
+                          )}
+                          {link.buyPrice && (
+                            <View style={{flex: 1, backgroundColor: buttonColor + '99', alignItems: 'center', paddingVertical: 5}}>
+                              <Text style={{fontSize: 13, fontWeight: '700', color: '#fff'}}>
+                                Buy {link.buyPrice}
+                              </Text>
+                            </View>
+                          )}
+                        </View>
+                      )}
                       {movie?._is_preorder && link.sublabel && (
                         <Text style={styles.preOrderDateLabel}>{link.sublabel}</Text>
                       )}
@@ -935,16 +954,11 @@ const MovieDetailTvOS = () => {
             {movie.pull_quotes?.length > 0 && (
               <View style={styles.pullQuotesSection}>
                 {movie.pull_quotes.slice(0, 2).map((pq, i) => (
-                  <View key={i} style={styles.pullQuoteRow}>
-                    <View style={[styles.pqSourceBadge, { backgroundColor: pq.source === 'rotten_tomatoes' ? '#FA3232' : '#00E054' }]}>
-                      <Text style={styles.pqSourceText}>{pq.source === 'rotten_tomatoes' ? 'RT' : 'LB'}</Text>
-                    </View>
-                    <View style={styles.pqContent}>
-                      <Text style={styles.pqText}>{'\u201C'}{pq.text}{'\u201D'}</Text>
-                      {(pq.critic || pq.outlet) && (
-                        <Text style={styles.pqAttribution}>{'\u2014'} {[pq.critic, pq.outlet].filter(Boolean).join(', ')}</Text>
-                      )}
-                    </View>
+                  <View key={i} style={styles.pullQuoteCard}>
+                    <Text style={styles.pqText}>{'\u201C'}{pq.text}{'\u201D'}</Text>
+                    {(pq.critic || pq.outlet) && (
+                      <Text style={styles.pqAttribution}>{'\u2014'} {[pq.critic, pq.outlet].filter(Boolean).join(', ')}</Text>
+                    )}
                   </View>
                 ))}
               </View>
@@ -1264,24 +1278,11 @@ const styles = StyleSheet.create({
   pullQuotesSection: {
     marginTop: Spacing.tvos.lg,
   },
-  pullQuoteRow: {
-    flexDirection: 'row',
+  pullQuoteCard: {
     marginBottom: Spacing.tvos.sm,
-  },
-  pqSourceBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 4,
-    marginRight: 10,
-    marginTop: 3,
-  },
-  pqSourceText: {
-    color: '#fff',
-    fontSize: Typography.tvos.caption - 2,
-    fontWeight: '700',
-  },
-  pqContent: {
-    flex: 1,
+    paddingLeft: 12,
+    borderLeftWidth: 2,
+    borderLeftColor: 'rgba(255,255,255,0.15)',
   },
   pqText: {
     color: Colors.textSecondary,
