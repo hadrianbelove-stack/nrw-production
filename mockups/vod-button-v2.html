@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>VOD Button V2 — Logo Left, Prices Right</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+    color: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    min-height: 100vh;
+    padding: 30px 20px;
+}
+h1 {
+    font-size: 1.1rem;
+    font-weight: 100;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 30px;
+    text-align: center;
+}
+.variant-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: #00d4aa;
+    text-transform: uppercase;
+    margin: 30px 0 12px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(0,212,170,0.2);
+}
+.variant-desc {
+    font-size: 0.72rem;
+    color: #888;
+    margin-bottom: 14px;
+}
+.vod-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+}
+
+/* Logo images */
+.logo-img {
+    height: 18px;
+    width: auto;
+    max-width: 80px;
+    object-fit: contain;
+}
+
+/* ============================================
+   SHARED CARD BASE — logo left, prices right
+   ============================================ */
+.vcard {
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    min-width: 160px;
+    max-width: 220px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.vcard:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+.vcard-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50%;
+    padding: 10px 8px;
+}
+.vcard-prices {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+}
+.vcard-price {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: inherit;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    transition: filter 0.2s;
+}
+.vcard-price:hover { filter: brightness(1.15); }
+.vcard-price.rent:not(:only-child) { border-bottom: 1px solid rgba(0,0,0,0.15); }
+
+/* ============================================
+   LOGO BACKGROUNDS — production brand colors
+   ============================================ */
+.amazon .vcard-logo { background: #ff9900; }
+.apple .vcard-logo { background: #000; }
+.apple { border: 1px solid #444; }
+/* Make all logos white on their brand-colored backgrounds */
+.amazon .logo-img { filter: brightness(0) invert(1); }
+.apple .logo-img { filter: invert(1); }
+.fandango .logo-img { filter: brightness(0) invert(1); }
+.plex .logo-img { filter: brightness(0) invert(1); }
+.fandango .vcard-logo { background: #FF6600; }
+.plex .vcard-logo { background: #1a1a1a; }
+.plex { border: 1px solid #444; }
+
+/* ============================================
+   V1 — Compact prices (0.68rem, 5px padding)
+   ============================================ */
+.v1 .vcard-price { font-size: 0.68rem; padding: 5px 4px; }
+
+.v1.amazon .vcard-price.rent { background: #ffad33; color: #000; }
+.v1.amazon .vcard-price.buy { background: #e68a00; color: #000; }
+
+.v1.apple .vcard-price.rent { background: #2a2a2a; color: #fff; }
+.v1.apple .vcard-price.buy { background: #1a1a1a; color: #ddd; }
+.v1.apple .vcard-price.rent:not(:only-child) { border-bottom: 1px solid #444; }
+
+.v1.fandango .vcard-price.rent { background: #e55a00; color: #fff; }
+.v1.fandango .vcard-price.buy { background: #cc4e00; color: #fff; }
+
+.v1.plex .vcard-price.rent { background: #c8900b; color: #fff; }
+.v1.plex .vcard-price.buy { background: #a07508; color: #fff; }
+
+/* ============================================
+   V2 — Medium prices (0.75rem, 7px padding)
+   ============================================ */
+.v2 .vcard-price { font-size: 0.75rem; padding: 7px 4px; }
+
+.v2.amazon .vcard-price.rent { background: #ffad33; color: #000; }
+.v2.amazon .vcard-price.buy { background: #e68a00; color: #000; }
+
+.v2.apple .vcard-price.rent { background: #2a2a2a; color: #fff; }
+.v2.apple .vcard-price.buy { background: #1a1a1a; color: #ddd; }
+.v2.apple .vcard-price.rent:not(:only-child) { border-bottom: 1px solid #444; }
+
+.v2.fandango .vcard-price.rent { background: #e55a00; color: #fff; }
+.v2.fandango .vcard-price.buy { background: #cc4e00; color: #fff; }
+
+.v2.plex .vcard-price.rent { background: #c8900b; color: #fff; }
+.v2.plex .vcard-price.buy { background: #a07508; color: #fff; }
+
+/* ============================================
+   V3 — Large prices (0.8rem, 9px padding)
+   ============================================ */
+.v3 .vcard-price { font-size: 0.8rem; padding: 9px 4px; }
+
+.v3.amazon .vcard-price.rent { background: #ffad33; color: #000; }
+.v3.amazon .vcard-price.buy { background: #e68a00; color: #000; }
+
+.v3.apple .vcard-price.rent { background: #2a2a2a; color: #fff; }
+.v3.apple .vcard-price.buy { background: #1a1a1a; color: #ddd; }
+.v3.apple .vcard-price.rent:not(:only-child) { border-bottom: 1px solid #444; }
+
+.v3.fandango .vcard-price.rent { background: #e55a00; color: #fff; }
+.v3.fandango .vcard-price.buy { background: #cc4e00; color: #fff; }
+
+.v3.plex .vcard-price.rent { background: #c8900b; color: #fff; }
+.v3.plex .vcard-price.buy { background: #a07508; color: #fff; }
+
+/* ============================================
+   V4 — Extra large prices (0.85rem, 11px padding)
+   ============================================ */
+.v4 .vcard-price { font-size: 0.85rem; padding: 11px 4px; }
+
+.v4.amazon .vcard-price.rent { background: #ffad33; color: #000; }
+.v4.amazon .vcard-price.buy { background: #e68a00; color: #000; }
+
+.v4.apple .vcard-price.rent { background: #2a2a2a; color: #fff; }
+.v4.apple .vcard-price.buy { background: #1a1a1a; color: #ddd; }
+.v4.apple .vcard-price.rent:not(:only-child) { border-bottom: 1px solid #444; }
+
+.v4.fandango .vcard-price.rent { background: #e55a00; color: #fff; }
+.v4.fandango .vcard-price.buy { background: #cc4e00; color: #fff; }
+
+.v4.plex .vcard-price.rent { background: #c8900b; color: #fff; }
+.v4.plex .vcard-price.buy { background: #a07508; color: #fff; }
+</style>
+</head>
+<body>
+
+<h1>VOD Button — Logo Left, Prices Right</h1>
+
+<!-- V1 -->
+<div class="variant-label">V1 — Compact</div>
+<div class="variant-desc">Smaller price text (0.68rem)</div>
+<div class="vod-row">
+    <div class="vcard v1 amazon">
+        <div class="vcard-logo"><img class="logo-img" src="../assets/logos/services/amazon_wide.png" alt="Amazon"></div>
+        <div class="vcard-prices">
+            <a class="vcard-price rent" href="#">Rent $6.99</a>
+            <a class="vcard-price buy" href="#">Buy $14.99</a>
+        </div>
+    </div>
+    <div class="vcard v1 apple">
+        <div class="vcard-logo"><img class="logo-img" src="../assets/logos/services/apple_tv_wide.png" alt="Apple TV"></div>
+        <div class="vcard-prices">
+            <a class="vcard-price rent" href="#">Rent $6.99</a>
+            <a class="vcard-price buy" href="#">Buy $14.99</a>
+        </div>
+    </div>
+    <div class="vcard v1 fandango">
+        <div class="vcard-logo"><img class="logo-img" src="../assets/logos/services/fandango_wide.png" alt="Fandango"></div>
+        <div class="vcard-prices">
+            <a class="vcard-price rent" href="#">Rent $6.99</a>
+            <a class="vcard-price buy" href="#">Buy $14.99</a>
+        </div>
+    </div>
+    <div class="vcard v1 plex">
+        <div class="vcard-logo"><img class="logo-img" src="../assets/logos/services/plex_wide.png" alt="Plex"></div>
+        <div class="vcard-prices">
+            <a class="vcard-price rent" href="#">Rent $3.99</a>
+            <a class="vcard-price buy" href="#">Buy $12.99</a>
+        </div>
+    </div>
+</div>
+
+<!-- V2 -->
+<div class="variant-label">V2 — Medium</div>
+<div class="variant-desc">Balanced price text (0.75rem)</div>
+<div class="vod-row">
+    <div class="vcard v2 amazon">
+        <div class="vcard-logo"><img class="logo-img" src="../assets/logos/services/amazon_wide.png" alt="Amazon"></div>
+        <div class="vcard-prices">
+            <a class="vcard-price rent" href="#">Rent $4.99</a>
+            <a class="vcard-price buy" href="#">Buy $9.99</a>
+        </div>
+    </div>
+    <div class="vcard v2 apple">
+        <div class="vcard-logo"><img class="logo-img" src="../assets/logos/services/apple_tv_wide.png" alt="Apple TV"></div>
+        <div class="vcard-prices">
+            <a class="vcard-price rent" href="#">Rent $4.99</a>
+            <a class="vcard-price buy" href="#">Buy $8.99</a>
+        </div>
+    </div>
+    <div class="vcard v2 fandango">
+        <div class="vcard-logo"><img class="logo-img" src="../assets/logos/services/fandango_wide.png" alt="Fandango"></div>
+        <div class="vcard-prices">
+            <a class="vcard-price rent" href="#">Rent $4.99</a>
+            <a class="vcard-price buy" href="#">Buy $9.99</a>
+        </div>
+    </div>
+    <div class="vcard v2 plex">
+        <div class="vcard-logo"><img class="logo-img" src="../assets/logos/services/plex_wide.png" alt="Plex"></div>
+        <div class="vcard-prices">
+            <a class="vcard-price rent" href="#">Rent $3.99</a>
+            <a class="vcard-price buy" href="#">Buy $12.99</a>
+        </div>
+    </div>
+</div>
+
+<!-- V3 -->
+<div class="variant-label">V3 — Large</div>
+<div class="variant-desc">Bigger price text (0.8rem)</div>
+<div class="vod-row">
+    <div class="vcard v3 amazon">
+        <div class="vcard-logo"><img class="logo-img" src="../assets/logos/services/amazon_wide.png" alt="Amazon"></div>
+        <div class="vcard-prices">
+            <a class="vcard-price rent" href="#">Rent $4.99</a>
+            <a class="vcard-price buy" href="#">Buy $9.99</a>
+        </div>
+    </div>
+    <div class="vcard v3 apple">
+        <div class="vcard-logo"><img class="logo-img" src="../assets/logos/services/apple_tv_wide.png" alt="Apple TV"></div>
+        <div class="vcard-prices">
+            <a class="vcard-price rent" href="#">Rent $4.99</a>
+            <a class="vcard-price buy" href="#">Buy $8.99</a>
+        </div>
+    </div>
+    <div class="vcard v3 fandango">
+        <div class="vcard-logo"><img class="logo-img" src="../assets/logos/services/fandango_wide.png" alt="Fandango"></div>
+        <div class="vcard-prices">
+            <a class="vcard-price rent" href="#">Rent $4.99</a>
+            <a class="vcard-price buy" href="#">Buy $9.99</a>
+        </div>
+    </div>
+    <div class="vcard v3 plex">
+        <div class="vcard-logo"><img class="logo-img" src="../assets/logos/services/plex_wide.png" alt="Plex"></div>
+        <div class="vcard-prices">
+            <a class="vcard-price rent" href="#">Rent $3.99</a>
+            <a class="vcard-price buy" href="#">Buy $12.99</a>
+        </div>
+    </div>
+</div>
+
+<!-- V4 -->
+<div class="variant-label">V4 — Extra large</div>
+<div class="variant-desc">Maximum price prominence (0.85rem)</div>
+<div class="vod-row">
+    <div class="vcard v4 amazon">
+        <div class="vcard-logo"><img class="logo-img" src="../assets/logos/services/amazon_wide.png" alt="Amazon"></div>
+        <div class="vcard-prices">
+            <a class="vcard-price rent" href="#">Rent $4.99</a>
+            <a class="vcard-price buy" href="#">Buy $9.99</a>
+        </div>
+    </div>
+    <div class="vcard v4 apple">
+        <div class="vcard-logo"><img class="logo-img" src="../assets/logos/services/apple_tv_wide.png" alt="Apple TV"></div>
+        <div class="vcard-prices">
+            <a class="vcard-price rent" href="#">Rent $4.99</a>
+            <a class="vcard-price buy" href="#">Buy $8.99</a>
+        </div>
+    </div>
+    <div class="vcard v4 fandango">
+        <div class="vcard-logo"><img class="logo-img" src="../assets/logos/services/fandango_wide.png" alt="Fandango"></div>
+        <div class="vcard-prices">
+            <a class="vcard-price rent" href="#">Rent $4.99</a>
+            <a class="vcard-price buy" href="#">Buy $9.99</a>
+        </div>
+    </div>
+    <div class="vcard v4 plex">
+        <div class="vcard-logo"><img class="logo-img" src="../assets/logos/services/plex_wide.png" alt="Plex"></div>
+        <div class="vcard-prices">
+            <a class="vcard-price rent" href="#">Rent $3.99</a>
+            <a class="vcard-price buy" href="#">Buy $12.99</a>
+        </div>
+    </div>
+</div>
+
+<!-- Rent-only examples -->
+<div class="variant-label">Rent-only (V2 size)</div>
+<div class="variant-desc">When a movie only has rent, no buy — price fills full height</div>
+<div class="vod-row">
+    <div class="vcard v2 amazon">
+        <div class="vcard-logo"><img class="logo-img" src="../assets/logos/services/amazon_wide.png" alt="Amazon"></div>
+        <div class="vcard-prices">
+            <a class="vcard-price rent" href="#">Rent $6.99</a>
+        </div>
+    </div>
+    <div class="vcard v2 apple">
+        <div class="vcard-logo"><img class="logo-img" src="../assets/logos/services/apple_tv_wide.png" alt="Apple TV"></div>
+        <div class="vcard-prices">
+            <a class="vcard-price rent" href="#">Rent $6.99</a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

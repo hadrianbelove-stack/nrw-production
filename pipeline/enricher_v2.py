@@ -345,7 +345,9 @@ class MovieEnricher:
                 pq_finder = GeminiPullQuoteFinder()
                 pq_director = result.get('crew', {}).get('director') if result.get('crew') else None
                 pq_count = self.ctx.config.get('gemini_scraper', {}).get('pull_quotes_count', 8)
-                quotes = pq_finder.find_pull_quotes(title, year, director=pq_director, num_quotes=pq_count)
+                pq_rt_url = result.get('links', {}).get('rt', '')
+                pq_mc_url = result.get('links', {}).get('metacritic', '')
+                quotes = pq_finder.find_pull_quotes(title, year, director=pq_director, num_quotes=pq_count, rt_url=pq_rt_url, mc_url=pq_mc_url)
                 if quotes:
                     enrichment_results['pull_quotes'] = 'success'
                 else:
