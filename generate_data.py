@@ -100,6 +100,11 @@ def main():
         action='store_true',
         help='Daily gap fill: refresh JustWatch links and Wikipedia for all wall movies'
     )
+    parser.add_argument(
+        '--scan-eventive',
+        action='store_true',
+        help='Scan Eventive festivals for active virtual screenings matching NRW movies'
+    )
 
     args = parser.parse_args()
     incremental = not args.full
@@ -166,6 +171,13 @@ def main():
         festival_count = generator.run_festival_backfill(years=years, debug=args.debug)
         print(f"✅ Festival backfill complete: {festival_count} new movies added")
 
+    # Scan Eventive for virtual screenings if requested
+    eventive_count = 0
+    if args.scan_eventive:
+        print("\n🎬 Scanning Eventive for virtual screenings...")
+        eventive_count = generator.scan_eventive_screenings()
+        print(f"✅ Eventive scan complete: {eventive_count} new links cached")
+
     # Check tracking movies for digital availability if requested
     if args.discover:
         print("\n🔍 Discovering provider availability for tracking movies...")
@@ -218,7 +230,7 @@ def main():
 
     # Generate the final display data (only for final generation phase, not intake/discovery/enrich/festival)
     festival_backfill = getattr(args, 'festival_backfill', False)
-    if not args.intake and not args.discover and not args.enrich and not festival_backfill and not args.reenrich_gaps and not args.reenrich_trailer_gaps and not args.gap_fill and not args.check_screenings and not args.archive:
+    if not args.intake and not args.discover and not args.enrich and not festival_backfill and not args.reenrich_gaps and not args.reenrich_trailer_gaps and not args.gap_fill and not args.check_screenings and not args.archive and not args.scan_eventive:
         print("\n🎬 Generating final display data...")
         generator.generate_display_data(incremental=incremental, force_refresh=force_refresh)
     else:

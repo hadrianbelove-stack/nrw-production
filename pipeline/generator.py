@@ -1481,6 +1481,167 @@ class DataGenerator:
         self._screening_info_cache[slug] = result
         return result
 
+    def scan_eventive_screenings(self):
+        """Scan Eventive for active virtual screenings matching NRW movies.
+
+        Populates watch_links_cache and updates tracking providers so the
+        discoverer's VS bypass can transition matched movies on the same run.
+
+        Only auto-caches matches from festivals with clear date windows
+        (both start_time and end_time present) to avoid false positives
+        from undated/evergreen festivals.
+
+        Returns:
+            int: Number of new Eventive links cached.
+        """
+        from pipeline.eventive import (
+            scan_all_festivals,
+            build_title_indexes,
+            match_film,
+        )
+
+        self.logger.info("Starting Eventive virtual screening scan...")
+
+        # Scan all festivals
+        try:
+            scan_result = scan_all_festivals(logger=self.logger)
+        except Exception as e:
+            self.logger.error(f"Eventive scan failed: {e}")
+            print(f"  ❌ Eventive scan failed: {e}")
+            return 0
+
+        unique_films = scan_result['films']
+        stats = scan_result['stats']
+
+        # Load tracking and wall data
+        tracking_path = 'movie_tracking.json'
+        tracking_data = {}
+        tracking_movies = {}
+        if os.path.exists(tracking_path):
+            with open(tracking_path, 'r') as f:
+                tracking_data = json.load(f)
+            tracking_movies = tracking_data.get('movies', {})
+
+        wall_movies = []
+        if os.path.exists('data.json'):
+            with open('data.json', 'r') as f:
+                data = json.load(f)
+            wall_movies = data.get('movies', []) if isinstance(data, dict) else data
+
+        # Build title indexes
+        tier1_index, tier2_index = build_title_indexes(tracking_movies, wall_movies)
+
+        # Match films against NRW
+        new_cached = 0
+        tracking_matches = []
+        wall_matches = []
+        skipped_undated = 0
+
+        for film in unique_films:
+            match = match_film(film, tier1_index, tier2_index)
+            if not match:
+                continue
+
+            # Only auto-cache matches with clear date windows
+            has_dates = bool(film.get('start_time')) and bool(film.get('end_time'))
+
+            for mid, orig_title, source, nrw_status in match['matches']:
+                entry = {
+                    'movie_id': mid,
+                    'nrw_title': orig_title,
+                    'eventive_title': film['name'],
+                    'festival': film.get('festival_name', film.get('slug', '')),
+                    'link': film['link'],
+                    'start': film.get('start_time', ''),
+                    'end': film.get('end_time', ''),
+                    'status': film.get('status', 'active'),
+                    'match_tier': match['tier'],
+                    'nrw_status': nrw_status,
+                }
+
+                if source == 'wall':
+                    wall_matches.append(entry)
+                else:
+                    tracking_matches.append(entry)
+
+                if not has_dates:
+                    skipped_undated += 1
+                    continue
+
+                movie_id = str(mid)
+
+                # Write to watch_links_cache
+                existing_cache = self.watch_links_cache.get(movie_id, {})
+                existing_source = existing_cache.get('source', '')
+
+                # Don't overwrite non-Eventive cache entries (JustWatch, manual, etc.)
+                if existing_source and existing_source != 'eventive_scanner':
+                    continue
+
+                self.watch_links_cache[movie_id] = {
+                    'links': {
+                        'vod': [{
+                            'service': 'Eventive',
+                            'link': film['link'],
+                        }]
+                    },
+                    'cached_at': datetime.now().isoformat(),
+                    'source': 'eventive_scanner',
+                }
+
+                # Update tracking providers if this is a tracking movie
+                if source == 'tracking' and movie_id in tracking_movies:
+                    movie = tracking_movies[movie_id]
+                    providers = movie.get('providers', {})
+                    streaming = providers.get('streaming', [])
+                    if 'eventive' not in [p.lower() if isinstance(p, str) else '' for p in streaming]:
+                        streaming.append('Eventive')
+                        providers['streaming'] = streaming
+                        movie['providers'] = providers
+
+                new_cached += 1
+                print(f"  ✓ {orig_title} — cached Eventive link ({film.get('festival_name', '')})")
+
+        # Save updated cache
+        if new_cached > 0:
+            self.storage.atomic_write_json(
+                self.watch_links_cache,
+                'cache/watch_links_cache.json',
+                backup=True
+            )
+            self.storage.atomic_write_json(
+                tracking_data,
+                tracking_path,
+                backup=True
+            )
+            print(f"  💾 Saved {new_cached} Eventive links to cache + tracking")
+
+        # Save scan metrics
+        metrics = {
+            'timestamp': datetime.now().isoformat(),
+            'operation': 'eventive_scan_pipeline',
+            'stats': {
+                **stats,
+                'tracking_matches': len(tracking_matches),
+                'wall_matches': len(wall_matches),
+                'new_cached': new_cached,
+                'skipped_undated': skipped_undated,
+            },
+            'tracking_matches': tracking_matches,
+            'wall_matches': wall_matches,
+        }
+        os.makedirs('metrics', exist_ok=True)
+        with open('metrics/eventive_scan_run.json', 'w') as f:
+            json.dump(metrics, f, indent=2)
+
+        self.logger.info(
+            f"Eventive scan complete: {len(tracking_matches)} tracking matches, "
+            f"{len(wall_matches)} wall matches, {new_cached} new cached, "
+            f"{skipped_undated} skipped (undated)"
+        )
+
+        return new_cached
+
     def check_virtual_screening_expirations(self):
         """
         Check virtual screening links for expiration.

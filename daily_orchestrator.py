@@ -1292,6 +1292,12 @@ class NRWOrchestrator:
                 ("python3 generate_data.py --intake",
                  "Intake new premieres from TMDB", True, True, 600),
 
+                # Phase 1.5: Eventive scan — find virtual screenings and populate cache
+                # Must run BEFORE discovery so VS bypass can use cached links.
+                # Normally 5-10 min. Non-critical: don't fail pipeline if Eventive is down.
+                ("python3 generate_data.py --scan-eventive",
+                 "Scan Eventive for virtual screenings", False, False, 900),
+
                 # Phase 2: Discovery – check tracked movies for digital availability
                 # Routinely takes 40-80 min (polls 13,000+ movies). 2hr safety net.
                 ("python3 generate_data.py --discover",
