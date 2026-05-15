@@ -1240,6 +1240,18 @@ class ProviderDiscoverer:
                                         current_vod.append(merged_entry)
                                         current_services.add(simplified.lower())
                                         merged = True
+                                    else:
+                                        # Update prices for existing service
+                                        for v in current_vod:
+                                            if isinstance(v, dict) and self.host.simplify_provider_name(v.get('service', '')).lower() == simplified.lower():
+                                                price_updated = False
+                                                for price_key in ('rent_price', 'buy_price'):
+                                                    if new_entry.get(price_key) and v.get(price_key) != new_entry[price_key]:
+                                                        v[price_key] = new_entry[price_key]
+                                                        price_updated = True
+                                                if price_updated:
+                                                    merged = True
+                                                break
 
                             if merged:
                                 current_links['vod'] = current_vod

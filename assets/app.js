@@ -1101,7 +1101,7 @@ const NRW = {
             const vodLink = vod.link || vod.url;
             if (vod.service && vodLink) {
                 const vodType = this.resolveVODService(vod.service, vodLink);
-                if (vodType) resolvedVod.push({ vodType, vodLink, rentPrice: vod.rent_price || vod.price || null, buyPrice: vod.buy_price || null });
+                if (vodType) resolvedVod.push({ vodType, vodLink, rentPrice: vod.rent_price || null, buyPrice: vod.buy_price || null });
             }
         });
         const hasNonFallback = resolvedVod.some(v => !v.vodType.fallback);

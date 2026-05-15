@@ -529,7 +529,7 @@ class JustWatchClient:
                 self.logger.debug(f"Skipping physical media offer '{service}' for '{title}'")
                 continue
 
-            offer_data = {'service': service, 'link': url, 'price': price}
+            offer_data = {'service': service, 'link': url, 'price': price, '_ptype': ptype}
 
             if mtype in ('FLATRATE', 'ADS', 'FREE'):
                 streaming_offers.append(offer_data)
@@ -543,6 +543,11 @@ class JustWatchClient:
                 buy_offers.append(offer_data)
                 if service not in buy_names:
                     buy_names.append(service)
+
+        # Prefer HD prices: sort rent/buy so HD comes first per service
+        _ptype_order = {'HD': 0, '4K': 1, 'SD': 2}
+        rent_offers.sort(key=lambda o: _ptype_order.get(o.get('_ptype', ''), 99))
+        buy_offers.sort(key=lambda o: _ptype_order.get(o.get('_ptype', ''), 99))
 
         has_streaming = bool(streaming_offers)
         has_rent = bool(rent_offers)

@@ -410,11 +410,9 @@ Sub SetupWatchButtons(movie as Object)
             else
                 vodButtons[i].label = GetVodDisplayName(vodServices[i].service)
             end if
-            ' Pass price data for V1 price bar (fall back to legacy "price" field)
+            ' Pass price data for V1 price bar
             if vodServices[i].rent_price <> invalid
                 vodButtons[i].rentPrice = vodServices[i].rent_price
-            else if vodServices[i].price <> invalid
-                vodButtons[i].rentPrice = vodServices[i].price
             end if
             if vodServices[i].buy_price <> invalid
                 vodButtons[i].buyPrice = vodServices[i].buy_price

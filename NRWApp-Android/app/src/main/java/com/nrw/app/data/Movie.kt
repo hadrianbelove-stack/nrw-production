@@ -360,7 +360,7 @@ fun Movie.getWatchOptions(): List<WatchOption> {
                 url = link.link,
                 type = WatchType.PURCHASE,
                 icon = normalizeServiceId(link.service) ?: "vod",
-                rentPrice = link.rentPrice ?: link.price,
+                rentPrice = link.rentPrice,
                 buyPrice = link.buyPrice
             ))
         }

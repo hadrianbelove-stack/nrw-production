@@ -332,7 +332,7 @@ export function getWatchLinks(movie) {
           label: isEventive ? 'Buy Ticket' : `Rent on ${item.service || 'VOD'}`,
           url: item.link,
           type: 'purchase',
-          rentPrice: item.rent_price || item.price || null,
+          rentPrice: item.rent_price || null,
           buyPrice: item.buy_price || null,
         });
       }
@@ -344,7 +344,7 @@ export function getWatchLinks(movie) {
       label: isEventive ? 'Buy Ticket' : `Rent on ${vod.service || 'VOD'}`,
       url: vod.link,
       type: 'purchase',
-      rentPrice: vod.rent_price || vod.price || null,
+      rentPrice: vod.rent_price || null,
       buyPrice: vod.buy_price || null,
     });
   }

@@ -865,7 +865,7 @@ const NRWMobile = {
                 link: v.link,
                 resolvedKey: resolved.key,
                 isFallback: !!resolved.fallback,
-                rentPrice: v.rent_price || v.price || null,
+                rentPrice: v.rent_price || null,
                 buyPrice: v.buy_price || null
             });
         });
