@@ -71,5 +71,21 @@
     "hypothesis_count": 1,
     "tool_calls_used": 10,
     "finding": "enricher uses production_countries[0] instead of origin_country for movies. 10 of 16 spot-checked movies have wrong country."
+  },
+  {
+    "date": "2026-05-15",
+    "question": "How was The Furious flagged, discovered, excluded, and reverted?",
+    "scope": "specific movie",
+    "verdict_type": "confirmed",
+    "hypothesis_count": 1,
+    "tool_calls_used": 7
+  },
+  {
+    "date": "2026-05-15",
+    "question": "How was In the Hand of Dante flagged, discovered, excluded, and reverted?",
+    "scope": "specific movie",
+    "verdict_type": "high_confidence",
+    "hypothesis_count": 2,
+    "tool_calls_used": 8
   }
 ]
