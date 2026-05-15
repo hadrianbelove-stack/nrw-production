@@ -79,6 +79,15 @@ def get_watch_link_count(m):
     wl = m.get('watch_links', {})
     return sum(len(v) for v in wl.values()) if isinstance(wl, dict) else 0
 
+def tmdb_url(movie_id):
+    """Build a TMDB URL from a movie/TV ID."""
+    mid_str = str(movie_id)
+    clean_id = mid_str.replace('tv_', '')
+    if not clean_id.isdigit():
+        return ''
+    kind = 'tv' if mid_str.startswith('tv_') else 'movie'
+    return 'https://www.themoviedb.org/%s/%s' % (kind, clean_id)
+
 # ── Section 1: DASHBOARD ────────────────────────────────────────────────────
 
 with_rt = sum(1 for m in movies if m.get('rt_score'))
@@ -140,6 +149,9 @@ if arrivals:
             gaps_count += 1
         print('  %-*s  %-3s %-3s %-4s %-7s %-4s %-4s  %s' % (
             col_w, title_display, has_rt, has_mc, has_wiki, has_trailer, has_imdb, has_links, svc_str))
+        t_url = tmdb_url(a.get('id', ''))
+        if t_url:
+            print('    %s' % t_url)
     print('  ' + '─' * (col_w + 55))
     if gaps_count:
         print('  Gaps: %d of %d arrivals have missing fields' % (gaps_count, len(arrivals)))
@@ -221,7 +233,8 @@ else:
         if rev_count > 1:
             status += ' [%dx]' % rev_count
 
-        rows.append((title, dd, days, status))
+        t_url = tmdb_url(mid)
+        rows.append((title, dd, days, status, t_url))
 
     rows.sort(key=lambda r: -r[2] if isinstance(r[2], int) else 0)
 
@@ -229,9 +242,11 @@ else:
     if shown:
         print('  %d active (+ %d aged out >3d)' % (shown, aged_out) if aged_out else '  %d active' % shown)
         print()
-        for title, dd, days, status in rows:
+        for title, dd, days, status, t_url in rows:
             days_str = '%dd' % days if isinstance(days, int) else '?'
             print('  %-42s  %-16s  %4s  %s' % (title[:42], fmt_date(dd), days_str, status))
+            if t_url:
+                print('    %s' % t_url)
     else:
         if aged_out:
             print('  All %d aged out (>3 days) — no action items' % aged_out)
@@ -252,6 +267,8 @@ for mid, m in tracking_raw.items():
 
     year = m.get('year', '')
 
+    t_url = tmdb_url(mid)
+
     # Repeat offenders: any movie reverted 2+ times (regardless of recency or wall status)
     if rev_count >= 2:
         provs = m.get('providers', {})
@@ -259,7 +276,7 @@ for mid, m in tracking_raw.items():
         for cat in ['rent', 'buy', 'streaming']:
             for p in provs.get(cat, []):
                 plat_names.append(p)
-        repeat_offenders.append((rev_count, title, year, reason, plat_names))
+        repeat_offenders.append((rev_count, title, year, reason, plat_names, t_url))
 
     # Recent reverts not on wall
     if rev_at >= three_days_ago and reason and title not in wall_titles:
@@ -268,7 +285,7 @@ for mid, m in tracking_raw.items():
         for cat in ['rent', 'buy', 'streaming']:
             for p in provs.get(cat, []):
                 plat_names.append(p)
-        jw_reverts.append((rev_at, title, year, reason, plat_names))
+        jw_reverts.append((rev_at, title, year, reason, plat_names, t_url))
 
 print()
 print('─' * 78)
@@ -279,7 +296,7 @@ if jw_reverts:
     # Reason summary
     reason_counts = Counter()
     excluded_platforms = Counter()
-    for rev_at, title, year, reason, plat_names in jw_reverts:
+    for rev_at, title, year, reason, plat_names, _url in jw_reverts:
         if reason == 'justwatch_no_valid_offers':
             reason_counts['excluded platform'] += 1
             for p in plat_names:
@@ -305,7 +322,7 @@ if jw_reverts:
     print('  FULL LIST:')
     print('  %-16s %-40s %-6s %s' % ('Date', 'Title', 'Year', 'Reason / TMDB Platforms'))
     print('  ' + '─' * 90)
-    for rev_at, title, year, reason, plat_names in sorted(jw_reverts, reverse=True):
+    for rev_at, title, year, reason, plat_names, t_url in sorted(jw_reverts, reverse=True):
         if reason == 'justwatch_no_valid_offers':
             label = 'excluded: ' + (', '.join(plat_names) if plat_names else '(not recorded)')
         elif reason == 'justwatch_no_match':
@@ -314,6 +331,8 @@ if jw_reverts:
             label = reason
         date_str = fmt_date(rev_at)
         print('  %-16s %-40s %-6s %s' % (date_str, title[:40], year or '—', label))
+        if t_url:
+            print('    %s' % t_url)
 else:
     print('  None in last 3 days')
 
@@ -324,9 +343,11 @@ if repeat_offenders:
     print('  REPEAT OFFENDERS (reverted 2+ times — investigate for pipeline fixes):')
     print('  %-4s %-40s %-6s %s' % ('Count', 'Title', 'Year', 'TMDB Platforms'))
     print('  ' + '─' * 90)
-    for rev_count, title, year, reason, plat_names in repeat_offenders[:20]:  # Cap at 20
+    for rev_count, title, year, reason, plat_names, t_url in repeat_offenders[:20]:  # Cap at 20
         plat_str = ', '.join(plat_names) if plat_names else '(none)'
         print('  %-4s %-40s %-6s %s' % ('%dx' % rev_count, title[:40], year or '—', plat_str))
+        if t_url:
+            print('    %s' % t_url)
     if len(repeat_offenders) > 20:
         print('  ... and %d more' % (len(repeat_offenders) - 20))
 
@@ -336,6 +357,7 @@ if repeat_offenders:
 bare_movies = []    # 0/5 fields — totally missed by enrichment
 recent_gaps = []    # last 14 days, 4/5 missing
 fourteen_ago = (today_dt - timedelta(days=14)).isoformat()
+thirty_ago = (today_dt - timedelta(days=30)).isoformat()
 
 all_miss_rt = 0
 all_miss_mc = 0
@@ -345,7 +367,10 @@ all_miss_imdb = 0
 
 for m in movies:
     dd = m.get('digital_date', '?')
-    if m.get('_is_preorder') or (dd != '?' and dd > today):
+    if m.get('hidden') or m.get('_is_preorder') or (dd != '?' and dd > today):
+        continue
+    # Skip movies older than 30 days — if not enriched by now, they won't be
+    if dd != '?' and dd < thirty_ago:
         continue
     links = m.get('links', {})
     has_rt = bool(m.get('rt_score'))
@@ -363,9 +388,9 @@ for m in movies:
     if not has_imdb: all_miss_imdb += 1
 
     if missing == 5:
-        bare_movies.append((m['title'], dd))
+        bare_movies.append((m['title'], dd, str(m.get('id', ''))))
     elif missing >= 4 and dd >= fourteen_ago:
-        recent_gaps.append((m['title'], dd, has_rt, has_mc, has_wiki, has_trailer, has_imdb))
+        recent_gaps.append((m['title'], dd, has_rt, has_mc, has_wiki, has_trailer, has_imdb, str(m.get('id', ''))))
 
 print()
 print('─' * 78)
@@ -376,12 +401,15 @@ print('  Wall totals missing: %d RT | %d MC | %d Wiki | %d Trailer | %d IMDb' % 
 
 if bare_movies:
     print()
-    print('  ZERO ENRICHMENT — 0/5 fields (%d):' % len(bare_movies))
+    print('  ZERO ENRICHMENT — 0/5 fields, last 30 days (%d):' % len(bare_movies))
     col_w = 42
     print('  %-*s  %s' % (col_w, 'Title', 'Date'))
     print('  ' + '─' * (col_w + 14))
-    for title, dd in sorted(bare_movies, key=lambda r: r[1] or '', reverse=True):
+    for title, dd, mid in sorted(bare_movies, key=lambda r: r[1] or '', reverse=True):
+        t_url = tmdb_url(mid)
         print('  %-*s  %s' % (col_w, title[:col_w], fmt_date(dd)))
+        if t_url:
+            print('    %s' % t_url)
 
 if recent_gaps:
     print()
@@ -389,7 +417,8 @@ if recent_gaps:
     col_w = 38
     print('  %-*s  %-12s %-3s %-3s %-4s %-7s %-4s' % (col_w, 'Title', 'Date', 'RT', 'MC', 'Wiki', 'Trailer', 'IMDb'))
     print('  ' + '─' * (col_w + 40))
-    for title, dd, has_rt, has_mc, has_wiki, has_trailer, has_imdb in sorted(recent_gaps, key=lambda r: r[1] or '', reverse=True):
+    for title, dd, has_rt, has_mc, has_wiki, has_trailer, has_imdb, mid in sorted(recent_gaps, key=lambda r: r[1] or '', reverse=True):
+        t_url = tmdb_url(mid)
         print('  %-*s  %-16s %-3s %-3s %-4s %-7s %-4s' % (
             col_w, title[:col_w], fmt_date(dd),
             'yes' if has_rt else '--',
@@ -397,6 +426,8 @@ if recent_gaps:
             'yes' if has_wiki else '--',
             'yes' if has_trailer else '--',
             'yes' if has_imdb else '--'))
+        if t_url:
+            print('    %s' % t_url)
 
 if not bare_movies and not recent_gaps:
     print('  No critical coverage gaps')
@@ -425,7 +456,7 @@ for m in movies:
                 tmdb_plats.append(SHORT_NAMES.get(p, p))
         tmdb_str = ', '.join(sorted(set(tmdb_plats))) if tmdb_plats else ''
         buyonly = ' (buy-only)' if m.get('_buyonly_preorder') else ''
-        merged.append((dd, m['title'], len(svcs), ', '.join(svcs) if svcs else 'NONE', tmdb_str, buyonly))
+        merged.append((dd, m['title'], len(svcs), ', '.join(svcs) if svcs else 'NONE', tmdb_str, buyonly, mid))
 
 # Add future-dated zero-link movies not already in pre-order set
 for m in zero_future:
@@ -442,7 +473,7 @@ for m in zero_future:
                                'Amazon Video': 'Amazon', 'Google Play Movies': 'Google Play'}
                 tmdb_plats.append(SHORT_NAMES.get(p, p))
         tmdb_str = ', '.join(sorted(set(tmdb_plats))) if tmdb_plats else ''
-        merged.append((dd, title, 0, 'NONE', tmdb_str, ''))
+        merged.append((dd, title, 0, 'NONE', tmdb_str, '', mid))
 
 merged.sort(key=lambda r: r[0] if r[0] != '?' else '9999')
 
@@ -456,13 +487,16 @@ if merged:
     print('  %-16s %-*s %-6s %-20s %s' % ('Date', col_w, 'Title', 'Links', 'Pre-order Services', 'TMDB Platforms'))
     print('  ' + '─' * (col_w + 59))
     no_link_count = 0
-    for dd, title, n_links, services, tmdb_str, buyonly in merged:
+    for dd, title, n_links, services, tmdb_str, buyonly, mid in merged:
         link_str = str(n_links) if n_links > 0 else 'NONE'
         if n_links == 0:
             no_link_count += 1
         display_title = (title[:col_w - 10] + buyonly) if buyonly else title[:col_w]
         svc_display = services if n_links > 0 else ''
+        t_url = tmdb_url(mid)
         print('  %-16s %-*s %-6s %-20s %s' % (fmt_date(dd), col_w, display_title, link_str, svc_display, tmdb_str))
+        if t_url:
+            print('    %s' % t_url)
     print('  ' + '─' * (col_w + 59))
     has_links = len(merged) - no_link_count
     print('  Links found: %d of %d | No links: %d' % (has_links, len(merged), no_link_count))
@@ -529,6 +563,11 @@ for m in movies:
     dd = m.get('digital_date', '?')
     mid = str(m.get('id', ''))
     e_status = m.get('_enrichment_status', '?')
+    # Skip hidden movies (e.g. expired virtual screenings) and old movies
+    if m.get('hidden'):
+        continue
+    if dd != '?' and dd < thirty_ago:
+        continue
     if not m.get('poster'):
         gap_no_poster.append((title, dd, e_status, mid))
     if not m.get('synopsis'):
@@ -541,7 +580,7 @@ total_gaps = len(set(r[0] for r in gap_no_poster + gap_no_synopsis + gap_no_link
 
 print()
 print('─' * 78)
-print('ENRICHMENT GAPS — %d movies with missing data' % total_gaps)
+print('ENRICHMENT GAPS — %d movies with missing data (last 30 days)' % total_gaps)
 print('─' * 78)
 
 if total_gaps == 0:
@@ -554,7 +593,10 @@ else:
         print('  %-*s %-16s %s' % (col_w, 'Title', 'Date', 'Enrichment'))
         print('  ' + '─' * (col_w + 29))
         for title, dd, e_status, mid in sorted(gap_no_poster, key=lambda r: r[1] or '', reverse=True):
+            t_url = tmdb_url(mid)
             print('  %-*s %-16s %s' % (col_w, title[:col_w], fmt_date(dd), e_status))
+            if t_url:
+                print('    %s' % t_url)
 
     if gap_no_synopsis:
         print()
@@ -562,7 +604,10 @@ else:
         print('  %-*s %-16s %s' % (col_w, 'Title', 'Date', 'Enrichment'))
         print('  ' + '─' * (col_w + 29))
         for title, dd, e_status, mid in sorted(gap_no_synopsis, key=lambda r: r[1] or '', reverse=True):
+            t_url = tmdb_url(mid)
             print('  %-*s %-16s %s' % (col_w, title[:col_w], fmt_date(dd), e_status))
+            if t_url:
+                print('    %s' % t_url)
 
     if gap_no_links:
         print()
@@ -570,7 +615,10 @@ else:
         print('  %-*s %-16s %s' % (col_w, 'Title', 'Date', 'Enrichment'))
         print('  ' + '─' * (col_w + 29))
         for title, dd, e_status, mid in sorted(gap_no_links, key=lambda r: r[1] or '', reverse=True):
+            t_url = tmdb_url(mid)
             print('  %-*s %-16s %s' % (col_w, title[:col_w], fmt_date(dd), e_status))
+            if t_url:
+                print('    %s' % t_url)
 
     print()
     print('  Summary: %d movies (%d no poster, %d no synopsis, %d no links)' % (

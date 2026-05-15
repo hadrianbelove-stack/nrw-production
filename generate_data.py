@@ -151,6 +151,11 @@ def main():
             except Exception as e:
                 print(f"⚠️  Could not update intake metrics: {e}")
 
+        # Also intake Apple Music Live specials (JW blind spot)
+        print("\n🔍 Running intake for Apple Music Live specials...")
+        aml_count = generator.intake_apple_music_live(debug=args.debug)
+        print(f"✅ Apple Music Live intake complete: {aml_count} new titles added")
+
     # Run festival backfill if requested
     festival_count = 0
     if getattr(args, 'festival_backfill', False):

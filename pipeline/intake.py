@@ -442,6 +442,108 @@ class MovieIntake:
 
         return new_series_added
 
+    def intake_apple_music_live(self, debug=False):
+        """Intake Apple Music Live concert specials from TMDB.
+
+        Searches TMDB for movies with the "Apple Music Live:" title prefix.
+        These are Apple TV exclusives that JustWatch doesn't index, so they
+        need a dedicated intake pass and a JW bypass flag.
+
+        Args:
+            debug: Enable detailed logging
+
+        Returns:
+            int: Number of new Apple Music Live titles added to tracking
+        """
+        self.logger.info("Apple Music Live intake - searching TMDB")
+
+        # Load existing tracking database
+        if not os.path.exists('movie_tracking.json'):
+            db = {'movies': {}}
+        else:
+            with open('movie_tracking.json', 'r') as f:
+                db = json.load(f)
+
+        existing_ids = set(db.get('movies', {}).keys())
+        new_added = 0
+
+        # Search TMDB for "Apple Music Live" — paginate to catch all
+        for page in range(1, 5):
+            try:
+                url = "https://api.themoviedb.org/3/search/movie"
+                params = {
+                    'api_key': self.tmdb_key,
+                    'query': 'Apple Music Live',
+                    'language': 'en-US',
+                    'page': page
+                }
+                response = requests.get(url, params=params, timeout=15)
+                response.raise_for_status()
+                data = response.json()
+            except Exception as e:
+                self.logger.error(f"Apple Music Live search failed (page {page}): {e}")
+                break
+
+            results = data.get('results', [])
+            if not results:
+                break
+
+            for movie in results:
+                title = movie.get('title', '')
+
+                # Only match the exact "Apple Music Live:" prefix
+                if not title.startswith('Apple Music Live:'):
+                    continue
+
+                movie_id = str(movie['id'])
+                if movie_id in existing_ids:
+                    if debug:
+                        self.logger.info(f"  Already tracking: {title}")
+                    continue
+
+                # Skip releases older than 90 days (would be immediately archived)
+                release_date = movie.get('release_date', '')
+                if release_date:
+                    try:
+                        rel_dt = datetime.strptime(release_date, '%Y-%m-%d')
+                        if (datetime.now() - rel_dt).days > 90:
+                            if debug:
+                                self.logger.info(f"  Skipping (>90 days old): {title}")
+                            continue
+                    except ValueError:
+                        pass
+
+                year = int(release_date[:4]) if release_date and len(release_date) >= 4 else None
+
+                db['movies'][movie_id] = {
+                    'title': title,
+                    'year': year,
+                    'status': 'tracking',
+                    'intake_date': get_today(),
+                    'digital_date': None,
+                    'providers': {},
+                    'intake_pass': 'AML',
+                    '_apple_music_live': True
+                }
+
+                existing_ids.add(movie_id)
+                new_added += 1
+                self.logger.info(f"  New Apple Music Live: {title} (ID: {movie_id})")
+
+            total_pages = data.get('total_pages', 1)
+            if page >= total_pages:
+                break
+            time.sleep(0.25)
+
+        # Save if anything was added
+        if new_added > 0:
+            db['last_update'] = datetime.now().isoformat()
+            if not self.storage.atomic_write_json(db, 'movie_tracking.json', backup=True):
+                self.logger.error("Failed to save movie_tracking.json after Apple Music Live intake")
+
+        self.logger.info(f"Apple Music Live intake: {new_added} new titles added")
+        return new_added
+
     # ------------------------------------------------------------------
     # Internal intake helpers
     # ------------------------------------------------------------------

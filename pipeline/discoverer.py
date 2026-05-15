@@ -14,6 +14,7 @@ Also contains the buy-only pre-order detection pipeline:
 import json
 import os
 import random
+import re
 import time
 import requests
 from datetime import datetime, timedelta
@@ -51,6 +52,7 @@ class ProviderDiscoverer:
 
         Bypasses (let through without JW check):
         - Manually-added movies (_added_manually) — curator decision
+        - Apple Music Live specials (_apple_music_live) — JW blind spot
         - Movies with watch_link overrides — curator decision
         - Virtual screenings (Eventive, Shift72, etc.) — own link lifecycle
 
@@ -67,6 +69,8 @@ class ProviderDiscoverer:
         # --- Bypass checks: these movies skip JW verification ---
         if movie.get('_added_manually'):
             return {'verified': True, '_bypass': 'manual_add'}
+        if movie.get('_apple_music_live'):
+            return {'verified': True, '_bypass': 'apple_music_live'}
         if hasattr(self.host, 'watch_links_overrides') and str(movie_id) in self.host.watch_links_overrides:
             return {'verified': True, '_bypass': 'override'}
         # Pre-orders already on wall — date arrived, let enrichment handle them.
@@ -396,6 +400,68 @@ class ProviderDiscoverer:
                         stream_names = [p.get('provider_name', '') for p in stream_providers]
 
                         has_providers = bool(rent_names or buy_names or stream_names)
+
+                        # Virtual screening platforms (Eventive, Shift72, Sundance) may not appear
+                        # in TMDB provider data. If tracking already has a VS platform AND a cached
+                        # or override link exists AND the link is still live, force transition.
+                        _vs_platforms = {'eventive', 'shift72', 'sundance'}
+                        _orig_providers = (movie.get('providers', {}).get('streaming', [])
+                                           + movie.get('providers', {}).get('rent', [])
+                                           + movie.get('providers', {}).get('buy', []))
+                        _is_virtual_screening = any(
+                            any(vs in p.lower() for vs in _vs_platforms)
+                            for p in _orig_providers if isinstance(p, str))
+                        if _is_virtual_screening and not has_providers:
+                            _mid = str(movie_id)
+                            # Extract the actual screening link from cache or overrides
+                            _vs_link = None
+                            if (hasattr(self.host, 'watch_links_overrides')
+                                    and _mid in self.host.watch_links_overrides):
+                                _ovr = self.host.watch_links_overrides[_mid]
+                                for _v in (_ovr.get('vod') or []):
+                                    _vs_link = _v.get('link')
+                                    if _vs_link:
+                                        break
+                            if not _vs_link and (hasattr(self, 'enrichment') and self.enrichment
+                                    and _mid in getattr(self.enrichment, 'watch_links_cache', {})):
+                                _cached = self.enrichment.watch_links_cache[_mid]
+                                for _v in (_cached.get('links', {}).get('vod') or []):
+                                    _vs_link = _v.get('link')
+                                    if _vs_link:
+                                        break
+                            # Validate the screening is still available before forcing transition
+                            if _vs_link and 'eventive.org' in _vs_link:
+                                try:
+                                    _resp = requests.get(_vs_link, timeout=10,
+                                                         headers={'User-Agent': 'Mozilla/5.0'})
+                                    _nd_match = re.search(
+                                        r'<script id="__NEXT_DATA__"[^>]*>(.*?)</script>',
+                                        _resp.text)
+                                    if _nd_match:
+                                        _nd = json.loads(_nd_match.group(1))
+                                        _init = _nd.get('props', {}).get('pageProps', {}).get('initialData', {})
+                                        if _init.get('is_available') is True:
+                                            has_providers = True
+                                            print(f"  ✓ {movie['title']} — VS bypass: screening active ({_vs_link})")
+                                        else:
+                                            _end = _init.get('end_time', 'unknown')
+                                            print(f"  ⏭ {movie['title']} — VS bypass skipped: screening expired (ended {_end})")
+                                    else:
+                                        print(f"  ⏭ {movie['title']} — VS bypass skipped: could not parse page")
+                                except requests.RequestException:
+                                    print(f"  ⏭ {movie['title']} — VS bypass skipped: link unreachable")
+                            elif _vs_link:
+                                # Non-Eventive VS links (Shift72, etc.) — HEAD check fallback
+                                try:
+                                    _head = requests.head(_vs_link, timeout=10, allow_redirects=True)
+                                    if _head.status_code < 400:
+                                        has_providers = True
+                                        print(f"  ✓ {movie['title']} — VS bypass: link verified ({_vs_link})")
+                                    else:
+                                        print(f"  ⏭ {movie['title']} — VS bypass skipped: HTTP {_head.status_code}")
+                                except requests.RequestException:
+                                    print(f"  ⏭ {movie['title']} — VS bypass skipped: link unreachable")
+
                         movie['has_providers'] = has_providers
 
                         if has_providers and movie['status'] == 'tracking':
@@ -421,10 +487,13 @@ class ProviderDiscoverer:
                                 'streaming': stream_names
                             }
 
-                            # JW verification gate — confirm real links before wall
-                            jw_result = self._verify_before_wall(movie_id, movie)
-                            if jw_result is None:
-                                continue  # Stay in tracking
+                            # JW verification gate — skip for virtual screening platforms
+                            if _is_virtual_screening:
+                                jw_result = {'verified': True, '_bypass': 'virtual_screening'}
+                            else:
+                                jw_result = self._verify_before_wall(movie_id, movie)
+                                if jw_result is None:
+                                    continue  # Stay in tracking
 
                             self.host._transition_movie_to_available(
                                 movie_id, movie, 'provider_availability_check', newly_available_ids)
@@ -1161,11 +1230,14 @@ class ProviderDiscoverer:
                                     simplified = self.host.simplify_provider_name(new_entry['service'])
                                     if simplified.lower() not in current_services:
                                         # Add with simplified name
-                                        current_vod.append({
+                                        merged_entry = {
                                             'service': simplified,
                                             'link': new_entry['link'],
-                                            'price': new_entry.get('price')
-                                        })
+                                        }
+                                        for price_key in ('rent_price', 'buy_price', 'price'):
+                                            if new_entry.get(price_key):
+                                                merged_entry[price_key] = new_entry[price_key]
+                                        current_vod.append(merged_entry)
                                         current_services.add(simplified.lower())
                                         merged = True
 

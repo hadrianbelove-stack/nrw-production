@@ -243,6 +243,10 @@ class DataGenerator:
         """Intake new miniseries — delegates to pipeline/intake.py"""
         return self._intake.intake_new_miniseries(debug=debug, days_back=days_back)
 
+    def intake_apple_music_live(self, debug=False):
+        """Intake Apple Music Live specials — delegates to pipeline/intake.py"""
+        return self._intake.intake_apple_music_live(debug=debug)
+
     def _transition_movie_to_available(self, movie_id, movie, source, newly_available_ids):
         """Transition a movie from tracking to available status.
 
