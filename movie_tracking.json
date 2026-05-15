@@ -26280,7 +26280,7 @@
         "streaming": []
       },
       "discovery_pass": "B",
-      "has_providers": true,
+      "has_providers": false,
       "year": 2025,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
@@ -114397,7 +114397,7 @@
       "festival": "Cannes",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 6,
+      "_jw_revert_count": 7,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-05-10"
     },
@@ -117122,11 +117122,21 @@
       "year": 2025,
       "status": "tracking",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-05-15",
+      "providers": {
+        "rent": [],
+        "buy": [
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "Sundance",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "_jw_revert_count": 1,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-05-15"
     },
     "1560379": {
       "title": "The Last Philadelphia",
@@ -117164,7 +117174,7 @@
       },
       "intake_pass": "C",
       "festival": "Sundance",
-      "has_providers": true,
+      "has_providers": false,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
       "enrichment_date": "2026-05-06",
@@ -123868,13 +123878,22 @@
     "1398050": {
       "title": "Driver's Ed",
       "year": 2025,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-05-15",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "Toronto/TIFF",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-05-15"
     },
     "1542195": {
       "title": "A Place Where I Belong",
@@ -126967,11 +126986,14 @@
       "year": 2024,
       "status": "tracking",
       "first_seen": "2026-01-06",
-      "digital_date": null,
+      "digital_date": "2026-06-12",
       "providers": {},
       "intake_pass": "C",
       "festival": "AFI Fest",
-      "has_providers": false
+      "has_providers": false,
+      "_discovery_source": "tmdb_type4",
+      "_type4_pending": true,
+      "_is_preorder": true
     },
     "1336305": {
       "title": "Ravens",
@@ -169723,7 +169745,7 @@
       ],
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-05-14"
     },
@@ -188045,7 +188067,7 @@
       "intake_pass": "B",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 4,
+      "_jw_revert_count": 5,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-05-12"
     },
@@ -196036,12 +196058,20 @@
       "status": "tracking",
       "first_seen": "2026-03-18",
       "digital_date": "2026-05-15",
-      "providers": {},
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false,
+      "has_providers": true,
       "_discovery_source": "tmdb_type4",
-      "_type4_pending": true,
-      "_is_preorder": true
+      "_is_preorder": true,
+      "enriched": false,
+      "enrichment_date": null,
+      "_jw_revert_reason": "justwatch_no_valid_offers",
+      "_jw_reverted_at": "2026-05-15",
+      "_jw_revert_count": 1
     },
     "1548475": {
       "title": "Précieuse(s)",
@@ -217216,7 +217246,7 @@
       "enriched": false,
       "enrichment_date": null,
       "_discovery_source": "tmdb_type4",
-      "_jw_revert_count": 9,
+      "_jw_revert_count": 10,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-10"
     },
@@ -217656,7 +217686,7 @@
       "enriched": false,
       "enrichment_date": null,
       "_discovery_source": "tmdb_type4",
-      "_jw_revert_count": 9,
+      "_jw_revert_count": 10,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-10"
     },
@@ -217693,7 +217723,7 @@
       "enriched": false,
       "enrichment_date": null,
       "_discovery_source": "tmdb_type4",
-      "_jw_revert_count": 9,
+      "_jw_revert_count": 10,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-10"
     },
@@ -218298,7 +218328,7 @@
       "_discovery_source": "tmdb_type4",
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-10",
-      "_jw_revert_count": 7
+      "_jw_revert_count": 8
     },
     "1622764": {
       "title": "Broad Trip",
@@ -218318,7 +218348,7 @@
       "_discovery_source": "tmdb_type4",
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-10",
-      "_jw_revert_count": 7
+      "_jw_revert_count": 8
     },
     "1690861": {
       "title": "Never Fold: The 2025 Las Vegas Aces",
@@ -218338,7 +218368,7 @@
       "_discovery_source": "tmdb_type4",
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-10",
-      "_jw_revert_count": 7
+      "_jw_revert_count": 8
     },
     "1691375": {
       "title": "Riccardo Chailly dirige la 9e de Beethoven - Scala de Milan",
@@ -220327,7 +220357,7 @@
       "digital_date": "2026-05-12",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 4,
+      "_jw_revert_count": 5,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-05-12"
     },
@@ -220968,7 +220998,7 @@
       "digital_date": "2026-05-14",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-14"
     },
@@ -221457,6 +221487,651 @@
       "intake_date": "2026-05-14",
       "networks": [
         "SVT"
+      ],
+      "has_providers": false
+    },
+    "1689253": {
+      "title": "Power Slap 20",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-15",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A"
+    },
+    "1688177": {
+      "title": "An Enemy Within",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-15",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A"
+    },
+    "1687502": {
+      "title": "Ultimate Spider-Man: Origins",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-15",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A"
+    },
+    "1684226": {
+      "title": "Bride of the Year",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-15",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A"
+    },
+    "1678170": {
+      "title": "House at the Edge of the Woods",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-15",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A"
+    },
+    "1662317": {
+      "title": "The Crash",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-15",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A"
+    },
+    "1628367": {
+      "title": "Kartavya",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-15",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A"
+    },
+    "1695088": {
+      "title": "Good Omens: The Finale",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-15",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A"
+    },
+    "1695388": {
+      "title": "The Fisherman",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-15",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1694164": {
+      "title": "Death at the Dinner Party",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-15",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1692570": {
+      "title": "Ken Zerafi",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-15",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1692481": {
+      "title": "Το Κλασικό Αριστούργημα",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-15",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1692376": {
+      "title": "Transit in Flamingo",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-15",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1691437": {
+      "title": "70 ans d'Eurovision : La Grande Histoire du Concours",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-15",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1691384": {
+      "title": "Hong Kong ne répond plus",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-15",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1690122": {
+      "title": "City of Honor: Choices",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-15",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1689272": {
+      "title": "Chasing Utopia",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-15",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1687936": {
+      "title": "Iceland for Dummies",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-15",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1684373": {
+      "title": "Please Do Not Sit",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-15",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1684048": {
+      "title": "Dharpakad",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-15",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1683175": {
+      "title": "Behind the 8 Ball",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-15",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1679751": {
+      "title": "Gregg Allman: The Music of My Soul",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-15",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1673894": {
+      "title": "My Share of Sky: Ek Mutthi Badal",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-15",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1665785": {
+      "title": "Once Upon A Time, We Loved",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-15",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1663504": {
+      "title": "Chaser Game W: A Match Made in Heaven",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-15",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1660401": {
+      "title": "Northern Soul: Still Burning",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-15",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1650724": {
+      "title": "Tu Nombre en el papel",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-15",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1643679": {
+      "title": "STREAKERS",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-15",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1630435": {
+      "title": "THE A-CARE -Disusebody-",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-15",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1608247": {
+      "title": "Baapya",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-15",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1600771": {
+      "title": "Aakhri Sawal",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-15",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1567798": {
+      "title": "Farruquito: A Flamenco Dynasty",
+      "year": 2025,
+      "status": "tracking",
+      "intake_date": "2026-05-15",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1564115": {
+      "title": "Daughter of Nectar",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-15",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1562235": {
+      "title": "LA PALOMA",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-15",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1517125": {
+      "title": "Milk Teeth",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-15",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1507097": {
+      "title": "Sattendru Maarudhu Vaanilai",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-15",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1449392": {
+      "title": "Rainy Summer Days",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-15",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1441301": {
+      "title": "Saptadingar Guptodhon",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-15",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1396368": {
+      "title": "A Son",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-15",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1367220": {
+      "title": "Karuppu",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-15",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1320660": {
+      "title": "Pati Patni Aur Woh Do",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-15",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1695294": {
+      "title": "Z/montowane życie Lidii Z.",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-15",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1691935": {
+      "title": "Cougars",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-15",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1380316": {
+      "title": "Is God Is",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-15",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1354945": {
+      "title": "I Died",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-15",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1280681": {
+      "title": "Children of the Coast",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-15",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1694990": {
+      "title": "Su Gimtadieniu, Ponas Prezidente",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-15",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1623608": {
+      "title": "Ashes",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-15",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1418998": {
+      "title": "Karma",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-15",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Cannes"
+    },
+    "1694966": {
+      "title": "Sous le soleil des Pyrénées",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-15",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Cannes"
+    },
+    "tv_321775": {
+      "title": "Monyová",
+      "content_type": "limited_series",
+      "tmdb_id": 321775,
+      "status": "tracking",
+      "first_air_date": "2026-05-15",
+      "digital_date": "2026-05-15",
+      "episode_count": 6,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/kzxXEf5WECvyYJALKEBy4jwWoP4.jpg",
+      "synopsis": "",
+      "genres": [
+        "Drama"
+      ],
+      "original_language": "cs",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-05-15",
+      "networks": [
+        "Oneplay"
+      ],
+      "has_providers": false
+    },
+    "tv_320239": {
+      "title": "VivaOne Originals: RabGel",
+      "content_type": "limited_series",
+      "tmdb_id": 320239,
+      "status": "tracking",
+      "first_air_date": "2026-05-15",
+      "digital_date": "2026-05-15",
+      "episode_count": 4,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/lcSzliSDQM9KDJsCnXHKVDgtMO2.jpg",
+      "synopsis": "RABGEL is officially stepping into their OWN ERA and it’s bigger and more exciting than ever with their Viva One Originals",
+      "genres": [
+        "Comedy"
+      ],
+      "original_language": "tl",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-05-15",
+      "networks": [
+        "Viva One"
+      ],
+      "has_providers": false
+    },
+    "tv_316965": {
+      "title": "EXAM",
+      "content_type": "limited_series",
+      "tmdb_id": 316965,
+      "status": "tracking",
+      "first_air_date": "2026-05-15",
+      "digital_date": "2026-05-15",
+      "episode_count": 7,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/9jt62J8sfq8pFFovZhEQmxjUqhb.jpg",
+      "synopsis": "A determined young woman with a mysterious past enters the dangerous world of the Regional Public Service Exam (RPSE) scam to expose a powerful paper-leak network. But as she digs deeper, she uncovers a corruption chain embedded deep within the education system-and must bring it down before it destroys the dreams of an entire generation.",
+      "genres": [
+        "Crime",
+        "Drama"
+      ],
+      "original_language": "ta",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-05-15",
+      "networks": [
+        "Prime Video"
+      ],
+      "has_providers": false
+    },
+    "tv_308014": {
+      "title": "Berlin and the Lady with an Ermine",
+      "content_type": "limited_series",
+      "tmdb_id": 308014,
+      "status": "tracking",
+      "first_air_date": "2026-05-15",
+      "digital_date": "2026-05-15",
+      "episode_count": 8,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/kru9Y5uRXdZFcUyeRlcv4bP4hOr.jpg",
+      "synopsis": "Seville, a beautiful place — for a beautiful robbery. With his sights set on a priceless work of art, Berlin summons his gang to plan an explosive heist.",
+      "genres": [
+        "Drama",
+        "Crime"
+      ],
+      "original_language": "es",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-05-15",
+      "networks": [
+        "Netflix"
+      ],
+      "has_providers": false
+    },
+    "tv_259837": {
+      "title": "The WONDERfools",
+      "content_type": "limited_series",
+      "tmdb_id": 259837,
+      "status": "tracking",
+      "first_air_date": "2026-05-15",
+      "digital_date": "2026-05-15",
+      "episode_count": 8,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/jj7AYkz2OLRDL1wfJmjTXyWQ5I4.jpg",
+      "synopsis": "A goofy group of townies stumbles into superpowers and fights rising evil as doomsday panic grows in this wild, turn-of-the-century action comedy.",
+      "genres": [
+        "Action & Adventure",
+        "Comedy",
+        "Sci-Fi & Fantasy",
+        "Drama"
+      ],
+      "original_language": "ko",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-05-15",
+      "networks": [
+        "Netflix"
+      ],
+      "has_providers": false
+    },
+    "tv_319804": {
+      "title": "The Palu Family: Under a Dark Spell",
+      "content_type": "limited_series",
+      "tmdb_id": 319804,
+      "status": "available",
+      "first_air_date": "2026-05-08",
+      "digital_date": "2026-05-08",
+      "episode_count": 3,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/i70MAvdqFuXGFXwhbFVkgylFbgg.jpg",
+      "synopsis": "An investigation into one of Turkey's most shocking cases -- and how one man was able to enact total control over a tight-knit family.",
+      "genres": [
+        "Documentary",
+        "Crime"
+      ],
+      "original_language": "tr",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "HBO Max Amazon Channel"
+        ]
+      },
+      "intake_date": "2026-05-15",
+      "networks": [
+        "HBO Max"
+      ],
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-05-15"
+    },
+    "tv_322340": {
+      "title": "一山能容二虎",
+      "content_type": "limited_series",
+      "tmdb_id": 322340,
+      "status": "tracking",
+      "first_air_date": "2026-05-03",
+      "digital_date": "2026-05-03",
+      "episode_count": 10,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/eA8OlaoTDpEQMqL3UOfVuFIvJTR.jpg",
+      "synopsis": "",
+      "genres": [
+        "Drama"
+      ],
+      "original_language": "zh",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-05-15",
+      "networks": [
+        "YouTube"
       ],
       "has_providers": false
     }

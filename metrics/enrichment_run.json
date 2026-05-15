@@ -1,30 +1,20 @@
 {
-  "timestamp": "2026-05-14T12:28:41.849536",
-  "movies_requested": 10,
-  "movies_enriched": 9,
+  "timestamp": "2026-05-15T11:59:34.324429",
+  "movies_requested": 3,
+  "movies_enriched": 2,
   "movies_deferred": 1,
   "deferred_details": [
     {
-      "title": "A Balcony in Limoges",
-      "reason": "enrichment_failed",
-      "digital_date": "2026-05-13",
-      "discovered_at": "2026-05-13T12:01:59.671568",
-      "discovery_source": "provider_availability_check",
-      "revert_count": 0,
-      "tmdb_platforms": [
-        "Amazon Video"
-      ]
+      "title": "Dhurandhar: The Revenge",
+      "reason": "jw_revert:justwatch_no_valid_offers",
+      "digital_date": "2026-05-15",
+      "discovered_at": "2026-05-11T13:05:49.611351",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 1,
+      "tmdb_platforms": []
     }
   ],
-  "enrichment_duration_seconds": 872.79,
-  "error_details": [
-    {
-      "timestamp": "2026-05-14T12:27:17.671327",
-      "title": "A Balcony in Limoges",
-      "source": "watch_links",
-      "error_type": "enrichment_failed",
-      "error_message": "All enrichment sources returned empty"
-    }
-  ],
-  "total_errors": 1
+  "enrichment_duration_seconds": 395.43,
+  "error_details": [],
+  "total_errors": 0
 }
