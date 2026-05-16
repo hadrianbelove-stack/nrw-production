@@ -805,7 +805,7 @@ VERIFICATION:"""
 
     def approve_capsule(self, title: str, year: int, capsule_text: str,
                         director: str = None):
-        """Add an approved capsule (original or rewritten) to the training bank.
+        """Add an approved capsule to the training bank AND update data.json.
 
         Args:
             title: Movie title
@@ -813,12 +813,15 @@ VERIFICATION:"""
             capsule_text: The approved capsule text (may be user-rewritten)
             director: Director name (for context in few-shot examples)
         """
+        capsule_text = capsule_text.strip()
+
+        # 1. Add to approved bank (training data)
         bank = self._load_approved_bank()
         bank.append({
             'title': title,
             'year': year,
             'director': director or 'Unknown',
-            'capsule': capsule_text.strip(),
+            'capsule': capsule_text,
             'approved_at': time.strftime('%Y-%m-%dT%H:%M:%S')
         })
 
@@ -829,3 +832,33 @@ VERIFICATION:"""
             logger.info(f"Approved capsule for {title} ({year}) — bank now has {len(bank)} entries")
         except Exception as e:
             logger.error(f"Failed to save approved capsule: {e}")
+
+        # 2. Update data.json synopsis field (goes live on site)
+        self._publish_to_data_json(title, year, capsule_text)
+
+    def _publish_to_data_json(self, title: str, year: int, capsule_text: str):
+        """Write approved capsule into data.json's synopsis field."""
+        data_path = 'data.json'
+        try:
+            with open(data_path, 'r') as f:
+                data = json.load(f)
+
+            movies = data.get('movies', data) if isinstance(data, dict) else data
+            updated = False
+
+            for m in movies:
+                if (m.get('title', '').lower() == title.lower() and
+                        m.get('year') == year):
+                    m['synopsis'] = capsule_text
+                    updated = True
+                    break
+
+            if updated:
+                with open(data_path, 'w') as f:
+                    json.dump(data, f, indent=2, ensure_ascii=False)
+                logger.info(f"Published capsule to data.json: {title} ({year})")
+            else:
+                logger.warning(f"Could not find {title} ({year}) in data.json to publish capsule")
+
+        except Exception as e:
+            logger.error(f"Failed to publish capsule to data.json: {e}")
