@@ -540,14 +540,6 @@ gemini_scraper:
   cache_ttl_days: 90               # How long to cache results
   max_retries: 3                   # Retry attempts with exponential backoff
 
-# Gemini-based watch link finder: uses Google Search grounding to find direct watch URLs
-# Tries Gemini first for all platforms, falls back to Playwright agent scraper
-# Tested: Netflix 7/7, Paramount+ 1/1, Film Movement Plus 1/1, Angel Studios 1/1
-gemini_watch_link_finder:
-  enabled: true                    # Master toggle
-  validate_urls: true              # HTTP-validate Gemini URLs before accepting
-  # Rate limit, cache TTL, retries inherited from gemini_scraper section above
-
 # Metacritic scraper (API-based): Finds Metascores via backend.metacritic.com
 metacritic_scraper:
   enabled: true

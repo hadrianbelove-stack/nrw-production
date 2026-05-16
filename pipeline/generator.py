@@ -1925,14 +1925,6 @@ class DataGenerator:
             except Exception as e:
                 self.logger.warning(f"Failed to close RT scraper: {e}")
 
-        # Cleanup Gemini watch link finder if initialized
-        if hasattr(self.enrichment, '_gemini_watch_link_finder') and self.enrichment._gemini_watch_link_finder and self.enrichment._gemini_watch_link_finder is not False:
-            try:
-                self.enrichment._gemini_watch_link_finder._save_cache()
-                self.logger.debug("Gemini watch link finder cache saved")
-            except Exception as e:
-                self.logger.warning(f"Failed to save Gemini watch link finder cache: {e}")
-
         # Cleanup trailer finder if initialized (Gemini + Playwright fallback)
         if self.trailer_finder:
             try:

@@ -14,7 +14,7 @@ from gemini_scraper.vod_date import GeminiVODDateFinder
 from gemini_scraper.pull_quotes import GeminiPullQuoteFinder
 from gemini_scraper.quote_extractor import GeminiQuoteExtractor
 from gemini_scraper.imdb import GeminiIMDbFinder
-from gemini_scraper.watch_link import GeminiWatchLinkFinder
+from gemini_scraper.capsule import GeminiCapsuleWriter
 
 __all__ = [
     'GeminiFinderBase',
@@ -27,5 +27,5 @@ __all__ = [
     'GeminiPullQuoteFinder',
     'GeminiQuoteExtractor',
     'GeminiIMDbFinder',
-    'GeminiWatchLinkFinder',
+    'GeminiCapsuleWriter',
 ]

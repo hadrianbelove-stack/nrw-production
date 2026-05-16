@@ -80,9 +80,6 @@ class EnrichmentService:
         # Amazon ASIN cache for reusing deep links
         self._amazon_asin_cache = {}
 
-        # Gemini watch link finder (lazy initialization)
-        self._gemini_watch_link_finder = None
-
         # Use shared stats dict or create new one
         if stats_dict is not None:
             self.stats = stats_dict
@@ -125,8 +122,8 @@ class EnrichmentService:
         1. Manual watch links from movie_tracking.json - highest priority
         2. Overrides (overrides/watch_links_overrides.json) - always wins over automated
         3. Cache (cache/watch_links_cache.json)
+        3.5. Apple Music Live rule - force Apple TV streaming
         4. JustWatch API (primary source for rent/buy deep links)
-        4.5 Gemini + Google Search (finds URLs for services JustWatch identified but lacks deeplinks for)
         5. VOD scraper (Amazon, Apple TV) - Playwright fallback
         6. TMDB provider names with null links - last resort
 
@@ -178,26 +175,42 @@ class EnrichmentService:
         if cached_result:
             return cached_result
 
+        # 3.5. Apple Music Live — always Apple TV streaming, no VOD
+        if title and title.lower().startswith('apple music live'):
+            self.logger.info(f"Apple Music Live detected: {title} — forcing Apple TV streaming only")
+            apple_link = None
+            has_vod_scraper = self._check_vod_scraper_available()
+            if has_vod_scraper:
+                try:
+                    apple_link = self.get_platform_deep_link_with_cache(title, year, 'Apple TV')
+                except Exception as e:
+                    self.logger.error(f"Scraper failed for Apple Music Live '{title}': {e}")
+            if apple_link:
+                watch_links = {
+                    'streaming': [{'service': 'Apple TV', 'link': apple_link}],
+                    'vod': []
+                }
+                watch_links = self.normalize_watch_links_urls(watch_links)
+                validated_links = self.validator.validate_watch_links_schema(watch_links, title)
+                if validated_links:
+                    self._apply_affiliate_tags_batch(validated_links, title)
+                    self.watch_links_cache[cache_key] = {
+                        'links': validated_links,
+                        'cached_at': datetime.now().isoformat(),
+                        'source': 'apple_music_live_rule'
+                    }
+                    self.storage.save_cache(self.watch_links_cache, 'cache/watch_links_cache.json')
+                    return validated_links
+            else:
+                self.logger.warning(f"Apple Music Live '{title}' — couldn't find Apple TV link")
+
         # 4. Try JustWatch API (primary source for rent/buy deep links)
         justwatch_result, jw_provider_names = self._try_justwatch_api(
             title, year, cache_key, validated_overrides, providers=providers,
             original_title=original_title, director=director, tmdb_id=tmdb_id
         )
         if justwatch_result:
-            # 4.5 Gemini enhancement: find URLs for services JustWatch identified but has no deeplink for
-            justwatch_result = self._try_gemini_for_missing_links(
-                justwatch_result, jw_provider_names, title, year
-            )
             return justwatch_result
-
-        # 4.5b Gemini fallback: JustWatch failed entirely, but if it identified provider names,
-        #       try Gemini for those services
-        if jw_provider_names:
-            gemini_result = self._try_gemini_for_provider_names(
-                jw_provider_names, title, year, cache_key
-            )
-            if gemini_result:
-                return gemini_result
 
         # 5. Build from scrapers (fallback — Amazon, Apple TV via Playwright)
         watch_links, vod_scraper_used = self._build_scraper_fallback_links(
@@ -397,7 +410,7 @@ class EnrichmentService:
         Returns:
             Tuple of (validated_links or None, provider_names dict or None).
             provider_names contains service names JustWatch identified, even when
-            watch_links are incomplete — used by Gemini step 4.5.
+            watch_links are incomplete.
         """
         jw_provider_names = None
 
@@ -445,7 +458,7 @@ class EnrichmentService:
                 )
                 return None, None
 
-            # Confidence is good — extract provider names for Gemini step 4.5
+            # Confidence is good — extract provider names
             jw_provider_names = result.get('provider_names')
 
             justwatch_links = result.get('watch_links', {})
@@ -818,7 +831,6 @@ class EnrichmentService:
     def try_streaming_scraper(self, movie_id, title, year, service, category, title_variants=None):
         """
         Try Playwright agent scraper for supported platforms, with title variant fallback.
-        Gemini watch link finder runs at step 4.5 (before this function is called).
 
         Args:
             movie_id: TMDB movie ID
@@ -831,8 +843,6 @@ class EnrichmentService:
         Returns:
             Dict: {'service': service_name, 'link': url_or_none}
         """
-        # Gemini watch link finder is now at step 4.5 (after JustWatch, before scraper fallback).
-        # This function handles Playwright scraping only.
         supported_platforms = ['Netflix', 'Disney+', 'Disney Plus', 'HBO Max', 'Max', 'Hulu']
 
         if service not in supported_platforms:
@@ -912,171 +922,6 @@ class EnrichmentService:
             except Exception as e:
                 self.logger.warning(f"Could not initialize agent scraper: {e}")
                 self.streaming_scraper = False
-
-    def _init_gemini_watch_link_finder(self):
-        """Initialize Gemini watch link finder if not already initialized."""
-        if self._gemini_watch_link_finder is None:
-            if not self.enrichment_enabled:
-                self.logger.debug("Gemini watch link finder disabled - enrichment not enabled")
-                self._gemini_watch_link_finder = False
-                return
-
-            gemini_config = self.config.get('gemini_watch_link_finder', {})
-            if not gemini_config.get('enabled', True):
-                self.logger.debug("Gemini watch link finder disabled in config")
-                self._gemini_watch_link_finder = False
-                return
-
-            try:
-                from gemini_scraper import GeminiWatchLinkFinder
-                self._gemini_watch_link_finder = GeminiWatchLinkFinder()
-                self.logger.info("Gemini watch link finder initialized")
-            except Exception as e:
-                self.logger.warning(f"Could not initialize Gemini watch link finder: {e}")
-                self._gemini_watch_link_finder = False
-
-    def _validate_gemini_watch_link(self, url, service, title):
-        """Validate a Gemini-returned watch link with HTTP HEAD request.
-
-        Checks HTTP status and verifies domain after redirects.
-
-        Returns:
-            Validated URL or None if invalid
-        """
-        gemini_config = self.config.get('gemini_watch_link_finder', {})
-        if not gemini_config.get('validate_urls', True):
-            return url  # Validation disabled, trust Gemini
-
-        try:
-            import requests
-            response = requests.head(url, allow_redirects=True, timeout=10,
-                                     headers={'User-Agent': 'Mozilla/5.0'})
-
-            # Streaming sites commonly mishandle HEAD requests:
-            # Netflix returns 405, Paramount+ returns 500, etc.
-            # Only reject clear "not found" responses (403, 404)
-            if response.status_code in (403, 404):
-                self.logger.warning(f"Gemini URL returned HTTP {response.status_code}: {url}")
-                return None
-
-            # Verify domain still matches after redirects
-            if self._validate_link_domain(response.url, service):
-                return response.url
-            else:
-                self.logger.warning(f"Gemini URL redirected to wrong domain: {url} -> {response.url}")
-                return None
-
-        except Exception as e:
-            self.logger.debug(f"URL validation request failed for {url}: {e}")
-            # On network error, trust the Gemini URL (it passed domain validation)
-            return url
-
-    def _try_gemini_for_service(self, service, title, year):
-        """Try Gemini to find a watch link for a single service. Returns URL or None.
-
-        Only calls Gemini API for services in the SUPPORTED_SERVICES whitelist
-        (Netflix, Paramount+, Film Movement Plus, Angel Studios, MUBI).
-        All other services (Criterion, Disney+, Hulu, Amazon, etc.) return None
-        immediately without an API call.
-        """
-        self._init_gemini_watch_link_finder()
-        if not self._gemini_watch_link_finder or self._gemini_watch_link_finder is False:
-            return None
-
-        # Early exit: don't call Gemini for services it can't find
-        if service not in self._gemini_watch_link_finder.SUPPORTED_SERVICES:
-            return None
-
-        try:
-            gemini_url = self._gemini_watch_link_finder.find_watch_link(title, year, service)
-            if gemini_url and self._validate_link_domain(gemini_url, service):
-                validated_url = self._validate_gemini_watch_link(gemini_url, service, title)
-                if validated_url:
-                    self.logger.info(f"Gemini found watch link for {title} on {service}: {validated_url}")
-                    return validated_url
-        except Exception as e:
-            self.logger.warning(f"Gemini watch link error for {title} on {service}: {e}")
-
-        return None
-
-    def _try_gemini_for_missing_links(self, justwatch_result, jw_provider_names, title, year):
-        """
-        Step 4.5: Enhance JustWatch result with Gemini URLs for services
-        JustWatch identified but didn't provide deeplinks for.
-
-        Only tries services in the Gemini finder's SUPPORTED_SERVICES whitelist.
-        """
-        if not jw_provider_names:
-            return justwatch_result
-
-        # Collect services that already have URLs in the JustWatch result
-        services_with_urls = set()
-        for category in ['streaming', 'vod']:
-            entries = justwatch_result.get(category, [])
-            if isinstance(entries, list):
-                for e in entries:
-                    if isinstance(e, dict) and e.get('link'):
-                        services_with_urls.add(e.get('service', ''))
-
-        # Find services JustWatch identified but has no URL for
-        all_jw_services = set(
-            jw_provider_names.get('streaming', []) +
-            jw_provider_names.get('rent', []) +
-            jw_provider_names.get('buy', [])
-        )
-        missing_services = all_jw_services - services_with_urls
-        if not missing_services:
-            return justwatch_result
-
-        for service in missing_services:
-            gemini_url = self._try_gemini_for_service(service, title, year)
-            if gemini_url:
-                # Add to streaming category (Gemini-found services are streaming, not VOD)
-                if 'streaming' not in justwatch_result:
-                    justwatch_result['streaming'] = []
-                if isinstance(justwatch_result['streaming'], list):
-                    justwatch_result['streaming'].append({'service': service, 'link': gemini_url})
-
-        return justwatch_result
-
-    def _try_gemini_for_provider_names(self, jw_provider_names, title, year, cache_key):
-        """
-        Step 4.5b: JustWatch found the movie and identified providers, but returned
-        no deeplinks at all. Try Gemini for each identified service.
-
-        Returns validated watch_links dict or None.
-        """
-        all_services = (
-            jw_provider_names.get('streaming', []) +
-            jw_provider_names.get('rent', []) +
-            jw_provider_names.get('buy', [])
-        )
-        if not all_services:
-            return None
-
-        watch_links = {}
-        streaming_links = []
-
-        for service in all_services:
-            gemini_url = self._try_gemini_for_service(service, title, year)
-            if gemini_url:
-                streaming_links.append({'service': service, 'link': gemini_url})
-
-        if streaming_links:
-            watch_links['streaming'] = streaming_links
-            validated_links = self.validator.validate_watch_links_schema(watch_links, title)
-            if validated_links:
-                self._apply_affiliate_tags_batch(validated_links, title)
-                # Cache the Gemini result
-                self.watch_links_cache[cache_key] = {
-                    'links': validated_links,
-                    'cached_at': datetime.now().isoformat(),
-                    'source': 'gemini_watch_link'
-                }
-                self.storage.save_cache(self.watch_links_cache, 'cache/watch_links_cache.json')
-                return validated_links
-
-        return None
 
     def _init_vod_scraper(self):
         """Initialize VOD scraper (Amazon/Apple TV) if needed."""
