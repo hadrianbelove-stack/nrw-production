@@ -87,5 +87,13 @@
     "verdict_type": "high_confidence",
     "hypothesis_count": 2,
     "tool_calls_used": 8
+  },
+  {
+    "date": "2026-05-16",
+    "question": "Why does Exorcismo have buy_price $3.99 when Apple TV shows $10.99?",
+    "scope": "specific movie + code behavior",
+    "verdict_type": "confirmed",
+    "hypothesis_count": 1,
+    "tool_calls_used": 10
   }
 ]

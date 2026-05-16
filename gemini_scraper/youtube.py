@@ -49,6 +49,16 @@ class GeminiYouTubeFinder(GeminiFinderBase):
 
         return False
 
+    def _validate_youtube_url_live(self, url: str) -> bool:
+        """Check if a YouTube URL resolves to a real video via oEmbed."""
+        try:
+            import requests
+            oembed = f"https://www.youtube.com/oembed?url={url}&format=json"
+            resp = requests.head(oembed, timeout=5)
+            return resp.status_code == 200
+        except Exception:
+            return True  # If check fails, don't block — assume valid
+
     def _extract_youtube_url(self, text: str) -> Optional[str]:
         """Extract YouTube URL from Gemini response text."""
         if not text:
@@ -169,6 +179,12 @@ YouTube URL:"""
             url = self._extract_youtube_url(result_text)
 
             if url and self._validate_youtube_url(url):
+                # Liveness check — don't cache hallucinated URLs
+                if not self._validate_youtube_url_live(url):
+                    logger.warning(f"Gemini returned dead URL for {title} ({year}): {url}")
+                    self.stats['invalid_urls'] += 1
+                    self.stats['gemini_failures'] += 1
+                    return None
                 logger.info(f"Found trailer for {title} ({year}): {url}")
                 self.cache[cache_key] = url
                 self._save_cache()
@@ -249,8 +265,16 @@ class HybridYouTubeFinder:
         result = self.gemini_finder.find_trailer(title, year, director, cast)
 
         if result is not None:
-            self.stats['gemini_resolved'] += 1
-            return result
+            # Verify cached results are still live (catches old poisoned cache entries)
+            cache_key = f"{title}_{year}"
+            if cache_key in self.gemini_finder.cache and not self.gemini_finder._validate_youtube_url_live(result):
+                logger.warning(f"Evicting dead cached URL for {title} ({year}): {result}")
+                del self.gemini_finder.cache[cache_key]
+                self.gemini_finder._save_cache()
+                result = None  # Fall through to Playwright
+            else:
+                self.stats['gemini_resolved'] += 1
+                return result
 
         # Gemini returned None — always try Playwright fallback
         # (Gemini's NO_TRAILER_EXISTS is unreliable for small/indie films)

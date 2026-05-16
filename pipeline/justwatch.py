@@ -657,7 +657,9 @@ class JustWatchClient:
         for offer in buy_offers:
             svc_key = offer['service'].lower()
             if svc_key in service_map:
-                service_map[svc_key]['buy_price'] = offer.get('price')
+                # Only set buy_price if not already set (first = HD after sort)
+                if service_map[svc_key]['buy_price'] is None:
+                    service_map[svc_key]['buy_price'] = offer.get('price')
             else:
                 service_map[svc_key] = {
                     'service': offer['service'],
