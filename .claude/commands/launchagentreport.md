@@ -85,3 +85,28 @@ After the report, curate pull quotes for any new movies. Follow these steps:
    - **When the user shortens a quote, that trimmed text IS the final version** — they are editing
    - For reissues/restorations: only show quotes specifically about the reissue, not original-era reviews
    - After all movies are curated, inject selected quotes into `data.json` using the same logic as `pipeline/display.py`'s `inject_selected_pull_quotes()`
+
+### Capsule Rewrites
+
+After pull quotes are done, rewrite capsules for new arrivals. Follow these steps:
+
+1. **Same window as pull quotes**: Use the last session timestamp from `.claude/last_nrw_session.json`.
+
+2. **Find candidates**: From `data.json`, find movies where ALL of these are true:
+   - `digital_date` is after the last session timestamp
+   - Movie is NOT already in `cache/approved_capsules.json`
+   - Movie is NOT a reissue/restoration (`is_restoration` flag, or title contains "Remaster"/"Restoration"/"4K", or `year` is 10+ years before current year)
+
+3. **If no candidates**: Report "No new movies need capsules since last session." and stop.
+
+4. **If candidates exist**, process each movie **one at a time, most recent first**:
+   - Run: `cd /Users/hadrianbelove/Downloads/nrw-production && /usr/bin/python3 scripts/write_capsule.py "TITLE" --force --variants 3 --skip-verify`
+   - Present 3 variants with word counts (use the same format as `/capsule`)
+   - Wait for user response: pick a number, provide a rewrite, or "skip"
+   - **When the user provides edited text, that IS the final version** — they are editing
+   - If picked/rewritten:
+     1. Apply standard capsule formatting (**bold** names, *italic* titles)
+     2. Write final text to `cache/rewrite.txt`
+     3. Run: `cd /Users/hadrianbelove/Downloads/nrw-production && /usr/bin/python3 scripts/write_capsule.py approve "TITLE" --file cache/rewrite.txt`
+     4. Commit + push: `cd /Users/hadrianbelove/Downloads/nrw-production && git add data.json cache/approved_capsules.json cache/capsule_cache.json && NRW_ALLOW_DATA_COMMIT=1 git commit -m "Capsule: [TITLE] APPROVED: DELETE" && git push origin main`
+   - After each movie, move to the next candidate

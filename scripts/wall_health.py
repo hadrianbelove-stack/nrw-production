@@ -6,7 +6,7 @@ detailed, scannable diagnostic report with:
 - Dashboard header with coverage stats
 - Today's arrivals with enrichment coverage + service names
 - Zero watch links (cross-referenced with tracking for root cause)
-- JW revert pattern analysis (grouped by reason, excluded platforms, repeat offenders)
+- JW revert pattern analysis (grouped by reason, excluded platforms)
 - Coverage gaps (0/5 and recent 4/5)
 - Pre-orders & upcoming (merged, sorted by date, with TMDB platforms + link status)
 - 14-day pipeline trend (intake + transitions)
@@ -257,7 +257,6 @@ else:
 
 wall_titles = set(m['title'] for m in movies)
 jw_reverts = []
-repeat_offenders = []
 
 for mid, m in tracking_raw.items():
     rev_at = m.get('_jw_reverted_at', '')
@@ -268,15 +267,6 @@ for mid, m in tracking_raw.items():
     year = m.get('year', '')
 
     t_url = tmdb_url(mid)
-
-    # Repeat offenders: any movie reverted 2+ times (regardless of recency or wall status)
-    if rev_count >= 2:
-        provs = m.get('providers', {})
-        plat_names = []
-        for cat in ['rent', 'buy', 'streaming']:
-            for p in provs.get(cat, []):
-                plat_names.append(p)
-        repeat_offenders.append((rev_count, title, year, reason, plat_names, t_url))
 
     # Recent reverts not on wall
     if rev_at >= three_days_ago and reason and title not in wall_titles:
@@ -335,21 +325,6 @@ if jw_reverts:
             print('    %s' % t_url)
 else:
     print('  None in last 3 days')
-
-# Repeat offenders (separate from recent — these span all time)
-if repeat_offenders:
-    repeat_offenders.sort(key=lambda r: -r[0])
-    print()
-    print('  REPEAT OFFENDERS (reverted 2+ times — investigate for pipeline fixes):')
-    print('  %-4s %-40s %-6s %s' % ('Count', 'Title', 'Year', 'TMDB Platforms'))
-    print('  ' + '─' * 90)
-    for rev_count, title, year, reason, plat_names, t_url in repeat_offenders[:20]:  # Cap at 20
-        plat_str = ', '.join(plat_names) if plat_names else '(none)'
-        print('  %-4s %-40s %-6s %s' % ('%dx' % rev_count, title[:40], year or '—', plat_str))
-        if t_url:
-            print('    %s' % t_url)
-    if len(repeat_offenders) > 20:
-        print('  ... and %d more' % (len(repeat_offenders) - 20))
 
 # ── Section 5: COVERAGE GAPS ────────────────────────────────────────────────
 

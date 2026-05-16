@@ -2,7 +2,7 @@
 YouTube trailer finder — Gemini + Playwright hybrid.
 
 Classes: GeminiYouTubeFinder, HybridYouTubeFinder
-Function: find_youtube_trailer()
+Function: find_youtube_trailer(), validate_youtube_url_live()
 """
 
 import re
@@ -12,6 +12,21 @@ from typing import Optional, Dict, Any
 from gemini_scraper.base import GeminiFinderBase
 
 logger = logging.getLogger('gemini_scraper.youtube')
+
+
+def validate_youtube_url_live(url: str) -> bool:
+    """Check if a YouTube URL resolves to a real video via oEmbed.
+
+    Shared utility — used by GeminiYouTubeFinder, HybridYouTubeFinder,
+    and pipeline/generator.py's trailer waterfall.
+    """
+    try:
+        import requests
+        oembed = f"https://www.youtube.com/oembed?url={url}&format=json"
+        resp = requests.head(oembed, timeout=5)
+        return resp.status_code == 200
+    except Exception:
+        return True  # If check fails, don't block — assume valid
 
 
 class GeminiYouTubeFinder(GeminiFinderBase):
@@ -51,13 +66,7 @@ class GeminiYouTubeFinder(GeminiFinderBase):
 
     def _validate_youtube_url_live(self, url: str) -> bool:
         """Check if a YouTube URL resolves to a real video via oEmbed."""
-        try:
-            import requests
-            oembed = f"https://www.youtube.com/oembed?url={url}&format=json"
-            resp = requests.head(oembed, timeout=5)
-            return resp.status_code == 200
-        except Exception:
-            return True  # If check fails, don't block — assume valid
+        return validate_youtube_url_live(url)
 
     def _extract_youtube_url(self, text: str) -> Optional[str]:
         """Extract YouTube URL from Gemini response text."""
@@ -216,6 +225,7 @@ class HybridYouTubeFinder:
         self.gemini_finder = GeminiYouTubeFinder(cache_file=cache_file)
         self.playwright_finder = None  # Lazy load
         self.cache_file = cache_file
+        self._validated_urls = set()  # URLs already confirmed live this session
 
         self.stats = {
             'total_requests': 0,
@@ -265,14 +275,19 @@ class HybridYouTubeFinder:
         result = self.gemini_finder.find_trailer(title, year, director, cast)
 
         if result is not None:
+            # Skip liveness check if already validated this session
+            if result in self._validated_urls:
+                self.stats['gemini_resolved'] += 1
+                return result
             # Verify cached results are still live (catches old poisoned cache entries)
             cache_key = f"{title}_{year}"
-            if cache_key in self.gemini_finder.cache and not self.gemini_finder._validate_youtube_url_live(result):
+            if cache_key in self.gemini_finder.cache and not validate_youtube_url_live(result):
                 logger.warning(f"Evicting dead cached URL for {title} ({year}): {result}")
                 del self.gemini_finder.cache[cache_key]
                 self.gemini_finder._save_cache()
                 result = None  # Fall through to Playwright
             else:
+                self._validated_urls.add(result)
                 self.stats['gemini_resolved'] += 1
                 return result
 
