@@ -451,10 +451,12 @@ class ProviderDiscoverer:
                                                 pass
                                         if _init.get('is_available') is True:
                                             has_providers = True
+                                            movie['_virtual_screening'] = True
                                             print(f"  ✓ {movie['title']} — VS bypass: screening active ({_vs_link})")
                                         elif _end_in_future:
                                             # Upcoming/pre-order — screening hasn't started but end_time is future
                                             has_providers = True
+                                            movie['_virtual_screening'] = True
                                             print(f"  ✓ {movie['title']} — VS bypass: upcoming screening (ends {_end_time[:10]})")
                                         else:
                                             _end = _end_time or 'unknown'
@@ -469,6 +471,7 @@ class ProviderDiscoverer:
                                     _head = requests.head(_vs_link, timeout=10, allow_redirects=True)
                                     if _head.status_code < 400:
                                         has_providers = True
+                                        movie['_virtual_screening'] = True
                                         print(f"  ✓ {movie['title']} — VS bypass: link verified ({_vs_link})")
                                     else:
                                         print(f"  ⏭ {movie['title']} — VS bypass skipped: HTTP {_head.status_code}")
@@ -494,6 +497,10 @@ class ProviderDiscoverer:
 
                             if not movie.get('digital_date'):
                                 movie['digital_date'] = datetime.now().strftime('%Y-%m-%d')
+                            # For VS bypass, preserve original streaming providers (TMDB returns empty)
+                            if movie.get('_virtual_screening') and not stream_names:
+                                _orig_streaming = movie.get('providers', {}).get('streaming', [])
+                                stream_names = _orig_streaming if _orig_streaming else stream_names
                             movie['providers'] = {
                                 'rent': rent_names,
                                 'buy': buy_names,

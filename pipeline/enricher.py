@@ -899,6 +899,8 @@ class MovieEnricher:
                 _is_manual = (movie_data.get('_added_manually')
                               or existing_movies[movie_index].get('_added_manually'))
                 _has_override = str(movie_id) in self.host.watch_links_overrides
+                _is_virtual_screening = (movie_data.get('_virtual_screening')
+                                         or existing_movies[movie_index].get('_virtual_screening'))
                 _jw_verified = False
                 _revert_reason = 'justwatch_error'
                 try:
@@ -1009,7 +1011,7 @@ class MovieEnricher:
                 except Exception as _jw_err:
                     self.ctx.logger.warning(f"JustWatch pre-check error for {_title}: {_jw_err} \u2014 proceeding with enrichment")
 
-                if not _jw_verified and not _is_manual and not _has_override:
+                if not _jw_verified and not _is_manual and not _has_override and not _is_virtual_screening:
                     _today_iso = datetime.now().strftime('%Y-%m-%d')
                     tracking_data['movies'][movie_id]['status'] = 'tracking'
                     tracking_data['movies'][movie_id]['_jw_revert_reason'] = _revert_reason
