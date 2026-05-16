@@ -65,17 +65,17 @@
           loadingBitmapUri="pkg:/images/icons/placeholder.png"
           failedBitmapUri="pkg:/images/icons/placeholder.png" />
 
-        <!-- Streaming service badge (top-right) -->
+        <!-- Streaming service bar badge (full-width top bar) -->
         <Rectangle id="serviceBadgeBg"
-          width="40"
+          width="200"
           height="24"
-          translation="[156, 4]"
+          translation="[0, 0]"
           color="0xE50914FF"
           visible="false" />
         <Label id="serviceBadge"
-          width="40"
+          width="200"
           height="24"
-          translation="[156, 4]"
+          translation="[0, 0]"
           horizAlign="center"
           vertAlign="center"
           font="font:SmallBoldSystemFont"

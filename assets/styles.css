@@ -469,17 +469,19 @@ header h1 {
     object-fit: cover;
 }
 
-/* Streaming service pill badge on poster */
+/* Streaming service bar badge on poster (full-width top bar) */
 .streaming-badge {
     position: absolute;
-    top: 8px;
-    right: 8px;
-    padding: 4px 8px;
-    border-radius: 10px;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 6px 0;
+    border-radius: 0;
     font-size: 9px;
     font-weight: 700;
-    letter-spacing: 0.5px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    letter-spacing: 0.8px;
+    text-align: center;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
     z-index: 5;
 }
 

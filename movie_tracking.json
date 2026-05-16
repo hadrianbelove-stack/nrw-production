@@ -113353,13 +113353,24 @@
     "1232350": {
       "title": "Memories of a Burning Body",
       "year": 2024,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-05-15",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "Berlin/Berlinale",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-05-15"
     },
     "1231607": {
       "title": "A Bit of a Stranger",
@@ -129671,13 +129682,28 @@
     "1304681": {
       "title": "Exorcismo: The Transgressive Legacy of Clasificada “S”",
       "year": 2024,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-05-15",
+      "providers": {
+        "rent": [
+          "Apple TV Store",
+          "Google Play Movies",
+          "YouTube"
+        ],
+        "buy": [
+          "Apple TV Store",
+          "Google Play Movies",
+          "YouTube"
+        ],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "Sitges",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-05-15"
     },
     "1174485": {
       "title": "Centaures de la nit",
@@ -136890,8 +136916,8 @@
       "intake_pass": "C",
       "festival": "Fantastic Fest",
       "has_providers": true,
-      "enriched": false,
-      "enrichment_date": null,
+      "enriched": true,
+      "enrichment_date": "2026-05-15",
       "imdb_id": "tt31613162"
     },
     "1177529": {
@@ -160305,12 +160331,23 @@
     "1613872": {
       "title": "Transcend",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-12",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-05-15",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-05-15"
     },
     "1562023": {
       "title": "[S I L V E R / W E L L]",
@@ -173102,10 +173139,13 @@
       },
       "intake_pass": "B",
       "has_providers": true,
-      "_discovery_source": "provider_availability_check",
+      "_discovery_source": "tmdb_type4",
       "enriched": true,
       "enrichment_date": "2026-05-14",
-      "_buyonly_preorder": true
+      "_buyonly_preorder": true,
+      "digital_date": "2026-06-12",
+      "_type4_pending": true,
+      "_is_preorder": true
     },
     "1062545": {
       "title": "OCD",

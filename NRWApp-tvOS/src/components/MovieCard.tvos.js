@@ -294,9 +294,9 @@ const MovieCard = forwardRef(({
             </View>
           )}
 
-          {/* Streaming service badge - upper right */}
+          {/* Streaming service bar badge (full-width top bar) */}
           {streamingBadge && (
-            <View style={[styles.streamingBadge, { backgroundColor: streamingBadge.color }, streamingBadge.subtext && { alignItems: 'center' }]}>
+            <View style={[styles.streamingBadge, { backgroundColor: streamingBadge.color }, streamingBadge.subtext && { flexDirection: 'row', gap: 8 }]}>
               <Text style={styles.streamingBadgeText}>{streamingBadge.name}</Text>
               {streamingBadge.subtext && (
                 <Text style={styles.streamingBadgeSubtext}>{streamingBadge.subtext}</Text>
@@ -396,17 +396,20 @@ const styles = StyleSheet.create({
   },
   streamingBadge: {
     position: 'absolute',
-    top: Spacing.tvos.xs,
-    right: Spacing.tvos.xs,
-    paddingHorizontal: Spacing.tvos.xs + 2,
-    paddingVertical: Spacing.tvos.xs - 2,
-    borderRadius: 6,
+    top: 0,
+    left: 0,
+    right: 0,
+    paddingVertical: Spacing.tvos.xs,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
   },
   streamingBadgeText: {
     color: '#FFFFFF',
     fontSize: Typography.tvos.caption - 4,
     fontWeight: '800',
-    letterSpacing: 0.3,
+    letterSpacing: 0.8,
   },
   streamingBadgeSubtext: {
     color: '#FFFFFF',

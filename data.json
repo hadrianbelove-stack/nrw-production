@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-05-15T15:12:37.117350",
-  "count": 780,
+  "generated_at": "2026-05-15T17:57:46.271002",
+  "count": 783,
   "movies": [
     {
       "id": "1010755",
@@ -106,9 +106,9 @@
         "Thriller",
         "Comedy"
       ],
-      "runtime": 91,
+      "runtime": 94,
       "year": 2025,
-      "rt_score": "77%",
+      "rt_score": "73%",
       "providers": {
         "rent": [],
         "buy": [],
@@ -140,6 +140,8 @@
           {
             "service": "Amazon",
             "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.a705f01d-1b57-45ca-8031-a7b6636ef654&tag=nrw04-20",
+            "rent_price": "$5.99",
+            "buy_price": "$14.99",
             "price": "$5.99"
           }
         ]
@@ -148,7 +150,7 @@
       "_discovered_at": "2026-02-28T19:10:07.126021",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/a2EdW8sk22fNCvrpOiaHbR2hOuZ.jpg",
+      "poster": "https://image.tmdb.org/t/p/w500/pT28lZl2eYCNYFyxyThpSKttLfI.jpg",
       "studio": "La Trini",
       "budget": 0,
       "country": "Argentina",
@@ -158,7 +160,10 @@
         "director": "Martín Mauregui",
         "cast": [
           "Carmen Maura",
-          "Daniel Hendler"
+          "Daniel Hendler",
+          "Agustina Liendo",
+          "Emma Cetrángolo",
+          "Germán de Silva"
         ]
       },
       "_discovery_source": "provider_availability_check",
@@ -197,7 +202,12 @@
           "source": "rt_critic",
           "review_url": "https://aisleseat.com/crazy-old-lady.html"
         }
-      ]
+      ],
+      "_enrichment_attempts": 1,
+      "_last_enrichment_attempt": "2026-05-15",
+      "_trailer_source": "tmdb_official",
+      "_needs_review": false,
+      "status": "available"
     },
     {
       "id": "1401542",
@@ -9237,6 +9247,275 @@
       "display_title": "Normal"
     },
     {
+      "id": "1613872",
+      "title": "Transcend",
+      "digital_date": "2026-05-15",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "",
+      "genres": [
+        "Drama"
+      ],
+      "runtime": 0,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Transcending_(film)",
+        "trailer": null,
+        "rt": "https://www.rottentomatoes.com/m/transcend_2026",
+        "imdb": "https://www.imdb.com/title/tt39214219/"
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.c002894f-1b7f-4368-b87a-8135c95c4297&tag=nrw04-20",
+            "rent_price": "$2.99",
+            "buy_price": "$7.99",
+            "price": "$2.99"
+          }
+        ]
+      },
+      "pre_order_links": [],
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-05-15T15:44:23.936647",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/uENm9TONvsbUkQXR0ykXHPx19aa.jpg",
+      "studio": "A Drip Production",
+      "budget": 0,
+      "country": "United States of America",
+      "original_language": "en",
+      "original_title": "Transcend",
+      "crew": {
+        "director": "Mark Allen Reed Jr.",
+        "cast": [
+          "Olivia Génesis"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_enrichment_attempts": 1,
+      "_last_enrichment_attempt": "2026-05-15",
+      "imdb_rating": null,
+      "_digital_date_source": "detection",
+      "_needs_review": false,
+      "status": "available",
+      "_enrichment_gaps": [
+        "rt_score",
+        "trailer",
+        "imdb_rating",
+        "metacritic_score"
+      ],
+      "categories": {
+        "tier": null,
+        "is_studio": false,
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "is_exploitation": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false,
+      "display_title": "Transcend"
+    },
+    {
+      "id": "1304681",
+      "title": "Exorcismo: The Transgressive Legacy of Clasificada “S”",
+      "digital_date": "2026-05-15",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Spain, 1975. Franco's death opens the door to the possibility of uncensored cinema. After two years of relaxed censorship, it is abolished in 1977, and the “S” rating is created to protect viewers from films that may “offend their sensibilities.”",
+      "genres": [
+        "Documentary",
+        "History"
+      ],
+      "runtime": 119,
+      "year": 2024,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "Apple TV Store",
+          "Google Play Movies",
+          "YouTube"
+        ],
+        "buy": [
+          "Apple TV Store",
+          "Google Play Movies",
+          "YouTube"
+        ],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": null,
+        "trailer": null,
+        "rt": "https://www.rottentomatoes.com/m/exorcismo_the_transgressive_legacy_of_clasificada_s",
+        "imdb": "https://www.imdb.com/title/tt33295808/"
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Apple TV",
+            "link": "https://tv.apple.com/us/movie/exorcismo-the-transgressive-legacy-of-clasificada-s/umc.cmc.5t2crdig5kvsrzh0q0wqsrhas?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1872490805",
+            "rent_price": "$5.99",
+            "buy_price": "$3.99",
+            "price": "$5.99"
+          }
+        ]
+      },
+      "pre_order_links": [],
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-05-15T15:39:38.760814",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/2xeTx0tIpR11YhnIBLqkBtTyE7G.jpg",
+      "studio": "Severin Films",
+      "budget": 0,
+      "country": "United States of America",
+      "original_language": "en",
+      "original_title": "Exorcismo: The Transgressive Legacy of Clasificada “S”",
+      "crew": {
+        "director": "Alberto Sedano",
+        "cast": [
+          "Iggy Pop",
+          "Alejandro Melero",
+          "Álex de la Iglesia",
+          "Álex Mendíbil",
+          "Antonio Mayans"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "categories": {
+        "tier": null,
+        "is_studio": false,
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": true,
+        "is_exploitation": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false,
+      "display_title": "Exorcismo: The Transgressive Legacy of Clasificada “S”",
+      "_enrichment_attempts": 1,
+      "_last_enrichment_attempt": "2026-05-15",
+      "imdb_rating": "7.1",
+      "_digital_date_source": "detection",
+      "_needs_review": false,
+      "status": "available",
+      "_enrichment_gaps": [
+        "rt_score",
+        "trailer",
+        "wikipedia",
+        "metacritic_score"
+      ]
+    },
+    {
+      "id": "1232350",
+      "title": "Memories of a Burning Body",
+      "digital_date": "2026-05-15",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Raised in a repressive era where sexuality was taboo, Ana, Patricia, and Mayela found their understanding of womanhood based on unspoken rules and implicit impositions. Now, their fearless voices incarnate in a single 65-year-old woman, who revisits a kaleidoscopic life of intertwined memories, secrets, and hidden desires.",
+      "genres": [
+        "Drama"
+      ],
+      "runtime": 90,
+      "year": 2024,
+      "rt_score": "100%",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Memories_of_a_Burning_Body",
+        "trailer": "https://www.youtube.com/watch?v=yhZw0zIfGXg",
+        "rt": "https://www.rottentomatoes.com/m/memories_of_a_burning_body",
+        "imdb": "https://www.imdb.com/title/tt15716284/"
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.2746936b-1d97-460e-b49b-8cffbd17e935&tag=nrw04-20",
+            "rent_price": "$3.99",
+            "buy_price": "$9.99",
+            "price": "$3.99"
+          }
+        ]
+      },
+      "pre_order_links": [],
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-05-15T15:31:54.095795",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/ifrCf4lfC5uO84gi02IejjP84PM.jpg",
+      "studio": "Substance Films",
+      "budget": 0,
+      "country": "Spain",
+      "original_language": "es",
+      "original_title": "Memorias de un cuerpo que arde",
+      "display_title": "Memorias de un cuerpo que arde (Memories of a Burning Body)",
+      "crew": {
+        "director": "Antonella Sudasassi",
+        "cast": [
+          "Sol Carballo",
+          "Paulina Bernini Víquez",
+          "Juliana Filloy",
+          "Liliana Biamonte",
+          "Juan Luis Araya"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "categories": {
+        "tier": null,
+        "is_studio": false,
+        "is_indie": false,
+        "is_foreign": true,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "is_exploitation": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false,
+      "_enrichment_attempts": 1,
+      "_last_enrichment_attempt": "2026-05-15",
+      "imdb_rating": "6.4",
+      "_trailer_source": "tmdb_official",
+      "_digital_date_source": "detection",
+      "_needs_review": false,
+      "status": "available",
+      "_enrichment_gaps": [
+        "metacritic_score"
+      ]
+    },
+    {
       "id": "1398050",
       "title": "Driver's Ed",
       "digital_date": "2026-05-15",
@@ -9421,7 +9700,7 @@
         "manual_override": null
       },
       "featured": false,
-      "_enrichment_attempts": 3,
+      "_enrichment_attempts": 4,
       "_last_enrichment_attempt": "2026-05-15",
       "imdb_rating": "8.5",
       "_trailer_source": "tmdb_official",
@@ -9455,15 +9734,10 @@
       "watch_links": {
         "streaming": [
           {
-            "service": "Amazon",
-            "link": "https://www.amazon.com/gp/video/detail/B0GYM4ZQF2?tag=nrw04-20"
-          },
-          {
             "service": "Apple TV",
             "link": "https://tv.apple.com/us/movie/apple-music-live-lady-gaga-mayhem-requiem/umc.cmc.45jukzjdf8vjwqafjhw2uihi1"
           }
-        ],
-        "vod": []
+        ]
       },
       "links": {
         "wikipedia": "https://en.wikipedia.org/wiki/Apple_Music_Live:_Mayhem_Requiem",
@@ -9507,7 +9781,7 @@
         "manual_override": null
       },
       "featured": false,
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 3,
       "_last_enrichment_attempt": "2026-05-15",
       "imdb_rating": null,
       "_trailer_source": "tmdb_official",
@@ -10517,7 +10791,7 @@
           "critic": "Benjamin Lee",
           "outlet": "The Guardian",
           "source": "critic",
-          "review_url": ""
+          "review_url": "https://www.theguardian.com/film/2025/sep/09/christophers-movie-review-ian-mckellen"
         }
       ],
       "_watch_links_verified": "2026-05-15T14:17:22.931122"
@@ -10725,7 +10999,7 @@
           "critic": "Cirilla Bowman",
           "outlet": "Arthur Newspaper",
           "source": "critic",
-          "review_url": ""
+          "review_url": "https://www.trentarthur.ca/author/cirilla-bowman?08d1218b_page=6&292eb465_page=3"
         }
       ],
       "_watch_links_verified": "2026-05-15T14:24:18.023585"
@@ -11312,7 +11586,7 @@
           "critic": "The Lexington Line Staff",
           "outlet": "The Lexington Line",
           "source": "critic",
-          "review_url": ""
+          "review_url": "https://www.thelexingtonline.com/blog/2026/4/7/marc-by-sofia-a-review"
         },
         {
           "text": "boy put that vape down.",
@@ -11746,7 +12020,7 @@
           "critic": "Sean Burns",
           "outlet": "WBUR",
           "source": "critic",
-          "review_url": ""
+          "review_url": "https://www.wbur.org/news/2026/04/09/hamlet-riz-ahmed-aneil-karia-film-reivew"
         }
       ],
       "_watch_links_verified": "2026-05-15T14:17:31.681921"
@@ -11853,7 +12127,7 @@
           "critic": "Wendy Ide",
           "outlet": "Screen Daily",
           "source": "critic",
-          "review_url": ""
+          "review_url": "https://www.screendaily.com/reviews/calle-malaga-review-carmen-maura-stars-in-maryam-touzanis-tame-tangier-set-domestic-drama/5208264.article"
         },
         {
           "text": "an emotional heist film and protest tale in delicate harmony",
@@ -12254,7 +12528,7 @@
           "critic": "Rodrigo Perez",
           "outlet": "The Playlist",
           "source": "critic",
-          "review_url": ""
+          "review_url": "https://theplaylist.net/faces-of-death-review-daniel-goldhabers-empty-internet-horror-mistakes-contempt-for-insight-20260410/"
         },
         {
           "text": "A glut of films about how the internet is slowly (or quickly) killing us gets an unexpected standout in this week's clever meta slasher remake/reboot/retooling of the cult classic 'Faces of Death.'",
@@ -14871,7 +15145,7 @@
           "critic": "Alex Heeney",
           "outlet": "Seventh Row",
           "source": "critic",
-          "review_url": ""
+          "review_url": "https://seventh-row.com/2025/05/17/film-review-alice-douard-love-letters/"
         },
         {
           "text": "Douard crafts a tender film in its domesticity yet piercing in its social commentary.",
@@ -15197,7 +15471,7 @@
           "critic": "Brian Tallerico",
           "outlet": "RogerEbert.com",
           "source": "critic",
-          "review_url": ""
+          "review_url": "https://www.rogerebert.com/festivals/sxsw-film-festival-2024-nirvanna-the-band-the-show-the-movie-fantasy-life-brother-verses-brother"
         },
         {
           "text": "With Amanda Peet in a remarkable star turn, it marks a promising debut for writer-director Matthew Shear.",
@@ -15416,7 +15690,7 @@
           "critic": "Simon Thompson",
           "outlet": "Bloody Flicks",
           "source": "critic",
-          "review_url": ""
+          "review_url": "https://bloody-flicks.co.uk/2026/04/21/buffet-infinity-overlook-film-fest-2026-review/"
         }
       ]
     },
@@ -15967,7 +16241,7 @@
           "critic": "Matt Neglia",
           "outlet": "Next Best Picture",
           "source": "critic",
-          "review_url": ""
+          "review_url": "https://nextbestpicture.com/death-does-not-exist/"
         },
         {
           "text": "Death Does Not Exist stands out as an impressive display of animation labor, but its narrative arc is as unmotivating and prescriptively moral as any children's parable.",
@@ -17285,7 +17559,7 @@
           "critic": "Ella Bowers",
           "outlet": "The Artists Forum Magazine",
           "source": "critic",
-          "review_url": ""
+          "review_url": "https://theartistsforum.org/film-match-in-a-haystack/"
         },
         {
           "text": "Dance is a visual medium, expressing what words cannot, and Match in a Haystack puts the camera in the middle of it all to capture this fight to exist.",
@@ -18530,7 +18804,7 @@
           "critic": "Sarah Campbell",
           "outlet": "Nerdist",
           "source": "critic",
-          "review_url": ""
+          "review_url": "https://nerdist.com/article/magic-the-gathering-movie-update-matt-johnson/"
         }
       ]
     },
@@ -18644,7 +18918,7 @@
           "critic": "Ben Miller",
           "outlet": "Blog",
           "source": "critic",
-          "review_url": ""
+          "review_url": "http://thefilmexperience.net/blog/2026/4/2/review-the-drama-is-a-nightmare-to-watch-and-even-worse-to-d.html"
         }
       ]
     },
@@ -20089,14 +20363,14 @@
           "critic": "John Schwarz",
           "outlet": "Bubbleblabber",
           "source": "critic",
-          "review_url": ""
+          "review_url": "https://www.bubbleblabber.com/2026/03/review-mars/"
         },
         {
           "text": "Mars displays the kind of comedy tradition The Whitest Kids U'Know are part of: smart people making the most stupid and surreal jokes possible.",
           "critic": "Louis Nalani",
           "outlet": "Bleeding Cool",
           "source": "critic",
-          "review_url": ""
+          "review_url": "https://bleedingcool.com/review-movies/"
         }
       ],
       "_watch_links_verified": "2026-05-15T14:24:55.179135"
@@ -20263,7 +20537,7 @@
           "critic": "Steven Hyden",
           "outlet": "UPROXX",
           "source": "critic",
-          "review_url": ""
+          "review_url": "https://uproxx.com/indie/mitski-the-land-review-concert-film/"
         },
         {
           "text": "It's an entry point into one of the most emotionally intelligent live performances of the decade.",
@@ -20932,7 +21206,7 @@
           "critic": "Kevin R. Wilson",
           "outlet": "That Shelf",
           "source": "critic",
-          "review_url": ""
+          "review_url": "https://thatshelf.com/modern-whore-review-tiff-2025/"
         },
         {
           "text": "Andrea Werhun is a magnetic screen presence as both the subject and performer.",
@@ -21723,21 +21997,21 @@
           "critic": "InSession Film",
           "outlet": "InSession Film",
           "source": "critic",
-          "review_url": ""
+          "review_url": "https://insessionfilm.com/movie-review-miff-2025-exit-8/"
         },
         {
           "text": "one of the most authentic video game adaptations of all time",
           "critic": "The Wolfman Cometh",
           "outlet": "The Wolfman Cometh",
           "source": "critic",
-          "review_url": ""
+          "review_url": "https://thewolfmancometh.com/2026/04/02/exit-8-video-game-movie-review/"
         },
         {
           "text": "a Moebius-strip nightmare",
           "critic": "Roger Ebert",
           "outlet": "RogerEbert.com",
           "source": "critic",
-          "review_url": ""
+          "review_url": "https://www.rogerebert.com/festivals/cannes-2025-exit-8-eleanor-the-great-fuori"
         }
       ]
     },
@@ -22556,14 +22830,14 @@
           "critic": "Katie Carter",
           "outlet": "Katie at the Movies",
           "source": "critic",
-          "review_url": ""
+          "review_url": "https://katieatthemovies.com/2026/03/27/review-forbidden-fruits/"
         },
         {
           "text": "Forbidden Fruits is bubbly, sharp, and ridiculously campy.",
           "critic": "Josh",
           "outlet": "Josh At The Movies",
           "source": "critic",
-          "review_url": ""
+          "review_url": "https://joshatthemovies.com/2026/03/26/film-review-forbidden-fruits/"
         }
       ]
     },
@@ -47884,7 +48158,7 @@
           "critic": "David Fear",
           "outlet": "Rolling Stone",
           "source": "rt_critic",
-          "review_url": ""
+          "review_url": "https://www.rollingstone.co.uk/contributor/david-fear/"
         }
       ],
       "display_title": "Sirāt",

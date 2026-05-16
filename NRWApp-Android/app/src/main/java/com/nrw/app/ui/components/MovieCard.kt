@@ -253,14 +253,14 @@ fun MovieCard(
                         .clip(RoundedCornerShape(8.dp))
                 )
 
-                // Streaming service badge (top right)
+                // Streaming service bar badge (full-width top bar)
                 movie.watchLinks?.streaming?.let { streaming ->
                     streaming.service?.let { serviceName ->
                         StreamingBadge(
                             serviceName = serviceName,
                             modifier = Modifier
-                                .align(Alignment.TopEnd)
-                                .padding(4.dp)
+                                .align(Alignment.TopCenter)
+                                .fillMaxWidth()
                         )
                     }
                 }
@@ -419,27 +419,28 @@ private fun StreamingBadge(
         "hulu" -> "HULU"
         "peacock" -> "PEACOCK"
         "paramount_plus" -> "P+"
-        "apple_tv" -> "APPLE"
+        "apple_tv" -> "APPLE TV+"
         "mubi" -> "MUBI"
         "shudder" -> "SHUDDER"
         "criterion" -> "CRITERION"
         "tubi" -> "TUBI"
         "fawesome" -> "FAWESOME"
-        else -> serviceName.uppercase().take(6)
+        else -> serviceName.uppercase().take(8)
     }
+    val textColor = if (serviceName.lowercase() == "hulu") Color.Black else TextPrimary
 
     Box(
         modifier = modifier
-            .clip(RoundedCornerShape(4.dp))
             .background(backgroundColor)
-            .padding(horizontal = 4.dp, vertical = 2.dp)
+            .padding(vertical = 4.dp),
+        contentAlignment = Alignment.Center
     ) {
         Text(
             text = displayName,
-            color = TextPrimary,
+            color = textColor,
             fontSize = 7.sp,
             fontWeight = FontWeight.Bold,
-            letterSpacing = 0.3.sp
+            letterSpacing = 0.8.sp
         )
     }
 }

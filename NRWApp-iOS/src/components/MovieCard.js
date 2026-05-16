@@ -78,11 +78,39 @@ const formatCountry = (country) => {
   return country;
 };
 
+// Get streaming service bar badge info
+const getStreamingBadge = (movie) => {
+  if (movie._is_preorder) return null; // pre-order badge handles this
+  const watchLinks = movie.watch_links || {};
+  const providers = movie.providers || {};
+  let service = null;
+  const streaming = watchLinks.streaming;
+  if (Array.isArray(streaming) && streaming.length > 0) service = streaming[0].service;
+  else if (streaming?.service) service = streaming.service;
+  if (!service && providers.streaming?.length > 0) {
+    service = providers.streaming.find(p => !p.includes('with Ads')) || providers.streaming[0];
+  }
+  if (!service) return null;
+  const s = service.toLowerCase();
+  if (s.includes('netflix')) return {name: 'NETFLIX', color: '#E50914'};
+  if (s.includes('disney')) return {name: 'DISNEY+', color: '#113CCF'};
+  if (s.includes('max') || s.includes('hbo')) return {name: 'MAX', color: '#B537F2'};
+  if (s.includes('amazon') || s.includes('prime')) return {name: 'PRIME', color: '#00A8E1'};
+  if (s.includes('hulu')) return {name: 'HULU', color: '#1CE783', textColor: '#000'};
+  if (s.includes('peacock')) return {name: 'PEACOCK', color: '#000'};
+  if (s.includes('mubi')) return {name: 'MUBI', color: '#DA2128'};
+  if (s.includes('shudder')) return {name: 'SHUDDER', color: '#8B0000'};
+  if (s.includes('apple')) return {name: 'APPLE TV+', color: '#555'};
+  if (s.includes('tubi')) return {name: 'TUBI', color: '#FA382F'};
+  return {name: service.toUpperCase().slice(0, 8), color: '#444'};
+};
+
 export default function MovieCard({movie, onPress, isFeatured = false}) {
   if (!movie) return null;
 
   const posterUrl = movie.poster_url || movie.poster;
   const director = movie.director || movie.crew?.director;
+  const streamingBadge = getStreamingBadge(movie);
 
   return (
     <TouchableOpacity
@@ -99,6 +127,15 @@ export default function MovieCard({movie, onPress, isFeatured = false}) {
         ) : (
           <View style={styles.posterPlaceholder}>
             <Text style={styles.placeholderText}>No Poster</Text>
+          </View>
+        )}
+
+        {/* Streaming service bar badge (full-width top bar) */}
+        {streamingBadge && (
+          <View style={[styles.streamingBar, {backgroundColor: streamingBadge.color}]}>
+            <Text style={[styles.streamingBarText, streamingBadge.textColor && {color: streamingBadge.textColor}]}>
+              {streamingBadge.name}
+            </Text>
           </View>
         )}
 
@@ -249,6 +286,21 @@ const styles = StyleSheet.create({
     fontSize: 9,
     fontWeight: '700',
     letterSpacing: 0.5,
+  },
+  streamingBar: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    paddingVertical: 5,
+    alignItems: 'center',
+    zIndex: 5,
+  },
+  streamingBarText: {
+    color: '#fff',
+    fontSize: 9,
+    fontWeight: '700',
+    letterSpacing: 0.8,
   },
   preOrderBadge: {
     position: 'absolute',

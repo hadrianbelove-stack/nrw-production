@@ -600,6 +600,10 @@ class HybridRTFinder:
             'cache_hits': gemini_stats.get('cache_hits', 0)
         }
 
+    def get_error_counts(self) -> Dict:
+        """Return error counts (compatibility with generator.py metrics)."""
+        return {}
+
     def close(self):
         """Clean up resources (compatibility with RTScraperPlaywright)."""
         self.cleanup()

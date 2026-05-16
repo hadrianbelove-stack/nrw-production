@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Streaming Bar A — Refinements</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: linear-gradient(135deg, #0a0a0a, #1a1a2e);
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+            padding: 20px 10px;
+        }
+
+        h1 {
+            text-align: center;
+            font-weight: 100;
+            letter-spacing: 0.15em;
+            font-size: 1.1rem;
+            color: #888;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        .variant-label {
+            text-align: center;
+            color: #00d4aa;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin: 30px 0 14px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid rgba(0,212,170,0.3);
+        }
+        .variant-label:first-of-type { margin-top: 16px; }
+
+        .variant-desc {
+            text-align: center;
+            color: #888;
+            font-size: 0.75rem;
+            margin-bottom: 14px;
+        }
+
+        .grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 14px;
+        }
+
+        /* ---- Card base ---- */
+        .movie-card {
+            width: 140px;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+        .poster {
+            width: 100%;
+            aspect-ratio: 2/3;
+            display: block;
+            object-fit: cover;
+        }
+
+        /* ---- A1: Thin bar ---- */
+        .bar-a1 {
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            padding: 4px 0;
+            font-size: 8px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            text-align: center;
+            z-index: 5;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+        }
+
+        /* ---- A2: Medium bar (original) ---- */
+        .bar-a2 {
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            padding: 6px 0;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            text-align: center;
+            z-index: 5;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+        }
+
+        /* ---- A3: Thick bar ---- */
+        .bar-a3 {
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            padding: 8px 0;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-align: center;
+            z-index: 5;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+            text-transform: uppercase;
+        }
+
+        /* ---- A4: Thin bar with bottom shadow fade ---- */
+        .bar-a4 {
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            padding: 5px 0 8px;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            text-align: center;
+            z-index: 5;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+            mask-image: linear-gradient(to bottom, black 60%, transparent);
+            -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent);
+        }
+        /* Separate shadow element for the fade effect */
+        .bar-a4-wrap {
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            z-index: 5;
+        }
+        .bar-a4-wrap::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 0; right: 0;
+            height: 12px;
+            pointer-events: none;
+        }
+
+        /* ---- Service colors ---- */
+        .svc-netflix { background: #E50914; color: #fff; }
+        .svc-prime { background: #00A8E1; color: #fff; }
+        .svc-apple { background: #555; color: #fff; }
+        .svc-hulu { background: #1CE783; color: #000; }
+        .svc-max { background: #B537F2; color: #fff; }
+        .svc-shudder { background: #333; color: #da2c38; }
+        .svc-disney { background: #113CCF; color: #fff; }
+        .svc-mubi { background: #001a34; color: #fff; }
+        .svc-tubi { background: #fa382f; color: #fff; }
+
+        /* For A4 gradient variants */
+        .svc-netflix-grad { background: linear-gradient(to bottom, #E50914 0%, rgba(229,9,20,0) 100%); color: #fff; }
+        .svc-prime-grad { background: linear-gradient(to bottom, #00A8E1 0%, rgba(0,168,225,0) 100%); color: #fff; }
+        .svc-hulu-grad { background: linear-gradient(to bottom, #1CE783 0%, rgba(28,231,131,0) 100%); color: #000; }
+        .svc-max-grad { background: linear-gradient(to bottom, #B537F2 0%, rgba(181,55,242,0) 100%); color: #fff; }
+        .svc-shudder-grad { background: linear-gradient(to bottom, #333 0%, rgba(51,51,51,0) 100%); color: #da2c38; }
+
+        .divider {
+            border: none;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            margin: 30px 0;
+        }
+
+        /* ---- No-bar card for comparison ---- */
+        .compare-label {
+            text-align: center;
+            color: #555;
+            font-size: 0.65rem;
+            margin-top: 4px;
+            letter-spacing: 0.05em;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Option A — Refinements</h1>
+
+<!-- A1: Thin -->
+<div class="variant-label">A1 — Thin</div>
+<div class="variant-desc">Minimal bar, just enough to read</div>
+<div class="grid">
+    <div class="movie-card">
+        <div class="bar-a1 svc-netflix">NETFLIX</div>
+        <img class="poster" src="https://image.tmdb.org/t/p/w300/ov8vrRLZGoXHpYjSY9Vpv1tHJX7.jpg" alt="Dhurandhar">
+    </div>
+    <div class="movie-card">
+        <div class="bar-a1 svc-prime">PRIME VIDEO</div>
+        <img class="poster" src="https://image.tmdb.org/t/p/w300/sojEzvfxR2DBcDSJyAisX8TWjov.jpg" alt="The Bluff">
+    </div>
+    <div class="movie-card">
+        <div class="bar-a1 svc-hulu">HULU</div>
+        <img class="poster" src="https://image.tmdb.org/t/p/w300/q7M8kQB46T11vmDMD6E239jsqTz.jpg" alt="Voice of Hind Rajab">
+    </div>
+    <div class="movie-card">
+        <div class="bar-a1 svc-max">MAX</div>
+        <img class="poster" src="https://image.tmdb.org/t/p/w300/38ppjtixad3xK2diPaRGg71ZBNB.jpg" alt="The A List">
+    </div>
+    <div class="movie-card">
+        <div class="bar-a1 svc-shudder">SHUDDER</div>
+        <img class="poster" src="https://image.tmdb.org/t/p/w300/a2EdW8sk22fNCvrpOiaHbR2hOuZ.jpg" alt="Crazy Old Lady">
+    </div>
+</div>
+
+<hr class="divider">
+
+<!-- A2: Medium -->
+<div class="variant-label">A2 — Medium</div>
+<div class="variant-desc">Balanced weight — readable without dominating</div>
+<div class="grid">
+    <div class="movie-card">
+        <div class="bar-a2 svc-netflix">NETFLIX</div>
+        <img class="poster" src="https://image.tmdb.org/t/p/w300/ov8vrRLZGoXHpYjSY9Vpv1tHJX7.jpg" alt="Dhurandhar">
+    </div>
+    <div class="movie-card">
+        <div class="bar-a2 svc-prime">PRIME VIDEO</div>
+        <img class="poster" src="https://image.tmdb.org/t/p/w300/sojEzvfxR2DBcDSJyAisX8TWjov.jpg" alt="The Bluff">
+    </div>
+    <div class="movie-card">
+        <div class="bar-a2 svc-hulu">HULU</div>
+        <img class="poster" src="https://image.tmdb.org/t/p/w300/q7M8kQB46T11vmDMD6E239jsqTz.jpg" alt="Voice of Hind Rajab">
+    </div>
+    <div class="movie-card">
+        <div class="bar-a2 svc-max">MAX</div>
+        <img class="poster" src="https://image.tmdb.org/t/p/w300/38ppjtixad3xK2diPaRGg71ZBNB.jpg" alt="The A List">
+    </div>
+    <div class="movie-card">
+        <div class="bar-a2 svc-shudder">SHUDDER</div>
+        <img class="poster" src="https://image.tmdb.org/t/p/w300/a2EdW8sk22fNCvrpOiaHbR2hOuZ.jpg" alt="Crazy Old Lady">
+    </div>
+</div>
+
+<hr class="divider">
+
+<!-- A3: Thick -->
+<div class="variant-label">A3 — Thick</div>
+<div class="variant-desc">Bold and unmissable</div>
+<div class="grid">
+    <div class="movie-card">
+        <div class="bar-a3 svc-netflix">NETFLIX</div>
+        <img class="poster" src="https://image.tmdb.org/t/p/w300/ov8vrRLZGoXHpYjSY9Vpv1tHJX7.jpg" alt="Dhurandhar">
+    </div>
+    <div class="movie-card">
+        <div class="bar-a3 svc-prime">PRIME VIDEO</div>
+        <img class="poster" src="https://image.tmdb.org/t/p/w300/sojEzvfxR2DBcDSJyAisX8TWjov.jpg" alt="The Bluff">
+    </div>
+    <div class="movie-card">
+        <div class="bar-a3 svc-hulu">HULU</div>
+        <img class="poster" src="https://image.tmdb.org/t/p/w300/q7M8kQB46T11vmDMD6E239jsqTz.jpg" alt="Voice of Hind Rajab">
+    </div>
+    <div class="movie-card">
+        <div class="bar-a3 svc-max">MAX</div>
+        <img class="poster" src="https://image.tmdb.org/t/p/w300/38ppjtixad3xK2diPaRGg71ZBNB.jpg" alt="The A List">
+    </div>
+    <div class="movie-card">
+        <div class="bar-a3 svc-shudder">SHUDDER</div>
+        <img class="poster" src="https://image.tmdb.org/t/p/w300/a2EdW8sk22fNCvrpOiaHbR2hOuZ.jpg" alt="Crazy Old Lady">
+    </div>
+</div>
+
+<hr class="divider">
+
+<!-- A4: Gradient fade -->
+<div class="variant-label">A4 — Gradient Fade</div>
+<div class="variant-desc">Color fades into the poster — softer transition</div>
+<div class="grid">
+    <div class="movie-card">
+        <div class="bar-a2 svc-netflix-grad">NETFLIX</div>
+        <img class="poster" src="https://image.tmdb.org/t/p/w300/ov8vrRLZGoXHpYjSY9Vpv1tHJX7.jpg" alt="Dhurandhar">
+    </div>
+    <div class="movie-card">
+        <div class="bar-a2 svc-prime-grad">PRIME VIDEO</div>
+        <img class="poster" src="https://image.tmdb.org/t/p/w300/sojEzvfxR2DBcDSJyAisX8TWjov.jpg" alt="The Bluff">
+    </div>
+    <div class="movie-card">
+        <div class="bar-a2 svc-hulu-grad">HULU</div>
+        <img class="poster" src="https://image.tmdb.org/t/p/w300/q7M8kQB46T11vmDMD6E239jsqTz.jpg" alt="Voice of Hind Rajab">
+    </div>
+    <div class="movie-card">
+        <div class="bar-a2 svc-max-grad">MAX</div>
+        <img class="poster" src="https://image.tmdb.org/t/p/w300/38ppjtixad3xK2diPaRGg71ZBNB.jpg" alt="The A List">
+    </div>
+    <div class="movie-card">
+        <div class="bar-a2 svc-shudder-grad">SHUDDER</div>
+        <img class="poster" src="https://image.tmdb.org/t/p/w300/a2EdW8sk22fNCvrpOiaHbR2hOuZ.jpg" alt="Crazy Old Lady">
+    </div>
+</div>
+
+<div style="height:60px;"></div>
+
+</body>
+</html>

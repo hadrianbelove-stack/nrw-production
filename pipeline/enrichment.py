@@ -170,12 +170,8 @@ class EnrichmentService:
         # Legacy admin overrides removed (Dec 2024) - empty dict for compatibility
         validated_overrides = {}
 
-        # 3. Try cached links
-        cached_result = self._try_cached_links(cache_key, force_refresh)
-        if cached_result:
-            return cached_result
-
-        # 3.5. Apple Music Live — always Apple TV streaming, no VOD
+        # 2.5. Apple Music Live — always Apple TV streaming, no VOD
+        # Runs BEFORE cache so stale cached data can't override the known-correct platform
         if title and title.lower().startswith('apple music live'):
             self.logger.info(f"Apple Music Live detected: {title} — forcing Apple TV streaming only")
             apple_link = None
@@ -202,7 +198,13 @@ class EnrichmentService:
                     self.storage.save_cache(self.watch_links_cache, 'cache/watch_links_cache.json')
                     return validated_links
             else:
-                self.logger.warning(f"Apple Music Live '{title}' — couldn't find Apple TV link")
+                self.logger.warning(f"Apple Music Live '{title}' — couldn't find Apple TV link, returning empty to prevent wrong platform links")
+                return {'streaming': [{'service': 'Apple TV', 'link': None}], 'vod': []}
+
+        # 3. Try cached links
+        cached_result = self._try_cached_links(cache_key, force_refresh)
+        if cached_result:
+            return cached_result
 
         # 4. Try JustWatch API (primary source for rent/buy deep links)
         justwatch_result, jw_provider_names = self._try_justwatch_api(

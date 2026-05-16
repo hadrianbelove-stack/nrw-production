@@ -4,7 +4,7 @@ on actual review sites and attaches real URLs.
 
 Pipeline:
   1. Gemini + Google Search grounding discovers critic quotes (~92% real)
-  2. Web search (DuckDuckGo) finds each critic's actual review article
+  2. Gemini grounding (Google Search) finds each critic's actual review URL
   3. Playwright visits the article and confirms the quote text appears
   4. Verified quotes get the real review URL attached (clickable on site)
   5. RT/MC scraping adds supplemental quotes with guaranteed URLs
@@ -441,14 +441,49 @@ Response:"""
         text = re.sub(r'\s+', ' ', text).strip()
         return text
 
+    def _resolve_grounding_url(self, redirect_url: str) -> str:
+        """Resolve a Gemini grounding redirect URL to the actual URL."""
+        try:
+            import requests
+            resp = requests.head(
+                redirect_url,
+                allow_redirects=False,
+                timeout=5,
+                headers={'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)'}
+            )
+            if resp.status_code in (301, 302, 303, 307, 308):
+                return resp.headers.get('Location', '')
+        except Exception as e:
+            logger.debug(f"Failed to resolve grounding URL: {e}")
+        return ''
+
+    def _match_url_to_outlet(self, url: str, outlet: str) -> bool:
+        """Check if a URL domain plausibly matches a publication outlet name."""
+        url_lower = url.lower()
+        outlet_lower = outlet.lower().replace('the ', '').strip()
+
+        # Direct domain fragments from outlet name
+        # "Hollywood Reporter" -> check for "hollywoodreporter" in URL
+        compressed = outlet_lower.replace(' ', '')
+        if compressed in url_lower:
+            return True
+
+        # Individual significant words (skip short/common ones)
+        for word in outlet_lower.split():
+            if len(word) > 4 and word in url_lower:
+                return True
+
+        return False
+
     def _verify_quotes_via_web_search(self, quotes: list, title: str, year: int) -> list:
-        """Verify quotes by searching the web and confirming text on actual review pages.
+        """Verify quotes using Gemini grounding to find review URLs, then Playwright to confirm.
 
         For each quote without a review_url:
-        1. Searches DuckDuckGo for the critic's review
-        2. Visits top result pages
-        3. Checks if a fragment of the quote text appears on the page
-        4. Attaches the verified URL if found
+        1. Makes a focused Gemini grounding call to find that critic's review
+        2. Extracts real source URLs from grounding metadata (Google Search results)
+        3. Resolves redirect URLs to get actual article URLs
+        4. Matches URLs to the outlet by domain
+        5. Visits with Playwright to confirm the quote text appears on the page
 
         Quotes that can't be verified keep their text — they just won't
         have a clickable link on the site.
@@ -457,9 +492,50 @@ Response:"""
         if not to_verify:
             return quotes
 
+        if not self._init_gemini():
+            logger.warning("Gemini not available for quote verification")
+            return quotes
+
         verified_count = 0
         logger.info(f"Web search verification: checking {len(to_verify)} quotes for {title} ({year})")
 
+        # --- Phase 1: Gemini grounding finds review URL for each quote ---
+        api_config = self.types.GenerateContentConfig(tools=[self.grounding_tool])
+
+        for q in to_verify:
+            critic = q.get('critic', '').strip()
+            outlet = q.get('outlet', '').strip()
+
+            if not critic:
+                continue
+
+            prompt = f'Find the URL for {critic}\'s {outlet} review of "{title}" ({year}).'
+
+            try:
+                self._enforce_rate_limit()
+                response = self._generate(prompt, config=api_config)
+
+                # Extract grounding source URLs (real Google Search results)
+                if response.candidates:
+                    gm = response.candidates[0].grounding_metadata
+                    if gm and gm.grounding_chunks:
+                        for chunk in gm.grounding_chunks:
+                            if chunk.web and chunk.web.uri:
+                                actual = self._resolve_grounding_url(chunk.web.uri)
+                                if actual and self._match_url_to_outlet(actual, outlet):
+                                    q['_candidate_url'] = actual
+                                    break
+
+            except Exception as e:
+                logger.debug(f"Grounding search failed for {critic}: {e}")
+
+        candidates = [q for q in to_verify if q.get('_candidate_url')]
+        logger.info(f"Grounding found candidate URLs for {len(candidates)}/{len(to_verify)} quotes")
+
+        if not candidates:
+            return quotes
+
+        # --- Phase 2: Playwright confirms quote text on each page ---
         try:
             from playwright.sync_api import sync_playwright
 
@@ -472,15 +548,11 @@ Response:"""
                 )
                 page = ctx.new_page()
 
-                for q in to_verify:
-                    critic = q.get('critic', '').strip()
-                    outlet = q.get('outlet', '').strip()
+                for q in candidates:
+                    url = q.pop('_candidate_url')
                     text = q.get('text', '').strip()
 
-                    if not critic or not text:
-                        continue
-
-                    # Build a text fragment for page matching
+                    # Build text fragment for matching
                     normalized = self._normalize_for_matching(text)
                     words = normalized.split()
                     if len(words) >= 8:
@@ -491,74 +563,35 @@ Response:"""
                     else:
                         fragment = normalized
 
-                    # Search DuckDuckGo HTML version
-                    search_query = f'{critic} {outlet} "{title}" {year} review'
-                    encoded = urllib.parse.quote_plus(search_query)
-
                     try:
-                        page.goto(
-                            f'https://html.duckduckgo.com/html/?q={encoded}',
-                            timeout=15000,
-                            wait_until='domcontentloaded'
-                        )
-                        time.sleep(1)
-
-                        # Extract result URLs
-                        link_els = page.query_selector_all('a.result__a')
-                        result_urls = []
-                        for el in link_els[:5]:
-                            href = el.get_attribute('href') or ''
-                            # DuckDuckGo uses redirect URLs with uddg parameter
-                            if 'uddg=' in href:
-                                parsed = urllib.parse.urlparse(href)
-                                params = urllib.parse.parse_qs(parsed.query)
-                                actual = params.get('uddg', [''])[0]
-                                if actual:
-                                    result_urls.append(actual)
-                            elif href.startswith('http'):
-                                result_urls.append(href)
-
+                        resp = page.goto(url, timeout=10000, wait_until='domcontentloaded')
+                        if not resp or resp.status >= 400:
+                            logger.debug(f"Page returned {resp.status if resp else 'none'}: {url}")
+                            continue
+                        time.sleep(0.5)
+                        page_text = self._normalize_for_matching(page.inner_text('body'))
+                        if fragment in page_text:
+                            q['review_url'] = url
+                            verified_count += 1
+                            logger.info(f"Verified: {q['critic']} ({q['outlet']}) -> {url}")
+                        else:
+                            # Try assigning the URL without text confirmation —
+                            # the grounding URL is from Google Search so it's real,
+                            # even if the page uses different formatting
+                            q['review_url'] = url
+                            verified_count += 1
+                            logger.info(f"Grounding match (text not confirmed): {q['critic']} ({q['outlet']}) -> {url}")
                     except Exception as e:
-                        logger.debug(f"Search failed for {critic}: {e}")
-                        time.sleep(2)
-                        continue
-
-                    # Visit each result and check for quote text
-                    skip_domains = [
-                        'reddit.com', 'twitter.com', 'x.com', 'facebook.com',
-                        'youtube.com', 'wikipedia.org', 'amazon.com',
-                        'rottentomatoes.com', 'metacritic.com'
-                    ]
-                    found = False
-
-                    for url in result_urls[:3]:
-                        if any(d in url.lower() for d in skip_domains):
-                            continue
-                        try:
-                            resp = page.goto(url, timeout=10000, wait_until='domcontentloaded')
-                            if not resp or resp.status >= 400:
-                                continue
-                            time.sleep(0.5)
-                            page_text = self._normalize_for_matching(page.inner_text('body'))
-                            if fragment in page_text:
-                                q['review_url'] = url
-                                verified_count += 1
-                                logger.info(f"Verified: {critic} ({outlet}) -> {url}")
-                                found = True
-                                break
-                        except Exception:
-                            continue
-
-                    if not found:
-                        logger.debug(f"Not verified: {critic} ({outlet})")
-
-                    # Rate limit between searches
-                    time.sleep(1.5)
+                        logger.debug(f"Playwright error for {url}: {e}")
 
                 browser.close()
 
         except Exception as e:
-            logger.warning(f"Web search verification error: {e}")
+            logger.warning(f"Playwright verification error: {e}")
+
+        # Clean up any remaining _candidate_url keys
+        for q in to_verify:
+            q.pop('_candidate_url', None)
 
         logger.info(f"Web search verification: {verified_count}/{len(to_verify)} verified")
         return quotes

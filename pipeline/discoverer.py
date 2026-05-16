@@ -440,11 +440,24 @@ class ProviderDiscoverer:
                                     if _nd_match:
                                         _nd = json.loads(_nd_match.group(1))
                                         _init = _nd.get('props', {}).get('pageProps', {}).get('initialData', {})
+                                        _end_time = _init.get('end_time', '')
+                                        _end_in_future = False
+                                        if _end_time:
+                                            try:
+                                                from datetime import datetime as _dt
+                                                _end_dt = _dt.fromisoformat(_end_time.replace('Z', '+00:00'))
+                                                _end_in_future = _end_dt > _dt.now(_end_dt.tzinfo)
+                                            except (ValueError, TypeError):
+                                                pass
                                         if _init.get('is_available') is True:
                                             has_providers = True
                                             print(f"  ✓ {movie['title']} — VS bypass: screening active ({_vs_link})")
+                                        elif _end_in_future:
+                                            # Upcoming/pre-order — screening hasn't started but end_time is future
+                                            has_providers = True
+                                            print(f"  ✓ {movie['title']} — VS bypass: upcoming screening (ends {_end_time[:10]})")
                                         else:
-                                            _end = _init.get('end_time', 'unknown')
+                                            _end = _end_time or 'unknown'
                                             print(f"  ⏭ {movie['title']} — VS bypass skipped: screening expired (ended {_end})")
                                     else:
                                         print(f"  ⏭ {movie['title']} — VS bypass skipped: could not parse page")

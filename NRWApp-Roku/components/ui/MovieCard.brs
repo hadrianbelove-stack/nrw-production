@@ -238,18 +238,11 @@ Sub SetupServiceBadge(service as String)
     end if
     m.serviceBadgeBg.visible = true
 
-    ' Adjust badge width based on text
-    if Len(badgeText) > 2
-        m.serviceBadge.width = 48
-        m.serviceBadgeBg.width = 48
-        m.serviceBadge.translation = [148, 4]
-        m.serviceBadgeBg.translation = [148, 4]
-    else
-        m.serviceBadge.width = 40
-        m.serviceBadgeBg.width = 40
-        m.serviceBadge.translation = [156, 4]
-        m.serviceBadgeBg.translation = [156, 4]
-    end if
+    ' Full-width bar — always 200px wide at top
+    m.serviceBadge.width = 200
+    m.serviceBadgeBg.width = 200
+    m.serviceBadge.translation = [0, 0]
+    m.serviceBadgeBg.translation = [0, 0]
 End Sub
 
 ' ============================================================================
