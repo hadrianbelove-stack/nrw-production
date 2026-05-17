@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The New Release Wall</title>
-    <link rel="stylesheet" href="assets/styles.css?v=53">
+    <link rel="stylesheet" href="assets/styles.css?v=56">
 </head>
 <body>
     <header>
@@ -39,7 +39,6 @@
     <div class="poster-lightbox" id="poster-lightbox">
         <button class="lightbox-close" onclick="NRW.closeLightbox()" aria-label="Close">&times;</button>
         <div class="lightbox-content">
-            <button class="lightbox-nav prev" onclick="NRW.lightboxNav(-1)" aria-label="Previous">&larr;</button>
             <div class="lightbox-poster-wrap">
                 <div class="lightbox-poster-fallback" id="lightbox-poster-fallback"><span class="lightbox-poster-fallback-title" id="lightbox-poster-fallback-title"></span></div>
                 <img class="lightbox-poster" id="lightbox-poster" src="" alt="Movie poster">
@@ -56,16 +55,15 @@
                 </div>
                 <div class="lightbox-meta" id="lightbox-meta"></div>
                 <div class="lightbox-scores" id="lightbox-scores"></div>
+                <div class="lightbox-buttons" id="lightbox-buttons"></div>
                 <div class="lightbox-pull-quotes" id="lightbox-pull-quotes" style="display:none;"></div>
                 <p class="lightbox-synopsis" id="lightbox-synopsis"></p>
-                <div class="lightbox-buttons" id="lightbox-buttons"></div>
             </div>
-            <button class="lightbox-nav next" onclick="NRW.lightboxNav(1)" aria-label="Next">&rarr;</button>
         </div>
-        <div class="lightbox-hint">Arrow keys to navigate &bull; ESC to close</div>
+        <div class="lightbox-hint">Arrow keys to browse &bull; Enter to select &bull; ESC to close</div>
     </div>
 
     <script src="assets/shared-config.js?v=1"></script>
-    <script src="assets/app.js?v=52"></script>
+    <script src="assets/app.js?v=55"></script>
 </body>
 </html>

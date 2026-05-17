@@ -835,7 +835,11 @@ const NRWMobile = {
         }
 
         if (!service && providers.streaming?.length > 0) {
-            service = providers.streaming.find(p => !p.includes('with Ads')) || providers.streaming[0];
+            const screeningNames = NRWConfig.VOD_SERVICE_MAP.screening.matches;
+            const realStreamers = providers.streaming.filter(p =>
+                !p.includes('with Ads') && !screeningNames.some(s => p.toLowerCase().includes(s))
+            );
+            service = realStreamers[0] || null;
         }
 
         if (!service) return null;

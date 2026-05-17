@@ -1289,6 +1289,18 @@ header h1 {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
+/* Keyboard focus ring for lightbox button navigation */
+.lb-focused {
+    outline: 2px solid var(--accent-primary) !important;
+    outline-offset: 3px;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+.lightbox-trailer-overlay.lb-focused {
+    outline-offset: -3px;
+    border-radius: 8px;
+}
+
 /* Service colors — references :root variables */
 .watch-btn-lb.stream { background: var(--accent-primary); color: #000; }
 .watch-btn-lb.netflix { background: var(--svc-netflix); color: #fff; }

@@ -83,6 +83,7 @@ const NRW = {
     // Lightbox state
     lightboxMovies: [],  // Movies currently in the lightbox (filtered/displayed)
     lightboxIndex: 0,    // Current index in lightbox
+    lightboxBtnIndex: -1, // Focused button index in lightbox (-1 = none focused, arrows cycle movies)
     trailerLightboxIndex: -1,  // Index in lightboxMovies of the movie whose trailer is playing (-1 = none)
     trailerReelMovies: [],     // Movies in the trailer reel (last 7 days with hosted trailers)
     isTrailerReel: false,      // true when playing the trailer reel (vs individual trailer from lightbox)
@@ -467,7 +468,11 @@ const NRW = {
                 // Get streaming service name
                 let service = NRW.getStreaming(watchLinks)?.service;
                 if (!service && providers.streaming?.length > 0) {
-                    service = providers.streaming.find(p => !p.includes('with Ads')) || providers.streaming[0];
+                    const screeningNames = NRWConfig.VOD_SERVICE_MAP.screening.matches;
+                    const realStreamers = providers.streaming.filter(p =>
+                        !p.includes('with Ads') && !screeningNames.some(s => p.toLowerCase().includes(s))
+                    );
+                    service = realStreamers[0] || null;
                 }
 
                 if (!service) return '';
@@ -826,6 +831,7 @@ const NRW = {
         if (index === -1) return;
 
         this.lightboxIndex = index;
+        this.lightboxBtnIndex = -1;
         this.updateLightbox();
 
         // Show lightbox
@@ -846,11 +852,76 @@ const NRW = {
         }
     },
 
-    // Navigate in lightbox
+    // Navigate in lightbox (movie-level)
     lightboxNav(direction) {
         const count = this.lightboxMovies.length;
         this.lightboxIndex = (this.lightboxIndex + direction + count) % count;
+        this.lightboxBtnIndex = -1;
         this.updateLightbox();
+    },
+
+    // Get all focusable buttons in the lightbox (trailer overlay + watch buttons)
+    _getLightboxFocusables() {
+        const items = [];
+        const posterWrap = document.querySelector('.lightbox-poster-wrap');
+        const trailerOverlay = posterWrap?.querySelector('.lightbox-trailer-overlay[data-trailer]');
+        if (trailerOverlay) items.push(trailerOverlay);
+        // Watch buttons and VOD cards inside the lightbox buttons area
+        const container = document.getElementById('lightbox-buttons');
+        if (container) {
+            container.querySelectorAll('a.watch-btn-lb, .vcard').forEach(b => items.push(b));
+        }
+        return items;
+    },
+
+    // Arrow key nav within lightbox: cycle buttons first, then movies
+    _lightboxArrowNav(direction) {
+        const focusables = this._getLightboxFocusables();
+        const count = focusables.length;
+
+        if (count === 0) {
+            // No buttons — just cycle movies
+            this.lightboxNav(direction);
+            return;
+        }
+
+        const next = this.lightboxBtnIndex + direction;
+
+        if (next < -1) {
+            // Past the left edge (was at poster, pressed left) — go to previous movie
+            this.lightboxNav(-1);
+        } else if (next >= count) {
+            // Past the right edge (was at last button, pressed right) — go to next movie
+            this.lightboxNav(1);
+        } else {
+            // Move focus within buttons (or back to poster at -1)
+            this.lightboxBtnIndex = next;
+            this._updateLightboxFocus(focusables);
+        }
+    },
+
+    // Visually highlight the focused button
+    _updateLightboxFocus(focusables) {
+        if (!focusables) focusables = this._getLightboxFocusables();
+        // Clear all focus rings
+        focusables.forEach(el => el.classList.remove('lb-focused'));
+        // Apply focus to current
+        if (this.lightboxBtnIndex >= 0 && this.lightboxBtnIndex < focusables.length) {
+            focusables[this.lightboxBtnIndex].classList.add('lb-focused');
+            focusables[this.lightboxBtnIndex].scrollIntoView({ block: 'nearest' });
+        }
+    },
+
+    // Enter/Space activates the focused button
+    _lightboxActivateFocused(e) {
+        if (this.lightboxBtnIndex < 0) return;
+        const focusables = this._getLightboxFocusables();
+        const el = focusables[this.lightboxBtnIndex];
+        if (!el) return;
+        e.preventDefault();
+        // For vcards, click the first link inside
+        const link = el.tagName === 'A' ? el : el.querySelector('a');
+        if (link) link.click();
     },
 
     // --- Lightbox sub-renderers (extracted from updateLightbox) ---
@@ -1085,12 +1156,44 @@ const NRW = {
 
         // Trailer is now a poster overlay (see _updateLightboxPoster)
 
-        // 1. Watch stack (VOD first, then streaming)
+        // 1. Watch stack (streaming first, then VOD)
         const watchStack = document.createElement('div');
         watchStack.className = 'watch-stack';
         let hasWatch = false;
 
-        // 2a. VOD row (rent/buy) — before streaming
+        // 2a. Streaming service — before VOD
+        const lbStreamData = this.getStreaming(watchLinks);
+        let streamSvc = lbStreamData?.service;
+        let streamLink = lbStreamData?.link;
+        if (!streamSvc && providers.streaming?.length) {
+            const screeningNames = NRWConfig.VOD_SERVICE_MAP.screening.matches;
+            const realStreamers = providers.streaming.filter(p =>
+                !p.includes('with Ads') && !screeningNames.some(s => p.toLowerCase().includes(s))
+            );
+            streamSvc = realStreamers[0] || null;
+        }
+        if (streamSvc) {
+            const resolved = this.resolveService(streamSvc);
+            const cls = resolved?.class || '';
+            const name = resolved?.name || streamSvc.toUpperCase();
+            const streamLabel = document.createElement('div');
+            streamLabel.className = 'watch-section-label';
+            streamLabel.textContent = 'Stream:';
+            watchStack.appendChild(streamLabel);
+            if (streamLink) {
+                watchStack.appendChild(makeLink(streamLink, `watch-btn-lb stream ${cls}`, name, null, resolved?.wideLogo));
+            } else {
+                const span = document.createElement('span');
+                span.className = `watch-btn-lb stream ${cls}`;
+                span.style.opacity = '0.6';
+                span.style.cursor = 'default';
+                span.textContent = name;
+                watchStack.appendChild(span);
+            }
+            hasWatch = true;
+        }
+
+        // 2b. VOD row (rent/buy) — after streaming
         const lbVodEntries = Array.isArray(watchLinks.vod) ? watchLinks.vod
             : (watchLinks.vod?.service ? [watchLinks.vod] : []);
         const vodRow = document.createElement('div');
@@ -1153,34 +1256,6 @@ const NRW = {
             vodLabel.textContent = 'Rent/Buy:';
             watchStack.appendChild(vodLabel);
             watchStack.appendChild(vodRow);
-            hasWatch = true;
-        }
-
-        // 2b. Streaming service — after VOD
-        const lbStreamData = this.getStreaming(watchLinks);
-        let streamSvc = lbStreamData?.service;
-        let streamLink = lbStreamData?.link;
-        if (!streamSvc && providers.streaming?.length) {
-            streamSvc = providers.streaming.find(p => !p.includes('with Ads')) || providers.streaming[0];
-        }
-        if (streamSvc) {
-            const resolved = this.resolveService(streamSvc);
-            const cls = resolved?.class || '';
-            const name = resolved?.name || streamSvc.toUpperCase();
-            const streamLabel = document.createElement('div');
-            streamLabel.className = 'watch-section-label';
-            streamLabel.textContent = 'Stream:';
-            watchStack.appendChild(streamLabel);
-            if (streamLink) {
-                watchStack.appendChild(makeLink(streamLink, `watch-btn-lb stream ${cls}`, name, null, resolved?.wideLogo));
-            } else {
-                const span = document.createElement('span');
-                span.className = `watch-btn-lb stream ${cls}`;
-                span.style.opacity = '0.6';
-                span.style.cursor = 'default';
-                span.textContent = name;
-                watchStack.appendChild(span);
-            }
             hasWatch = true;
         }
 
@@ -1248,10 +1323,11 @@ const NRW = {
 
             if (e.key === 'Escape') {
                 this.closeLightbox();
-            } else if (e.key === 'ArrowLeft') {
-                this.lightboxNav(-1);
-            } else if (e.key === 'ArrowRight') {
-                this.lightboxNav(1);
+            } else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+                e.preventDefault();
+                this._lightboxArrowNav(e.key === 'ArrowRight' ? 1 : -1);
+            } else if (e.key === 'Enter' || e.key === ' ') {
+                this._lightboxActivateFocused(e);
             }
         }, true);  // capture phase — fires before video/iframe controls
     },

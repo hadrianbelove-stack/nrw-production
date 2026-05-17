@@ -1598,10 +1598,10 @@ class DataGenerator:
                 if source == 'tracking' and movie_id in tracking_movies:
                     movie = tracking_movies[movie_id]
                     providers = movie.get('providers', {})
-                    streaming = providers.get('streaming', [])
-                    if 'eventive' not in [p.lower() if isinstance(p, str) else '' for p in streaming]:
-                        streaming.append('Eventive')
-                        providers['streaming'] = streaming
+                    rent = providers.get('rent', [])
+                    if 'eventive' not in [p.lower() if isinstance(p, str) else '' for p in rent]:
+                        rent.append('Eventive')
+                        providers['rent'] = rent
                         movie['providers'] = providers
 
                 new_cached += 1
