@@ -140,6 +140,135 @@ const ActionButton = forwardRef(({
   );
 });
 
+// VOD button — single unified button: small logo left, prices right
+const VodButton = ({
+  color, onPress, hasTVPreferredFocus = false, testID,
+  borderColor, icon, label,
+  rentPrice, buyPrice,
+  buttonIndex, isWatchButton = false,
+}) => {
+  const [isFocused, setIsFocused] = useState(false);
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    _totalButtonCount++;
+    if (isWatchButton) _watchButtonCount++;
+    return () => {
+      _totalButtonCount--;
+      if (isWatchButton) _watchButtonCount--;
+    };
+  }, []);
+
+  const handleFocus = useCallback(() => {
+    setIsFocused(true);
+    if (isWatchButton) _focusedWatchIndex = buttonIndex;
+    Animated.spring(scaleAnim, {
+      toValue: 1.1,
+      useNativeDriver: true,
+    }).start();
+  }, [scaleAnim, isWatchButton, buttonIndex]);
+
+  const handleBlur = useCallback(() => {
+    setIsFocused(false);
+    if (isWatchButton) {
+      if (_focusedWatchIndex === buttonIndex) _focusedWatchIndex = -1;
+      _lastWatchBlurTime = Date.now();
+    }
+    Animated.spring(scaleAnim, {
+      toValue: 1,
+      useNativeDriver: true,
+    }).start();
+  }, [scaleAnim, isWatchButton, buttonIndex]);
+
+  const hasPrice = !!(rentPrice || buyPrice);
+
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      onFocus={handleFocus}
+      onBlur={handleBlur}
+      hasTVPreferredFocus={hasTVPreferredFocus}
+      activeOpacity={0.9}
+      accessible={true}
+      accessibilityLabel={label || [rentPrice && `Rent ${rentPrice}`, buyPrice && `Buy ${buyPrice}`].filter(Boolean).join(', ')}
+      accessibilityRole="button"
+      testID={testID}
+    >
+      <Animated.View
+        style={[
+          vodButtonStyles.button,
+          { backgroundColor: color },
+          borderColor && { borderWidth: 1, borderColor },
+          isFocused && vodButtonStyles.buttonFocused,
+          { transform: [{ scale: scaleAnim }] },
+        ]}
+      >
+        {icon && (
+          <Image source={icon} style={vodButtonStyles.logo} />
+        )}
+        {label && !hasPrice && (
+          <Text style={vodButtonStyles.labelOnly}>{label}</Text>
+        )}
+        {hasPrice && (
+          <View style={vodButtonStyles.priceContainer}>
+            {rentPrice && (
+              <Text style={vodButtonStyles.priceText}>Rent {rentPrice}</Text>
+            )}
+            {rentPrice && buyPrice && (
+              <Text style={vodButtonStyles.priceDivider}>·</Text>
+            )}
+            {buyPrice && (
+              <Text style={vodButtonStyles.priceText}>Buy {buyPrice}</Text>
+            )}
+          </View>
+        )}
+      </Animated.View>
+    </TouchableOpacity>
+  );
+};
+
+const vodButtonStyles = StyleSheet.create({
+  button: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 60,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    marginRight: 20,
+  },
+  buttonFocused: {
+    borderWidth: 4,
+    borderColor: Colors.focusBorderHighlight,
+  },
+  logo: {
+    width: 80,
+    height: 20,
+    resizeMode: 'contain',
+    tintColor: '#ffffff',
+    marginRight: 12,
+  },
+  labelOnly: {
+    color: '#ffffff',
+    fontSize: 20,
+    fontWeight: '700',
+    letterSpacing: 1,
+  },
+  priceContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  priceText: {
+    color: '#ffffff',
+    fontSize: 20,
+    fontWeight: '700',
+  },
+  priceDivider: {
+    color: 'rgba(255,255,255,0.5)',
+    fontSize: 20,
+    marginHorizontal: 8,
+  },
+});
+
 const actionButtonStyles = StyleSheet.create({
   button: {
     width: 200,
@@ -822,8 +951,6 @@ const MovieDetailTvOS = () => {
                 )}
                 {nonVsLinks.map((link, i) => {
                   const idx = watchIdx++;
-                  const label = movie?._is_preorder ? 'PRE-ORDER'
-                    : getVodDisplayName(link.service);
                   const buttonColor = movie?._is_preorder ? '#7c3aed'
                     : getServiceColor(link.service);
                   const vodKey = normalizeService(link.service);
@@ -831,42 +958,20 @@ const MovieDetailTvOS = () => {
                     : undefined;
                   const hasPrice = !!(link.rentPrice || link.buyPrice);
                   return (
-                    <View key={`purchase-${i}`}>
-                      <ActionButton
-                        buttonIndex={idx}
-                        isWatchButton={true}
-                        nextFocusUp={undefined}
-                        label={label}
-                        color={buttonColor}
-                        icon={!movie?._is_preorder ? getServiceLogo(link.service) : null}
-                        iconTintColor="#ffffff"
-                        borderColor={vodBorder}
-                        onPress={() => handleWatchPress(link)}
-                        hasTVPreferredFocus={(preferWatchFocus || !movie?.links?.trailer_hosted) && i === 0}
-                        testID={`action-btn-purchase-${i}`}
-                      />
-                      {hasPrice && (
-                        <View style={{flexDirection: 'row', width: 200, marginTop: -8, borderBottomLeftRadius: 8, borderBottomRightRadius: 8, overflow: 'hidden'}}>
-                          {link.rentPrice && (
-                            <View style={{flex: 1, backgroundColor: buttonColor + 'CC', alignItems: 'center', paddingVertical: 5}}>
-                              <Text style={{fontSize: 13, fontWeight: '700', color: '#fff'}}>
-                                Rent {link.rentPrice}
-                              </Text>
-                            </View>
-                          )}
-                          {link.buyPrice && (
-                            <View style={{flex: 1, backgroundColor: buttonColor + '99', alignItems: 'center', paddingVertical: 5}}>
-                              <Text style={{fontSize: 13, fontWeight: '700', color: '#fff'}}>
-                                Buy {link.buyPrice}
-                              </Text>
-                            </View>
-                          )}
-                        </View>
-                      )}
-                      {movie?._is_preorder && link.sublabel && (
-                        <Text style={styles.preOrderDateLabel}>{link.sublabel}</Text>
-                      )}
-                    </View>
+                    <VodButton
+                      key={`purchase-${i}`}
+                      buttonIndex={idx}
+                      isWatchButton={true}
+                      color={buttonColor}
+                      borderColor={vodBorder}
+                      icon={!movie?._is_preorder ? getServiceLogo(link.service) : null}
+                      label={movie?._is_preorder ? 'PRE-ORDER' : null}
+                      rentPrice={link.rentPrice}
+                      buyPrice={link.buyPrice}
+                      onPress={() => handleWatchPress(link)}
+                      hasTVPreferredFocus={(preferWatchFocus || !movie?.links?.trailer_hosted) && i === 0}
+                      testID={`action-btn-purchase-${i}`}
+                    />
                   );
                 })}
 
