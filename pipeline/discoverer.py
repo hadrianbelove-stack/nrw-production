@@ -497,21 +497,31 @@ class ProviderDiscoverer:
 
                             if not movie.get('digital_date'):
                                 # For VS bypass, use screening start_time as digital_date
+                                _resolved_date = None
                                 if movie.get('_virtual_screening') and _mid in getattr(self.enrichment, 'watch_links_cache', {}):
                                     _vs_cache = self.enrichment.watch_links_cache[_mid]
                                     _vs_start = _vs_cache.get('start_time', '')
                                     if _vs_start:
                                         try:
                                             _start_dt = datetime.fromisoformat(_vs_start.replace('Z', '+00:00'))
-                                            movie['digital_date'] = _start_dt.strftime('%Y-%m-%d')
-                                            # Future screening = pre-order (hidden unless filter active)
-                                            if _start_dt.date() > datetime.now().date():
-                                                movie['_is_preorder'] = True
+                                            _resolved_date = _start_dt.strftime('%Y-%m-%d')
                                         except (ValueError, TypeError):
-                                            movie['digital_date'] = datetime.now().strftime('%Y-%m-%d')
-                                    else:
-                                        movie['digital_date'] = datetime.now().strftime('%Y-%m-%d')
-                                else:
+                                            pass
+
+                                # Fallback: use virtual_screening_info.available_start if already populated
+                                if not _resolved_date:
+                                    _vsi_start = movie.get('virtual_screening_info', {}).get('available_start')
+                                    if _vsi_start:
+                                        _resolved_date = _vsi_start
+
+                                if _resolved_date:
+                                    movie['digital_date'] = _resolved_date
+                                    # Future screening = pre-order (hidden unless filter active)
+                                    if _resolved_date > datetime.now().strftime('%Y-%m-%d'):
+                                        movie['_is_preorder'] = True
+                                elif not movie.get('_virtual_screening'):
+                                    # Only non-VS movies get today's date as fallback;
+                                    # VS movies wait for display phase to resolve from Eventive data
                                     movie['digital_date'] = datetime.now().strftime('%Y-%m-%d')
                             # For VS bypass, preserve original streaming providers (TMDB returns empty)
                             if movie.get('_virtual_screening') and not stream_names:

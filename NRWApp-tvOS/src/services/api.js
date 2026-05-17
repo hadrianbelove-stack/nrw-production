@@ -15,15 +15,18 @@ const DATA_URL = 'https://raw.githubusercontent.com/hadrianbelove-stack/nrw-prod
  */
 export async function fetchMovies() {
   try {
-    // Always fetch fresh data to ensure posters are up to date
-    // TODO: Re-enable caching once data is stable
-    console.log('[API] Fetching fresh movie data from GitHub (cache bypassed)');
+    // Always fetch fresh data — bust HTTP cache with timestamp param
+    console.log('[API] Fetching fresh movie data from GitHub');
 
     // Add timeout to prevent indefinite hang on slow networks
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
 
-    const response = await fetch(DATA_URL, { signal: controller.signal });
+    const cacheBustUrl = `${DATA_URL}?t=${Date.now()}`;
+    const response = await fetch(cacheBustUrl, {
+      signal: controller.signal,
+      headers: { 'Cache-Control': 'no-cache' },
+    });
     clearTimeout(timeoutId);
 
     if (!response.ok) {
