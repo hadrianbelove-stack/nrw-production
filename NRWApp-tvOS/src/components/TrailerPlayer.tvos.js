@@ -20,6 +20,7 @@ const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const TrailerPlayer = ({ movieList, initialIndex, onClose }) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [paused, setPaused] = useState(false);
+  const [closing, setClosing] = useState(false);
   const leftArrowOpacity = useRef(new Animated.Value(0.4)).current;
   const rightArrowOpacity = useRef(new Animated.Value(0.4)).current;
 
@@ -78,13 +79,22 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose }) => {
     }
   }, [currentIndex, findNextTrailerIndex, flashArrow, leftArrowOpacity]);
 
+  // Close handler — pause video first, then notify parent after a frame
+  const handleClose = useCallback(() => {
+    if (closing) return;
+    setClosing(true);
+    setPaused(true);
+    // Give react-native-video a frame to process the pause before unmount
+    setTimeout(() => onClose(currentIndex), 50);
+  }, [closing, currentIndex, onClose]);
+
   // Handle TV remote events
   useTVEventHandler({
     [TV_EVENTS.LEFT]: navigatePrevious,
     [TV_EVENTS.RIGHT]: navigateNext,
     [TV_EVENTS.SWIPE_LEFT]: navigatePrevious,
     [TV_EVENTS.SWIPE_RIGHT]: navigateNext,
-    [TV_EVENTS.MENU]: () => onClose(currentIndex),
+    [TV_EVENTS.MENU]: handleClose,
     [TV_EVENTS.PLAY_PAUSE]: togglePlayPause,
     [TV_EVENTS.SELECT]: togglePlayPause,
   });
@@ -110,10 +120,10 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose }) => {
           source={{ uri: trailerUrl }}
           style={styles.video}
           resizeMode="contain"
-          paused={paused}
+          paused={paused || closing}
           controls={false}
-          onEnd={() => onClose(currentIndex)}
-          onError={() => onClose(currentIndex)}
+          onEnd={handleClose}
+          onError={handleClose}
         />
       )}
 
