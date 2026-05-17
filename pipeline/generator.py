@@ -27,7 +27,14 @@ except ImportError as e:
     # Fallback: If Gemini module fails, use Playwright-only scraper
     from scripts.youtube_trailer_scraper import YouTubeTrailerScraper as HybridYouTubeFinder
     GEMINI_AVAILABLE = False
-    validate_youtube_url_live = None  # Defined inline as method fallback
+    # gemini_scraper unavailable — define liveness check inline
+    def validate_youtube_url_live(url):
+        try:
+            import requests
+            resp = requests.head(f"https://www.youtube.com/oembed?url={url}&format=json", timeout=5)
+            return resp.status_code == 200
+        except Exception:
+            return True
 
 # RT finder: Try Gemini-based hybrid first, fall back to Playwright-only
 try:
@@ -1017,16 +1024,7 @@ class DataGenerator:
     def _validate_youtube_url_live(self, url):
         """Check if a YouTube URL actually resolves to a playable video.
         Uses YouTube's oEmbed endpoint — fast (~100ms), no API key needed."""
-        if validate_youtube_url_live is not None:
-            return validate_youtube_url_live(url)
-        # Inline fallback if gemini_scraper import failed
-        try:
-            import requests
-            oembed = f"https://www.youtube.com/oembed?url={url}&format=json"
-            resp = requests.head(oembed, timeout=5)
-            return resp.status_code == 200
-        except Exception:
-            return True
+        return validate_youtube_url_live(url)
 
     def _cache_bad_trailer_key(self, key, title, year, url):
         """Add a dead YouTube key to bad_trailer_urls cache and save."""
@@ -1591,6 +1589,9 @@ class DataGenerator:
                     },
                     'cached_at': datetime.now().isoformat(),
                     'source': 'eventive_scanner',
+                    'start_time': film.get('start_time', ''),
+                    'end_time': film.get('end_time', ''),
+                    'festival_name': film.get('festival_name', ''),
                 }
 
                 # Update tracking providers if this is a tracking movie

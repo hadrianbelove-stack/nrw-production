@@ -644,6 +644,11 @@ class JustWatchClient:
         """
         service_map = {}  # lowercase service -> merged entry
 
+        # Enforce HD-first sort so "first wins" keeps the best quality price
+        _ptype_order = {'HD': 0, '4K': 1, 'SD': 2}
+        rent_offers = sorted(rent_offers, key=lambda o: _ptype_order.get(o.get('_ptype', ''), 99))
+        buy_offers = sorted(buy_offers, key=lambda o: _ptype_order.get(o.get('_ptype', ''), 99))
+
         for offer in rent_offers:
             svc_key = offer['service'].lower()
             if svc_key not in service_map:
