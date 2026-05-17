@@ -1,10 +1,33 @@
 {
-  "timestamp": "2026-05-16T13:15:08.150189",
-  "movies_requested": 1,
-  "movies_enriched": 1,
-  "movies_deferred": 0,
-  "deferred_details": [],
-  "enrichment_duration_seconds": 3.58,
+  "timestamp": "2026-05-17T11:05:05.178693",
+  "movies_requested": 23,
+  "movies_enriched": 21,
+  "movies_deferred": 2,
+  "deferred_details": [
+    {
+      "title": "Ashes",
+      "reason": "under_60min",
+      "digital_date": "2026-05-16",
+      "discovered_at": "2026-05-16T13:14:16.445503",
+      "discovery_source": "provider_availability_check",
+      "revert_count": 1,
+      "tmdb_platforms": [
+        "Eventive"
+      ]
+    },
+    {
+      "title": "A Balcony in Limoges",
+      "reason": "under_60min",
+      "digital_date": "2026-05-13",
+      "discovered_at": "2026-05-13T12:01:59.671568",
+      "discovery_source": "provider_availability_check",
+      "revert_count": 0,
+      "tmdb_platforms": [
+        "Amazon Video"
+      ]
+    }
+  ],
+  "enrichment_duration_seconds": 1829.41,
   "error_details": [],
   "total_errors": 0
 }

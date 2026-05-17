@@ -21429,7 +21429,7 @@
       "discovery_pass": "B",
       "has_providers": false,
       "year": 2025,
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-16"
     },
@@ -25957,8 +25957,8 @@
       "has_providers": true,
       "year": 2025,
       "_discovery_source": "provider_availability_check",
-      "enriched": false,
-      "enrichment_date": null,
+      "enriched": true,
+      "enrichment_date": "2026-05-17",
       "_jw_revert_count": 1,
       "_virtual_screening": true
     },
@@ -30073,8 +30073,8 @@
       "has_providers": true,
       "year": 2025,
       "_discovery_source": "provider_availability_check",
-      "enriched": false,
-      "enrichment_date": null,
+      "enriched": true,
+      "enrichment_date": "2026-05-17",
       "_jw_revert_count": 1,
       "_virtual_screening": true
     },
@@ -32983,8 +32983,8 @@
       "has_providers": true,
       "year": 2025,
       "_discovery_source": "provider_availability_check",
-      "enriched": false,
-      "enrichment_date": null,
+      "enriched": true,
+      "enrichment_date": "2026-05-17",
       "_jw_revert_count": 1,
       "_virtual_screening": true
     },
@@ -42656,8 +42656,8 @@
       "has_providers": true,
       "year": 2025,
       "_discovery_source": "provider_availability_check",
-      "enriched": false,
-      "enrichment_date": null,
+      "enriched": true,
+      "enrichment_date": "2026-05-17",
       "_jw_revert_count": 1,
       "_virtual_screening": true
     },
@@ -53704,8 +53704,8 @@
       "has_providers": true,
       "year": 2025,
       "_discovery_source": "provider_availability_check",
-      "enriched": false,
-      "enrichment_date": null,
+      "enriched": true,
+      "enrichment_date": "2026-05-17",
       "_jw_revert_count": 1,
       "_virtual_screening": true
     },
@@ -77522,8 +77522,8 @@
       "intake_pass": "B",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "enriched": false,
-      "enrichment_date": null,
+      "enriched": true,
+      "enrichment_date": "2026-05-17",
       "_jw_revert_count": 1,
       "_virtual_screening": true
     },
@@ -89840,8 +89840,8 @@
       "year": 2025,
       "premiere_date": "2025-01-01",
       "_discovery_source": "provider_availability_check",
-      "enriched": false,
-      "enrichment_date": null,
+      "enriched": true,
+      "enrichment_date": "2026-05-17",
       "_jw_revert_count": 1,
       "_virtual_screening": true
     },
@@ -96570,8 +96570,8 @@
       "year": 2025,
       "premiere_date": "2025-04-05",
       "_discovery_source": "provider_availability_check",
-      "enriched": false,
-      "enrichment_date": null,
+      "enriched": true,
+      "enrichment_date": "2026-05-17",
       "_jw_revert_count": 1,
       "_virtual_screening": true
     },
@@ -100461,8 +100461,8 @@
       "year": 2025,
       "premiere_date": "2025-05-01",
       "_discovery_source": "provider_availability_check",
-      "enriched": false,
-      "enrichment_date": null,
+      "enriched": true,
+      "enrichment_date": "2026-05-17",
       "_jw_revert_count": 1,
       "_virtual_screening": true
     },
@@ -105851,12 +105851,15 @@
       "title": "Blind Cop 2",
       "status": "tracking",
       "first_seen": "2026-01-04",
-      "digital_date": null,
+      "digital_date": "2026-05-29",
       "providers": {},
       "intake_pass": "backfill",
       "has_providers": false,
       "year": 2025,
-      "premiere_date": "2025-07-02"
+      "premiere_date": "2025-07-02",
+      "_discovery_source": "tmdb_type4",
+      "_type4_pending": true,
+      "_is_preorder": true
     },
     "1174121": {
       "title": "Extreme Family",
@@ -106312,8 +106315,8 @@
       "year": 2025,
       "premiere_date": "2025-06-29",
       "_discovery_source": "provider_availability_check",
-      "enriched": false,
-      "enrichment_date": null,
+      "enriched": true,
+      "enrichment_date": "2026-05-17",
       "_jw_revert_count": 1,
       "_virtual_screening": true
     },
@@ -109915,8 +109918,8 @@
       "year": 2025,
       "premiere_date": "2025-09-05",
       "_discovery_source": "provider_availability_check",
-      "enriched": false,
-      "enrichment_date": null,
+      "enriched": true,
+      "enrichment_date": "2026-05-17",
       "_jw_revert_count": 1,
       "_virtual_screening": true
     },
@@ -111042,8 +111045,8 @@
       "year": 2025,
       "premiere_date": "2025-09-03",
       "_discovery_source": "provider_availability_check",
-      "enriched": false,
-      "enrichment_date": null,
+      "enriched": true,
+      "enrichment_date": "2026-05-17",
       "_jw_revert_count": 1,
       "_virtual_screening": true
     },
@@ -114569,7 +114572,8 @@
       "_discovery_source": "provider_availability_check",
       "_jw_revert_count": 10,
       "_jw_revert_reason": "justwatch_no_valid_offers",
-      "_jw_reverted_at": "2026-05-10"
+      "_jw_reverted_at": "2026-05-10",
+      "_skip_provider_discovery": true
     },
     "1241554": {
       "title": "Dirty Boy",
@@ -116808,8 +116812,8 @@
       "festival": "Toronto/TIFF",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "enriched": false,
-      "enrichment_date": null,
+      "enriched": true,
+      "enrichment_date": "2026-05-17",
       "_jw_revert_count": 1,
       "_virtual_screening": true
     },
@@ -117315,7 +117319,7 @@
       "festival": "Sundance",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 4,
+      "_jw_revert_count": 5,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-15"
     },
@@ -119343,8 +119347,8 @@
       "festival": "SXSW",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "enriched": false,
-      "enrichment_date": null,
+      "enriched": true,
+      "enrichment_date": "2026-05-17",
       "_jw_revert_count": 1,
       "_virtual_screening": true
     },
@@ -121358,8 +121362,8 @@
       "festival": "Tribeca",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "enriched": false,
-      "enrichment_date": null,
+      "enriched": true,
+      "enrichment_date": "2026-05-17",
       "_jw_revert_count": 1,
       "_virtual_screening": true
     },
@@ -123446,8 +123450,8 @@
       "festival": "Toronto/TIFF",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "enriched": false,
-      "enrichment_date": null,
+      "enriched": true,
+      "enrichment_date": "2026-05-17",
       "_jw_revert_count": 1,
       "_virtual_screening": true
     },
@@ -123896,8 +123900,8 @@
       "festival": "Toronto/TIFF",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "enriched": false,
-      "enrichment_date": null,
+      "enriched": true,
+      "enrichment_date": "2026-05-17",
       "_jw_revert_count": 1,
       "_virtual_screening": true
     },
@@ -131497,8 +131501,8 @@
       "festival": "Busan",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "enriched": false,
-      "enrichment_date": null,
+      "enriched": true,
+      "enrichment_date": "2026-05-17",
       "_jw_revert_count": 1,
       "_virtual_screening": true
     },
@@ -132832,8 +132836,8 @@
       "festival": "NYFF",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "enriched": false,
-      "enrichment_date": null,
+      "enriched": true,
+      "enrichment_date": "2026-05-17",
       "_jw_revert_count": 1,
       "_virtual_screening": true
     },
@@ -135221,8 +135225,8 @@
       "festival": "Sheffield DocFest",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "enriched": false,
-      "enrichment_date": null,
+      "enriched": true,
+      "enrichment_date": "2026-05-17",
       "_jw_revert_count": 1,
       "_virtual_screening": true
     },
@@ -135589,8 +135593,8 @@
       "festival": "Sheffield DocFest",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "enriched": false,
-      "enrichment_date": null,
+      "enriched": true,
+      "enrichment_date": "2026-05-17",
       "_jw_revert_count": 1,
       "_virtual_screening": true
     },
@@ -170129,7 +170133,7 @@
       "networks": [
         "France 2"
       ],
-      "has_providers": true,
+      "has_providers": false,
       "_discovery_source": "provider_availability_check",
       "_jw_revert_count": 6,
       "_jw_revert_reason": "justwatch_no_valid_offers",
@@ -188491,7 +188495,7 @@
       "intake_pass": "B",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 8,
+      "_jw_revert_count": 9,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-05-12"
     },
@@ -222061,8 +222065,8 @@
       "digital_date": "2026-05-15",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 2,
-      "_jw_revert_reason": "justwatch_no_valid_offers",
+      "_jw_revert_count": 3,
+      "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-16"
     },
     "1688177": {
@@ -222090,7 +222094,7 @@
       "digital_date": "2026-05-15",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-16"
     },
@@ -222119,7 +222123,7 @@
       "digital_date": "2026-05-15",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-16"
     },
@@ -223073,6 +223077,142 @@
         "France 2"
       ],
       "has_providers": false
+    },
+    "1460154": {
+      "title": "Lightscape",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-17",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A"
+    },
+    "1694172": {
+      "title": "Friends Until the End",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-17",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1693413": {
+      "title": "Pommelien Thijs - AFAS Dome",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-17",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1675201": {
+      "title": "Press: Stop- The Ri Lit Movie",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-17",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1626675": {
+      "title": "Voidance",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-17",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1624649": {
+      "title": "DUCOBU: Le Marathon des Enfers !",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-17",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1696601": {
+      "title": "Heir to the Rift: The Final Choice",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-17",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1696437": {
+      "title": "El Perfecto Culpable",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-17",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1696120": {
+      "title": "Iberah",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-17",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1696756": {
+      "title": "Karaa",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-17",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1696589": {
+      "title": "The Great Indian Illusion",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-17",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1696333": {
+      "title": "Театр в кино: Принцесса цирка",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-17",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1696224": {
+      "title": "Helden und Herzen: Bayern, Schalke und das unmögliche Tor",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-17",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1695826": {
+      "title": "Julian Gałek drinks Matcha Oat Milk 2026",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-17",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1514891": {
+      "title": "A Girl’s Story",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-17",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Cannes"
     }
   }
 }
