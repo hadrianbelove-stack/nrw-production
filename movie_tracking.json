@@ -21429,7 +21429,7 @@
       "discovery_pass": "B",
       "has_providers": false,
       "year": 2025,
-      "_jw_revert_count": 3,
+      "_jw_revert_count": 5,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-16"
     },
@@ -53026,13 +53026,24 @@
     },
     "1585266": {
       "title": "Clairtone",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2025-12-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-05-17",
+      "providers": {
+        "rent": [
+          "Apple TV Store"
+        ],
+        "buy": [
+          "Apple TV Store"
+        ],
+        "streaming": []
+      },
       "discovery_pass": "B",
-      "has_providers": false,
-      "year": 2025
+      "has_providers": true,
+      "year": 2025,
+      "_discovery_source": "provider_availability_check",
+      "enriched": false,
+      "enrichment_date": null
     },
     "1585144": {
       "title": "Connection",
@@ -117319,7 +117330,7 @@
       "festival": "Sundance",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 5,
+      "_jw_revert_count": 7,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-15"
     },
@@ -122068,11 +122079,14 @@
       "year": 2025,
       "status": "tracking",
       "first_seen": "2026-01-06",
-      "digital_date": null,
+      "digital_date": "2026-05-27",
       "providers": {},
       "intake_pass": "C",
       "festival": "Tribeca",
-      "has_providers": false
+      "has_providers": false,
+      "_discovery_source": "tmdb_type4",
+      "_type4_pending": true,
+      "_is_preorder": true
     },
     "1465988": {
       "title": "The Degenerate: The Life and Films of Andy Milligan",
@@ -188495,9 +188509,10 @@
       "intake_pass": "B",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 9,
+      "_jw_revert_count": 10,
       "_jw_revert_reason": "justwatch_no_valid_offers",
-      "_jw_reverted_at": "2026-05-12"
+      "_jw_reverted_at": "2026-05-12",
+      "_skip_provider_discovery": true
     },
     "1631821": {
       "title": "Pinball",
@@ -221905,7 +221920,7 @@
       "title": "Soul Mate",
       "content_type": "limited_series",
       "tmdb_id": 258063,
-      "status": "tracking",
+      "status": "available",
       "first_air_date": "2026-05-14",
       "digital_date": "2026-05-14",
       "episode_count": 8,
@@ -221917,15 +221932,21 @@
       ],
       "original_language": "ja",
       "providers": {
-        "streaming": [],
         "rent": [],
-        "buy": []
+        "buy": [],
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
       },
       "intake_date": "2026-05-14",
       "networks": [
         "Netflix"
       ],
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": false,
+      "enrichment_date": null
     },
     "tv_322402": {
       "title": "Dokument inifrån: Arvtagarna",
@@ -222065,7 +222086,7 @@
       "digital_date": "2026-05-15",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 3,
+      "_jw_revert_count": 5,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-16"
     },
@@ -222094,7 +222115,7 @@
       "digital_date": "2026-05-15",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 3,
+      "_jw_revert_count": 5,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-16"
     },
@@ -222123,7 +222144,7 @@
       "digital_date": "2026-05-15",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 3,
+      "_jw_revert_count": 5,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-16"
     },

@@ -906,21 +906,31 @@ const NRWMobile = {
     },
 
     renderVODPriceCard(provider) {
-        const badge = this.renderProviderBadge(provider);
-        if (!provider.rentPrice && !provider.buyPrice) return badge;
-        // V1: badge on top, split rent/buy price bar below
+        if (!provider.rentPrice && !provider.buyPrice) return this.renderProviderBadge(provider);
+        // V2: logo left, prices stacked right
         const svcKey = provider.serviceKey || '';
-        let barHtml = '<div class="vod-price-bar-m ' + this.esc(svcKey) + '">';
+        const invertClass = this.INVERT_KEYS.has(svcKey) ? ' invert' : '';
+        let logoHtml;
+        if (provider.wideLogo) {
+            const src = '../assets/logos/' + provider.wideLogo;
+            logoHtml = '<img class="vcard-logo-img' + invertClass + '" src="' + src +
+                '" alt="' + this.esc(provider.name) + '">';
+        } else {
+            logoHtml = '<span class="vcard-logo-text">' + this.esc(provider.name) + '</span>';
+        }
+        let pricesHtml = '';
         if (provider.rentPrice) {
-            barHtml += '<a href="' + provider.link + '" target="_blank" rel="noopener" ' +
-                'class="vod-price-half-m rent">Rent ' + this.esc(provider.rentPrice) + '</a>';
+            pricesHtml += '<a href="' + provider.link + '" target="_blank" rel="noopener" ' +
+                'class="vcard-price-m rent">Rent ' + this.esc(provider.rentPrice) + '</a>';
         }
         if (provider.buyPrice) {
-            barHtml += '<a href="' + provider.link + '" target="_blank" rel="noopener" ' +
-                'class="vod-price-half-m buy">Buy ' + this.esc(provider.buyPrice) + '</a>';
+            pricesHtml += '<a href="' + provider.link + '" target="_blank" rel="noopener" ' +
+                'class="vcard-price-m buy">Buy ' + this.esc(provider.buyPrice) + '</a>';
         }
-        barHtml += '</div>';
-        return '<div class="vod-price-card-m ' + this.esc(svcKey) + '">' + badge + barHtml + '</div>';
+        return '<div class="vcard-m ' + this.esc(svcKey) + '">' +
+            '<a href="' + provider.link + '" target="_blank" rel="noopener" class="vcard-logo-m">' + logoHtml + '</a>' +
+            '<div class="vcard-prices-m">' + pricesHtml + '</div>' +
+            '</div>';
     },
 
     // ===== GESTURE HANDLERS =====

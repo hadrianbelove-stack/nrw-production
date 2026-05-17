@@ -56,11 +56,12 @@ const FullscreenPosterModal = ({
     setImageError(false);
   }, [currentIndex, movies.length]);
 
-  // Handle TV remote events
+  // Handle TV remote events — only MENU to dismiss
+  // LEFT/RIGHT are NOT intercepted here so the tvOS focus engine can
+  // move focus between buttons, poster, and nav arrows naturally.
+  // Movie navigation happens via the NavArrow onPress (SELECT).
   useTVEventHandler(trailerVisible ? {} : {
     [TV_EVENTS.MENU]: () => onClose(),
-    [TV_EVENTS.LEFT]: () => navigate(-1),
-    [TV_EVENTS.RIGHT]: () => navigate(1),
   });
 
   // Get poster URL

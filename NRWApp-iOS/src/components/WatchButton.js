@@ -95,6 +95,11 @@ const SERVICE_CONFIG = {
     color: '#ff6600',
     textColor: '#ffffff',
   },
+  plex: {
+    name: 'Plex',
+    color: '#E5A00D',
+    textColor: '#000000',
+  },
   vod: {
     name: 'Rent/Buy',
     color: Colors.orange,
@@ -158,58 +163,82 @@ export default function WatchButton({link, onPress, size = 'medium'}) {
   const hasPrice = !!(link.rentPrice || link.buyPrice);
   const priceBarBg = config.color || Colors.orange;
 
-  return (
-    <View>
-      <View style={hasPrice ? styles.priceCardWrap : undefined}>
-        <TouchableOpacity
-          style={[buttonStyle, hasPrice && styles.buttonNoPriceRadius]}
-          onPress={() => onPress?.(link)}
-          activeOpacity={0.8}>
-          <View style={styles.buttonContent}>
+  if (hasPrice) {
+    // V2: Logo left, prices stacked right
+    return (
+      <View>
+        <View style={styles.vcardWrap}>
+          <TouchableOpacity
+            style={[styles.vcardLogo, {backgroundColor: config.color}, config.borderColor && {borderWidth: 1, borderColor: config.borderColor}]}
+            onPress={() => onPress?.(link)}
+            activeOpacity={0.8}>
             {SERVICE_LOGOS[link.service] && !isScreeningButton && !link.labelOverride ? (
               <Image
                 source={SERVICE_LOGOS[link.service]}
-                style={[styles.logo, size === 'small' && styles.logoSmall]}
+                style={styles.vcardLogoImg}
                 tintColor="#ffffff"
                 resizeMode="contain"
               />
             ) : (
-              <Text style={textStyle} numberOfLines={1}>
-                {label}
-              </Text>
+              <Text style={[textStyle, {textAlign: 'center'}]} numberOfLines={1}>{label}</Text>
             )}
-            {isStreaming && (
-              <View style={styles.streamBadge}>
-                <Text style={styles.streamBadgeText}>INCLUDED</Text>
-              </View>
-            )}
-          </View>
-        </TouchableOpacity>
-        {hasPrice && (
-          <View style={styles.priceBar}>
+          </TouchableOpacity>
+          <View style={styles.vcardPrices}>
             {link.rentPrice && (
               <TouchableOpacity
-                style={[styles.priceHalf, {backgroundColor: adjustBrightness(priceBarBg, 1.15)}]}
+                style={[styles.vcardPrice, {backgroundColor: adjustBrightness(priceBarBg, 1.15)}, link.buyPrice && styles.vcardPriceRentBorder]}
                 onPress={() => onPress?.(link)}
                 activeOpacity={0.8}>
-                <Text style={[styles.priceHalfText, {color: config.textColor}]}>
+                <Text style={[styles.vcardPriceText, {color: config.textColor}]}>
                   Rent {link.rentPrice}
                 </Text>
               </TouchableOpacity>
             )}
             {link.buyPrice && (
               <TouchableOpacity
-                style={[styles.priceHalf, {backgroundColor: adjustBrightness(priceBarBg, 0.85)}]}
+                style={[styles.vcardPrice, {backgroundColor: adjustBrightness(priceBarBg, 0.85)}]}
                 onPress={() => onPress?.(link)}
                 activeOpacity={0.8}>
-                <Text style={[styles.priceHalfText, {color: config.textColor}]}>
+                <Text style={[styles.vcardPriceText, {color: config.textColor}]}>
                   Buy {link.buyPrice}
                 </Text>
               </TouchableOpacity>
             )}
           </View>
+        </View>
+        {link.sublabel && (
+          <Text style={styles.sublabelText}>{link.sublabel}</Text>
         )}
       </View>
+    );
+  }
+
+  return (
+    <View>
+      <TouchableOpacity
+        style={buttonStyle}
+        onPress={() => onPress?.(link)}
+        activeOpacity={0.8}>
+        <View style={styles.buttonContent}>
+          {SERVICE_LOGOS[link.service] && !isScreeningButton && !link.labelOverride ? (
+            <Image
+              source={SERVICE_LOGOS[link.service]}
+              style={[styles.logo, size === 'small' && styles.logoSmall]}
+              tintColor="#ffffff"
+              resizeMode="contain"
+            />
+          ) : (
+            <Text style={textStyle} numberOfLines={1}>
+              {label}
+            </Text>
+          )}
+          {isStreaming && (
+            <View style={styles.streamBadge}>
+              <Text style={styles.streamBadgeText}>INCLUDED</Text>
+            </View>
+          )}
+        </View>
+      </TouchableOpacity>
       {link.sublabel && (
         <Text style={styles.sublabelText}>{link.sublabel}</Text>
       )}
@@ -332,26 +361,40 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.sm,
     textAlign: 'center',
   },
-  priceCardWrap: {
+  vcardWrap: {
+    flexDirection: 'row',
     borderRadius: 8,
     overflow: 'hidden',
+    minWidth: 140,
   },
-  buttonNoPriceRadius: {
-    borderBottomLeftRadius: 0,
-    borderBottomRightRadius: 0,
-    marginBottom: 0,
+  vcardLogo: {
+    width: '50%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 8,
   },
-  priceBar: {
-    flexDirection: 'row',
+  vcardLogoImg: {
+    width: 70,
+    height: 18,
   },
-  priceHalf: {
+  vcardPrices: {
+    width: '50%',
+    flexDirection: 'column',
+  },
+  vcardPrice: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 3,
+    paddingVertical: 7,
+    paddingHorizontal: 4,
   },
-  priceHalfText: {
-    fontSize: 10,
+  vcardPriceRentBorder: {
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(0,0,0,0.15)',
+  },
+  vcardPriceText: {
+    fontSize: 11,
     fontWeight: '700',
     textTransform: 'uppercase',
     letterSpacing: 0.3,

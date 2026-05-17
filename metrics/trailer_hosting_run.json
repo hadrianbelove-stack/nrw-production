@@ -1,9 +1,17 @@
 {
-  "timestamp": "2026-05-16T04:20:33.560908",
-  "movies_attempted": 8,
-  "hosted": 8,
-  "failed": 0,
+  "timestamp": "2026-05-17T10:04:08.949664",
+  "movies_attempted": 19,
+  "hosted": 18,
+  "failed": 1,
   "skipped": 0,
-  "failure_details": [],
+  "failure_details": [
+    {
+      "title": "Big City Pizza",
+      "movie_id": "1579893",
+      "reason": "download:failed",
+      "detail": "File not created after download",
+      "trailer_url": "https://www.youtube.com/watch?v=cbXYpphbcUg"
+    }
+  ],
   "yt_dlp_version": "2026.03.17"
 }

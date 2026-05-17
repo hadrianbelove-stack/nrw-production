@@ -147,11 +147,9 @@ if arrivals:
         has_gap = '--' in (has_rt, has_mc, has_wiki, has_trailer, has_imdb) or has_links == 'NONE'
         if has_gap:
             gaps_count += 1
-        print('  %-*s  %-3s %-3s %-4s %-7s %-4s %-4s  %s' % (
-            col_w, title_display, has_rt, has_mc, has_wiki, has_trailer, has_imdb, has_links, svc_str))
         t_url = tmdb_url(a.get('id', ''))
-        if t_url:
-            print('    %s' % t_url)
+        print('  %-*s  %-3s %-3s %-4s %-7s %-4s %-4s  %-16s  %s' % (
+            col_w, title_display, has_rt, has_mc, has_wiki, has_trailer, has_imdb, has_links, svc_str, t_url))
     print('  ' + '─' * (col_w + 55))
     if gaps_count:
         print('  Gaps: %d of %d arrivals have missing fields' % (gaps_count, len(arrivals)))
@@ -244,9 +242,7 @@ else:
         print()
         for title, dd, days, status, t_url in rows:
             days_str = '%dd' % days if isinstance(days, int) else '?'
-            print('  %-42s  %-16s  %4s  %s' % (title[:42], fmt_date(dd), days_str, status))
-            if t_url:
-                print('    %s' % t_url)
+            print('  %-42s  %-16s  %4s  %s  %s' % (title[:42], fmt_date(dd), days_str, status, t_url))
     else:
         if aged_out:
             print('  All %d aged out (>3 days) — no action items' % aged_out)
@@ -320,9 +316,7 @@ if jw_reverts:
         else:
             label = reason
         date_str = fmt_date(rev_at)
-        print('  %-16s %-40s %-6s %s' % (date_str, title[:40], year or '—', label))
-        if t_url:
-            print('    %s' % t_url)
+        print('  %-16s %-40s %-6s %-40s %s' % (date_str, title[:40], year or '—', label, t_url))
 else:
     print('  None in last 3 days')
 
@@ -382,9 +376,7 @@ if bare_movies:
     print('  ' + '─' * (col_w + 14))
     for title, dd, mid in sorted(bare_movies, key=lambda r: r[1] or '', reverse=True):
         t_url = tmdb_url(mid)
-        print('  %-*s  %s' % (col_w, title[:col_w], fmt_date(dd)))
-        if t_url:
-            print('    %s' % t_url)
+        print('  %-*s  %-16s  %s' % (col_w, title[:col_w], fmt_date(dd), t_url))
 
 if recent_gaps:
     print()
@@ -394,15 +386,14 @@ if recent_gaps:
     print('  ' + '─' * (col_w + 40))
     for title, dd, has_rt, has_mc, has_wiki, has_trailer, has_imdb, mid in sorted(recent_gaps, key=lambda r: r[1] or '', reverse=True):
         t_url = tmdb_url(mid)
-        print('  %-*s  %-16s %-3s %-3s %-4s %-7s %-4s' % (
+        print('  %-*s  %-16s %-3s %-3s %-4s %-7s %-4s  %s' % (
             col_w, title[:col_w], fmt_date(dd),
             'yes' if has_rt else '--',
             'yes' if has_mc else '--',
             'yes' if has_wiki else '--',
             'yes' if has_trailer else '--',
-            'yes' if has_imdb else '--'))
-        if t_url:
-            print('    %s' % t_url)
+            'yes' if has_imdb else '--',
+            t_url))
 
 if not bare_movies and not recent_gaps:
     print('  No critical coverage gaps')
@@ -469,9 +460,7 @@ if merged:
         display_title = (title[:col_w - 10] + buyonly) if buyonly else title[:col_w]
         svc_display = services if n_links > 0 else ''
         t_url = tmdb_url(mid)
-        print('  %-16s %-*s %-6s %-20s %s' % (fmt_date(dd), col_w, display_title, link_str, svc_display, tmdb_str))
-        if t_url:
-            print('    %s' % t_url)
+        print('  %-16s %-*s %-6s %-20s %-16s %s' % (fmt_date(dd), col_w, display_title, link_str, svc_display, tmdb_str, t_url))
     print('  ' + '─' * (col_w + 59))
     has_links = len(merged) - no_link_count
     print('  Links found: %d of %d | No links: %d' % (has_links, len(merged), no_link_count))
@@ -565,35 +554,29 @@ else:
     if gap_no_poster:
         print()
         print('  NO POSTER (%d):' % len(gap_no_poster))
-        print('  %-*s %-16s %s' % (col_w, 'Title', 'Date', 'Enrichment'))
-        print('  ' + '─' * (col_w + 29))
+        print('  %-*s %-16s %-12s %s' % (col_w, 'Title', 'Date', 'Enrichment', 'TMDB'))
+        print('  ' + '─' * (col_w + 70))
         for title, dd, e_status, mid in sorted(gap_no_poster, key=lambda r: r[1] or '', reverse=True):
             t_url = tmdb_url(mid)
-            print('  %-*s %-16s %s' % (col_w, title[:col_w], fmt_date(dd), e_status))
-            if t_url:
-                print('    %s' % t_url)
+            print('  %-*s %-16s %-12s %s' % (col_w, title[:col_w], fmt_date(dd), e_status, t_url))
 
     if gap_no_synopsis:
         print()
         print('  NO SYNOPSIS (%d):' % len(gap_no_synopsis))
-        print('  %-*s %-16s %s' % (col_w, 'Title', 'Date', 'Enrichment'))
-        print('  ' + '─' * (col_w + 29))
+        print('  %-*s %-16s %-12s %s' % (col_w, 'Title', 'Date', 'Enrichment', 'TMDB'))
+        print('  ' + '─' * (col_w + 70))
         for title, dd, e_status, mid in sorted(gap_no_synopsis, key=lambda r: r[1] or '', reverse=True):
             t_url = tmdb_url(mid)
-            print('  %-*s %-16s %s' % (col_w, title[:col_w], fmt_date(dd), e_status))
-            if t_url:
-                print('    %s' % t_url)
+            print('  %-*s %-16s %-12s %s' % (col_w, title[:col_w], fmt_date(dd), e_status, t_url))
 
     if gap_no_links:
         print()
         print('  NO WATCH LINKS — released, non-preorder (%d):' % len(gap_no_links))
-        print('  %-*s %-16s %s' % (col_w, 'Title', 'Date', 'Enrichment'))
-        print('  ' + '─' * (col_w + 29))
+        print('  %-*s %-16s %-12s %s' % (col_w, 'Title', 'Date', 'Enrichment', 'TMDB'))
+        print('  ' + '─' * (col_w + 70))
         for title, dd, e_status, mid in sorted(gap_no_links, key=lambda r: r[1] or '', reverse=True):
             t_url = tmdb_url(mid)
-            print('  %-*s %-16s %s' % (col_w, title[:col_w], fmt_date(dd), e_status))
-            if t_url:
-                print('    %s' % t_url)
+            print('  %-*s %-16s %-12s %s' % (col_w, title[:col_w], fmt_date(dd), e_status, t_url))
 
     print()
     print('  Summary: %d movies (%d no poster, %d no synopsis, %d no links)' % (
@@ -633,16 +616,17 @@ if os.path.exists(host_fail_path):
     try:
         hf = json.load(open(host_fail_path))
         cutoff = three_days_ago
-        recent_fails = [(v['recorded_at'][:10], v['title'], v.get('reason', '?'), v.get('detail', ''))
+        recent_fails = [(v['recorded_at'][:10], v['title'], v.get('reason', '?'), v.get('detail', ''), v.get('movie_id', ''))
                         for v in hf.values() if v.get('recorded_at', '') >= cutoff]
         if recent_fails:
             print()
             print('─' * 78)
             print('TRAILER HOSTING FAILURES — %d in last 3 days' % len(recent_fails))
             print('─' * 78)
-            for fail_date, title, reason, detail in sorted(recent_fails):
+            for fail_date, title, reason, detail, mid in sorted(recent_fails):
                 detail_str = (' — ' + detail[:60]) if detail else ''
-                print('  %-16s %-42s %s%s' % (fmt_date(fail_date), title[:42], reason, detail_str))
+                t_url = tmdb_url(mid) if mid else ''
+                print('  %-16s %-42s %s%s  %s' % (fmt_date(fail_date), title[:42], reason, detail_str, t_url))
     except Exception:
         pass
 

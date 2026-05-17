@@ -87,7 +87,7 @@ Sub onLabelChanged()
 End Sub
 
 ' ============================================================================
-' Price Changed — show V1 price bar below button
+' Price Changed — V2: prices stacked vertically on the right
 ' ============================================================================
 Sub onPriceChanged()
     rentPrice = m.top.rentPrice
@@ -97,8 +97,6 @@ Sub onPriceChanged()
 
     if hasRent OR hasBuy
         m.priceBar.visible = true
-        ' Use lighter/darker shades of the service color for rent/buy
-        ' Default to Amazon orange if no service color set
         rentColor = m.serviceColor
         buyColor = m.serviceColor
 
@@ -113,27 +111,48 @@ Sub onPriceChanged()
         m.rentPriceBg.color = rentColor
         m.buyPriceBg.color = buyColor
 
-        ' Get current button width
-        btnWidth = m.buttonBg.width
+        ' V2: Shrink logo to left half, prices go right half
+        logoWidth = 70
+        m.buttonBg.width = logoWidth
+        m.buttonLabel.width = logoWidth
+        ' Reposition service icon for narrower logo area
+        if m.serviceIcon.visible
+            m.serviceIcon.width = 50
+            m.serviceIcon.height = 24
+            m.serviceIcon.translation = [10, 10]
+        end if
+
+        priceWidth = logoWidth  ' same width for the right half
+        m.priceBar.translation = [logoWidth, 0]
+
         if hasRent AND hasBuy
-            halfWidth = Int(btnWidth / 2)
-            m.rentPriceBg.width = halfWidth
-            m.rentPriceLabel.width = halfWidth
+            ' Two prices stack vertically, each gets half the button height
+            priceHeight = Int(m.buttonBg.height / 2)
+            m.rentPriceBg.width = priceWidth
+            m.rentPriceBg.height = priceHeight
+            m.rentPriceLabel.width = priceWidth
+            m.rentPriceLabel.height = priceHeight
             m.rentPriceLabel.text = "RENT " + rentPrice
             m.rentPriceBg.visible = true
-            m.buyPriceBg.width = btnWidth - halfWidth
-            m.buyPriceLabel.width = btnWidth - halfWidth
+            m.buyPriceBg.width = priceWidth
+            m.buyPriceBg.height = m.buttonBg.height - priceHeight
+            m.buyPriceLabel.width = priceWidth
+            m.buyPriceLabel.height = m.buttonBg.height - priceHeight
             m.buyPriceLabel.text = "BUY " + buyPrice
             m.buyPriceBg.visible = true
         else if hasRent
-            m.rentPriceBg.width = btnWidth
-            m.rentPriceLabel.width = btnWidth
+            m.rentPriceBg.width = priceWidth
+            m.rentPriceBg.height = m.buttonBg.height
+            m.rentPriceLabel.width = priceWidth
+            m.rentPriceLabel.height = m.buttonBg.height
             m.rentPriceLabel.text = "RENT " + rentPrice
             m.rentPriceBg.visible = true
             m.buyPriceBg.visible = false
         else
-            m.buyPriceBg.width = btnWidth
-            m.buyPriceLabel.width = btnWidth
+            m.buyPriceBg.width = priceWidth
+            m.buyPriceBg.height = m.buttonBg.height
+            m.buyPriceLabel.width = priceWidth
+            m.buyPriceLabel.height = m.buttonBg.height
             m.buyPriceLabel.text = "BUY " + buyPrice
             m.buyPriceBg.visible = true
             m.rentPriceBg.visible = false

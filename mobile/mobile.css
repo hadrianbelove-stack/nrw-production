@@ -665,43 +665,82 @@ body {
   white-space: nowrap;
 }
 
-/* V1 VOD price cards (mobile) */
-.vod-price-card-m {
+/* V2 VOD price cards (mobile): logo left, prices right */
+.vcard-m {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   border-radius: 6px;
   overflow: hidden;
+  min-width: 130px;
+  max-width: 180px;
 }
-.vod-price-card-m .provider-pill,
-.vod-price-card-m .provider-pill-text {
-  border-radius: 6px 6px 0 0;
-  border-bottom: none;
-}
-.vod-price-bar-m {
+.vcard-logo-m {
   display: flex;
-}
-.vod-price-half-m {
-  flex: 1;
-  text-align: center;
-  padding: 2px 6px;
-  font-size: 0.5rem;
-  font-weight: 700;
+  align-items: center;
+  justify-content: center;
+  width: 50%;
+  padding: 8px 6px;
   text-decoration: none;
+}
+.vcard-logo-m .vcard-logo-img {
+  height: 14px;
+  width: auto;
+  max-width: 60px;
+  object-fit: contain;
+}
+.vcard-logo-m .vcard-logo-img.invert { filter: invert(1); }
+.vcard-logo-m .vcard-logo-text {
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.6rem;
+  text-transform: uppercase;
+}
+.vcard-prices-m {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+}
+.vcard-price-m {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: inherit;
+  font-weight: 700;
+  font-size: 0.55rem;
   text-transform: uppercase;
   letter-spacing: 0.03em;
+  padding: 5px 3px;
   white-space: nowrap;
 }
-.vod-price-half-m.rent:not(:only-child) {
-  border-right: 1px solid rgba(255,255,255,0.1);
-}
-.vod-price-bar-m.amazon .vod-price-half-m.rent { background: #ffad33; color: #000; }
-.vod-price-bar-m.amazon .vod-price-half-m.buy { background: #e68a00; color: #000; }
-.vod-price-bar-m.apple .vod-price-half-m.rent { background: #1a1a1a; color: #ccc; }
-.vod-price-bar-m.apple .vod-price-half-m.buy { background: #111; color: #ccc; }
-.vod-price-bar-m.fandango .vod-price-half-m.rent { background: #ff7a1a; color: #fff; }
-.vod-price-bar-m.fandango .vod-price-half-m.buy { background: #cc5200; color: #fff; }
-.vod-price-bar-m.youtube .vod-price-half-m.rent { background: #cc0000; color: #fff; }
-.vod-price-bar-m.youtube .vod-price-half-m.buy { background: #990000; color: #fff; }
+.vcard-price-m.rent:not(:only-child) { border-bottom: 1px solid rgba(0,0,0,0.15); }
+/* Logo backgrounds */
+.vcard-m.amazon .vcard-logo-m { background: #ff9900; }
+.vcard-m.apple .vcard-logo-m { background: #000; }
+.vcard-m.apple { border: 1px solid #444; }
+.vcard-m.fandango .vcard-logo-m { background: #FF6600; }
+.vcard-m.youtube .vcard-logo-m { background: #cc0000; }
+.vcard-m.plex .vcard-logo-m { background: #1a1a1a; }
+.vcard-m.plex { border: 1px solid #444; }
+/* Logo images white */
+.vcard-m.amazon .vcard-logo-img { filter: brightness(0) invert(1); }
+.vcard-m.apple .vcard-logo-img { filter: invert(1); }
+.vcard-m.fandango .vcard-logo-img { filter: brightness(0) invert(1); }
+.vcard-m.youtube .vcard-logo-img { filter: brightness(0) invert(1); }
+.vcard-m.plex .vcard-logo-img { filter: brightness(0) invert(1); }
+/* Price colors */
+.vcard-m.amazon .vcard-price-m.rent { background: #ffad33; color: #000; }
+.vcard-m.amazon .vcard-price-m.buy { background: #e68a00; color: #000; }
+.vcard-m.apple .vcard-price-m.rent { background: #2a2a2a; color: #fff; }
+.vcard-m.apple .vcard-price-m.buy { background: #1a1a1a; color: #ddd; }
+.vcard-m.fandango .vcard-price-m.rent { background: #e55a00; color: #fff; }
+.vcard-m.fandango .vcard-price-m.buy { background: #cc5200; color: #fff; }
+.vcard-m.youtube .vcard-price-m.rent { background: #cc0000; color: #fff; }
+.vcard-m.youtube .vcard-price-m.buy { background: #990000; color: #fff; }
+.vcard-m.plex .vcard-price-m.rent { background: #c8900b; color: #fff; }
+.vcard-m.plex .vcard-price-m.buy { background: #a07508; color: #fff; }
+.vcard-m.apple .vcard-price-m.rent:not(:only-child) { border-bottom: 1px solid #444; }
 
 /* Virtual screening in sheet */
 .sheet-screening-banner {

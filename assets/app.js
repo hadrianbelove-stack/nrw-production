@@ -1108,28 +1108,39 @@ const NRW = {
         if (hasNonFallback) resolvedVod = resolvedVod.filter(v => !v.vodType.fallback);
         resolvedVod.forEach(({ vodType, vodLink, rentPrice, buyPrice }) => {
             if (rentPrice || buyPrice) {
-                // V1: Logo button on top, split rent/buy price bar below
+                // V2: Logo left, prices stacked right
                 const card = document.createElement('div');
-                card.className = `vod-price-card ${vodType.key}`;
-                const btnTop = makeLink(vodLink, `watch-btn-lb ${vodType.key}`, vodType.label, null, vodType.wideLogo);
-                card.appendChild(btnTop);
-                const priceBar = document.createElement('div');
-                priceBar.className = 'vod-price-bar';
+                card.className = `vcard ${vodType.key}`;
+                const logoDiv = document.createElement('a');
+                logoDiv.href = vodLink; logoDiv.target = '_blank'; logoDiv.rel = 'noopener noreferrer';
+                logoDiv.className = 'vcard-logo';
+                if (vodType.wideLogo) {
+                    const img = document.createElement('img');
+                    img.src = `assets/logos/${vodType.wideLogo}`;
+                    img.className = 'logo-img';
+                    img.alt = vodType.label;
+                    logoDiv.appendChild(img);
+                } else {
+                    logoDiv.textContent = vodType.label;
+                }
+                card.appendChild(logoDiv);
+                const pricesDiv = document.createElement('div');
+                pricesDiv.className = 'vcard-prices';
                 if (rentPrice) {
                     const rentEl = document.createElement('a');
                     rentEl.href = vodLink; rentEl.target = '_blank'; rentEl.rel = 'noopener noreferrer';
-                    rentEl.className = 'vod-price-half rent';
+                    rentEl.className = 'vcard-price rent';
                     rentEl.textContent = `Rent ${rentPrice}`;
-                    priceBar.appendChild(rentEl);
+                    pricesDiv.appendChild(rentEl);
                 }
                 if (buyPrice) {
                     const buyEl = document.createElement('a');
                     buyEl.href = vodLink; buyEl.target = '_blank'; buyEl.rel = 'noopener noreferrer';
-                    buyEl.className = 'vod-price-half buy';
+                    buyEl.className = 'vcard-price buy';
                     buyEl.textContent = `Buy ${buyPrice}`;
-                    priceBar.appendChild(buyEl);
+                    pricesDiv.appendChild(buyEl);
                 }
-                card.appendChild(priceBar);
+                card.appendChild(pricesDiv);
                 vodRow.appendChild(card);
             } else {
                 vodRow.appendChild(makeLink(vodLink, `watch-btn-lb ${vodType.key}`, vodType.label, null, vodType.wideLogo));

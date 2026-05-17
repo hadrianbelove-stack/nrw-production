@@ -28,20 +28,19 @@
   <script type="text/brightscript" uri="pkg:/source/utils/MovieUtils.brs" />
 
   <children>
-    <!-- Button container -->
+    <!-- Button container — V2: logo left, prices right (when prices exist) -->
     <Group id="buttonContainer">
-      <!-- Button background (for filled style) -->
+      <!-- Button background (full width default, shrunk to left half when prices present) -->
       <Rectangle id="buttonBg"
         width="140"
         height="44"
         color="0x00000000" />
 
-      <!-- Button border -->
+      <!-- Button border (for services like Apple TV) -->
       <Rectangle id="buttonBorder"
         width="140"
         height="44"
         color="0x00000000">
-        <!-- Inner cutout to create border effect -->
         <Rectangle id="buttonInner"
           width="136"
           height="40"
@@ -49,14 +48,14 @@
           color="0x0A0A0AFF" />
       </Rectangle>
 
-      <!-- Service icon (optional) -->
+      <!-- Service icon (in logo area) -->
       <Poster id="serviceIcon"
         width="24"
         height="24"
         translation="[12, 10]"
         visible="false" />
 
-      <!-- Button label -->
+      <!-- Button label (full width default, shrunk when prices present) -->
       <Label id="buttonLabel"
         width="140"
         height="44"
@@ -65,10 +64,10 @@
         font="font:SmallBoldSystemFont"
         color="0xFFFFFFFF" />
 
-      <!-- V1 Price bar (below button) -->
+      <!-- V2 Price area (right half, stacked vertically — positioned dynamically) -->
       <LayoutGroup id="priceBar"
-        layoutDirection="horiz"
-        translation="[0, 44]"
+        layoutDirection="vert"
+        translation="[140, 0]"
         visible="false">
         <Rectangle id="rentPriceBg" width="70" height="22" color="0xFFAD33FF">
           <Label id="rentPriceLabel" width="70" height="22"

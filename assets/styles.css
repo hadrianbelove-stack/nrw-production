@@ -1371,53 +1371,86 @@ header h1 {
     text-shadow: 0 2px 12px rgba(0,0,0,0.8);
 }
 
-/* V1 VOD price cards: logo button + split price bar */
-.vod-price-card {
+/* V2 VOD price cards: logo left, prices stacked right */
+.vcard {
     border-radius: 8px;
     overflow: hidden;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    min-width: 160px;
+    max-width: 220px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
 }
-.vod-price-card .watch-btn-lb {
-    border-radius: 8px 8px 0 0;
+.vcard:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
 }
-.vod-price-bar {
+.vcard-logo {
     display: flex;
-}
-.vod-price-half {
-    flex: 1;
-    text-align: center;
-    padding: 3px 0;
-    font-size: 0.58rem;
-    font-weight: 700;
+    align-items: center;
+    justify-content: center;
+    width: 50%;
+    padding: 10px 8px;
     text-decoration: none;
+    color: #fff;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+}
+.vcard-logo .logo-img {
+    height: 18px;
+    width: auto;
+    max-width: 80px;
+    object-fit: contain;
+}
+.vcard-prices {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+}
+.vcard-price {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: inherit;
+    font-weight: 700;
+    font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.03em;
+    padding: 7px 4px;
     transition: filter 0.2s;
 }
-.vod-price-half:hover {
-    filter: brightness(1.15);
-}
-.vod-price-half.rent:not(:only-child) {
-    border-right: 1px solid rgba(255,255,255,0.1);
-}
-/* Amazon price bar */
-.vod-price-card.amazon .vod-price-half.rent { background: #ffad33; color: #000; }
-.vod-price-card.amazon .vod-price-half.buy { background: #e68a00; color: #000; }
-/* Apple TV price bar */
-.vod-price-card.apple .vod-price-half.rent { background: #1a1a1a; color: #ccc; border-bottom: 1px solid #444; }
-.vod-price-card.apple .vod-price-half.buy { background: #111; color: #ccc; border-bottom: 1px solid #444; }
-.vod-price-card.apple .vod-price-half.rent:not(:only-child) { border-right: 1px solid #444; border-left: 1px solid #444; }
-.vod-price-card.apple .vod-price-half.buy { border-right: 1px solid #444; }
-/* Fandango price bar */
-.vod-price-card.fandango .vod-price-half.rent { background: #ff7a1a; color: #fff; }
-.vod-price-card.fandango .vod-price-half.buy { background: #cc5200; color: #fff; }
-/* YouTube price bar */
-.vod-price-card.youtube .vod-price-half.rent { background: #cc0000; color: #fff; }
-.vod-price-card.youtube .vod-price-half.buy { background: #990000; color: #fff; }
-/* Plex price bar */
-.vod-price-card.plex .vod-price-half.rent { background: #c8900b; color: #000; }
-.vod-price-card.plex .vod-price-half.buy { background: #a07508; color: #000; }
+.vcard-price:hover { filter: brightness(1.15); }
+.vcard-price.rent:not(:only-child) { border-bottom: 1px solid rgba(0,0,0,0.15); }
+/* Logo backgrounds — brand colors */
+.vcard.amazon .vcard-logo { background: #ff9900; }
+.vcard.apple .vcard-logo { background: #000; }
+.vcard.apple { border: 1px solid #444; }
+.vcard.fandango .vcard-logo { background: #FF6600; }
+.vcard.youtube .vcard-logo { background: #cc0000; }
+.vcard.plex .vcard-logo { background: #1a1a1a; }
+.vcard.plex { border: 1px solid #444; }
+/* Logo images white on brand backgrounds */
+.vcard.amazon .logo-img { filter: brightness(0) invert(1); }
+.vcard.apple .logo-img { filter: invert(1); }
+.vcard.fandango .logo-img { filter: brightness(0) invert(1); }
+.vcard.plex .logo-img { filter: brightness(0) invert(1); }
+.vcard.youtube .logo-img { filter: brightness(0) invert(1); }
+/* Price colors per service */
+.vcard.amazon .vcard-price.rent { background: #ffad33; color: #000; }
+.vcard.amazon .vcard-price.buy { background: #e68a00; color: #000; }
+.vcard.apple .vcard-price.rent { background: #2a2a2a; color: #fff; }
+.vcard.apple .vcard-price.buy { background: #1a1a1a; color: #ddd; }
+.vcard.apple .vcard-price.rent:not(:only-child) { border-bottom: 1px solid #444; }
+.vcard.fandango .vcard-price.rent { background: #e55a00; color: #fff; }
+.vcard.fandango .vcard-price.buy { background: #cc4e00; color: #fff; }
+.vcard.youtube .vcard-price.rent { background: #cc0000; color: #fff; }
+.vcard.youtube .vcard-price.buy { background: #990000; color: #fff; }
+.vcard.plex .vcard-price.rent { background: #c8900b; color: #fff; }
+.vcard.plex .vcard-price.buy { background: #a07508; color: #fff; }
 
 /* Wide service logos inside watch buttons */
 .watch-btn-lb .watch-logo {

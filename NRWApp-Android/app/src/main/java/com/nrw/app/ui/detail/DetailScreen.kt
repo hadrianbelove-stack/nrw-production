@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -546,26 +547,34 @@ private fun MovieDetail(
                             Column {
                                 val hasPrice = option.rentPrice != null || option.buyPrice != null
                                 if (hasPrice) {
-                                    Column(
-                                        modifier = Modifier.clip(RoundedCornerShape(6.dp))
+                                    // V2: Logo left, prices stacked right
+                                    val svcColor = getServiceColor(option.service)
+                                    Row(
+                                        modifier = Modifier.clip(RoundedCornerShape(6.dp)).height(IntrinsicSize.Min)
                                     ) {
-                                        WatchButton(option = option, onClick = { onWatchClick(option) }, compact = true)
-                                        Row {
-                                            val svcColor = getServiceColor(option.service)
+                                        // Logo area (left half)
+                                        Box(
+                                            modifier = Modifier.weight(1f).fillMaxHeight(),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            WatchButton(option = option, onClick = { onWatchClick(option) }, compact = true)
+                                        }
+                                        // Prices area (right half)
+                                        Column(modifier = Modifier.weight(1f)) {
                                             if (option.rentPrice != null) {
                                                 Box(
-                                                    modifier = Modifier.weight(1f).background(svcColor.copy(alpha = 0.8f)).padding(vertical = 3.dp),
+                                                    modifier = Modifier.fillMaxWidth().weight(1f).background(svcColor.copy(alpha = 0.8f)).padding(vertical = 8.dp),
                                                     contentAlignment = Alignment.Center
                                                 ) {
-                                                    Text(text = "RENT ${option.rentPrice}", color = Color.White, fontSize = 9.sp, fontWeight = FontWeight.Bold, letterSpacing = 0.3.sp)
+                                                    Text(text = "RENT ${option.rentPrice}", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold, letterSpacing = 0.3.sp)
                                                 }
                                             }
                                             if (option.buyPrice != null) {
                                                 Box(
-                                                    modifier = Modifier.weight(1f).background(svcColor.copy(alpha = 0.6f)).padding(vertical = 3.dp),
+                                                    modifier = Modifier.fillMaxWidth().weight(1f).background(svcColor.copy(alpha = 0.6f)).padding(vertical = 8.dp),
                                                     contentAlignment = Alignment.Center
                                                 ) {
-                                                    Text(text = "BUY ${option.buyPrice}", color = Color.White, fontSize = 9.sp, fontWeight = FontWeight.Bold, letterSpacing = 0.3.sp)
+                                                    Text(text = "BUY ${option.buyPrice}", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold, letterSpacing = 0.3.sp)
                                                 }
                                             }
                                         }
