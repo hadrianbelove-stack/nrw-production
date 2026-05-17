@@ -55,13 +55,11 @@ const formatShortDate = (dateStr) => {
 const decodeHtml = (str) => str.replace(/&#x27;/g, "'").replace(/&amp;/g, '&').replace(/&quot;/g, '"');
 
 // Module-level edge navigation tracking.
-// Track which watch button is focused by index. When the user presses RIGHT
-// at the last watch button (or LEFT at the first), navigate to next/prev movie.
-// No timers — deterministic index check.
-let _totalButtonCount = 0;    // Total ActionButtons mounted (including trailer)
-let _focusedWatchIndex = -1;  // Which watch-row button is focused (-1 = none)
-let _watchButtonCount = 0;    // How many watch-row buttons are mounted
-let _lastWatchBlurTime = 0;   // Timestamp of last watch-button blur (for edge detection)
+// Simple approach: after each L/R press, remember where focus ended up.
+// On the NEXT press, if focus hasn't moved AND it's at the edge → navigate.
+let _currentFocusId = null;     // Updated by every button's onFocus
+let _lastEventFocusId = null;   // Snapshot of _currentFocusId after last L/R press
+let _watchButtonCount = 0;      // How many watch-row buttons are mounted
 
 // Simple action button with equal sizing — forwardRef for focus navigation wiring
 const ActionButton = forwardRef(({
@@ -75,17 +73,15 @@ const ActionButton = forwardRef(({
 
   // Track mounted buttons
   useEffect(() => {
-    _totalButtonCount++;
     if (isWatchButton) _watchButtonCount++;
     return () => {
-      _totalButtonCount--;
       if (isWatchButton) _watchButtonCount--;
     };
   }, []);
 
   const handleFocus = useCallback(() => {
     setIsFocused(true);
-    if (isWatchButton) _focusedWatchIndex = buttonIndex;
+    if (isWatchButton) _currentFocusId = `watch-${buttonIndex}`;
     Animated.spring(scaleAnim, {
       toValue: 1.1,
       useNativeDriver: true,
@@ -94,15 +90,11 @@ const ActionButton = forwardRef(({
 
   const handleBlur = useCallback(() => {
     setIsFocused(false);
-    if (isWatchButton) {
-      if (_focusedWatchIndex === buttonIndex) _focusedWatchIndex = -1;
-      _lastWatchBlurTime = Date.now();
-    }
     Animated.spring(scaleAnim, {
       toValue: 1,
       useNativeDriver: true,
     }).start();
-  }, [scaleAnim, isWatchButton, buttonIndex]);
+  }, [scaleAnim]);
 
   return (
     <TouchableOpacity
@@ -151,17 +143,15 @@ const VodButton = ({
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
-    _totalButtonCount++;
     if (isWatchButton) _watchButtonCount++;
     return () => {
-      _totalButtonCount--;
       if (isWatchButton) _watchButtonCount--;
     };
   }, []);
 
   const handleFocus = useCallback(() => {
     setIsFocused(true);
-    if (isWatchButton) _focusedWatchIndex = buttonIndex;
+    if (isWatchButton) _currentFocusId = `watch-${buttonIndex}`;
     Animated.spring(scaleAnim, {
       toValue: 1.1,
       useNativeDriver: true,
@@ -170,17 +160,59 @@ const VodButton = ({
 
   const handleBlur = useCallback(() => {
     setIsFocused(false);
-    if (isWatchButton) {
-      if (_focusedWatchIndex === buttonIndex) _focusedWatchIndex = -1;
-      _lastWatchBlurTime = Date.now();
-    }
     Animated.spring(scaleAnim, {
       toValue: 1,
       useNativeDriver: true,
     }).start();
-  }, [scaleAnim, isWatchButton, buttonIndex]);
+  }, [scaleAnim]);
 
   const hasPrice = !!(rentPrice || buyPrice);
+
+  if (hasPrice) {
+    // V2: Logo left, prices stacked right
+    return (
+      <TouchableOpacity
+        onPress={onPress}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+        hasTVPreferredFocus={hasTVPreferredFocus}
+        activeOpacity={0.9}
+        accessible={true}
+        accessibilityLabel={[icon ? '' : label, rentPrice && `Rent ${rentPrice}`, buyPrice && `Buy ${buyPrice}`].filter(Boolean).join(', ')}
+        accessibilityRole="button"
+        testID={testID}
+      >
+        <Animated.View
+          style={[
+            vodButtonStyles.vcard,
+            borderColor && { borderWidth: 1, borderColor },
+            isFocused && vodButtonStyles.buttonFocused,
+            { transform: [{ scale: scaleAnim }] },
+          ]}
+        >
+          <View style={[vodButtonStyles.vcardLogo, { backgroundColor: color }]}>
+            {icon ? (
+              <Image source={icon} style={vodButtonStyles.vcardLogoImg} />
+            ) : (
+              <Text style={vodButtonStyles.labelOnly}>{label}</Text>
+            )}
+          </View>
+          <View style={vodButtonStyles.vcardPrices}>
+            {rentPrice && (
+              <View style={[vodButtonStyles.vcardPrice, { backgroundColor: color }, buyPrice && vodButtonStyles.vcardPriceRentBorder]}>
+                <Text style={vodButtonStyles.priceText}>Rent {rentPrice}</Text>
+              </View>
+            )}
+            {buyPrice && (
+              <View style={[vodButtonStyles.vcardPrice, { backgroundColor: color, opacity: 0.85 }]}>
+                <Text style={vodButtonStyles.priceText}>Buy {buyPrice}</Text>
+              </View>
+            )}
+          </View>
+        </Animated.View>
+      </TouchableOpacity>
+    );
+  }
 
   return (
     <TouchableOpacity
@@ -190,7 +222,7 @@ const VodButton = ({
       hasTVPreferredFocus={hasTVPreferredFocus}
       activeOpacity={0.9}
       accessible={true}
-      accessibilityLabel={label || [rentPrice && `Rent ${rentPrice}`, buyPrice && `Buy ${buyPrice}`].filter(Boolean).join(', ')}
+      accessibilityLabel={label}
       accessibilityRole="button"
       testID={testID}
     >
@@ -206,21 +238,8 @@ const VodButton = ({
         {icon && (
           <Image source={icon} style={vodButtonStyles.logo} />
         )}
-        {label && !hasPrice && (
+        {label && (
           <Text style={vodButtonStyles.labelOnly}>{label}</Text>
-        )}
-        {hasPrice && (
-          <View style={vodButtonStyles.priceContainer}>
-            {rentPrice && (
-              <Text style={vodButtonStyles.priceText}>Rent {rentPrice}</Text>
-            )}
-            {rentPrice && buyPrice && (
-              <Text style={vodButtonStyles.priceDivider}>·</Text>
-            )}
-            {buyPrice && (
-              <Text style={vodButtonStyles.priceText}>Buy {buyPrice}</Text>
-            )}
-          </View>
         )}
       </Animated.View>
     </TouchableOpacity>
@@ -235,6 +254,41 @@ const vodButtonStyles = StyleSheet.create({
     paddingHorizontal: 16,
     borderRadius: 12,
     marginRight: 20,
+  },
+  vcard: {
+    flexDirection: 'row',
+    borderRadius: 12,
+    overflow: 'hidden',
+    marginRight: 20,
+    minWidth: 220,
+  },
+  vcardLogo: {
+    width: '50%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 14,
+    paddingHorizontal: 12,
+  },
+  vcardLogoImg: {
+    width: 80,
+    height: 22,
+    resizeMode: 'contain',
+    tintColor: '#ffffff',
+  },
+  vcardPrices: {
+    width: '50%',
+    flexDirection: 'column',
+  },
+  vcardPrice: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 8,
+  },
+  vcardPriceRentBorder: {
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(0,0,0,0.15)',
   },
   buttonFocused: {
     borderWidth: 4,
@@ -253,19 +307,10 @@ const vodButtonStyles = StyleSheet.create({
     fontWeight: '700',
     letterSpacing: 1,
   },
-  priceContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
   priceText: {
     color: '#ffffff',
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '700',
-  },
-  priceDivider: {
-    color: 'rgba(255,255,255,0.5)',
-    fontSize: 20,
-    marginHorizontal: 8,
   },
 });
 
@@ -539,7 +584,7 @@ const MovieDetailTvOS = () => {
 
   // Reset module-level tracking on unmount
   useEffect(() => {
-    return () => { _focusedWatchIndex = -1; _watchButtonCount = 0; _totalButtonCount = 0; _lastWatchBlurTime = 0; };
+    return () => { _currentFocusId = null; _lastEventFocusId = null; _watchButtonCount = 0; };
   }, []);
 
   // Deep link fallback: fetch movies only if shared list is empty (e.g., deep link into app)
@@ -590,9 +635,13 @@ const MovieDetailTvOS = () => {
   const navigateNext = useCallback(() => {
     if (movieList.length === 0) return;
     const nextIndex = (currentIndex + 1) % movieList.length;
-    setPreferWatchFocus(_focusedWatchIndex >= 0);
+    const onWatchButton = _currentFocusId && _currentFocusId.startsWith('watch-');
+    setPreferWatchFocus(onWatchButton);
     setCurrentIndex(nextIndex);
     setMovie(movieList[nextIndex]);
+    // Reset so next movie requires a fresh press to navigate again
+    _lastEventFocusId = null;
+    _currentFocusId = null;
     // Flash the right chevron
     setChevronFlash('right');
     clearTimeout(flashTimer.current);
@@ -603,9 +652,13 @@ const MovieDetailTvOS = () => {
   const navigatePrevious = useCallback(() => {
     if (movieList.length === 0) return;
     const prevIndex = currentIndex === 0 ? movieList.length - 1 : currentIndex - 1;
-    setPreferWatchFocus(_focusedWatchIndex >= 0);
+    const onWatchButton = _currentFocusId && _currentFocusId.startsWith('watch-');
+    setPreferWatchFocus(onWatchButton);
     setCurrentIndex(prevIndex);
     setMovie(movieList[prevIndex]);
+    // Reset so next movie requires a fresh press to navigate again
+    _lastEventFocusId = null;
+    _currentFocusId = null;
     // Flash the left chevron
     setChevronFlash('left');
     clearTimeout(flashTimer.current);
@@ -662,8 +715,12 @@ const MovieDetailTvOS = () => {
   }, [fadeAnim]);
 
   // Handle TV remote events (disabled while trailer player is active)
-  // RIGHT/LEFT edge navigation: deterministic index check, no timers.
-  // Navigate only when the focused watch button is at the edge of the row.
+  // Edge navigation logic:
+  // After each L/R press, we snapshot where focus is (_lastEventFocusId).
+  // On the NEXT press, if focus hasn't moved AND it's at the edge → navigate.
+  // This works because: if focus moved, _currentFocusId was updated by the new
+  // button's onFocus. If focus couldn't move, _currentFocusId is unchanged.
+  const hasTrailer = !!movie?.links?.trailer_hosted;
   useTVEventHandler(trailerVisible ? {} : {
     [TV_EVENTS.MENU]: () => {
       navigation.goBack();
@@ -675,32 +732,21 @@ const MovieDetailTvOS = () => {
     },
     [TV_EVENTS.RIGHT]: () => {
       if (movieList.length <= 1) return;
-      if (_totalButtonCount === 0) {
-        navigateNext();
-        return;
-      }
-      // If a watch button just blurred, focus moved between buttons — don't navigate.
-      // tvOS moves focus BEFORE delivering the TV event, so by the time this handler
-      // fires, _focusedWatchIndex already points to the NEW button. The blur timestamp
-      // tells us whether focus actually moved (blur = moved) or stayed (no blur = edge).
-      if (Date.now() - _lastWatchBlurTime < 150) return;
-      // No recent blur → focus couldn't move → at right edge → navigate
-      if (_focusedWatchIndex >= 0 && _focusedWatchIndex >= _watchButtonCount - 1) {
+      const rightmostId = _watchButtonCount > 0 ? `watch-${_watchButtonCount - 1}` : (hasTrailer ? 'trailer' : null);
+      // Navigate if: focus didn't move since last press AND it's the rightmost element
+      if (_currentFocusId && _currentFocusId === _lastEventFocusId && _currentFocusId === rightmostId) {
         navigateNext();
       }
+      _lastEventFocusId = _currentFocusId;
     },
     [TV_EVENTS.LEFT]: () => {
       if (movieList.length <= 1) return;
-      if (_totalButtonCount === 0) {
-        navigatePrevious();
-        return;
-      }
-      // Same blur-timestamp check as RIGHT (see comment above)
-      if (Date.now() - _lastWatchBlurTime < 150) return;
-      // No recent blur → focus couldn't move → at left edge → navigate
-      if (_focusedWatchIndex === 0) {
+      const leftmostId = hasTrailer ? 'trailer' : (_watchButtonCount > 0 ? 'watch-0' : null);
+      // Navigate if: focus didn't move since last press AND it's the leftmost element
+      if (_currentFocusId && _currentFocusId === _lastEventFocusId && _currentFocusId === leftmostId) {
         navigatePrevious();
       }
+      _lastEventFocusId = _currentFocusId;
     },
   });
 
@@ -831,6 +877,7 @@ const MovieDetailTvOS = () => {
               ref={trailerRefCallback}
               style={styles.posterTrailerOverlay}
               onPress={() => setTrailerVisible(true)}
+              onFocus={() => { _currentFocusId = 'trailer'; }}
               hasTVPreferredFocus={!preferWatchFocus}
               activeOpacity={0.8}
               accessible={true}
