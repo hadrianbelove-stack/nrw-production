@@ -1,7 +1,8 @@
 /**
  * New Release Wall - tvOS Fullscreen Poster Modal
  * Side-by-side layout: large poster + info panel
- * Navigate between movies with left/right on remote
+ * Navigation: UP/DOWN between button rows, LEFT/RIGHT within rows,
+ * edge triggers (< >) navigate to prev/next movie on focus.
  */
 
 import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react';
@@ -57,9 +58,6 @@ const FullscreenPosterModal = ({
   }, [currentIndex, movies.length]);
 
   // Handle TV remote events — only MENU to dismiss
-  // LEFT/RIGHT are NOT intercepted here so the tvOS focus engine can
-  // move focus between buttons, poster, and nav arrows naturally.
-  // Movie navigation happens via the NavArrow onPress (SELECT).
   useTVEventHandler(trailerVisible ? {} : {
     [TV_EVENTS.MENU]: () => onClose(),
   });
@@ -133,8 +131,19 @@ const FullscreenPosterModal = ({
     return { ...vod, isVirtualScreening };
   }, [movie]);
 
-  // Button component with focus handling
-  const ActionButton = ({ label, onPress, color, borderColor, textColor, isPrimary = false, disabled = false }) => {
+  // Edge trigger — navigates to prev/next movie the moment focus lands on it
+  const EdgeTrigger = ({ direction }) => (
+    <TouchableOpacity
+      onFocus={() => navigate(direction === 'left' ? -1 : 1)}
+      style={[styles.edgeTrigger, direction === 'left' ? styles.edgeLeft : styles.edgeRight]}
+      activeOpacity={1}
+    >
+      <Text style={styles.edgeText}>{direction === 'left' ? '‹' : '›'}</Text>
+    </TouchableOpacity>
+  );
+
+  // Action button with focus handling
+  const ActionButton = ({ label, onPress, color, borderColor, textColor, isFirst = false, disabled = false }) => {
     const [isFocused, setIsFocused] = useState(false);
     const scaleAnim = useRef(new Animated.Value(1)).current;
 
@@ -156,13 +165,14 @@ const FullscreenPosterModal = ({
       }).start();
     };
 
-    const bgColor = color || (isPrimary ? '#E50914' : '#333');
+    const bgColor = color || '#333';
 
     return (
       <TouchableOpacity
         onPress={onPress}
         onFocus={handleFocus}
         onBlur={handleBlur}
+        hasTVPreferredFocus={isFirst}
         disabled={disabled}
         activeOpacity={1}
       >
@@ -184,29 +194,17 @@ const FullscreenPosterModal = ({
     );
   };
 
-  // Navigation arrow component — focusable button, SELECT navigates to prev/next movie
-  const NavArrow = ({ direction, onPress }) => {
-    const [isFocused, setIsFocused] = useState(false);
-    const isLeft = direction === 'left';
-
-    return (
-      <TouchableOpacity
-        onPress={onPress}
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
-        style={[
-          styles.navArrow,
-          isLeft ? styles.navArrowLeft : styles.navArrowRight,
-          isFocused && styles.navArrowFocused,
-        ]}
-        activeOpacity={1}
-      >
-        <Text style={styles.navArrowText}>{isLeft ? '‹' : '›'}</Text>
-      </TouchableOpacity>
-    );
-  };
-
   if (!visible) return null;
+
+  // Determine which button gets initial focus (first available)
+  let firstButtonAssigned = false;
+  const getIsFirst = () => {
+    if (!firstButtonAssigned) {
+      firstButtonAssigned = true;
+      return true;
+    }
+    return false;
+  };
 
   return (
     <Modal
@@ -216,10 +214,6 @@ const FullscreenPosterModal = ({
       onRequestClose={onClose}
     >
       <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
-        {/* Navigation arrows */}
-        <NavArrow direction="left" onPress={() => navigate(-1)} />
-        <NavArrow direction="right" onPress={() => navigate(1)} />
-
         {/* Main content - side by side */}
         <View style={styles.content}>
           {/* Large poster */}
@@ -249,50 +243,82 @@ const FullscreenPosterModal = ({
               </Text>
             </ScrollView>
 
-            {/* Action buttons */}
-            <View style={styles.buttons}>
-              {streamingInfo && (
-                <ActionButton
-                  label={`Watch on ${streamingInfo.service}`}
-                  onPress={() => openLink(streamingInfo.link)}
-                  color={getServiceColor(streamingInfo.service)}
-                  disabled={!streamingInfo.link}
-                />
-              )}
+            {/* Action buttons with edge triggers */}
+            {/* key forces remount on movie change so hasTVPreferredFocus re-fires */}
+            <View key={`buttons-${currentIndex}`} style={styles.buttons}>
 
-              {vodInfo && (
-                <ActionButton
-                  label={vodInfo.isVirtualScreening ? 'Buy Ticket' : 'Rent / Buy'}
-                  onPress={() => openLink(vodInfo.link || vodInfo.url)}
-                  color={vodInfo.isVirtualScreening ? 'transparent' : '#ff9500'}
-                  borderColor={vodInfo.isVirtualScreening ? Colors.screeningGold : undefined}
-                  textColor={vodInfo.isVirtualScreening ? Colors.screeningGold : undefined}
-                  disabled={!(vodInfo.link || vodInfo.url)}
-                />
-              )}
-
-              {plexLibrary[String(movie.id)]?.deep_link && (
-                <ActionButton
-                  label="Play on Plex"
-                  onPress={() => openLink(plexLibrary[String(movie.id)].deep_link)}
-                  color="#E5A00D"
-                />
-              )}
-
+              {/* Trailer row */}
               {movie.links?.trailer_hosted && (
-                <ActionButton
-                  label="Watch Trailer"
-                  onPress={() => setTrailerVisible(true)}
-                  color="#E50914"
-                />
+                <View style={styles.buttonRow}>
+                  <EdgeTrigger direction="left" />
+                  <ActionButton
+                    label="Watch Trailer"
+                    onPress={() => setTrailerVisible(true)}
+                    color="#E50914"
+                    isFirst={getIsFirst()}
+                  />
+                  <EdgeTrigger direction="right" />
+                </View>
               )}
 
+              {/* VOD row (may have multiple) */}
+              {vodInfo && (
+                <View style={styles.buttonRow}>
+                  <EdgeTrigger direction="left" />
+                  <ActionButton
+                    label={vodInfo.isVirtualScreening ? 'Buy Ticket' : 'Rent / Buy'}
+                    onPress={() => openLink(vodInfo.link || vodInfo.url)}
+                    color={vodInfo.isVirtualScreening ? 'transparent' : '#ff9500'}
+                    borderColor={vodInfo.isVirtualScreening ? Colors.screeningGold : undefined}
+                    textColor={vodInfo.isVirtualScreening ? Colors.screeningGold : undefined}
+                    isFirst={getIsFirst()}
+                    disabled={!(vodInfo.link || vodInfo.url)}
+                  />
+                  <EdgeTrigger direction="right" />
+                </View>
+              )}
+
+              {/* Streaming row */}
+              {streamingInfo && (
+                <View style={styles.buttonRow}>
+                  <EdgeTrigger direction="left" />
+                  <ActionButton
+                    label={`Watch on ${streamingInfo.service}`}
+                    onPress={() => openLink(streamingInfo.link)}
+                    color={getServiceColor(streamingInfo.service)}
+                    isFirst={getIsFirst()}
+                    disabled={!streamingInfo.link}
+                  />
+                  <EdgeTrigger direction="right" />
+                </View>
+              )}
+
+              {/* Plex row */}
+              {plexLibrary[String(movie.id)]?.deep_link && (
+                <View style={styles.buttonRow}>
+                  <EdgeTrigger direction="left" />
+                  <ActionButton
+                    label="Play on Plex"
+                    onPress={() => openLink(plexLibrary[String(movie.id)].deep_link)}
+                    color="#E5A00D"
+                    isFirst={getIsFirst()}
+                  />
+                  <EdgeTrigger direction="right" />
+                </View>
+              )}
+
+              {/* RT row */}
               {movie.rt_score && (
-                <ActionButton
-                  label={`Rotten Tomatoes: ${movie.rt_score}`}
-                  onPress={() => openLink(movie.links?.rt)}
-                  disabled={!movie.links?.rt}
-                />
+                <View style={styles.buttonRow}>
+                  <EdgeTrigger direction="left" />
+                  <ActionButton
+                    label={`Rotten Tomatoes: ${movie.rt_score}`}
+                    onPress={() => openLink(movie.links?.rt)}
+                    isFirst={getIsFirst()}
+                    disabled={!movie.links?.rt}
+                  />
+                  <EdgeTrigger direction="right" />
+                </View>
               )}
             </View>
           </View>
@@ -302,7 +328,6 @@ const FullscreenPosterModal = ({
         <Text style={styles.counter}>
           {currentIndex + 1} / {movies.length}
         </Text>
-
 
         {/* Trailer player overlay */}
         {trailerVisible && movies.length > 0 && (
@@ -392,7 +417,12 @@ const styles = StyleSheet.create({
   buttons: {
     gap: 12,
   },
+  buttonRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   button: {
+    flex: 1,
     paddingVertical: 16,
     paddingHorizontal: 24,
     borderRadius: 10,
@@ -410,31 +440,22 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: '600',
   },
-  navArrow: {
-    position: 'absolute',
-    top: '50%',
-    marginTop: -40,
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: 'rgba(0, 212, 170, 0.1)',
+  edgeTrigger: {
+    width: 50,
+    height: 50,
     justifyContent: 'center',
     alignItems: 'center',
+    opacity: 0.4,
   },
-  navArrowLeft: {
-    left: 30,
+  edgeLeft: {
+    marginRight: 8,
   },
-  navArrowRight: {
-    right: 30,
+  edgeRight: {
+    marginLeft: 8,
   },
-  navArrowFocused: {
-    backgroundColor: 'rgba(0, 212, 170, 0.25)',
-    borderWidth: 2,
-    borderColor: Colors.focusBorderHighlight,
-  },
-  navArrowText: {
+  edgeText: {
     color: 'rgba(0, 212, 170, 0.6)',
-    fontSize: 48,
+    fontSize: 36,
     fontWeight: '300',
   },
   counter: {
