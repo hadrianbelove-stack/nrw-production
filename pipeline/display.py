@@ -447,24 +447,63 @@ class DisplayGenerator:
                     elif 'festivalplayer.sundance.org' in screening_link:
                         screening_slug = 'sundance'
 
-                # Look up screening info: config.yaml name → Eventive page (name + dates) → fallback
-                eventive_info = self.host._fetch_eventive_screening_info(screening_slug) if screening_slug else {}
-                screening_name = screening_names_map.get(screening_slug, '') or eventive_info.get('name', screening_slug)
+                # Look up per-film dates from cache first (most accurate), then festival-level
+                _movie_id_str = str(movie.get('id', ''))
+                _cache_entry = self.host.watch_links_cache.get(_movie_id_str, {})
+                _cached_start = _cache_entry.get('start_time', '')
+                _cached_end = _cache_entry.get('end_time', '')
+                _cached_festival = _cache_entry.get('festival_name', '')
+
+                # Only fetch festival page if we don't have per-film dates from cache
+                if not _cached_start and not _cached_end:
+                    eventive_info = self.host._fetch_eventive_screening_info(screening_slug) if screening_slug else {}
+                else:
+                    eventive_info = {}
+
+                screening_name = _cached_festival or screening_names_map.get(screening_slug, '') or eventive_info.get('name', screening_slug)
 
                 today_str = datetime.now().strftime('%Y-%m-%d')
-                available_end = eventive_info.get('available_end') or screening_end_dates_map.get(screening_slug) or existing_screening_info.get('available_end')
+
+                # Per-film dates from cache take priority over festival-level dates
+                if _cached_start:
+                    try:
+                        _s_dt = datetime.fromisoformat(_cached_start.replace('Z', '+00:00'))
+                        available_start = _s_dt.strftime('%Y-%m-%d')
+                    except (ValueError, TypeError):
+                        available_start = eventive_info.get('available_start') or existing_screening_info.get('available_start')
+                else:
+                    available_start = eventive_info.get('available_start') or existing_screening_info.get('available_start')
+
+                if _cached_end:
+                    try:
+                        _e_dt = datetime.fromisoformat(_cached_end.replace('Z', '+00:00'))
+                        available_end = _e_dt.strftime('%Y-%m-%d')
+                    except (ValueError, TypeError):
+                        available_end = eventive_info.get('available_end') or screening_end_dates_map.get(screening_slug) or existing_screening_info.get('available_end')
+                else:
+                    available_end = eventive_info.get('available_end') or screening_end_dates_map.get(screening_slug) or existing_screening_info.get('available_end')
+
                 screening_expired = available_end and available_end < today_str
 
                 movie['virtual_screening_info'] = {
                     'platform': screening_service or 'Unknown',
                     'screening_slug': screening_slug,
                     'screening_name': screening_name,
-                    'available_start': eventive_info.get('available_start') or existing_screening_info.get('available_start'),
+                    'available_start': available_start,
                     'available_end': available_end,
                     'discovered': existing_screening_info.get('discovered', today_str),
                     'last_checked': existing_screening_info.get('last_checked', today_str),
                     'status': 'expired' if screening_expired else existing_screening_info.get('status', 'active')
                 }
+
+                # Correct digital_date and pre-order status from screening dates
+                if available_start:
+                    movie['digital_date'] = available_start
+                    if available_start > today_str:
+                        movie['_is_preorder'] = True
+                    elif movie.get('_is_preorder'):
+                        # Screening has started — no longer a pre-order
+                        del movie['_is_preorder']
 
                 # Hide expired virtual screenings automatically
                 if screening_expired:

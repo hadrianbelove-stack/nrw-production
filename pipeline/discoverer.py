@@ -496,7 +496,23 @@ class ProviderDiscoverer:
                                 print(f"  ✓ {movie['title']} — buy-only pre-order graduated (rent/streaming found)")
 
                             if not movie.get('digital_date'):
-                                movie['digital_date'] = datetime.now().strftime('%Y-%m-%d')
+                                # For VS bypass, use screening start_time as digital_date
+                                if movie.get('_virtual_screening') and _mid in getattr(self.enrichment, 'watch_links_cache', {}):
+                                    _vs_cache = self.enrichment.watch_links_cache[_mid]
+                                    _vs_start = _vs_cache.get('start_time', '')
+                                    if _vs_start:
+                                        try:
+                                            _start_dt = datetime.fromisoformat(_vs_start.replace('Z', '+00:00'))
+                                            movie['digital_date'] = _start_dt.strftime('%Y-%m-%d')
+                                            # Future screening = pre-order (hidden unless filter active)
+                                            if _start_dt.date() > datetime.now().date():
+                                                movie['_is_preorder'] = True
+                                        except (ValueError, TypeError):
+                                            movie['digital_date'] = datetime.now().strftime('%Y-%m-%d')
+                                    else:
+                                        movie['digital_date'] = datetime.now().strftime('%Y-%m-%d')
+                                else:
+                                    movie['digital_date'] = datetime.now().strftime('%Y-%m-%d')
                             # For VS bypass, preserve original streaming providers (TMDB returns empty)
                             if movie.get('_virtual_screening') and not stream_names:
                                 _orig_streaming = movie.get('providers', {}).get('streaming', [])

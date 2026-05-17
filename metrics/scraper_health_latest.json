@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-05-16T13:15:09.362178",
+  "timestamp": "2026-05-17T14:22:12.133438",
   "scrapers": {
     "rt_scraper": {
       "attempts": 1,
@@ -18,9 +18,9 @@
       "error_types": {}
     },
     "wikipedia_scraper": {
-      "wikidata_attempts": 0,
-      "wikidata_successes": 0,
-      "success_rate": null,
+      "wikidata_attempts": 1,
+      "wikidata_successes": 1,
+      "success_rate": 100.0,
       "error_types": {}
     },
     "trailer_scraper": {
@@ -45,8 +45,8 @@
     }
   },
   "validation": {
-    "passes": 1,
+    "passes": 0,
     "warnings": 0,
-    "pass_rate": 100.0
+    "pass_rate": null
   }
 }

@@ -27,6 +27,7 @@ const NRWConfig = {
         fandango:      { class: 'fandango',      name: 'FANDANGO',   badgeName: 'FANDANGO',  btnName: 'Fandango',      matches: ['fandango'],          logo: 'fandangoathome.png', wideLogo: 'services/fandango_wide.png' },
         docuramafilms: { class: 'docuramafilms', name: 'DOCURAMA',   badgeName: 'DOCURAMA',  btnName: 'Docurama',      matches: ['docurama'],          wideLogo: 'services/docuramafilms_wide.png' },
         fandor:        { class: 'fandor',        name: 'FANDOR',     badgeName: 'FANDOR',    btnName: 'Fandor',        matches: ['fandor'],            wideLogo: 'services/fandor_wide.png' },
+        bloodstream:   { class: 'other',         name: 'BLOODSTREAM', badgeName: 'BLOODSTREAM', btnName: 'Bloodstream', matches: ['bloodstream'] },
     },
 
     // VOD (rent/buy) service definitions (colors in CSS :root variables)
