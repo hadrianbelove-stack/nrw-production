@@ -83,7 +83,8 @@ const NRW = {
     // Lightbox state
     lightboxMovies: [],  // Movies currently in the lightbox (filtered/displayed)
     lightboxIndex: 0,    // Current index in lightbox
-    lightboxBtnIndex: -1, // Focused button index in lightbox (-1 = none focused, arrows cycle movies)
+    lbRow: 0,  // Focused row in lightbox grid
+    lbCol: 0,  // Focused column in lightbox grid
     trailerLightboxIndex: -1,  // Index in lightboxMovies of the movie whose trailer is playing (-1 = none)
     trailerReelMovies: [],     // Movies in the trailer reel (last 7 days with hosted trailers)
     isTrailerReel: false,      // true when playing the trailer reel (vs individual trailer from lightbox)
@@ -859,104 +860,111 @@ const NRW = {
         this.updateLightbox();
     },
 
-    // Get all focusable buttons in the lightbox
-    // Order: [<] [score badges...] [TRAILER] [watch buttons...] [>]
-    // < and > auto-fire on focus (navigate prev/next movie)
-    _getLightboxFocusables() {
-        const items = [];
-        const btnContainer = document.getElementById('lightbox-buttons');
-
-        // 1. < nav button
-        const prevBtn = btnContainer?.querySelector('.lb-nav-prev');
-        if (prevBtn) items.push(prevBtn);
-
-        // 2. Score badges (RT, IMDb, MC, Wiki)
+    // Build 2D grid of focusable elements for lightbox keyboard navigation
+    // Rows: [scores] [trailer] [streaming] [vod]
+    _getLightboxGrid() {
+        const grid = [];
+        // Row: score badges (RT, IMDb, MC, Wiki)
         const scores = document.getElementById('lightbox-scores');
-        if (scores) {
-            scores.querySelectorAll('.score-badge').forEach(b => items.push(b));
-        }
-
-        // 3. TRAILER button
+        const scoreBadges = scores ? Array.from(scores.querySelectorAll('.score-badge')) : [];
+        if (scoreBadges.length > 0) grid.push(scoreBadges);
+        // Row: TRAILER button (only if present)
+        const btnContainer = document.getElementById('lightbox-buttons');
         const trailerBtn = btnContainer?.querySelector('.lb-trailer-btn');
-        if (trailerBtn) items.push(trailerBtn);
-
-        // 4. Watch buttons (streaming + VOD)
-        if (btnContainer) {
-            btnContainer.querySelectorAll('.lb-watch-row a.stream-btn, .lb-watch-row a.vod-btn').forEach(b => items.push(b));
+        if (trailerBtn) grid.push([trailerBtn]);
+        // Row: streaming buttons
+        const streamRow = btnContainer?.querySelector('.lb-stream-row');
+        if (streamRow) {
+            const btns = Array.from(streamRow.querySelectorAll('a.stream-btn'));
+            if (btns.length > 0) grid.push(btns);
         }
-
-        // 5. > nav button
-        const nextBtn = btnContainer?.querySelector('.lb-nav-next');
-        if (nextBtn) items.push(nextBtn);
-
-        return items;
+        // Row: VOD buttons
+        const vodRow = btnContainer?.querySelector('.lb-vod-row');
+        if (vodRow) {
+            const btns = Array.from(vodRow.querySelectorAll('a.vod-btn'));
+            if (btns.length > 0) grid.push(btns);
+        }
+        return grid;
     },
 
-    // Arrow key nav within lightbox
-    // < and > auto-fire on focus — navigate movie and reset to TRAILER
-    _lightboxArrowNav(direction) {
-        const focusables = this._getLightboxFocusables();
-        const count = focusables.length;
-
-        if (count === 0) {
-            this.lightboxNav(direction);
+    // 2D arrow key nav in lightbox
+    // TRAILER row: LEFT → prev movie, RIGHT → next movie
+    // Other rows: LEFT/RIGHT cycle within row, UP/DOWN move between rows
+    _lightboxGridNav(direction) {
+        const grid = this._getLightboxGrid();
+        if (grid.length === 0) {
+            if (direction === 'left' || direction === 'right') {
+                this.lightboxNav(direction === 'right' ? 1 : -1);
+            }
             return;
         }
+        // Clamp to valid range
+        if (this.lbRow >= grid.length) this.lbRow = grid.length - 1;
+        if (this.lbCol >= grid[this.lbRow].length) this.lbCol = grid[this.lbRow].length - 1;
 
-        const next = this.lightboxBtnIndex + direction;
+        const isTrailerRow = grid[this.lbRow].some(el => el.classList.contains('lb-trailer-btn'));
 
-        if (next < 0 || next >= count) {
-            // Past the edge — navigate movies
-            this.lightboxNav(direction > 0 ? 1 : -1);
-            return;
+        switch (direction) {
+            case 'left':
+                if (isTrailerRow) {
+                    this.lightboxNav(-1);  // prev movie
+                } else if (this.lbCol > 0) {
+                    this.lbCol--;
+                    this._updateLightboxGridFocus(grid);
+                } else {
+                    this.lightboxNav(-1);  // past first button → prev movie
+                }
+                break;
+            case 'right':
+                if (isTrailerRow) {
+                    this.lightboxNav(1);  // next movie
+                } else if (this.lbCol < grid[this.lbRow].length - 1) {
+                    this.lbCol++;
+                    this._updateLightboxGridFocus(grid);
+                } else {
+                    this.lightboxNav(1);  // past last button → next movie
+                }
+                break;
+            case 'up':
+                if (this.lbRow > 0) {
+                    this.lbRow--;
+                    this.lbCol = Math.min(this.lbCol, grid[this.lbRow].length - 1);
+                    this._updateLightboxGridFocus(grid);
+                }
+                break;
+            case 'down':
+                if (this.lbRow < grid.length - 1) {
+                    this.lbRow++;
+                    this.lbCol = Math.min(this.lbCol, grid[this.lbRow].length - 1);
+                    this._updateLightboxGridFocus(grid);
+                }
+                break;
         }
-
-        const el = focusables[next];
-
-        // < and > auto-fire: navigate movie, focus resets to TRAILER via updateLightbox
-        if (el.classList.contains('lb-nav-prev')) {
-            this.lightboxNav(-1);
-            return;
-        }
-        if (el.classList.contains('lb-nav-next')) {
-            this.lightboxNav(1);
-            return;
-        }
-
-        // Normal focus movement
-        this.lightboxBtnIndex = next;
-        this._updateLightboxFocus(focusables);
     },
 
-    // Visually highlight the focused button
-    _updateLightboxFocus(focusables) {
-        if (!focusables) focusables = this._getLightboxFocusables();
-        // Clear all focus rings
-        focusables.forEach(el => el.classList.remove('lb-focused'));
-        // Apply focus to current
-        if (this.lightboxBtnIndex >= 0 && this.lightboxBtnIndex < focusables.length) {
-            focusables[this.lightboxBtnIndex].classList.add('lb-focused');
-            focusables[this.lightboxBtnIndex].scrollIntoView({ block: 'nearest' });
+    // Visually highlight the focused element in the grid
+    _updateLightboxGridFocus(grid) {
+        if (!grid) grid = this._getLightboxGrid();
+        grid.forEach(row => row.forEach(el => el.classList.remove('lb-focused')));
+        const el = grid[this.lbRow]?.[this.lbCol];
+        if (el) {
+            el.classList.add('lb-focused');
+            el.scrollIntoView({ block: 'nearest' });
         }
     },
 
-    // Enter/Space activates the focused button
+    // Enter/Space activates the focused element
     _lightboxActivateFocused(e) {
-        if (this.lightboxBtnIndex < 0) return;
-        const focusables = this._getLightboxFocusables();
-        const el = focusables[this.lightboxBtnIndex];
+        const grid = this._getLightboxGrid();
+        const el = grid[this.lbRow]?.[this.lbCol];
         if (!el) return;
         e.preventDefault();
-
         // Trailer button
         if (el.dataset.trailer) {
             this.showTrailer(el.dataset.trailer);
             return;
         }
-        // Nav buttons (< >) — Enter also fires them
-        if (el.classList.contains('lb-nav-prev')) { this.lightboxNav(-1); return; }
-        if (el.classList.contains('lb-nav-next')) { this.lightboxNav(1); return; }
-        // Links (scores, stream, VOD)
+        // Links (scores, watch buttons, VOD cards)
         const link = el.tagName === 'A' ? el : el.querySelector('a');
         if (link) link.click();
     },
@@ -1171,15 +1179,20 @@ const NRW = {
         prevBtn.setAttribute('aria-label', 'Previous movie');
         navRow.appendChild(prevBtn);
 
-        // TRAILER button (only if movie has a trailer)
+        // TRAILER button (or disabled placeholder when no trailer)
         const trailerUrl = movie.links?.trailer_hosted || movie.links?.trailer;
+        const trailerBtn = document.createElement('button');
+        trailerBtn.className = 'lb-trailer-btn';
         if (trailerUrl) {
-            const trailerBtn = document.createElement('button');
-            trailerBtn.className = 'lb-trailer-btn';
             trailerBtn.dataset.trailer = trailerUrl;
             trailerBtn.textContent = 'TRAILER';
-            navRow.appendChild(trailerBtn);
+        } else {
+            trailerBtn.textContent = 'NO TRAILER';
+            trailerBtn.disabled = true;
+            trailerBtn.style.opacity = '0.35';
+            trailerBtn.style.cursor = 'default';
         }
+        navRow.appendChild(trailerBtn);
 
         // > button
         const nextBtn = document.createElement('button');
@@ -1190,12 +1203,7 @@ const NRW = {
 
         container.appendChild(navRow);
 
-        // === ROW 2: Streaming + VOD side by side ===
-        const watchRow = document.createElement('div');
-        watchRow.className = 'lb-watch-row';
-        let hasWatch = false;
-
-        // Streaming button(s)
+        // === STREAM ROW (own row, before VOD) ===
         const lbStreamData = this.getStreaming(watchLinks);
         let streamSvc = lbStreamData?.service;
         let streamLink = lbStreamData?.link;
@@ -1206,30 +1214,30 @@ const NRW = {
             );
             streamSvc = realStreamers[0] || null;
         }
-        if (streamSvc) {
+        if (streamSvc && streamLink) {
             const resolved = this.resolveService(streamSvc);
             const cls = resolved?.class || '';
             const logo = resolved?.wideLogo || null;
-            if (streamLink) {
-                const btn = document.createElement('a');
-                btn.className = `stream-btn ${cls}`;
-                btn.setAttribute('href', streamLink);
-                btn.setAttribute('target', '_blank');
-                btn.setAttribute('rel', 'noopener noreferrer');
-                if (logo) {
-                    const img = document.createElement('img');
-                    img.src = `assets/logos/${logo}`;
-                    img.alt = resolved?.btnName || streamSvc;
-                    btn.appendChild(img);
-                } else {
-                    btn.textContent = resolved?.name || streamSvc.toUpperCase();
-                }
-                watchRow.appendChild(btn);
-                hasWatch = true;
+            const streamRowEl = document.createElement('div');
+            streamRowEl.className = 'lb-stream-row';
+            const btn = document.createElement('a');
+            btn.className = `stream-btn ${cls}`;
+            btn.setAttribute('href', streamLink);
+            btn.setAttribute('target', '_blank');
+            btn.setAttribute('rel', 'noopener noreferrer');
+            if (logo) {
+                const img = document.createElement('img');
+                img.src = `assets/logos/${logo}`;
+                img.alt = resolved?.btnName || streamSvc;
+                btn.appendChild(img);
+            } else {
+                btn.textContent = resolved?.name || streamSvc.toUpperCase();
             }
+            streamRowEl.appendChild(btn);
+            container.appendChild(streamRowEl);
         }
 
-        // VOD buttons
+        // === VOD ROW (own row, after streaming) ===
         const lbVodEntries = Array.isArray(watchLinks.vod) ? watchLinks.vod
             : (watchLinks.vod?.service ? [watchLinks.vod] : []);
         let resolvedVod = [];
@@ -1242,6 +1250,10 @@ const NRW = {
         });
         const hasNonFallback = resolvedVod.some(v => !v.vodType.fallback);
         if (hasNonFallback) resolvedVod = resolvedVod.filter(v => !v.vodType.fallback);
+
+        const vodRowEl = document.createElement('div');
+        vodRowEl.className = 'lb-vod-row';
+        let hasVod = false;
 
         resolvedVod.forEach(({ vodType, vodLink, rentPrice, buyPrice }) => {
             const btn = document.createElement('a');
@@ -1280,12 +1292,12 @@ const NRW = {
                 btn.appendChild(priceHalf);
             }
 
-            watchRow.appendChild(btn);
-            hasWatch = true;
+            vodRowEl.appendChild(btn);
+            hasVod = true;
         });
 
         // Pre-order links (when no other watch options)
-        if (!hasWatch) {
+        if (!hasVod) {
             const preOrderLinks = Array.isArray(movie.pre_order_links) ? movie.pre_order_links : [];
             preOrderLinks.forEach(pl => {
                 const plLink = pl.link || pl.url;
@@ -1312,16 +1324,16 @@ const NRW = {
                     priceHalf.className = 'price-half';
                     priceHalf.textContent = 'Pre-Order';
                     btn.appendChild(priceHalf);
-                    watchRow.appendChild(btn);
-                    hasWatch = true;
+                    vodRowEl.appendChild(btn);
+                    hasVod = true;
                 }
             });
         }
 
-        if (hasWatch) container.appendChild(watchRow);
+        if (hasVod) container.appendChild(vodRowEl);
 
         // Pre-order availability date
-        if (movie._is_preorder && hasWatch) {
+        if (movie._is_preorder && hasVod) {
             const dateLabel = document.createElement('span');
             dateLabel.className = 'po-available-date';
             dateLabel.textContent = movie.digital_date
@@ -1332,7 +1344,7 @@ const NRW = {
     },
 
     // Update lightbox content — delegates to sub-renderers
-    // Default focus lands on TRAILER (or first non-nav button if no trailer)
+    // Default focus: TRAILER button (or first available row/col)
     updateLightbox() {
         const movie = this.lightboxMovies[this.lightboxIndex];
         if (!movie) return;
@@ -1344,18 +1356,12 @@ const NRW = {
         this._updateLightboxPullQuotes(movie);
         this._buildLightboxButtons(movie);
 
-        // Default focus: TRAILER button, fallback to first non-nav button
-        const focusables = this._getLightboxFocusables();
-        const trailerIdx = focusables.findIndex(el => el.classList.contains('lb-trailer-btn'));
-        if (trailerIdx >= 0) {
-            this.lightboxBtnIndex = trailerIdx;
-        } else {
-            const firstReal = focusables.findIndex(el =>
-                !el.classList.contains('lb-nav-prev') && !el.classList.contains('lb-nav-next')
-            );
-            this.lightboxBtnIndex = firstReal >= 0 ? firstReal : 0;
-        }
-        this._updateLightboxFocus(focusables);
+        // Default focus on TRAILER row, fallback to first row
+        const grid = this._getLightboxGrid();
+        const trailerRowIdx = grid.findIndex(r => r.some(el => el.classList.contains('lb-trailer-btn')));
+        this.lbRow = trailerRowIdx >= 0 ? trailerRowIdx : 0;
+        this.lbCol = 0;
+        this._updateLightboxGridFocus(grid);
     },
 
     // Setup lightbox + trailer keyboard navigation
@@ -1382,9 +1388,10 @@ const NRW = {
 
             if (e.key === 'Escape') {
                 this.closeLightbox();
-            } else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+            } else if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
                 e.preventDefault();
-                this._lightboxArrowNav(e.key === 'ArrowRight' ? 1 : -1);
+                const dirMap = { ArrowLeft: 'left', ArrowRight: 'right', ArrowUp: 'up', ArrowDown: 'down' };
+                this._lightboxGridNav(dirMap[e.key]);
             } else if (e.key === 'Enter' || e.key === ' ') {
                 this._lightboxActivateFocused(e);
             }
@@ -1582,21 +1589,14 @@ const NRW = {
             }
         });
 
-        // Handle clicks on document body for lightbox buttons
+        // Handle clicks on document body for lightbox/trailer elements
         document.body.addEventListener('click', (e) => {
-            // Lightbox nav buttons (< and >) — click to navigate movies
-            const navPrev = e.target.closest('.lb-nav-prev');
-            if (navPrev) { this.lightboxNav(-1); return; }
-            const navNext = e.target.closest('.lb-nav-next');
-            if (navNext) { this.lightboxNav(1); return; }
-
+            // Lightbox nav buttons (< and >)
+            if (e.target.closest('.lb-nav-prev')) { this.lightboxNav(-1); return; }
+            if (e.target.closest('.lb-nav-next')) { this.lightboxNav(1); return; }
             // Lightbox TRAILER button
             const trailerBtn = e.target.closest('.lb-trailer-btn[data-trailer]');
-            if (trailerBtn) {
-                this.showTrailer(trailerBtn.dataset.trailer);
-                return;
-            }
-
+            if (trailerBtn) { this.showTrailer(trailerBtn.dataset.trailer); return; }
             // Trailer modal backdrop or close button
             if (e.target.closest('.trailer-modal-backdrop') || e.target.closest('.trailer-close-btn')) {
                 this.closeTrailer();

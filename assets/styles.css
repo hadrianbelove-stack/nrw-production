@@ -1244,7 +1244,6 @@ header h1 {
     gap: 10px;
     margin-bottom: 10px;
 }
-
 .lb-nav-btn {
     width: 48px;
     height: 48px;
@@ -1266,11 +1265,10 @@ header h1 {
     background: rgba(0, 212, 170, 0.3);
     color: #00ffbb;
 }
-
 .lb-trailer-btn {
     flex: 1;
     height: 48px;
-    border: none;
+    border: 1.5px solid rgba(255,255,255,0.3);
     border-radius: 10px;
     background: #E50914;
     color: #fff;
@@ -1279,7 +1277,6 @@ header h1 {
     letter-spacing: 0.2em;
     cursor: pointer;
     transition: all 0.2s;
-    border: 1.5px solid rgba(255,255,255,0.3);
 }
 .lb-trailer-btn:hover {
     background: #ff1a25;
@@ -1287,12 +1284,17 @@ header h1 {
     box-shadow: 0 4px 16px rgba(229,9,20,0.5);
 }
 
-/* ROW 2: Streaming + VOD buttons side by side */
-.lb-watch-row {
+/* STREAM ROW: own row below nav */
+.lb-stream-row {
+    margin-bottom: 8px;
+}
+
+/* VOD ROW: own row below streaming, side by side */
+.lb-vod-row {
     display: flex;
     gap: 8px;
 }
-.lb-watch-row > * { flex: 1; min-width: 0; }
+.lb-vod-row > * { flex: 1; min-width: 0; }
 
 /* === Streaming button: solid brand fill, logo only === */
 .stream-btn {
@@ -1348,7 +1350,7 @@ header h1 {
     overflow: hidden;
     text-decoration: none;
     color: #fff;
-    min-height: 56px;
+    min-height: 48px;
     border: 1.5px solid rgba(255,255,255,0.8);
     transition: all 0.2s;
 }
@@ -1358,28 +1360,31 @@ header h1 {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 8px 12px;
-    width: 45%;
+    padding: 6px 6px;
+    width: 40%;
     font-weight: 700;
     text-transform: uppercase;
-    font-size: 0.75rem;
+    font-size: 0.65rem;
+    overflow: hidden;
 }
 .vod-btn .logo-half img {
-    height: 18px;
+    height: 14px;
     width: auto;
+    max-width: 100%;
+    object-fit: contain;
     filter: brightness(0) invert(1);
 }
 .vod-btn .price-half {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 8px 8px;
-    width: 55%;
+    padding: 6px 4px;
+    width: 60%;
     background: rgba(0,0,0,0.4);
-    font-size: 0.8rem;
+    font-size: 0.65rem;
     font-weight: 700;
     color: #fff;
-    line-height: 1.3;
+    line-height: 1.2;
     text-align: center;
 }
 /* VOD logo-half brand colors */
@@ -1415,7 +1420,7 @@ header h1 {
     box-shadow: 0 0 12px rgba(0,212,170,0.4), 0 0 20px rgba(229,9,20,0.3) !important;
 }
 
-/* Trailer — poster overlay */
+/* Trailer — poster overlay (#10: entire poster is the button) */
 .lightbox-poster-wrap.has-trailer {
     cursor: pointer;
 }
@@ -1465,6 +1470,96 @@ header h1 {
     letter-spacing: 0.3em;
     color: #fff;
     text-shadow: 0 2px 12px rgba(0,0,0,0.8);
+}
+
+/* V2 VOD price cards: logo left, prices stacked right */
+.vcard {
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: row;
+    min-width: 160px;
+    max-width: 220px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.vcard:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+.vcard-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50%;
+    padding: 10px 8px;
+    text-decoration: none;
+    color: #fff;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+}
+.vcard-logo .logo-img {
+    height: 18px;
+    width: auto;
+    max-width: 80px;
+    object-fit: contain;
+}
+.vcard-prices {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+}
+.vcard-price {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: inherit;
+    font-weight: 700;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    padding: 7px 4px;
+    transition: filter 0.2s;
+}
+.vcard-price:hover { filter: brightness(1.15); }
+.vcard-price.rent:not(:only-child) { border-bottom: 1px solid rgba(0,0,0,0.15); }
+/* Logo backgrounds — brand colors */
+.vcard.amazon .vcard-logo { background: #ff9900; }
+.vcard.apple .vcard-logo { background: #000; }
+.vcard.apple { border: 1px solid #444; }
+.vcard.fandango .vcard-logo { background: #FF6600; }
+.vcard.youtube .vcard-logo { background: #cc0000; }
+.vcard.plex .vcard-logo { background: #1a1a1a; }
+.vcard.plex { border: 1px solid #444; }
+/* Logo images white on brand backgrounds */
+.vcard.amazon .logo-img { filter: brightness(0) invert(1); }
+.vcard.apple .logo-img { filter: invert(1); }
+.vcard.fandango .logo-img { filter: brightness(0) invert(1); }
+.vcard.plex .logo-img { filter: brightness(0) invert(1); }
+.vcard.youtube .logo-img { filter: brightness(0) invert(1); }
+/* Price colors per service */
+.vcard.amazon .vcard-price.rent { background: #ffad33; color: #000; }
+.vcard.amazon .vcard-price.buy { background: #e68a00; color: #000; }
+.vcard.apple .vcard-price.rent { background: #2a2a2a; color: #fff; }
+.vcard.apple .vcard-price.buy { background: #1a1a1a; color: #ddd; }
+.vcard.apple .vcard-price.rent:not(:only-child) { border-bottom: 1px solid #444; }
+.vcard.fandango .vcard-price.rent { background: #e55a00; color: #fff; }
+.vcard.fandango .vcard-price.buy { background: #cc4e00; color: #fff; }
+.vcard.youtube .vcard-price.rent { background: #cc0000; color: #fff; }
+.vcard.youtube .vcard-price.buy { background: #990000; color: #fff; }
+.vcard.plex .vcard-price.rent { background: #c8900b; color: #fff; }
+.vcard.plex .vcard-price.buy { background: #a07508; color: #fff; }
+
+/* Wide service logos inside watch buttons */
+.watch-btn-lb .watch-logo {
+    height: 18px;
+    width: auto;
+    max-width: 110px;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
 }
 
 /* Navigation arrows - inline with content */
