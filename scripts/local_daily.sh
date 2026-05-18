@@ -6,6 +6,7 @@
 # 3. Stamps hosted trailer URLs into data.json and pushes to GitHub
 # Sentinel is only created after we confirm CI has run today (via run_diagnostics.json).
 
+export PATH="/opt/homebrew/bin:$PATH"
 PROJECT_DIR="/Users/hadrianbelove/Downloads/nrw-production"
 LOG="$PROJECT_DIR/logs/launchagent.log"
 
@@ -38,7 +39,7 @@ if ! /usr/bin/git diff --quiet || ! /usr/bin/git diff --cached --quiet; then
     echo "  Stashed local changes" >> "$LOG"
 fi
 
-/usr/bin/git pull --ff-only origin main >> "$LOG" 2>&1
+/usr/bin/git pull --rebase origin main >> "$LOG" 2>&1
 if [ $? -ne 0 ]; then
     echo "WARNING: git pull failed" >> "$LOG"
 fi
