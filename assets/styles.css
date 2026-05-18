@@ -1237,101 +1237,185 @@ header h1 {
     margin-top: auto;
 }
 
-/* Watch stack: full-width colored buttons, one per line */
-.lightbox-buttons .watch-stack {
+/* ROW 1: < TRAILER > navigation row */
+.lb-nav-row {
     display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    margin-bottom: 0.5rem;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
 }
 
-/* Section labels above watch buttons */
-.watch-section-label {
+.lb-nav-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(0, 212, 170, 0.1);
     color: #00d4aa;
-    font-size: 0.65rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: -0.25rem;
-}
-
-/* VOD row: rent/buy buttons side-by-side */
-.lightbox-buttons .vod-row {
-    display: flex;
-    flex-direction: row;
-    gap: 0.5rem;
-}
-
-.lightbox-buttons .vod-row > * {
-    flex: 1;
-}
-
-.lightbox-buttons .watch-btn-lb {
-    padding: 0.6rem 0.8rem;
-    border-radius: 8px;
-    text-align: center;
-    font-weight: bold;
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    text-decoration: none;
+    font-size: 1.8rem;
+    font-weight: 300;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
+    flex-shrink: 0;
+    line-height: 1;
+}
+.lb-nav-btn:hover {
+    background: rgba(0, 212, 170, 0.3);
+    color: #00ffbb;
+}
+
+.lb-trailer-btn {
+    flex: 1;
+    height: 48px;
     border: none;
-    letter-spacing: 0.5px;
-    gap: 0.4rem;
+    border-radius: 10px;
+    background: #E50914;
+    color: #fff;
+    font-size: 0.95rem;
+    font-weight: 800;
+    letter-spacing: 0.2em;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1.5px solid rgba(255,255,255,0.3);
+}
+.lb-trailer-btn:hover {
+    background: #ff1a25;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(229,9,20,0.5);
+}
+
+/* ROW 2: Streaming + VOD buttons side by side */
+.lb-watch-row {
+    display: flex;
+    gap: 8px;
+}
+.lb-watch-row > * { flex: 1; min-width: 0; }
+
+/* === Streaming button: solid brand fill, logo only === */
+.stream-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 10px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: #fff;
+    min-height: 52px;
+    border: 1.5px solid rgba(255,255,255,0.8);
+    transition: all 0.2s;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+}
+.stream-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+.stream-btn:active { transform: scale(0.97); }
+.stream-btn img {
+    height: 20px;
+    width: auto;
+    max-width: 100px;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+}
+/* Streaming service colors */
+.stream-btn.netflix { background: var(--svc-netflix); }
+.stream-btn.max { background: var(--svc-max); }
+.stream-btn.disney { background: var(--svc-disney); }
+.stream-btn.prime { background: var(--svc-prime); }
+.stream-btn.hulu { background: var(--svc-hulu); color: #000; }
+.stream-btn.mubi { background: var(--svc-mubi); }
+.stream-btn.criterion { background: var(--svc-criterion); }
+.stream-btn.peacock { background: var(--svc-peacock); }
+.stream-btn.shudder { background: var(--svc-shudder); }
+.stream-btn.tubi { background: var(--svc-tubi); }
+.stream-btn.paramount { background: var(--svc-paramount); }
+.stream-btn.kanopy { background: var(--svc-kanopy); }
+.stream-btn.hoopla { background: var(--svc-hoopla); }
+.stream-btn.amc { background: var(--svc-amc); }
+.stream-btn.roku { background: var(--svc-roku); }
+.stream-btn.pluto { background: var(--svc-pluto); }
+.stream-btn.crackle { background: var(--svc-crackle); }
+.stream-btn.fawesome { background: var(--svc-fawesome); }
+.stream-btn.other { background: #333; }
+
+/* === VOD button: split logo half + price half === */
+.vod-btn {
+    display: flex;
+    align-items: stretch;
+    border-radius: 10px;
+    overflow: hidden;
+    text-decoration: none;
+    color: #fff;
+    min-height: 56px;
+    border: 1.5px solid rgba(255,255,255,0.8);
+    transition: all 0.2s;
+}
+.vod-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+.vod-btn:active { transform: scale(0.97); }
+.vod-btn .logo-half {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 12px;
+    width: 45%;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+}
+.vod-btn .logo-half img {
+    height: 18px;
+    width: auto;
+    filter: brightness(0) invert(1);
+}
+.vod-btn .price-half {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 8px;
+    width: 55%;
+    background: rgba(0,0,0,0.4);
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.3;
+    text-align: center;
+}
+/* VOD logo-half brand colors */
+.vod-btn.amazon .logo-half { background: var(--svc-prime); }
+.vod-btn.apple .logo-half { background: #333; }
+.vod-btn.fandango .logo-half { background: var(--svc-fandango); }
+.vod-btn.youtube .logo-half { background: var(--svc-youtube); }
+.vod-btn.plex .logo-half { background: #1a1a1a; }
+/* Virtual screening — gold */
+.vod-btn.screening { border-color: #FFD700; }
+.vod-btn.screening .price-half.screening-full {
     width: 100%;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-.lightbox-buttons .watch-btn-lb:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    background: transparent;
+    color: #FFD700;
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
 }
 
-/* Keyboard focus ring for lightbox button navigation */
+/* Keyboard focus: green border (replaces white) */
 .lb-focused {
-    outline: 2px solid var(--accent-primary) !important;
-    outline-offset: 3px;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    border-color: var(--accent-primary) !important;
+    box-shadow: 0 0 10px rgba(0,212,170,0.3) !important;
 }
-.lightbox-trailer-overlay.lb-focused {
-    outline-offset: -3px;
-    border-radius: 8px;
+/* Nav buttons get brighter background on focus */
+.lb-nav-btn.lb-focused {
+    background: rgba(0, 212, 170, 0.3) !important;
+    color: #00ffbb !important;
+}
+/* TRAILER button focus */
+.lb-trailer-btn.lb-focused {
+    border-color: var(--accent-primary) !important;
+    box-shadow: 0 0 12px rgba(0,212,170,0.4), 0 0 20px rgba(229,9,20,0.3) !important;
 }
 
-/* Service colors — references :root variables */
-.watch-btn-lb.stream { background: var(--accent-primary); color: #000; }
-.watch-btn-lb.netflix { background: var(--svc-netflix); color: #fff; }
-.watch-btn-lb.max { background: var(--svc-max); color: #fff; }
-.watch-btn-lb.disney { background: var(--svc-disney); color: #fff; }
-.watch-btn-lb.hulu { background: var(--svc-hulu); color: #000; }
-.watch-btn-lb.prime { background: var(--svc-prime); color: #fff; }
-.watch-btn-lb.mubi { background: var(--svc-mubi); color: #fff; }
-.watch-btn-lb.peacock { background: var(--svc-peacock); color: #fff; border: 1px solid #444; }
-.watch-btn-lb.shudder { background: var(--svc-shudder); color: #fff; }
-.watch-btn-lb.criterion { background: var(--svc-criterion); color: #fff; border: 1px solid #444; }
-.watch-btn-lb.purchase { background: var(--svc-amazon); color: #000; }
-.watch-btn-lb.amazon { background: var(--svc-amazon); color: #000; }
-.watch-btn-lb.apple { background: var(--svc-apple); color: #fff; border: 1px solid #444; }
-.watch-btn-lb.tubi { background: var(--svc-tubi); color: #fff; }
-.watch-btn-lb.youtube { background: var(--svc-youtube); color: #fff; }
-.watch-btn-lb.paramount { background: var(--svc-paramount); color: #fff; }
-.watch-btn-lb.kanopy { background: var(--svc-kanopy); color: #fff; }
-.watch-btn-lb.hoopla { background: var(--svc-hoopla); color: #fff; }
-.watch-btn-lb.roku { background: var(--svc-roku); color: #fff; }
-.watch-btn-lb.pluto { background: var(--svc-pluto); color: #fff; }
-.watch-btn-lb.crackle { background: var(--svc-crackle); color: #fff; }
-.watch-btn-lb.fawesome { background: var(--svc-fawesome); color: #fff; }
-.watch-btn-lb.fandango { background: var(--svc-fandango); color: #fff; }
-.watch-btn-lb.docuramafilms { background: #333; color: #fff; }
-.watch-btn-lb.fandor { background: #333; color: #fff; }
-.watch-btn-lb.plex { background: var(--svc-plex); color: #000; }
-.watch-btn-lb.amc { background: var(--svc-amc); color: #fff; }
-.lightbox-buttons .watch-btn-lb.screening { background: transparent; color: #FFD700; border: 2px solid #FFD700; font-weight: 700; }
-
-/* Trailer — poster overlay (#10: entire poster is the button) */
+/* Trailer — poster overlay */
 .lightbox-poster-wrap.has-trailer {
     cursor: pointer;
 }
@@ -1381,96 +1465,6 @@ header h1 {
     letter-spacing: 0.3em;
     color: #fff;
     text-shadow: 0 2px 12px rgba(0,0,0,0.8);
-}
-
-/* V2 VOD price cards: logo left, prices stacked right */
-.vcard {
-    border-radius: 8px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: row;
-    min-width: 160px;
-    max-width: 220px;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-.vcard:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-}
-.vcard-logo {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 50%;
-    padding: 10px 8px;
-    text-decoration: none;
-    color: #fff;
-    font-weight: 700;
-    text-transform: uppercase;
-    font-size: 0.7rem;
-}
-.vcard-logo .logo-img {
-    height: 18px;
-    width: auto;
-    max-width: 80px;
-    object-fit: contain;
-}
-.vcard-prices {
-    display: flex;
-    flex-direction: column;
-    width: 50%;
-}
-.vcard-price {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    color: inherit;
-    font-weight: 700;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-    padding: 7px 4px;
-    transition: filter 0.2s;
-}
-.vcard-price:hover { filter: brightness(1.15); }
-.vcard-price.rent:not(:only-child) { border-bottom: 1px solid rgba(0,0,0,0.15); }
-/* Logo backgrounds — brand colors */
-.vcard.amazon .vcard-logo { background: #ff9900; }
-.vcard.apple .vcard-logo { background: #000; }
-.vcard.apple { border: 1px solid #444; }
-.vcard.fandango .vcard-logo { background: #FF6600; }
-.vcard.youtube .vcard-logo { background: #cc0000; }
-.vcard.plex .vcard-logo { background: #1a1a1a; }
-.vcard.plex { border: 1px solid #444; }
-/* Logo images white on brand backgrounds */
-.vcard.amazon .logo-img { filter: brightness(0) invert(1); }
-.vcard.apple .logo-img { filter: invert(1); }
-.vcard.fandango .logo-img { filter: brightness(0) invert(1); }
-.vcard.plex .logo-img { filter: brightness(0) invert(1); }
-.vcard.youtube .logo-img { filter: brightness(0) invert(1); }
-/* Price colors per service */
-.vcard.amazon .vcard-price.rent { background: #ffad33; color: #000; }
-.vcard.amazon .vcard-price.buy { background: #e68a00; color: #000; }
-.vcard.apple .vcard-price.rent { background: #2a2a2a; color: #fff; }
-.vcard.apple .vcard-price.buy { background: #1a1a1a; color: #ddd; }
-.vcard.apple .vcard-price.rent:not(:only-child) { border-bottom: 1px solid #444; }
-.vcard.fandango .vcard-price.rent { background: #e55a00; color: #fff; }
-.vcard.fandango .vcard-price.buy { background: #cc4e00; color: #fff; }
-.vcard.youtube .vcard-price.rent { background: #cc0000; color: #fff; }
-.vcard.youtube .vcard-price.buy { background: #990000; color: #fff; }
-.vcard.plex .vcard-price.rent { background: #c8900b; color: #fff; }
-.vcard.plex .vcard-price.buy { background: #a07508; color: #fff; }
-
-/* Wide service logos inside watch buttons */
-.watch-btn-lb .watch-logo {
-    height: 18px;
-    width: auto;
-    max-width: 110px;
-    object-fit: contain;
-    filter: brightness(0) invert(1);
 }
 
 /* Navigation arrows - inline with content */
@@ -1587,8 +1581,14 @@ header h1 {
         max-height: 35vh;
     }
 
-    /* Hide nav arrows on mobile - use swipe or keyboard */
-    .lightbox-nav {
-        display: none;
+    /* Compact nav row on mobile */
+    .lb-nav-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 1.4rem;
+    }
+    .lb-trailer-btn {
+        height: 40px;
+        font-size: 0.85rem;
     }
 }

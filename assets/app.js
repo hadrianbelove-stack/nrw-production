@@ -831,7 +831,6 @@ const NRW = {
         if (index === -1) return;
 
         this.lightboxIndex = index;
-        this.lightboxBtnIndex = -1;
         this.updateLightbox();
 
         // Show lightbox
@@ -853,51 +852,80 @@ const NRW = {
     },
 
     // Navigate in lightbox (movie-level)
+    // updateLightbox() sets default focus to TRAILER
     lightboxNav(direction) {
         const count = this.lightboxMovies.length;
         this.lightboxIndex = (this.lightboxIndex + direction + count) % count;
-        this.lightboxBtnIndex = -1;
         this.updateLightbox();
     },
 
-    // Get all focusable buttons in the lightbox (trailer overlay + watch buttons)
+    // Get all focusable buttons in the lightbox
+    // Order: [<] [score badges...] [TRAILER] [watch buttons...] [>]
+    // < and > auto-fire on focus (navigate prev/next movie)
     _getLightboxFocusables() {
         const items = [];
-        const posterWrap = document.querySelector('.lightbox-poster-wrap');
-        const trailerOverlay = posterWrap?.querySelector('.lightbox-trailer-overlay[data-trailer]');
-        if (trailerOverlay) items.push(trailerOverlay);
-        // Watch buttons and VOD cards inside the lightbox buttons area
-        const container = document.getElementById('lightbox-buttons');
-        if (container) {
-            container.querySelectorAll('a.watch-btn-lb, .vcard').forEach(b => items.push(b));
+        const btnContainer = document.getElementById('lightbox-buttons');
+
+        // 1. < nav button
+        const prevBtn = btnContainer?.querySelector('.lb-nav-prev');
+        if (prevBtn) items.push(prevBtn);
+
+        // 2. Score badges (RT, IMDb, MC, Wiki)
+        const scores = document.getElementById('lightbox-scores');
+        if (scores) {
+            scores.querySelectorAll('.score-badge').forEach(b => items.push(b));
         }
+
+        // 3. TRAILER button
+        const trailerBtn = btnContainer?.querySelector('.lb-trailer-btn');
+        if (trailerBtn) items.push(trailerBtn);
+
+        // 4. Watch buttons (streaming + VOD)
+        if (btnContainer) {
+            btnContainer.querySelectorAll('.lb-watch-row a.stream-btn, .lb-watch-row a.vod-btn').forEach(b => items.push(b));
+        }
+
+        // 5. > nav button
+        const nextBtn = btnContainer?.querySelector('.lb-nav-next');
+        if (nextBtn) items.push(nextBtn);
+
         return items;
     },
 
-    // Arrow key nav within lightbox: cycle buttons first, then movies
+    // Arrow key nav within lightbox
+    // < and > auto-fire on focus — navigate movie and reset to TRAILER
     _lightboxArrowNav(direction) {
         const focusables = this._getLightboxFocusables();
         const count = focusables.length;
 
         if (count === 0) {
-            // No buttons — just cycle movies
             this.lightboxNav(direction);
             return;
         }
 
         const next = this.lightboxBtnIndex + direction;
 
-        if (next < -1) {
-            // Past the left edge (was at poster, pressed left) — go to previous movie
-            this.lightboxNav(-1);
-        } else if (next >= count) {
-            // Past the right edge (was at last button, pressed right) — go to next movie
-            this.lightboxNav(1);
-        } else {
-            // Move focus within buttons (or back to poster at -1)
-            this.lightboxBtnIndex = next;
-            this._updateLightboxFocus(focusables);
+        if (next < 0 || next >= count) {
+            // Past the edge — navigate movies
+            this.lightboxNav(direction > 0 ? 1 : -1);
+            return;
         }
+
+        const el = focusables[next];
+
+        // < and > auto-fire: navigate movie, focus resets to TRAILER via updateLightbox
+        if (el.classList.contains('lb-nav-prev')) {
+            this.lightboxNav(-1);
+            return;
+        }
+        if (el.classList.contains('lb-nav-next')) {
+            this.lightboxNav(1);
+            return;
+        }
+
+        // Normal focus movement
+        this.lightboxBtnIndex = next;
+        this._updateLightboxFocus(focusables);
     },
 
     // Visually highlight the focused button
@@ -919,7 +947,16 @@ const NRW = {
         const el = focusables[this.lightboxBtnIndex];
         if (!el) return;
         e.preventDefault();
-        // For vcards, click the first link inside
+
+        // Trailer button
+        if (el.dataset.trailer) {
+            this.showTrailer(el.dataset.trailer);
+            return;
+        }
+        // Nav buttons (< >) — Enter also fires them
+        if (el.classList.contains('lb-nav-prev')) { this.lightboxNav(-1); return; }
+        if (el.classList.contains('lb-nav-next')) { this.lightboxNav(1); return; }
+        // Links (scores, stream, VOD)
         const link = el.tagName === 'A' ? el : el.querySelector('a');
         if (link) link.click();
     },
@@ -934,22 +971,10 @@ const NRW = {
         document.getElementById('lightbox-poster-fallback-title').textContent = movie.display_title || movie.title;
         document.getElementById('lightbox-score-overlay').innerHTML = '';
 
-        // Remove old trailer overlay
+        // Clean poster — no trailer overlay
         const oldOverlay = posterWrap.querySelector('.lightbox-trailer-overlay');
         if (oldOverlay) oldOverlay.remove();
         posterWrap.classList.remove('has-trailer');
-
-        // Add trailer overlay if movie has a trailer
-        const trailerUrl = movie.links?.trailer_hosted || movie.links?.trailer;
-        if (trailerUrl && movie.poster) {
-            posterWrap.classList.add('has-trailer');
-            const overlay = document.createElement('div');
-            overlay.className = 'lightbox-trailer-overlay';
-            overlay.dataset.trailer = trailerUrl;
-            overlay.innerHTML = '<div class="lightbox-trailer-circle"></div>' +
-                '<div class="lightbox-trailer-text">TRAILER</div>';
-            posterWrap.appendChild(overlay);
-        }
     },
 
     _updateLightboxHeader(movie) {
@@ -1135,33 +1160,42 @@ const NRW = {
         const watchLinks = movie.watch_links || {};
         const providers = movie.providers || {};
 
-        // Helper: create an <a> with safe href + target, optional wide logo
-        const makeLink = (url, className, text, _unused, wideLogo) => {
-            const a = document.createElement('a');
-            a.setAttribute('href', url);
-            a.setAttribute('target', '_blank');
-            a.setAttribute('rel', 'noopener noreferrer');
-            a.className = className;
-            if (wideLogo) {
-                const img = document.createElement('img');
-                img.src = `assets/logos/${wideLogo}`;
-                img.className = 'watch-logo';
-                img.alt = text;
-                a.appendChild(img);
-            } else {
-                a.textContent = text;
-            }
-            return a;
-        };
+        // === ROW 1: < TRAILER > ===
+        const navRow = document.createElement('div');
+        navRow.className = 'lb-nav-row';
 
-        // Trailer is now a poster overlay (see _updateLightboxPoster)
+        // < button
+        const prevBtn = document.createElement('button');
+        prevBtn.className = 'lb-nav-btn lb-nav-prev';
+        prevBtn.textContent = '\u2039';
+        prevBtn.setAttribute('aria-label', 'Previous movie');
+        navRow.appendChild(prevBtn);
 
-        // 1. Watch stack (streaming first, then VOD)
-        const watchStack = document.createElement('div');
-        watchStack.className = 'watch-stack';
+        // TRAILER button (only if movie has a trailer)
+        const trailerUrl = movie.links?.trailer_hosted || movie.links?.trailer;
+        if (trailerUrl) {
+            const trailerBtn = document.createElement('button');
+            trailerBtn.className = 'lb-trailer-btn';
+            trailerBtn.dataset.trailer = trailerUrl;
+            trailerBtn.textContent = 'TRAILER';
+            navRow.appendChild(trailerBtn);
+        }
+
+        // > button
+        const nextBtn = document.createElement('button');
+        nextBtn.className = 'lb-nav-btn lb-nav-next';
+        nextBtn.textContent = '\u203A';
+        nextBtn.setAttribute('aria-label', 'Next movie');
+        navRow.appendChild(nextBtn);
+
+        container.appendChild(navRow);
+
+        // === ROW 2: Streaming + VOD side by side ===
+        const watchRow = document.createElement('div');
+        watchRow.className = 'lb-watch-row';
         let hasWatch = false;
 
-        // 2a. Streaming service — before VOD
+        // Streaming button(s)
         const lbStreamData = this.getStreaming(watchLinks);
         let streamSvc = lbStreamData?.service;
         let streamLink = lbStreamData?.link;
@@ -1175,30 +1209,29 @@ const NRW = {
         if (streamSvc) {
             const resolved = this.resolveService(streamSvc);
             const cls = resolved?.class || '';
-            const name = resolved?.name || streamSvc.toUpperCase();
-            const streamLabel = document.createElement('div');
-            streamLabel.className = 'watch-section-label';
-            streamLabel.textContent = 'Stream:';
-            watchStack.appendChild(streamLabel);
+            const logo = resolved?.wideLogo || null;
             if (streamLink) {
-                watchStack.appendChild(makeLink(streamLink, `watch-btn-lb stream ${cls}`, name, null, resolved?.wideLogo));
-            } else {
-                const span = document.createElement('span');
-                span.className = `watch-btn-lb stream ${cls}`;
-                span.style.opacity = '0.6';
-                span.style.cursor = 'default';
-                span.textContent = name;
-                watchStack.appendChild(span);
+                const btn = document.createElement('a');
+                btn.className = `stream-btn ${cls}`;
+                btn.setAttribute('href', streamLink);
+                btn.setAttribute('target', '_blank');
+                btn.setAttribute('rel', 'noopener noreferrer');
+                if (logo) {
+                    const img = document.createElement('img');
+                    img.src = `assets/logos/${logo}`;
+                    img.alt = resolved?.btnName || streamSvc;
+                    btn.appendChild(img);
+                } else {
+                    btn.textContent = resolved?.name || streamSvc.toUpperCase();
+                }
+                watchRow.appendChild(btn);
+                hasWatch = true;
             }
-            hasWatch = true;
         }
 
-        // 2b. VOD row (rent/buy) — after streaming
+        // VOD buttons
         const lbVodEntries = Array.isArray(watchLinks.vod) ? watchLinks.vod
             : (watchLinks.vod?.service ? [watchLinks.vod] : []);
-        const vodRow = document.createElement('div');
-        vodRow.className = 'vod-row';
-        let hasVod = false;
         let resolvedVod = [];
         lbVodEntries.forEach(vod => {
             const vodLink = vod.link || vod.url;
@@ -1209,57 +1242,49 @@ const NRW = {
         });
         const hasNonFallback = resolvedVod.some(v => !v.vodType.fallback);
         if (hasNonFallback) resolvedVod = resolvedVod.filter(v => !v.vodType.fallback);
+
         resolvedVod.forEach(({ vodType, vodLink, rentPrice, buyPrice }) => {
-            if (rentPrice || buyPrice) {
-                // V2: Logo left, prices stacked right
-                const card = document.createElement('div');
-                card.className = `vcard ${vodType.key}`;
-                const logoDiv = document.createElement('a');
-                logoDiv.href = vodLink; logoDiv.target = '_blank'; logoDiv.rel = 'noopener noreferrer';
-                logoDiv.className = 'vcard-logo';
+            const btn = document.createElement('a');
+            btn.setAttribute('href', vodLink);
+            btn.setAttribute('target', '_blank');
+            btn.setAttribute('rel', 'noopener noreferrer');
+            btn.className = `vod-btn ${vodType.key}`;
+
+            if (vodType.key === 'screening') {
+                btn.className = 'vod-btn screening';
+                btn.innerHTML = '<div class="price-half screening-full">Buy Ticket</div>';
+            } else {
+                const logoHalf = document.createElement('div');
+                logoHalf.className = 'logo-half';
                 if (vodType.wideLogo) {
                     const img = document.createElement('img');
                     img.src = `assets/logos/${vodType.wideLogo}`;
-                    img.className = 'logo-img';
                     img.alt = vodType.label;
-                    logoDiv.appendChild(img);
+                    logoHalf.appendChild(img);
                 } else {
-                    logoDiv.textContent = vodType.label;
+                    logoHalf.textContent = vodType.label;
                 }
-                card.appendChild(logoDiv);
-                const pricesDiv = document.createElement('div');
-                pricesDiv.className = 'vcard-prices';
-                if (rentPrice) {
-                    const rentEl = document.createElement('a');
-                    rentEl.href = vodLink; rentEl.target = '_blank'; rentEl.rel = 'noopener noreferrer';
-                    rentEl.className = 'vcard-price rent';
-                    rentEl.textContent = `Rent ${rentPrice}`;
-                    pricesDiv.appendChild(rentEl);
-                }
-                if (buyPrice) {
-                    const buyEl = document.createElement('a');
-                    buyEl.href = vodLink; buyEl.target = '_blank'; buyEl.rel = 'noopener noreferrer';
-                    buyEl.className = 'vcard-price buy';
-                    buyEl.textContent = `Buy ${buyPrice}`;
-                    pricesDiv.appendChild(buyEl);
-                }
-                card.appendChild(pricesDiv);
-                vodRow.appendChild(card);
-            } else {
-                vodRow.appendChild(makeLink(vodLink, `watch-btn-lb ${vodType.key}`, vodType.label, null, vodType.wideLogo));
-            }
-            hasVod = true;
-        });
-        if (hasVod) {
-            const vodLabel = document.createElement('div');
-            vodLabel.className = 'watch-section-label';
-            vodLabel.textContent = 'Rent/Buy:';
-            watchStack.appendChild(vodLabel);
-            watchStack.appendChild(vodRow);
-            hasWatch = true;
-        }
+                btn.appendChild(logoHalf);
 
-        // Pre-order links (JustWatch buy offers for pre-order movies)
+                const priceHalf = document.createElement('div');
+                priceHalf.className = 'price-half';
+                if (rentPrice && buyPrice) {
+                    priceHalf.textContent = `Rent ${rentPrice} / Buy ${buyPrice}`;
+                } else if (rentPrice) {
+                    priceHalf.textContent = `Rent ${rentPrice}`;
+                } else if (buyPrice) {
+                    priceHalf.textContent = `Buy ${buyPrice}`;
+                } else {
+                    priceHalf.textContent = vodType.btnLabel || vodType.label;
+                }
+                btn.appendChild(priceHalf);
+            }
+
+            watchRow.appendChild(btn);
+            hasWatch = true;
+        });
+
+        // Pre-order links (when no other watch options)
         if (!hasWatch) {
             const preOrderLinks = Array.isArray(movie.pre_order_links) ? movie.pre_order_links : [];
             preOrderLinks.forEach(pl => {
@@ -1267,26 +1292,47 @@ const NRW = {
                 if (pl.service && plLink) {
                     const vodType = this.resolveVODService(pl.service, plLink);
                     if (!vodType) return;
-                    watchStack.appendChild(makeLink(plLink, `watch-btn-lb ${vodType.key}`, `Pre-Order`));
+                    const btn = document.createElement('a');
+                    btn.setAttribute('href', plLink);
+                    btn.setAttribute('target', '_blank');
+                    btn.setAttribute('rel', 'noopener noreferrer');
+                    btn.className = `vod-btn ${vodType.key}`;
+                    const logoHalf = document.createElement('div');
+                    logoHalf.className = 'logo-half';
+                    if (vodType.wideLogo) {
+                        const img = document.createElement('img');
+                        img.src = `assets/logos/${vodType.wideLogo}`;
+                        img.alt = vodType.label;
+                        logoHalf.appendChild(img);
+                    } else {
+                        logoHalf.textContent = vodType.label;
+                    }
+                    btn.appendChild(logoHalf);
+                    const priceHalf = document.createElement('div');
+                    priceHalf.className = 'price-half';
+                    priceHalf.textContent = 'Pre-Order';
+                    btn.appendChild(priceHalf);
+                    watchRow.appendChild(btn);
                     hasWatch = true;
                 }
             });
         }
 
-        // Pre-order availability date next to button
+        if (hasWatch) container.appendChild(watchRow);
+
+        // Pre-order availability date
         if (movie._is_preorder && hasWatch) {
             const dateLabel = document.createElement('span');
             dateLabel.className = 'po-available-date';
             dateLabel.textContent = movie.digital_date
                 ? `Available ${NRW.formatShortDate(movie.digital_date)}`
                 : 'Available TBD';
-            watchStack.appendChild(dateLabel);
+            container.appendChild(dateLabel);
         }
-
-        if (hasWatch) container.appendChild(watchStack);
     },
 
     // Update lightbox content — delegates to sub-renderers
+    // Default focus lands on TRAILER (or first non-nav button if no trailer)
     updateLightbox() {
         const movie = this.lightboxMovies[this.lightboxIndex];
         if (!movie) return;
@@ -1297,6 +1343,19 @@ const NRW = {
         this._updateLightboxScores(movie);
         this._updateLightboxPullQuotes(movie);
         this._buildLightboxButtons(movie);
+
+        // Default focus: TRAILER button, fallback to first non-nav button
+        const focusables = this._getLightboxFocusables();
+        const trailerIdx = focusables.findIndex(el => el.classList.contains('lb-trailer-btn'));
+        if (trailerIdx >= 0) {
+            this.lightboxBtnIndex = trailerIdx;
+        } else {
+            const firstReal = focusables.findIndex(el =>
+                !el.classList.contains('lb-nav-prev') && !el.classList.contains('lb-nav-next')
+            );
+            this.lightboxBtnIndex = firstReal >= 0 ? firstReal : 0;
+        }
+        this._updateLightboxFocus(focusables);
     },
 
     // Setup lightbox + trailer keyboard navigation
@@ -1525,17 +1584,16 @@ const NRW = {
 
         // Handle clicks on document body for lightbox buttons
         document.body.addEventListener('click', (e) => {
-            // Lightbox trailer poster overlay
-            const trailerOverlay = e.target.closest('.lightbox-trailer-overlay[data-trailer]');
-            if (trailerOverlay) {
-                this.showTrailer(trailerOverlay.dataset.trailer);
-                return;
-            }
+            // Lightbox nav buttons (< and >) — click to navigate movies
+            const navPrev = e.target.closest('.lb-nav-prev');
+            if (navPrev) { this.lightboxNav(-1); return; }
+            const navNext = e.target.closest('.lb-nav-next');
+            if (navNext) { this.lightboxNav(1); return; }
 
-            // Lightbox trailer button (legacy)
-            const lightboxTrailer = e.target.closest('#lightbox-buttons [data-trailer]');
-            if (lightboxTrailer) {
-                this.showTrailer(lightboxTrailer.dataset.trailer);
+            // Lightbox TRAILER button
+            const trailerBtn = e.target.closest('.lb-trailer-btn[data-trailer]');
+            if (trailerBtn) {
+                this.showTrailer(trailerBtn.dataset.trailer);
                 return;
             }
 

@@ -1,8 +1,14 @@
 /**
  * New Release Wall - tvOS Fullscreen Poster Modal
  * Side-by-side layout: large poster + info panel
- * Navigation: UP/DOWN between button rows, LEFT/RIGHT within rows,
- * edge triggers (< >) navigate to prev/next movie on focus.
+ *
+ * Navigation:
+ *   Row 1: [ < ]  [ TRAILER ]  [ > ]   — default focus on TRAILER
+ *   Row 2: [Stream] [VOD1] [VOD2] ...  — all services side by side
+ *
+ *   < and > auto-fire on focus (navigate prev/next movie).
+ *   TRAILER always gets default focus on each new movie.
+ *   DOWN enters watch row, LEFT/RIGHT between services, UP back to nav row.
  */
 
 import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react';
@@ -38,7 +44,6 @@ const FullscreenPosterModal = ({
     if (visible) {
       setCurrentIndex(initialIndex || 0);
       setImageError(false);
-      // Fade in
       Animated.timing(fadeAnim, {
         toValue: 1,
         duration: 300,
@@ -57,7 +62,8 @@ const FullscreenPosterModal = ({
     setImageError(false);
   }, [currentIndex, movies.length]);
 
-  // Handle TV remote events — only MENU to dismiss
+  // Only MENU — no LEFT/RIGHT interception.
+  // Movie navigation is handled by the < > buttons via onFocus.
   useTVEventHandler(trailerVisible ? {} : {
     [TV_EVENTS.MENU]: () => onClose(),
   });
@@ -121,29 +127,44 @@ const FullscreenPosterModal = ({
     }
   }, []);
 
-  // Get VOD/rental info with virtual screening platform detection (memoized)
-  const vodInfo = useMemo(() => {
+  // Get ALL VOD links
+  const vodLinks = useMemo(() => {
     const watchLinks = movie.watch_links || {};
-    const vodLinks = watchLinks.vod || [];
-    if (!Array.isArray(vodLinks) || vodLinks.length === 0) return null;
-    const vod = vodLinks[0];
-    const isVirtualScreening = isVirtualScreeningPlatform(vod.service, vod.link || vod.url);
-    return { ...vod, isVirtualScreening };
+    const vodArray = watchLinks.vod || [];
+    if (!Array.isArray(vodArray) || vodArray.length === 0) return [];
+    return vodArray.slice(0, 3).map(vod => ({
+      ...vod,
+      isVirtualScreening: isVirtualScreeningPlatform(vod.service, vod.link || vod.url),
+    }));
   }, [movie]);
 
-  // Edge trigger — navigates to prev/next movie the moment focus lands on it
-  const EdgeTrigger = ({ direction }) => (
-    <TouchableOpacity
-      onFocus={() => navigate(direction === 'left' ? -1 : 1)}
-      style={[styles.edgeTrigger, direction === 'left' ? styles.edgeLeft : styles.edgeRight]}
-      activeOpacity={1}
-    >
-      <Text style={styles.edgeText}>{direction === 'left' ? '‹' : '›'}</Text>
-    </TouchableOpacity>
-  );
+  const hasTrailer = !!movie.links?.trailer_hosted;
+  const hasWatchButtons = vodLinks.length > 0 || streamingInfo || plexLibrary[String(movie.id)]?.deep_link;
 
-  // Action button with focus handling
-  const ActionButton = ({ label, onPress, color, borderColor, textColor, isFirst = false, disabled = false }) => {
+  // --- Sub-components ---
+
+  // Nav button: < or >. Auto-fires navigate on focus AND on press.
+  const NavButton = ({ direction }) => {
+    const [isFocused, setIsFocused] = useState(false);
+
+    return (
+      <TouchableOpacity
+        onFocus={() => {
+          setIsFocused(true);
+          navigate(direction === 'left' ? -1 : 1);
+        }}
+        onBlur={() => setIsFocused(false)}
+        onPress={() => navigate(direction === 'left' ? -1 : 1)}
+        style={[styles.navBtn, isFocused && styles.navBtnFocused]}
+        activeOpacity={1}
+      >
+        <Text style={styles.navBtnText}>{direction === 'left' ? '‹' : '›'}</Text>
+      </TouchableOpacity>
+    );
+  };
+
+  // Action button (trailer / service)
+  const ActionButton = ({ label, onPress, color, borderColor, textColor, isPreferred = false, disabled = false, size = 'lg' }) => {
     const [isFocused, setIsFocused] = useState(false);
     const scaleAnim = useRef(new Animated.Value(1)).current;
 
@@ -172,21 +193,22 @@ const FullscreenPosterModal = ({
         onPress={onPress}
         onFocus={handleFocus}
         onBlur={handleBlur}
-        hasTVPreferredFocus={isFirst}
+        hasTVPreferredFocus={isPreferred}
         disabled={disabled}
         activeOpacity={1}
+        style={size === 'sm' ? styles.btnTouchSm : styles.btnTouchLg}
       >
         <Animated.View
           style={[
-            styles.button,
+            size === 'sm' ? styles.btnSm : styles.btnLg,
             { backgroundColor: bgColor },
             borderColor && { borderWidth: 2, borderColor },
-            isFocused && styles.buttonFocused,
-            disabled && styles.buttonDisabled,
+            isFocused && styles.btnFocused,
+            disabled && styles.btnDisabled,
             { transform: [{ scale: scaleAnim }] },
           ]}
         >
-          <Text style={[styles.buttonText, textColor && { color: textColor }]}>
+          <Text style={[styles.btnText, size === 'sm' && styles.btnTextSm, textColor && { color: textColor }]}>
             {label}
           </Text>
         </Animated.View>
@@ -195,16 +217,6 @@ const FullscreenPosterModal = ({
   };
 
   if (!visible) return null;
-
-  // Determine which button gets initial focus (first available)
-  let firstButtonAssigned = false;
-  const getIsFirst = () => {
-    if (!firstButtonAssigned) {
-      firstButtonAssigned = true;
-      return true;
-    }
-    return false;
-  };
 
   return (
     <Modal
@@ -243,81 +255,64 @@ const FullscreenPosterModal = ({
               </Text>
             </ScrollView>
 
-            {/* Action buttons with edge triggers */}
-            {/* key forces remount on movie change so hasTVPreferredFocus re-fires */}
-            <View key={`buttons-${currentIndex}`} style={styles.buttons}>
+            {/* Buttons — key forces full remount so hasTVPreferredFocus re-fires */}
+            <View key={`btns-${currentIndex}`} style={styles.buttonArea}>
 
-              {/* Trailer row */}
-              {movie.links?.trailer_hosted && (
-                <View style={styles.buttonRow}>
-                  <EdgeTrigger direction="left" />
+              {/* Row 1: < TRAILER > (always present for movie navigation) */}
+              <View style={styles.navRow}>
+                <NavButton direction="left" />
+                {hasTrailer && (
                   <ActionButton
-                    label="Watch Trailer"
+                    label="TRAILER"
                     onPress={() => setTrailerVisible(true)}
                     color="#E50914"
-                    isFirst={getIsFirst()}
+                    isPreferred={true}
+                    size="lg"
                   />
-                  <EdgeTrigger direction="right" />
-                </View>
-              )}
+                )}
+                <NavButton direction="right" />
+              </View>
 
-              {/* VOD row (may have multiple) */}
-              {vodInfo && (
-                <View style={styles.buttonRow}>
-                  <EdgeTrigger direction="left" />
-                  <ActionButton
-                    label={vodInfo.isVirtualScreening ? 'Buy Ticket' : 'Rent / Buy'}
-                    onPress={() => openLink(vodInfo.link || vodInfo.url)}
-                    color={vodInfo.isVirtualScreening ? 'transparent' : '#ff9500'}
-                    borderColor={vodInfo.isVirtualScreening ? Colors.screeningGold : undefined}
-                    textColor={vodInfo.isVirtualScreening ? Colors.screeningGold : undefined}
-                    isFirst={getIsFirst()}
-                    disabled={!(vodInfo.link || vodInfo.url)}
-                  />
-                  <EdgeTrigger direction="right" />
-                </View>
-              )}
+              {/* Row 2: all watch services side by side */}
+              {hasWatchButtons && (
+                <View style={styles.watchRow}>
+                  {/* Streaming buttons first */}
+                  {streamingInfo && (
+                    <ActionButton
+                      label={streamingInfo.service.toUpperCase()}
+                      onPress={() => openLink(streamingInfo.link)}
+                      color={getServiceColor(streamingInfo.service)}
+                      isPreferred={!hasTrailer}
+                      disabled={!streamingInfo.link}
+                      size="lg"
+                    />
+                  )}
 
-              {/* Streaming row */}
-              {streamingInfo && (
-                <View style={styles.buttonRow}>
-                  <EdgeTrigger direction="left" />
-                  <ActionButton
-                    label={`Watch on ${streamingInfo.service}`}
-                    onPress={() => openLink(streamingInfo.link)}
-                    color={getServiceColor(streamingInfo.service)}
-                    isFirst={getIsFirst()}
-                    disabled={!streamingInfo.link}
-                  />
-                  <EdgeTrigger direction="right" />
-                </View>
-              )}
+                  {/* VOD buttons */}
+                  {vodLinks.map((vod, i) => (
+                    <ActionButton
+                      key={`vod-${i}`}
+                      label={vod.isVirtualScreening ? 'TICKET' : (vod.service || 'RENT/BUY').toUpperCase()}
+                      onPress={() => openLink(vod.link || vod.url)}
+                      color={vod.isVirtualScreening ? 'transparent' : getServiceColor(vod.service)}
+                      borderColor={vod.isVirtualScreening ? Colors.screeningGold : undefined}
+                      textColor={vod.isVirtualScreening ? Colors.screeningGold : undefined}
+                      isPreferred={!hasTrailer && !streamingInfo && i === 0}
+                      disabled={!(vod.link || vod.url)}
+                      size="sm"
+                    />
+                  ))}
 
-              {/* Plex row */}
-              {plexLibrary[String(movie.id)]?.deep_link && (
-                <View style={styles.buttonRow}>
-                  <EdgeTrigger direction="left" />
-                  <ActionButton
-                    label="Play on Plex"
-                    onPress={() => openLink(plexLibrary[String(movie.id)].deep_link)}
-                    color="#E5A00D"
-                    isFirst={getIsFirst()}
-                  />
-                  <EdgeTrigger direction="right" />
-                </View>
-              )}
-
-              {/* RT row */}
-              {movie.rt_score && (
-                <View style={styles.buttonRow}>
-                  <EdgeTrigger direction="left" />
-                  <ActionButton
-                    label={`Rotten Tomatoes: ${movie.rt_score}`}
-                    onPress={() => openLink(movie.links?.rt)}
-                    isFirst={getIsFirst()}
-                    disabled={!movie.links?.rt}
-                  />
-                  <EdgeTrigger direction="right" />
+                  {/* Plex button */}
+                  {plexLibrary[String(movie.id)]?.deep_link && (
+                    <ActionButton
+                      label="PLEX"
+                      onPress={() => openLink(plexLibrary[String(movie.id)].deep_link)}
+                      color="#E5A00D"
+                      isPreferred={!hasTrailer && !streamingInfo && vodLinks.length === 0}
+                      size="lg"
+                    />
+                  )}
                 </View>
               )}
             </View>
@@ -414,49 +409,76 @@ const styles = StyleSheet.create({
     fontSize: 22,
     lineHeight: 32,
   },
-  buttons: {
-    gap: 12,
+  buttonArea: {
+    gap: 14,
   },
-  buttonRow: {
+  // Row 1: < TRAILER >
+  navRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 12,
   },
-  button: {
-    flex: 1,
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    borderRadius: 10,
+  navBtn: {
+    width: 60,
+    height: 54,
+    borderRadius: 12,
+    backgroundColor: 'rgba(0, 212, 170, 0.1)',
+    justifyContent: 'center',
     alignItems: 'center',
   },
-  buttonFocused: {
+  navBtnFocused: {
+    backgroundColor: 'rgba(0, 212, 170, 0.3)',
     borderWidth: 3,
     borderColor: Colors.focusBorderHighlight,
   },
-  buttonDisabled: {
+  navBtnText: {
+    color: 'rgba(0, 212, 170, 0.8)',
+    fontSize: 32,
+    fontWeight: '300',
+  },
+  // Row 2: services
+  watchRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+  },
+  // Large button (trailer, streaming, plex)
+  btnTouchLg: {
+    width: 180,
+    height: 54,
+  },
+  btnLg: {
+    flex: 1,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  // Small button (VOD)
+  btnTouchSm: {
+    width: 160,
+    height: 48,
+  },
+  btnSm: {
+    flex: 1,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  btnFocused: {
+    borderWidth: 3,
+    borderColor: Colors.focusBorderHighlight,
+  },
+  btnDisabled: {
     opacity: 0.5,
   },
-  buttonText: {
+  btnText: {
     color: '#fff',
-    fontSize: 22,
-    fontWeight: '600',
+    fontSize: 18,
+    fontWeight: '700',
+    letterSpacing: 1,
   },
-  edgeTrigger: {
-    width: 50,
-    height: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
-    opacity: 0.4,
-  },
-  edgeLeft: {
-    marginRight: 8,
-  },
-  edgeRight: {
-    marginLeft: 8,
-  },
-  edgeText: {
-    color: 'rgba(0, 212, 170, 0.6)',
-    fontSize: 36,
-    fontWeight: '300',
+  btnTextSm: {
+    fontSize: 15,
   },
   counter: {
     position: 'absolute',

@@ -61,7 +61,6 @@ Build the URL: `http://[LOCAL_IP]:8090/mockups/[FILENAME]`
 Present:
 1. The **phone-testable URL** (clickable)
 2. Brief description of what was built or what the current state is
-3. Reminder: **"Refresh on your phone to see changes after each edit"**
 
 If resuming an existing mockup, read the file first, start the server, show the link, and ask what changes the user wants.
 
@@ -70,4 +69,3 @@ If resuming an existing mockup, read the file first, start the server, show the 
 After each round of user feedback:
 1. Make the requested changes to the mockup file
 2. Confirm the server is still running (restart if needed)
-3. Tell the user to refresh

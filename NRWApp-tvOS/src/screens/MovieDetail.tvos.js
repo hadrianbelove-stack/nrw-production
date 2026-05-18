@@ -66,7 +66,7 @@ const ActionButton = forwardRef(({
   label, color, onPress, hasTVPreferredFocus = false, testID,
   borderColor, textColor, icon, iconTintColor,
   nextFocusUp, nextFocusDown, nextFocusLeft, nextFocusRight,
-  buttonIndex, isWatchButton = false,
+  buttonIndex, isWatchButton = false, focusId,
 }, ref) => {
   const [isFocused, setIsFocused] = useState(false);
   const scaleAnim = useRef(new Animated.Value(1)).current;
@@ -81,12 +81,13 @@ const ActionButton = forwardRef(({
 
   const handleFocus = useCallback(() => {
     setIsFocused(true);
-    if (isWatchButton) _currentFocusId = `watch-${buttonIndex}`;
+    if (focusId) _currentFocusId = focusId;
+    else if (isWatchButton) _currentFocusId = `watch-${buttonIndex}`;
     Animated.spring(scaleAnim, {
       toValue: 1.1,
       useNativeDriver: true,
     }).start();
-  }, [scaleAnim, isWatchButton, buttonIndex]);
+  }, [scaleAnim, isWatchButton, buttonIndex, focusId]);
 
   const handleBlur = useCallback(() => {
     setIsFocused(false);
@@ -132,12 +133,13 @@ const ActionButton = forwardRef(({
   );
 });
 
-// VOD button — single unified button: small logo left, prices right
+// VOD button — compact unified button: service name + prices stacked inside
 const VodButton = ({
   color, onPress, hasTVPreferredFocus = false, testID,
   borderColor, icon, label,
   rentPrice, buyPrice,
   buttonIndex, isWatchButton = false,
+  nextFocusUp,
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const scaleAnim = useRef(new Animated.Value(1)).current;
@@ -166,53 +168,8 @@ const VodButton = ({
     }).start();
   }, [scaleAnim]);
 
-  const hasPrice = !!(rentPrice || buyPrice);
-
-  if (hasPrice) {
-    // V2: Logo left, prices stacked right
-    return (
-      <TouchableOpacity
-        onPress={onPress}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
-        hasTVPreferredFocus={hasTVPreferredFocus}
-        activeOpacity={0.9}
-        accessible={true}
-        accessibilityLabel={[icon ? '' : label, rentPrice && `Rent ${rentPrice}`, buyPrice && `Buy ${buyPrice}`].filter(Boolean).join(', ')}
-        accessibilityRole="button"
-        testID={testID}
-      >
-        <Animated.View
-          style={[
-            vodButtonStyles.vcard,
-            borderColor && { borderWidth: 1, borderColor },
-            isFocused && vodButtonStyles.buttonFocused,
-            { transform: [{ scale: scaleAnim }] },
-          ]}
-        >
-          <View style={[vodButtonStyles.vcardLogo, { backgroundColor: color }]}>
-            {icon ? (
-              <Image source={icon} style={vodButtonStyles.vcardLogoImg} />
-            ) : (
-              <Text style={vodButtonStyles.labelOnly}>{label}</Text>
-            )}
-          </View>
-          <View style={vodButtonStyles.vcardPrices}>
-            {rentPrice && (
-              <View style={[vodButtonStyles.vcardPrice, { backgroundColor: color }, buyPrice && vodButtonStyles.vcardPriceRentBorder]}>
-                <Text style={vodButtonStyles.priceText}>Rent {rentPrice}</Text>
-              </View>
-            )}
-            {buyPrice && (
-              <View style={[vodButtonStyles.vcardPrice, { backgroundColor: color, opacity: 0.85 }]}>
-                <Text style={vodButtonStyles.priceText}>Buy {buyPrice}</Text>
-              </View>
-            )}
-          </View>
-        </Animated.View>
-      </TouchableOpacity>
-    );
-  }
+  const priceStr = [rentPrice, buyPrice].filter(Boolean).join(' / ');
+  const a11yLabel = [label, rentPrice && `Rent ${rentPrice}`, buyPrice && `Buy ${buyPrice}`].filter(Boolean).join(', ');
 
   return (
     <TouchableOpacity
@@ -220,9 +177,10 @@ const VodButton = ({
       onFocus={handleFocus}
       onBlur={handleBlur}
       hasTVPreferredFocus={hasTVPreferredFocus}
+      nextFocusUp={nextFocusUp}
       activeOpacity={0.9}
       accessible={true}
-      accessibilityLabel={label}
+      accessibilityLabel={a11yLabel}
       accessibilityRole="button"
       testID={testID}
     >
@@ -230,17 +188,19 @@ const VodButton = ({
         style={[
           vodButtonStyles.button,
           { backgroundColor: color },
-          borderColor && { borderWidth: 1, borderColor },
+          borderColor && { borderColor },
           isFocused && vodButtonStyles.buttonFocused,
           { transform: [{ scale: scaleAnim }] },
         ]}
       >
-        {icon && (
+        {icon ? (
           <Image source={icon} style={vodButtonStyles.logo} />
+        ) : (
+          <Text style={vodButtonStyles.labelText}>{label}</Text>
         )}
-        {label && (
-          <Text style={vodButtonStyles.labelOnly}>{label}</Text>
-        )}
+        {priceStr ? (
+          <Text style={vodButtonStyles.priceText}>{priceStr}</Text>
+        ) : null}
       </Animated.View>
     </TouchableOpacity>
   );
@@ -248,94 +208,62 @@ const VodButton = ({
 
 const vodButtonStyles = StyleSheet.create({
   button: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    height: 60,
-    paddingHorizontal: 16,
+    width: 160,
+    height: 48,
     borderRadius: 12,
-    marginRight: 20,
-  },
-  vcard: {
-    flexDirection: 'row',
-    borderRadius: 12,
-    overflow: 'hidden',
-    marginRight: 20,
-    minWidth: 220,
-  },
-  vcardLogo: {
-    width: '50%',
-    alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 14,
-    paddingHorizontal: 12,
-  },
-  vcardLogoImg: {
-    width: 80,
-    height: 22,
-    resizeMode: 'contain',
-    tintColor: '#ffffff',
-  },
-  vcardPrices: {
-    width: '50%',
-    flexDirection: 'column',
-  },
-  vcardPrice: {
-    flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 10,
-    paddingHorizontal: 8,
-  },
-  vcardPriceRentBorder: {
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(0,0,0,0.15)',
+    marginRight: 16,
+    borderWidth: 4,
+    borderColor: 'transparent',
   },
   buttonFocused: {
-    borderWidth: 4,
     borderColor: Colors.focusBorderHighlight,
   },
   logo: {
-    width: 80,
-    height: 20,
+    width: 70,
+    height: 18,
     resizeMode: 'contain',
     tintColor: '#ffffff',
-    marginRight: 12,
   },
-  labelOnly: {
+  labelText: {
     color: '#ffffff',
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: '700',
     letterSpacing: 1,
   },
   priceText: {
     color: '#ffffff',
-    fontSize: 18,
-    fontWeight: '700',
+    fontSize: 14,
+    fontWeight: '600',
+    opacity: 0.85,
+    marginTop: 2,
   },
 });
 
 const actionButtonStyles = StyleSheet.create({
   button: {
-    width: 200,
-    height: 60,
+    width: 180,
+    height: 54,
     borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 20,
+    marginRight: 16,
+    borderWidth: 4,
+    borderColor: 'transparent',
   },
   buttonFocused: {
-    borderWidth: 4,
     borderColor: Colors.focusBorderHighlight,
   },
   label: {
     color: '#ffffff',
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '700',
     letterSpacing: 1,
   },
   logoFull: {
-    width: 140,
-    height: 32,
+    width: 120,
+    height: 28,
     resizeMode: 'contain',
   },
 });
@@ -720,7 +648,10 @@ const MovieDetailTvOS = () => {
   // On the NEXT press, if focus hasn't moved AND it's at the edge → navigate.
   // This works because: if focus moved, _currentFocusId was updated by the new
   // button's onFocus. If focus couldn't move, _currentFocusId is unchanged.
+  // Special case: if a movie has NO focusable buttons (no trailer, no watch buttons),
+  // LEFT/RIGHT navigate immediately without edge detection.
   const hasTrailer = !!movie?.links?.trailer_hosted;
+  const hasNoButtons = !hasTrailer && !hasWatchOptions;
   useTVEventHandler(trailerVisible ? {} : {
     [TV_EVENTS.MENU]: () => {
       navigation.goBack();
@@ -732,18 +663,33 @@ const MovieDetailTvOS = () => {
     },
     [TV_EVENTS.RIGHT]: () => {
       if (movieList.length <= 1) return;
-      const rightmostId = _watchButtonCount > 0 ? `watch-${_watchButtonCount - 1}` : (hasTrailer ? 'trailer' : null);
-      // Navigate if: focus didn't move since last press AND it's the rightmost element
-      if (_currentFocusId && _currentFocusId === _lastEventFocusId && _currentFocusId === rightmostId) {
+      // No buttons at all → navigate immediately
+      if (hasNoButtons) {
+        navigateNext();
+        return;
+      }
+      // Trailer is in its own row — edge detection only considers the watch button row
+      // and the trailer (which has nothing to its right)
+      const rightmostId = _watchButtonCount > 0 ? `watch-${_watchButtonCount - 1}` : null;
+      const atEdge = _currentFocusId && _currentFocusId === _lastEventFocusId &&
+        (_currentFocusId === rightmostId || _currentFocusId === 'trailer');
+      if (atEdge) {
         navigateNext();
       }
       _lastEventFocusId = _currentFocusId;
     },
     [TV_EVENTS.LEFT]: () => {
       if (movieList.length <= 1) return;
-      const leftmostId = hasTrailer ? 'trailer' : (_watchButtonCount > 0 ? 'watch-0' : null);
-      // Navigate if: focus didn't move since last press AND it's the leftmost element
-      if (_currentFocusId && _currentFocusId === _lastEventFocusId && _currentFocusId === leftmostId) {
+      // No buttons at all → navigate immediately
+      if (hasNoButtons) {
+        navigatePrevious();
+        return;
+      }
+      // Trailer is in its own row — edge detection considers watch-0 and trailer
+      const leftmostId = _watchButtonCount > 0 ? 'watch-0' : null;
+      const atEdge = _currentFocusId && _currentFocusId === _lastEventFocusId &&
+        (_currentFocusId === leftmostId || _currentFocusId === 'trailer');
+      if (atEdge) {
         navigatePrevious();
       }
       _lastEventFocusId = _currentFocusId;
@@ -871,26 +817,6 @@ const MovieDetailTvOS = () => {
             accessibilityLabel={`Movie poster for ${movie.title}`}
           />
 
-          {/* Trailer overlay on poster (#10: thick red border, dim, circle + text) */}
-          {movie?.links?.trailer_hosted && (
-            <TouchableOpacity
-              ref={trailerRefCallback}
-              style={styles.posterTrailerOverlay}
-              onPress={() => setTrailerVisible(true)}
-              onFocus={() => { _currentFocusId = 'trailer'; }}
-              hasTVPreferredFocus={!preferWatchFocus}
-              activeOpacity={0.8}
-              accessible={true}
-              accessibilityLabel="Play trailer"
-              accessibilityRole="button"
-            >
-              <View style={styles.posterTrailerCircle}>
-                <View style={styles.posterTrailerTriangle} />
-              </View>
-              <Text style={styles.posterTrailerText}>TRAILER</Text>
-            </TouchableOpacity>
-          )}
-
           {/* Staff Pick badge */}
           {(movie.featured || movie.categories?.is_staff_pick) && (
             <View style={styles.staffPickBadge}>
@@ -979,7 +905,20 @@ const MovieDetailTvOS = () => {
               </View>
             )}
 
-            {/* Trailer is now a poster overlay (see posterContainer above) */}
+            {/* Trailer — its own row above watch buttons */}
+            {movie?.links?.trailer_hosted && (
+              <View style={styles.watchButtonRow}>
+                <ActionButton
+                  ref={trailerRefCallback}
+                  focusId="trailer"
+                  label="TRAILER"
+                  color="#E50914"
+                  onPress={() => setTrailerVisible(true)}
+                  hasTVPreferredFocus={!preferWatchFocus}
+                  testID="action-btn-trailer"
+                />
+              </View>
+            )}
 
             {/* Watch buttons row (VOD first, then streaming) */}
             {hasWatchOptions && (() => {
@@ -993,9 +932,6 @@ const MovieDetailTvOS = () => {
               return (
               <View style={styles.watchButtonRow}>
                 {/* VOD buttons (rent/buy) — before streaming */}
-                {nonVsLinks.length > 0 && (
-                  <Text style={styles.watchSectionLabel}>Rent/Buy:</Text>
-                )}
                 {nonVsLinks.map((link, i) => {
                   const idx = watchIdx++;
                   const buttonColor = movie?._is_preorder ? '#7c3aed'
@@ -1009,6 +945,7 @@ const MovieDetailTvOS = () => {
                       key={`purchase-${i}`}
                       buttonIndex={idx}
                       isWatchButton={true}
+                      nextFocusUp={trailerHandle}
                       color={buttonColor}
                       borderColor={vodBorder}
                       icon={!movie?._is_preorder ? getServiceLogo(link.service) : null}
@@ -1028,11 +965,10 @@ const MovieDetailTvOS = () => {
                   const svcKey = normalizeService(streamingLinks[0].service);
                   return (
                   <>
-                    <Text style={styles.watchSectionLabel}>Stream:</Text>
                     <ActionButton
                       buttonIndex={idx}
                       isWatchButton={true}
-                      nextFocusUp={undefined}
+                      nextFocusUp={trailerHandle}
                       label={getStreamDisplayName(streamingLinks[0].service)}
                       color={getServiceColor(streamingLinks[0].service)}
                       icon={getServiceLogo(streamingLinks[0].service)}
@@ -1053,7 +989,7 @@ const MovieDetailTvOS = () => {
                   <ActionButton
                     buttonIndex={idx}
                     isWatchButton={true}
-                    nextFocusUp={undefined}
+                    nextFocusUp={trailerHandle}
                     label="PLEX"
                     color="#E5A00D"
                     icon={getServiceLogo('plex')}
@@ -1186,53 +1122,6 @@ const styles = StyleSheet.create({
     height: POSTER_WIDTH * 1.5,
     borderRadius: 16,
     backgroundColor: Colors.backgroundSecondary,
-  },
-  posterTrailerOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    borderRadius: 16,
-    backgroundColor: 'rgba(0,0,0,0.45)',
-    borderWidth: 3,
-    borderColor: '#E50914',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 12,
-    zIndex: 5,
-  },
-  posterTrailerCircle: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: '#E50914',
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#E50914',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.6,
-    shadowRadius: 20,
-  },
-  posterTrailerTriangle: {
-    width: 0,
-    height: 0,
-    borderLeftWidth: 24,
-    borderTopWidth: 14,
-    borderBottomWidth: 14,
-    borderLeftColor: '#ffffff',
-    borderTopColor: 'transparent',
-    borderBottomColor: 'transparent',
-    marginLeft: 6,
-  },
-  posterTrailerText: {
-    color: '#ffffff',
-    fontSize: 22,
-    fontWeight: '800',
-    letterSpacing: 6,
-    textShadowColor: 'rgba(0,0,0,0.8)',
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 10,
   },
   staffPickBadge: {
     position: 'absolute',
@@ -1389,16 +1278,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginTop: Spacing.tvos.lg,
     alignItems: 'center',
-    paddingLeft: Spacing.tvos.md,
     flexWrap: 'wrap',
-  },
-  watchSectionLabel: {
-    color: '#00d4aa',
-    fontSize: Typography.tvos.caption,
-    fontWeight: '600',
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-    marginRight: 4,
   },
   preOrderDateLabel: {
     color: '#c4b5fd',
