@@ -1,10 +1,22 @@
 {
-  "timestamp": "2026-05-17T14:22:11.656153",
-  "movies_requested": 1,
-  "movies_enriched": 1,
+  "timestamp": "2026-05-18T13:56:35.135720",
+  "movies_requested": 7,
+  "movies_enriched": 7,
   "movies_deferred": 0,
-  "deferred_details": [],
-  "enrichment_duration_seconds": 4.44,
+  "deferred_details": [
+    {
+      "title": "To Love a Narcissist",
+      "reason": "zero_watch_links",
+      "digital_date": "",
+      "discovered_at": "2026-05-06T11:59:18.675974",
+      "discovery_source": "provider_availability_check",
+      "revert_count": 1,
+      "tmdb_platforms": [
+        "Amazon Video"
+      ]
+    }
+  ],
+  "enrichment_duration_seconds": 1396.95,
   "error_details": [],
   "total_errors": 0
 }
