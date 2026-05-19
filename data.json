@@ -132,11 +132,25 @@
       },
       "links": {
         "wikipedia": "https://en.wikipedia.org/wiki/Wasteman",
-        "trailer": null,
+        "trailer": "https://www.youtube.com/watch?v=uaOextY7REM",
         "rt": null
       },
       "watch_links": {
         "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.30d74063-9d70-44e9-9512-59df700ed7fd&tag=nrw04-20",
+            "rent_price": "$6.99",
+            "buy_price": "$14.99",
+            "price": "$6.99"
+          },
+          {
+            "service": "Google Play",
+            "link": "https://play.google.com/store/movies/details/Wasteman?gl=US&hl=en&id=30CzDqKcJQM.P",
+            "rent_price": "$4.99",
+            "buy_price": "$14.99",
+            "price": "$4.99"
+          },
           {
             "service": "Plex",
             "link": "https://watch.plex.tv/movie/wasteman?utm_content=64fdc3b86a04359e1d4ba1ae&utm_medium=deeplink&utm_source=justWatch-v2-catalog",
@@ -190,7 +204,7 @@
       },
       "links": {
         "wikipedia": "https://en.wikipedia.org/wiki/Palestine_36",
-        "trailer": null,
+        "trailer": "https://www.youtube.com/watch?v=wWtwnae_5UI",
         "rt": null
       },
       "watch_links": {},
@@ -925,7 +939,23 @@
         "manual_override": null
       },
       "featured": false,
-      "_watch_links_verified": "2026-05-19T12:56:55.957717"
+      "_watch_links_verified": "2026-05-19T12:56:55.957717",
+      "pull_quotes": [
+        {
+          "text": "It's textbook Petzold, which I mean as a major compliment.",
+          "critic": "Luke Hicks",
+          "outlet": "The Film Stage",
+          "source": "gemini_critic",
+          "review_url": "https://thefilmstage.com/cannes-review-christian-petzolds-mirrors-no-3-is-an-enigmatic-drama-about-letting-go/"
+        },
+        {
+          "text": "one of the more lovely and profound little movies about how hearts can be mended",
+          "critic": "Jake Coyle",
+          "outlet": "The Associated Press",
+          "source": "mc_critic",
+          "review_url": "https://apnews.com/article/miroirs-no-3-movie-review-christian-petzold-61a10791dd11348d14bef9f87a7803f4"
+        }
+      ]
     },
     {
       "id": "1446753",
@@ -11700,12 +11730,14 @@
       "title": "Bunny",
       "digital_date": "2026-05-16",
       "bootstrap_date": false,
-      "manually_corrected": false,
-      "synopsis": "In the aftermath of a climate apocalypse, a young woman roams the ruins of a world she never got to grow up in. Supplies are scarce and food is running out. There's nothing left to hunt. Nothing except other people.",
+      "manually_corrected": true,
+      "synopsis": "Two best friends rally the neighbors in their tenement building to help them hide a dead body over the best/worst night of their lives.",
       "genres": [
-        "Horror"
+        "Crime",
+        "Comedy",
+        "Thriller"
       ],
-      "runtime": 90,
+      "runtime": 87,
       "year": 2025,
       "rt_score": "80%",
       "providers": {
@@ -11757,10 +11789,10 @@
       "_discovered_at": "2026-05-16T10:49:54.237085",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/fXTHbREmREcpZcJzlRanudGYoyd.jpg",
-      "studio": "Sneaky Films",
+      "poster": "https://image.tmdb.org/t/p/w500/gFPGHCC7yJrtoL6C3jlcXhutq3y.jpg",
+      "studio": "Pragma",
       "budget": 0,
-      "country": "AU",
+      "country": "US",
       "original_language": "en",
       "original_title": "Bunny",
       "crew": {
@@ -11790,7 +11822,7 @@
         "is_virtual_screening": false,
         "is_series": false,
         "is_documentary": false,
-        "is_exploitation": true,
+        "is_exploitation": false,
         "auto_categorized": true,
         "manual_override": null
       },
