@@ -251,6 +251,142 @@ class GeminiPullQuoteFinder(GeminiFinderBase):
         logger.info(f"Scraped {len(quotes)} critic quotes from MC reviews page")
         return quotes
 
+    def _deep_read_reviews(self, quotes: list, title: str, year: int) -> list:
+        """Visit full review URLs and extract the best quote from each article.
+
+        For each quote that has a review_url, loads the full article with
+        Playwright, extracts the text, and asks Gemini to find the single
+        most vivid pull-quote-worthy sentence. Replaces the RT/MC blurb
+        with the deeper extraction. Falls back to the original blurb if
+        the page is paywalled, blocked, or empty.
+
+        Args:
+            quotes: List of quote dicts (must have 'review_url' populated)
+            title: Movie title (for Gemini context)
+            year: Release year
+
+        Returns:
+            Enhanced quote list with better text extracted from full reviews.
+        """
+        if not self._init_gemini():
+            logger.warning("Gemini not available for deep read")
+            return quotes
+
+        # Only process quotes that have review URLs
+        to_read = [q for q in quotes if q.get('review_url')]
+        if not to_read:
+            return quotes
+
+        # Limit to 10 reviews per movie to manage time/costs
+        to_read = to_read[:10]
+
+        logger.info(f"Deep reading {len(to_read)} reviews for {title} ({year})")
+
+        try:
+            from playwright.sync_api import sync_playwright
+
+            with sync_playwright() as p:
+                browser = p.chromium.launch(headless=True)
+                ctx = browser.new_context(
+                    user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                               'AppleWebKit/537.36 (KHTML, like Gecko) '
+                               'Chrome/120.0.0.0 Safari/537.36'
+                )
+                page = ctx.new_page()
+
+                for q in to_read:
+                    url = q['review_url']
+                    critic = q.get('critic', '')
+                    outlet = q.get('outlet', '')
+                    original_text = q.get('text', '')
+
+                    try:
+                        resp = page.goto(url, timeout=12000, wait_until='domcontentloaded')
+                        if not resp or resp.status >= 400:
+                            logger.debug(f"Deep read: page {resp.status if resp else 'none'} for {url}")
+                            continue
+
+                        time.sleep(1)
+
+                        # Try article element first, fall back to body
+                        try:
+                            article_text = page.inner_text('article')
+                        except Exception:
+                            article_text = page.inner_text('body')
+
+                        # Skip if too short (paywall, blocked, etc.)
+                        if len(article_text) < 200:
+                            logger.debug(f"Deep read: article too short ({len(article_text)} chars) for {url}")
+                            continue
+
+                        # Truncate very long articles to avoid token limits
+                        if len(article_text) > 8000:
+                            article_text = article_text[:8000]
+
+                        # Ask Gemini to extract the best quote
+                        self._enforce_rate_limit()
+                        prompt = f"""From this review of the film "{title}" ({year}) by {critic} ({outlet}), extract the single best sentence for a pull quote.
+
+TASTE PREFERENCES (what makes a great pull quote):
+- Vivid, specific language over vague generic praise ("by turns swoony, funny, panicky and sad" > "a brilliant exploration of love")
+- Shorter is almost always better — one knockout sentence, not a paragraph
+- Punchy energy and emotion over academic jargon
+- Specific filmmaking observations over abstract critique
+- Evokes the FEELING of watching the film
+- OK to trim mid-sentence if a fragment is punchier than the whole
+
+RULES:
+- Return ONLY the exact quote text as it appears in the review (you may trim to a fragment)
+- One sentence maximum (or a short fragment)
+- If the review has no quotable sentences, respond with: NO_QUOTE
+
+Review text:
+{article_text}
+
+Best pull quote:"""
+
+                        response = self._generate(prompt)
+                        result = response.text.strip().strip('"').strip('\u201c\u201d')
+
+                        if result and 'NO_QUOTE' not in result and len(result) > 15:
+                            # Verify the extracted quote actually appears in the article
+                            normalized_result = self._normalize_for_matching(result)
+                            normalized_article = self._normalize_for_matching(article_text)
+
+                            # Check if at least a significant fragment appears
+                            words = normalized_result.split()
+                            if len(words) >= 6:
+                                # Check a middle fragment
+                                mid = len(words) // 2
+                                fragment = ' '.join(words[max(0, mid - 3):mid + 4])
+                                if fragment in normalized_article:
+                                    q['text'] = result
+                                    q['_deep_read'] = True
+                                    logger.info(f"Deep read: upgraded quote from {critic} ({outlet})")
+                                else:
+                                    logger.debug(f"Deep read: extracted quote not found in article for {critic}")
+                            elif normalized_result in normalized_article:
+                                q['text'] = result
+                                q['_deep_read'] = True
+                                logger.info(f"Deep read: upgraded short quote from {critic} ({outlet})")
+
+                    except Exception as e:
+                        logger.debug(f"Deep read error for {url}: {e}")
+
+                browser.close()
+
+        except Exception as e:
+            logger.warning(f"Deep read Playwright error: {e}")
+
+        upgraded = sum(1 for q in to_read if q.get('_deep_read'))
+        logger.info(f"Deep read: upgraded {upgraded}/{len(to_read)} quotes for {title} ({year})")
+
+        # Clean up internal flag
+        for q in quotes:
+            q.pop('_deep_read', None)
+
+        return quotes
+
     def _dedupe_quotes(self, quotes: list) -> list:
         """Deduplicate quotes from RT and MC by critic name.
 
@@ -603,13 +739,15 @@ Response:"""
         director: str = None,
         num_quotes: int = 8,
         rt_url: str = None,
-        mc_url: str = None
+        mc_url: str = None,
+        deep_read: bool = False
     ) -> list:
         """
         Find pull quotes for a movie.
 
         Primary: Gemini discovers critic quotes, web search verifies and attaches URLs.
         Supplemental: RT/MC scraping for additional quotes with guaranteed URLs.
+        Deep read: Optionally visit full review articles and extract better quotes.
         Letterboxd: Gemini with URL validation.
 
         Args:
@@ -619,14 +757,15 @@ Response:"""
             num_quotes: Number of quotes to request (default 8)
             rt_url: Rotten Tomatoes URL (e.g. https://www.rottentomatoes.com/m/the_brutalist)
             mc_url: Metacritic URL (e.g. https://www.metacritic.com/movie/the-brutalist/)
+            deep_read: If True, visit full review URLs and extract better quotes (slower)
 
         Returns:
             List of quote dicts with keys: text, critic, outlet, source, review_url, selected, added_at
         """
         cache_key = f"{title}_{year}"
 
-        # Check cache
-        if cache_key in self.cache:
+        # Check cache (deep_read bypasses cache — it needs fresh article reads)
+        if not deep_read and cache_key in self.cache:
             cached_data = self.cache[cache_key]
             if isinstance(cached_data, dict):
                 scraped_at = cached_data.get('scraped_at', '')
@@ -676,6 +815,12 @@ Response:"""
                 self.stats['mc_scraped'] += 1
         else:
             logger.info(f"No MC URL for {title} ({year}), skipping MC supplement")
+
+        # --- Step 3b: Deep read full reviews for better quotes ---
+        if deep_read:
+            scraped_quotes = [q for q in all_quotes if q.get('source') in ('rt_critic', 'mc_critic')]
+            if scraped_quotes:
+                all_quotes = self._deep_read_reviews(all_quotes, title, year)
 
         # --- Step 4: Letterboxd quotes via Gemini ---
         if not self._init_gemini():

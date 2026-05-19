@@ -34,6 +34,31 @@
     "Hulu",
     "Peacock"
   ],
+  "indie_distributors": [
+    "A24",
+    "NEON",
+    "IFC Films",
+    "Sundance Selects",
+    "IFC Midnight",
+    "Magnolia Pictures",
+    "Roadside Attractions",
+    "The Cinema Guild",
+    "First Run Features",
+    "Kino Lorber",
+    "Film Movement",
+    "Abramorama",
+    "Greenwich Entertainment",
+    "Gravitas Ventures",
+    "Vertical Entertainment",
+    "Good Deed Entertainment",
+    "Cranked Up Films",
+    "Breaking Glass Pictures",
+    "Gunpowder & Sky",
+    "Freestyle Digital Media",
+    "Cohen Media Group",
+    "Music Box Films",
+    "Utopia"
+  ],
   "budget_threshold": 10000000,
-  "notes": "Studios list used for auto-categorization. Movies from these studios are tagged as 'studio'. Budget threshold is fallback when studio doesn't match."
+  "notes": "Studios list = 'studio' tag. Indie distributors = 'indie' tag IF budget < threshold AND language is English. A24/NEON appear on both lists — budget is the tiebreaker."
 }
