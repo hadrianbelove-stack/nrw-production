@@ -239,6 +239,7 @@ class MovieEnricher:
             'year': int(year) if year.isdigit() else None,
             'rt_score': None,
             'imdb_rating': None,
+            'letterboxd_score': None,
             'links': {},
             'watch_links': {}
         }
@@ -248,6 +249,7 @@ class MovieEnricher:
             'wikipedia': 'not_attempted',
             'trailer': 'not_attempted',
             'rt_score': 'not_attempted',
+            'letterboxd_score': 'not_attempted',
             'pull_quotes': 'not_attempted',
             'watch_links': 'not_attempted',
             'digital_date': 'not_attempted'
@@ -342,6 +344,30 @@ class MovieEnricher:
         if imdb_id:
             result['links']['imdb'] = f"https://www.imdb.com/title/{imdb_id}/"
 
+        # Letterboxd score and link
+        self._current_enrichment_step = 'letterboxd_score'
+        try:
+            lb_data = self.host.find_letterboxd_score(title, year)
+            if lb_data:
+                if lb_data.get('url'):
+                    result['links']['letterboxd'] = lb_data['url']
+                result['letterboxd_score'] = lb_data.get('score')
+                if result.get('letterboxd_score'):
+                    enrichment_results['letterboxd_score'] = 'success'
+                else:
+                    enrichment_results['letterboxd_score'] = 'not_found'
+                self.ctx.logger.debug(f"LB: Found data for {title} ({year}) - Score: {result.get('letterboxd_score', 'None')}")
+            else:
+                enrichment_results['letterboxd_score'] = 'not_found'
+        except Exception as e:
+            enrichment_results['letterboxd_score'] = 'error'
+            self.ctx.logger.warning(f"LB: Error for {title} ({year}): {type(e).__name__}: {str(e)[:500]}")
+            self._error_details.append({
+                'timestamp': datetime.now().isoformat(),
+                'title': title, 'source': 'letterboxd_score',
+                'error_type': type(e).__name__, 'error_message': str(e)[:500],
+            })
+
         # Pull quotes (isolated failure handling)
         pull_quotes_enabled = self.ctx.config.get('gemini_scraper', {}).get('pull_quotes_enabled', False)
         if pull_quotes_enabled:
@@ -352,7 +378,8 @@ class MovieEnricher:
                 pq_count = self.ctx.config.get('gemini_scraper', {}).get('pull_quotes_count', 8)
                 pq_rt_url = result.get('links', {}).get('rt', '')
                 pq_mc_url = result.get('links', {}).get('metacritic', '')
-                quotes = pq_finder.find_pull_quotes(title, year, director=pq_director, num_quotes=pq_count, rt_url=pq_rt_url, mc_url=pq_mc_url)
+                pq_lb_url = result.get('links', {}).get('letterboxd', '')
+                quotes = pq_finder.find_pull_quotes(title, year, director=pq_director, num_quotes=pq_count, rt_url=pq_rt_url, mc_url=pq_mc_url, lb_url=pq_lb_url)
                 if quotes:
                     enrichment_results['pull_quotes'] = 'success'
                 else:
@@ -1140,6 +1167,8 @@ class MovieEnricher:
                         gaps.append('imdb_rating')
                     if enrichment_fields.get('metacritic_score') is None:
                         gaps.append('metacritic_score')
+                    if enrichment_fields.get('letterboxd_score') is None:
+                        gaps.append('letterboxd_score')
                     if gaps:
                         existing_movies[movie_index]['_enrichment_gaps'] = gaps
                     elif '_enrichment_gaps' in existing_movies[movie_index]:

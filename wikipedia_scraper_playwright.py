@@ -80,6 +80,9 @@ class WikipediaScraperPlaywright(PlaywrightScraperBase):
             'scraper_successes': 0
         })
 
+        # Wikidata distributor results (populated by _query_wikidata)
+        self.last_wikidata_distributors = []
+
         # Gemini finder (lazy loaded)
         self._gemini_finder = None
         self._gemini_enabled = self._check_gemini_enabled()
@@ -435,6 +438,8 @@ class WikipediaScraperPlaywright(PlaywrightScraperBase):
                             if cache_age < 30:
                                 self.stats['cache_hits'] += 1
                                 self._log(f"Negative cache hit for {title} ({year}): no article ({cache_age}d old)", level='debug')
+                                # Restore cached Wikidata distributors even for negative cache
+                                self.last_wikidata_distributors = cached_data.get('wikidata_distributors', [])
                                 return None
                             else:
                                 self._log(f"Negative cache expired for {title} ({year}): {cache_age}d old, retrying", level='debug')
@@ -444,10 +449,13 @@ class WikipediaScraperPlaywright(PlaywrightScraperBase):
                 elif url and '/wiki/' in url:
                     self.stats['cache_hits'] += 1
                     self._log(f"Cache hit for {title} ({year}): {source}", level='debug')
+                    # Restore cached Wikidata distributors
+                    self.last_wikidata_distributors = cached_data.get('wikidata_distributors', [])
                     return url
             # Handle old string-only cache entries
             elif cached_data and 'index.php?search=' not in cached_data and '/wiki/' in cached_data:
                 self.stats['cache_hits'] += 1
+                self.last_wikidata_distributors = []
                 return cached_data
 
         # 2. Try Wikidata if IMDb ID available
@@ -504,26 +512,35 @@ class WikipediaScraperPlaywright(PlaywrightScraperBase):
         # No article found - cache negative result to avoid re-querying daily
         self._log(f"No Wikipedia article found for {title} ({year})", level='warning')
         self.stats['failures'] += 1
-        self.cache[cache_key] = {
+        neg_entry = {
             'url': None,
             'title': title,
             'cached_at': datetime.now().isoformat(),
             'source': 'no_article',
             'negative': True
         }
+        # Preserve Wikidata distributors even when no Wikipedia article exists
+        if self.last_wikidata_distributors:
+            neg_entry['wikidata_distributors'] = self.last_wikidata_distributors
+        self.cache[cache_key] = neg_entry
         self._save_cache()
         return None
 
     def _query_wikidata(self, imdb_id):
-        """Query Wikidata SPARQL endpoint for Wikipedia URL."""
+        """Query Wikidata SPARQL endpoint for Wikipedia URL and distributor (P750)."""
         self.stats['wikidata_attempts'] += 1
+        self.last_wikidata_distributors = []
 
         try:
             sparql_query = f"""
-            SELECT ?article WHERE {{
+            SELECT ?article ?distributorLabel WHERE {{
               ?item wdt:P345 "{imdb_id}" .
-              ?article schema:about ?item .
-              ?article schema:isPartOf <https://en.wikipedia.org/> .
+              OPTIONAL {{
+                ?article schema:about ?item .
+                ?article schema:isPartOf <https://en.wikipedia.org/> .
+              }}
+              OPTIONAL {{ ?item wdt:P750 ?distributor . }}
+              SERVICE wikibase:label {{ bd:serviceParam wikibase:language "en" . }}
             }}
             """
 
@@ -545,9 +562,28 @@ class WikipediaScraperPlaywright(PlaywrightScraperBase):
             if not results:
                 return None
 
-            wikipedia_url = results[0]['article']['value']
+            # Extract Wikipedia URL from first result that has one
+            wikipedia_url = None
+            for r in results:
+                article = r.get('article', {}).get('value', '')
+                if article and article.startswith('https://en.wikipedia.org/wiki/'):
+                    wikipedia_url = article
+                    break
 
-            if not wikipedia_url or not wikipedia_url.startswith('https://en.wikipedia.org/wiki/'):
+            # Extract all unique distributor names
+            distributors = []
+            seen = set()
+            for r in results:
+                dist_label = r.get('distributorLabel', {}).get('value', '')
+                if dist_label and dist_label not in seen:
+                    distributors.append(dist_label)
+                    seen.add(dist_label)
+
+            self.last_wikidata_distributors = distributors
+            if distributors:
+                self._log(f"Wikidata found distributors for IMDb {imdb_id}: {distributors}", level='debug')
+
+            if not wikipedia_url:
                 return None
 
             self._log(f"Wikidata found Wikipedia link for IMDb {imdb_id}", level='debug')
@@ -629,12 +665,16 @@ class WikipediaScraperPlaywright(PlaywrightScraperBase):
             self._log(f"Refusing to cache non-article URL: {url}", level='warning')
             return
 
-        self.cache[cache_key] = {
+        entry = {
             'url': url,
             'title': title,
             'cached_at': datetime.now().isoformat(),
             'source': source
         }
+        # Include Wikidata distributors if available (from P750 query)
+        if self.last_wikidata_distributors:
+            entry['wikidata_distributors'] = self.last_wikidata_distributors
+        self.cache[cache_key] = entry
         self._save_cache()
 
     def close(self):

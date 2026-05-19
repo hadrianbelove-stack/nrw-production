@@ -116,6 +116,9 @@ class DataGenerator:
             'mc_attempts': 0,
             'mc_successes': 0,
             'mc_cache_hits': 0,
+            'lb_attempts': 0,
+            'lb_successes': 0,
+            'lb_cache_hits': 0,
             'trailer_attempts': 0,
             'trailer_successes': 0,
             'trailer_cache_hits': 0,
@@ -144,6 +147,7 @@ class DataGenerator:
         self.bad_trailer_urls = self.storage.load_cache('cache/bad_trailer_urls.json')
         self.rt_scraper = None  # Lazy initialization for RT scraping with Playwright
         self.metacritic_scraper = None  # Lazy initialization for Metacritic API scraping
+        self.letterboxd_scraper = None  # Lazy initialization for Letterboxd score scraping
         self.wikipedia_scraper = None  # Lazy initialization for Wikipedia scraping with Playwright
 
         # Initialize enrichment service (extracted 2025-11-10) - shares enrichment_stats dict
@@ -173,6 +177,7 @@ class DataGenerator:
             'wikidata_attempts': 0,
             'wikidata_successes': 0
         }
+        self.last_wikidata_distributors = []
 
         # Intake statistics
         self.intake_stats = {
@@ -1013,6 +1018,9 @@ class DataGenerator:
             self.wikipedia_stats['wikidata_attempts'] = self.wikipedia_scraper.stats.get('wikidata_attempts', 0)
             self.wikipedia_stats['wikidata_successes'] = self.wikipedia_scraper.stats.get('wikidata_successes', 0)
 
+            # Pass through Wikidata distributors if found
+            self.last_wikidata_distributors = getattr(self.wikipedia_scraper, 'last_wikidata_distributors', [])
+
             return wiki_url
 
         except Exception as e:
@@ -1249,6 +1257,50 @@ class DataGenerator:
         except Exception as e:
             self.logger.error(f"Failed to initialize Metacritic scraper: {e}")
             self.metacritic_scraper = False
+            return False
+
+    def find_letterboxd_score(self, title, year):
+        """Find Letterboxd URL and average rating via HTTP scraper."""
+        enabled = self.config.get('letterboxd_scraper', {}).get('enabled', True)
+        if not enabled:
+            return None
+
+        if not self._init_letterboxd_scraper():
+            return None
+
+        try:
+            result = self.letterboxd_scraper.scrape_letterboxd_score(title, int(year))
+            scraper_stats = self.letterboxd_scraper.get_stats()
+            self.enrichment_stats['lb_attempts'] = scraper_stats['attempts']
+            self.enrichment_stats['lb_successes'] = scraper_stats['successes']
+            self.enrichment_stats['lb_cache_hits'] = scraper_stats['cache_hits']
+            return result
+        except Exception as e:
+            self.logger.warning(f"Letterboxd scraper error for {title}: {e}")
+            return None
+
+    def _init_letterboxd_scraper(self):
+        """Initialize Letterboxd scraper (lazy initialization)."""
+        if self.letterboxd_scraper is not None:
+            return self.letterboxd_scraper is not False
+
+        if not self.enrichment_enabled:
+            self.logger.debug("Letterboxd scraper disabled - enrichment not enabled")
+            self.letterboxd_scraper = False
+            return False
+
+        try:
+            from letterboxd_scraper import LetterboxdScraper
+            self.letterboxd_scraper = LetterboxdScraper(
+                cache_file='cache/letterboxd_score_cache.json',
+                config=self.config,
+                logger=self.logger
+            )
+            self.logger.info("Letterboxd scraper initialized (HTTP-based)")
+            return True
+        except Exception as e:
+            self.logger.error(f"Failed to initialize Letterboxd scraper: {e}")
+            self.letterboxd_scraper = False
             return False
 
     # ============================================================================
@@ -2035,6 +2087,14 @@ class DataGenerator:
             mc_success_rate = (self.enrichment_stats['mc_successes'] / self.enrichment_stats['mc_attempts'] * 100)
             print(f"  MC success rate: {mc_success_rate:.1f}%")
 
+        print(f"\n📊 Letterboxd Scraper Usage:")
+        print(f"  LB attempts: {self.enrichment_stats['lb_attempts']}")
+        print(f"  LB successes: {self.enrichment_stats['lb_successes']}")
+        print(f"  LB cache hits: {self.enrichment_stats['lb_cache_hits']}")
+        if self.enrichment_stats['lb_attempts'] > 0:
+            lb_success_rate = (self.enrichment_stats['lb_successes'] / self.enrichment_stats['lb_attempts'] * 100)
+            print(f"  LB success rate: {lb_success_rate:.1f}%")
+
         print(f"\n📊 Trailer Scraper Usage:")
         print(f"  Trailer attempts: {self.enrichment_stats['trailer_attempts']}")
         print(f"  Trailer successes: {self.enrichment_stats['trailer_successes']}")
@@ -2123,6 +2183,20 @@ class DataGenerator:
                         self.enrichment_stats['mc_attempts']
                     ),
                     "error_types": self.metacritic_scraper.get_error_counts() if self.metacritic_scraper and self.metacritic_scraper is not False else {}
+                },
+                "lb_scraper": {
+                    "attempts": self.enrichment_stats['lb_attempts'],
+                    "successes": self.enrichment_stats['lb_successes'],
+                    "cache_hits": self.enrichment_stats['lb_cache_hits'],
+                    "success_rate": calc_rate(
+                        self.enrichment_stats['lb_successes'],
+                        self.enrichment_stats['lb_attempts']
+                    ),
+                    "cache_hit_rate": calc_rate(
+                        self.enrichment_stats['lb_cache_hits'],
+                        self.enrichment_stats['lb_attempts']
+                    ),
+                    "error_types": self.letterboxd_scraper.get_error_counts() if self.letterboxd_scraper and self.letterboxd_scraper is not False else {}
                 },
                 "wikipedia_scraper": {
                     "wikidata_attempts": self.wikipedia_stats['wikidata_attempts'],

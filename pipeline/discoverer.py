@@ -1399,6 +1399,10 @@ class ProviderDiscoverer:
                         if 'links' not in movie:
                             movie['links'] = {}
                         movie['links']['wikipedia'] = wiki_url
+                        # Store Wikidata distributors if found (for indie detection)
+                        wd_dist = getattr(self.host, 'last_wikidata_distributors', [])
+                        if wd_dist:
+                            movie['wikidata_distributors'] = wd_dist
                         wiki_filled += 1
                         unsaved_count += 1
                         print(f"  📚 {title} — Wikipedia link added")

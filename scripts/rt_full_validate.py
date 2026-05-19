@@ -14,6 +14,7 @@ Usage:
 """
 
 import json
+import re
 import sys
 import time
 import signal
@@ -26,6 +27,7 @@ project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
 import load_env
+from gemini_scraper.rt_validation import page_title_matches
 
 logging.basicConfig(
     level=logging.INFO,
@@ -73,8 +75,9 @@ def phase1_validate(data, dry_run=False):
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
     })
 
-    stats = {'checked': 0, 'valid': 0, 'invalid': 0, 'errors': 0}
+    stats = {'checked': 0, 'valid': 0, 'invalid': 0, 'mismatches': 0, 'errors': 0}
     invalid_movies = []
+    mismatched_movies = []
 
     for idx, (i, movie) in enumerate(with_links):
         title = movie['title']
@@ -85,7 +88,7 @@ def phase1_validate(data, dry_run=False):
         signal.alarm(30)
 
         try:
-            response = session.head(url, timeout=5, allow_redirects=True)
+            response = session.get(url, timeout=10, allow_redirects=True)
 
             if response.status_code >= 400:
                 stats['invalid'] += 1
@@ -97,7 +100,23 @@ def phase1_validate(data, dry_run=False):
                     movies[i]['links']['rt'] = None
                     movies[i]['rt_score'] = None
             else:
-                stats['valid'] += 1
+                # Title verification: extract page title from HTML
+                title_tag = re.search(r'<title>(.*?)</title>', response.text[:4096], re.IGNORECASE | re.DOTALL)
+                if title_tag:
+                    page_title_text = title_tag.group(1).strip()
+                    # RT format: "Movie Name (YYYY) | Rotten Tomatoes"
+                    movie_part = page_title_text.split('|')[0].strip() if '|' in page_title_text else page_title_text.strip()
+                    page_movie_title = re.sub(r'\s*\(\d{4}\)\s*$', '', movie_part).strip()
+
+                    if page_movie_title and not page_title_matches(page_movie_title, title):
+                        stats['mismatches'] += 1
+                        mismatched_movies.append((title, movie.get('year'), url, page_movie_title))
+                        print(f"  MISMATCH: {title} ({movie.get('year')}) -> page shows '{page_movie_title}'")
+                    else:
+                        stats['valid'] += 1
+                else:
+                    # Could not extract title tag — count as valid (don't penalize)
+                    stats['valid'] += 1
 
         except MovieTimeout:
             stats['errors'] += 1
@@ -110,18 +129,25 @@ def phase1_validate(data, dry_run=False):
 
         # Progress every 50
         if (idx + 1) % 50 == 0:
-            print(f"  ... checked {idx+1}/{len(with_links)} ({stats['invalid']} invalid so far)")
+            print(f"  ... checked {idx+1}/{len(with_links)} ({stats['invalid']} invalid, {stats['mismatches']} mismatches so far)")
 
     print(f"\nPhase 1 Results:")
-    print(f"  Checked:  {stats['checked']}")
-    print(f"  Valid:    {stats['valid']}")
-    print(f"  Invalid:  {stats['invalid']}")
-    print(f"  Errors:   {stats['errors']}")
+    print(f"  Checked:    {stats['checked']}")
+    print(f"  Valid:      {stats['valid']}")
+    print(f"  Invalid:    {stats['invalid']}")
+    print(f"  Mismatches: {stats['mismatches']}")
+    print(f"  Errors:     {stats['errors']}")
 
     if invalid_movies:
         print(f"\nInvalid links nulled out:")
         for title, year, url, reason in invalid_movies:
             print(f"  {title} ({year}): {url} [{reason}]")
+
+    if mismatched_movies:
+        print(f"\nTitle mismatches found (NOT auto-nulled — review manually):")
+        for title, year, url, page_title_found in mismatched_movies:
+            print(f"  {title} ({year}): {url}")
+            print(f"    Page shows: '{page_title_found}'")
 
     return stats
 

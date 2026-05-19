@@ -96,21 +96,32 @@ class GeminiRTFinder(GeminiFinderBase):
             # Very short title, can't validate meaningfully
             return True
 
-        # Check for word overlap
         overlap = title_significant & slug_significant
-        if overlap:
-            return True
 
-        # Also check if title words appear as substrings in the slug
+        # Single-word titles: require the word to be present
+        if len(title_significant) == 1:
+            return bool(overlap)
+
+        # Guard: if all our words match but slug has extra words, likely different movie
+        # e.g. "Dark Waters" matching "dark_waters_of_crime"
+        if overlap == title_significant and len(slug_significant) > len(title_significant):
+            return False
+
+        # Multi-word: require >= 50% overlap of expected title words
+        if title_significant:
+            overlap_ratio = len(overlap) / len(title_significant)
+            if overlap_ratio >= 0.5:
+                return True
+
+        # Flat string: exact match only (not substring — prevents partial false positives)
         slug_flat = slug_no_year.lower().replace('_', '').replace('-', '')
         title_flat = re.sub(r'[^a-z0-9]', '', title.lower())
-
-        # Check if the title (without spaces) appears in the slug
-        if title_flat in slug_flat or slug_flat in title_flat:
+        if title_flat == slug_flat:
             return True
 
         logger.warning(f"RT URL mismatch: slug '{slug}' doesn't match title '{title}' "
-                       f"(title_words={title_significant}, slug_words={slug_significant})")
+                       f"(title_words={title_significant}, slug_words={slug_significant}, "
+                       f"overlap={overlap}, ratio={len(overlap)/len(title_significant):.0%})")
         return False
 
     def _extract_rt_data(self, text: str) -> Optional[Dict[str, str]]:

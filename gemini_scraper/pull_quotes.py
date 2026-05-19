@@ -45,17 +45,25 @@ class GeminiPullQuoteFinder(GeminiFinderBase):
     def _get_extra_stats(self) -> Dict[str, int]:
         return {'quotes_found': 0, 'insufficient_quotes': 0, 'rt_scraped': 0, 'mc_scraped': 0}
 
-    def _scrape_rt_reviews(self, rt_url: str) -> list:
+    def _scrape_rt_reviews(self, rt_url: str, expected_title: str = '') -> list:
         """Scrape critic quotes directly from the RT reviews page.
 
         Loads {rt_url}/reviews with Playwright and parses the review blocks.
         Returns ground-truth quotes with verified review URLs.
+
+        Args:
+            rt_url: The RT movie URL (e.g. https://www.rottentomatoes.com/m/the_brutalist)
+            expected_title: Movie title for page verification. If provided and the RT
+                page title doesn't match, returns empty list (safety net against
+                wrong-movie URLs).
         """
         reviews_url = rt_url.rstrip('/') + '/reviews'
         quotes = []
 
         try:
             from playwright.sync_api import sync_playwright
+            from gemini_scraper.rt_validation import page_title_matches
+
             with sync_playwright() as p:
                 browser = p.chromium.launch(headless=True)
                 page = browser.new_page()
@@ -67,6 +75,17 @@ class GeminiPullQuoteFinder(GeminiFinderBase):
                     return []
 
                 time.sleep(2)
+
+                # Safety net: verify RT page is for the right movie
+                if expected_title:
+                    page_title = page.title() or ''
+                    if not page_title_matches(page_title, expected_title):
+                        logger.warning(
+                            f"RT page title mismatch: '{page_title}' vs expected '{expected_title}' "
+                            f"— skipping review scraping for {reviews_url}"
+                        )
+                        browser.close()
+                        return []
 
                 html = page.content()
                 body = page.inner_text('body')
@@ -505,108 +524,119 @@ Best pull quote:"""
             logger.info(f"LB URL validation: {validated} verified, {cleared} cleared")
         return quotes
 
-    def _scrape_letterboxd_reviews(self, title: str, year: int) -> list:
+    def _scrape_letterboxd_reviews(self, title: str, year: int, lb_url: str = None) -> list:
         """Scrape popular reviews from Letterboxd.
 
-        Step 1: Use Gemini grounding to find the Letterboxd film page URL.
+        Step 1: Use pre-found URL if available, otherwise find via slug + Playwright/Gemini.
         Step 2: Load the reviews page with stealth Playwright.
         Step 3: Extract reviews using DOM selectors (proven approach from legacy scraper).
 
+        Args:
+            title: Movie title
+            year: Release year
+            lb_url: Pre-found Letterboxd film URL (from enrichment pipeline). Skips URL
+                    discovery if provided.
+
         Returns list of quote dicts with source='letterboxd'.
         """
-        if not self._init_gemini():
-            return []
+        if lb_url:
+            # Use pre-found URL from enrichment — skip entire URL discovery phase
+            lb_url = lb_url.rstrip('/')
+            logger.info(f"Using pre-found Letterboxd URL for {title}: {lb_url}")
+        else:
+            # --- Step 1: Find Letterboxd URL ---
+            if not self._init_gemini():
+                return []
 
-        # --- Step 1: Find Letterboxd URL ---
-        # Try constructing slug directly (most reliable), then fall back to Gemini
-        import unicodedata
+            # Try constructing slug directly (most reliable), then fall back to Gemini
+            import unicodedata
 
-        def _make_slug(t):
-            """Convert title to Letterboxd-style URL slug."""
-            # Normalize unicode, lowercase
-            t = unicodedata.normalize('NFKD', t).encode('ascii', 'ignore').decode('ascii')
-            t = t.lower()
-            # Remove possessives and common punctuation
-            t = re.sub(r"'s\b", 's', t)
-            t = re.sub(r"[''']", '', t)
-            # Replace non-alphanumeric with hyphens
-            t = re.sub(r'[^a-z0-9]+', '-', t)
-            t = t.strip('-')
-            return t
+            def _make_slug(t):
+                """Convert title to Letterboxd-style URL slug."""
+                # Normalize unicode, lowercase
+                t = unicodedata.normalize('NFKD', t).encode('ascii', 'ignore').decode('ascii')
+                t = t.lower()
+                # Remove possessives and common punctuation
+                t = re.sub(r"'s\b", 's', t)
+                t = re.sub(r"[''']", '', t)
+                # Replace non-alphanumeric with hyphens
+                t = re.sub(r'[^a-z0-9]+', '-', t)
+                t = t.strip('-')
+                return t
 
-        lb_url = None
-        slug = _make_slug(title)
-        candidate_urls = [
-            f'https://letterboxd.com/film/{slug}/',
-            f'https://letterboxd.com/film/{slug}-{year}/',
-            f'https://letterboxd.com/film/{slug}-{year - 1}/',  # Letterboxd may use production year
-        ]
+            slug = _make_slug(title)
+            candidate_urls = [
+                f'https://letterboxd.com/film/{slug}/',
+                f'https://letterboxd.com/film/{slug}-{year}/',
+                f'https://letterboxd.com/film/{slug}-{year - 1}/',  # Letterboxd may use production year
+            ]
 
-        try:
-            from playwright.sync_api import sync_playwright
+            try:
+                from playwright.sync_api import sync_playwright
 
-            with sync_playwright() as p:
-                browser = p.chromium.launch(
-                    headless=True,
-                    args=['--disable-blink-features=AutomationControlled']
-                )
-                ctx = browser.new_context(
-                    user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
-                               'AppleWebKit/537.36 (KHTML, like Gecko) '
-                               'Chrome/125.0.0.0 Safari/537.36',
-                    viewport={'width': 1920, 'height': 1080},
-                    locale='en-US'
-                )
-                page = ctx.new_page()
-                page.add_init_script(
-                    'Object.defineProperty(navigator, "webdriver", {get: () => undefined})'
-                )
+                with sync_playwright() as p:
+                    browser = p.chromium.launch(
+                        headless=True,
+                        args=['--disable-blink-features=AutomationControlled']
+                    )
+                    ctx = browser.new_context(
+                        user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                   'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                   'Chrome/125.0.0.0 Safari/537.36',
+                        viewport={'width': 1920, 'height': 1080},
+                        locale='en-US'
+                    )
+                    page = ctx.new_page()
+                    page.add_init_script(
+                        'Object.defineProperty(navigator, "webdriver", {get: () => undefined})'
+                    )
 
-                # Try year-suffixed slug first (more specific), then bare slug
-                for url in reversed(candidate_urls):
-                    try:
-                        resp = page.goto(url, timeout=15000, wait_until='domcontentloaded')
-                        if resp and resp.status == 200:
-                            # Verify year matches to avoid wrong film with same title
-                            page_title = page.title()
-                            if f'({year})' in page_title:
-                                lb_url = url.rstrip('/')
-                                logger.info(f"Found Letterboxd page at {lb_url}")
-                                break
-                            else:
-                                logger.debug(f"Letterboxd {url} is wrong year: {page_title}")
-                    except Exception:
-                        continue
+                    # Try year-suffixed slug first (more specific), then bare slug
+                    for url in reversed(candidate_urls):
+                        try:
+                            resp = page.goto(url, timeout=15000, wait_until='domcontentloaded')
+                            if resp and resp.status == 200:
+                                # Verify year matches to avoid wrong film with same title
+                                page_title = page.title()
+                                if f'({year})' in page_title:
+                                    lb_url = url.rstrip('/')
+                                    logger.info(f"Found Letterboxd page at {lb_url}")
+                                    break
+                                else:
+                                    logger.debug(f"Letterboxd {url} is wrong year: {page_title}")
+                        except Exception:
+                            continue
 
-                # If slug didn't work, try Gemini grounding
-                if not lb_url:
-                    browser.close()
-                    try:
-                        self._enforce_rate_limit()
-                        prompt = f'What is the Letterboxd URL for the film "{title}" ({year})? Return only the URL.'
-                        api_config = self.types.GenerateContentConfig(tools=[self.grounding_tool])
-                        response = self._generate(prompt, config=api_config)
-                        text = response.text.strip()
+                    # If slug didn't work, try Gemini grounding
+                    if not lb_url:
+                        browser.close()
+                        try:
+                            self._enforce_rate_limit()
+                            prompt = f'What is the Letterboxd URL for the film "{title}" ({year})? Return only the URL.'
+                            api_config = self.types.GenerateContentConfig(tools=[self.grounding_tool])
+                            response = self._generate(prompt, config=api_config)
+                            text = response.text.strip()
 
-                        url_match = re.search(r'https://letterboxd\.com/film/[a-z0-9-]+/?', text)
-                        if url_match:
-                            lb_url = url_match.group(0).rstrip('/')
-                        elif response.candidates:
-                            gm = response.candidates[0].grounding_metadata
-                            if gm and gm.grounding_chunks:
-                                for chunk in gm.grounding_chunks:
-                                    if chunk.web and chunk.web.uri and 'letterboxd.com/film/' in chunk.web.uri:
-                                        resolved = self._resolve_grounding_url(chunk.web.uri)
-                                        if resolved and 'letterboxd.com/film/' in resolved:
-                                            lb_url = resolved.rstrip('/')
-                                            break
-                    except Exception as e:
-                        logger.debug(f"Gemini couldn't find Letterboxd URL for {title}: {e}")
-                else:
-                    browser.close()
+                            url_match = re.search(r'https://letterboxd\.com/film/[a-z0-9-]+/?', text)
+                            if url_match:
+                                lb_url = url_match.group(0).rstrip('/')
+                            elif response.candidates:
+                                gm = response.candidates[0].grounding_metadata
+                                if gm and gm.grounding_chunks:
+                                    for chunk in gm.grounding_chunks:
+                                        if chunk.web and chunk.web.uri and 'letterboxd.com/film/' in chunk.web.uri:
+                                            resolved = self._resolve_grounding_url(chunk.web.uri)
+                                            if resolved and 'letterboxd.com/film/' in resolved:
+                                                lb_url = resolved.rstrip('/')
+                                                break
+                        except Exception as e:
+                            logger.debug(f"Gemini couldn't find Letterboxd URL for {title}: {e}")
+                    else:
+                        browser.close()
 
-        except Exception as e:
-            logger.debug(f"Error finding Letterboxd URL for {title}: {e}")
+            except Exception as e:
+                logger.warning(f"Error finding Letterboxd URL for {title}: {e}")
+                return []
 
         if not lb_url:
             logger.info(f"No Letterboxd URL found for {title} ({year})")
@@ -687,38 +717,36 @@ Best pull quote:"""
                         continue
                     english_reviews.append(item)
 
-                for item in english_reviews[:8]:  # Cap at 8 reviews
+                # Build review dicts for batch quote extraction
+                capped_reviews = english_reviews[:8]  # Cap at 8 reviews
+                review_dicts = []
+                for item in capped_reviews:
                     review_url = ''
                     if item.get('reviewUrl'):
                         review_url = 'https://letterboxd.com' + item['reviewUrl']
+                    review_dicts.append({
+                        'text': item['text'],
+                        'critic': '@' + item['username'] if not item['username'].startswith('@') else item['username'],
+                        'review_url': review_url,
+                    })
 
-                    # Extract the best sentence as a pull quote
-                    text = item['text']
-                    if len(text) > 200:
-                        # Use Gemini to find the best pull-quote sentence
-                        try:
-                            self._enforce_rate_limit()
-                            extract_prompt = (
-                                f'From this Letterboxd review of "{title}" ({year}), extract the single most vivid, '
-                                f'pull-quote-worthy sentence. Return ONLY that sentence, nothing else.\n\n'
-                                f'Review:\n{text[:2000]}'
-                            )
-                            extract_resp = self._generate(extract_prompt)
-                            extracted_quote = extract_resp.text.strip().strip('"').strip("'")
-                            if 20 < len(extracted_quote) < 300:
-                                text = extracted_quote
-                        except Exception:
-                            # Fallback: take first sentence that's quote-worthy length
-                            sentences = [s.strip() for s in re.split(r'[.!?]+', text) if len(s.strip()) > 20]
-                            if sentences:
-                                text = sentences[0] + '.'
+                # Use GeminiQuoteExtractor for batched, verbatim-verified extraction
+                try:
+                    from gemini_scraper.quote_extractor import GeminiQuoteExtractor
+                    extractor = GeminiQuoteExtractor()
+                    review_dicts = extractor.extract_quotes(review_dicts, title=title, year=year)
+                except Exception as e:
+                    logger.warning(f"GeminiQuoteExtractor failed for {title}, using raw text: {e}")
 
+                for item in review_dicts:
+                    # Use extracted pull_quote if available, otherwise full text
+                    text = item.get('pull_quote') or item['text']
                     quotes.append({
                         'text': text,
-                        'critic': '@' + item['username'] if not item['username'].startswith('@') else item['username'],
+                        'critic': item['critic'],
                         'outlet': 'Letterboxd',
                         'source': 'letterboxd',
-                        'review_url': review_url,
+                        'review_url': item.get('review_url', ''),
                         'selected': False,
                         'added_at': now
                     })
@@ -964,7 +992,8 @@ Response:"""
         num_quotes: int = 8,
         rt_url: str = None,
         mc_url: str = None,
-        deep_read: bool = False
+        deep_read: bool = False,
+        lb_url: str = None
     ) -> list:
         """
         Find pull quotes for a movie.
@@ -982,6 +1011,7 @@ Response:"""
             rt_url: Rotten Tomatoes URL (e.g. https://www.rottentomatoes.com/m/the_brutalist)
             mc_url: Metacritic URL (e.g. https://www.metacritic.com/movie/the-brutalist/)
             deep_read: If True, visit full review URLs and extract better quotes (slower)
+            lb_url: Pre-found Letterboxd URL (skips URL discovery if provided)
 
         Returns:
             List of quote dicts with keys: text, critic, outlet, source, review_url, selected, added_at
@@ -1020,7 +1050,7 @@ Response:"""
         existing_critics = {q.get('critic', '').lower().strip() for q in all_quotes if q.get('critic')}
 
         if rt_url:
-            rt_quotes = self._scrape_rt_reviews(rt_url)
+            rt_quotes = self._scrape_rt_reviews(rt_url, expected_title=title)
             rt_new = [q for q in rt_quotes
                       if q.get('critic', '').lower().strip() not in existing_critics]
             all_quotes.extend(rt_new)
@@ -1046,8 +1076,8 @@ Response:"""
             if scraped_quotes:
                 all_quotes = self._deep_read_reviews(all_quotes, title, year)
 
-        # --- Step 4: Letterboxd quotes (Gemini finds URL, Playwright scrapes) ---
-        lb_quotes = self._scrape_letterboxd_reviews(title, year)
+        # --- Step 4: Letterboxd quotes (uses pre-found URL if available, else Playwright finds it) ---
+        lb_quotes = self._scrape_letterboxd_reviews(title, year, lb_url=lb_url)
         if lb_quotes:
             all_quotes.extend(lb_quotes)
             logger.info(f"Found {len(lb_quotes)} Letterboxd quotes for {title} ({year})")

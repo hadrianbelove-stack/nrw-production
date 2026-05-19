@@ -34,6 +34,7 @@ from datetime import datetime, timedelta
 from urllib.parse import quote
 
 from scraper_base import PlaywrightScraperBase
+from gemini_scraper.rt_validation import page_title_matches
 
 
 class RTScraperPlaywright(PlaywrightScraperBase):
@@ -556,12 +557,28 @@ class RTScraperPlaywright(PlaywrightScraperBase):
                     if response and response.status >= 400:
                         continue
 
-                    page_title = self.page.title().lower()
-                    if ('rotten tomatoes' in page_title and
-                        'not found' not in page_title and
-                        '404' not in page_title):
-                        rt_link = candidate_url
-                        break
+                    page_title_raw = self.page.title() or ''
+                    page_title_lower = page_title_raw.lower()
+                    if ('rotten tomatoes' in page_title_lower and
+                        'not found' not in page_title_lower and
+                        '404' not in page_title_lower):
+                        # Extract movie title from RT format: "Movie Name (YYYY) | Rotten Tomatoes"
+                        movie_part = page_title_raw.split('|')[0].strip() if '|' in page_title_raw else page_title_raw.strip()
+                        # Year check: reject if page year is >1 year off
+                        page_year_match = re.search(r'\((\d{4})\)', movie_part)
+                        if page_year_match and year:
+                            page_year = int(page_year_match.group(1))
+                            if abs(page_year - int(year)) > 1:
+                                self._log(f"URL construction: year mismatch {page_year} vs {year} for {candidate_url}", level='debug')
+                                continue
+                        # Title check: extract movie name and verify
+                        page_movie_title = re.sub(r'\s*\(\d{4}\)\s*$', '', movie_part).strip()
+                        if page_title_matches(page_movie_title, title):
+                            rt_link = candidate_url
+                            self._log(f"URL construction: title+year verified for {candidate_url}", level='debug')
+                            break
+                        else:
+                            self._log(f"URL construction: title mismatch - page='{page_movie_title}', expected='{title}'", level='debug')
 
             if not rt_link:
                 self._log(f"No RT link found for {title} ({year})", level='warning')
@@ -609,12 +626,18 @@ class RTScraperPlaywright(PlaywrightScraperBase):
                                 continue
                     except Exception:
                         pass
-                if page_year is not None and abs(page_year - year) > 1:
+                if page_year is None:
+                    self._log(f"Year verification failed: could not extract year from RT page — rejecting {rt_link}", level='warning')
+                    rt_link = None
+                    rt_score = None
+                elif abs(page_year - year) > 1:
                     self._log(f"Year mismatch: page has {page_year}, expected {year} — rejecting {rt_link}", level='warning')
                     rt_link = None
                     rt_score = None
-            except Exception:
-                pass  # If year check fails, proceed with the result
+            except Exception as e:
+                self._log(f"Year verification error: {e} — rejecting {rt_link}", level='warning')
+                rt_link = None
+                rt_score = None
 
             if not rt_link:
                 self._log(f"No RT link found for {title} ({year})", level='warning')

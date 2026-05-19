@@ -628,6 +628,10 @@ header h1 {
     background: rgba(245, 197, 24, 0.9);
     color: #000;
 }
+.score-badge.lb {
+    background: rgba(0, 224, 84, 0.85);
+    color: #fff;
+}
 
 /* Filter Description (slide-down when single filter active) */
 .filter-description {
@@ -1046,6 +1050,7 @@ header h1 {
 .card-score-badge.rt { color: #ff6b6b; }
 .card-score-badge.mc { color: #7ddf64; }
 .card-score-badge.imdb { color: #f5c518; }
+.card-score-badge.lb { color: #00e054; }
 .card-score-badge .score-logo {
     height: 11px;
     width: auto;
@@ -1170,6 +1175,7 @@ header h1 {
 .lightbox-scores .score-badge.rt { color: #ff6b6b; }
 .lightbox-scores .score-badge.mc { color: #7ddf64; }
 .lightbox-scores .score-badge.imdb { color: #f5c518; }
+.lightbox-scores .score-badge.lb { color: #00e054; }
 .lightbox-scores .score-badge.wiki { color: #fff; }
 .lightbox-scores .score-badge .score-logo {
     height: 14px;

@@ -149,11 +149,12 @@ def main():
         cache_key = f"{title}_{year}"
         rt_url = movie.get('links', {}).get('rt', '')
         mc_url = movie.get('links', {}).get('metacritic', '')
+        lb_url = movie.get('links', {}).get('letterboxd', '')
 
         logger.info(f"[{i}/{len(to_process)}] {title} ({year})...")
 
         try:
-            quotes = finder.find_pull_quotes(title, year, director=director, rt_url=rt_url, mc_url=mc_url)
+            quotes = finder.find_pull_quotes(title, year, director=director, rt_url=rt_url, mc_url=mc_url, lb_url=lb_url)
 
             if quotes:
                 # Write to combined cache in admin-compatible format

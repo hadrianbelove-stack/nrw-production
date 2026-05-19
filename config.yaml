@@ -547,6 +547,13 @@ metacritic_scraper:
   timeout: 10
   cache_ttl_days: 90
 
+# Letterboxd scraper (HTTP-based): Finds average ratings via JSON-LD on film pages
+letterboxd_scraper:
+  enabled: true
+  rate_limit: 1.0              # Respectful — static pages, no API
+  timeout: 10
+  cache_ttl_days: 30           # Ratings shift as films gain audience
+
 # Streaming scraper (Playwright): For Netflix/Disney+/HBO Max/Hulu - DISABLED due to authentication barriers
 # Uses playwright for stealth browsing but blocked by login requirements
 streaming_scraper:
