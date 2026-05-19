@@ -8,6 +8,7 @@ and admin override application for the final display output.
 
 import json
 import os
+import re
 from datetime import datetime
 
 
@@ -127,15 +128,25 @@ class DisplayGenerator:
             print(f"\U0001f517 Applied cached watch links for {applied} movies")
         return applied
 
-    def categorize_movie(self, movie, category_config):
+    @staticmethod
+    def _normalize_title(title):
+        """Normalize a film title for distributor lookup matching."""
+        t = title.lower().strip()
+        t = re.sub(r'^the\s+', '', t)
+        t = re.sub(r'\s+', ' ', t)
+        return t
+
+    def categorize_movie(self, movie, category_config, distributor_lookup=None):
         """
         Categorize a movie as 'studio', 'indie', or None based on studio and budget.
 
         Logic:
         1. Check manual override first (admin can force tier)
-        2. Match studio against studio_list
-        3. Fallback to budget threshold ($10M default)
-        4. Default to None (uncategorized) if no match
+        2. Check distributor filmography lookup (Wikipedia-sourced)
+        3. Check Wikidata distributors against indie list (enrichment signal)
+        4. Check TMDB studio against indie/studio lists
+        5. Fallback to budget threshold ($10M default)
+        6. Default to None (uncategorized) if no match
 
         Returns:
             dict: Categories object with tier, is_foreign, is_staff_pick, auto_categorized, manual_override
@@ -149,6 +160,7 @@ class DisplayGenerator:
         budget = movie.get('budget', 0) or 0  # Handle None
         original_language = movie.get('original_language', 'en')
         genres = movie.get('genres', []) or []
+        wikidata_distributors = movie.get('wikidata_distributors', [])
 
         # Check for existing manual override from movie_tracking.json
         manual_override = movie.get('categories', {}).get('manual_override')
@@ -156,20 +168,48 @@ class DisplayGenerator:
         # Determine foreign status (needed for indie check)
         is_foreign = original_language and original_language != 'en'
 
-        # Check distributor matches
+        # Check distributor filmography lookup (scraped from Wikipedia)
+        lookup_distributor = None
+        if distributor_lookup:
+            by_title_year = distributor_lookup.get('by_title_year', {})
+            title = movie.get('title', '')
+            year = movie.get('year', '')
+            key = f"{self._normalize_title(title)}_{year}"
+            lookup_distributor = by_title_year.get(key)
+
+        lookup_matches_indie = lookup_distributor and lookup_distributor in indie_distributors
+        lookup_matches_studio = lookup_distributor and any(
+            s.lower() in lookup_distributor.lower() for s in studio_list
+        )
+
+        # Check distributor matches — TMDB studio field
         matches_studio = studio and any(bs.lower() in studio.lower() for bs in studio_list)
         matches_indie = studio and any(bs.lower() in studio.lower() for bs in indie_distributors)
 
+        # Check Wikidata distributors (from P750 property, populated during enrichment)
+        wikidata_matches_indie = any(
+            any(ind.lower() in wd.lower() for ind in indie_distributors)
+            for wd in wikidata_distributors
+        ) if wikidata_distributors else False
+        wikidata_matches_studio = any(
+            any(s.lower() in wd.lower() for s in studio_list)
+            for wd in wikidata_distributors
+        ) if wikidata_distributors else False
+
         # Determine tier
+        # Priority: manual override > lookup/Wikidata/TMDB indie > studio match > budget fallback
         # Indie rules: matches indie distributor, budget under threshold, NOT foreign
         # If on both lists (e.g. A24, NEON): budget is tiebreaker
+        any_indie = matches_indie or lookup_matches_indie or wikidata_matches_indie
+        any_studio = matches_studio or lookup_matches_studio or wikidata_matches_studio
+
         if manual_override:
             tier = manual_override
             auto_categorized = False
-        elif matches_indie and budget < budget_threshold and not is_foreign:
+        elif any_indie and budget < budget_threshold and not is_foreign:
             tier = 'indie'
             auto_categorized = True
-        elif matches_studio:
+        elif any_studio:
             tier = 'studio'
             auto_categorized = True
         elif budget >= budget_threshold:
@@ -240,6 +280,23 @@ class DisplayGenerator:
         if os.path.exists('admin/category_overrides.json'):
             with open('admin/category_overrides.json', 'r') as f:
                 category_overrides = json.load(f)
+
+        # Auto-refresh distributor filmography lookup if stale (>7 days)
+        try:
+            from scripts.build_distributor_lookup import build_lookup
+            build_lookup(quiet=True)
+        except Exception as e:
+            self.ctx.logger.debug(f"Distributor lookup refresh skipped: {e}")
+
+        # Load distributor filmography lookup (Wikipedia-sourced)
+        distributor_lookup = {}
+        lookup_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'cache', 'distributor_lookup.json')
+        if os.path.exists(lookup_path):
+            try:
+                with open(lookup_path, 'r') as f:
+                    distributor_lookup = json.load(f)
+            except Exception as e:
+                self.ctx.logger.warning(f"Distributor lookup: Error loading: {e}")
 
         if os.path.exists('admin/ordering.json'):
             with open('admin/ordering.json', 'r') as f:
@@ -381,7 +438,7 @@ class DisplayGenerator:
             movie_id = str(movie.get('id'))
 
             # First, auto-categorize the movie
-            categories = self.categorize_movie(movie, category_config)
+            categories = self.categorize_movie(movie, category_config, distributor_lookup)
 
             # Check for manual category override from tracking data
             if movie_id in tracking_data and tracking_data[movie_id].get('categories'):
