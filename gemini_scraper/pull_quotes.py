@@ -505,6 +505,229 @@ Best pull quote:"""
             logger.info(f"LB URL validation: {validated} verified, {cleared} cleared")
         return quotes
 
+    def _scrape_letterboxd_reviews(self, title: str, year: int) -> list:
+        """Scrape popular reviews from Letterboxd.
+
+        Step 1: Use Gemini grounding to find the Letterboxd film page URL.
+        Step 2: Load the reviews page with stealth Playwright.
+        Step 3: Extract reviews using DOM selectors (proven approach from legacy scraper).
+
+        Returns list of quote dicts with source='letterboxd'.
+        """
+        if not self._init_gemini():
+            return []
+
+        # --- Step 1: Find Letterboxd URL ---
+        # Try constructing slug directly (most reliable), then fall back to Gemini
+        import unicodedata
+
+        def _make_slug(t):
+            """Convert title to Letterboxd-style URL slug."""
+            # Normalize unicode, lowercase
+            t = unicodedata.normalize('NFKD', t).encode('ascii', 'ignore').decode('ascii')
+            t = t.lower()
+            # Remove possessives and common punctuation
+            t = re.sub(r"'s\b", 's', t)
+            t = re.sub(r"[''']", '', t)
+            # Replace non-alphanumeric with hyphens
+            t = re.sub(r'[^a-z0-9]+', '-', t)
+            t = t.strip('-')
+            return t
+
+        lb_url = None
+        slug = _make_slug(title)
+        candidate_urls = [
+            f'https://letterboxd.com/film/{slug}/',
+            f'https://letterboxd.com/film/{slug}-{year}/',
+        ]
+
+        try:
+            from playwright.sync_api import sync_playwright
+
+            with sync_playwright() as p:
+                browser = p.chromium.launch(
+                    headless=True,
+                    args=['--disable-blink-features=AutomationControlled']
+                )
+                ctx = browser.new_context(
+                    user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                               'AppleWebKit/537.36 (KHTML, like Gecko) '
+                               'Chrome/125.0.0.0 Safari/537.36',
+                    viewport={'width': 1920, 'height': 1080},
+                    locale='en-US'
+                )
+                page = ctx.new_page()
+                page.add_init_script(
+                    'Object.defineProperty(navigator, "webdriver", {get: () => undefined})'
+                )
+
+                # Try year-suffixed slug first (more specific), then bare slug
+                for url in reversed(candidate_urls):
+                    try:
+                        resp = page.goto(url, timeout=15000, wait_until='domcontentloaded')
+                        if resp and resp.status == 200:
+                            # Verify year matches to avoid wrong film with same title
+                            page_title = page.title()
+                            if f'({year})' in page_title:
+                                lb_url = url.rstrip('/')
+                                logger.info(f"Found Letterboxd page at {lb_url}")
+                                break
+                            else:
+                                logger.debug(f"Letterboxd {url} is wrong year: {page_title}")
+                    except Exception:
+                        continue
+
+                # If slug didn't work, try Gemini grounding
+                if not lb_url:
+                    browser.close()
+                    try:
+                        self._enforce_rate_limit()
+                        prompt = f'What is the Letterboxd URL for the film "{title}" ({year})? Return only the URL.'
+                        api_config = self.types.GenerateContentConfig(tools=[self.grounding_tool])
+                        response = self._generate(prompt, config=api_config)
+                        text = response.text.strip()
+
+                        url_match = re.search(r'https://letterboxd\.com/film/[a-z0-9-]+/?', text)
+                        if url_match:
+                            lb_url = url_match.group(0).rstrip('/')
+                        elif response.candidates:
+                            gm = response.candidates[0].grounding_metadata
+                            if gm and gm.grounding_chunks:
+                                for chunk in gm.grounding_chunks:
+                                    if chunk.web and chunk.web.uri and 'letterboxd.com/film/' in chunk.web.uri:
+                                        resolved = self._resolve_grounding_url(chunk.web.uri)
+                                        if resolved and 'letterboxd.com/film/' in resolved:
+                                            lb_url = resolved.rstrip('/')
+                                            break
+                    except Exception as e:
+                        logger.debug(f"Gemini couldn't find Letterboxd URL for {title}: {e}")
+                else:
+                    browser.close()
+
+        except Exception as e:
+            logger.debug(f"Error finding Letterboxd URL for {title}: {e}")
+
+        if not lb_url:
+            logger.info(f"No Letterboxd URL found for {title} ({year})")
+            return []
+
+        # --- Step 2: Load reviews page with stealth Playwright ---
+        reviews_url = lb_url + '/reviews/by/popular/'
+        quotes = []
+
+        try:
+            from playwright.sync_api import sync_playwright
+
+            with sync_playwright() as p:
+                browser = p.chromium.launch(
+                    headless=True,
+                    args=['--disable-blink-features=AutomationControlled']
+                )
+                ctx = browser.new_context(
+                    user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                               'AppleWebKit/537.36 (KHTML, like Gecko) '
+                               'Chrome/125.0.0.0 Safari/537.36',
+                    viewport={'width': 1920, 'height': 1080},
+                    locale='en-US'
+                )
+                page = ctx.new_page()
+                page.add_init_script(
+                    'Object.defineProperty(navigator, "webdriver", {get: () => undefined})'
+                )
+
+                resp = page.goto(reviews_url, timeout=15000, wait_until='domcontentloaded')
+                time.sleep(1)  # Brief pause for dynamic content
+                if not resp or resp.status >= 400:
+                    logger.info(f"Letterboxd reviews page returned {resp.status if resp else 'none'}: {reviews_url}")
+                    browser.close()
+                    return []
+
+                # --- Step 3: Extract reviews via DOM ---
+                extracted = page.evaluate('''() => {
+                    let results = [];
+                    let articles = document.querySelectorAll("li.film-detail");
+                    if (!articles.length) {
+                        articles = document.querySelectorAll("article.production-viewing");
+                    }
+                    for (let art of articles) {
+                        let r = {};
+                        // Username
+                        let name = art.querySelector("strong.name, strong.displayname, a.context strong");
+                        r.username = name ? name.textContent.trim() : null;
+                        if (!r.username) {
+                            let link = art.querySelector("a.avatar, a.name");
+                            if (link) r.username = link.getAttribute("href").replace(/\\//g, "");
+                        }
+                        if (!r.username) continue;
+                        // Review text
+                        let body = art.querySelector(".body-text, .js-review-body");
+                        r.text = body ? body.textContent.trim() : "";
+                        if (!r.text || r.text.length < 10) continue;
+                        // Review URL
+                        let reviewLink = art.querySelector("a.context");
+                        r.reviewUrl = reviewLink ? reviewLink.getAttribute("href") : null;
+                        results.push(r);
+                    }
+                    return results;
+                }''')
+
+                browser.close()
+
+                now = time.strftime('%Y-%m-%dT%H:%M:%S')
+
+                # Filter non-English reviews and extract best quote sentence
+                english_reviews = []
+                for item in extracted:
+                    text = item.get('text', '')
+                    # Quick language heuristic: check for common English words
+                    english_words = {'the', 'and', 'this', 'that', 'with', 'for', 'was', 'but', 'not', 'you', 'film', 'movie'}
+                    words = set(text.lower().split()[:30])
+                    if len(words & english_words) < 3:
+                        continue
+                    english_reviews.append(item)
+
+                for item in english_reviews[:8]:  # Cap at 8 reviews
+                    review_url = ''
+                    if item.get('reviewUrl'):
+                        review_url = 'https://letterboxd.com' + item['reviewUrl']
+
+                    # Extract the best sentence as a pull quote
+                    text = item['text']
+                    if len(text) > 200:
+                        # Use Gemini to find the best pull-quote sentence
+                        try:
+                            self._enforce_rate_limit()
+                            extract_prompt = (
+                                f'From this Letterboxd review of "{title}" ({year}), extract the single most vivid, '
+                                f'pull-quote-worthy sentence. Return ONLY that sentence, nothing else.\n\n'
+                                f'Review:\n{text[:2000]}'
+                            )
+                            extract_resp = self._generate(extract_prompt)
+                            extracted_quote = extract_resp.text.strip().strip('"').strip("'")
+                            if 20 < len(extracted_quote) < 300:
+                                text = extracted_quote
+                        except Exception:
+                            # Fallback: take first sentence that's quote-worthy length
+                            sentences = [s.strip() for s in re.split(r'[.!?]+', text) if len(s.strip()) > 20]
+                            if sentences:
+                                text = sentences[0] + '.'
+
+                    quotes.append({
+                        'text': text,
+                        'critic': '@' + item['username'] if not item['username'].startswith('@') else item['username'],
+                        'outlet': 'Letterboxd',
+                        'source': 'letterboxd',
+                        'review_url': review_url,
+                        'selected': False,
+                        'added_at': now
+                    })
+
+        except Exception as e:
+            logger.warning(f"Error scraping Letterboxd reviews for {title}: {e}")
+
+        logger.info(f"Scraped {len(quotes)} Letterboxd reviews for {title} ({year})")
+        return quotes
+
     def _gemini_critic_quotes(self, title: str, year: int, director: str = None, num_quotes: int = 8) -> list:
         """Use Gemini with Google Search grounding to discover critic quotes.
 
@@ -822,55 +1045,11 @@ Response:"""
             if scraped_quotes:
                 all_quotes = self._deep_read_reviews(all_quotes, title, year)
 
-        # --- Step 4: Letterboxd quotes via Gemini ---
-        if not self._init_gemini():
-            logger.info(f"Gemini not available, skipping Letterboxd quotes for {title} ({year})")
-        else:
-            context = f'"{title}" ({year})'
-            if director:
-                context += f" directed by {director}"
-
-            letterboxd_prompt = f"""Find 3 notable Letterboxd user reviews for the movie {context}.
-
-Requirements:
-- Only reviews with significant engagement (popular/liked reviews)
-- Include the Letterboxd username (with @ prefix)
-- Do NOT fabricate reviews - only real Letterboxd reviews
-- If no notable reviews exist, respond with: NO_REVIEWS
-
-What makes a GREAT Letterboxd pull quote:
-- Genre-comparison one-liners are GOLD. Examples: "12 angry men for catholic people", "Barbie for people who listen to Charli xcx", "a cinderella story for girls on SSRIs"
-- Vibe/experience quotes that convey what it FEELS like to watch the movie. Example: "This made me want to light a cigarette and stare at a wall for two hours. Five stars."
-- Contrasting opinions in one quote — loving AND hating. Example: "i really loved the gore effects, they're all awesomely nasty. unfortunately this is the dumbest movie of the year i think."
-- Sharp humor that also describes the film, not just random jokes
-- Shorter ALWAYS wins. If a review is long, extract only the punchiest line.
-
-Format each as:
-QUOTE: "review text" -- @username, Letterboxd | URL: https://letterboxd.com/username/film/...
-
-The URL must be the direct link to the Letterboxd review. This is critical for verification.
-
-Response:"""
-
-            def _fetch_letterboxd_quotes():
-                api_config = self.types.GenerateContentConfig(tools=[self.grounding_tool])
-                response = self._generate(letterboxd_prompt, config=api_config)
-                return response.text.strip()
-
-            try:
-                self._enforce_rate_limit()
-                lb_text = self._retry_with_backoff(_fetch_letterboxd_quotes)
-
-                if lb_text and 'NO_REVIEWS' not in lb_text:
-                    lb_quotes = self._parse_quotes(lb_text, source_type='letterboxd')
-                    lb_quotes = self._validate_lb_urls(lb_quotes)
-                    all_quotes.extend(lb_quotes)
-                    logger.info(f"Found {len(lb_quotes)} Letterboxd quotes for {title} ({year})")
-                    self.stats['gemini_successes'] += 1
-
-            except Exception as e:
-                logger.warning(f"Error fetching Letterboxd quotes for {title} ({year}): {e}")
-                self.stats['gemini_failures'] += 1
+        # --- Step 4: Letterboxd quotes (Gemini finds URL, Playwright scrapes) ---
+        lb_quotes = self._scrape_letterboxd_reviews(title, year)
+        if lb_quotes:
+            all_quotes.extend(lb_quotes)
+            logger.info(f"Found {len(lb_quotes)} Letterboxd quotes for {title} ({year})")
 
         # Cache results (even if empty, to avoid re-fetching)
         if all_quotes:
