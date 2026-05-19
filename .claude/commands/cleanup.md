@@ -9,6 +9,19 @@ You are performing **codebase maintenance** for the NRW project. Think of this a
 
 ---
 
+## VERIFICATION-FIRST METHODOLOGY
+
+The #1 failure mode of cleanup is **false positives** — reporting dead code that isn't dead, or CSS classes that don't exist. This wastes the user's time and erodes trust.
+
+**MANDATORY**: For EVERY finding, you must:
+1. **Read the actual file** and confirm the code/selector exists at the reported line
+2. **Grep the full project** to verify nothing references it (exclude `museum_legacy/`)
+3. **Only report findings at 90%+ confidence** — if uncertain, skip it
+
+DO NOT delegate verification to a single agent pass. Use multiple targeted searches per finding. One false positive invalidates the entire sweep.
+
+---
+
 ## WHAT TO LOOK FOR
 
 Scan for these categories of maintenance issues:
@@ -17,7 +30,7 @@ Scan for these categories of maintenance issues:
 2. **Redundant logic** — two or more places doing the same thing (consolidate into one)
 3. **Stale comments** — TODOs that are done, comments describing old behavior, outdated notes
 4. **Leftover debug code** — print statements, console.logs, temporary logging from past sessions
-5. **Unused config/data entries** — config keys that nothing reads, dead feature flags
+5. **Unused config/data entries** — config keys that nothing reads, dead CSS variables, dead feature flags
 6. **Over-engineering** — abstractions or patterns more complex than needed for what they do
 7. **Orphaned files** — files that nothing imports or references
 
@@ -28,6 +41,8 @@ Scan for these categories of maintenance issues:
 - Architecture decisions — those are intentional, not cruft
 - Anything in `museum_legacy/` (archived on purpose)
 - Comments that explain non-obvious logic (those are valuable)
+- Intentional `print()` statements in pipeline code (the pipeline uses print for user-facing output with emojis by design — this is NOT debug code)
+- Backwards-compatibility fallbacks (e.g., `movie.featured || movie.categories?.is_staff_pick`) — these are intentional safety nets, not redundancy
 
 ---
 
@@ -39,17 +54,54 @@ Scan for these categories of maintenance issues:
 - If target is a **filename**: scan just that file.
 - If target is an **area** (e.g., "discovery", "enrichment", "trailers", "UI"): determine which files are relevant to that area and scan those.
 
-### Step 2: Scan and Catalog
+### Step 2: Multi-Pass Scanning
 
-For each file in scope:
-- Read the file
-- Identify maintenance items from the categories above
-- For dead code: verify it's actually dead by grepping for calls/references across the project
-- For redundancy: confirm both copies exist and do the same thing
+A single scan misses things. The fix is to run the full scan cycle **multiple times** — like filtering water through the same filter repeatedly. Each cycle catches smaller and smaller particles that previous cycles missed.
 
-**CRITICAL**: Do NOT flag something as dead code unless you have VERIFIED nothing references it. Grep the full project. False positives waste the user's time.
+**Each cycle has 3 passes:**
 
-### Step 3: Present Findings
+#### Pass A: Broad Scan
+
+Launch **separate, parallel agents** for different file categories:
+- **Agent 1**: Python pipeline files (pipeline/*.py, generate_data.py)
+- **Agent 2**: Python scripts and scrapers (scripts/*.py, gemini_scraper/*.py, *_scraper*.py, admin.py)
+- **Agent 3**: Frontend files (assets/*.js, assets/*.css, mobile/*.js, mobile/*.css, index.html)
+
+Each agent must:
+- Read every file in its scope
+- For each potential finding, **grep the full project** to verify it's actually dead/unused
+- Report exact file path, exact line number, and the exact text found
+- Only report 90%+ confidence findings
+
+#### Pass B: Targeted Re-scan
+
+After Pass A returns, launch a **second round of parallel agents** with these instructions:
+- Each agent re-reads **every file** in its scope from Pass A
+- Focus specifically on anything Pass A **might have missed**: unused imports, dead CSS selectors, orphaned variables, stale comments
+- Agents receive the Pass A findings list so they **skip already-found items** and look for new ones
+- Same verification rules apply — grep before reporting
+
+#### Pass C: Cross-file and Connection Scan
+
+Launch a **single agent** that looks across file boundaries:
+- For every function/class found in Pass A or B: check if its **callers** have dead code too (cascade detection)
+- Check for **orphaned files** — files that nothing imports or references
+- Check **config.yaml keys** against all code that reads config
+- Check **CSS classes in HTML/JS** against CSS definitions (both directions: unused CSS, and classes used in HTML with no CSS)
+- Check **.github/workflows/** to confirm no "dead" function is actually called by CI
+
+#### Repeat the full cycle
+
+After completing one A→B→C cycle, **run the entire cycle again from the top**. Feed all previous findings into the new cycle so agents skip known items and look for new ones.
+
+Keep repeating until a full cycle produces **zero new findings** — that's when the filter is clean. There is no maximum number of cycles. Each cycle is fast and cheap; thoroughness matters more than speed.
+
+### Step 3: Merge, Deduplicate, and Verify
+
+After all cycles complete:
+1. **Merge** findings from every cycle and pass into one list
+2. **Deduplicate** — if multiple passes found the same thing, keep one entry
+3. **Verify every finding**: read the actual file at the reported line and confirm the code exists. If it doesn't match, discard it. This is non-negotiable — every single item in the final list must be confirmed real by reading the file.
 
 Use this exact format:
 

@@ -75,9 +75,20 @@ def find_movie(movies, query):
 
 def extract_capsule_args(movie):
     """Extract capsule writer arguments from a data.json movie entry."""
+    import re as _re
     crew = movie.get('crew', {}) or {}
     cats = movie.get('categories', {}) or {}
     links = movie.get('links', {}) or {}
+
+    # Derive Amazon product page URL from watch_links if available
+    amazon_url = ''
+    watch_links = movie.get('watch_links', {}) or {}
+    for vod in (watch_links.get('vod') or []):
+        if vod.get('service') == 'Amazon' and vod.get('link'):
+            gti_match = _re.search(r'gti=([^&]+)', vod['link'])
+            if gti_match:
+                amazon_url = f"https://www.amazon.com/gp/video/detail/{gti_match.group(1)}"
+            break
 
     return {
         'title': movie.get('title', ''),
@@ -102,6 +113,8 @@ def extract_capsule_args(movie):
         'wiki_url': links.get('wikipedia', ''),
         'rt_url': links.get('rt', ''),
         'mc_url': links.get('metacritic', ''),
+        'amazon_url': amazon_url,
+        'imdb_url': links.get('imdb', ''),
     }
 
 

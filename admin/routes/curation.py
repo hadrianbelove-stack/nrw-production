@@ -124,47 +124,6 @@ def toggle_status() -> dict:
         return jsonify({'success': False, 'error': f'Internal error: {str(e)}'})
 
 
-@bp.route('/update-date', methods=['POST'])
-def update_date() -> dict:
-    """Update movie's digital release date."""
-    data = request.json
-    movie_id = data.get('movie_id')
-    new_date = data.get('digital_date')
-
-    # Validate ISO date format before proceeding
-    if new_date:
-        try:
-            datetime.strptime(new_date, '%Y-%m-%d')
-        except ValueError:
-            return jsonify({
-                'success': False,
-                'error': 'Digital date must be in ISO format YYYY-MM-DD (e.g., 2025-10-20)'
-            })
-
-    # Update in tracking database
-    try:
-        with open('movie_tracking.json', 'r') as f:
-            db = json.load(f)
-
-        if movie_id in db['movies']:
-            logger.info(f"Updating digital date for movie {movie_id} to {new_date}")
-            db['movies'][movie_id]['digital_date'] = new_date
-            db['movies'][movie_id]['manually_corrected'] = True
-
-            safe_write_json('movie_tracking.json', db)
-
-            # Mark that changes need to be saved
-            mark_changes_pending()
-
-            logger.info(f"Successfully updated date for movie {movie_id} to {new_date}")
-            return jsonify({'success': True, 'message': f'Date updated to {new_date}. Click "Save Changes" to rebuild.'})
-    except Exception as e:
-        logger.error(f"Failed to update date for movie {movie_id}: {str(e)}")
-        return jsonify({'success': False, 'error': str(e)})
-
-    return jsonify({'success': False, 'error': 'Movie not found'})
-
-
 @bp.route('/update-movie-fields', methods=['POST'])
 def update_movie_fields() -> dict:
     """Update all editable fields for a movie."""

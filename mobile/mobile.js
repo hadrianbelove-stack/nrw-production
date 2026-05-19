@@ -254,8 +254,8 @@ const NRWMobile = {
         const filters = this.activeFilters;
 
         this.filteredMovies = this.allMovies.filter(movie => {
-            // Pre-orders only appear when the pre-orders filter is active
-            if (movie._is_preorder && !filters.has('pre-orders')) return false;
+            // Pre-orders only appear when the pre-orders filter is active OR search is active
+            if (movie._is_preorder && !filters.has('pre-orders') && !this.searchQuery) return false;
 
             // Category filters (OR logic)
             if (filters.size > 0) {

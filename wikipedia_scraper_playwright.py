@@ -1,24 +1,9 @@
 #!/usr/bin/env python3
 """
-Wikipedia Scraper v2 - Migrated to use PlaywrightScraperBase.
+Wikipedia Scraper — Playwright-based Wikipedia URL and data finder.
 
-This is a WALLED GARDEN version for testing. Do not use in production
-until comparison tests pass.
-
-Changes from v1 (wikipedia_scraper_playwright.py):
-- Inherits from PlaywrightScraperBase instead of duplicating code
-- Removes ~200 lines of duplicated methods
-- All Wikipedia-specific logic preserved exactly
-
-Inherited from base class:
-- _log(), _log_metrics()
-- _load_cache(), _save_cache()
-- _cleanup_old_screenshots()
-- _init_browser(), _init_browser_shared(), _init_browser_local()
-- _enforce_rate_limit()
-- stats and counters initialization
-- get_stats()
-- Context manager (__enter__, __exit__)
+Inherits from PlaywrightScraperBase for shared browser management.
+Finds Wikipedia film pages and extracts structured data (Wikidata distributors).
 """
 
 from playwright.sync_api import TimeoutError as PlaywrightTimeoutError

@@ -311,7 +311,7 @@ class DisplayGenerator:
                 with open('movie_tracking.json', 'r') as f:
                     tracking_data = json.load(f).get('movies', {})
             except Exception as e:
-                print(f"\u26a0\ufe0f  Could not load movie_tracking.json: {e}")
+                self.ctx.logger.warning(f"Could not load movie_tracking.json: {e}")
 
         # Apply manual field edits from movie_tracking.json
         fields_updated = 0

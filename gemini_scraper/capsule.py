@@ -320,10 +320,11 @@ class GeminiCapsuleWriter(GeminiFinderBase):
             return t
 
         slug = _make_slug(title)
+        # Try most specific first (year-suffixed), then bare slug
         candidate_urls = [
-            f'https://letterboxd.com/film/{slug}/reviews/by/popular/',
-            f'https://letterboxd.com/film/{slug}-{year}/reviews/by/popular/',
             f'https://letterboxd.com/film/{slug}-{year - 1}/reviews/by/popular/',
+            f'https://letterboxd.com/film/{slug}-{year}/reviews/by/popular/',
+            f'https://letterboxd.com/film/{slug}/reviews/by/popular/',
         ]
 
         try:
@@ -334,58 +335,56 @@ class GeminiCapsuleWriter(GeminiFinderBase):
                     headless=True,
                     args=['--disable-blink-features=AutomationControlled']
                 )
-                ctx = browser.new_context(
-                    user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
-                               'AppleWebKit/537.36 (KHTML, like Gecko) '
-                               'Chrome/125.0.0.0 Safari/537.36',
-                    viewport={'width': 1920, 'height': 1080},
-                    locale='en-US'
-                )
-                page = ctx.new_page()
-                page.add_init_script(
-                    'Object.defineProperty(navigator, "webdriver", {get: () => undefined})'
-                )
+                try:
+                    ctx = browser.new_context(
+                        user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                   'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                   'Chrome/125.0.0.0 Safari/537.36',
+                        viewport={'width': 1920, 'height': 1080},
+                        locale='en-US'
+                    )
+                    page = ctx.new_page()
+                    page.add_init_script(
+                        'Object.defineProperty(navigator, "webdriver", {get: () => undefined})'
+                    )
 
-                reviews_url = None
-                # Try year-suffixed first (more specific), then bare slug
-                # Accept ±1 year tolerance (Letterboxd may use production year)
-                valid_years = [str(year), str(year - 1), str(year + 1)]
-                for url in reversed(candidate_urls):
-                    try:
-                        resp = page.goto(url, timeout=15000, wait_until='domcontentloaded')
-                        if resp and resp.status == 200:
-                            page_title = page.title()
-                            if any(f'({y})' in page_title for y in valid_years):
-                                reviews_url = url
-                                break
-                    except Exception:
-                        continue
+                    reviews_url = None
+                    valid_years = [str(year), str(year - 1), str(year + 1)]
+                    for url in candidate_urls:
+                        try:
+                            resp = page.goto(url, timeout=15000, wait_until='domcontentloaded')
+                            if resp and resp.status == 200:
+                                page_title = page.title()
+                                if any(f'({y})' in page_title for y in valid_years):
+                                    reviews_url = url
+                                    break
+                        except Exception:
+                            continue
 
-                if not reviews_url:
+                    if not reviews_url:
+                        return ''
+
+                    time.sleep(1)
+
+                    # Extract review text via DOM (same selectors as pull_quotes)
+                    extracted = page.evaluate('''() => {
+                        let results = [];
+                        let articles = document.querySelectorAll("li.film-detail");
+                        if (!articles.length) {
+                            articles = document.querySelectorAll("article.production-viewing");
+                        }
+                        for (let art of articles) {
+                            let r = {};
+                            let name = art.querySelector("strong.name, strong.displayname, a.context strong");
+                            r.username = name ? name.textContent.trim() : "anon";
+                            let body = art.querySelector(".body-text, .js-review-body");
+                            r.text = body ? body.textContent.trim() : "";
+                            if (r.text && r.text.length >= 20) results.push(r);
+                        }
+                        return results;
+                    }''')
+                finally:
                     browser.close()
-                    return ''
-
-                time.sleep(1)
-
-                # Extract review text via DOM (same selectors as pull_quotes)
-                extracted = page.evaluate('''() => {
-                    let results = [];
-                    let articles = document.querySelectorAll("li.film-detail");
-                    if (!articles.length) {
-                        articles = document.querySelectorAll("article.production-viewing");
-                    }
-                    for (let art of articles) {
-                        let r = {};
-                        let name = art.querySelector("strong.name, strong.displayname, a.context strong");
-                        r.username = name ? name.textContent.trim() : "anon";
-                        let body = art.querySelector(".body-text, .js-review-body");
-                        r.text = body ? body.textContent.trim() : "";
-                        if (r.text && r.text.length >= 20) results.push(r);
-                    }
-                    return results;
-                }''')
-
-                browser.close()
 
                 # Filter to English reviews
                 english_reviews = []
@@ -413,6 +412,154 @@ class GeminiCapsuleWriter(GeminiFinderBase):
 
         except Exception as e:
             logger.warning(f"Letterboxd reactions fetch failed for {title}: {e}")
+
+        return ''
+
+    def _fetch_amazon_synopsis(self, amazon_url: str) -> str:
+        """Fetch editorial synopsis from Amazon product page.
+
+        Amazon occasionally has a different editorial synopsis than TMDB,
+        especially for indie/arthouse films where the distributor provides copy.
+        """
+        if not amazon_url:
+            return ''
+
+        try:
+            from playwright.sync_api import sync_playwright
+            with sync_playwright() as p:
+                browser = p.chromium.launch(headless=True)
+                page = browser.new_page(
+                    user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                               'AppleWebKit/537.36 (KHTML, like Gecko) '
+                               'Chrome/125.0.0.0 Safari/537.36'
+                )
+
+                resp = page.goto(amazon_url, timeout=15000, wait_until='domcontentloaded')
+                if not resp or resp.status >= 400:
+                    browser.close()
+                    return ''
+
+                time.sleep(1)
+
+                synopsis = ''
+
+                # Try synopsis/description selectors
+                for selector in [
+                    '[data-automation-id="synopsis"]',
+                    '.dv-dp-node-synopsis',
+                    '#btf-product-details .dv-simple-synopsis',
+                    '.TitleSynopsis',
+                    '[class*="Synopsis"]',
+                    '[class*="synopsis"]',
+                ]:
+                    try:
+                        el = page.query_selector(selector)
+                        if el:
+                            text = el.inner_text().strip()
+                            if text and len(text) > 20:
+                                synopsis = text
+                                break
+                    except Exception:
+                        continue
+
+                # Fallback: regex on page body
+                if not synopsis:
+                    try:
+                        body = page.inner_text('body')
+                        # Look for synopsis-like blocks between known Amazon UI elements
+                        match = re.search(
+                            r'(?:Synopsis|About this movie|About)\s*[:\-—]?\s*(.+?)(?:\n\n|Customers|Directors?:|Starring:)',
+                            body, re.DOTALL
+                        )
+                        if match:
+                            synopsis = match.group(1).strip()
+                    except Exception:
+                        pass
+
+                browser.close()
+
+                if synopsis and len(synopsis) > 20:
+                    # Cap at 600 chars
+                    if len(synopsis) > 600:
+                        synopsis = synopsis[:600].rsplit(' ', 1)[0] + '...'
+                    self.stats.setdefault('amazon_synopsis_fetched', 0)
+                    self.stats['amazon_synopsis_fetched'] += 1
+                    logger.info(f"Fetched Amazon synopsis: {len(synopsis)} chars")
+                    return synopsis
+
+        except Exception as e:
+            logger.warning(f"Amazon synopsis fetch failed: {e}")
+
+        return ''
+
+    def _fetch_imdb_trivia(self, imdb_url: str) -> str:
+        """Fetch trivia/production facts from IMDb trivia page.
+
+        Returns top trivia items as a numbered list — concrete production
+        details that make capsules interesting.
+        """
+        if not imdb_url:
+            return ''
+
+        # Construct trivia URL
+        trivia_url = imdb_url.rstrip('/') + '/trivia/'
+
+        try:
+            from playwright.sync_api import sync_playwright
+            with sync_playwright() as p:
+                browser = p.chromium.launch(headless=True)
+                page = browser.new_page(
+                    user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                               'AppleWebKit/537.36 (KHTML, like Gecko) '
+                               'Chrome/125.0.0.0 Safari/537.36'
+                )
+
+                resp = page.goto(trivia_url, timeout=15000, wait_until='domcontentloaded')
+                if not resp or resp.status >= 400:
+                    browser.close()
+                    return ''
+
+                time.sleep(1)
+
+                # Extract trivia items from DOM
+                items = page.evaluate('''() => {
+                    let results = [];
+                    // IMDb trivia: each item is an .ipc-list-card--border-line
+                    // with content in .ipc-html-content-inner-div
+                    let cards = document.querySelectorAll('.ipc-list-card--border-line');
+                    for (let card of cards) {
+                        let content = card.querySelector('.ipc-html-content-inner-div');
+                        if (!content) continue;
+                        let text = content.textContent.trim();
+                        if (text && text.length > 30 && text.length < 1000) {
+                            results.push(text);
+                        }
+                        if (results.length >= 5) break;
+                    }
+                    return results;
+                }''')
+
+                browser.close()
+
+                if not items:
+                    return ''
+
+                # Cap each at 200 chars, format as numbered list
+                lines = []
+                for i, item in enumerate(items[:5], 1):
+                    text = item[:200]
+                    if len(item) > 200:
+                        text = text.rsplit(' ', 1)[0] + '...'
+                    lines.append(f"{i}. {text}")
+
+                result = '\n'.join(lines)
+                self.stats.setdefault('imdb_trivia_fetched', 0)
+                self.stats['imdb_trivia_fetched'] += 1
+                logger.info(f"Fetched {len(items)} IMDb trivia items")
+                return result
+
+        except Exception as e:
+            logger.warning(f"IMDb trivia fetch failed: {e}")
 
         return ''
 
@@ -590,18 +737,19 @@ class GeminiCapsuleWriter(GeminiFinderBase):
     # Variant angles — each gives Gemini a different entry point into the material
     VARIANT_ANGLES = [
         (
-            "ANGLE: Lead with the FILMMAKER — who made this, what's their track record, "
-            "what did they do before, is this a debut? The filmmaker's story is the hook."
+            "ANGLE: Lead with the FILMMAKER. Your first sentence must be about the "
+            "director — their track record, previous films, or debut story. Do NOT "
+            "open with the film's title or premise."
         ),
         (
-            "ANGLE: Lead with the PREMISE & GENRE — what kind of movie is this, what's it "
-            "about at a high level, what tradition or genre is it working in? Give the "
-            "reader a sense of what they're in for."
+            "ANGLE: Lead with the PREMISE & GENRE. Your first sentence must describe "
+            "what kind of movie this is and what it's about — tone, genre, setup. "
+            "Do NOT open with the director's name or bio."
         ),
         (
-            "ANGLE: Lead with the CONTEXT & MOMENT — festival history, cultural significance, "
-            "audience reception, production backstory, or why this movie exists right now. "
-            "What's the story behind the story?"
+            "ANGLE: Lead with a CONCRETE DETAIL — a production fact, a festival moment, "
+            "a number, a quote, an anecdote. Something specific and surprising. "
+            "Do NOT open with the director's name or the film's premise."
         ),
     ]
 
@@ -635,8 +783,12 @@ class GeminiCapsuleWriter(GeminiFinderBase):
 
         if sources.get('rt_consensus'):
             source_lines.append(f"RT CRITICS CONSENSUS:\n{sources['rt_consensus']}")
-        if sources.get('mc_summary'):
-            source_lines.append(f"METACRITIC SUMMARY:\n{sources['mc_summary']}")
+
+        if sources.get('amazon'):
+            source_lines.append(f"AMAZON SYNOPSIS:\n{sources['amazon']}")
+
+        if sources.get('imdb_trivia'):
+            source_lines.append(f"IMDB TRIVIA & PRODUCTION FACTS:\n{sources['imdb_trivia']}")
 
         if sources.get('letterboxd'):
             source_lines.append(
@@ -827,6 +979,8 @@ VERIFICATION:"""
         wiki_url: str = None,
         rt_url: str = None,
         mc_url: str = None,
+        amazon_url: str = None,
+        imdb_url: str = None,
         force: bool = False,
         skip_verify: bool = False,
         variants: int = 1
@@ -878,6 +1032,9 @@ VERIFICATION:"""
             'wikipedia': self._fetch_wikipedia_summary(wiki_url),
             'wiki_sections': self._fetch_wikipedia_sections(wiki_url),
             'letterboxd': self._fetch_letterboxd_reactions(title, year),
+            'rt_consensus': self._fetch_rt_consensus(rt_url),
+            'amazon': self._fetch_amazon_synopsis(amazon_url),
+            'imdb_trivia': self._fetch_imdb_trivia(imdb_url),
         }
 
         # --- Phase 2: Capsule Writing ---

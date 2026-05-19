@@ -7,7 +7,7 @@ Prints available finder classes and checks Gemini API key availability.
 from gemini_scraper import (
     GeminiFinderBase, GeminiYouTubeFinder, GeminiRTFinder,
     GeminiWikipediaFinder, GeminiVODDateFinder, GeminiPullQuoteFinder,
-    GeminiQuoteExtractor, GeminiIMDbFinder, GeminiWatchLinkFinder,
+    GeminiQuoteExtractor, GeminiIMDbFinder, GeminiCapsuleWriter,
     HybridYouTubeFinder, HybridRTFinder,
 )
 from gemini_scraper.base import _get_gemini_api_key
@@ -17,7 +17,7 @@ def main():
     finders = [
         GeminiYouTubeFinder, GeminiRTFinder, GeminiWikipediaFinder,
         GeminiVODDateFinder, GeminiPullQuoteFinder, GeminiQuoteExtractor,
-        GeminiIMDbFinder, GeminiWatchLinkFinder,
+        GeminiIMDbFinder, GeminiCapsuleWriter,
     ]
     hybrids = [HybridYouTubeFinder, HybridRTFinder]
 

@@ -344,8 +344,9 @@ const HomeScreenTvOS = () => {
 
   // Get movies based on active filters (multi-select with OR logic - cumulative)
   const displayMovies = useMemo(() => {
-    // If no filters selected, show all (pre-orders only shown when explicitly filtered)
+    // If no filters selected, show all (pre-orders only shown when explicitly filtered or during search)
     if (activeFilters.size === 0) {
+      if (searchQuery) return filteredMovies;
       return filteredMovies.filter(m => !m._is_preorder);
     }
 

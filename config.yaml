@@ -519,7 +519,6 @@ api:
   tmdb_api_key: ""
   omdb_api_key: ""
   gemini_api_key: ""
-  watchmode_api_key: ""  # Free tier: 2,500 calls/mo, web deeplinks included, no native app deeplinks
   tmdb_rate_limit: 0.1  # Seconds between API calls
   max_retries: 3
   max_pages_bootstrap: 49  # Maximum pages to fetch for bootstrap operation
@@ -534,7 +533,6 @@ gemini_scraper:
   wikipedia_enabled: true          # Wikipedia-specific toggle - set false for Playwright-only Wikipedia
   pull_quotes_enabled: true        # Pull quotes - find critic/Letterboxd quotes per movie
   pull_quotes_count: 8             # Number of critic quotes to request per movie
-  use_playwright_fallback: true    # Try Playwright if Gemini fails
   timeout_seconds: 30              # Prevent hanging API calls
   rate_limit: 1.0                  # Seconds between API calls
   cache_ttl_days: 90               # How long to cache results

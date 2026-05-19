@@ -1,13 +1,11 @@
 /* CSS Custom Properties - Single source of truth for colors */
 :root {
     --accent-primary: #00d4aa;
-    --accent-hover: #00ffbb;
     --accent-glow: rgba(0, 212, 170, 0.3);
     --bg-dark: #1a1a2e;
     --bg-darker: #0a0a0a;
     --border-subtle: #333;
     --text-muted: #888;
-    --text-white: #fff;
     --staff-pick: #dc143c;
     --staff-pick-glow: rgba(220, 20, 60, 0.3);
     --staff-pick-subtle: rgba(220, 20, 60, 0.05);
@@ -37,7 +35,6 @@
     --svc-fawesome: #5B8DEF;
     --svc-fandango: #FF6600;
     --svc-amazon: #ff9900;
-    --svc-apple: #000;
     --svc-plex: #E5A00D;
     --svc-preorder: #7c3aed;
     --svc-restoration: #C8A951;
@@ -506,8 +503,6 @@ header h1 {
 .badge-amc { background: var(--svc-amc); color: white; }
 .badge-fawesome { background: var(--svc-fawesome); color: white; }
 .badge-fandango { background: var(--svc-fandango); color: white; }
-.badge-docuramafilms { background: #333; color: white; }
-.badge-fandor { background: #333; color: white; }
 .badge-other { background: #444; color: white; }
 .badge-preorder {
     background: var(--svc-preorder);
@@ -595,12 +590,6 @@ header h1 {
     color: var(--accent-primary);
 }
 
-/* Score badges row (lightbox) */
-.score-row {
-    display: flex;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
-}
 .score-badge {
     flex: 1;
     display: block;
@@ -889,7 +878,6 @@ header h1 {
     z-index: 1;
     pointer-events: none;
 }
-
 .trailer-error { color: #ff6b6b; }
 
 .trailer-spinner {
@@ -1478,114 +1466,6 @@ header h1 {
     text-shadow: 0 2px 12px rgba(0,0,0,0.8);
 }
 
-/* V2 VOD price cards: logo left, prices stacked right */
-.vcard {
-    border-radius: 8px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: row;
-    min-width: 160px;
-    max-width: 220px;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-.vcard:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-}
-.vcard-logo {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 50%;
-    padding: 10px 8px;
-    text-decoration: none;
-    color: #fff;
-    font-weight: 700;
-    text-transform: uppercase;
-    font-size: 0.7rem;
-}
-.vcard-logo .logo-img {
-    height: 18px;
-    width: auto;
-    max-width: 80px;
-    object-fit: contain;
-}
-.vcard-prices {
-    display: flex;
-    flex-direction: column;
-    width: 50%;
-}
-.vcard-price {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    color: inherit;
-    font-weight: 700;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-    padding: 7px 4px;
-    transition: filter 0.2s;
-}
-.vcard-price:hover { filter: brightness(1.15); }
-.vcard-price.rent:not(:only-child) { border-bottom: 1px solid rgba(0,0,0,0.15); }
-/* Logo backgrounds — brand colors */
-.vcard.amazon .vcard-logo { background: #ff9900; }
-.vcard.apple .vcard-logo { background: #000; }
-.vcard.apple { border: 1px solid #444; }
-.vcard.fandango .vcard-logo { background: #FF6600; }
-.vcard.youtube .vcard-logo { background: #cc0000; }
-.vcard.plex .vcard-logo { background: #1a1a1a; }
-.vcard.plex { border: 1px solid #444; }
-/* Logo images white on brand backgrounds */
-.vcard.amazon .logo-img { filter: brightness(0) invert(1); }
-.vcard.apple .logo-img { filter: invert(1); }
-.vcard.fandango .logo-img { filter: brightness(0) invert(1); }
-.vcard.plex .logo-img { filter: brightness(0) invert(1); }
-.vcard.youtube .logo-img { filter: brightness(0) invert(1); }
-/* Price colors per service */
-.vcard.amazon .vcard-price.rent { background: #ffad33; color: #000; }
-.vcard.amazon .vcard-price.buy { background: #e68a00; color: #000; }
-.vcard.apple .vcard-price.rent { background: #2a2a2a; color: #fff; }
-.vcard.apple .vcard-price.buy { background: #1a1a1a; color: #ddd; }
-.vcard.apple .vcard-price.rent:not(:only-child) { border-bottom: 1px solid #444; }
-.vcard.fandango .vcard-price.rent { background: #e55a00; color: #fff; }
-.vcard.fandango .vcard-price.buy { background: #cc4e00; color: #fff; }
-.vcard.youtube .vcard-price.rent { background: #cc0000; color: #fff; }
-.vcard.youtube .vcard-price.buy { background: #990000; color: #fff; }
-.vcard.plex .vcard-price.rent { background: #c8900b; color: #fff; }
-.vcard.plex .vcard-price.buy { background: #a07508; color: #fff; }
-
-/* Wide service logos inside watch buttons */
-.watch-btn-lb .watch-logo {
-    height: 18px;
-    width: auto;
-    max-width: 110px;
-    object-fit: contain;
-    filter: brightness(0) invert(1);
-}
-
-/* Navigation arrows - inline with content */
-.lightbox-nav {
-    flex-shrink: 0;
-    width: 50px;
-    height: 50px;
-    background: rgba(0, 212, 170, 0.1);
-    border: none;
-    color: #00d4aa;
-    font-size: 1.5rem;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: background 0.3s, color 0.3s;
-}
-
-.lightbox-nav:hover {
-    background: rgba(0, 212, 170, 0.3);
-    color: #00ffbb;
-}
 
 /* X close button - upper right */
 .lightbox-close {
@@ -1607,55 +1487,6 @@ header h1 {
 
 .lightbox-close:hover {
     background: rgba(255, 255, 255, 0.2);
-}
-
-/* Shrink button - aligned with nav arrows, at bottom */
-.lightbox-shrink {
-    position: absolute;
-    bottom: 5%;
-    right: calc(50% - 620px);
-    width: 64px;
-    height: 64px;
-    background: rgba(40, 40, 40, 0.9);
-    border: none;
-    color: #fff;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: background 0.2s, transform 0.2s;
-    z-index: 10001;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-}
-
-.lightbox-shrink svg {
-    width: 32px;
-    height: 32px;
-}
-
-.lightbox-shrink:hover {
-    background: var(--accent-primary);
-    transform: scale(1.1);
-}
-
-/* Counter */
-.lightbox-counter {
-    position: absolute;
-    bottom: 1rem;
-    left: 50%;
-    transform: translateX(-50%);
-    color: #888;
-    font-size: 0.9rem;
-}
-
-/* Keyboard hint */
-.lightbox-hint {
-    position: absolute;
-    bottom: 1rem;
-    right: 1rem;
-    color: #555;
-    font-size: 0.8rem;
 }
 
 /* Responsive adjustments */

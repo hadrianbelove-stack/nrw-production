@@ -1,22 +1,9 @@
 #!/usr/bin/env python3
 """
-Streaming Platform Scraper v2 - Migrated to use PlaywrightScraperBase.
+Streaming Platform Scraper — Playwright-based VOD link finder.
 
-This is a WALLED GARDEN version for testing. Do not use in production
-until comparison tests pass.
-
-Changes from v1 (streaming_platform_scraper.py):
-- Inherits from PlaywrightScraperBase instead of duplicating code
-- Maintains backward-compatible constructor signature
-- All platform-specific logic preserved exactly
-
-Inherited from base class:
-- _log(), _log_metrics()
-- _cleanup_old_screenshots()
-- _init_browser(), _init_browser_shared(), _init_browser_local()
-- _cleanup_browser()
-- _enforce_rate_limit()
-- stats and counters initialization
+Inherits from PlaywrightScraperBase for shared browser management.
+Scrapes streaming platform pages to find direct watch links.
 """
 
 from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeoutError
@@ -45,7 +32,6 @@ class StreamingPlatformScraper(PlaywrightScraperBase):
     def __init__(self, headless=True, timeout_seconds=None, rate_limit_seconds=None, config=None, **kwargs):
         """Initialize Playwright browser with anti-bot measures.
 
-        Maintains backward-compatible constructor signature from v1.
         """
         # Build config dict for base class
         internal_config = config or {}
@@ -78,10 +64,9 @@ class StreamingPlatformScraper(PlaywrightScraperBase):
         # Override rate limit with constructor parameter
         self.rate_limit = self._rate_limit_seconds
 
-        # Alias for backward compatibility
+        # Exposed for enrichment.py diagnostics (logs scraper timeout on init)
         self.timeout_seconds = self._timeout_seconds
         self.headless = self._headless
-        self._amazon_asin_cache = self.cache  # Alias for v1 compatibility
 
         # Override stats with streaming-specific fields
         self.stats = {

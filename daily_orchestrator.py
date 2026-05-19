@@ -213,22 +213,6 @@ class NRWOrchestrator:
 
         return False
 
-    def check_changes(self):
-        """Check if there are git changes to commit (only data.json for CI workflow)"""
-        try:
-            result = subprocess.run(
-                ['git', 'diff', '--quiet', 'data.json'],
-                shell=False
-            )
-            self.has_changes = result.returncode != 0
-            return self.has_changes
-        except Exception as e:
-            print(f"⚠️ Error checking git changes: {e}")
-            self._track_error('Git Check', f'Error checking git changes: {e}', severity='warning')
-            self.has_changes = False
-            return False
-
-
 
     def validate_rt_data(self):
         """Validate RT data in data.json (non-critical check)"""
@@ -338,8 +322,6 @@ class NRWOrchestrator:
                 print(f"⚠️  Warning: Movie count is low ({len(movies)}) - expected 150+, but continuing")
 
             # 4. Check for recent movies - strict 7-day window per charter
-            from datetime import timedelta
-            import yaml
 
             # Load validation configuration
             config = {}
@@ -401,8 +383,6 @@ class NRWOrchestrator:
 
     def validate_provider_coverage(self, recent_movies):
         """Validate that we have adequate provider coverage for recent movies"""
-        import yaml
-
         # Load validation configuration
         config = {}
         if os.path.exists('config.yaml'):
@@ -764,97 +744,6 @@ class NRWOrchestrator:
 
         if not issues:
             print("   ✅ All health checks passed")
-
-    def validate_state_file(self):
-        """Validate that Phase 2 created a fresh state file with today's date."""
-        print("🔍 Validating enrichment state file...")
-        issues = []
-        today = datetime.now().strftime('%Y-%m-%d')
-        state_file_path = 'metrics/newly_available.json'
-
-        try:
-            if not os.path.exists(state_file_path):
-                print(f"   ⚠️ Phase 2 completed but state file is missing: {state_file_path}")
-                issues.append({
-                    'check': 'state_file_missing',
-                    'severity': 'warning',
-                    'message': f'Enrichment state file missing after Phase 2: {state_file_path}'
-                })
-                self.warnings.append({
-                    'phase': 'Health Check',
-                    'message': f'Enrichment state file missing after Phase 2: {state_file_path}'
-                })
-            else:
-                with open(state_file_path) as f:
-                    state_data = json.load(f)
-
-                state_date = state_data.get('date')
-                movie_count = state_data.get('count', 0)
-                timestamp = state_data.get('timestamp')
-
-                if state_date != today:
-                    print(f"   ⚠️ Phase 2 completed but state file is stale (date={state_date}, expected={today})")
-                    issues.append({
-                        'check': 'state_file_stale',
-                        'severity': 'warning',
-                        'message': f'Enrichment state file has stale date: {state_date} (expected {today})'
-                    })
-                    self.warnings.append({
-                        'phase': 'Health Check',
-                        'message': f'Enrichment state file has stale date: {state_date} (expected {today})'
-                    })
-                else:
-                    print(f"   ✅ State file is fresh: {movie_count} newly available movies, date={state_date}")
-
-                # Check for timestamp/date consistency
-                if timestamp and state_date:
-                    try:
-                        timestamp_date = timestamp.split('T')[0]  # Extract date part from ISO timestamp
-                        if timestamp_date != state_date:
-                            print(f"   ⚠️ State file has inconsistent date fields: date={state_date}, timestamp date={timestamp_date}")
-                            issues.append({
-                                'check': 'state_file_inconsistent_dates',
-                                'severity': 'warning',
-                                'message': f'State file date/timestamp mismatch: date={state_date}, timestamp={timestamp_date}'
-                            })
-                            self.warnings.append({
-                                'phase': 'Health Check',
-                                'message': f'State file date/timestamp mismatch: date={state_date}, timestamp={timestamp_date}'
-                            })
-                    except Exception as ts_error:
-                        print(f"   ⚠️ Could not validate timestamp consistency: {ts_error}")
-
-        except json.JSONDecodeError as e:
-            print(f"   ❌ State file exists but is invalid JSON: {e}")
-            issues.append({
-                'check': 'state_file_parse',
-                'severity': 'error',
-                'message': f'Enrichment state file invalid JSON: {e}'
-            })
-            self.failures.append({
-                'phase': 'Health Check',
-                'severity': 'error',
-                'message': f'Enrichment state file invalid JSON: {e}',
-                'context': 'state_file_parse'
-            })
-        except Exception as e:
-            print(f"   ❌ Failed to validate state file: {e}")
-            issues.append({
-                'check': 'state_file_read',
-                'severity': 'warning',
-                'message': f'Failed to validate enrichment state file: {e}'
-            })
-            self.warnings.append({
-                'phase': 'Health Check',
-                'message': f'Failed to validate enrichment state file: {e}'
-            })
-
-        # Merge issues into self.health_issues
-        if not hasattr(self, 'health_issues') or self.health_issues is None:
-            self.health_issues = []
-        self.health_issues.extend(issues)
-
-        return issues
 
     def check_for_stall(self):
         """Detect multi-day stalls - reports but never fails pipeline"""

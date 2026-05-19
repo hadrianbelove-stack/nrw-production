@@ -24,6 +24,10 @@ today_dt = date.today()
 today = today_dt.isoformat()
 three_days_ago = (today_dt - timedelta(days=3)).isoformat()
 
+# Shorten common service names for display (used in multiple report sections)
+SHORT_NAMES = {'Fandango At Home': 'Fandango', 'Apple TV Store': 'Apple TV',
+               'Amazon Video': 'Amazon', 'Google Play Movies': 'Google Play'}
+
 
 def fmt_date(iso_str):
     """Format ISO date string as 'May 5th, 2026'."""
@@ -68,9 +72,6 @@ def get_services(m):
         for link in cat_links:
             svc = link.get('service', '') if isinstance(link, dict) else ''
             if svc:
-                # Shorten common names for display
-                SHORT_NAMES = {'Fandango At Home': 'Fandango', 'Apple TV Store': 'Apple TV',
-                               'Amazon Video': 'Amazon', 'Google Play Movies': 'Google Play'}
                 short = SHORT_NAMES.get(svc, svc)
                 services.add(short)
     return sorted(services)
@@ -417,8 +418,6 @@ for m in movies:
         tmdb_plats = []
         for cat in ['rent', 'buy', 'streaming']:
             for p in provs.get(cat, []):
-                SHORT_NAMES = {'Fandango At Home': 'Fandango', 'Apple TV Store': 'Apple TV',
-                               'Amazon Video': 'Amazon', 'Google Play Movies': 'Google Play'}
                 tmdb_plats.append(SHORT_NAMES.get(p, p))
         tmdb_str = ', '.join(sorted(set(tmdb_plats))) if tmdb_plats else ''
         buyonly = ' (buy-only)' if m.get('_buyonly_preorder') else ''
@@ -435,8 +434,6 @@ for m in zero_future:
         tmdb_plats = []
         for cat in ['rent', 'buy', 'streaming']:
             for p in provs.get(cat, []):
-                SHORT_NAMES = {'Fandango At Home': 'Fandango', 'Apple TV Store': 'Apple TV',
-                               'Amazon Video': 'Amazon', 'Google Play Movies': 'Google Play'}
                 tmdb_plats.append(SHORT_NAMES.get(p, p))
         tmdb_str = ', '.join(sorted(set(tmdb_plats))) if tmdb_plats else ''
         merged.append((dd, title, 0, 'NONE', tmdb_str, '', mid))

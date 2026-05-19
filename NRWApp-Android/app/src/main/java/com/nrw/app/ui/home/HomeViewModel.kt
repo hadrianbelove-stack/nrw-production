@@ -92,7 +92,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
      */
     private fun applyFilters() {
         val state = _uiState.value
-        var filtered = repository.filterMoviesMulti(state.movies, state.activeFilters)
+        var filtered = repository.filterMoviesMulti(state.movies, state.activeFilters, state.searchQuery)
 
         if (state.searchQuery.isNotBlank()) {
             filtered = repository.searchMovies(filtered, state.searchQuery)

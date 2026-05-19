@@ -54,7 +54,7 @@ export default function HomeScreen({navigation}) {
 
   // Apply filters and search
   useEffect(() => {
-    let result = filterMoviesMulti(movies, activeFilters);
+    let result = filterMoviesMulti(movies, activeFilters, searchQuery);
     if (searchQuery.trim()) {
       result = searchMovies(result, searchQuery);
     }

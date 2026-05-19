@@ -13,7 +13,6 @@ import json
 import requests
 import yaml
 from datetime import datetime, timedelta
-import time
 import re
 import logging
 # NOTE: Scraper imports are LAZY (inside methods) to protect intake/discovery phases
@@ -704,7 +703,6 @@ class DataGenerator:
         # Generate display_title for foreign films
         # Latin-script originals: "Original (English)" — e.g. "Nukkad Naatak (A Street Play)"
         # Non-Latin originals: "English (Original)" — e.g. "The Adventure (奇遇)"
-        import re
         original_title = entry.get('original_title')
         orig_lang = entry.get('original_language', 'en')
         if original_title and original_title != entry.get('title') and orig_lang != 'en':
@@ -1896,7 +1894,6 @@ class DataGenerator:
         # Compute display_title for non-English films
         # Latin-script originals: "Original (English)" — e.g. "Nukkad Naatak (A Street Play)"
         # Non-Latin originals: "English (Original)" — e.g. "The Adventure (奇遇)"
-        import re
         for m in all_movies:
             orig = m.get('original_title')
             lang = m.get('original_language', 'en')

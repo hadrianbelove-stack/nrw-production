@@ -9,7 +9,7 @@ This tests the MIGRATED version of WikipediaScraperPlaywright:
 
 Run with: python3 tests/test_wikipedia_scraper_migration.py
 
-This is a WALLED GARDEN test - no production files are touched.
+Tests that WikipediaScraperPlaywright works correctly with PlaywrightScraperBase.
 """
 
 import os

@@ -21,10 +21,7 @@ from gemini_scraper.rt_validation import page_title_matches
 
 
 class RTScraperPlaywright(PlaywrightScraperBase):
-    """Rotten Tomatoes scraper using Playwright for scores and URLs.
-
-    v2: Now inherits from PlaywrightScraperBase for shared functionality.
-    """
+    """Rotten Tomatoes scraper using Playwright for scores and URLs."""
 
     def __init__(self, cache_file='cache/rt_cache.json', config=None, logger=None):
         """Initialize the RT scraper with configuration.
@@ -702,5 +699,3 @@ class RTScraperPlaywright(PlaywrightScraperBase):
         self._log("RT Scraper closed")
 
 
-# For backwards compatibility
-RTScraperV2 = RTScraperPlaywright

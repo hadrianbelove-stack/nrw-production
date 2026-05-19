@@ -254,8 +254,8 @@ const NRW = {
         const query = this.searchQuery;
 
         this.filteredMovies = this.allMovies.filter(movie => {
-            // Pre-orders only appear when the pre-orders filter is active
-            if (movie._is_preorder && !filters.has('pre-orders')) return false;
+            // Pre-orders only appear when the pre-orders filter is active OR search is active
+            if (movie._is_preorder && !filters.has('pre-orders') && !query) return false;
 
             // If no filters selected, show all (except hidden)
             if (filters.size === 0) {

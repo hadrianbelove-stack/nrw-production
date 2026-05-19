@@ -183,9 +183,9 @@ class MovieRepository(private val context: Context) {
     /**
      * Filter movies by multiple categories (OR logic - cumulative)
      */
-    fun filterMoviesMulti(movies: List<Movie>, activeFilters: Set<FilterCategory>): List<Movie> {
-        // Pre-orders only appear when the pre-orders filter is active
-        val filtered = if (FilterCategory.PRE_ORDERS !in activeFilters) {
+    fun filterMoviesMulti(movies: List<Movie>, activeFilters: Set<FilterCategory>, searchQuery: String = ""): List<Movie> {
+        // Pre-orders only appear when the pre-orders filter is active OR search is active
+        val filtered = if (FilterCategory.PRE_ORDERS !in activeFilters && searchQuery.isBlank()) {
             movies.filter { !it.isPreorder }
         } else movies
         if (activeFilters.isEmpty()) {
