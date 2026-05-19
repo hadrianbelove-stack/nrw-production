@@ -1,13 +1,15 @@
 """
 Capsule writer — Gemini-powered first-draft editorial movie descriptions.
 
-Generates 3-4 sentence capsules grounded in real facts from Wikipedia, RT, and
-Metacritic. Supports a training loop: user rewrites capsules, approves them, and
-approved rewrites become few-shot examples for future generations.
+Generates capsules grounded in real facts from Wikipedia, Letterboxd audience
+reactions, RT consensus, and Metacritic. Supports a training loop: user rewrites
+capsules, approves them, and approved rewrites become few-shot examples for
+future generations.
 
 Three-phase pipeline:
-  1. FACT GATHERING — Wikipedia REST API summary + RT consensus + MC summary
+  1. FACT GATHERING — Wikipedia + Letterboxd reviews + RT consensus + MC summary
   2. CAPSULE WRITING — Gemini with Google Search grounding + style guide + examples
+     (variants use different angles: filmmaker, premise/genre, context/moment)
   3. FACT VERIFICATION — second Gemini call cross-checks claims against sources
 """
 
@@ -300,6 +302,120 @@ class GeminiCapsuleWriter(GeminiFinderBase):
 
         return result
 
+    def _fetch_letterboxd_reactions(self, title: str, year: int) -> str:
+        """Fetch popular Letterboxd reviews to capture audience reactions.
+
+        Returns a condensed string of top audience reactions — what real
+        viewers are responding to, what's resonating, what the vibe is.
+        """
+        import unicodedata
+
+        def _make_slug(t):
+            t = unicodedata.normalize('NFKD', t).encode('ascii', 'ignore').decode('ascii')
+            t = t.lower()
+            t = re.sub(r"'s\b", 's', t)
+            t = re.sub(r"[''']", '', t)
+            t = re.sub(r'[^a-z0-9]+', '-', t)
+            t = t.strip('-')
+            return t
+
+        slug = _make_slug(title)
+        candidate_urls = [
+            f'https://letterboxd.com/film/{slug}/reviews/by/popular/',
+            f'https://letterboxd.com/film/{slug}-{year}/reviews/by/popular/',
+            f'https://letterboxd.com/film/{slug}-{year - 1}/reviews/by/popular/',
+        ]
+
+        try:
+            from playwright.sync_api import sync_playwright
+
+            with sync_playwright() as p:
+                browser = p.chromium.launch(
+                    headless=True,
+                    args=['--disable-blink-features=AutomationControlled']
+                )
+                ctx = browser.new_context(
+                    user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                               'AppleWebKit/537.36 (KHTML, like Gecko) '
+                               'Chrome/125.0.0.0 Safari/537.36',
+                    viewport={'width': 1920, 'height': 1080},
+                    locale='en-US'
+                )
+                page = ctx.new_page()
+                page.add_init_script(
+                    'Object.defineProperty(navigator, "webdriver", {get: () => undefined})'
+                )
+
+                reviews_url = None
+                # Try year-suffixed first (more specific), then bare slug
+                # Accept ±1 year tolerance (Letterboxd may use production year)
+                valid_years = [str(year), str(year - 1), str(year + 1)]
+                for url in reversed(candidate_urls):
+                    try:
+                        resp = page.goto(url, timeout=15000, wait_until='domcontentloaded')
+                        if resp and resp.status == 200:
+                            page_title = page.title()
+                            if any(f'({y})' in page_title for y in valid_years):
+                                reviews_url = url
+                                break
+                    except Exception:
+                        continue
+
+                if not reviews_url:
+                    browser.close()
+                    return ''
+
+                time.sleep(1)
+
+                # Extract review text via DOM (same selectors as pull_quotes)
+                extracted = page.evaluate('''() => {
+                    let results = [];
+                    let articles = document.querySelectorAll("li.film-detail");
+                    if (!articles.length) {
+                        articles = document.querySelectorAll("article.production-viewing");
+                    }
+                    for (let art of articles) {
+                        let r = {};
+                        let name = art.querySelector("strong.name, strong.displayname, a.context strong");
+                        r.username = name ? name.textContent.trim() : "anon";
+                        let body = art.querySelector(".body-text, .js-review-body");
+                        r.text = body ? body.textContent.trim() : "";
+                        if (r.text && r.text.length >= 20) results.push(r);
+                    }
+                    return results;
+                }''')
+
+                browser.close()
+
+                # Filter to English reviews
+                english_reviews = []
+                english_words = {'the', 'and', 'this', 'that', 'with', 'for', 'was', 'but', 'not', 'you', 'film', 'movie'}
+                for item in extracted:
+                    words = set(item['text'].lower().split()[:30])
+                    if len(words & english_words) >= 3:
+                        english_reviews.append(item)
+
+                if not english_reviews:
+                    return ''
+
+                # Take top 6, cap each at 300 chars
+                capped = english_reviews[:6]
+                lines = []
+                for r in capped:
+                    text = r['text'][:300]
+                    if len(r['text']) > 300:
+                        text = text.rsplit(' ', 1)[0] + '...'
+                    lines.append(f"@{r['username']}: {text}")
+
+                result = '\n\n'.join(lines)
+                logger.info(f"Fetched {len(capped)} Letterboxd reactions for {title}")
+                return result
+
+        except Exception as e:
+            logger.warning(f"Letterboxd reactions fetch failed for {title}: {e}")
+
+        return ''
+
     def _fetch_rt_consensus(self, rt_url: str) -> str:
         """Fetch RT Critics Consensus text by loading the movie page with Playwright."""
         if not rt_url:
@@ -471,7 +587,26 @@ class GeminiCapsuleWriter(GeminiFinderBase):
 
         return '\n'.join(lines)
 
-    def _build_prompt(self, context: str, sources: Dict[str, str]) -> str:
+    # Variant angles — each gives Gemini a different entry point into the material
+    VARIANT_ANGLES = [
+        (
+            "ANGLE: Lead with the FILMMAKER — who made this, what's their track record, "
+            "what did they do before, is this a debut? The filmmaker's story is the hook."
+        ),
+        (
+            "ANGLE: Lead with the PREMISE & GENRE — what kind of movie is this, what's it "
+            "about at a high level, what tradition or genre is it working in? Give the "
+            "reader a sense of what they're in for."
+        ),
+        (
+            "ANGLE: Lead with the CONTEXT & MOMENT — festival history, cultural significance, "
+            "audience reception, production backstory, or why this movie exists right now. "
+            "What's the story behind the story?"
+        ),
+    ]
+
+    def _build_prompt(self, context: str, sources: Dict[str, str],
+                      angle: str = None) -> str:
         """Build the full capsule-writing prompt with all training material."""
 
         style_guide = self._load_style_guide()
@@ -503,6 +638,11 @@ class GeminiCapsuleWriter(GeminiFinderBase):
         if sources.get('mc_summary'):
             source_lines.append(f"METACRITIC SUMMARY:\n{sources['mc_summary']}")
 
+        if sources.get('letterboxd'):
+            source_lines.append(
+                f"LETTERBOXD AUDIENCE REACTIONS (what real viewers are responding to):\n{sources['letterboxd']}"
+            )
+
         source_block = ''
         if source_lines:
             source_block = '\n\nVERIFIED FACTS — draw from these sources for factual claims:\n' + '\n\n'.join(source_lines)
@@ -518,6 +658,10 @@ class GeminiCapsuleWriter(GeminiFinderBase):
         if anti_examples:
             anti_block = f'\n\n{anti_examples}\n'
 
+        angle_block = ''
+        if angle:
+            angle_block = f'\n{angle}\n'
+
         return f"""{style_guide}
 {anti_block}
 {examples_block}
@@ -526,12 +670,12 @@ MOVIE METADATA:
 {context}
 {source_block}
 
-Use Google Search to look up:
-- The director's previous notable films (for "from the director of ___" references)
-- Whether this film premiered at any major festivals (Cannes, Venice, TIFF, Sundance, Berlin, etc.)
-- Any notable production history, cultural significance, or interesting facts
-
-Write a capsule (3-4 sentences). Return ONLY the capsule text, no labels or formatting.
+Use Google Search to look up anything interesting about this film — the director's
+other work, festival history, press coverage, interviews, distributor background,
+comparable films, cultural context, production backstory, audience reception.
+Follow whatever thread is most interesting.
+{angle_block}
+Write a capsule. Return ONLY the capsule text, no labels or formatting.
 
 CAPSULE:"""
 
@@ -651,7 +795,7 @@ VERIFICATION:"""
         if word_count < 20:
             logger.warning(f"Capsule too short for {title} ({word_count} words)")
             self.stats['too_short'] += 1
-        elif word_count > 150:
+        elif word_count > 200:
             logger.warning(f"Capsule too long for {title} ({word_count} words)")
             self.stats['too_long'] += 1
 
@@ -733,6 +877,7 @@ VERIFICATION:"""
         sources = {
             'wikipedia': self._fetch_wikipedia_summary(wiki_url),
             'wiki_sections': self._fetch_wikipedia_sections(wiki_url),
+            'letterboxd': self._fetch_letterboxd_reactions(title, year),
         }
 
         # --- Phase 2: Capsule Writing ---
@@ -746,13 +891,14 @@ VERIFICATION:"""
             is_foreign=is_foreign, is_exploitation=is_exploitation,
             is_indie=is_indie
         )
-        prompt = self._build_prompt(context, sources)
 
-        # Generate N variants from the same prompt + facts
+        # Generate N variants — each with a different angle for real variation
         capsules = []
         for i in range(variants):
+            angle = self.VARIANT_ANGLES[i % len(self.VARIANT_ANGLES)] if variants > 1 else None
             if variants > 1:
                 logger.info(f"  Generating variant {i + 1}/{variants}...")
+            prompt = self._build_prompt(context, sources, angle=angle)
             capsule = self._generate_single_capsule(prompt, title, year)
             if capsule:
                 capsules.append(capsule)
