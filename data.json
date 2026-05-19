@@ -143,19 +143,6 @@
             "rent_price": "$6.99",
             "buy_price": "$14.99",
             "price": "$6.99"
-          },
-          {
-            "service": "Google Play",
-            "link": "https://play.google.com/store/movies/details/Wasteman?gl=US&hl=en&id=30CzDqKcJQM.P",
-            "rent_price": "$4.99",
-            "buy_price": "$14.99",
-            "price": "$4.99"
-          },
-          {
-            "service": "Plex",
-            "link": "https://watch.plex.tv/movie/wasteman?utm_content=64fdc3b86a04359e1d4ba1ae&utm_medium=deeplink&utm_source=justWatch-v2-catalog",
-            "rent_price": "$7.99",
-            "price": "$7.99"
           }
         ]
       },
@@ -11572,7 +11559,23 @@
       "_trailer_source": "gemini_playwright",
       "_digital_date_source": "tmdb_type4",
       "_needs_review": false,
-      "status": "available"
+      "status": "available",
+      "pull_quotes": [
+        {
+          "text": "Ben Wheatley meets John Wick? Oh, go on then.",
+          "critic": "Dan Jolin",
+          "outlet": "Empire Magazine",
+          "source": "rt_critic",
+          "review_url": "https://www.empireonline.com/movies/reviews/normal/"
+        },
+        {
+          "text": "a cheerfully gonzo midnight movie.",
+          "critic": "Danny Leigh",
+          "outlet": "Financial Times",
+          "source": "rt_critic",
+          "review_url": "https://www.ft.com/content/5f334e79-3b55-478e-9c19-fe897f1c3c15"
+        }
+      ]
     },
     {
       "id": "1585266",
