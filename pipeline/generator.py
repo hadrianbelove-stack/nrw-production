@@ -1070,11 +1070,11 @@ class DataGenerator:
 
         Tier order (each validated before accepting):
           1. Manual overrides (trusted, no validation)
-          2. TMDB official trailers (validated — TMDB data can go stale)
-          3. YouTube scraper cache (validated — free/instant, checked before Gemini)
-          4. Gemini+Playwright live search (validated — most reliable but costs tokens)
+          2. YouTube scraper cache (validated — free/instant, best quality)
+          3. Gemini+Playwright live search (validated — most reliable, costs tokens)
+          4. TMDB official trailers (validated — TMDB data can go stale)
           5. TMDB any YouTube video (validated — teasers/clips, last resort from TMDB)
-          6. YouTube search URL fallback (no validation — not a direct video)
+          6. Broad YouTube search (validated — last resort)
         """
         title = movie_details.get('name') or movie_details.get('title', '')
         year = (movie_details.get('first_air_date') or movie_details.get('release_date', ''))[:4] if (movie_details.get('first_air_date') or movie_details.get('release_date')) else ''
@@ -1085,22 +1085,7 @@ class DataGenerator:
             self.logger.info(f"Trailer for {title} ({year}): tier=override")
             return self.trailer_overrides[override_key], 'override'
 
-        videos = movie_details.get('videos', {}).get('results', [])
-
-        # --- Tier 2: TMDB official trailers (validated) ---
-        for video in videos:
-            if video['type'] == 'Trailer' and video['site'] == 'YouTube':
-                if video['key'] in self.bad_trailer_urls:
-                    self.logger.info(f"Skipping known-bad TMDB trailer for {title} ({year}): {video['key']}")
-                    continue
-                url = f"https://www.youtube.com/watch?v={video['key']}"
-                if self._validate_youtube_url_live(url):
-                    self.logger.info(f"Trailer for {title} ({year}): tier=tmdb_official, url={url}")
-                    return url, 'tmdb_official'
-                self.logger.warning(f"Trailer dead link for {title} ({year}): tier=tmdb_official, url={url}")
-                self._cache_bad_trailer_key(video['key'], title, year, url)
-
-        # --- Tier 3: YouTube scraper cache (validated, checked before Gemini to save cost) ---
+        # --- Tier 2: YouTube scraper cache (validated — free/instant, best quality) ---
         cache_key = f"{title}_{year}"
         if cache_key in self.youtube_trailer_cache:
             cached_url = self.youtube_trailer_cache[cache_key]
@@ -1111,7 +1096,7 @@ class DataGenerator:
                 self.logger.warning(f"Trailer dead link for {title} ({year}): tier=cache, url={cached_url}")
                 del self.youtube_trailer_cache[cache_key]  # Invalidate dead cache entry
 
-        # --- Tier 4: Gemini+Playwright live search (validated) ---
+        # --- Tier 3: Gemini+Playwright live search (validated — most reliable) ---
         if self._init_trailer_finder():
             # Clear dead entries from finder's internal cache (loaded from same file)
             # HybridYouTubeFinder stores cache at .gemini_finder.cache
@@ -1124,7 +1109,7 @@ class DataGenerator:
             if finder_cache and cache_key in finder_cache:
                 finder_url = finder_cache[cache_key]
                 if finder_url and cache_key not in self.youtube_trailer_cache:
-                    # We already proved this URL is dead in Tier 3
+                    # We already proved this URL is dead in Tier 2
                     del finder_cache[cache_key]
                     self.logger.info(f"Cleared dead URL from finder cache for {title} ({year})")
 
@@ -1145,6 +1130,21 @@ class DataGenerator:
                 return scraped_url, 'gemini_playwright'
             elif scraped_url:
                 self.logger.warning(f"Trailer dead link for {title} ({year}): tier=gemini_playwright, url={scraped_url}")
+
+        videos = movie_details.get('videos', {}).get('results', [])
+
+        # --- Tier 4: TMDB official trailers (validated — fallback after scraper) ---
+        for video in videos:
+            if video['type'] == 'Trailer' and video['site'] == 'YouTube':
+                if video['key'] in self.bad_trailer_urls:
+                    self.logger.info(f"Skipping known-bad TMDB trailer for {title} ({year}): {video['key']}")
+                    continue
+                url = f"https://www.youtube.com/watch?v={video['key']}"
+                if self._validate_youtube_url_live(url):
+                    self.logger.info(f"Trailer for {title} ({year}): tier=tmdb_official, url={url}")
+                    return url, 'tmdb_official'
+                self.logger.warning(f"Trailer dead link for {title} ({year}): tier=tmdb_official, url={url}")
+                self._cache_bad_trailer_key(video['key'], title, year, url)
 
         # --- Tier 5: TMDB any YouTube video — teasers/clips (validated) ---
         for video in videos:
