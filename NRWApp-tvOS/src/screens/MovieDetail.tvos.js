@@ -21,7 +21,6 @@ import {
   useMovieDetail,
   getPosterUrl,
   getBackdropUrl,
-  formatSynopsis,
   getMetadataString,
   getAccessibilityLabel,
 } from './useMovieDetail';
@@ -32,12 +31,11 @@ import {
   openAmazon,
   openAppleTV,
   openURL,
-  openTrailer,
   openPlex,
   showLinkError,
 } from '../utils/links.tvos';
 import { fetchMovies } from '../services/api';
-import { trackWatchButtonTap, trackInfoButtonTap } from '../services/analytics.tvos';
+import { trackWatchButtonTap } from '../services/analytics.tvos';
 import TrailerPlayer from '../components/TrailerPlayer.tvos';
 import { getSharedMovieList } from './sharedMovieList';
 
@@ -54,47 +52,257 @@ const formatShortDate = (dateStr) => {
 // Decode HTML entities (e.g. &#x27; → ')
 const decodeHtml = (str) => str.replace(/&#x27;/g, "'").replace(/&amp;/g, '&').replace(/&quot;/g, '"');
 
-// Module-level edge navigation tracking.
-// Simple approach: after each L/R press, remember where focus ended up.
-// On the NEXT press, if focus hasn't moved AND it's at the edge → navigate.
-let _currentFocusId = null;     // Updated by every button's onFocus
-let _lastEventFocusId = null;   // Snapshot of _currentFocusId after last L/R press
-let _watchButtonCount = 0;      // How many watch-row buttons are mounted
+// Full-width stream button matching site's .stream-btn — forwardRef for focus wiring
+const StreamButton = forwardRef(({
+  service, onPress, hasTVPreferredFocus = false, testID,
+  nextFocusUp, nextFocusDown,
+}, ref) => {
+  const [isFocused, setIsFocused] = useState(false);
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+  const svcKey = normalizeService(service);
+  const logo = getServiceLogo(service);
+  const displayName = getStreamDisplayName(service);
 
-// Simple action button with equal sizing — forwardRef for focus navigation wiring
-const ActionButton = forwardRef(({
-  label, color, onPress, hasTVPreferredFocus = false, testID,
-  borderColor, textColor, icon, iconTintColor,
+  const handleFocus = useCallback(() => {
+    setIsFocused(true);
+    Animated.spring(scaleAnim, { toValue: 1.05, useNativeDriver: true }).start();
+  }, [scaleAnim]);
+
+  const handleBlur = useCallback(() => {
+    setIsFocused(false);
+    Animated.spring(scaleAnim, { toValue: 1, useNativeDriver: true }).start();
+  }, [scaleAnim]);
+
+  return (
+    <TouchableOpacity
+      ref={ref}
+      onPress={onPress}
+      onFocus={handleFocus}
+      onBlur={handleBlur}
+      hasTVPreferredFocus={hasTVPreferredFocus}
+      nextFocusUp={nextFocusUp}
+      nextFocusDown={nextFocusDown}
+      activeOpacity={0.9}
+      accessible={true}
+      accessibilityLabel={`Watch on ${displayName}`}
+      accessibilityRole="button"
+      testID={testID}
+    >
+      <Animated.View style={[
+        streamBtnStyles.button,
+        { backgroundColor: getServiceColor(service) },
+        NEEDS_BORDER.includes(svcKey) && streamBtnStyles.darkServiceBorder,
+        isFocused && streamBtnStyles.focused,
+        { transform: [{ scale: scaleAnim }] },
+      ]}>
+        {logo ? (
+          <Image source={logo} style={streamBtnStyles.logo} />
+        ) : (
+          <Text style={streamBtnStyles.label}>{displayName}</Text>
+        )}
+      </Animated.View>
+    </TouchableOpacity>
+  );
+});
+
+const streamBtnStyles = StyleSheet.create({
+  button: {
+    height: 64,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: 'rgba(255,255,255,0.8)',
+  },
+  focused: {
+    borderColor: Colors.focusBorderHighlight,
+    borderWidth: 4,
+  },
+  logo: {
+    height: 28,
+    width: 140,
+    resizeMode: 'contain',
+    tintColor: '#ffffff',
+  },
+  label: {
+    color: '#ffffff',
+    fontSize: 20,
+    fontWeight: '700',
+    letterSpacing: 1,
+  },
+  darkServiceBorder: {
+    borderColor: '#444',
+  },
+});
+
+// VOD button — split layout (40% logo / 60% price) matching site's .vod-btn
+const VodButton = ({
+  service, color, onPress, hasTVPreferredFocus = false, testID,
+  icon, label,
+  rentPrice, buyPrice,
+  nextFocusUp, nextFocusDown,
+}) => {
+  const [isFocused, setIsFocused] = useState(false);
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+  const svcKey = normalizeService(service);
+
+  const handleFocus = useCallback(() => {
+    setIsFocused(true);
+    Animated.spring(scaleAnim, { toValue: 1.05, useNativeDriver: true }).start();
+  }, [scaleAnim]);
+
+  const handleBlur = useCallback(() => {
+    setIsFocused(false);
+    Animated.spring(scaleAnim, { toValue: 1, useNativeDriver: true }).start();
+  }, [scaleAnim]);
+
+  const priceStr = [
+    rentPrice && `Rent ${rentPrice}`,
+    buyPrice && `Buy ${buyPrice}`,
+  ].filter(Boolean).join(' / ');
+  const a11yLabel = [label || getVodDisplayName(service), priceStr].filter(Boolean).join(', ');
+
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      onFocus={handleFocus}
+      onBlur={handleBlur}
+      hasTVPreferredFocus={hasTVPreferredFocus}
+      nextFocusUp={nextFocusUp}
+      nextFocusDown={nextFocusDown}
+      activeOpacity={0.9}
+      accessible={true}
+      accessibilityLabel={a11yLabel}
+      accessibilityRole="button"
+      testID={testID}
+      style={{ flex: 1 }}
+    >
+      <Animated.View style={[
+        vodBtnStyles.button,
+        NEEDS_BORDER.includes(svcKey) && { borderColor: '#444' },
+        isFocused && vodBtnStyles.focused,
+        { transform: [{ scale: scaleAnim }] },
+      ]}>
+        {/* Left 40%: brand color + logo */}
+        <View style={[vodBtnStyles.logoHalf, { backgroundColor: color }]}>
+          {icon ? (
+            <Image source={icon} style={vodBtnStyles.logo} />
+          ) : (
+            <Text style={vodBtnStyles.logoText}>{label || getVodDisplayName(service)}</Text>
+          )}
+        </View>
+        {/* Right 60%: dark bg + prices */}
+        <View style={vodBtnStyles.priceHalf}>
+          <Text style={vodBtnStyles.priceText}>
+            {priceStr || label || getVodDisplayName(service)}
+          </Text>
+        </View>
+      </Animated.View>
+    </TouchableOpacity>
+  );
+};
+
+const vodBtnStyles = StyleSheet.create({
+  button: {
+    flexDirection: 'row',
+    minHeight: 58,
+    borderRadius: 10,
+    overflow: 'hidden',
+    borderWidth: 2,
+    borderColor: 'rgba(255,255,255,0.8)',
+  },
+  focused: {
+    borderColor: Colors.focusBorderHighlight,
+    borderWidth: 4,
+  },
+  logoHalf: {
+    width: '40%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 8,
+  },
+  logo: {
+    height: 22,
+    width: 80,
+    resizeMode: 'contain',
+    tintColor: '#ffffff',
+  },
+  logoText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '700',
+    letterSpacing: 1,
+  },
+  priceHalf: {
+    width: '60%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    paddingVertical: 8,
+    paddingHorizontal: 6,
+  },
+  priceText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '700',
+    textAlign: 'center',
+  },
+});
+
+// Visual-only navigation arrow indicator (not focusable — d-pad LEFT/RIGHT navigates via useTVEventHandler)
+const NavArrowIndicator = ({ direction, flash }) => {
+  const opacity = useRef(new Animated.Value(0.5)).current;
+
+  useEffect(() => {
+    if (flash) {
+      opacity.setValue(1);
+      Animated.timing(opacity, { toValue: 0.5, duration: 400, useNativeDriver: true }).start();
+    }
+  }, [flash, opacity]);
+
+  return (
+    <Animated.View style={[navArrowStyles.circle, { opacity }]}>
+      <Text style={navArrowStyles.symbol}>
+        {direction === 'left' ? '\u2039' : '\u203A'}
+      </Text>
+    </Animated.View>
+  );
+};
+
+const navArrowStyles = StyleSheet.create({
+  circle: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 212, 170, 0.1)',
+  },
+  symbol: {
+    color: Colors.primary,
+    fontSize: 36,
+    fontWeight: '300',
+    marginTop: -2,
+  },
+});
+
+// Focusable trailer button matching site's .lb-trailer-btn
+const TrailerButton = forwardRef(({
+  onPress, hasTVPreferredFocus = false,
   nextFocusUp, nextFocusDown, nextFocusLeft, nextFocusRight,
-  buttonIndex, isWatchButton = false, focusId,
 }, ref) => {
   const [isFocused, setIsFocused] = useState(false);
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
-  // Track mounted buttons
-  useEffect(() => {
-    if (isWatchButton) _watchButtonCount++;
-    return () => {
-      if (isWatchButton) _watchButtonCount--;
-    };
-  }, []);
-
   const handleFocus = useCallback(() => {
     setIsFocused(true);
-    if (focusId) _currentFocusId = focusId;
-    else if (isWatchButton) _currentFocusId = `watch-${buttonIndex}`;
-    Animated.spring(scaleAnim, {
-      toValue: 1.1,
-      useNativeDriver: true,
-    }).start();
-  }, [scaleAnim, isWatchButton, buttonIndex, focusId]);
+    Animated.spring(scaleAnim, { toValue: 1.05, useNativeDriver: true }).start();
+  }, [scaleAnim]);
 
   const handleBlur = useCallback(() => {
     setIsFocused(false);
-    Animated.spring(scaleAnim, {
-      toValue: 1,
-      useNativeDriver: true,
-    }).start();
+    Animated.spring(scaleAnim, { toValue: 1, useNativeDriver: true }).start();
   }, [scaleAnim]);
 
   return (
@@ -110,280 +318,77 @@ const ActionButton = forwardRef(({
       nextFocusRight={nextFocusRight}
       activeOpacity={0.9}
       accessible={true}
-      accessibilityLabel={label}
+      accessibilityLabel="Play trailer"
       accessibilityRole="button"
-      testID={testID}
+      testID="action-btn-trailer"
+      style={{ flex: 1 }}
     >
-      <Animated.View
-        style={[
-          actionButtonStyles.button,
-          { backgroundColor: color },
-          borderColor && { borderWidth: 1, borderColor },
-          isFocused && actionButtonStyles.buttonFocused,
-          { transform: [{ scale: scaleAnim }] },
-        ]}
-      >
-        {icon ? (
-          <Image source={icon} style={[actionButtonStyles.logoFull, iconTintColor && { tintColor: iconTintColor }]} />
-        ) : (
-          <Text style={[actionButtonStyles.label, textColor && { color: textColor }]}>{label}</Text>
-        )}
+      <Animated.View style={[
+        trailerBtnStyles.button,
+        isFocused && trailerBtnStyles.focused,
+        { transform: [{ scale: scaleAnim }] },
+      ]}>
+        <Text style={trailerBtnStyles.text}>TRAILER</Text>
       </Animated.View>
     </TouchableOpacity>
   );
 });
 
-// VOD button — compact unified button: service name + prices stacked inside
-const VodButton = ({
-  color, onPress, hasTVPreferredFocus = false, testID,
-  borderColor, icon, label,
-  rentPrice, buyPrice,
-  buttonIndex, isWatchButton = false,
-  nextFocusUp,
-}) => {
-  const [isFocused, setIsFocused] = useState(false);
-  const scaleAnim = useRef(new Animated.Value(1)).current;
-
-  useEffect(() => {
-    if (isWatchButton) _watchButtonCount++;
-    return () => {
-      if (isWatchButton) _watchButtonCount--;
-    };
-  }, []);
-
-  const handleFocus = useCallback(() => {
-    setIsFocused(true);
-    if (isWatchButton) _currentFocusId = `watch-${buttonIndex}`;
-    Animated.spring(scaleAnim, {
-      toValue: 1.1,
-      useNativeDriver: true,
-    }).start();
-  }, [scaleAnim, isWatchButton, buttonIndex]);
-
-  const handleBlur = useCallback(() => {
-    setIsFocused(false);
-    Animated.spring(scaleAnim, {
-      toValue: 1,
-      useNativeDriver: true,
-    }).start();
-  }, [scaleAnim]);
-
-  const priceStr = [rentPrice, buyPrice].filter(Boolean).join(' / ');
-  const a11yLabel = [label, rentPrice && `Rent ${rentPrice}`, buyPrice && `Buy ${buyPrice}`].filter(Boolean).join(', ');
-
-  return (
-    <TouchableOpacity
-      onPress={onPress}
-      onFocus={handleFocus}
-      onBlur={handleBlur}
-      hasTVPreferredFocus={hasTVPreferredFocus}
-      nextFocusUp={nextFocusUp}
-      activeOpacity={0.9}
-      accessible={true}
-      accessibilityLabel={a11yLabel}
-      accessibilityRole="button"
-      testID={testID}
-    >
-      <Animated.View
-        style={[
-          vodButtonStyles.button,
-          { backgroundColor: color },
-          borderColor && { borderColor },
-          isFocused && vodButtonStyles.buttonFocused,
-          { transform: [{ scale: scaleAnim }] },
-        ]}
-      >
-        {icon ? (
-          <Image source={icon} style={vodButtonStyles.logo} />
-        ) : (
-          <Text style={vodButtonStyles.labelText}>{label}</Text>
-        )}
-        {priceStr ? (
-          <Text style={vodButtonStyles.priceText}>{priceStr}</Text>
-        ) : null}
-      </Animated.View>
-    </TouchableOpacity>
-  );
-};
-
-const vodButtonStyles = StyleSheet.create({
+const trailerBtnStyles = StyleSheet.create({
   button: {
-    width: 160,
-    height: 48,
-    borderRadius: 12,
+    height: 60,
+    backgroundColor: '#E50914',
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: 'rgba(255,255,255,0.3)',
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 16,
-    borderWidth: 4,
-    borderColor: 'transparent',
   },
-  buttonFocused: {
+  focused: {
     borderColor: Colors.focusBorderHighlight,
-  },
-  logo: {
-    width: 70,
-    height: 18,
-    resizeMode: 'contain',
-    tintColor: '#ffffff',
-  },
-  labelText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '700',
-    letterSpacing: 1,
-  },
-  priceText: {
-    color: '#ffffff',
-    fontSize: 14,
-    fontWeight: '600',
-    opacity: 0.85,
-    marginTop: 2,
-  },
-});
-
-const actionButtonStyles = StyleSheet.create({
-  button: {
-    width: 180,
-    height: 54,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 16,
     borderWidth: 4,
-    borderColor: 'transparent',
   },
-  buttonFocused: {
-    borderColor: Colors.focusBorderHighlight,
-  },
-  label: {
-    color: '#ffffff',
-    fontSize: 18,
-    fontWeight: '700',
-    letterSpacing: 1,
-  },
-  logoFull: {
-    width: 120,
-    height: 28,
-    resizeMode: 'contain',
-  },
-});
-
-// Rotten Tomatoes display — freshness icon + score (display-only)
-const RTDisplay = ({ score }) => {
-  const isCertifiedFresh = score >= 75;
-  const isFresh = score >= 60;
-  const label = isCertifiedFresh ? 'CERTIFIED FRESH' : isFresh ? 'FRESH' : 'ROTTEN';
-  const labelColor = isCertifiedFresh ? '#FFD700' : isFresh ? '#FA3232' : '#77B900';
-
-  return (
-    <View style={scoreStyles.container} accessible={true} accessibilityLabel={`Rotten Tomatoes ${score} percent ${label}`}>
-      <View style={scoreStyles.iconWrap}>
-        <Image
-          source={require('../../assets/logos/rt.png')}
-          style={[scoreStyles.rtIcon, !isFresh && { tintColor: '#77B900' }]}
-        />
-        {isCertifiedFresh && (
-          <View style={scoreStyles.certifiedBadge}>
-            <Text style={scoreStyles.certifiedCheck}>{'\u2713'}</Text>
-          </View>
-        )}
-      </View>
-      <View>
-        <Text style={scoreStyles.scoreValue}>{score}%</Text>
-        <Text style={[scoreStyles.freshnessLabel, { color: labelColor }]}>{label}</Text>
-      </View>
-    </View>
-  );
-};
-
-// Metacritic display — colored score box + logo wordmark (display-only)
-const MetacriticDisplay = ({ score }) => {
-  if (!score || score === 0) return null;
-
-  const getColor = (s) => {
-    if (s >= 61) return '#66cc33';
-    if (s >= 40) return '#ffcc33';
-    return '#ff0000';
-  };
-
-  return (
-    <View style={scoreStyles.container} accessible={true} accessibilityLabel={`Metacritic score ${score}`}>
-      <Image source={require('../../assets/logos/metacritic.png')} style={scoreStyles.mcIcon} />
-      <View style={[scoreStyles.mcBox, { backgroundColor: getColor(score) }]}>
-        <Text style={scoreStyles.mcScore}>{score}</Text>
-      </View>
-    </View>
-  );
-};
-
-const scoreStyles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginRight: 24,
-  },
-  iconWrap: {
-    width: 40,
-    height: 40,
-    marginRight: 10,
-  },
-  rtIcon: {
-    width: 40,
-    height: 40,
-    resizeMode: 'contain',
-  },
-  certifiedBadge: {
-    position: 'absolute',
-    bottom: -2,
-    right: -4,
-    width: 18,
-    height: 18,
-    borderRadius: 9,
-    backgroundColor: '#FFD700',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  certifiedCheck: {
-    color: '#000',
-    fontSize: 12,
-    fontWeight: '900',
-  },
-  scoreValue: {
+  text: {
     color: '#ffffff',
     fontSize: 22,
     fontWeight: '800',
+    letterSpacing: 3,
   },
-  freshnessLabel: {
-    fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 0.5,
-    marginTop: 1,
+});
+
+// Compact score badge — small inline pill matching site's .score-badge (display-only)
+const ScoreBadge = ({ logo, score, color, accessibilityLabel }) => (
+  <View style={badgeStyles.pill} accessible={true} accessibilityLabel={accessibilityLabel}>
+    <Image source={logo} style={[badgeStyles.logo, { tintColor: color }]} />
+    <Text style={[badgeStyles.score, { color }]}>{score}</Text>
+  </View>
+);
+
+const badgeStyles = StyleSheet.create({
+  row: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: Spacing.tvos.sm,
   },
-  mcBox: {
-    width: 48,
-    height: 48,
-    borderRadius: 6,
-    justifyContent: 'center',
+  pill: {
+    flexDirection: 'row',
     alignItems: 'center',
-    marginRight: 10,
+    gap: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderRadius: 8,
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
   },
-  mcScore: {
-    color: '#ffffff',
-    fontSize: 24,
-    fontWeight: '800',
-  },
-  mcIcon: {
-    width: 40,
-    height: 40,
-    resizeMode: 'contain',
-    marginRight: 10,
-    tintColor: '#ffffff',
-  },
-  imdbLogo: {
-    width: 48,
+  logo: {
+    width: 24,
     height: 24,
     resizeMode: 'contain',
-    marginRight: 8,
+  },
+  score: {
+    fontSize: 18,
+    fontWeight: '600',
   },
 });
 
@@ -430,61 +435,6 @@ const getServiceLogo = (service) => SERVICE_LOGOS[normalizeService(service)] || 
 // Services that need a visible border on dark backgrounds (black bg buttons)
 const NEEDS_BORDER = ['apple_tv', 'peacock', 'criterion'];
 
-// Visual-only chevron indicator at screen edges.
-// NOT focusable — purely decorative. Navigation is handled by the TV event handler
-// detecting RIGHT/LEFT when focus can't move further.
-const ChevronIndicator = ({ direction, active }) => {
-  const isLeft = direction === 'left';
-  return (
-    <View style={[chevronStyles.container, isLeft ? chevronStyles.left : chevronStyles.right]}>
-      <Animated.View style={[chevronStyles.circle, active && chevronStyles.active]}>
-        <Text style={[chevronStyles.symbol, active && chevronStyles.symbolActive]}>
-          {isLeft ? '\u2039' : '\u203A'}
-        </Text>
-      </Animated.View>
-    </View>
-  );
-};
-
-const chevronStyles = StyleSheet.create({
-  container: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'center',
-  },
-  left: {
-    marginLeft: -Spacing.tvos.screenPadding,
-    marginRight: Spacing.tvos.md,
-  },
-  right: {
-    marginRight: -Spacing.tvos.screenPadding,
-    marginLeft: Spacing.tvos.md,
-  },
-  circle: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.06)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.12)',
-  },
-  active: {
-    backgroundColor: 'rgba(0, 212, 170, 0.3)',
-    borderColor: Colors.focusBorderHighlight,
-  },
-  symbol: {
-    color: 'rgba(255, 255, 255, 0.3)',
-    fontSize: 32,
-    fontWeight: '300',
-    marginTop: -2,
-  },
-  symbolActive: {
-    color: '#ffffff',
-  },
-});
-
 const MovieDetailTvOS = () => {
   const navigation = useNavigation();
   const route = useRoute();
@@ -509,11 +459,6 @@ const MovieDetailTvOS = () => {
     }
     return 0;
   });
-
-  // Reset module-level tracking on unmount
-  useEffect(() => {
-    return () => { _currentFocusId = null; _lastEventFocusId = null; _watchButtonCount = 0; };
-  }, []);
 
   // Deep link fallback: fetch movies only if shared list is empty (e.g., deep link into app)
   useEffect(() => {
@@ -555,48 +500,30 @@ const MovieDetailTvOS = () => {
     loadMovies();
   }, [passedMovie, movieId]);
 
-  // Chevron flash state — briefly lights up when edge navigation fires
-  const [chevronFlash, setChevronFlash] = useState(null); // 'left' | 'right' | null
-  const flashTimer = useRef(null);
+  // Arrow flash state — briefly highlights the ‹/› indicator on navigation
+  const [arrowFlash, setArrowFlash] = useState(null); // 'left' | 'right' | null
 
   // Navigate to next movie (cycles to first if at end)
   const navigateNext = useCallback(() => {
     if (movieList.length === 0) return;
     const nextIndex = (currentIndex + 1) % movieList.length;
-    const onWatchButton = _currentFocusId && _currentFocusId.startsWith('watch-');
-    setPreferWatchFocus(onWatchButton);
+    setArrowFlash('right');
     setCurrentIndex(nextIndex);
     setMovie(movieList[nextIndex]);
-    // Reset so next movie requires a fresh press to navigate again
-    _lastEventFocusId = null;
-    _currentFocusId = null;
-    // Flash the right chevron
-    setChevronFlash('right');
-    clearTimeout(flashTimer.current);
-    flashTimer.current = setTimeout(() => setChevronFlash(null), 300);
   }, [movieList, currentIndex]);
 
   // Navigate to previous movie (cycles to last if at start)
   const navigatePrevious = useCallback(() => {
     if (movieList.length === 0) return;
     const prevIndex = currentIndex === 0 ? movieList.length - 1 : currentIndex - 1;
-    const onWatchButton = _currentFocusId && _currentFocusId.startsWith('watch-');
-    setPreferWatchFocus(onWatchButton);
+    setArrowFlash('left');
     setCurrentIndex(prevIndex);
     setMovie(movieList[prevIndex]);
-    // Reset so next movie requires a fresh press to navigate again
-    _lastEventFocusId = null;
-    _currentFocusId = null;
-    // Flash the left chevron
-    setChevronFlash('left');
-    clearTimeout(flashTimer.current);
-    flashTimer.current = setTimeout(() => setChevronFlash(null), 300);
   }, [movieList, currentIndex]);
 
   // Get shared state
   const {
     watchLinks,
-    infoLinks,
     plexLinks,
     purchaseLinks,
     streamingLinks,
@@ -606,7 +533,6 @@ const MovieDetailTvOS = () => {
     imdbScore,
     formattedCountries,
     hasWatchOptions,
-    hasInfoLinks,
   } = useMovieDetail(movie);
 
   // Trailer player state
@@ -617,10 +543,6 @@ const MovieDetailTvOS = () => {
   const trailerRefCallback = useCallback((ref) => {
     if (ref) setTrailerHandle(findNodeHandle(ref));
   }, []);
-
-  // Track whether to give initial focus to watch row (instead of trailer) after movie navigation.
-  // When the user navigates LEFT/RIGHT from a watch button, focus should stay on the watch row.
-  const [preferWatchFocus, setPreferWatchFocus] = useState(false);
 
   // Prevent MENU/Back from popping the detail screen while trailer is playing.
   // The TrailerPlayer handles MENU internally to close itself; without this guard
@@ -643,15 +565,7 @@ const MovieDetailTvOS = () => {
   }, [fadeAnim]);
 
   // Handle TV remote events (disabled while trailer player is active)
-  // Edge navigation logic:
-  // After each L/R press, we snapshot where focus is (_lastEventFocusId).
-  // On the NEXT press, if focus hasn't moved AND it's at the edge → navigate.
-  // This works because: if focus moved, _currentFocusId was updated by the new
-  // button's onFocus. If focus couldn't move, _currentFocusId is unchanged.
-  // Special case: if a movie has NO focusable buttons (no trailer, no watch buttons),
-  // LEFT/RIGHT navigate immediately without edge detection.
-  const hasTrailer = !!movie?.links?.trailer_hosted;
-  const hasNoButtons = !hasTrailer && !hasWatchOptions;
+  // LEFT/RIGHT d-pad swipes navigate movies directly — no button press needed
   useTVEventHandler(trailerVisible ? {} : {
     [TV_EVENTS.MENU]: () => {
       navigation.goBack();
@@ -661,45 +575,13 @@ const MovieDetailTvOS = () => {
         setTrailerVisible(true);
       }
     },
-    [TV_EVENTS.RIGHT]: () => {
-      if (movieList.length <= 1) return;
-      // No buttons at all → navigate immediately
-      if (hasNoButtons) {
-        navigateNext();
-        return;
-      }
-      // Trailer is in its own row — edge detection only considers the watch button row
-      // and the trailer (which has nothing to its right)
-      const rightmostId = _watchButtonCount > 0 ? `watch-${_watchButtonCount - 1}` : null;
-      const atEdge = _currentFocusId && _currentFocusId === _lastEventFocusId &&
-        (_currentFocusId === rightmostId || _currentFocusId === 'trailer');
-      if (atEdge) {
-        navigateNext();
-      }
-      _lastEventFocusId = _currentFocusId;
-    },
     [TV_EVENTS.LEFT]: () => {
-      if (movieList.length <= 1) return;
-      // No buttons at all → navigate immediately
-      if (hasNoButtons) {
-        navigatePrevious();
-        return;
-      }
-      // Trailer is in its own row — edge detection considers watch-0 and trailer
-      const leftmostId = _watchButtonCount > 0 ? 'watch-0' : null;
-      const atEdge = _currentFocusId && _currentFocusId === _lastEventFocusId &&
-        (_currentFocusId === leftmostId || _currentFocusId === 'trailer');
-      if (atEdge) {
-        navigatePrevious();
-      }
-      _lastEventFocusId = _currentFocusId;
+      if (movieList.length > 1) navigatePrevious();
+    },
+    [TV_EVENTS.RIGHT]: () => {
+      if (movieList.length > 1) navigateNext();
     },
   });
-
-  // Clear flash timer on unmount
-  useEffect(() => {
-    return () => { clearTimeout(flashTimer.current); };
-  }, []);
 
   // Handle watch button press
   const handleWatchPress = useCallback(async (link) => {
@@ -722,34 +604,6 @@ const MovieDetailTvOS = () => {
       }
 
       if (result && !result.success) {
-        showLinkError(link.label);
-      }
-    } catch (error) {
-      console.error('[MovieDetail] Error opening link:', error);
-      showLinkError(link.label);
-    }
-  }, [movie]);
-
-  // Handle info button press
-  const handleLinkPress = useCallback(async (link) => {
-    // Track analytics
-    if (movie) {
-      trackInfoButtonTap(movie, link.type);
-    }
-
-    try {
-      // For trailers, use the trailer-specific opener (YouTube deep linking)
-      if (link.type === 'trailer') {
-        const result = await openTrailer(link.url);
-        if (!result.success) {
-          showLinkError(link.label);
-        }
-        return;
-      }
-
-      const result = await openURL(link.url);
-
-      if (!result.success) {
         showLinkError(link.label);
       }
     } catch (error) {
@@ -802,11 +656,6 @@ const MovieDetailTvOS = () => {
       <View style={styles.backdropOverlay} />
 
       <View style={styles.content}>
-        {/* Left chevron indicator — visual only */}
-        {movieList.length > 1 && (
-          <ChevronIndicator direction="left" active={chevronFlash === 'left'} />
-        )}
-
         {/* Left side - Poster */}
         <View style={styles.posterContainer}>
           <Image
@@ -833,7 +682,7 @@ const MovieDetailTvOS = () => {
 
         </View>
 
-        {/* Right side - Details */}
+        {/* Right side - Details (reordered to match site lightbox) */}
         <View style={styles.detailsContainer}>
           <ScrollView
             ref={scrollViewRef}
@@ -841,7 +690,7 @@ const MovieDetailTvOS = () => {
             showsVerticalScrollIndicator={true}
             contentContainerStyle={styles.detailsScrollContent}
           >
-            {/* Title row with date */}
+            {/* 1. Title row with date */}
             <View style={styles.titleRow}>
               <Text
                 style={styles.title}
@@ -861,14 +710,14 @@ const MovieDetailTvOS = () => {
               )}
             </View>
 
-            {/* Virtual screening badge */}
+            {/* 2. Virtual screening badge */}
             {movie.categories?.is_virtual_screening && (
               <Text style={styles.screeningName}>
                 {decodeHtml(movie.virtual_screening_info?.screening_name || 'VIRTUAL SCREENING')}
               </Text>
             )}
 
-            {/* Meta block — 3 lines */}
+            {/* 3. Meta block — Director, Cast, details line */}
             {movie.director && (
               <Text style={styles.metadataCrewLine}><Text style={styles.metadataCrewLabel}>Director: </Text><Text style={styles.metadataCrewName}>{movie.director}</Text></Text>
             )}
@@ -897,7 +746,7 @@ const MovieDetailTvOS = () => {
               )}
             </View>
 
-            {/* Language (only if not English) */}
+            {/* 4. Language (only if not English) */}
             {movie.original_language && movie.original_language !== 'en' && (
               <View style={styles.creditRow}>
                 <Text style={styles.creditLabel}>Language</Text>
@@ -905,106 +754,144 @@ const MovieDetailTvOS = () => {
               </View>
             )}
 
-            {/* Trailer — its own row above watch buttons */}
-            {movie?.links?.trailer_hosted && (
-              <View style={styles.watchButtonRow}>
-                <ActionButton
+            {/* 5. Scores — compact inline badge pills (display-only, no Wiki) */}
+            {(rtScore || mcScore || imdbScore) && (
+              <View style={badgeStyles.row}>
+                {rtScore && (
+                  <ScoreBadge
+                    logo={require('../../assets/logos/rt.png')}
+                    score={rtScore.label}
+                    color="#ff6b6b"
+                    accessibilityLabel={`Rotten Tomatoes ${rtScore.label}`}
+                  />
+                )}
+                {imdbScore && (
+                  <ScoreBadge
+                    logo={require('../../assets/logos/imdb.png')}
+                    score={imdbScore.label}
+                    color="#f5c518"
+                    accessibilityLabel={`IMDb rating ${imdbScore.label}`}
+                  />
+                )}
+                {mcScore && (
+                  <ScoreBadge
+                    logo={require('../../assets/logos/metacritic.png')}
+                    score={mcScore.label}
+                    color="#7ddf64"
+                    accessibilityLabel={`Metacritic score ${mcScore.label}`}
+                  />
+                )}
+              </View>
+            )}
+
+            {/* 6. Pull Quotes */}
+            {movie.pull_quotes?.length > 0 && (
+              <View style={styles.pullQuotesSection}>
+                {movie.pull_quotes.slice(0, 2).map((pq, i) => (
+                  <View key={i} style={styles.pullQuoteCard}>
+                    <Text style={styles.pqText}>{'\u201C'}{pq.text}{'\u201D'}</Text>
+                    {(pq.critic || pq.outlet) && (
+                      <Text style={styles.pqAttribution}>{'\u2014'} {[pq.critic, pq.outlet].filter(Boolean).join(', ')}</Text>
+                    )}
+                  </View>
+                ))}
+              </View>
+            )}
+
+            {/* 7. Synopsis */}
+            {movie.synopsis && (
+              <View style={styles.synopsisContainer}>
+                <Text style={styles.synopsis} numberOfLines={6}>
+                  {movie.synopsis}
+                  {movie.categories?.is_virtual_screening && movie.virtual_screening_info?.screening_name && (
+                    <Text style={styles.screeningCallout}>
+                      {` Virtual screening available as part of the ${movie.virtual_screening_info.screening_name}.${movie.virtual_screening_info?.available_end ? ` Ends ${formatShortDate(movie.virtual_screening_info.available_end)}.` : ''}`}
+                    </Text>
+                  )}
+                </Text>
+              </View>
+            )}
+
+            {/* 8. Navigation + Trailer row: ‹ [TRAILER] › */}
+            {/* Arrows are visual-only — LEFT/RIGHT d-pad navigates via useTVEventHandler */}
+            <View style={styles.navTrailerRow}>
+              {movieList.length > 1 && (
+                <NavArrowIndicator direction="left" flash={arrowFlash === 'left'} />
+              )}
+
+              {movie?.links?.trailer_hosted ? (
+                <TrailerButton
                   ref={trailerRefCallback}
-                  focusId="trailer"
-                  label="TRAILER"
-                  color="#E50914"
                   onPress={() => setTrailerVisible(true)}
-                  hasTVPreferredFocus={!preferWatchFocus}
-                  testID="action-btn-trailer"
+                  hasTVPreferredFocus={true}
+                  nextFocusLeft={trailerHandle}
+                  nextFocusRight={trailerHandle}
+                />
+              ) : (
+                <View style={{ flex: 1 }} />
+              )}
+
+              {movieList.length > 1 && (
+                <NavArrowIndicator direction="right" flash={arrowFlash === 'right'} />
+              )}
+            </View>
+
+            {/* 9. Stream button — full-width row (before VOD) */}
+            {streamingLinks.length > 0 && (
+              <View style={styles.streamRow}>
+                <StreamButton
+                  service={streamingLinks[0].service}
+                  onPress={() => handleWatchPress(streamingLinks[0])}
+                  hasTVPreferredFocus={!movie?.links?.trailer_hosted}
+                  nextFocusUp={trailerHandle}
+                  testID="action-btn-stream"
                 />
               </View>
             )}
 
-            {/* Watch buttons row (VOD first, then streaming) */}
+            {/* 10. VOD buttons — split layout, side by side */}
             {hasWatchOptions && (() => {
               const nonVsLinks = purchaseLinks.slice(0, 2).filter(l => !isVirtualScreeningPlatform(l.service, l.url));
-              const totalButtons = (streamingLinks.length > 0 ? 1 : 0) + nonVsLinks.length + (plexLinks.length > 0 ? 1 : 0);
-              if (totalButtons === 0) return null;
-
-              // Compute sequential button indices for edge navigation tracking
-              let watchIdx = 0;
+              if (nonVsLinks.length === 0 && plexLinks.length === 0) return null;
 
               return (
-              <View style={styles.watchButtonRow}>
-                {/* VOD buttons (rent/buy) — before streaming */}
-                {nonVsLinks.map((link, i) => {
-                  const idx = watchIdx++;
-                  const buttonColor = movie?._is_preorder ? '#7c3aed'
-                    : getServiceColor(link.service);
-                  const vodKey = normalizeService(link.service);
-                  const vodBorder = (!movie?._is_preorder && NEEDS_BORDER.includes(vodKey)) ? '#444'
-                    : undefined;
-                  const hasPrice = !!(link.rentPrice || link.buyPrice);
-                  return (
+                <View style={styles.vodRow}>
+                  {nonVsLinks.map((link, i) => {
+                    const buttonColor = movie?._is_preorder ? '#7c3aed'
+                      : getServiceColor(link.service);
+                    return (
+                      <VodButton
+                        key={`purchase-${i}`}
+                        service={link.service}
+                        nextFocusUp={trailerHandle}
+                        color={buttonColor}
+                        icon={!movie?._is_preorder ? getServiceLogo(link.service) : null}
+                        label={movie?._is_preorder ? 'PRE-ORDER' : null}
+                        rentPrice={link.rentPrice}
+                        buyPrice={link.buyPrice}
+                        onPress={() => handleWatchPress(link)}
+                        hasTVPreferredFocus={!movie?.links?.trailer_hosted && streamingLinks.length === 0 && i === 0}
+                        testID={`action-btn-purchase-${i}`}
+                      />
+                    );
+                  })}
+
+                  {/* PLEX button in VOD row */}
+                  {plexLinks.length > 0 && (
                     <VodButton
-                      key={`purchase-${i}`}
-                      buttonIndex={idx}
-                      isWatchButton={true}
+                      service="plex"
                       nextFocusUp={trailerHandle}
-                      color={buttonColor}
-                      borderColor={vodBorder}
-                      icon={!movie?._is_preorder ? getServiceLogo(link.service) : null}
-                      label={movie?._is_preorder ? 'PRE-ORDER' : null}
-                      rentPrice={link.rentPrice}
-                      buyPrice={link.buyPrice}
-                      onPress={() => handleWatchPress(link)}
-                      hasTVPreferredFocus={(preferWatchFocus || !movie?.links?.trailer_hosted) && i === 0}
-                      testID={`action-btn-purchase-${i}`}
+                      color="#E5A00D"
+                      icon={getServiceLogo('plex')}
+                      onPress={() => handleWatchPress(plexLinks[0])}
+                      testID="action-btn-plex"
                     />
-                  );
-                })}
-
-                {/* STREAM button — after VOD */}
-                {streamingLinks.length > 0 && (() => {
-                  const idx = watchIdx++;
-                  const svcKey = normalizeService(streamingLinks[0].service);
-                  return (
-                  <>
-                    <ActionButton
-                      buttonIndex={idx}
-                      isWatchButton={true}
-                      nextFocusUp={trailerHandle}
-                      label={getStreamDisplayName(streamingLinks[0].service)}
-                      color={getServiceColor(streamingLinks[0].service)}
-                      icon={getServiceLogo(streamingLinks[0].service)}
-                      iconTintColor="#ffffff"
-                      borderColor={NEEDS_BORDER.includes(svcKey) ? '#444' : undefined}
-                      onPress={() => handleWatchPress(streamingLinks[0])}
-                      hasTVPreferredFocus={(preferWatchFocus || !movie?.links?.trailer_hosted) && nonVsLinks.length === 0}
-                      testID="action-btn-stream"
-                    />
-                  </>
-                  );
-                })()}
-
-                {/* PLEX button */}
-                {plexLinks.length > 0 && (() => {
-                  const idx = watchIdx++;
-                  return (
-                  <ActionButton
-                    buttonIndex={idx}
-                    isWatchButton={true}
-                    nextFocusUp={trailerHandle}
-                    label="PLEX"
-                    color="#E5A00D"
-                    icon={getServiceLogo('plex')}
-                    iconTintColor="#ffffff"
-                    onPress={() => handleWatchPress(plexLinks[0])}
-                    testID="action-btn-plex"
-                  />
-                  );
-                })()}
-
-              </View>
+                  )}
+                </View>
               );
             })()}
 
-            {/* Virtual screening QR code — scan to buy ticket on phone */}
+            {/* 11. Virtual screening QR code */}
             {purchaseLinks.some(link => isVirtualScreeningPlatform(link.service, link.url)) && (() => {
               const vsLink = purchaseLinks.find(link => isVirtualScreeningPlatform(link.service, link.url));
               if (!vsLink?.url) return null;
@@ -1024,54 +911,8 @@ const MovieDetailTvOS = () => {
               );
             })()}
 
-            {/* Scores row — RT + MC + IMDb display-only badges */}
-            {(rtScore || mcScore || imdbScore) && (
-              <View style={styles.scoresRow}>
-                {rtScore && <RTDisplay score={rtScore.value} />}
-                {mcScore && <MetacriticDisplay score={mcScore.value} />}
-                {imdbScore && (
-                  <View style={scoreStyles.container} accessible={true} accessibilityLabel={`IMDb rating ${imdbScore.label}`}>
-                    <Image source={require('../../assets/logos/imdb.png')} style={scoreStyles.imdbLogo} />
-                    <Text style={[scoreStyles.scoreValue, { color: '#f5c518' }]}>{imdbScore.label}</Text>
-                  </View>
-                )}
-              </View>
-            )}
-
-            {/* Pull Quotes */}
-            {movie.pull_quotes?.length > 0 && (
-              <View style={styles.pullQuotesSection}>
-                {movie.pull_quotes.slice(0, 2).map((pq, i) => (
-                  <View key={i} style={styles.pullQuoteCard}>
-                    <Text style={styles.pqText}>{'\u201C'}{pq.text}{'\u201D'}</Text>
-                    {(pq.critic || pq.outlet) && (
-                      <Text style={styles.pqAttribution}>{'\u2014'} {[pq.critic, pq.outlet].filter(Boolean).join(', ')}</Text>
-                    )}
-                  </View>
-                ))}
-              </View>
-            )}
-
-            {/* Synopsis — plain text, not interactive */}
-            {movie.synopsis && (
-              <View style={styles.synopsisContainer}>
-                <Text style={styles.synopsis} numberOfLines={6}>
-                  {movie.synopsis}
-                  {movie.categories?.is_virtual_screening && movie.virtual_screening_info?.screening_name && (
-                    <Text style={styles.screeningCallout}>
-                      {` Virtual screening available as part of the ${movie.virtual_screening_info.screening_name}.${movie.virtual_screening_info?.available_end ? ` Ends ${formatShortDate(movie.virtual_screening_info.available_end)}.` : ''}`}
-                    </Text>
-                  )}
-                </Text>
-              </View>
-            )}
           </ScrollView>
         </View>
-
-        {/* Right chevron indicator — visual only */}
-        {movieList.length > 1 && (
-          <ChevronIndicator direction="right" active={chevronFlash === 'right'} />
-        )}
       </View>
 
       {/* Trailer player overlay */}
@@ -1153,37 +994,18 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     letterSpacing: 1,
   },
-  scoreRow: {
-    flexDirection: 'row',
-    gap: Spacing.tvos.md,
-    marginTop: Spacing.tvos.sm,
-    marginBottom: Spacing.tvos.sm,
-  },
-  scoreBadge: {
-    paddingHorizontal: Spacing.tvos.md,
-    paddingVertical: Spacing.tvos.sm,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  scoreBadgeText: {
-    color: Colors.textPrimary,
-    fontSize: Typography.tvos.body,
-    fontWeight: '800',
-  },
-  scoreBadgeLabel: {
-    color: Colors.textPrimary,
-    fontSize: Typography.tvos.caption - 2,
-    fontWeight: '500',
-    marginTop: 2,
-  },
   detailsContainer: {
     flex: 1,
     maxWidth: CONTENT_WIDTH,
+    backgroundColor: '#1a1a2e',
+    borderRadius: 12,
+    overflow: 'hidden',
   },
   detailsScroll: {
     flex: 1,
   },
   detailsScrollContent: {
+    padding: Spacing.tvos.md,
     paddingBottom: Spacing.tvos.xl,
   },
   titleRow: {
@@ -1274,11 +1096,20 @@ const styles = StyleSheet.create({
     fontSize: Typography.tvos.body,
     lineHeight: Typography.tvos.body * 1.5,
   },
-  watchButtonRow: {
+  navTrailerRow: {
     flexDirection: 'row',
-    marginTop: Spacing.tvos.lg,
     alignItems: 'center',
-    flexWrap: 'wrap',
+    gap: 12,
+    marginTop: Spacing.tvos.lg,
+    marginBottom: 10,
+  },
+  streamRow: {
+    marginBottom: 8,
+  },
+  vodRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginBottom: 8,
   },
   preOrderDateLabel: {
     color: '#c4b5fd',
@@ -1286,12 +1117,6 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     textAlign: 'center',
     marginTop: 4,
-  },
-  scoresRow: {
-    flexDirection: 'row',
-    marginTop: Spacing.tvos.lg,
-    alignItems: 'center',
-    paddingLeft: Spacing.tvos.md,
   },
   errorContainer: {
     flex: 1,
@@ -1313,8 +1138,12 @@ const styles = StyleSheet.create({
   pullQuoteCard: {
     marginBottom: Spacing.tvos.sm,
     paddingLeft: 12,
+    paddingRight: 12,
+    paddingVertical: 10,
     borderLeftWidth: 2,
     borderLeftColor: 'rgba(255,255,255,0.15)',
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderRadius: 6,
   },
   pqText: {
     color: Colors.textSecondary,
