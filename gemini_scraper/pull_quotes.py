@@ -549,22 +549,9 @@ Best pull quote:"""
                 return []
 
             # Try constructing slug directly (most reliable), then fall back to Gemini
-            import unicodedata
+            from letterboxd_scraper import LetterboxdScraper
 
-            def _make_slug(t):
-                """Convert title to Letterboxd-style URL slug."""
-                # Normalize unicode, lowercase
-                t = unicodedata.normalize('NFKD', t).encode('ascii', 'ignore').decode('ascii')
-                t = t.lower()
-                # Remove possessives and common punctuation
-                t = re.sub(r"'s\b", 's', t)
-                t = re.sub(r"[''']", '', t)
-                # Replace non-alphanumeric with hyphens
-                t = re.sub(r'[^a-z0-9]+', '-', t)
-                t = t.strip('-')
-                return t
-
-            slug = _make_slug(title)
+            slug = LetterboxdScraper._make_slug(title)
             candidate_urls = [
                 f'https://letterboxd.com/film/{slug}/',
                 f'https://letterboxd.com/film/{slug}-{year}/',
@@ -667,7 +654,15 @@ Best pull quote:"""
                 )
 
                 resp = page.goto(reviews_url, timeout=15000, wait_until='domcontentloaded')
-                time.sleep(1)  # Brief pause for dynamic content
+                # Wait for review elements to appear, then scroll to load more
+                try:
+                    page.wait_for_selector('li.film-detail', timeout=5000)
+                except Exception:
+                    pass  # Some pages use different selectors
+                time.sleep(0.5)
+                # Scroll down to trigger lazy-loaded reviews
+                page.evaluate('window.scrollTo(0, document.body.scrollHeight)')
+                time.sleep(1)
                 if not resp or resp.status >= 400:
                     logger.info(f"Letterboxd reviews page returned {resp.status if resp else 'none'}: {reviews_url}")
                     browser.close()
@@ -718,7 +713,7 @@ Best pull quote:"""
                     english_reviews.append(item)
 
                 # Build review dicts for batch quote extraction
-                capped_reviews = english_reviews[:8]  # Cap at 8 reviews
+                capped_reviews = english_reviews[:12]  # Extract from top 12 to find 4 good quotes
                 review_dicts = []
                 for item in capped_reviews:
                     review_url = ''
@@ -750,6 +745,9 @@ Best pull quote:"""
                         'selected': False,
                         'added_at': now
                     })
+
+                # Cap at 4 Letterboxd quotes — enough choice without noise
+                quotes = quotes[:4]
 
         except Exception as e:
             logger.warning(f"Error scraping Letterboxd reviews for {title}: {e}")
