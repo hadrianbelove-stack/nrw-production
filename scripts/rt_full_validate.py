@@ -13,6 +13,7 @@ Usage:
     python3 scripts/rt_full_validate.py --dry-run     # Preview without saving
 """
 
+import html
 import json
 import re
 import sys
@@ -103,7 +104,7 @@ def phase1_validate(data, dry_run=False):
                 # Title verification: extract page title from HTML
                 title_tag = re.search(r'<title>(.*?)</title>', response.text[:4096], re.IGNORECASE | re.DOTALL)
                 if title_tag:
-                    page_title_text = title_tag.group(1).strip()
+                    page_title_text = html.unescape(title_tag.group(1).strip())
                     # RT format: "Movie Name (YYYY) | Rotten Tomatoes"
                     movie_part = page_title_text.split('|')[0].strip() if '|' in page_title_text else page_title_text.strip()
                     page_movie_title = re.sub(r'\s*\(\d{4}\)\s*$', '', movie_part).strip()

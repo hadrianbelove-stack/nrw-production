@@ -1,27 +1,10 @@
 #!/usr/bin/env python3
 """
-Rotten Tomatoes Scraper v2 - Migrated to use PlaywrightScraperBase.
+Rotten Tomatoes Scraper — Playwright-based RT score and URL finder.
 
-This is a WALLED GARDEN version for testing. Do not use in production
-until comparison tests pass.
-
-Changes from v1 (rt_scraper_playwright.py):
-- Inherits from PlaywrightScraperBase instead of duplicating code
-- Removes ~200 lines of duplicated methods
-- All RT-specific logic preserved exactly (including stealth scripts)
-
-Inherited from base class:
-- _log(), _log_metrics()
-- _load_cache(), _save_cache()
-- _cleanup_old_screenshots()
-- _enforce_rate_limit()
-- stats and counters initialization
-- get_stats()
-- Context manager (__enter__, __exit__)
-
-Overridden methods:
-- _init_browser_shared() - adds RT-specific stealth scripts
-- _cleanup_browser() - adds RT-specific metrics logging
+Inherits from PlaywrightScraperBase for shared browser management.
+RT-specific: stealth scripts (anti-bot), search + URL construction,
+score extraction waterfall (JSON-LD → media-scorecard → CSS → regex).
 """
 
 from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeoutError
