@@ -263,6 +263,10 @@ class MovieEnricher:
             enrichment_results, title, year)
         if wiki_url:
             result['links']['wikipedia'] = wiki_url
+        # Store Wikidata distributors if found (for indie detection)
+        wikidata_distributors = getattr(self.host, 'last_wikidata_distributors', [])
+        if wikidata_distributors:
+            result['wikidata_distributors'] = wikidata_distributors
 
         # Trailer link
         trailer_result = self._run_enrichment_source(
@@ -932,6 +936,12 @@ class MovieEnricher:
                                 'cached_at': datetime.now().isoformat(),
                                 'source': 'justwatch_pre_verification'
                             }
+                        # Save JustWatch page URL for downstream use (pull quotes, disambiguation)
+                        _jw_url = _jw_result.get('jw_url', '')
+                        if _jw_url:
+                            if 'links' not in existing_movies[movie_index]:
+                                existing_movies[movie_index]['links'] = {}
+                            existing_movies[movie_index]['links']['justwatch'] = _jw_url
                         # Clear revert history -- movie now has valid providers
                         tracking_data['movies'][movie_id].pop('_jw_reverted_at', None)
                         tracking_data['movies'][movie_id].pop('_jw_revert_reason', None)

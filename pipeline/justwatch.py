@@ -581,11 +581,16 @@ class JustWatchClient:
         if presentation_types:
             self.logger.debug(f"JustWatch presentationTypes for {title}: {presentation_types}")
 
+        # Build JustWatch page URL from fullPath (e.g. /us/movie/bunny-2025)
+        jw_full_path = content.get('fullPath', '')
+        jw_url = f'https://www.justwatch.com{jw_full_path}' if jw_full_path else ''
+
         return {
             'verified': verified,
             'match_confidence': confidence,
             'jw_title': jw_title,
             'jw_year': jw_year,
+            'jw_url': jw_url,
             'has_streaming': has_streaming,
             'has_rent': has_rent,
             'has_buy': has_buy,
