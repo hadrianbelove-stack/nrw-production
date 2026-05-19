@@ -539,6 +539,7 @@ Best pull quote:"""
         candidate_urls = [
             f'https://letterboxd.com/film/{slug}/',
             f'https://letterboxd.com/film/{slug}-{year}/',
+            f'https://letterboxd.com/film/{slug}-{year - 1}/',  # Letterboxd may use production year
         ]
 
         try:
