@@ -141,6 +141,7 @@ class DisplayGenerator:
             dict: Categories object with tier, is_foreign, is_staff_pick, auto_categorized, manual_override
         """
         studio_list = category_config.get('studio_list', [])
+        indie_distributors = category_config.get('indie_distributors', [])
         budget_threshold = category_config.get('budget_threshold', 10000000)
 
         # Get movie properties
@@ -152,11 +153,23 @@ class DisplayGenerator:
         # Check for existing manual override from movie_tracking.json
         manual_override = movie.get('categories', {}).get('manual_override')
 
+        # Determine foreign status (needed for indie check)
+        is_foreign = original_language and original_language != 'en'
+
+        # Check distributor matches
+        matches_studio = studio and any(bs.lower() in studio.lower() for bs in studio_list)
+        matches_indie = studio and any(bs.lower() in studio.lower() for bs in indie_distributors)
+
         # Determine tier
+        # Indie rules: matches indie distributor, budget under threshold, NOT foreign
+        # If on both lists (e.g. A24, NEON): budget is tiebreaker
         if manual_override:
             tier = manual_override
             auto_categorized = False
-        elif studio and any(bs.lower() in studio.lower() for bs in studio_list):
+        elif matches_indie and budget < budget_threshold and not is_foreign:
+            tier = 'indie'
+            auto_categorized = True
+        elif matches_studio:
             tier = 'studio'
             auto_categorized = True
         elif budget >= budget_threshold:
@@ -165,9 +178,6 @@ class DisplayGenerator:
         else:
             tier = None
             auto_categorized = True
-
-        # Determine foreign status
-        is_foreign = original_language and original_language != 'en'
 
         # Determine documentary status from TMDB genres
         is_documentary = 'Documentary' in genres
@@ -179,7 +189,7 @@ class DisplayGenerator:
         return {
             'tier': tier,  # Kept for backward compatibility
             'is_studio': tier == 'studio',
-            'is_indie': False,  # Default; set via admin override
+            'is_indie': tier == 'indie',
             'is_foreign': is_foreign,
             'is_staff_pick': False,  # Set later from staff_picks.json
             'is_restoration': False,  # Set later from restoration detection

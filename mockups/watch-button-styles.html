@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Watch Button Styles</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    background: #0a0a0a;
+    color: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    padding: 20px 16px 60px;
+}
+
+.style-label {
+    font-size: 11px;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+}
+
+.style-section {
+    margin-bottom: 36px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    padding-bottom: 28px;
+}
+.style-section:last-child { border-bottom: none; }
+
+.btn-row {
+    display: flex;
+    gap: 8px;
+}
+.btn-row > * { flex: 1; min-width: 0; }
+
+.stream-row { margin-bottom: 8px; }
+.stream-row > * { flex: none; width: 100%; }
+
+/* Streaming: Solid brand fill — just the logo */
+.stream-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 10px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: #fff;
+    min-height: 52px;
+    transition: all 0.2s;
+    border: 1.5px solid rgba(255,255,255,0.8);
+}
+.stream-btn:active { transform: scale(0.97); }
+.stream-btn img {
+    height: 20px;
+    width: auto;
+    max-width: 100px;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+}
+.stream-btn.selected {
+    border-color: #00d4aa;
+    box-shadow: 0 0 10px rgba(0,212,170,0.3);
+}
+.stream-netflix { background: #E50914; }
+
+/* VOD: Split logo half + dark price half */
+.vod-btn {
+    display: flex;
+    align-items: stretch;
+    border-radius: 10px;
+    overflow: hidden;
+    text-decoration: none;
+    color: #fff;
+    min-height: 56px;
+    transition: all 0.2s;
+    border: 1.5px solid rgba(255,255,255,0.8);
+}
+.vod-btn:active { transform: scale(0.97); }
+.vod-btn.selected {
+    border-color: #00d4aa;
+    box-shadow: 0 0 10px rgba(0,212,170,0.3);
+}
+.vod-btn .logo-half {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 12px;
+    width: 45%;
+}
+.vod-btn .logo-half img {
+    height: 18px;
+    width: auto;
+    filter: brightness(0) invert(1);
+}
+.vod-btn .price-half {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 12px;
+    width: 55%;
+    background: rgba(0,0,0,0.4);
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.3;
+    text-align: center;
+}
+.vod-amazon .logo-half { background: #00A8E1; }
+.vod-apple .logo-half { background: #333; }
+</style>
+</head>
+<body>
+
+<!-- Default state: white 80% border -->
+<div class="style-section">
+    <div class="style-label">Default — White border</div>
+    <div class="btn-row stream-row">
+        <a class="stream-btn stream-netflix" href="#"><img src="../assets/logos/services/netflix_wide.png" alt="Netflix"></a>
+    </div>
+    <div class="btn-row">
+        <a class="vod-btn vod-amazon" href="#">
+            <div class="logo-half"><img src="../assets/logos/services/amazon_wide.png" alt="Amazon"></div>
+            <div class="price-half">Rent $5.99 / Buy $13.99</div>
+        </a>
+        <a class="vod-btn vod-apple" href="#">
+            <div class="logo-half"><img src="../assets/logos/services/apple_tv_wide.png" alt="Apple TV"></div>
+            <div class="price-half">Rent $5.99 / Buy $13.99</div>
+        </a>
+    </div>
+</div>
+
+<!-- Selected state: green accent border -->
+<div class="style-section">
+    <div class="style-label">Selected — Green border</div>
+    <div class="btn-row stream-row">
+        <a class="stream-btn stream-netflix selected" href="#"><img src="../assets/logos/services/netflix_wide.png" alt="Netflix"></a>
+    </div>
+    <div class="btn-row">
+        <a class="vod-btn vod-amazon" href="#">
+            <div class="logo-half"><img src="../assets/logos/services/amazon_wide.png" alt="Amazon"></div>
+            <div class="price-half">Rent $5.99 / Buy $13.99</div>
+        </a>
+        <a class="vod-btn vod-apple" href="#">
+            <div class="logo-half"><img src="../assets/logos/services/apple_tv_wide.png" alt="Apple TV"></div>
+            <div class="price-half">Rent $5.99 / Buy $13.99</div>
+        </a>
+    </div>
+</div>
+
+<div class="style-section">
+    <div class="style-label">Selected — VOD button</div>
+    <div class="btn-row stream-row">
+        <a class="stream-btn stream-netflix" href="#"><img src="../assets/logos/services/netflix_wide.png" alt="Netflix"></a>
+    </div>
+    <div class="btn-row">
+        <a class="vod-btn vod-amazon selected" href="#">
+            <div class="logo-half"><img src="../assets/logos/services/amazon_wide.png" alt="Amazon"></div>
+            <div class="price-half">Rent $5.99 / Buy $13.99</div>
+        </a>
+        <a class="vod-btn vod-apple" href="#">
+            <div class="logo-half"><img src="../assets/logos/services/apple_tv_wide.png" alt="Apple TV"></div>
+            <div class="price-half">Rent $5.99 / Buy $13.99</div>
+        </a>
+    </div>
+</div>
+
+<!-- Interactive: tap to toggle selection -->
+<div class="style-section">
+    <div class="style-label">Interactive — tap to select</div>
+    <div class="btn-row stream-row">
+        <a class="stream-btn stream-netflix" href="#" onclick="event.preventDefault(); toggleSelect(this)"><img src="../assets/logos/services/netflix_wide.png" alt="Netflix"></a>
+    </div>
+    <div class="btn-row">
+        <a class="vod-btn vod-amazon" href="#" onclick="event.preventDefault(); toggleSelect(this)">
+            <div class="logo-half"><img src="../assets/logos/services/amazon_wide.png" alt="Amazon"></div>
+            <div class="price-half">Rent $5.99 / Buy $13.99</div>
+        </a>
+        <a class="vod-btn vod-apple" href="#" onclick="event.preventDefault(); toggleSelect(this)">
+            <div class="logo-half"><img src="../assets/logos/services/apple_tv_wide.png" alt="Apple TV"></div>
+            <div class="price-half">Rent $5.99 / Buy $13.99</div>
+        </a>
+    </div>
+</div>
+
+<script>
+function toggleSelect(el) {
+    // Clear all selections in the same section
+    const section = el.closest('.style-section');
+    section.querySelectorAll('.selected').forEach(b => b.classList.remove('selected'));
+    el.classList.add('selected');
+}
+</script>
+
+</body>
+</html>

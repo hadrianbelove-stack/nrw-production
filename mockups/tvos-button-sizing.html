@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>tvOS Button Sizing - Unified</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #0a0a0a;
+  color: #ffffff;
+  padding: 20px;
+  min-height: 100vh;
+}
+
+h1 {
+  color: #00d4aa;
+  font-size: 1.1rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.section-label {
+  color: #888;
+  font-size: 0.75rem;
+  margin-bottom: 20px;
+  letter-spacing: 0.05em;
+}
+
+.mockup-section {
+  margin-bottom: 40px;
+  padding: 20px;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 15px;
+  background: linear-gradient(135deg, #0a0a0a, #1a1a2e);
+}
+
+.mockup-title {
+  color: #00d4aa;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.mockup-desc {
+  color: #888;
+  font-size: 0.8rem;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+/* Movie context */
+.movie-context {
+  margin-bottom: 12px;
+}
+
+.movie-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+  border-bottom: 2px solid rgba(0,212,170,0.4);
+  padding-bottom: 6px;
+  margin-bottom: 8px;
+}
+
+.movie-meta {
+  color: #888;
+  font-size: 0.75rem;
+}
+
+/* Row label (kept for broken demo only) */
+.row-label {
+  color: #00d4aa;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-right: 6px;
+  white-space: nowrap;
+}
+
+/* Focus toggle */
+.toggle-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.toggle-btn {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.05);
+  color: #bbb;
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.toggle-btn.active {
+  background: #00d4aa;
+  color: #000;
+  border-color: #00d4aa;
+}
+
+.divider {
+  height: 1px;
+  background: rgba(255,255,255,0.1);
+  margin: 30px 0;
+}
+
+.note {
+  background: rgba(255,255,255,0.05);
+  border-left: 3px solid #00d4aa;
+  padding: 10px 14px;
+  margin-top: 12px;
+  border-radius: 0 8px 8px 0;
+}
+
+.note p {
+  color: #bbb;
+  font-size: 0.75rem;
+  line-height: 1.6;
+}
+
+.note strong {
+  color: #00d4aa;
+}
+
+/* =============================================
+   UNIFIED BUTTON SYSTEM
+   All buttons same shape. Two sizes:
+   - Trailer + Streaming: 180w x 54h (slightly bigger)
+   - VOD: 160w x 48h (slightly smaller)
+   Focus uses outline so nothing clips.
+   ============================================= */
+
+.btn-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+/* Base button — shared shape */
+.tv-btn {
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 1px;
+}
+
+/* Trailer + Streaming: slightly bigger */
+.tv-btn--lg {
+  width: 180px;
+  height: 54px;
+  font-size: 0.85rem;
+}
+
+/* VOD: slightly smaller */
+.tv-btn--sm {
+  width: 160px;
+  height: 48px;
+  font-size: 0.75rem;
+}
+
+/* VOD with prices — two lines stacked inside */
+.tv-btn--sm .btn-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.tv-btn--sm .btn-service {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  opacity: 0.9;
+}
+
+.tv-btn--sm .btn-prices {
+  font-size: 0.65rem;
+  font-weight: 600;
+  opacity: 0.8;
+}
+
+/* Focus state — outline outside, never clips */
+.tv-btn-focused {
+  outline: 4px solid #00ffcc;
+  outline-offset: 4px;
+}
+
+/* =============================================
+   CURRENT BROKEN STATE (for comparison)
+   ============================================= */
+.current-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0;
+}
+
+.current-vod-card {
+  display: flex;
+  flex-direction: row;
+  border-radius: 12px;
+  overflow: hidden;
+  min-width: 100%;
+  margin-bottom: 10px;
+}
+
+.current-vod-logo {
+  width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 12px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 1px;
+}
+
+.current-vod-prices {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+}
+
+.current-vod-price {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 8px;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.current-stream-btn {
+  width: 100%;
+  height: 60px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 1px;
+}
+
+.current-focused {
+  border: 4px solid #00ffcc;
+}
+</style>
+</head>
+<body>
+
+<h1>tvOS Button Sizing Fix</h1>
+<p class="section-label">Unified button sizes. Trailer/streaming slightly larger, VOD slightly smaller. All same shape.</p>
+
+<!-- CURRENT BROKEN STATE -->
+<div class="mockup-section">
+  <div class="mockup-title">Current (Broken)</div>
+  <div class="mockup-desc">Buttons stretch full width. Focus border clips content.</div>
+
+  <div class="movie-context">
+    <div class="movie-title">Nosferatu</div>
+    <div class="movie-meta">Director: Robert Eggers &bull; USA &bull; 2024 &bull; 132 min</div>
+  </div>
+
+  <div class="toggle-row">
+    <button class="toggle-btn" onclick="toggleFocus('current', false)">Normal</button>
+    <button class="toggle-btn" onclick="toggleFocus('current', true)">Focus</button>
+  </div>
+
+  <div class="current-row" id="current-demo">
+    <span class="row-label">Rent/Buy:</span>
+    <div class="current-vod-card" style="background: #00A8E1;" id="current-vod1">
+      <div class="current-vod-logo" style="background: #00A8E1;">AMAZON</div>
+      <div class="current-vod-prices">
+        <div class="current-vod-price" style="background: #00A8E1; border-bottom: 1px solid rgba(0,0,0,0.15);">Rent $5.99</div>
+        <div class="current-vod-price" style="background: #00A8E1; opacity: 0.85;">Buy $19.99</div>
+      </div>
+    </div>
+    <div class="current-vod-card" style="background: #000; border: 1px solid #444;" id="current-vod2">
+      <div class="current-vod-logo" style="background: #000;">APPLE TV</div>
+      <div class="current-vod-prices">
+        <div class="current-vod-price" style="background: #000; border-bottom: 1px solid rgba(0,0,0,0.15);">Rent $5.99</div>
+        <div class="current-vod-price" style="background: #000; opacity: 0.85;">Buy $19.99</div>
+      </div>
+    </div>
+    <span class="row-label">Stream:</span>
+    <div class="current-stream-btn" style="background: #E50914;" id="current-stream">NETFLIX</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- FIXED: Basic example (2 VOD + 1 Stream) -->
+<div class="mockup-section">
+  <div class="mockup-title">Fixed: 2 VOD + Streaming</div>
+  <div class="mockup-desc">Trailer row on top (180x54). VOD buttons below (160x48) with prices stacked inside. Streaming same size as trailer.</div>
+
+  <div class="movie-context">
+    <div class="movie-title">Nosferatu</div>
+    <div class="movie-meta">Director: Robert Eggers &bull; USA &bull; 2024 &bull; 132 min</div>
+  </div>
+
+  <div class="toggle-row">
+    <button class="toggle-btn" onclick="toggleFocus('fix1', false)">Normal</button>
+    <button class="toggle-btn" onclick="toggleFocus('fix1', true)">Focus</button>
+  </div>
+
+  <!-- Trailer row -->
+  <div class="btn-row">
+    <div class="tv-btn tv-btn--lg" style="background: #E50914;" id="fix1-trailer">TRAILER</div>
+  </div>
+
+  <!-- Watch row -->
+  <div class="btn-row" id="fix1-demo">
+    <div class="tv-btn tv-btn--sm" style="background: #00A8E1;" id="fix1-vod1">
+      <div class="btn-content">
+        <span class="btn-service">AMAZON</span>
+        <span class="btn-prices">$5.99 / $19.99</span>
+      </div>
+    </div>
+    <div class="tv-btn tv-btn--sm" style="background: #000; border: 1px solid #444;" id="fix1-vod2">
+      <div class="btn-content">
+        <span class="btn-service">APPLE TV</span>
+        <span class="btn-prices">$5.99 / $19.99</span>
+      </div>
+    </div>
+    <div class="tv-btn tv-btn--lg" style="background: #E50914;" id="fix1-stream">NETFLIX</div>
+  </div>
+
+  <div class="note">
+    <p><strong>Sizes:</strong> Trailer + streaming = 180x54px. VOD = 160x48px. Focus = outline (outside), no clipping.</p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- FIXED: Full house (2 VOD + Stream + Plex) -->
+<div class="mockup-section">
+  <div class="mockup-title">Fixed: Full House (2 VOD + Stream + Plex)</div>
+  <div class="mockup-desc">Maximum button scenario. All fit on one row without stretching.</div>
+
+  <div class="toggle-row">
+    <button class="toggle-btn" onclick="toggleFocus('fix2', false)">Normal</button>
+    <button class="toggle-btn" onclick="toggleFocus('fix2', true)">Focus</button>
+  </div>
+
+  <!-- Trailer row -->
+  <div class="btn-row">
+    <div class="tv-btn tv-btn--lg" style="background: #E50914;">TRAILER</div>
+  </div>
+
+  <!-- Watch row -->
+  <div class="btn-row" id="fix2-demo">
+    <div class="tv-btn tv-btn--sm" style="background: #00A8E1;" id="fix2-vod1">
+      <div class="btn-content">
+        <span class="btn-service">AMAZON</span>
+        <span class="btn-prices">$3.99 / $14.99</span>
+      </div>
+    </div>
+    <div class="tv-btn tv-btn--sm" style="background: #000; border: 1px solid #444;" id="fix2-vod2">
+      <div class="btn-content">
+        <span class="btn-service">APPLE TV</span>
+        <span class="btn-prices">$3.99 / $14.99</span>
+      </div>
+    </div>
+    <div class="tv-btn tv-btn--lg" style="background: #1CE783; color: #000;" id="fix2-stream">HULU</div>
+    <div class="tv-btn tv-btn--lg" style="background: #E5A00D;" id="fix2-plex">PLEX</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- FIXED: VOD only (no streaming) -->
+<div class="mockup-section">
+  <div class="mockup-title">Fixed: VOD Only (no streaming)</div>
+  <div class="mockup-desc">When a film only has purchase options, no streaming button.</div>
+
+  <div class="toggle-row">
+    <button class="toggle-btn" onclick="toggleFocus('fix3', false)">Normal</button>
+    <button class="toggle-btn" onclick="toggleFocus('fix3', true)">Focus</button>
+  </div>
+
+  <!-- Trailer row -->
+  <div class="btn-row">
+    <div class="tv-btn tv-btn--lg" style="background: #E50914;">TRAILER</div>
+  </div>
+
+  <!-- Watch row -->
+  <div class="btn-row" id="fix3-demo">
+    <div class="tv-btn tv-btn--sm" style="background: #00A8E1;" id="fix3-vod1">
+      <div class="btn-content">
+        <span class="btn-service">AMAZON</span>
+        <span class="btn-prices">$6.99 / $19.99</span>
+      </div>
+    </div>
+    <div class="tv-btn tv-btn--sm" style="background: #000; border: 1px solid #444;" id="fix3-vod2">
+      <div class="btn-content">
+        <span class="btn-service">APPLE TV</span>
+        <span class="btn-prices">$6.99 / $19.99</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- FIXED: Streaming only (no VOD) -->
+<div class="mockup-section">
+  <div class="mockup-title">Fixed: Streaming Only</div>
+  <div class="mockup-desc">Film on a subscription service, no purchase buttons.</div>
+
+  <div class="toggle-row">
+    <button class="toggle-btn" onclick="toggleFocus('fix4', false)">Normal</button>
+    <button class="toggle-btn" onclick="toggleFocus('fix4', true)">Focus</button>
+  </div>
+
+  <!-- Trailer row -->
+  <div class="btn-row">
+    <div class="tv-btn tv-btn--lg" style="background: #E50914;">TRAILER</div>
+  </div>
+
+  <!-- Watch row -->
+  <div class="btn-row" id="fix4-demo">
+    <div class="tv-btn tv-btn--lg" style="background: #B537F2;" id="fix4-stream">MAX</div>
+  </div>
+</div>
+
+<script>
+function toggleFocus(section, on) {
+  const demo = document.getElementById(section + '-demo');
+  if (!demo) return;
+
+  // Update toggle buttons
+  const container = demo.closest('.mockup-section');
+  const toggles = container.querySelectorAll('.toggle-btn');
+  toggles.forEach((btn, i) => {
+    btn.classList.toggle('active', (on && i === 1) || (!on && i === 0));
+  });
+
+  // Determine focus class
+  const focusClass = section.startsWith('current') ? 'current-focused' : 'tv-btn-focused';
+
+  // Remove all focus in this section
+  container.querySelectorAll('.' + focusClass).forEach(el => el.classList.remove(focusClass));
+
+  if (on) {
+    // Focus the first button
+    const firstBtn = demo.querySelector('[id$="-vod1"], [id$="-stream"]');
+    if (firstBtn) firstBtn.classList.add(focusClass);
+  }
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>tvOS Pull Quotes — FullscreenPosterModal</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #000;
+    color: #fff;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  /* TV screen simulation — 16:9 letterbox */
+  .tv-frame {
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+  }
+
+  .tv-label {
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #555;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  /* Main content — matches real component: side by side, gap 40, paddingHorizontal 120 (scaled) */
+  .content {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 30px;
+    padding: 0 60px;
+    max-width: 100%;
+  }
+
+  /* Poster — matches: width 450, height 675, borderRadius 16 (scaled) */
+  .poster-container {
+    width: 280px;
+    height: 420px;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #1a1a1a;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+    flex-shrink: 0;
+  }
+  .poster-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .poster-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    text-align: center;
+    color: #707070;
+    font-size: 16px;
+  }
+
+  /* Info panel — matches: width 500, borderRadius 16, padding 32, bg rgba(26,26,46,0.95) */
+  .info-panel {
+    flex: 1;
+    max-width: 380px;
+    max-height: 420px;
+    background: rgba(26, 26, 46, 0.95);
+    border-radius: 12px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* Title — matches: fontSize 36, fontWeight 700 (scaled) */
+  .movie-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    line-height: 1.2;
+  }
+
+  /* Meta — matches: color #888, fontSize 20 (scaled) */
+  .movie-meta {
+    color: #888;
+    font-size: 13px;
+    margin-bottom: 14px;
+  }
+
+  /* Synopsis — matches: color #ccc, fontSize 22, lineHeight 32 (scaled) */
+  .synopsis {
+    color: #ccc;
+    font-size: 14px;
+    line-height: 1.45;
+    margin-bottom: 16px;
+    max-height: 65px;
+    overflow: hidden;
+  }
+
+  /* ============ PULL QUOTES — NEW ADDITION ============ */
+  .pull-quotes-section {
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .pq-card {
+    padding: 8px 10px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 6px;
+    border-left: 2px solid rgba(0, 212, 170, 0.4);
+    margin-bottom: 8px;
+  }
+  .pq-card:last-child { margin-bottom: 0; }
+
+  .pq-text {
+    font-style: italic;
+    color: #ddd;
+    font-size: 12px;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .pq-text::before { content: "\201C"; }
+  .pq-text::after { content: "\201D"; }
+
+  .pq-link { text-decoration: none; color: inherit; }
+
+  .pq-cite {
+    font-style: normal;
+    font-size: 10px;
+    color: #888;
+    margin-top: 3px;
+  }
+  .pq-cite .outlet { color: #00d4aa; }
+
+  .pq-url-indicator {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background: #00d4aa;
+    border-radius: 50%;
+    margin-left: 4px;
+    vertical-align: middle;
+    opacity: 0.7;
+  }
+
+  /* ============ ACTION BUTTONS — matches real component exactly ============ */
+  /* Real: paddingVertical 16, paddingHorizontal 24, borderRadius 10, gap 12 */
+  .buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: auto;
+  }
+
+  .btn {
+    padding: 12px 18px;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    border: none;
+  }
+
+  /* Service colors match getServiceColor() + real component colors */
+  .btn-streaming-shudder  { background: #bb2233; }
+  .btn-streaming-netflix  { background: #E50914; }
+  .btn-streaming-mubi     { background: #0a0a0a; border: 1px solid #555; }
+  .btn-vod                { background: #ff9500; }
+  .btn-vod-screening      { background: transparent; border: 2px solid #FFD700; color: #FFD700; }
+  .btn-plex               { background: #E5A00D; }
+  .btn-trailer            { background: #E50914; }
+  .btn-rt                 { background: #333; }
+
+  /* Nav arrows — matches real: width 80, height 80, borderRadius 40, bg rgba(0,212,170,0.1) */
+  .nav-arrow {
+    position: absolute;
+    top: 50%;
+    margin-top: -28px;
+    width: 56px;
+    height: 56px;
+    border-radius: 28px;
+    background: rgba(0, 212, 170, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(0, 212, 170, 0.6);
+    font-size: 32px;
+    font-weight: 300;
+    cursor: pointer;
+    user-select: none;
+  }
+  .nav-arrow:active {
+    background: rgba(0, 212, 170, 0.25);
+    border: 2px solid #00ffcc;
+  }
+  .nav-left { left: 16px; }
+  .nav-right { right: 16px; }
+
+  /* Counter — matches real: position absolute, bottom 40, color #888, fontSize 20 */
+  .counter {
+    position: absolute;
+    bottom: 20px;
+    color: #888;
+    font-size: 13px;
+  }
+
+  /* ============ VARIANT TOGGLE (mockup-only UI) ============ */
+  .variant-controls {
+    position: absolute;
+    top: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 6px;
+    z-index: 10;
+  }
+  .variant-btn {
+    padding: 5px 12px;
+    border-radius: 15px;
+    border: 1px solid #444;
+    background: transparent;
+    color: #888;
+    font-size: 11px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .variant-btn.active {
+    background: #00d4aa;
+    color: #000;
+    border-color: #00d4aa;
+    font-weight: 600;
+  }
+</style>
+</head>
+<body>
+
+<div class="tv-frame">
+  <div class="tv-label">Apple TV — FullscreenPosterModal</div>
+
+  <div class="variant-controls">
+    <button class="variant-btn active" onclick="setVariant('A')">A: Two quotes</button>
+    <button class="variant-btn" onclick="setVariant('B')">B: Featured quote</button>
+    <button class="variant-btn" onclick="setVariant('C')">C: Current (none)</button>
+  </div>
+
+  <div class="nav-arrow nav-left" onclick="navigate(-1)">&#8249;</div>
+  <div class="nav-arrow nav-right" onclick="navigate(1)">&#8250;</div>
+
+  <div class="content" id="main-content"></div>
+
+  <div class="counter" id="counter"></div>
+</div>
+
+<script>
+// Sample movies with realistic button configs matching real component
+const movies = [
+  {
+    title: "Vieja loca (Crazy Old Lady)",
+    year: 2025,
+    genres: ["Horror", "Thriller"],
+    runtime: 94,
+    director: "Martín Mauregui",
+    country: "Argentina",
+    synopsis: "Pedro receives a desperate message from an ex-girlfriend asking him to look after her senile mother, Alicia. What seems like a simple mission soon becomes his worst nightmare.",
+    poster_url: "https://image.tmdb.org/t/p/w500/t17u04aQXBawIfqlZDGmMfGUluf.jpg",
+    rt_score: "73%",
+    pull_quotes: [
+      { text: "The film allows Maura to mutate from the vulnerability of a woman grappling with long-suppressed trauma to the deranged glee of someone enjoying causing their victim pain.", critic: "Carlos Aguilar", outlet: "RogerEbert.com", review_url: "https://www.rogerebert.com/reviews/crazy-old-lady-shudder-movie-review-2026" },
+      { text: "Delightfully macabre.", critic: "Mike McGranaghan", outlet: "Aisle Seat", review_url: "https://aisleseat.com/crazy-old-lady.html" }
+    ],
+    buttons: [
+      { label: "Watch on Shudder", cls: "btn-streaming-shudder" },
+      { label: "Watch Trailer", cls: "btn-trailer" },
+      { label: "Rotten Tomatoes: 73%", cls: "btn-rt" }
+    ]
+  },
+  {
+    title: "Suburban Fury",
+    year: 2024,
+    genres: ["Documentary"],
+    runtime: 118,
+    director: "Robinson Devor",
+    synopsis: "On September 22, 1975, 45-year-old Sara Jane Moore took a revolver out of her purse and fired two shots at President Gerald Ford on a crowded sidewalk in San Francisco's Union Square.",
+    poster_url: "https://image.tmdb.org/t/p/w500/gccn5RbMLfJhijKvSjGWRzM3bRk.jpg",
+    rt_score: "100%",
+    pull_quotes: [
+      { text: "A refraction of history through a uniquely warped prism, to nonetheless revelatory effect.", critic: "Richard Brody", outlet: "The New Yorker", review_url: "https://www.newyorker.com/culture/the-front-row/two-new-movies-revivify-the-portrait-film-genre" },
+      { text: "Bursting with the energy of the archives and the thrill of a narrator who can't quite be trusted.", critic: "Lovia Gyarke", outlet: "The Hollywood Reporter", review_url: "" }
+    ],
+    buttons: [
+      { label: "Watch on MUBI", cls: "btn-streaming-mubi" },
+      { label: "Rent / Buy", cls: "btn-vod" },
+      { label: "Rotten Tomatoes: 100%", cls: "btn-rt" }
+    ]
+  },
+  {
+    title: "The Drama",
+    year: 2026,
+    genres: ["Drama", "Romance"],
+    runtime: 105,
+    director: "Kristoffer Borgli",
+    synopsis: "A couple's relationship is put to the test when the woman discovers she may be the reincarnation of a notorious serial killer.",
+    poster_url: "https://image.tmdb.org/t/p/w500/5bFMptOlBaNeGAzgSFVsXmvqCiR.jpg",
+    rt_score: "77%",
+    pull_quotes: [
+      { text: "Zendaya and Pattinson are magnetic together — an electric pairing that makes every frame crackle.", critic: "Adrian Horton", outlet: "The Guardian", review_url: "https://www.theguardian.com/film/2026/apr/06/the-drama-movie-spoilers-zendaya-robert-pattinson" },
+      { text: "A slyly funny psychological drama — a neat rom-com in disguise.", critic: "Kate Stables", outlet: "Sight and Sound", review_url: "https://www.bfi.org.uk/sight-and-sound/reviews/drama-slyly-funny-psychological-drama-neat-rom-com-disguise" }
+    ],
+    buttons: [
+      { label: "Rent / Buy", cls: "btn-vod" },
+      { label: "Watch Trailer", cls: "btn-trailer" },
+      { label: "Rotten Tomatoes: 77%", cls: "btn-rt" }
+    ]
+  }
+];
+
+let currentIndex = 0;
+let currentVariant = 'A';
+
+function buildMeta(m) {
+  const parts = [];
+  if (m.year) parts.push(m.year);
+  if (m.genres?.length) parts.push(m.genres.slice(0, 2).join(', '));
+  if (m.runtime) parts.push(m.runtime + ' min');
+  if (m.director) parts.push('Director: ' + m.director);
+  if (m.country) parts.push(m.country);
+  return parts.join(' \u2022 ');
+}
+
+function renderQuotesVariantA(quotes) {
+  if (!quotes || !quotes.length) return '';
+  return `
+    <div class="pull-quotes-section">
+      ${quotes.slice(0, 2).map(q => {
+        const hasUrl = !!q.review_url;
+        const inner = `
+          <div class="pq-text">${q.text}</div>
+          <div class="pq-cite">
+            \u2014 ${q.critic}${q.outlet ? ', <span class="outlet">' + q.outlet + '</span>' : ''}
+            ${hasUrl ? '<span class="pq-url-indicator" title="Links to review"></span>' : ''}
+          </div>
+        `;
+        if (hasUrl) {
+          return `<div class="pq-card"><a class="pq-link" href="${q.review_url}" target="_blank">${inner}</a></div>`;
+        }
+        return `<div class="pq-card">${inner}</div>`;
+      }).join('')}
+    </div>
+  `;
+}
+
+function renderQuotesVariantB(quotes) {
+  if (!quotes || !quotes.length) return '';
+  const q = quotes[0];
+  const hasUrl = !!q.review_url;
+  return `
+    <div class="pull-quotes-section">
+      <div style="
+        padding: 12px 14px;
+        background: linear-gradient(135deg, rgba(0,212,170,0.08), rgba(0,212,170,0.02));
+        border-radius: 8px;
+        border-left: 3px solid #00d4aa;
+      ">
+        <div class="pq-text" style="color: #eee; font-size: 13px; -webkit-line-clamp: 4;">${q.text}</div>
+        <div class="pq-cite" style="margin-top: 6px;">
+          \u2014 ${q.critic}${q.outlet ? ', <span class="outlet">' + q.outlet + '</span>' : ''}
+          ${hasUrl ? '<span class="pq-url-indicator"></span>' : ''}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function render() {
+  const m = movies[currentIndex];
+  const quotesHtml = currentVariant === 'A' ? renderQuotesVariantA(m.pull_quotes)
+                   : currentVariant === 'B' ? renderQuotesVariantB(m.pull_quotes)
+                   : '';
+
+  document.getElementById('main-content').innerHTML = `
+    <div class="poster-container">
+      ${m.poster_url
+        ? `<img src="${m.poster_url}" alt="${m.title}" onerror="this.parentElement.innerHTML='<div class=poster-placeholder>${m.title}</div>'">`
+        : `<div class="poster-placeholder">${m.title}</div>`
+      }
+    </div>
+    <div class="info-panel">
+      <div class="movie-title">${m.title}</div>
+      <div class="movie-meta">${buildMeta(m)}</div>
+
+      ${quotesHtml}
+
+      <div class="synopsis">${m.synopsis}</div>
+
+      <div class="buttons">
+        ${m.buttons.map(b => `<div class="btn ${b.cls}">${b.label}</div>`).join('')}
+      </div>
+    </div>
+  `;
+
+  document.getElementById('counter').textContent = `${currentIndex + 1} / ${movies.length}`;
+}
+
+function navigate(dir) {
+  currentIndex = (currentIndex + dir + movies.length) % movies.length;
+  render();
+}
+
+function setVariant(v) {
+  currentVariant = v;
+  document.querySelectorAll('.variant-btn').forEach(b => {
+    b.classList.toggle('active', b.textContent.startsWith(v));
+  });
+  render();
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowLeft') navigate(-1);
+  else if (e.key === 'ArrowRight') navigate(1);
+});
+
+let touchStartX = 0;
+document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; });
+document.addEventListener('touchend', e => {
+  const diff = e.changedTouches[0].clientX - touchStartX;
+  if (Math.abs(diff) > 50) navigate(diff > 0 ? -1 : 1);
+});
+
+render();
+</script>
+</body>
+</html>
