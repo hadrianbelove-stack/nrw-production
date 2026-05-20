@@ -119,13 +119,22 @@ print('COVERAGE: RT %d%% (%d) | MC %d%% (%d) | Wiki %d%% (%d) | Trailers %d%% (%
     pct(with_rt), with_rt, pct(with_mc), with_mc, pct(with_wiki), with_wiki,
     pct(with_trailers), with_trailers, pct(with_imdb), with_imdb, pct(with_links), with_links))
 
-# ── Section 2: TODAY'S ARRIVALS ──────────────────────────────────────────────
+# ── Section 2: TODAY'S ARRIVALS (successful transitions only) ────────────────
 
-arrivals = [m for m in movies if m.get('digital_date') == today]
+# Build ID→movie lookup for cross-referencing tracking with wall data
+movies_by_id = {str(m.get('id', '')): m for m in movies}
+
+# Find movies that transitioned today (via _transitioned_at in tracking)
+arrivals = []
+for mid, tk in tracking_raw.items():
+    if tk.get('_transitioned_at') == today:
+        wall_movie = movies_by_id.get(str(mid))
+        if wall_movie:
+            arrivals.append(wall_movie)
 
 print()
 print('─' * 78)
-print("TODAY'S ARRIVALS: %d (%s)" % (len(arrivals), fmt_date(today)))
+print("TODAY'S ARRIVALS: %d transitions (%s)" % (len(arrivals), fmt_date(today)))
 print('─' * 78)
 
 if arrivals:
@@ -323,11 +332,10 @@ else:
 
 # ── Section 5: COVERAGE GAPS ────────────────────────────────────────────────
 
-# Two tiers: completely un-enriched (0/5 fields) and recent arrivals (14 days) with 4+ missing
+# Two tiers: completely un-enriched (0/5 fields) and recent arrivals (3 days) with 4+ missing
 bare_movies = []    # 0/5 fields — totally missed by enrichment
-recent_gaps = []    # last 14 days, 4/5 missing
-fourteen_ago = (today_dt - timedelta(days=14)).isoformat()
-thirty_ago = (today_dt - timedelta(days=30)).isoformat()
+recent_gaps = []    # last 3 days, 4/5 missing
+three_days_ago_coverage = (today_dt - timedelta(days=3)).isoformat()
 
 all_miss_rt = 0
 all_miss_mc = 0
@@ -339,8 +347,8 @@ for m in movies:
     dd = m.get('digital_date', '?')
     if m.get('hidden') or m.get('_is_preorder') or (dd != '?' and dd > today):
         continue
-    # Skip movies older than 30 days — if not enriched by now, they won't be
-    if dd != '?' and dd < thirty_ago:
+    # Skip movies older than 3 days — same window as recent arrivals
+    if dd != '?' and dd < three_days_ago_coverage:
         continue
     links = m.get('links', {})
     has_rt = bool(m.get('rt_score'))
@@ -359,7 +367,7 @@ for m in movies:
 
     if missing == 5:
         bare_movies.append((m['title'], dd, str(m.get('id', ''))))
-    elif missing >= 4 and dd >= fourteen_ago:
+    elif missing >= 4 and dd >= three_days_ago_coverage:
         recent_gaps.append((m['title'], dd, has_rt, has_mc, has_wiki, has_trailer, has_imdb, str(m.get('id', ''))))
 
 print()
@@ -371,7 +379,7 @@ print('  Wall totals missing: %d RT | %d MC | %d Wiki | %d Trailer | %d IMDb' % 
 
 if bare_movies:
     print()
-    print('  ZERO ENRICHMENT — 0/5 fields, last 30 days (%d):' % len(bare_movies))
+    print('  ZERO ENRICHMENT — 0/5 fields, last 3 days (%d):' % len(bare_movies))
     col_w = 42
     print('  %-*s  %s' % (col_w, 'Title', 'Date'))
     print('  ' + '─' * (col_w + 14))
@@ -381,7 +389,7 @@ if bare_movies:
 
 if recent_gaps:
     print()
-    print('  RECENT ARRIVALS missing 4/5 fields (last 14 days, %d):' % len(recent_gaps))
+    print('  RECENT ARRIVALS missing 4/5 fields (last 3 days, %d):' % len(recent_gaps))
     col_w = 38
     print('  %-*s  %-12s %-3s %-3s %-4s %-7s %-4s' % (col_w, 'Title', 'Date', 'RT', 'MC', 'Wiki', 'Trailer', 'IMDb'))
     print('  ' + '─' * (col_w + 40))
@@ -527,7 +535,7 @@ for m in movies:
     # Skip hidden movies (e.g. expired virtual screenings) and old movies
     if m.get('hidden'):
         continue
-    if dd != '?' and dd < thirty_ago:
+    if dd != '?' and dd < three_days_ago:
         continue
     if not m.get('poster'):
         gap_no_poster.append((title, dd, e_status, mid))
@@ -541,7 +549,7 @@ total_gaps = len(set(r[0] for r in gap_no_poster + gap_no_synopsis + gap_no_link
 
 print()
 print('─' * 78)
-print('ENRICHMENT GAPS — %d movies with missing data (last 30 days)' % total_gaps)
+print('ENRICHMENT GAPS — %d movies with missing data (last 3 days)' % total_gaps)
 print('─' * 78)
 
 if total_gaps == 0:
