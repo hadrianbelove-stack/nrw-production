@@ -439,8 +439,7 @@ header h1 {
     display: none;
     align-items: center;
     justify-content: center;
-    height: 92vh;
-    max-height: 1050px;
+    height: 96vh;
     aspect-ratio: 2 / 3;
     padding: 2rem;
     text-align: center;
@@ -1001,8 +1000,8 @@ header h1 {
     display: flex;
     align-items: center;
     gap: 1.5rem;
-    max-width: 1800px;
-    max-height: 96vh;
+    max-width: 98vw;
+    max-height: 98vh;
     animation: lightboxFadeIn 0.3s ease;
 }
 
@@ -1057,8 +1056,7 @@ header h1 {
 
 /* Large poster */
 .lightbox-poster {
-    height: 92vh;
-    max-height: 1050px;
+    height: 96vh;
     width: auto;
     border-radius: 12px;
     object-fit: cover;
@@ -1066,11 +1064,10 @@ header h1 {
     display: block;
 }
 
-/* Info panel — width matches poster (1050px tall × 2:3 = 700px) */
+/* Info panel — scales with poster height (2:3 aspect = width is 2/3 of height) */
 .lightbox-info {
-    width: 700px;
-    height: 92vh;
-    max-height: 1050px;
+    width: calc(96vh * 0.67);
+    height: 96vh;
     background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
     border-radius: 12px;
     padding: 2rem;
@@ -1509,7 +1506,7 @@ header h1 {
 
     .lightbox-info {
         width: 100%;
-        max-width: 600px;
+        max-width: 90vw;
         height: auto;
         max-height: 40vh;
     }
