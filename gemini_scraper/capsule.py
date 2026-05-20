@@ -428,55 +428,55 @@ class GeminiCapsuleWriter(GeminiFinderBase):
             from playwright.sync_api import sync_playwright
             with sync_playwright() as p:
                 browser = p.chromium.launch(headless=True)
-                page = browser.new_page(
-                    user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
-                               'AppleWebKit/537.36 (KHTML, like Gecko) '
-                               'Chrome/125.0.0.0 Safari/537.36'
-                )
+                try:
+                    page = browser.new_page(
+                        user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                   'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                   'Chrome/125.0.0.0 Safari/537.36'
+                    )
 
-                resp = page.goto(amazon_url, timeout=15000, wait_until='domcontentloaded')
-                if not resp or resp.status >= 400:
+                    resp = page.goto(amazon_url, timeout=15000, wait_until='domcontentloaded')
+                    if not resp or resp.status >= 400:
+                        return ''
+
+                    time.sleep(1)
+
+                    synopsis = ''
+
+                    # Try synopsis/description selectors
+                    for selector in [
+                        '[data-automation-id="synopsis"]',
+                        '.dv-dp-node-synopsis',
+                        '#btf-product-details .dv-simple-synopsis',
+                        '.TitleSynopsis',
+                        '[class*="Synopsis"]',
+                        '[class*="synopsis"]',
+                    ]:
+                        try:
+                            el = page.query_selector(selector)
+                            if el:
+                                text = el.inner_text().strip()
+                                if text and len(text) > 20:
+                                    synopsis = text
+                                    break
+                        except Exception:
+                            continue
+
+                    # Fallback: regex on page body
+                    if not synopsis:
+                        try:
+                            body = page.inner_text('body')
+                            # Look for synopsis-like blocks between known Amazon UI elements
+                            match = re.search(
+                                r'(?:Synopsis|About this movie|About)\s*[:\-—]?\s*(.+?)(?:\n\n|Customers|Directors?:|Starring:)',
+                                body, re.DOTALL
+                            )
+                            if match:
+                                synopsis = match.group(1).strip()
+                        except Exception:
+                            pass
+                finally:
                     browser.close()
-                    return ''
-
-                time.sleep(1)
-
-                synopsis = ''
-
-                # Try synopsis/description selectors
-                for selector in [
-                    '[data-automation-id="synopsis"]',
-                    '.dv-dp-node-synopsis',
-                    '#btf-product-details .dv-simple-synopsis',
-                    '.TitleSynopsis',
-                    '[class*="Synopsis"]',
-                    '[class*="synopsis"]',
-                ]:
-                    try:
-                        el = page.query_selector(selector)
-                        if el:
-                            text = el.inner_text().strip()
-                            if text and len(text) > 20:
-                                synopsis = text
-                                break
-                    except Exception:
-                        continue
-
-                # Fallback: regex on page body
-                if not synopsis:
-                    try:
-                        body = page.inner_text('body')
-                        # Look for synopsis-like blocks between known Amazon UI elements
-                        match = re.search(
-                            r'(?:Synopsis|About this movie|About)\s*[:\-—]?\s*(.+?)(?:\n\n|Customers|Directors?:|Starring:)',
-                            body, re.DOTALL
-                        )
-                        if match:
-                            synopsis = match.group(1).strip()
-                    except Exception:
-                        pass
-
-                browser.close()
 
                 if synopsis and len(synopsis) > 20:
                     # Cap at 600 chars
@@ -508,38 +508,38 @@ class GeminiCapsuleWriter(GeminiFinderBase):
             from playwright.sync_api import sync_playwright
             with sync_playwright() as p:
                 browser = p.chromium.launch(headless=True)
-                page = browser.new_page(
-                    user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
-                               'AppleWebKit/537.36 (KHTML, like Gecko) '
-                               'Chrome/125.0.0.0 Safari/537.36'
-                )
+                try:
+                    page = browser.new_page(
+                        user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                   'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                   'Chrome/125.0.0.0 Safari/537.36'
+                    )
 
-                resp = page.goto(trivia_url, timeout=15000, wait_until='domcontentloaded')
-                if not resp or resp.status >= 400:
-                    browser.close()
-                    return ''
+                    resp = page.goto(trivia_url, timeout=15000, wait_until='domcontentloaded')
+                    if not resp or resp.status >= 400:
+                        return ''
 
-                time.sleep(1)
+                    time.sleep(1)
 
-                # Extract trivia items from DOM
-                items = page.evaluate('''() => {
-                    let results = [];
-                    // IMDb trivia: each item is an .ipc-list-card--border-line
-                    // with content in .ipc-html-content-inner-div
-                    let cards = document.querySelectorAll('.ipc-list-card--border-line');
-                    for (let card of cards) {
-                        let content = card.querySelector('.ipc-html-content-inner-div');
-                        if (!content) continue;
-                        let text = content.textContent.trim();
-                        if (text && text.length > 30 && text.length < 1000) {
-                            results.push(text);
+                    # Extract trivia items from DOM
+                    items = page.evaluate('''() => {
+                        let results = [];
+                        // IMDb trivia: each item is an .ipc-list-card--border-line
+                        // with content in .ipc-html-content-inner-div
+                        let cards = document.querySelectorAll('.ipc-list-card--border-line');
+                        for (let card of cards) {
+                            let content = card.querySelector('.ipc-html-content-inner-div');
+                            if (!content) continue;
+                            let text = content.textContent.trim();
+                            if (text && text.length > 30 && text.length < 1000) {
+                                results.push(text);
+                            }
+                            if (results.length >= 5) break;
                         }
-                        if (results.length >= 5) break;
-                    }
-                    return results;
-                }''')
-
-                browser.close()
+                        return results;
+                    }''')
+                finally:
+                    browser.close()
 
                 if not items:
                     return ''
