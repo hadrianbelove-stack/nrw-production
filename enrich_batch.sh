@@ -8,7 +8,7 @@ echo "Starting batch enrichment (max $BATCH_SIZE movies)"
 echo "Log file: $LOG_FILE"
 
 # Start enrichment in background
-python3 generate_data.py > "$LOG_FILE" 2>&1 &
+python3 generate_data.py --enrich > "$LOG_FILE" 2>&1 &
 PID=$!
 
 echo "Enrichment started (PID: $PID)"

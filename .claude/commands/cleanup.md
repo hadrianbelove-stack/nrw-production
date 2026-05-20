@@ -54,7 +54,17 @@ Scan for these categories of maintenance issues:
 - If target is a **filename**: scan just that file.
 - If target is an **area** (e.g., "discovery", "enrichment", "trailers", "UI"): determine which files are relevant to that area and scan those.
 
-### Step 2: Multi-Pass Scanning
+### Step 2: Determine Cycle Count
+
+Before scanning, count the total lines in scope (`wc -l` on all target files). Scale the effort:
+
+- **Under 500 lines**: 1 cycle (small file, one thorough pass is enough)
+- **500–1500 lines**: 2 cycles minimum, stop if a cycle finds zero new items
+- **Over 1500 lines or "everything"**: keep cycling until a full cycle produces zero new findings (no maximum)
+
+This prevents spending 300k+ tokens on a 241-line file while still being thorough on large files where attention drift is real.
+
+### Step 3: Multi-Pass Scanning
 
 A single scan misses things. The fix is to run the full scan cycle **multiple times** — like filtering water through the same filter repeatedly. Each cycle catches smaller and smaller particles that previous cycles missed.
 
@@ -67,18 +77,22 @@ Launch **separate, parallel agents** for different file categories:
 - **Agent 2**: Python scripts and scrapers (scripts/*.py, gemini_scraper/*.py, *_scraper*.py, admin.py)
 - **Agent 3**: Frontend files (assets/*.js, assets/*.css, mobile/*.js, mobile/*.css, index.html)
 
+(If the target is a single file, launch 1 agent instead of 3.)
+
 Each agent must:
 - Read every file in its scope
 - For each potential finding, **grep the full project** to verify it's actually dead/unused
 - Report exact file path, exact line number, and the exact text found
 - Only report 90%+ confidence findings
 
-#### Pass B: Targeted Re-scan
+#### Pass B: Verification + Fresh Eyes
 
-After Pass A returns, launch a **second round of parallel agents** with these instructions:
+Pass B exists to **catch hallucinations from Pass A** and find what Pass A missed. Launch a second round of parallel agents with these instructions:
+
 - Each agent re-reads **every file** in its scope from Pass A
-- Focus specifically on anything Pass A **might have missed**: unused imports, dead CSS selectors, orphaned variables, stale comments
-- Agents receive the Pass A findings list so they **skip already-found items** and look for new ones
+- **First job: verify Pass A's findings.** For each item Pass A reported, confirm the code actually exists at the reported line and that the grep verification is correct. Flag any Pass A finding that is wrong.
+- **Second job: find new items** that Pass A missed — unused imports, dead CSS selectors, orphaned variables, stale comments
+- Agents receive the Pass A findings as a structured blocklist (exact file:line pairs) so they skip already-found items when looking for new ones
 - Same verification rules apply — grep before reporting
 
 #### Pass C: Cross-file and Connection Scan
@@ -92,11 +106,18 @@ Launch a **single agent** that looks across file boundaries:
 
 #### Repeat the full cycle
 
-After completing one A→B→C cycle, **run the entire cycle again from the top**. Feed all previous findings into the new cycle so agents skip known items and look for new ones.
+After completing one A→B→C cycle, **run the entire cycle again from the top** (if the cycle count from Step 2 allows more cycles). Feed all previous findings into the next cycle as a structured blocklist:
 
-Keep repeating until a full cycle produces **zero new findings** — that's when the filter is clean. There is no maximum number of cycles. Each cycle is fast and cheap; thoroughness matters more than speed.
+```
+BLOCKLIST (do not re-report these):
+- generate_data.py:115 — AGENT_SCRAPER_DEBUG dead env var
+- generate_data.py:110 — dead incremental variable
+...
+```
 
-### Step 3: Merge, Deduplicate, and Verify
+Using exact file:line pairs prevents agents from re-discovering and re-litigating settled findings.
+
+### Step 4: Merge, Deduplicate, and Verify
 
 After all cycles complete:
 1. **Merge** findings from every cycle and pass into one list
@@ -126,7 +147,7 @@ Use this exact format:
 - Say WHY it's dead/redundant (what replaced it, when it became unnecessary)
 - If you're less than 90% sure something is dead, say "Possibly dead — verify with user"
 
-### Step 4: Get Approval
+### Step 5: Get Approval
 
 After presenting findings, ask:
 
@@ -136,7 +157,7 @@ After presenting findings, ask:
 - **Numbers** (e.g., "1, 3, 5") → fix only those
 - **"skip"** → done, no changes
 
-### Step 5: Make Changes
+### Step 6: Make Changes
 
 For approved items:
 - Remove dead code cleanly (no leftover blank lines or orphaned comments)
@@ -145,7 +166,7 @@ For approved items:
 - Remove debug code
 - After all changes, run a quick syntax check (`python3 -c "import ast; ast.parse(open('file').read())"` for Python, or equivalent)
 
-### Step 6: Summary
+### Step 7: Summary
 
 After fixes:
 
@@ -179,6 +200,29 @@ Start with generator.py (heaviest)? Or pick a file.
 ```
 
 Then walk through one file at a time. Get approval per batch before moving to the next.
+
+---
+
+## CLEANUP HISTORY (memory between runs)
+
+After completing a cleanup (Step 7), append a record to `.claude/cleanup_history.json` so future runs know what was already cleaned:
+
+```python
+import json, os, time
+history_path = '.claude/cleanup_history.json'
+history = json.load(open(history_path)) if os.path.exists(history_path) else []
+history.append({
+    "timestamp": time.strftime('%Y-%m-%dT%H:%M:%S'),
+    "target": "[the target that was cleaned]",
+    "files_scanned": ["list of files"],
+    "items_found": 0,
+    "items_fixed": 0
+})
+with open(history_path, 'w') as f:
+    json.dump(history, f, indent=2)
+```
+
+At the start of a run, check this history. If a file was cleaned within the last 7 days and the target is "everything", skip it and note "(skipped — cleaned [date])". If the target is a specific file, always scan it regardless of history.
 
 ---
 

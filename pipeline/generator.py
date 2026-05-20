@@ -51,7 +51,6 @@ from pipeline.enricher import MovieEnricher
 from pipeline.display import DisplayGenerator
 from pipeline.archive import ArchiveManager
 from utils.logger import setup_logger
-# Watch link discovery: cache + Playwright scrapers
 
 
 class DataGenerator:
@@ -74,32 +73,13 @@ class DataGenerator:
             # Fall back to config.yaml for local development
             self.tmdb_key = self.config.get('api', {}).get('tmdb_api_key')
 
-        if not self.tmdb_key:
-            self.logger.error(
-                "TMDB_API_KEY not found. Please set the TMDB_API_KEY environment variable "
-                "or add 'tmdb_api_key' to the 'api' section in config.yaml. "
-                "Get a free key from https://www.themoviedb.org/settings/api"
-            )
-            raise ValueError("TMDB_API_KEY is required")
-
         # Watch link discovery via cache + Playwright scrapers
         self.wikipedia_cache = self.storage.load_cache('cache/wikipedia_cache.json')
-        self.rt_cache = self.storage.load_cache('cache/rt_cache.json')
         self.wikipedia_overrides = self.storage.load_cache('overrides/wikipedia_overrides.json')
         self.rt_overrides = self.storage.load_cache('overrides/rt_overrides.json')
         self.watch_links_overrides = self.storage.load_cache('overrides/watch_links_overrides.json')
         self.trailer_overrides = self.storage.load_cache('overrides/trailer_overrides.json')
         self.watch_links_cache = self.storage.load_cache('cache/watch_links_cache.json')
-
-        # Load reviews
-        self.reviews = {}
-        if os.path.exists('admin/movie_reviews.json'):
-            try:
-                with open('admin/movie_reviews.json', 'r') as f:
-                    self.reviews = json.load(f)
-            except (json.JSONDecodeError, IOError) as e:
-                self.logger.warning(f"Failed to load movie reviews from admin/movie_reviews.json: {e}")
-                self.reviews = {}
 
         # Enrichment statistics (shared across all enrichment sources)
         self.enrichment_stats = {
@@ -120,12 +100,8 @@ class DataGenerator:
             'lb_cache_hits': 0,
             'trailer_attempts': 0,
             'trailer_successes': 0,
-            'trailer_cache_hits': 0,
             'schema_validation_warnings': 0,
-            'schema_validation_passes': 0,
-            'search_calls': 0,
-            'source_calls': 0,
-            'scraper_successes': 0
+            'schema_validation_passes': 0
         }
 
         # Initialize validation service (extracted 2025-11-10) - shares enrichment_stats dict
@@ -415,6 +391,16 @@ class DataGenerator:
             self.logger.debug(f"Type 4 date lookup failed for {movie_id}: {e}")
             return None
 
+    @staticmethod
+    def _compute_display_title(title, original_title, original_language):
+        """Compute display_title — foreign films get 'Original (English)' or 'English (Original)'."""
+        if original_title and original_title != title and original_language != 'en':
+            _is_latin = bool(re.match(r'^[\u0000-\u024F\u1E00-\u1EFF\s\d\W]+$', original_title))
+            if _is_latin:
+                return f"{original_title} ({title})"
+            return f"{title} ({original_title})"
+        return title or ''
+
     def add_movie_to_site_immediately(self, movie_id, movie_data):
         """
         Write minimal movie entry to data.json for immediate display.
@@ -436,7 +422,7 @@ class DataGenerator:
                 # Try to fix schema issues (adds missing keys, never removes movies)
                 if not self.validator.fix_data_json_schema('data.json'):
                     self.logger.error("data.json schema unfixable — aborting discovery to preserve data")
-                    return 0
+                    return False
 
                 # Load existing movies - if this fails, ABORT to preserve data
                 try:
@@ -701,17 +687,10 @@ class DataGenerator:
         entry['original_language'] = movie_details.get('original_language')
         entry['original_title'] = movie_details.get(original_title_field)
 
-        # Generate display_title for foreign films
-        # Latin-script originals: "Original (English)" — e.g. "Nukkad Naatak (A Street Play)"
-        # Non-Latin originals: "English (Original)" — e.g. "The Adventure (奇遇)"
-        original_title = entry.get('original_title')
-        orig_lang = entry.get('original_language', 'en')
-        if original_title and original_title != entry.get('title') and orig_lang != 'en':
-            _is_latin = bool(re.match(r'^[\u0000-\u024F\u1E00-\u1EFF\s\d\W]+$', original_title))
-            if _is_latin:
-                entry['display_title'] = f"{original_title} ({entry['title']})"
-            else:
-                entry['display_title'] = f"{entry['title']} ({original_title})"
+        # Generate display_title (foreign films get bilingual format)
+        entry['display_title'] = self._compute_display_title(
+            entry.get('title', ''), entry.get('original_title'), entry.get('original_language', 'en')
+        )
 
         # Add cast/crew with error handling
         entry['crew'] = {'director': 'Unknown', 'cast': []}
@@ -862,14 +841,13 @@ class DataGenerator:
         return self._imdb_dataset
 
     def get_imdb_rating(self, imdb_id, title=None, year=None):
-        """Fetch IMDb rating using 5-tier waterfall.
+        """Fetch IMDb rating using 4-tier waterfall.
 
         Tiers:
             1. Cache check
             2. IMDb bulk dataset (daily TSV from datasets.imdbws.com)
             3. OMDb API by ID
             4. Gemini + Google Search grounding (catches new/low-vote movies)
-            5. OMDb title search (finds ID + rating, only when no IMDb ID)
 
         Args:
             imdb_id: IMDb ID (e.g., 'tt12345678'), can be None
@@ -928,29 +906,6 @@ class DataGenerator:
                     return rating
             except Exception as e:
                 self.logger.debug(f"Gemini IMDb error for {imdb_id}: {e}")
-
-        # Tier 5: OMDb title search (finds both ID and rating, only when no IMDb ID)
-        if title and not imdb_id:
-            omdb_key = os.environ.get('OMDB_API_KEY') or self.config.get('api', {}).get('omdb_api_key')
-            if omdb_key:
-                try:
-                    url = f"http://www.omdbapi.com/?t={quote(title)}&apikey={omdb_key}"
-                    if year:
-                        url += f"&y={year}"
-                    response = requests.get(url, timeout=5)
-                    if response.status_code == 200:
-                        data = response.json()
-                        if data.get('Response') != 'False':
-                            found_id = data.get('imdbID')
-                            rating = data.get('imdbRating')
-                            if rating == 'N/A':
-                                rating = None
-                            if found_id and rating:
-                                self.logger.debug(f"OMDb title search: {found_id} -> {rating}")
-                                self._save_to_imdb_cache(found_id, rating, title=title, source='omdb')
-                                return rating
-                except Exception as e:
-                    self.logger.debug(f"OMDb title search error for '{title}': {e}")
 
         return None
 
@@ -1207,7 +1162,6 @@ class DataGenerator:
         if result:
             return result
 
-        # 4. No result — return None (deep links or nothing)
         return None
 
     def find_metacritic_score(self, title, year):
@@ -1415,11 +1369,6 @@ class DataGenerator:
         if not self._init_rt_scraper():
             return None
 
-        # Check scraper availability
-        if self.rt_scraper is False:
-            return None
-
-        # Use the new Playwright scraper
         try:
             # HybridRTFinder uses find_rt_score(); Playwright-only uses scrape_rt_score()
             if GEMINI_RT_AVAILABLE:
@@ -1457,11 +1406,11 @@ class DataGenerator:
                 self.logger.info("Trailer hosting: connecting to B2...")
                 self._b2_connection = get_b2_connection()
 
-            api, bucket, bucket_url = self._b2_connection
+            _, bucket, bucket_url = self._b2_connection
             # Prefer config bucket_url over B2 native URL
             config_url = trailer_config.get('bucket_url', '') or bucket_url
 
-            hosted_url, new_trailer_url, _fail_reason, _fail_detail = download_and_upload_trailer(movie_id, title, year, youtube_url, bucket, config_url)
+            hosted_url, _, _fail_reason, _fail_detail = download_and_upload_trailer(movie_id, title, year, youtube_url, bucket, config_url)
             if hosted_url:
                 self.logger.info(f"Trailer hosted: {title} ({year}) -> {hosted_url}")
             return hosted_url
@@ -1846,7 +1795,7 @@ class DataGenerator:
         """Delegate to DisplayGenerator."""
         return self._display.apply_cached_watch_links(movies_list)
 
-    def generate_display_data(self, days_back=90, incremental=True, force_refresh=False):
+    def generate_display_data(self, days_back=90):
         """
         PHASE 4: Apply admin overrides and prepare final display data.
 
@@ -1855,8 +1804,6 @@ class DataGenerator:
 
         Args:
             days_back: Used for stats only (frontend handles date filtering)
-            incremental: Deprecated (kept for compatibility)
-            force_refresh: Deprecated (kept for compatibility)
         """
         # Try to fix schema issues first (adds missing keys, never removes movies)
         if os.path.exists('data.json'):
@@ -1891,20 +1838,11 @@ class DataGenerator:
             self.logger.error(f"Error loading data.json for display: {e}")
             return
 
-        # Compute display_title for non-English films
-        # Latin-script originals: "Original (English)" — e.g. "Nukkad Naatak (A Street Play)"
-        # Non-Latin originals: "English (Original)" — e.g. "The Adventure (奇遇)"
+        # Compute display_title for all movies (foreign films get bilingual format)
         for m in all_movies:
-            orig = m.get('original_title')
-            lang = m.get('original_language', 'en')
-            if orig and orig != m.get('title') and lang != 'en':
-                _is_latin = bool(re.match(r'^[\u0000-\u024F\u1E00-\u1EFF\s\d\W]+$', orig))
-                if _is_latin:
-                    m['display_title'] = f"{orig} ({m['title']})"
-                else:
-                    m['display_title'] = f"{m['title']} ({orig})"
-            else:
-                m['display_title'] = m.get('title', '')
+            m['display_title'] = self._compute_display_title(
+                m.get('title', ''), m.get('original_title'), m.get('original_language', 'en')
+            )
 
         # Inject selected pull quotes from cache into movie data
         self._inject_selected_pull_quotes(all_movies)
@@ -1964,13 +1902,6 @@ class DataGenerator:
             except Exception as e:
                 self.logger.warning(f"Failed to close agent scraper: {e}")
 
-        # Cleanup platform scraper if initialized
-        if self.vod_scraper and self.vod_scraper != False:
-            try:
-                self.vod_scraper.close()
-            except Exception as e:
-                self.logger.warning(f"Failed to close platform scraper: {e}")
-
         # Cleanup RT scraper if initialized
         if self.rt_scraper and self.rt_scraper is not False:
             try:
@@ -2018,12 +1949,9 @@ class DataGenerator:
         print(f"  Wikipedia links recovered via Wikidata: {self.wikipedia_stats['wikidata_successes']}")
 
         # Enrichment statistics
-        total_calls = self.enrichment_stats['search_calls'] + self.enrichment_stats['source_calls']
-        cache_hit_rate = (self.enrichment_stats['cache_hits'] / (self.enrichment_stats['cache_hits'] + total_calls) * 100) if (self.enrichment_stats['cache_hits'] + total_calls) > 0 else 0
-
+        cache_hits = self.enrichment_stats['cache_hits']
         print(f"\n📊 Watch Links Enrichment:")
-        print(f"  Cache hits: {self.enrichment_stats['cache_hits']}")
-        print(f"  Cache hit rate: {cache_hit_rate:.1f}%")
+        print(f"  Cache hits: {cache_hits}")
         scraper_successes = self.enrichment_stats.get('scraper_successes', 0)
         print(f"  Scraper successes: {scraper_successes}")
 
@@ -2095,7 +2023,6 @@ class DataGenerator:
         print(f"\n📊 Trailer Scraper Usage:")
         print(f"  Trailer attempts: {self.enrichment_stats['trailer_attempts']}")
         print(f"  Trailer successes: {self.enrichment_stats['trailer_successes']}")
-        print(f"  Trailer cache hits: {self.enrichment_stats['trailer_cache_hits']}")
         if self.enrichment_stats['trailer_attempts'] > 0:
             trailer_success_rate = (self.enrichment_stats['trailer_successes'] / self.enrichment_stats['trailer_attempts'] * 100)
             print(f"  Trailer success rate: {trailer_success_rate:.1f}%")
@@ -2207,13 +2134,8 @@ class DataGenerator:
                 "trailer_scraper": {
                     "attempts": self.enrichment_stats['trailer_attempts'],
                     "successes": self.enrichment_stats['trailer_successes'],
-                    "cache_hits": self.enrichment_stats['trailer_cache_hits'],
                     "success_rate": calc_rate(
                         self.enrichment_stats['trailer_successes'],
-                        self.enrichment_stats['trailer_attempts']
-                    ),
-                    "cache_hit_rate": calc_rate(
-                        self.enrichment_stats['trailer_cache_hits'],
                         self.enrichment_stats['trailer_attempts']
                     )
                 },

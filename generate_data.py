@@ -5,11 +5,9 @@ Generate display data from tracking database with enriched links.
 This is the main entry point for the NRW data generation pipeline.
 All business logic has been extracted to the pipeline/ module for maintainability.
 
-Clean 4-Phase Architecture:
-  Phase 1: INTAKE    - python3 generate_data.py --intake
-  Phase 2: DISCOVERY - python3 generate_data.py --discover
-  Phase 3: ENRICHMENT - python3 generate_data.py --enrich
-  Phase 4: DISPLAY   - python3 generate_data.py (reads data.json for final processing)
+Core phases: --intake, --discover, --enrich, and bare display generation.
+Additional operations: --enrich-id, --festival-backfill, --scan-eventive,
+--reenrich-gaps, --reenrich-trailer-gaps, --gap-fill, --check-screenings, --archive.
 """
 
 import os
@@ -48,12 +46,12 @@ def main():
     parser.add_argument(
         '--since',
         type=str,
-        help='Provider discovery since date (YYYY-MM-DD) for stateful incremental checks'
+        help='Intake since date (YYYY-MM-DD) — overrides stateful incremental window'
     )
     parser.add_argument(
         '--bootstrap',
         action='store_true',
-        help='Bootstrap provider discovery state using full discovery.days_back window'
+        help='Bootstrap intake state using full intake.days_back window'
     )
     parser.add_argument(
         '--enrich',
@@ -63,7 +61,7 @@ def main():
     parser.add_argument(
         '--festival-backfill',
         action='store_true',
-        help='Backfill festival premieres to tracking database (2024, 2025, 2026)'
+        help='Backfill festival premieres to tracking database (years from config.yaml)'
     )
     parser.add_argument(
         '--festival-years',
@@ -73,7 +71,7 @@ def main():
     parser.add_argument(
         '--reenrich-gaps',
         action='store_true',
-        help='Re-enrich movies that have Amazon/Apple providers but no watch links'
+        help='Re-enrich movies missing VOD deep links or with unverified watch links'
     )
     parser.add_argument(
         '--reenrich-trailer-gaps',
@@ -107,12 +105,9 @@ def main():
     )
 
     args = parser.parse_args()
-    incremental = not args.full
-    force_refresh = args.full  # Force refresh cache on full runs
 
-    # Set debug mode globally (could be passed to DataGenerator if needed)
+    # Set debug mode globally
     if args.debug:
-        os.environ['AGENT_SCRAPER_DEBUG'] = 'true'
         print("🐛 Debug mode enabled for intake/provider discovery and agent scraper")
 
     # Initialize data generator from pipeline module
@@ -163,7 +158,7 @@ def main():
 
     # Run festival backfill if requested
     festival_count = 0
-    if getattr(args, 'festival_backfill', False):
+    if args.festival_backfill:
         years = None
         if args.festival_years:
             years = [int(y.strip()) for y in args.festival_years.split(',')]
@@ -228,11 +223,10 @@ def main():
         generator.archive_old_movies(days=90)
         print("✅ Archive complete")
 
-    # Generate the final display data (only for final generation phase, not intake/discovery/enrich/festival)
-    festival_backfill = getattr(args, 'festival_backfill', False)
-    if not args.intake and not args.discover and not args.enrich and not festival_backfill and not args.reenrich_gaps and not args.reenrich_trailer_gaps and not args.gap_fill and not args.check_screenings and not args.archive and not args.scan_eventive:
+    # Generate the final display data (only when no phase flags are passed)
+    if not args.intake and not args.discover and not args.enrich and not args.festival_backfill and not args.reenrich_gaps and not args.reenrich_trailer_gaps and not args.gap_fill and not args.check_screenings and not args.archive and not args.scan_eventive:
         print("\n🎬 Generating final display data...")
-        generator.generate_display_data(incremental=incremental, force_refresh=force_refresh)
+        generator.generate_display_data()
     else:
         print("📋 Phase complete")
 
