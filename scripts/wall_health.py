@@ -124,13 +124,8 @@ print('COVERAGE: RT %d%% (%d) | MC %d%% (%d) | Wiki %d%% (%d) | Trailers %d%% (%
 # Build ID→movie lookup for cross-referencing tracking with wall data
 movies_by_id = {str(m.get('id', '')): m for m in movies}
 
-# Find movies that transitioned today (via _transitioned_at in tracking)
-arrivals = []
-for mid, tk in tracking_raw.items():
-    if tk.get('_transitioned_at') == today:
-        wall_movie = movies_by_id.get(str(mid))
-        if wall_movie:
-            arrivals.append(wall_movie)
+# Find movies whose digital_date is today (on wall = arrived today)
+arrivals = [m for m in movies if m.get('digital_date') == today and not m.get('_is_preorder')]
 
 print()
 print('─' * 78)
