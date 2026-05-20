@@ -530,7 +530,7 @@ const NRW = {
             }
             if (movie.links?.letterboxd) {
                 const lbText = movie.letterboxd_score ? NRW.lbStars(movie.letterboxd_score) : '';
-                cardScoreBadges += `<a href="${movie.links.letterboxd}" target="_blank" rel="noopener noreferrer" class="card-score-badge lb"><img src="assets/logos/letterboxd.png" class="score-logo" alt="LB">${lbText ? ' ' + lbText : ''}</a>`;
+                cardScoreBadges += `<a href="${movie.links.letterboxd}" target="_blank" rel="noopener noreferrer" class="card-score-badge lb"><img src="assets/logos/services/letterboxd-decal-dots-pos-rgb-500px.png" class="score-logo" alt="LB">${lbText ? ' ' + lbText : ''}</a>`;
             }
             const cardScoreHtml = cardScoreBadges ? `<div class="card-score-overlay">${cardScoreBadges}</div>` : '';
 
@@ -1130,7 +1130,7 @@ const NRW = {
         }
         if (movie.links?.letterboxd) {
             const lbText = movie.letterboxd_score ? NRW.lbStars(movie.letterboxd_score) : 'LB';
-            container.appendChild(makeBadge(movie.links.letterboxd, 'lb', lbText, 'assets/logos/letterboxd.png'));
+            container.appendChild(makeBadge(movie.links.letterboxd, 'lb', lbText, 'assets/logos/services/letterboxd-decal-dots-pos-rgb-500px.png'));
         }
         if (movie.links?.wikipedia) {
             container.appendChild(makeBadge(movie.links.wikipedia, 'wiki', 'Wiki'));
