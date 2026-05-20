@@ -2497,7 +2497,7 @@
       "status": "tracking",
       "added": "2025-09-06T16:47:45.382517",
       "year": 2025,
-      "_jw_revert_count": 1,
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-19"
     },
@@ -21444,7 +21444,7 @@
       "discovery_pass": "B",
       "has_providers": false,
       "year": 2025,
-      "_jw_revert_count": 8,
+      "_jw_revert_count": 9,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-16"
     },
@@ -34533,13 +34533,23 @@
     },
     "1569807": {
       "title": "Receptions",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2025-11-10",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-06-02",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
       "discovery_pass": "B",
-      "has_providers": false,
-      "year": 2025
+      "has_providers": true,
+      "year": 2025,
+      "_virtual_screening": true,
+      "_discovery_source": "provider_availability_check",
+      "_is_preorder": true,
+      "enriched": true,
+      "enrichment_date": "2026-05-20",
+      "_transitioned_at": "2026-05-20"
     },
     "1569696": {
       "title": "Voice",
@@ -84813,12 +84823,22 @@
       "title": "KA",
       "status": "tracking",
       "first_seen": "2026-01-04",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-05-20",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "fuboTV"
+        ]
+      },
       "intake_pass": "backfill",
-      "has_providers": false,
+      "has_providers": true,
       "year": 2024,
-      "premiere_date": "2024-10-31"
+      "premiere_date": "2024-10-31",
+      "_discovery_source": "provider_availability_check",
+      "_jw_revert_count": 1,
+      "_jw_revert_reason": "justwatch_no_valid_offers",
+      "_jw_reverted_at": "2026-05-20"
     },
     "1342156": {
       "title": "Songs Inside",
@@ -97371,12 +97391,24 @@
       "title": "28 Degree Celsius",
       "status": "tracking",
       "first_seen": "2026-01-04",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-05-20",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
       "intake_pass": "backfill",
-      "has_providers": false,
+      "has_providers": true,
       "year": 2025,
-      "premiere_date": "2025-04-04"
+      "premiere_date": "2025-04-04",
+      "_discovery_source": "provider_availability_check",
+      "_jw_revert_count": 1,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-05-20"
     },
     "1586208": {
       "title": "The Decomposing",
@@ -104175,7 +104207,7 @@
       "year": 2025,
       "premiere_date": "2025-05-30",
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 1,
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-05-19"
     },
@@ -114667,11 +114699,21 @@
       "year": 2024,
       "status": "tracking",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-05-20",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "fuboTV"
+        ]
+      },
       "intake_pass": "C",
       "festival": "Cannes",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "_jw_revert_count": 1,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-05-20"
     },
     "242826": {
       "title": "The Churning",
@@ -115387,11 +115429,14 @@
       "year": 2024,
       "status": "tracking",
       "first_seen": "2026-01-06",
-      "digital_date": null,
+      "digital_date": "2026-06-19",
       "providers": {},
       "intake_pass": "C",
       "festival": "Tribeca",
-      "has_providers": false
+      "has_providers": false,
+      "_discovery_source": "tmdb_type4",
+      "_type4_pending": true,
+      "_is_preorder": true
     },
     "1276007": {
       "title": "How I Faked My Life with AI",
@@ -117396,7 +117441,7 @@
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-05-19"
+      "enrichment_date": "2026-05-20"
     },
     "1560379": {
       "title": "The Last Philadelphia",
@@ -123101,9 +123146,10 @@
       "_is_preorder": true,
       "enriched": false,
       "enrichment_date": null,
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
+      "_transitioned_at": "2026-05-20",
       "_jw_revert_reason": "justwatch_no_valid_offers",
-      "_jw_reverted_at": "2026-05-19"
+      "_jw_reverted_at": "2026-05-20"
     },
     "1421539": {
       "title": "Julian",
@@ -123182,7 +123228,7 @@
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
       "enriched": true,
-      "enrichment_date": "2026-05-19"
+      "enrichment_date": "2026-05-20"
     },
     "1242265": {
       "title": "Fuze",
@@ -222301,7 +222347,7 @@
       "digital_date": "2026-05-15",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 8,
+      "_jw_revert_count": 9,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-16"
     },
@@ -222330,7 +222376,7 @@
       "digital_date": "2026-05-15",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 8,
+      "_jw_revert_count": 9,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-16"
     },
@@ -222359,7 +222405,7 @@
       "digital_date": "2026-05-15",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 8,
+      "_jw_revert_count": 9,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-16"
     },
@@ -223081,7 +223127,7 @@
       "has_providers": false,
       "_jw_revert_count": 2,
       "enriched": true,
-      "enrichment_date": "2026-05-19",
+      "enrichment_date": "2026-05-20",
       "_enrichment_attempts": 0,
       "_added_manually": true,
       "_added_at": "2026-05-19",
@@ -223347,7 +223393,7 @@
       "digital_date": "2026-05-17",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-19"
     },
@@ -223861,6 +223907,282 @@
       "digital_date": null,
       "providers": {},
       "intake_pass": "B"
+    },
+    "1698435": {
+      "title": "The Boys: Blood and Bone",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-20",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A"
+    },
+    "1380291": {
+      "title": "Tom Clancy's Jack Ryan: Ghost War",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-20",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A"
+    },
+    "1698914": {
+      "title": "The Boys: Finale",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-20",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1694049": {
+      "title": "In Salita",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-20",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1679686": {
+      "title": "Maximilien Kolbe",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-20",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1677549": {
+      "title": "Inheritance",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-20",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1669069": {
+      "title": "Wanted, Wasted And Washed.",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-20",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1663287": {
+      "title": "Paul and Greg and Amelia",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-20",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1607073": {
+      "title": "Be Yourself",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-20",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1603952": {
+      "title": "Wu Ye Yuan Ling",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-20",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1578068": {
+      "title": "1026: 새로운 세상을 위한",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-20",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1522686": {
+      "title": "The Rule Breaker",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-20",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1473878": {
+      "title": "Speed Demon",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-20",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1422084": {
+      "title": "As the Hydra Devours History",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-20",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1368314": {
+      "title": "Passenger",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-20",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1259114": {
+      "title": "Rosen und Reis",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-20",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1698842": {
+      "title": "Forever Young: A Grammy Salute to Rod Stewart Live",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-20",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1698215": {
+      "title": "The Final Battle",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-20",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "1692355": {
+      "title": "Sopa de Cabra, tornar enrere",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-20",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B"
+    },
+    "tv_322126": {
+      "title": "World Wide Mafia 'Ndrangheta",
+      "content_type": "limited_series",
+      "tmdb_id": 322126,
+      "status": "tracking",
+      "first_air_date": "2026-05-20",
+      "digital_date": "2026-05-20",
+      "episode_count": 4,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/on88qvkBtZH3YUELMNW0MYc9XwF.jpg",
+      "synopsis": "Prosecutor Nicola Gratteri fights against the ’Ndrangheta, the world’s most powerful mafia, in this true story. From the Rinascita Scott operation to the historic Maxi-Trial, the series unveils courage, justice, and sacrifice in a relentless fight against organized crime.",
+      "genres": [
+        "Documentary",
+        "Crime"
+      ],
+      "original_language": "it",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-05-20",
+      "networks": [
+        "Disney+"
+      ],
+      "has_providers": false
+    },
+    "tv_320472": {
+      "title": "Kylie",
+      "content_type": "limited_series",
+      "tmdb_id": 320472,
+      "status": "tracking",
+      "first_air_date": "2026-05-20",
+      "digital_date": "2026-05-20",
+      "episode_count": 3,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/nFz22o5i9EFAidLZS1a34HOZIcr.jpg",
+      "synopsis": "Kylie looks at the life of Minogue, who opens her personal archives and reflects on a career in which she has sold 80 million records and reinvented herself, by extension pop, several times. Home movies, personal photographs and new interviews will reveal the picture, as she addresses how she’s faced public scrutiny, personal loss and illness.",
+      "genres": [
+        "Documentary"
+      ],
+      "original_language": "en",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-05-20",
+      "networks": [
+        "Netflix"
+      ],
+      "has_providers": false
+    },
+    "tv_287168": {
+      "title": "Falling",
+      "content_type": "limited_series",
+      "tmdb_id": 287168,
+      "status": "tracking",
+      "first_air_date": "2026-05-19",
+      "digital_date": "2026-05-19",
+      "episode_count": 6,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/cez4OCwBHziwIYKuOJtlMxLkTGo.jpg",
+      "synopsis": "A nun and priest, each dedicated to their religious calling, unexpectedly fall in love and must confront what this means for their vows and faith.",
+      "genres": [
+        "Drama"
+      ],
+      "original_language": "en",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-05-20",
+      "networks": [
+        "Channel 4"
+      ],
+      "has_providers": false
+    },
+    "tv_322947": {
+      "title": "Tjernobyl - dagarna som skakade Sverige",
+      "content_type": "limited_series",
+      "tmdb_id": 322947,
+      "status": "tracking",
+      "first_air_date": "2026-04-21",
+      "digital_date": "2026-04-21",
+      "episode_count": 2,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/nHCMXeh7Rhcpssw6pS5t6FwO8Z8.jpg",
+      "synopsis": "",
+      "genres": [
+        "Documentary"
+      ],
+      "original_language": "sv",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-05-20",
+      "networks": [
+        "SVT2"
+      ],
+      "has_providers": false
     }
   }
 }
