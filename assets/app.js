@@ -528,9 +528,9 @@ const NRW = {
                     cardScoreBadges += `<span class="card-score-badge imdb"><img src="assets/logos/imdb.png" class="score-logo" alt="IMDb"> ${movie.imdb_rating}</span>`;
                 }
             }
-            if (movie.letterboxd_score && movie.links?.letterboxd) {
-                const lbStars = NRW.lbStars(movie.letterboxd_score);
-                cardScoreBadges += `<a href="${movie.links.letterboxd}" target="_blank" rel="noopener noreferrer" class="card-score-badge lb"><img src="assets/logos/letterboxd.png" class="score-logo" alt="LB"> ${lbStars}</a>`;
+            if (movie.links?.letterboxd) {
+                const lbText = movie.letterboxd_score ? NRW.lbStars(movie.letterboxd_score) : '';
+                cardScoreBadges += `<a href="${movie.links.letterboxd}" target="_blank" rel="noopener noreferrer" class="card-score-badge lb"><img src="assets/logos/letterboxd.png" class="score-logo" alt="LB">${lbText ? ' ' + lbText : ''}</a>`;
             }
             const cardScoreHtml = cardScoreBadges ? `<div class="card-score-overlay">${cardScoreBadges}</div>` : '';
 
@@ -1128,8 +1128,9 @@ const NRW = {
         if (movie.metacritic_score && movie.metacritic_score !== "0" && movie.links?.metacritic) {
             container.appendChild(makeBadge(movie.links.metacritic, 'mc', movie.metacritic_score, 'assets/logos/metacritic.png'));
         }
-        if (movie.letterboxd_score && movie.links?.letterboxd) {
-            container.appendChild(makeBadge(movie.links.letterboxd, 'lb', NRW.lbStars(movie.letterboxd_score), 'assets/logos/letterboxd.png'));
+        if (movie.links?.letterboxd) {
+            const lbText = movie.letterboxd_score ? NRW.lbStars(movie.letterboxd_score) : 'LB';
+            container.appendChild(makeBadge(movie.links.letterboxd, 'lb', lbText, 'assets/logos/letterboxd.png'));
         }
         if (movie.links?.wikipedia) {
             container.appendChild(makeBadge(movie.links.wikipedia, 'wiki', 'Wiki'));
