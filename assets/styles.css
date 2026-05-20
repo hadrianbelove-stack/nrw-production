@@ -439,8 +439,8 @@ header h1 {
     display: none;
     align-items: center;
     justify-content: center;
-    height: 80vh;
-    max-height: 700px;
+    height: 92vh;
+    max-height: 1050px;
     aspect-ratio: 2 / 3;
     padding: 2rem;
     text-align: center;
@@ -546,12 +546,12 @@ header h1 {
 .lightbox-screening-name {
     background: #FFD700;
     color: #000;
-    font-size: 0.7rem;
+    font-size: 0.85rem;
     font-weight: 800;
     letter-spacing: 1.5px;
     text-align: center;
-    padding: 8px 12px;
-    margin: -1.5rem -1.5rem 16px -1.5rem;
+    padding: 10px 14px;
+    margin: -2rem -2rem 16px -2rem;
     border-radius: 12px 12px 0 0;
 }
 
@@ -989,7 +989,7 @@ header h1 {
     z-index: 10000;
     align-items: center;
     justify-content: center;
-    padding: 2rem;
+    padding: 1rem;
 }
 
 .poster-lightbox.active {
@@ -1000,9 +1000,9 @@ header h1 {
 .lightbox-content {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    max-width: 1400px;
-    max-height: 90vh;
+    gap: 1.5rem;
+    max-width: 1800px;
+    max-height: 96vh;
     animation: lightboxFadeIn 0.3s ease;
 }
 
@@ -1057,8 +1057,8 @@ header h1 {
 
 /* Large poster */
 .lightbox-poster {
-    height: 80vh;
-    max-height: 700px;
+    height: 92vh;
+    max-height: 1050px;
     width: auto;
     border-radius: 12px;
     object-fit: cover;
@@ -1066,14 +1066,14 @@ header h1 {
     display: block;
 }
 
-/* Info panel — width matches poster (700px tall × 2:3 = 467px) */
+/* Info panel — width matches poster (1050px tall × 2:3 = 700px) */
 .lightbox-info {
-    width: 467px;
-    height: 80vh;
-    max-height: 700px;
+    width: 700px;
+    height: 92vh;
+    max-height: 1050px;
     background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
     border-radius: 12px;
-    padding: 1.5rem;
+    padding: 2rem;
     display: flex;
     flex-direction: column;
     overflow-y: auto;
@@ -1083,10 +1083,10 @@ header h1 {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
-    gap: 0.75rem;
+    gap: 1rem;
     border-bottom: 2px solid rgba(0, 212, 170, 0.4);
-    padding-bottom: 0.6rem;
-    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+    margin-bottom: 1rem;
 }
 
 .lightbox-title-side {
@@ -1098,7 +1098,7 @@ header h1 {
 }
 
 .lightbox-title {
-    font-size: 1.5rem;
+    font-size: 2.2rem;
     font-weight: 600;
     color: #fff;
     margin: 0;
@@ -1107,7 +1107,7 @@ header h1 {
 
 .lightbox-date {
     color: #00d4aa;
-    font-size: 1.2rem;
+    font-size: 1.6rem;
     font-weight: 700;
     white-space: nowrap;
 }
@@ -1126,8 +1126,8 @@ header h1 {
 
 .lightbox-meta {
     color: #888;
-    margin-bottom: 1rem;
-    font-size: 0.9rem;
+    margin-bottom: 1.25rem;
+    font-size: 1.1rem;
     line-height: 1.6;
 }
 .lightbox-crew-label {
@@ -1149,10 +1149,10 @@ header h1 {
 .lightbox-scores .score-badge {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
-    padding: 3px 8px;
-    border-radius: 5px;
-    font-size: 0.75rem;
+    gap: 5px;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 0.9rem;
     font-weight: 600;
     text-decoration: none;
     background: rgba(255,255,255,0.06);
@@ -1166,7 +1166,7 @@ header h1 {
 .lightbox-scores .score-badge.lb { color: #00e054; }
 .lightbox-scores .score-badge.wiki { color: #fff; }
 .lightbox-scores .score-badge .score-logo {
-    height: 14px;
+    height: 18px;
     width: auto;
     vertical-align: middle;
 }
@@ -1176,9 +1176,10 @@ header h1 {
 
 .lightbox-synopsis {
     color: #ccc;
-    line-height: 1.6;
+    font-size: 1.05rem;
+    line-height: 1.7;
     flex: 1;
-    margin-bottom: 1rem;
+    margin-bottom: 1.25rem;
     overflow-y: auto;
 }
 
@@ -1213,7 +1214,7 @@ header h1 {
     display: block;
     font-style: italic;
     color: #ddd;
-    font-size: 0.85rem;
+    font-size: 1rem;
     line-height: 1.5;
     quotes: "\201C" "\201D";
 }
@@ -1221,7 +1222,7 @@ header h1 {
 .pq-cite {
     display: block;
     font-style: normal;
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     color: #888;
     margin-top: 0.25rem;
 }
@@ -1239,13 +1240,13 @@ header h1 {
     margin-bottom: 10px;
 }
 .lb-nav-btn {
-    width: 48px;
-    height: 48px;
+    width: 56px;
+    height: 56px;
     border-radius: 50%;
     border: none;
     background: rgba(0, 212, 170, 0.1);
     color: #00d4aa;
-    font-size: 1.8rem;
+    font-size: 2rem;
     font-weight: 300;
     cursor: pointer;
     transition: background 0.2s, color 0.2s;
@@ -1261,12 +1262,12 @@ header h1 {
 }
 .lb-trailer-btn {
     flex: 1;
-    height: 48px;
+    height: 56px;
     border: 1.5px solid rgba(255,255,255,0.3);
     border-radius: 10px;
     background: #E50914;
     color: #fff;
-    font-size: 0.95rem;
+    font-size: 1.1rem;
     font-weight: 800;
     letter-spacing: 0.2em;
     cursor: pointer;
@@ -1295,23 +1296,23 @@ header h1 {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 14px 10px;
+    padding: 16px 12px;
     border-radius: 10px;
     text-decoration: none;
     color: #fff;
-    min-height: 52px;
+    min-height: 58px;
     border: 1.5px solid rgba(255,255,255,0.8);
     transition: all 0.2s;
     font-weight: 700;
     text-transform: uppercase;
-    font-size: 0.85rem;
+    font-size: 1rem;
 }
 .stream-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
 .stream-btn:active { transform: scale(0.97); }
 .stream-btn img {
-    height: 20px;
+    height: 26px;
     width: auto;
-    max-width: 100px;
+    max-width: 120px;
     object-fit: contain;
     filter: brightness(0) invert(1);
 }
@@ -1344,7 +1345,7 @@ header h1 {
     overflow: hidden;
     text-decoration: none;
     color: #fff;
-    min-height: 48px;
+    min-height: 56px;
     border: 1.5px solid rgba(255,255,255,0.8);
     transition: all 0.2s;
 }
@@ -1354,15 +1355,15 @@ header h1 {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 6px 6px;
+    padding: 8px 8px;
     width: 40%;
     font-weight: 700;
     text-transform: uppercase;
-    font-size: 0.65rem;
+    font-size: 0.8rem;
     overflow: hidden;
 }
 .vod-btn .logo-half img {
-    height: 14px;
+    height: 18px;
     width: auto;
     max-width: 100%;
     object-fit: contain;
@@ -1372,10 +1373,10 @@ header h1 {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 6px 4px;
+    padding: 8px 6px;
     width: 60%;
     background: rgba(0,0,0,0.4);
-    font-size: 0.65rem;
+    font-size: 0.8rem;
     font-weight: 700;
     color: #fff;
     line-height: 1.2;
@@ -1490,7 +1491,7 @@ header h1 {
 }
 
 /* Responsive adjustments */
-@media (max-width: 900px) {
+@media (max-width: 1100px) {
     .lightbox-content {
         flex-direction: column;
         align-items: center;
@@ -1508,19 +1509,19 @@ header h1 {
 
     .lightbox-info {
         width: 100%;
-        max-width: 467px;
+        max-width: 600px;
         height: auto;
-        max-height: 35vh;
+        max-height: 40vh;
     }
 
     /* Compact nav row on mobile */
     .lb-nav-btn {
-        width: 40px;
-        height: 40px;
-        font-size: 1.4rem;
+        width: 44px;
+        height: 44px;
+        font-size: 1.5rem;
     }
     .lb-trailer-btn {
-        height: 40px;
-        font-size: 0.85rem;
+        height: 44px;
+        font-size: 0.9rem;
     }
 }
