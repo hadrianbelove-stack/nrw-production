@@ -270,6 +270,7 @@ class DataGenerator:
         movie['enriched'] = False
         movie['enrichment_date'] = None
         movie['_discovery_source'] = source
+        movie['_transitioned_at'] = datetime.now().strftime('%Y-%m-%d')
         if 'providers' not in movie or not movie['providers']:
             movie['providers'] = {'rent': [], 'buy': [], 'streaming': []}
         # Clear ALL revert/false-positive flags from any prior state
@@ -1256,7 +1257,7 @@ class DataGenerator:
             self.metacritic_scraper = False
             return False
 
-    def find_letterboxd_score(self, title, year):
+    def find_letterboxd_score(self, title, year, tmdb_id=None):
         """Find Letterboxd URL and average rating via HTTP scraper."""
         enabled = self.config.get('letterboxd_scraper', {}).get('enabled', True)
         if not enabled:
@@ -1266,7 +1267,7 @@ class DataGenerator:
             return None
 
         try:
-            result = self.letterboxd_scraper.scrape_letterboxd_score(title, int(year))
+            result = self.letterboxd_scraper.scrape_letterboxd_score(title, int(year), tmdb_id=tmdb_id)
             scraper_stats = self.letterboxd_scraper.get_stats()
             self.enrichment_stats['lb_attempts'] = scraper_stats['attempts']
             self.enrichment_stats['lb_successes'] = scraper_stats['successes']

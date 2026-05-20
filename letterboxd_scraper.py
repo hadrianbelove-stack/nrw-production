@@ -43,12 +43,15 @@ class LetterboxdScraper:
             'Accept-Language': 'en-US,en;q=0.9',
         }
 
-    def scrape_letterboxd_score(self, title, year):
+    def scrape_letterboxd_score(self, title, year, tmdb_id=None):
         """Public interface: find Letterboxd page and average rating for a movie.
 
         Args:
             title: Movie title
             year: Release year (int)
+            tmdb_id: TMDB movie ID (int or str). If provided, uses Letterboxd's
+                     TMDB redirect (letterboxd.com/tmdb/{id}/) as primary lookup —
+                     bypasses slug construction and year verification entirely.
 
         Returns:
             dict: {'url': str, 'score': str or None} or None if not found
@@ -72,8 +75,14 @@ class LetterboxdScraper:
         self._enforce_rate_limit()
         self.stats['attempts'] += 1
 
-        # Try candidate URLs
-        result = self._try_candidate_urls(title, year)
+        # Primary: TMDB redirect (reliable, handles all slug/year edge cases)
+        result = None
+        if tmdb_id:
+            result = self._try_tmdb_redirect(tmdb_id)
+
+        # Fallback: slug-based URL construction
+        if not result:
+            result = self._try_candidate_urls(title, year)
 
         # Cache and return
         if result and result.get('url'):
@@ -95,6 +104,40 @@ class LetterboxdScraper:
             }
             self._save_cache()
             self.stats['failures'] += 1
+            return None
+
+    def _try_tmdb_redirect(self, tmdb_id):
+        """Look up Letterboxd film page via TMDB ID redirect.
+
+        Letterboxd maintains a TMDB-to-film mapping: requesting
+        letterboxd.com/tmdb/{id}/ redirects to the canonical film page.
+        This bypasses slug construction and year verification entirely.
+
+        Returns:
+            dict with url and score, or None if not found
+        """
+        # Strip 'tv_' prefix — Letterboxd is film-only, TV IDs will 404
+        clean_id = str(tmdb_id).replace('tv_', '')
+        if not clean_id.isdigit():
+            return None
+
+        url = f'https://letterboxd.com/tmdb/{clean_id}/'
+        try:
+            resp = requests.get(url, headers=self.headers, timeout=self.timeout,
+                                allow_redirects=True)
+            if resp.status_code != 200 or '/film/' not in resp.url:
+                return None
+
+            score = self._extract_rating_from_html(resp.text)
+            final_url = resp.url.rstrip('/')
+            return {'url': final_url, 'score': score}
+
+        except requests.exceptions.Timeout:
+            self._log(f"Timeout for TMDB redirect {url}", level='debug')
+            self.record_error('timeout')
+            return None
+        except Exception as e:
+            self._log(f"Error with TMDB redirect {url}: {e}", level='debug')
             return None
 
     def _try_candidate_urls(self, title, year):

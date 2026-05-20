@@ -347,7 +347,7 @@ class MovieEnricher:
         # Letterboxd score and link
         self._current_enrichment_step = 'letterboxd_score'
         try:
-            lb_data = self.host.find_letterboxd_score(title, year)
+            lb_data = self.host.find_letterboxd_score(title, year, tmdb_id=movie_id)
             if lb_data:
                 if lb_data.get('url'):
                     result['links']['letterboxd'] = lb_data['url']
