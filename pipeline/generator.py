@@ -362,7 +362,7 @@ class DataGenerator:
             if response.status_code == 200:
                 return response.json()
         except Exception as e:
-            print(f"Error fetching details for {movie_id}: {e}")
+            self.logger.error(f"Error fetching details for {movie_id}: {e}")
         return None
 
     def get_tv_details(self, tv_id):
@@ -379,7 +379,7 @@ class DataGenerator:
             if response.status_code == 200:
                 return response.json()
         except Exception as e:
-            print(f"Error fetching TV details for {tv_id}: {e}")
+            self.logger.error(f"Error fetching TV details for {tv_id}: {e}")
         return None
 
     def fetch_tmdb_type4_date(self, movie_id):
@@ -1022,7 +1022,6 @@ class DataGenerator:
             return wiki_url
 
         except Exception as e:
-            print(f"Wikipedia scraper error for {title} ({year}): {e}")
             self.logger.error(f"Wikipedia scraper error for {title} ({year}): {e}")
             return None
     
