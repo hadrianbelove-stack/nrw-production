@@ -531,6 +531,7 @@ const MovieDetailTvOS = () => {
     rtScore,
     mcScore,
     imdbScore,
+    lbScore,
     formattedCountries,
     hasWatchOptions,
   } = useMovieDetail(movie);
@@ -755,7 +756,7 @@ const MovieDetailTvOS = () => {
             )}
 
             {/* 5. Scores — compact inline badge pills (display-only, no Wiki) */}
-            {(rtScore || mcScore || imdbScore) && (
+            {(rtScore || mcScore || imdbScore || lbScore) && (
               <View style={badgeStyles.row}>
                 {rtScore && (
                   <ScoreBadge
@@ -779,6 +780,14 @@ const MovieDetailTvOS = () => {
                     score={mcScore.label}
                     color="#7ddf64"
                     accessibilityLabel={`Metacritic score ${mcScore.label}`}
+                  />
+                )}
+                {lbScore && (
+                  <ScoreBadge
+                    logo={require('../../assets/logos/letterboxd.png')}
+                    score={lbScore.label}
+                    color="#00E054"
+                    accessibilityLabel={`Letterboxd rating ${lbScore.label}`}
                   />
                 )}
               </View>

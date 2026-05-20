@@ -81,6 +81,12 @@ import com.nrw.app.ui.theme.TextSecondary
 import com.nrw.app.util.DeepLinkHelper
 import com.nrw.app.util.formatShortDate
 
+/** Convert Letterboxd 0-5 score to star glyphs (★★★★☆) */
+private fun lbStars(score: Float): String {
+    val n = Math.round(score).coerceIn(0, 5)
+    return "\u2605".repeat(n) + "\u2606".repeat(5 - n)
+}
+
 /**
  * Movie Detail Screen for Android TV
  * Matches tvOS layout: 35% poster, 60dp padding, buttons above synopsis
@@ -622,9 +628,10 @@ private fun MovieDetail(
                     }
                 }
 
-                // Scores row — RT + MC + IMDb display-only (no Wiki on TV)
+                // Scores row — RT + MC + IMDb + LB display-only (no Wiki on TV)
                 val mcScore = movie.metacriticScore?.toIntOrNull()?.takeIf { it > 0 }
-                if (rtInfo != null || mcScore != null || movie.imdbRating?.toFloatOrNull() != null) {
+                val lbRating = movie.letterboxdScore?.toFloatOrNull()
+                if (rtInfo != null || mcScore != null || movie.imdbRating?.toFloatOrNull() != null || lbRating != null) {
                     Spacer(modifier = Modifier.height(14.dp))
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(24.dp),
@@ -716,6 +723,24 @@ private fun MovieDetail(
                                 Text(
                                     text = "${"%.1f".format(rating)}",
                                     color = Color(0xFFF5C518),
+                                    fontWeight = FontWeight.ExtraBold,
+                                    fontSize = 18.sp
+                                )
+                            }
+                        }
+                        // Letterboxd: logo + star glyphs (display-only)
+                        lbRating?.let { score ->
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.logo_letterboxd),
+                                    contentDescription = "Letterboxd",
+                                    modifier = Modifier.height(24.dp).padding(end = 8.dp),
+                                    contentScale = ContentScale.Fit,
+                                    colorFilter = ColorFilter.tint(Color(0xFF00E054))
+                                )
+                                Text(
+                                    text = lbStars(score),
+                                    color = Color(0xFF00E054),
                                     fontWeight = FontWeight.ExtraBold,
                                     fontSize = 18.sp
                                 )

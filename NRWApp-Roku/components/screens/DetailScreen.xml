@@ -355,6 +355,21 @@
               font="font:MediumBoldSystemFont"
               color="0xF5C518FF" />
           </LayoutGroup>
+
+          <!-- Letterboxd: logo + star glyphs -->
+          <LayoutGroup id="lbGroup"
+            layoutDirection="horiz"
+            itemSpacings="[8]"
+            visible="false">
+            <Poster id="lbLogoPoster"
+              width="32" height="32"
+              uri="pkg:/images/icons/logo_letterboxd.png"
+              loadDisplayMode="scaleToFit"
+              blendColor="0x00E054FF" />
+            <Label id="lbScoreLabel"
+              font="font:MediumBoldSystemFont"
+              color="0x00E054FF" />
+          </LayoutGroup>
         </LayoutGroup>
       </LayoutGroup>
     </LayoutGroup>

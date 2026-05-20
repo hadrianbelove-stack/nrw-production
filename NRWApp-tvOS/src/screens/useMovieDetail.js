@@ -93,6 +93,16 @@ export function useMovieDetail(movie) {
     return { value: rating, label: rating.toFixed(1) };
   }, [movie]);
 
+  // Get Letterboxd score display (stars)
+  const lbScore = useMemo(() => {
+    if (!movie?.letterboxd_score) return null;
+    const score = parseFloat(movie.letterboxd_score);
+    if (isNaN(score)) return null;
+    const n = Math.round(score);
+    const label = '\u2605'.repeat(n) + '\u2606'.repeat(5 - n);
+    return { value: score, label };
+  }, [movie]);
+
   // Get formatted countries
   const formattedCountries = useMemo(() => {
     if (!movie?.countries || !Array.isArray(movie.countries)) return '';
@@ -134,6 +144,7 @@ export function useMovieDetail(movie) {
     rtScore,
     mcScore,
     imdbScore,
+    lbScore,
     formattedCountries,
     formattedLanguage,
     hasWatchOptions,

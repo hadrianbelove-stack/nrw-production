@@ -81,6 +81,19 @@ export async function openMetacritic(url) {
 }
 
 /**
+ * Open Letterboxd link
+ */
+export async function openLetterboxd(url) {
+  if (!url) return;
+
+  try {
+    await Linking.openURL(url);
+  } catch (error) {
+    console.error('[Links] Error opening Letterboxd:', error);
+  }
+}
+
+/**
  * Open Wikipedia link
  */
 export async function openWikipedia(url) {
@@ -129,6 +142,7 @@ export default {
   openTrailer,
   openRottenTomatoes,
   openMetacritic,
+  openLetterboxd,
   openWikipedia,
   shareMovie,
   extractYouTubeId,

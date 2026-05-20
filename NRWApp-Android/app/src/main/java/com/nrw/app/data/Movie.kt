@@ -66,6 +66,9 @@ data class Movie(
     @SerializedName("imdb_rating")
     val imdbRating: String? = null,
 
+    @SerializedName("letterboxd_score")
+    val letterboxdScore: String? = null,
+
     val links: MovieLinks? = null,
 
     @SerializedName("watch_links")
@@ -141,7 +144,9 @@ data class MovieLinks(
 
     val wikipedia: String? = null,
 
-    val imdb: String? = null
+    val imdb: String? = null,
+
+    val letterboxd: String? = null
 )
 
 data class WatchLinks(

@@ -52,6 +52,8 @@ Sub Init()
     m.mcWordLabel = m.top.FindNode("mcWordLabel")
     m.imdbGroup = m.top.FindNode("imdbGroup")
     m.imdbScoreLabel = m.top.FindNode("imdbScoreLabel")
+    m.lbGroup = m.top.FindNode("lbGroup")
+    m.lbScoreLabel = m.top.FindNode("lbScoreLabel")
 
     m.leftChevron = m.top.FindNode("leftChevron")
     m.rightChevron = m.top.FindNode("rightChevron")
@@ -367,6 +369,30 @@ Sub LoadMovie(index as Integer)
         end if
     else
         m.imdbGroup.visible = false
+    end if
+
+    ' Letterboxd score (star glyphs)
+    if movie.letterboxd_score <> invalid
+        lbStr = movie.letterboxd_score.ToStr()
+        lbNum = Val(lbStr)
+        if lbNum > 0
+            lbRounded = Int(lbNum + 0.5)
+            if lbRounded > 5 then lbRounded = 5
+            stars = ""
+            for i = 1 to lbRounded
+                stars = stars + chr(9733)
+            end for
+            for i = 1 to (5 - lbRounded)
+                stars = stars + chr(9734)
+            end for
+            m.lbScoreLabel.text = stars
+            m.lbGroup.visible = true
+            hasInfo = true
+        else
+            m.lbGroup.visible = false
+        end if
+    else
+        m.lbGroup.visible = false
     end if
 
     m.infoRow.visible = hasInfo

@@ -21,7 +21,7 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {WatchButtonGroup} from '../components/WatchButton';
 import {Colors, Typography, Spacing} from '../constants/colors';
 import {getWatchLinks} from '../services/api';
-import {openWatchLink, openRottenTomatoes, openMetacritic, openWikipedia} from '../utils/links';
+import {openWatchLink, openRottenTomatoes, openMetacritic, openLetterboxd, openWikipedia} from '../utils/links';
 import {trackMovieView, trackWatchButtonTap} from '../services/analytics';
 import TrailerPlayer from '../components/TrailerPlayer';
 
@@ -41,6 +41,11 @@ const formatCountry = (country) => {
     return country[0].toUpperCase() + country.slice(1).toLowerCase();
   }
   return country;
+};
+
+const lbStars = (score) => {
+  const n = Math.round(parseFloat(score));
+  return '\u2605'.repeat(n) + '\u2606'.repeat(5 - n);
 };
 
 const formatShortDate = (dateStr) => {
@@ -168,6 +173,12 @@ export default function MovieDetail({route}) {
     }
   }, [movie]);
 
+  const handleLBPress = useCallback(() => {
+    if (movie.links?.letterboxd) {
+      openLetterboxd(movie.links.letterboxd);
+    }
+  }, [movie]);
+
   const handleWikiPress = useCallback(() => {
     if (movie.links?.wikipedia) {
       openWikipedia(movie.links.wikipedia);
@@ -291,8 +302,8 @@ export default function MovieDetail({route}) {
         </View>
       </View>
 
-      {/* Scores row — RT + IMDb + MC + Wiki */}
-      {(movie.links?.wikipedia || movie.rt_score || (movie.metacritic_score && movie.metacritic_score !== "0") || movie.imdb_rating) && (
+      {/* Scores row — RT + IMDb + MC + LB + Wiki */}
+      {(movie.links?.wikipedia || movie.rt_score || (movie.metacritic_score && movie.metacritic_score !== "0") || movie.imdb_rating || movie.letterboxd_score) && (
         <View style={styles.section}>
           <View style={styles.infoRow}>
             {movie.rt_score && (
@@ -322,6 +333,17 @@ export default function MovieDetail({route}) {
                 <View style={styles.infoBtnContent}>
                   <Image source={require('../assets/logos/metacritic.png')} style={[styles.infoBtnLogo, { tintColor: '#7ddf64' }]} />
                   <Text style={[styles.infoBtnColoredText, { color: '#7ddf64' }]}>{movie.metacritic_score}</Text>
+                </View>
+              </TouchableOpacity>
+            )}
+            {movie.letterboxd_score && (
+              <TouchableOpacity
+                style={styles.infoBtnColored}
+                onPress={handleLBPress}
+                disabled={!movie.links?.letterboxd}>
+                <View style={styles.infoBtnContent}>
+                  <Image source={require('../assets/logos/letterboxd.png')} style={[styles.infoBtnLogo, { tintColor: '#00E054' }]} />
+                  <Text style={[styles.infoBtnColoredText, { color: '#00E054' }]}>{lbStars(movie.letterboxd_score)}</Text>
                 </View>
               </TouchableOpacity>
             )}
