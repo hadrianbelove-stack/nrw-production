@@ -1,29 +1,20 @@
 {
-  "timestamp": "2026-05-19T03:58:36.071248",
-  "movies_requested": 16,
-  "movies_enriched": 14,
-  "movies_deferred": 2,
+  "timestamp": "2026-05-20T20:02:16.044503",
+  "movies_requested": 10,
+  "movies_enriched": 9,
+  "movies_deferred": 1,
   "deferred_details": [
     {
       "title": "Palestine 36",
       "reason": "jw_revert:justwatch_no_valid_offers",
       "digital_date": "2026-05-19",
-      "discovered_at": "2026-05-08T01:20:12.923722",
+      "discovered_at": "2026-05-19T12:14:03.118242",
       "discovery_source": "tmdb_type4",
-      "revert_count": 1,
-      "tmdb_platforms": []
-    },
-    {
-      "title": "Wasteman",
-      "reason": "jw_revert:justwatch_no_valid_offers",
-      "digital_date": "2026-05-19",
-      "discovered_at": "2026-05-08T01:20:13.679115",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 1,
+      "revert_count": 4,
       "tmdb_platforms": []
     }
   ],
-  "enrichment_duration_seconds": 1189.49,
+  "enrichment_duration_seconds": 993.38,
   "error_details": [],
   "total_errors": 0
 }
