@@ -296,7 +296,7 @@ class ProviderDiscoverer:
                                     if not movie.get('_is_preorder'):
                                         movie['_is_preorder'] = True
                                         self.host.add_movie_to_site_immediately(movie_id, movie)
-                                        newly_available_ids.add(str(movie_id))  # Enrich on entry (trailers, Wiki, RT)
+                                        newly_available_ids.append(str(movie_id))  # Enrich on entry (trailers, Wiki, RT)
                                         print(f"  🏷️ {movie['title']} — added to wall as pre-order ({pending_date})")
                                     self.logger.debug(f"Type 4 still pending: {movie['title']} — {days_until}d until {pending_date}")
                             except ValueError:
@@ -336,7 +336,7 @@ class ProviderDiscoverer:
                                     movie['_is_preorder'] = True
                                     type4_found = True  # Skip provider check
                                     self.host.add_movie_to_site_immediately(movie_id, movie)
-                                    newly_available_ids.add(str(movie_id))  # Enrich on entry (trailers, Wiki, RT)
+                                    newly_available_ids.append(str(movie_id))  # Enrich on entry (trailers, Wiki, RT)
                                     self.logger.info(f"Type 4 future: {movie['title']} — {days_until}d until {type4_date} [pre-order on wall]")
                                     print(f"  ⏳ {movie['title']} — digital in {days_until}d ({type4_date}) [pre-order on wall]")
                             except ValueError:
