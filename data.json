@@ -9731,17 +9731,22 @@
       },
       "links": {
         "wikipedia": null,
-        "trailer": null,
-        "rt": null
+        "trailer": "https://www.youtube.com/watch?v=UuJ-wZTXEbk",
+        "rt": null,
+        "justwatch": "https://www.justwatch.com/us/movie/a-machu-picchu-proposal",
+        "imdb": "https://www.imdb.com/title/tt36615154/",
+        "letterboxd": "https://letterboxd.com/film/a-machu-picchu-proposal"
       },
       "watch_links": {
-        "streaming": {
-          "service": "Hallmark+",
-          "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.81658149-da02-4ecb-8677-e7e02b4b9821"
-        }
+        "streaming": [
+          {
+            "service": "Hallmark+",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.81658149-da02-4ecb-8677-e7e02b4b9821"
+          }
+        ]
       },
       "pre_order_links": [],
-      "_enrichment_status": "pending",
+      "_enrichment_status": "completed",
       "_discovered_at": "2026-05-21T13:01:28.951341",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
@@ -9778,7 +9783,20 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "_enrichment_attempts": 1,
+      "_last_enrichment_attempt": "2026-05-21",
+      "imdb_rating": "5.8",
+      "letterboxd_score": "2.9",
+      "_trailer_source": "gemini_playwright",
+      "_digital_date_source": "detection",
+      "_needs_review": false,
+      "status": "available",
+      "_enrichment_gaps": [
+        "rt_score",
+        "wikipedia",
+        "metacritic_score"
+      ]
     },
     {
       "id": "1127384",
@@ -9889,8 +9907,11 @@
       },
       "links": {
         "wikipedia": null,
-        "trailer": null,
-        "rt": null
+        "trailer": "https://www.youtube.com/watch?v=yo_HKSpJtpg",
+        "rt": null,
+        "justwatch": "https://www.justwatch.com/us/movie/strange-creatures",
+        "imdb": "https://www.imdb.com/title/tt24177240/",
+        "letterboxd": "https://letterboxd.com/film/strange-creatures-2024-1"
       },
       "watch_links": {
         "vod": [
@@ -9898,12 +9919,13 @@
             "service": "Amazon",
             "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.9024fb9a-6ea0-45a0-9802-d4e4de0c3e61&tag=nrw04-20",
             "rent_price": "$4.99",
+            "buy_price": "$9.99",
             "price": "$4.99"
           }
         ]
       },
       "pre_order_links": [],
-      "_enrichment_status": "pending",
+      "_enrichment_status": "completed",
       "_discovered_at": "2026-05-21T12:30:40.279478",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
@@ -9940,7 +9962,21 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "_enrichment_attempts": 1,
+      "_last_enrichment_attempt": "2026-05-21",
+      "imdb_rating": "6.8",
+      "letterboxd_score": null,
+      "_trailer_source": "gemini_playwright",
+      "_digital_date_source": "detection",
+      "_needs_review": false,
+      "status": "available",
+      "_enrichment_gaps": [
+        "rt_score",
+        "wikipedia",
+        "metacritic_score",
+        "letterboxd_score"
+      ]
     },
     {
       "id": "1380291",
