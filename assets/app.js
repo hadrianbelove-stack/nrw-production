@@ -74,6 +74,18 @@ const NRW = {
         return null;
     },
 
+    // Render a tiny markdown subset (**bold**, *italic*) to safe HTML.
+    // HTML is escaped first so synopsis text can never inject markup.
+    renderMarkdown(text) {
+        const esc = (text || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+        return esc
+            .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*([^*]+)\*/g, '<em>$1</em>');
+    },
+
 
     // Grid navigation state
     gridSelectedId: null,   // movie ID of selected card (string)
@@ -1079,9 +1091,9 @@ const NRW = {
             metaEl.appendChild(document.createTextNode(detailParts.join(' \u2022 ')));
         }
 
-        // Synopsis text
+        // Synopsis text (renders **bold**/*italic* markdown)
         const synopsisEl = document.getElementById('lightbox-synopsis');
-        synopsisEl.textContent = movie.synopsis || 'Synopsis coming soon.';
+        synopsisEl.innerHTML = this.renderMarkdown(movie.synopsis || 'Synopsis coming soon.');
 
         // Screening callout appended to synopsis
         if (movie.categories?.is_virtual_screening && movie.virtual_screening_info?.screening_name) {

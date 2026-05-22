@@ -25,6 +25,32 @@ import {openWatchLink, openRottenTomatoes, openMetacritic, openLetterboxd, openW
 import {trackMovieView, trackWatchButtonTap} from '../services/analytics';
 import TrailerPlayer from '../components/TrailerPlayer';
 
+// Render a tiny markdown subset (**bold**, *italic*) into styled <Text> spans.
+// Returns an array of <Text> that inherits the parent <Text>'s base style.
+const renderMarkdownSpans = (text) => {
+  if (!text) return null;
+  const regex = /\*\*([^*]+)\*\*|\*([^*]+)\*/g;
+  const spans = [];
+  let lastIndex = 0;
+  let key = 0;
+  let m;
+  while ((m = regex.exec(text)) !== null) {
+    if (m.index > lastIndex) {
+      spans.push(<Text key={key++}>{text.slice(lastIndex, m.index)}</Text>);
+    }
+    if (m[1] !== undefined) {
+      spans.push(<Text key={key++} style={{fontWeight: '700'}}>{m[1]}</Text>);
+    } else {
+      spans.push(<Text key={key++} style={{fontStyle: 'italic'}}>{m[2]}</Text>);
+    }
+    lastIndex = regex.lastIndex;
+  }
+  if (lastIndex < text.length) {
+    spans.push(<Text key={key++}>{text.slice(lastIndex)}</Text>);
+  }
+  return spans;
+};
+
 const COUNTRY_SHORT_NAMES = {
   'united states of america': 'USA', 'united states': 'USA', 'usa': 'USA',
   'united kingdom': 'UK', 'great britain': 'UK',
@@ -405,7 +431,7 @@ export default function MovieDetail({route}) {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Synopsis</Text>
           <Text style={styles.synopsis}>
-            {movie.synopsis}
+            {renderMarkdownSpans(movie.synopsis)}
             {movie.categories?.is_virtual_screening && movie.virtual_screening_info?.screening_name && (
               <Text style={styles.screeningCallout}>
                 {` Virtual screening available as part of the ${movie.virtual_screening_info.screening_name}.${movie.virtual_screening_info?.available_end ? ` Ends ${formatShortDate(movie.virtual_screening_info.available_end)}.` : ''}`}

@@ -88,6 +88,27 @@ private fun lbStars(score: Float): String {
 }
 
 /**
+ * Append text rendering a tiny markdown subset: **bold** and *italic*.
+ * Anything outside the markers is appended as plain text.
+ */
+private fun androidx.compose.ui.text.AnnotatedString.Builder.appendMarkdown(text: String) {
+    val regex = Regex("""\*\*([^*]+)\*\*|\*([^*]+)\*""")
+    var last = 0
+    for (m in regex.findAll(text)) {
+        if (m.range.first > last) append(text.substring(last, m.range.first))
+        val bold = m.groupValues[1]
+        val italic = m.groupValues[2]
+        if (bold.isNotEmpty()) {
+            withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append(bold) }
+        } else {
+            withStyle(SpanStyle(fontStyle = androidx.compose.ui.text.font.FontStyle.Italic)) { append(italic) }
+        }
+        last = m.range.last + 1
+    }
+    if (last < text.length) append(text.substring(last))
+}
+
+/**
  * Movie Detail Screen for Android TV
  * Matches tvOS layout: 35% poster, 60dp padding, buttons above synopsis
  */
@@ -510,7 +531,7 @@ private fun MovieDetail(
 
                     Text(
                         text = buildAnnotatedString {
-                            append(synopsis)
+                            appendMarkdown(synopsis)
                             screeningCallout?.let {
                                 withStyle(SpanStyle(
                                     color = Color(0xFFFFD700),

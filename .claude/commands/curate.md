@@ -112,9 +112,14 @@ If candidates exist:
 5. **When the user shortens a quote, that trimmed text IS the final version** — they are editing
 6. For reissues/restorations: only show quotes specifically about the reissue, not original-era reviews
 
-**Key: inject per-movie, not at the end.** After each movie's quotes are selected:
-- Inject selected quotes into that movie's `pull_quotes` array in `data.json` using the same logic as `pipeline/display.py`'s `inject_selected_pull_quotes()`
-- Commit + push: `git add data.json cache/pull_quotes_cache.json cache/pull_quotes_combined.json && NRW_ALLOW_DATA_COMMIT=1 git commit -m "Pull quotes: [TITLE] APPROVED: DELETE" && git push origin main`
+**Key: persist to the cache FIRST, then inject — per-movie, not at the end.**
+
+⚠️ The master list the pipeline rebuilds from is `cache/pull_quotes_combined.json`. If you only write to data.json, the quotes WILL be silently deleted on the next local `generate_data.py` run (the inject treats the cache as source of truth). So after each movie's quotes are selected/edited:
+
+1. **Write the selections into the cache** `cache/pull_quotes_combined.json`. For each chosen quote, set `selected: true` and store the user's FINAL (edited) text under `text`. If the movie has no entry, create one: `{"title", "year", "rt_quotes": [...], "lb_quotes": []}`. If a matching quote already exists, flip it to `selected: true` and overwrite its `text` with the edit. Schema per quote: `text`/`critic`/`outlet`/`source`/`review_url`/`selected`.
+2. **Then inject** the selected quotes into that movie's `pull_quotes` array in `data.json` using the same logic as `pipeline/display.py`'s `inject_selected_pull_quotes()` — so data.json and the cache always agree.
+3. Commit + push: `git add data.json && NRW_ALLOW_DATA_COMMIT=1 git commit -m "Pull quotes: [TITLE] APPROVED: DELETE" && git push origin main`
+   (The `cache/*.json` files are gitignored — they stay LOCAL as the source of truth and are not committed. Do not `git add` them; it's a silent no-op.)
 
 After all movies are processed, mark stage `completed` in progress file.
 

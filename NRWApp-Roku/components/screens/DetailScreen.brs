@@ -239,7 +239,9 @@ Sub LoadMovie(index as Integer)
 
     ' Set synopsis
     if movie.synopsis <> invalid AND movie.synopsis <> ""
-        synopsisText = movie.synopsis
+        ' Strip **bold**/*italic* markers — Roku Labels can't render inline styles
+        markdownRx = CreateObject("roRegex", "\*", "g")
+        synopsisText = markdownRx.ReplaceAll(movie.synopsis, "")
         ' Append screening callout to synopsis
         if movie.categories <> invalid AND movie.categories.is_virtual_screening = true AND movie.virtual_screening_info <> invalid AND movie.virtual_screening_info.screening_name <> invalid
             callout = " Virtual screening available as part of the " + movie.virtual_screening_info.screening_name + "."
