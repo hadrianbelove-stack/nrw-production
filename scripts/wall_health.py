@@ -98,6 +98,8 @@ with_trailers = sum(1 for m in movies if m.get('links', {}).get('trailer') or m.
 with_imdb = sum(1 for m in movies if m.get('imdb_rating'))
 with_links = sum(1 for m in movies if get_watch_link_count(m) > 0)
 
+diag = None
+failed_phases = []
 try:
     diag = json.load(open(os.path.join(BASE, 'metrics/run_diagnostics.json')))
     ts = diag.get('timestamp', '?')
@@ -105,14 +107,48 @@ try:
     time_part = ts[11:16] if len(ts) > 16 else ts
     status = 'SUCCESS' if diag.get('overall_success') else 'FAILURE'
     pipeline_str = '%s %s' % (status, time_part)
+    if not diag.get('overall_success'):
+        failed_phases = [p for p in diag.get('phases', []) if not p.get('success')]
 except Exception:
     pipeline_str = 'unknown'
+
+
+def _best_error_line(err):
+    """Pull the most informative line from a captured phase error (prefer the
+    actual exception over the truncated head-of-stderr noise)."""
+    if not err:
+        return ''
+    lines = [l.strip() for l in err.splitlines() if l.strip()]
+    for l in reversed(lines):
+        if 'Error' in l or 'Exception' in l or 'Traceback' in l:
+            return l
+    # No real exception in the captured text (run_diagnostics keeps only the
+    # head of stderr) — don't show scraper noise that looks like a cause.
+    return ''
+
 
 pct = lambda n: round(n / total * 100) if total else 0
 
 print('=' * 78)
 print('WALL HEALTH REPORT — %s' % fmt_date(today))
 print('=' * 78)
+
+# Loud banner when the latest pipeline run failed — a failure must never hide
+if diag is not None and not diag.get('overall_success', True):
+    n_phases = len(diag.get('phases', []))
+    run_when = (diag.get('timestamp', '?')[:16]).replace('T', ' ')
+    print()
+    print('🚨 PIPELINE FAILURE — INVESTIGATE NOW 🚨')
+    print('  Run %s · %d of %d phases failed' % (run_when, len(failed_phases), n_phases))
+    for p in failed_phases:
+        dur = p.get('duration_seconds')
+        dur_str = ' (%ds)' % int(dur) if dur else ''
+        print('  ✗ %s%s' % (p.get('name', '?'), dur_str))
+        eline = _best_error_line(p.get('error'))
+        print('    %s' % (eline[:120] if eline else '(error detail truncated — run /investigate)'))
+    print('  → Run:  /investigate the pipeline failure')
+    print('=' * 78)
+
 print()
 print('WALL: %d movies | PIPELINE: %s' % (total, pipeline_str))
 print('COVERAGE: RT %d%% (%d) | MC %d%% (%d) | Wiki %d%% (%d) | Trailers %d%% (%d) | IMDb %d%% (%d) | Links %d%% (%d)' % (

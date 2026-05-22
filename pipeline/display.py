@@ -584,6 +584,13 @@ class DisplayGenerator:
             # Apply category overrides from admin panel
             if movie_id in category_overrides:
                 overrides = category_overrides[movie_id]
+                # Tolerate legacy string format (e.g. "indie" meaning {"is_indie": True}).
+                # One malformed override must never crash the whole enrichment phase.
+                if isinstance(overrides, str):
+                    legacy_key = 'is_%s' % overrides
+                    overrides = {legacy_key: True} if legacy_key in categories else {}
+                elif not isinstance(overrides, dict):
+                    overrides = {}
                 for key, val in overrides.items():
                     if key in categories:
                         categories[key] = val
