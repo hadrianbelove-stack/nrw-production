@@ -1,19 +1,43 @@
 {
-  "timestamp": "2026-05-21T12:18:32.127865",
+  "timestamp": "2026-05-22T11:50:20.756892",
   "operation": "eventive_scan_pipeline",
   "stats": {
     "festivals_scanned": 120,
     "festivals_with_films": 115,
     "festivals_failed": 48,
-    "total_films_indexed": 2107,
+    "total_films_indexed": 2105,
     "expired_filtered": 0,
-    "unique_active": 1617,
+    "unique_active": 1614,
     "tracking_matches": 81,
-    "wall_matches": 29,
-    "new_cached": 82,
+    "wall_matches": 30,
+    "new_cached": 83,
     "skipped_undated": 28
   },
   "tracking_matches": [
+    {
+      "movie_id": "1526222",
+      "nrw_title": "There Are No Words",
+      "eventive_title": "There Are No Words",
+      "festival": "25th San Francisco Documentary Festival",
+      "link": "https://watch.eventive.org/sfdocfest2026/play/69e4dd36bf881f9dbaa5a17c",
+      "start": "2026-05-28T07:00:00.000Z",
+      "end": "2026-06-08T06:59:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1629372",
+      "nrw_title": "The Way We Move",
+      "eventive_title": "The Way We Move",
+      "festival": "25th San Francisco Documentary Festival",
+      "link": "https://watch.eventive.org/sfdocfest2026/play/69e4dd26bd48fa0d6a803238",
+      "start": "2026-05-28T07:00:00.000Z",
+      "end": "2026-06-08T06:59:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
     {
       "movie_id": "1631918",
       "nrw_title": "Hunky Jesus",
@@ -106,30 +130,6 @@
       "link": "https://watch.eventive.org/insideoutfilmfestival2026/play/69dff2209c7c6e898d1668e4",
       "start": "2026-05-25T16:00:00.000Z",
       "end": "2026-06-01T03:59:00.000Z",
-      "status": "upcoming",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1526222",
-      "nrw_title": "There Are No Words",
-      "eventive_title": "There Are No Words",
-      "festival": "25th San Francisco Documentary Festival",
-      "link": "https://watch.eventive.org/sfdocfest2026/play/69e4dd36bf881f9dbaa5a17c",
-      "start": "2026-05-28T07:00:00.000Z",
-      "end": "2026-06-08T06:59:00.000Z",
-      "status": "upcoming",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1629372",
-      "nrw_title": "The Way We Move",
-      "eventive_title": "The Way We Move",
-      "festival": "25th San Francisco Documentary Festival",
-      "link": "https://watch.eventive.org/sfdocfest2026/play/69e4dd26bd48fa0d6a803238",
-      "start": "2026-05-28T07:00:00.000Z",
-      "end": "2026-06-08T06:59:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
       "nrw_status": "available"
@@ -351,16 +351,16 @@
       "nrw_status": "tracking"
     },
     {
-      "movie_id": "1277882",
-      "nrw_title": "Out of Love",
-      "eventive_title": "Out of Love",
-      "festival": "Focus on French Cinema Festival 2026",
-      "link": "https://watch.eventive.org/focusonfrenchcinema/play/69987b9e1ab3800c3fdbb0fc",
-      "start": "2026-05-11T04:00:00.000Z",
-      "end": "2026-05-26T03:45:00.000Z",
+      "movie_id": "1162053",
+      "nrw_title": "Out of Order",
+      "eventive_title": "Out of Order",
+      "festival": "CinemaDanube",
+      "link": "https://watch.eventive.org/cinemadanube/play/68cc2cb0fbf0fc260b1fef0c",
+      "start": "",
+      "end": "",
       "status": "active",
       "match_tier": 1,
-      "nrw_status": "available"
+      "nrw_status": "tracking"
     },
     {
       "movie_id": "1591027",
@@ -373,6 +373,18 @@
       "status": "active",
       "match_tier": 1,
       "nrw_status": "tracking"
+    },
+    {
+      "movie_id": "1277882",
+      "nrw_title": "Out of Love",
+      "eventive_title": "Out of Love",
+      "festival": "Focus on French Cinema Festival 2026",
+      "link": "https://watch.eventive.org/focusonfrenchcinema/play/69987b9e1ab3800c3fdbb0fc",
+      "start": "2026-05-11T04:00:00.000Z",
+      "end": "2026-05-26T03:45:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
     },
     {
       "movie_id": "1514056",
@@ -639,18 +651,6 @@
       "nrw_status": "tracking"
     },
     {
-      "movie_id": "1162053",
-      "nrw_title": "Out of Order",
-      "eventive_title": "Out of Order",
-      "festival": "CinemaDanube",
-      "link": "https://watch.eventive.org/cinemadanube/play/68cc2cb0fbf0fc260b1fef0c",
-      "start": "",
-      "end": "",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "tracking"
-    },
-    {
       "movie_id": "1560360",
       "nrw_title": "Baristas vs Billionaires",
       "eventive_title": "Baristas vs Billionaires",
@@ -792,7 +792,7 @@
       "end": "2026-06-30T22:00:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1622620",
@@ -989,6 +989,18 @@
   ],
   "wall_matches": [
     {
+      "movie_id": "1526222",
+      "nrw_title": "There Are No Words",
+      "eventive_title": "There Are No Words",
+      "festival": "25th San Francisco Documentary Festival",
+      "link": "https://watch.eventive.org/sfdocfest2026/play/69e4dd36bf881f9dbaa5a17c",
+      "start": "2026-05-28T07:00:00.000Z",
+      "end": "2026-06-08T06:59:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
       "movie_id": "1398460",
       "nrw_title": "A Second Life",
       "eventive_title": "A Second Life",
@@ -1008,18 +1020,6 @@
       "link": "https://watch.eventive.org/insideoutfilmfestival2026/play/69dff2209c7c6e898d1668e4",
       "start": "2026-05-25T16:00:00.000Z",
       "end": "2026-06-01T03:59:00.000Z",
-      "status": "upcoming",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1526222",
-      "nrw_title": "There Are No Words",
-      "eventive_title": "There Are No Words",
-      "festival": "25th San Francisco Documentary Festival",
-      "link": "https://watch.eventive.org/sfdocfest2026/play/69e4dd36bf881f9dbaa5a17c",
-      "start": "2026-05-28T07:00:00.000Z",
-      "end": "2026-06-08T06:59:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
       "nrw_status": "available"
@@ -1186,6 +1186,18 @@
       "eventive_title": "Redlight to Limelight",
       "festival": "Doxumentale",
       "link": "https://watch.eventive.org/doxumentale/play/69e7e1d5bd2eedba4d9ffa21",
+      "start": "2026-05-26T22:00:00.000Z",
+      "end": "2026-06-30T22:00:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1544920",
+      "nrw_title": "The Beauty of the Donkey",
+      "eventive_title": "The Beauty of the Donkey",
+      "festival": "Doxumentale",
+      "link": "https://watch.eventive.org/doxumentale/play/69e7e1d58199e79167f7d8a9",
       "start": "2026-05-26T22:00:00.000Z",
       "end": "2026-06-30T22:00:00.000Z",
       "status": "upcoming",

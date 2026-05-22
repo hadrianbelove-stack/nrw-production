@@ -1,20 +1,31 @@
 {
-  "timestamp": "2026-05-20T20:02:16.044503",
-  "movies_requested": 10,
-  "movies_enriched": 9,
-  "movies_deferred": 1,
+  "timestamp": "2026-05-22T12:57:03.834967",
+  "movies_requested": 9,
+  "movies_enriched": 7,
+  "movies_deferred": 2,
   "deferred_details": [
     {
       "title": "Palestine 36",
       "reason": "jw_revert:justwatch_no_valid_offers",
       "digital_date": "2026-05-19",
-      "discovered_at": "2026-05-19T12:14:03.118242",
+      "discovered_at": "2026-05-21T12:18:37.373572",
       "discovery_source": "tmdb_type4",
-      "revert_count": 4,
+      "revert_count": 6,
       "tmdb_platforms": []
+    },
+    {
+      "title": "The Nightmare Upstairs: What Happened to Ty and Bryn?",
+      "reason": "under_60min",
+      "digital_date": "2026-05-19",
+      "discovered_at": "2026-05-22T11:50:27.744491",
+      "discovery_source": "provider_availability_check",
+      "revert_count": 0,
+      "tmdb_platforms": [
+        "Hulu"
+      ]
     }
   ],
-  "enrichment_duration_seconds": 993.38,
+  "enrichment_duration_seconds": 1420.65,
   "error_details": [],
   "total_errors": 0
 }
