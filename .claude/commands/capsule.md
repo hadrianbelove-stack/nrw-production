@@ -56,6 +56,12 @@ If they pick a number or provide text: move to Step 4.
 
 Take the final capsule text (either the picked variant or the user's rewrite).
 
+**First, pull latest** so you publish onto current data. The daily CI rewrites data.json; approving onto a stale copy causes a push conflict:
+
+```bash
+cd /Users/hadrianbelove/Downloads/nrw-production && git pull origin main
+```
+
 1. Write the capsule text to `cache/rewrite.txt`
 2. Run the approve command:
 
@@ -70,8 +76,10 @@ This does TWO things automatically:
 3. Commit and push:
 
 ```bash
-cd /Users/hadrianbelove/Downloads/nrw-production && git add data.json cache/approved_capsules.json cache/capsule_cache.json && NRW_ALLOW_DATA_COMMIT=1 git commit -m "Capsule: [TITLE] APPROVED: DELETE" && git push origin main
+cd /Users/hadrianbelove/Downloads/nrw-production && git add data.json && NRW_ALLOW_DATA_COMMIT=1 git commit -m "Capsule: [TITLE] APPROVED: DELETE" && git push origin main
 ```
+
+Commit **only** `data.json`. The cache files (`cache/approved_capsules.json`, `cache/capsule_cache.json`) are **gitignored** — they stay LOCAL as the training-bank source of truth and are NOT committed. Do not `git add` them; it's a silent no-op.
 
 ---
 

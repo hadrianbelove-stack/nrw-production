@@ -5,6 +5,16 @@ allowed-tools: Bash, Read, Grep, Edit, Write, AskUserQuestion, Glob
 
 Curate movies added since last session. Runs 4 stages in order, each with a user prompt. Resumable — if interrupted, re-running picks up where you left off.
 
+## Before You Start — pull latest
+
+The daily CI rewrites `data.json` every morning. Start on fresh main so your edits don't conflict:
+
+```bash
+cd /Users/hadrianbelove/Downloads/nrw-production && git pull origin main
+```
+
+If any `git push` in this session is rejected (CI or another writer pushed mid-session), run `git pull --rebase origin main` and push again — never resolve a data.json merge by hand (`--ours`/`--theirs` loses transitions; see CLAUDE.md).
+
 ## Resume Logic
 
 Before starting, check for an existing session:
@@ -145,7 +155,8 @@ If candidates exist, process each movie **one at a time, most recent first**:
    1. Apply standard capsule formatting (**bold** names, *italic* titles)
    2. Write final text to `cache/rewrite.txt`
    3. Run: `cd /Users/hadrianbelove/Downloads/nrw-production && /usr/bin/python3 scripts/write_capsule.py approve "TITLE" --file cache/rewrite.txt`
-   4. Commit + push: `cd /Users/hadrianbelove/Downloads/nrw-production && git add data.json cache/approved_capsules.json cache/capsule_cache.json && NRW_ALLOW_DATA_COMMIT=1 git commit -m "Capsule: [TITLE] APPROVED: DELETE" && git push origin main`
+   4. Commit + push: `cd /Users/hadrianbelove/Downloads/nrw-production && git add data.json && NRW_ALLOW_DATA_COMMIT=1 git commit -m "Capsule: [TITLE] APPROVED: DELETE" && git push origin main`
+      (Commit only `data.json`. `cache/approved_capsules.json` and `cache/capsule_cache.json` are gitignored local source-of-truth — don't `git add` them; it's a silent no-op.)
 
 After all movies are processed, mark stage `completed` in progress file.
 
