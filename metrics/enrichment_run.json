@@ -1,40 +1,29 @@
 {
-  "timestamp": "2026-05-23T11:32:23.852211",
-  "movies_requested": 12,
-  "movies_enriched": 10,
+  "timestamp": "2026-05-24T12:25:27.366410",
+  "movies_requested": 20,
+  "movies_enriched": 18,
   "movies_deferred": 2,
   "deferred_details": [
     {
       "title": "Palestine 36",
       "reason": "jw_revert:justwatch_no_valid_offers",
       "digital_date": "2026-05-19",
-      "discovered_at": "2026-05-23T10:31:51.453894",
+      "discovered_at": "2026-05-24T10:35:48.090015",
       "discovery_source": "tmdb_type4",
-      "revert_count": 7,
+      "revert_count": 8,
       "tmdb_platforms": []
     },
     {
-      "title": "No Place For Football",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-05-29",
-      "discovered_at": "2026-05-23T11:11:40.480135",
+      "title": "Bouchra",
+      "reason": "jw_revert:justwatch_no_valid_offers",
+      "digital_date": "2026-08-21",
+      "discovered_at": "2026-05-24T10:41:17.620741",
       "discovery_source": "tmdb_type4",
       "revert_count": 1,
       "tmdb_platforms": []
-    },
-    {
-      "title": "Roses on the Vine",
-      "reason": "zero_watch_links",
-      "digital_date": "",
-      "discovered_at": "2026-05-11T12:32:00.883953",
-      "discovery_source": "provider_availability_check",
-      "revert_count": 1,
-      "tmdb_platforms": [
-        "Amazon Video"
-      ]
     }
   ],
-  "enrichment_duration_seconds": 1151.92,
+  "enrichment_duration_seconds": 1860.03,
   "error_details": [],
   "total_errors": 0
 }

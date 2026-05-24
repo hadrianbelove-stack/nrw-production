@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-05-23T11:35:05.658477",
-  "duration_seconds": 4189.421885,
+  "timestamp": "2026-05-24T12:28:43.085107",
+  "duration_seconds": 7181.337816,
   "overall_success": true,
   "failure_count": 0,
   "warning_count": 0,
@@ -8,65 +8,65 @@
     {
       "name": "Intake new premieres from TMDB",
       "success": true,
-      "duration_seconds": 6.223057,
+      "duration_seconds": 7.935784,
       "error": null,
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-05-21 to 2026-05-23 (incremental mode, 21 intaked)\n\u2705 Movie intake complete: 21 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-04-23 to 2026-05-23\n   \ud83d\udccb Dual Stars (6 eps)\n   \ud83d\udccb Zodiaque (6 eps"
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-05-22 to 2026-05-24 (incremental mode, 14 intaked)\n\u2705 Movie intake complete: 14 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-04-24 to 2026-05-24\n   \ud83d\udccb Dear England (4 eps)\n   \ud83d\udccb Two Weeks in "
     },
     {
       "name": "Scan Eventive for virtual screenings",
       "success": true,
-      "duration_seconds": 381.904415,
+      "duration_seconds": 385.452231,
       "error": null,
-      "output_preview": "\n\ud83c\udfac Scanning Eventive for virtual screenings...\nFetching Eventive festival directory...\n  Found 169 festival slugs\nScanning 169 festivals for catalogs...\n  Progress: 75/169 slugs | 27 scanned | 634 films indexed\n  Progress: 100/169 slugs | 52 scanned | 1042 films indexed\n  Progress: 125/169 slugs | 77 scanned | 1436 films indexed\n  Progress: 150/169 slugs | 102 scanned | 1898 films indexed\n  Done: 121 festivals, 116 with films, 48 failed, 2112 total films\n  Active: 2112 | Expired: 0 | Unique: 162"
+      "output_preview": "\n\ud83c\udfac Scanning Eventive for virtual screenings...\nFetching Eventive festival directory...\n  Found 169 festival slugs\nScanning 169 festivals for catalogs...\n  Progress: 75/169 slugs | 27 scanned | 540 films indexed\n  Progress: 100/169 slugs | 52 scanned | 1095 films indexed\n  Progress: 125/169 slugs | 77 scanned | 1342 films indexed\n  Progress: 150/169 slugs | 102 scanned | 1822 films indexed\n  Done: 121 festivals, 116 with films, 48 failed, 2190 total films\n  Active: 2190 | Expired: 0 | Unique: 165"
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 2487.148763,
+      "duration_seconds": 4731.81347,
       "error": null,
-      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 17150 total movies\n\ud83d\udd0d Raw tracking filter: 13531 movies\n\ud83d\udd0d Assigned tracking_movies list: 13531\n\ud83d\udd0d Found 13531 movies in tracking status\n  Priority queue (last 180 days): 597 movies\n  Older movies: 12934 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 13531 movies for digital availability...\n\n   \u2705 Added Preemptive Listening to site immediately (discovery-driven)\n  \u2713 Preemptive Listenin"
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 17166 total movies\n\ud83d\udd0d Raw tracking filter: 13538 movies\n\ud83d\udd0d Assigned tracking_movies list: 13538\n\ud83d\udd0d Found 13538 movies in tracking status\n  Priority queue (last 180 days): 603 movies\n  Older movies: 12935 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 13538 movies for digital availability...\n\n   \u2705 Added Roses on the Vine to site immediately (discovery-driven)\n  \u2713 Roses on the Vine now "
     },
     {
       "name": "Enrich newly available movies with metadata",
       "success": true,
-      "duration_seconds": 1153.021518,
+      "duration_seconds": 1861.184055,
       "error": null,
-      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\n  \ud83d\udd0d Pre-order link finder: 27 movies within 14d window\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n      \u00b7 No Place For Football: Amazon not found\n      \u00b7 No Place For Football: Fandang"
+      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\n  \ud83d\udd0d Pre-order link finder: 29 movies within 14d window\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n      \u00b7 Spain is not different: Amazon not found\n      \u00b7 Spain is not different: Fanda"
     },
     {
       "name": "Stamp hosted trailer URLs into data.json",
       "success": true,
-      "duration_seconds": 1.401889,
+      "duration_seconds": 1.079554,
       "error": null,
-      "output_preview": "=== Trailer Pipeline: stamp ===\n\nConnecting to B2...\nFound 736 trailers in B2 bucket\n\nStamp results:\n  Stamped:          0\n  Already had URL:  621\n  Stale cleaned:    0\n  Not in B2:        191\n"
+      "output_preview": "=== Trailer Pipeline: stamp ===\n\nConnecting to B2...\nFound 744 trailers in B2 bucket\n\nStamp results:\n  Stamped:          0\n  Already had URL:  628\n  Stale cleaned:    0\n  Not in B2:        199\n"
     },
     {
       "name": "Refresh watch links and Wikipedia for all wall movies",
       "success": true,
-      "duration_seconds": 140.43856,
+      "duration_seconds": 155.943555,
       "error": null,
-      "output_preview": "\n\ud83d\udd04 Running daily gap fill for all wall movies...\n  \ud83d\udcca Processing 298 of 812 wall movies (last 30 days)\n  + Giant \u2014 new services added\n  + Voidance \u2014 new services added\n  \ud83c\udf93 Voidance \u2014 pre-order graduated (now available)\n  + Friends Until the End \u2014 new services added\n  + The Legend of Hei 2 \u2014 new services added\n\ud83d\udd17 Applied cached watch links for 1 movies\n  \ud83d\udcbe Tracking synced (1 graduation(s))\n\n  \ud83d\udcca Gap fill results (140s, 298 movies):\n     Watch links updated: 4\n     Wikipedia filled: 0\n     Pre-orders"
+      "output_preview": "\n\ud83d\udd04 Running daily gap fill for all wall movies...\n  \ud83d\udcca Processing 300 of 827 wall movies (last 30 days)\n  \ud83c\udf93 Voidance \u2014 pre-order graduated (now available)\n\ud83d\udd17 Applied cached watch links for 2 movies\n  \ud83d\udcbe Tracking synced (1 graduation(s))\n\n  \ud83d\udcca Gap fill results (156s, 300 movies):\n     Watch links updated: 0\n     Wikipedia filled: 0\n     Pre-orders graduated: 1\n\u2705 Gap fill complete: 0 watch links updated, 0 Wikipedia filled, 1 pre-orders graduated\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Retry trailer discovery for movies missing trailers",
       "success": true,
-      "duration_seconds": 9.592519,
+      "duration_seconds": 25.773592,
       "error": null,
-      "output_preview": "\n\ud83c\udfac Re-enriching movies with missing trailers...\n\ud83c\udfac Found 2 movies missing trailers:\n  \u2022 A Movie Trip\n  \u2022 Bride of the Year\n  \u2713 Cache hit: A Movie Trip (2025)\n  \u25cb A Movie Trip \u2014 no trailer found (attempt 1/5)\n[YouTubeTrailerScraper] Initializing browser via shared manager...\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headle"
+      "output_preview": "\n\ud83c\udfac Re-enriching movies with missing trailers...\n\ud83c\udfac Found 3 movies missing trailers:\n  \u2022 Spain is not different\n  \u2022 The Obsessed\n  \u2022 OHO Film\n  \u2713 Cache hit: Spain is not different (2026)\n  \u25cb Spain is not different \u2014 no trailer found (attempt 1/5)\n[YouTubeTrailerScraper] Initializing browser via shared manager...\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManag"
     },
     {
       "name": "Check virtual screening link expirations",
       "success": true,
-      "duration_seconds": 9.08961,
+      "duration_seconds": 11.538613,
       "error": null,
-      "output_preview": "\n\ud83c\udfaa Checking virtual screening links...\n  Checking 58 virtual screening movies...\n  \ud83d\udcbe Updated data.json\n  \ud83d\udcca Results: 24 active, 0 expired\n\u2705 Virtual screening check complete\n\ud83d\udccb Phase complete\n"
+      "output_preview": "\n\ud83c\udfaa Checking virtual screening links...\n  Checking 61 virtual screening movies...\n  \ud83d\udcbe Updated data.json\n  \ud83d\udcca Results: 27 active, 0 expired\n\u2705 Virtual screening check complete\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Archive movies older than 90 days",
       "success": true,
-      "duration_seconds": 0.420388,
+      "duration_seconds": 0.431394,
       "error": null,
-      "output_preview": "\n\ud83d\udce6 Archiving movies older than 90 days...\n\ud83d\udce6 Archived 1 movies (>90 days old) \u2192 data_archive.json\n   data.json: 811 movies | archive: 475 total\n\u2705 Archive complete\n\ud83d\udccb Phase complete\n"
+      "output_preview": "\n\ud83d\udce6 Archiving movies older than 90 days...\n\ud83d\udce6 Archived 10 movies (>90 days old) \u2192 data_archive.json\n   data.json: 817 movies | archive: 486 total\n\u2705 Archive complete\n\ud83d\udccb Phase complete\n"
     }
   ],
   "health_issues": [],
@@ -77,52 +77,41 @@
   "failures": [],
   "warnings": [],
   "data_quality": {
-    "total": 17150,
-    "tracking": 13522,
-    "available": 3277,
-    "data_movies": 811,
-    "movies_with_links": 781,
-    "movies_with_rt": 573,
-    "movies_with_wikipedia": 441,
-    "movies_with_trailers": 762
+    "total": 17166,
+    "tracking": 13523,
+    "available": 3292,
+    "data_movies": 817,
+    "movies_with_links": 787,
+    "movies_with_rt": 563,
+    "movies_with_wikipedia": 439,
+    "movies_with_trailers": 769
   },
   "enrichment_metrics": {
-    "timestamp": "2026-05-23T11:32:23.852211",
-    "movies_requested": 12,
-    "movies_enriched": 10,
+    "timestamp": "2026-05-24T12:25:27.366410",
+    "movies_requested": 20,
+    "movies_enriched": 18,
     "movies_deferred": 2,
     "deferred_details": [
       {
         "title": "Palestine 36",
         "reason": "jw_revert:justwatch_no_valid_offers",
         "digital_date": "2026-05-19",
-        "discovered_at": "2026-05-23T10:31:51.453894",
+        "discovered_at": "2026-05-24T10:35:48.090015",
         "discovery_source": "tmdb_type4",
-        "revert_count": 7,
+        "revert_count": 8,
         "tmdb_platforms": []
       },
       {
-        "title": "No Place For Football",
-        "reason": "jw_revert:justwatch_no_match",
-        "digital_date": "2026-05-29",
-        "discovered_at": "2026-05-23T11:11:40.480135",
+        "title": "Bouchra",
+        "reason": "jw_revert:justwatch_no_valid_offers",
+        "digital_date": "2026-08-21",
+        "discovered_at": "2026-05-24T10:41:17.620741",
         "discovery_source": "tmdb_type4",
         "revert_count": 1,
         "tmdb_platforms": []
-      },
-      {
-        "title": "Roses on the Vine",
-        "reason": "zero_watch_links",
-        "digital_date": "",
-        "discovered_at": "2026-05-11T12:32:00.883953",
-        "discovery_source": "provider_availability_check",
-        "revert_count": 1,
-        "tmdb_platforms": [
-          "Amazon Video"
-        ]
       }
     ],
-    "enrichment_duration_seconds": 1151.92,
+    "enrichment_duration_seconds": 1860.03,
     "error_details": [],
     "total_errors": 0
   }
