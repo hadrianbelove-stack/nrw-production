@@ -254,8 +254,9 @@ fun MovieCard(
                 )
 
                 // Streaming service bar badge (full-width top bar)
-                movie.watchLinks?.streaming?.let { streaming ->
-                    streaming.service?.let { serviceName ->
+                movie.watchLinks?.streaming
+                    ?.firstOrNull { !it.service.isNullOrBlank() }
+                    ?.service?.let { serviceName ->
                         StreamingBadge(
                             serviceName = serviceName,
                             modifier = Modifier
@@ -263,7 +264,6 @@ fun MovieCard(
                                 .fillMaxWidth()
                         )
                     }
-                }
 
                 // Pre-order badge (top right) — pipeline sets isPreorder flag
                 if (movie.isPreorder) {
@@ -410,24 +410,32 @@ private fun StreamingBadge(
     serviceName: String,
     modifier: Modifier = Modifier
 ) {
-    val backgroundColor = StreamingColors[serviceName.lowercase()] ?: Color(0xFF333333)
-    val displayName = when (serviceName.lowercase()) {
-        "netflix" -> "NETFLIX"
-        "disney_plus" -> "DISNEY+"
-        "max", "hbo_max" -> "MAX"
-        "prime", "amazon" -> "PRIME"
-        "hulu" -> "HULU"
-        "peacock" -> "PEACOCK"
-        "paramount_plus" -> "P+"
-        "apple_tv" -> "APPLE TV+"
-        "mubi" -> "MUBI"
-        "shudder" -> "SHUDDER"
-        "criterion" -> "CRITERION"
-        "tubi" -> "TUBI"
-        "fawesome" -> "FAWESOME"
-        else -> serviceName.uppercase().take(8)
+    // Strip storefront wrappers ("Shudder Amazon Channel" -> "Shudder") so we name the
+    // brand, not the platform it's sold through. Then match by substring so multi-word
+    // names ("Amazon Prime Video") resolve correctly.
+    val cleaned = serviceName
+        .replace(Regex("\\s+(Amazon|Apple TV|Roku Premium)\\s+Channel\\s*$", RegexOption.IGNORE_CASE), "")
+        .trim()
+        .ifEmpty { serviceName }
+    val s = cleaned.lowercase()
+    val (displayName, colorKey) = when {
+        s.contains("netflix") -> "NETFLIX" to "netflix"
+        s.contains("disney") -> "DISNEY+" to "disney_plus"
+        s.contains("max") || s.contains("hbo") -> "MAX" to "max"
+        s.contains("amazon") || s.contains("prime") -> "PRIME" to "prime"
+        s.contains("hulu") -> "HULU" to "hulu"
+        s.contains("peacock") -> "PEACOCK" to "peacock"
+        s.contains("paramount") -> "P+" to "paramount_plus"
+        s.contains("apple") -> "APPLE TV+" to "apple_tv"
+        s.contains("mubi") -> "MUBI" to "mubi"
+        s.contains("shudder") -> "SHUDDER" to "shudder"
+        s.contains("criterion") -> "CRITERION" to "criterion"
+        s.contains("tubi") -> "TUBI" to "tubi"
+        s.contains("fawesome") -> "FAWESOME" to "fawesome"
+        else -> cleaned.uppercase().take(10) to "other"
     }
-    val textColor = if (serviceName.lowercase() == "hulu") Color.Black else TextPrimary
+    val backgroundColor = StreamingColors[colorKey] ?: Color(0xFF333333)
+    val textColor = if (colorKey == "hulu") Color.Black else TextPrimary
 
     Box(
         modifier = modifier

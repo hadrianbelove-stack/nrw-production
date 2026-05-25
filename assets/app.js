@@ -65,6 +65,7 @@ const NRW = {
 
     resolveService: NRWConfig.resolveService,
     resolveVODService: NRWConfig.resolveVODService,
+    cleanServiceName: NRWConfig.cleanServiceName,
 
     // Normalize streaming to {service, link} — handles both array and dict formats
     getStreaming(wl) {
@@ -72,18 +73,6 @@ const NRW = {
         if (Array.isArray(s) && s.length > 0) return s[0];
         if (s?.service) return s;
         return null;
-    },
-
-    // Render a tiny markdown subset (**bold**, *italic*) to safe HTML.
-    // HTML is escaped first so synopsis text can never inject markup.
-    renderMarkdown(text) {
-        const esc = (text || '')
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;');
-        return esc
-            .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-            .replace(/\*([^*]+)\*/g, '<em>$1</em>');
     },
 
 
@@ -504,7 +493,7 @@ const NRW = {
                     displayName = resolved.badgeName;
                     badgeClass = 'badge-' + resolved.class;
                 } else {
-                    displayName = service.toUpperCase().slice(0, 10);
+                    displayName = NRW.cleanServiceName(service).toUpperCase().slice(0, 10);
                     badgeClass = 'badge-other';
                 }
 
@@ -1094,7 +1083,7 @@ const NRW = {
 
         // Synopsis text (renders **bold**/*italic* markdown)
         const synopsisEl = document.getElementById('lightbox-synopsis');
-        synopsisEl.innerHTML = this.renderMarkdown(movie.synopsis || 'Synopsis coming soon.');
+        synopsisEl.innerHTML = NRWConfig.renderMarkdown(movie.synopsis || 'Synopsis coming soon.');
 
         // Screening callout appended to synopsis
         if (movie.categories?.is_virtual_screening && movie.virtual_screening_info?.screening_name) {

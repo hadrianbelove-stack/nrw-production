@@ -150,7 +150,8 @@ data class MovieLinks(
 )
 
 data class WatchLinks(
-    val streaming: ServiceLink? = null,
+    @com.google.gson.annotations.JsonAdapter(VodLinksAdapter::class)
+    val streaming: List<ServiceLink>? = null,  // Array of streaming services (data.json uses array form)
     @com.google.gson.annotations.JsonAdapter(VodLinksAdapter::class)
     val vod: List<ServiceLink>? = null  // Array of VOD services (Amazon, Apple TV)
 )
@@ -371,8 +372,8 @@ fun Movie.getWatchOptions(): List<WatchOption> {
         }
     }
 
-    // Add streaming option - single object
-    watchLinks?.streaming?.let { link ->
+    // Add streaming options - array (one button per streaming service)
+    watchLinks?.streaming?.forEach { link ->
         if (link.link != null) {
             options.add(WatchOption(
                 service = normalizeServiceId(link.service) ?: "streaming",
@@ -482,7 +483,13 @@ private fun isEventiveLink(service: String?, url: String?): Boolean {
 
 private fun normalizeServiceId(serviceName: String?): String? {
     if (serviceName == null) return null
-    val normalized = serviceName.lowercase().trim()
+    // Strip storefront wrappers ("Shudder Amazon Channel" -> "Shudder") so the brand,
+    // not the platform it's sold through, drives the id / icon / label.
+    val stripped = serviceName
+        .replace(Regex("\\s+(Amazon|Apple TV|Roku Premium)\\s+Channel\\s*$", RegexOption.IGNORE_CASE), "")
+        .trim()
+        .ifEmpty { serviceName }
+    val normalized = stripped.lowercase().trim()
     return SERVICE_NAME_MAP[normalized] ?: normalized.replace(" ", "_")
 }
 

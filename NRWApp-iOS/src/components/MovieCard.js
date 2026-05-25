@@ -91,6 +91,9 @@ const getStreamingBadge = (movie) => {
     service = providers.streaming.find(p => !p.includes('with Ads')) || providers.streaming[0];
   }
   if (!service) return null;
+  // Channel storefronts ("Shudder Amazon Channel", "Britbox Apple TV Channel") are the
+  // brand sold through Amazon/Apple/Roku — name the brand, not the storefront.
+  service = service.replace(/\s+(Amazon|Apple TV|Roku Premium)\s+Channel\s*$/i, '').trim() || service;
   const s = service.toLowerCase();
   if (s.includes('netflix')) return {name: 'NETFLIX', color: '#E50914'};
   if (s.includes('disney')) return {name: 'DISNEY+', color: '#113CCF'};

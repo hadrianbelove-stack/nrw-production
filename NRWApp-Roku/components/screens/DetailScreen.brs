@@ -21,6 +21,13 @@ Sub Init()
     m.metadataLabel = m.top.FindNode("metadataLabel")
     m.languageLabel = m.top.FindNode("languageLabel")
     m.synopsisLabel = m.top.FindNode("synopsisLabel")
+    ' Synopsis renders **bold**/*italic* via MultiStyleLabel (see docs/STYLE_GUIDE.md).
+    ' default + bold use system fonts; italic uses bundled Lato (Roku has no system italic).
+    m.synopsisLabel.drawingStyles = {
+        "default": { fontUri: "font:MediumSystemFont", color: "#BBBBBBFF" }
+        "bold": { fontUri: "font:MediumBoldSystemFont", color: "#BBBBBBFF" }
+        "italic": { fontUri: "pkg:/fonts/Italic.ttf", fontSize: 27, color: "#BBBBBBFF" }
+    }
     m.pullQuotesLabel = m.top.FindNode("pullQuotesLabel")
 
     m.staffPickBadge = m.top.FindNode("staffPickBadge")
@@ -237,12 +244,10 @@ Sub LoadMovie(index as Integer)
         m.pullQuotesLabel.visible = false
     end if
 
-    ' Set synopsis
+    ' Set synopsis — render **bold**/*italic* as MultiStyleLabel tags (see docs/STYLE_GUIDE.md)
     if movie.synopsis <> invalid AND movie.synopsis <> ""
-        ' Strip **bold**/*italic* markers — Roku Labels can't render inline styles
-        markdownRx = CreateObject("roRegex", "\*", "g")
-        synopsisText = markdownRx.ReplaceAll(movie.synopsis, "")
-        ' Append screening callout to synopsis
+        synopsisText = MarkdownToMultiStyle(movie.synopsis)
+        ' Append screening callout to synopsis (plain text, default style)
         if movie.categories <> invalid AND movie.categories.is_virtual_screening = true AND movie.virtual_screening_info <> invalid AND movie.virtual_screening_info.screening_name <> invalid
             callout = " Virtual screening available as part of the " + movie.virtual_screening_info.screening_name + "."
             if movie.virtual_screening_info.available_end <> invalid AND movie.virtual_screening_info.available_end <> ""
@@ -720,3 +725,15 @@ Function OnKeyEvent(key as String, press as Boolean) as Boolean
 
     return false
 End Function
+
+' Convert the **bold**/*italic* markdown subset into MultiStyleLabel tags.
+' Bold first (** before single *). Untagged text uses the "default" style.
+' Canonical spec: docs/STYLE_GUIDE.md "Synopsis / Capsule Text Formatting".
+function MarkdownToMultiStyle(s as String) as String
+    if s = invalid then return ""
+    boldRx = CreateObject("roRegex", "\*\*([^*]+)\*\*", "g")
+    s = boldRx.ReplaceAll(s, "<bold>$1</bold>")
+    italRx = CreateObject("roRegex", "\*([^*]+)\*", "g")
+    s = italRx.ReplaceAll(s, "<italic>$1</italic>")
+    return s
+end function

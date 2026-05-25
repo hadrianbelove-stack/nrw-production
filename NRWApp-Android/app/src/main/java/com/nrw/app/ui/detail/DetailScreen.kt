@@ -90,6 +90,7 @@ private fun lbStars(score: Float): String {
 /**
  * Append text rendering a tiny markdown subset: **bold** and *italic*.
  * Anything outside the markers is appended as plain text.
+ * Canonical spec: docs/STYLE_GUIDE.md "Synopsis / Capsule Text Formatting".
  */
 private fun androidx.compose.ui.text.AnnotatedString.Builder.appendMarkdown(text: String) {
     val regex = Regex("""\*\*([^*]+)\*\*|\*([^*]+)\*""")

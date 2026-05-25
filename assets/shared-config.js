@@ -108,9 +108,20 @@ const NRWConfig = {
         return country;
     },
 
+    // Strip storefront wrappers so we match the real brand, not the platform it's
+    // sold through. "Shudder Amazon Channel" / "Britbox Apple TV Channel" /
+    // "Starz Roku Premium Channel" are the brand (Shudder/Britbox/Starz) billed
+    // through Amazon/Apple/Roku — the badge should name the brand. Leaves genuine
+    // services alone ("Amazon Prime Video", "The Roku Channel").
+    cleanServiceName(rawName) {
+        if (!rawName) return rawName;
+        const stripped = rawName.replace(/\s+(Amazon|Apple TV|Roku Premium)\s+Channel\s*$/i, '').trim();
+        return stripped || rawName;
+    },
+
     resolveService(rawName) {
         if (!rawName) return null;
-        const s = rawName.toLowerCase();
+        const s = NRWConfig.cleanServiceName(rawName).toLowerCase();
         for (const entry of Object.values(NRWConfig.SERVICE_MAP)) {
             if (entry.matches.some(m => s.includes(m))) return entry;
         }
@@ -129,5 +140,18 @@ const NRWConfig = {
             }
         }
         return null;
+    },
+
+    // Render a tiny markdown subset (**bold**, *italic*) to safe HTML.
+    // HTML is escaped first so synopsis text can never inject markup.
+    // Canonical spec: docs/STYLE_GUIDE.md "Synopsis / Capsule Text Formatting".
+    renderMarkdown(text) {
+        const esc = (text || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+        return esc
+            .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*([^*]+)\*/g, '<em>$1</em>');
     }
 };

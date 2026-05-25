@@ -396,5 +396,5 @@ Function GetStreamDisplayName(service as String) as String
         return names[normalized]
     end if
 
-    return UCase(service)
+    return UCase(CleanServiceName(service))
 End Function

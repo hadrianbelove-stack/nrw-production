@@ -236,6 +236,7 @@
 				2D02E4CB1E0B4B27006451C7 /* Bundle React Native Code And Images */,
 				42686649B799B0EA1ADB4648 /* [CP] Copy Pods Resources */,
 				1D628A144AB903441126BE7D /* [CP] Embed Pods Frameworks */,
+				34E41EAEAC9A26272394206C /* [CP-User] Generate Hermes dSYM */,
 			);
 			buildRules = (
 			);
@@ -374,9 +375,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-NRWApp-tvOS-NRWApp-tvOSTests/Pods-NRWApp-tvOS-NRWApp-tvOSTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-NRWApp-tvOS-NRWApp-tvOSTests/Pods-NRWApp-tvOS-NRWApp-tvOSTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -391,9 +396,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-NRWApp-tvOS/Pods-NRWApp-tvOS-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-NRWApp-tvOS/Pods-NRWApp-tvOS-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -414,6 +423,20 @@
 			shellPath = /bin/sh;
 			shellScript = "export NODE_BINARY=/opt/homebrew/bin/node\n../node_modules/react-native/scripts/react-native-xcode.sh";
 		};
+		34E41EAEAC9A26272394206C /* [CP-User] Generate Hermes dSYM */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP-User] Generate Hermes dSYM";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "      if [ \"${CONFIGURATION}\" = \"Release\" ]; then\n        HERMES_XCFWK=\"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes\"\n        if [ -f \"$HERMES_XCFWK\" ]; then\n          /usr/bin/dsymutil \"$HERMES_XCFWK\" -o \"${DWARF_DSYM_FOLDER_PATH}/hermes.framework.dSYM\"\n        fi\n      fi\n";
+		};
 		42686649B799B0EA1ADB4648 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -422,9 +445,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-NRWApp-tvOS/Pods-NRWApp-tvOS-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-NRWApp-tvOS/Pods-NRWApp-tvOS-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -439,9 +466,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-NRWApp-tvOS-NRWApp-tvOSTests/Pods-NRWApp-tvOS-NRWApp-tvOSTests-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-NRWApp-tvOS-NRWApp-tvOSTests/Pods-NRWApp-tvOS-NRWApp-tvOSTests-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -698,7 +729,7 @@
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 11;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = N97GA9NN35;
 				ENABLE_BITCODE = NO;
@@ -737,7 +768,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 11;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = N97GA9NN35;
 				ENABLE_BITCODE = NO;
@@ -888,10 +919,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;
@@ -953,10 +981,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;

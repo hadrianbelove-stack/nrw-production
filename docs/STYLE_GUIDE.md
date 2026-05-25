@@ -96,6 +96,33 @@ Use system fonts. No custom web fonts.
 
 ---
 
+## Synopsis / Capsule Text Formatting
+
+Movie `synopsis` text in `data.json` may contain a tiny markdown subset:
+
+| Marker | Meaning | Example |
+|--------|---------|---------|
+| `**text**` | Bold — people's names | `**Brady Corbet**` |
+| `*text*`   | Italic — film titles  | `*The Brutalist*` |
+
+Rules:
+- This is the **only** field that carries markdown. Pull quotes are plain text.
+- Markers must be **balanced**: every `**` opens and closes; every single `*` opens and closes.
+- Canonical regex (bold matched first): `\*\*([^*]+)\*\*|\*([^*]+)\*`
+- Authoring convention: `gemini_scraper/capsule_style_guide.txt` (FORMATTING section). Approval warns on unbalanced markers (`gemini_scraper/capsule.py`).
+
+Renderers — all must match the spec above:
+
+| Surface | Renderer |
+|---------|----------|
+| Desktop + Mobile web | `NRWConfig.renderMarkdown()` in `assets/shared-config.js` |
+| iOS / tvOS | `renderMarkdownSpans()` in `src/utils/markdown.js` (one identical copy per app — keep in sync) |
+| Android TV | `appendMarkdown()` in `ui/detail/DetailScreen.kt` |
+| Roku | `MultiStyleLabel` + `MarkdownToMultiStyle()` in `components/screens/DetailScreen.brs` (italic uses bundled `fonts/Italic.ttf`) |
+| Newsletter | n/a — does not display synopsis |
+
+---
+
 ## Spacing & Layout
 
 ### Border Radius
@@ -257,6 +284,11 @@ Use **light theme** for better email compatibility:
 ---
 
 ## Changelog
+
+### 2026-05-22 - Synopsis Markdown Formatting
+- Added "Synopsis / Capsule Text Formatting" section: `**bold**` names, `*italic*` titles
+- Documented the one renderer per platform and the shared web helper (`NRWConfig.renderMarkdown`)
+- Roku now renders bold/italic via `MultiStyleLabel` (bundled Lato italic font) instead of stripping
 
 ### 2026-04-24 - Naming Conventions
 - Added DO: abbreviate "International" → "Intl.", "Film Festival" → "Film Fest"

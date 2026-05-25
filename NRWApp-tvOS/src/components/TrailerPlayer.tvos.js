@@ -21,6 +21,7 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose }) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [paused, setPaused] = useState(false);
   const [closing, setClosing] = useState(false);
+  const videoRef = useRef(null);
   const leftArrowOpacity = useRef(new Animated.Value(0.4)).current;
   const rightArrowOpacity = useRef(new Animated.Value(0.4)).current;
 
@@ -79,13 +80,18 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose }) => {
     }
   }, [currentIndex, findNextTrailerIndex, flashArrow, leftArrowOpacity]);
 
-  // Close handler — pause video first, then notify parent after a frame
+  // Close handler — RELEASE the native player before unmount, not just pause it.
+  // react-native-video leaks the AVPlayer on tvOS unmount (issue #2281): a paused-
+  // but-not-released instance keeps both the audio AND a focused native view alive,
+  // which is why audio persists and SELECT keeps hitting the trailer. Setting `closing`
+  // flips the Video `source` to undefined, which tears down the native instance;
+  // pause() is an imperative belt-and-suspenders. Unmount one beat later.
   const handleClose = useCallback(() => {
     if (closing) return;
     setClosing(true);
     setPaused(true);
-    // Give react-native-video a frame to process the pause before unmount
-    setTimeout(() => onClose(currentIndex), 50);
+    videoRef.current?.pause();
+    setTimeout(() => onClose(currentIndex), 100);
   }, [closing, currentIndex, onClose]);
 
   // Handle TV remote events
@@ -117,11 +123,14 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose }) => {
       {/* Video player */}
       {isMP4 && (
         <Video
-          source={{ uri: trailerUrl }}
+          ref={videoRef}
+          source={closing ? undefined : { uri: trailerUrl }}
           style={styles.video}
           resizeMode="contain"
           paused={paused || closing}
           controls={false}
+          playInBackground={false}
+          playWhenInactive={false}
           onEnd={handleClose}
           onError={handleClose}
         />

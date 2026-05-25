@@ -235,12 +235,10 @@
           maxLines="6"
           visible="false" />
 
-        <!-- Synopsis -->
-        <Label id="synopsisLabel"
+        <!-- Synopsis — MultiStyleLabel renders **bold**/*italic* (styles set in init via drawingStyles) -->
+        <MultiStyleLabel id="synopsisLabel"
           width="1100"
           height="300"
-          font="font:MediumSystemFont"
-          color="0xBBBBBBFF"
           wrap="true"
           maxLines="8"
           ellipsisText="..." />

@@ -803,7 +803,7 @@ const NRWMobile = {
 
         // Synopsis (renders **bold**/*italic* markdown)
         html += '<div class="sheet-section-label">Synopsis</div>' +
-            '<div class="sheet-synopsis">' + this.renderMarkdown(movie.synopsis || 'No synopsis available.') + '</div>';
+            '<div class="sheet-synopsis">' + NRWConfig.renderMarkdown(movie.synopsis || 'No synopsis available.') + '</div>';
 
         html += '<div style="height:50px"></div>';
 
@@ -846,7 +846,7 @@ const NRWMobile = {
 
         const resolved = this.resolveService(service);
         return {
-            name: resolved?.name || service,
+            name: resolved?.name || NRWConfig.cleanServiceName(service),
             wideLogo: resolved?.wideLogo,
             serviceKey: resolved?.class,
             link: link || null,
@@ -1179,14 +1179,6 @@ const NRWMobile = {
         const d = document.createElement('div');
         d.textContent = String(str);
         return d.innerHTML;
-    },
-
-    // Render a tiny markdown subset (**bold**, *italic*) to safe HTML.
-    // Escapes first via esc() so synopsis text can never inject markup.
-    renderMarkdown(str) {
-        return this.esc(str)
-            .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-            .replace(/\*([^*]+)\*/g, '<em>$1</em>');
     },
 
     formatRuntime(min) {

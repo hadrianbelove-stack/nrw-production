@@ -1118,6 +1118,16 @@ VERIFICATION:"""
         """
         capsule_text = capsule_text.strip()
 
+        # Warn (don't block) on unbalanced markdown markers before publishing.
+        # Renderers degrade gracefully, but a dropped asterisk is usually a typo.
+        # See docs/STYLE_GUIDE.md "Synopsis / Capsule Text Formatting".
+        if capsule_text.count('**') % 2 != 0:
+            logger.warning(f"Capsule for {title} ({year}) has an odd number of '**' "
+                           f"(unbalanced bold). Markdown may render wrong. Approving anyway.")
+        if capsule_text.replace('**', '').count('*') % 2 != 0:
+            logger.warning(f"Capsule for {title} ({year}) has an unmatched '*' "
+                           f"(unbalanced italic). Markdown may render wrong. Approving anyway.")
+
         # 1. Add to approved bank (training data)
         bank = self._load_approved_bank()
         bank.append({

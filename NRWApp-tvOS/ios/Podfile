@@ -61,6 +61,17 @@ target 'NRWApp-tvOS' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
+  script_phase :name => 'Generate Hermes dSYM',
+    :script => <<-SCRIPT,
+      if [ "${CONFIGURATION}" = "Release" ]; then
+        HERMES_XCFWK="${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes"
+        if [ -f "$HERMES_XCFWK" ]; then
+          /usr/bin/dsymutil "$HERMES_XCFWK" -o "${DWARF_DSYM_FOLDER_PATH}/hermes.framework.dSYM"
+        fi
+      fi
+    SCRIPT
+    :execution_position => :after_compile
+
   target 'NRWApp-tvOSTests' do
     inherit! :complete
     # Pods for testing
@@ -78,11 +89,13 @@ post_install do |installer|
   )
 
   # Bump pod deployment targets to avoid deprecation warnings with modern Xcode
+  # Also generate dSYMs for all pods (fixes Hermes dSYM missing on archive upload)
   installer.pods_project.targets.each do |target|
     target.build_configurations.each do |config|
       if config.build_settings['TVOS_DEPLOYMENT_TARGET'].to_f < 15.0
         config.build_settings['TVOS_DEPLOYMENT_TARGET'] = '15.0'
       end
+      config.build_settings['DEBUG_INFORMATION_FORMAT'] = 'dwarf-with-dsym'
     end
   end
 end

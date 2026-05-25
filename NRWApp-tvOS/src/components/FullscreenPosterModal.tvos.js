@@ -26,6 +26,7 @@ import {
 import { Colors, getServiceColor, isVirtualScreeningPlatform } from '../constants/colors';
 import { useTVEventHandler, TV_EVENTS } from '../utils/focusManager.tvos';
 import TrailerPlayer from './TrailerPlayer.tvos';
+import { renderMarkdownSpans } from '../utils/markdown';
 
 const FullscreenPosterModal = ({
   visible,
@@ -251,7 +252,7 @@ const FullscreenPosterModal = ({
 
             <ScrollView style={styles.synopsisContainer} showsVerticalScrollIndicator={false}>
               <Text style={styles.synopsis}>
-                {movie.synopsis || 'Synopsis coming soon.'}
+                {movie.synopsis ? renderMarkdownSpans(movie.synopsis) : 'Synopsis coming soon.'}
               </Text>
             </ScrollView>
 

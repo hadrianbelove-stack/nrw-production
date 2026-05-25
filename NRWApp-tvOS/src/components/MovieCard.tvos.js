@@ -194,11 +194,23 @@ const MovieCard = forwardRef(({
       return { name: 'PRE-ORDER', subtext: poDate, color: '#7c3aed' };
     }
 
-    let service = watchLinks.streaming?.service;
+    // watch_links.streaming is an array of {service, link} (legacy: a single object).
+    // Prefer a non-"with Ads" entry, then fall back to providers.streaming (plain strings).
+    let service;
+    const wlStreaming = watchLinks.streaming;
+    if (Array.isArray(wlStreaming) && wlStreaming.length > 0) {
+      const pick = wlStreaming.find(s => !(s?.service || '').includes('with Ads')) || wlStreaming[0];
+      service = pick?.service;
+    } else if (wlStreaming && typeof wlStreaming === 'object') {
+      service = wlStreaming.service; // legacy single-object form
+    }
     if (!service && providers.streaming?.length > 0) {
       service = providers.streaming.find(p => !p.includes('with Ads')) || providers.streaming[0];
     }
     if (!service) return null;
+    // Channel storefronts ("Shudder Amazon Channel", "Britbox Apple TV Channel") are the
+    // brand sold through Amazon/Apple/Roku — name the brand, not the storefront.
+    service = service.replace(/\s+(Amazon|Apple TV|Roku Premium)\s+Channel\s*$/i, '').trim() || service;
 
     const s = service.toLowerCase();
     if (s.includes('netflix')) return { name: 'NETFLIX', color: '#E50914' };

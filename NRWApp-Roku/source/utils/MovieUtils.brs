@@ -551,9 +551,33 @@ End Function
 ' Get streaming service info
 Function GetStreamingService(movie as Object) as Object
     if movie.watch_links <> invalid AND movie.watch_links.streaming <> invalid
-        return movie.watch_links.streaming
+        s = movie.watch_links.streaming
+        ' data.json uses array form ([{service, link}]); callers expect a single object
+        if Type(s) = "roArray"
+            if s.Count() > 0
+                return s[0]
+            end if
+            return invalid
+        end if
+        return s  ' legacy single-object form
     end if
     return invalid
+End Function
+
+' Strip storefront wrappers ("Shudder Amazon Channel" -> "Shudder") so we name the
+' brand, not the platform it is sold through. Leaves "Amazon Prime Video" /
+' "The Roku Channel" alone (only strips a trailing storefront suffix).
+Function CleanServiceName(service as String) as String
+    if service = invalid then return service
+    lower = LCase(service)
+    suffixes = [" amazon channel", " apple tv channel", " roku premium channel"]
+    for each suf in suffixes
+        endPos = Len(service) - Len(suf) + 1
+        if endPos > 1 AND InStr(1, lower, suf) = endPos
+            return Mid(service, 1, endPos - 1).Trim()
+        end if
+    end for
+    return service
 End Function
 
 ' Get VOD services as array (handles both array and single object formats)
@@ -609,7 +633,7 @@ End Function
 
 ' Normalize service name for color lookup
 Function NormalizeServiceName(service as String) as String
-    normalized = LCase(service)
+    normalized = LCase(CleanServiceName(service))
     normalized = normalized.Replace(" ", "_")
     normalized = normalized.Replace("+", "_plus")
 
@@ -670,6 +694,6 @@ Function GetServiceBadgeText(service as String) as String
         return badges[normalized]
     end if
 
-    ' Return first letter as fallback
-    return UCase(Left(service, 1))
+    ' Return first letter as fallback (of cleaned brand)
+    return UCase(Left(CleanServiceName(service), 1))
 End Function
