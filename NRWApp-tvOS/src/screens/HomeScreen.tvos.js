@@ -146,11 +146,12 @@ const DateCard = ({ dateParts }) => {
   );
 };
 
-// Grid configuration - 8 columns for 1920px width
-const NUM_COLUMNS = 8;
+// Grid configuration - 5 columns for 1920px width
+const NUM_COLUMNS = 5;
 const CARD_WIDTH = Dimensions.tvos.cardWidth;
 const CARD_HEIGHT = Dimensions.tvos.cardHeight;
 const CARD_GAP = 16;
+const SHOW_TRAILERS_CARD = false; // Trailers card temporarily disabled — set true to restore
 
 // Trailers Card Component with focus animations
 const TrailersCard = ({ playlistUrl, nextFocusUp }) => {
@@ -424,7 +425,7 @@ const HomeScreenTvOS = () => {
         currentDate = movieDate;
 
         // Add NEW TRAILERS button before the first date
-        if (isFirstDate) {
+        if (isFirstDate && SHOW_TRAILERS_CARD) {
           items.push({
             type: 'trailers',
             id: 'new-trailers-button',
@@ -587,7 +588,7 @@ const HomeScreenTvOS = () => {
             onSelect={() => handleMovieSelect(item.movie)}
             onLongPress={() => handleOpenFullscreen(item.movie)}
             onFocus={() => handleMovieFocus(item.movie, index)}
-            hasTVPreferredFocus={index === 2} // First movie after trailers + first date marker
+            hasTVPreferredFocus={index === (SHOW_TRAILERS_CARD ? 2 : 1)} // First movie: after [trailers,date] when shown, else after [date]
             testID={`movie-card-${index}`}
             nextFocusUp={focusUpTarget}
             nextFocusLeft={nextFocusLeft}
@@ -735,7 +736,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 64,
+    paddingHorizontal: 68,
     paddingTop: 28,
     paddingBottom: 16,
   },
@@ -808,8 +809,8 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   listContent: {
-    // Center the 8-column grid: (1920 - 8*210 - 7*16) / 2 = 64px
-    paddingHorizontal: 64,
+    // Center the 5-column grid: (1920 - 5*344 - 4*16) / 2 = 68px
+    paddingHorizontal: 68,
     paddingTop: 30,
     paddingBottom: 20,
     overflow: 'visible',

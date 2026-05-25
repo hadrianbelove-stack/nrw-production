@@ -408,6 +408,7 @@ const NRW = {
         let lastDate = '';
         let isFirstDate = true;
         let preorderSectionStarted = false;
+        const SHOW_TRAILERS_CARD = false; // Trailers card temporarily disabled — set true to restore
 
         orderedMovies.forEach(movie => {
             const date = (movie.digital_date || '').substring(0, 10);
@@ -426,7 +427,7 @@ const NRW = {
             // Regular movies: date divider when date changes
             } else if (date !== lastDate) {
                 // Add NEW TRAILERS button before the first date marker
-                if (isFirstDate) {
+                if (isFirstDate && SHOW_TRAILERS_CARD) {
                     const now = new Date();
                     const weekStart = new Date(now);
                     weekStart.setDate(now.getDate() - now.getDay());

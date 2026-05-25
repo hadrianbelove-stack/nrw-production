@@ -20,7 +20,7 @@ import MovieCard from '../components/MovieCard.tvos';
 const CARD_WIDTH = Dimensions.tvos.cardWidth;
 const CARD_HEIGHT = Dimensions.tvos.cardHeight;
 const CARD_GAP = 16;
-const NUM_COLUMNS = 8;
+const NUM_COLUMNS = 5;
 
 const SearchScreen = ({ route }) => {
   const navigation = useNavigation();
@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   resultsInfo: {
-    paddingHorizontal: 64,
+    paddingHorizontal: 68,
     paddingBottom: 10,
   },
   resultsText: {
@@ -227,7 +227,8 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   listContent: {
-    paddingHorizontal: 64,
+    // Center the 5-column grid: (1920 - 5*344 - 4*16) / 2 = 68px
+    paddingHorizontal: 68,
     paddingTop: 10,
     paddingBottom: 40,
   },

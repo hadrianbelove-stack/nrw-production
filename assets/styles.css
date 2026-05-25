@@ -145,12 +145,12 @@ header h1 {
 #wall {
     padding: 1.5rem 2rem;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    grid-template-columns: repeat(5, 1fr);
     gap: 2rem 1rem;
 }
 
 #wall > * {
-    justify-self: center;
+    justify-self: stretch;
 }
 
 .movie-container {
@@ -212,8 +212,9 @@ header h1 {
 
 /* Inline date divider cards - same size as movie cards */
 .date-divider-card {
-    width: 270px;
-    height: 405px;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 2 / 3;
     background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
     border: 2px solid var(--accent-primary);
     border-radius: 15px;
@@ -291,8 +292,9 @@ header h1 {
 
 /* NEW TRAILERS card - same size as movie cards */
 .trailers-card {
-    width: 270px;
-    height: 405px;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 2 / 3;
     background: linear-gradient(180deg, #0a0a0a 0%, #1a1a2e 100%);
     border: 2px solid var(--accent-primary);
     border-radius: 15px;
@@ -354,8 +356,9 @@ header h1 {
 }
 
 .movie-card {
-    width: 270px;
-    height: 405px;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 2 / 3;
     -webkit-perspective: 1000px;
     perspective: 1000px;
     cursor: pointer;
@@ -569,7 +572,7 @@ header h1 {
     font-size: 0.9rem;
     color: #bbb;
     line-height: 1.3;
-    max-width: 270px;
+    max-width: 100%;
 }
 
 .movie-info .movie-title {
@@ -693,6 +696,18 @@ header h1 {
         gap: 1.5rem;
     }
 
+}
+
+@media (max-width: 1280px) {
+    #wall {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 900px) {
+    #wall {
+        grid-template-columns: repeat(3, 1fr);
+    }
 }
 
 @media (max-width: 480px) {

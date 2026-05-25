@@ -87,3 +87,43 @@ Credentials in `.env`: `B2_KEY_ID`, `B2_APPLICATION_KEY`, `B2_BUCKET_NAME`
 3. For *playlist curation* (a separate feature — see `docs/features/YOUTUBE_PLAYLIST_SETUP.md`)
 
 The vast majority of trailers (324+ as of March 2026) are served as self-hosted MP4 files from Backblaze B2.
+
+## This Week's Trailers Card (currently disabled)
+
+**Status: DISABLED as of May 2026** (temporary — "for now"). The card is dormant, not deleted. All component code, styles, and markup remain in place; it is simply not inserted/shown.
+
+**What it is:** A special card pinned to the front of the poster grid that opens the trailer reel/playlist. The on-screen label varies by platform — tvOS says **"THIS WEEK'S TRAILERS"**, Desktop says **"NEW TRAILERS"** + the week's date range, Android TV / Roku say **"TRAILERS"** — but it is one feature: the *This Week's Trailers Card*. (Related: the YouTube playlist it links to on tvOS — see `docs/features/YOUTUBE_PLAYLIST_SETUP.md`.)
+
+**Present on 4 of 7 devices.** Mobile Website, iOS, and the Newsletter never had this card.
+
+### How to re-enable
+
+Flip one switch per device back to on, then rebuild the native apps.
+
+| Device | File | Switch | Re-enable |
+|--------|------|--------|-----------|
+| Desktop Web | `assets/app.js` | `const SHOW_TRAILERS_CARD = false` | set `true` |
+| tvOS | `NRWApp-tvOS/src/screens/HomeScreen.tvos.js` | `const SHOW_TRAILERS_CARD = false` | set `true` (initial-focus index auto-adjusts via the same flag) |
+| Android TV | `NRWApp-Android/app/src/main/java/com/nrw/app/ui/home/HomeScreen.kt` | `private const val SHOW_TRAILERS_CARD = false` | set `true` |
+| Roku | `NRWApp-Roku/components/screens/HomeScreen.brs` | `m.trailersButton.visible = false` (in the "Show grid" block) | set `true` |
+
+After flipping the native ones (tvOS / Android TV / Roku), rebuild & redeploy those apps. Desktop takes effect on reload.
+
+### Where the dormant code lives (left intact)
+
+| Device | Dormant pieces |
+|--------|----------------|
+| Desktop Web | `.trailers-card` styles in `assets/styles.css`; the card-building block in `assets/app.js` (inside the date-divider branch) |
+| tvOS | `TrailersCard` component + `trailersCard` styles in `HomeScreen.tvos.js`; the `item.type === 'trailers'` render branch |
+| Android TV | `GridItem.TrailersItem` (sealed type) + its `when` branches in `HomeScreen.kt`; `TrailersCard` composable in `ui/components/` |
+| Roku | `trailersButton` `<Group>` in `NRWApp-Roku/components/screens/HomeScreen.xml` |
+
+### How to find it in code
+
+The human name to use is **"This Week's Trailers Card."** To locate the switches in code, grep the flag name (catches Desktop, tvOS, Android TV):
+
+```
+grep -rn "SHOW_TRAILERS_CARD" .
+```
+
+Roku has no shared keyword — look for `m.trailersButton.visible` in `NRWApp-Roku/components/screens/HomeScreen.brs`.

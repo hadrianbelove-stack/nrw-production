@@ -63,6 +63,9 @@ import com.nrw.app.ui.theme.TextMuted
 import com.nrw.app.ui.theme.TextPrimary
 import com.nrw.app.ui.theme.TextSecondary
 
+// Trailers card temporarily disabled — set true to restore
+private const val SHOW_TRAILERS_CARD = false
+
 // Grid item can be either a movie, date divider, or trailers card
 sealed class GridItem {
     data class MovieItem(val movie: Movie) : GridItem()
@@ -170,7 +173,7 @@ private fun createGridItems(movies: List<Movie>, playlistUrl: String?): List<Gri
         val movieDate = movie.getDisplayDate()
         if (movieDate != null && movieDate != currentDate) {
             // Add trailers card before first date divider
-            if (!addedTrailers) {
+            if (!addedTrailers && SHOW_TRAILERS_CARD) {
                 items.add(GridItem.TrailersItem)
                 addedTrailers = true
             }

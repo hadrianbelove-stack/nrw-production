@@ -72,7 +72,7 @@ Sub onMoviesLoaded()
 
     ' Show grid
     m.movieGrid.visible = true
-    m.trailersButton.visible = true
+    m.trailersButton.visible = false  ' Trailers card temporarily disabled — set true to restore
 
     ' Restore last focus position
     lastIndex = GetFocusIndex()
